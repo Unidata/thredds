@@ -1,0 +1,5 @@
+CP="build/classes;resources;@CLASSPATH@"
+
+echo "java -classpath $CP thredds.viewer.Main"
+
+java -Xmx512m -classpath $CP ucar.nc2.ui.ToolsUI

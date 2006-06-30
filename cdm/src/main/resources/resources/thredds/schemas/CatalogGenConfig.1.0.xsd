@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v1.0"
+            xmlns="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v1.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            elementFormDefault="qualified">
+
+  <xsd:import namespace="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+              schemaLocation="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd"/>
+
+  <!--
+    The catalogGenConfig element contains the CatGen config info and declares its type.
+   -->
+  <xsd:element name="catalogGenConfig">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="datasetSource"/>
+        <xsd:element ref="addCollection" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datasetNamer" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="addMetadata" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datasetSorter" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="type" type="catalogGenConfigTypeEnum" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    Describe where to look for datasets and how to determine dataset from non-dataset objects.
+   -->
+  <xsd:element name="datasetSource">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="resultService" minOccurs="1" maxOccurs="unbounded"/>
+        <xsd:element ref="datasetFilter" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:token" use="required"/>
+      <xsd:attribute name="type" type="datasetSourceTypeEnum" use="required"/>
+      <xsd:attribute name="flatten" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="accessPoint" type="xsd:token" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+  References an existing service element.
+  If more than one, construct multiple access elements?
+  Allow renaming of urlPath??? (multiple access elements designed for same ds needing diff urlPaths)
+  -->
+  <xsd:element name="resultService">
+    <xsd:complexType>
+      <xsd:attribute name="serviceName" type="xsd:token" use="required"/>
+      <xsd:attribute name="accessPointHeader" type="xsd:token" use="required"/>
+    </xsd:complexType>
+    <!-- Enforce requirement that serviceName attribute reference an existing service element. -->
+    <xsd:keyref name="resultServiceName" refer="cat:serviceNameKey">
+      <xsd:selector xpath="."/>
+      <xsd:field xpath="@serviceName"/>
+    </xsd:keyref>
+  </xsd:element>
+
+  <!--
+   -->
+  <xsd:element name="datasetFilter">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="regularExpression" type="xsd:string"/>
+        <xsd:element name="userDefinedFilter">
+          <!-- Given class must implement the DatasetFilter interface:
+            - datasetFilter( InvDataset) : boolean
+            -->
+          <xsd:complexType>
+            <xsd:attribute name="javaClassName" type="xsd:token"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:choice>
+      <xsd:attribute name="name" type="xsd:token" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    Add a new collection dataset, describe the datasets that are part of the new collection dataset.
+    -->
+  <xsd:element name="addCollection">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="findMatchingDatasets"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:token"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    Fold this into addMetadata
+    Should split this into two subclasses? RegEx and attrib
+   -->
+  <xsd:element name="datasetNamer">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:token" use="required"/>
+      <xsd:attribute name="addLevel" type="xsd:boolean" use="required"/>
+      <xsd:attribute name="type" type="datasetNamerTypeEnum" use="required"/>
+      <xsd:attribute name="matchPattern" type="xsd:token"/>
+      <xsd:attribute name="substitutePattern" type="xsd:token"/>
+      <xsd:attribute name="attribContainer" type="xsd:token"/>
+      <xsd:attribute name="attribName" type="xsd:token"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+  Describe how to add metadata to a dataset collection.
+    -->
+  <xsd:element name="addMetadata">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="findTargetDatasets" ref="findMatchingDatasets"/>
+        <xsd:element name="type" type="xsd:token"/> <!-- name, ID, THREDDS metadata, DIF, etc -->
+        <xsd:element name="target" type="xsd:string"/> <!-- XPath to datasets to which the metadata is to be added -->
+        <xsd:choice>
+          <xsd:element ref="cat:metadata"/> <!--  -->
+          <xsd:element ref="calcMetadataElement"/>
+          <xsd:element ref="calcMetadataValue"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <!-- ???? -->
+      <xsd:attribute name="name" type="xsd:token"/>
+      <xsd:attribute name="inherited" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+  Describe how to sort the datasets at each level in a dataset collection.
+    -->
+  <xsd:element name="datasetSorter">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="lexigraphicallyByName">
+          <xsd:complexType>
+            <xsd:attribute name="increasing" type="xsd:boolean" default="true"/>
+            <xsd:attribute name="ignoreCase" type="xsd:boolean" default="false"/>
+            <xsd:attribute name="mixLeafAndCollection" type="xsd:boolean" default="false"/>
+            <!-- With both leaf and collection nodes, there are lots of ways to sort. Here
+              - we just support two: 1) sort everything not seperating collection and leaf
+              - nodes; and 2) sort everything with all collection nodes sorted before all
+              - the leaf nodes.
+              -
+              - NB: Can't sort collection nodes in a different way than leaf nodes with
+              -     this setup. Which would bring up the issue of placing collection or
+              -     leaf nodes first anyway. Maybe look at this later (targetNodeType
+              -     attribute with type datasetNodeTypeEnum?).
+              -->
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="userDefinedSort">
+          <!-- Given class must implement the sortDatasets interface:
+            - sortDatasets( InvDataset parent) : void (the child datasets are sorted)
+            -->
+          <xsd:complexType>
+            <xsd:attribute name="javaClassName" type="xsd:token"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:choice>
+      <xsd:attribute name="name" type="xsd:token"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+  Describe Find all datasets that match  
+  -->
+  <xsd:element name="findMatchingDatasets">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="regularExpression" type="xsd:string"/>
+        <xsd:element name="xpath" type="xsd:string"/>
+        <xsd:element name="userDefinedMatcher">
+          <!-- Given class must implement the findMatchingDatasets interface:
+            - findMatchingDatasets( InvDataset) : List of InvDatasets
+            -->
+          <xsd:complexType>
+            <xsd:attribute name="javaClassName" type="xsd:token"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:choice>
+      <xsd:attribute name="datasetNodeType" type="datasetNodeTypeEnum" default="all"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="userDefinedFunction">
+    <xsd:attribute name="javaClassName" type="xsd:token"/>
+  </xsd:complexType>
+
+  <!-- ******************************************************************* -->
+  <!-- Enumeration of allowed types of CatalogGen configuration. -->
+  <xsd:simpleType name="catalogGenConfigTypeEnum">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="Catalog"/>
+      <xsd:enumeration value="Aggregation"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Enumeration of allowed types of dataset sources. -->
+  <xsd:simpleType name="datasetSourceTypeEnum">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="Local"/>
+      <xsd:enumeration value="DodsDir"/>
+      <xsd:enumeration value="DodsFileServer"/>
+      <xsd:enumeration value="GrADSDataServer"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Enumeration of allowed types of dataset namers. -->
+  <xsd:simpleType name="datasetNamerTypeEnum">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="RegExp"/>
+      <xsd:enumeration value="DodsAttrib"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Enumeration of allowed types of dataset filters. -->
+  <xsd:simpleType name="datasetFilterTypeEnum">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="RegExp"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Enumeration of allowed dataset node types. -->
+  <xsd:simpleType name="datasetNodeTypeEnum">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="all"/>
+      <xsd:enumeration value="leafNode"/>
+      <xsd:enumeration value="collectionNode"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

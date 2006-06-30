@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4" relativePaths="true" type="JAVA_MODULE">
+  <component name="BuildJarSettings">
+    <containerInfo>
+      <containerElement type="module" name="cdm">
+        <attribute name="method" value="1" />
+        <attribute name="URI" value="/" />
+      </containerElement>
+    </containerInfo>
+    <setting name="jarPath" value="C:\dev\svn\thredds\trunk\cdm\cdm.jar" />
+    <setting name="buildJar" value="true" />
+    <setting name="mainClass" value="" />
+  </component>
+  <component name="ModuleRootManager" />
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="all" level="project" />
+    <orderEntry type="library" name="bufr" level="project" />
+    <orderEntry type="library" name="bzip2" level="project" />
+    <orderEntry type="library" name="commons-httpclient-3.0" level="project" />
+    <orderEntry type="library" name="commons-logging-1.0.4" level="project" />
+    <orderEntry type="library" name="grib" level="project" />
+    <orderEntry type="library" name="jdom" level="project" />
+    <orderEntry type="library" name="jpeg2000" level="project" />
+    <orderEntry type="library" name="junit" level="project" />
+    <orderEntry type="library" name="lucene" level="project" />
+    <orderEntry type="library" name="nlog4j-1.2.21" level="project" />
+    <orderEntry type="library" name="prefsAll" level="project" />
+    <orderEntry type="library" name="visadNoDods" level="project" />
+    <orderEntryProperties />
+  </component>
+</module>
+

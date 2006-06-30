@@ -1,0 +1,45 @@
+Netcdf-Java library
+Version @VERSION.MINOR@
+Build Date = @BUILDTIME@
+
+see http://www.unidata.ucar.edu/packages/netcdf-java/
+
+DISTRIBUTIONS
+  ncCore-@VERSION@.jar        just the core netcdf-java classes
+  netcdf-@VERSION@.jar        complete netcdf-java, except for the UI and optional libraries
+  netcdfUI-@VERSION@.jar      complete netcdf-java including the UI, without optional libraries
+  toolsUI-@VERSION@.jar       complete netcdf-java including the UI and optional libraries
+
+  netcdfAll-@VERSION@.zip     all of netcdf-java and optional libraries
+  ncSrc-@VERSION@.zip         source distribution
+  nc2.2.zip                   library that can be used in the IDV
+
+OPTIONAL LIBRARIES
+  commons-httpclient          required to read files remotely over HTTP
+  commons-logging, codec      required by commons-httpclient
+  gnu-regexp                  required by dods; dods library itself is now directly contained in netcdf
+  grib.jar                    required to read Grib-1 or Grib-2 datasets
+  jdom.jar                    required to read thredds catalogs, and read NcML
+  jpeg2000.jar                required to read Grib-2 JPEG2000 compressed files
+  nlog4j.jar                  log4j logging. Alternately, you can use any slf4j implementation.
+  visadNoDods.jar             required to read ADDE datasets; this version has the dods libraries removed
+  xercesImpl.jar              required to validate thredds catalogs (jdk 1.4 only)
+  xml-apis.jar                required by xerces library
+
+RELATED UI LIBRARIES
+  prefsAll.jar                required for UI state persistence, related widgets
+  resourcesOptional.jar       optional detailed maps and tables
+
+RUN THE NETCDF TOOLS UI APPLICATION FROM COMMAND LINE
+  1. get the toolsUI jar file (toolsUI-@VERSION@.zip)
+  3. java -Xmx512m -jar toolsUI-@VERSION@.jar
+or
+  1. get the netcdfAll zip file (netcdfAll-@VERSION@.zip)
+  2. unzip into working directory
+  3. java -Xmx512m -jar netcdfUI-@VERSION@.jar 
+
+BUILD AND RUN FROM SOURCE
+ 1. get the source release (ncSrc-@VERSION@.zip)
+ 2. unzip into working directory
+ 3. ant compileUI
+ 4. sh runSrcRelease

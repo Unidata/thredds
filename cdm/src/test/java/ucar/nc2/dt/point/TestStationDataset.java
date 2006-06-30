@@ -1,0 +1,269 @@
+package ucar.nc2.dt.point;
+
+import junit.framework.*;
+
+import ucar.ma2.*;
+import ucar.nc2.*;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.dt.*;
+import ucar.unidata.geoloc.LatLonRect;
+
+import java.io.IOException;
+import java.io.File;
+import java.util.List;
+import java.util.Date;
+import java.util.Iterator;
+
+/** Test StationObsDataset adapters in the JUnit framework. */
+
+public class TestStationDataset extends TestCase {
+  String topDir = ucar.nc2.TestAll.testdataDir+ "station/";
+  public TestStationDataset( String name) {
+    super(name);
+  }
+
+
+  public void testUnidataStationObsDataset() throws IOException {
+    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm/20050804_metar.nc", null, null));
+  }  
+
+  public void testNdbcStationObsDataset() throws IOException {
+    testAllMethods( PointObsDatasetFactory.open( topDir+"ndbc/41001h1976.nc", null, null));
+  }
+
+  public void testMadisStationObsDataset() throws IOException {
+    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/metar.20040604_1600.nc", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/sao.20040604_2100.nc", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/mesonet1.20050502_2300", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/coop.20040824_0900.gz", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/hydro.20040824_0400.gz", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/maritime.20040824_1000.gz", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/radiometer.20040824_1000.gz", null, null));
+  }
+
+  public void utestMadisAll() throws IOException {
+    String dataAlldir = "C:/data/madis";
+
+    File dir = new File(dataAlldir);
+    doOneFromEach(dir);
+  }
+
+  private void doOneFromEach(File dir) throws IOException {
+
+    File[] files = dir.listFiles();
+    for (int i = 0; i < files.length; i++) {
+      File file = files[i];
+      if (file.isDirectory())
+        doOneFromEach(file);
+      else {
+        System.out.println("\ndoOneFromEach="+file.getPath());
+        try {
+          PointObsDataset pobs = PointObsDatasetFactory.open( file.getPath(), null, null);
+          //if (null != pobs) testAllMethods(pobs);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        return;
+      }
+    }
+ }
+
+
+  public void utestUnidataStationObsDataset2() throws IOException {
+    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm/20050626_metar.nc", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm/20050727_metar.nc", null, null));
+  }
+
+  public void testOldUnidataStationObsDataset() throws IOException {
+    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm-old/04061912_buoy.nc", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm-old/2004061915_metar.nc", null, null));
+    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm-old/04061900_syn.nc", null, null));
+  }
+
+  private void testAllMethods(PointObsDataset pod) throws IOException {
+    StationObsDataset sod = (StationObsDataset) pod;
+
+    System.out.println("-----------");
+    System.out.println(sod.getDetailInfo());
+
+    Date d1 = sod.getStartDate();
+    Date d2 = sod.getEndDate();
+    if ((d1 != null) && (d2 != null))
+      assert d1.before(d2) || d1.equals( d2);
+
+    DateUnit du = sod.getTimeUnits();
+    assert null != du;
+
+    double startVal = du.makeValue( d1);
+    double endVal = du.makeValue( d2);
+    assert startVal <= endVal;
+
+    Class dataClass = sod.getDataClass();
+    assert dataClass == StationObsDatatype.class;
+
+    List dataVars =  sod.getDataVariables();
+    assert dataVars != null;
+    for (int i = 0; i < dataVars.size(); i++) {
+      VariableSimpleIF v = (VariableSimpleIF) dataVars.get(i);
+      assert null != sod.getDataVariable( v.getShortName());
+    }
+
+    List stations = sod.getStations();
+    assert null != stations;
+    assert 0 < stations.size();
+    System.out.println(" stations = "+stations.size());
+    int n = stations.size();
+    testStation( sod, (Station) stations.get(0));
+    if (n > 3) {
+      testStation( sod, (Station) stations.get(n-1));
+      testStation( sod, (Station) stations.get((n-1)/2));
+    }
+
+    // make a new bb
+    LatLonRect bb = sod.getBoundingBox();
+    assert null != bb;
+    double h = bb.getUpperRightPoint().getLatitude() - bb.getLowerLeftPoint().getLatitude();
+    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getWidth()/2, h/2);
+
+    List stationsBB= sod.getStations( bb2);
+    assert null != stationsBB;
+    assert stationsBB.size() <= stations.size();
+    System.out.println(" bb2 stations = "+stationsBB.size());
+
+    List data = sod.getData( bb2);
+    testData( sod.getTimeUnits(), data.iterator());
+
+    // make a new data range
+    double diff = endVal - startVal;
+    Date startRange = du.makeDate( startVal + .25 * diff);
+    Date endRange = du.makeDate( startVal + .75 * diff);
+    data = sod.getData( bb2, startRange, endRange);
+    testData( sod.getTimeUnits(), data.iterator());
+
+    data = sod.getData( stationsBB, startRange, endRange);
+    testData( sod.getTimeUnits(), data.iterator());
+
+    DataIterator dataIter = sod.getDataIterator(0);
+    int iterCount = testData( sod.getTimeUnits(), dataIter);
+    System.out.println(" getData size= "+iterCount+" getDataCount= "+sod.getDataCount());
+    assert iterCount == sod.getDataCount() : " iterCount = "+iterCount+" getDataCount= "+sod.getDataCount();
+
+    int stationDataCount = 0;
+    stations = sod.getStations();
+    for (int i = 0; i < stations.size(); i++) {
+      Station station = (Station) stations.get(i);
+      List stationData = sod.getData( station);
+      stationDataCount += stationData.size();
+    }
+    assert iterCount == stationDataCount : " iterCount= "+iterCount+" stationDataCount= "+stationDataCount;
+
+    pod.close();
+  }
+
+  private int testData( DateUnit timeUnit, Iterator dataIter) throws java.io.IOException {
+    int count = 0;
+    while(dataIter.hasNext()) {
+      Object data = dataIter.next();
+      assert data instanceof StationObsDatatype;
+      StationObsDatatype pobs = (StationObsDatatype) data;
+
+      EarthLocation loc = pobs.getLocation();
+      if (loc == null)
+        System.out.println("barf");
+      assert loc != null;
+      Station s = pobs.getStation();
+      assert s != null;
+
+      assert null != pobs.getNominalTimeAsDate();
+      assert null != pobs.getObservationTimeAsDate();
+
+      assert timeUnit.makeDate( pobs.getNominalTime()).equals( pobs.getNominalTimeAsDate());
+      assert timeUnit.makeDate( pobs.getObservationTime()).equals( pobs.getObservationTimeAsDate());
+
+      StructureData sdata = pobs.getData();
+      assert null != sdata;
+      testData( sdata);
+      count++;
+    }
+    return count;
+  }
+
+  private void testStation( StationObsDataset sod, Station s) throws IOException {
+
+    assert sod.getStation( s.getName()).equals(s);
+
+    List dataList = sod.getData( s);
+    int n = sod.getStationDataCount( s);
+    assert n == dataList.size() : n+ " != "+ dataList.size();
+    System.out.println(" station "+s.getName()+" has "+n+" data records");
+
+    Class dataClass = sod.getDataClass();
+    assert dataClass == StationObsDatatype.class;
+
+    if (n > 0) {
+      assert dataClass.isInstance( dataList.get(0));
+      StationObsDatatype data = (StationObsDatatype) dataList.get(0);
+      StructureData sdata = data.getData();
+      StructureMembers members = sdata.getStructureMembers();
+      int size = members.getStructureSize();
+      System.out.println(" structureSize= "+size+" total size = "+(sod.getDataCount() *size));
+
+      List dataVars = sod.getDataVariables();
+      List dataMembers = sdata.getMembers();
+      assert dataMembers.size() >= dataVars.size();
+      System.out.println(" dataMembers ="+dataMembers.size()+" dataVars= "+dataVars.size());
+
+      for (int i = 0; i < dataVars.size(); i++) {
+        VariableSimpleIF tdv = (VariableSimpleIF) dataVars.get(0);
+        StructureMembers.Member member = members.findMember( tdv.getShortName());
+        assert null != member : "cant find "+tdv.getShortName();
+
+        member.getDataType().equals( tdv.getDataType());
+        Array adata = sdata.getArray(member);
+        adata.getShape().equals( member.getShape());
+      }
+    }
+  }
+
+  private void testData( StructureData sdata) {
+      List dataMembers = sdata.getMembers();
+
+      for (int i = 0; i < dataMembers.size(); i++) {
+        StructureMembers.Member member = (StructureMembers.Member) dataMembers.get(i);
+        DataType dt = member.getDataType();
+        if (dt == DataType.FLOAT) {
+          sdata.getScalarFloat(member);
+          sdata.getArrayFloat(member);
+        } else if (dt == DataType.DOUBLE) {
+          sdata.getScalarDouble(member);
+          sdata.getArrayDouble(member);
+        } else if (dt == DataType.BYTE) {
+          sdata.getScalarByte(member);
+          sdata.getArrayByte(member);
+        } else if (dt == DataType.SHORT) {
+          sdata.getScalarShort(member);
+          sdata.getArrayShort(member);
+        } else if (dt == DataType.INT) {
+          sdata.getScalarInt(member);
+          sdata.getArrayInt(member);
+        } else if (dt == DataType.LONG) {
+          sdata.getScalarLong(member);
+          sdata.getArrayLong(member);
+        } else if (dt == DataType.CHAR) {
+          sdata.getScalarChar(member);
+          sdata.getArrayChar(member);
+          sdata.getScalarString(member);
+        } else if (dt == DataType.STRING) {
+          sdata.getScalarString(member);
+        }
+
+         if (dt != DataType.STRING) {
+           sdata.convertScalarFloat(member);
+         }
+
+      }
+  }
+
+
+}

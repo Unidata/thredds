@@ -1,0 +1,1546 @@
+ObjectDomain_Model 15
+{-zdywvu_c3z_e5rd2c1i_-p8w 0
+}[objectdomain.uml.core.TypeExpression $18
+objectdomain.uml.mechanisms.UmlPackage-owns $7
+objectdomain.uml.core.Generalization-owns $10
+objectdomain.uml.core.Projection $17
+objectdomain.uml.core.UmlAttribute-features $9
+objectdomain.uml.core.UmlAssociationEnd-connections $12
+objectdomain.uml.view.ClassView-owns $4
+objectdomain.uml.core.UmlAssociation-owns $11
+objectdomain.uml.view.Diagram-owns $3
+objectdomain.uml.core.UmlOperation-features $13
+objectdomain.domain.ModelEnvironment-owns $2
+objectdomain.uml.mechanisms.StylePackage-owns $16
+objectdomain.uml.mechanisms.StereotypePackage-owns $14
+objectdomain.uml.view.GeneralizationView-owns $6
+objectdomain.uml.core.UmlClass-owns $8
+objectdomain.domain.DomainLockObject $19
+objectdomain.uml.view.AssociationView-owns $5
+objectdomain.uml.mechanisms.UmlModel-models $1
+objectdomain.uml.core.Stereotype-owns $15
+]
+($1 1 > -zdywvu_c3z_e5rd2c1i_-p8w 0
+(name "Model"
+)
+(namespaceRoot true)
+(uid "-zdywvu_c3z_e5rd2c1i_-p8w"))
+($2 2 < -zdywvu_c3z_e5rd2c1i_-p8v "ModelEnvironment" 1
+(uid "-zdywvu_c3z_e5rd2c1i_-p8v"))
+($7 71 < -zdywvu_c3z_e5rd2c1i_-p8u "Logical" 1
+(name "Logical"
+)
+(namespaceRoot true)
+(uid "-zdywvu_c3z_e5rd2c1i_-p8u"))
+($3 3 < -zdywvu_c3z_e5rd2c1i_-p8t "Class Diagram" 71
+(name "Class Diagram"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p8t")
+(diagramType "class"))
+($4 4 < -zdywvu_c3z_e5rd2c1i_-p8p "TypedDataset" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywvu_c3z_e5rd2c1i_-p8p")
+(bbx 130 70 100 130))
+($4 5 < -zdywvu_c3z_e5rd2c1i_-p8o "TypedDataVariable" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywvu_c3z_e5rd2c1i_-p8o")
+(bbx 400 60 120 150))
+($5 6 < -zdywvu_c3z_e5rd2c1i_-p8n "" 3
+(uid "-zdywvu_c3z_e5rd2c1i_-p8n")
+(points 230 135 400 135)
+(lineStyle "oblique"))
+($4 7 < -zdywvu_c3z_e5rd2c1i_-p8m "GridDataset" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywvu_c3z_e5rd2c1i_-p8m")
+(bbx 130 340 100 60))
+($4 8 < -zdywvu_c3z_e5rd2c1i_-p8l "Grid" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywvu_c3z_e5rd2c1i_-p8l")
+(bbx 410 390 100 60))
+($6 9 < -zdywvu_c3z_e5rd2c1i_-p8j "" 3
+(uid "-zdywvu_c3z_e5rd2c1i_-p8j")
+(points 180 340 180 200)
+(lineStyle "oblique"))
+($6 10 < -zdywvu_c3z_e5rd2c1i_-p8i "" 3
+(uid "-zdywvu_c3z_e5rd2c1i_-p8i")
+(points 460 390 460 210)
+(lineStyle "oblique"))
+($4 11 < z8kflt_ksi_e7i75o5i_-p6l "Gridset" 3
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p6l")
+(bbx 130 470 100 60))
+($5 12 < z8kflt_ksi_e7i75o5i_-p6k "" 3
+(uid "z8kflt_ksi_e7i75o5i_-p6k")
+(points 180 400 180 470)
+(lineStyle "oblique"))
+($5 13 < z8kflt_ksi_e7i75o5i_-p6j "" 3
+(uid "z8kflt_ksi_e7i75o5i_-p6j")
+(points 230 486 410 434)
+(lineStyle "oblique"))
+($4 14 < z8kflt_ksi_e7i75o5i_-p6i "GridCoordSys" 3
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p6i")
+(bbx 410 530 100 60))
+($5 15 < z8kflt_ksi_e7i75o5i_-p6h "" 3
+(uid "z8kflt_ksi_e7i75o5i_-p6h")
+(points 230 511 410 549)
+(lineStyle "oblique"))
+($5 16 < z8kflt_ksi_e7i75o5i_-p6g "" 3
+(uid "z8kflt_ksi_e7i75o5i_-p6g")
+(points 460 450 460 530)
+(lineStyle "oblique"))
+($3 17 < z8kflt_ksi_e7i75o5i_-p94 "PointObs" 71
+(name "PointObs"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p94")
+(diagramType "class"))
+($4 18 < z8kflt_ksi_e7i75o5i_-p93 "PointCollection" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p93")
+(bbx 200 120 160 80))
+($4 19 < z8kflt_ksi_e7i75o5i_-p92 "StationCollection" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p92")
+(bbx 220 300 120 80))
+($6 20 < z8kflt_ksi_e7i75o5i_-p91 "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p91")
+(points 280 300 280 200)
+(lineStyle "oblique"))
+($4 21 < z8kflt_ksi_e7i75o5i_-p90 "TypedDataset" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p90")
+(bbx 430 10 100 130))
+($4 22 < z8kflt_ksi_e7i75o5i_-p8z "StationObsDataset" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p8z")
+(bbx 420 410 120 60))
+($6 23 < z8kflt_ksi_e7i75o5i_-p8y "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p8y")
+(points 479 410 476 260)
+(lineStyle "oblique"))
+($4 24 < z8kflt_ksi_e7i75o5i_-p8x "PointObsDataset" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p8x")
+(bbx 420 200 110 60))
+($6 25 < z8kflt_ksi_e7i75o5i_-p8w "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p8w")
+(points 476 200 478 140)
+(lineStyle "oblique"))
+($4 26 < z8kflt_ksi_e7i75o5i_-p8v "PointObsDatatype" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p8v")
+(bbx 590 310 110 80))
+($4 27 < z8kflt_ksi_e7i75o5i_-p8u "StationObsDatatype" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p8u")
+(bbx 580 550 130 60))
+($5 28 < z8kflt_ksi_e7i75o5i_-p8t "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p8t")
+(points 518 260 590 311)
+(lineStyle "oblique"))
+($5 29 < z8kflt_ksi_e7i75o5i_-p8s "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p8s")
+(points 515 470 610 550)
+(lineStyle "oblique"))
+($6 30 < z8kflt_ksi_e7i75o5i_-p8r "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p8r")
+(points 645 550 645 390)
+(lineStyle "oblique"))
+($6 31 < z8kflt_ksi_e7i75o5i_-p8q "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p8q")
+(points 420 210 360 189)
+(lineStyle "oblique"))
+($6 32 < z8kflt_ksi_e7i75o5i_-p8p "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p8p")
+(points 420 410 340 370)
+(lineStyle "oblique"))
+($4 33 < z8kflt_ksi_e7i75o5i_-p7v "Station" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p7v")
+(bbx 230 540 100 100))
+($5 34 < z8kflt_ksi_e7i75o5i_-p7u "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p7u")
+(points 280 380 280 540)
+(lineStyle "oblique"))
+($4 35 < z8kflt_ksi_e7i75o5i_-p7t "Location" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p7t")
+(bbx 60 410 100 120))
+($6 36 < z8kflt_ksi_e7i75o5i_-p7s "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p7s")
+(points 230 555 160 505)
+(lineStyle "oblique"))
+($5 37 < z8kflt_ksi_e7i75o5i_-p7r "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p7r")
+(points 580 582 330 589)
+(lineStyle "oblique"))
+($5 38 < z8kflt_ksi_e7i75o5i_-p7q "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p7q")
+(points 590 362 160 459)
+(lineStyle "oblique"))
+($4 39 < z8kflt_ksi_e7i75o5i_-p7p "TypedDataVariable" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p7p")
+(bbx 620 0 120 150))
+($5 40 < z8kflt_ksi_e7i75o5i_-p7o "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p7o")
+(points 530 75 620 75)
+(lineStyle "oblique"))
+($4 41 < z8kflt_ksi_e7i75o5i_-p7n "StructureData" 17
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p7n")
+(bbx 770 300 130 100))
+($5 42 < z8kflt_ksi_e7i75o5i_-p7m "" 17
+(uid "z8kflt_ksi_e7i75o5i_-p7m")
+(points 700 350 770 350)
+(lineStyle "oblique"))
+($3 43 < z8kflt_ksi_e7i75o5i_-p77 "TrajectoryObs" 71
+(name "TrajectoryObs"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p77")
+(diagramType "class"))
+($4 44 < z8kflt_ksi_e7i75o5i_-p76 "TypedDataset" 43
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p76")
+(bbx 120 40 100 130))
+($4 45 < z8kflt_ksi_e7i75o5i_-p75 "TypedDataVariable" 43
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p75")
+(bbx 380 30 120 150))
+($5 46 < z8kflt_ksi_e7i75o5i_-p74 "" 43
+(uid "z8kflt_ksi_e7i75o5i_-p74")
+(points 220 105 380 105)
+(lineStyle "oblique"))
+($4 47 < z8kflt_ksi_e7i75o5i_-p73 "TrajectoryObsDataset" 43
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p73")
+(bbx 100 250 140 60))
+($6 48 < z8kflt_ksi_e7i75o5i_-p72 "" 43
+(uid "z8kflt_ksi_e7i75o5i_-p72")
+(points 170 250 170 170)
+(lineStyle "oblique"))
+($4 49 < z8kflt_ksi_e7i75o5i_-p71 "TrajectoryObsDatatype" 43
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p71")
+(bbx 100 390 140 100))
+($5 50 < z8kflt_ksi_e7i75o5i_-p70 "" 43
+(uid "z8kflt_ksi_e7i75o5i_-p70")
+(points 170 310 170 390)
+(lineStyle "oblique"))
+($4 51 < z8kflt_ksi_e7i75o5i_-p6z "PointObsDatatype" 43
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p6z")
+(bbx 110 560 110 80))
+($5 52 < z8kflt_ksi_e7i75o5i_-p6y "" 43
+(uid "z8kflt_ksi_e7i75o5i_-p6y")
+(points 168 490 166 560)
+(lineStyle "oblique"))
+($4 53 < z8kflt_ksi_e7i75o5i_-p6x "Location" 43
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p6x")
+(bbx 360 460 100 120))
+($5 54 < z8kflt_ksi_e7i75o5i_-p6w "" 43
+(uid "z8kflt_ksi_e7i75o5i_-p6w")
+(points 220 582 360 536)
+(lineStyle "oblique"))
+($4 55 < z8kflt_ksi_e7i75o5i_-p6v "StructureData" 43
+(stereotypeGraphic "adornment")
+(uid "z8kflt_ksi_e7i75o5i_-p6v")
+(bbx 350 630 130 100))
+($5 56 < z8kflt_ksi_e7i75o5i_-p6u "" 43
+(uid "z8kflt_ksi_e7i75o5i_-p6u")
+(points 220 618 350 659)
+(lineStyle "oblique"))
+($3 57 < z8kflt_kto_ef1ni0xp_-p8u "Radial" 1
+(name "Radial"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8u")
+(diagramType "class"))
+($4 58 < z8kflt_kto_ef1ni0xp_-p8t "RadialDataset" 57
+(uid "z8kflt_kto_ef1ni0xp_-p8t")
+(bbx 70 120 100 60))
+($4 59 < z8kflt_kto_ef1ni0xp_-p8s "RadialVariable" 57
+(uid "z8kflt_kto_ef1ni0xp_-p8s")
+(bbx 290 130 100 50))
+($4 60 < z8kflt_kto_ef1ni0xp_-p8r "Radial" 57
+(uid "z8kflt_kto_ef1ni0xp_-p8r")
+(bbx 540 40 130 220))
+($5 61 < z8kflt_kto_ef1ni0xp_-p8q "" 57
+(uid "z8kflt_kto_ef1ni0xp_-p8q")
+(points 170 151 290 154)
+(lineStyle "oblique"))
+($5 62 < z8kflt_kto_ef1ni0xp_-p8p "" 57
+(uid "z8kflt_kto_ef1ni0xp_-p8p")
+(points 390 154 540 151)
+(lineStyle "oblique"))
+($4 63 < z8kflt_kto_ef1ni0xp_-p7z "RadialSweepDataset" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7z")
+(bbx 60 420 130 50))
+($6 64 < z8kflt_kto_ef1ni0xp_-p7y "" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7y")
+(points 125 420 121 180)
+(lineStyle "oblique"))
+($4 65 < z8kflt_kto_ef1ni0xp_-p7x "RadialSweepVariable" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7x")
+(bbx 280 420 130 50))
+($5 66 < z8kflt_kto_ef1ni0xp_-p7w "" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7w")
+(points 190 445 280 445)
+(lineStyle "oblique"))
+($6 67 < z8kflt_kto_ef1ni0xp_-p7v "" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7v")
+(points 345 420 340 180)
+(lineStyle "oblique"))
+($4 68 < z8kflt_kto_ef1ni0xp_-p7u "Sweep" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7u")
+(bbx 540 320 130 180))
+($5 69 < z8kflt_kto_ef1ni0xp_-p7t "" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7t")
+(points 410 445 540 445)
+(lineStyle "oblique"))
+($5 70 < z8kflt_kto_ef1ni0xp_-p7s "" 57
+(uid "z8kflt_kto_ef1ni0xp_-p7s")
+(points 605 320 605 260)
+(lineStyle "oblique"))
+($8 72 < -zdywvu_c3z_e5rd2c1i_-p98 "Location" 71
+(name "Location"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p98"))
+($9 73 < -zdywvu_c3z_e5rd2c1i_-p5e "lat" 72
+(name "lat"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5e"))
+($9 74 < -zdywvu_c3z_e5rd2c1i_-p5d "lon" 72
+(name "lon"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5d"))
+($9 75 < -zdywvu_c3z_e5rd2c1i_-p5c "elev" 72
+(name "elev"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5c"))
+($8 76 < -zdywvu_c3z_e5rd2c1i_-p97 "Station" 71
+(name "Station"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p97"))
+($9 77 < -zdywvu_c3z_e5rd2c1i_-p5b "name" 76
+(name "name"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5b"))
+($9 78 < z8kflt_ksi_e7i75o5i_-p7b "description" 76
+(name "description"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p7b"))
+($10 79 < -zdywvu_c3z_e5rd2c1i_-p7v "#<anon> (Station, Location)" 76
+(uid "-zdywvu_c3z_e5rd2c1i_-p7v"))
+($8 80 < -zdywvu_c3z_e5rd2c1i_-p96 "TypedDataset" 71
+(name "TypedDataset"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p96"))
+($9 81 < z8kflt_ksi_e7i75o5i_-p83 "title" 80
+(name "title"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p83"))
+($9 82 < z8kflt_ksi_e7i75o5i_-p82 "attributes" 80
+(name "attributes"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p82"))
+($9 83 < z8kflt_ksi_e7i75o5i_-p81 "boundingBox" 80
+(name "boundingBox"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p81"))
+($9 84 < z8kflt_ksi_e7i75o5i_-p80 "timeRange" 80
+(name "timeRange"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p80"))
+($11 85 < -zdywvu_c3z_e5rd2c1i_-p7u "#<anon> (TypedDataset, TypedDataVariable)" 80
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7u"))
+($12 86 < -zdywvu_c3z_e5rd2c1i_-p7t "#0" 85
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7t"))
+($12 87 < -zdywvu_c3z_e5rd2c1i_-p7s "#1" 85
+(uid "-zdywvu_c3z_e5rd2c1i_-p7s"))
+($8 88 < -zdywvu_c3z_e5rd2c1i_-p95 "TypedDataVariable" 71
+(name "TypedDataVariable"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p95"))
+($9 89 < z8kflt_ksi_e7i75o5i_-p88 "name" 88
+(name "name"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p88"))
+($9 90 < z8kflt_ksi_e7i75o5i_-p87 "attributes" 88
+(name "attributes"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p87"))
+($9 91 < z8kflt_ksi_e7i75o5i_-p86 "dataType" 88
+(name "dataType"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p86"))
+($9 92 < z8kflt_ksi_e7i75o5i_-p85 "shape" 88
+(name "shape"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p85"))
+($9 93 < z8kflt_ksi_e7i75o5i_-p84 "units" 88
+(name "units"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p84"))
+($8 94 < -zdywvu_c3z_e5rd2c1i_-p94 "GridDataset" 71
+(name "GridDataset"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p94"))
+($10 95 < -zdywvu_c3z_e5rd2c1i_-p7o "#<anon> (GridDataset, TypedDataset)" 94
+(uid "-zdywvu_c3z_e5rd2c1i_-p7o"))
+($11 96 < z8kflt_ksi_e7i75o5i_-p6f "#<anon> (GridDataset, Gridset)" 94
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p6f"))
+($12 97 < z8kflt_ksi_e7i75o5i_-p6e "#0" 96
+(aggregation "composite")
+(uid "z8kflt_ksi_e7i75o5i_-p6e"))
+($12 98 < z8kflt_ksi_e7i75o5i_-p6d "#1" 96
+(uid "z8kflt_ksi_e7i75o5i_-p6d"))
+($8 99 < -zdywvu_c3z_e5rd2c1i_-p93 "Grid" 71
+(name "Grid"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p93"))
+($10 100 < -zdywvu_c3z_e5rd2c1i_-p7n "#<anon> (Grid, TypedDataVariable)" 99
+(uid "-zdywvu_c3z_e5rd2c1i_-p7n"))
+($11 101 < z8kflt_ksi_e7i75o5i_-p6c "#<anon> (Grid, GridCoordSys)" 99
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p6c"))
+($12 102 < z8kflt_ksi_e7i75o5i_-p6b "#0" 101
+(uid "z8kflt_ksi_e7i75o5i_-p6b"))
+($12 103 < z8kflt_ksi_e7i75o5i_-p6a "#1" 101
+(uid "z8kflt_ksi_e7i75o5i_-p6a"))
+($8 104 < -zdywvu_c3z_e5rd2c1i_-p92 "StationObsDataset" 71
+(name "StationObsDataset"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p92"))
+($10 105 < -zdywvu_c3z_e5rd2c1i_-p7m "#<anon> (StationObsDataset, PointObsDataset)" 104
+(uid "-zdywvu_c3z_e5rd2c1i_-p7m"))
+($11 106 < -zdywvu_c3z_e5rd2c1i_-p7i "#<anon> (StationObsDataset, StationObs)" 104
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7i"))
+($12 107 < -zdywvu_c3z_e5rd2c1i_-p7h "#0" 106
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7h"))
+($12 108 < -zdywvu_c3z_e5rd2c1i_-p7g "#1" 106
+(uid "-zdywvu_c3z_e5rd2c1i_-p7g"))
+($11 109 < z8kflt_ksi_e7i75o5i_-p8o "#<anon> (StationObsDataset, StationObsDatatype)" 104
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p8o"))
+($12 110 < z8kflt_ksi_e7i75o5i_-p8n "#0" 109
+(aggregation "composite")
+(uid "z8kflt_ksi_e7i75o5i_-p8n"))
+($12 111 < z8kflt_ksi_e7i75o5i_-p8m "#1" 109
+(uid "z8kflt_ksi_e7i75o5i_-p8m"))
+($10 112 < z8kflt_ksi_e7i75o5i_-p8l "#<anon> (StationObsDataset, StationCollection)" 104
+(uid "z8kflt_ksi_e7i75o5i_-p8l"))
+($8 113 < -zdywvu_c3z_e5rd2c1i_-p7f "StationObs" 71
+(name "StationObs"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p7f"))
+($11 114 < -zdywvu_c3z_e5rd2c1i_-p7e "#<anon> (StationObs, TypedDataVariable)" 113
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7e"))
+($12 115 < -zdywvu_c3z_e5rd2c1i_-p7d "#0" 114
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7d"))
+($12 116 < -zdywvu_c3z_e5rd2c1i_-p7c "#1" 114
+(uid "-zdywvu_c3z_e5rd2c1i_-p7c"))
+($8 117 < -zdywvu_c3z_e5rd2c1i_-p91 "RadialDataset" 71
+(name "RadialDataset"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p91"))
+($11 118 < -zdywvu_c3z_e5rd2c1i_-p7b "#<anon> (RadialDataset, RadialVariable)" 117
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7b"))
+($12 119 < -zdywvu_c3z_e5rd2c1i_-p7a "#0" 118
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7a"))
+($12 120 < -zdywvu_c3z_e5rd2c1i_-p79 "#1" 118
+(uid "-zdywvu_c3z_e5rd2c1i_-p79"))
+($10 121 < -zdywvu_c3z_e5rd2c1i_-p78 "#<anon> (RadialDataset, TypedDataset)" 117
+(uid "-zdywvu_c3z_e5rd2c1i_-p78"))
+($8 122 < -zdywvu_c3z_e5rd2c1i_-p90 "RadialVariable" 71
+(name "RadialVariable"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p90"))
+($11 123 < -zdywvu_c3z_e5rd2c1i_-p77 "#<anon> (RadialVariable, Sweep)" 122
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p77"))
+($12 124 < -zdywvu_c3z_e5rd2c1i_-p76 "#0" 123
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p76"))
+($12 125 < -zdywvu_c3z_e5rd2c1i_-p75 "#1" 123
+(uid "-zdywvu_c3z_e5rd2c1i_-p75"))
+($10 126 < -zdywvu_c3z_e5rd2c1i_-p74 "#<anon> (RadialVariable, TypedDataVariable)" 122
+(uid "-zdywvu_c3z_e5rd2c1i_-p74"))
+($8 127 < -zdywvu_c3z_e5rd2c1i_-p73 "Sweep" 71
+(name "Sweep"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p73"))
+($8 128 < -zdywvu_c3z_e5rd2c1i_-p8z "TrajectoryObsDataset" 71
+(name "TrajectoryObsDataset"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p8z"))
+($10 129 < -zdywvu_c3z_e5rd2c1i_-p72 "#<anon> (TrajectoryObsDataset, TypedDataset)" 128
+(uid "-zdywvu_c3z_e5rd2c1i_-p72"))
+($11 130 < -zdywvu_c3z_e5rd2c1i_-p71 "#<anon> (TrajectoryObsDataset, ?)" 128
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p71"))
+($12 131 < -zdywvu_c3z_e5rd2c1i_-p70 "#0" 130
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p70"))
+($12 132 < -zdywvu_c3z_e5rd2c1i_-p6z "#1" 130
+(uid "-zdywvu_c3z_e5rd2c1i_-p6z"))
+($11 133 < z8kflt_ksi_e7i75o5i_-p6t "#<anon> (TrajectoryObsDataset, TrajectoryObsDatatype)" 128
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p6t"))
+($12 134 < z8kflt_ksi_e7i75o5i_-p6s "#0" 133
+(aggregation "composite")
+(uid "z8kflt_ksi_e7i75o5i_-p6s"))
+($12 135 < z8kflt_ksi_e7i75o5i_-p6r "#1" 133
+(uid "z8kflt_ksi_e7i75o5i_-p6r"))
+($8 136 < -zdywvu_c3z_e5rd2c1i_-p8x "StationRadialDataset" 71
+(name "StationRadialDataset"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p8x"))
+($10 137 < -zdywvu_c3z_e5rd2c1i_-p6x "#<anon> (StationRadialDataset, TypedDataset)" 136
+(uid "-zdywvu_c3z_e5rd2c1i_-p6x"))
+($11 138 < -zdywvu_c3z_e5rd2c1i_-p6w "#<anon> (StationRadialDataset, RadialDataset)" 136
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p6w"))
+($12 139 < -zdywvu_c3z_e5rd2c1i_-p6v "#0" 138
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p6v"))
+($12 140 < -zdywvu_c3z_e5rd2c1i_-p6u "#1" 138
+(uid "-zdywvu_c3z_e5rd2c1i_-p6u"))
+($11 141 < -zdywvu_c3z_e5rd2c1i_-p6t "#<anon> (StationRadialDataset, Station)" 136
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p6t"))
+($12 142 < -zdywvu_c3z_e5rd2c1i_-p6s "#0" 141
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p6s"))
+($12 143 < -zdywvu_c3z_e5rd2c1i_-p6r "#1" 141
+(uid "-zdywvu_c3z_e5rd2c1i_-p6r"))
+($8 144 < z8kflt_ksi_e7i75o5i_-p8k "PointCollection" 71
+(name "PointCollection"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p8k"))
+($13 145 < z8kflt_ksi_e7i75o5i_-p8c "getData(bb, timeRange)" 144
+(name "getData(bb, timeRange)"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p8c"))
+($8 146 < z8kflt_ksi_e7i75o5i_-p98 "StationCollection" 71
+(name "StationCollection"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p98"))
+($13 147 < z8kflt_ksi_e7i75o5i_-p8b "getData(stations)" 146
+(name "getData(stations)"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p8b"))
+($10 148 < z8kflt_ksi_e7i75o5i_-p8j "#<anon> (StationCollection, PointCollection)" 146
+(uid "z8kflt_ksi_e7i75o5i_-p8j"))
+($11 149 < -zdywvu_c3z_e5rd2c1i_-p7l "#<anon> (StationCollection, Station)" 146
+(name "")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7l"))
+($12 150 < -zdywvu_c3z_e5rd2c1i_-p7k "#0" 149
+(aggregation "composite")
+(uid "-zdywvu_c3z_e5rd2c1i_-p7k"))
+($12 151 < -zdywvu_c3z_e5rd2c1i_-p7j "#1" 149
+(uid "-zdywvu_c3z_e5rd2c1i_-p7j"))
+($8 152 < z8kflt_ksi_e7i75o5i_-p97 "PointObsDataset" 71
+(name "PointObsDataset"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p97"))
+($10 153 < z8kflt_ksi_e7i75o5i_-p8i "#<anon> (PointObsDataset, TypedDataset)" 152
+(uid "z8kflt_ksi_e7i75o5i_-p8i"))
+($11 154 < z8kflt_ksi_e7i75o5i_-p8h "#<anon> (PointObsDataset, PointObsDatatype)" 152
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p8h"))
+($12 155 < z8kflt_ksi_e7i75o5i_-p8g "#0" 154
+(aggregation "composite")
+(uid "z8kflt_ksi_e7i75o5i_-p8g"))
+($12 156 < z8kflt_ksi_e7i75o5i_-p8f "#1" 154
+(uid "z8kflt_ksi_e7i75o5i_-p8f"))
+($10 157 < z8kflt_ksi_e7i75o5i_-p8e "#<anon> (PointObsDataset, PointCollection)" 152
+(uid "z8kflt_ksi_e7i75o5i_-p8e"))
+($8 158 < z8kflt_ksi_e7i75o5i_-p96 "PointObsDatatype" 71
+(name "PointObsDatatype"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p96"))
+($9 159 < z8kflt_ksi_e7i75o5i_-p7c "time" 158
+(name "time"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p7c"))
+($11 160 < z8kflt_ksi_e7i75o5i_-p7l "#<anon> (PointObsDatatype, Location)" 158
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p7l"))
+($12 161 < z8kflt_ksi_e7i75o5i_-p7k "#0" 160
+(uid "z8kflt_ksi_e7i75o5i_-p7k"))
+($12 162 < z8kflt_ksi_e7i75o5i_-p7j "#1" 160
+(uid "z8kflt_ksi_e7i75o5i_-p7j"))
+($11 163 < z8kflt_ksi_e7i75o5i_-p7i "#<anon> (PointObsDatatype, StructureData)" 158
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p7i"))
+($12 164 < z8kflt_ksi_e7i75o5i_-p7h "#0" 163
+(uid "z8kflt_ksi_e7i75o5i_-p7h"))
+($12 165 < z8kflt_ksi_e7i75o5i_-p7g "#1" 163
+(uid "z8kflt_ksi_e7i75o5i_-p7g"))
+($8 166 < z8kflt_ksi_e7i75o5i_-p95 "StationObsDatatype" 71
+(name "StationObsDatatype"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p95"))
+($10 167 < z8kflt_ksi_e7i75o5i_-p8d "#<anon> (StationObsDatatype, PointObsDatatype)" 166
+(uid "z8kflt_ksi_e7i75o5i_-p8d"))
+($11 168 < z8kflt_ksi_e7i75o5i_-p7f "#<anon> (StationObsDatatype, Station)" 166
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p7f"))
+($12 169 < z8kflt_ksi_e7i75o5i_-p7e "#0" 168
+(uid "z8kflt_ksi_e7i75o5i_-p7e"))
+($12 170 < z8kflt_ksi_e7i75o5i_-p7d "#1" 168
+(uid "z8kflt_ksi_e7i75o5i_-p7d"))
+($8 171 < z8kflt_ksi_e7i75o5i_-p7y "StructureData" 71
+(name "StructureData"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p7y"))
+($13 172 < z8kflt_ksi_e7i75o5i_-p7x "getData(member)" 171
+(name "getData(member)"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p7x"))
+($9 173 < z8kflt_ksi_e7i75o5i_-p7w "members" 171
+(name "members"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p7w"))
+($8 174 < z8kflt_ksi_e7i75o5i_-p7a "TrajectoryObsDatatype" 71
+(name "TrajectoryObsDatatype"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p7a"))
+($13 175 < z8kflt_ksi_e7i75o5i_-p79 "getData(point)" 174
+(name "getData(point)"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p79"))
+($9 176 < z8kflt_ksi_e7i75o5i_-p78 "npoints" 174
+(name "npoints"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p78"))
+($11 177 < z8kflt_ksi_e7i75o5i_-p6q "#<anon> (TrajectoryObsDatatype, PointObsDatatype)" 174
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p6q"))
+($12 178 < z8kflt_ksi_e7i75o5i_-p6p "#0" 177
+(aggregation "composite")
+(uid "z8kflt_ksi_e7i75o5i_-p6p"))
+($12 179 < z8kflt_ksi_e7i75o5i_-p6o "#1" 177
+(uid "z8kflt_ksi_e7i75o5i_-p6o"))
+($8 180 < z8kflt_ksi_e7i75o5i_-p6n "Gridset" 71
+(name "Gridset"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p6n"))
+($11 181 < z8kflt_ksi_e7i75o5i_-p69 "#<anon> (Gridset, Grid)" 180
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p69"))
+($12 182 < z8kflt_ksi_e7i75o5i_-p68 "#0" 181
+(aggregation "composite")
+(uid "z8kflt_ksi_e7i75o5i_-p68"))
+($12 183 < z8kflt_ksi_e7i75o5i_-p67 "#1" 181
+(uid "z8kflt_ksi_e7i75o5i_-p67"))
+($11 184 < z8kflt_ksi_e7i75o5i_-p66 "#<anon> (Gridset, GridCoordSys)" 180
+(name "")
+(uid "z8kflt_ksi_e7i75o5i_-p66"))
+($12 185 < z8kflt_ksi_e7i75o5i_-p65 "#0" 184
+(uid "z8kflt_ksi_e7i75o5i_-p65"))
+($12 186 < z8kflt_ksi_e7i75o5i_-p64 "#1" 184
+(uid "z8kflt_ksi_e7i75o5i_-p64"))
+($8 187 < z8kflt_ksi_e7i75o5i_-p6m "GridCoordSys" 71
+(name "GridCoordSys"
+)
+(uid "z8kflt_ksi_e7i75o5i_-p6m"))
+($14 188 < -zdywvu_c3z_e5rd2c1i_-p6q "stereotypes" 1
+(uid "-zdywvu_c3z_e5rd2c1i_-p6q"))
+($15 189 < -zdywvu_c3z_e5rd2c1i_-p6p "_odPackage" 188
+(name "_odPackage"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6p")
+(baseClass "Package"))
+($15 190 < -zdywvu_c3z_e5rd2c1i_-p6o "odStub" 188
+(name "odStub"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6o"))
+($15 191 < -zdywvu_c3z_e5rd2c1i_-p6n "access" 188
+(name "access"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6n")
+(baseClass "Dependency"))
+($15 192 < -zdywvu_c3z_e5rd2c1i_-p6m "association" 188
+(name "association"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6m")
+(baseClass "AssociationEnd"))
+($15 193 < -zdywvu_c3z_e5rd2c1i_-p6l "create" 188
+(name "create"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6l")
+(baseClass "BehavioralFeature"))
+($15 194 < -zdywvu_c3z_e5rd2c1i_-p6k "destroy" 188
+(name "destroy"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6k")
+(baseClass "BehavioralFeature"))
+($15 195 < -zdywvu_c3z_e5rd2c1i_-p6j "document" 188
+(name "document"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6j")
+(baseClass "Component"))
+($15 196 < -zdywvu_c3z_e5rd2c1i_-p6i "executable" 188
+(name "executable"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6i")
+(baseClass "Component"))
+($15 197 < -zdywvu_c3z_e5rd2c1i_-p6h "extend" 188
+(name "extend"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6h")
+(baseClass "Dependency"))
+($15 198 < -zdywvu_c3z_e5rd2c1i_-p6g "facade" 188
+(name "facade"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6g")
+(baseClass "Package"))
+($15 199 < -zdywvu_c3z_e5rd2c1i_-p6f "file" 188
+(name "file"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6f")
+(baseClass "Component"))
+($15 200 < -zdywvu_c3z_e5rd2c1i_-p6e "framework" 188
+(name "framework"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6e")
+(baseClass "Package"))
+($15 201 < -zdywvu_c3z_e5rd2c1i_-p6d "friend" 188
+(name "friend"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6d")
+(baseClass "Dependency"))
+($15 202 < -zdywvu_c3z_e5rd2c1i_-p6c "global" 188
+(name "global"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6c")
+(baseClass "AssociationEnd"))
+($15 203 < -zdywvu_c3z_e5rd2c1i_-p6b "implementation" 188
+(name "implementation"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6b")
+(baseClass "Generalization"))
+($15 204 < -zdywvu_c3z_e5rd2c1i_-p6a "implementationClass" 188
+(name "implementationClass"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p6a")
+(baseClass "Class"))
+($15 205 < -zdywvu_c3z_e5rd2c1i_-p69 "import" 188
+(name "import"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p69")
+(baseClass "Dependency"))
+($15 206 < -zdywvu_c3z_e5rd2c1i_-p68 "include" 188
+(name "include"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p68")
+(baseClass "Dependency"))
+($15 207 < -zdywvu_c3z_e5rd2c1i_-p67 "invariant" 188
+(name "invariant"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p67")
+(baseClass "Constraint"))
+($15 208 < -zdywvu_c3z_e5rd2c1i_-p66 "library" 188
+(name "library"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p66")
+(baseClass "Component"))
+($15 209 < -zdywvu_c3z_e5rd2c1i_-p65 "local" 188
+(name "local"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p65")
+(baseClass "AssociationEnd"))
+($15 210 < -zdywvu_c3z_e5rd2c1i_-p64 "metaclass" 188
+(name "metaclass"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p64")
+(baseClass "Classifier"))
+($15 211 < -zdywvu_c3z_e5rd2c1i_-p63 "metamodel" 188
+(name "metamodel"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p63")
+(baseClass "Package"))
+($15 212 < -zdywvu_c3z_e5rd2c1i_-p62 "parameter" 188
+(name "parameter"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p62")
+(baseClass "AssociationEnd"))
+($15 213 < -zdywvu_c3z_e5rd2c1i_-p61 "postcondition" 188
+(name "postcondition"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p61")
+(baseClass "Constraint"))
+($15 214 < -zdywvu_c3z_e5rd2c1i_-p60 "powertype" 188
+(name "powertype"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p60")
+(baseClass "Classifier"))
+($15 215 < -zdywvu_c3z_e5rd2c1i_-p5z "precondition" 188
+(name "precondition"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5z")
+(baseClass "Constraint"))
+($15 216 < -zdywvu_c3z_e5rd2c1i_-p5y "process" 188
+(name "process"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5y")
+(baseClass "Classifier"))
+($15 217 < -zdywvu_c3z_e5rd2c1i_-p5x "requirement" 188
+(name "requirement"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5x")
+(baseClass "Comment"))
+($15 218 < -zdywvu_c3z_e5rd2c1i_-p5w "responsibility" 188
+(name "responsibility"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5w")
+(baseClass "Comment"))
+($15 219 < -zdywvu_c3z_e5rd2c1i_-p5v "self" 188
+(name "self"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5v")
+(baseClass "AssociationEnd"))
+($15 220 < -zdywvu_c3z_e5rd2c1i_-p5u "stub" 188
+(name "stub"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5u")
+(baseClass "Package"))
+($15 221 < -zdywvu_c3z_e5rd2c1i_-p5t "systemModel" 188
+(name "systemModel"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5t")
+(baseClass "Package"))
+($15 222 < -zdywvu_c3z_e5rd2c1i_-p5s "table" 188
+(name "table"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5s")
+(baseClass "Component"))
+($15 223 < -zdywvu_c3z_e5rd2c1i_-p5r "thread" 188
+(name "thread"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5r")
+(baseClass "Classifier"))
+($15 224 < -zdywvu_c3z_e5rd2c1i_-p5q "topLevel" 188
+(name "topLevel"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5q")
+(baseClass "Package"))
+($15 225 < -zdywvu_c3z_e5rd2c1i_-p5p "type" 188
+(name "type"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5p")
+(baseClass "Class"))
+($15 226 < -zdywvu_c3z_e5rd2c1i_-p5o "utility" 188
+(name "utility"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5o")
+(baseClass "Classifier"))
+($15 227 < -zdywvu_c3z_e5rd2c1i_-p5n "boundary" 188
+(smallImageFile stereotype/image/small/boundary.gif)
+(name "boundary"
+)
+(defaultIconWidth 65)
+(iconFile stereotype/icon/boundary.wmf)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5n")
+(baseClass "Class"))
+($15 228 < -zdywvu_c3z_e5rd2c1i_-p5m "entity" 188
+(smallImageFile stereotype/image/small/entity.gif)
+(name "entity"
+)
+(iconFile stereotype/icon/entity.wmf)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5m")
+(baseClass "Class"))
+($15 229 < -zdywvu_c3z_e5rd2c1i_-p5l "control" 188
+(smallImageFile stereotype/image/small/control.gif)
+(name "control"
+)
+(defaultIconWidth 60)
+(iconFile stereotype/icon/control.wmf)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5l")
+(defaultIconHeight 60)
+(baseClass "Class"))
+($15 230 < -zdywvu_c3z_e5rd2c1i_-p5k "interface" 188
+(name "interface"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5k")
+(baseClass "Class"))
+($15 231 < -zdywvu_c3z_e5rd2c1i_-p5j "body" 188
+(name "body"
+)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5j")
+(baseClass "Component"))
+($16 232 < -zdywvu_c3z_e5rd2c1i_-p5i "styles" 1
+(uid "-zdywvu_c3z_e5rd2c1i_-p5i"))
+($7 233 < -zdywvu_c3z_e5rd2c1i_-p5h "Component" 1
+(name "Component"
+)
+(namespaceRoot true)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5h"))
+($7 234 < -zdywvu_c3z_e5rd2c1i_-p5g "Usecase" 1
+(name "Usecase"
+)
+(namespaceRoot true)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5g"))
+($7 235 < -zdywvu_c3z_e5rd2c1i_-p5f "Deployment" 1
+(name "Deployment"
+)
+(namespaceRoot true)
+(uid "-zdywvu_c3z_e5rd2c1i_-p5f"))
+($8 236 < z8kflt_kto_ef1ni0xp_-p98 "RadialDataset" 1
+(name "RadialDataset"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p98"))
+($9 237 < z8kflt_kto_ef1ni0xp_-p8v "timeUnits" 236
+(name "timeUnits"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8v"))
+($11 238 < z8kflt_kto_ef1ni0xp_-p8o "#<anon> (RadialDataset, RadialVariable)" 236
+(name "")
+(uid "z8kflt_kto_ef1ni0xp_-p8o"))
+($12 239 < z8kflt_kto_ef1ni0xp_-p8n "#0" 238
+(aggregation "composite")
+(uid "z8kflt_kto_ef1ni0xp_-p8n"))
+($12 240 < z8kflt_kto_ef1ni0xp_-p8m "#1" 238
+(uid "z8kflt_kto_ef1ni0xp_-p8m"))
+($8 241 < z8kflt_kto_ef1ni0xp_-p97 "RadialVariable" 1
+(name "RadialVariable"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p97"))
+($11 242 < z8kflt_kto_ef1ni0xp_-p8l "#<anon> (RadialVariable, Radial)" 241
+(name "")
+(uid "z8kflt_kto_ef1ni0xp_-p8l"))
+($12 243 < z8kflt_kto_ef1ni0xp_-p8k "#0" 242
+(aggregation "composite")
+(uid "z8kflt_kto_ef1ni0xp_-p8k"))
+($12 244 < z8kflt_kto_ef1ni0xp_-p8j "#1" 242
+(uid "z8kflt_kto_ef1ni0xp_-p8j"))
+($8 245 < z8kflt_kto_ef1ni0xp_-p96 "Radial" 1
+(name "Radial"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p96"))
+($9 246 < z8kflt_kto_ef1ni0xp_-p95 "azimuth" 245
+(name "azimuth"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p95"))
+($9 247 < z8kflt_kto_ef1ni0xp_-p94 "elevation" 245
+(name "elevation"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p94"))
+($9 248 < z8kflt_kto_ef1ni0xp_-p93 "time" 245
+(name "time"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p93"))
+($9 249 < z8kflt_kto_ef1ni0xp_-p8w "origin" 245
+(name "origin"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8w"))
+($9 250 < z8kflt_kto_ef1ni0xp_-p92 "ngates" 245
+(name "ngates"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p92"))
+($13 251 < z8kflt_kto_ef1ni0xp_-p91 "getData" 245
+(name "getData"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p91"))
+($9 252 < z8kflt_kto_ef1ni0xp_-p90 "gateSize" 245
+(name "gateSize"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p90"))
+($9 253 < z8kflt_kto_ef1ni0xp_-p8z "gateStart" 245
+(name "gateStart"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8z"))
+($9 254 < z8kflt_kto_ef1ni0xp_-p8y "beamWidth" 245
+(name "beamWidth"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8y"))
+($9 255 < z8kflt_kto_ef1ni0xp_-p8x "nyqFreq" 245
+(name "nyqFreq"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8x"))
+($8 256 < z8kflt_kto_ef1ni0xp_-p8i "RadialSweepDataset" 1
+(name "RadialSweepDataset"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8i"))
+($10 257 < z8kflt_kto_ef1ni0xp_-p7r "#<anon> (RadialSweepDataset, RadialDataset)" 256
+(uid "z8kflt_kto_ef1ni0xp_-p7r"))
+($11 258 < z8kflt_kto_ef1ni0xp_-p7q "#<anon> (RadialSweepDataset, RadialSweepVariable)" 256
+(name "")
+(uid "z8kflt_kto_ef1ni0xp_-p7q"))
+($12 259 < z8kflt_kto_ef1ni0xp_-p7p "#0" 258
+(aggregation "composite")
+(uid "z8kflt_kto_ef1ni0xp_-p7p"))
+($12 260 < z8kflt_kto_ef1ni0xp_-p7o "#1" 258
+(uid "z8kflt_kto_ef1ni0xp_-p7o"))
+($8 261 < z8kflt_kto_ef1ni0xp_-p8h "RadialSweepVariable" 1
+(name "RadialSweepVariable"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8h"))
+($10 262 < z8kflt_kto_ef1ni0xp_-p7n "#<anon> (RadialSweepVariable, RadialVariable)" 261
+(uid "z8kflt_kto_ef1ni0xp_-p7n"))
+($11 263 < z8kflt_kto_ef1ni0xp_-p7m "#<anon> (RadialSweepVariable, Sweep)" 261
+(name "")
+(uid "z8kflt_kto_ef1ni0xp_-p7m"))
+($12 264 < z8kflt_kto_ef1ni0xp_-p7l "#0" 263
+(aggregation "composite")
+(uid "z8kflt_kto_ef1ni0xp_-p7l"))
+($12 265 < z8kflt_kto_ef1ni0xp_-p7k "#1" 263
+(uid "z8kflt_kto_ef1ni0xp_-p7k"))
+($8 266 < z8kflt_kto_ef1ni0xp_-p8d "Sweep" 1
+(name "Sweep"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8d"))
+($9 267 < z8kflt_kto_ef1ni0xp_-p8c "type" 266
+(name "type"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8c"))
+($9 268 < z8kflt_kto_ef1ni0xp_-p85 "startingTime" 266
+(name "startingTime"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p85"))
+($9 269 < z8kflt_kto_ef1ni0xp_-p84 "endingTime" 266
+(name "endingTime"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p84"))
+($9 270 < z8kflt_kto_ef1ni0xp_-p8a "ngates" 266
+(name "ngates"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p8a"))
+($9 271 < z8kflt_kto_ef1ni0xp_-p87 "gateSize" 266
+(name "gateSize"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p87"))
+($9 272 < z8kflt_kto_ef1ni0xp_-p86 "gateStart" 266
+(name "gateStart"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p86"))
+($9 273 < z8kflt_kto_ef1ni0xp_-p89 "beamWidth" 266
+(name "beamWidth"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p89"))
+($9 274 < z8kflt_kto_ef1ni0xp_-p88 "nyqFreq" 266
+(name "nyqFreq"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p88"))
+($13 275 < z8kflt_kto_ef1ni0xp_-p83 "getData" 266
+(name "getData"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p83"))
+($13 276 < z8kflt_kto_ef1ni0xp_-p82 "getAzimuth" 266
+(name "getAzimuth"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p82"))
+($13 277 < z8kflt_kto_ef1ni0xp_-p80 "getElevation" 266
+(name "getElevation"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p80"))
+($13 278 < z8kflt_kto_ef1ni0xp_-p81 "getTime" 266
+(name "getTime"
+)
+(uid "z8kflt_kto_ef1ni0xp_-p81"))
+($11 279 < z8kflt_kto_ef1ni0xp_-p7j "#<anon> (Sweep, Radial)" 266
+(name "")
+(uid "z8kflt_kto_ef1ni0xp_-p7j"))
+($12 280 < z8kflt_kto_ef1ni0xp_-p7i "#0" 279
+(aggregation "composite")
+(uid "z8kflt_kto_ef1ni0xp_-p7i"))
+($12 281 < z8kflt_kto_ef1ni0xp_-p7h "#1" 279
+(uid "z8kflt_kto_ef1ni0xp_-p7h"))
+($17 282)
+($18 283)
+($18 284
+(body "String"
+))
+($18 285
+(body "int[]"
+))
+($18 286
+(body "String"
+))
+($17 287)
+($17 288)
+($17 289)
+($17 290)
+($17 291)
+($17 292)
+($17 293)
+($17 294)
+($17 295)
+($17 296)
+($17 297)
+($17 298)
+($17 299)
+($17 300)
+($18 301
+(body "double"
+))
+($18 302
+(body "double"
+))
+($18 303
+(body "double"
+))
+($18 304
+(body "String"
+))
+($17 305)
+($17 306)
+($17 307)
+($17 308)
+($17 309)
+($17 310)
+($17 311)
+($17 312)
+($17 313)
+($17 314)
+($17 315)
+($17 316)
+($17 317)
+($17 318)
+($17 319)
+($17 320)
+($17 321)
+($17 322)
+($17 323)
+($17 324)
+($17 325)
+($17 326)
+($17 327)
+($17 328)
+($17 329)
+($17 330)
+($17 331)
+($18 332
+(body "int"
+))
+($17 333)
+($17 334)
+($17 335)
+($17 336)
+($17 337)
+($17 338)
+($17 339)
+($17 340)
+($17 341)
+($17 342)
+($18 343)
+($18 344
+(body "degrees"
+))
+($18 345
+(body "degrees"
+))
+($18 346
+(body "msec"
+))
+($18 347
+(body "EarthLocation"
+))
+($18 348
+(body "int"
+))
+($18 349
+(body "m"
+))
+($18 350
+(body "m"
+))
+($18 351
+(body "degrees"
+))
+($17 352)
+($17 353)
+($17 354)
+($17 355)
+($17 356)
+($18 357
+(body "SweepType"
+))
+($18 358
+(body "Date"
+))
+($18 359
+(body "Date"
+))
+($18 360
+(body "int"
+))
+($18 361
+(body "m"
+))
+($18 362
+(body "m"
+))
+($18 363
+(body "degrees"
+))
+($17 364)
+($17 365)
+($17 366)
+($17 367)
+($17 368)
+($17 369)
+($17 370)
+($19 371
+(name "DomainLockObject"
+))
+(typeAssn 86 80)
+(assocEndAssn 80 86)
+(stereotypeAssn 80 230)
+(typeExpression 81 283)
+(typeExpression 82 283)
+(typeExpression 83 283)
+(typeExpression 84 283)
+(assocEndAssn 88 87)
+(typeAssn 116 88)
+(assocEndAssn 88 116)
+(stereotypeAssn 88 230)
+(typeExpression 89 284)
+(typeExpression 90 283)
+(typeExpression 91 283)
+(typeExpression 92 285)
+(typeExpression 93 286)
+(typeAssn 87 88)
+(projectionAssn 4 80 282)
+(projectionAssn 5 88 287)
+(to 6 5)
+(from 6 4)
+(projectionAssn 6 85 288)
+(typeAssn 97 94)
+(assocEndAssn 94 97)
+(stereotypeAssn 94 230)
+(subtypeAssn 95 94)
+(supertypeAssn 95 80)
+(generalizationAssn 94 95)
+(assocEndAssn 180 98)
+(typeAssn 182 180)
+(assocEndAssn 180 182)
+(typeAssn 185 180)
+(assocEndAssn 180 185)
+(stereotypeAssn 180 230)
+(assocEndAssn 99 183)
+(typeAssn 102 99)
+(assocEndAssn 99 102)
+(stereotypeAssn 99 230)
+(subtypeAssn 100 99)
+(supertypeAssn 100 88)
+(generalizationAssn 99 100)
+(typeAssn 186 187)
+(assocEndAssn 187 186)
+(assocEndAssn 187 103)
+(stereotypeAssn 187 230)
+(typeAssn 103 187)
+(typeAssn 183 99)
+(typeAssn 98 180)
+(projectionAssn 7 94 289)
+(projectionAssn 8 99 290)
+(to 9 4)
+(from 9 7)
+(projectionAssn 9 95 291)
+(to 10 5)
+(from 10 8)
+(projectionAssn 10 100 292)
+(projectionAssn 11 180 293)
+(to 12 11)
+(from 12 7)
+(projectionAssn 12 96 294)
+(to 13 8)
+(from 13 11)
+(projectionAssn 13 181 295)
+(projectionAssn 14 187 296)
+(to 15 14)
+(from 15 11)
+(projectionAssn 15 184 297)
+(to 16 14)
+(from 16 8)
+(projectionAssn 16 101 298)
+(openDiagrams 2 3)
+(stereotypeAssn 144 230)
+(projectionAssn 18 144 299)
+(typeAssn 150 146)
+(assocEndAssn 146 150)
+(stereotypeAssn 146 230)
+(subtypeAssn 148 146)
+(supertypeAssn 148 144)
+(generalizationAssn 146 148)
+(assocEndAssn 76 151)
+(typeAssn 143 76)
+(assocEndAssn 76 143)
+(typeAssn 170 76)
+(assocEndAssn 76 170)
+(stereotypeAssn 76 230)
+(subtypeAssn 79 76)
+(typeAssn 162 72)
+(assocEndAssn 72 162)
+(stereotypeAssn 72 230)
+(typeExpression 73 301)
+(typeExpression 74 302)
+(typeExpression 75 303)
+(supertypeAssn 79 72)
+(generalizationAssn 76 79)
+(typeExpression 77 304)
+(typeExpression 78 283)
+(typeAssn 151 76)
+(projectionAssn 19 146 300)
+(to 20 18)
+(from 20 19)
+(projectionAssn 20 148 305)
+(projectionAssn 21 80 306)
+(typeAssn 107 104)
+(assocEndAssn 104 107)
+(typeAssn 110 104)
+(assocEndAssn 104 110)
+(stereotypeAssn 104 230)
+(subtypeAssn 105 104)
+(typeAssn 155 152)
+(assocEndAssn 152 155)
+(stereotypeAssn 152 230)
+(subtypeAssn 153 152)
+(supertypeAssn 153 80)
+(generalizationAssn 152 153)
+(subtypeAssn 157 152)
+(supertypeAssn 157 144)
+(generalizationAssn 152 157)
+(assocEndAssn 158 156)
+(typeAssn 161 158)
+(assocEndAssn 158 161)
+(typeAssn 164 158)
+(assocEndAssn 158 164)
+(typeAssn 179 158)
+(assocEndAssn 158 179)
+(stereotypeAssn 158 230)
+(typeExpression 159 283)
+(assocEndAssn 171 165)
+(stereotypeAssn 171 230)
+(typeExpression 173 283)
+(typeAssn 165 171)
+(typeAssn 156 158)
+(supertypeAssn 105 152)
+(generalizationAssn 104 105)
+(subtypeAssn 112 104)
+(supertypeAssn 112 146)
+(generalizationAssn 104 112)
+(assocEndAssn 113 108)
+(typeAssn 115 113)
+(assocEndAssn 113 115)
+(stereotypeAssn 113 230)
+(typeAssn 108 113)
+(assocEndAssn 166 111)
+(typeAssn 169 166)
+(assocEndAssn 166 169)
+(stereotypeAssn 166 230)
+(subtypeAssn 167 166)
+(supertypeAssn 167 158)
+(generalizationAssn 166 167)
+(typeAssn 111 166)
+(projectionAssn 22 104 307)
+(projectionAssn 24 152 308)
+(to 23 24)
+(from 23 22)
+(projectionAssn 23 105 309)
+(to 25 21)
+(from 25 24)
+(projectionAssn 25 153 310)
+(projectionAssn 26 158 311)
+(projectionAssn 27 166 312)
+(to 28 26)
+(from 28 24)
+(projectionAssn 28 154 313)
+(to 29 27)
+(from 29 22)
+(projectionAssn 29 109 314)
+(to 30 26)
+(from 30 27)
+(projectionAssn 30 167 315)
+(to 31 18)
+(from 31 24)
+(projectionAssn 31 157 316)
+(to 32 19)
+(from 32 22)
+(projectionAssn 32 112 317)
+(projectionAssn 33 76 318)
+(to 34 33)
+(from 34 19)
+(projectionAssn 34 149 319)
+(projectionAssn 35 72 320)
+(to 36 35)
+(from 36 33)
+(projectionAssn 36 79 321)
+(to 37 33)
+(from 37 27)
+(projectionAssn 37 168 322)
+(to 38 35)
+(from 38 26)
+(projectionAssn 38 160 323)
+(projectionAssn 39 88 324)
+(to 40 39)
+(from 40 21)
+(projectionAssn 40 85 325)
+(projectionAssn 41 171 326)
+(to 42 41)
+(from 42 26)
+(projectionAssn 42 163 327)
+(openDiagrams 2 17)
+(projectionAssn 44 80 328)
+(projectionAssn 45 88 329)
+(to 46 45)
+(from 46 44)
+(projectionAssn 46 85 330)
+(typeAssn 131 128)
+(assocEndAssn 128 131)
+(typeAssn 134 128)
+(assocEndAssn 128 134)
+(stereotypeAssn 128 230)
+(subtypeAssn 129 128)
+(supertypeAssn 129 80)
+(generalizationAssn 128 129)
+(assocEndAssn 174 135)
+(typeAssn 178 174)
+(assocEndAssn 174 178)
+(stereotypeAssn 174 230)
+(typeExpression 176 332)
+(typeAssn 135 174)
+(projectionAssn 47 128 331)
+(to 48 44)
+(from 48 47)
+(projectionAssn 48 129 333)
+(projectionAssn 49 174 334)
+(to 50 49)
+(from 50 47)
+(projectionAssn 50 133 335)
+(projectionAssn 51 158 336)
+(to 52 51)
+(from 52 49)
+(projectionAssn 52 177 337)
+(projectionAssn 53 72 338)
+(to 54 53)
+(from 54 51)
+(projectionAssn 54 160 339)
+(projectionAssn 55 171 340)
+(to 56 55)
+(from 56 51)
+(projectionAssn 56 163 341)
+(openDiagrams 2 43)
+(typeAssn 239 236)
+(assocEndAssn 236 239)
+(typeExpression 237 343)
+(assocEndAssn 241 240)
+(typeAssn 243 241)
+(assocEndAssn 241 243)
+(assocEndAssn 245 244)
+(typeAssn 281 245)
+(assocEndAssn 245 281)
+(typeExpression 246 344)
+(typeExpression 247 345)
+(typeExpression 248 346)
+(typeExpression 249 347)
+(typeExpression 250 348)
+(typeExpression 252 349)
+(typeExpression 253 350)
+(typeExpression 254 351)
+(typeExpression 255 343)
+(typeAssn 244 245)
+(typeAssn 240 241)
+(projectionAssn 58 236 342)
+(projectionAssn 59 241 352)
+(projectionAssn 60 245 353)
+(to 61 59)
+(from 61 58)
+(projectionAssn 61 238 354)
+(to 62 60)
+(from 62 59)
+(projectionAssn 62 242 355)
+(typeAssn 259 256)
+(assocEndAssn 256 259)
+(subtypeAssn 257 256)
+(supertypeAssn 257 236)
+(generalizationAssn 256 257)
+(assocEndAssn 261 260)
+(typeAssn 264 261)
+(assocEndAssn 261 264)
+(subtypeAssn 262 261)
+(supertypeAssn 262 241)
+(generalizationAssn 261 262)
+(assocEndAssn 266 265)
+(typeAssn 280 266)
+(assocEndAssn 266 280)
+(typeExpression 267 357)
+(typeExpression 268 358)
+(typeExpression 269 359)
+(typeExpression 270 360)
+(typeExpression 271 361)
+(typeExpression 272 362)
+(typeExpression 273 363)
+(typeExpression 274 343)
+(typeAssn 265 266)
+(typeAssn 260 261)
+(projectionAssn 63 256 356)
+(to 64 58)
+(from 64 63)
+(projectionAssn 64 257 364)
+(projectionAssn 65 261 365)
+(to 66 65)
+(from 66 63)
+(projectionAssn 66 258 366)
+(to 67 59)
+(from 67 65)
+(projectionAssn 67 262 367)
+(projectionAssn 68 266 368)
+(to 69 68)
+(from 69 65)
+(projectionAssn 69 263 369)
+(to 70 60)
+(from 70 68)
+(projectionAssn 70 279 370)
+(openDiagrams 2 57)
+(selection 2 277)
+(lockedBy 189 371)
+(stereotypeAssn 71 189)
+(typeAssn 119 117)
+(assocEndAssn 117 119)
+(typeAssn 140 117)
+(assocEndAssn 117 140)
+(stereotypeAssn 117 230)
+(subtypeAssn 121 117)
+(supertypeAssn 121 80)
+(generalizationAssn 117 121)
+(assocEndAssn 122 120)
+(typeAssn 124 122)
+(assocEndAssn 122 124)
+(stereotypeAssn 122 230)
+(subtypeAssn 126 122)
+(supertypeAssn 126 88)
+(generalizationAssn 122 126)
+(assocEndAssn 127 125)
+(stereotypeAssn 127 230)
+(typeAssn 125 127)
+(typeAssn 120 122)
+(typeAssn 139 136)
+(assocEndAssn 136 139)
+(typeAssn 142 136)
+(assocEndAssn 136 142)
+(stereotypeAssn 136 230)
+(subtypeAssn 137 136)
+(supertypeAssn 137 80)
+(generalizationAssn 136 137)
+(lockedBy 71 371)
+(lockedBy 188 371)
+(lockedBy 232 371)
+(stereotypeAssn 233 189)
+(lockedBy 233 371)
+(stereotypeAssn 234 189)
+(lockedBy 234 371)
+(stereotypeAssn 235 189)
+(lockedBy 235 371)
+(lockedBy 1 371)

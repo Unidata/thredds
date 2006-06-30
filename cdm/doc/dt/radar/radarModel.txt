@@ -1,0 +1,496 @@
+heres a first pass at the nexrad data in CDM.
+
+The essence is that the data looks like
+
+    float data(nscan, nradial, ngate);
+
+the coordinate system is
+
+    int time(nscan, nradial);
+    float elevation(nscan, nradial);
+    float azimuth(nscan, nradial);
+    float distance(ngate);
+
+So this is the full information, where the azimuth and elevation vary for each radial.
+The ngate doesnt vary in the data model, but we return missing values when the data becomes ambiguous.
+The azimuth angles are always increasing but start anywhere and cross 0 anywhere in  index space.
+
+The reflectivity and the (velocity,spectray width) have seperate coordinate systems and dimensions. (see example)
+
+i could see building a simplified coordinate system that ignores time, takes the average elevation,
+and maybe standardizes the azimuths and puts them in order starting at 0. that would give us a
+cross product cordinate system:
+
+    float data(elevation, azimuth, gate);
+
+    float elevation(elevation);
+    float azimuth(azimuth);
+    float gate(gate);
+
+im not sure how useful that would be.
+
+id like to look at some other radar data before deciding on what a radar data type interface
+should be, as well as talk to you about how it should look from IDV's POV.
+
+let me know any thoughts you have; i need to get back to the esml people soon.
+
+current actual ncdump:
+
+netcdf C:/data/radar/craft/KPUX_20041020_1354 {
+ dimensions:
+   radial = 367;
+   scanR = 5;
+   gateR = 460;
+   scanV = 5;
+   gateV = 920;
+
+ variables:
+   float Reflectivity(scanR=5, radial=367, gateR=460);
+     :units = "db";
+     :missing_value = NaN; // float
+     :_coordinates = "timeR elevationR azimuthR distanceR";
+
+   int timeR(scanR=5, radial=367);
+     :long_name = "time since base date";
+     :units = "msecs since 2004-10-20T00:00:00Z";
+   float elevationR(scanR=5, radial=367);
+     :units = "degrees";
+     :long_name = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
+   float azimuthR(scanR=5, radial=367);
+     :units = "degrees";
+     :long_name = "azimuth angle in degrees: 0 = true north, 90 = east";
+   float distanceR(gateR=460);
+     :units = "m";
+     :long_name = "radial distance to start of gate";
+
+   float Velocity(scanV=5, radial=367, gateV=920);
+     :units = "m/s";
+     :missing_value = NaN; // float
+     :_coordinates = "timeV elevationV azimuthV distanceV";
+
+   int timeV(scanV=5, radial=367);
+     :long_name = "time since base date";
+     :units = "msecs since 2004-10-20T00:00:00Z";
+   float elevationV(scanV=5, radial=367);
+     :units = "degrees";
+     :long_name = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
+   float azimuthV(scanV=5, radial=367);
+     :units = "degrees";
+     :long_name = "azimuth angle in degrees: 0 = true north, 90 = east";
+   float distanceV(gateV=920);
+     :units = "m";
+     :long_name = "radial distance to start of gate";
+
+   float SpectrumWidth(scanV=5, radial=367, gateV=920);
+     :units = "m/s";
+     :_coordinates = "timeV elevationV azimuthV distanceV";
+
+ :format = "AR2V0001";
+ :title_date = "2004-10-20";
+ :VolumeScanPatternName = "7 elevation scans every 10 mins";
+ :VolumeScanPattern = 32; // int
+}
+
+---------------
+Dataset {
+    Float32 Reflectivity[scanR = 5][radial = 367][gateR = 460];
+
+    Float32 timeR[scanR = 5][radial = 367];
+    Float32 elevationR[scanR = 5][radial = 367];
+    Float32 azimuth[scanR = 5][radial = 367];
+    Float32 distanceR[gateR = 460];
+
+    Float32 Velocity[scanV = 5][radial = 367][gateV = 920];
+    Float32 SpectrumWidth[scanV = 5][radial = 367][gateV = 920];
+
+    Float32 timeV[scanV = 4][radial = 367];
+    Float32 elevationV[scanV = 4][radial = 367];
+    Float32 azimuth[scanV = 4][radial = 367];
+    Float32 distanceV[gateV = 920];
+
+} 20031223031102.nexradII_bz;
+
+Attributes {
+
+    Reflectivity {
+      String units = "dbZ";
+      Float32 missing_value = "NaN"; // or some other float
+      String coordinates = "timeR elevationR azimuthR distanceR";
+    }
+
+
+etc
+
+
+
+---------------
+
+original
+
+
+Dataset {
+    Structure {
+        Float64 time;
+        Int32 num_of_volumes;
+        Int32 radar_number;
+        Float64 latitude;
+        Float64 longitude;
+        Int32 height;
+        Structure {
+            Int32 nsweeps;
+            Float32 elev[D0 = 5];
+            Float64 sweep_00_time[D0 = 367];
+            Float32 sweep_00_azimuth[D0 = 367];
+            Float32 sweep_00_elev[D0 = 367];
+            Int32 sweep_00_range[D0 = 460];
+            Float32 sweep_00_data[D1 = 367][D0 = 460];
+            Float64 sweep_01_time[D0 = 366];
+            Float32 sweep_01_azimuth[D0 = 366];
+            Float32 sweep_01_elev[D0 = 366];
+            Int32 sweep_01_range[D0 = 356];
+            Float32 sweep_01_data[D1 = 366][D0 = 356];
+            Float64 sweep_02_time[D0 = 365];
+            Float32 sweep_02_azimuth[D0 = 365];
+            Float32 sweep_02_elev[D0 = 365];
+            Int32 sweep_02_range[D0 = 336];
+            Float32 sweep_02_data[D1 = 365][D0 = 336];
+            Float64 sweep_03_time[D0 = 366];
+            Float32 sweep_03_azimuth[D0 = 366];
+            Float32 sweep_03_elev[D0 = 366];
+            Int32 sweep_03_range[D0 = 268];
+            Float32 sweep_03_data[D1 = 366][D0 = 268];
+            Float64 sweep_04_time[D0 = 366];
+            Float32 sweep_04_azimuth[D0 = 366];
+            Float32 sweep_04_elev[D0 = 366];
+            Int32 sweep_04_range[D0 = 216];
+            Float32 sweep_04_data[D1 = 366][D0 = 216];
+        } Reflectivity;
+        Structure {
+            Int32 nsweeps;
+            Float32 elev[D0 = 5];
+            Float64 sweep_00_time[D0 = 367];
+            Float32 sweep_00_azimuth[D0 = 367];
+            Float32 sweep_00_elev[D0 = 367];
+            Int32 sweep_00_range[D0 = 920];
+            Float32 sweep_00_data[D1 = 367][D0 = 920];
+            Float64 sweep_01_time[D0 = 366];
+            Float32 sweep_01_azimuth[D0 = 366];
+            Float32 sweep_01_elev[D0 = 366];
+            Int32 sweep_01_range[D0 = 920];
+            Float32 sweep_01_data[D1 = 366][D0 = 920];
+            Float64 sweep_02_time[D0 = 365];
+            Float32 sweep_02_azimuth[D0 = 365];
+            Float32 sweep_02_elev[D0 = 365];
+            Int32 sweep_02_range[D0 = 920];
+            Float32 sweep_02_data[D1 = 365][D0 = 920];
+            Float64 sweep_03_time[D0 = 366];
+            Float32 sweep_03_azimuth[D0 = 366];
+            Float32 sweep_03_elev[D0 = 366];
+            Int32 sweep_03_range[D0 = 920];
+            Float32 sweep_03_data[D1 = 366][D0 = 920];
+            Float64 sweep_04_time[D0 = 366];
+            Float32 sweep_04_azimuth[D0 = 366];
+            Float32 sweep_04_elev[D0 = 366];
+            Int32 sweep_04_range[D0 = 860];
+            Float32 sweep_04_data[D1 = 366][D0 = 860];
+        } Velocity;
+        Structure {
+            Int32 nsweeps;
+            Float32 elev[D0 = 5];
+            Float64 sweep_00_time[D0 = 367];
+            Float32 sweep_00_azimuth[D0 = 367];
+            Float32 sweep_00_elev[D0 = 367];
+            Int32 sweep_00_range[D0 = 920];
+            Float32 sweep_00_data[D1 = 367][D0 = 920];
+            Float64 sweep_01_time[D0 = 366];
+            Float32 sweep_01_azimuth[D0 = 366];
+            Float32 sweep_01_elev[D0 = 366];
+            Int32 sweep_01_range[D0 = 920];
+            Float32 sweep_01_data[D1 = 366][D0 = 920];
+            Float64 sweep_02_time[D0 = 365];
+            Float32 sweep_02_azimuth[D0 = 365];
+            Float32 sweep_02_elev[D0 = 365];
+            Int32 sweep_02_range[D0 = 920];
+            Float32 sweep_02_data[D1 = 365][D0 = 920];
+            Float64 sweep_03_time[D0 = 366];
+            Float32 sweep_03_azimuth[D0 = 366];
+            Float32 sweep_03_elev[D0 = 366];
+            Int32 sweep_03_range[D0 = 920];
+            Float32 sweep_03_data[D1 = 366][D0 = 920];
+            Float64 sweep_04_time[D0 = 366];
+            Float32 sweep_04_azimuth[D0 = 366];
+            Float32 sweep_04_elev[D0 = 366];
+            Int32 sweep_04_range[D0 = 860];
+            Float32 sweep_04_data[D1 = 366][D0 = 860];
+        } Spectrum%20width;
+    } main;
+} 20031223031102.nexradII_bz;
+
+Attributes {
+    MAT_GLOBAL {
+        String ESML
+/usr/local/web/www/html/msud/xml_files/WSR88DIITesting.xml;
+    }
+    Reflectivity {
+        nsweeps {
+        }
+        elev {
+            String Dim_0_name "nSweeps";
+        }
+        sweep_00_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_00_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_01_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_01_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_02_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_02_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_03_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_03_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_04_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_04_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+    }
+    Velocity {
+        nsweeps {
+        }
+        elev {
+            String Dim_0_name "nSweeps";
+        }
+        sweep_00_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_00_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_01_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_01_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_02_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_02_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_03_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_03_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_04_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_04_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+    }
+    Spectrum%20width {
+        nsweeps {
+        }
+        elev {
+            String Dim_0_name "nSweeps";
+        }
+        sweep_00_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_00_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_00_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_01_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_01_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_01_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_02_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_02_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_02_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_03_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_03_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_03_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+        sweep_04_time {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_azimuth {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_elev {
+            String Dim_0_name "nRays";
+        }
+        sweep_04_range {
+            String Dim_0_name "nBins";
+        }
+        sweep_04_data {
+            String Dim_0_name "nRanges";
+            String Dim_1_name "nRays";
+        }
+    }
+}
+

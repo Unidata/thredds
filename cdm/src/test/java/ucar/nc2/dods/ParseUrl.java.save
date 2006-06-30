@@ -1,0 +1,146 @@
+package ucar.nc2.dods;
+
+// netCDF stuff
+import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.Attribute;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableStandardized;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.conv.Convention;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.grid.GridCoordSys;
+import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.*;
+
+import ucar.ma2.Array;
+
+// DODS DAP Stuff
+import dods.dap.DODSException;
+
+// Standard Java stuff.
+
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
+import java.text.*;
+
+
+
+/**
+ * Find the ucar.nc2.dataset.grid.GeoGrid's in a file and print out the description.
+ * <p>
+ *
+ * @author R.H. Schweitzer
+ * @version 0.1, 2/2003
+ */
+public class ParseUrl
+{
+
+  /**
+   * The main method is the whole thing.
+   *
+   * one argument a String with the URL of the dataset to be parsed.
+   *
+   */
+  public static void main(String[] args)
+  {
+    String data = "dods://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/.test/sst.xyt.nc?lat[15:1:22],lon[10:1:25],time[0:1:5],sst[0:1:5][15:1:22][10:1:25]";
+
+    if ( data == null || data.length() == 0) {
+       System.out.println("Useage java ParseUrl http://dods.server.gov/file.");
+    }
+
+      try {
+
+          // Get a list of grids
+          String url = DODSNetcdfFile.canonicalURL(data);
+
+          System.out.println("Parsing: "+url);
+
+          NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.factory(url, null);
+          System.out.println(ncfile.toString());
+
+          NetcdfDataset ncds =  ucar.nc2.dataset.conv.Convention.factory(ncfile);
+          GridDataset gridDs = new GridDataset (ncds);
+          List grids = gridDs.getGrids();
+
+          if ( grids.size() == 0 ) {
+             System.out.println("File parsed.  No Lat/Lon grids found.");
+          }
+
+          for (int i=0; i<grids.size(); i++) {
+
+            GeoGrid grid = (GeoGrid) grids.get(i);
+
+            System.out.println("- "+grid.getDescription());
+            System.out.println("-- "+grid.getName());
+
+            GridCoordSys gcs = grid.getCoordinateSystem();
+
+            CoordinateAxis1D xAxis = (CoordinateAxis1D)gcs.getXHorizAxis();
+            System.out.print("--- Longitude axis: ");
+            double[] x = xAxis.getCoordValues();
+
+            for ( int c = 0; c < x.length; c++ ) {
+               System.out.print(String.valueOf(x[c])+", ");
+            }
+            System.out.println("");
+
+            CoordinateAxis1D yAxis = (CoordinateAxis1D)gcs.getYHorizAxis();
+            System.out.print("--- Latitude axis: ");
+            double[] y = yAxis.getCoordValues();
+
+            for ( int c = 0; c < y.length; c++ ) {
+               System.out.print(String.valueOf(y[c])+", ");
+            }
+            System.out.println("");
+
+            if ( gcs.hasVerticalAxis() ) {
+               CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+               System.out.println("--- Grid has vertical axis with "+zAxis.getSize()+" levels");
+            }
+            else {
+               System.out.println("--- Grid has no vertical axis");
+            }
+
+            CoordinateAxis1D tAxis = gcs.getTimeAxis();
+
+            if ( tAxis != null ) {
+               System.out.println("--- Grid has time axis with "+tAxis.getSize()+" time steps");
+            }
+            else {
+               System.out.println("--- Grid has no time axis");
+            }
+
+            ProjectionImpl proj = grid.getProjection();
+               if (proj instanceof LatLonProjection) {
+                  System.out.println("---- Grid has a LatLonProjection.");
+               }
+               else if ( proj instanceof LambertConformal)  {
+                  System.out.println("---- Grid has Lambert Conformal projection...");
+               }
+               else if ( proj instanceof Stereographic)  {
+                  System.out.println("---- Grid has Stereographic projection...");
+               }
+               else if ( proj instanceof TransverseMercator)  {
+                  System.out.println("---- Grid has Transvers Mercator projection...");
+               }
+               else {
+                  System.out.println("---- Grid has unknown projection...");
+               }
+           } // Loop over Grids
+
+      }
+      catch (IOException e) {
+         System.out.println("IO error = "+e);
+      }
+
+   } // end of main
+}// end of class

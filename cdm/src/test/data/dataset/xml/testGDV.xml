@@ -1,0 +1,380 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<netcdf xmlns='http://www.ucar.edu/schemas/netcdf'
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:schemaLocation='http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdf.xsd'
+    uri='Z:\testdata\test_met_no.nc' >
+
+  <dimension name='i' length='132' />
+  <dimension name='j' length='111' />
+  <dimension name='k' length='20' />
+  
+  <dimension name='x' length='132' />
+  <dimension name='y' length='111' />
+  <dimension name='z' length='20' />
+  <dimension name='time' length='3' isUnlimited='true' />
+
+  <attribute name='Conventions' type='string' value='GDV' />
+  <attribute name='version' type='string' value='Unimod rv1.4' />
+  <attribute name='model' type='string' value='ZD_OZONE' />
+  <attribute name='author_of_run' type='string' value='Unimod group' />
+  <attribute name='created_date' type='string' value='20030227' />
+  <attribute name='created_hour' type='string' value='110159.361' />
+  <attribute name='lastmodified_date' type='string' value='20030227' />
+  <attribute name='lastmodified_hour' type='string' value='110658.133' />
+  <attribute name='projection' type='string' value='Stereographic' />
+  <attribute name='projection_params' type='string' value='60.0 -32.0 1.0' />
+  <attribute name='vert_coord' type='string' value='vertical coordinates = (p-p(top))/(p(surf)-p(top))' />
+  <attribute name='period_type' type='string' value='daily' />
+
+  <variable name='x' type='float' shape='x' >
+    <attribute name='coord_axis' type='string' value='x' />
+    <attribute name='long_name' type='string' value='EMEP grid x coordinate' />
+    <attribute name='units' type='string' value='km' />
+  </variable>
+  <variable name='y' type='float' shape='y' >
+    <attribute name='coord_axis' type='string' value='y' />
+    <attribute name='long_name' type='string' value='EMEP grid y coordinate' />
+    <attribute name='units' type='string' value='km' />
+  </variable>
+  <variable name='z' type='float' shape='z' >
+    <attribute name='coord_alias' type='string' value='level' />
+    <attribute name='long_name' type='string' value='vertical eta coordinates' />
+    <attribute name='units' type='string' value='eta_level' />
+    <attribute name='positive' type='string' value='down' />
+  </variable>
+  <variable name='time' type='int' shape='time' >
+    <attribute name='long_name' type='string' value='current time at end of period' />
+    <attribute name='units' type='string' value='seconds since 1970-1-1 00:00:00.0 +00:00' />
+  </variable>
+  <variable name='D2_SO2_2D' type='float' shape='time y x' >
+    <attribute name='long_name' type='string' value='D2_SO2' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugS/m3' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 601 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -2 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_SO4_2D' type='float' shape='time y x' >
+    <attribute name='long_name' type='string' value='D2_SO4' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugS/m3' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 620 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_HNO3_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_HNO3' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugN/m3' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 621 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_PAN_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_PAN' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugN/m3' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 604 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_NO_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_NO' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugN/m3' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 623 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -2 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_NO2_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_NO2' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugN/m3' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 606 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_O3_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_O3' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ppb' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 607 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -2 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_CO_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_CO' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ppb' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 612 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -1 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2T_HCHO_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2T_HCHO' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ug/m3' />
+    <attribute name='class' type='string' value='TADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 613 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2T_CH3CHO_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2T_CH3CHO' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ug/m3' />
+    <attribute name='class' type='string' value='TADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 614 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_VOC_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_VOC' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ppb' />
+    <attribute name='class' type='string' value='VOC' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 610 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -1 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_SOX_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_SOX' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugS/m3' />
+    <attribute name='class' type='string' value='TSO4' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 602 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_OXN_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_OXN' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugN/m3' />
+    <attribute name='class' type='string' value='TOXN' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 603 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_REDN_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_REDN' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugN/m3' />
+    <attribute name='class' type='string' value='TRDN' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 605 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_FRNIT_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_FRNIT' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='(1)' />
+    <attribute name='class' type='string' value='FRNIT' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 624 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_aNH4_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_aNH4' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ugN/m3' />
+    <attribute name='class' type='string' value='ADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 619 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_MAXO3_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_MAXO3' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='ppb' />
+    <attribute name='class' type='string' value='MAXADV' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 625 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -2 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_MAXOH_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_MAXOH' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='?' />
+    <attribute name='class' type='string' value='MAXSHL' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 626 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_HMIX_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_HMIX' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='m' />
+    <attribute name='class' type='string' value='HMIX' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 468 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -1 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_HMIX00_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_HMIX00' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='m' />
+    <attribute name='class' type='string' value='HMIX00' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 469 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -1 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='D2_HMIX12_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='D2_HMIX12' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='m' />
+    <attribute name='class' type='string' value='HMIX12' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 470 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -1 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='DDEP_SOX_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='DDEP_SOX' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='DDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 521 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='DDEP_OXN_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='DDEP_OXN' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='DDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 522 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='DDEP_RDN_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='DDEP_RDN' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='DDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 523 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='DDEP_JRK_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='DDEP_JRK' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='DDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 524 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='DDEP_FOR_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='DDEP_FOR' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='DDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 525 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='WDEP_PREC_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='WDEP_PREC' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mm' />
+    <attribute name='class' type='string' value='PREC' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 561 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -2 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='WDEP_SOX_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='WDEP_SOX' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='WDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 541 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='WDEP_OXN_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='WDEP_OXN' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='WDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 542 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -4 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+  <variable name='WDEP_RDN_2D' type='float' shape='time j i' >
+    <attribute name='long_name' type='string' value='WDEP_RDN' />
+    <attribute name='numberofrecords' type='int' value='3 ' />
+    <attribute name='units' type='string' value='mg/m2' />
+    <attribute name='class' type='string' value='WDEP' />
+    <attribute name='scale_factor' type='float' value='1.0 ' />
+    <attribute name='_FillValue' type='float' value='0.0 ' />
+    <attribute name='xfelt_ident' type='int' value='88 1841 2 6 2 543 1000 0 1 132 111 2000 101 1800 800 11000 498 -32 200 -3 ' />
+    <attribute name='current_date_first' type='int' value='2000 1 2 6 ' />
+    <attribute name='current_date_last' type='int' value='2000 1 4 0 ' />
+  </variable>
+</netcdf>
+

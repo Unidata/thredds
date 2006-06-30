@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  elementFormDefault="qualified">
+
+  <!-- XML encoding of Netcdf container object -->
+  <xsd:element name="netcdf">
+    <xsd:complexType>
+      <xsd:sequence>
+         <xsd:choice minOccurs="0">
+          <xsd:element name="readMetadata"/>
+          <xsd:element name="explicit"/>
+        </xsd:choice>
+        
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="group"/>
+          <xsd:element ref="dimension"/>
+          <xsd:element ref="variable"/>
+          <xsd:element ref="attribute"/>
+          <xsd:element ref="remove"/>
+        </xsd:choice>
+
+        <xsd:element ref="aggregation" minOccurs="0"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="location" type="xsd:anyURI"/>
+      <xsd:attribute name="id" type="xsd:string"/>
+      <xsd:attribute name="title" type="xsd:string"/>
+      <xsd:attribute name="enhance" type="xsd:boolean"/>
+      <xsd:attribute name="addRecords" type="xsd:boolean"/>
+
+      <!-- for aggregations -->
+      <xsd:attribute name="ncoords" type="xsd:string"/>
+      <xsd:attribute name="coordValue" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- XML encoding of group object -->
+  <xsd:element name="group">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="dimension"/>
+        <xsd:element ref="variable"/>
+        <xsd:element ref="attribute"/>
+        <xsd:element ref="group"/>
+        <xsd:element ref="remove"/>
+      </xsd:choice>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="orgName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- XML encoding of dimension object -->
+  <xsd:element name="dimension">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:token" use="required"/>
+      <xsd:attribute name="length" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="isUnlimited" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="isVariableLength" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="isShared" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="orgName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- XML encoding of Variable object -->
+  <xsd:element name="variable">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="values" minOccurs="0"/>
+        <xsd:element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="logicalView" minOccurs="0" />
+        <xsd:element ref="remove" minOccurs="0" maxOccurs="unbounded" />
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:token" use="required"/>
+      <xsd:attribute name="type" type="DataType" />
+      <xsd:attribute name="shape" type="xsd:token"/>
+      <xsd:attribute name="orgName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- XML encoding of values -->
+  <xsd:element name="values">
+    <xsd:complexType mixed="true">
+      <xsd:attribute name="start" type="xsd:float"/>
+      <xsd:attribute name="increment" type="xsd:float"/>
+      <xsd:attribute name="npts" type="xsd:int"/>
+      <xsd:attribute name="separator" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- XML encoding of Attribute object -->
+  <xsd:element name="attribute">
+    <xsd:complexType mixed="true">
+      <xsd:attribute name="name" type="xsd:token" use="required"/>
+      <xsd:attribute name="type" type="DataType" default="String"/>
+      <xsd:attribute name="value" type="xsd:string" />
+      <xsd:attribute name="separator" type="xsd:string" />
+      <xsd:attribute name="orgName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- possible data types for Variable, Attribute objects -->
+  <xsd:simpleType name="DataType">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="byte"/>
+      <xsd:enumeration value="char"/>
+      <xsd:enumeration value="short"/>
+      <xsd:enumeration value="int"/>
+      <xsd:enumeration value="long"/>
+      <xsd:enumeration value="float"/>
+      <xsd:enumeration value="double"/>
+      <xsd:enumeration value="String"/>
+      <xsd:enumeration value="string"/>
+      <xsd:enumeration value="Structure"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Dataset **********************************************************************-->
+
+  <xsd:element name="remove">
+    <xsd:complexType>
+      <xsd:attribute name="type" type="ObjectType" use="required"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="ObjectType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="attribute"/>
+			<xsd:enumeration value="dimension"/>
+			<xsd:enumeration value="variable"/>
+			<xsd:enumeration value="group"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+  <!-- aggregation  -->
+  <xsd:element name="aggregation">
+    <xsd:complexType>
+      <xsd:sequence>
+
+        <xsd:element name="variableAgg" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+
+        <xsd:element ref="netcdf" minOccurs="0" maxOccurs="unbounded"/>
+
+        <xsd:element name="scan" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="location" type="xsd:string" use="required"/>
+            <xsd:attribute name="suffix" type="xsd:string" />
+            <xsd:attribute name="dateFormatMark" type="xsd:string" />
+            <xsd:attribute name="enhance" type="xsd:boolean"/>
+          </xsd:complexType>
+        </xsd:element>
+
+      </xsd:sequence>
+
+      <xsd:attribute name="dimName" type="xsd:token" />
+      <xsd:attribute name="type" type="AggregationType" use="required"/>
+      <xsd:attribute name="recheckEvery" type="xsd:string" />
+      
+      <xsd:attribute name="forecastDate" type="xsd:string" />
+      <xsd:attribute name="forecastDateVariable" type="xsd:string" />
+      <xsd:attribute name="forecastOffset" type="xsd:string" />
+      <xsd:attribute name="forecastTimeOffset" type="xsd:string" />
+      <xsd:attribute name="referenceDateVariable" type="xsd:string" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- type of aggregation -->
+  <xsd:simpleType name="AggregationType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="forecastModelRun"/>
+      <xsd:enumeration value="joinExisting"/>
+      <xsd:enumeration value="joinNew"/>
+      <xsd:enumeration value="union"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- logical view  -->
+  <xsd:element name="logicalView">
+    <xsd:complexType>
+      <xsd:attribute name="section" type="xsd:token" use="optional"/>
+    </xsd:complexType>
+  </xsd:element>
+
+
+</xsd:schema>

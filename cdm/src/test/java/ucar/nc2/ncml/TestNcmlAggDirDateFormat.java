@@ -1,0 +1,104 @@
+package ucar.nc2.ncml;
+
+import junit.framework.TestCase;
+
+import java.io.IOException;
+
+import ucar.nc2.*;
+import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dataset.grid.GridCoordSys;
+import ucar.ma2.DataType;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+
+public class TestNcmlAggDirDateFormat extends TestCase {
+
+  public TestNcmlAggDirDateFormat( String name) {
+    super(name);
+  }
+
+  public void testNcmlGrid() throws IOException {
+    String filename = "file:./"+TestNcML.topDir + "aggDateFormat.xml";
+
+    GridDataset gds = GridDataset.open( filename);
+    System.out.println(" TestNcmlAggDirDateFormat.openGrid "+ filename);
+
+    NetcdfFile ncfile = gds.getNetcdfDataset();
+    testDimensions( ncfile);
+    testAggCoordVar( ncfile);
+    testReadData( gds);
+
+    gds.close();
+  }
+
+  public void testDimensions(NetcdfFile ncfile) {
+    Dimension latDim = ncfile.findDimension("y");
+    assert null != latDim;
+    assert latDim.getName().equals("y");
+    assert latDim.getLength() == 1008;
+    assert !latDim.isUnlimited();
+
+    Dimension lonDim = ncfile.findDimension("x");
+    assert null != lonDim;
+    assert lonDim.getName().equals("x");
+    assert lonDim.getLength() == 1536;
+    assert !lonDim.isUnlimited();
+
+    Dimension timeDim = ncfile.findDimension("time");
+    assert null != timeDim;
+    assert timeDim.getName().equals("time");
+    assert timeDim.getLength() == 12;
+  }
+
+
+  public void testAggCoordVar(NetcdfFile ncfile) throws IOException {
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getName().equals("time");
+    assert time.getRank() == 1;
+    assert time.getSize() == 12;
+    assert time.getShape()[0] == 12;
+    assert time.getDataType() == DataType.STRING;
+
+    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 12;
+    assert data.getShape()[0] == 12;
+    assert data.getElementType() == String.class;
+
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext())
+      System.out.println(" coord="+dataI.getObjectNext());
+  }
+
+  public void testReadData(GridDataset gds) throws IOException {
+    GeoGrid g = gds.findGridByName("IR_WV");
+    assert null != g;
+    assert g.getName().equals("IR_WV");
+    assert g.getRank() == 3;
+    assert g.getShape()[0] == 12;
+    assert g.getShape()[1] == 1008;
+    assert g.getShape()[2] == 1536;
+    assert g.getDataType() == DataType.BYTE;
+
+    GridCoordSys gsys = g.getCoordinateSystem();
+    assert gsys.getXHorizAxis() != null;
+    assert gsys.getYHorizAxis() != null;
+    assert gsys.getTimeAxis() != null;
+    assert gsys.getVerticalAxis() == null;
+    assert gsys.getProjection() != null;
+
+    Array data = g.readVolumeData(0);
+    assert data.getRank() == 2;
+    assert data.getShape()[0] == 1008;
+    assert data.getShape()[1] == 1536;
+    assert data.getElementType() == byte.class;
+  }
+
+
+}
+
+

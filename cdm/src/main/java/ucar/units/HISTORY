@@ -1,0 +1,15 @@
+VERSION/DATE	COMMENTS
+------------	--------
+
+0.1	YYYY-MM-DD
+
+		Added to StandardUnitFormat the printing on standard error
+		of the message "Unknown unit: ...".
+
+		Added Unit.getCanonicalString().
+
+		Fixed bug in handling of timezones and daylight savings time.
+
+0.0	1999-04-09
+
+		Released for internal use.

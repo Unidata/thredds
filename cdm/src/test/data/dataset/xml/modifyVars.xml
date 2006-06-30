@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  location="file:test/data/dataset/example.nc">
+	
+	<attribute name="Conventions" type="string" value="added"/>
+	<attribute name="title" type="string" value="replaced"/>
+			
+	<dimension name="lat" length="3"/>
+	<variable name="deltaLat" type="double" shape="lat">
+		<values>.1 .1 .01</values>
+	</variable>
+
+  <variable name="Temperature" orgName="T"/>
+	<variable name="ReletiveHumidity" orgName="rh">
+	  <attribute name="long_name2" type="string" value="relatively humid"/>
+	  <attribute name="units" type="string" value="percent (%)"/>
+		<remove type="attribute" name="long_name"/>
+	</variable >
+	
+</netcdf>

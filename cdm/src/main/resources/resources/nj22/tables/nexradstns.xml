@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stationtable name="NEXRAD Sites" category="Weather">
+<station idn="000525" id="APD" name="Fairbanks/Pedro Dome" st="AK" co="US" lat="65:02:06" lon="-147:30:06" elev="790"/>
+<station idn="000346" id="AEC" name="Fairbanks/Nome" st="AK" co="US" lat="64:30:41" lon="-165:17:42" elev="16"/>
+<station idn="000553" id="ACG" name="Juneau/Sitka" st="AK" co="US" lat="56:51:10" lon="-135:31:45" elev="63"/>
+<station idn="000505" id="AIH" name="Anchorage/Middleton Island" st="AK" co="US" lat="59:27:41" lon="-146:18:11" elev="20"/>
+<station idn="000304" id="ABC" name="Anchorage/Bethel" st="AK" co="US" lat="60:47:31" lon="-161:52:35" elev="49"/>
+<station idn="000344" id="AHG" name="Anchorage/Nikiski" st="AK" co="US" lat="60:43:33" lon="-151:21:05" elev="74"/>
+<station idn="000568" id="AKC" name="Anchorage/King Salmon" st="AK" co="US" lat="58:40:46" lon="-156:37:46" elev="19"/>
+<station idn="000320" id="BMX" name="Birmingham/Alabaster" st="AL" co="US" lat="33:10:20" lon="-86:46:11" elev="197"/>
+<station idn="000509" id="MOB" name="Mobile" st="AL" co="US" lat="30:40:46" lon="-88:14:23" elev="63"/>
+<station idn="000826" id="HTX" name="Birmingham/Northeastern Al" st="AL" co="US" lat="34:55:50" lon="-86:05:00" elev="536"/>
+<station idn="000354" id="MXX" name="Birmingham/Maxwell Afb" st="AL" co="US" lat="32:32:12" lon="-85:47:23" elev="122"/>
+<station idn="000362" id="EOX" name="Birmingham/Fort Rucker" st="AL" co="US" lat="31:27:38" lon="-85:27:34" elev="132"/>
+<station idn="000395" id="LZK" name="Little Rock/N Little Rock" st="AR" co="US" lat="34:50:11" lon="-92:15:44" elev="173"/>
+<station idn="000825" id="SRX" name="Tulsa/Western Arkansas" st="AR" co="US" lat="35:17:26" lon="-94:21:42" elev="195"/>
+<station idn="000524" id="IWA" name="Phoenix/Mesa" st="AZ" co="US" lat="33:17:21" lon="-111:40:12" elev="412"/>
+<station idn="000556" id="EMX" name="Tucson/Pima County" st="AZ" co="US" lat="31:53:37" lon="-110:37:49" elev="1586"/>
+<station idn="000361" id="FSX" name="Flagstaff/Coconino" st="AZ" co="US" lat="34:34:28" lon="-111:11:52" elev="2261"/>
+<station idn="000393" id="YUX" name="Phoenix/Yuma" st="AZ" co="US" lat="32:29:43" lon="-114:39:24" elev="53"/>
+<station idn="000536" id="DAX" name="Sacramento" st="CA" co="US" lat="38:30:04" lon="-121:40:40" elev="9"/>
+<station idn="000396" id="VTX" name="Los Angeles/Ventura County" st="CA" co="US" lat="34:24:42" lon="-119:10:46" elev="831"/>
+<station idn="000541" id="MUX" name="San Francisco Bay Area/Santa" st="CA" co="US" lat="37:09:19" lon="-121:53:54" elev="1057"/>
+<station idn="000359" id="BHX" name="Eureka/Humboldt County" st="CA" co="US" lat="40:29:54" lon="-124:17:31" elev="732"/>
+<station idn="000363" id="HNX" name="San Joaquin Valley/Hanford" st="CA" co="US" lat="36:18:51" lon="-119:37:56" elev="74"/>
+<station idn="000540" id="NKX" name="San Diego" st="CA" co="US" lat="32:55:08" lon="-117:02:31" elev="291"/>
+<station idn="000574" id="SOX" name="San Diego/Orange County" st="CA" co="US" lat="33:49:04" lon="-117:38:09" elev="923"/>
+<station idn="000559" id="VBX" name="Los Angeles/Orcutt Oil Field" st="CA" co="US" lat="34:50:17" lon="-120:23:49" elev="373"/>
+<station idn="000511" id="EYX" name="Las Vegas/Edwards Afb" st="CA" co="US" lat="35:05:52" lon="-117:33:39" elev="840"/>
+<station idn="000380" id="BBX" name="Sacramento/Oro Dam Blvd West" st="CA" co="US" lat="39:29:46" lon="-121:37:54" elev="53"/>
+<station idn="000347" id="FTG" name="Denver/Boulder" st="CO" co="US" lat="39:47:12" lon="-104:32:45" elev="1675"/>
+<station idn="000529" id="PUX" name="Pueblo/Pueblo County" st="CO" co="US" lat="38:27:34" lon="-104:10:53" elev="1600"/>
+<station idn="000368" id="GJX" name="Grand Junction/Mesa" st="CO" co="US" lat="39:03:44" lon="-108:12:50" elev="3045"/>
+<station idn="000351" id="DOX" name="Wakefield/Ellendale State Fo" st="DE" co="US" lat="38:49:32" lon="-75:26:23" elev="15"/>
+<station idn="000302" id="MLB" name="Melbourne" st="FL" co="US" lat="28:06:48" lon="-80:39:15" elev="11"/>
+<station idn="000728" id="AMX" name="Miami" st="FL" co="US" lat="25:36:40" lon="-80:24:46" elev="4"/>
+<station idn="000552" id="TBW" name="Tampa Bay Area/Ruskin" st="FL" co="US" lat="27:42:20" lon="-82:24:06" elev="12"/>
+<station idn="000383" id="JAX" name="Jacksonville" st="FL" co="US" lat="30:29:05" lon="-81:42:07" elev="10"/>
+<station idn="000551" id="TLH" name="Tallahassee" st="FL" co="US" lat="30:23:51" lon="-84:19:44" elev="19"/>
+<station idn="000386" id="BYX" name="Miami/Boca Chica Key" st="FL" co="US" lat="24:35:51" lon="-81:42:11" elev="2"/>
+<station idn="000307" id="EVX" name="Tallahassee/Eglin Afb" st="FL" co="US" lat="30:33:52" lon="-85:55:17" elev="43"/>
+<station idn="000316" id="FFC" name="Atlanta/Peachtree City" st="GA" co="US" lat="33:21:49" lon="-84:33:57" elev="262"/>
+<station idn="000535" id="JGX" name="Atlanta/State Hwy 96" st="GA" co="US" lat="32:40:31" lon="-83:21:04" elev="159"/>
+<station idn="000510" id="VAX" name="Tallahassee/State Rd 129" st="GA" co="US" lat="30:53:25" lon="-83:00:06" elev="54"/>
+<station idn="000314" id="GUA" name="Guam/Barrigada Communication" st="GU" co="US" lat="13:27:16" lon="144:48:30" elev="80"/>
+<station idn="000336" id="HMO" name="Honolulu/Molokai" st="HI" co="US" lat="21:07:58" lon="-157:10:48" elev="415"/>
+<station idn="000570" id="HWA" name="Honolulu/Hawaii" st="HI" co="US" lat="19:05:42" lon="-155:34:08" elev="421"/>
+<station idn="000377" id="HKM" name="Honolulu/Kohala" st="HI" co="US" lat="20:07:32" lon="-155:46:40" elev="1162"/>
+<station idn="000550" id="HKI" name="Honolulu/Kauai" st="HI" co="US" lat="21:53:39" lon="-159:33:08" elev="55"/>
+<station idn="000348" id="DMX" name="Des Moines/Johnston" st="IA" co="US" lat="41:43:52" lon="-93:43:22" elev="299"/>
+<station idn="000530" id="DVN" name="Quad Cities/Davenport" st="IA" co="US" lat="41:36:42" lon="-90:34:51" elev="230"/>
+<station idn="000322" id="CBX" name="Boise/Ada County" st="ID" co="US" lat="43:29:26" lon="-116:14:08" elev="933"/>
+<station idn="000546" id="SFX" name="Pocatello/Idaho Falls/Spring" st="ID" co="US" lat="43:06:21" lon="-112:41:10" elev="1364"/>
+<station idn="000337" id="LOT" name="Chicago/Romeoville" st="IL" co="US" lat="41:36:17" lon="-88:05:05" elev="202"/>
+<station idn="000549" id="ILX" name="Central Illinois/Lincoln" st="IL" co="US" lat="40:09:02" lon="-89:20:13" elev="177"/>
+<station idn="000381" id="IND" name="Indianapolis" st="IN" co="US" lat="39:42:27" lon="-86:16:49" elev="241"/>
+<station idn="000827" id="IWX" name="Northern Indiana/North Webst" st="IN" co="US" lat="41:21:32" lon="-85:42:00" elev="293"/>
+<station idn="000851" id="VWX" name="Evansville/Gibson" st="IN" co="US" lat="38:15:37" lon="-87:43:28" elev="190"/>
+<station idn="000350" id="DDC" name="Dodge City" st="KS" co="US" lat="37:45:39" lon="-99:58:08" elev="789"/>
+<station idn="000562" id="ICT" name="Wichita" st="KS" co="US" lat="37:39:17" lon="-97:26:34" elev="407"/>
+<station idn="000554" id="TWX" name="Topeka/Alma" st="KS" co="US" lat="38:59:49" lon="-96:13:57" elev="417"/>
+<station idn="000366" id="GLD" name="Goodland" st="KS" co="US" lat="39:22:01" lon="-101:42:01" elev="1113"/>
+<station idn="000397" id="LVX" name="Louisville/Fort Knox" st="KY" co="US" lat="37:58:31" lon="-85:56:38" elev="219"/>
+<station idn="000521" id="PAH" name="Paducah" st="KY" co="US" lat="37:04:06" lon="-88:46:19" elev="119"/>
+<station idn="000373" id="JKL" name="Jackson/Noctor" st="KY" co="US" lat="37:35:27" lon="-83:18:47" elev="416"/>
+<station idn="000364" id="HPX" name="Paducah/Us Hwy 41 N" st="KY" co="US" lat="36:44:12" lon="-87:17:06" elev="176"/>
+<station idn="000545" id="LIX" name="New Orleans/Baton Rouge/Slid" st="LA" co="US" lat="30:20:12" lon="-89:49:32" elev="7"/>
+<station idn="000391" id="LCH" name="Lake Charles" st="LA" co="US" lat="30:07:31" lon="-93:12:57" elev="4"/>
+<station idn="000543" id="SHV" name="Shreveport" st="LA" co="US" lat="32:27:03" lon="-93:50:29" elev="83"/>
+<station idn="000339" id="POE" name="Lake Charles/Fort Polk" st="LA" co="US" lat="31:09:20" lon="-92:58:33" elev="124"/>
+<station idn="000323" id="BOX" name="Boston/Taunton" st="MA" co="US" lat="41:57:21" lon="-71:08:13" elev="36"/>
+<station idn="000303" id="LWX" name="Baltimore/Wash/Sterling" st="MD" co="US" lat="38:58:31" lon="-77:28:40" elev="83"/>
+<station idn="000528" id="GYX" name="Portland/Gray" st="ME" co="US" lat="43:53:29" lon="-70:15:23" elev="125"/>
+<station idn="000329" id="CBW" name="Portland/Houlton" st="ME" co="US" lat="46:02:21" lon="-67:48:23" elev="227"/>
+<station idn="000349" id="DTX" name="Detroit/White Lake" st="MI" co="US" lat="42:41:59" lon="-83:28:18" elev="327"/>
+<station idn="000369" id="GRR" name="Grand Rapids" st="MI" co="US" lat="42:53:38" lon="-85:32:41" elev="237"/>
+<station idn="000399" id="MQT" name="Marquette" st="MI" co="US" lat="46:31:52" lon="-87:32:54" elev="430"/>
+<station idn="000312" id="APX" name="North Central Lower Michigan" st="MI" co="US" lat="44:54:26" lon="-84:43:11" elev="446"/>
+<station idn="000506" id="MPX" name="Minneapolis/Chanhassen" st="MN" co="US" lat="44:50:56" lon="-93:33:56" elev="288"/>
+<station idn="000352" id="DLH" name="Duluth" st="MN" co="US" lat="46:50:13" lon="-92:12:35" elev="435"/>
+<station idn="000308" id="LSX" name="St. Louis/St Charles" st="MO" co="US" lat="38:41:56" lon="-90:40:58" elev="185"/>
+<station idn="000385" id="EAX" name="Kansas City/Pleasant Hill/Pl" st="MO" co="US" lat="38:48:37" lon="-94:15:52" elev="303"/>
+<station idn="000548" id="SGF" name="Springfield" st="MO" co="US" lat="37:14:07" lon="-93:24:02" elev="390"/>
+<station idn="000382" id="JAN" name="Jackson" st="MS" co="US" lat="32:19:04" lon="-90:04:48" elev="91"/>
+<station idn="999999" id="DGX" name="Brandon" st="MS" co="US" lat="32:16:47" lon="-89:59:03" elev="186"/>
+<station idn="000342" id="GWX" name="Memphis/Ms Hwy 8 &amp; Us Hwy 27" st="MS" co="US" lat="33:53:48" lon="-88:19:44" elev="145"/>
+<station idn="000370" id="TFX" name="Great Falls" st="MT" co="US" lat="47:27:35" lon="-111:23:07" elev="1132"/>
+<station idn="000508" id="MSX" name="Missoula/Missoula County" st="MT" co="US" lat="47:02:28" lon="-113:59:10" elev="2394"/>
+<station idn="000318" id="BLX" name="Billings/Yellowstone County" st="MT" co="US" lat="45:51:14" lon="-108:36:24" elev="1097"/>
+<station idn="000365" id="GGW" name="Glasgow" st="MT" co="US" lat="48:12:23" lon="-106:37:30" elev="694"/>
+<station idn="000375" id="MHX" name="Morehead City/Newport" st="NC" co="US" lat="34:46:34" lon="-76:52:34" elev="9"/>
+<station idn="000563" id="LTX" name="Wilmington/Shallotte" st="NC" co="US" lat="33:59:22" lon="-78:25:44" elev="20"/>
+<station idn="000531" id="RAX" name="Raleigh/Durham/Clayton" st="NC" co="US" lat="35:39:56" lon="-78:29:23" elev="106"/>
+<station idn="000321" id="BIS" name="Bismarck" st="ND" co="US" lat="46:46:15" lon="-100:45:38" elev="505"/>
+<station idn="000360" id="MVX" name="Eastern North Dakota/Mayvill" st="ND" co="US" lat="47:31:40" lon="-97:19:32" elev="301"/>
+<station idn="000507" id="MBX" name="Bismarck/Mchenry County" st="ND" co="US" lat="48:23:33" lon="-100:51:54" elev="455"/>
+<station idn="000367" id="UEX" name="Hastings/Webster County" st="NE" co="US" lat="40:19:15" lon="-98:26:31" elev="602"/>
+<station idn="000519" id="OAX" name="Omaha/Valley" st="NE" co="US" lat="41:19:13" lon="-96:22:00" elev="350"/>
+<station idn="000517" id="LNX" name="North Platte/Thedford" st="NE" co="US" lat="41:57:28" lon="-100:34:35" elev="905"/>
+<station idn="000523" id="DIX" name="Philadelphia/Manchester" st="NJ" co="US" lat="39:56:49" lon="-74:24:39" elev="45"/>
+<station idn="000311" id="ABX" name="Albuquerque" st="NM" co="US" lat="35:08:59" lon="-106:49:26" elev="1789"/>
+<station idn="000328" id="FDX" name="Albuquerque/State Rd 89" st="NM" co="US" lat="34:38:07" lon="-103:37:48" elev="1417"/>
+<station idn="000376" id="HDX" name="El Paso/White Sands Missile" st="NM" co="US" lat="33:04:35" lon="-106:07:22" elev="1287"/>
+<station idn="000533" id="RGX" name="Reno/Washoe County" st="NV" co="US" lat="39:45:15" lon="-119:27:44" elev="2530"/>
+<station idn="000566" id="ESX" name="Las Vegas/Nelson" st="NV" co="US" lat="35:42:04" lon="-114:53:29" elev="1483"/>
+<station idn="000564" id="LRX" name="Elko/Lander County" st="NV" co="US" lat="40:44:23" lon="-116:48:10" elev="2056"/>
+<station idn="000515" id="OKX" name="New York City/Upton" st="NY" co="US" lat="40:51:56" lon="-72:51:50" elev="26"/>
+<station idn="000319" id="BGM" name="Binghamton" st="NY" co="US" lat="42:11:59" lon="-75:59:05" elev="490"/>
+<station idn="000310" id="ENX" name="Albany/East Berne" st="NY" co="US" lat="42:35:11" lon="-74:03:50" elev="557"/>
+<station idn="000325" id="BUF" name="Buffalo/Cheektowaga" st="NY" co="US" lat="42:56:56" lon="-78:44:12" elev="211"/>
+<station idn="000850" id="TYX" name="Montague/Fort Drum" st="NY" co="US" lat="43:45:21" lon="-75:40:48" elev="562"/>
+<station idn="000340" id="CLE" name="Cleveland" st="OH" co="US" lat="41:24:47" lon="-81:51:35" elev="233"/>
+<station idn="000338" id="ILN" name="Cincinnati/Wilmington" st="OH" co="US" lat="39:25:13" lon="-83:49:18" elev="322"/>
+<station idn="000001" id="TLX" name="Oklahoma City/Norman" st="OK" co="US" lat="35:19:59" lon="-97:16:40" elev="370"/>
+<station idn="000557" id="INX" name="Tulsa/Inola" st="OK" co="US" lat="36:10:30" lon="-95:33:53" elev="204"/>
+<station idn="000305" id="FDR" name="Oklahoma City/Altus Afb" st="OK" co="US" lat="34:21:44" lon="-98:58:35" elev="386"/>
+<station idn="000558" id="VNX" name="Oklahoma City/Kegelman Aux F" st="OK" co="US" lat="36:44:27" lon="-98:07:40" elev="369"/>
+<station idn="000527" id="RTX" name="Portland/Scappoose" st="OR" co="US" lat="45:42:53" lon="-122:57:55" elev="479"/>
+<station idn="000500" id="MAX" name="Medford/Jackson County" st="OR" co="US" lat="42:04:52" lon="-122:43:02" elev="2290"/>
+<station idn="000522" id="PDT" name="Pendleton" st="OR" co="US" lat="45:41:26" lon="-118:51:10" elev="462"/>
+<station idn="000526" id="PBZ" name="Pittsburgh/Coraopolis" st="PA" co="US" lat="40:31:54" lon="-80:13:05" elev="361"/>
+<station idn="000374" id="CCX" name="Central Pennsylvania/Rush" st="PA" co="US" lat="40:55:23" lon="-78:00:13" elev="733"/>
+<station idn="000502" id="JUA" name="San Juan/Cayey" st="PR" co="US" lat="18:06:56" lon="-66:04:41" elev="852"/>
+<station idn="000341" id="CAE" name="Columbia" st="SC" co="US" lat="33:56:55" lon="-81:07:06" elev="70"/>
+<station idn="000555" id="GSP" name="Greenville/Spartanburg/Greer" st="SC" co="US" lat="34:53:00" lon="-82:13:12" elev="287"/>
+<station idn="000333" id="CLX" name="Charleston/Grays" st="SC" co="US" lat="32:39:20" lon="-81:02:32" elev="30"/>
+<station idn="000309" id="ABR" name="Aberdeen" st="SD" co="US" lat="45:27:21" lon="-98:24:47" elev="397"/>
+<station idn="000544" id="FSD" name="Sioux Falls" st="SD" co="US" lat="43:35:16" lon="-96:43:46" elev="436"/>
+<station idn="000532" id="UDX" name="Rapid City/New Underwood" st="SD" co="US" lat="44:07:30" lon="-102:49:47" elev="919"/>
+<station idn="000501" id="NQA" name="Memphis/Millington" st="TN" co="US" lat="35:20:41" lon="-89:52:24" elev="86"/>
+<station idn="000387" id="MRX" name="Knoxville/Tri-cities/Morrist" st="TN" co="US" lat="36:10:07" lon="-83:24:06" elev="408"/>
+<station idn="000512" id="OHX" name="Nashville/Old Hickory" st="TN" co="US" lat="36:14:50" lon="-86:33:45" elev="176"/>
+<station idn="000313" id="AMA" name="Amarillo" st="TX" co="US" lat="35:14:00" lon="-101:42:33" elev="1093"/>
+<station idn="000378" id="HGX" name="Houston/Galveston/Dickinson" st="TX" co="US" lat="29:28:19" lon="-95:04:45" elev="5"/>
+<station idn="000345" id="FWS" name="Dallas/Fort Worth" st="TX" co="US" lat="32:34:23" lon="-97:18:11" elev="208"/>
+<station idn="000539" id="EWX" name="Austin/San Antonio/New Braun" st="TX" co="US" lat="29:42:14" lon="-98:01:42" elev="193"/>
+<station idn="000398" id="LBB" name="Lubbock" st="TX" co="US" lat="33:39:15" lon="-101:48:51" elev="993"/>
+<station idn="000518" id="MAF" name="Midland/Odessa" st="TX" co="US" lat="31:56:36" lon="-102:11:21" elev="874"/>
+<station idn="000324" id="BRO" name="Brownsville" st="TX" co="US" lat="25:54:58" lon="-97:25:08" elev="7"/>
+<station idn="000357" id="EPZ" name="El Paso/Santa Teresa" st="TX" co="US" lat="31:52:23" lon="-106:41:53" elev="1251"/>
+<station idn="000538" id="SJT" name="San Angelo" st="TX" co="US" lat="31:22:17" lon="-100:29:33" elev="576"/>
+<station idn="000343" id="CRP" name="Corpus Christi/Corpus Christ" st="TX" co="US" lat="27:47:03" lon="-97:30:40" elev="14"/>
+<station idn="000332" id="GRK" name="Dallas/Fort Worth/Ft Hood" st="TX" co="US" lat="30:43:19" lon="-97:22:59" elev="164"/>
+<station idn="000353" id="DYX" name="San Angelo/Shackelford Count" st="TX" co="US" lat="32:32:18" lon="-99:15:16" elev="462"/>
+<station idn="000394" id="DFX" name="Austin/San Antonio/Us Hwy 90" st="TX" co="US" lat="29:16:22" lon="-100:16:50" elev="345"/>
+<station idn="000537" id="MTX" name="Salt Lake City/Elder County" st="UT" co="US" lat="41:15:46" lon="-112:26:52" elev="1969"/>
+<station idn="000330" id="ICX" name="Salt Lake City/Cedar City" st="UT" co="US" lat="37:35:27" lon="-112:51:44" elev="3231"/>
+<station idn="000534" id="FCX" name="Roanoke/Floyd County" st="VA" co="US" lat="37:01:28" lon="-80:16:26" elev="874"/>
+<station idn="000516" id="AKQ" name="Wakefield" st="VA" co="US" lat="36:59:02" lon="-77:00:26" elev="34"/>
+<station idn="000326" id="CXX" name="Burlington/Colchester" st="VT" co="US" lat="44:30:40" lon="-73:10:01" elev="97"/>
+<station idn="000542" id="ATX" name="Seattle/Tacoma/Camano Island" st="WA" co="US" lat="48:11:40" lon="-122:29:45" elev="151"/>
+<station idn="000547" id="OTX" name="Spokane" st="WA" co="US" lat="47:40:49" lon="-117:37:36" elev="727"/>
+<station idn="000371" id="GRB" name="Green Bay/Ashwaubenon" st="WI" co="US" lat="44:29:54" lon="-88:06:41" elev="208"/>
+<station idn="000504" id="MKX" name="Milwaukee/Dousman" st="WI" co="US" lat="42:58:04" lon="-88:33:02" elev="292"/>
+<station idn="000389" id="ARX" name="La Crosse" st="WI" co="US" lat="43:49:22" lon="-91:11:28" elev="389"/>
+<station idn="000334" id="RLX" name="Charleston/Ruthdale" st="WV" co="US" lat="38:18:40" lon="-81:43:23" elev="329"/>
+<station idn="000335" id="CYS" name="Cheyenne" st="WY" co="US" lat="41:09:07" lon="-104:48:22" elev="1868"/>
+<station idn="000392" id="RIW" name="Riverton" st="WY" co="US" lat="43:03:58" lon="-108:28:38" elev="1697"/>
+</stationtable>

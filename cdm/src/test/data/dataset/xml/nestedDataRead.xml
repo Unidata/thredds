@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nc:netcdf xmlns:nc="http://www.ucar.edu/schemas/netcdf" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset.xsd">
+	 
+	<nc:dimension name="time" length="3" isUnlimited="true"/>
+	<nc:variable name="T" type="double" shape="time lat lon"/>
+	
+     <nc:netcdf uri="file:///E:/dev/NCdataset/data/time0.nc">
+      	<nc:readMetadata/>
+	</nc:netcdf>
+	
+    <nc:netcdf uri="file:///E:/dev/NCdataset/data/time1.nc">
+      	<nc:readMetadata/>
+	</nc:netcdf>
+	
+    <nc:netcdf uri="file:///E:/dev/NCdataset/data/time2.nc">
+      	<nc:readMetadata/>
+	</nc:netcdf>
+	
+</nc:netcdf>

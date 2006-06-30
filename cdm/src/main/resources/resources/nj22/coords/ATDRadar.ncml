@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="ATDRadar" >
+
+  <attribute name="Conventions" value="ATDRadar"/>
+
+  <variable name="latitude">
+    <attribute name="_CoordinateAxisType" value="Lat" />
+  </variable>
+
+  <variable name="longitude">
+    <attribute name="_CoordinateAxisType" value="Lon" />
+  </variable>
+
+  <variable name="altitude">
+    <attribute name="_CoordinateAxisType" value="Height" />
+    <attribute name="_CoordinateZisPositive" value="up" />
+  </variable>
+
+  <variable name="time">
+    <attribute name="_CoordinateAxisType" value="Time" />
+  </variable>
+
+</netcdf>

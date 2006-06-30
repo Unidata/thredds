@@ -1,0 +1,935 @@
+/*
+ * Copyright 1999 University Corporation for Atmospheric Research/Unidata
+ * See file LICENSE for legal details.
+ */
+
+options
+{
+    STATIC = false;
+    // DEBUG_PARSER = true;
+    // DEBUG_TOKEN_MANAGER = true;
+    // LOOKAHEAD=2;
+    // FORCE_LA_CHECK=true;
+}
+
+PARSER_BEGIN(StandardUnitFormat)
+
+    package ucar.units;
+
+    import java.io.InputStreamReader;
+    import java.io.IOException;
+    import java.io.LineNumberReader;
+    import java.io.Serializable;
+    import java.io.StringReader;
+    import java.text.DateFormat;
+    import java.text.DecimalFormat;
+    import java.text.NumberFormat;
+    import java.text.SimpleDateFormat;
+    import java.util.Arrays;
+    import java.util.Calendar;
+    import java.util.Comparator;
+    import java.util.Date;
+    import java.util.Locale;
+    import java.util.StringTokenizer;
+    import java.util.TimeZone;
+
+    /**
+     * Standard formatter/parser for unit specifications.
+     *
+     * @author Steven R. Emmerson
+     */
+    public final class
+    StandardUnitFormat
+        extends UnitFormatImpl
+    {
+	private boolean				isTimeUnit;
+
+        /**
+         * The singleton instance of this class.
+         * @serial
+         */
+        private static StandardUnitFormat       _instance;
+
+        /**
+         * The Julian day number of the (artificial) time origin.
+         * @serial
+         */
+        private static final long               julianDayOrigin = 
+            StandardUnitFormat.julianDay(2001, 1, 1);
+
+        /**
+         * The date formatter.
+         * @serial
+         */
+        private static final SimpleDateFormat   dateFormat;
+
+        /**
+         * The Comparator for ordering base units for printing.  Orders
+         * Factor-s by decreasing exponent (major) and lexically (minor).
+         * @serial
+         */
+        private static final Comparator         factorComparator =
+            new Comparator()
+            {
+                public int compare(Object o1, Object o2)
+                {
+                    Factor      f1 = ((Factor)o1);
+                    Factor      f2 = ((Factor)o2);
+                    int comp = f2.getExponent() - f1.getExponent();
+                    if (comp == 0)
+                        comp = f1.getID().compareTo(f2.getID());
+                    return comp;
+                }
+            };
+
+        static
+        {
+            dateFormat =
+                (SimpleDateFormat)DateFormat.getDateInstance(
+                    DateFormat.SHORT, Locale.US);
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            dateFormat.applyPattern(" '@' yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
+        }
+
+        /**
+         * Constructs from nothing.
+         */
+        private
+        StandardUnitFormat()
+        {
+            this(new StringReader(""));
+        }
+
+
+        /**
+         * Returns an instance of this class.
+         * @return              An instance of this class.
+         */
+        public static StandardUnitFormat
+        instance()
+        {
+            if (_instance == null)
+            {
+                synchronized(StandardUnitFormat.class)
+                {
+                    if (_instance == null)
+                        _instance = new StandardUnitFormat();
+                }
+            }
+            return _instance;
+        }
+
+
+        /**
+         * Decodes a unit specification.  An unrecognized unit is made into
+         * an UnknownUnit.
+         * @param spec          The unit specification to be decoded.
+         * @param unitDB        The unit database to use.
+         * @return              The unit corresponding to the specification.
+         * @throws UnitParseException   The unit specification syntax is
+         *                              invalid.
+         * @throws SpecificationException       Something's wrong with the
+         *                                      specification.
+         * @throws UnitDBException      Something's wrong with the unit
+         *                              database.
+         * @throws PrefixDBException    Something's wrong with the unit prefix
+         *                              database.
+         * @throws UnitSystemException  Something's wrong with the underlying
+                                        system of units.
+         */
+        public Unit
+        parse(String spec, UnitDB unitDB)
+            throws UnitParseException,
+                SpecificationException,
+                UnitDBException,
+                PrefixDBException,
+                UnitSystemException
+        {
+            ReInit(new StringReader(spec.trim()));
+
+            try
+            {
+                Unit    unit = unitSpec(unitDB);
+                return unit;
+            }
+            catch (TokenMgrError e)
+            {
+                throw new UnitParseException(spec, e.getMessage());
+            }
+            catch (ParseException e)
+            {
+                throw new UnitParseException(spec, e.getMessage());
+            }
+            catch (OperationException e)
+            {
+                throw new SpecificationException(spec, e.getMessage());
+            }
+        }
+
+
+        /**
+         * Formats a Factor.
+         * @param factor        The factor to be formatted.
+         * @param buf           The buffer to append to.
+         * @return              The appended-to buffer.
+         */
+        public StringBuffer
+        format(Factor factor, StringBuffer buf)
+        {
+            return buf.append(factor.toString());
+        }
+
+
+        /**
+         * Formats a unit.  The symbol or name will be used if available;
+         * otherwise, a specification in terms of underlying units will be
+         * returned.
+         * @param unit          The unit to be formatted.
+         * @param buf           The buffer to append to.
+         * @return              The appended-to buffer.
+         * @throws UnitClassException   The class of the unit is unknown.
+         */
+        public StringBuffer
+        format(Unit unit, StringBuffer buf)
+            throws UnitClassException
+        {
+            return format(unit, buf, true);
+        }
+
+
+        /**
+         * Formats a unit in the underlying system of units.
+         * @param unit          The unit to be formatted.
+         * @param buf           The buffer to append to.
+         * @return              The appended-to buffer.
+         * @throws UnitClassException   The class of the unit is unknown.
+         */
+        public StringBuffer
+        longFormat(Unit unit, StringBuffer buf)
+            throws UnitClassException
+        {
+            return format(unit, buf, false);
+        }
+
+
+        /**
+         * Formats a unit.
+         * @param unit          The unit to be formatted.
+         * @param buf           The buffer to append to.
+         * @param normalize     Whether or not to reduce the unit.
+         * @return              The appended-to buffer.
+         * @throws UnitClassException   The class of the unit is unknown.
+         */
+        private StringBuffer
+        format(Unit unit, StringBuffer buf, boolean normalize)
+            throws UnitClassException
+        {
+            boolean     done = false;
+            if (!normalize)
+            {
+                String  id = unit.getSymbol();
+                if (id == null)
+                    id = unit.getName();
+                if (id != null)
+                {
+                    buf.append(id.replace(' ', '_'));
+                    done = true;
+                }
+            }
+            if (!done)
+            {
+                if (unit instanceof BaseUnit)
+                    format((BaseUnit)unit, buf);
+                else
+                if (unit instanceof DerivedUnit)
+                    format((DerivedUnit)unit, buf);
+                else
+                if (unit instanceof ScaledUnit)
+                    format((ScaledUnit)unit, buf, normalize);
+                else
+                if (unit instanceof OffsetUnit)
+                    format((OffsetUnit)unit, buf, normalize);
+                else
+                if (unit instanceof TimeScaleUnit)
+                    format((TimeScaleUnit)unit, buf, normalize);
+                else
+                    throw new UnitClassException(unit);
+            }
+            return buf;
+        }
+
+
+        private StringBuffer
+        format(BaseUnit baseUnit, StringBuffer buf)
+        {
+            return buf.append(baseUnit.getSymbol());
+        }
+
+
+        private StringBuffer
+        format(DerivedUnit unit, StringBuffer buf)
+        {
+            Factor[]    factors = unit.getDimension().getFactors();
+            Arrays.sort(factors, factorComparator);
+            for (int i = 0; i < factors.length; i++)
+                format(factors[i], buf).append('.');
+            if (factors.length != 0)
+                buf.setLength(buf.length()-1);
+            return buf;
+        }
+
+
+        private StringBuffer
+        format(ScaledUnit unit, StringBuffer buf, boolean normalize)
+            throws UnitClassException
+        {
+            String      result;
+            double      scale = unit.getScale();
+            if (scale != 0.0)
+            {
+                if (scale == 1)
+                {
+                    format(unit.getUnit(), buf, normalize);
+                }
+                else
+                {
+                    buf.append(scale).append(' ');
+                    int start = buf.length();
+                    format(unit.getUnit(), buf, normalize);
+                    if (start == buf.length())
+                        buf.setLength(start-1);
+                }
+            }
+            return buf;
+        }
+
+
+        private StringBuffer
+        format(OffsetUnit unit, StringBuffer buf, boolean normalize)
+            throws UnitClassException
+        {
+            double      offset = unit.getOffset();
+            if (offset == 0.0)
+            {
+                format(unit.getUnit(), buf, normalize);
+            }
+            else
+            {
+                int     start = buf.length();
+                format(unit.getUnit(), buf, normalize);
+                return (isBlackSpace(buf, start)
+                            ? buf
+                            : buf.insert(start, '(').append(')')).
+                        append(" @ ").append(offset);
+            }
+            return buf;
+        }
+
+        private boolean
+        contains(StringBuffer buf, int start, char[] chars)
+        {
+            int n = buf.length();
+            for (int i = start; i < n; i++)
+            {
+                char    c = buf.charAt(i);
+                for (int j = 0; j < chars.length; j++)
+                {
+                    if (c == chars[j])
+                        return true;
+                }
+            }
+            return false;
+        }
+
+
+        private StringBuffer
+        formatBinaryUnit(Unit first, Unit second, char separator, 
+                StringBuffer buf, boolean normalize)
+            throws UnitClassException
+        {
+            int start = buf.length();
+            group(first, buf, normalize);
+            if (start < buf.length())
+                buf.append(separator);
+            group(second, buf, normalize);
+            if (buf.charAt(buf.length()-1) == separator)
+                buf.setLength(buf.length()-1);
+            return buf;
+        }
+
+
+        private StringBuffer
+        group(Unit unit, StringBuffer buf, boolean normalize)
+            throws UnitClassException
+        {
+            int start = buf.length();
+            format(unit, buf, normalize);
+            if (!isBlackSpace(buf, start))
+            {
+                buf.insert(start, '(');
+                buf.append(')');
+            }
+            return buf;
+        }
+
+
+        private static boolean
+        isBlackSpace(StringBuffer buf, int start)
+        {
+            return buf.substring(start).indexOf(' ') == -1;
+        }
+
+
+        private StringBuffer
+        format(TimeScaleUnit unit, StringBuffer buf, boolean normalize)
+            throws UnitClassException
+        {
+            return format(unit.getUnit(), buf, normalize).
+                append(dateFormat.format(unit.getOrigin()));
+        }
+
+
+        /**
+         * Compute the Julian day number of a date.
+         */
+        private static long
+        julianDay(int year, int month, int day)
+        {
+            long        igreg = 15 + 31 * (10 + (12 * 1582));
+            int         iy;     // signed, origin-0 year
+            int         ja;     // Julian century
+            int         jm;     // Julian month
+            int         jy;     // Julian year
+            long        julday; // returned Julian day number
+
+            /*
+             * Because there is no 0 BC or 0 AD, assume the user wants
+             * the start of the common era if they specify year 0.
+             */
+            if (year == 0)
+                year = 1;
+
+            iy = year;
+            if (year < 0)
+                iy++;
+            if (month > 2)
+            {
+                jy = iy;
+                jm = month + 1;
+            }
+            else
+            {
+                jy = iy - 1;
+                jm = month + 13;
+
+            }
+
+            julday = day + (int)(30.6001 * jm);
+            if (jy >= 0)
+            {
+                julday += 365 * jy;
+                julday += 0.25 * jy;
+            }
+            else
+            {
+                double  xi = 365.25 * jy;
+
+                if ((int)xi != xi)
+                    xi -= 1;
+                julday += (int)xi;
+            }
+            julday += 1720995;
+
+            if (day + (31* (month + (12 * iy))) >= igreg)
+            {
+                ja = jy/100;
+                julday -= ja;
+                julday += 2;
+                julday += ja/4;
+            }
+
+            return julday;
+        }
+
+
+        /**
+         * Convert broken-out time into a double.
+         */
+        private static double
+        toDouble(int year, int month, int day,
+            int hour, int minute, float second, int zone)
+        {
+            return (julianDay(year, month, day) - julianDayOrigin) *
+                86400.0 + (hour*60 + minute - zone)*60 + second;
+        }
+
+
+        /**
+         * Gets a unit from a unit database.
+         */
+        private static Unit
+        getUnit(UnitDB unitDB, String string)
+            throws UnitDBAccessException
+        {
+            return unitDB.get(string);
+        }
+
+
+        /**
+         * Gets a prefix from the prefix database.
+         */
+        private static Prefix
+        getPrefix(String string)
+            throws PrefixDBException
+        {
+            PrefixDB    prefixDB = PrefixDBManager.instance();
+            Prefix      prefix = prefixDB.getPrefixByName(string);
+            if (prefix == null)
+                prefix = prefixDB.getPrefixBySymbol(string);
+            return prefix;
+        }
+
+
+        /**
+         * Test this class.
+         */
+        public static void main(String[] args)
+            throws Exception
+        {
+            StandardUnitFormat          parser =
+                StandardUnitFormat.instance();
+            LineNumberReader    lineInput = new LineNumberReader(
+                                    new InputStreamReader(System.in));
+
+            for (;;)
+            {
+                System.out.print("Enter a unit specification or ^D to quit: ");
+
+                String  spec = lineInput.readLine();
+                if (spec == null)
+                    break;
+
+                try
+                {
+                    System.out.println(parser.parse(spec.trim()));
+                }
+                catch (Exception e)
+                {
+                    System.out.println(e.getMessage());
+                }
+            }
+            System.out.println("");
+        }
+    }
+
+PARSER_END(StandardUnitFormat)
+
+TOKEN [IGNORE_CASE] :
+{
+	< UINT:		(["0"-"9"])+ >
+    |	< SINCE:	(<WHITESPACE>)? ("since"|"from") (<WHITESPACE>)? >
+    |   < WHITESPACE:   (" " | "\t" | "\n" | "\r")+ >
+    |   < #PER:   	"per" >
+    |   < DIVIDE:       (<WHITESPACE>)? ("/" | <PER>) (<WHITESPACE>)? >
+    |   < SHIFT:        (<WHITESPACE>)? "@" (<WHITESPACE>)? >
+    |	< E:		"e" >
+    |	< Z:		"z" >
+    |	< #LETTER:	["a"-"z","_"] >
+    |	< UTC:		"utc" | "gmt" | "zulu" >
+    |   < SYMBOL:	"'" | "\"" | "%" >
+    |	< T:		"t" >
+    |   < NAME:        (<LETTER>)+ ((<UINT>) (<LETTER>)+)* >
+}
+
+
+Unit unitSpec(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
+{
+    Unit        unit = DerivedUnitImpl.DIMENSIONLESS;
+    Unit	unit2;
+    Date        timestamp;
+    double      origin;
+    int		exponent;
+}
+{
+    [
+	unit=unitTerm(unitDB) 
+    ]
+    <EOF>
+    {
+	return unit;
+    }
+}
+
+
+Unit unitTerm(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
+{
+    Unit        unit;
+    Unit	unit2;
+    Date        timestamp;
+    double      origin;
+}
+{
+    unit=unitFactor(unitDB) 
+    (
+	    [
+		    LOOKAHEAD(2)
+		    <WHITESPACE>
+		|
+		    "."
+		|
+		    "*"
+	    ]
+	    unit2=unitFactor(unitDB) 
+	    {
+		unit = unit.multiplyBy(unit2);
+	    }
+	|
+	    <DIVIDE>
+	    (
+		unit2=unitFactor(unitDB)
+	    )
+	    {
+		unit = unit.divideBy(unit2);
+	    }
+	|
+	    LOOKAHEAD({isTimeUnit})
+	    timestamp=timeOriginExpression()
+	    {
+		unit = new TimeScaleUnit(unit, timestamp);
+	    }
+	|
+	    origin=numericalOriginExpression()
+	    {
+		unit = new OffsetUnit(unit, origin);
+	    }
+    )*
+    {
+	return unit;
+    }
+}
+
+
+Unit unitFactor(UnitDB unitDB)
+    throws
+        OperationException,
+        UnitSystemException,
+        PrefixDBException,
+        UnitDBException :
+{
+    Unit        unit;
+    int		exponent;
+    double	scale;
+}
+{
+    (
+	    scale=number()
+	    {
+		unit = new ScaledUnit(scale);
+	    }
+	|
+	    (
+		    unit=unitIdentifier(unitDB)
+		|
+		    "(" unit=unitTerm(unitDB) ")"
+	    )
+	    [
+		LOOKAHEAD(2)
+		exponent=powerExpression()
+		{
+		    unit = unit.raiseTo(exponent);
+		}
+	    ]
+    )
+    {
+	isTimeUnit = unit.isCompatible(UnitSystemManager.instance().
+	    getBaseUnit(BaseQuantity.TIME));
+        return unit;
+    }
+}
+
+
+double numericalOriginExpression() :
+{
+    double      origin = 0;
+}
+{
+    <SHIFT> origin=number()
+    {
+	return origin;
+    }
+}
+
+
+double number() :
+{
+    int		sign = 1;
+    int		exponent;
+    double	number;
+}
+{
+    [sign=sign()]
+    number=unsignedDecimal()
+    [
+	LOOKAHEAD(2)
+	<E>
+	exponent=integer()
+	{
+	    number = number * Math.pow(10, exponent);
+	}
+    ]
+    {
+	return sign == 1 ? number : -number;
+    }
+}
+
+
+int integer() :
+{
+    int		sign = 1;
+    int		integer;
+}
+{
+    [sign=sign()]
+    integer=unsignedInteger()
+    {
+	return sign == 1 ? integer : -integer;
+    }
+}
+
+
+int sign() :
+{}
+{
+	"+" { return 1; }
+    |
+	"-" { return -1; }
+}
+
+
+int unsignedInteger() :
+{
+    Token       t;
+}
+{
+    t=<UINT>
+    {
+	return Integer.parseInt(t.image);
+    }
+}
+
+
+double unsignedDecimal() :
+{
+    int		integer = 0;
+    double	fraction = 0;
+    Token	t;
+}
+{
+    (
+	    integer=unsignedInteger()
+	    [
+		LOOKAHEAD(2)
+		"."
+		[
+		    LOOKAHEAD(2)
+		    t=<UINT>
+		    {
+			fraction = new Double("." + t.image).doubleValue();
+		    }
+		]
+	    ]
+	|
+	    "."
+	    t=<UINT>
+	    {
+		fraction = new Double("." + t.image).doubleValue();
+	    }
+    )
+    {
+	return integer + fraction;
+    }
+}
+
+
+int powerExpression() :
+{
+    int		exponent;
+}
+{
+    ["^"]
+    exponent=integer()
+    {
+        return exponent;
+    }
+}
+
+
+Unit unitIdentifier(UnitDB unitDB) 
+    throws UnitDBException, UnitSystemException, PrefixDBException:
+{
+    Token	t;
+    Unit        unit;
+}
+{
+    (
+	    t=<E>
+	|
+	    t=<Z>
+	|
+	    t=<UTC>
+	|
+	    t=<SYMBOL>
+	|
+	    t=<T>
+	|
+	    t=<NAME>
+    )
+    {
+	String	string = t.image;
+        double  scale = 1;
+
+        for (unit = getUnit(unitDB, string);
+            unit == null;
+            unit = getUnit(unitDB, string))
+        {
+            Prefix      prefix = getPrefix(string);
+            if (prefix == null)
+            {
+                try
+                {
+                    // System.err.println("Unknown unit: \"" + string + '"');
+                    unit = UnknownUnit.create(string);
+                    break;
+                }
+                catch (NameException e)
+                {}      // shouldn't happen
+            }
+            scale *= prefix.getValue();
+            string = string.substring(prefix.length());
+        }
+        if (scale != 1)
+        {
+            unit = new ScaledUnit(scale, unit);
+        }
+    }
+    {
+        return unit;
+    }
+}
+
+
+/*
+ * See <http://www.cl.cam.ac.uk/~mgk25/iso-time.html> for
+ * a discussion of the relevant timestamp format or google "ISO 8601".
+ */
+Date timeOriginExpression() :
+{
+    int         year = 0;
+    int         month = 1;
+    int         day = 1;
+    int         hour = 0;
+    int         minute = 0;
+    int         second = 0;
+    int         millisecond = 0;
+    double	sec;
+    double      when = 0;
+    Token       t;
+    int		sign = 1;
+    int         zoneHour;
+    int         zoneMinute = 0;
+    int         zone = 0;       // time zone in minutes
+}
+{
+    ( <SINCE> | <SHIFT> )
+    year=integer()
+    [
+	LOOKAHEAD(2)
+	"-" month=unsignedInteger() "-" day=unsignedInteger()
+	[
+	    LOOKAHEAD(2)
+	    ( <T> | (<WHITESPACE>)?)
+	    hour=unsignedInteger()
+	    [
+		":" minute=unsignedInteger()
+		[
+		    ":" sec=unsignedDecimal()
+		    {
+			second = (int)sec;
+			millisecond = (int)Math.round((sec - second) * 1000);
+		    }
+		]
+	    ]
+	    [
+		LOOKAHEAD(2)
+		[<WHITESPACE>]
+		(
+			[sign=sign()]
+			zoneHour=unsignedInteger()
+			[":" zoneMinute=unsignedInteger()]
+			{
+			    if (zoneHour >= 100)
+			    {
+				zoneMinute += zoneHour % 100;
+				zoneHour /= 100;
+			    }
+
+			    zone = sign * (zoneHour * 60 + zoneMinute);
+			}
+		    |
+			<UTC>
+		    |
+			<Z>
+		)
+	    ]
+	]
+    ]
+    {
+        if (month < 1 || month > 12 ||
+            day < 1 || day > 31 ||
+            hour < 0 || hour > 23 ||
+            minute < 0 || minute > 59 ||
+            second < 0 || second > 61 ||
+            zone < -1440 || zone > 1440)
+        {
+            throw new ParseException("invalid timestamp");
+        }
+
+	StringBuffer	zoneId = new StringBuffer(12);
+
+	zoneId.append("GMT");
+	if (zone >= 0)
+	{
+	    zoneId.append('+');
+	}
+	else
+	{
+	    zoneId.append('-');
+	    zone = -zone;
+	}
+	zoneId.append(zone/60);
+	zoneId.append(':');
+	zone %= 60;
+	if (zone < 10)
+	    zoneId.append('0');
+	zoneId.append(zone);
+
+        Calendar        calendar =
+	    Calendar.getInstance(TimeZone.getTimeZone(zoneId.toString()));
+
+        calendar.clear();
+        calendar.set(year, month-1, day, hour, minute, second);
+        calendar.set(Calendar.MILLISECOND, millisecond);
+
+        return calendar.getTime();
+    }
+}

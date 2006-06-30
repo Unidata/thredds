@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="Grib" >
+
+  <attribute name="Conventions" value="Grib"/>
+
+  <coordAxis name="x" shape="x">
+    <attribute name="long_name" value="x coordinate" />
+    <attribute name="units" value="km" />
+    <attribute name="_coordAxisType" value="GeoX" />
+    <values start="{proj.startx}" incr="{@DxKm}"/>
+  </coordAxis>
+
+  <coordAxis name="y" shape="y">
+    <attribute name="long_name" value="y coordinate" />
+    <attribute name="units" value="km" />
+    <attribute name="_coordAxisType" value="GeoY" />
+    <values start="{proj.starty}" incr="{@DyKm}"/>
+  </coordAxis>
+
+  <coordSystem name="XY" type="String">
+    <attribute name="_coordAxes" value="x y" />
+    <values>x,y on the projection plane</values>
+  </coordSystem>
+  
+  <coordTransform name="LambertConformal" type="String">
+    <attribute name="name" value="Lambert_Conformal_Conic" />
+    <attribute name="Latitude_of_Projection_Origin" value="{@Latin}" />
+    <attribute name="Longitude_of_Central_Meridian" value="{@Lov}" />
+    <attribute name="Standard_Parallel_1" value="{@Latin}" />
+    <attribute name="Standard_Parallel_2" value="{@Latin}" />
+    <attribute name="_coordTransformType" value="Projection" />
+    <values>LambertConformal Projection</values>
+  </coordTransform>
+  
+</netcdf>

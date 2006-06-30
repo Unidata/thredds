@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <dimension name="time" length="0"/>
+  <variable name="time" type="int" shape="time">
+    <attribute name="long_name" type="string" value="time coordinate" />
+    <attribute name="units" type="string" value="days since 2001-8-31 00:00:00 UTC" />
+    <values start="0" increment="1" />
+  </variable>
+	
+	<aggregation dimName="time" type="joinNew">
+		<variableAgg name="T"/>
+    <netcdf uri="C:/dev/netcdf-java/test/data/time0.nc"/>
+    <netcdf uri="C:/dev/netcdf-java/test/data/time1.nc"/>
+    <netcdf uri="C:/dev/netcdf-java/test/data/time2.nc"/>
+  </aggregation>
+  
+</netcdf>

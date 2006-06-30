@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.ucar.edu/schemas/netcdf" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset.xsd">
+
+  <dimension name='time' length='59' />
+  <dimension name='lat' length='3' />
+  <dimension name='lon' length='4' />
+	
+	<netcdf>
+		<variable name="T" type="double" shape="time lat lon"/>
+		<variable name="time" type="int" shape="time"/>
+		<netcdf uri="test/data/jan.nc">
+			<dimension name="time" length="31"/>
+		</netcdf>
+		<netcdf uri="test/data/feb.nc" >
+			<dimension name="time" length="28"/>
+		</netcdf>
+	</netcdf>
+	
+	<netcdf>
+		<variable name="P" type="double" shape="time lat lon"/>
+		<netcdf uri="test/data/jan.nc">
+			<dimension name="time" length="31"/>
+		</netcdf>
+		<netcdf uri="test/data/feb.nc">
+			<dimension name="time" length="28"/>
+		</netcdf>
+	</netcdf>
+	
+	
+</netcdf>

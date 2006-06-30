@@ -1,0 +1,60 @@
+// $Id: NamedObject.java,v 1.3 2005/02/18 01:14:58 caron Exp $
+/*
+ * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+package ucar.nc2.util;
+
+/**
+ * An object that has a name and a description.
+ * @author caron
+ * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
+ */
+
+public interface NamedObject {
+
+  /** Get the object's name */
+  public String getName();
+
+  /** Get the object's description. Use as a tooltip, for example */
+  public String getDescription(); 
+
+}
+
+
+/* Change History:
+   $Log: NamedObject.java,v $
+   Revision 1.3  2005/02/18 01:14:58  caron
+   no message
+
+   Revision 1.2  2004/07/12 23:40:19  caron
+   2.2 alpha 1.0 checkin
+
+   Revision 1.1.1.1  2003/12/04 21:05:28  caron
+   checkin 2.2
+
+   Revision 1.1  2003/04/08 15:06:34  caron
+   nc2 version 2.1
+
+   Revision 1.1.1.1  2002/11/23 17:49:48  caron
+   thredds reorg
+
+   Revision 1.1.1.1  2002/02/15 00:01:48  caron
+   import sources
+
+*/

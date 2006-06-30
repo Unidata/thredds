@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.ucar.edu/schemas/netcdf" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset.xsd" 
+	uri="dods://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2003020500_eta.nc">
+	
+	<readMetadata/>
+	
+</netcdf>

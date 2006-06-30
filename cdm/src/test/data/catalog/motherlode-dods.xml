@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  name="Unidata THREDDS-IDD Data Server" version="1.0.1">
+
+  <service name="ncdods" serviceType="OpenDAP" base=""/>
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <dataset name="NCEP Model Data">
+
+    <metadata inherited="true">
+      <authority>edu.ucar.unidata</authority>
+      <serviceName>ncdods</serviceName>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-1</dataFormat>
+      <documentation type="summary">NCEP Model output</documentation>
+      <documentation type="rights">Freely available</documentation>
+
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+
+      <timeCoverage>
+        <end>present</end>
+        <duration>14 days</duration>
+      </timeCoverage>
+    </metadata>
+
+    <dataset name="North American Model">
+
+      <metadata inherited="true">
+        <documentation type="summary">North American Model data is available at 12Z and 00Z, with analysis and forecasts every 3 hours out to 60 hours</documentation>
+      </metadata>
+
+      <datasetScan name="Alaska 22 km" path="model/nam/Y/" scanDir="/data/ldm/pub/raw/hrs/model/NAM/Y/" filter=".*\.wmo$" addLatest="true"
+        collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Y">
+
+        <metadata inherited="true">
+          <documentation type="summary">
+AWIPS 217 (Y) Grid over Alaska - Double Resolution;
+horizontal = 277 by 213 points, resolution 22.5 km, Polar Stereographic projection;
+vertical = surface, height above ground
+          </documentation>
+
+          <geospatialCoverage>
+            <northsouth>
+              <start>29.33743785809335</start>
+              <size>40.27485574626826</size>
+              <units>degrees_north</units>
+            </northsouth>
+            <eastwest>
+              <start>-173.17747546639623</start>
+              <size>112.44397843200078</size>
+              <units>degrees_east</units>
+            </eastwest>
+          </geospatialCoverage>
+
+          <variables vocabulary='GRIB-1'>
+            <variable name='Accum_snow' vocabulary_name='65' units='kg/m^2'/>
+            <variable name='Best_4-layer_lifted_index' vocabulary_name='132' units='K'/>
+            <variable name='Categorical_freezing_rain' vocabulary_name='141' units='yes=1;no=0'/>
+            <variable name='Categorical_ice_pellets' vocabulary_name='142' units='yes=1;no=0'/>
+            <variable name='Categorical_rain' vocabulary_name='140' units='yes=1;no=0'/>
+            <variable name='Categorical_snow' vocabulary_name='143' units='yes=1;no=0'/>
+            <variable name='Convective_Avail_Pot_Energy' vocabulary_name='157' units='J/kg'/>
+            <variable name='Convective_inhibition' vocabulary_name='156' units='J/kg'/>
+            <variable name='Convective_precipitation' vocabulary_name='63' units='kg/m^2'/>
+            <variable name='Mean_sea_level_pressure_ETA_model' vocabulary_name='130' units='Pa'/>
+            <variable name='Precipitable_water' vocabulary_name='54' units='kg/m^2'/>
+            <variable name='Pressure_reduced_to_MSL' vocabulary_name='2' units='Pa'/>
+            <variable name='Pressure' vocabulary_name='1' units='Pa'/>
+            <variable name='Relative_humidity' vocabulary_name='52' units='%'/>
+            <variable name='Relative_humidity_height_above_ground' vocabulary_name='52' units='%'/>
+            <variable name='Storm_relative_helicity' vocabulary_name='190' units='m^2/s^2'/>
+            <variable name='Surface_lifted_index' vocabulary_name='131' units='K'/>
+            <variable name='Temperature' vocabulary_name='11' units='K'/>
+            <variable name='Temperature_height_above_ground' vocabulary_name='11' units='K'/>
+            <variable name='Total_precipitation' vocabulary_name='61' units='kg/m^2'/>
+            <variable name='u_wind' vocabulary_name='33' units='m/s'/>
+            <variable name='u_wind_height_above_ground' vocabulary_name='33' units='m/s'/>
+            <variable name='v_wind' vocabulary_name='34' units='m/s'/>
+            <variable name='v_wind_height_above_ground' vocabulary_name='34' units='m/s'/>
+            <variable name='Visibility' vocabulary_name='20' units='m'/>
+          </variables>
+
+        </metadata>
+
+      </datasetScan>
+
+      <datasetScan name="Alaska 45 km" path="model/nam/V/" scanDir="/data/ldm/pub/raw/hrs/model/NAM/V/" filter=".*\.wmo$" addLatest="true"
+        collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/V">
+
+        <metadata inherited="true">
+          <documentation type="summary">
+AWIPS 216 (V) grid over Alaska;
+horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection;
+vertical = 1000 to 100 hPa pressure levels
+          </documentation>
+
+          <geospatialCoverage zpositive="down">
+            <northsouth>
+              <start>29.221802110482088</start>
+              <size>40.315991061104285</size>
+              <units>degrees_north</units>
+            </northsouth>
+            <eastwest>
+              <start>-173.19331808551357</start>
+              <size>112.83782951788592</size>
+              <units>degrees_east</units>
+            </eastwest>
+            <updown>
+              <start>1000.0</start>
+              <size>-900.0</size>
+              <units>hPa</units>
+            </updown>
+
+          </geospatialCoverage>
+
+          <variables vocabulary='GRIB-1'>
+            <variable name='Geopotential_height' vocabulary_name='7' units='gpm'/>
+            <variable name='Geopotential_height_zeroDegC_isotherm' vocabulary_name='7' units='gpm'/>
+            <variable name='Geopotential_height_highest_tropospheric_freezing' vocabulary_name='7' units='gpm'/>
+            <variable name='High_level_cloud_cover' vocabulary_name='75' units='%'/>
+            <variable name='Low_level_cloud_cover' vocabulary_name='73' units='%'/>
+            <variable name='Mid_level_cloud_cover' vocabulary_name='74' units='%'/>
+            <variable name='Pressure_vertical_velocity' vocabulary_name='39' units='Pa/s'/>
+            <variable name='Pressure' vocabulary_name='1' units='Pa'/>
+            <variable name='Pressure_maximum_wind' vocabulary_name='1' units='Pa'/>
+            <variable name='Relative_humidity' vocabulary_name='52' units='%'/>
+            <variable name='Relative_humidity_layer_between_two_sigmas' vocabulary_name='52' units='%'/>
+            <variable name='Relative_humidity_zeroDegC_isotherm' vocabulary_name='52' units='%'/>
+            <variable name='Temperature' vocabulary_name='11' units='K'/>
+            <variable name='Temperature_tropopause' vocabulary_name='11' units='K'/>
+            <variable name='u_wind' vocabulary_name='33' units='m/s'/>
+            <variable name='u_wind_tropopause' vocabulary_name='33' units='m/s'/>
+            <variable name='u_wind_maximum_wind' vocabulary_name='33' units='m/s'/>
+            <variable name='v_wind' vocabulary_name='34' units='m/s'/>
+            <variable name='v_wind_tropopause' vocabulary_name='34' units='m/s'/>
+            <variable name='v_wind_maximum_wind' vocabulary_name='34' units='m/s'/>
+          </variables>
+
+        </metadata>
+      </datasetScan>
+
+      <datasetScan name="Alaska 95 km" path="model/nam/N/" scanDir="/data/ldm/pub/raw/hrs/model/NAM/N/" filter=".*\.wmo$" addLatest="true"
+        collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/N">
+
+        <metadata inherited="true">
+          <documentation type="summary">
+AWIPS 207 (N) Regional - Alaska;
+horizontal = 49 by 35 points, resolution 95.25 km, Stereographic projection
+vertical = 1000 to 100 mb pressure levels
+          </documentation>
+
+          <geospatialCoverage zpositive="down">
+            <northsouth>
+              <start>41.17042774039555</start>
+              <size>22.474590179304073</size>
+              <units>degrees_north</units>
+            </northsouth>
+            <eastwest>
+              <start>-176.17160182712345</start>
+              <size>84.94750102461508</size>
+              <units>degrees_east</units>
+            </eastwest>
+            <updown>
+              <start>1000.0</start>
+              <size>100.0</size>
+              <resolution>-50.0</resolution>
+              <units>hPa</units>
+            </updown>
+          </geospatialCoverage>
+          <variables vocabulary='GRIB-1'>
+            <variable name='Absolute_vorticity' vocabulary_name='41' units='1/s'/>
+            <variable name='Best_4-layer_lifted_index' vocabulary_name='132' units='K'/>
+            <variable name='Convective_Avail_Pot_Energy' vocabulary_name='157' units='J/kg'/>
+            <variable name='Convective_Avail_Pot_Energy_layer_between_two_pressure_difference_from_ground' vocabulary_name='157' units='J/kg'/>
+            <variable name='Convective_inhibition' vocabulary_name='156' units='J/kg'/>
+            <variable name='Convective_inhibition_layer_between_two_pressure_difference_from_ground' vocabulary_name='156' units='J/kg'/>
+            <variable name='Convective_precipitation' vocabulary_name='63' units='kg/m^2'/>
+            <variable name='Geopotential_height' vocabulary_name='7' units='gpm'/>
+            <variable name='Geopotential_height_surface' vocabulary_name='7' units='gpm'/>
+            <variable name='Mean_sea_level_pressure_ETA_model' vocabulary_name='130' units='Pa'/>
+            <variable name='Parcel_lifted_index_to_500_hPa' vocabulary_name='24' units='K'/>
+            <variable name='Precipitable_water' vocabulary_name='54' units='kg/m^2'/>
+            <variable name='Pressure_vertical_velocity' vocabulary_name='39' units='Pa/s'/>
+            <variable name='Pressure' vocabulary_name='1' units='Pa'/>
+            <variable name='Relative_humidity' vocabulary_name='52' units='%'/>
+            <variable name='Relative_humidity_layer_between_two_sigmas' vocabulary_name='52' units='%'/>
+            <variable name='Relative_humidity_height_above_ground' vocabulary_name='52' units='%'/>
+            <variable name='Relative_humidity_layer_between_two_pressure_difference_from_ground' vocabulary_name='52' units='%'/>
+            <variable name='Storm_relative_helicity' vocabulary_name='190' units='m^2/s^2'/>
+            <variable name='Temperature' vocabulary_name='11' units='K'/>
+            <variable name='Temperature_height_above_ground' vocabulary_name='11' units='K'/>
+            <variable name='Temperature_layer_between_two_pressure_difference_from_ground' vocabulary_name='11' units='K'/>
+            <variable name='Total_precipitation' vocabulary_name='61' units='kg/m^2'/>
+            <variable name='u_wind' vocabulary_name='33' units='m/s'/>
+            <variable name='u_wind_height_above_ground' vocabulary_name='33' units='m/s'/>
+            <variable name='u_wind_layer_between_two_pressure_difference_from_ground' vocabulary_name='33' units='m/s'/>
+            <variable name='v_wind' vocabulary_name='34' units='m/s'/>
+            <variable name='v_wind_height_above_ground' vocabulary_name='34' units='m/s'/>
+            <variable name='v_wind_layer_between_two_pressure_difference_from_ground' vocabulary_name='34' units='m/s'/>
+          </variables>
+
+        </metadata>
+      </datasetScan>
+
+      <datasetScan name="CONUS 20 km" path="model/nam/U/" scanDir="/data/ldm/pub/raw/hrs/model/NAM/U/" filter=".*\.wmo$" addLatest="true"
+        collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/U">
+
+        <metadata inherited="true">
+          <documentation type="summary">
+AWIPS 215(U) grid over the continental United States - Quadruple Resolution;
+horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection;
+vertical = mandatory pressure levels
+          </documentation>
+
+          <geospatialCoverage zpositive="down">
+            <northsouth>
+              <start>11.455172940983049</start>
+              <size>46.059202241794836</size>
+              <units>degrees_north</units>
+            </northsouth>
+            <eastwest>
+              <start>-134.03289501648703</start>
+              <size>86.04356810288479</size>
+              <units>degrees_east</units>
+            </eastwest>
+            <updown>
+              <start>150.0</start>
+              <size>30.0</size>
+              <resolution>-30.0</resolution>
+              <units>hPa</units>
+            </updown>
+          </geospatialCoverage>
+
+          <variables vocabulary='GRIB-1'>
+            <variable name='Absolute_vorticity' vocabulary_name='41' units='1/s'/>
+            <variable name='Best_4-layer_lifted_index' vocabulary_name='132' units='K'/>
+            <variable name='Convective_Avail_Pot_Energy' vocabulary_name='157' units='J/kg'/>
+            <variable name='Convective_Avail_Pot_Energy_layer_between_two_pressure_difference_from_ground' vocabulary_name='157' units='J/kg'/>
+            <variable name='Convective_inhibition' vocabulary_name='156' units='J/kg'/>
+            <variable name='Convective_inhibition_layer_between_two_pressure_difference_from_ground' vocabulary_name='156' units='J/kg'/>
+            <variable name='Convective_precipitation' vocabulary_name='63' units='kg/m^2'/>
+            <variable name='Dew_point_temperature' vocabulary_name='17' units='K'/>
+            <variable name='Max_temperature' vocabulary_name='15' units='K'/>
+            <variable name='Mean_sea_level_pressure_ETA_model' vocabulary_name='130' units='Pa'/>
+            <variable name='Min_temperature' vocabulary_name='16' units='K'/>
+            <variable name='Parcel_lifted_index_to_500_hPa' vocabulary_name='24' units='K'/>
+            <variable name='Precipitable_water' vocabulary_name='54' units='kg/m^2'/>
+            <variable name='Pressure_reduced_to_MSL' vocabulary_name='2' units='Pa'/>
+            <variable name='Pressure' vocabulary_name='1' units='Pa'/>
+            <variable name='Prob_of_freezing_precipitation' vocabulary_name='195' units='%'/>
+            <variable name='Prob_of_frozen_precipitation' vocabulary_name='194' units='%'/>
+            <variable name='Prob_of_precipitation' vocabulary_name='193' units='%'/>
+            <variable name='Relative_humidity_height_above_ground' vocabulary_name='52' units='%'/>
+            <variable name='Relative_humidity' vocabulary_name='52' units='%'/>
+            <variable name='Snow_depth' vocabulary_name='66' units='m'/>
+            <variable name='Storm_relative_helicity' vocabulary_name='190' units='m^2/s^2'/>
+            <variable name='Temperature_height_above_ground' vocabulary_name='11' units='K'/>
+            <variable name='Temperature' vocabulary_name='11' units='K'/>
+            <variable name='Thunderstorm_probability' vocabulary_name='60' units='%'/>
+            <variable name='Total_cloud_cover' vocabulary_name='71' units='%'/>
+            <variable name='Total_precipitation' vocabulary_name='61' units='kg/m^2'/>
+            <variable name='u_wind_height_above_ground' vocabulary_name='33' units='m/s'/>
+            <variable name='u_wind' vocabulary_name='33' units='m/s'/>
+            <variable name='v_wind_height_above_ground' vocabulary_name='34' units='m/s'/>
+            <variable name='v_wind' vocabulary_name='34' units='m/s'/>
+            <variable name='Wind_direction' vocabulary_name='31' units='deg'/>
+            <variable name='Wind_speed' vocabulary_name='32' units='m/s'/>
+          </variables>
+
+        </metadata>
+      </datasetScan>
+
+      <datasetScan name="CONUS 40 km" path="model/nam/R/" scanDir="/data/ldm/pub/raw/hrs/model/NAM/R/" filter=".*\.wmo$" addLatest="true"
+        collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/R">
+
+        <metadata inherited="true">
+          <documentation type="summary">
+AWIPS 212 (R) Regional - CONUS - Double Resolution;
+horizontal = 185 by 129 points, resolution 40.63 km, LambertConformal projection;
+vertical = 1000 to 100 hPa pressure levels
+          </documentation>
+
+          <geospatialCoverage zpositive="down">
+            <northsouth>
+              <start>11.34250562594521</start>
+              <size>46.217522257453766</size>
+              <units>degrees_north</units>
+            </northsouth>
+            <eastwest>
+              <start>-134.09527139486696</start>
+              <size>86.28625854213718</size>
+              <units>degrees_east</units>
+            </eastwest>
+            <updown>
+              <start>1000.0</start>
+              <size>100.0</size>
+              <resolution>-25.0</resolution>
+              <units>hPa</units>
+            </updown>
+          </geospatialCoverage>
+          <variables vocabulary='GRIB-1'>
+            <variable name='Accum_snow' vocabulary_name='65' units='kg/m^2'/>
+            <variable name='Convective_Avail_Pot_Energy' vocabulary_name='157' units='J/kg'/>
+            <variable name='Convective_inhibition' vocabulary_name='156' units='J/kg'/>
+            <variable name='Convective_precipitation' vocabulary_name='63' units='kg/m^2'/>
+            <variable name='Geopotential_height' vocabulary_name='7' units='gpm'/>
+            <variable name='Geopotential_height_surface' vocabulary_name='7' units='gpm'/>
+            <variable name='Mean_sea_level_pressure_ETA_model' vocabulary_name='130' units='Pa'/>
+            <variable name='Plant_canopy_surface_water' vocabulary_name='223' units='kg/m^2'/>
+            <variable name='Pressure_reduced_to_MSL' vocabulary_name='2' units='Pa'/>
+            <variable name='Pressure_vertical_velocity' vocabulary_name='39' units='Pa/s'/>
+            <variable name='Relative_humidity' vocabulary_name='52' units='%'/>
+            <variable name='Soil_temperature' vocabulary_name='85' units='K'/>
+            <variable name='Temperature' vocabulary_name='11' units='K'/>
+            <variable name='Total_precipitation' vocabulary_name='61' units='kg/m^2'/>
+            <variable name='u_wind' vocabulary_name='33' units='m/s'/>
+            <variable name='v_wind' vocabulary_name='34' units='m/s'/>
+            <variable name='Volumetric_soil_moisture' vocabulary_name='144' units='fraction'/>
+          </variables>
+
+        </metadata>
+      </datasetScan>
+
+      <datasetScan name="CONUS 80 km" path="model/nam/Q/" scanDir="/data/ldm/pub/raw/hrs/model/NAM/Q/" filter=".*\.wmo$" addLatest="true"
+        collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Q">
+
+        <metadata inherited="true">
+          <documentation type="summary">
+AWIPS 211 (Q)  	Regional - CONUS (Lambert Conformal)
+horizontal = 93 by 65 points, resolution 81.27 81.27 km, LambertConformal projection;
+vertical = 1000 to 100 mb pressure levels
+          </documentation>
+
+        </metadata>
+      </datasetScan>
+    </dataset>
+
+    <datasetScan name="GFS" path="model/gfs" scanDir="/data/ldm/pub/raw/hrs/model/GFS/" filter=".*\.wmo$" addLatest="true"/>
+    <datasetScan name="MRF" path="model/mrf" scanDir="/data/ldm/pub/raw/hrs/model/MRF/" filter=".*\.wmo$" addLatest="true"/>
+    <datasetScan name="NGM" path="model/ngm" scanDir="/data/ldm/pub/raw/hrs/model/NGM/" filter=".*\.wmo$" addLatest="true"/>
+    <datasetScan name="RUC" path="model/ruc" scanDir="/data/ldm/pub/raw/hrs/model/RUC/" filter=".*\.wmo$" addLatest="true"/>
+    <datasetScan name="ocean" path="model/ocean" scanDir="/data/ldm/pub/raw/hrs/model/ocean/" filter=".*\.wmo$" addLatest="true"/>
+
+  </dataset>
+
+  <datasetScan name="National Radar Composite" path="radarcomp" scanDir="/data/ldm/pub/raw/nexrcomp/" filter=".*\.grib$" addLatest="true">
+    <serviceName>ncdods</serviceName>
+    <dataType>Grid</dataType>
+    <dataFormat>GRIB-1</dataFormat>
+  </datasetScan>
+
+  <datasetScan name="NEXRAD level 3 Radar" path="radar" scanDir="/data/ldm/pub/raw/nexrad/" addLatest="true">
+    <serviceName>ncdods</serviceName>
+    <dataType>Radial</dataType>
+    <dataFormat>NIDS</dataFormat>
+  </datasetScan>
+
+
+</catalog>

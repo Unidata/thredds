@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="GEIF" >
+
+  <attribute name="Conventions" value="GEIF"/>
+
+  <variable name="latitude" shape="row" type="double">
+    <attribute name="long_name" value="latitide coordinate (synthesized)" />
+    <attribute name="units" value="degrees_north" />
+    <attribute name="_CoordinateAxisType" value="Lat" />
+  </variable>
+
+  <variable name="longitude" shape="column" type="double">
+    <attribute name="long_name" value="longitude coordinate (synthesized)" />
+    <attribute name="units" value="degrees_east" />
+    <attribute name="_CoordinateAxisType" value="Lon" />
+  </variable>
+
+  <variable name="level">
+    <attribute name="_CoordinateAxisType" value="Height" />
+    <attribute name="_CoordinateZisPositive" value="up" />
+  </variable>
+
+  <variable name="time" shape="time">
+    <attribute name="long_name" value="time coordinate" />
+    <attribute name="_CoordinateAxisType" value="Time" />
+  </variable>
+
+</netcdf>

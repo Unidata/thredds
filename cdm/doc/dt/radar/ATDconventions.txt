@@ -1,0 +1,511 @@
+netCDF Conventions              Draft                               2000 Apr 14
+
+
+
+-------------------------------------------------------------------------------
+I.  Objective
+-------------------------------------------------------------------------------
+
+Our immediate objective is to define the netCDF convention rigorously
+enough so that first-order visualization tools will work on any netCDF
+file that follows this convention without code modification.  This
+largely means that the variables specifying the geometry of the
+scanning be consistently defined.
+
+
+
+-------------------------------------------------------------------------------
+II. General Philosophy
+-------------------------------------------------------------------------------
+
+Within the constraints established by the netCDF standard, there are
+many ways to define a netCDF data set.  Our intent is to define a
+convention within the netCDF construct in which data from various
+scanning and non-scanning instruments can be stored, which will
+facilitate the interchange of data, code and analysis tools.
+
+We hope to achieve this objective by defining a minimal set of rules
+(a core) about which we are free to build the remaining parts of the
+data set.  This allows enough generality to accommodate more than one
+instrument or class of instruments and yet maintain a level of
+commonality.  We believe that this will succeed, in large part,
+because netCDF is completely self describing.
+
+
+
+-------------------------------------------------------------------------------
+III. Specific Rules
+-------------------------------------------------------------------------------
+
+> Variable Names
+
+  All variables will be assumed to be case insensitive; different
+  variables should be given different lengths and/or one or more
+  unique characters.  E.g. `Lat' and `lat' will be considered to be
+  equivalent, whereas `latitude' and `lat' will represent different
+  variables (i.e.  this could be latitude in radians in one case and
+  latitude in degrees in another).
+
+  The purpose is to facilitate post processing in which variable names
+  can be converted to all one case and searched for.
+
+
+> Sweeps
+
+  Each file will contain one sweep of data.  For scanning instruments
+  this can be thought of as a reversal in direction of an axis being
+  scanned.  For nonscanning instruments this is typically an arbitrary
+  time or number of records.
+
+
+> File Nomenclature
+
+  Dick Oye's file naming convention - These are the file names he is
+  currently producing:
+
+  [As Irina notes, some file systems may truncate the names so you
+  want to get the date and time close to the front of the name to
+  assure uniqueness.  Some systems might not take a number as the
+  first character (does anyone know of such a system?).  Carroll has
+  suggested something like:
+      nc_19990217_193427.151_v1_14.3_PPI_SPOL_projname.cdf
+  however it is redundant to have `nc' at the beginning and `cdf' at
+  the end.  Can anyone comment informatively on the UNIDATA opinion on
+  suffixes? ]
+
+  ncswp_SPOL_19990217_193427.151_v1_s14_14.3_PPI
+  ncswp_SPOL_19990217_193448.301_v1_s15_15.8_PPI
+  ncswp_SPOL_19990217_193511.151_v2_s16_1.1_SUR
+  ncswp_SPOL_19990217_193608.602_v2_s17_0.7_SUR
+  ncswp_SPOL_19990217_193708.602_v3_s18_332.0_RHI
+  ncswp_SPOL_19990217_193728.565_v3_s19_334.0_RHI
+    |    |     |         |        |   |   |    scan mode
+    |    |     |         |        |   |   Fixed angle
+    |    |     |         |        |   Scan num.
+    |    |     |         |        Vol. num
+    |    |     |         Time including milliseconds    
+    |    |     Date
+    |    Instrument name
+    Generic prefix identifying the file as a netCDF sweepfile
+
+  What's missing is the postfix ".cdf" which some software keys on.
+  I'm planning to add it unless there is a good reason not to.
+
+  If you think the project name is important we can add that too.
+
+  [COMMENT by TLS: we could add the postfix `.cdf' or even `.nc' and
+   replace the generic prefix with a project name...]
+
+  The only reason the scan number is present is concern that a future
+  radar may be looking at several fixed angles simultaneously and the
+  time stamp would not be unique but it is probably expendable.
+
+  [COMMENT by WCC: But in that case, would the scan numbers be unique?
+  I suggest handling the future radar by using the name field, e.g., a
+  dual-wavelength SPOL could produce SPOL_S and SPOL_X files.]
+
+
+> General Attributes
+
+  As a general rule use attributes excessively.
+
+
+> Global Attributes
+
+  Mandatory global attributes [** Please indicate which are missing
+  or should be removed from the list.]:
+ 
+      Start_Time
+      Finish_Time
+      Instrument_Name
+      Instrument_Type  [GROUND, airborne, etc.]
+      Scan_Mode        [RHI,PPI, fixed, etc.]
+      Project_Name
+
+
+> Variable Attributes
+
+  Each variable must inlcude the following attributes (although more
+  are encouraged on a case-by-case basis) [** Please indicate which
+  are missing or should be removed from the list.]:
+
+	long_name
+	units
+	valid_range 
+	missing_value
+        type            [e.g. "engineering data", "calibration data",
+                         "header", "Radar Parameters header", etc. ]
+
+
+> Mandatory Variables for fixed instruments
+
+  The following variables should be present as named and with the same
+  data type (double, float, int, etc.)
+
+  double time_offset(Time) ;
+      time_offset:long_name = "time offset of the current record from base_time
+      time_offset:units = "seconds" ;
+      time_offset:_FillValue = 0. ;
+  int base_time ;
+      base_time:long_name = "Unix Date/Time value for first record" ;
+      base_time:units = "seconds since 1970-01-01 00:00 UTC" ;
+      base_time:_FillValue = 0 ;
+  double Latitude ;	[For mobile instruments, this would be a vector.]
+      Latitude:long_name = "Latitude of the instrument" ;
+      Latitude:units = "degrees_north" ;
+      Latitude:valid_range = -90.f, 90.f ;
+      Latitude:missing_value = -999.f ;
+      Latitude:_FillValue = -888. ;
+  double Longitude ;	[For mobile instruments, this would be a vector.]
+      Longitude:long_name = "Longitude of the instrument" ;
+      Longitude:units = "degrees_east" ;
+      Longitude:valid_range = -360.f, 360.f ;
+      Longitude:missing_value = -999.f ;
+      Longitude:_FillValue = -888. ;
+  double Altitude ;	[For mobile instruments, this would be a vector.]
+      Altitude:long_name = "Altitude in meters (asl) of the instrument" ;
+      Altitude:units = "meters" ;
+      Altitude:valid_range = -10000.f, 90000.f ;
+      Altitude:missing_value = -99999.f ;
+      Altitude:_FillValue = -88888. ;
+  float Azimuth(Time) ;
+      Azimuth:long_name = "Earth relative azimuth of the ray" ;
+      Azimuth:Comment = "Degrees clockwise from true North" ;
+      Azimuth:units = "degrees" ;
+      Azimuth:valid_range = -360.f, 360.f ;
+      Azimuth:missing_value = -999.f ;
+      Azimuth:_FillValue = -888.f ;
+  float Elevation(Time) ;
+      Elevation:long_name = "Earth relative elevation of the ray" ;
+      Elevation:Comment = "Degrees from earth tangent towards zenith" ;
+      Elevation:units = "degrees" ;
+      Elevation:valid_range = -360.f, 360.f ;
+      Elevation:missing_value = -999.f ;
+      Elevation:_FillValue = -888.f ;
+  float Fixed_Angle ;
+      Fixed_Angle:long_name = "Targeted fixed angle for this scan" ;
+      Fixed_Angle:Comment = "Used if one axis of motion is nominally constant" ;
+      Fixed_Angle:units = "degrees" ;
+      Fixed_Angle:valid_range = -360.f, 360.f ;
+      Fixed_Angle:missing_value = -999.f ;
+      Fixed_Angle:_FillValue = 0.f ;
+  float Range_to_First_Cell ;	[Could be a vector in some instruments.]
+      Range_to_First_Cell:long_name = "Range to the center of the first cell" ;
+      Range_to_First_Cell:Comment = "Instrument effects on range should be removed" ;
+      Range_to_First_Cell:units = "meters" ;
+      Range_to_First_Cell:valid_range = 0.f ;
+      Range_to_First_Cell:missing_value = -999.f ;
+      Range_to_First_Cell:_FillValue = 0.f ;
+  float Cell_Spacing ;	[Could be a vector in some instruments.]
+      Cell_Spacing:long_name = "Distance between cells" ;
+      Cell_Spacing:units = "meters" ;
+      Cell_Spacing:valid_range = 0.f ;
+      Cell_Spacing:missing_value = -999.f ;
+      Cell_Spacing:_FillValue = 0.f ;
+
+  Mobile instruments would also include Velocity(Time) ( (x,y,z) in
+  meters/sec) and Attitude(Time) (yaw, pitch, role in degrees) as
+  mandatory, and possibly other parameters as well.  Variables such as
+  Latitude, Longitude & Altitude may have one dimension for the moving
+  instrument but the names have to be the same. Thus processing
+  programs only need to recognize their size.
+
+  Scanning instruments should include...
+
+  Profiling instruments it is necessary to include two variables that
+  describe the range gates structure:
+      Range_to_First_Cell
+      Cell_Spacing
+  Again in some cases both variables may have one dimension (for
+  ex. for MMCR) but with the same names.
+
+
+> Mandatory Dimensions
+
+  There must be one unlimited dimension variable.  It may possess the
+  name of `time' or `record' or `beam'.  There will also be a variable
+  to describe the number of cells called maxcells [NOTE: I prefer
+  ncells] - which can be thought of in various ways.  Range gates,
+  samples, cells are all essentially synonymous here.  This
+  nomenclature was adopted to allow for various sorts of averaging
+  during the generation of the netCDF file which some folks do.
+
+	Time = UNLIMITED ; // (63 currently)
+	maxCells = 784 ;
+
+
+
+-------------------------------------------------------------------------------
+IV. Miscellaneous Comments.
+-------------------------------------------------------------------------------
+
+Data fields can be short, int, float or double.
+
+It seems reasonable to come up with suggested names for common data
+fields.
+
+Same for common radar and lidar parameters.
+
+Common scan types should be specified since programs need something to
+key off of to determine the appropriate routine to use for display,
+e.g., PPI, RHI, B-SCAN, SCTR, SLAR, etc.
+
+
+
+-------------------------------------------------------------------------------
+V. Sample netCDF Headers:
+-------------------------------------------------------------------------------
+
+From: Dick Oye <oye@atd.ucar.edu>
+Subject: Re: Reminder: netCDF meeting tomorrow
+To: tschneider@etl.noaa.gov (Timothy Schneider)
+Date: Fri, 7 Apr 2000 10:21:22 -0600 (MDT)
+Cc: oye@hotlips.atd.ucar.edu (Dick Oye)
+
+
+Hi,
+
+I'm bringing a several copies of the latest SPOL cdl with me but I
+thought you might like an electronic version as well so here it is
+
+
+netcdf ncswp_SPOL_19990918_114427.000_v1_s1_10 {
+dimensions:
+	Time = UNLIMITED ; // (63 currently)
+	maxCells = 784 ;
+	numSystems = 2 ;
+	two = 2 ;
+variables:
+	int base_time ;
+		base_time:long_name = "Unix Date/Time value for first record" ;
+		base_time:units = "seconds since 1970-01-01 00:00 UTC" ;
+		base_time:_FillValue = 0 ;
+	float Fixed_Angle ;
+		Fixed_Angle:long_name = "Targeted fixed angle for this scan" ;
+		Fixed_Angle:units = "degrees" ;
+		Fixed_Angle:_FillValue = 0.f ;
+	float Range_to_First_Cell ;
+		Range_to_First_Cell:long_name = "Range to the center of the first cell" ;
+		Range_to_First_Cell:units = "meters" ;
+		Range_to_First_Cell:_FillValue = 0.f ;
+	float Cell_Spacing ;
+		Cell_Spacing:long_name = "Distance between cells" ;
+		Cell_Spacing:units = "meters" ;
+		Cell_Spacing:_FillValue = 0.f ;
+	float Nyquist_Velocity ;
+		Nyquist_Velocity:long_name = "Effective unambigous velocity" ;
+		Nyquist_Velocity:units = "meters/second" ;
+		Nyquist_Velocity:_FillValue = 0.f ;
+	float Unambiguous_Range ;
+		Unambiguous_Range:long_name = "Effective unambigous range" ;
+		Unambiguous_Range:units = "meters" ;
+		Unambiguous_Range:_FillValue = 0.f ;
+	double Latitude ;
+		Latitude:long_name = "Latitude of the instrument" ;
+		Latitude:units = "degrees_north" ;
+		Latitude:valid_range = -90.f, 90.f ;
+		Latitude:missing_value = -999.f ;
+		Latitude:_FillValue = -888. ;
+	double Longitude ;
+		Longitude:long_name = "Longitude of the instrument" ;
+		Longitude:units = "degrees_east" ;
+		Longitude:valid_range = -360.f, 360.f ;
+		Longitude:missing_value = -999.f ;
+		Longitude:_FillValue = -888. ;
+	double Altitude ;
+		Altitude:long_name = "Altitude in meters (asl) of the instrument" ;
+		Altitude:units = "meters" ;
+		Altitude:valid_range = -10000.f, 90000.f ;
+		Altitude:missing_value = -99999.f ;
+		Altitude:_FillValue = -88888. ;
+	float Radar_Constant(numSystems) ;
+		Radar_Constant:long_name = "Radar constant" ;
+		Radar_Constant:units = "???" ;
+		Radar_Constant:_FillValue = 0.f ;
+	float rcvr_gain(numSystems) ;
+		rcvr_gain:long_name = "Receiver Gain" ;
+		rcvr_gain:Comment = "Most entries are 2 dimension arrays one for each polarity" ;
+		rcvr_gain:units = "db" ;
+		rcvr_gain:missing_value = -999.f ;
+		rcvr_gain:_FillValue = -888.f ;
+	float ant_gain(numSystems) ;
+		ant_gain:long_name = "Antenna Gain" ;
+		ant_gain:units = "db" ;
+		ant_gain:missing_value = -999.f ;
+		ant_gain:_FillValue = -888.f ;
+	float sys_gain(numSystems) ;
+		sys_gain:long_name = "System Gain" ;
+		sys_gain:units = "db" ;
+		sys_gain:missing_value = -999.f ;
+		sys_gain:_FillValue = -888.f ;
+	float bm_width(numSystems) ;
+		bm_width:long_name = "Beam Width" ;
+		bm_width:units = "degrees" ;
+		bm_width:missing_value = -999.f ;
+		bm_width:_FillValue = -888.f ;
+	float pulse_width(numSystems) ;
+		pulse_width:long_name = "Pulse Width" ;
+		pulse_width:units = "seconds" ;
+		pulse_width:missing_value = -999.f ;
+		pulse_width:_FillValue = -888.f ;
+	float band_width(numSystems) ;
+		band_width:long_name = "Band Width" ;
+		band_width:units = "hertz" ;
+		band_width:missing_value = -999.f ;
+		band_width:_FillValue = -888.f ;
+	float peak_pwr(numSystems) ;
+		peak_pwr:long_name = "Peak Power" ;
+		peak_pwr:units = "watts" ;
+		peak_pwr:missing_value = -999.f ;
+		peak_pwr:_FillValue = -888.f ;
+	float xmtr_pwr(numSystems) ;
+		xmtr_pwr:long_name = "Transmitter Power" ;
+		xmtr_pwr:units = "dBm" ;
+		xmtr_pwr:missing_value = -999.f ;
+		xmtr_pwr:_FillValue = -888.f ;
+	float noise_pwr(numSystems) ;
+		noise_pwr:long_name = "Noise Power" ;
+		noise_pwr:units = "dBm" ;
+		noise_pwr:missing_value = -999.f ;
+		noise_pwr:_FillValue = -888.f ;
+	float tst_pls_pwr(numSystems) ;
+		tst_pls_pwr:long_name = "Test Pulse Power" ;
+		tst_pls_pwr:units = "dBm" ;
+		tst_pls_pwr:missing_value = -999.f ;
+		tst_pls_pwr:_FillValue = -888.f ;
+	float Test_Pulse_Ranges(two) ;
+		Test_Pulse_Ranges:long_name = "Ranges to beginning and end of the test pulse" ;
+		Test_Pulse_Ranges:units = "meters" ;
+		Test_Pulse_Ranges:_FillValue = 0.f ;
+	double time_offset(Time) ;
+		time_offset:long_name = "time offset of the current record from base_time" ;
+		time_offset:units = "seconds" ;
+		time_offset:_FillValue = 0. ;
+	float Azimuth(Time) ;
+		Azimuth:long_name = "Earth relative azimuth of the ray" ;
+		Azimuth:Comment = "Degrees clockwise from true North" ;
+		Azimuth:units = "degrees" ;
+		Azimuth:valid_range = -360.f, 360.f ;
+		Azimuth:missing_value = -999.f ;
+		Azimuth:_FillValue = -888.f ;
+	float Elevation(Time) ;
+		Elevation:long_name = "Earth relative elevation of the ray" ;
+		Elevation:Comment = "Degrees from earth tangent towards zenith" ;
+		Elevation:units = "degrees" ;
+		Elevation:valid_range = -360.f, 360.f ;
+		Elevation:missing_value = -999.f ;
+		Elevation:_FillValue = -888.f ;
+	short DZ(Time, maxCells) ;
+		DZ:long_name = "Reflectivity factor" ;
+		DZ:units = "dBz" ;
+		DZ:scale_factor = 0.01f ;
+		DZ:add_offset = 0.f ;
+		DZ:missing_value = -32768s ;
+		DZ:_FillValue = -32768s ;
+		DZ:polarization = "Horizontal" ;
+		DZ:Frequencies_GHz = 2.78599977493286 ;
+		DZ:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short VE(Time, maxCells) ;
+		VE:long_name = "Doppler velocity" ;
+		VE:units = "meters/second" ;
+		VE:scale_factor = 0.01f ;
+		VE:add_offset = 0.f ;
+		VE:missing_value = -32768s ;
+		VE:_FillValue = -32768s ;
+		VE:polarization = "Horizontal" ;
+		VE:Frequencies_GHz = 2.78599977493286 ;
+		VE:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short NC(Time, maxCells) ;
+		NC:long_name = "Normalized Coherent Power" ;
+		NC:units = "" ;
+		NC:scale_factor = 0.01f ;
+		NC:add_offset = 0.f ;
+		NC:missing_value = -32768s ;
+		NC:_FillValue = -32768s ;
+		NC:polarization = "Horizontal" ;
+		NC:Frequencies_GHz = 2.78599977493286 ;
+		NC:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short ZD(Time, maxCells) ;
+		ZD:long_name = "Polarization_diversity" ;
+		ZD:units = "dBm" ;
+		ZD:scale_factor = 0.01f ;
+		ZD:add_offset = 0.f ;
+		ZD:missing_value = -32768s ;
+		ZD:_FillValue = -32768s ;
+		ZD:polarization = "Horizontal and Vertical" ;
+		ZD:Frequencies_GHz = 2.78599977493286 ;
+		ZD:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short LD(Time, maxCells) ;
+		LD:long_name = "Linear Depolarization Ratio" ;
+		LD:units = "dBm" ;
+		LD:scale_factor = 0.01f ;
+		LD:add_offset = 0.f ;
+		LD:missing_value = -32768s ;
+		LD:_FillValue = -32768s ;
+		LD:polarization = "Horizontal and Vertical" ;
+		LD:Frequencies_GHz = 2.78599977493286 ;
+		LD:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short PH(Time, maxCells) ;
+		PH:long_name = "Differential Phase" ;
+		PH:units = "deg." ;
+		PH:scale_factor = 0.01f ;
+		PH:add_offset = 0.f ;
+		PH:missing_value = -32768s ;
+		PH:_FillValue = -32768s ;
+		PH:polarization = "Horizontal and Vertical" ;
+		PH:Frequencies_GHz = 2.78599977493286 ;
+		PH:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short RH(Time, maxCells) ;
+		RH:long_name = "RHOhv is just RHOhv" ;
+		RH:units = "" ;
+		RH:scale_factor = 0.001f ;
+		RH:add_offset = 0.f ;
+		RH:missing_value = -32768s ;
+		RH:_FillValue = -32768s ;
+		RH:polarization = "Horizontal and Vertical" ;
+		RH:Frequencies_GHz = 2.78599977493286 ;
+		RH:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short DM(Time, maxCells) ;
+		DM:long_name = "Power in dBm" ;
+		DM:units = "dBm" ;
+		DM:scale_factor = 0.01f ;
+		DM:add_offset = 0.f ;
+		DM:missing_value = -32768s ;
+		DM:_FillValue = -32768s ;
+		DM:polarization = "Horizontal" ;
+		DM:Frequencies_GHz = 2.78599977493286 ;
+		DM:InterPulsePeriods_secs = 0.0011764999628067 ;
+	short DX(Time, maxCells) ;
+		DX:long_name = "Cross Pole power in dBm" ;
+		DX:units = "dBm" ;
+		DX:scale_factor = 0.01f ;
+		DX:add_offset = 0.f ;
+		DX:missing_value = -32768s ;
+		DX:_FillValue = -32768s ;
+		DX:polarization = "Horizontal and Vertical" ;
+		DX:Frequencies_GHz = 2.78599977493286 ;
+		DX:InterPulsePeriods_secs = 0.0011764999628067 ;
+
+// global attributes:
+		:Content = "This file contains one scan of remotely sensed data" ;
+		:Convention = "NCAR/ATD-NOAA/ETL Scanning Remote Sensor" ;
+		:Instrument_Name = "SPOL" ;
+		:Instrument_Type = "GROUND" ;
+		:Scan_Mode = "RHI" ;
+		:Start_Time = "09/18/99 11:44:27.000" ;
+		:Year = 1999 ;
+		:Month = 9 ;
+		:Day = 18 ;
+		:Hour = 11 ;
+		:Minute = 44 ;
+		:Second = 27 ;
+		:Volume_Number = 1 ;
+		:Scan_Number = 1 ;
+		:Num_Samples = 120 ;
+		:Index_of_horizontal_information = 0 ;
+		:Index_of_vertical_information = 1 ;
+		:Project_Name = "MAP99" ;
+		:Production_Date = "Fri Apr  7 09:36:05 2000" ;
+		:Producer_Name = "NSF/UCAR/NCAR/ATD" ;
+		:Software = "xltrs" ;
+}

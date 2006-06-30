@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="Zebra" >
+
+  <attribute name="Conventions" value="Zebra"/>
+
+  <variable name="latitude">
+    <attribute name="_CoordinateAxisType" value="Lat" />
+  </variable>
+
+  <variable name="longitude">
+    <attribute name="_CoordinateAxisType" value="Lon" />
+  </variable>
+
+  <variable name="altitude">
+    <attribute name="_CoordinateAxisType" value="Height" />
+    <attribute name="_CoordinateZisPositive" value="up" />
+  </variable>
+
+  <variable name="time" type="float" shape="time">
+    <attribute name="long_name" value="time coordinate" />
+    <attribute name="units" value="{base_time@units}" />
+    <attribute name="process" value="added by NetcdfDataset ZebraConvention = base_time + time_offset" />
+    <attribute name="_CoordinateAxisType" value="Time" />
+    <!-- values> {base_time + time_offset} </values -->
+  </variable>
+
+</netcdf>

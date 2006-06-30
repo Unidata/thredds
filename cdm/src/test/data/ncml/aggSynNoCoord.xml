@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <aggregation  dimName="time" type="joinNew">
+    <variableAgg name="T"/>
+    <netcdf location="file:test/data/ncml/nc/time0.nc"/>
+    <netcdf location="file:test/data/ncml/nc/time1.nc"/>
+    <netcdf location="file:test/data/ncml/nc/time2.nc"/>
+  </aggregation>
+
+</netcdf>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+	
+	<attribute name="title" type="string" value="Example Data"/>
+	
+	<netcdf uri="file:test/data/dataset/example.nc">
+		<dimension name="time" length="2" isUnlimited="true"/>
+		<dimension name="lat" length="3"/>
+		<dimension name="lon" length="4"/>
+	
+		<variable name="lat" type="float" shape="lat">
+			<attribute name="units" type="string" value="degrees_north"/>
+		</variable>
+		<variable name="lon" type="float" shape="lon">
+			<attribute name="units" type="string" value="degrees_east"/>
+		</variable>
+		<variable name="time" type="int" shape="time">
+			<attribute name="units" type="string" value="hours"/>
+		</variable>
+
+		<variable name="ReletiveHumidity" type="int" shape="time lat lon" orgName="rh">
+			<attribute name="long_name" type="string" value="relative humidity"/>
+			<attribute name="units" type="string" value="percent"/>
+		</variable>
+
+    <explicit/>
+
+	</netcdf>
+	
+	<netcdf uri="file:test/data/dataset/example.nc">
+		<dimension name="time" length="2" isUnlimited="true"/>
+		<dimension name="lat" length="3"/>
+		<dimension name="lon" length="4"/>
+
+		<variable name="Temperature" type="double" shape="time lat lon" orgName="T">
+			<attribute name="long_name" type="string" value="surface temperature"/>
+			<attribute name="units" type="string" value="degC"/>
+		</variable>
+    <explicit/>
+	</netcdf>
+	
+	
+</netcdf>

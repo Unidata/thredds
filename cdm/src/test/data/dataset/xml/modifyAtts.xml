@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  location="file:test/data/example1.nc">
+	 
+	<attribute name="Conventions" type="string" value="Metapps"/>
+
+  <remove type="attribute" name="title"/>
+  <variable name="rh">
+    <remove type="attribute" name="long_name"/>
+    <attribute name="UNITS" orgName="units" />
+    <attribute name="longer_name" type="string" value="Abe said what?"/>
+  </variable >
+	
+</netcdf>

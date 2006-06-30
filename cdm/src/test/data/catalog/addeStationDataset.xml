@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+  <catalog 
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  C:/dev/thredds/catalog/test/data/xml/InvCatalog.1.0.xsd"
+  >
+ 
+  <service base="adde://adde.ucar.edu/point?" serviceType="ADDE" name="addePointData"/>
+  <dataset name="ADDE Surface Data" ID="AddeSurfaceData" dataType="Station">
+  
+      <property name="Conventions" value="ADDE Station Data" />
+      <property name="_StationDBlocation" value="resource:resources/nj22/tables/STNDB.TXT" />
+ 
+      <geospatialCoverage zpositive="down">
+        <northsouth>
+          <start>40</start>
+          <size>-80</size>
+          <resolution>2</resolution>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-130</start>
+          <size>260</size>
+          <resolution>2</resolution>
+          <units>degrees_east</units>
+        </eastwest>
+        <updown>
+          <start>0</start>
+          <size>22</size>
+          <resolution>0.5</resolution>
+          <units>km</units>
+        </updown>
+         <name vocabulary="DIF">Arctic Ocean</name>
+      </geospatialCoverage>
+       
+      <timeCoverage>
+        <start>1999-11-16T12:00:00</start>
+        <end>present</end>
+      </timeCoverage>
+      
+      <variables vocabulary="DIF" xlink:href="http://gcmd.gsfc.nasa.gov/Resources/valids/gcmd_parameters.html">
+           <variableMap xlink:href="dif/metar.vocabulary.xml" />
+      </variables>
+
+      <access urlPath="group=rtptsrc&amp;descr=sfchourly" serviceName="addePointData"/>
+            
+  </dataset>
+  
+</catalog>

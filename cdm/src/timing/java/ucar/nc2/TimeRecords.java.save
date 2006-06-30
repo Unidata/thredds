@@ -1,0 +1,148 @@
+package ucar.nc2;
+
+import junit.framework.*;
+import ucar.ma2.*;
+import ucar.nc2.*;
+
+import java.io.*;
+import java.util.*;
+
+/** Test reading record data */
+
+public class TimeRecords {
+
+  private long readAllData(String fname) {
+    long nbytes = 0;
+    try {
+      NetcdfFile ncFile = new NetcdfFile( fname);
+
+      Iterator iter = ncFile.getVariableIterator();
+      while (iter.hasNext()) {
+        Variable v = (Variable) iter.next();
+        //System.out.print(" read "+v.getName());
+        v.read();
+        //System.out.println(" ok");
+        nbytes += v.getSize() * v.getDataType().getSize();
+      }
+      ncFile.close();
+
+    } catch (Exception ioe) {
+      System.out.println(" read from "+fname+ " failed ");
+      ioe.printStackTrace();
+      return 0;
+    }
+    return nbytes;
+  }
+
+  private long readAllRecordData( String fname) {
+    long total = 0;
+    try {
+      NetcdfFile ncfile = new NetcdfFile(fname);
+      StructureVariable record = (StructureVariable) ncfile.findVariable("record");
+      if (record == null) {
+        System.out.println("no record variable in "+fname);
+        return 0;
+      }
+
+      StructureVariable.Iterator iter = record.getStructureIterator();
+      while (iter.hasNext()) {
+        StructureVariable s = iter.next();
+
+        // loop over structure variables
+        Iterator viter = s.getMembers().iterator();
+        while (viter.hasNext()) {
+          Variable v2 = (Variable) viter.next();
+          Array data = v2.read();
+          total += data.getSize() * v2.getDataType().getSize();
+        }
+      }
+      ncfile.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      assert false;
+    }
+    return total;
+  }
+
+  private long showAllRecordData( NetcdfFile ncfile) {
+    long total = 0;
+    boolean first = true;
+    try {
+      StructureVariable record = (StructureVariable) ncfile.findVariable("record");
+      if (record == null) {
+        System.out.println("no record variable in "+ncfile.getPathName());
+        return 0;
+      }
+      StructureVariable.Iterator iter = record.getStructureIterator();
+      while (iter.hasNext()) {
+        StructureVariable s = iter.next();
+        if (first) System.out.println(s);
+        first = false;
+
+        // loop over structure variables
+        Iterator viter = s.getMembers().iterator();
+        while (viter.hasNext()) {
+          Variable v2 = (Variable) viter.next();
+          Array data = v2.read();
+          total += data.getSize() * v2.getDataType().getSize();
+          NCdump.printArray(System.out, v2.getName(), data);
+        }
+        ncfile.close();
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      assert false;
+    }
+    return total;
+  }
+
+  public void utestShowExample() {
+    NetcdfFile ncfile = TestAll.openFile("example.nc");
+    showAllRecordData( ncfile);
+  }
+
+  public void readBothWays(String filename) throws IOException {
+    NetcdfFile.setUseRecordStructure(true);
+    NetcdfFile ncfile = new NetcdfFile(filename);
+    System.out.println(ncfile);
+    NetcdfFile.setUseRecordStructure(false);
+    ncfile = new NetcdfFile(filename);
+    System.out.println(ncfile);
+  }
+
+  public void testBothWays() throws IOException {
+    readBothWays("C:/data/conventions/mm5/n040.nc");
+    readBothWays(TestAll.topDir+"example.nc");
+    readBothWays("C:/data/ldm/03082003_metar.nc");
+  }
+
+  private void readAllRecordAndTime(String fname) {
+    long startTime = System.currentTimeMillis();
+    long total = readAllRecordData( fname);
+    long endTime = System.currentTimeMillis();
+    long diff = endTime - startTime;
+    System.out.println("readAllRecord "+fname+ " size = "+total+" bytes; took "+diff+ " msecs");
+  }
+
+  private void readAllAndTime(String fname) {
+    long startTime = System.currentTimeMillis();
+    long total = readAllData( fname);
+    long endTime = System.currentTimeMillis();
+    long diff = endTime - startTime;
+    System.out.println("readAll "+fname+ " size = "+total+" bytes; took "+diff+ " msecs");
+  }
+
+  public void utestTime() throws IOException {
+    readAllRecordAndTime( "C:/data/conventions/mm5/n040.nc");
+    /* readAllRecordAndTime( "C:/data/conventions/mm5/copy_n040.nc");
+    readAllRecordAndTime( "C:/data/conventions/mm5/copy2_n040.nc");
+    readAllAndTime( "C:/data/conventions/mm5/n040.nc");
+    readAllAndTime( "C:/data/conventions/mm5/copy_n040.nc");
+    readAllAndTime( "C:/data/conventions/mm5/copy2_n040.nc");
+    readAllRecordAndTime( "C:/data/conventions/mm5/n040.nc");
+    readAllRecordAndTime( "C:/data/conventions/mm5/copy_n040.nc");
+    readAllRecordAndTime( "C:/data/conventions/mm5/copy2_n040.nc"); */
+  }
+
+
+}

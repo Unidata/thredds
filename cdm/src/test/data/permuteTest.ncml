@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nc:netcdf xmlns:nc="http://www.ucar.edu/schemas/netcdf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset.xsd" 
+	uri="C:\dev\netcdf\test\data\example.nc">
+  <nc:dimension name="time" length="2" />
+  <nc:dimension name="lat" length="3" />
+  <nc:dimension name="lon" length="4" />
+  <nc:dimension name="lev" length="5" />
+  <nc:attribute name="title" type="string" value="Example Data" />
+  <nc:variable name="lat" shape="lat" type="float">
+    <nc:attribute name="units" type="string" value="degrees_north" />
+    <nc:values start="0.0" increment="0.0" npts="3" />
+  </nc:variable>
+  <nc:variable name="lon" shape="lon" type="float">
+    <nc:attribute name="units" type="string" value="degrees_east" />
+    <nc:values start="0.0" increment="0.0" npts="4" />
+  </nc:variable>
+  <nc:variable name="lev" shape="lev" type="float">
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:values start="0.0" increment="0.0" npts="5" />
+  </nc:variable>
+  <nc:variable name="time" shape="time" type="int">
+    <nc:attribute name="units" type="string" value="hours" />
+    <nc:values>6.0 18.0</nc:values>
+  </nc:variable>
+  <nc:variable name="rh" shape="time lat lon" type="int">
+    <nc:attribute name="long_name" type="string" value="relative humidity" />
+    <nc:attribute name="units" type="string" value="percent" />
+  </nc:variable>
+  <nc:variable name="t-lon-lat" nameInFile="T" shape="time lon lat" type="double">
+    <nc:attribute name="units" type="string" value="degC" />
+  </nc:variable>
+  <nc:variable name="lon-lat-t" nameInFile="T" shape="lon lat time" type="double">
+    <nc:attribute name="units" type="string" value="degC" />
+  </nc:variable>
+  <nc:variable name="lat-lon-t" nameInFile="T" shape="lat lon time" type="double">
+    <nc:attribute name="units" type="string" value="degC" />
+  </nc:variable>
+</nc:netcdf>
+

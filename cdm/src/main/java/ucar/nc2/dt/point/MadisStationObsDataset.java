@@ -1,0 +1,305 @@
+// $Id: MadisStationObsDataset.java,v 1.12 2006/06/06 16:07:14 caron Exp $
+/*
+ * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+package ucar.nc2.dt.point;
+
+import ucar.ma2.*;
+import ucar.nc2.*;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.dt.*;
+
+import java.io.*;
+import java.util.*;
+
+/**
+ * This reads MADIS station data formatted files. It might actually be ok for any AWIPS station file ??
+ *
+ * <p> We construct the list of StationObsDatatype records, but without the data cached.
+ * <p>
+ * There are a few problems with this format from an efficiency POV:
+ * <ol><li> the station lat, lon, and desc are in the record variable, forcing us to read one obd data for
+ *  each station at open.
+ * <li> time units are 'seconds since 1-1-1970' instead of 'seconds since 1970-01-01' (not udunit compatible)
+ *  this is being corrected.
+ * </ol>
+ *
+ * @author John Caron
+ * @version $Id: MadisStationObsDataset.java,v 1.12 2006/06/06 16:07:14 caron Exp $
+ */
+
+public class MadisStationObsDataset extends StationObsDatasetImpl {
+  private Structure recordVar;
+  private RecordDatasetHelper recordHelper;
+  private String obsTimeVName, nomTimeVName, stnIdVName, stnDescVName, altVName;
+
+  private boolean debug = false, debugLinks = false;
+
+  static public boolean isValidFile(NetcdfFile ds) {
+    if (ds.findVariable("staticIds") == null) return false;
+    if (ds.findVariable("nStaticIds") == null) return false;
+    if (ds.findVariable("lastRecord") == null) return false;
+    if (ds.findVariable("prevRecord") == null) return false;
+    if (ds.findVariable("latitude") == null) return false;
+    if (ds.findVariable("longitude") == null) return false;
+
+    if (!ds.hasUnlimitedDimension()) return false;
+    if (ds.findGlobalAttribute("timeVariables") == null) return false;
+    if (ds.findGlobalAttribute("idVariables") == null) return false;
+
+    Attribute att = ds.findGlobalAttribute("title");
+    if ((att != null) && att.getStringValue().equals("MADIS ACARS data")) return false;
+
+    return true;
+  }
+
+  public MadisStationObsDataset(NetcdfFile ds) throws IOException {
+    super(ds);
+
+    // dork around with the variable names
+    altVName = "elevation";
+
+    String timeNames = ds.findAttValueIgnoreCase(null, "timeVariables", null);
+    StringTokenizer stoker = new StringTokenizer( timeNames,", ");
+    obsTimeVName = stoker.nextToken();
+
+    if (ds.findVariable("timeNominal") != null)
+      nomTimeVName = "timeNominal";
+
+    String idNames = ds.findAttValueIgnoreCase(null, "idVariables", null);
+    stoker = new StringTokenizer( idNames,", ");
+    stnIdVName = stoker.nextToken();
+
+    if (stnIdVName.equals("stationName")) { // metars, sao, maritime
+      if (ds.findVariable("locationName") != null)
+        stnDescVName = "locationName";
+      if (debug) System.out.println("filetype 1 (metars)");
+
+    } else if (stnIdVName.equals("latitude")) { // acars LOOK this is not station - move to trajectory !!
+      if (ds.findVariable("en_tailNumber") != null)
+        stnIdVName = "en_tailNumber";
+      altVName = "altitude";
+      if (debug) System.out.println("filetype 3 (acars)");
+
+    } else {  // coop, hydro, mesonet, radiometer
+      if (ds.findVariable("stationId") != null)
+        stnIdVName = "stationId";
+      if (ds.findVariable("stationName") != null)
+        stnDescVName = "stationName";
+      if (debug) System.out.println("filetype 2 (mesonet)");
+    }
+    if (debug) System.out.println("title= "+ncfile.findAttValueIgnoreCase(null, "title", null));
+
+    recordHelper = new RecordDatasetHelper(ds, obsTimeVName, nomTimeVName, dataVariables, parseInfo);
+    recordHelper.setStationInfo(stnIdVName, stnDescVName);
+    removeDataVariable(obsTimeVName);
+    removeDataVariable(nomTimeVName);
+    removeDataVariable("latitude");
+    removeDataVariable("longitude");
+    removeDataVariable(altVName);
+    removeDataVariable("prevRecord");
+    removeDataVariable(stnIdVName);
+    removeDataVariable(stnDescVName);
+
+    timeUnit = recordHelper.timeUnit;
+
+    // construct the stations
+    Variable lastRecordVar = ds.findVariable("lastRecord");
+    ArrayInt.D1 lastRecord = (ArrayInt.D1) lastRecordVar.read();
+
+    Variable inventoryVar = ds.findVariable("inventory");
+    ArrayInt.D1 inventoryData = (ArrayInt.D1) inventoryVar.read();
+
+    Variable v = ds.findVariable("nStaticIds");
+    int n = v.readScalarInt();
+
+    recordHelper.stnHash = new HashMap(2*n);
+    recordVar = (Structure) ds.findVariable("record");
+    for (int stnIndex=0; stnIndex < n; stnIndex++) {
+      int lastValue = lastRecord.get(stnIndex);
+      int inventory = inventoryData.get(stnIndex);
+
+      if (lastValue < 0)
+        continue;
+
+      // get an obs record for this, and extract the station info
+      StructureData sdata = null;
+      try {
+        sdata = recordVar.readStructure( lastValue);
+      } catch (InvalidRangeException e) {
+        parseInfo.append("Invalid lastValue="+lastValue+" for station at index "+stnIndex+"\n");
+        continue;
+      }
+
+      String stationId = sdata.getScalarString( stnIdVName).trim();
+      String stationDesc = (stnDescVName == null) ? null : sdata.getScalarString( stnDescVName);
+      float lat = sdata.getScalarFloat("latitude");
+      float lon = sdata.getScalarFloat("longitude");
+      float alt = sdata.getScalarFloat(altVName);
+
+      MadisStationImpl stn = (MadisStationImpl) recordHelper.stnHash.get(stationId);
+      if (stn != null) {
+        if (debugLinks) {
+          parseInfo.append("Already have="+stationId+" for station at index "+lastValue+" lastRecord= "+stn.lastRecord+"\n");
+          parseInfo.append("  old lat="+stn.getLatitude()+" lon= "+stn.getLongitude()+" alt= "+stn.getAltitude()+"\n");
+          parseInfo.append("  new lat="+lat+" lon= "+lon+" alt= "+alt+"\n");
+        }
+        stn.addLinkedList( lastValue, inventory);
+        continue;
+      }
+
+      MadisStationImpl station = new MadisStationImpl(stationId, stationDesc, lat, lon, alt, lastValue, inventory);
+      recordHelper.stnHash.put(stationId, station);
+      stations.add( station);
+    }
+    if (debug) System.out.println("total stations " + stations.size()+" should be = "+n);
+
+    // get min, max date
+    Variable timeVar = ds.findVariable(obsTimeVName);
+    Array timeData = timeVar.read();
+    MAMath.MinMax minmax = MAMath.getMinMax( timeData);
+
+    startDate = timeUnit.makeDate( minmax.min);
+    endDate = timeUnit.makeDate( minmax.max);
+
+    setBoundingBox();
+  }
+
+  protected void setTimeUnits() {}
+  protected void setStartDate() {}
+  protected void setEndDate() {}
+  protected void setBoundingBox() {
+    boundingBox = stationHelper.getBoundingBox();
+  }
+
+  public List getData(CancelTask cancel) throws IOException {
+    ArrayList allData = new ArrayList();
+    for (int i=0; i<getDataCount(); i++) {
+      allData.add( makeObs(i));
+      if ((cancel != null) && cancel.isCancel())
+        return null;
+    }
+    return allData;
+  }
+
+  protected StationObsDatatype makeObs(int recno) throws IOException {
+    try {
+      StructureData sdata = recordVar.readStructure(recno);
+
+      String stationId = sdata.getScalarString(stnIdVName);
+      Station s = (Station) recordHelper.stnHash.get(stationId);
+
+      float obsTime = sdata.getScalarFloat(obsTimeVName);
+      float nomTime = (nomTimeVName == null) ? obsTime : sdata.getScalarFloat(nomTimeVName);
+
+      return recordHelper.new RecordStationObs( s, obsTime, nomTime, recno);
+
+    } catch (ucar.ma2.InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IOException( e.getMessage());
+    }
+  }
+
+  public List getData( Station s, CancelTask cancel) throws IOException {
+    return ((MadisStationImpl)s).getObservations();
+  }
+
+  public int getDataCount() {
+    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
+    return unlimitedDim.getLength();
+  }
+
+  private class MadisStationImpl extends StationImpl {
+    private int lastRecord;
+    private ArrayList lastRecords;
+
+    private MadisStationImpl( String name, String desc, double lat, double lon, double alt,
+                              int lastRecord, int inventory) {
+      super( name, desc, lat, lon, alt);
+      this.lastRecord = lastRecord;
+      this.count = count( inventory);
+    }
+
+    // extra linked lists
+    private void addLinkedList(int lastRecord, int inventory ) {
+      if (lastRecords == null)
+        lastRecords = new ArrayList();
+      lastRecords.add( new Integer(lastRecord));
+      this.count += count( inventory);
+    }
+
+    private int count( int inventory) {
+      int cnt = 0;
+      for (int bitno=0; bitno < 24; bitno++) {
+        cnt += (inventory & 1);
+        inventory = inventory >> 1;
+      }
+      return cnt;
+    }
+
+    protected ArrayList readObservations() throws IOException {
+      ArrayList result = new ArrayList();
+      readLinkedList( this, result, lastRecord);
+
+      if (lastRecords == null)
+        return result;
+
+      // extra linked lists
+      for (int i = 0; i < lastRecords.size(); i++) {
+        Integer lastLink = (Integer) lastRecords.get(i);
+        readLinkedList( this, result, lastLink.intValue());
+      }
+
+      Collections.sort( result);
+      return result;
+  }
+
+    protected void readLinkedList(StationImpl s, ArrayList result, int lastLink) throws IOException {
+      int recnum = lastLink;
+      while (recnum >= 0) {
+        try {
+          StructureData sdata = recordVar.readStructure(recnum);
+          int prevRecord = sdata.getScalarInt("prevRecord");
+          float obsTime = sdata.getScalarFloat(obsTimeVName);
+          float nomTime = (nomTimeVName == null) ? obsTime : sdata.getScalarFloat(nomTimeVName);
+          result.add( 0, recordHelper.new RecordStationObs(s, obsTime, nomTime, recnum));
+          recnum = prevRecord;
+        } catch (ucar.ma2.InvalidRangeException e) {
+          e.printStackTrace();
+          throw new IOException(e.getMessage());
+        }
+      }
+    }
+  }
+
+  public DataIterator getDataIterator(int bufferSize) throws IOException {
+    return new MadisDatatypeIterator(recordHelper.recordVar, bufferSize);
+  }
+
+  private class MadisDatatypeIterator extends DatatypeIterator {
+    protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
+      return recordHelper.new RecordStationObs( recnum, sdata);
+    }
+
+    MadisDatatypeIterator(Structure struct, int bufferSize) {
+      super( struct, bufferSize);
+    }
+  }
+}

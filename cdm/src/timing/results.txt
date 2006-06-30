@@ -1,0 +1,428 @@
+NIO results
+
+8/24/03
+
+using mmap on windows: 
+
+1. when reading many files in a row, you can get IOException
+
+java.io.IOException: Not enough storage is available to process this command	at sun.nio.ch.FileChannelImpl.map0(Native Method)	at sun.nio.ch.FileChannelImpl.map(FileChannelImpl.java:705)
+it seems that dropping file mapping is not deterministic ??
+
+happens after mapping 1.5 Gb
+
+
+2. reading 
+
+bulk channel reading averaged for 100 Mb files.
+no difference running outside of JBuilder
+
+running under client
+	direct allocate = 5.9 secs
+	regular allocate = 6.5 secs
+	mmap: 6.9 secs
+
+
+running under -server:
+	direct allocate = 5.6 secs
+	regular allocate = 5.6 secs
+	mmap : 5.5 secs
+
+
+
+3. memmory mapping (XP)
+
+first few are faster, then slows down, then fails, after 1.6 Gb read:
+
+readMM from timing/data/writeMM-100K-625020937 nbytes= 100004000 nreads = 1000 took 761 msecs
+readMM from timing/data/writeMM-10K-1328095594 nbytes= 100040000 nreads = 10000 took 641 msecs
+readMM from timing/data/writeMM-16K-793352632 nbytes= 100025000 nreads = 6250 took 500 msecs
+readMM from timing/data/writeMM-16K768522452 nbytes= 100025000 nreads = 6250 took 2274 msecs
+readMM from timing/data/writeMM-1K-1180548825 nbytes= 100400000 nreads = 100000 took 5768 msecs
+readMM from timing/data/writeMM-1K-1334170905 nbytes= 100400000 nreads = 100000 took 6499 msecs
+readMM from timing/data/writeMM-1K1198845275 nbytes= 100400000 nreads = 100000 took 6580 msecs
+readMM from timing/data/writeMM-1K333286500 nbytes= 100400000 nreads = 100000 took 5978 msecs
+readMM from timing/data/writeMM-32K-558097474 nbytes= 100012500 nreads = 3125 took 6790 msecs
+readMM from timing/data/writeMM-32K1199126233 nbytes= 100012500 nreads = 3125 took 7801 msecs
+readMM from timing/data/writeMM-4K-1694378108 nbytes= 100100000 nreads = 25000 took 9474 msecs
+readMM from timing/data/writeMM-4K-712338042 nbytes= 100100000 nreads = 25000 took 6289 msecs
+readMM from timing/data/writeMM-8K105515720 nbytes= 100050000 nreads = 12500 took 8612 msecs
+readMM from timing/data/writeMM-8K1559492285 nbytes= 100050000 nreads = 12500 took 9364 msecs
+readMM 100 5523 msec  count= 14
+
+
+MM total done = 1402019000
+readMM from timing/data/writeMM-100K-625020937 nbytes= 100004000 nreads = 1000 took 6539 msecs
+readMM from timing/data/writeMM-10K-1328095594 nbytes= 100040000 nreads = 10000 took 13139 msecs
+java.io.IOException: Not enough storage is available to process this command
+        at sun.nio.ch.FileChannelImpl.map0(Native Method)
+        at sun.nio.ch.FileChannelImpl.map(FileChannelImpl.java:705)
+        at ucar.nc2.TimeMMap.timeReadMMap(TimeMMap.java:226)
+
+
+3.2 under client:
+$ sh runTiming
+readMM from timing/data/writeMM-100K-625020937 nbytes= 100004000 nreads = 1000 took 891 msecs
+readMM from timing/data/writeMM-10K-1328095594 nbytes= 100040000 nreads = 10000 took 491 msecs
+readMM from timing/data/writeMM-16K-793352632 nbytes= 100025000 nreads = 6250 took 6359 msecs
+readMM from timing/data/writeMM-16K768522452 nbytes= 100025000 nreads = 6250 took 10475 msecs
+readMM from timing/data/writeMM-1K-1180548825 nbytes= 100400000 nreads = 100000 took 6008 msecs
+readMM from timing/data/writeMM-1K-1334170905 nbytes= 100400000 nreads = 100000 took 5889 msecs
+readMM from timing/data/writeMM-1K1198845275 nbytes= 100400000 nreads = 100000 took 6860 msecs
+readMM from timing/data/writeMM-1K333286500 nbytes= 100400000 nreads = 100000 took 4907 msecs
+readMM from timing/data/writeMM-32K-558097474 nbytes= 100012500 nreads = 3125 took 9323 msecs
+readMM from timing/data/writeMM-32K1199126233 nbytes= 100012500 nreads = 3125 took 7511 msecs
+readMM from timing/data/writeMM-4K-1694378108 nbytes= 100100000 nreads = 25000 took 7601 msecs
+readMM from timing/data/writeMM-4K-712338042 nbytes= 100100000 nreads = 25000 took 5838 msecs
+readMM from timing/data/writeMM-8K105515720 nbytes= 100050000 nreads = 12500 took 6409 msecs
+readMM from timing/data/writeMM-8K1559492285 nbytes= 100050000 nreads = 12500 took 18677 msecs
+readMM 100 6945 msec  count= 14
+
+
+MM total done = 1402019000
+readMM from timing/data/writeMM-100K-625020937 nbytes= 100004000 nreads = 1000 took 6630 msecs
+readMM from timing/data/writeMM-10K-1328095594 nbytes= 100040000 nreads = 10000 took 5829 msecs
+java.io.IOException: Not enough storage is available to process this command
+        at sun.nio.ch.FileChannelImpl.map0(Native Method)
+        at sun.nio.ch.FileChannelImpl.map(FileChannelImpl.java:705)
+        at ucar.nc2.TimeMMap.timeReadMMap(TimeMMap.java:226)
+        at ucar.nc2.TimeMMap.testReadMM(TimeMMap.java:327)
+        at ucar.nc2.TimeMMap.main(TimeMMap.java:365)
+MM total before error= 1602063000
+readMM 100 6856 msec  count= 16
+        at ucar.nc2.TimeMMap.testReadMM(TimeMMap.java:327)
+        at ucar.nc2.TimeMMap.main(TimeMMap.java:365)
+MM total before error= 1602063000
+readMM 100 6063 msec  count= 16
+
+
+3.3 when there is more of a mix of file sizes, results differ, and can be very fast, probably due to caching:
+
+$ sh runTiming
+readMM from timing/data/writeMM-100K-1208645187 nbytes= 1000040 nreads = 10 took 471 msecs
+readMM from timing/data/writeMM-100K-1595631521 nbytes= 1000040 nreads = 10 took 160 msecs
+readMM from timing/data/writeMM-100K-208963519 nbytes= 1000040 nreads = 10 took 10 msecs
+readMM from timing/data/writeMM-16K-1825180133 nbytes= 1000248 nreads = 2062 took 90 msecs
+readMM from timing/data/writeMM-16K1704713367 nbytes= 1000248 nreads = 2062 took 20 msecs
+readMM from timing/data/writeMM-16K669097830 nbytes= 1000248 nreads = 2062 took 121 msecs
+readMM from timing/data/writeMM-1K-1851355582 nbytes= 1004000 nreads = 1000 took 30 msecs
+readMM from timing/data/writeMM-1K1023083508 nbytes= 1004000 nreads = 1000 took 100 msecs
+readMM from timing/data/writeMM-1K2038865226 nbytes= 1004000 nreads = 1000 took 10 msecs
+readMM from timing/data/writeMM-32K-684615672 nbytes= 1000124 nreads = 2031 took 120 msecs
+readMM from timing/data/writeMM-32K-837683209 nbytes= 1000124 nreads = 2031 took 30 msecs
+readMM from timing/data/writeMM-32K1329322424 nbytes= 1000124 nreads = 2031 took 300 msecs
+readMM from timing/data/writeMM-4K-1224835829 nbytes= 1001000 nreads = 250 took 0 msecs
+readMM from timing/data/writeMM-4K-1248912022 nbytes= 1001000 nreads = 250 took 731 msecs
+readMM from timing/data/writeMM-4K1302156818 nbytes= 1001000 nreads = 250 took 31 msecs
+readMM from timing/data/writeMM-8K1354833121 nbytes= 1000500 nreads = 125 took 580 msecs
+readMM from timing/data/writeMM-8K1789013039 nbytes= 1000500 nreads = 125 took 30 msecs
+readMM from timing/data/writeMM-8K517645927 nbytes= 1000500 nreads = 125 took 10 msecs
+readMM from timing/data/writeMM10-100K-985222826 nbytes= 10000400 nreads = 100 took 571 msecs
+readMM from timing/data/writeMM10-100K1837055281 nbytes= 10000400 nreads = 100 took 591 msecs
+readMM from timing/data/writeMM10-100K1894222658 nbytes= 10000400 nreads = 100 took 70 msecs
+readMM from timing/data/writeMM10-16K-1407092215 nbytes= 10002500 nreads = 625 took 50 msecs
+readMM from timing/data/writeMM10-16K-1773424693 nbytes= 10002500 nreads = 625 took 50 msecs
+readMM from timing/data/writeMM10-16K-2071699601 nbytes= 10002500 nreads = 625 took 641 msecs
+readMM from timing/data/writeMM10-1K-642091832 nbytes= 10040000 nreads = 10000 took 631 msecs
+readMM from timing/data/writeMM10-1K2040748751 nbytes= 10040000 nreads = 10000 took 831 msecs
+readMM from timing/data/writeMM10-1K2131562093 nbytes= 10040000 nreads = 10000 took 51 msecs
+readMM from timing/data/writeMM10-32K-524627446 nbytes= 10001248 nreads = 4312 took 50 msecs
+readMM from timing/data/writeMM10-32K-735987835 nbytes= 10001248 nreads = 4312 took 430 msecs
+readMM from timing/data/writeMM10-32K2063224573 nbytes= 10001248 nreads = 4312 took 511 msecs
+readMM from timing/data/writeMM10-4K-1127416265 nbytes= 10010000 nreads = 2500 took 461 msecs
+readMM from timing/data/writeMM10-4K-1267133284 nbytes= 10010000 nreads = 2500 took 150 msecs
+readMM from timing/data/writeMM10-4K372381711 nbytes= 10010000 nreads = 2500 took 60 msecs
+readMM from timing/data/writeMM10-8K-2023043541 nbytes= 10005000 nreads = 1250 took 541 msecs
+readMM from timing/data/writeMM10-8K1431174335 nbytes= 10005000 nreads = 1250 took 70 msecs
+readMM from timing/data/writeMM10-8K2145061224 nbytes= 10005000 nreads = 1250 took 50 msecs
+readMM from timing/data/writeMM100-100K-1046058874 nbytes= 100004000 nreads = 1000 took 491 msecs
+readMM from timing/data/writeMM100-16K629453927 nbytes= 100025000 nreads = 6250 took 490 msecs
+readMM from timing/data/writeMM100-1K-1136948071 nbytes= 100400000 nreads = 100000 took 4266 msecs
+readMM from timing/data/writeMM100-1K-718492642 nbytes= 100400000 nreads = 100000 took 6249 msecs
+readMM from timing/data/writeMM100-1K387134686 nbytes= 100400000 nreads = 100000 took 511 msecs
+readMM from timing/data/writeMM100-32K-1204776358 nbytes= 100012500 nreads = 3125 took 6960 msecs
+readMM from timing/data/writeMM100-4K658871339 nbytes= 100100000 nreads = 25000 took 6750 msecs
+readMM from timing/data/writeMM100-8K1142034396 nbytes= 100050000 nreads = 12500 took 4116 msecs
+readMM 1 158 msec  count= 18
+readMM 10 322 msec  count= 18
+readMM 100 3729 msec  count= 8
+
+
+MM total done = 999586680
+readMM from timing/data/writeMM-100K-1208645187 nbytes= 1000040 nreads = 10 took 10 msecs
+readMM from timing/data/writeMM-100K-1595631521 nbytes= 1000040 nreads = 10 took 60 msecs
+readMM from timing/data/writeMM-100K-208963519 nbytes= 1000040 nreads = 10 took 60 msecs
+readMM from timing/data/writeMM-16K-1825180133 nbytes= 1000248 nreads = 2062 took 50 msecs
+readMM from timing/data/writeMM-16K1704713367 nbytes= 1000248 nreads = 2062 took 70 msecs
+readMM from timing/data/writeMM-16K669097830 nbytes= 1000248 nreads = 2062 took 60 msecs
+readMM from timing/data/writeMM-1K-1851355582 nbytes= 1004000 nreads = 1000 took 60 msecs
+readMM from timing/data/writeMM-1K1023083508 nbytes= 1004000 nreads = 1000 took 571 msecs
+readMM from timing/data/writeMM-1K2038865226 nbytes= 1004000 nreads = 1000 took 50 msecs
+readMM from timing/data/writeMM-32K-684615672 nbytes= 1000124 nreads = 2031 took 60 msecs
+readMM from timing/data/writeMM-32K-837683209 nbytes= 1000124 nreads = 2031 took 50 msecs
+readMM from timing/data/writeMM-32K1329322424 nbytes= 1000124 nreads = 2031 took 51 msecs
+readMM from timing/data/writeMM-4K-1224835829 nbytes= 1001000 nreads = 250 took 70 msecs
+readMM from timing/data/writeMM-4K-1248912022 nbytes= 1001000 nreads = 250 took 60 msecs
+readMM from timing/data/writeMM-4K1302156818 nbytes= 1001000 nreads = 250 took 60 msecs
+readMM from timing/data/writeMM-8K1354833121 nbytes= 1000500 nreads = 125 took 50 msecs
+readMM from timing/data/writeMM-8K1789013039 nbytes= 1000500 nreads = 125 took 50 msecs
+readMM from timing/data/writeMM-8K517645927 nbytes= 1000500 nreads = 125 took 50 msecs
+readMM from timing/data/writeMM10-100K-985222826 nbytes= 10000400 nreads = 100 took 411 msecs
+readMM from timing/data/writeMM10-100K1837055281 nbytes= 10000400 nreads = 100 took 701 msecs
+readMM from timing/data/writeMM10-100K1894222658 nbytes= 10000400 nreads = 100 took 621 msecs
+readMM from timing/data/writeMM10-16K-1407092215 nbytes= 10002500 nreads = 625 took 380 msecs
+readMM from timing/data/writeMM10-16K-1773424693 nbytes= 10002500 nreads = 625 took 361 msecs
+readMM from timing/data/writeMM10-16K-2071699601 nbytes= 10002500 nreads = 625 took 951 msecs
+readMM from timing/data/writeMM10-1K-642091832 nbytes= 10040000 nreads = 10000 took 511 msecs
+readMM from timing/data/writeMM10-1K2040748751 nbytes= 10040000 nreads = 10000 took 470 msecs
+readMM from timing/data/writeMM10-1K2131562093 nbytes= 10040000 nreads = 10000 took 371 msecs
+readMM from timing/data/writeMM10-32K-524627446 nbytes= 10001248 nreads = 4312 took 601 msecs
+readMM from timing/data/writeMM10-32K-735987835 nbytes= 10001248 nreads = 4312 took 611 msecs
+readMM from timing/data/writeMM10-32K2063224573 nbytes= 10001248 nreads = 4312 took 370 msecs
+readMM from timing/data/writeMM10-4K-1127416265 nbytes= 10010000 nreads = 2500 took 391 msecs
+readMM from timing/data/writeMM10-4K-1267133284 nbytes= 10010000 nreads = 2500 took 511 msecs
+readMM from timing/data/writeMM10-4K372381711 nbytes= 10010000 nreads = 2500 took 430 msecs
+readMM from timing/data/writeMM10-8K-2023043541 nbytes= 10005000 nreads = 1250 took 411 msecs
+readMM from timing/data/writeMM10-8K1431174335 nbytes= 10005000 nreads = 1250 took 400 msecs
+readMM from timing/data/writeMM10-8K2145061224 nbytes= 10005000 nreads = 1250 took 3505 msecs
+readMM from timing/data/writeMM100-100K-1046058874 nbytes= 100004000 nreads = 1000 took 501 msecs
+readMM from timing/data/writeMM100-16K629453927 nbytes= 100025000 nreads = 6250 took 601 msecs
+readMM from timing/data/writeMM100-1K-1136948071 nbytes= 100400000 nreads = 100000 took 711 msecs
+readMM from timing/data/writeMM100-1K-718492642 nbytes= 100400000 nreads = 100000 took 751 msecs
+readMM from timing/data/writeMM100-1K387134686 nbytes= 100400000 nreads = 100000 took 831 msecs
+readMM from timing/data/writeMM100-32K-1204776358 nbytes= 100012500 nreads = 3125 took 5028 msecs
+readMM from timing/data/writeMM100-4K658871339 nbytes= 100100000 nreads = 25000 took 510 msecs
+readMM from timing/data/writeMM100-8K1142034396 nbytes= 100050000 nreads = 12500 took 491 msecs
+readMM 1 120 msec  count= 36
+readMM 10 494 msec  count= 36
+readMM 100 2453 msec  count= 16
+
+
+MM total done = 1999173360
+readMM from timing/data/writeMM-100K-1208645187 nbytes= 1000040 nreads = 10 took 10 msecs
+readMM from timing/data/writeMM-100K-1595631521 nbytes= 1000040 nreads = 10 took 50 msecs
+readMM from timing/data/writeMM-100K-208963519 nbytes= 1000040 nreads = 10 took 60 msecs
+readMM from timing/data/writeMM-16K-1825180133 nbytes= 1000248 nreads = 2062 took 50 msecs
+readMM from timing/data/writeMM-16K1704713367 nbytes= 1000248 nreads = 2062 took 60 msecs
+readMM from timing/data/writeMM-16K669097830 nbytes= 1000248 nreads = 2062 took 50 msecs
+readMM from timing/data/writeMM-1K-1851355582 nbytes= 1004000 nreads = 1000 took 60 msecs
+readMM from timing/data/writeMM-1K1023083508 nbytes= 1004000 nreads = 1000 took 51 msecs
+readMM from timing/data/writeMM-1K2038865226 nbytes= 1004000 nreads = 1000 took 60 msecs
+readMM from timing/data/writeMM-32K-684615672 nbytes= 1000124 nreads = 2031 took 60 msecs
+readMM from timing/data/writeMM-32K-837683209 nbytes= 1000124 nreads = 2031 took 50 msecs
+readMM from timing/data/writeMM-32K1329322424 nbytes= 1000124 nreads = 2031 took 60 msecs
+readMM from timing/data/writeMM-4K-1224835829 nbytes= 1001000 nreads = 250 took 60 msecs
+readMM from timing/data/writeMM-4K-1248912022 nbytes= 1001000 nreads = 250 took 60 msecs
+readMM from timing/data/writeMM-4K1302156818 nbytes= 1001000 nreads = 250 took 40 msecs
+readMM from timing/data/writeMM-8K1354833121 nbytes= 1000500 nreads = 125 took 50 msecs
+readMM from timing/data/writeMM-8K1789013039 nbytes= 1000500 nreads = 125 took 50 msecs
+readMM from timing/data/writeMM-8K517645927 nbytes= 1000500 nreads = 125 took 90 msecs
+readMM from timing/data/writeMM10-100K-985222826 nbytes= 10000400 nreads = 100 took 411 msecs
+readMM from timing/data/writeMM10-100K1837055281 nbytes= 10000400 nreads = 100 took 561 msecs
+readMM from timing/data/writeMM10-100K1894222658 nbytes= 10000400 nreads = 100 took 621 msecs
+readMM from timing/data/writeMM10-16K-1407092215 nbytes= 10002500 nreads = 625 took 380 msecs
+readMM from timing/data/writeMM10-16K-1773424693 nbytes= 10002500 nreads = 625 took 411 msecs
+readMM from timing/data/writeMM10-16K-2071699601 nbytes= 10002500 nreads = 625 took 1883 msecs
+readMM from timing/data/writeMM10-1K-642091832 nbytes= 10040000 nreads = 10000 took 530 msecs
+readMM from timing/data/writeMM10-1K2040748751 nbytes= 10040000 nreads = 10000 took 411 msecs
+readMM from timing/data/writeMM10-1K2131562093 nbytes= 10040000 nreads = 10000 took 1132 msecs
+readMM from timing/data/writeMM10-32K-524627446 nbytes= 10001248 nreads = 4312 took 590 msecs
+readMM from timing/data/writeMM10-32K-735987835 nbytes= 10001248 nreads = 4312 took 391 msecs
+readMM from timing/data/writeMM10-32K2063224573 nbytes= 10001248 nreads = 4312 took 371 msecs
+readMM from timing/data/writeMM10-4K-1127416265 nbytes= 10010000 nreads = 2500 took 390 msecs
+readMM from timing/data/writeMM10-4K-1267133284 nbytes= 10010000 nreads = 2500 took 511 msecs
+readMM from timing/data/writeMM10-4K372381711 nbytes= 10010000 nreads = 2500 took 721 msecs
+readMM from timing/data/writeMM10-8K-2023043541 nbytes= 10005000 nreads = 1250 took 601 msecs
+readMM from timing/data/writeMM10-8K1431174335 nbytes= 10005000 nreads = 1250 took 420 msecs
+readMM from timing/data/writeMM10-8K2145061224 nbytes= 10005000 nreads = 1250 took 811 msecs
+java.io.IOException: Not enough storage is available to process this command
+        at sun.nio.ch.FileChannelImpl.map0(Native Method)
+        at sun.nio.ch.FileChannelImpl.map(FileChannelImpl.java:705)
+        at ucar.nc2.TimeMMap.timeReadMMap(TimeMMap.java:225)
+        at ucar.nc2.TimeMMap.testReadMM(TimeMMap.java:343)
+        at ucar.nc2.TimeMMap.main(TimeMMap.java:381)
+MM total before error= 2197368540
+readMM 1 98 msec  count= 54
+readMM 10 536 msec  count= 54
+readMM 100 2453 msec  count= 16
+
+3.4 whereas the channel reading doesnt fail on this mixture, with these time results:
+
+CD total done = 4997933400
+readCD 1 86 msec  count= 90
+readCD 10 578 msec  count= 90
+readCD 100 8704 msec  count= 40
+
+it appears that the mmap can take more advantage of caching, at the cost of running out of memory.
+
+4. writing
+
+when writing many files, mmap goes into thrashing, presumably after some resource is exhausted.
+
+$ sh runTiming
+writeMMap to timing/data/writeMM-1K-1433136207; n records = 1000 took 251 msecs
+writeMMap to timing/data/writeMM-4K-1003593704; n records = 250 took 10 msecs
+writeMMap to timing/data/writeMM-8K-1747593259; n records = 125 took 30 msecs
+writeMMap to timing/data/writeMM-16K-548950089; n records = 62 took 10 msecs
+writeMMap to timing/data/writeMM-32K-1860525496; n records = 31 took 30 msecs
+writeMMap to timing/data/writeMM-100K203365911; n records = 10 took 10 msecs
+writeMMap to timing/data/writeMM10-1K1795359821; n records = 10000 took 270 msecs
+writeMMap to timing/data/writeMM10-4K-1453807980; n records = 2500 took 181 msecs
+writeMMap to timing/data/writeMM10-8K-35612543; n records = 1250 took 150 msecs
+writeMMap to timing/data/writeMM10-16K-1402165794; n records = 625 took 40 msecs
+writeMMap to timing/data/writeMM10-32K540333947; n records = 312 took 120 msecs
+writeMMap to timing/data/writeMM10-100K-1417399777; n records = 100 took 40 msecs
+writeMMap to timing/data/writeMM100-1K96506862; n records = 100000 took 611 msecs
+writeMMap to timing/data/writeMM100-4K-128537848; n records = 25000 took 551 msecs
+writeMMap to timing/data/writeMM100-8K148059320; n records = 12500 took 440 msecs
+writeMMap to timing/data/writeMM100-16K1570143261; n records = 6250 took 541 msecs
+writeMMap to timing/data/writeMM100-32K-1870008970; n records = 3125 took 491 msecs
+writeMMap to timing/data/writeMM100-100K955222196; n records = 1000 took 511 msecs
+WriteMM timing/data/writeMM-100K 10 msec  count= 1
+WriteMM timing/data/writeMM-16K 10 msec  count= 1
+WriteMM timing/data/writeMM-1K 251 msec  count= 1
+WriteMM timing/data/writeMM-32K 30 msec  count= 1
+WriteMM timing/data/writeMM-4K 10 msec  count= 1
+WriteMM timing/data/writeMM-8K 30 msec  count= 1
+WriteMM timing/data/writeMM10-100K 40 msec  count= 1
+WriteMM timing/data/writeMM10-16K 40 msec  count= 1
+WriteMM timing/data/writeMM10-1K 270 msec  count= 1
+WriteMM timing/data/writeMM10-32K 120 msec  count= 1
+WriteMM timing/data/writeMM10-4K 181 msec  count= 1
+WriteMM timing/data/writeMM10-8K 150 msec  count= 1
+WriteMM timing/data/writeMM100-100K 511 msec  count= 1
+WriteMM timing/data/writeMM100-16K 541 msec  count= 1
+WriteMM timing/data/writeMM100-1K 611 msec  count= 1
+WriteMM timing/data/writeMM100-32K 491 msec  count= 1
+WriteMM timing/data/writeMM100-4K 551 msec  count= 1
+WriteMM timing/data/writeMM100-8K 440 msec  count= 1
+
+
+writeMMap to timing/data/writeMM-1K-1613755745; n records = 1000 took 10 msecs
+writeMMap to timing/data/writeMM-4K-934963076; n records = 250 took 100 msecs
+writeMMap to timing/data/writeMM-8K-2018315211; n records = 125 took 10 msecs
+writeMMap to timing/data/writeMM-16K-1307038568; n records = 62 took 90 msecs
+writeMMap to timing/data/writeMM-32K210657927; n records = 31 took 10 msecs
+writeMMap to timing/data/writeMM-100K-1624000380; n records = 10 took 10 msecs
+writeMMap to timing/data/writeMM10-1K792294047; n records = 10000 took 130 msecs
+writeMMap to timing/data/writeMM10-4K652681052; n records = 2500 took 111 msecs
+writeMMap to timing/data/writeMM10-8K-1716755379; n records = 1250 took 130 msecs
+writeMMap to timing/data/writeMM10-16K-989536949; n records = 625 took 40 msecs
+writeMMap to timing/data/writeMM10-32K-64757269; n records = 312 took 120 msecs
+writeMMap to timing/data/writeMM10-100K1527201317; n records = 100 took 130 msecs
+writeMMap to timing/data/writeMM100-1K1367560790; n records = 100000 took 671 msecs
+writeMMap to timing/data/writeMM100-4K-1241989778; n records = 25000 took 20940 msecs
+writeMMap to timing/data/writeMM100-8K374861742; n records = 12500 took 22523 msecs
+writeMMap to timing/data/writeMM100-16K-2108688017; n records = 6250 took 190945 msecs
+
+one can still ctrl-C to stop the program, but it takes several minutes for the OS to recover. it appears that the OS itelf swaps out (?)
+
+
+10. test real netcdf code. these results are after the files got cached:
+
+NIO C:/data/conventions/cf/copy_cf1.nc 60 msec  count= 3NIO C:/data/conventions/mm5/copy_n040.nc 2233 msec  count= 3
+Normal C:/data/conventions/cf/cf1.nc 354 msec  count= 3Normal C:/data/conventions/mm5/n040.nc 18880 msec  count= 3
+CD******* read total of 332001239readAll 3349 msec  count= 45
+MM****** read total of 332001239readAll 2476 msec  count= 45
+reverse order:
+
+MM******* read total of 1311080533  11.38Mb/secreadAll 2560 msec  count= 45
+CD****** read total of 1311080533 9.12Mb/secreadAll 3195 msec  count= 45
+**repeat, with ver1:
+
+V1******* read total of 1311080533readAll 3034 msec  count= 45
+
+CD****** read total of 1311080533readAll 4673 msec  count= 45MM****** read total of 1311080533readAll 2474 msec  count= 45
+
+11. 
+
+$ java -version
+java version "1.4.2"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.2-b28)
+Java HotSpot(TM) Client VM (build 1.4.2-b28, mixed mode)
+
+$ uname -a
+CYGWIN_NT-5.1 whoopee 1.3.20(0.73/3/2) 2003-02-08 12:10 i686 unknown unknown Cygwin
+
+repeat:
+Ver1= readAll 3240 msec  count= 45CD= readAll 3421 msec  count= 45MM= readAll 2447 msec  count= 45
+repeat -server
+
+Ver1=readAll 2634 msec  count= 45
+CD=readAll 4271 msec  count= 45
+MM=readAll 2628 msec  count= 45
+
+repeat -client
+
+Ver1=readAll 3322 msec  count= 45
+CD=readAll 3227 msec  count= 45
+MM=readAll 2622 msec  count= 45
+
+make some fixesS
+
+CD=readAll 3266 msec  count= 45
+MM=readAll 2453 msec  count= 45
+
+12. add record oriented reading: seems to improve "read all" on large files about 1/3:
+
+.readAllRecord C:/data/conventions/mm5/n040.nc size = 254011616 bytes; took 14000 msecsreadAllRecord C:/data/conventions/mm5/copy_n040.nc size = 254011616 bytes; took 13700 msecsreadAllRecord C:/data/conventions/mm5/copy2_n040.nc size = 254011616 bytes; took 12929 msecsreadAll C:/data/conventions/mm5/n040.nc size = 254012540 bytes; took 19317 msecsreadAll C:/data/conventions/mm5/copy_n040.nc size = 254012540 bytes; took 20069 msecsreadAll C:/data/conventions/mm5/copy2_n040.nc size = 254012540 bytes; took 19088 msecsreadAllRecord C:/data/conventions/mm5/n040.nc size = 254011616 bytes; took 12728 msecsreadAllRecord C:/data/conventions/mm5/copy_n040.nc size = 254011616 bytes; took 13750 msecsreadAllRecord C:/data/conventions/mm5/copy2_n040.nc size = 254011616 bytes; took 15192 msecs
+
+13. add our raf implementation
+
+client:
+Ver1=readAll 3273 msec  count= 45
+Raf=readAll 3177 msec  count= 45
+MM=readAll 2581 msec  count= 45
+
+server:
+Ver1=readAll 2630 msec  count= 45
+Raf=readAll 2713 msec  count= 45
+MM=readAll 2508 msec  count= 45
+
+Ver1=readAll 2481 msec  count= 45
+Raf=readAll 2353 msec  count= 45
+CD=readAll 3251 msec  count= 45
+MM=readAll 2494 msec  count= 45
+
+another test is to repeatedly read data that is spread out over a large (250M) file
+
+10 times:
+Ver1=readSpreadData 3995 msec  count= 1Raf=readSpreadData 3655 msec  count= 1MM=readSpreadData 751 msec  count= 1
+30 times:
+Ver1=readSpreadData 9373 msec  count= 1Raf=readSpreadData 9083 msec  count= 1MM=readSpreadData 1212 msec  count= 1
+
+60 times:
+Ver1=readSpreadData 18767 msec  count= 1Raf=readSpreadData 17936 msec  count= 1MM=readSpreadData 2433 msec  count= 1
+server 10:
+Ver1=readSpreadData 2223 msec  count= 1
+Raf=readSpreadData 1983 msec  count= 1
+MM=readSpreadData 401 msec  count= 1
+
+server 30:
+Ver1=readSpreadData 5768 msec  count= 1
+Raf=readSpreadData 5348 msec  count= 1
+MM=readSpreadData 1101 msec  count= 1
+server 60:
+Ver1=readSpreadData 11377 msec  count= 1
+Raf=readSpreadData 10395 msec  count= 1
+MM=readSpreadData 2123 msec  count= 1
+***************************************************************************************************************
+
+100. TODO: 
+ 1. memory mapping: how useful is it, dont we get same effect without it?
+ 1. test on linux, solaris 
+ 1. can class be compiled under 1.4 and run under 1.3 ?
+ 2. profile and look for inefficiencies
+ 3. remap MMap when write record values: better way? 10M increment? user spec? truncate?
+ 4. write non-NIO SP using old RandomAccessFile; could be non-NIO defuult.
+
+200. useful NIO changes
+
+no way to read non-byte data without doing an extra copy.
+no way to gracefully extend mmap as you write the file (?)
+
+1000. good ideas
+
+1. build dataset table to view values in netcdf. allow sort, select
+2. build station / track viewer for ldm data
+
