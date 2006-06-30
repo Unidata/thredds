@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+  </service>
+  <service name="latest" serviceType="Resolver" base=""/>
+  <dataset name="GFS_Alaska_191km_20051011_1800.grib1" ID="NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_1800.grib1"
+           urlPath="model/GFS/Alaska_191km/GFS_Alaska_191km_20051011_1800.grib1">
+    <dataSize units="Mbytes">3.534</dataSize>
+    <timeCoverage>
+      <start>2005-10-11T18:00:00</start>
+      <duration>120 hours</duration>
+    </timeCoverage>
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-1</dataFormat>
+      <documentation type="summary">NCEP GFS Model : AWIPS 203 (J) Grid.
+        National - Alaska (polar stereographic). Model runs are made at 0, 6,
+        12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+        Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic
+        projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10
+        levels); surface, height above ground, pressure layers.</documentation>
+      <documentation type="summary">NCEP Model output</documentation>
+      <documentation type="rights">Freely available</documentation>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
+                     xlink:title="NCEP Model documentation"></documentation>
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <documentation>Previously called AVN/MRF (Medium Range Forecast)</documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+      <geospatialCoverage zpositive="down">
+        <northsouth>
+          <start>18.28536</start>
+          <size>38.4064</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>174.01996</start>
+          <size>133.67597</size>
+          <units>degrees_east</units>
+        </eastwest>
+        <updown>
+          <start>1000.0</start>
+          <size>-900.0</size>
+          <resolution>-150.0</resolution>
+          <units>hPa</units>
+        </updown>
+      </geospatialCoverage>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+      <variables vocabulary="GRIB-1">
+        <variable name="Absolute_vorticity" vocabulary_name="41" units="1/s">Absolute vorticity @ isobaric2</variable>
+        <variable name="Geopotential_height" vocabulary_name="7" units="gpm">Geopotential height @ isobaric</variable>
+        <variable name="Precipitable_water" vocabulary_name="54" units="kg/m^2">Precipitable water @ entire_atmosphere</variable>
+        <variable name="Pressure_reduced_to_MSL" vocabulary_name="2" units="Pa">Pressure reduced to MSL @ msl</variable>
+        <variable name="Pressure_vertical_velocity" vocabulary_name="39" units="Pa/s">Pressure vertical velocity @ isobaric1</variable>
+        <variable name="Pressure" vocabulary_name="1" units="Pa">Pressure @ surface</variable>
+        <variable name="Pressure_tropopause" vocabulary_name="1" units="Pa">Pressure @ tropopause</variable>
+        <variable name="Relative_humidity" vocabulary_name="52" units="%">Relative humidity @ isobaric3</variable>
+        <variable name="Relative_humidity_layer_between_two_sigmas" vocabulary_name="52" units="%">Relative humidity @ layer_between_two_sigmas</variable>
+        <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vocabulary_name="52" units="%">Relative humidity @ layer_between_two_pressure_difference_from_ground</variable>
+        <variable name="Surface_lifted_index" vocabulary_name="131" units="K">Surface lifted index @ surface</variable>
+        <variable name="Temperature" vocabulary_name="11" units="K">Temperature @ isobaric1</variable>
+        <variable name="Temperature_tropopause" vocabulary_name="11" units="K">Temperature @ tropopause</variable>
+        <variable name="Temperature_height_above_ground" vocabulary_name="11" units="K">Temperature @ height_above_ground</variable>
+        <variable name="Total_precipitation" vocabulary_name="61" units="kg/m^2">Total precipitation @ surface</variable>
+        <variable name="u_wind" vocabulary_name="33" units="m/s">u wind @ isobaric</variable>
+        <variable name="u_wind_tropopause" vocabulary_name="33" units="m/s">u wind @ tropopause</variable>
+        <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="33" units="m/s">u wind @ layer_between_two_pressure_difference_from_ground</variable>
+        <variable name="v_wind" vocabulary_name="34" units="m/s">v wind @ isobaric</variable>
+        <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="34" units="m/s">v wind @ layer_between_two_pressure_difference_from_ground</variable>
+        <variable name="v_wind_tropopause" vocabulary_name="34" units="m/s">v wind @ tropopause</variable>
+        <variable name="Vertical_speed_shear" vocabulary_name="136" units="1/s">Vertical speed shear @ tropopause</variable>
+      </variables>
+    </metadata>
+  </dataset>
+</catalog>

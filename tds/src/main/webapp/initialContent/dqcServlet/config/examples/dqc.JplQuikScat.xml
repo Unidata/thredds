@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryCapability xmlns="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3 http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd"
+  name="NASA Jet Propulsion Lab, Global Level-2B QuikSCAT Archive" version="0.3">
+  <query base="http://dods.jpl.nasa.gov/dqcServlet/quikscat"
+    construct="template" />
+  <selectFromRange title="Select Date Range" required="false"
+                   template="minDate={min}&amp;maxDate={max}"
+                   min="17193600.0" max="157680000.0" units="seconds since 1999-01-01" />
+  <selectFromRange title="Northerly Equatorial Crossing (longitude)" required="false"
+                    template="minCross={min}&amp;maxCross={max}"
+                    min="0.0" max="360.0" units="degree_east" modulo="true" >
+    <description>
+      The longitude at which the satellite crosses the equator from the
+      southern into the northern hemisphere.
+    </description>
+  </selectFromRange>
+  <selectService id="serviceType" title="Select service type(s)" required="true"
+                     template="serviceType={serviceType}" multiple="true">
+    <serviceType name="OPeNDAP/DODS" value="DODS" />
+  </selectService>
+</queryCapability>
+<!--
+    EXAMPLE queries:
+     ?minDate=1.0&maxDate=1.5
+     ?minCross=250.0&maxCross=260.0
+  -->

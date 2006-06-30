@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog name="Test Dataset Alias / ID" version="0.6" xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<dataset name="top">
+
+		<service name="Motherlode" serviceType="Compound" base="">
+			<service name="MotherlodeFTP" serviceType="FTP" base="ftp://motherlode.ucar.edu/ftp/pub/thredds/"/>
+			<service name="MotherlodeDODS" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/"/>
+		</service>
+
+		<dataset name="Flux measurements" dataType="Grid" serviceName="Motherlode" ID="FluxData">
+			<dataset name="CO2" urlPath="flux/CO2.nc"/>
+			<dataset name="NO2" urlPath="flux/NO2.nc"/>
+		</dataset>
+
+		<dataset name="Model data" dataType="Grid" serviceName="Motherlode">
+			<dataset name="Flux measurements" alias="FluxData"/>
+			<dataset name="Model results" urlPath="model/results.nc"/>
+		</dataset>
+		
+	</dataset>
+</catalog>

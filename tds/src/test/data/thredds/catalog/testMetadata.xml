@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+  <catalog 
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd" 
+  >
+ 
+  <service base="http://acd.ucar.edu/models/MOZART/DATA_COMP/datasets_nc/solve1/" serviceType="HTTP" name="disk"/>
+    
+  <dataset name="SAGE III Ozone Loss and Validation Experiment" ID="solve" harvest="true">
+ 
+   <metadata inherited="true">
+       <serviceName>disk</serviceName>
+       <dataType>Trajectory</dataType>
+       <dataFormat>NetCDF</dataFormat>
+       <authority>unidata.ucar.edu:</authority>
+    </metadata>
+
+   <metadata xmlns:d="somethingdifferent">
+       <d:boof>disk</d:boof>
+       <d:smack pew="fachia">globulate</d:smack>
+    </metadata>
+
+   <metadata xlink:href="http://dataportal.ucar.edu/metadata/acd/model-eval-data/solve/solve1.dc" metadataType="ADN"/>
+
+   <metadata xlink:href="http://dataportal.ucar.edu/metadata/acd/model-eval-data/solve/solve1.dc" metadataType="DIF"
+	xmlns:d="DIF" />
+
+   <metadata xlink:href="DifTest.xml" metadataType="THREDDS"/>
+
+
+       
+  </dataset>
+  
+</catalog>

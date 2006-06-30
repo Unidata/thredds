@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog version="0.7"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns ="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog1.0.xsd"
+>
+  <dataset name="Unidata IDD data">
+    <service name="mlode" serviceType="DODS" base="http://motherlode/cgi-bin/dods/nph-dods" />
+    <!--documentation>Hi there</documentation-->
+    <metadata metadataType="DIF"/>
+    <dataset name="NCEP Model data" dataType="Grid">
+      <dataset name="NCEP Eta 211 model data">
+        <dataset name="NCEP Eta 211 model 2003-12-19 00Z run" >
+          <access urlPath="model/2003121900_eta_211.nc" serviceName="mlode" />
+        </dataset>
+        <dataset name="NCEP Eta 211 model 2003-12-19 12Z run" >
+          <access urlPath="model/2003121912_eta_211.nc" serviceName="mlode" />
+        </dataset>
+      </dataset>
+    </dataset>
+  </dataset>
+
+</catalog>

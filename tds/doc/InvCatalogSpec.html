@@ -1,0 +1,798 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+<!-- $Id: InvCatalogSpec.html,v 1.1 2005/03/30 05:40:31 edavis Exp $ -->
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR"
+ content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
+  <meta name="Author" content="John Caron">
+  <title>Dataset Inventory Catalog Specification</title>
+</head>
+<body bgcolor="#ffecec">
+<div class="head">
+<h1> <img src="InvCatalogSpec7_files/THREDDSlogo10.jpg" width="67"
+ height="54"> Dataset Inventory Catalog Specification Version 0.7</h1>
+<address> last update: Dec 11, 2003 ($Date: 2005/03/30 05:40:31 $)</address>
+<br>
+<hr title="Separator for header"></div>
+<h2>Overview</h2>
+<p>THREDDS Inventory Catalogs are designed to organize and describe
+collections of data. A <em><strong>dataset</strong></em> is a
+container for associated metadata and other <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>s.
+Each <span style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+is either a collection dataset (i.e., contains other <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>s)
+or an atomic dataset (i.e., has an access method).</p>
+<p>An <em><strong>atomic dataset</strong></em> has no nested datasets,
+and has an access URL with service type not <em>Resolver</em> or <em>QueryCapability</em>.
+To find out more about this Dataset, one must use a non-THREDDS
+protocol, which we call <em>crossing the protocol boundary</em>.<br>
+</p>
+<p>A <em><strong>collection dataset </strong></em> may be of the
+following types:</p>
+<ul>
+  <li>A <em><strong></strong></em><strong><em>heterogeneous collection
+dataset </em></strong>may have arbitrarily-deep nested datasets, and
+there are no constraints on how the datasets are related.</li>
+  <li>A<strong><em> coherent collection dataset </em></strong> has
+only one level of nested datasets, which must be atomic and coherently
+related. A coherent dataset always has a <em>collectionType</em>
+attribute that describes the relationship of its nested datasets.
+Possible types are <em>TimeSeries</em>, <em>StationCollection</em>,
+what else?</li>
+  <li>A <span style="font-style: italic;"><span
+ style="font-weight: bold;">query dataset</span></span> is a proxy to a
+dataset and has the service type <span style="font-style: italic;">Query</span>.
+When accessed, it can result in an atomic dataset, a collection
+dataset, or a DQC dataset (document?).</li>
+  <li>A <strong><em>resolver dataset</em></strong> is a proxy to a
+collection dataset. It has service type <em>Resolver</em>, and its URL
+always returns a catalog containing a single coherent dataset. (<span
+ style="font-weight: bold;">Note</span>: resolver dataset is a subclass
+of query dataset.)<br>
+  </li>
+  <li>A <em><strong>DQC dataset</strong></em> is a collection of
+resolver datasets. It has service type <em>QueryCapability</em>, and
+its URL points to an XML document called a <a href="./DqcSpec.html">Dataset
+Query Capability
+(DQC) document</a>. That document describes in a compact way the set of
+resolver datasets contained in the DQC dataset.</li>
+  <li>A <span style="font-style: italic;"><span
+ style="font-weight: bold;">data object</span></span> is a dataset that
+an application might want to act on, e.g., visualize. Both atomic
+datasets and coherent collection datasets
+are considered data objects.</li>
+</ul>
+<br>
+<hr style="width: 100%; height: 2px;">Notes from discussions on 12
+December:<br>
+<ul>
+  <li>DQC is a collection of&nbsp; resolver datasets</li>
+  <li>DQC is used to build a resolver dataset</li>
+  <li>DQC documents can be chained together. I.e., a resolver dataset
+when
+dereferenced may results in a:</li>
+  <ul>
+    <li>collection dataset; or a</li>
+    <li>DQC document<br>
+    </li>
+  </ul>
+</ul>
+More discussion on 18Dec:<br>
+<ul>
+  <li>Data Object is the result of catalog/DQC activity that is thrown
+to the application (atomic and coherent collection datasets).</li>
+  <li>is serviceType enough? Do we need serviceType
+(transProtocolType?) and formatType (dataModelType?)</li>
+  <ul>
+    <li>serviceType is really made up of several things including the
+transport protocol and describes how to make a request<br>
+    </li>
+    <ul>
+      <li>&nbsp;transportType - HTTP, FTP, GridFTP, ...<br>
+      </li>
+      <li>queryType - <br>
+      </li>
+      <li>formatType/dataModelType (optional?) - OPeNDAP, ADDE, netCDF,
+HDF, ...<br>
+      </li>
+    </ul>
+    <li>dataType</li>
+    <li>collectionType</li>
+  </ul>
+  <li>Where is the (data access) protocol boundary? Should THREDDS deal
+with both sides of the protocol boundary? We should probably deal with
+it in terms of having a framework that allows new protocols to be
+plugged in and tools that pull information from the data access side of
+the protocol boundary.. But the protocol and the XML encodings should
+not cross the protocol boundary, i.e., <span style="font-weight: bold;">a
+user should be able to use THREDDS software even on datasets that are
+accessible in ways the THREDDS software does not understand</span>.</li>
+  <ul>
+    <li>THREDDS side of protocol boundary:</li>
+    <ul>
+      <li>deals with collections of data objects<br>
+      </li>
+    </ul>
+    <ul>
+      <li>provides metadata about data objects collectively and
+individually</li>
+      <li>metadata can be as detailed as desired but should not contain
+information specific to a particular protocol. (What about a DQC that
+is a collection of ADDE or DODS constrained URLs? ) -- I'm guessing
+this isn't very important. Let's ignore this for the time being.</li>
+      <li>All THREDDS information can be accessed (though not
+necessarily understood) without knowing anything about or using a data
+access protocol<br>
+      </li>
+    </ul>
+    <li>Data access side of protocol boundary:</li>
+    <ul>
+      <li>deals with only one data object&nbsp; at a time (???)<br>
+      </li>
+    </ul>
+    <ul>
+      <li>may provides metadata about the data object</li>
+      <li>provides access to the data object<br>
+      </li>
+    </ul>
+  </ul>
+</ul>
+<hr>
+<h2>Catalog Elements and Attributes</h2>
+<h3>catalog Element</h3>
+<pre>&lt;xsd:element name="catalog" type="cat:catalogType"&gt;<br><br>  &lt;!-- Enforce dataset ID references:<br>       1) Each dataset ID must be unique in the document.<br>       2) Each dataset alias must reference a dataset ID in the document.<br>    --&gt;<br>  &lt;xsd:unique name="datasetID"&gt;<br>    &lt;xsd:selector xpath=".//cat:dataset"/&gt;<br>    &lt;xsd:field xpath="@ID"/&gt;<br>  &lt;/xsd:unique&gt;<br>  &lt;xsd:keyref name="datasetAlias" refer="cat:datasetID"&gt;<br>    &lt;xsd:selector xpath=".//cat:dataset"/&gt;<br>    &lt;xsd:field xpath="@alias"/&gt;<br>  &lt;/xsd:keyref&gt;<br><br>  &lt;!-- Enforce references to services:<br>       1) Each service name must be unique and is required.<br>       2) Each dataset that references a service (i.e., has a serviceName<br>          attribute) must reference a service that exists.<br>       3) Each access that references a service (i.e., has a serviceName<br>          attribute) must reference a service that exists.<br>       @todo Do we want unique service names. Currently, don't need to be unique.<br>       @todo This does not enforce the current scoping of service elements.<br>    --&gt;<br>  &lt;!xsd:key name="serviceNameKey"&gt;<br>    &lt;xsd:selector xpath=".//cat:service" /&gt;<br>    &lt;xsd:field xpath="@name" /&gt;<br>  &lt;/xsd:key&gt;<br>  &lt;xsd:keyref name="datasetServiceName" refer="cat:serviceNameKey"&gt;<br>    &lt;xsd:selector xpath=".//cat:dataset" /&gt;<br>    &lt;xsd:field xpath="@serviceName" /&gt;<br>  &lt;/xsd:keyref&gt;<br>  &lt;xsd:keyref name="accessServiceName" refer="cat:serviceNameKey"&gt;<br>    &lt;xsd:selector xpath=".//cat:access" /&gt;<br>    &lt;xsd:field xpath="@serviceName" /&gt;<br>  &lt;/xsd:keyref&gt;<br>&lt;/xsd:element&gt;<br><br>&lt;xsd:complexType name="catalogType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="cat:dataset"  minOccurs="1" maxOccurs="1" /&gt;<br>  &lt;/xsd:sequence&gt;<br>  &lt;!--xsd:attribute name="name" type="xsd:string" use="required"/--&gt;<br>  &lt;xsd:attribute name="version" type="xsd:token" default="0.7"/&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+<p>The <span style="font-style: italic;"><span
+ style="font-weight: bold;">catalog</span></span> element is the
+top-level element and must contain
+exactly
+one top-level <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span>. The <i>version</i>
+attribute allows
+DTD
+migration and should be set to"<b>0.7</b>". The name of the top-level <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+is considered the name of the catalog and should be displayed to the
+user when selecting from catalogs. Here is an example catalog with
+top-level <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span>:<br>
+</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog version="0.7"<br>  xmlns ="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.7.xsd"<br>  xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br>  &lt;dataset name="My data collection" &gt;<br>    ...<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
+<p>Several uniqueness and reference rules for other elements are
+enforced by parts of the schema snippet above. See the <a
+ href="#dataset_Element_">"dataset Element" section</a> for more
+details on <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span> elements referencing
+other <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span> elements as well as <span
+ style="font-style: italic;"><span style="font-weight: bold;">service</span></span>
+elements. See the <a href="#access_Element">"access Element" section</a>
+for more details on <span style="font-style: italic;"><span
+ style="font-weight: bold;">access</span></span> elements referencing <span
+ style="font-style: italic;"><span style="font-weight: bold;">service</span></span>
+elements.<br>
+<br>
+</p>
+<h3><a name="dataset_Element_"></a>dataset Element<br>
+</h3>
+<pre>&lt;xsd:element name="dataset" type="cat:datasetType" /&gt;<br>&lt;xsd:complexType name="datasetType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="cat:service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="cat:documentation" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:choice minOccurs="0" maxOccurs="unbounded" &gt;<br>      &lt;xsd:element ref="cat:metadata" /&gt;<br>      &lt;xsd:element ref="cat:property" /&gt;<br>    &lt;/xsd:choice&gt;<br>    &lt;xsd:element ref="cat:access" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt;<br>      &lt;xsd:element ref="cat:dataset" /&gt;<br>      &lt;xsd:element ref="cat:catalogRef" /&gt;<br>    &lt;/xsd:choice&gt;<br>  &lt;/xsd:sequence&gt;<br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="dataType" type="cat:dataTypeEnum" /&gt;<br>  &lt;xsd:attribute name="authority" type="xsd:string" /&gt;<br>  &lt;xsd:attribute name="ID" type="xsd:token" /&gt;<br>  &lt;xsd:attribute name="alias" type="xsd:token" /&gt;<br>  &lt;xsd:attribute name="serviceName" type="xsd:token" /&gt;<br>  &lt;xsd:attribute name="urlPath" type="xsd:token" /&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+<p>A <span style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+element represents a named logical set of data at a level of
+granularity
+appropriate for presentation to a user. The name of the <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+element (i.e., the value of the <span style="font-weight: bold;">name</span>
+attribute) should be a human readable name that will be displayed to
+users. A <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span>
+is considered an atomic dataset if it defines at least one access
+method, otherwise it is just a container for nested datasets. [If an
+atomic dataset is selected by a user, an event is sent to the client
+software. <span style="color: rgb(255, 0, 0);">Should we seperate out
+the object/library/widget actions from the communication layer? Content
+vs presentation?</span>] Multiple access methods specify different
+services for accessing the data. Choices among these different services
+should be filterered by client
+software
+or presented to the user for selection. There are a variety of ways to
+define an access method in a <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span> element; they are
+described in detail in the <a
+ href="#Constructing_an_Access_Method_for_a">"Constructing
+an Access Method" section</a> below.<br>
+</p>
+<p>A <i style="font-weight: bold;">dataset</i> element contains 0 or
+more <i style="font-weight: bold;">service</i>
+elements
+followed by 0 or more <i style="font-weight: bold;">documentation</i>,
+<i style="font-weight: bold;">metadata</i>, or
+<i style="font-weight: bold;">property</i>
+elemets in any order, followed by 0 or more <i
+ style="font-weight: bold;">access</i> elements,
+followed
+by 0 or more nested <i><span style="font-weight: bold;">dataset</span>
+</i>or<i> <span style="font-weight: bold;">catalogRef</span></i>
+elements.&nbsp;
+The data represented by a nested <i style="font-weight: bold;">dataset</i>
+element should be a
+subset,
+a specialization or in some other sense "contained" within the data
+represented
+by its parent <i style="font-weight: bold;">dataset</i> element.
+</p>
+<p>A dataset may have a dataType, specified within itself or in
+a containing <i>collection</i>, whose value comes from a controlled
+vocabulary.
+</p>
+<p><a name="alias"></a>If a <i>dataset</i> has an <i>alias</i>
+attribute, the value of the attribute must be an ID of another <i>dataset</i>
+within the same catalog. Note it may not refer to a <i>dataset</i> in
+another catalog referred to by a <i>catalogRef</i> element. In this
+case, any other properties of the dataset are ignored, and the dataset
+to which the alias refers is used in its place. </p>
+<p><a name="uniqueId"></a>A dataset may have a <i>authority</i>
+specified within itself or in a containing <i>collection. </i>If a
+dataset has an <i>ID</i> and a <i>authority</i> attribute, then the
+combination of the two should be globally unique for all time. If the
+same dataset is specified in multiple catalogs, then its <i>authority</i>
+- <i>ID</i> should be identical if possible. </p>
+<p>Many of the properties of a dataset become the default for contained
+<i>datasets.</i> This includes <i>property
+</i>elements, and
+<i>dataType,
+authority,</i> and <i>serviceName </i>attributes. Any <i>documentation</i>
+elements are displayed at the dataset itself when presenting the
+catalog
+to the user. Any <i>metadata</i> elements apply to all contained
+datasets.
+<br>
+&nbsp;
+<br>
+A <span style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+element can reference another <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span> element; the <span
+ style="font-weight: bold;">ID</span> attribute (if one is given) must
+be unique to the XML document and the <span style="font-weight: bold;">alias</span>
+attribute must reference an existing <span style="font-weight: bold;">ID</span>
+attribute.<br>
+</p>
+<h3>service Element</h3>
+<pre>&lt;xsd:element name="service" type="cat:serviceElemType" /&gt;<br>&lt;xsd:complexType name="serviceElemType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="cat:property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="cat:service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>  &lt;/xsd:sequence&gt;<br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="cat:serviceTypeEnum" use="required" /&gt;<br>  &lt;!-- @todo What does "base" mean for a compound service? null value? --&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br>&lt;/xsd:complexType&gt;<br><br></pre>
+<p>The <span style="font-style: italic;"><span
+ style="font-weight: bold;">service</span></span> element ...<br>
+</p>
+<h3><a name="access_Element"></a>access Element</h3>
+<pre>&lt;xsd:element name="access" type="cat:accessType" /&gt;<br>&lt;xsd:complexType name="accessType"&gt;<br>  &lt;xsd:attribute name="urlPath" type="xsd:token" use="required" /&gt;<br>  &lt;!-- @todo How can I restrict to serviceName OR serviceType, not both? --&gt;<br>  &lt;xsd:attribute name="serviceName" type="xsd:string" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="cat:serviceTypeEnum" /&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+<p>An <span style="font-style: italic;"><span
+ style="font-weight: bold;">access</span></span> element describes one
+method for accessing the data that the parent <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+represents. The access method accessing the data object that the <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+<br>
+</p>
+<h3>documentation Element</h3>
+<pre>&lt;<br></pre>
+<p>A <span style="font-style: italic;"><span style="font-weight: bold;">documentation</span></span>
+element ...<br>
+</p>
+<h3>metadata Element</h3>
+<pre>&lt;<br></pre>
+<p>A <span style="font-style: italic;"><span style="font-weight: bold;">metadata</span></span>
+element ...<br>
+</p>
+<h3>catalogRef Element</h3>
+<pre>&lt;<br></pre>
+<p>A <span style="font-style: italic;"><span style="font-weight: bold;">catalogRef</span></span>
+element ...<br>
+</p>
+<h3>property Element<br>
+</h3>
+<pre>&lt;xsd:element name="property" type="cat:propertyType" /&gt;<br>&lt;xsd:complexType name="propertyType"&gt;<br>  &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>  &lt;xsd:attribute name="value" type="xsd:string" /&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+<p>A <span style="font-style: italic;"><span style="font-weight: bold;">property</span></span>
+element ...<br>
+</p>
+<hr style="width: 100%; height: 2px;">
+<h2>Notes</h2>
+<h3><a name="Constructing_an_Access_Method_for_a"></a>Constructing an
+Access Method for a Dataset</h3>
+<p>There are a variety of ways to build an access method for a given
+dataset:<br>
+</p>
+<p>1) The access method can be defined as a combination of the <span
+ style="font-weight: bold;">urlPath</span> and <span
+ style="font-weight: bold;">serviceName</span>
+attribute of the given <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span> element.<br>
+</p>
+<p>For example:<br>
+</p>
+<pre>&lt;dataset name="d1"&gt;<br>  &lt;service name="s1" serviceType="DODS" base="http://s1/dods" /&gt;<br>  &lt;service name="s2" serviceType="DODS" base="http://s2/dods" /&gt;<br><br>  &lt;!-- This datasets URL is "http://s1/dods/d1.1.nc" --&gt;<br>  &lt;dataset name="d1.1" serviceName="s1" urlPath="d1.1.nc" /&gt;<br><br>  &lt;!-- This datasets URL is "http://s2/dods/d1.2.nc" --&gt;<br>  &lt;dataset name="d1.2" serviceName="s2" urlPath="d1.2.nc" /&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>2) The access method can be defined as a combination of the <span
+ style="font-weight: bold;">urlPath</span>
+attribute of the given <span style="font-style: italic;"><span
+ style="font-weight: bold;">dataset</span></span> element and the <span
+ style="font-weight: bold;">serviceName</span> attribute of an ancestor
+<span style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+(i.e., the
+service name value is inherited from or scoped within ancestor <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>s).<br>
+</p>
+<p>This is convenient when all (or most) of the datasets in a parent
+dataset have the same service. For example:<br>
+</p>
+<pre>&lt;dataset name="d1" serviceName="s1"&gt;<br>  &lt;service name="s1" serviceType="DODS" base="http://s1/dods" /&gt;<br>  &lt;service name="s2" serviceType="DODS" base="http://s2/dods" /&gt;<br><br>  &lt;dataset name="d1.1" urlPath="d1.1.nc" /&gt; &lt;!-- URL: "http://s1/dods/d1.1.nc" --&gt;<br>&nbsp; &lt;dataset name="d1.2" urlPath="d1.2.nc" /&gt; &lt;!-- URL: "http://s1/dods/d1.2.nc" --&gt;<br>&nbsp; &lt;dataset name="d1.3" urlPath="d1.2.nc" /&gt; &lt;!-- URL: "http://s1/dods/d1.3.nc" --&gt;<br>&nbsp; &lt;dataset name="d1.4" urlPath="d1.2.nc" /&gt; &lt;!-- URL: "http://s1/dods/d1.4.nc" --&gt;<br><br>&nbsp; &lt;dataset name="d1.5" serviceName="s2" urlPath="d1.2.nc" /&gt; &lt;!-- URL: "http://s2/dods/d1.5.nc" --&gt;<br>&lt;/dataset&gt;</pre>
+<p>3) The access method can be defined by a <span
+ style="font-style: italic;"><span style="font-weight: bold;">access</span></span>
+element that is the child of the given <span
+ style="font-style: italic;"><span style="font-weight: bold;">dataset</span></span>
+element. Each <span style="font-style: italic;"><span
+ style="font-weight: bold;">access</span></span> element defines one
+access method. An <span style="font-style: italic;"><span
+ style="font-weight: bold;">access</span></span> element can define an
+access method in two ways. First, an access method is defined by a
+combination of a <span style="font-weight: bold;">serviceType</span>
+attribute and a <span style="font-weight: bold;">urlPath</span>
+attribute of the <span style="font-style: italic;"><span
+ style="font-weight: bold;">access</span></span> element. In this case,
+the value of the <span style="font-weight: bold;">urlPath</span>
+attribute must be an absolute URL. Second, an access method can be
+defined as a combination of the <span style="font-weight: bold;">serviceName</span>
+attribute and the <span style="font-weight: bold;">urlPath</span>
+attribute of the <span style="font-style: italic;"><span
+ style="font-weight: bold;">access</span></span> element. In this case,
+the URL given in the <span style="font-weight: bold;">urlPath</span>
+attribute is a relative URL, relative to the base URL of the <span
+ style="font-style: italic;"><span style="font-weight: bold;">service</span></span>
+element referenced by the <span style="font-weight: bold;">serviceName</span>
+attribute.<br>
+</p>
+<p>An access method defined by the dataset element's urlPath attribute
+(1 and 2 above) is considered the default access method. The default
+access method should be the preferred access method
+when
+no filtering or user choice is possible.
+</p>
+<ul>
+</ul>
+<p></p>
+<hr style="width: 100%; height: 2px;">
+<hr style="width: 100%; height: 2px;">
+<hr style="width: 100%; height: 2px;">
+<hr style="width: 100%; height: 2px;">
+<hr style="width: 100%; height: 2px;">
+<hr style="width: 100%; height: 2px;">
+<p>OLD STUFF TO BE REVIEWED</p>
+<h2>Change Log</h2>
+<ul>
+  <li>12/16/02 Service URL may be relative to the catalog URL.</li>
+  <li>12/12/02 CatalogRef HREF may be relative to the catalog URL.</li>
+</ul>
+<h2>Catalog Elements and Attributes</h2>
+<h3>
+Access Element</h3>
+<pre>&lt;!ELEMENT access EMPTY&gt;<br>&lt;!ATTLIST access<br>&nbsp;&nbsp;&nbsp; urlPath CDATA #REQUIRED<br>&nbsp;&nbsp;&nbsp; serviceName CDATA #IMPLIED<br>&nbsp;&nbsp;&nbsp; serviceType (%ServiceType;) #IMPLIED<br>&gt;</pre>
+An <i>access</i> element specifies how a dataset can be accessed
+through
+a data service. It is typically used when there is more than one
+service
+available for a dataset.
+<p>Typically a <i>serviceName</i> is specified, which is the name of a
+<i>service</i>
+element in a parent element of the same catalog. Note it may not refer
+to a <i>service</i> in another catalog referred to by a <i>catalogRef</i>
+element. The dataset URL is then formed from the service <i>base</i>
+and
+the access <i>urlPath, </i>and optionally the service <i>suffix</i>
+(see
+forming URLs).
+</p>
+<p>If a <i>serviceName</i> is not specified, a <i>serviceType</i>
+must
+be specified, which creates an "anonymous service" of that type. In
+this
+case the <i>urlPath</i> must be absolute.
+<br>
+&nbsp;
+</p>
+<h3> <a name="catalog"></a>Catalog Element</h3>
+<pre>&lt;!ELEMENT catalog (dataset) &gt;<br>&lt;!ATTLIST catalog<br>&nbsp;&nbsp;&nbsp; name CDATA #REQUIRED<br>&nbsp;&nbsp;&nbsp; version CDATA #REQUIRED<br>&nbsp;&nbsp;&nbsp; xmlns:xlink CDATA #FIXED "http://www.w3.org/1999/xlink"<br>&nbsp;&nbsp;&nbsp; xmlns CDATA #FIXED "http://www.unidata.ucar.edu/thredds"<br>&gt;</pre>
+This is the top-level element. A <i>catalog</i> element contains
+exactly
+one top-level <i>dataset</i>. The name of the catalog should be
+displayed
+to the user when selecting among catalogs. The <i>version</i> allows
+DTD
+migration and should be set to"<b>0.6</b>".
+<p>The XLink and default namespaces are declared here, so technically
+they
+do not have to be declared in the catalog XML itself. However Internet
+Explorer cannot deal with namespaces declared in the DTD, so you should
+add the same two namespace declarations in the catalog element in the
+XML
+document itself (see <a
+ href="http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6d.xml">example</a>).
+This allows you to view the catalog in the IE browser. Netscape
+Navigator
+cannot yet view XML files (as of version 6.2.1).
+<br>
+&nbsp;
+</p>
+<h3>CatalogRef Element</h3>
+<pre>&lt;!ELEMENT catalogRef EMPTY&gt;<br>&lt;!ATTLIST catalogRef<br>&nbsp;&nbsp;&nbsp; xlink:type (simple) #FIXED "simple"<br>&nbsp;&nbsp;&nbsp; xlink:href CDATA #REQUIRED<br>&nbsp;&nbsp;&nbsp; xlink:title CDATA #REQUIRED<br>&gt;</pre>
+A <i>catalogRef</i> element refers to another catalog that becomes a <i>dataset</i>
+inside this catalog. This is used to seperately maintain catalogs and
+to
+break up large catalogs. The referenced catalog should not be read
+until
+the user explicitly requests it, so that very large dataset collections
+can be represented with <i>catalogRef</i> elements without large
+delays
+in presenting them to the user. The referenced catalog is not textually
+substituted into the containing catalog, but remains a self-contained
+object.
+The referenced catalog must be a valid THREDDS catalog, but it does not
+have to match versions with the containing catalog.
+<p>The value of <i>xlink:href</i> is the URL of the referenced
+catalog. It may be absolute or reletive to the catalog URL. The value
+of <i>xlink:title</i> is displayed as the name of the dataset that the
+user can click on to follow the XLink. Note that the XLink has a fixed
+type of "simple" that is part of the DTD, so does not have to be
+specified in the catalog XML. </p>
+<p>The dataset chooser software should seamlessly present a <i>catalogRef</i>
+to the user, for example by eliminating the referenced catalog's
+top-level
+dataset in its presentation of the catalog when its name matches the
+title
+of the catalogRef title attribute.
+<br>
+&nbsp;
+</p>
+<h3> Dataset Element<a name="dataset"></a></h3>
+<pre>&lt;!ENTITY % DataType "Grid | Image | Station"&gt;</pre>
+<pre>&lt;!ELEMENT dataset (service*, (documentation | metadata | property)*, access*, (dataset | catalogRef)*)&gt;<br>&lt;!ATTLIST dataset<br>&nbsp;&nbsp;&nbsp; name CDATA #REQUIRED<br>&nbsp;&nbsp;&nbsp; dataType (%DataType;) #IMPLIED<br>&nbsp;&nbsp;&nbsp; authority CDATA #IMPLIED<br>&nbsp;&nbsp;&nbsp; ID ID #IMPLIED<br>&nbsp;&nbsp;&nbsp; alias IDREF #IMPLIED<br>&nbsp;&nbsp;&nbsp; serviceName CDATA #IMPLIED<br>&nbsp;&nbsp;&nbsp; urlPath CDATA #IMPLIED<br>&gt;</pre>
+A <i>dataset</i> element represents a logical set of data at a level
+of
+granularity appropriate for presentation to a user. A dataset is <b><i>selectable</i></b>
+if it contains at least one access path, otherwise it is just a
+container
+for nested datasets. If selectable, upon selection, an event is sent to
+the client software.
+<p>A <i>dataset</i> element contains 0 or more <i>service</i>
+elements
+followed by 0 or more <i>documentation</i>,
+<i>metadata</i>, or
+<i>property</i>
+elemets in any order, followed by 0 or more <i>access</i> elements,
+followed
+by 0 or more nested <i>dataset </i>or<i> catalogRef</i>
+elements.&nbsp;
+The data represented by a nested <i>dataset</i> element should be a
+subset,
+a specialization or in some other sense "contained" within the data
+represented
+by its parent <i>dataset</i> element.
+</p>
+<p>A dataset&nbsp; must have one or more access paths, specified
+implicitly
+through a <i>urlPath </i>attribute, or explicitly in contained <i>access</i>
+elements.&nbsp; An access path should be thought of as a URL, but its
+actually
+information from which a protocol-aware layer can construct URLs.&nbsp;
+When there is only one URL, this is typically specified in the <i>dataset</i>
+element itself. When there are multiple URLs, these may be specified in
+the <i>dataset</i> element and/or in contained <i>access</i>
+elements.
+Multiple URLs specify different services for accessing the&nbsp;
+dataset.
+Choices among these different services should be filterered by client
+software
+or presented to the user for selection.&nbsp; A URL specified in the
+dataset
+element itself is the default URL, which should be the preferred URL
+when
+no filtering or user choice is possible. Also see forming URLs.
+</p>
+<p>A dataset may have a <i>dataType</i>, specified within itself or in
+a containing <i>collection</i>, whose value comes from a controlled
+vocabulary.
+</p>
+<p><a name="alias"></a>If a <i>dataset</i> has an <i>alias</i>
+attribute, the value of the attribute must be an ID of another <i>dataset</i>
+within the same catalog. Note it may not refer to a <i>dataset</i> in
+another catalog referred to by a <i>catalogRef</i> element. In this
+case, any other properties of the dataset are ignored, and the dataset
+to which the alias refers is used in its place. </p>
+<p><a name="uniqueId"></a>A dataset may have a <i>authority</i>
+specified within itself or in a containing <i>collection. </i>If a
+dataset has an <i>ID</i> and a <i>authority</i> attribute, then the
+combination of the two should be globally unique for all time. If the
+same dataset is specified in multiple catalogs, then its <i>authority</i>
+- <i>ID</i> should be identical if possible. </p>
+<p>Many of the properties of a dataset become the default for contained
+<i>datasets.</i> This includes <i>property
+</i>elements, and
+<i>dataType,
+authority,</i> and <i>serviceName </i>attributes. Any <i>documentation</i>
+elements are displayed at the dataset itself when presenting the
+catalog
+to the user. Any <i>metadata</i> elements apply to all contained
+datasets.
+<br>
+&nbsp;
+</p>
+<h3>Documentation Element</h3>
+<pre>&lt;!ELEMENT documentation (#PCDATA)&gt;<br>&lt;!ATTLIST documentation<br>&nbsp;&nbsp;&nbsp; xlink:type (simple) #FIXED "simple"<br>&nbsp;&nbsp;&nbsp; xlink:href CDATA #IMPLIED<br>&nbsp;&nbsp;&nbsp; xlink:title CDATA #IMPLIED<br>&nbsp;&nbsp;&nbsp; xlink:show (new | replace | embed) "new"<br>&gt;</pre>
+A <i>documentation</i> element contains or refers to content that
+should
+be displayed to an end-user when making selections from the catalog.
+The
+content may be HTML or plain text. We call this kind of content "human
+readable" information.
+<p>The <i>documentation </i>element may contain arbitrary plain text
+content,
+which should be displayed inline at the position of the <i>collection</i>
+or the <i>dataset</i> element that contains it.
+</p>
+<p>The <i>documentation </i>element may also contain an XLink to an
+HTML
+or plain text web page. This text should be either shown inline or
+displayed
+when the user activates the XLink, depending on the value of the <i>xlink:show</i>
+attribute, whose default is <b>new</b>. If the value of <i>xlink:show
+</i>is
+<b>new</b>,
+then the content of the XLink should be displayed in a new window when
+the user selects it. If the value of <i>xlink:show </i>is <b>embed</b>,
+then the context should be displayed inline, as if it was text content
+in the documentation element.<b> </b>If the value of <i>xlink:show </i>is
+<b>replace,
+</b>the
+content should replace the existing window. The value of <i>xlink:title</i>
+is used for <b>show</b> and <b>replace</b>, and should be the
+displayed
+as the name that the user can click on to follow the XLink. The value
+of
+<i>xlink:show</i>
+and <i>xlink:title</i> are heuristics for the dataset choosing widget,
+which may not be able to fully implement them. These heuristics are
+intended
+to follow the <a href="http://www.w3.org/TR/xlink/">XLink specification</a>
+as closely as possible. Note that the XLink has a fixed type of
+"simple"
+that is part of the DTD, so does not have to be specified in the XML.
+<br>
+&nbsp;
+</p>
+<h3>Metadata Element</h3>
+<pre>&lt;!ENTITY % MetadataType "THREDDS | ADN | Aggregation | DublinCore | DIF | FGDC | LAS | Other"&gt;</pre>
+<pre>&lt;!ELEMENT metadata ANY&gt;<br>&lt;!ATTLIST metadata<br>&nbsp;&nbsp;&nbsp; xlink:type (simple) #FIXED "simple"<br>&nbsp;&nbsp;&nbsp; xlink:href CDATA #IMPLIED<br>&nbsp;&nbsp;&nbsp; metadataType (%MetadataType;) #REQUIRED<br>&gt;</pre>
+A <i>metadata</i> element contains or refers to structured information
+about datasets, which is used by client programs to properly display or
+search for the dataset.&nbsp; Typically, metadata is not displayed to
+an
+end-user when making selections from the catalog, although it may be
+useful
+to make it optionally available. We call this kind of content "machine
+readable" information.
+<p>The <i>metadata</i> element must contain a <i>metadataType</i>
+attribute
+whose value comes from a controlled vocabulary. The types and formats
+of
+the metadata are still being developed, and the current list should be
+considered experimental. Most are currently not operational.
+</p>
+<ul>
+  <li> <b>THREDDS</b>: aka "Dataset Description"</li>
+  <li> <b>ADN</b>: Alexandria / DLESE format</li>
+  <li> <b>Aggregation</b>: DODS Aggregation Server</li>
+  <li> <b>DublinCore</b>: Dublin Core</li>
+  <li> <b>DIF</b>: NASA's Global Change Master Directory (GCMD) format</li>
+  <li> <b>FGDC</b>: Federal Geographic Data Committee</li>
+  <li> <b>LAS</b>: Live Access Server</li>
+</ul>
+The metadata content may be placed in the <i>metadata</i> element
+itself,
+or it may be pointed to through an XLink, but it may not have both.
+Generally
+when the metadata is referenced by an XLink, the information is not
+read
+until explicitly requested.
+<br>
+&nbsp;
+<h3> <a name="property"></a>Property Element</h3>
+<pre>&lt;!ELEMENT property EMPTY&gt;<br>&lt;!ATTLIST property<br>&nbsp;&nbsp; name CDATA #REQUIRED<br>&nbsp;&nbsp; value CDATA #REQUIRED<br>&gt;</pre>
+Property elements are arbitrary name/value pairs to associate with a
+dataset, collection or service elements. They will be used to create
+extended semantics, and should be available to client applications, but
+not typically displayed during dataset selection. Currently they have
+no specified semantics.
+<h3> <a name="service"></a>Service Element1</h3>
+<pre>&lt;!ENTITY % ServiceType "DODS | ADDE | NetCDF | Catalog | FTP | WMS | WFS | WCS | WSDL | Compound | Other"&gt;</pre>
+<pre>&lt;!ELEMENT service (property*, service*)&gt;<br>&lt;!ATTLIST service<br>&nbsp;&nbsp;&nbsp; name CDATA #REQUIRED<br>&nbsp;&nbsp;&nbsp; serviceType (%ServiceType;) #REQUIRED<br>&nbsp;&nbsp;&nbsp; base CDATA #REQUIRED<br>&nbsp;&nbsp;&nbsp; suffix CDATA #IMPLIED<br>&gt;</pre>
+<p><br>
+A <i>service</i> element represents a data service. It must contain a <i>name</i>
+and a <i>serviceType</i> attribute whose value comes from a controlled
+vocabulary. It must contain a <i>name</i> unique within the catalog
+(note that catalogs referenced by a <i>catalogRef </i>contain their
+own <i>ID</i> namespaces). It must have a <i>base</i> attribute and
+may have an optional <i>suffix</i> atribute which are used to
+construct the dataset URL (see <a href="#constructingURLS">constructing
+URLS</a>). The base may be an absolute URL or reletive to the catalog
+URL.
+</p>
+<p>A <i>service</i> element may contain 0 or more <i>property </i>elements.
+These property elements are made available to the application when a
+dataset is selected, but are not otherwise used. </p>
+<p>The scope of a <i>service</i> element is its sibling elements and
+their
+descendents, excluding catalogs referenced by <i>catalogRef </i>elements.&nbsp;
+The service <i>name</i> should be unique within its scope.
+</p>
+<p>A <i>service</i> element with <i>serviceType="Compound"</i> must
+have
+nested service elements, and services with type other than <i>Compound</i>
+may not have nested <i>service</i> elements. Nested <i>service</i>
+elements
+may be used directly by <i>dataset</i> or <i>access</i> elements.
+They
+are at the same scoping level as their parent <i>service</i>.
+</p>
+<p>Each <i>dataset</i> element must refer to one or more <i>service</i>
+elements that appear in a parent collection. Since typically there will
+be only a few <i>service</i> elements in a catalog but many <i>dataset
+</i>elements, a <i>service</i> element factors out the common
+properties of the data service for efficient representation within the
+catalog. <br>
+</p>
+<p>&nbsp;
+</p>
+<h2>Miscellaneous</h2>
+<ul>
+  <li>To use special &nbsp;characters in your XML, use the "numeric
+entity" instead of the "character entity" from HTML. For example, use <b>&amp;#233;</b>
+instead of <b>&amp;eacute; </b>See <a
+ href="http://www.xml.com/pub/a/2001/01/31/qanda.html">this explanation.</a>
+A list of the HTML character entity and their numeric equivalents are <a
+ href="http://www.w3.org/TR/REC-html40/sgml/entities.html">here</a>.</li>
+</ul>
+<p>&nbsp;
+</p>
+<h2>Validation Error Messages</h2>
+<ul>
+  <li> <b>Dataset (1) &lt;datasetName&gt;: has unknown service named
+&lt;serviceName&gt;</b></li>
+  <ul>
+    <li>&lt;datasetName&gt; declares a service &lt;serviceName&gt; that
+cannot
+be found.
+(FATAL)</li>
+  </ul>
+  <li> <b>Dataset (2) &lt;datasetName&gt;: is selectable but no data
+type
+declared
+in it or in a parent element</b></li>
+  <ul>
+    <li>no dataType attribute was declared in a selectable dataset
+element or
+in
+any parent (WARN)</li>
+  </ul>
+  <li> <b>Dataset (3) &lt;datasetName&gt;: is not selectable and does
+not
+have nested
+datasets</b></li>
+  <ul>
+    <li>this dataset has no use (WARN)</li>
+  </ul>
+  <li> <b>Dataset Access (1) &lt;datasetName&gt;: has unknown service
+named &lt;ServiceName&gt;</b></li>
+  <ul>
+    <li>cannot find a service of the given name within a parent element
+(FATAL)</li>
+  </ul>
+  <li> <b>Dataset Access (2) &lt;datasetName&gt;: cannot declare
+service
+&lt;ServiceName&gt;
+and serviceType &lt;ServiceTypeName&gt;</b></li>
+  <ul>
+    <li>the ServiceType will be ignored (WARN)</li>
+  </ul>
+  <li> <b>Dataset Access (3) &lt;datasetName&gt;: urlPath bad syntax
+&lt;urlPath&gt;</b></li>
+  <ul>
+    <li>urlPath could not be parsed as a URI reference (FATAL)</li>
+  </ul>
+  <li> <b>Dataset Access (4) &lt;datasetName&gt;: urlPath must be
+absolute
+&lt;urlPath&gt;</b></li>
+  <ul>
+    <li>urlPath must be absolute when you create an "anonymous" service
+by
+specifying
+a serviceType but no serviceName (FATAL)</li>
+  </ul>
+  <li> <b>Dataset Access (5) &lt;datasetName&gt;: has access
+&lt;urlPath&gt; with no
+valid service</b></li>
+  <ul>
+    <li>no valid service is declared in access element or parent
+dataset.</li>
+  </ul>
+  <li> <b>InvCatalogFactory.readXML (1) MalformedURLException on URL
+&lt;urlPath&gt;
+&lt;message&gt;</b></li>
+  <ul>
+    <li>malformed URL</li>
+  </ul>
+  <li> <b>InvCatalogFactory.readXML (2) cant open catalog; response =
+&lt;http
+response code&gt; &lt;message&gt;</b></li>
+  <ul>
+    <li>URL does not exist</li>
+  </ul>
+  <li> <b>InvCatalogFactory.readXML (3) IOException on catalog
+&lt;message&gt;</b></li>
+  <ul>
+    <li>probably a network or web server error</li>
+  </ul>
+  <li> <b>InvCatalogFactory.readXML (4) cant find 'version' attribute
+in
+catalog</b></li>
+  <ul>
+    <li>catalog element must have a "version" attribute</li>
+  </ul>
+  <li> <b>InvCatalogFactory.readXML (5) No factory for version
+&lt;version&gt;</b></li>
+  <ul>
+    <li>library cannot read that version of catalog docs</li>
+  </ul>
+  <li> <b>InvCatalogFactory6 catalog DTD is &lt;DTD URL&gt; must be
+&lt;http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd&gt;</b></li>
+  <ul>
+    <li>version 6 catalogs must use the named standard DTD</li>
+  </ul>
+  <li> <b>Metadata (1)&nbsp; href = &lt;XLink URL&gt;:
+MalformedURLException &lt;message&gt;</b></li>
+  <ul>
+    <li>The specified URL has incorrect syntax</li>
+  </ul>
+  <li> <b>Metadata (2)&nbsp; href = &lt;XLink URL&gt;: IOException
+&lt;message&gt;</b></li>
+  <ul>
+    <li>Error reading the specified URL.</li>
+  </ul>
+  <li> <b>Service (1) &lt;ServiceName&gt; type COMPOUND must have a
+nested
+service</b></li>
+  <ul>
+    <li>a compound service cannot be used without nested services.</li>
+  </ul>
+  <li> <b>Service (2) &lt;ServiceName&gt; type &lt;ServiceTypeName&gt;
+may
+not have
+nested services</b></li>
+  <ul>
+    <li>non-compound service cannot have nested services.</li>
+  </ul>
+</ul>
+<!--
+  $Log: InvCatalogSpec.html,v $
+  Revision 1.1  2005/03/30 05:40:31  edavis
+  Simplify build process: 1) combine all build scripts into one,
+  thredds/build.xml; 2) combine contents of all resources/ directories into
+  one, thredds/resources; 3) move all test source code and test data into
+  thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
+  into thredds/resources/resources/thredds/schemas.
+
+  Revision 1.2  2003/12/24 00:00:04  edavis
+  A bunch of changes.
+
+  Revision 1.1  2003/12/20 20:27:01  edavis
+  First draft for the 0.7 version of the InvCatalog schema.
+
+  -->
+</body>
+</html>

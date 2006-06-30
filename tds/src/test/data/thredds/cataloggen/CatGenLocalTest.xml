@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: CatGenLocalTest.xml,v 1.1 2005/03/30 05:41:12 edavis Exp $ -->
+<!--
+  Test: Local source, RegExp filter and namer.
+
+  Test CatalogGen on a Local datasetSource with a regular expression
+  datasetFilter and a regular expression datasetNamer.
+-->
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd">
+<catalog name="Unidata IDD Server" version="0.6">
+  <dataset name="Unidata IDD Server">
+    <dataset name="test 1">
+      <metadata metadataType="CatalogGenConfig">
+        <catalogGenConfig type="Catalog">
+          <datasetSource name="first ds source" type="Local"
+                         structure="Flat"
+                         accessPoint="/home/edavis/java/catalogGen/testSuite/serverData/modelAll">
+            <resultService name="mlode" serviceType="DODS"
+                           base="http://mlode.ucar.edu/cgi-bin/dods/nph-dods/"
+                           accessPointHeader="/home/edavis/java/catalogGen/testSuite/serverData/" />
+            <datasetFilter name="Accept netCDF files only" type="RegExp"
+                           matchPattern="\.nc$" />
+            <datasetNamer name="NCEP AVN-Q model data"
+                          type="RegExp" addLevel="true"
+                          matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_avn-q.nc$"
+                          substitutePattern="NCEP AVN-Q $1-$2-$3 $4:00:00 GMT" />
+            <datasetNamer name="NCEP Eta model data"
+                          type="RegExp" addLevel="true"
+                          matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_eta.nc$"
+                          substitutePattern="NCEP Eta $1-$2-$3 $4:00:00 GMT" />
+            <datasetNamer name="NCEP RUC model data"
+                          type="RegExp" addLevel="true"
+                          matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_ruc.nc$"
+                          substitutePattern="NCEP RUC $1-$2-$3 $4:00:00 GMT" />
+          </datasetSource>
+        </catalogGenConfig>
+      </metadata>
+    </dataset>
+    <dataset name="test 2">
+      <metadata metadataType="CatalogGenConfig">
+        <catalogGenConfig type="Catalog">
+          <datasetSource name="2nd ds source" type="Local"
+                         structure="Flat"
+                         accessPoint="/upc/dods/wwwDocs/data/nc_test/metar">
+            <resultService name="mlode" serviceType="DODS"
+                           base="http://www.unidata.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/packages/dods/"
+                           accessPointHeader="/upc/dods/wwwDocs/" />
+            <datasetFilter name="Accept netCDF files only" type="RegExp"
+                           matchPattern="\.nc$" />
+            <datasetNamer name="DODS attrib"
+                          type="DodsAttrib" addLevel="false"
+                          attribContainer="NC_GLOBAL"
+                          attribName="title" />
+          </datasetSource>
+        </catalogGenConfig>
+      </metadata>
+    </dataset>
+  </dataset>
+</catalog>

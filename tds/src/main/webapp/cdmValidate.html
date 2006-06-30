@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>CDM Validation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+<LINK REL="StyleSheet" HREF="/thredds/upc.css" TYPE="text/css">
+<table width="100%">
+    <tr>
+        <td width="95" height="95" align="left"><img src="unidataLogo.gif" width="95" height="93"> </td>
+        <td width="701" align="left" valign="top">
+            <table width="303">
+                <tr>
+                  <td width="295" height="22" align="left" valign="top"><h3><strong>Thredds Data Server</strong></h3></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<h1>Common Data Model Coordinate System Validator </h1>
+<p>The <a href="http://www.unidata.ucar.edu/software/netcdf/CDM/CDM.html">Common Data Model</a> (CDM) Coordinate System Validator  identifies  georeferencing Coordinate Systems in a CDM file (e.g. NetCDF), using CF-1.0, COARDS or other <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">Conventions</a> that it knows about. This accurately indicates what will be viewable in applications like the <a href="http://www.unidata.ucar.edu/software/idv/">IDV</a> that use the CDM <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java library</a>. It currently only works on griddded data.</p>
+<hr>
+<FORM ENCTYPE='multipart/form-data' method='POST' action='/thredds/cdmValidate'>
+<p><strong>Your Name: </strong>
+  <input type="text" name="username">
+</p>
+<p>Please enter or browse to a local filename:</p>
+<p><strong>Filename: </strong>
+  <INPUT NAME='uploadFile' TYPE='file' size="80"><INPUT TYPE='submit' VALUE='Validate' /> 
+  <input type="checkbox" name="xml" value="true"/>
+    return XML </p>
+</FORM>
+
+<form method="GET" action='/thredds/cdmValidate'>
+<p></p>OR enter the URL of a file accessible through an HTTP Server or OPeNDAP:</p>
+<p><strong>URL: </strong>
+  <INPUT NAME='URL' TYPE='text' id="URL" size="80">
+<input type="submit" value="Validate"/>
+<input type="checkbox" name="xml" value="true"/>
+return XML
+</form>
+ 
+<hr>
+<h3>Useful links: </h3>
+<ul>
+  <li><a href="cdmValidateHelp.html">CDM validation output help</a> </li>
+  <li><a href="http://titania.badc.rl.ac.uk/cgi-bin/cf-checker.pl">CF-1.0 Compliance checker</a> </li>
+</ul>
+</body>
+</html>

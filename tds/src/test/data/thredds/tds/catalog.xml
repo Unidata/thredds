@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unit Test datasets" version="1.0.1">
+  
+    <service name="all" serviceType="Compound" base="">     
+  	<service name="thisDODS" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+        <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+        <service name="WCSServer" serviceType="WCS" base="/thredds/wcs/" />
+        <service name="NetcdfServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
+      
+        <datasetRoot path="testContent" location="content/dodsC/data/" />
+    </service>
+
+    <service name="latest" serviceType="Resolver" base="" />
+    <service name="ObsServer" serviceType="ObsServer" base="/thredds/obsServer/" />
+ 
+  <dataset name="Test Single Dataset" ID="testSingleDataset" urlPath="testContent/testData.nc" dataType="Grid">
+    <serviceName>thisDODS</serviceName>
+  </dataset>
+  
+  <catalogRef xlink:href="enhancedCatalog.xml" xlink:title="Test Enhanced Catalog" name="" />
+  <catalogRef xlink:href="test/catalog.xml" xlink:title="Test Nested Catalog" name="" />
+  <catalogRef xlink:href="wcsServer/catalog.xml" xlink:title="Test WCS Catalog" name="" />
+  
+  <datasetScan name="Gribbed Collection" ID="gribCollection" path="gribCollection" location="/$testdata/tds/grib/nam/c20s">
+    <documentation xlink:href="/thredds/modelInventory/gribCollection/" xlink:title="Model Inventory" />
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <filter>
+      <include wildcard="*.grib1" atomic="true" collection="false" />
+    </filter>
+    <sort>
+      <lexigraphicByName increasing="true" />
+    </sort>
+    <addLatest />
+    <addDatasetSize />
+  </datasetScan>
+  
+  <datasetScan name="Metar Collection" ID="metarCollection" path="metarCollection" location="/$testdata/station/ldm/metar/" >
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+    <filter>
+      <include wildcard="*.nc" atomic="true" collection="false" />
+    </filter>
+  </datasetScan>
+  
+  <datasetScan name="testAddRecords" ID="testAddRecords" path="testAddRecords" location="/$testdata/tds/netcdf/">
+    <documentation>Add an NcML element to a DatasetScan </documentation>
+    <metadata inherited="true">
+      <serviceName>thisDODS</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true" enhance="true" >
+	<attribute name="name2" value="value2" />
+    </netcdf>
+    <filter>
+      <include wildcard="*.nc" atomic="true" collection="false" />
+    </filter>
+    <addID />
+   </datasetScan>
+  
+  <dataset name="seawifs aggregation" ID="aggExistingTest" urlPath="aggExistingTest/seawifs.nc">
+    <serviceName>thisDODS</serviceName>
+    <documentation>Add an NcML agg element to a Dataset (not a scan) </documentation>
+    
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+      <attribute name="ncmlAdded" value="value" />
+	<variable name="latitude">
+         <attribute name="ncmlAdded" value="lat_value" />
+      </variable>
+	<variable name="chlorophylle_a">
+         <attribute name="ncmlAdded" value="chlor_value" />
+      </variable>
+	<variable name="time">
+         <attribute name="ncmlAdded" value="time_value" />
+      </variable>
+ 
+      <aggregation dimName="time" type="joinExisting">
+        <scan location="/$testdata/tds/netcdf/seawifs/" suffix=".nc" />
+      </aggregation>
+    </netcdf>
+  </dataset>
+
+  <dataset name="gini aggregation" ID="aggNewTest" urlPath="aggNewTest/SUPER-NATIONAL_8km_WV.gini">
+    <serviceName>all</serviceName>
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+      <dimension isShared="true" isUnlimited="false" isVariableLength="false" length="12" name="time" />
+      <variable name="time" shape="time" type="int">
+        <attribute name="units" value="minutes since 2000-6-16 6:00" />
+        <attribute name="_CoordinateAxisType" value="Time" />
+        <values increment="15" npts="12" start="0" />
+      </variable>
+      <aggregation dimName="time" type="joinNew">
+        <variableAgg name="IR_WV" />
+        <scan location="/$testdata/image/gini" suffix=".gini" dateFormatMark="SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm"/>
+      </aggregation>
+    </netcdf>
+  </dataset>
+
+  <datasetScan name="gini individual files" ID="giniIndividuals" path="giniIndividuals" location="/$testdata/image/gini/" >
+    <metadata inherited="true">
+      <serviceName>thisDODS</serviceName>
+    </metadata>
+    <filter>
+      <include wildcard="*.gini" atomic="true" collection="false" />
+    </filter>
+  </datasetScan>
+
+  
+  <datasetScan name="ncdodsNcmlTest" ID="ncdodsNcmlTest" path="ncdodsNcmlTest" location="C:/data/ncdodsTest/ncml/" >
+    <metadata inherited="true">
+      <serviceName>thisDODS</serviceName>
+    </metadata>
+    <filter>
+      <include wildcard="*.ncml" atomic="true" collection="false" />
+    </filter>
+  </datasetScan>
+
+  <datasetScan name="ncmodels" ID="ncmodels" path="ncmodels" location="C:/data/ncmodels/" >
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+    <filter>
+      <include wildcard="*.nc" atomic="true" collection="false" />
+    </filter>
+    <addLatest />
+    <addDatasetSize />
+  </datasetScan>
+
+  <dataset name="time series of NAM_CONUS-80km forecasts" ID="forecastModelRun" urlPath="NAM_CONUS-80km-forecastModelRun">
+    <serviceName>thisDODS</serviceName>
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+      <aggregation dimName="time" type="forecastModelRun">
+        <scan location="C:/data/ncmodels/" suffix=".nc" />
+      </aggregation>
+    </netcdf>
+  </dataset>
+
+  <datasetScan name="Metar Station Data" collectionType="TimeSeries" harvest="true" ID="NWS/METAR" path="station/metar" location="/$testdata/station/ldm/" >
+
+    <metadata inherited="true">
+      <dataType>Station</dataType>
+      <serviceName>all</serviceName>
+      <documentation type="summary">Metars: hourly surface weather observations</documentation>
+      <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information" />
+      <documentation>In the U.S., METAR reports are taken once an hour between 50 minutes past the hour and the top of the (next) hour. All the observations taken within this time are considered to be for the same cycle. For example, observations taken between 1150Z and 1200Z are all considered to be 12Z observations. In reality, observations may be taken a little earlier or a little later. In addition, observations taken due to changing conditions, known as SPECI reports, are also considered to occur for a given cycle. Our rule of thumb is that all reports taken between (hh-1)45Z to hh44Z are considered to be for the hh cycle.</documentation>
+      <keyword>metar</keyword>
+      <keyword>surface observations</keyword>
+      <timeCoverage>
+        <end>present</end>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </metadata>
+    
+    <access urlPath="MetarDQC.xml" serviceName="DqcServer" dataFormat="NetCDF" />
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true" />
+    <filter>
+      <include wildcard="*.nc" atomic="true" collection="false" />
+    </filter>
+    <addID />
+    <sort>
+      <lexigraphicByName increasing="false" />
+    </sort>
+    <addLatest />
+    <addDatasetSize />
+    <addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_metar.nc$" startTimeSubstitutionPattern="$1-$2-$3T00:00:00" duration="1 day" />
+  </datasetScan>
+
+  <dataset name="Pathfinder AVHRR Northwest Atlantic Aggregation (6km Declouded)" urlPath="HollowayAggregation.nc" ID="HollowayAggregation">
+     <serviceName>thisDODS</serviceName>
+
+     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+        <dimension name="time" length="0"/>
+        <variable name="time" type="String" shape="time" >
+           <attribute name="_CoordinateAxisType" value="Time" />
+        </variable>
+
+        <aggregation dimName="time" type="joinNew">
+           <variableAgg name="dsp_band_1" />
+           <netcdf location="http://dods.gso.uri.edu/dods-3.4/nph-dods/Pathfinder/Northwest_Atlantic/6km/declouded/1999/1/f99001082417.hdf" coordValue="1999-01-01T08:24:17Z" />
+           <netcdf location="http://dods.gso.uri.edu/dods-3.4/nph-dods/Pathfinder/Northwest_Atlantic/6km/declouded/1999/1/f99001181038.hdf" coordValue="1999-01-01T18:10:38Z" />
+           <netcdf location="http://dods.gso.uri.edu/dods-3.4/nph-dods/Pathfinder/Northwest_Atlantic/6km/declouded/1999/1/f99001195049.hdf" coordValue="1999-01-01T19:50:49Z" />
+           <netcdf location="http://dods.gso.uri.edu/dods-3.4/nph-dods/Pathfinder/Northwest_Atlantic/6km/declouded/1999/1/f99002081244.hdf" coordValue="1999-01-02T08:12:44Z" />
+        </aggregation>
+
+     </netcdf>
+    </dataset>
+
+  
+</catalog>
+

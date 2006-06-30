@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Unidata THREDDS-IDD Server" 
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">
+
+  <service name="this" serviceType="QueryCapability" base=""/>
+  
+  <dataset name="Unidata THREDDS-IDD Server">
+    <metadata inherited="true">
+      <authority>unidata.ucar.edu:</authority>
+    </metadata>
+    
+    <dataset name="Realtime data from IDD">
+      <catalogRef xlink:title="NCEP Model Data" xlink:href="http://motherlode.ucar.edu:8080/cataloggen/cataloggen/catalogs/uniModels.xml"/>
+      <dataset name="Satellite Images from NOAAPort and Unidata/Wisconsin Data Streams" dataType="Image">
+        <catalogRef xlink:title="Catalog" xlink:href="adde/motherlode/catalog.xml"/>
+        <dataset name="Dataset Query Capability" serviceName="this" urlPath="adde/motherlode/dqc.xml" dataType="Image"/>
+      </dataset>
+      <dataset name="Station data">
+        <metadata inherited="true">
+          <serviceName>this</serviceName>
+          <dataType>Station</dataType>
+        </metadata>
+        
+        <dataset name="Metar data" urlPath="ldm/MetarDQC.xml" ID="Metars">
+          <project vocabulary="DIF">test1</project>
+        </dataset>
+        
+        <dataset name="Level 3 Radar data" urlPath="ldm/RadarDQC.xml" ID="Radars">
+          <metadata>
+            <project vocabulary="DIF">test2</project>
+          </metadata>
+        </dataset>
+        
+        <dataset name="Profiler data" urlPath="ldm/ProfilerDQC.xml"/>
+        <dataset name="Upperair data" urlPath="ldm/UpperairDQC.xml"/>
+        <dataset name="Synoptic data" urlPath="ldm/SynopticDQC.xml"/>
+        <dataset name="Buoy data" urlPath="ldm/BuoyDQC.xml"/>
+        <dataset name="Zonal data" urlPath="ldm/ZoneDQC.xml" ID="Zonal">
+          <metadata xlink:href="ZoneMetadata.xml" metadataType="THREDDS"/>
+        </dataset>
+      </dataset>
+  
+      <dataset name="A comparative study on floral ecology between Malaysia and Antarctica" ID="ASAC_2372">
+          <metadata xlink:href="DifTest.xml" metadataType="THREDDS"/>
+      </dataset>
+
+    </dataset>
+    
+    <dataset name="Case Studies">
+      <catalogRef xlink:title="Data for VGEE Curricula" xlink:href="casestudy/vgeeCatalog.xml"/>
+      <catalogRef xlink:title="Data for Comet CaseStudy 034" xlink:href="casestudy/ccs034Catalog.xml"/>
+    </dataset>
+  </dataset>
+</catalog>

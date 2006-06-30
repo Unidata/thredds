@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en"><html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="John Caron">
+   <title>THREDDS Security</title>
+   <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />  
+
+</head>
+
+<body>
+
+<table width="100%">
+    <tr>
+        <td width="95" height="95" align="left"><img src="../unidataLogo.gif" width="95" height="93"> </td>
+        <td width="701" align="left" valign="top">
+            <table width="303">
+                <tr>
+                  <td width="295" height="22" align="left" valign="top"><h3><strong>Thredds Data Server </strong></h3></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<div class="head">
+  <h1 align="left">Performance</h1>
+  <address>
+  last update: July 09, 2005
+  </address>
+
+<br>
+<hr></div>
+
+<h2><a name="JVM"></a>Java Virtual Machine </h2>
+<ul>
+  <li>You should give the JVM as much memory as possible.</li>
+  <li>You should run with the 
+Java HotSpot Server VM. </li>
+</ul>
+<p>To do so,  set the Java runtime parameters with the environmental variable JAVA_OPTS. For example, add the following to <strong>${tomcat_home}/bin/startup.sh</strong> : </p>
+<blockquote>
+  <pre>JAVA_OPTS="-server -Xmx512m -Xms128m"
+export JAVA_OPTS</pre>
+</blockquote>
+<p>starts Tomcat with the Server JVM, and gives it 128 Mbytes of memory to start with, and allows a maximum of 512 Mbytes. These are suggested numbers, use more if you can. You will need to restart Tomcat for this to take effect.</p>
+<h2>Tomcat</h2>
+<h3>Version</h3>
+<p>Tomcat 5.0 should have better performance than Tomcat 4.X. We recommend 5.0.28  as the best stable version available as of the date of this writing. </p>
+<p>Tomcat 5.5 may have better performance than 5.0, but we have not tested. We hope to do some performance tests soon and give more specific recommendations. If you are in the position to do so, please let us know the results! </p>
+<h3>Automatic Startup </h3>
+<p>In a production environment, Tomcat should be automatically restarted when the machine starts. How to do this depends on what OS you are running. This <a href="http://wiki.apache.org/jakarta-tomcat/HowTo">FAQ</a> has a bit of info. </p>
+<h3>Resources</h3>
+<ul>
+  <li><a href="http://jakarta.apache.org/tomcat/faq/performance.html">Tomcat Performance FAQ </a></li>
+  <li>  <a href="http://jakarta.apache.org/tomcat/articles/performance.pdf">Tomcat Performance</a> paper by Peter Lin </li>
+</ul>
+<p>&nbsp;</p>
+<h2>Thredds Data Server </h2>
+<h3>Memory Use</h3>
+<p>The OPeNDAP-Java layer of the server currently has to read the entire data request into memory before sending it to the client (we hope to get a streaming I/O solution working eventually). Generally clients only request subsets of large files, but if you need to support large data requests, make sure that the <em><strong>-Xmx512m</strong></em> parameter above is set accordingly. </p>
+<h3>File Handles</h3>
+<p>The OPeNDAP-NetCDF server will keep up to 100 NetCDF files open at a time. This  is set in <strong>{tomcat_home}/webapps/thredds/WEB-INF/web.xml</strong> file, in the parameter called <em><strong>maxNetcdfFilesCached. </strong></em>You can change it, but beware that it gets overwritten when a new thredds.war is installed. </p>
+<hr width="100%">
+<p> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@support.unidata.ucar.edu">THREDDS support</a> </span></i></p>
+<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../thredds.jpg" width="95" height="79"></p>
+</body></html>

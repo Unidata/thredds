@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryCapability
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3"
+  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3 http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd"
+  name="My Collection" version="0.3">
+  <query base="/thredds/dqc/myData" construct="template"/>
+
+  <!-- -->
+  <selectServiceType id="serviceType" title="Select service type(s)" required="false"
+      template="serviceType={value}" multiple="false">
+    <serviceType>DODS</serviceType>
+    <serviceType>FTP</serviceType>
+  </selectServiceType>
+
+  <!-- -->
+  <selectList id="prod" title="Products:"
+      template="product={value}" multiple="true" required="true">
+    <choice name=".5 reflectivity .54nm res" value="N0R">
+      <description>.5 reflectivity .54nm res 16 levels id 19/r</description>
+    </choice>
+    <choice name=".5 storm rel. velocity" value="N0S">
+      <description>.5 storm rel. velocity .54nm res 16 lvls id 56/srm</description>
+    </choice>
+  </selectList>
+
+  <!-- -->
+  <selectStation title="Available Stations" template="stn={value}">
+    <station name="LOS_ANGELES/Orcutt_Oil_Field CA" value="VBX">
+      <location latitude="34.83" longitude="-120.38"/>
+    </station>
+    <station name="OKLAHOMA_CITY/Kegelman_Aux_F OK" value="VNX">
+      <location latitude="36.73" longitude="-98.12"/>
+    </station>
+  </selectStation>
+
+  <!-- -->
+  <selectFromRange title="Longitude" required="false"
+    selectType="range" template="minLon={min}&amp;amp;maxLon={max}"
+    min="0.0" max="360.0" units="degree_east" modulo="true" />
+
+  <!-- -->
+  <selectFromDateRange title="a date range"
+    selectType="endDuration" template="endDate={end}&amp;duration={duration}"
+    end="present" duration="3 days" />
+
+  <!-- -->
+  <selectFromGeoRegion title="Geographic Coverage"
+    selectType="range" template="minLat={minLat}&amp;maxLat={maxLat}&amp;minLon={minLon}&amp;maxLon={maxLon}">
+    <geoBoundingBox>
+      <upperLeft latitude="45.0" longitude="-110.0" />
+      <lowerRight latitude="40.0" longitude="-105.0" />
+    </geoBoundingBox>
+  </selectFromGeoRegion>
+
+
+</queryCapability>

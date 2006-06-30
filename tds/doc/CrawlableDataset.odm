@@ -1,0 +1,1252 @@
+ObjectDomain_Model 15
+{-zdywv3_n6c_eblaueui_-p8k 0
+}[objectdomain.uml.core.TypeExpression $27
+objectdomain.uml.view.CommentView-owns $7
+objectdomain.uml.mechanisms.UmlPackage-owns $11
+objectdomain.uml.core.UmlComment-owns $22
+objectdomain.uml.core.Generalization-owns $20
+objectdomain.uml.core.Dependency-owns $14
+objectdomain.uml.core.Projection $26
+objectdomain.uml.core.UmlAttribute-features $21
+objectdomain.uml.core.UmlAssociationEnd-connections $19
+objectdomain.uml.view.ClassView-owns $4
+objectdomain.uml.view.DependencyView-owns $10
+objectdomain.uml.core.UmlParameter-parameters $17
+objectdomain.uml.core.UmlAssociation-owns $18
+objectdomain.uml.view.Diagram-owns $3
+objectdomain.uml.core.UmlOperation-features $16
+objectdomain.domain.ModelEnvironment-owns $2
+objectdomain.uml.mechanisms.StylePackage-owns $25
+objectdomain.uml.mechanisms.StereotypePackage-owns $23
+objectdomain.uml.view.GeneralizationView-owns $5
+objectdomain.uml.core.UmlClass-owns $15
+objectdomain.uml.behavioral.collaboration.ClassifierRole-owns $13
+objectdomain.domain.DomainLockObject $28
+objectdomain.uml.view.AssociationView-owns $6
+objectdomain.uml.mechanisms.UmlModel-models $1
+objectdomain.uml.core.Stereotype-owns $24
+objectdomain.uml.behavioral.collaboration.Collaboration-owns $12
+objectdomain.uml.view.SequenceDiagram-sequenceDiagrams $8
+objectdomain.uml.view.ClassifierRoleView-owns $9
+]
+($1 1 > -zdywv3_n6c_eblaueui_-p8k 0
+(name "Model"
+)
+(namespaceRoot true)
+(uid "-zdywv3_n6c_eblaueui_-p8k"))
+($2 2 < -zdywv3_n6c_eblaueui_-p8j "ModelEnvironment" 1
+(uid "-zdywv3_n6c_eblaueui_-p8j"))
+($11 45 < -zdywv3_n6c_eblaueui_-p98 "Logical" 1
+(name "Logical"
+)
+(namespaceRoot true)
+(uid "-zdywv3_n6c_eblaueui_-p98"))
+($3 3 < -zdywv3_n6c_eblaueui_-p8i "Class Diagram" 45
+(name "Class Diagram"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8i")
+(diagramType "class"))
+($4 4 < -zdywv3_n6c_eblaueui_-p8h "CrawlableDataset" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_n6c_eblaueui_-p8h")
+(bbx 850 210 120 200))
+($4 5 < -zdywv3_n6c_eblaueui_-p8g "CrawlableDatasetFilter" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_n6c_eblaueui_-p8g")
+(bbx 1060 100 140 80))
+($4 6 < -zdywv3_n6c_eblaueui_-p8f "CrawlableDatasetAlias" 3
+(uid "-zdywv3_n6c_eblaueui_-p8f")
+(bbx 970 480 140 110))
+($4 7 < -zdywv3_n6c_eblaueui_-p8e "CrawlableDatasetFile" 3
+(uid "-zdywv3_n6c_eblaueui_-p8e")
+(bbx 830 480 130 50))
+($5 8 < -zdywv3_n6c_eblaueui_-p8d "" 3
+(uid "-zdywv3_n6c_eblaueui_-p8d")
+(points 897 480 902 410)
+(lineStyle "oblique"))
+($4 9 < -zdywv3_n6c_eblaueui_-p8c "Selector" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_n6c_eblaueui_-p8c")
+(bbx 1060 330 140 130))
+($4 10 < -zdywv3_n6c_eblaueui_-p8b "MultiSelectorFilter" 3
+(uid "-zdywv3_n6c_eblaueui_-p8b")
+(bbx 1040 240 180 50))
+($5 11 < -zdywv3_n6c_eblaueui_-p8a "" 3
+(uid "-zdywv3_n6c_eblaueui_-p8a")
+(points 1130 240 1130 180)
+(lineStyle "oblique"))
+($6 12 < -zdywv3_n6c_eblaueui_-p89 "" 3
+(uid "-zdywv3_n6c_eblaueui_-p89")
+(points 1130 290 1130 330)
+(lineStyle "oblique"))
+($4 13 < -zdywv3_n6c_eblaueui_-p5x "CrawlableDatasetFactory" 3
+(uid "-zdywv3_n6c_eblaueui_-p5x")
+(bbx 810 90 200 60))
+($4 14 < z8kflt_-iiv_ebnnunk6_-p8z "CollectionLevelScanner" 3
+(uid "z8kflt_-iiv_ebnnunk6_-p8z")
+(bbx 510 150 170 110))
+($7 15 < z8kflt_-iiv_ebnnunk6_-p8x "Comment" 3
+(uid "z8kflt_-iiv_ebnnunk6_-p8x")
+(bbx 490 40 240 90))
+($4 16 < -zdywv3_n6c_efspz84m_-p97 "CatalogBuilder" 3
+(uid "-zdywv3_n6c_efspz84m_-p97")
+(bbx 150 80 100 50))
+($4 17 < -zdywv3_n6c_efspz84m_-p8t "DatasetEnhancer" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_n6c_efspz84m_-p8t")
+(bbx 450 310 140 80))
+($4 18 < -zdywv3_n6c_efspz84m_-p8s "ScannerInfoAccess" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_n6c_efspz84m_-p8s")
+(bbx 10 210 210 80))
+($5 19 < -zdywv3_n6c_efspz84m_-p8n "" 3
+(uid "-zdywv3_n6c_efspz84m_-p8n")
+(points 1008 480 968 410)
+(lineStyle "oblique"))
+($6 20 < -zdywv3_n6c_efspz84m_-p8m "" 3
+(uid "-zdywv3_n6c_efspz84m_-p8m")
+(points 910 150 910 210)
+(lineStyle "oblique"))
+($6 21 < -zdywv3_n6c_efspz84m_-p8l "" 3
+(uid "-zdywv3_n6c_efspz84m_-p8l")
+(points 970 264 1078 180)
+(lineStyle "oblique"))
+($4 22 < -zdywv3_n6c_efspz84m_-p81 "FileScannerInfoAccess" 3
+(uid "-zdywv3_n6c_efspz84m_-p81")
+(bbx 10 480 160 50))
+($5 23 < -zdywv3_n6c_efspz84m_-p80 "" 3
+(uid "-zdywv3_n6c_efspz84m_-p80")
+(points 92 480 111 290)
+(lineStyle "oblique"))
+($7 24 < -zdywv3_n6c_efspz84m_-p83 "Comment1" 3
+(uid "-zdywv3_n6c_efspz84m_-p83")
+(bbx 10 540 210 110))
+($4 25 < -zdywv3_n6c_efspz84m_-p7z "NestedScannerInfoAccess" 3
+(uid "-zdywv3_n6c_efspz84m_-p7z")
+(bbx 110 340 160 50))
+($5 26 < -zdywv3_n6c_efspz84m_-p7y "" 3
+(uid "-zdywv3_n6c_efspz84m_-p7y")
+(points 174 340 141 290)
+(lineStyle "oblique"))
+($7 27 < -zdywv3_n6c_efspz84m_-p7x "Comment2" 3
+(uid "-zdywv3_n6c_efspz84m_-p7x")
+(bbx 110 400 230 70))
+($6 28 < -zdywv3_n6c_efspz84m_-p7q "" 3
+(uid "-zdywv3_n6c_efspz84m_-p7q")
+(points 185 130 138 210)
+(lineStyle "oblique"))
+($6 29 < -zdywv3_n6c_efspz84m_-p7p "" 3
+(uid "-zdywv3_n6c_efspz84m_-p7p")
+(points 680 233 850 290)
+(lineStyle "oblique"))
+($6 30 < -zdywv3_n6c_efspz84m_-p7o "" 3
+(uid "-zdywv3_n6c_efspz84m_-p7o")
+(points 250 118 510 183)
+(lineStyle "oblique"))
+($7 31 < -zdywv3_n6c_efspz84m_-p7n "Comment3" 3
+(uid "-zdywv3_n6c_efspz84m_-p7n")
+(bbx 170 10 190 60))
+($4 32 < -zdywv3_-mex_eg2cf3s1_-p8x "CrawlableDatasetIdentifier" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8x")
+(bbx 520 460 160 80))
+($4 33 < -zdywv3_-mex_eg2cf3s1_-p8w "CrawlableDatasetNamer" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8w")
+(bbx 660 550 160 80))
+($6 34 < -zdywv3_-mex_eg2cf3s1_-p8v "" 3
+(uid "-zdywv3_-mex_eg2cf3s1_-p8v")
+(points 567 260 541 310)
+(lineStyle "oblique"))
+($6 35 < -zdywv3_-mex_eg2cf3s1_-p8u "" 3
+(uid "-zdywv3_-mex_eg2cf3s1_-p8u")
+(points 596 260 599 460)
+(lineStyle "oblique"))
+($6 36 < -zdywv3_-mex_eg2cf3s1_-p8t "" 3
+(uid "-zdywv3_-mex_eg2cf3s1_-p8t")
+(points 616 260 725 550)
+(lineStyle "oblique"))
+($4 37 < -zdywv3_-mex_eg2cf3s1_-p8h "CrawlableDatasetMetadata" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8h")
+(bbx 830 620 170 100))
+($6 38 < -zdywv3_-mex_eg2cf3s1_-p8g "" 3
+(uid "-zdywv3_-mex_eg2cf3s1_-p8g")
+(points 633 260 881 620)
+(lineStyle "oblique"))
+($4 39 < -zdywv3_-mex_eg2cf3s1_-p83 "DatasetSort" 3
+(stereotypeGraphic "adornment")
+(uid "-zdywv3_-mex_eg2cf3s1_-p83")
+(bbx 340 560 220 100))
+($6 40 < -zdywv3_-mex_eg2cf3s1_-p81 "" 3
+(uid "-zdywv3_-mex_eg2cf3s1_-p81")
+(points 212 130 425 560)
+(lineStyle "oblique"))
+($12 46 < -zdywv3_n6c_efspz84m_-p7a "Collaboration" 45
+(name "Collaboration"
+)
+(uid "-zdywv3_n6c_efspz84m_-p7a"))
+($8 41 < -zdywv3_n6c_efspz84m_-p73 "Sequence Diagram" 46
+(name "Sequence Diagram"
+)
+(uid "-zdywv3_n6c_efspz84m_-p73")
+(diagramType "sequence"))
+($9 42 < -zdywv3_n6c_efspz84m_-p72 "CatalogBuilder" 41
+(headHeight 30)
+(uid "-zdywv3_n6c_efspz84m_-p72")
+(bbx 100 30 120 500))
+($9 43 < -zdywv3_n6c_efspz84m_-p6w "CollectionLevelScanner" 41
+(headHeight 30)
+(uid "-zdywv3_n6c_efspz84m_-p6w")
+(bbx 260 30 210 160))
+($10 44 < -zdywv3_n6c_efspz84m_-p6u "" 41
+(uid "-zdywv3_n6c_efspz84m_-p6u")
+(points 160 130 365 130)
+(lineStyle "oblique"))
+($13 47 < -zdywv3_n6c_efspz84m_-p79 "CatalogBuilder" 46
+(name "CatalogBuilder"
+)
+(uid "-zdywv3_n6c_efspz84m_-p79"))
+($14 48 < -zdywv3_n6c_efspz84m_-p6v "#<anon> (CatalogBuilder, CollectionLevelScanner)" 47
+(uid "-zdywv3_n6c_efspz84m_-p6v"))
+($13 49 < -zdywv3_n6c_efspz84m_-p6y "CollectionLevelScanner" 46
+(name "CollectionLevelScanner"
+)
+(uid "-zdywv3_n6c_efspz84m_-p6y"))
+($15 50 < -zdywv3_n6c_eblaueui_-p97 "CrawlableDataset" 45
+(name "CrawlableDataset"
+)
+(uid "-zdywv3_n6c_eblaueui_-p97"))
+($16 51 < -zdywv3_n6c_eblaueui_-p6r "getPath##String" 50
+(name "getPath"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6r"))
+($17 52 < -zdywv3_n6c_eblaueui_-p6q "path" 51
+(name "path"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p6q"))
+($16 53 < -zdywv3_n6c_eblaueui_-p6o "getName##String" 50
+(name "getName"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6o"))
+($17 54 < -zdywv3_n6c_eblaueui_-p6n "name" 53
+(name "name"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p6n"))
+($16 55 < -zdywv3_n6c_eblaueui_-p6m "getParentDataset##CrawlableDataset" 50
+(name "getParentDataset"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6m"))
+($17 56 < -zdywv3_n6c_eblaueui_-p6l "dataset" 55
+(name "dataset"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p6l"))
+($16 57 < -zdywv3_n6c_eblaueui_-p6k "isCollection#boolean" 50
+(name "isCollection"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6k"))
+($17 58 < -zdywv3_n6c_eblaueui_-p6j "retVal" 57
+(name "retVal"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6j"))
+($16 59 < -zdywv3_n6c_eblaueui_-p6i "listDatasets##List" 50
+(name "listDatasets"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6i"))
+($17 60 < -zdywv3_n6c_eblaueui_-p6h "list" 59
+(name "list"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p6h"))
+($16 61 < -zdywv3_n6c_eblaueui_-p6f "listDatasets#CrawlableDatasetFilter##List" 50
+(name "listDatasets"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6f"))
+($17 62 < -zdywv3_n6c_eblaueui_-p6e "filter" 61
+(name "filter"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6e"))
+($17 63 < -zdywv3_n6c_eblaueui_-p6d "list" 61
+(name "list"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p6d"))
+($16 64 < -zdywv3_n6c_eblaueui_-p6c "length##long" 50
+(name "length"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6c"))
+($17 65 < -zdywv3_n6c_eblaueui_-p6b "length" 64
+(name "length"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p6b"))
+($16 66 < -zdywv3_n6c_eblaueui_-p69 "lastModified#Date" 50
+(name "lastModified"
+)
+(uid "-zdywv3_n6c_eblaueui_-p69"))
+($17 67 < -zdywv3_n6c_eblaueui_-p68 "date" 66
+(name "date"
+)
+(uid "-zdywv3_n6c_eblaueui_-p68"))
+($18 68 < -zdywv3_n6c_efspz84m_-p8o "#<anon> (CrawlableDataset, CrawlableDatasetFilter)" 50
+(name "")
+(uid "-zdywv3_n6c_efspz84m_-p8o"))
+($19 69 < -zdywv3_n6c_efspz84m_-p8k "#0" 68
+(uid "-zdywv3_n6c_efspz84m_-p8k"))
+($19 70 < -zdywv3_n6c_efspz84m_-p8j "#1" 68
+(uid "-zdywv3_n6c_efspz84m_-p8j"))
+($15 71 < -zdywv3_n6c_eblaueui_-p96 "CrawlableDatasetFilter" 45
+(name "CrawlableDatasetFilter"
+)
+(uid "-zdywv3_n6c_eblaueui_-p96"))
+($16 72 < -zdywv3_n6c_eblaueui_-p8w "accept#CrawlableDataset" 71
+(name "accept"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8w"))
+($17 73 < -zdywv3_n6c_eblaueui_-p8v "dataset" 72
+(name "dataset"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8v"))
+($15 74 < -zdywv3_n6c_eblaueui_-p95 "CrawlableDatasetAlias" 45
+(name "CrawlableDatasetAlias"
+)
+(uid "-zdywv3_n6c_eblaueui_-p95"))
+($16 75 < -zdywv3_n6c_eblaueui_-p66 "getPath##String" 74
+(name "getPath"
+)
+(uid "-zdywv3_n6c_eblaueui_-p66"))
+($17 76 < -zdywv3_n6c_eblaueui_-p65 "path" 75
+(name "path"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p65"))
+($16 77 < -zdywv3_n6c_eblaueui_-p64 "getName##String" 74
+(name "getName"
+)
+(uid "-zdywv3_n6c_eblaueui_-p64"))
+($17 78 < -zdywv3_n6c_eblaueui_-p63 "name" 77
+(name "name"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p63"))
+($16 79 < -zdywv3_n6c_eblaueui_-p62 "listDatasets##List" 74
+(name "listDatasets"
+)
+(uid "-zdywv3_n6c_eblaueui_-p62"))
+($17 80 < -zdywv3_n6c_eblaueui_-p61 "list" 79
+(name "list"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p61"))
+($16 81 < -zdywv3_n6c_eblaueui_-p60 "listDatasets#CrawlableDatasetFilter##List" 74
+(name "listDatasets"
+)
+(uid "-zdywv3_n6c_eblaueui_-p60"))
+($17 82 < -zdywv3_n6c_eblaueui_-p5z "filter" 81
+(name "filter"
+)
+(uid "-zdywv3_n6c_eblaueui_-p5z"))
+($17 83 < -zdywv3_n6c_eblaueui_-p5y "list" 81
+(name "list"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p5y"))
+($20 84 < -zdywv3_n6c_efspz84m_-p8q "#<anon> (CrawlableDatasetAlias, CrawlableDataset)" 74
+(uid "-zdywv3_n6c_efspz84m_-p8q"))
+($15 85 < -zdywv3_n6c_eblaueui_-p94 "CrawlableDatasetFile" 45
+(name "CrawlableDatasetFile"
+)
+(uid "-zdywv3_n6c_eblaueui_-p94"))
+($20 86 < -zdywv3_n6c_eblaueui_-p91 "#<anon> (CrawlableDatasetFile, CrawlableDataset)" 85
+(uid "-zdywv3_n6c_eblaueui_-p91"))
+($15 87 < -zdywv3_n6c_eblaueui_-p90 "Selector" 45
+(name "Selector"
+)
+(uid "-zdywv3_n6c_eblaueui_-p90"))
+($16 88 < -zdywv3_n6c_eblaueui_-p8u "match#CrawlableDataset" 87
+(name "match"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8u"))
+($17 89 < -zdywv3_n6c_eblaueui_-p8t "dataset" 88
+(name "dataset"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8t"))
+($16 90 < -zdywv3_n6c_eblaueui_-p8q "isApplicable#CrawlableDataset##boolean" 87
+(name "isApplicable"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8q"))
+($17 91 < -zdywv3_n6c_eblaueui_-p8p "dataset" 90
+(name "dataset"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8p"))
+($17 92 < -zdywv3_n6c_eblaueui_-p8o "retVal" 90
+(name "retVal"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p8o"))
+($16 93 < -zdywv3_n6c_eblaueui_-p8m "isIncluder" 87
+(name "isIncluder"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8m"))
+($16 94 < -zdywv3_n6c_eblaueui_-p8l "isExcluder" 87
+(name "isExcluder"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8l"))
+($15 95 < -zdywv3_n6c_eblaueui_-p8z "MultiSelectorFilter" 45
+(name "MultiSelectorFilter"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8z"))
+($20 96 < -zdywv3_n6c_eblaueui_-p8y "#<anon> (MultiSelectorFilter, CrawlableDatasetFilter)" 95
+(uid "-zdywv3_n6c_eblaueui_-p8y"))
+($18 97 < -zdywv3_n6c_eblaueui_-p8x "#<anon> (MultiSelectorFilter, Selector)" 95
+(name "")
+(uid "-zdywv3_n6c_eblaueui_-p8x"))
+($19 98 < -zdywv3_n6c_eblaueui_-p88 "#0" 97
+(uid "-zdywv3_n6c_eblaueui_-p88"))
+($19 99 < -zdywv3_n6c_eblaueui_-p87 "#1" 97
+(uid "-zdywv3_n6c_eblaueui_-p87"))
+($15 100 < -zdywv3_n6c_eblaueui_-p8n "boolean" 45
+(name "boolean"
+)
+(uid "-zdywv3_n6c_eblaueui_-p8n"))
+($15 101 < -zdywv3_n6c_eblaueui_-p6u "CrawlableDatasetFactory" 45
+(name "CrawlableDatasetFactory"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6u"))
+($16 102 < -zdywv3_n6c_eblaueui_-p6t "createCrawlableDataset##CrawlableDataset" 101
+(name "createCrawlableDataset"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6t"))
+($17 103 < -zdywv3_n6c_eblaueui_-p6s "dataset" 102
+(name "dataset"
+)
+(kind "return")
+(uid "-zdywv3_n6c_eblaueui_-p6s"))
+($18 104 < -zdywv3_n6c_efspz84m_-p8p "#<anon> (CrawlableDatasetFactory, CrawlableDataset)" 101
+(name "")
+(uid "-zdywv3_n6c_efspz84m_-p8p"))
+($19 105 < -zdywv3_n6c_efspz84m_-p8i "#0" 104
+(uid "-zdywv3_n6c_efspz84m_-p8i"))
+($19 106 < -zdywv3_n6c_efspz84m_-p8h "#1" 104
+(uid "-zdywv3_n6c_efspz84m_-p8h"))
+($15 107 < -zdywv3_n6c_eblaueui_-p6p "String" 45
+(name "String"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6p"))
+($15 108 < -zdywv3_n6c_eblaueui_-p6g "List" 45
+(name "List"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6g"))
+($15 109 < -zdywv3_n6c_eblaueui_-p6a "long" 45
+(name "long"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6a"))
+($15 110 < -zdywv3_n6c_eblaueui_-p67 "Date" 45
+(name "Date"
+)
+(uid "-zdywv3_n6c_eblaueui_-p67"))
+($15 111 < z8kflt_-iiv_ebnnunk6_-p98 "CollectionLevelScanner" 45
+(name "CollectionLevelScanner"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p98"))
+($21 112 < z8kflt_-iiv_ebnnunk6_-p97 "path" 111
+(name "path"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p97"))
+($21 113 < z8kflt_-iiv_ebnnunk6_-p96 "rootDir" 111
+(name "rootDir"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p96"))
+($16 114 < z8kflt_-iiv_ebnnunk6_-p95 "getCatalog#CrawlableDataset##InvCatalog" 111
+(name "getCatalog"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p95"))
+($17 115 < z8kflt_-iiv_ebnnunk6_-p94 "dataset" 114
+(name "dataset"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p94"))
+($17 116 < z8kflt_-iiv_ebnnunk6_-p91 "catalog" 114
+(name "catalog"
+)
+(kind "return")
+(uid "z8kflt_-iiv_ebnnunk6_-p91"))
+($16 117 < z8kflt_-iiv_ebnnunk6_-p93 "getDataset##InvDataset" 111
+(name "getDataset"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p93"))
+($17 118 < z8kflt_-iiv_ebnnunk6_-p92 "dataset" 117
+(name "dataset"
+)
+(kind "return")
+(uid "z8kflt_-iiv_ebnnunk6_-p92"))
+($18 119 < -zdywv3_n6c_efspz84m_-p7u "#<anon> (CollectionLevelScanner, CrawlableDataset)" 111
+(name "")
+(uid "-zdywv3_n6c_efspz84m_-p7u"))
+($19 120 < -zdywv3_n6c_efspz84m_-p7l "#0" 119
+(uid "-zdywv3_n6c_efspz84m_-p7l"))
+($19 121 < -zdywv3_n6c_efspz84m_-p7k "#1" 119
+(uid "-zdywv3_n6c_efspz84m_-p7k"))
+($18 122 < -zdywv3_-mex_eg2cf3s1_-p90 "#<anon> (CollectionLevelScanner, DatasetEnhancer)" 111
+(name "")
+(uid "-zdywv3_-mex_eg2cf3s1_-p90"))
+($19 123 < -zdywv3_-mex_eg2cf3s1_-p8s "#0" 122
+(uid "-zdywv3_-mex_eg2cf3s1_-p8s"))
+($19 124 < -zdywv3_-mex_eg2cf3s1_-p8r "#1" 122
+(uid "-zdywv3_-mex_eg2cf3s1_-p8r"))
+($18 125 < -zdywv3_-mex_eg2cf3s1_-p8z "#<anon> (CollectionLevelScanner, CrawlableDatasetIdentifier)" 111
+(name "")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8z"))
+($19 126 < -zdywv3_-mex_eg2cf3s1_-p8q "#0" 125
+(uid "-zdywv3_-mex_eg2cf3s1_-p8q"))
+($19 127 < -zdywv3_-mex_eg2cf3s1_-p8p "#1" 125
+(uid "-zdywv3_-mex_eg2cf3s1_-p8p"))
+($18 128 < -zdywv3_-mex_eg2cf3s1_-p8y "#<anon> (CollectionLevelScanner, CrawlableDatasetNamer)" 111
+(name "")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8y"))
+($19 129 < -zdywv3_-mex_eg2cf3s1_-p8o "#0" 128
+(uid "-zdywv3_-mex_eg2cf3s1_-p8o"))
+($19 130 < -zdywv3_-mex_eg2cf3s1_-p8n "#1" 128
+(uid "-zdywv3_-mex_eg2cf3s1_-p8n"))
+($18 131 < -zdywv3_-mex_eg2cf3s1_-p8i "#<anon> (CollectionLevelScanner, CrawlableDatasetMetadata)" 111
+(name "")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8i"))
+($19 132 < -zdywv3_-mex_eg2cf3s1_-p8f "#0" 131
+(uid "-zdywv3_-mex_eg2cf3s1_-p8f"))
+($19 133 < -zdywv3_-mex_eg2cf3s1_-p8e "#1" 131
+(uid "-zdywv3_-mex_eg2cf3s1_-p8e"))
+($15 134 < z8kflt_-iiv_ebnnunk6_-p90 "InvCatalog" 45
+(name "InvCatalog"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p90"))
+($22 135 < z8kflt_-iiv_ebnnunk6_-p8y "Comment" 45
+(name "Comment"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p8y")
+(body "datasetRoot can use CollectionLevelScanner.getDataset() and datasetScan can use CollectionLevelScanner.getCatalog()"
+))
+($15 136 < z8kflt_-iiv_ebnnunk6_-p8w "InvDataset" 45
+(name "InvDataset"
+)
+(uid "z8kflt_-iiv_ebnnunk6_-p8w"))
+($15 137 < -zdywv3_n6c_efspz84m_-p98 "CatalogBuilder" 45
+(name "CatalogBuilder"
+)
+(uid "-zdywv3_n6c_efspz84m_-p98"))
+($18 138 < -zdywv3_n6c_efspz84m_-p7v "#<anon> (CatalogBuilder, ScannerInfoAccess)" 137
+(name "")
+(uid "-zdywv3_n6c_efspz84m_-p7v"))
+($19 139 < -zdywv3_n6c_efspz84m_-p7j "#0" 138
+(uid "-zdywv3_n6c_efspz84m_-p7j"))
+($19 140 < -zdywv3_n6c_efspz84m_-p7i "#1" 138
+(uid "-zdywv3_n6c_efspz84m_-p7i"))
+($18 141 < -zdywv3_n6c_efspz84m_-p7t "#<anon> (CatalogBuilder, CollectionLevelScanner)" 137
+(name "")
+(uid "-zdywv3_n6c_efspz84m_-p7t"))
+($19 142 < -zdywv3_n6c_efspz84m_-p7h "#0" 141
+(uid "-zdywv3_n6c_efspz84m_-p7h"))
+($19 143 < -zdywv3_n6c_efspz84m_-p7g "#1" 141
+(uid "-zdywv3_n6c_efspz84m_-p7g"))
+($18 144 < -zdywv3_-mex_eg2cf3s1_-p82 "#<anon> (CatalogBuilder, DatasetSort)" 137
+(name "")
+(uid "-zdywv3_-mex_eg2cf3s1_-p82"))
+($19 145 < -zdywv3_-mex_eg2cf3s1_-p80 "#0" 144
+(uid "-zdywv3_-mex_eg2cf3s1_-p80"))
+($19 146 < -zdywv3_-mex_eg2cf3s1_-p7z "#1" 144
+(uid "-zdywv3_-mex_eg2cf3s1_-p7z"))
+($15 147 < -zdywv3_n6c_efspz84m_-p96 "DatasetEnhancer" 45
+(name "DatasetEnhancer"
+)
+(uid "-zdywv3_n6c_efspz84m_-p96"))
+($16 148 < -zdywv3_n6c_efspz84m_-p95 "addMetadata#String##boolean" 147
+(name "addMetadata"
+)
+(uid "-zdywv3_n6c_efspz84m_-p95"))
+($17 149 < -zdywv3_n6c_efspz84m_-p94 "dataset" 148
+(name "dataset"
+)
+(uid "-zdywv3_n6c_efspz84m_-p94"))
+($17 150 < -zdywv3_n6c_efspz84m_-p93 "added" 148
+(name "added"
+)
+(kind "return")
+(uid "-zdywv3_n6c_efspz84m_-p93"))
+($15 151 < -zdywv3_n6c_efspz84m_-p92 "InvMetadata" 45
+(name "InvMetadata"
+)
+(uid "-zdywv3_n6c_efspz84m_-p92"))
+($15 152 < -zdywv3_n6c_efspz84m_-p8y "ScannerInfoAccess" 45
+(name "ScannerInfoAccess"
+)
+(uid "-zdywv3_n6c_efspz84m_-p8y"))
+($16 153 < -zdywv3_n6c_efspz84m_-p8x "getScannerInfo#String##InvDatasetScan" 152
+(name "getScannerInfo"
+)
+(uid "-zdywv3_n6c_efspz84m_-p8x"))
+($17 154 < -zdywv3_n6c_efspz84m_-p8w "path" 153
+(name "path"
+)
+(uid "-zdywv3_n6c_efspz84m_-p8w"))
+($17 155 < -zdywv3_n6c_efspz84m_-p8v "scannerInfo" 153
+(name "scannerInfo"
+)
+(kind "return")
+(uid "-zdywv3_n6c_efspz84m_-p8v"))
+($15 156 < -zdywv3_n6c_efspz84m_-p8u "InvDatasetScan" 45
+(name "InvDatasetScan"
+)
+(uid "-zdywv3_n6c_efspz84m_-p8u"))
+($15 157 < -zdywv3_n6c_efspz84m_-p88 "FileScannerInfoAccess" 45
+(name "FileScannerInfoAccess"
+)
+(uid "-zdywv3_n6c_efspz84m_-p88"))
+($20 158 < -zdywv3_n6c_efspz84m_-p87 "#<anon> (FileScannerInfoAccess, ScannerInfoAccess)" 157
+(uid "-zdywv3_n6c_efspz84m_-p87"))
+($22 159 < -zdywv3_n6c_efspz84m_-p86 "Comment1" 45
+(name "Comment1"
+)
+(uid "-zdywv3_n6c_efspz84m_-p86")
+(body "FileScannerInfoAccess looks for standard file in the directory that corresponds to the path. (The standard file must be a datasetScan element and be named ???.xml.)"
+))
+($15 160 < -zdywv3_n6c_efspz84m_-p85 "NestedScannerInfoAccess" 45
+(name "NestedScannerInfoAccess"
+)
+(uid "-zdywv3_n6c_efspz84m_-p85"))
+($20 161 < -zdywv3_n6c_efspz84m_-p84 "#<anon> (NestedScannerInfoAccess, ScannerInfoAccess)" 160
+(uid "-zdywv3_n6c_efspz84m_-p84"))
+($22 162 < -zdywv3_n6c_efspz84m_-p82 "Comment2" 45
+(name "Comment2"
+)
+(uid "-zdywv3_n6c_efspz84m_-p82")
+(body "NestedScannerInfoAccess looks for a nested DatasetScan elements that corresponds to the path."
+))
+($22 163 < -zdywv3_n6c_efspz84m_-p7s "Comment3" 45
+(name "Comment3"
+)
+(uid "-zdywv3_n6c_efspz84m_-p7s")
+(body "CatalogBuilder uses CollectionLevelScanner to build catalog for single level."
+))
+($15 164 < -zdywv3_-mex_eg2cf3s1_-p98 "CrawlableDatasetIdentifier" 45
+(name "CrawlableDatasetIdentifier"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p98"))
+($16 165 < -zdywv3_-mex_eg2cf3s1_-p97 "getID#CrawlableDataset##String" 164
+(name "getID"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p97"))
+($17 166 < -zdywv3_-mex_eg2cf3s1_-p96 "dataset" 165
+(name "dataset"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p96"))
+($17 167 < -zdywv3_-mex_eg2cf3s1_-p95 "id" 165
+(name "id"
+)
+(kind "return")
+(uid "-zdywv3_-mex_eg2cf3s1_-p95"))
+($15 168 < -zdywv3_-mex_eg2cf3s1_-p94 "CrawlableDatasetNamer" 45
+(name "CrawlableDatasetNamer"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p94"))
+($16 169 < -zdywv3_-mex_eg2cf3s1_-p93 "getName#CrawlableDataset##String" 168
+(name "getName"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p93"))
+($17 170 < -zdywv3_-mex_eg2cf3s1_-p92 "dataset" 169
+(name "dataset"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p92"))
+($17 171 < -zdywv3_-mex_eg2cf3s1_-p91 "name" 169
+(name "name"
+)
+(kind "return")
+(uid "-zdywv3_-mex_eg2cf3s1_-p91"))
+($15 172 < -zdywv3_-mex_eg2cf3s1_-p8m "CrawlableDatasetMetadata" 45
+(name "CrawlableDatasetMetadata"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p8m"))
+($16 173 < -zdywv3_-mex_eg2cf3s1_-p8l "getMetadataURL#CrawlableDataset##String" 172
+(name "getMetadataURL"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p8l"))
+($17 174 < -zdywv3_-mex_eg2cf3s1_-p8k "dataset" 173
+(name "dataset"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p8k"))
+($17 175 < -zdywv3_-mex_eg2cf3s1_-p8j "url" 173
+(name "url"
+)
+(kind "return")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8j"))
+($16 176 < -zdywv3_-mex_eg2cf3s1_-p86 "getMetadataXML#CrawlableDataset##String" 172
+(name "getMetadataXML"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p86"))
+($17 177 < -zdywv3_-mex_eg2cf3s1_-p85 "dataset" 176
+(name "dataset"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p85"))
+($17 178 < -zdywv3_-mex_eg2cf3s1_-p84 "metadataXML" 176
+(name "metadataXML"
+)
+(kind "return")
+(uid "-zdywv3_-mex_eg2cf3s1_-p84"))
+($15 179 < -zdywv3_-mex_eg2cf3s1_-p8d "DatasetSort" 45
+(name "DatasetSort"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p8d"))
+($16 180 < -zdywv3_-mex_eg2cf3s1_-p8c "sortThisCollection#InvDataset##boolean" 179
+(name "sortThisCollection"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p8c"))
+($17 181 < -zdywv3_-mex_eg2cf3s1_-p8b "collectionDataset" 180
+(name "collectionDataset"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p8b"))
+($17 182 < -zdywv3_-mex_eg2cf3s1_-p8a "decision" 180
+(name "decision"
+)
+(kind "return")
+(uid "-zdywv3_-mex_eg2cf3s1_-p8a"))
+($16 183 < -zdywv3_-mex_eg2cf3s1_-p89 "sort#List##boolean" 179
+(name "sort"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p89"))
+($17 184 < -zdywv3_-mex_eg2cf3s1_-p88 "datasetList" 183
+(name "datasetList"
+)
+(uid "-zdywv3_-mex_eg2cf3s1_-p88"))
+($17 185 < -zdywv3_-mex_eg2cf3s1_-p87 "success" 183
+(name "success"
+)
+(kind "return")
+(uid "-zdywv3_-mex_eg2cf3s1_-p87"))
+($23 186 < -zdywv3_n6c_eblaueui_-p86 "stereotypes" 1
+(uid "-zdywv3_n6c_eblaueui_-p86"))
+($24 187 < -zdywv3_n6c_eblaueui_-p85 "_odPackage" 186
+(name "_odPackage"
+)
+(uid "-zdywv3_n6c_eblaueui_-p85")
+(baseClass "Package"))
+($24 188 < -zdywv3_n6c_eblaueui_-p84 "odStub" 186
+(name "odStub"
+)
+(uid "-zdywv3_n6c_eblaueui_-p84"))
+($24 189 < -zdywv3_n6c_eblaueui_-p83 "access" 186
+(name "access"
+)
+(uid "-zdywv3_n6c_eblaueui_-p83")
+(baseClass "Dependency"))
+($24 190 < -zdywv3_n6c_eblaueui_-p82 "association" 186
+(name "association"
+)
+(uid "-zdywv3_n6c_eblaueui_-p82")
+(baseClass "AssociationEnd"))
+($24 191 < -zdywv3_n6c_eblaueui_-p81 "create" 186
+(name "create"
+)
+(uid "-zdywv3_n6c_eblaueui_-p81")
+(baseClass "BehavioralFeature"))
+($24 192 < -zdywv3_n6c_eblaueui_-p80 "destroy" 186
+(name "destroy"
+)
+(uid "-zdywv3_n6c_eblaueui_-p80")
+(baseClass "BehavioralFeature"))
+($24 193 < -zdywv3_n6c_eblaueui_-p7z "document" 186
+(name "document"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7z")
+(baseClass "Component"))
+($24 194 < -zdywv3_n6c_eblaueui_-p7y "executable" 186
+(name "executable"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7y")
+(baseClass "Component"))
+($24 195 < -zdywv3_n6c_eblaueui_-p7x "extend" 186
+(name "extend"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7x")
+(baseClass "Dependency"))
+($24 196 < -zdywv3_n6c_eblaueui_-p7w "facade" 186
+(name "facade"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7w")
+(baseClass "Package"))
+($24 197 < -zdywv3_n6c_eblaueui_-p7v "file" 186
+(name "file"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7v")
+(baseClass "Component"))
+($24 198 < -zdywv3_n6c_eblaueui_-p7u "framework" 186
+(name "framework"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7u")
+(baseClass "Package"))
+($24 199 < -zdywv3_n6c_eblaueui_-p7t "friend" 186
+(name "friend"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7t")
+(baseClass "Dependency"))
+($24 200 < -zdywv3_n6c_eblaueui_-p7s "global" 186
+(name "global"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7s")
+(baseClass "AssociationEnd"))
+($24 201 < -zdywv3_n6c_eblaueui_-p7r "implementation" 186
+(name "implementation"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7r")
+(baseClass "Generalization"))
+($24 202 < -zdywv3_n6c_eblaueui_-p7q "implementationClass" 186
+(name "implementationClass"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7q")
+(baseClass "Class"))
+($24 203 < -zdywv3_n6c_eblaueui_-p7p "import" 186
+(name "import"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7p")
+(baseClass "Dependency"))
+($24 204 < -zdywv3_n6c_eblaueui_-p7o "include" 186
+(name "include"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7o")
+(baseClass "Dependency"))
+($24 205 < -zdywv3_n6c_eblaueui_-p7n "invariant" 186
+(name "invariant"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7n")
+(baseClass "Constraint"))
+($24 206 < -zdywv3_n6c_eblaueui_-p7m "library" 186
+(name "library"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7m")
+(baseClass "Component"))
+($24 207 < -zdywv3_n6c_eblaueui_-p7l "local" 186
+(name "local"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7l")
+(baseClass "AssociationEnd"))
+($24 208 < -zdywv3_n6c_eblaueui_-p7k "metaclass" 186
+(name "metaclass"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7k")
+(baseClass "Classifier"))
+($24 209 < -zdywv3_n6c_eblaueui_-p7j "metamodel" 186
+(name "metamodel"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7j")
+(baseClass "Package"))
+($24 210 < -zdywv3_n6c_eblaueui_-p7i "parameter" 186
+(name "parameter"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7i")
+(baseClass "AssociationEnd"))
+($24 211 < -zdywv3_n6c_eblaueui_-p7h "postcondition" 186
+(name "postcondition"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7h")
+(baseClass "Constraint"))
+($24 212 < -zdywv3_n6c_eblaueui_-p7g "powertype" 186
+(name "powertype"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7g")
+(baseClass "Classifier"))
+($24 213 < -zdywv3_n6c_eblaueui_-p7f "precondition" 186
+(name "precondition"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7f")
+(baseClass "Constraint"))
+($24 214 < -zdywv3_n6c_eblaueui_-p7e "process" 186
+(name "process"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7e")
+(baseClass "Classifier"))
+($24 215 < -zdywv3_n6c_eblaueui_-p7d "requirement" 186
+(name "requirement"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7d")
+(baseClass "Comment"))
+($24 216 < -zdywv3_n6c_eblaueui_-p7c "responsibility" 186
+(name "responsibility"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7c")
+(baseClass "Comment"))
+($24 217 < -zdywv3_n6c_eblaueui_-p7b "self" 186
+(name "self"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7b")
+(baseClass "AssociationEnd"))
+($24 218 < -zdywv3_n6c_eblaueui_-p7a "stub" 186
+(name "stub"
+)
+(uid "-zdywv3_n6c_eblaueui_-p7a")
+(baseClass "Package"))
+($24 219 < -zdywv3_n6c_eblaueui_-p79 "systemModel" 186
+(name "systemModel"
+)
+(uid "-zdywv3_n6c_eblaueui_-p79")
+(baseClass "Package"))
+($24 220 < -zdywv3_n6c_eblaueui_-p78 "table" 186
+(name "table"
+)
+(uid "-zdywv3_n6c_eblaueui_-p78")
+(baseClass "Component"))
+($24 221 < -zdywv3_n6c_eblaueui_-p77 "thread" 186
+(name "thread"
+)
+(uid "-zdywv3_n6c_eblaueui_-p77")
+(baseClass "Classifier"))
+($24 222 < -zdywv3_n6c_eblaueui_-p76 "topLevel" 186
+(name "topLevel"
+)
+(uid "-zdywv3_n6c_eblaueui_-p76")
+(baseClass "Package"))
+($24 223 < -zdywv3_n6c_eblaueui_-p75 "type" 186
+(name "type"
+)
+(uid "-zdywv3_n6c_eblaueui_-p75")
+(baseClass "Class"))
+($24 224 < -zdywv3_n6c_eblaueui_-p74 "utility" 186
+(name "utility"
+)
+(uid "-zdywv3_n6c_eblaueui_-p74")
+(baseClass "Classifier"))
+($24 225 < -zdywv3_n6c_eblaueui_-p73 "boundary" 186
+(smallImageFile stereotype/image/small/boundary.gif)
+(name "boundary"
+)
+(defaultIconWidth 65)
+(iconFile stereotype/icon/boundary.wmf)
+(uid "-zdywv3_n6c_eblaueui_-p73")
+(baseClass "Class"))
+($24 226 < -zdywv3_n6c_eblaueui_-p72 "entity" 186
+(smallImageFile stereotype/image/small/entity.gif)
+(name "entity"
+)
+(iconFile stereotype/icon/entity.wmf)
+(uid "-zdywv3_n6c_eblaueui_-p72")
+(baseClass "Class"))
+($24 227 < -zdywv3_n6c_eblaueui_-p71 "control" 186
+(smallImageFile stereotype/image/small/control.gif)
+(name "control"
+)
+(defaultIconWidth 60)
+(iconFile stereotype/icon/control.wmf)
+(uid "-zdywv3_n6c_eblaueui_-p71")
+(defaultIconHeight 60)
+(baseClass "Class"))
+($24 228 < -zdywv3_n6c_eblaueui_-p70 "interface" 186
+(name "interface"
+)
+(uid "-zdywv3_n6c_eblaueui_-p70")
+(baseClass "Class"))
+($24 229 < -zdywv3_n6c_eblaueui_-p6z "body" 186
+(name "body"
+)
+(uid "-zdywv3_n6c_eblaueui_-p6z")
+(baseClass "Component"))
+($25 230 < -zdywv3_n6c_eblaueui_-p6y "styles" 1
+(uid "-zdywv3_n6c_eblaueui_-p6y"))
+($11 231 < -zdywv3_n6c_eblaueui_-p6x "Component" 1
+(name "Component"
+)
+(namespaceRoot true)
+(uid "-zdywv3_n6c_eblaueui_-p6x"))
+($11 232 < -zdywv3_n6c_eblaueui_-p6w "Usecase" 1
+(name "Usecase"
+)
+(namespaceRoot true)
+(uid "-zdywv3_n6c_eblaueui_-p6w"))
+($11 233 < -zdywv3_n6c_eblaueui_-p6v "Deployment" 1
+(name "Deployment"
+)
+(namespaceRoot true)
+(uid "-zdywv3_n6c_eblaueui_-p6v"))
+($26 234)
+($27 235)
+($26 236)
+($26 237)
+($26 238)
+($26 239)
+($26 240)
+($26 241)
+($26 242)
+($26 243)
+($26 244)
+($26 245)
+($27 246)
+($27 247)
+($27 248)
+($26 249)
+($26 250)
+($26 251)
+($26 252)
+($26 253)
+($26 254)
+($26 255)
+($26 256)
+($26 257)
+($26 258)
+($26 259)
+($26 260)
+($26 261)
+($26 262)
+($26 263)
+($26 264)
+($26 265)
+($26 266)
+($26 267)
+($26 268)
+($26 269)
+($26 270)
+($26 271)
+($26 272)
+($26 273)
+($26 274)
+($26 275)
+($26 276)
+($26 277)
+($28 278
+(name "DomainLockObject"
+))
+(typeAssn 106 50)
+(assocEndAssn 50 106)
+(typeAssn 69 50)
+(assocEndAssn 50 69)
+(typeAssn 121 50)
+(assocEndAssn 50 121)
+(stereotypeAssn 50 228)
+(typeAssn 52 107)
+(typeExpression 52 235)
+(typeAssn 54 107)
+(typeExpression 54 235)
+(typeAssn 56 50)
+(typeExpression 56 235)
+(typeAssn 58 100)
+(typeExpression 58 235)
+(typeAssn 60 108)
+(typeExpression 60 235)
+(typeAssn 70 71)
+(assocEndAssn 71 70)
+(stereotypeAssn 71 228)
+(typeAssn 73 50)
+(typeExpression 73 235)
+(typeAssn 62 71)
+(typeExpression 62 235)
+(typeAssn 63 108)
+(typeExpression 63 235)
+(typeAssn 65 109)
+(typeExpression 65 235)
+(typeAssn 67 110)
+(typeExpression 67 235)
+(projectionAssn 4 50 234)
+(projectionAssn 5 71 236)
+(subtypeAssn 84 74)
+(supertypeAssn 84 50)
+(generalizationAssn 74 84)
+(typeAssn 76 107)
+(typeExpression 76 235)
+(typeAssn 78 107)
+(typeExpression 78 235)
+(typeAssn 80 108)
+(typeExpression 80 235)
+(typeAssn 82 71)
+(typeExpression 82 235)
+(typeAssn 83 108)
+(typeExpression 83 235)
+(projectionAssn 6 74 237)
+(subtypeAssn 86 85)
+(supertypeAssn 86 50)
+(generalizationAssn 85 86)
+(projectionAssn 7 85 238)
+(to 8 4)
+(from 8 7)
+(projectionAssn 8 86 239)
+(typeAssn 99 87)
+(assocEndAssn 87 99)
+(stereotypeAssn 87 228)
+(typeAssn 89 50)
+(typeExpression 89 235)
+(typeAssn 91 50)
+(typeExpression 91 235)
+(typeAssn 92 100)
+(typeExpression 92 235)
+(projectionAssn 9 87 240)
+(typeAssn 98 95)
+(assocEndAssn 95 98)
+(subtypeAssn 96 95)
+(supertypeAssn 96 71)
+(generalizationAssn 95 96)
+(projectionAssn 10 95 241)
+(to 11 5)
+(from 11 10)
+(projectionAssn 11 96 242)
+(to 12 9)
+(from 12 10)
+(projectionAssn 12 97 243)
+(typeAssn 105 101)
+(assocEndAssn 101 105)
+(typeAssn 103 50)
+(typeExpression 103 235)
+(projectionAssn 13 101 244)
+(typeAssn 120 111)
+(assocEndAssn 111 120)
+(typeAssn 143 111)
+(assocEndAssn 111 143)
+(typeAssn 123 111)
+(assocEndAssn 111 123)
+(typeAssn 126 111)
+(assocEndAssn 111 126)
+(typeAssn 129 111)
+(assocEndAssn 111 129)
+(typeAssn 132 111)
+(assocEndAssn 111 132)
+(typeRefAssn 112 107)
+(typeExpression 112 246)
+(typeRefAssn 113 107)
+(typeExpression 113 246)
+(typeAssn 115 50)
+(typeExpression 115 246)
+(typeAssn 116 134)
+(typeExpression 116 246)
+(typeAssn 118 136)
+(typeExpression 118 246)
+(assocEndAssn 147 124)
+(stereotypeAssn 147 228)
+(typeAssn 149 107)
+(typeExpression 149 247)
+(typeAssn 150 100)
+(typeExpression 150 247)
+(typeAssn 124 147)
+(assocEndAssn 164 127)
+(stereotypeAssn 164 228)
+(typeAssn 166 50)
+(typeExpression 166 248)
+(typeAssn 167 107)
+(typeExpression 167 248)
+(typeAssn 127 164)
+(assocEndAssn 168 130)
+(stereotypeAssn 168 228)
+(typeAssn 170 50)
+(typeExpression 170 248)
+(typeAssn 171 107)
+(typeExpression 171 248)
+(typeAssn 130 168)
+(assocEndAssn 172 133)
+(stereotypeAssn 172 228)
+(typeAssn 174 50)
+(typeExpression 174 248)
+(typeAssn 175 107)
+(typeExpression 175 248)
+(typeAssn 177 50)
+(typeExpression 177 248)
+(typeAssn 178 107)
+(typeExpression 178 248)
+(typeAssn 133 172)
+(projectionAssn 14 111 245)
+(projectionAssn 15 135 249)
+(typeAssn 139 137)
+(assocEndAssn 137 139)
+(typeAssn 142 137)
+(assocEndAssn 137 142)
+(typeAssn 145 137)
+(assocEndAssn 137 145)
+(assocEndAssn 152 140)
+(stereotypeAssn 152 228)
+(typeAssn 154 107)
+(typeExpression 154 247)
+(typeAssn 155 156)
+(typeExpression 155 247)
+(typeAssn 140 152)
+(assocEndAssn 179 146)
+(stereotypeAssn 179 228)
+(typeAssn 181 136)
+(typeExpression 181 248)
+(typeAssn 182 100)
+(typeExpression 182 248)
+(typeAssn 184 108)
+(typeExpression 184 248)
+(typeAssn 185 100)
+(typeExpression 185 248)
+(typeAssn 146 179)
+(projectionAssn 16 137 250)
+(projectionAssn 17 147 251)
+(projectionAssn 18 152 252)
+(to 19 4)
+(from 19 6)
+(projectionAssn 19 84 253)
+(to 20 4)
+(from 20 13)
+(projectionAssn 20 104 254)
+(to 21 5)
+(from 21 4)
+(projectionAssn 21 68 255)
+(subtypeAssn 158 157)
+(supertypeAssn 158 152)
+(generalizationAssn 157 158)
+(projectionAssn 22 157 256)
+(to 23 18)
+(from 23 22)
+(projectionAssn 23 158 257)
+(projectionAssn 24 159 258)
+(subtypeAssn 161 160)
+(supertypeAssn 161 152)
+(generalizationAssn 160 161)
+(projectionAssn 25 160 259)
+(to 26 18)
+(from 26 25)
+(projectionAssn 26 161 260)
+(projectionAssn 27 162 261)
+(to 28 18)
+(from 28 16)
+(projectionAssn 28 138 262)
+(to 29 4)
+(from 29 14)
+(projectionAssn 29 119 263)
+(to 30 14)
+(from 30 16)
+(projectionAssn 30 141 264)
+(projectionAssn 31 163 265)
+(projectionAssn 32 164 266)
+(projectionAssn 33 168 267)
+(to 34 17)
+(from 34 14)
+(projectionAssn 34 122 268)
+(to 35 32)
+(from 35 14)
+(projectionAssn 35 125 269)
+(to 36 33)
+(from 36 14)
+(projectionAssn 36 128 270)
+(projectionAssn 37 172 271)
+(to 38 37)
+(from 38 14)
+(projectionAssn 38 131 272)
+(projectionAssn 39 179 273)
+(to 40 39)
+(from 40 16)
+(projectionAssn 40 144 274)
+(openDiagrams 2 3)
+(clientAssn 48 47)
+(supplierAssn 48 49)
+(projectionAssn 42 47 275)
+(projectionAssn 43 49 276)
+(to 44 43)
+(from 44 42)
+(projectionAssn 44 48 277)
+(openDiagrams 2 41)
+(selection 2 40)
+(lockedBy 187 278)
+(stereotypeAssn 45 187)
+(lockedBy 45 278)
+(lockedBy 186 278)
+(lockedBy 230 278)
+(stereotypeAssn 231 187)
+(lockedBy 231 278)
+(stereotypeAssn 232 187)
+(lockedBy 232 278)
+(stereotypeAssn 233 187)
+(lockedBy 233 278)
+(lockedBy 1 278)

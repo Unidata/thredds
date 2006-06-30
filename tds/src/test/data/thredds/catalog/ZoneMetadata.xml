@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">
+  
+<documentation type="summary"> The SAGE III Ozone Loss and Validation Experiment (SOLVE) was a measurement campaign 
+ designed to examine the processes controlling ozone levels at mid- to high latitudes. Measurements 
+ were made in the Arctic high-latitude    region in winter using the NASA DC-8 and ER-2 aircraft, 
+ as well as balloon platforms and ground-based instruments. </documentation > 
+
+<documentation type="rights"> Users of these data files are expected  to follow the NASA ESPO Archive guidelines for use 
+  of the SOLVE data, including consulting with the PIs of the individual measurements  for interpretation and credit.
+</documentation >
+
+<keyword>Ocean Biomass</keyword>
+
+<project vocabulary="DIF">NASA Earth Science Project Office, Ames Research Center</project>
+
+<keyword vocabulary="DIF-Discipline">Earth Science</keyword >
+
+</metadata >

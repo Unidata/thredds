@@ -1,0 +1,38 @@
+<html>
+<head>
+ <title>THREDDS Dataset CDM validation</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />
+</head>
+<body>
+
+<table width="100%">
+    <tr>
+        <td width="95" height="95" align="left"><img src="unidataLogo.gif" width="95" height="93"> </td>
+        <td width="701" align="left" valign="top">
+            <table width="303">
+                <tr>
+                  <td width="295" height="22" align="left" valign="top"><h3><strong>Thredds Data Server</strong></h3></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<h1 align="left">CDM Validation</h1>
+
+<form method="GET" action="datasetServices">
+  <input type="hidden" name="cmd" value="validate">
+<p/> Dataset URL:
+    <input type="text" name="dataset" size="120">
+<p/> Options: <input type="checkbox" name="validate" checked="checked" value="true"/> Validate
+	<input type="checkbox" name="debug" value="true"/> Debug
+<p/>
+<input type="submit" value="Submit"/>
+<input type="reset" value="Reset"/>
+</form>
+
+<hr width="100%"/>
+<img src="thredds.jpg" width="95" height="79"/>
+</body>
+</html>

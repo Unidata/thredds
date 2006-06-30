@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: catGenConf.exampleDods.xml,v 1.2 2005/06/28 23:43:07 edavis Exp $ -->
+<!-- 
+  - Example CatalogGenConfig file.
+  -->
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd">
+<catalog name="Example of cataloging a remote DODS server" version="0.6">
+  <dataset name="Example of cataloging a remote DODS server">
+    <dataset name="Eta 211 model data from DODS server named with regular expressions" >
+      <metadata metadataType="CatalogGenConfig">
+        <catalogGenConfig type="Catalog">
+          <datasetSource name="Motherlode model via DODS" type="DodsDir"
+            structure="Flat"
+            accessPoint="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model/">
+            <resultService name="mlode" serviceType="DODS"
+              base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/"
+              accessPointHeader="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/"
+              />
+
+            <datasetFilter name="Accept netCDF files only" type="RegExp"
+              matchPattern="eta_211\.nc$"
+              />
+
+            <datasetNamer name="NCEP Eta model data"
+              type="RegExp" addLevel="true"
+              matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_eta_211.nc$"
+              substitutePattern="NCEP Eta $1-$2-$3 $4:00:00 GMT"
+              />
+
+          </datasetSource>
+        </catalogGenConfig>
+      </metadata>
+    </dataset>
+    <dataset name="RUC 211 model data from DODS server named with DODS attributes">
+      <metadata metadataType="CatalogGenConfig">
+        <catalogGenConfig type="Catalog">
+          <datasetSource name="Motherlode model via DODS" type="DodsDir"
+            structure="Flat"
+            accessPoint="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model/">
+            <resultService name="mlode" serviceType="DODS"
+              base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/"
+              accessPointHeader="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/"
+              />
+
+            <datasetFilter name="Accept netCDF files only" type="RegExp"
+              matchPattern="ruc_211\.nc$"
+              />
+
+            <datasetNamer name="RUC 211 model data named with DODS attrib"
+              type="DodsAttrib" addLevel="false"
+              attribContainer="NC_GLOBAL" attribName="title"/>
+
+          </datasetSource>
+        </catalogGenConfig>
+      </metadata>
+    </dataset>
+  </dataset>
+</catalog>

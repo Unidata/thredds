@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="THREDDS Server Default Catalog : You must change this to fit your server!"
+        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/">
+    <datasetRoot path="test" location="content/testdata/"/>
+  </service>
+
+  <dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS"
+           urlPath="test/testData.nc"/>
+
+  <datasetScan name="Test all files in a directory" ID="testDatasetScan"
+               path="testAll" location="content/testdata">
+
+    <metadata inherited="true">
+      <serviceName>thisDODS</serviceName>
+    </metadata>
+
+    <filter>
+      <include wildcard="*.nc"/>
+    </filter>
+
+  </datasetScan>
+
+  <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
+
+</catalog>

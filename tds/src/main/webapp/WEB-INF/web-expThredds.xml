@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+  <display-name>Example THREDDS Server</display-name>
+  <description>Example THREDDS Server</description>
+
+  <context-param>
+    <param-name>ContextPath</param-name>
+    <param-value>expThredds</param-value>
+  </context-param>
+
+  <!-- Turn on some more targeted debugging. -->
+  <context-param>
+    <param-name>DebugOn</param-name>
+    <param-value></param-value>
+  </context-param>
+
+  <!-- listeners -->
+  <listener>
+    <listener-class>thredds.servlet.ServletListener</listener-class>
+  </listener>
+
+  <!-- Default Servlet -->
+  <servlet>
+    <servlet-name>ExampleThreddsServlet</servlet-name>
+    <servlet-class>thredds.examples.ExampleThreddsServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Setup for catalog validation and translation into HTML. -->
+  <servlet>
+    <servlet-name>CatalogServices</servlet-name>
+    <servlet-class>thredds.servlet.CatalogServicesServlet</servlet-class>
+  </servlet>
+
+  <!-- default servlet -->
+
+  <servlet-mapping>
+    <servlet-name>ExampleThreddsServlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CatalogServices</servlet-name>
+    <url-pattern>/catalog</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CatalogServices</servlet-name>
+    <url-pattern>/catalog.html</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CatalogServices</servlet-name>
+    <url-pattern>/catalogServices</url-pattern>
+  </servlet-mapping>
+
+  <!-- ++++++++++ Setup security restrictions ++++++++++ -->
+  <!-- Default is to not allow DELETE, PUT, POST -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>not allowed</web-resource-name>
+      <url-pattern>/*</url-pattern>
+      <http-method>DELETE</http-method>
+      <http-method>PUT</http-method>
+      <!-- http-method>POST</http-method -->
+    </web-resource-collection>
+    <auth-constraint/>
+  </security-constraint>
+
+  <!-- This allows "remote configuration":
+    /thredds/debug gives access to various debug and status info.
+    ThreddsDefault servlet aliases /thredds/root/ to "{tomcat_home}/webapps/thredds/"
+    ThreddsDefault servlet aliases /thredds/dataDir/path to "dirLocation/" where path is mapped to dirLocation through a
+      datasetRoot or datasetScan element in the catalog. -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>sensitive read access</web-resource-name>
+      <url-pattern>/debug</url-pattern>
+      <url-pattern>/root/*</url-pattern>
+      <url-pattern>/dataDir/*</url-pattern>
+      <http-method>GET</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- ThreddsDefault servlet aliases /thredds/content/ to "{tomcat_home}/content/thredds/"   -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>sensitive read and write access</web-resource-name>
+      <url-pattern>/content/*</url-pattern>
+      <http-method>GET</http-method>
+      <http-method>PUT</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>Thredds Configuration</realm-name>
+  </login-config>
+
+  <!-- Define security roles. -->
+  <security-role>
+    <description>The configuration role allows users to configure the THREDDS server.</description>
+    <role-name>tdsConfig</role-name>
+  </security-role>
+</web-app>

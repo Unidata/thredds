@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences EXTERNAL_XML_VERSION="1.0">
+  <root type="user">
+    <map>
+
+      <bean key="configInfo"
+            class="thredds.dqc.server.LatestModel$LatestModelConfigInfo"
+            dirName="test/data/thredds/cataloggen/testData/model"
+            dirNameRoot="test/data/thredds/cataloggen/testData/"
+            matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_@model@.nc$"
+            substitutePattern="$1/$2/$3 $4:00"
+            serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods"
+            invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+
+      <beanCollection key="configModels" class="thredds.dqc.server.LatestModel$LatestModelConfigModel">
+        <bean name="gfs_211" value="GFS 80km CONUS"/>
+        <bean name="gfs_37-44" value="GFS Global 5.0x2.5 degree"/>
+        <bean name="eta_211" value="NAM 80km CONUS"/>
+
+        <bean name="ecmwf_1-12" value="ECMWF Global 5.0x2.5 degree"/>
+        <bean name="gfs_21-24" value="GFS Global 5.0x2.5 degree"/>
+        <bean name="gfs_25-26" value="GFS Global 5.0x5.0 degree"/>
+        <bean name="ngm_211" value="NGM 80km CONUS"/>
+        <bean name="ocean_21-24" value="Wind-Wave Global 5.0x2.5 degree"/>
+        <bean name="ruc_211" value="RUC 80km CONUS"/>
+        <bean name="ruc2_236" value="RUC2 40km CONUS"/>
+        <bean name="sst_21-24" value="SST Global 5.0x2.5 degree"/>
+        <bean name="sst_61-64" value="SST Global 2.0x2.0 degree"/>
+
+        <bean name="wseta" value="Workstation Eta (locally run)"/>
+      </beanCollection>
+
+    </map>
+  </root>
+</preferences>

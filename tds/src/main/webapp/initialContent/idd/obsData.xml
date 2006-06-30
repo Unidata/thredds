@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - Station Data" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="DqcServer" serviceType="QueryCapability" base="/thredds/ldm/" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+  </service>
+  <dataset name="Station Data">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Station</dataType>
+      <dataFormat>NetCDF</dataFormat>
+      <documentation type="rights">Freely available</documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS</name>
+        <contact url="http://www.noaa.gov/" email="answers@noaa.gov" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+    </metadata>
+    <datasetScan name="Metar Station Data" collectionType="TimeSeries" harvest="true" ID="NWS/METAR" path="station/metar" location="/data/ldm/pub/decoded/netcdf/surface/metar/">
+      <metadata inherited="true">
+        <documentation type="summary">Metars: hourly surface weather observations</documentation>
+        <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information" />
+        <documentation>In the U.S., METAR reports are taken once an hour between 50 minutes past the hour and the top of the (next) hour. All the observations taken within this time are considered to be for the same cycle. For example, observations taken between 1150Z and 1200Z are all considered to be 12Z observations. In reality, observations may be taken a little earlier or a little later. In addition, observations taken due to changing conditions, known as SPECI reports, are also considered to occur for a given cycle. Our rule of thumb is that all reports taken between (hh-1)45Z to hh44Z are considered to be for the hh cycle.</documentation>
+        <keyword>metar</keyword>
+        <keyword>surface observations</keyword>
+        <geospatialCoverage>
+          <northsouth>
+            <start>-90.0</start>
+            <size>180.0</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>0.0</start>
+            <size>360.0</size>
+            <units>degrees_east</units>
+          </eastwest>
+        </geospatialCoverage>
+        <timeCoverage>
+          <end>present</end>
+          <duration>7 days</duration>
+        </timeCoverage>
+        <variables vocabulary="CF-1">
+          <variable name="air_pressure_at_sea_level" vocabulary_name="air_pressure_at_sea_level" units="hectoPascal">Air pressure at sea level</variable>
+          <variable name="air_temperature" vocabulary_name="air_temperature" units="Celsius">Air temperature at 2 meters</variable>
+          <variable name="dew_point_temperature" vocabulary_name="dew_point_temperature" units="Celsius">Dew point temperature at 2 meters</variable>
+          <variable name="hectoPascal_ALTIM" vocabulary_name="pressure" units="hectoPascal">Pressure at station</variable>
+          <variable name="high_cloud_area_fraction" vocabulary_name="cloud_area_fraction" units="">High cloud area fraction</variable>
+          <variable name="high_cloud_base_altitude" vocabulary_name="cloud_base_altitude" units="meters">High cloud base</variable>
+          <variable name="inches_ALTIM" vocabulary_name="pressure" units="inches">Pressure at station</variable>
+          <variable name="low_cloud_area_fraction" vocabulary_name="cloud_area_fraction" units="">Low cloud area fraction</variable>
+          <variable name="low_cloud_base_altitude" vocabulary_name="cloud_base_altitude" units="meters">Low cloud base</variable>
+          <variable name="middle_cloud_area_fraction" vocabulary_name="cloud_area_fraction" units="">Middle cloud area fraction</variable>
+          <variable name="middle_cloud_base_altitude" vocabulary_name="cloud_base_altitude" units="meters">Middle cloud base</variable>
+          <variable name="precipitation_amount_24" vocabulary_name="precipitation_amount" units=".01 inches">24 hour precipitation amount</variable>
+          <variable name="precipitation_amount_hourly" vocabulary_name="precipitation_amount" units=".01 inches">Hourly precipitation amount</variable>
+          <variable name="snowfall_amount" vocabulary_name="snowfall_amount" units="inches">Snow fall amount on ground</variable>
+          <variable name="snowfall_amount_last_hour" vocabulary_name="snowfall_amount" units="inches">Snow fall amount last hour</variable>
+          <variable name="visibility_in_air" vocabulary_name="visibility_in_air" units="US_statute_mile">visibility in air</variable>
+          <variable name="visibility_in_air_direction" vocabulary_name="visibility_in_air" units="degrees">visibility in air direction</variable>
+          <variable name="visibility_in_air_surface" vocabulary_name="visibility_in_air" units="meters">Visibility in air at surface</variable>
+          <variable name="visibility_in_air_vertical" vocabulary_name="visibility_in_air" units="meters">Vertical visibility in air</variable>
+          <variable name="wind_from_direction" vocabulary_name="wind_from_direction" units="degrees">Wind From Direction</variable>
+          <variable name="wind_from_direction_max" vocabulary_name="wind_from_direction" units="degrees">wind from direction maximum</variable>
+          <variable name="wind_from_direction_min" vocabulary_name="wind_from_direction" units="degrees">wind from direction minimum</variable>
+          <variable name="wind_gust" vocabulary_name="wind_speed" units="m/s">Wind Gust</variable>
+          <variable name="wind_peak_from_direction" vocabulary_name="wind_from_direction" units="degrees">Peak wind direction</variable>
+          <variable name="wind_peak_speed" vocabulary_name="wind_speed" units="m/s">Peak wind speed</variable>
+          <variable name="wind_peak_time" vocabulary_name="forecast_reference_time">Peak wind time</variable>
+          <variable name="wind_speed" vocabulary_name="wind_speed" units="m/s">Wind Speed</variable>
+        </variables>
+      </metadata>
+      <access urlPath="MetarDQC.xml" serviceName="DqcServer" dataFormat="NetCDF" />
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true" />
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_metar.nc$" startTimeSubstitutionPattern="$1-$2-$3T00:00:00" duration="1 day" />
+    </datasetScan>
+    <dataset name="NOAA Profiler Network">
+      <metadata inherited="true">
+        <documentation type="summary">The NOAA Profiler Network (NPN), consisting of 35 unmanned Doppler Radar sites located in 18 central US states and Alaska, provides vertical wind profile data. Some of the sites are also equipped with RASS temperature profilers.</documentation>
+        <documentation xlink:href="http://www.arm.gov/xds/static/wpdn.stm" xlink:title="NWS/NOAA information" />
+        <keyword>profiler</keyword>
+        <keyword>WPDN</keyword>
+        <timeCoverage>
+          <end>present</end>
+          <duration>7 days</duration>
+        </timeCoverage>
+      </metadata>
+      <dataset name="Wind Profilers">
+        <datasetScan name="6 minute" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/6min" path="station/profiler/wind/06min" location="/data/ldm/pub/native/profiler/wind/06min/">
+          <metadata inherited="true">
+            <documentation type="summary">Six minute average data.</documentation>
+          </metadata>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false" />
+          </filter>
+          <addID />
+          <sort>
+            <lexigraphicByName increasing="false" />
+          </sort>
+          <addLatest />
+          <addDatasetSize />
+          <addTimeCoverage datasetNameMatchPattern="PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour" />
+        </datasetScan>
+        <datasetScan name="1 hour" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/1hour" path="station/profiler/wind/1hr" location="/data/ldm/pub/native/profiler/wind/01hr/">
+          <documentation type="summary">Hourly average data</documentation>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false" />
+          </filter>
+          <addID />
+          <sort>
+            <lexigraphicByName increasing="false" />
+          </sort>
+          <addLatest />
+          <addDatasetSize />
+          <addTimeCoverage datasetNameMatchPattern="PROFILER_wind_01hr_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour" />
+        </datasetScan>
+      </dataset>
+      <dataset name="RASS (Radio Acoustic Sounding System)">
+        <metadata inherited="true">
+          <documentation type="summary">Eleven NOAA Profiler sites equipped with RASS (Radio Acoustic Sounding System), which measure vertical temperature profiles.</documentation>
+        </metadata>
+        <datasetScan name="6 minute" collectionType="TimeSeries" harvest="true" ID="NWS/RASS/6min" path="station/profiler/RASS/06min" location="/data/ldm/pub/native/profiler/RASS/06min/">
+          <metadata inherited="true">
+            <documentation type="summary">Six minute average data.</documentation>
+          </metadata>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false" />
+          </filter>
+          <addID />
+          <sort>
+            <lexigraphicByName increasing="false" />
+          </sort>
+          <addLatest />
+          <addDatasetSize />
+          <addTimeCoverage datasetNameMatchPattern="PROFILER_RASS_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour" />
+        </datasetScan>
+        <datasetScan name="1 hour" collectionType="TimeSeries" harvest="true" ID="NWS/RASS/1hour" path="station/profiler/RASS/1hr" location="/data/ldm/pub/native/profiler/RASS/01hr/">
+          <documentation type="summary">Hourly average data</documentation>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false" />
+          </filter>
+          <addID />
+          <sort>
+            <lexigraphicByName increasing="false" />
+          </sort>
+          <addLatest />
+          <addDatasetSize />
+          <addTimeCoverage datasetNameMatchPattern="PROFILER_RASS_01hr_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour" />
+        </datasetScan>
+      </dataset>
+    </dataset>
+  </dataset>
+</catalog>
+

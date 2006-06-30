@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<latestConfig>
+  <latestItem id="gfs_211" name="GFS 80km CONUS"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_gfs_211.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+
+  <latestItem id="gfs_37-44" name="GFS Global 5.0x2.5 degree"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_gfs_37-44.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="ecmwf_1-12" name="ECMWF Global 5.0x2.5 degree"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_ecmwf_1-12.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="eta_211" refid="nam_211"/>
+  <latestItem id="gfs_21-24" name="GFS Global 5.0x2.5 degree"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_gfs_21-24.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="gfs_25-26" name="GFS Global 5.0x5.0 degree"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_gfs_25-26.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="nam_211" name="NAM 80km CONUS"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_nam_211.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="ngm_211" name="NGM 80km CONUS"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_ngm_211.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="ocean_21-24" name="Wind-Wave Global 5.0x2.5 degree"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_ocean_21-24.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="ruc_211" name="RUC 80km CONUS"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_ruc_211.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="ruc2_236" name="RUC2 40km CONUS"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_ruc2_236.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="sst_21-24" name="SST Global 5.0x2.5 degree"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_sst_21-24.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="sst_61-64" name="SST Global 2.0x2.0 degree"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_sst_61-64.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+  <latestItem id="wseta" name="Workstation Eta (locally run)"
+              dirLocation="test/data/thredds/cataloggen/testData/model"
+              datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_wseta.nc"
+              datasetTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+              serviceBaseURL="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.4.3/nph-dods/dods/model"
+              invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
+</latestConfig>

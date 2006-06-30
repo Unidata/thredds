@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?> 
+
+     <jnlp spec="1.0" codebase = "http://www.unidata.ucar.edu/projects/metapps/webstart"> 
+       <information> 
+         <title>Start IDV with selected dataset</title> 
+         <vendor>Unidata</vendor> 
+         <description>Just a test</description>
+         <offline-allowed/> 
+       </information> 
+       
+       <resources> 
+           <j2se version="1.3+" max-heap-size="512m" /> 
+           <jar href="IDV/idv.jar"/>
+           <extension name="IDV Base" href="http://www.unidata.ucar.edu/projects/metapps/webstart/IDV/idvbase.jnlp"/>
+       </resources>
+       
+       <resources os="Linux"> 
+           <property name="j3d.sharedctx" value="false"/>
+       </resources>
+       
+       <application-desc main-class="ucar.unidata.idv.DefaultIdv"> 
+	    <argument>{bundleURL.xidv}</argument>
+       </application-desc>
+       
+       <security>
+           <all-permissions/>
+       </security>
+       
+     </jnlp> 

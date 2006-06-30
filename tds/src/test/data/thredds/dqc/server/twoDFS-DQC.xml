@@ -1,0 +1,47 @@
+<!--
+     An example DQC that describes the queries available for two different
+     DODS File Servers that serve the same data over the same time range
+     but with different geographic footprints. Let's assume satellite SST
+     product data from 1998-01-01 to 2003-10-31. The data for the North
+     Atlantic is cataloged in the myNorthAtlanticSST.doc. The data for the
+     South Pacific is cataloged in the mySouthPacificSST.doc so the URLs are
+     http://my.server/dods/catalogs/myNorthAtlanticSST.doc
+     and
+     http://my.server/dods/catalogs/mySouthPacificSST.doc
+     both with queries for date range ("?minDate=1998-01-01&maxDate=1998-12-31")
+
+  -->
+<?xml version="1.0" encoding="UTF-8"?>
+<queryCapability xmlns="http://www.unidata.ucar.edu/schemas/thredds/queryCapability.xsd"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.unidata.ucar.edu/schemas/thredds/queryCapability.xsd http://www.unidata.ucar.edu/schemas/thredds/queryCapability.xsd"
+                 name="Unidata IDD Latest Model Data" version="0.2">
+  <query base="http://my.server/dods/catalogs/"
+    construct="template" returns="catalog"/>
+
+  <selectList id="catalog" title="Ocean Region"
+    template="my%catalog%SST.doc" required="true">
+    <choice name="North Atlantic" value="NorthAtlantic"/>
+    <choice name="South Pacific" value="SouthPacific"/>
+  </selectList>
+
+  <selectFromRange title="Date Range" required="false"
+    min="0.0" max="730.0" units="days since 1997-03-12"
+    template="?minDate=%min%&maxDate=%max%">
+  </selectFromRange>
+
+  <selectFromRange2 title="Date Range" required="false"
+    min="0.0" max="730.0" units="days since 1997-03-12"
+    template="?minDate=%minDate%&maxDate=%maxDate%">
+    <description>The Date Range</description>
+    <selectedMin id="minDate" />
+    <selectedMax id="minDate" />
+  </selectFromRange2>
+
+</queryCapability>
+
+<!--
+    EXAMPLE queries:
+    - http://my.server/dods/catalogs/myNorthAtlanticSST.doc?minDate=1.5&maxDate=2.5
+
+  -->

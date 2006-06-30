@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<preferences EXTERNAL_XML_VERSION='1.0'>
+  <root type='user'>
+    <map>
+      <bean key='configInfo'
+        class='thredds.dqc.server.LatestModel$LatestModelConfigInfo'
+        dirName='./build/test/classes/thredds/dqc/server'
+        dirNameRoot='./build/test/classes/thredds/dqc/server'
+        serviceBaseURL='http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/'
+        matchPattern='([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_@model@.nc$'
+        substitutePattern='$1/$2/$3 $4:00'
+        invCatSpecVersion='1.0'
+        dqcSpecVersion='0.3'/>
+      <!--dirName="/usr/local/apache/htdocs/motherlode/dods/model" -->
+      <!--dirNameRoot="/usr/local/apache/htdocs/motherlode/" -->
+      <beanCollection key='configModels'
+        class='thredds.dqc.server.LatestModel$LatestModelConfigModel'>
+        <bean name="ecmwf_1-12" value="ECMWF_1-12"/>
+        <bean name="eta_211" value="Eta_211"/>
+        <bean name="gfs_211" value="GFS_211"/>
+        <bean name="gfs_37-44" value="GFS_37-44"/>
+        <bean name="gfs_21-24" value="GFS_21-24"/>
+        <bean name="gfs_25-26" value="GFS_25-26"/>
+        <bean name="ngm_211" value="NGM_211"/>
+        <bean name="ocean_21-24" value="Ocean_21-24"/>
+        <bean name="ruc_211" value="RUC_211"/>
+        <bean name="ruc2_236" value="RUC2_236"/>
+        <bean name="sst_21-24" value="SST_21-24"/>
+        <bean name="sst_61-64" value="SST_61-64"/>
+        <bean name="wseta" value="Workstation Eta"/>
+      </beanCollection>
+    </map>
+  </root>
+</preferences>

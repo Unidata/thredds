@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="myserver" serviceType="Compound" base="">
+    <service name="tdsDods" serviceType="DODS" base="/thredds/dodsC"/>
+    <service name="tdsHttp" serviceType="HTTPServer" base="/thredds/fileServer"/>
+    <service name="tdsWcs" serviceType="WCS" base="/thredds/wcs"/>
+  </service>
+  <dataset name="Data" ID="test/relative">
+    <metadata inherited="true">
+      <serviceName>myserver</serviceName>
+    </metadata>
+    <metadata inherited="true">
+      <serviceName>myserver</serviceName>
+    </metadata>
+    <dataset name="testData2.nc" ID="test/relative/testData2.nc" urlPath="testRelative/testData2.nc">
+      <dataSize units="Kbytes">57.28</dataSize>
+    </dataset>
+    <dataset name="testData.nc" ID="test/relative/testData.nc" urlPath="testRelative/testData.nc">
+      <dataSize units="Kbytes">54.73</dataSize>
+    </dataset>
+  </dataset>
+</catalog>

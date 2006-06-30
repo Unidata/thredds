@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.1">
+    <dataset name="NCEP Model Data">
+      <catalogRef xlink:href="dgex_model.xml" xlink:title="DGEX Model" name="" />
+      <catalogRef xlink:href="gfs_model.xml" xlink:title="Global Forecast System Model" name="" />
+      <catalogRef xlink:href="nam_model.xml" xlink:title="North American Model" name="" />
+      <catalogRef xlink:href="ruc_model.xml" xlink:title="Rapid Update Cycle Model" name="" />
+      <catalogRef xlink:href="ndfd_model.xml" xlink:title="NWS National Digital Forecast Database" name="" />
+    </dataset>
+</catalog>
+

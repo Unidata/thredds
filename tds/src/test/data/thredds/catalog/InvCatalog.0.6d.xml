@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6d.dtd">
+<catalog name="Example THREDDS Inventory Catalog" version="0.6" xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<collection name="top-level collection">
+		<!--	all referenced servers -->
+		<service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
+		<service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
+		<service name="Motherlode" serviceType="Compound" base="">
+			<service name="MotherlodeFTP" serviceType="FTP" base="ftp://motherlode.ucar.edu/ftp/pub/thredds/"/>
+			<service name="MotherlodeDODS" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/"/>
+		</service>
+		<!-- simple collection -->
+		<collection name="Flux measurements" dataType="Grid" serviceName="ACD">
+			<dataset name="CO2" urlPath="flux/CO2.nc"/>
+			<dataset name="NO2" urlPath="flux/NO2.nc"/>
+		</collection>
+		<!-- datasets can be gotten by DODS or FTP with same urlPath, using serviceList -->
+		<collection name="Flux measurements 2" dataType="Grid" serviceName="Motherlode">
+			<dataset name="CO2" urlPath="flux/CO2.nc"/>
+			<dataset name="NO2" urlPath="flux/NO2.nc"/>
+		</collection>
+		<!-- datasets can be gotten by DODS or FTP with different urlPath -->
+		<collection name="Flux measurements 3" dataType="Grid" serviceName="Motherlode">
+			<dataset name="CO2" ID="CO2_Flux">
+				<access serviceName="MotherlodeFTP" urlPath="ftp/flux/CO2.nc"/>
+				<access serviceName="MotherlodeDODS" urlPath="1998/CO2.nc"/>
+			</dataset>
+			<dataset name="NO2" ID="NO2_Flux">
+				<access serviceName="MotherlodeFTP" urlPath="ftp/flux/NO2.nc"/>
+				<access serviceName="MotherlodeDODS" urlPath="1998/NO2.nc"/>
+			</dataset>
+		</collection>
+		<!-- example of alias-->
+		<collection name="Doubled CO2 CCM2 Model Runs" serviceName="ACD" dataType="Grid">
+			<collection name="SurfaceFlux">
+				<dataset name="CO2" alias="CO2_Flux"/>
+				<dataset name="NO2" alias="NO2_Flux"/>
+			</collection>
+			<collection name="Model Output" serviceName="ACD">
+				<dataset name="Jan Averages" urlPath="model/DoubleCO2/Jan.nc"/>
+				<dataset name="Feb Averages" urlPath="model/DoubleCO2/Feb.nc"/>
+				<dataset name="Mar Averages" urlPath="model/DoubleCO2/Mar.nc"/>
+			</collection>
+		</collection>
+		<!-- example of documentation, property, and metadata elements -->
+		<collection name="Test ETA data" dataType="Grid" serviceName="ACD">
+			<documentation xlink:href="http://www.unidata.ucar.edu/staff/caron/anotherGoodIdea.html" xlink:title="anotherGoodIdea"> 
+		      This inline documentation refers to the entire collection. 	  
+	           </documentation>
+			<!-- these metadata elements apply to all contained datasets -->
+			<metadata xlink:href="http://www.unidata.ucar.edu/projects/THREDDS/Eta.xml" metadataType="THREDDS"/>
+			<metadata xlink:href="http://www.unidata.ucar.edu/projects/THREDDS/NCEP/DC.xml" metadataType="DublinCore"/>
+			<property name="GoodThing" value="Where have you gone?"/>
+			<property name="BadThing" value="what a fool!"/>
+			<dataset name="Mar 17, 2001" urlPath="test/eta.nc"/>
+			<dataset name="Mar 18, 2001 " urlPath="test/eta2.nc" ID="testProperty">
+				<documentation xlink:href="http://www.unidata.ucar.edu/staff/caron/EtaNormal.html"> The standard run. </documentation>
+				<property name="GoodThing" value="Where have you gone?"/>
+			</dataset>
+			<dataset name="Mar 18, 2001 (experimental)" urlPath="test/eta2.nc">
+				<documentation> Test defrobulating the dataset description  </documentation>
+				<metadata metadataType="THREDDS" xlink:href="http://www.unidata.ucar.edu/staff/caron/EtaTest.xml"/>
+			</dataset>
+		</collection>
+		<!-- example of catalog Reference -->
+		<catalogRef xlink:href="http://www.unidata.ucar.edu/projects/thredds/xml/InvCatalog5.part2.xml" xlink:title="ETA data"/>
+	</collection>
+</catalog>

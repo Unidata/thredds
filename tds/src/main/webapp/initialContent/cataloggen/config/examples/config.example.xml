@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- $Id: config.example.xml,v 1.2 2005/07/11 20:07:53 edavis Exp $ -->
+<!--
+  - Example CatalogGen Servlet configuration file.
+  -->
+<preferences EXTERNAL_XML_VERSION='1.0'>
+  <root type='user'>
+    <map>
+      <beanCollection key='config'
+                      class='thredds.cataloggen.servlet.CatGenTimerTask'>
+
+        <!-- Example setup to catalog remote DODS servers. -->
+        <bean name='exampleDods'
+          delayInMinutes='1' periodInMinutes='0'
+          configDocName='catGenConf.exampleDods.xml'
+          resultFileName='catalog.exampleDods.xml'
+          />
+
+      </beanCollection>
+    </map>
+  </root>
+</preferences>

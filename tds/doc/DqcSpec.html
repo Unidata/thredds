@@ -1,0 +1,672 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><!-- $Id: DqcSpec.html,v 1.1 2005/03/30 05:40:31 edavis Exp $ --><title>Dataset Query Capabilities Specification</title></head><body>
+<h1>Dataset Query Capabilities Document Specification</h1>
+
+<p> <em>Last modified: 10 June 2004 ($Date: 2005/03/30 05:40:31 $)</em></p>
+
+<p><em>Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mail list</a> 
+  </em></p>
+
+
+<hr>
+<h3>Contents:</h3>
+
+<ul>
+
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#DQC_Elements_and_Types">DQC Elements and Types</a></li>
+  <li><a href="#Example">Example</a></li>
+  <li><a href="#Notes_">Notes (and Thoughts for the Future)</a></li><ul><li><a href="#How_is_a_Query_String_Build">How is a Query String Built</a></li></ul>
+  <li><a href="#Index_of_elements_and_types">Index of Elements and Types</a><br>
+  </li>
+</ul>
+
+<h3>Related Resources:</h3>
+
+<ul>
+
+  <li><a href="./DqcChanges.html">Changes</a> from version 0.2</li>
+  <li><a href="http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd">DQC schema</a> version 0.3<br>
+  </li>
+</ul>
+
+<hr style="width: 100%; height: 2px;">
+<h2><a name="Overview"></a>Overview</h2>
+
+<p>A Dataset Query Capabilities (DQC) document is an XML document that describes 
+  the set of requests that can be made to one or more THREDDS services. A DQC 
+  document is returned when a THREDDS dataset is accessed with serviceType "QueryCapability". 
+  The DQC can be thought of as an abstract description of the contents of a THREDDS 
+  dataset.</p>
+
+<p>This DQC Document Specification covers the 0.3 version of the query capabilities 
+  schema (<a href="http://www.unidata.ucar.edu/schemas/thredds/queryCapabilities.0.3.xsd">http://www.unidata.ucar.edu/schemas/thredds/queryCapabilities.0.3.xsd</a>). 
+  It explains the meanings of the individual elements that constitutes a DQC document 
+  and how a DQC service request is built from the information in a DQC document.</p>
+
+<p>Also see: <a href="../catalog/Primer.html">THREDDS Catalog Primer</a>.<br>
+</p>
+
+<h2><a name="DQC_Elements_and_Types"></a>DQC Elements and Types</h2>
+
+
+<h3><a name="queryCapability_Element"></a>queryCapability Element</h3>
+
+<pre>&lt;xsd:element name="queryCapability"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="query"/&gt;<br>      &lt;!-- Require a selectServiceType, more allowed because of selector elements. --&gt;<br>      &lt;xsd:element ref="selectServiceType"/&gt;<br>      &lt;xsd:element ref="selector" minOccurs="1" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="userInterface" minOccurs="0" maxOccurs="unbounded"/&gt;<br>    &lt;/xsd:sequence&gt;<br>    &lt;xsd:attribute name="version" type="xsd:token" default="0.3"/&gt;<br>    &lt;xsd:attribute name="name" type="xsd:token"/&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>This is the top level element, containing one <strong style="font-style: italic;">query</strong> 
+  element, followed by one selectServiceType element, followed 
+  by one or more <strong style="font-style: italic;"> selector</strong> elements, 
+  and 0 or more <strong></strong><strong style="font-style: italic;"><a href="#userInterface_Element">userInterface</a></strong> 
+  elements. For example,</p>
+
+
+<pre>&lt;queryCapability<br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3"<br>    name="My collection of datasets" version="0.3"&gt;<br>  &lt;query base="http://my.server/dqcServlet/myCollection" /&gt;<br>  &lt;selectServiceType id="serviceType" title="Select service type(s)"<br>     &nbsp;required="false"<br>      template="serviceType={value}" multiple="false"&gt;<br>    &lt;serviceType&gt;DODS&lt;/serviceType&gt;<br>    &lt;serviceType&gt;HTTP&lt;/serviceType&gt;<br>  &lt;selectServiceType&gt;<br>  &lt;selectFromRange title="Longitude" required="false"<br>     template="minLon={min}&amp;amp;maxLon={max}"<br>     min="0.0" max="360.0" units="degree_east" modulo="true" /&gt;<br>&lt;queryCapability&gt;<br></pre>
+
+<p> </p>
+
+<h3><a name="query_Element"></a>query Element</h3>
+
+
+<pre>&lt;xsd:element name="query"&gt;<br>  &lt;xsd:complexType&gt;<br> &nbsp;  &lt;xsd:attribute name="base" type="xsd:string" use="required"/&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>A <strong><em>query</em></strong> element provides the initial part of the 
+  query string and defines what the query returns. 
+  The <em><strong>base</strong></em> attribute becomes the base of the query URL.<br>
+</p>
+
+<p>Example:<br>
+</p>
+
+<pre>&lt;query base="http://my.server/dqcServlet/myCollection" /&gt;<br></pre>
+
+<p>How the query string is constructed depends on whether the <i><b>selector</b></i> elements have <i><b>template</b></i> attributes or not. For the details of how to build the query string, see the <a href="#How_is_a_Query_String_Build">"How is a Query String Built" section</a> below.<br>
+</p>
+
+
+
+
+<h3><a name="selector_Element"></a>selector Element</h3>
+
+
+<pre>&lt;xsd:element name="selector" type="selectorType" abstract="true"/&gt;<br>&lt;xsd:complexType name="selectorType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element name="description" type="cat:documentationType" minOccurs="0" maxOccurs="1"/&gt;<br>  &lt;/xsd:sequence&gt;<br>  &lt;xsd:attribute name="id" type="xsd:token" use="required"/&gt;<br>  &lt;xsd:attribute name="title" type="xsd:token" use="required"/&gt;<br>  &lt;xsd:attribute name="template" type="xsd:token" /&gt;<br>  &lt;xsd:attribute name="required" type="xsd:boolean" default="true"/&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+
+<p>Each <span style="font-weight: bold; font-style: italic;">selector</span> element in a DQC document represents a single selection available to a user. It is the base class for all selectors including <a href="#selectList_Element">selectList</a>, 
+  <a href="#selectStation_Element">selectStation</a>, <a href="#selectFromRange_Element">selectFromRange</a>, and 
+  <a href="#selectGeoRegion_Element">selectGeoRegion</a>. 
+  Thus the following elements and attributes apply to all selectors. The <span style="font-style: italic;"><span style="font-weight: bold;">required</span></span> 
+  attribute (which defaults to "<span style="font-weight: bold;">true</span>") 
+  indicates whether the user must make a selection from this selector to obtain 
+  a valid query string. The <em><strong>title</strong></em> attribute is required 
+  and its value is displayed to the user as the title of this selector. The contents 
+  of the optional <em><strong>description</strong></em> element (plain text or 
+  a combination of text and XHTML) may be displayed to the user to further describe 
+  the selector. The <i><b>id</b></i> attribute is required and must be unique within the DQC document. The <em>template</em> attribute is optional.<br>
+</p>
+<p>Each <i><b>selector</b></i> element for which a selection is made appends a string to the query string. The appended string is built using the <i><b>template</b></i> and <i><b>id</b></i> attributes. If the optional <i><b>template</b></i> attribute is given, the template string (i.e., the value of the <i><b>template</b></i>
+attribute) must contain the replacement string "{value}". The template
+string becomes the appended string. But first the value of the
+selection (how that value is determined depends on the type of
+selector) replaces the replacement string. If no <i><b>template</b></i> attribute is given, the value of the <i><b>id</b></i>
+attribute and the value of the selection are used to build the appended
+string as a name/value pair of the form "&lt;id&gt;=&lt;value&gt;".</p>
+More information on how the <em><strong>id</strong></em> and <span style="font-style: italic;"><span style="font-weight: bold;">template</span></span> attributes are used in the building of the query string is available in the <a href="#How_is_a_Query_String_Build">"How 
+is a Query String Built" section</a> below. 
+
+
+<h3><a name="selectList_Element"></a>selectList Element</h3>
+
+<pre>&lt;xsd:element name="selectList" substitutionGroup="selector"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="selectorType"&gt;<br>        &lt;xsd:sequence&gt;<br>          &lt;xsd:element ref="choice" minOccurs="1" maxOccurs="unbounded"/&gt;<br>        &lt;/xsd:sequence&gt;<br>        &lt;xsd:attribute name="multiple" type="xsd:boolean" default="false" /&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>A<strong><em> </em></strong><em><strong>selectList</strong></em> is a kind 
+  of selector that defines an enumerated list of choices from which the user can 
+  make a selection. Each choice in the enumerated list is defined by a <i><b><strong>choice</strong></b></i> 
+  element. A <i><b>selectList</b></i> element contains an optional <i><b>description</b></i> element followed by one or more <i><b>choice</b></i> elements. It also allows all of the attributes declared in the selector element: <b><i>id</i></b>, <b><i>title</i></b>, <b><i>template</i></b>, and <b><i>required</i></b>. If the <span style="font-style: italic;"><span style="font-weight: bold;">multiple</span></span>
+attribute is set to "true", the user may select one or more of the
+available choices. If the multiple attribute is set to "false" (the
+default value), the user may select only one of the available choices.
+</p>
+
+<p>The selector's resulting value is the value of the selected <b><i>choice</i></b> element's <b><i>value</i></b>
+attribute.&nbsp; If an optional <i><b>template</b></i>
+attribute is given, the template string must contain the replacement
+string "{value}" and that replacement string is replaced by the
+selector's resulting value. The resulting string is then appended to
+the query string.For example, if the ".5 reflectivity .54nm res" product is selected from the following: <br>
+
+
+
+</p>
+<pre>&lt;selectList id="prod" title="Products:"<br>    template="product={value}" multiple="true" required="true"&gt;<br>  &lt;choice name=".5 reflectivity .54nm res" value="N0R"&gt;<br>    &lt;description&gt;.5 reflectivity .54nm res 16 levels id 19/r&lt;/description&gt;<br>  &lt;/choice&gt;<br>  &lt;choice name=".5 storm rel. velocity" value="N0S"&gt;<br>    &lt;description&gt;.5 storm rel. velocity .54nm res 16 lvls id 56/srm&lt;/description&gt;<br>  &lt;/choice&gt;<br>&lt;/selectList&gt;<br></pre>
+
+
+
+<p>the string "product=N0R" will be appended to the query
+string.</p>
+<p>If no <i><b>template</b></i> attribute is given, the value of the <i><b>id</b></i>attribute
+becomes a parameter name and the selector's resulting value becomes the
+parameter value. The resulting name value pair is appended to the query
+string with the form "&lt;id&gt;=&lt;value&gt;". For example, if the
+".5 reflectivity .54nm res" product is selected from the following:<br>
+</p>
+
+
+<pre>&lt;selectList id="prod" title="Products:"<br>    multiple="true" required="true"&gt;<br>  &lt;choice name=".5 reflectivity .54nm res" value="N0R"&gt;<br>    &lt;description&gt;.5 reflectivity .54nm res 16 levels id 19/r&lt;/description&gt;<br>  &lt;/choice&gt;<br>  &lt;choice name=".5 storm rel. velocity" value="N0S"&gt;<br>    &lt;description&gt;.5 storm rel. velocity .54nm res 16 lvls id 56/srm&lt;/description&gt;<br>  &lt;/choice&gt;<br>&lt;/selectList&gt;</pre>
+
+
+<p>the string "prod=N0R" will be appended to the query
+string.</p>
+<h3><a name="choice_Element"></a>choice Element</h3>
+
+
+<pre>&lt;xsd:element name="choice" type="choiceType"/&gt;<br>&lt;xsd:complexType name="choiceType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element name="description" type="cat:documentationType" minOccurs="0" maxOccurs="1"/&gt;<br>    &lt;xsd:element ref="selectList" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br>  &lt;xsd:attribute name="name" type="xsd:string" use="required"/&gt;<br>  &lt;xsd:attribute name="value" type="xsd:string" use="required"/&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+
+
+<p>A <span style="font-weight: bold; font-style: italic;">choice</span> element 
+  specifies a single choice that the user can make from a <span style="font-weight: bold; font-style: italic;">selectList</span>. 
+  The <em><strong>name</strong></em> attribute is displayed to the user, while 
+  the <em><strong>description</strong></em> element is an optional longer description 
+  of the choice. The <em><strong>value</strong></em> attribute of a selected choice 
+  provides the selections resulting value which is used to construct the query.<br>
+</p>
+<p>Here is an example of a selectList element containing several choice elements:<br>
+</p>
+<pre>&lt;selectList id="prod" title="Products:"<br>    template="product={value}" multiple="true" required="true"&gt;<br>  &lt;choice name=".5 reflectivity .54nm res" value="N0R"/&gt;<br>  &lt;choice name=".5 storm rel. velocity" value="N0S"/&gt;<br>&lt;/selectList&gt;<br></pre>
+<p>
+</p>
+<p>Each <i>choice</i> element can contain nested <i>selector</i> elements. This allows further refinement of a selection. Here is the above example with nested selectors:<br>
+</p>
+
+<pre>&lt;selectList id="prod" title="Products:"<br>    template="product={value}" multiple="true" required="true"&gt;<br>  &lt;choice name=".5 reflectivity .54nm res" value="N0R"&gt;<br>    &lt;selectList id="radar" title="Mobile Radar" template="radar={stn}"&gt;<br>      &lt;choice name="Mobile Radar 1" value="mr1&gt;<br>      &lt;choice name="Mobile Radar 2" value="mr2&gt;<br>      &lt;choice name="Mobile Radar 3" value="mr3&gt;<br>    &lt;/selectList&gt;<br> &nbsp;&lt;/choice&gt;<br>  &lt;choice name=".5 storm rel. velocity" value="N0S"&gt;<br>    &lt;selectList id="radar" title="Mobile Radar" template="radar={stn}"&gt;<br>      &lt;choice name="Mobile Radar 1" value="mr1&gt;<br>      &lt;choice name="Mobile Radar 3" value="mr3&gt;<br>    &lt;/selectList&gt;<br>  &lt;/choice&gt;<br>&lt;/selectList&gt;<br></pre>
+
+<p>This allows for cases where there are different choices depending on your first choice.<br>
+</p>
+
+<p>
+</p>
+
+
+<h3><a name="selectServiceType_Element"></a>selectService Element</h3>
+
+<pre>&lt;xsd:element name="selectService" substitutionGroup="selector"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="selectorType"&gt;<br>        &lt;xsd:sequence&gt;<br>          &lt;xsd:element name="serviceType" minOccurs="1" maxOccurs="unbounded"&gt;<br>            &lt;xsd:complexType&gt;<br>              &lt;xsd:simpleContent&gt;<br>                &lt;xsd:extension base="cat:serviceTypes"&gt;<br>                  &lt;xsd:attribute name="title" type="xsd:token"/&gt; <br>                &lt;/xsd:extension&gt;<br>              &lt;/xsd:simpleContent&gt;<br>            &lt;/xsd:complexType&gt;<br>          &lt;/xsd:element&gt;<br>        &lt;/xsd:sequence&gt;<br>        &lt;xsd:attribute name="multiple" type="xsd:boolean" default="false" /&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>A <b><i>selectService</i></b> element is a type of <b><i>selector</i></b> that defines 
+  the possible <b><i>serviceTypes</i></b> that can be returned from a query on this DQC. It contains an optional <b><i>description</i></b> element followed by one or more <b><i>serviceType</i></b> elements and also allows all of the attributes declared in the selector element: <b><i>id</i></b>, <b><i>title</i></b>, <b><i>template</i></b>, and <b><i>required</i></b>. Each serviceType element specifies a single THREDDS catalog service type (see the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html">THREDDS catalog specification</a>
+for more information) and allows an optional <i><b>title</b></i> attribute to further describe the service type. If the <span style="font-style: italic;"><span style="font-weight: bold;">multiple</span></span>
+attribute is set to "true", the user may select one or more of the
+available service types. If the multiple attribute is set to "false" (the
+default value), the user may select only one of the available service types.</p><p>Having a <i>selectService</i> in a 
+  DQC document allows clients to filter the response on the <i>serviceType</i>s 
+  the client understands. For this reason, a <i>selectService</i> element 
+  is required in all DQC documents.&nbsp;<br>
+</p>
+<p>The selection's resulting value is the value of the selected <b><i>serviceType</i></b> element.&nbsp; If an optional <i><b>template</b></i>
+attribute is given, the template string must contain the replacement
+string "{value}" and that replacement string is replaced by the
+selection's resulting value. The resulting string is then appended to
+the query string. For example, if the "DODS" service type is selected from the following:<br>
+
+
+</p>
+<pre>&lt;selectService id="serviceType" title="Select service type(s)" required="false"<br>    template="serviceType={value}" multiple="false"&gt;<br>  &lt;serviceType&gt;DODS&lt;/serviceType&gt;<br>  &lt;serviceType&gt;HTTP&lt;/serviceType&gt;<br>&lt;/selectService&gt;<br></pre>
+
+
+
+<p>the string "serviceType=DODS" will be appended to the query
+string.</p>
+
+
+<p>If no <i><b>template</b></i> attribute is given, the value of the <i><b>id</b></i>
+attribute becomes a parameter name and the selector's resulting value
+becomes the parameter value. The resulting name value pair is appended
+to the query string with the form "&lt;id&gt;=&lt;value&gt;". For
+example, if the "DODS" service type is selected from the following:<br>
+</p>
+
+
+
+
+<pre>&lt;selectService id="service" title="Select service type(s)" required="false"<br>    multiple="false"&gt;<br>  &lt;serviceType&gt;DODS&lt;/serviceType&gt;<br>  &lt;serviceType&gt;HTTP&lt;/serviceType&gt;<br>&lt;/selectService&gt;<br></pre>
+
+
+
+<p>the string "service=DODS" will be appended to the query
+string.</p>
+<h3><a name="selectStation_Element"></a> selectStation Element</h3>
+
+<pre>&lt;xsd:element name="selectStation" substitutionGroup="selector"&gt;<br>  &lt;xsd:complexType name="selectStationType"&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="selectorType"&gt;<br>        &lt;xsd:sequence&gt;<br>          &lt;xsd:element ref="station" minOccurs="1" maxOccurs="unbounded"/&gt;<br>        &lt;/xsd:sequence&gt;<br>        &lt;xsd:attribute name="multiple" type="xsd:boolean" default="false" /&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>A <em><strong>selectStation</strong></em> element is a kind of <span style="font-weight: bold; font-style: italic;">selector</span> 
+  that allows the user to select from an enumerated list of <strong>station</strong> 
+  elements. It is similar to the <span style="font-style: italic;"><span style="font-weight: bold;">selectList</span></span> 
+  element but specialized to handle geographically located stations. Besides the elements and attributes allowed in all <i>selector</i> elements, the <i>selectStation</i> element must contain one or more <a href="#station_Element"><i>station</i></a> elements. Each <i>station</i> element must contain a <a href="#location_Element"><i>location</i></a> element which provides latitude, longitude, and optionally the elevation of the station. If the <span style="font-style: italic;"><span style="font-weight: bold;">multiple</span></span>
+attribute is set to "true", the user may select one or more of the
+available stations. If the multiple attribute is set to "false" (the
+default value), the user may select only one of the available stations.</p>The selection's resulting value is the value of the selected <b><i>station</i></b> element's <i><b>value</b></i> attribute.&nbsp; If an optional <i><b>template</b></i>
+attribute is given, the template string must contain the replacement
+string "{value}" and that replacement string is replaced by the
+selection's resulting value. The resulting string is then appended to
+the query string. For example, if the "OKLAHOMA_CITY/Kegelman_Aux_F OK" station is selected from the following:<br>
+
+
+
+
+
+<pre>&lt;selectStation id="stn" title="Available Stations" template="station={value}"&gt;<br>  &lt;station name="LOS_ANGELES/Orcutt_Oil_Field CA" value="VBX"&gt;<br>    &lt;location latitude="34.83" longitude="-120.38"/&gt;<br>  &lt;/station&gt;<br>  &lt;station name="OKLAHOMA_CITY/Kegelman_Aux_F OK" value="VNX"&gt;<br>    &lt;location latitude="36.73" longitude="-98.12"/&gt;<br>  &lt;/station&gt;<br>&lt;/selectStation&gt;</pre>
+
+
+
+
+<p>the string "station=VNX" will be appended to the query
+string.</p>
+
+
+
+<p>If no <i><b>template</b></i> attribute is given, the value of the <i><b>id</b></i>
+attribute becomes a parameter name and the selector's resulting value
+becomes the parameter value. The resulting name value pair is appended
+to the query string with the form "&lt;id&gt;=&lt;value&gt;". For example, if the
+"OKLAHOMA_CITY/Kegelman_Aux_F OK" station is selected from the
+following:<br>
+</p>
+
+
+
+
+<pre>&lt;selectStation id="stn" title="Available Stations"&gt;<br>  &lt;station name="LOS_ANGELES/Orcutt_Oil_Field CA" value="VBX"&gt;<br>    &lt;location latitude="34.83" longitude="-120.38"/&gt;<br>  &lt;/station&gt;<br>  &lt;station name="OKLAHOMA_CITY/Kegelman_Aux_F OK" value="VNX"&gt;<br>    &lt;location latitude="36.73" longitude="-98.12"/&gt;<br>  &lt;/station&gt;<br>&lt;/selectStation&gt;</pre>
+
+
+
+
+<p>the string "stn=VNX" will be appended to the query
+string.</p>
+
+
+<p>
+</p>
+
+
+
+<h3><a name="station_Element"></a>station Element</h3>
+
+
+<pre>&lt;xsd:element name="station" substitutionGroup="choice"&gt;<br>  &lt;xsd:complexType name="stationType"&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="choiceType"&gt;<br>        &lt;xsd:sequence&gt;<br>          &lt;xsd:element ref="location"/&gt;<br>        &lt;/xsd:sequence&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>A <em><strong>station</strong></em> element is an
+extention of a
+choice element that is specific to geographically located stations in
+that it specifies a location. It contains exactly one <strong>location</strong>
+element. It inherits the <strong>name</strong>, <strong>description</strong>
+and <strong>value</strong> attributes from the <strong>choice</strong>
+type. It is used in conjunction with the <span style="font-weight: bold; font-style: italic;">selectStation</span>
+element.<br>
+</p>
+
+
+<h3><a name="location_Element"></a>location Element</h3>
+
+<pre>&lt;xsd:element name="location" type="locationType"/&gt;<br>&lt;xsd:complexType name="locationType"&gt;<br>  &lt;xsd:attribute name="latitude" type="xsd:float" use="required"/&gt;<br>  &lt;xsd:attribute name="longitude" type="xsd:float" use="required"/&gt;<br>  &lt;xsd:attribute name="latitude_units" type="xsd:token" default="degrees_north"/&gt;<br>  &lt;xsd:attribute name="longitude_units" type="xsd:token" default="degrees_east"/&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+
+<p>A <em><strong>location</strong></em> element has a <strong><em>latitude</em></strong>
+and <strong><em>longitude</em></strong>, and optionally may contain
+units for the latitude and longitude<em><strong></strong></em>.
+The units default to "degrees_north" and "degrees_east", meaning decimal degrees. The convention
+for longitude is that 0 is greenwich, with positive going east, and the
+numbers will be interpreted modulo 360. The default for latittude is 0
+is the equator with positive going north, and must be in the range +/-
+90.</p>
+
+
+<h3><a name="location3D_Element"></a>location3D Element</h3>
+
+<pre>&lt;xsd:element name="location3D" substitutionGroup="location"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="locationType"&gt;<br>        &lt;xsd:attribute name="elevation" type="xsd:float" use="required"/&gt;<br>        &lt;xsd:attribute name="elevation_units" type="xsd:token" default="msl"/&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>A <strong><em>location3D</em></strong> element extends
+the <strong>location</strong>
+type by adding an <em><strong>elevation</strong></em> attribute to
+indicate the vertical location. The <em><strong>elevation_unit</strong></em><strong><em>s</em></strong>
+attribute specifies the units of the elevation.</p>
+
+
+<h3><a name="selectFromRange_Element"></a> selectFromRange Element</h3>
+
+<pre>&lt;xsd:element name="selectFromRange" substitutionGroup="selector"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="selectorType"&gt;<br>        &lt;xsd:attribute name="min" type="xsd:float" use="required" /&gt;<br>        &lt;xsd:attribute name="max" type="xsd:float" use="required" /&gt;<br>        &lt;xsd:attribute name="units" type="xsd:string" /&gt;<br>        &lt;xsd:attribute name="modulo" type="xsd:boolean" default="false" /&gt;<br>        &lt;xsd:attribute name="resolution" type="xsd:float" use="required"/&gt;<br>        &lt;xsd:attribute name="selectType" type="rangeSelectTypeEnum" default="subrange" /&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br>&lt;xsd:simpleType name="rangeSelectTypeEnum"&gt;<br>  &lt;xsd:restriction base="xsd:token"&gt;<br>    &lt;xsd:enumeration value="point" /&gt;<br>    &lt;xsd:enumeration value="subrange" /&gt;<br>  &lt;/xsd:restriction&gt;<br>&lt;/xsd:simpleType&gt;</pre>
+
+
+<p>A <em><strong>selectFromRange</strong></em> element is a kind of <i><span style="font-weight: bold; font-style: italic;">selector</span></i> 
+  that defines a range of numbers from which a user can select a point or a range. 
+  The given range is defined by the values of the <span style="font-style: italic;"><span style="font-weight: bold;">min</span></span> 
+  and <span style="font-style: italic;"><span style="font-weight: bold;">max</span></span> 
+  attributes. The units of the given values and the selected value(s) is given 
+  by the value of the <i>units</i> attribute. Defining the <i>modulo</i> attribute 
+  to "true" means that the given range is cyclic and the modulo value can be calculated 
+  by taking the maximum value and subtracting the minimum value. E.g., longitude 
+  from -180.0 to 180.0 has a modulo value of 360.0 as does the longitude range 
+  from 0.0 to 360.0. The <i><b>resolution</b></i> attribute provides some idea of the density of data points. The <i>selectType</i>
+attribute indicates whether the user needs to select a single point
+within the allowed range or needs to select a subrange of the allowed
+range.</p>
+<p>The value of the point or the minimum and maximum value of the subrange (depending on the <i>selectType</i>) are required to build a valid query string from a <i>selectFromRange</i> element. When the value of the <em>selectType</em>
+attribute is set to "subrange", a template string must be given and
+must contain the replacement strings "{min}" and "{max}".&nbsp; The
+replacement strings are replaced by the
+values of the minimum and maximum values of the&nbsp; subrange. The
+resulting string is then appended to
+the query string. For example, if the range 223.0 to 278.0 is selected
+from the following:<br>
+</p>
+
+
+<pre>&lt;selectFromRange id="longRng" title="Longitude" required="false"<br>    selectType="range" template="minLon={min}&amp;amp;maxLon={max}&amp;amp;"<br>    min="0.0" max="360.0" units="degree_east" modulo="true" /&gt;<br></pre>
+
+
+
+
+
+<p>the string "minLon=223.0&amp;amp;maxLon=278.0&amp;amp;" will be appended to the query
+string.<br>
+</p>
+
+<p>When the value of the <em>selectType</em> attribute is set to "point" and a template string is given, the template string must contain the replacement
+string "{point}" and that replacement string is replaced by the
+value of the selected point. The resulting string is then appended to
+the query string. For example, if the value 255.3 is the point selected from the following:</p>
+
+<pre>&lt;selectFromRange id="longPnt" title="Longitude" required="false"<br>    selectType="point" template="lonPoint={point}"<br>    min="0.0" max="360.0" units="degree_east" modulo="true" /&gt;<br></pre>
+<p>the string "lonPoint=255.3" will be appended to the query
+string.<br>
+</p>
+<p>When the value of the <em>selectType</em> attribute is set to "point" and no template string is given, the value of the <i><b>id</b></i>
+attribute becomes a parameter name and the value of the selected&nbsp; point
+becomes the parameter value. The resulting name value pair is appended
+to the query string with the form "&lt;id&gt;=&lt;value&gt;". For example, if the value 255.3 is the point selected from the following:
+
+</p>
+<pre>&lt;selectFromRange id="longPnt" title="Longitude" required="false"<br>    selectType="point"<br>    min="0.0" max="360.0" units="degree_east" modulo="true" /&gt;<br></pre>
+<p>
+the string "longPoint=255.3" will be appended to the query
+string.</p>
+<p>Various issues come up with all selector elements that require multiple values to make a valid selection. See the <a href="file:///C:/Ethan/dev/thredds/catalog/doc/DqcSpec.html#Issues_for_selector_Elements_that">"Issues for selector Elements that Require Multiple Values" section</a> below for further information.</p>
+
+<h3><a name="selectFromDateRange_Element"></a>selectFromDateRange Element</h3>
+
+<pre>&lt;xsd:element name="selectFromDateRange" substitutionGroup="selector"&gt;<br>  &lt;xsd:complexType name="selectFromDateRangeType"&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="selectorType"&gt;<br>        &lt;xsd:attribute name="start" type="cat:dateType" /&gt;<br>        &lt;xsd:attribute name="end" type="cat:dateType" /&gt;<br>        &lt;xsd:attribute name="duration" type="cat:duration" /&gt;<br>        &lt;xsd:attribute name="resolution" type="cat:duration" use="required"/&gt;<br>        &lt;xsd:attribute name="selectType" type="rangeSelectTypeEnum" default="subrange" /&gt;<br>     &nbsp;&lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br></pre>
+
+<p>A <i><b>selectFromDateRange</b></i> element is a kind of <i><b>selector</b></i> 
+  that defines a date range from which a user may select a point or a range. The 
+  given date range is defined by the values of the <i>start</i>, <i>end</i>, and 
+  <i>duration</i> attributes. Only two of the three attributes can be present 
+  in a given <i>selectFromDateRange</i>. The value of the <em>start</em> and <em>end</em>
+attributes must be an ISO8601 encoded date or date/time (e.g.,
+2004-03-04T17:30), a valid udunits date string, or the string
+"present". The given duration value must be an ISO8601 encoded duration
+(e.g., "2Y5M1DT1H3M") or a valid udunits time duration. (See the
+THREDDS catalog specification for more information on the <em>dateType</em> and <em>duration</em> types.) 
+  The optional <i>resolution</i> attribute provides some idea of the density of data points. The <i>selectType</i> attribute indicates whether a single point or a range 
+  (start/end, start/duration, or end/duration) is expected.<br>
+</p>
+<p>The value of the point or the subrange (depending on the <i>selectType</i>) are required to build a valid query string from a <i>selectFromDateRange</i> element. When the value of the <em>selectType</em>
+attribute is set to "subrange", a template string must be given and
+must contain two of these three replacement strings: "{start}", "{end}", and "{duration}".&nbsp; The
+replacement strings are replaced by the
+values of the corresponding values that define the subrange. The
+resulting string is then appended to
+the query string. Here is an example that uses the "{start}" and "{end}" replacement strings, if
+the range from "2004-04-10T00:00" forward two days ("2004-04-12T00:00")
+is selected from the following:<br>
+
+
+</p>
+<pre>&lt;selectFromDateRange id="datePnt" title="Date"<br>    selectType="subrange" template="dateStart={start}&amp;amp;dateEnd={end}&amp;amp;"<br>    end="2004-04-01T00:00" duration="P15D" /&gt;<br></pre>
+
+
+<p>the string
+"dateStart=2004-04-10T00:00&amp;amp;dateEnd=2004-04-12T00:00" will be
+appended to the query string. Here is an example that uses the
+"{start}" and "{duration}" replacement strings, if the range from
+"2004-04-10T00:00"
+forward two days ("P2D") is selected from the following:</p>
+
+<p>
+
+</p>
+
+<pre>&lt;selectFromDateRange id="datePnt" title="Date"<br>    selectType="subrange" template="dateStart={start}&amp;amp;dateDuration={duration}&amp;amp;"<br>    start="2004-04-01T00:00" end="2004-04-15T12:00" /&gt;<br></pre>
+
+
+<p>the string "dateStart=2004-04-10T00:00&amp;amp;dateDuration=P2D"
+will be appended to the query string. Here is an example that uses the "{end}" and "{duration}" replacement strings, if the two day range ending at the
+present is selected from the following:</p>
+
+<p>
+
+</p>
+
+<pre>&lt;selectFromDateRange id="datePnt" title="Date"<br>    selectType="subrange" template="dateEnd={end}&amp;amp;dateDuration={duration}&amp;amp;"<br>    end="present" duration="P5D" /&gt;<br></pre>
+<p>
+
+the string "dateEnd=present&amp;amp;dateDuration=P2D" will be appended to the query string.<br>
+</p>
+<p>When the value of the <em>selectType</em> attribute is "point" and a <em>template</em> attribute is given, the template string must contain the replacement
+string "{point}" and that replacement string is replaced by the
+value of the selected point. The resulting string is then appended to
+the query string. For example, if the value "present" is selected from the following:<br>
+</p>
+<pre>&lt;selectFromDateRange id="datePnt" title="Date"<br>    selectType="point" template="datePoint={point}"<br>    end="present" duration="P5D" /&gt;<br></pre>
+<p>the string "datePoint=present" will be appended to the query string.<br>
+</p><p>When the value of the <em>selectType</em> attribute is "point" and no <em>template</em> attribute is given, the value of the <i><b>id</b></i>attribute
+becomes a parameter name and the value of the selected&nbsp; point
+becomes the parameter value. The resulting name value pair is appended
+to the query string with the form "&lt;id&gt;=&lt;value&gt;". For
+example, if the date/time of "2004-04-10T00:00" is selected from the
+following:
+</p>
+<p>
+
+</p>
+
+<pre>&lt;selectFromDateRange id="datePnt" title="Date"<br>    selectType="point"<br>    start="2004-04-01T00:00" end="2004-04-15T12:00" /&gt;<br></pre>
+
+
+the string "datePnt=2004-04-10T00:00" will be appended to the query string.<br>
+<br>
+Various issues come up with all selector elements that require multiple values to make a valid selection. See the <a href="file:///C:/Ethan/dev/thredds/catalog/doc/DqcSpec.html#Issues_for_selector_Elements_that">"Issues for selector Elements that Require Multiple Values" section</a> below for further information.<h3><a name="selectFromGeoRegion_Element"></a>selectFromGeoRegion Element</h3>
+
+<pre>&lt;xsd:element name="selectFromGeoRegion" substitutionGroup="selector"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="selectorType"&gt;<br>        &lt;xsd:sequence&gt;<br>          &lt;xsd:element ref="geoBoundingBox"/&gt;<br>        &lt;/xsd:sequence&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+
+<p>A <em><strong>selectFromGeoRegion</strong></em> element is a kind of
+<span style="font-weight: bold; font-style: italic;">selector</span> that
+defines a geographic region from which a user can select a geographic bounding box. The given geographic region is defined by a <i><b>geoBoundingBox</b></i> element. The requested geographic region must be fully located inside the defined geographic region.<br>
+</p>
+<p>Currently, only a geographic bounding box may be selected. Four values are required to define the selected bounding box: the
+minimum latitude, maximum latitude,&nbsp; minimum longitude, and
+maximum longitude. A template attribute is required and it's value must contain these four replacement strings: "{minLat}", "{minLon}", "{maxLat}", and "{maxLon}". The
+replacement strings are replaced by the
+values of the corresponding values for the selected geographic bounding box. The
+resulting string is then appended to
+the query string. For example, if a minimul
+latitude of 42.0, a minimum longitude of -108.0, a maximum latitude of
+43.0, and a maximum longitude of -106.0 are selected from the following:<br>
+</p>
+
+<pre>&lt;selectFromGeoRegion id="geoCov" title="Geographic Coverage"<br>    template="minLa={minLat}&amp;amp;maxLa={maxLat}&amp;amp;minLo={minLon}&amp;amp;maxLo={maxLon}"&gt;<br>  &lt;geoBoundingBox&gt;<br>    &lt;upperLeft latitude="45.0" longitude="-110.0" /&gt;<br>    &lt;lowerRight latitude="40.0" longitude="-105.0" /&gt;<br>  &lt;/geoBoundingBox&gt;<br>&lt;/selectFromGeoRegion&gt;</pre>
+<p>the string "minLa=42.0&amp;amp;maxLa=43.0&amp;amp;minLo=-108.0&amp;amp;maxLo=-106.0" is appended to the query string.</p><p>Various issues come up with all selector elements that require multiple values to make a valid selection. See the <a href="#Issues_for_selector_Elements_that">"Issues for selector Elements that Require Multiple Values" section</a> below for further information.</p>
+<h3><a name="geoBoundingBox_Element"></a>geoBoundingBox Element</h3>
+
+<pre>&lt;xsd:element name="geoBoundingBox"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element name="lowerLeft" type="locationType"/&gt;<br>      &lt;xsd:element name="upperRight" type="locationType"/&gt;<br>    &lt;/xsd:sequence&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br></pre>
+
+<p>A <strong><em>geoBoundingBox</em></strong> element defines a lat/lon bounding 
+  box using two <i><b>location</b></i> elements. The <i><b>lowerLeft</b></i> element 
+  defines the minimum latitude and minimum longitude of the bounding box. The 
+  <i><b>upperRight</b></i> element defines the maximum latitude and maximum longitude 
+  of the bounding box. The location the <i><b>lowerLeft</b></i> element defines 
+  must be south-west of the location defined by the <i><b>upperRight</b></i> element.</p><p>
+</p>
+
+
+
+<h3><a name="userInterface_Element"></a>userInterface Element</h3>
+
+<pre>&lt;xsd:element name="userInterface"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/&gt;<br>    &lt;/xsd:sequence&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+
+<p>A <em><strong>userInterface</strong></em> element is a container for
+zero or more elements that can be anything. The userInterface element
+is available for the support of specific applications that need/want
+additional information about how to build a user interface from a DQC
+document. This requires that the application read a catalog that has
+the expected information. This feature was requested early on but has
+not been developed.<em></em><br>
+
+</p><hr width="100%" size="2"><br>
+
+<h2><a name="Example"></a>Example</h2>
+
+<p>Here is an example THREDDS dataset that, when accessed, results in a
+DQC document (note, the serviceType is "queryCapability"):<br>
+</p>
+
+<pre>&lt;dataset name="NEXRAD data" &gt;<br>  &lt;access serviceType="queryCapability" urlPath="http://www/dqc/radar.xml" /&gt;<br>&lt;/dataset&gt;<br></pre>
+
+<p>The resulting DQC document:<br>
+</p>
+
+<pre>&lt;queryCapability&gt;<br>  &lt;query base="http://www/dqc/radar"/&gt;<br><br>  &lt;selectService id="serviceType" title="Select service type(s)"<br>     &nbsp;required="false" multiple="false"&gt;<br>    &lt;serviceType title="Dataset served by OPeNDAP"&gt;DODS&lt;/serviceType&gt;<br>    &lt;serviceType title="Dataset file available via FTP"&gt;FTP&lt;/serviceType&gt;<br>  &lt;/selectService&gt;<br><br><br>  &lt;selectStation id="station" title="Stations:"<br>      multiple="true" required="true"&gt;<br><br>    &lt;station name="ANCHORAGE/Bethel AK" value="ABC"&gt;<br>      &lt;location latitude="60.78" longitude="-161.87"/&gt;<br>    &lt;/station&gt;<br>    &lt;station name="ABERDEEN/Aberdeen SD" value="ABR"&gt;<br>      &lt;location latitude="45.45" longitude="-98.4"/&gt;<br>    &lt;/station&gt;<br>  &lt;/selectStation&gt;<br><br>  &lt;selectList id="prod" title="Products:"<br>      multiple="true" required="true"&gt;<br>    &lt;choice name=".5 reflectivity .54nm res" value="N0R"&gt;<br>      &lt;description&gt;.5 reflectivity .54nm res 16 levels id 19/r&lt;/description&gt;<br>    &lt;/choice&gt;<br>    &lt;choice name=".5 storm rel. velocity" value="N0S"&gt;<br>      &lt;description&gt;.5 storm rel. velocity .54nm res 16 lvls id 56/srm&lt;/description&gt;<br>    &lt;/choice&gt;<br>  &lt;/selectList&gt;<br><br>  &lt;selectList id="time" title="Times:" required="true"&gt;<br>    &lt;choice name="Latest" value="latest"/&gt;<br>    &lt;choice name="Last hour" value="1hour"/&gt;<br>  &lt;/selectList&gt;<br><br>&lt;/queryCapability&gt;<br></pre>
+<p>From this DQC document, the client application builds a user interface displaying the choices, for example:<br>
+</p>
+<p>&lt;insert graphic&gt;<br>
+</p>
+<p>The user then selects the "ABC" and "ABR" stations, the "NOS"
+product, and the "latest" time. With these selections, the application
+generates this query string:</p>
+<pre>http://www/dqc/radar?stn=ABC&amp;stn=ABR&amp;product=NOS&amp;time=latest<br><br></pre>
+
+<p>The result of a query is always a THREDDS catalog, in this case, a coherant collection dataset with collectionType="stations":<br>
+</p>
+
+<pre>&lt;catalog&gt;<br>  &lt;service name="mlode" base="http://www/data/radar" /&gt;  <br>  &lt;dataset name="Latest NOS NEXRAD product from ABC and ABR" collectionType="stations"&gt;<br>    &lt;dataset name="Latest .5 storm relative velocity product from Bethel, AK"&gt;<br>        &lt;access serviceName="mlode" urlPath="NOS/ABC/2003121600_NOS.nc" /&gt;<br>    &lt;/dataset&gt;<br>    &lt;dataset name="Latest .5 storm relative velocity product from Aberdeen, SD"&gt;<br>        &lt;access serviceName="mlode" urlPath="NOS/ABR/2003121600_NOS.nc" /&gt;<br>    &lt;/dataset&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
+
+
+
+
+
+
+<hr>
+<h2><a name="Notes_"></a>Notes<br>
+</h2>
+
+<h3><a name="How_is_a_Query_String_Build"></a>How is a Query String Built</h3>
+
+
+
+
+
+<p>To build a query string from a DQC document, the user makes a
+valid selection for each <span style="font-weight: bold; font-style: italic;">selector</span>
+element that is required
+and optionally for each <span style="font-weight: bold; font-style: italic;">selector</span> element
+that is not required. Each <em>selector</em> element for which a user makes a selection produces a string. These strings are appended to the value of the <em>query</em> element's <em>base</em> attribute to produce the query string. The order of the <em>selector</em> elements in the DQC document is the order the corresponding strings are appended<em></em>.<br>
+</p>
+<p>The string produced by a <em>selector</em> element is built using that <em>selector</em> element's <em>template</em> and <em>id</em> attributes. Each <em>selector</em> element is required to have an <em>id</em> attribute and may optionally have a <em>template</em> attribute. If the optional <em>template</em> attribute is given, the template string (i.e., the value of the <em>template</em>attribute)
+must contain one or more replacement strings. What those replacement
+strings are (and how many there are) depends on the type of selector.
+Once all the replacement strings are replaced with the corresponding
+selected values, the template string becomes the string produced by
+that <em>selector</em>. The number of selected values and their meaning depends on the type of <em>selector</em> element for which the selection is being made. For example, the selected value for a <em>selectList</em> element is simply the value of the <em>value</em> attribute of the <em>choice</em> element that was selected.<br>
+</p>
+<p>If no <em>template</em> attribute is given, the value of the <em>id</em>
+attribute becomes a parameter name and the selected value
+becomes the parameter value. The resulting name value pair is appended
+to the query string with the form "&lt;id&gt;=&lt;value&gt;". NOTE: Since each <em>selector</em> element only has one <em>id</em> attribute, all <em>selector </em>elements that require more than one value to make a valid selection must include a <em>template</em> attribute.</p>
+<p>When the value of the <span style="font-style: italic;"><span style="font-weight: bold;">multiple</span></span> 
+  attribute is "<span style="font-weight: bold;">true</span>", multiple selections can be made on the <span style="font-style: italic;"><span style="font-weight: bold;">selector</span></span> 
+  whether. When multiple selections 
+  are made on the same <span style="font-style: italic;"><span style="font-weight: bold;">selector</span></span>,
+the string produced by that selector is the normal string repeated for
+each of the multiple selections and expanded for that selection.</p><h3><a name="Issues_for_selector_Elements_that"></a>Issues for <i>selector</i> Elements that Require Multiple Values<br>
+</h3>
+
+
+<p>There are several issues that arise with all <i>selector</i> elements that require more than one value to make a valid selection.<br>
+</p>
+
+
+<ul>
+<li>A single <i>id</i> attribute cannot deal with two values. This is currently dealt
+with by specifying the parameter names in this specification. Another
+way is discussed in the <a href="./DqcSpecIssues.html#Selectors_That_Require_Multiple_Values">"Selectors that Require Multiple Values"</a> issue discussion.<br>
+</li><li>There is no way to allow the user to decide what select type
+(point, range, endStart, etc) they desire. The DQC document must
+specify one or the
+other (see the <a href="./DqcSpecIssues.html#Selectors_That_Require_Multiple_Values">"Selectors that Require Multiple Values"</a> issue discussion for a possible alternative).</li><li>Is
+the point case really needed? And what does it mean (find the closest
+point)? Is it the same as min=max, start=end, and duration=0?</li>
+</ul>
+<hr width="100%" size="2">
+<h2><a name="Index_of_elements_and_types"></a>Index of elements and types</h2>
+
+<ul>
+
+  <li><a href="#queryCapability_Element">queryCapability</a></li>
+  <li><a href="#query_Element">query</a></li>
+  <li><a href="#selector_Element">selector</a></li>
+  <li><a href="#selectList_Element">selectList</a></li>
+  <li><a href="#choice_Element">choice</a></li>
+  <li><a href="#selectServiceType_Element">selectService</a></li>
+  
+  <li><a href="#selectStation_Element">selectStation</a></li>
+  <li><a href="#station_Element">station</a></li>
+  <li><a href="#location_Element">location</a></li>
+  <li><a href="#location3D_Element">location3D</a></li>
+  <li><a href="#selectFromRange_Element">selectFromRange</a></li>
+  <li><a href="#selectFromDateRange_Element">selectFromDateRange</a></li>
+  <li><a href="#selectFromGeoRegion_Element">selectFromGeoRegion</a></li>
+  <li><a href="#geoBoundingBox_Element">geoBoundingBox</a></li>
+  <li><a href="#userInterface_Element">userInterface<br>
+    </a></li>
+</ul>
+
+<br>
+
+<hr>
+<address><a href="mailto:edavis@ucar.edu">Ethan Davis</a></address>
+<!--
+  $Log: DqcSpec.html,v $
+  Revision 1.1  2005/03/30 05:40:31  edavis
+  Simplify build process: 1) combine all build scripts into one,
+  thredds/build.xml; 2) combine contents of all resources/ directories into
+  one, thredds/resources; 3) move all test source code and test data into
+  thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
+  into thredds/resources/resources/thredds/schemas.
+
+  Revision 1.6  2004/08/23 16:45:16  edavis
+  Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
+
+  Revision 1.5  2004/04/09 18:00:50  edavis
+  Integrate comments from John; add and expand examples; move most notes
+  into DqcSpecIssues.html; change paramValue behavior for selectors that
+  require multiple values (parameter names are predefined); require a
+  selectServiceType element before all other selector elements; remove
+  annotation from the serviceType element, i.e., no more attributes and 
+  content is of type cat:serviceTypes; add minInterval attribute to both
+  selectFromRange and selectFromDateRange elements.
+
+  Revision 1.4  2004/04/02 21:29:22  edavis
+  Reword some descriptions; add more examples; allow both template and
+  paramValue construction for selectors that require multiple values for
+  a valid selection.
+
+  Revision 1.3  2004/03/03 18:27:04  edavis
+  Remove some docs on experimental features, add list of changes since 0.2,
+  add selectFromDateRange and selectFromGeoRegion, and clear up some
+  explainations.
+
+  Revision 1.2  2004/01/15 19:41:39  edavis
+  Some minor changes.
+
+  Revision 1.1  2003/12/20 20:29:41  edavis
+  Second draft for the 0.3 version of the
+  Dataset Query Capabilities (DQC) schema.
+
+  -->
+
+</body></html>

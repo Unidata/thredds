@@ -1,0 +1,149 @@
+THREDDS Data Server notes
+
+June 26, 2005
+
+Security
+
+http://tomcat.apache.org/tomcat-5.5-doc/ssl-howto.html:
+
+ To access the SSL session ID from the request, use:
+ String sslID = (String)request.getAttribute("javax.servlet.request.ssl_session");
+
+response.setHeader("WWW-Authenticate","Basic realm=\"MySystem\"");
+
+response.setHeader("WWW-Authenticate","Basic realm=\"MySystem\"");
+
+HTTP basic authentication
+HTTP basic authentication over SSL
+
+HTTP digest authentication: solves the password sniffing problem, and it would solve the replay problem,
+
+
+user= (caron)
+password raw= ([C@12f0999)
+password= ([C@11f2ee1)
+
+Jun 28, 2006 11:13:09 AM org.apache.commons.httpclient.auth.AuthChallengeProcessor selectAuthScheme
+INFO: basic authentication scheme selected
+localhost:8080 requires authentication with the realm 'Thredds Configuration'
+
+user= (caron)
+password raw= ([C@1c9a690)
+password= ([C@1d6776d)
+
+password raw= ([C@d02b51)
+password= ([C@cbf30e)
+
+
+----------------------------------------------------
+April 2, 2005
+
+root path = <tomcat>/webapps/thredds/		    (restricted)
+content path = <tomcat>/content/thredds/<servlet>/  (publicly accessible)
+
+config files = <tomcat>/content/thredds/<servlet>/config.xml 
+log files =  <tomcat>/content/thredds/logs/  and  <tomcat>/logs
+nj22 cache = <tomcat>/content/thredds/nj22/cache/  
+
+initialize by copying <war>/initialContent/* to <tomcat>/content/thredds/
+ and adding an .INIT file in <tomcat>/content/thredds/  
+
+web addresses
+ http://server:port/thredds/<servlet>/
+ http://server:port/thredds/debug
+ http://server:port/thredds/content/
+ http://server:port/thredds/root/
+
+=================================================
+Servlets
+=================================================
+"Default Handling"
+ThreddsDefault thredds.servlet.ThreddsDefault
+/*
+/annotate   ?? shouldnt this be mapped to CatalogAnnotate 
+
+=================================================
+"Catalog Generator"
+catalogGen thredds.cataloggen.servlet.CatGenServlet
+/cataloggen/*
+
+=================================================
+"Netcdf/CDM OpenDAP Server"
+
+NetcdfDODS dods.servers.netcdf.NcDODSServlet
+/dodsC/*
+
+=================================================
+"WCS Server"
+
+WCS thredds.wcs.servlet.WCSServlet
+/wcs/*
+
+read <tomcat>/content/thredds/wcs/wcsConfig.xml
+
+
+=================================================
+"Catalog Services"
+
+CatalogHtml  thredds.servlet.CatalogHtml
+/catalog.html
+/validate
+/convert
+
+CatalogSubset thredds.servlet.CatalogHtml
+/subset.xml
+/subset.html
+
+CatalogDL thredds.servlet.CatalogDL
+/makeDLrecords
+
+CatalogAnnotate thredds.servlet.CatalogAnnotate
+
+
+=================================================
+DatasetScan autogenerate
+
+
+
+1) general catalog preocessing
+
+catalogURL
+serviceBase
+catrefURL
+datasetURL
+
+catref = catalogURL.resolve( catrefURL)
+dataset = catalogURL.resolve( serviceBase + datasetURL)
+
+2) DatasetScan processing (CatalogHandler.java)
+
+each DatasetScan defines a (rootPath, scanDir)
+
+all files under scanDir start with rootPath:
+   scanDir/file  -> rootPath/file
+   scanDir/dir/file ->  rootPath/dir/file
+
+To make this work, all catrefs are reletive
+   scanDir/dir -> rootPath/dir/catalog.xml
+
+3) thredds.cataloggen.DirectoryScanner does the actual work
+
+   * @param serviceBaseUrlDir - the local directory to which the service's base URL references.
+    DirectoryScanner( InvService service, String serviceTitle, File serviceBaseUrlDir, boolean createCatalogRefs)
+    InvCatalog DirectoryScanner.getDirCatalog( File subdir, ...)
+
+   where
+     serviceBaseUrlDir - the local directory to which the service's base URL references.
+     subdir - subdir of serviceBaseUrlDir, the directory to represent as a catalog.
+
+   a) if serviceBase == "" then we are always using reletive dataset URL, so serviceBaseUrlDir == subdir. In this case
+   the catalog configuration has to reside in content/thredds/<server> in order to get handler by <server>, eg dodsC.
+
+4) initializing rootPaths
+
+starting from the top catalog, we recurse through all connected catalogs, looking for InvDatasetScan elements,
+building a HashMap of (rootPath, InvDatasetScan).
+
+path should not start with "/", not end with "/"
+scanDir should end with "/"
+(InvCatalogFactory will fix if wrong)

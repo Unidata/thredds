@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+  </service>
+
+    <datasetScan name="RUC" ID="NCEP/RUC" path="test/NCEP/RUC/CONUS_40km" dirLocation="/data/ldm/pub/native/grid/NCEP/RUC/" filter=".*\.grib1$" addDatasetSize="true" addLatest="true" serviceName="all" />
+
+</catalog>
+

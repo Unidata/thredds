@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: testCatGen.dirTree.InvCat1.0.result.xml,v 1.2 2005/06/07 22:50:23 edavis Exp $ -->
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="DirTree (InvCat1.0) test">
+  <service name="mlode" serviceType="DODS" base="http://localhost:8080/thredds/cataloggen/" />
+  <dataset name="DirTree (InvCat1.0) test">
+    <dataset name="gfs_211">
+      <metadata inherited="true">
+        <serviceName>mlode</serviceName>
+      </metadata>
+      <dataset name="2004050318_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050318_gfs_211.nc" />
+      <dataset name="2004050312_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050312_gfs_211.nc" />
+      <dataset name="2004050306_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050306_gfs_211.nc" />
+      <dataset name="2004050300_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" />
+    </dataset>
+    <dataset name="eta_211">
+      <metadata inherited="true">
+        <serviceName>mlode</serviceName>
+      </metadata>
+      <dataset name="2004050412_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050412_eta_211.nc" />
+      <dataset name="2004050400_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050400_eta_211.nc" />
+      <dataset name="2004050312_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050312_eta_211.nc" />
+      <dataset name="2004050300_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050300_eta_211.nc" />
+    </dataset>
+  </dataset>
+</catalog>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryCapability
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3"
+  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3 http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd"
+  name="latestModel DQC Document" version="0.3">
+  <query base="/thredds/dqc/latestModel" construct="template"/>
+
+  <!-- -->
+  <selectService id="service" title="Select service type" required="false">
+    <serviceType title="OPeNDAP/DODS">OpenDAP</serviceType>
+  </selectService>
+
+  <!-- -->
+  <selectList id="models" title="Model name">
+    <choice name="ocean_21-24" value="Ocean_21-24"/>
+    <choice name="sst_61-64" value="SST_61-64"/>
+    <choice name="ruc_211" value="RUC_211"/>
+    <choice name="sst_21-24" value="SST_21-24"/>
+    <choice name="gfs_37-44" value="GFS_37-44"/>
+    <choice name="ruc2_236" value="RUC2_236"/>
+    <choice name="gfs_211" value="GFS_211"/>
+    <choice name="wseta" value="Workstation Eta"/>
+    <choice name="ecmwf_1-12" value="ECMWF_1-12"/>
+    <choice name="eta_211" value="Eta_211"/>
+    <choice name="ngm_211" value="NGM_211"/>
+    <choice name="gfs_25-26" value="GFS_25-26"/>
+    <choice name="gfs_21-24" value="GFS_21-24"/>
+  </selectList>
+
+</queryCapability>

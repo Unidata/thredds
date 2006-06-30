@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+  <display-name>THREDDS Server</display-name>
+  <description>THREDDS Server</description>
+
+  <context-param>
+    <param-name>ContextPath</param-name>
+    <param-value>thredds</param-value>
+  </context-param>
+
+  <!-- Turn on some more targeted debugging. -->
+  <context-param>
+    <param-name>DebugOn</param-name>
+    <param-value></param-value>
+  </context-param>
+
+  <!-- listeners -->
+  <!--listener>
+    <listener-class>thredds.servlet.ServletListener</listener-class>
+  </listener -->
+  <listener>
+    <listener-class>dods.servers.netcdf.NcDODSSessionAttributeListener</listener-class>
+  </listener>
+
+  <!-- Default Servlet -->
+  <servlet>
+    <servlet-name>ThreddsDefaultServlet</servlet-name>
+    <servlet-class>thredds.servlet.ThreddsDefaultServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- data services -->
+
+  <!-- NetCDF/OPeNDAP server -->
+  <servlet>
+    <servlet-name>NetcdfDODS</servlet-name>
+    <display-name>THREDDS/NetCDF DODS Server</display-name>
+    <servlet-class>dods.servers.netcdf.NcDODSServlet</servlet-class>
+    <init-param>
+      <param-name>maxNetcdfFilesCached</param-name>
+      <param-value>10</param-value>
+    </init-param>
+    <init-param>
+      <param-name>DebugOn</param-name>
+      <param-value></param-value> <!-- dods.util.Debug flags -->
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <!-- Setup for the DQC servlet. -->
+  <servlet>
+    <servlet-name>dqc</servlet-name>
+    <servlet-class>thredds.dqc.server.DqcServlet</servlet-class>
+    <!--
+    - The "configFile" parameter allows you to specify the name of the
+    - configuration file for this DqcServlet servlet.
+      -->
+    <init-param>
+      <param-name>configFile</param-name>
+      <param-value>config.xml</param-value>
+    </init-param>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+
+  <!-- Setup for the CatalogGen servlet. (Allows scheduling of CatalogGen tasks) -->
+  <servlet>
+    <servlet-name>catalogGen</servlet-name>
+    <servlet-class>thredds.cataloggen.servlet.CatGenServlet</servlet-class>
+    <!--
+    - The "configFile" parameter allows you to specify the name of the
+    - configuration file for this CatalogGen servlet.
+      -->
+    <init-param>
+      <param-name>configFile</param-name>
+      <param-value>config.xml</param-value>
+    </init-param>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+
+  <!-- OGC Web Coverage server -->
+  <servlet>
+    <servlet-name>FileServer</servlet-name>
+    <servlet-class>thredds.servlet.FileServerServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+
+  <!-- Metar DQC Server -->
+  <servlet>
+    <servlet-name>MetarServlet</servlet-name>
+    <servlet-class>thredds.servlet.ldm.MetarServlet</servlet-class>
+  </servlet>
+
+  <!-- Netcdf Server -->
+  <servlet>
+    <servlet-name>NetcdfServer</servlet-name>
+    <servlet-class>thredds.servlet.NetcdfServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+
+  <!-- Point Obs Server (experimental) -->
+  <servlet>
+    <servlet-name>ObsServer</servlet-name>
+    <servlet-class>thredds.servlet.StationObsCollectionServlet</servlet-class>
+  </servlet>
+
+  <!-- OGC Web Coverage server -->
+  <servlet>
+    <servlet-name>WCS</servlet-name>
+    <servlet-class>thredds.wcs.servlet.WCSServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+
+  <!-- catalog services -->
+
+  <!-- Setup for the CatalogHtml servlet. (Catalog validation and translation into HTML.) -->
+  <servlet>
+    <servlet-name>CatalogServlet</servlet-name>
+    <servlet-class>thredds.servlet.CatalogServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>CatalogServices</servlet-name>
+    <servlet-class>thredds.servlet.CatalogServicesServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>CdmValidator</servlet-name>
+    <servlet-class>thredds.servlet.CoordSysValidatorServlet</servlet-class>
+    <load-on-startup>6</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>ForecastModelRunInventory</servlet-name>
+    <servlet-class>thredds.servlet.ForecastModelRunServlet</servlet-class>
+    <load-on-startup>6</load-on-startup>
+  </servlet>
+
+  <!-- Setup for the CatalogAnnotate servlet. (Attach extra info to a catalog.
+  <servlet>
+    <servlet-name>CatalogAnnotate</servlet-name>
+    <servlet-class>thredds.servlet.CatalogAnnotate</servlet-class>
+  </servlet> -->
+
+  <!-- Setup for the CatalogDL servlet. (Make Digital Library records from a catalog.  -->
+  <servlet>
+    <servlet-name>DLwriter</servlet-name>
+    <servlet-class>thredds.servlet.DLwriterServlet</servlet-class>
+     <load-on-startup>10</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>View</servlet-name>
+    <servlet-class>thredds.servlet.ViewServlet</servlet-class>
+     <load-on-startup>10</load-on-startup>
+  </servlet>
+
+   <!-- Setup for the ADDE servlet.
+   <servlet>
+     <servlet-name>adde</servlet-name>
+     <servlet-class>thredds.adde.server.AddeServlet</servlet-class>
+     <init-param>
+        <param-name>DebugOn</param-name>
+        <param-value>AddeServlet/init AddeServlet/update AddeServlet/runTask AddeServlet/monitor AddeServlet/monitorStats AddeDataset/overlapFailure</param-value>
+      </init-param>
+      <load-on-startup>4</load-on-startup>
+    </servlet -->
+
+  <!-- default servlet -->
+
+  <servlet-mapping>
+    <servlet-name>ThreddsDefaultServlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- data services -->
+
+  <servlet-mapping>
+    <servlet-name>MetarServlet</servlet-name>
+    <url-pattern>/ldm/metar/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>NetcdfDODS</servlet-name>
+    <url-pattern>/dodsC/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>dqc</servlet-name>
+    <url-pattern>/dqc/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>FileServer</servlet-name>
+    <url-pattern>/fileServer/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>NetcdfServer</servlet-name>
+    <url-pattern>/ncServer/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ObsServer</servlet-name>
+    <url-pattern>/obsServer/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>WCS</servlet-name>
+    <url-pattern>/wcs/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- catalog services -->
+
+  <servlet-mapping>
+    <servlet-name>catalogGen</servlet-name>
+    <url-pattern>/cataloggen/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CatalogServlet</servlet-name>
+    <url-pattern>/catalog/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CatalogServices</servlet-name>
+    <url-pattern>/catalog.html</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CatalogServices</servlet-name>
+    <url-pattern>/catalogServices</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CdmValidator</servlet-name>
+    <url-pattern>/cdmValidate</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ForecastModelRunInventory</servlet-name>
+    <url-pattern>/modelInventory/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>DLwriter</servlet-name>
+    <url-pattern>/DLwriter</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>View</servlet-name>
+    <url-pattern>/view/*</url-pattern>
+  </servlet-mapping>
+
+  <!--
+
+ <servlet-mapping>
+   <servlet-name>CatalogAnnotate</servlet-name>
+    <url-pattern>/annotate</url-pattern>
+  </servlet-mapping>
+  -->
+
+  <!-- ++++++++++ Setup security restrictions ++++++++++ -->
+  <!-- Default is to not allow DELETE, PUT, POST -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>not allowed</web-resource-name>
+      <url-pattern>/*</url-pattern>
+      <http-method>DELETE</http-method>
+      <http-method>PUT</http-method>
+      <!-- http-method>POST</http-method -->
+    </web-resource-collection>
+    <auth-constraint />
+  </security-constraint>
+
+  <!-- This allows "remote configuration":
+    /thredds/debug gives access to various debug and status info.
+    ThreddsDefault servlet aliases /thredds/root/ to "{tomcat_home}/webapps/thredds/"
+    ThreddsDefault servlet aliases /thredds/dataDir/path to "dirLocation/" where path is mapped to dirLocation through a
+      datasetRoot or datasetScan element in the catalog. -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>sensitive read access</web-resource-name>
+      <url-pattern>/debug</url-pattern>
+      <url-pattern>/root/*</url-pattern>
+      <url-pattern>/dataDir/*</url-pattern>
+      <http-method>GET</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- ThreddsDefault servlet aliases /thredds/content/ to "{tomcat_home}/content/thredds/"   -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>sensitive read and write access</web-resource-name>
+      <url-pattern>/content/*</url-pattern>
+      <http-method>GET</http-method>
+      <http-method>PUT</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- Setup security restrictions on THREDDS server HTTP POST capabilities in CatalogGen. -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>cataloggen configuration</web-resource-name>
+      <url-pattern>/cataloggen/admin/*</url-pattern>
+      <http-method>GET</http-method>
+      <http-method>POST</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>testing</web-resource-name>
+      <url-pattern>/testSecurity</url-pattern>
+      <http-method>GET</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>Thredds Configuration</realm-name>
+  </login-config>
+
+  <!-- Define security roles. -->
+  <security-role>
+    <description>The configuration role allows users to configure the THREDDS server.</description>
+    <role-name>tdsConfig</role-name>
+  </security-role>
+</web-app>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD WCS Data Server" version="1.0.1">    
+
+   <service name="ncdods" serviceType="OPeNDAP" base="/thredds/dodsC/" />
+ 
+   <dataset name="Test Nested catalog">
+     <metadata inherited="true">
+       <serviceName>ncdods</serviceName>
+       <authority>unidata.ucar.edu:</authority>
+       <dataType>Grid</dataType>
+     </metadata>
+     <datasetScan name="GALEON Test Data" path="testNestedCatalog" dirLocation="content/wcsServer/testdata/" filter=".*\.nc$" />
+   </dataset>
+</catalog>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata IDD Server" version="0.6">
+  <dataset name="Unidata IDD Server">
+    <dataset name="test 1">
+      <service name="mlode" serviceType="DODS" base="http://mlode.ucar.edu/cgi-bin/dods/nph-dods/" />
+      <dataset name="NCEP RUC model data" serviceName="mlode">
+        <dataset name="NCEP RUC 2002-10-16 00:00:00 GMT" urlPath="modelAll/2002101600_ruc.nc" />
+      </dataset>
+      <dataset name="NCEP Eta model data" serviceName="mlode">
+        <dataset name="NCEP Eta 2000-12-05 12:00:00 GMT" urlPath="modelAll/2000120512_eta.nc" />
+        <dataset name="NCEP Eta 2000-12-05 00:00:00 GMT" urlPath="modelAll/2000120500_eta.nc" />
+      </dataset>
+      <dataset name="NCEP AVN-Q model data" serviceName="mlode">
+        <dataset name="NCEP AVN-Q 2002-02-25 09:00:00 GMT" urlPath="modelAll/2002022509_avn-q.nc" />
+        <dataset name="NCEP AVN-Q 2002-02-25 06:00:00 GMT" urlPath="modelAll/2002022506_avn-q.nc" />
+        <dataset name="NCEP AVN-Q 2002-02-25 03:00:00 GMT" urlPath="modelAll/2002022503_avn-q.nc" />
+        <dataset name="NCEP AVN-Q 2002-02-25 00:00:00 GMT" urlPath="modelAll/2002022500_avn-q.nc" />
+      </dataset>
+    </dataset>
+    <dataset name="test 2">
+      <service name="mlode" serviceType="DODS" base="http://www.unidata.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/packages/dods/" />
+      <dataset name="METAR definition" serviceName="mlode" urlPath="data/nc_test/metar/99031117_metar.nc" />
+      <dataset name="METAR definition" serviceName="mlode" urlPath="data/nc_test/metar/99031118_metar.nc" />
+      <dataset name="METAR definition" serviceName="mlode" urlPath="data/nc_test/metar/99031119_metar.nc" />
+      <dataset name="METAR definition" serviceName="mlode" urlPath="data/nc_test/metar/99031120_metar.nc" />
+    </dataset>
+  </dataset>
+</catalog>
+

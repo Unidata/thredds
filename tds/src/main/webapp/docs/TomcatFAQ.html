@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Configuration</title>
+  <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />  
+</head>
+<body>
+
+<table width="100%">
+    <tbody><tr>
+        <td align="left" height="95" width="95"><img src="../unidataLogo.gif" height="93" width="95"> </td>
+        <td align="left" valign="top" width="701">
+            <table width="303">
+                <tbody><tr>
+                  <td align="left" height="22" valign="top" width="295"><h3><strong>Thredds Data Server</strong></h3></td>
+                </tr>
+            </tbody></table>
+        </td>
+    </tr>
+</tbody></table>
+
+<div class="head">
+  <h1>Tomcat FAQ </h1>
+  <address>
+  last update: May 22, 2006 
+  </address>
+  <hr>
+  <div class="head"></div>
+  <p>The following are various Frequently Asked Questions and How-to's about using the Tomcat web server. If you solve a problem that others may be interested in, <a href="mailto:support@unidata.ucar.edu">send us a note</a> and we'll include it here.</p>
+  <h3>Who is accessing my server? </h3>
+  <p>When you examine the <a href="/thredds/content/logs/threddsAccess.log">TDS access logs</a>, you can see who is accessing the TDS by IP address. Use <strong>nslookup &lt;ip address&gt;</strong> to find out the host name. </p>
+  <h3>Restricting Web crawlers </h3>
+  <p>Well-behaved web crawlers are supposed to look for a robots.txt file on the server and follow its instructions. To set up a robots.txt file that excludes web crawlers from crawling your server, follow <a href="GettingStarted.html#robots">these directions</a>. For more info, see <a href="http://www.robotstxt.org/">here</a>. </p>
+  <h3>Restricting Access by IP address </h3>
+  <p>If you want to prevent some annoying person from accessing your server, its best to exclude them using their  IP address, to avoid having to do a reverse DNS lookup for each request. To do so, edit <strong>${tomcat_home}/conf/server.xml</strong>, find the following section and add the following Valve element:</p>
+  <pre>  &lt;Host name=&quot;localhost&quot; debug=&quot;0&quot; appBase=&quot;webapps&quot; .. &gt; 
+    <strong>&lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; deny=&quot;</strong>18.83.0.150<strong>&quot; /&gt; </strong> 
+   ...
+  &lt;/Host&gt;</pre>
+  <p>You can use lists of IP addresses as well as wildcards: </p>
+  <ul><li>
+      <p><strong>deny="18.83.0.150<strong></strong>, 128.100.34.99, 128.117.140.*"</strong></p>
+  </li>
+  </ul>
+  <p>You need to restart the server before this will take effect.</p>
+  <h3>Remove Servlet Autodeploy </h3>
+  <p>Remove autodetection of changes while Tomcat is running. In a production environment, its better to explicitly redeploy the application: </p>
+  <pre>   &lt;Host name=&quot;localhost&quot; appBase=&quot;webapps&quot; unpackWARs=&quot;true&quot; <strong>autoDeploy=&quot;false&quot;</strong>
+     xmlValidation=&quot;false&quot; xmlNamespaceAware=&quot;false&quot;&gt;
+   ...
+  &lt;/Host&gt;</pre>
+  <h3>Remove port 8009 when using tomcat in standalone mode:</h3>
+  <p>Unless you are using Tomcat with the Apache server, comment out this line in <strong>server.xml:</strong> </p>
+  <pre>  &lt;Connector port=&quot;8009&quot; enableLookups=&quot;false&quot; redirectPort=&quot;8443&quot; protocol=&quot;AJP/1.3&quot; /&gt;<br>
+    </pre>
+  <h3>Resources</h3>
+  <ul>
+    <li><a href="/manager/status">Tomcat Server Status</a> page</li>
+    <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ</a> </li>
+    <li><a href="http://tomcat.apache.org/tomcat-5.5-doc/index.html">Tomcat 5.5 documentation</a></li>
+    <li><a href="http://www.coreservlets.com/Apache-Tomcat-Tutorial/">tutorial</a></li>
+  </ul>
+</div>
+<hr width="100%">
+<p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@support.unidata.ucar.edu">THREDDS support</a> &nbsp;&nbsp; </span></i></p>
+<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../thredds.jpg" height="79" width="95"><br>
+</p>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  c:/data/ncep/                   <-1and2- rootPath="c:/data/ncep"
+      eta_211/                    <-1and2- catPath="c:/data/ncep/eta_211"
+          20050704/
+          20050705/               <-2-     node.getPath()="c:/data/ncep/eta_211/20050705"
+            2005070500_eta_211.nc
+            2005070512_eta_211.nc
+          2005070600_eta_211.nc   <-1-     node.getPath()="c:/data/ncep/eta_211/2005070600_eta_211.nc"
+          2005070612_eta_211.nc
+      gfs_211/
+          20050704/
+          20050705/
+          2005070600_gfs_211.nc
+          2005070612_gfs_211.nc
+  -->
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <service name="myServer1" serviceType="DODS" base=""/>
+  <service name="myServer2" serviceType="DODS" base="http://localhost:8080/thredds/dodsC" />
+
+  <!--
+  Configuration 1:
+  1) service relative to catalog (i.e., base="")
+  2) catalogRefs for all collections
+  <datasetScan pathName="model" rootPath="c:/data/ncep"
+               serviceName="myServer1" ID="my/model"
+               createCatalogRef="false"/> -->
+  <!-- Requested catalog URL = serverURL + servlet name + "model/eta_211/catalog.xml" -->
+  <!--
+  name=node.getName()
+  urlPath=node.getPath().substring( catPath.length)
+  href=node.getName() + "/catalog.xml"
+
+  ID=parentDs.getID() + "/" + dataset.getName()
+    OR (if adding ID at dataset construction)
+  ID=baseID + "/" + node.getPath().substring( roothPath.length)
+  -->
+  <dataset name="eta_211" ID="my/model/eta_211">
+    <metadata inherited="true">
+      <serviceName>myServer1</serviceName>
+    </metadata>
+    <catalogRef xlink:title="20050704" ID="my/model/eta_211/20050704"
+      xlink:href="20050704/catalog.xml"/>
+    <catalogRef xlink:title="20050705" ID="my/model/eta_211/20050705"
+      xlink:href="20050705/catalog.xml"/>
+    <dataset name="2005070600_eta_211.nc" ID="my/model/eta_211/2005070600_eta_211.nc"
+      urlPath="2005070600_eta_211.nc"/>
+    <dataset name="2005070612_eta_211.nc" ID="my/model/eta_211/2005070612_eta_211.nc"
+      urlPath="2005070612_eta_211.nc"/>
+  </dataset>
+
+    <!--
+    Configuration 2:
+    1) service relative to catalog (i.e., base="")
+    2) no catalogRefs
+    <datasetScan pathName="model" rootPath="c:/data/ncep"
+                 serviceName="myServer1" ID="my/model"
+                 createCatalogRef="false"/> -->
+  <!-- Requested catalog URL = serverURL + servlet name + "model/catalog.xml" -->
+  <!--
+  name=node.getName()
+  urlPath=node.getPath().substring( catPath.length)
+  href=N/A
+
+  ID=parentDs.getID() + "/" + dataset.getName()
+  OR (if adding ID at dataset construction)
+  ID=baseID + "/" + node.getPath().substring( roothPath.length)
+  -->
+  <dataset name="model" ID="my/model">
+    <dataset name="eta_211" ID="my/model/eta_211">
+      <metadata inherited="true">
+        <serviceName>myServer1</serviceName>
+      </metadata>
+      <dataset name="20050704" ID="my/model/eta_211/20050704">
+      ...
+      </dataset>
+
+      <dataset name="20050705" ID="my/model/eta_211/20050705">
+        <dataset name="2005070500_eta_211.nc" ID="my/model/eta_211/20050705/2005070500_eta_211.nc"
+          urlPath="eta_211/20050705/2005070500_eta_211.nc"/>
+        <dataset name="2005070612_eta_211.nc" ID="my/model/eta_211/20050705/2005070512_eta_211.nc"
+          urlPath="eta_211/20050705/2005070512_eta_211.nc"/>
+      </dataset>
+      <dataset name="2005070600_eta_211.nc" ID="my/model/eta_211/2005070600_eta_211.nc"
+        urlPath="eta_211/2005070600_eta_211.nc"/>
+      <dataset name="2005070612_eta_211.nc" ID="my/model/eta_211/2005070612_eta_211.nc"
+        urlPath="eta_211/2005070612_eta_211.nc"/>
+    </dataset>
+  </dataset>
+
+    <!--
+    Configuration 3:
+    1) service relative to root path (i.e., base="/thredds/dodsC")
+    2) catalogRefs for all collections
+    <datasetScan pathName="model" rootPath="c:/data/ncep"
+                 serviceName="myServer2" ID="my/model"
+                 createCatalogRef="true"/> -->
+    <!-- Requested catalog URL = serverURL + servlet name + "model/eta_211/catalog.xml" -->
+  <!--
+  name=node.getName()
+  urlPath=node.getPath().substring( rootPath.length)
+  href=rootName + "/" + node.getPath().substring( catPath.length) + "/catalog.xml"
+
+  ID=parentDs.getID() + "/" + dataset.getName()
+  OR (if adding ID at dataset construction)
+  ID=baseID + "/" + node.getPath().substring( roothPath.length)
+  -->
+  <dataset name="eta_211" ID="my/model/eta_211">
+    <metadata inherited="true">
+      <serviceName>myServer2</serviceName>
+    </metadata>
+    <catalogRef xlink:title="20050704" ID="my/model/eta_211/20050704"
+      xlink:href="20050704/catalog.xml"/>
+    <catalogRef xlink:title="20050705" ID="my/model/eta_211/20050705"
+      xlink:href="20050705/catalog.xml"/>
+    <dataset name="2005070600_eta_211.nc" ID="my/model/eta_211/2005070600_eta_211.nc"
+      urlPath="model/eta_211/2005070600_eta_211.nc"/>
+    <dataset name="2005070612_eta_211.nc" ID="my/model/eta_211/2005070612_eta_211.nc"
+      urlPath="model/eta_211/2005070612_eta_211.nc"/>
+  </dataset>
+
+  <!--
+  Configuration 4:
+  1) service relative to root path (i.e., base="/thredds/dodsC")
+  2) no catalogRefs
+  <datasetScan pathName="model" rootPath="c:/data/ncep"
+               serviceName="myServer2" ID="my/model"
+               createCatalogRef="false"/> -->
+  <!-- Requested catalog URL = serverURL + servlet name + "model/catalog.xml" -->
+  <!--
+  name=node.getName()
+  urlPath=rootName + "/" + node.getPath().substring( rootPath.length)
+  href=N/A
+
+  ID=parentDs.getID() + "/" + dataset.getName()
+  OR (if adding ID at dataset construction)
+  ID=baseID + "/" + node.getPath().substring( roothPath.length)
+  -->
+  <dataset name="model" ID="my/model">
+    <dataset name="eta_211" ID="my/model/eta_211">
+      <metadata inherited="true">
+        <serviceName>myServer2</serviceName>
+      </metadata>
+      <dataset name="20050704" ID="my/model/eta_211/20050704">
+      ...
+      </dataset>
+
+      <dataset name="20050705" ID="my/model/eta_211/20050705">
+        <dataset name="2005070500_eta_211.nc" ID="my/model/eta_211/20050705/2005070500_eta_211.nc"
+          urlPath="model/eta_211/20050705/2005070500_eta_211.nc"/>
+        <dataset name="2005070612_eta_211.nc" ID="my/model/eta_211/20050705/2005070512_eta_211.nc"
+          urlPath="model/eta_211/20050705/2005070512_eta_211.nc"/>
+      </dataset>
+      <dataset name="2005070600_eta_211.nc" ID="my/model/eta_211/2005070600_eta_211.nc"
+        urlPath="model/eta_211/2005070600_eta_211.nc"/>
+      <dataset name="2005070612_eta_211.nc" ID="my/model/eta_211/2005070612_eta_211.nc"
+        urlPath="model/eta_211/2005070612_eta_211.nc"/>
+    </dataset>
+  </dataset>
+
+
+</catalog>
+

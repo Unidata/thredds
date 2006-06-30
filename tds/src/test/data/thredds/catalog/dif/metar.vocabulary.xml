@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<variables vocabulary="DIF"
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  file:///C:/dev/thredds/catalog/resources/xml/InvCatalog.1.0.xsd" >
+
+<variable name="wind_from_direction" units="degrees"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction" />
+<variable name="wind_speed" units="m/s"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_speed" />
+<variable name="wind_gust" units="m/s"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_gust" />
+<variable name="wind_from_direction_min" units="degrees"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction_min" />
+<variable name="wind_from_direction_max" units="degrees"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction_max" />
+<variable name="wind_peak_from_direction" units="degrees"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_peak_from_direction" />
+<variable name="wind_peak_speed" units="m/s"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_peak_speed" />
+<variable name="wind_peak_time" units=""
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_peak_time" />
+<variable name="visibility_in_air" units="miles"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Visibility > Visibility In Air > visibility_in_air" />
+<variable name="visibility_in_air_direction" units="degrees"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Visibility > Visibility In Air > visibility_in_air_direction" />
+<variable name="visibility_in_air_vertical" units="meters"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Visibility > Visibility In Air > visibility_in_air_vertical" />
+<variable name="visibility_in_air_surface" units="meters"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Visibility > Visibility In Air > visibility_in_air_surface" />
+<variable name="low_cloud_area_fraction" units=""
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency > low_cloud_area_fraction" />
+<variable name="low_cloud_base_altitude" units="meters"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Clouds > Cloud Height > low_cloud_base_altitude" />
+<variable name="middle_cloud_area_fraction" units=""
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency > middle_cloud_area_fraction" />
+<variable name="middle_cloud_base_altitude" units="meters"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Clouds > Cloud Height > middle_cloud_base_altitude" />
+<variable name="high_cloud_area_fraction" units=""
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency > high_cloud_area_fraction" />
+<variable name="high_cloud_base_altitude" units="meters"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Clouds > Cloud Height > high_cloud_base_altitude" />
+<variable name="air_temperature" units="Celsius"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Temperature > Air Temperature > air_temperature" />
+<variable name="dew_point_temperature" units="Celsius"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Water Vapor > Dew Point > dew_point_temperature" />
+<variable name="air_pressure" units="hectoPascal"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Pressure > Surface Pressure > air_pressure" />
+<variable name="air_pressure_at_sea_level" units="hectoPascal"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Pressure > Sea Level Pressure > air_pressure_at_sea_level" />
+<variable name="weather" units=""
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Atmosphere Phenomena > Storms > weather" />
+<variable name="snowfall_amount_last_hour" units="inches"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Precipitation > Snow  > snowfall_amount_last_hour" />
+<variable name="snowfall_amount" units="inches"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Precipitation > Snow  > snowfall_amount" />
+<variable name="precipitation_amount_hourly" units=".01 inches"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Amount  > precipitation_amount_hourly" />
+<variable name="precipitation_amount_24_hours" units=".01 inches"
+    vocabulary_name="EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Amount  > precipitation_amount_24_hours" />
+</variables>

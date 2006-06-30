@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "file:///C:/dev/thredds/catalog/resources/xml/InvCatalog.0.6.dtd">
+<catalog name="Example THREDDS Inventory Catalog" version="0.6" xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<dataset name="top-level collection" ID="top">
+		<!--	all referenced servers -->
+		<service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
+		<service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
+		
+		<!-- simple collection -->
+		<dataset name="Flux measurements" dataType="Grid" serviceName="ACD" ID="nest1" authority="divine">
+		     <property name="GoodThing" value="Where have you gone?"/>
+		     <metadata metadataType="NetCDF" xlink:title="Your mama"  xlink:href="any.xml" />
+		     <documentation>HEY</documentation>
+		     
+			<dataset name="CO2" urlPath="flux/CO2.nc" ID="nest11" />
+			<dataset name="NO2" urlPath="flux/NO2.nc" ID="nest12" dataType="Image" serviceName="local" authority="human">
+			    <property name="GoodThing" value="override"/>
+			    <dataset name="CO22" urlPath="flux/CO22.nc" ID="nest121" />
+              </dataset>
+		</dataset >
+
+		<dataset name="Flux measurements" ID="nest2" />
+		
+		<!-- example of catalog Reference -->
+		<catalogRef xlink:href="http://www.unidata.ucar.edu/projects/thredds/xml/InvCatalog5.part2.xml" xlink:title="ETA data"/>
+	</dataset>
+</catalog>

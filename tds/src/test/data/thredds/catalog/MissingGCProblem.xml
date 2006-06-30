@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Problem with missing GC" 
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">
+  
+  <service name="this" serviceType="OpenDAP" base=""/>
+  
+  <dataset ID="hasGC" name="dataset contains metadata" serviceName="this" urlPath="that">
+    <metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
+      
+      <property name="upLimit" value="52"/>
+      <property name="downLimit" value="5"/>
+      <geospatialCoverage>
+        <updown>
+          <start>5.0</start>
+          <size>47.0</size>
+          <units>Meters</units>
+        </updown>
+      </geospatialCoverage>
+      <date format="yyyy-MM-dd" type="lastModified">2006-02-09</date>
+      <date format="yyyy-MM-dd" type="created">2006-02-09</date>
+    </metadata> 
+    
+  </dataset>
+  
+</catalog>

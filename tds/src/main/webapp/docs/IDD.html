@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en"><html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>THREDDS IDD Server</title>
+  <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />
+</head>
+<body>
+<table width="100%">
+    <tr>
+        <td width="95" height="95" align="left"><img src="../unidataLogo.gif" width="95" height="93"> </td>
+        <td width="701" align="left" valign="top">
+            <table width="303">
+                <tr>
+                  <td width="295" height="22" align="left" valign="top"><h3><strong>Thredds Data Server </strong></h3></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<div class="head">
+  <h1>
+    Using the THREDDS Data Server with the IDD</h1>
+  <address>
+  last update: Oct 21, 2005
+</address>
+</div>
+<hr>
+<p>One of the primary objectives of the  THREDDS Data Server (TDS) is to serve real-time meteorological data from Unidata's <a href="http://www.unidata.ucar.edu/software/idd/">Internet Data Distribution (IDD).</a> To use the TDS in this way, you must install and run Unidata's <a href="http://www.unidata.ucar.edu/software/ldm/index.html">LDM</a>, and connect to the IDD. </p>
+<h3>Standard directory layout </h3>
+<p>The LDM must place its files into directories that the TDS knows about. This means that the<em><strong> pqact files</strong></em> that tell the LDM what to do must correspond to the <em><strong>catalog files</strong></em> that tell the TDS what to do. You can generate these files yourself to do whatever you want. We have defined a standard directory layout (and file naming) to make it easy for anyone to setup and run a THREDDS IDD server. </p>
+<ol>
+  <li>The <em><strong>standard IDD catalogs</strong></em>  are in the <strong>thredds.war </strong>file in the <strong> initialContent/idd</strong> directory. After startup they are copied to <strong>${tomcat_home}/content/thredds/idd/. </strong>To use just as they are, copy <strong>${tomcat_home}/content/thredds/idd/catalog.xml</strong> up one directory, to <strong>${tomcat_home}/content/thredds</strong>/ which makes the IDD catalog your top-level catalog. You can then modify it as you need. Alternatively, copy it up one level and rename to <strong>idd_catalog</strong>, and then add a catref element to your top-level catalog that points to it, e.g.:</li>
+<blockquote>
+  <pre><strong> &lt;catalogRef xlink:href=&quot;idd_catalog.xml&quot; xlink:title=&quot;IDD data&quot;/&gt;</strong></pre>
+</blockquote>
+  <li>The following pqact files implement the standard directory layout:
+    <ul>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/pqact.thredds">pqact.thredds</a> captures raw data files and netCDF decoded files </li>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/pqact.threddsconduit">pqact.threddsconduit</a> captures raw data files from the conduit feed </li>
+      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/pqact.threddsradar">pqact.threddsradar</a> captures level2 and level3 NEXRAD radar data.</li>
+    </ul>
+  </li> 
+  <p>(Note: The LDM uses tabs as separators between parts of these entries. Make sure you download these files in a way that preserves the tabs, e.g. use right-click and &quot;Save Link As&quot; or equivalent) </p>
+  <li>The LDM configuration file <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/ldmd.conf">ldmd.conf</a> references these pqact files. </li>
+</ol>
+
+<p>Both the pqact file and the standard IDD catalogs are being improved with better metadata and are changing as the IDD data changes. Its a good idea to periodically check for updated pqact and standard IDD catalogs. For this reason, minimize and track any changes you make to your local copy.<br>
+</p>
+<h3>Scouring files</h3>
+<p>Typically you want to scour old files from your file directory each day. You can run this <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/manageFilesDirs.pl">manageFilesDirs.pl</a> perl script to removes files from the standard directory layout. It should be run once a day from cron. It uses <a href="http://www.unidata.ucar.edu/content/projects/THREDDS/tech/server/manageFilesDirs.conf">manageFilesDirs.conf</a> to set
+the number of days of data to keep. An example command line to run this script is: </p>
+<blockquote>
+  <pre><strong>&gt; manageFilesDirs.pl -f manageFilesDirs.conf > ~ldm/logs/manageFilesDirs.log
+</strong></pre>
+</blockquote>
+<h3>Pre-indexing GRIB files </h3>
+<p>If you are serving GRIB files through the nj22/OpenDAP server, you may want to index the grib files automatically for performance. This can take up to 30 seconds for large grib files. Experience shows that preindexing reduces the user wait time to a second or two. </p>
+<p>Run the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/GribIndexer.pl">GribIndexer.pl</a> perl script to indexe GRIB files from the standard directory layout. You can run as often as you want' motherlode is currently  running it every ten minutes from cron. It uses the <a href="http://www.unidata.ucar.edu/content/projects/THREDDS/tech/server/GribIndexer.conf">GribIndexer.conf</a> file to set
+  the directories to index.
+An example command line to run this script is: 
+
+<blockquote>
+  <pre><strong>&gt; GribIndexer.pl -f GribIndexer.conf > ~ldm/logs/GribIndexer.log</strong></pre>
+</blockquote>
+Note that the  CLASSPATH must be set to the location of the grib.jar file for the
+indexer to work.
+<h3>Setting JVM params </h3>
+<p>It is recommended that you use the following values (or greater), see <a href="Performance.html#JVM">setting JVM parameters</a>:</p>
+<blockquote>
+  <pre>JAVA_OPTS="-server -Xmx1024m -Xms256m"
+export JAVA_OPTS</pre>
+</blockquote>
+<div class="head"></div>
+<hr width="100%">
+<p> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@support.unidata.ucar.edu">THREDDS support</a> </span></i></p>
+<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../thredds.jpg" width="95" height="79"></p>
+</body></html>

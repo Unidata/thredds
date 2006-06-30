@@ -1,0 +1,15 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>DQC Schema Changes - Version 0.3</title><meta name="author" content="Ethan Davis"></head><body>
+<h1>DQC Schema Changes - Version 0.3</h1>
+<br>
+<hr width="100%" size="2"><br>
+<p>Changes from 0.2:<br>
+</p>
+
+<ul>
+<li>Namespace: change to "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3".</li><li>Define certain attributes as document unique keys</li><ul><li>The selector element's id attribute must be unique (***Not currently used. ***)<br>
+</li></ul><li>queryCapability element:</li><ul><li>Remove selections element (wrapper for selectors), allow selector elements directly in queryCapability element.</li><li>bump the default version value up to 0.3</li></ul><li>query element:</li><ul><li>rename action attribute to base</li><li>remove the returns attribute<br>
+    </li><li>Change enumeration values for construct attribute: "macro" to "template" and "append" to "paramValue"</li></ul><li>selector element</li><ul><li>rename help element to description and change from string type to cat:documentationType (mixed XHTML content)<br>
+    </li><li>rename label attribute to title</li><li>make id attribute optional</li><li>change enumerated selectType attribute to a boolean multiple attribute (default equals false)</li></ul><li>selectStation element</li><ul><li>remove the boundingBox element</li></ul><li>add selectFromRange element</li><li>add selectFromDateRange element</li><li>add selectFromGeoRegion element</li><li>add selectServiceType<br>
+  </li><li>import InvCatalog/v1.0 and use documentationType and tDate types</li>
+</ul>
+<hr width="100%" size="2"></body></html>

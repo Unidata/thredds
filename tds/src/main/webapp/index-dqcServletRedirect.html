@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>DqcServletRedirect Test Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  </head>
+  <body>
+    <h1>DqcServletRedirect Test Page</h1>
+
+    <hr width="100%"/>
+
+    <h2 align="left">GET links using query string</h2>
+
+    <a href="/dqcServlet/dqc/redirect-test?301">301 (Permanently Moved)</a>
+    <br/>
+    <a href="/dqcServlet/dqc/redirect-test?302">302 (Temporarily Moved)</a>
+    <br/>
+    <a href="/dqcServlet/dqc/redirect-test?305">305 (Use Proxy)</a>
+    <br/>
+    <a href="/dqcServlet/dqc/redirect-test?dispatch">dispatch (not client visible)</a>
+
+    <h2 align="left">GET links using additional path info</h2>
+
+    <a href="/dqcServlet/dqc/redirect-test/301">301 (Permanently Moved)</a>
+    <br/>
+    <a href="/dqcServlet/dqc/redirect-test/302">302 (Temporarily Moved)</a>
+    <br/>
+    <a href="/dqcServlet/dqc/redirect-test/305">305 (Use Proxy)</a>
+    <br/>
+    <a href="/dqcServlet/dqc/redirect-test/dispatch">dispatch (not client visible)</a>
+
+    <!-- Redirects don't really work for POST - but dispatch does !
+    <!--h2 align="left">POST form</h2>
+
+    <form method="POST" action="/dqcServlet/dqc/redirect-test">
+      <input type="radio" name="redirectType" value="301" /> 301<br/>
+      <input type="radio" name="redirectType" value="302" /> 302<br/>
+      <input type="radio" name="redirectType" value="305" /> 305<br/>
+      <input type="radio" name="redirectType" value="dispatch" /> dispatch<br/>
+
+      <input type="submit" value="Submit" />
+      <input type="reset" value="Reset" />
+    </form-->
+
+    <hr width="100%"/>
+  </body>
+</html>

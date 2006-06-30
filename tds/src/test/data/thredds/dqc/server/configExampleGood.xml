@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<preferences EXTERNAL_XML_VERSION='1.0'>
+  <root type='user'>
+    <map>
+      <beanCollection key='config' class='thredds.dqc.server.DqcServletConfigItem'>
+        <bean name='example1' description='An example (1) DqcServletConfigItem'
+              handlerClassName='an.example.dqc.Handler1' handlerConfigFileName='exampleConfig1.xml'
+          />
+        <bean name='example2' description='An example (2) DqcServletConfigItem'
+              handlerClassName='an.example.dqc.Handler2' handlerConfigFileName='exampleConfig2.xml'
+          />
+      </beanCollection>
+    </map>
+  </root>
+</preferences>

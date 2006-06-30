@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog name="Example THREDDS Inventory Catalog extra really good version" version="0.6" xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<dataset name="Example THREDDS Inventory Catalog Final extra good version">
+		<!--	all referenced servers -->
+		<service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
+		<service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
+		<service name="Motherlode" serviceType="Compound" base="">
+			<service name="MotherlodeFTP" serviceType="FTP" base="ftp://motherlode.ucar.edu/ftp/pub/thredds/"/>
+			<service name="MotherlodeDODS" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/"/>
+		</service>
+		<!-- simple collection -->
+		<dataset name="Flux measurements from ACD" dataType="Grid" serviceName="ACD">
+			<dataset name="CO2" urlPath="flux/CO2.nc"/>
+			<dataset name="NO2" urlPath="flux/NO2.nc"/>
+		</dataset>
+		<!-- datasets can be gotten by DODS or FTP with same urlPath, using serviceList -->
+		<dataset name="Flux measurements from SCD" dataType="Grid" serviceName="Motherlode">
+			<dataset name="CO2" urlPath="flux/CO2.nc"/>
+			<dataset name="NO2" urlPath="flux/NO2.nc"/>
+		</dataset>
+		<!-- datasets can be gotten by DODS or FTP with different urlPath -->
+		<dataset name="Flux measurements DODS or FTP" dataType="Grid" serviceName="Motherlode">
+			<dataset name="CO2" ID="CO2_Flux">
+				<access serviceName="MotherlodeFTP" urlPath="ftp/flux/CO2.nc"/>
+				<access serviceName="MotherlodeDODS" urlPath="1998/CO2.nc"/>
+			</dataset>
+			<dataset name="NO2" ID="NO2_Flux">
+				<access serviceName="MotherlodeFTP" urlPath="ftp/flux/NO2.nc"/>
+				<access serviceName="MotherlodeDODS" urlPath="1998/NO2.nc"/>
+			</dataset>
+		</dataset>
+		<!-- example of alias-->
+		<dataset name="Doubled CO2 CCM2 Model Runs" serviceName="ACD" dataType="Grid">
+			<dataset name="SurfaceFlux">
+				<dataset name="CO2" alias="CO2_Flux"/>
+				<dataset name="NO2" alias="NO2_Flux"/>
+			</dataset>
+			<dataset name="Model Output" serviceName="ACD">
+				<dataset name="Jan Averages" urlPath="model/DoubleCO2/Jan.nc"/>
+				<dataset name="Feb Averages" urlPath="model/DoubleCO2/Feb.nc"/>
+				<dataset name="Mar Averages" urlPath="model/DoubleCO2/Mar.nc"/>
+			</dataset>
+		</dataset>
+		<!-- example of documentation, attribute, and metadata elements -->
+		<dataset name="Test ETA data" dataType="Grid" serviceName="ACD" ID="hasProp">
+		     <property name="GoodThing" value="Where have you gone?"/>
+			<documentation xlink:href="http://www.unidata.ucar.edu/staff/caron/anotherGoodIdea.html"> 
+		      		This inline documentation refers to the entire collection. 	  
+	           </documentation>
+			<!-- these metadata elements apply to all contained datasets -->
+			<metadata xlink:href="http://www.unidata.ucar.edu/projects/THREDDS/Eta.xml" metadataType="THREDDS"/>
+			<metadata xlink:href="http://www.unidata.ucar.edu/projects/THREDDS/NCEP/DC.xml" metadataType="DublinCore"/>
+			<dataset name="Mar 17, 2001" urlPath="test/eta.nc" ID="hasNoProp"/>
+			<dataset name="Mar 18, 2001 " urlPath="test/eta2.nc" ID="hasProp2">
+				<documentation xlink:href="http://www.unidata.ucar.edu/staff/caron/EtaNormal.html"> The standard run. </documentation>
+				<property name="GoodThing" value="overrides the earlier one"/>
+			</dataset>
+			<dataset name="Mar 18, 2001 (experimental)" urlPath="test/eta2.nc">
+				<documentation> Test defrobulating the dataset description  </documentation>
+				<metadata metadataType="THREDDS" xlink:href="http://www.unidata.ucar.edu/staff/caron/EtaTest.xml"/>
+			</dataset>
+		</dataset>
+		<dataset name="test DODS" urlPath="01070516_ruc.nc" serviceName="Agg" dataType="Grid">
+			<service name="Agg" serviceType="DODS" base="http://thredds.unidata.ucar.edu:8080/dodsC/"/>
+		</dataset>
+		<dataset name="test FTP" urlPath="01070516_ruc.nc" serviceName="AnonFTP" dataType="Grid">
+			<service name="AnonFTP" serviceType="FTP" base="ftp://thredds.unidata.ucar.edu:8080/dodsC/"/>
+		</dataset>
+		<!-- example of catalog Reference -->
+		<catalogRef xlink:href="http://www.unidata.ucar.edu/projects/thredds/xml/InvCatalog6.part2.xml" xlink:title="ETA data (CatalogRef)"/>
+	</dataset>
+</catalog>

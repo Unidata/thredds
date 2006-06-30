@@ -1,0 +1,7 @@
+<!--
+   Context configuration file for the DqcServletRedirect app.
+   Setting the crossContext attribute to true allows the
+   "/dqcServlet" context to getContext( "/thredds").
+  -->
+<Context path="/dqcServlet" docBase="dqcServlet"
+         debug="0" privileged="true" crossContext="true"/>

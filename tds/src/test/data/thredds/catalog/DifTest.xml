@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">
+  
+  <contributor role="Investigator">Mashor Mashnor</contributor>
+          
+  <documentation type="summary">
+   This project aims to determine the physiological adaptations of algae to the
+   extreme conditions of Antarctica. The major aim is to understand the effect of
+   global changes such as temperature and ultraviolet radiation increases arising
+   from the Antarctic ozone hole and to detect environmental changes in the
+   Antarctic due to human activities.
+  </documentation >
+  
+  <keyword>ANTARTICA</keyword>
+  <keyword>ECOLOGY</keyword>
+  <keyword>FLORA</keyword>
+  
+  <publisher>
+     <name vocabulary="DIF">Australian Antarctic Data Centre, Australia</name>
+     <contact url="http://www.aad.gov.au/default.asp?casid=3786" email="metadata@aad.gov.au"/>
+  </publisher>
+  
+  <variables vocabulary="DIF">
+    <variable name="structure" vocabulary_name="EARTH SCIENCE > BIOSPHERE > ECOLOGICAL DYNAMICS > COMMUNITY STRUCTURE" />
+    <variable name="species" vocabulary_name="EARTH SCIENCE > BIOSPHERE > ECOLOGICAL DYNAMICS > VEGETATION SPECIES" />
+  </variables>
+
+</metadata >

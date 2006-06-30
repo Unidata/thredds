@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: CatGenDodsDirTest.xml,v 1.1 2005/03/30 05:41:12 edavis Exp $ -->
+<!--
+  Test CatalogGen on a DodsDir datasetSource with a regular expression
+  datasetFilter and a regular expression datasetNamer.
+-->
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd">
+<catalog name="Test: DodsDir source, RegExp filt and namer" version="0.6">
+  <dataset name="Test: DodsDir source, RegExp filt and namer">
+    <dataset name="Test: DodsDir source, RegExp filt and namer">
+      <metadata metadataType="CatalogGenConfig">
+        <catalogGenConfig type="Catalog">
+          <datasetSource name="DodsDir source" type="DodsDir"
+                         structure="Flat"
+                         accessPoint="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/">
+            <resultService name="mlode" serviceType="DODS"
+                           base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/"
+                           accessPointHeader="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+            <datasetFilter name="Accept netCDF files only" type="RegExp"
+                           matchPattern="\.nc$" />
+            <datasetNamer name="NCEP AVN-Q model data"
+                          type="RegExp" addLevel="true"
+                          matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_avn-q.nc$"
+                          substitutePattern="NCEP AVN-Q $1-$2-$3 $4:00:00 GMT" />
+            <datasetNamer name="NCEP Eta model data"
+                          type="RegExp" addLevel="true"
+                          matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_eta.nc$"
+                          substitutePattern="NCEP Eta $1-$2-$3 $4:00:00 GMT" />
+            <datasetNamer name="NCEP RUC model data"
+                          type="RegExp" addLevel="true"
+                          matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_ruc.nc$"
+                          substitutePattern="NCEP RUC $1-$2-$3 $4:00:00 GMT" />
+          </datasetSource>
+        </catalogGenConfig>
+      </metadata>
+    </dataset>
+  </dataset>
+</catalog>

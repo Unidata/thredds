@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>THREDDS Catalog Generator - To Do</title>
+    <!-- $Id: CatalogGenToDo.html,v 1.1 2005/03/30 22:10:06 edavis Exp $ -->
+  </head>
+
+  <body>
+    <h1>THREDDS Catalog Generator - To Do</h1>
+
+    <p>
+      Comments to <a href="mailto:edavis@ucar.edu">Ethan Davis</a> or
+      <a href="mailto:thredds@unidata.ucar.edu">THREDDS mail list</a>
+    </p>
+
+    <hr>
+<h2>0.8.1</h2>
+<ul>
+  <li>Allow unnamed datasets to be cataloged (i.e., remove the filter nature
+      of the datasetNamer elements in a given datasetSource)
+  </li>
+</ul>
+
+<h2>pre 0.8.1</h2>
+
+
+    <ul>
+      <li> Add datasetFilter-ing for the directory level datasets.</li>
+      <li> Add dataset sorting capabilities. (Look at XSLT sort syntax?)</li>
+      <li> Add ability to produce catalogRef elements
+        <ul>
+          <li> Crawl a set number of levels before producing
+            catalogRefs</li>
+          <li> Crawl a datasetSource but only produce a dataset
+            hierarchy with catalogRefs as the leaf nodes. 
+            I.e., crawl and build a dataset hierarchy until selectable
+            datasets are found at which point a catalogRef is created.
+            [Maybe spawn off another generator instance to produce the
+            catalog referenced by a catalogRef.]
+          </li>
+          <li> How represent diff catRef stuff in config file.</li>
+        </ul>
+      </li>
+      <li> Add AggServer Config generation
+      </li>
+      <li> Develop GUI for building CatalogGen config files???
+      </li>
+      <li> Add GDS translator (lost after moved from XSLT)
+      </li>
+<!-- See doc/THREDDS/CatalogGen for more. ERD -->
+    </ul>
+
+    <hr>
+
+    <h2>Done</h2>
+    <ul>
+      <li> [BUG] on Windows (whenever '\' is used in path rather than
+        '/', need to replace in URL.
+      </li>
+    </ul>
+
+    <hr>
+
+    <address><a href="mailto:edavis@ucar.edu">Ethan Davis</a></address>
+<!-- Created: Fri Oct 18 16:49:56 MDT 2002 -->
+<!-- hhmts start -->
+Last modified: Mon Apr 28 16:34:23 MDT 2003
+<!-- hhmts end -->
+  </body></html>

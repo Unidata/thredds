@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+  <!--
+    Example:
+    2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.servlet.CatGenServlet - doGet():
+  -->
+  <appender name="dqcServletRedirect" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${logdir}/dqcServletRedirect.log"/>
+    <param name="MaxFileSize" value="1MB"/>
+    <param name="MaxBackupIndex" value="5"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
+    </layout>
+  </appender>
+
+  <!--
+    Generate an access log similar to Apache server access_log.
+    139.140.167.4 - - [01/Mar/2005:00:00:00 -0700] "GET /cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2005030100_gfs_211.nc.dods?u[22:22][0:28][0:64][0:92] HTTP/1.1" 200 -
+  -->
+  <appender name="dqcServletRedirectAccess" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${logdir}/dqcServletRedirectAccess.log"/>
+    <param name="DatePattern" value="'.'yyyy-MM"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern"
+             value="%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n"/>
+    </layout>
+  </appender>
+
+  <logger name="thredds">
+    <level value="INFO"/>
+    <appender-ref ref="dqcServletRedirect"/>
+  </logger>
+
+  <logger name="threddsAccessLogger">
+    <level value="ALL"/>
+    <appender-ref ref="dqcServletRedirectAccess"/>
+  </logger>
+
+  <logger name="ucar">
+    <level value="INFO"/>
+    <appender-ref ref="dqcServletRedirect"/>
+  </logger>
+
+  <!-- Initialize a few loggers to make the servlet debug web interface more convenient. -->
+  <logger name="thredds.catalog"/>
+  <logger name="thredds.cataloggen"/>
+  <logger name="thredds.dqc"/>
+  <logger name="thredds.servlet"/>
+
+  <logger name="thredds.dqc.server.DqcServletRedirect">
+    <level value="INFO"/>
+  </logger>
+
+  <root>
+    <level value="WARN"/>
+  </root>
+
+</log4j:configuration>
