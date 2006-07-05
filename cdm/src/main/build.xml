@@ -1,47 +1,47 @@
 <?xml version="1.0"?>
-<project name="ucar.nc2" default="makeJarUI" basedir=".">
-	<property name="release.version" value="2.2.16"/>
-	<property name="release.version.minor" value="${release.version}.03"/>
+<project name="cdm" default="makeJar" basedir=".">
+  <property name="release.version" value="2.2.17"/>
+  <property name="release.version.minor" value="${release.version}.00"/>
+  <property name="build.debug" value="on"/>
+  <property name="build.release" value="false"/>
 
-	<!-- load env -->
-	<property environment="env"/>
+  <!-- load env -->
+  <property environment="env"/>
   <property file="${user.home}/build.properties"/>
 
-	<property name="root.dir" location="${basedir}"/>
-	<property name="src.dir" location="${root.dir}/src"/>
-	<property name="doc.dir" location="${root.dir}/doc"/>
-	<property name="lib.dir" location="${root.dir}/lib"/>
-	<property name="resources.dir" location="${root.dir}/resources"/>
-	<property name="build.dir" location="${root.dir}/build"/>
-	<property name="build.classes.dir" location="${build.dir}/classes"/>
-	<property name="build.debug" value="on"/>
-	<property name="build.release" value="false"/>
-	<property name="build.javadoc.dir" location="${build.dir}/javadoc"/>
-	<property name="dist.dir" location="${root.dir}/dist"/>
-	<property name="javadoc.dir" location="${dist.dir}/javadoc"/>
-	<property name="javadocAll.dir" location="${dist.dir}/javadocAll"/>
+  <property name="root.dir" location="${basedir}"/>
+  <property name="src.dir" location="${root.dir}/java"/>
+  <property name="doc.dir" location="${root.dir}/doc"/>
+  <property name="lib.dir" location="${root.dir}/../../../lib"/>
+  <property name="resources.dir" location="${root.dir}/resources"/>
 
-	<property name="release.library.dir" value="O:/pub/netcdf-java/v${release.version}/"/>
-	<property name="release.doc.dir" value="O:/pub/netcdf-java/v${release.version}/"/>
-	
-	<property name="release.html.dir" value="Z:/content/software/netcdf-java/v${release.version}/"/>
-	<property name="release.javadoc.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadoc/"/>
-	<property name="release.javadocAll.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadocAll/"/>
-	<property name="webstart_dir" location="Z:/content/software/netcdf-java/v2.2/webstart"/>
-	
-	<property name="test.src.dir" location="${root.dir}/test/src"/>
-	<property name="test.dir" location="${root.dir}/build/test"/>
+  <property name="build.dir" location="${root.dir}/../../target/build"/>
+  <property name="build.classes.dir" location="${build.dir}/classes"/>
+  <property name="build.javadoc.dir" location="${build.dir}/javadoc"/>
+  <property name="dist.dir" location="${root.dir}/../../target/dist"/>
+  <property name="javadoc.dir" location="${dist.dir}/javadoc"/>
+  <property name="javadocAll.dir" location="${dist.dir}/javadocAll"/>
+
+  <property name="release.library.dir" value="O:/pub/netcdf-java/v${release.version}/"/>
+  <property name="release.doc.dir" value="O:/pub/netcdf-java/v${release.version}/"/>
+  <property name="release.html.dir" value="Z:/content/software/netcdf-java/v${release.version}/"/>
+  <property name="release.javadoc.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadoc/"/>
+  <property name="release.javadocAll.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadocAll/"/>
+  <property name="webstart_dir" location="Z:/content/software/netcdf-java/v2.2/webstart"/>
+
+  <property name="test.src.dir" location="${root.dir}/test/src"/>
+  <property name="test.dir" location="${root.dir}/build/test"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="dods.jar" value="dods-1.1.7c.jar"/ -->
   <property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/>
   <property name="bufr.jar" value="bufr.jar"/>
   <property name="grib.jar" value="grib.jar"/>
-  <property name="httpclient.jar" value="commons-httpclient-3.0.jar" />
+  <property name="httpclient.jar" value="commons-httpclient-3.0.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.0.4.jar"/>
-  <property name="http-codec.jar" value="commons-codec-1.3.jar" />
-  <property name="jdom.jar" value="jdom.jar" />
-  <property name="jpeg2000.jar" value="jpeg2000.jar" />
+  <property name="http-codec.jar" value="commons-codec-1.3.jar"/>
+  <property name="jdom.jar" value="jdom.jar"/>
+  <property name="jpeg2000.jar" value="jpeg2000.jar"/>
   <property name="junit.jar" value="junit.jar"/>
   <property name="logging.jar" value="nlog4j-1.2.21.jar"/>
   <property name="logging-minimal.jar" value="slf4j-jdk14.jar"/>
@@ -53,116 +53,106 @@
   <property name="xml-apis.jar" value="xml-apis.jar"/>
   <property name="xercesImpl.jar" value="xercesImpl.jar"/>
 
-  <available property="threddsSrc.dir" value="../thredds/src" file="../thredds/src" type="dir"/>
-	<property name="threddsSrc.dir" location="src"/>
+  <!-- LOOK can we generate with pathconvert? -->
+  <property name="Class-Path"
+            value="${gnu-regexp.jar} ${bufr.jar} ${grib.jar} ${jdom.jar} ${httpclient.jar} ${http-codec.jar} ${http-logging.jar} ${jpeg2000.jar} ${logging.jar} ${prefs.jar} ${resourcesOptional.jar} ${visadNoDods.jar}"/>
+  <property name="ClassPath-CommandLine"
+            value="lib/${gnu-regexp.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${prefs.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
 
-  <available property="threddsLib.dir" value="../thredds/lib" file="../thredds/lib" type="dir"/>
-	<property name="threddsLib.dir" location="lib"/>
+  <target name="test">
+    <pathconvert property="sourcepath.prop" refid="sourcepath" targetos="windows"/>
+    <echo>sourcepath=${sourcepath.prop}</echo>
 
-  <available property="threddsResources.dir" value="../thredds/resourcespath" file="../thredds/resourcespath" type="dir"/>
-  <property name="threddsResources.dir" location="${root.dir}/LOOK:WHERE??"/>
-
-  <property name="Class-Path" value="${gnu-regexp.jar} ${bufr.jar} ${grib.jar} ${jdom.jar} ${httpclient.jar} ${http-codec.jar} ${http-logging.jar} ${jpeg2000.jar} ${logging.jar} ${prefs.jar} ${resourcesOptional.jar} ${visadNoDods.jar}"/>
-  <property name="ClassPath-CommandLine" value="lib/${gnu-regexp.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${prefs.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
+    <pathconvert property="runtime.classpath.prop" refid="runtime.classpath" pathsep=" ">
+      <map from=";" to=" "/>
+      <mapper type="flatten"/>
+    </pathconvert>
+    <echo>runtime.classpath.prop=${runtime.classpath.prop}</echo>
+  </target>
 
   <!-- source -->
-	<path id="sourcepath">
-		<pathelement location="${src.dir}"/>
-		<pathelement location="${threddsSrc.dir}"/>
-	</path>
+  <path id="sourcepath">
+    <pathelement location="${src.dir}"/>
+  </path>
 
   <patternset id="sources">
-    <include name="ucar/ma2/*.java"/>
-    <include name="ucar/nc2/*.java"/>
-    <include name="ucar/nc2/adde/*.java"/>
-    <include name="ucar/nc2/dataset/*.java"/>
-    <include name="ucar/nc2/dataset/**/*.java"/>
-    <include name="ucar/nc2/dods/*.java"/>
-    <include name="ucar/nc2/dt/*.java"/>
-    <include name="ucar/nc2/dt/**/*.java"/>
-    <include name="ucar/nc2/geotiff/*.java"/>
-    <include name="ucar/nc2/iosp/**/*.java"/>
-    <include name="ucar/nc2/ncml/*.java"/>
-    <include name="ucar/nc2/thredds/*.java"/>
-    <include name="ucar/nc2/units/*.java"/>
-    <include name="ucar/nc2/util/*.java"/>
-    <include name="ucar/unidata/geoloc/**/*.java"/>
-    <include name="ucar/unidata/io/FileCache.java"/>
-    <include name="ucar/unidata/io/RandomAccessFile.java"/>
-    <include name="thredds/catalog/parser/jdom/*.java"/>
-    <include name="thredds/catalog/crawl/*.java"/>
+    <include name="ucar/**/*.java"/>
+    <include name="thredds/**/*.java"/>
   </patternset>
 
-  <patternset id="uiSources">
-    <include name="ucar/nc2/ui/*.java"/>
-  </patternset>
+  <!-- Libraries -->
 
-  <!-- Libraries needed for compile. -->
-  <fileset id="compile.libraries" dir="${lib.dir}">
-    <include name="${bufr.jar}"/>
-    <include name="${grib.jar}"/>
+  <fileset id="libs.external" dir="${lib.dir}/external">
     <include name="${jdom.jar}"/>
     <include name="${httpclient.jar}"/>
     <include name="${logging.jar}"/>
+  </fileset>
+
+  <fileset id="libs.release" dir="${lib.dir}/release">
+    <include name="${bufr.jar}"/>
+    <include name="${grib.jar}"/>
     <include name="${visadNoDods.jar}"/>
   </fileset>
 
+  <path id="compile.classpath">
+    <fileset refid="libs.external"/>
+    <fileset refid="libs.release"/>
+  </path>
 
-  <fileset id="compileUI.libraries" dir="${lib.dir}">
-    <include name="${prefs.jar}"/>
-  </fileset>
-
-  <!-- Libraries needed for runtime. -->
-  <fileset id="runtime.libraries" dir="${lib.dir}">
+  <fileset id="runtime.libraries" dir="${lib.dir}/external">
     <include name="${gnu-regexp.jar}"/>
-    <include name="${http-codec.jar}" />
-    <include name="${http-logging.jar}" />
+    <include name="${http-codec.jar}"/>
+    <include name="${http-logging.jar}"/>
     <include name="${jpeg2000.jar}"/>
     <include name="${xercesImpl.jar}"/>
     <include name="${xml-apis.jar}"/>
   </fileset>
 
-  <path id="compile.classpath">
-     <fileset refid="compile.libraries"/>
+  <path id="runtime.classpath">
+    <fileset refid="libs.release"/>
+    <fileset refid="libs.external"/>
+    <fileset refid="runtime.libraries"/>
   </path>
 
-  <path id="compileUI.classpath">
-     <fileset refid="compileUI.libraries"/>
-   </path>
+  <!-- targets -->
+  <target name="init">
+    <mkdir dir="${build.classes.dir}"/>
+    <mkdir dir="${dist.dir}"/>
+    <echo message="Initialize ${ant.project.name}"/>
+  </target>
 
- 	<!-- targets -->
-  <target name="cleanCompileUI">
-    <antcall target="clean"/>
-    <antcall target="compileUI"/>
+  <target name="clean" description="Deletes all files that are generated by the build.">
+    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${dist.dir}" failonerror="false"/>
   </target>
-  <target name="cleanTestSetup">
-    <antcall target="clean"/>
-    <antcall target="compileUI"/>
-    <antcall target="test-setup"/>
+
+  <target name="release-settings">
+    <condition property="build.debuglevel" value="lines">
+      <istrue value="${build.release}"/>
+    </condition>
+    <property name="build.debuglevel" value="lines,vars,source"/>
+    <!-- echo>release.build=${release.build}</echo>
+       <echo>build.debuglevel=${build.debuglevel}</echo -->
   </target>
-	<target name="init">
-		<mkdir dir="${build.classes.dir}"/>
-		<mkdir dir="${dist.dir}"/>
-		<echo message="Initialize ${ant.project.name}"/>
-	</target>
-	<target name="clean" description="Deletes all files that are generated by the build.">
-		<delete dir="${build.dir}" failonerror="false"/>
-		<delete dir="${dist.dir}" failonerror="false"/>
-	</target>
-	<target name="release-settings">
-		<condition property="build.debuglevel" value="lines">
-			<istrue value="${build.release}"/>
-		</condition>
-		<property name="build.debuglevel" value="lines,vars,source"/>
-		<!-- echo>release.build=${release.build}</echo>
-	   <echo>build.debuglevel=${build.debuglevel}</echo -->
-	</target>
 
   <target name="compile" depends="init, release-settings" description="library compile">
-    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.4" target="1.4">
-      <src refid="sourcepath"/>
-      <patternset refid="sources"/>
+    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
+           includeAntRuntime="false" source="1.4" target="1.4">
+      <!-- src refid="sourcepath"/>
+      <patternset refid="sources"/ -->
+
+      <sourcepath>
+        <pathelement location="${src.dir}"/>
+      </sourcepath>
+
+      <patternset>
+        <include name="ucar/**/*.java"/>
+        <include name="thredds/catalog/parser/jdom/*.java"/>
+        <include name="thredds/catalog/crawl/*.java"/>
+      </patternset>
+
       <classpath refid="compile.classpath"/>
+
     </javac>
   </target>
 
@@ -177,24 +167,12 @@
       <classpath refid="compile.classpath"/>
       <classpath refid="compileUI.classpath"/>
     </javac>
+
   </target>
 
-  <!-- not needed - use compileUI -->
-  <!--target name="compileSrcRelease" depends="init, release-settings" description="source release compile">
-    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.4" srcdir="${src.dir}">
-      <patternset refid="sources"/>
-      <patternset refid="uiSources"/>
-      <classpath refid="compile.classpath"/>
-      <classpath refid="compileUI.classpath"/>
-    </javac>
-  </target -->
-
-	<!-- make library jars -->
+  <!-- make library jars -->
   <property name="jarMinimal" value="ncCore-${release.version}.jar"/>
   <property name="jarMain" value="netcdf-${release.version}.jar"/>
-  <property name="jarUI" value="netcdfUI-${release.version}.jar"/>
-  <property name="toolsUI" value="toolsUI-${release.version}.jar"/>
-  <property name="ncAll" value="netcdfAll-${release.version}.zip"/>
   <property name="srcRelease" value="ncSrc-${release.version}.zip"/>
   <property name="idv.jar" value="nc2.2.jar"/>
 
@@ -229,7 +207,7 @@
       </fileset>
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
-      <fileset dir="${lib.dir}/slf4j" />
+      <!--fileset dir="${lib.dir}/slf4j" /-->
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
@@ -242,19 +220,12 @@
     </jar>
 
     <jar jarfile="${dist.dir}/${jarMain}" index="true">
-      <fileset dir="${build.classes.dir}" />
+      <fileset dir="${build.classes.dir}"/>
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
 
       <fileset dir="${resources.dir}">
-        <include name="resources/nj22/coords/*"/>
-        <include name="resources/nj22/schemas/*"/>
-        <include name="resources/nj22/tables/*"/>
-      </fileset>
-
-      <fileset dir="${threddsResources.dir}">
-        <include name="resources/thredds/schemas/*"/>
-        <exclude name="**/CVS/*"/>
+        <include name="resources/**//*"/>
       </fileset>
 
       <manifest>
@@ -267,129 +238,26 @@
 
     </jar>
 
-    <!-- copy main jar to lib dir for THREDDS -->
-    <!--copy file="${dist.dir}/${jarMain}" todir="${lib.dir}" overwrite="true" preservelastmodified="true"/ -->
-    <copy file="${dist.dir}/${jarMain}" todir="${threddsLib.dir}" overwrite="true" preservelastmodified="true"/>
-  </target>
-
-  <target name="makeJarUI" depends="compile, compileUI" description="make toolsUI jar">
-    <tstamp>
-      <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
-    </tstamp>
-    <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
-      <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
-        <filter token="VERSION" value="${release.version}"/>
-        <filter token="VERSION.MINOR" value="${release.version.minor}"/>
-      </filterset>
-    </copy>
-
-    <copy file="CHANGES.txt" tofile="${build.dir}/CHANGES" overwrite="true">
-      <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
-        <filter token="VERSION" value="${release.version}"/>
-        <filter token="VERSION.MINOR" value="${release.version.minor}"/>
-      </filterset>
-    </copy>
-
-    <jar jarfile="${dist.dir}/${jarUI}" index="true" duplicate="preserve">
-      <fileset dir="${build.dir}" includes="README"/>
-      <fileset dir="${build.dir}" includes="CHANGES"/>
-      <fileset dir="${build.classes.dir}" />
-      <zipfileset dir="${resources.dir}/resources" prefix="resources"/>
-      <zipfileset dir="${threddsResources.dir}/resources" prefix="resources"/>
-
-      <manifest>
-        <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
-        <attribute name="Class-Path" value="${Class-Path}"/>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="NetCDF-Java-UITools"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-
-      <indexjars>
-        <path refid="compile.classpath"/>
-        <path refid="compileUI.classpath"/>
-        <pathelement location="${lib.dir}/${resourcesOptional.jar}"/>
-      </indexjars>
-
-    </jar>
-
-  </target>
-
-  <target name="makeResourcesOptional" description="make resourcesOptional.jar">
-    <tstamp>
-      <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
-    </tstamp>
-
-    <jar jarfile="${lib.dir}/resourcesOptional.jar" index="true" duplicate="preserve">
-      <zipfileset dir="${resources.dir}/optional" prefix="resources"/>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="NetCDF-Java Optional Resources"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-
-    </jar>
-
   </target>
 
   <property name="zip.dir" location="${dist.dir}/zip"/>
   <property name="uiZip.dir" location="${dist.dir}/uiZip"/>
   <property name="idv.dir" location="${dist.dir}/idv"/>
-  <target name="makeAll" depends="makeJar, makeJarUI" description="create netcdfAll zip file">
-    <copy file="${dist.dir}/${jarUI}" todir="${zip.dir}" overwrite="true" preservelastmodified="true"/>
-
-    <!--gather jars for the application and make ncAll.zip -->
-    <copy todir="${zip.dir}" flatten="true" overwrite="true" preservelastmodified="true">
-      <fileset refid="compile.libraries"/>
-      <fileset refid="compileUI.libraries"/>
-      <fileset refid="runtime.libraries"/>
-      <fileset file="${lib.dir}/${logging-minimal.jar}"/>
-      <fileset file="${lib.dir}/${resourcesOptional.jar}"/>
-    </copy>
-    <zip destfile="${dist.dir}/${ncAll}"  basedir="${zip.dir}" />
-
-    <!--unzip all so we can make uiAll -->
-    <mkdir dir="${uiZip.dir}"/>
-    <unzip dest="${uiZip.dir}">
-      <fileset dir="${zip.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </unzip>
-
-    <jar jarfile="${dist.dir}/${toolsUI}" index="true" duplicate="preserve">
-      <fileset dir="${build.dir}" includes="README"/>
-      <fileset dir="${build.dir}" includes="CHANGES"/>
-      <fileset dir="${uiZip.dir}" />
-
-      <manifest>
-        <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="NetCDF-Java-UITools"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-    </jar>
-
+  <target name="makeIDVjar" depends="makeJar" description="create netcdfAll zip file">
     <!--unzip so we can make idv jar -->
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
-      <fileset dir="${zip.dir}">
-        <include name="${bufr.jar}"/>
-        <include name="${grib.jar}"/>
+      <fileset dir="${lib.dir}/external">
         <include name="${jdom.jar}"/>
         <include name="${jpeg2000.jar}"/>
         <include name="${httpclient.jar}"/>
         <include name="${http-codec.jar}"/>
         <include name="${http-logging.jar}"/>
         <include name="${logging-minimal.jar}"/>
+      </fileset>
+      <fileset dir="${lib.dir}/release">
+        <include name="${bufr.jar}"/>
+        <include name="${grib.jar}"/>
       </fileset>
     </unzip>
     <unzip dest="${idv.dir}">
@@ -401,7 +269,7 @@
     <jar jarfile="${dist.dir}/${idv.jar}" index="true" duplicate="preserve">
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
-      <fileset dir="${idv.dir}" />
+      <fileset dir="${idv.dir}"/>
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
@@ -438,23 +306,19 @@
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
       </fileset>
-
-      <fileset dir="${threddsSrc.dir}">
-        <include name="thredds/**/*.java"/>
-      </fileset>
     </copy>
 
     <copy todir="${srcZip.dir}/lib" overwrite="true" preservelastmodified="true">
-      <fileset refid="compile.libraries"/>
-      <fileset refid="compileUI.libraries"/>
+      <fileset refid="libs.external"/>
+      <fileset refid="libs.release"/>
       <fileset refid="runtime.libraries"/>
       <fileset file="${lib.dir}/${resourcesOptional.jar}"/>
     </copy>
 
-    <zip destfile="${dist.dir}/${srcRelease}"  basedir="${srcZip.dir}" />
-   </target>
+    <zip destfile="${dist.dir}/${srcRelease}" basedir="${srcZip.dir}"/>
+  </target>
 
-  <target name="dist" depends="makeAll, makeSrc, javadoc, javadocAll" description="create a full distribution"/>
+  <target name="dist" depends="makeIDVjar, makeSrc, javadoc, javadocAll" description="create a full distribution"/>
 
   <!-- get rid of dods stuff in visad.jar -->
   <property name="visadNoDods.tempdir" location="C:/TEMP/visad/"/>
@@ -462,58 +326,57 @@
     <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
     <mkdir dir="${visadNoDods.tempdir}"/>
     <unzip dest="${visadNoDods.tempdir}">
-      <fileset file="${lib.dir}/${visad.jar}" />
+      <fileset file="${lib.dir}/${visad.jar}"/>
     </unzip>
 
     <delete dir="${visadNoDods.tempdir}/dods" failonerror="true"/>
     <delete dir="${visadNoDods.tempdir}/gnu/regexp" failonerror="true"/>
 
     <jar jarfile="${lib.dir}/${visadNoDods.jar}" index="true" duplicate="preserve">
-      <fileset dir="${visadNoDods.tempdir}" />
+      <fileset dir="${visadNoDods.tempdir}"/>
     </jar>
   </target>
 
 
   <!-- make javadoc -->
-	<target name="javadoc" description="make the javadocs">
-		<mkdir dir="${javadoc.dir}"/>
-		<javadoc  Doctitle="NetCDF-Java 2.2 API" Use="true"  Windowtitle="NetCDF-Java 2.2 API"
-         maxmemory="256m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true"  source="1.4">
- 			<classpath refid="compile.classpath"/>
-      <classpath refid="compileUI.classpath"/>
-			<package name="thredds.catalog"/>
-			<!--package name="thredds.catalog.query"/ -->
-			<package name="ucar.ma2"/>
-			<package name="ucar.nc2"/>
-			<package name="ucar.nc2.dataset"/>
-			<!--package name="ucar.nc2.dataset.conv"/ -->
-			<package name="ucar.nc2.dataset.grid"/>
-			<!-- package name="ucar.nc2.geotiff"/ -->
-			<!--package name="ucar.nc2.dt"/ -->
-			<!-- package name="ucar.nc2.dt.grid"/ -->
-			<!-- package name="ucar.nc2.dt.image"/ -->
-			<!-- package name="ucar.nc2.dt.radial"/-->
-			<!-- package name="ucar.nc2.dt.point"/-->
-			<!--package name="ucar.nc2.dt.trajectory"/ -->
+  <target name="javadoc" description="make the javadocs">
+    <mkdir dir="${javadoc.dir}"/>
+    <javadoc Doctitle="NetCDF-Java 2.2 API" Use="true" Windowtitle="NetCDF-Java 2.2 API"
+             maxmemory="256m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.4">
+      <classpath refid="compile.classpath"/>
+
+      <package name="thredds.catalog"/>
+      <!--package name="thredds.catalog.query"/ -->
+      <package name="ucar.ma2"/>
+      <package name="ucar.nc2"/>
+      <package name="ucar.nc2.dataset"/>
+      <!--package name="ucar.nc2.dataset.conv"/ -->
+      <package name="ucar.nc2.dataset.grid"/>
+      <!-- package name="ucar.nc2.geotiff"/ -->
+      <!--package name="ucar.nc2.dt"/ -->
+      <!-- package name="ucar.nc2.dt.grid"/ -->
+      <!-- package name="ucar.nc2.dt.image"/ -->
+      <!-- package name="ucar.nc2.dt.radial"/-->
+      <!-- package name="ucar.nc2.dt.point"/-->
+      <!--package name="ucar.nc2.dt.trajectory"/ -->
       <!-- package name="ucar.nc2.ncml"/ -->
       <package name="ucar.nc2.thredds"/>
       <package name="ucar.nc2.units"/>
       <package name="ucar.nc2.util"/>
       <package name="ucar.unidata.geoloc"/>
-			<package name="ucar.unidata.geoloc.projection"/>
-			<package name="ucar.unidata.geoloc.vertical"/>
+      <package name="ucar.unidata.geoloc.projection"/>
+      <package name="ucar.unidata.geoloc.vertical"/>
       <package name="ucar.unidata.io"/>
       <package name="ucar.unidata.util"/>
-		</javadoc>
-	</target>
+    </javadoc>
+  </target>
 
 
   <target name="javadocAll" description="make all javadocs">
     <mkdir dir="${javadocAll.dir}"/>
-    <javadoc  Doctitle="NetCDF-Java 2.2 API" Use="true"  Windowtitle="NetCDF-Java 2.2 API"
-         maxmemory="256m" sourcepathref="sourcepath" destdir="${javadocAll.dir}" protected="true" source="1.4">
+    <javadoc Doctitle="NetCDF-Java 2.2 API" Use="true" Windowtitle="NetCDF-Java 2.2 API"
+             maxmemory="256m" sourcepathref="sourcepath" destdir="${javadocAll.dir}" protected="true" source="1.4">
       <classpath refid="compile.classpath"/>
-      <classpath refid="compileUI.classpath"/>
       <package name="dods.dap.*"/>
       <package name="thredds.catalog.*"/>
       <package name="ucar.ma2"/>
@@ -524,119 +387,34 @@
   </target>
 
   <!-- release library -->
-	<target name="release" description="Release library and source jar files to release directory: do 'ant dist' first">
-		<copy todir="${release.library.dir}" overwrite="true">
-			<fileset dir="${dist.dir}" includes="${jarMinimal}"/>
-      <fileset dir="${dist.dir}" includes="${jarMain}" />
-      <fileset dir="${dist.dir}" includes="${jarUI}" />
-      <fileset dir="${dist.dir}" includes="${ncAll}" />
- 			<fileset dir="${dist.dir}" includes="${srcRelease}" />
- 			<fileset dir="${dist.dir}" includes="${toolsUI}" />
- 			<fileset dir="${dist.dir}" includes="${idv.jar}" />
-		</copy>
-		<copy todir="${release.javadoc.dir}" overwrite="true">
-			<fileset dir="${javadoc.dir}"/>
-		</copy>
+  <target name="release" description="Release library and source jar files to release directory: do 'ant dist' first">
+    <copy todir="${release.library.dir}" overwrite="true">
+      <fileset dir="${dist.dir}" includes="${jarMinimal}"/>
+      <fileset dir="${dist.dir}" includes="${jarMain}"/>
+      <fileset dir="${dist.dir}" includes="${srcRelease}"/>
+      <fileset dir="${dist.dir}" includes="${idv.jar}"/>
+    </copy>
+    <copy todir="${release.javadoc.dir}" overwrite="true">
+      <fileset dir="${javadoc.dir}"/>
+    </copy>
     <copy todir="${release.javadocAll.dir}" overwrite="true">
-			<fileset dir="${javadocAll.dir}"/>
-		</copy>
+      <fileset dir="${javadocAll.dir}"/>
+    </copy>
     <copy todir="${release.html.dir}" overwrite="true">
-			<fileset file="${build.dir}/README"/>
-			<fileset file="${build.dir}/CHANGES"/>
-		</copy>
-	</target>
-	
-	<!-- release user manual -->
-	<target name="releaseDoc" description="Release user manual">
-		<copy todir="${release.doc.dir}" overwrite="true">
-			<fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.doc"/>
-			<fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.pdf"/>
-		</copy>
-		<copy todir="${release.html.dir}" overwrite="true">
-			<fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.htm"/>
-		</copy>		
-	</target>
-
-	<!-- netcdfUI webstart release -->
-	<target name="releaseWebstart" description="make webstart release; do dist or release first">
-    <signjar alias="idv" jar="${dist.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${gnu-regexp.jar}" keystore="${keystore}" signedjar="${webstart_dir}/gnu-regexp.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${bufr.jar}" keystore="${keystore}" signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${grib.jar}" keystore="${keystore}" signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${jdom.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${jpeg2000.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jpeg2000.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${httpclient.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${http-codec.jar}" keystore="${keystore}" signedjar="${webstart_dir}/codec.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${http-logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${prefs.jar}" keystore="${keystore}" signedjar="${webstart_dir}/prefs.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${resourcesOptional.jar}" keystore="${keystore}" signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${visadNoDods.jar}" keystore="${keystore}" signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${xml-apis.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xml-apis.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/${xercesImpl.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>
-	</target>
-	
-	<!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
-	<!-- TESTING  -->
-	<path id="test.sourcepath">
-		<path refid="sourcepath"/>
-		<pathelement location="${test.src.dir}"/>
-	</path>
-	
-  <fileset id="test.libraries" dir="${lib.dir}">
-    <include name="${junit.jar}"/>
-    <include name="${test.src.dir}/auxdata.jar"/>
-  </fileset>
-
-  <path id="test.classpath">
-    <path refid="compile.classpath"/>
-    <pathelement location="${test.dir}/classes"/>
-    <pathelement location="${resources.dir}"/>
-    <fileset refid="test.libraries"/>
-  </path>
-
-  <target name="test-setup" depends="compile" description="setup for running junit tests">
-    <mkdir dir="${test.dir}"/>
-    <mkdir dir="${test.dir}/classes"/>
-
-    <!-- debugging path -->
-    <property name="test.classpath" refid="test.classpath"/>
-    <echo>test.classpath=${test.classpath}</echo>
-    <javac destdir="${test.dir}/classes" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.4" target="1.4">
-      <src refid="test.sourcepath"/>
-      <patternset refid="sources"/>
-      <patternset includes="thredds/wcs/TestWcsServer.java" />
-      <classpath refid="test.classpath"/>
-    </javac>
-
+      <fileset file="${build.dir}/README"/>
+      <fileset file="${build.dir}/CHANGES"/>
+    </copy>
   </target>
 
-	<target name="test" depends="compile, test-setup" description="run junit tests">
-		<junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
-			<classpath refid="test.classpath"/>
-			<jvmarg value="-ea"/>
-			<formatter type="xml"/>
-			<formatter type="brief" usefile="false"/>
-			<test todir="${test.dir}" name="ucar.ma2.TestAll"/>
-			<test todir="${test.dir}" name="ucar.nc2.TestAll"/>
-			<!-- test todir="${test.dir}" name="ucar.nc2.dods.TestAll"/ -->
-			<test todir="${test.dir}" name="ucar.nc2.dataset.TestAll"/>
-			<test todir="${test.dir}" name="ucar.nc2.dataset.grid.TestAll"/>
-		</junit>
-		
-		<!-- #Generate test reports -->
-		<junitreport todir="${test.dir}">
-			<fileset dir="${test.dir}">
-				<include name="TEST-*.xml"/>
-			</fileset>
-			<report format="frames" todir="${test.dir}"/>
-		</junitreport>
-		<!-- create temporary file indicating these tests failed -->
-		<!-- #Test case bypass trick -->
-		<echo message="last build failed tests" file="${test.dir}/failed"/>
-		<fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.dir}/index.html for details.</fail>
-		<!-- Remove test failed file, as these tests succeeded -->
-		<delete file="${test.dir}/failed"/>
-		<echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
-	</target>
+  <!-- release user manual -->
+  <target name="releaseDoc" description="Release user manual">
+    <copy todir="${release.doc.dir}" overwrite="true">
+      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.doc"/>
+      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.pdf"/>
+    </copy>
+    <copy todir="${release.html.dir}" overwrite="true">
+      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.htm"/>
+    </copy>
+  </target>
+
 </project>
