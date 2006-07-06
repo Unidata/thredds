@@ -51,7 +51,7 @@ public class RegExpAndDurationTimeCoverageEnhancer implements DatasetEnhancer
     }
     catch ( java.util.regex.PatternSyntaxException e )
     {
-      log.error( "ctor(): bad match pattern <" + this.matchPattern + ">, failed to compile." );
+      log.error( "ctor(): bad match pattern <" + this.matchPattern + ">, failed to compile: " +e.getMessage() );
       this.pattern = null;
     }
   }
@@ -103,25 +103,3 @@ public class RegExpAndDurationTimeCoverageEnhancer implements DatasetEnhancer
     return ( true );
   }
 }
-/*
- * $Log: RegExpAndDurationTimeCoverageEnhancer.java,v $
- * Revision 1.5  2006/03/27 21:52:20  edavis
- * Small change to log message.
- *
- * Revision 1.4  2006/03/27 21:13:53  caron
- * track bugger on empty string
- *
- * Revision 1.3  2006/01/26 21:12:04  edavis
- * Change addMetadata() to log and ignore instead of throwing an
- * exception when addTimeCoverage element has bad attribute values.
- *
- * Revision 1.2  2005/12/30 00:18:52  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.1  2005/12/06 19:39:20  edavis
- * Last CatalogBuilder/CrawlableDataset changes before start using in InvDatasetScan.
- *
- */
