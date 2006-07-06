@@ -81,7 +81,7 @@ public abstract class AbstractGisFeature implements GisFeature {
         ProjectionPointImpl lastW = new ProjectionPointImpl();
         GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, getNumPoints());
 
-        boolean showPts = ucar.util.prefs.ui.Debug.isSet("projection/showPoints");
+        boolean showPts = false; // ucar.util.prefs.ui.Debug.isSet("projection/showPoints");
 
         java.util.Iterator pi = getGisParts();
         while (pi.hasNext()) {
@@ -123,7 +123,7 @@ public abstract class AbstractGisFeature implements GisFeature {
         ProjectionPointImpl lastW = new ProjectionPointImpl();
         GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, getNumPoints());
 
-        boolean showPts = ucar.util.prefs.ui.Debug.isSet("projection/showPoints");
+        boolean showPts = false; // ucar.util.prefs.ui.Debug.isSet("projection/showPoints");
 
         java.util.Iterator pi = getGisParts();
         while (pi.hasNext()) {
