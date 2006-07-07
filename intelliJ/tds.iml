@@ -8,7 +8,6 @@
     <output-test url="file://$MODULE_DIR$/../tds/target/test/classes" />
     <content url="file://$MODULE_DIR$/../tds">
       <sourceFolder url="file://$MODULE_DIR$/../tds/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../tds/src/test/java" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -32,6 +31,15 @@
     </orderEntry>
     <orderEntry type="module" module-name="cdm" />
     <orderEntry type="library" name="Tomcat" level="application_server_libraries" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/commons-fileupload-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
@@ -47,6 +55,11 @@
     <containerElement type="module" name="cdm">
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/classes" />
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.1.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/commons-fileupload-1.1.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
