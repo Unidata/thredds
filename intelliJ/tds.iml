@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4" relativePaths="true" type="J2EE_WEB_MODULE" j2ee-integration="Tomcat Server">
+  <component name="ModuleRootManager" />
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/../tds/target/classes" />
+    <exclude-output />
+    <exclude-exploded />
+    <output-test url="file://$MODULE_DIR$/../tds/target/test/classes" />
+    <content url="file://$MODULE_DIR$/../tds">
+      <sourceFolder url="file://$MODULE_DIR$/../tds/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../tds/src/test/java" isTestSource="true" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/servlet-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/nlog4j-1.2.21.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="cdm" />
+    <orderEntry type="library" name="Tomcat" level="application_server_libraries" />
+    <orderEntryProperties />
+  </component>
+  <component name="WebModuleBuildComponent">
+    <setting name="EXPLODED_URL" value="file://" />
+    <setting name="EXPLODED_ENABLED" value="false" />
+    <setting name="JAR_URL" value="file://$MODULE_DIR$/../tds/target/thredds.war" />
+    <setting name="JAR_ENABLED" value="true" />
+    <setting name="SYNC_EXPLODED_DIR" value="true" />
+    <setting name="BUILD_ON_FRAME_DEACTIVATION" value="false" />
+    <setting name="RUN_JASPER_VALIDATION" value="false" />
+  </component>
+  <component name="WebModuleProperties">
+    <containerElement type="module" name="cdm">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/classes" />
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.0.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/commons-httpclient-3.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/gnu-regexp-1.1.4.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/gnu-regexp-1.1.4.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/jdom.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/jpeg2000.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/jpeg2000.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/nlog4j-1.2.21.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/nlog4j-1.2.21.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/slf4j-jdk14.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/slf4j-jdk14.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/xercesImpl.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/xercesImpl.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/xml-apis.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/xml-apis.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/bufr.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/bufr.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/grib.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/grib.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/prefsAll.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/visadNoDods.jar!/</url>
+    </containerElement>
+    <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../tds/src/main/webapp/WEB-INF/web-thredds.xml" optional="false" version="2.3" />
+    <deploymentDescriptor name="unknown.xml" url="file://$MODULE_DIR$/../tds/src/main/webapp/WEB-INF/log4j.xml" optional="false">
+      <option name="DEFAULT_DIR" value="WEB-INF" />
+      <option name="NAME" value="unknown.xml" />
+      <option name="DESCRIPTION" value="Additional Resource" />
+    </deploymentDescriptor>
+    <webroots>
+      <root url="file://$MODULE_DIR$/../tds/src/main/webapp/resources" relative="/" />
+      <root url="file://$MODULE_DIR$/../tds/src/main/webapp/WEB-INF/xsl" relative="/WEB-INF/xsl" />
+    </webroots>
+  </component>
+  <component name="WeblogicWebModuleProperties">
+    <option name="IS_RUN_APPC" value="false" />
+  </component>
+</module>
+
