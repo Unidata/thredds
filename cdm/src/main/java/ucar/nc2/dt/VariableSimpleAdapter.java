@@ -69,4 +69,8 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   public double convertScaleOffsetMissing(double value) {
     return v.convertScaleOffsetMissing( value);
   }
+
+  public String toString() {
+    return v.toString();
+  }
 }

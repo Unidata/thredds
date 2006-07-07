@@ -49,12 +49,19 @@ import org.jdom.Element;
  * @author caron
  */
 public class Aggregation {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
+  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
+  static protected DiskCache2 diskCache2 = null;
 
-  private NetcdfDataset ncd;
+  static public void setPersistenceCache(DiskCache2 dc) {
+    diskCache2 = dc;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+
+  protected NetcdfDataset ncd;
   private String dimName;
   private Type type;
-  private ArrayList nestedDatasets; // working set of Datasets
+  protected ArrayList nestedDatasets; // working set of Aggregation.Dataset
   private int totalCoords = 0;
   private NetcdfFile typical = null; // metadata and non-agg variables come from a "typical" nested file.
   private Dataset typicalDataset = null; // metadata and non-agg variables come from a "typical" nested file.
@@ -62,13 +69,13 @@ public class Aggregation {
   // explicit
   private ArrayList vars = new ArrayList(); // variable names (String)
   private ArrayList unionDatasets = new ArrayList(); // NetcdfDataset objects
-  private ArrayList explicitDatasets = new ArrayList(); // explicitly created Dataset objects from netcdf elements
+  protected ArrayList explicitDatasets = new ArrayList(); // explicitly created Dataset objects from netcdf elements
 
   // scan
-  private ArrayList scanList = new ArrayList(); // current set of Directory
+  protected ArrayList scanList = new ArrayList(); // current set of Directory
   private List fileList = new ArrayList(); // current set of MyFile from directory scanning
   private TimeUnit recheck;
-  private long lastChecked;
+  protected long lastChecked;
   private boolean isDate = false;
 
   private DateFormatter formatter = new DateFormatter();
@@ -192,12 +199,6 @@ public class Aggregation {
     // optionally persist info from joinExisting scans, since that can be expensive to recreate
     if ((diskCache2 != null) && (type == Type.JOIN_EXISTING) && (scanList.size() > 0))
       persistWrite();
-  }
-
-  static private DiskCache2 diskCache2 = null;
-
-  static public void setPersistenceCache(DiskCache2 dc) {
-    diskCache2 = dc;
   }
 
   private String getCacheName() {
@@ -365,9 +366,9 @@ public class Aggregation {
     this.lastChecked = System.currentTimeMillis();
   }
 
-  private void buildCoords(CancelTask cancelTask) throws IOException {
+  protected void buildCoords(CancelTask cancelTask) throws IOException {
 
-    if (type == Type.FORECAST_MODEL) {
+    if ((type == Type.FORECAST_MODEL) || (type == Type.FORECAST_MODEL_COLLECTION)) {
       for (int i = 0; i < nestedDatasets.size() ; i++) {
         Dataset nested = (Dataset) nestedDatasets.get(i);
         nested.ncoord = 1;
@@ -585,7 +586,7 @@ public class Aggregation {
     }
   }
 
-  private class MyReplaceVariableCheck implements ReplaceVariableCheck {
+  protected class MyReplaceVariableCheck implements ReplaceVariableCheck {
     public boolean replace(Variable v) {
       // needs to be replaced if its not an agg variable
 
@@ -729,7 +730,7 @@ public class Aggregation {
         if (debug) System.out.println("agg use "+nested.aggStart+":"+nested.aggEnd+" range= "+nestedJoinRange+" file "+nested.getLocation());
 
         Array varData;
-        if (type == Type.JOIN_NEW) {
+        if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
           varData = nested.read(mainv, cancelTask, innerSection);
         } else {
           nestedSection.set(0, nestedJoinRange);
@@ -748,7 +749,7 @@ public class Aggregation {
   }
 
   //////////////////////////////////////////////////////////////////
-  private void scan(List result, CancelTask cancelTask) throws IOException {
+  protected void scan(List result, CancelTask cancelTask) throws IOException {
     fileList = getFileList(cancelTask);
     if ((cancelTask != null) && cancelTask.isCancel())
       return;
@@ -827,6 +828,10 @@ public class Aggregation {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Encapsolate a "scan" element: a directory that we want to scan.
+   */
   private class Directory {
     String dirName, suffix, dateFormatMark;
     boolean enhance = false;
@@ -840,6 +845,9 @@ public class Aggregation {
     }
   }
 
+  /**
+   * Encapsolate a file that was scanned.
+   */
   private class MyFile {
     File file;
     Date dateCoord;
@@ -856,6 +864,10 @@ public class Aggregation {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * Encapsolates a NetcdfFile that is a component of the aggregation.
+   * public for NcMLWriter
+   */
   public class Dataset {
     private String cacheName, location;
     private String coordValueS; // coordinate value from netcdf coordValue Attribute (joinNew)
@@ -865,6 +877,7 @@ public class Aggregation {
 
     private int ncoord; // n coordinates in outer dimension for this dataset; joinExisting
     private double coordValue; // if numeric valued coordinate - joinNew
+
     private boolean isStringValued = false;
     private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
 
@@ -1023,7 +1036,7 @@ public class Aggregation {
       return ncoord;
     }
 
-    private Array read(VariableDS mainv, CancelTask cancelTask) throws IOException {
+    protected Array read(VariableDS mainv, CancelTask cancelTask) throws IOException {
       NetcdfFile ncd = acquireFile(cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -1278,6 +1291,7 @@ public class Aggregation {
     public final static Type JOIN_NEW = new Type("joinNew");
     public final static Type UNION = new Type("union");
     public final static Type FORECAST_MODEL = new Type("forecastModelRun");
+    public final static Type FORECAST_MODEL_COLLECTION = new Type("forecastModelRunCollection");
 
     private String name;
 

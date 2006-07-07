@@ -40,7 +40,6 @@ import java.util.Date;
  */
 public class Nexrad2IOServiceProvider implements IOServiceProvider {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Nexrad2IOServiceProvider.class);
-  static private final int MISSING_BYTE = 1;
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
 
@@ -115,7 +114,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     Date d = Level2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
 
-    ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(volScan.getStartDate())));
+    ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(d)));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", formatter.toDateTimeStringISO(volScan.getEndDate())));
 
     ncfile.addAttribute(null, new Attribute("history", "direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
@@ -195,8 +194,9 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     ncfile.addVariable(null, timeVar);
 
 
-    int julianDays = volScan.getTitleJulianDays();
-    Date d = Level2Record.getDate( julianDays, 0);
+    // int julianDays = volScan.getTitleJulianDays();
+    // Date d = Level2Record.getDate( julianDays, 0);
+    Date d = Level2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     String units = "msecs since "+formatter.toDateTimeStringISO(d);
 
     timeVar.addAttribute( new Attribute("long_name", "time since base date"));
@@ -287,17 +287,24 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
   private void makeVariableNoCoords(NetcdfFile ncfile, int datatype, String shortName, String longName, Variable from) {
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.FLOAT);
+    v.setDataType(DataType.BYTE);
     v.setDimensions( from.getDimensions());
     ncfile.addVariable(null, v);
 
     v.addAttribute( new Attribute("units", Level2Record.getDatatypeUnits(datatype)));
     v.addAttribute( new Attribute("long_name", longName));
-    v.addAttribute( new Attribute("missing_value", new Byte( Level2Record.MISSING_DATA)));
+
+    byte[] b = new byte[2];
+    b[0] = Level2Record.MISSING_DATA;
+    b[1] = Level2Record.BELOW_THRESHOLD;
+    Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
+
+    v.addAttribute( new Attribute("missing_value", missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Level2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute("scale_factor", new Float( Level2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute("add_offset", new Float( Level2Record.getDatatypeAddOffset(datatype))));
     v.addAttribute( new Attribute("_unsigned", "true"));
+
     Attribute fromAtt = from.findAttribute("_CoordinateAxes");
     v.addAttribute( new Attribute("_CoordinateAxes", fromAtt));
 
@@ -389,7 +396,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
   private void readOneRadial(Level2Record r, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
       for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride())
-        ii.setFloatNext( MISSING_FLOAT);
+        ii.setByteNext( Level2Record.MISSING_DATA);
       return;
     }
     r.readData(volScan.raf, datatype, gateRange, ii);

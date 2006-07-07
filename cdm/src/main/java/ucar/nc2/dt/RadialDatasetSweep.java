@@ -28,6 +28,12 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
   /** If all sweeps have the same origin, return it here, else null */
   public ucar.nc2.dt.EarthLocation  getCommonOrigin();
 
+  /** Get the units of Calendar time.
+   *  To get a Date, from a time value, call DateUnit.getStandardDate(double value).
+   *  To get units as a String, call DateUnit.getUnitsString().
+   */
+  public ucar.nc2.units.DateUnit getTimeUnits();
+
   /**
    * Get the basic property of Radar
    * @return 1 if this is a station radar
@@ -43,10 +49,8 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
 
   /**
    * Get the basic property of Radar,
-   *
    * @return 0 if there is only one sweep
    */
-
   public boolean isVolume();
 
   /** The radial data variables available in the dataset.

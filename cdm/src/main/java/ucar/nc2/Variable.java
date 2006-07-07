@@ -307,6 +307,7 @@ public class Variable implements VariableIF {
   // sections
   protected List ranges = null;
   protected boolean isSection = false;
+  protected int sliceDim = -1;
 
   /**
    * Get index subsection as an array of Range objects. If this is a section, will reflect the index range
@@ -433,6 +434,44 @@ public class Variable implements VariableIF {
     return result;
   }
 
+  /**
+   * Create a new Variable that is a logical slice of this Variable, by
+   * fixing the specified dimension at the specified index value. This reduces rank by 1.
+   * No data is read until a read method is called on it.
+   * @param dim which dimension to fix
+   * @param value at what index value
+   * @return a new Variable which is a logical slice of this Variable.
+   * @throws InvalidRangeException
+   */
+  public Variable slice(int dim, int value) throws InvalidRangeException {
+    Variable vs = new Variable( this);
+    makeSlice(vs, dim, value);
+    return vs;
+  }
+
+  protected void makeSlice(Variable newVar, int dim, int value) throws InvalidRangeException {
+    // check consistency
+    if ((dim < 0) || (dim >= shape.length))
+      throw new InvalidRangeException("Variable.slice: invalid dimension= "+dim);
+    if ((value < 0) || (value >= shape[dim]))
+      throw new InvalidRangeException("Variable.slice: invalid value= "+value+" for dimension= "+dim);
+
+    // LOOK: probably doesnt work if its already a section or slice
+    int origin[] = new int[ getRank()];
+    int[] sshape = (int []) shape.clone();
+    origin[dim] = value;
+    sshape[dim] = 1;
+    List section = Range.factory(origin, sshape);
+
+    newVar.orgVar = isSection() ? orgVar : this;
+    newVar.isSection = true; // LOOK
+    newVar.sliceDim = dim;
+
+    // LOOK: so heres the rub: we need to reduce the shape, but when do we need to know the section in the original ??
+    newVar.ranges = makeSectionRanges( this, section);
+    newVar.shape  = Range.getShape( newVar.ranges);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // IO
   // implementation notes to subclassers
@@ -509,8 +548,10 @@ public class Variable implements VariableIF {
     if (isMemberOfStructure()) // read using first element of parents
       return readMemberOfStructureFlatten( section);
 
-    if (isSection)
-      return _read(makeSectionRanges(this, section));
+    if (isSection) {
+      Array result = _read(makeSectionRanges(this, section));
+      return (sliceDim >= 0) ? result.reduce(sliceDim) : result;
+    }
 
     return _read(section);
   }
@@ -536,7 +577,13 @@ public class Variable implements VariableIF {
     }
 
     try {
-      return isSection ? _read(ranges) : _read();
+      if (isSection) {
+        Array result = _read(ranges);
+        return (sliceDim >= 0) ? result.reduce(sliceDim) : result;
+      } else {
+        return _read();
+      }
+
     } catch (InvalidRangeException e) {
       e.printStackTrace();
       return null;
@@ -804,7 +851,8 @@ public class Variable implements VariableIF {
 
     Variable useVar = (orgVar != null) ? orgVar : this;
     String err = Range.checkInRange( section, useVar.getShape());
-    if (err != null) throw new InvalidRangeException( err);
+    if (err != null)
+      throw new InvalidRangeException( err);
 
     // cant cache it
     return ncfile.readData( useVar, section);

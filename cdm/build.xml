@@ -29,9 +29,6 @@
   <property name="release.javadocAll.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadocAll/"/>
   <property name="webstart_dir" location="Z:/content/software/netcdf-java/v2.2/webstart"/>
 
-  <property name="test.src.dir" location="${root.dir}/test/src"/>
-  <property name="test.dir" location="${root.dir}/build/test"/>
-
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="dods.jar" value="dods-1.1.7c.jar"/ -->
   <property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/>
@@ -99,7 +96,7 @@
   <property name="ClassPath-CommandLine"
             value="lib/${gnu-regexp.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${prefs.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
 
-  <target name="test">
+  <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
 
     <pathconvert property="runtime.classpath.prop" refid="runtime.classpath" pathsep=" ">
@@ -542,5 +539,67 @@
     </copy>
   </target>
 
+  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
+  <property name="test.src.dir" location="${root.dir}/src/test/java"/>
+	<property name="test.dir" location="${root.dir}/target/build/test"/>
+
+  <path id="test.sourcepath">
+		<path refid="sourcepathUI"/>
+		<pathelement location="${test.src.dir}"/>
+	</path>
+
+  <fileset id="test.libraries" dir="${lib.dir}">
+    <include name="external/${junit.jar}"/>
+    <include name="external/${logging.jar}"/>
+  </fileset>
+
+  <path id="test.classpath">
+    <fileset refid="compile.libraries"/>
+    <fileset refid="compileUI.libraries"/>
+    <pathelement location="${test.dir}/classes"/>
+    <pathelement location="${resources.dir}"/>
+    <pathelement location="${resourcesUI.dir}"/>
+    <fileset refid="test.libraries"/>
+  </path>
+
+  <target name="test-setup" depends="compile" description="setup for running junit tests">
+    <mkdir dir="${test.dir}"/>
+    <mkdir dir="${test.dir}/classes"/>
+
+    <!-- debugging path -->
+    <property name="test.classpath" refid="test.classpath"/>
+    <echo>test.classpath=${test.classpath}</echo>
+    <javac destdir="${test.dir}/classes" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.4" target="1.4">
+      <src refid="test.sourcepath"/>
+      <patternset refid="sources"/>
+      <classpath refid="test.classpath"/>
+    </javac>
+
+  </target>
+
+  <target name="unit-test" depends="compile, test-setup" description="run junit tests">
+		<junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
+			<classpath refid="test.classpath"/>
+			<jvmarg value="-ea"/>
+			<formatter type="xml"/>
+			<formatter type="brief" usefile="false"/>
+			<test todir="${test.dir}" name="ucar.nc2.TestAll"/>
+		</junit>
+
+		<!-- #Generate test reports -->
+		<junitreport todir="${test.dir}">
+			<fileset dir="${test.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${test.dir}"/>
+		</junitreport>
+		<!-- create temporary file indicating these tests failed -->
+		<!-- #Test case bypass trick -->
+		<echo message="last build failed tests" file="${test.dir}/failed"/>
+		<fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.dir}/index.html for details.</fail>
+		<!-- Remove test failed file, as these tests succeeded -->
+		<delete file="${test.dir}/failed"/>
+		<echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
+	</target>
 
 </project>

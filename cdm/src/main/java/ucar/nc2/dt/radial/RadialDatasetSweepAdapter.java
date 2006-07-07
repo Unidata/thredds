@@ -96,8 +96,19 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
 
   public String getDetailInfo() {
     StringBuffer sbuff = new StringBuffer();
+
+    sbuff.append(" Radar ID = "+getRadarID()+"\n");
+    sbuff.append(" Radar Name = "+getRadarName()+"\n");
+    sbuff.append(" Data Format Name= "+getDataFormatName()+"\n");
+    sbuff.append(" Common Type = "+getCommonType()+"\n");
+    sbuff.append(" Common Origin = "+getCommonOrigin()+"\n");
+    sbuff.append(" Date Unit = "+getTimeUnits().getUnitsString()+"\n");
+    sbuff.append(" isStationary = "+isStationary()+"\n");
+    sbuff.append(" isRadial = "+isRadial()+"\n");
+    sbuff.append(" isVolume = "+isVolume()+"\n");
+    sbuff.append("\n");
     sbuff.append(super.getDetailInfo());
-    sbuff.append("  center= "+getEarthLocation()+"\n");
+
     return sbuff.toString();
   }
 
@@ -106,6 +117,9 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   public RadialDatasetSweep.Type getCommonType() {
       return null;
   }
+
+  public ucar.nc2.units.DateUnit getTimeUnits() { return dateUnits; }
+
   public ucar.nc2.dt.EarthLocation getEarthLocation() { return origin; }
 
   // you must set EarthLocation before you call this.
@@ -124,4 +138,5 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     }
     boundingBox = largestBB;
   }
+
 }

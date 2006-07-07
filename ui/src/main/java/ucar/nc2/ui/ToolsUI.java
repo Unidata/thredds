@@ -1711,7 +1711,7 @@ public class ToolsUI extends JPanel {
     JSplitPane split;
     IndependentWindow viewerWindow;
 
-    RadialDataset ds = null;
+    RadialDatasetSweep ds = null;
 
     RadialPanel(PreferencesExt prefs) {
       super(prefs, "dataset:", true, false);
@@ -1721,7 +1721,7 @@ public class ToolsUI extends JPanel {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          RadialDataset radialDataset = dsTable.getRadialDataset();
+          RadialDatasetSweep radialDataset = dsTable.getRadialDataset();
           String info = null;
           if ((radialDataset != null) && ((info = radialDataset.getDetailInfo()) != null)) {
             detailTA.setText(info);
@@ -1745,8 +1745,8 @@ public class ToolsUI extends JPanel {
           JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command);
           return false;
         }
-        ucar.nc2.dt.radial.RadialDatasetFactory fac = new ucar.nc2.dt.radial.RadialDatasetFactory();
-        RadialDataset rds = fac.open(newds);
+        ucar.nc2.dt.radial.RadialDatasetSweepFactory fac = new ucar.nc2.dt.radial.RadialDatasetSweepFactory();
+        RadialDatasetSweep rds = fac.open(newds);
         setDataset(rds);
 
       } catch (FileNotFoundException ioe) {
@@ -1763,7 +1763,7 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
-    void setDataset(ucar.nc2.dt.RadialDataset newds) {
+    void setDataset(ucar.nc2.dt.RadialDatasetSweep newds) {
       if (newds == null) return;
       try {
         if (ds != null) ds.close();

@@ -86,7 +86,7 @@ public class ThreddsDataFactory {
     public thredds.catalog.DataType dtype;
     public ucar.nc2.dataset.grid.GridDataset gridDataset;
     public ucar.nc2.dt.PointObsDataset pobsDataset;
-    public ucar.nc2.dt.RadialDataset radialDataset;
+    public ucar.nc2.dt.RadialDatasetSweep radialDataset;
     public String imageURL;
 
     public String location;

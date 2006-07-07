@@ -23,9 +23,8 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.Dimension;
-import ucar.nc2.dt.RadialDataset;
-import ucar.nc2.dt.RadialDatasetFixed;
-import ucar.nc2.dt.radial.RadialDatasetFactory;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.grid.*;
@@ -42,6 +41,8 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 /**
  * A Swing widget to examine a RadialDataset.
@@ -52,11 +53,10 @@ import javax.swing.*;
 
 public class RadialDatasetTable extends JPanel {
   private PreferencesExt prefs;
-  // private NetcdfDataset ds;
-  private RadialDataset radialDataset;
-  private RadialDatasetFactory factory = new RadialDatasetFactory();
+  private RadialDatasetSweep radialDataset;
+  private DateUnit dateUnit;
 
-  private BeanTableSorted varTable, csTable = null;
+  private BeanTableSorted varTable, sweepTable = null;
   private JSplitPane split = null;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
@@ -65,6 +65,13 @@ public class RadialDatasetTable extends JPanel {
     this.prefs = prefs;
 
     varTable = new BeanTableSorted(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
+    varTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        VariableBean vb = (VariableBean) varTable.getSelectedBean();
+        setVariable( vb);
+      }
+    });
+
     JTable jtable = varTable.getJTable();
 
     thredds.ui.PopupMenu csPopup = new thredds.ui.PopupMenu(jtable, "Options");
@@ -84,10 +91,10 @@ public class RadialDatasetTable extends JPanel {
     infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "netcdfUI"), infoTA);
     infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
 
-    // optionally show coordinate systems
-    csTable = new BeanTableSorted(CoordinateSystemBean.class,
-      (PreferencesExt) prefs.node("CoordinateSystemBean"), false);
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, csTable);
+    sweepTable = new BeanTableSorted(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
+
+
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, sweepTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     setLayout(new BorderLayout());
@@ -100,56 +107,45 @@ public class RadialDatasetTable extends JPanel {
     varTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (csTable != null) csTable.saveState(false);
+    if (sweepTable != null) sweepTable.saveState(false);
   }
 
-  public void setDataset(RadialDataset rds) {
+  public void setDataset(RadialDatasetSweep rds) {
     this.radialDataset = rds;
+    dateUnit = rds.getTimeUnits();
 
     varTable.setBeans( getVariableBeans(rds));
-    if (csTable != null) csTable.setBeans( getCoordinateSystemBeans( rds));
+    sweepTable.setBeans( new ArrayList());
   }
 
-  public RadialDataset getRadialDataset() { return radialDataset; }
+  public RadialDatasetSweep getRadialDataset() { return radialDataset; }
 
-  public ArrayList getVariableBeans(RadialDataset rds) {
+  public ArrayList getVariableBeans(RadialDatasetSweep rds) {
     ArrayList vlist = new ArrayList();
-    /* java.util.List list = rds.getDataVariables();
+    java.util.List list = rds.getDataVariables();
     for (int i=0; i<list.size(); i++) {
-      RadialDataset.RadialVariable v = (RadialDataset.RadialVariable) list.get(i);
-      addVariableBeans( vlist, v);
-    } */
-    return vlist;
-  }
-
-  private void addVariableBeans(ArrayList vlist, VariableEnhanced v) {
-    if (v instanceof StructureDS) {
-      StructureDS s = (StructureDS) v;
-      List members = s.getVariables();
-      for (int i = 0; i < members.size(); i++) {
-        VariableEnhanced nested =  (VariableEnhanced) members.get(i);
-        // LOOK flatten here ??
-        addVariableBeans( vlist, nested);
-      }
-    } else {
+      RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) list.get(i);
       vlist.add( new VariableBean( v));
     }
+    return vlist;
   }
 
-  public ArrayList getCoordinateSystemBeans(RadialDataset ds) {
-    ArrayList vlist = new ArrayList();
-    /* java.util.List list = ds.getCoordinateSystems();
-    for (int i=0; i<list.size(); i++) {
-      CoordinateSystem elem = (CoordinateSystem) list.get(i);
-      vlist.add( new CoordinateSystemBean( elem));
-    }            */
-    return vlist;
+  public void setVariable(VariableBean vb) {
+    ArrayList sweeps = new ArrayList();
+    int n = vb.v.getNumSweeps();
+    for (int i=0; i<n; i++) {
+      RadialDatasetSweep.Sweep sweep = vb.v.getSweep(i);
+      sweeps.add( new SweepBean( sweep));
+    }
+    sweepTable.setBeans( sweeps);
   }
 
   public class VariableBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
-    private String name, desc, units, axisType="";
+    RadialDatasetSweep.RadialVariable v;
+
+    private String name, desc, units, dataType;
     String dims, r, elev, azi, t;
     private boolean isCoordVar, isRadial, axis;
 
@@ -157,190 +153,95 @@ public class RadialDatasetTable extends JPanel {
     public VariableBean() {}
 
     // create from a dataset
-    public VariableBean( VariableEnhanced v) {
+    public VariableBean( RadialDatasetSweep.RadialVariable v) {
+      this.v = v;
+
       setName( v.getName());
-      setCoordVar( v.getCoordinateDimension() != null);
       setDescription( v.getDescription());
       setUnits( v.getUnitsString());
+      dataType = v.getDataType().toString();
 
             // collect dimensions
       StringBuffer buff = new StringBuffer();
-      java.util.List dims = v.getDimensions();
-      for (int j=0; j<dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        buff.append(dim.getName()+" ");
+      int[] shape = v.getShape();
+      for (int j=0; j<shape.length; j++) {
+        if (j>0) buff.append(",");
+        buff.append(shape[j]);
       }
-      setDims( buff.toString());
-
-      if (v instanceof CoordinateAxis) {
-        setAxis( true);
-        CoordinateAxis ca = (CoordinateAxis) v;
-        AxisType at = ca.getAxisType();
-        if (at != null)
-          setAxisType( at.toString());
-        String p = ca.getPositive();
-      }
-
-      /* RadialDatasetFixed.RadialVariableFixed rvar = (RadialDatasetFixed.RadialVariableFixed) radialDataset.getDataVariable( v.getName());
-      if (rvar != null) {
-        RadialCoordSys rcsys = rvar.getRadialCoordSys();
-        setRadialVar (true);
-        CoordinateAxis axis = rcsys.getRadialAxis();
-        if (axis != null) setR( axis.getName());
-        axis = rcsys.getAzimuthAxis();
-        if (axis != null) setAzimuth( axis.getName());
-        axis = rcsys.getElevationAxis();
-        if (axis != null) setElevation( axis.getName());
-        axis = rcsys.getTimeAxis();
-        if (axis != null) setTime( axis.getName());
-      } */
+      dims = buff.toString();
     }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getR() { return r; }
-    public void setR(String r) { this.r = r; }
-
-    public String getElevation() { return elev; }
-    public void setElevation(String elev) { this.elev = elev; }
-
-    public String getAzimuth() { return azi; }
-    public void setAzimuth(String azi) { this.azi = azi; }
-
-    public String getTime() { return t; }
-    public void setTime(String t) { this.t = t; }
-
-    public boolean isCoordVar() { return isCoordVar; }
-    public void setCoordVar(boolean isCoordVar) { this.isCoordVar = isCoordVar; }
-
-    public boolean isAxis() { return axis; }
-    public void setAxis(boolean axis) { this.axis = axis; }
-
-    public boolean isRadialVar() { return isRadial; }
-    public void setRadialVar(boolean isRadial) { this.isRadial = isRadial; }
-
-    public String getAxisType() { return axisType; }
-    public void setAxisType(String axisType) { this.axisType = axisType; }
-
-    public String getDims() { return dims; }
-    public void setDims(String dims) { this.dims = dims; }
 
     public String getDescription() { return desc; }
     public void setDescription(String desc) { this.desc = desc; }
 
     public String getUnits() { return units; }
     public void setUnits(String units) { this.units = units; }
+
+    public String getDataType() { return dataType; }
+    public String getDims() { return dims; }
   }
 
-  public class CoordinateSystemBean {
+  public class SweepBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
-    private String name;
-    private int domainRank, rangeRank;
-    private boolean isRadial, isLatLon, isProductSet;
+    RadialDatasetSweep.Sweep sweep;
 
     // no-arg constructor
-    public CoordinateSystemBean() {}
+    public SweepBean() {}
 
     // create from a dataset
-    public CoordinateSystemBean( CoordinateSystem cs) {
-      setName( cs.getName());
-      setRadial( cs.isRadial());
-      setLatLon( cs.isLatLon());
-      setProductSet( cs.isProductSet());
-      setDomainRank( cs.getDomain().size());
-      setRangeRank( cs.getCoordinateAxes().size());
-      //setZPositive( cs.isZPositive());
+    public SweepBean( RadialDatasetSweep.Sweep sweep) {
+      this.sweep = sweep;
+
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getType() {
+      RadialDatasetSweep.Type type = sweep.getType();
+      return (type == null) ? "" : type.toString();
+    }
 
-    public boolean isRadial() { return isRadial; }
-    public void setRadial(boolean isRadial) { this.isRadial = isRadial; }
+    public int getNumRadial() {
+      return sweep.getRadialNumber();
+    }
 
-    public boolean getLatLon() { return isLatLon; }
-    public void setLatLon(boolean isLatLon) { this.isLatLon = isLatLon; }
+    public int getNumGates() {
+      return sweep.getGateNumber();
+    }
 
-    public boolean isProductSet() { return isProductSet; }
-    public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }
+    public float getBeamWidth() {
+      return sweep.getBeamWidth();
+    }
 
-    public int getDomainRank() { return domainRank; }
-    public void setDomainRank(int domainRank) { this.domainRank = domainRank; }
+    public float getNyqFreq() {
+      return sweep.getNyquistFrequency();
+    }
 
-    public int getRangeRank() { return rangeRank; }
-    public void setRangeRank(int rangeRank) { this.rangeRank = rangeRank; }
+    public float getFirstGate() {
+      return sweep.getRangeToFirstGate();
+    }
 
-    //public boolean isZPositive() { return isZPositive; }
-    //public void setZPositive(boolean isZPositive) { this.isZPositive = isZPositive; }
+    public float getGateSize() {
+      return sweep.getGateSize();
+    }
+
+    public float getMeanElevation() {
+      return sweep.getMeanElevation();
+    }
+
+    public float getMeanAzimuth() {
+      return sweep.getMeanAzimuth();
+    }
+
+    public String getStartingTime() {
+      return dateUnit.makeStandardDateString( sweep.getStartingTime());
+    }
+
+    public String getEndingTime() {
+      return dateUnit.makeStandardDateString( sweep.getEndingTime());
+    }
+
   }
 }
-
-/* Change History:
-   $Log: RadialDatasetTable.java,v $
-   Revision 1.6  2006/02/16 23:02:38  caron
-   *** empty log message ***
-
-   Revision 1.5  2006/02/06 21:17:05  caron
-   more fixes to dods parsing.
-   ArraySequence.flatten()
-   ncml.xml use default namespace. Only way I can get ncml in catalog to validate.
-   ThreddsDataFactory refactor
-
-   Revision 1.4  2005/03/15 23:20:53  caron
-   new radial dataset interface
-   change getElevation() to getAltitude()
-
-   Revision 1.3  2005/03/11 23:02:14  caron
-   *** empty log message ***
-
-   Revision 1.2  2005/03/07 20:49:25  caron
-   *** empty log message ***
-
-   Revision 1.1  2005/03/07 20:48:34  caron
-   no message
-
-   Revision 1.4  2005/02/18 01:14:57  caron
-   no message
-
-   Revision 1.3  2004/12/07 02:43:22  caron
-   *** empty log message ***
-
-   Revision 1.2  2004/12/01 05:53:43  caron
-   ncml pass 2, new convention parsing
-
-   Revision 1.1  2004/10/22 01:01:40  caron
-   another round
-
-   Revision 1.5  2004/10/06 19:03:43  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.4  2004/09/30 00:33:42  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/08/26 17:55:09  caron
-   no message
-
-   Revision 1.2  2004/08/17 19:20:07  caron
-   2.2 alpha (2)
-
-   Revision 1.1  2004/08/16 20:53:51  caron
-   2.2 alpha (2)
-
-   Revision 1.4  2004/07/16 17:58:16  caron
-   source build self-contained
-
-   Revision 1.3  2003/10/28 23:57:21  caron
-   minor
-
-   Revision 1.2  2003/10/02 20:33:56  caron
-   move SimpleUnit to dataset; add <units> tag; add projections to CF
-
-   Revision 1.1  2003/06/09 15:23:17  caron
-   add nc2.ui
-
- */

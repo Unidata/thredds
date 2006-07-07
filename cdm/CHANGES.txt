@@ -2,8 +2,18 @@ CHANGES for Netcdf-Java library
 Version @VERSION@
 Build Date = @BUILDTIME@
 
+Changes in version 2.2.17
+ Features
+ API changes
+  * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
+ Bugs
+ ToolsUI
+  * Radial Tab now works with RadialDatasetSweep interface
+ Libraries
+
 Changes in version 2.2.16
  Bugs
+  * nexrad2 iosp: SpectrumWidth is now in bytes, unsigned with scale and offset. Also correct the time units.
   * ucar.nc2.dt.radial.NexradIIDataset: dont cache origin, shape arrays
   * Nexrad2 error when ngates different within a scan; unneeded, removed.
   * Grib IOSP workaround for "Grib2 generating process" field being ignored.

@@ -1,7 +1,6 @@
 package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.NetcdfDatasetCache;
-import ucar.nc2.dt.RadialDataset;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dataset.*;
 

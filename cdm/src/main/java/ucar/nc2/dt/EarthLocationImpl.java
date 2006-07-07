@@ -43,5 +43,7 @@ public class EarthLocationImpl implements EarthLocation {
 
   public void setLatitude(double lat) { this.lat = lat; }
   public void setLongitude(double lon) { this.lon = lon; }
-  public void setAltitude(double alt) { this.alt = alt; } 
+  public void setAltitude(double alt) { this.alt = alt; }
+
+  public String toString() { return "lat="+lat+" lon="+lon+" alt="+alt; }
 }

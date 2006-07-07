@@ -112,10 +112,14 @@ public class TestNcMLWriteRead extends TestCase {
 
     NcMLWriter writer = new NcMLWriter();
 
+    // make sure writeDirs exists
+    File writeDir = new File(TestDataset.writeDir);
+    writeDir.mkdirs();
+
     // create a file and write it out
     int pos = location.lastIndexOf("/");
     String filename = location.substring(pos+1);
-    String ncmlOut = TestDataset.xmlDir+ "tmp/"+filename+ ".ncml";
+    String ncmlOut = TestDataset.writeDir+filename+ ".ncml";
     if (showFiles) System.out.println(" output filename= "+ncmlOut);
     try {
      OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));
@@ -154,7 +158,7 @@ public class TestNcMLWriteRead extends TestCase {
     // create a file and write it out
     int pos = location.lastIndexOf("/");
     String filename = location.substring(pos+1);
-    String ncmlOut = TestDataset.xmlDir+ "tmp/"+filename+ ".ncml";
+    String ncmlOut = TestDataset.writeDir+filename+ ".ncml";
     if (showFiles) System.out.println(" output filename= "+ncmlOut);
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));

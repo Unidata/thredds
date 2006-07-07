@@ -95,6 +95,7 @@ public class RecordDatasetHelper {
     this.nomTimeVName = nomTimeVName;
     this.errs = errBuffer;
 
+    // check if we already have a structure vs if we have to add it.
 
     if (this.ncfile.hasUnlimitedDimension()) {
       this.ncfile.addRecordStructure();

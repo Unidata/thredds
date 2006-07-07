@@ -883,27 +883,33 @@ public class NcMLReader {
     String dimName = aggElem.getAttributeValue("dimName");
     String type = aggElem.getAttributeValue("type");
     String recheck = aggElem.getAttributeValue("recheckEvery");
+
     String forecastDate = aggElem.getAttributeValue("forecastDate");
     String forecastDateVariable = aggElem.getAttributeValue("forecastDateVariable");
     String forecastOffset = aggElem.getAttributeValue("forecastOffset");
     String forecastTimeOffset = aggElem.getAttributeValue("forecastTimeOffset");
     String referenceDateVariable = aggElem.getAttributeValue("referenceDateVariable");
 
-    Aggregation agg = new Aggregation( newds, dimName, type, recheck);
+    Aggregation agg;
+    if (type.equals("forecastModelRunCollection"))
+      agg = new FmrcAggregation( newds, dimName, type, recheck);
+    else {
+      agg = new Aggregation( newds, dimName, type, recheck);
 
-    if (forecastDate != null)
-      agg.setForecastDate(forecastDate, forecastDateVariable);
-    else if (forecastOffset != null)
-      agg.setForecastOffset(forecastOffset);
-    else if (forecastTimeOffset != null)
-      agg.setForecastTimeOffset(forecastTimeOffset, forecastDateVariable, referenceDateVariable);
+      if (forecastDate != null)
+        agg.setForecastDate(forecastDate, forecastDateVariable);
+      else if (forecastOffset != null)
+        agg.setForecastOffset(forecastOffset);
+      else if (forecastTimeOffset != null)
+        agg.setForecastTimeOffset(forecastTimeOffset, forecastDateVariable, referenceDateVariable);
 
-    // look for variable names
-    java.util.List list = aggElem.getChildren("variableAgg", ncNS);
-    for (int j=0; j< list.size(); j++) {
-      Element e = (Element) list.get(j);
-      String varName = e.getAttributeValue("name");
-      agg.addVariable( varName);
+      // look for variable names
+      java.util.List list = aggElem.getChildren("variableAgg", ncNS);
+      for (int j=0; j< list.size(); j++) {
+        Element e = (Element) list.get(j);
+        String varName = e.getAttributeValue("name");
+        agg.addVariable( varName);
+      }
     }
 
      // nested netcdf elements
@@ -939,7 +945,6 @@ public class NcMLReader {
      String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
      String enhance = scanElem.getAttributeValue("enhance");
 
-     //NetcdfDatasetReader reader = new NetcdfDatasetReader();
      agg.addDirectoryScan( dirLocation, suffix, dateFormatMark, enhance);
 
      if ((cancelTask != null) && cancelTask.isCancel())
@@ -1283,6 +1288,15 @@ public class NcMLReader {
   }
 
   static void transferVariableAttributes( Variable src, Variable target) {
+    Iterator iterAtt = src.getAttributes().iterator();
+    while (iterAtt.hasNext()) {
+      ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();
+      if (null == target.findAttribute( a.getName()))
+        target.addAttribute(a);
+    }
+  }
+
+  static public void transferGroupAttributes( Group src, Group target) {
     Iterator iterAtt = src.getAttributes().iterator();
     while (iterAtt.hasNext()) {
       ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();

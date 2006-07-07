@@ -366,7 +366,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // If its an aggregation
   private ucar.nc2.ncml.Aggregation agg = null; // used to close underlying files
 
-  /** If its an NcML aggregation, it has an Aggregation object associated. */
+  /** If its an NcML aggregation, it has an Aggregation object associated.
+   *  This is public for use by NcmlWriter.
+   **/
   public ucar.nc2.ncml.Aggregation getAggregation() { return agg; }
 
   /** Set the Aggregation object associated with this NcML dataset */

@@ -498,50 +498,6 @@ public class Level2Record {
         ii.setByteNext(data[i]);
     }
 
-    /* switch (datatype) {
-      case REFLECTIVITY :
-        for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride()) {
-          if (i >= dataCount)
-            ii.setByteNext( MISSING_DATA);
-          else
-            ii.setByteNext( data[i]);
-        }
-        return;
-
-      case VELOCITY :
-        if (resolution == 2) {
-          for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride()) {
-            if (i >= dataCount)
-              ii.setByteNext( MISSING_DATA);
-            else {
-              int index = convert(data[i]);
-              ii.setFloatNext( Velocity_hkm_LUT[ index]);
-            }
-          }
-        } else {
-          for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride()){
-            if (i >= dataCount)
-              ii.setFloatNext( Float.NaN);
-            else {
-              int index = convert(data[i]);
-              ii.setFloatNext( Velocity_1km_LUT[ index]);
-            }
-          }
-        }
-        return;
-
-      case SPECTRUM_WIDTH :
-        for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride()) {
-          if (i >= dataCount)
-            ii.setByteNext( MISSING_DATA);
-          else {
-            //int index = convert(data[i]);
-            ii.setByteNext( data[i]);
-          }
-        }
-        return;
-    }  */
-
   }
 
  /**

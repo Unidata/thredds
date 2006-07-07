@@ -9,6 +9,7 @@ import junit.framework.*;
 public class TestDataset {
   public static String topDir = "test/data/";
   public static String xmlDir = topDir+"dataset/xml/";
+  public static String writeDir = topDir+"tmp/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

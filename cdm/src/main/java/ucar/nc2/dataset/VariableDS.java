@@ -87,6 +87,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return vs;
   }
 
+  // override to keep slice a VariableDS
+  public Variable slice(int dim, int value) throws InvalidRangeException {
+    Variable vs = new VariableDS( this.group, this, isEnhanced);
+    makeSlice(vs, dim, value);
+    return vs;
+  }
+
   /** recalc any enhancement info */
   public void enhance() {
     this.smProxy = new EnhanceScaleMissingImpl( this);

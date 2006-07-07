@@ -5,6 +5,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
@@ -26,7 +27,32 @@ public class TestStationDataset extends TestCase {
 
   public void testUnidataStationObsDataset() throws IOException {
     testAllMethods( PointObsDatasetFactory.open( topDir+"ldm/20050804_metar.nc", null, null));
-  }  
+  }
+
+  public void testMetarDataset() throws IOException {
+    long start = System.currentTimeMillis();
+
+    ThreddsDataFactory fac = new ThreddsDataFactory();
+    ThreddsDataFactory.Result result = fac.openDatatype( "http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.xml#NWS/METAR/Surface_METAR_20060701_0000.nc", null);
+    PointObsDataset sod = result.pobsDataset;
+    long took = System.currentTimeMillis() - start;
+    System.out.println(" open took = "+took+" msec");
+    start = System.currentTimeMillis();
+
+    //StationObsDataset sod = (StationObsDataset) PointObsDatasetFactory.open( topDir+"ldm/Surface_METAR_20060701_0000.nc", null, null);
+    DataIterator iter = sod.getDataIterator(0);
+    double sum = 0.0;
+    int count = 0;
+    while (iter.hasNext()) {
+      PointObsDatatype obs = (PointObsDatatype) iter.nextData();
+      StructureData sdata = obs.getData();
+      sum += sdata.getScalarDouble("wind_speed");
+      count++;
+    }
+    took = System.currentTimeMillis() - start;
+    System.out.println(" read took = "+took+" msec");
+    System.out.println("sum= "+sum+" count = "+count);
+  }
 
   public void testNdbcStationObsDataset() throws IOException {
     testAllMethods( PointObsDatasetFactory.open( topDir+"ndbc/41001h1976.nc", null, null));
