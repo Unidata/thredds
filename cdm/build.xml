@@ -519,6 +519,13 @@
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <target name="dist" depends="makeAll, makeIDVjar, makeSrc, javadoc, javadocAll" description="create a full distribution"/>
 
+    <!-- release library -->
+  <target name="releaseInternal" depends="makeJar" description="internal release to lib">
+    <copy todir="${lib.dir}/release" overwrite="true">
+      <fileset dir="${dist.dir}" includes="${jarMain}"/>
+    </copy>
+  </target>
+
   <!-- release library -->
   <target name="release" description="Release library and source jar files to release directory: do 'ant dist' first">
     <copy todir="${release.library.dir}" overwrite="true">
@@ -536,6 +543,10 @@
     <copy todir="${release.html.dir}" overwrite="true">
       <fileset file="${build.dir}/README"/>
       <fileset file="${build.dir}/CHANGES"/>
+    </copy>
+
+    <copy todir="${lib.dir}/release" overwrite="true">
+      <fileset dir="${dist.dir}" includes="${jarMain}"/>
     </copy>
   </target>
 

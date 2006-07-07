@@ -1,0 +1,67 @@
+ **CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/DGEX/CONUS_12km/catalog.xml (CONUS_12km) 
+
+One file is "damaged" (?), they all look like this:
+ dim 0=[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,16,18]
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/DGEX/Alaska_12km/catalog.xml (Alaska_12km)
+OK
+
+*********************
+
+the first one is repeated twice, so we are just seeing the first one being incomplete; plus a "damaged" run (3rd from last).
+also, there are a few variables that have n-1, probably missing time = 0 ?
+ 
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/Alaska_191km/catalog.xml (Alaska 191km) 
+
+dim 0=[19,19,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,15,21,21]
+dim 0=[18,18,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,15,20,20]
+dim 0=[19,19,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,14,21,21]
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/CONUS_80km/catalog.xml (CONUS 80 km) 
+
+dim 0=[18,18,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,31,36,36,36]
+dim 0=[19,19,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,31,36,36,36]
+dim 0=[17,17,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,31,35,35,35]
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/CONUS_95km/catalog.xml (CONUS 95 Km) 
+
+dim 0=[6,6,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,15,21,21]
+ dim 0=[5,5,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,14,20,20]
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/CONUS_191km/catalog.xml (CONUS 191 km) 
+
+dim 0=[6,6,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,15,21,21]
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/Global_0p5deg/catalog.xml (Global 0.5 degree)
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/Global_2p5deg/catalog.xml (Global 2.5 degree) 
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/Puerto_Rico_191km/catalog.xml (Puerto Rico 191km) 
+
+OK
+ 
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/Global_onedeg/catalog.xml (Global 1 degree) 
+ dim 0=[37,37,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61] 
+ dim 0=[34,34,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60,60]
+
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/GFS/N_Hemisphere_381km/catalog.xml (Northern Hemispheric 381km) 
+
+ dim 0=[11,11,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,9,12,12]
+ dim 0=[9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,3,9,9] (Pressure!)
+ dim 0=[18,18,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,14,20,20] (Pressure_reduced_to_MSL)
+ dim 0=[14,14,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,9,15,15]
+ dim 0=[10,10,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,8,11,11]
+ dim 0=[9,9,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,8,10,10]
+
+=========================
+
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/NCEP/NAM/Alaska_11km/catalog.xml (Alaska 11 km) 
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/NCEP/NAM/Alaska_45km/noaaport/catalog.xml (noaaport) 
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/NCEP/NAM/Alaska_22km/catalog.xml (Alaska 22 km)
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/NCEP/NAM/Alaska_45km/conduit/catalog.xml (conduit) 
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/NCEP/NAM/Alaska_95km/catalog.xml (Alaska 95 km) 
+**CATREF http://motherlode.ucar.edu:9080/thredds/idd/model/NCEP/NAM/CONUS_12km/catalog.xml (CONUS 12 km) 
+ 
+
+OK
+

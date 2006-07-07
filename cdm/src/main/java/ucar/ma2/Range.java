@@ -281,6 +281,7 @@ public class Range {
    */
   public Range(Range r) throws InvalidRangeException {
     this(r.first(), r.last(), r.stride());
+    setName( r.getName());
   }
 
   /**
@@ -299,6 +300,7 @@ public class Range {
       int last = base.element(r.last());
       this.n = Math.max( (last - first) / stride + 1, 0);
     }
+    setName( r.getName());
   }
 
   /** Get name */

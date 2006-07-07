@@ -79,7 +79,6 @@ public class DODSVariable extends ucar.nc2.Variable {
 
     } else {
       shape = new int[0];
-      this.ranges = Range.factory( shape);
     }
   }
 

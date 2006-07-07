@@ -41,7 +41,7 @@ public class Variable implements VariableIF {
   static public final int defaultSizeToCache = 4000; // bytes
   static protected boolean debugCaching = false;
 
-  protected NetcdfFile ncfile; // used for I/O calls
+  protected NetcdfFile ncfile; // used for I/O calls, not necessarily the logical container
   protected Variable orgVar = null; // different for section, VariableDS wrapping. used in I/O calls
 
   protected Group group;
@@ -67,7 +67,7 @@ public class Variable implements VariableIF {
    * entire NetcdfFile.
    */
   public String	getName() {
-    return ncfile == null ? "" : ncfile.makeFullName( this.group, this);
+    return ncfile == null ? "" : NetcdfFile.makeFullName( this.group, this);
   }
 
   /**
@@ -305,19 +305,33 @@ public class Variable implements VariableIF {
 
   /////////////////////////////////////////////////////////////////////////
   // sections
-  protected List ranges = null;
-  protected boolean isSection = false;
-  protected int sliceDim = -1;
+  protected boolean isSection = false, isSlice = false;
+  protected List sectionRanges = null;  // section of the original variable.
+  protected List sliceRanges = null;  // section of the original variable.
+  protected int sliceDim = -1;  // dimension index into original
 
   /**
-   * Get index subsection as an array of Range objects. If this is a section, will reflect the index range
-   * reletive to the original variable. If not a section, this will equal the shape.
+   * Get shape as an array of Range objects.
    * @return array of Ranges, one for each Dimension.
    */
   public List getRanges() {
+    return Range.factory( shape);
+  }
+
+  /**
+   * Get index subsection as an array of Range objects, reletive to the original variable.
+   * If this is a section, will reflect the index range reletive to the original variable.
+   * If its a slice, it will have a rank different from this variable.
+   * Otherwise it will correspond to this Variable's shape, ie match getRanges().
+   * @return array of Ranges, one for each Dimension.
+   */
+  public List getSectionRanges() {
+    if (!isSection)
+      return getRanges();
+
     ArrayList result = new ArrayList();
-    for (int i = 0; i < ranges.size(); i++) {
-      Range r =  (Range) ranges.get(i);
+    for (int i = 0; i < sectionRanges.size(); i++) {
+      Range r =  (Range) sectionRanges.get(i);
       try {
         result.add( new Range(r));
       } catch (InvalidRangeException e) { // cant happpen
@@ -329,7 +343,7 @@ public class Variable implements VariableIF {
   /**
    * Is this Variable a section of another variable ?.
    */
-  public boolean isSection() { return isSection; }
+  protected boolean isSection() { return isSection; }
 
   /**
    * Create a new Variable that is a logical subsection of this Variable.
@@ -346,9 +360,11 @@ public class Variable implements VariableIF {
     return vs;
   }
 
-  // work goes here so can be called by subcclasses
+  // work goes here so can be called by subclasses
   protected void makeSection(Variable newVar, List section) throws InvalidRangeException  {
     // check consistency
+    if (isSlice)
+      throw new InvalidRangeException("Variable.section: cannot section a slice"); // LOOK, could remove restriction
     if (section.size() != getRank())
       throw new InvalidRangeException("Variable.section: section rank "+section.size()+" != "+getRank());
     for (int ii=0; ii<section.size(); ii++) {
@@ -361,11 +377,11 @@ public class Variable implements VariableIF {
         throw new InvalidRangeException("Bad range ending value at index "+ii+" == "+r.last());
     }
 
-    newVar.orgVar = isSection() ? orgVar : this;
+    newVar.orgVar = (orgVar != null) ? orgVar : this;
     newVar.isSection = true;
 
-    newVar.ranges = makeSectionRanges( this, section);
-    newVar.shape  = Range.getShape( newVar.ranges);
+    newVar.sectionRanges = makeSectionRanges( this, section);
+    newVar.shape  = Range.getShape( newVar.sectionRanges);
 
     // replace dimensions if needed !! LOOK not shared
     newVar.dimensions = new ArrayList();
@@ -390,17 +406,18 @@ public class Variable implements VariableIF {
     if (section == null) return v.getRanges();
 
     // check individual nulls
+    List orgRanges = v.getSectionRanges();
     ArrayList results = new ArrayList(v.getRank());
     for (int i=0; i<v.getRank(); i++) {
       Range r = (Range) section.get(i);
       Range result;
       if (r == null)
-        result = new Range( (Range) v.ranges.get(i)); // use entire range
+        result = new Range( (Range) orgRanges.get(i)); // use entire range
       else if (v.isSection())
-        result = new Range( (Range) v.ranges.get(i), r); // compose
+        result = new Range( (Range) orgRanges.get(i), r); // compose
       else
         result = new Range(r); // use section
-      result.setName( v.getDimension(i).getName()); // who uses ??
+      result.setName( v.getDimension(i).getName()); // used when composing slices and sections
       results.add ( result);
     }
 
@@ -450,27 +467,57 @@ public class Variable implements VariableIF {
   }
 
   protected void makeSlice(Variable newVar, int dim, int value) throws InvalidRangeException {
+    if (isSection)
+      throw new InvalidRangeException("Variable.slice: cannot slice a section"); // LOOK, could remove restriction
+
     // check consistency
     if ((dim < 0) || (dim >= shape.length))
       throw new InvalidRangeException("Variable.slice: invalid dimension= "+dim);
     if ((value < 0) || (value >= shape[dim]))
       throw new InvalidRangeException("Variable.slice: invalid value= "+value+" for dimension= "+dim);
 
-    // LOOK: probably doesnt work if its already a section or slice
-    int origin[] = new int[ getRank()];
-    int[] sshape = (int []) shape.clone();
-    origin[dim] = value;
-    sshape[dim] = 1;
-    List section = Range.factory(origin, sshape);
+    // create the new shape
+    List dims = getDimensions();
+    dims.remove( dim);
+    newVar.setDimensions( dims);
 
-    newVar.orgVar = isSection() ? orgVar : this;
-    newVar.isSection = true; // LOOK
-    newVar.sliceDim = dim;
+    // construct or augment the sliceRanges array
+    ArrayList newSlices;
+    if (isSlice) { // slice of a slice
+      int count = 0;
+      newSlices = new ArrayList(sliceRanges);
+      for (int i = 0; i < newSlices.size(); i++) {
+        Range range = (Range) newSlices.get(i);
+        if (range == null) {
+          if (dim == count) newSlices.set( dim, new Range(value, value));
+          count++;
+        }
+      }
+    } else {
+      newSlices = new ArrayList( getRank());
+      for (int i = 0; i < shape.length; i++)
+        newSlices.add( null);
+      newSlices.set( dim, new Range(value, value));
+    }
+    newVar.sliceRanges = newSlices;
 
-    // LOOK: so heres the rub: we need to reduce the shape, but when do we need to know the section in the original ??
-    newVar.ranges = makeSectionRanges( this, section);
-    newVar.shape  = Range.getShape( newVar.ranges);
+    newVar.orgVar = (orgVar != null) ? orgVar : this;
+    newVar.isSlice = true;
   }
+
+  // compose a user requested section with the slice sections to get a full section into the orginal variable
+  protected List makeSliceRanges(List section) throws InvalidRangeException {
+    int count = 0;
+    ArrayList result = new ArrayList(sliceRanges);
+    for (int i = 0; i < sliceRanges.size(); i++) {
+      Range range = (Range) sliceRanges.get(i);
+      if (range == null)
+        result.set(i, section.get(count++));
+    }
+
+    return result;
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////
   // IO
@@ -548,9 +595,20 @@ public class Variable implements VariableIF {
     if (isMemberOfStructure()) // read using first element of parents
       return readMemberOfStructureFlatten( section);
 
-    if (isSection) {
-      Array result = _read(makeSectionRanges(this, section));
-      return (sliceDim >= 0) ? result.reduce(sliceDim) : result;
+    if (isSection)
+      return _read( makeSectionRanges(this, section));
+
+    if (isSlice) {
+      Array data = _read( makeSliceRanges(section));
+      int count = 0;
+      for (int i = 0; i < sliceRanges.size(); i++) {
+        Range range = (Range) sliceRanges.get(i);
+        if (range != null) {
+          data = data.reduce(i-count); // reduce each slice dimension
+          count++;
+        }
+      }
+      return data;
     }
 
     return _read(section);
@@ -570,19 +628,20 @@ public class Variable implements VariableIF {
   public Array read() throws IOException {
     if (isMemberOfStructure()) { // LOOK - could see if parent structure is cached ??
       try {
-        return readMemberOfStructureFlatten( ranges);
+        return readMemberOfStructureFlatten( getRanges());
       } catch (InvalidRangeException e) {
         return null; // cant happen
       }
     }
 
     try {
-      if (isSection) {
-        Array result = _read(ranges);
-        return (sliceDim >= 0) ? result.reduce(sliceDim) : result;
-      } else {
-        return _read();
-      }
+      if (isSection)
+        return _read(sectionRanges);
+
+      if (isSlice)
+        return read(getRanges());
+
+      return _read();
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -615,11 +674,11 @@ public class Variable implements VariableIF {
    */
   public Structure getParentStructure() { return parent; }
 
-  /**
+  /*
    * Get index subsection as an array of Range objects, including parents if any. If not isMemberOfStructure(),
    * this is the same as getRanges();
    * @return array of Ranges, rank of v plus all parents.
-   */
+   *
   public List getRangesAll() {
     if (isMemberOfStructure())
       try {
@@ -629,7 +688,7 @@ public class Variable implements VariableIF {
       }
     else
       return getRanges();
-  }
+  } */
 
   /**
    * Get list of Dimensions, including parents if any.
@@ -826,7 +885,7 @@ public class Variable implements VariableIF {
     Array data = null;
     try {
       Variable useVar = (orgVar != null) ? orgVar : this;
-      data = ncfile.readData( useVar, useVar.ranges);
+      data = ncfile.readData( useVar, useVar.getRanges());
     } catch (InvalidRangeException e) { } // cant happen
 
     if (isCaching()) {
@@ -959,7 +1018,7 @@ public class Variable implements VariableIF {
       result = 37*result + getDataType().hashCode();
       //if (isMetadata()) result++;
       result = 37*result + getDimensions().hashCode();
-      if (isSection()) result++;
+      if (isSection) result++;
       result = 37*result + getParentGroup().hashCode();
       if (isVlen) result++;
       hashCode = result;
@@ -998,7 +1057,7 @@ public class Variable implements VariableIF {
     this.ncfile = from.ncfile;
     this.orgVar = from;
     this.parent = from.parent;
-    this.ranges = from.ranges;
+    this.sectionRanges = from.sectionRanges;
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.spiObject = from.spiObject;
@@ -1067,7 +1126,6 @@ public class Variable implements VariableIF {
           isVlen = true;
       }
     }
-    this.ranges = Range.factory( shape);
   }
 
   /**
@@ -1077,7 +1135,6 @@ public class Variable implements VariableIF {
   public void setDimensions(String dimString) {
     if (dimString == null) { // scalar
       this.shape = new int[0];
-      this.ranges = new ArrayList();
       return;
     }
 
@@ -1103,7 +1160,6 @@ public class Variable implements VariableIF {
       Dimension anon = new Dimension(null, shape[i], false, false, false);
       dimensions.add( anon);
     }
-    this.ranges = Range.factory( shape);
   }
 
   /**

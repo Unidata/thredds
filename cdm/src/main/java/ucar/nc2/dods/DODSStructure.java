@@ -84,8 +84,6 @@ public class DODSStructure extends ucar.nc2.Structure {
     } else
       this.shape = new int[0]; // scalar
 
-    this.ranges = Range.factory( shape);
-
     for (int i = 0; i < dodsV.children.size(); i++) {
       DodsV nested = (DodsV) dodsV.children.get(i);
       dodsfile.addVariable( parentGroup, this, nested);

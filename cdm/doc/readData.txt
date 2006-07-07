@@ -1,0 +1,220 @@
+last updated July 7, 2006
+------------------
+NetcdfFile
+
+all reading is channelled through 
+
+ protected Array readData(ucar.nc2.Variable v, List section) throws IOException, InvalidRangeException  {
+    return spi.readData( v, section);
+  }
+
+  // this is for reading variables that are members of structures
+  protected Array readMemberData(ucar.nc2.Variable v, List section, boolean flatten) throws IOException, InvalidRangeException  {
+    return spi.readNestedData( v, section, flatten);
+  }
+
+------------------
+Variable
+
+all reading is channelled through (caching code removed) these:
+
+
+  // non-structure-member Variables.
+  protected Array _read() throws IOException {
+
+    Array data = null;
+    try {
+      Variable useVar = (orgVar != null) ? orgVar : this;
+      data = (Array) ncfile.readData( useVar, useVar.ranges);
+    } catch (InvalidRangeException e) { } // cant happen
+
+  }
+
+  // section of non-structure-member Variable
+  protected Array _read(List section) throws IOException, InvalidRangeException  {
+
+    Variable useVar = (orgVar != null) ? orgVar : this;
+    String err = Range.checkInRange( section, useVar.getShape());
+    if (err != null) throw new InvalidRangeException( err);
+
+    return ncfile.readData( useVar, section);
+  }
+
+  protected Array _readMemberData(List section, boolean flatten) throws IOException, InvalidRangeException  {
+    Variable useVar = (orgVar != null) ? orgVar : this;
+    return ncfile.readMemberData(useVar, section, flatten);
+  }
+
+
+note use of ncfile and orgVar; orgVar must be part of ncfile, ie known by the spi. orgVar is for section and copy constructor, otherwise == var. So ncfile and orgVar must stay together. ncfile is then the place to read data from, not necessarily the logical container.
+
+so on the surface, subclass only need override NetcdfFile.readData(), readMemberData().
+
+---------------------------
+NetcdfDataset wants to wrap a NetcdfFile
+
+  protected NetcdfDataset( NetcdfFile ncfile) {
+    super( ncfile);
+    this.orgFile = ncfile;
+    convertVariables( getRootGroup()); // groups get reparented, but not variables
+    finish(); // rebuild global lists
+  }
+
+  protected NetcdfFile( NetcdfFile ncfile) {
+    this.location = ncfile.getLocation();
+    this.id = ncfile.getId();
+    this.title = ncfile.getTitle();
+    this.spi = ncfile.spi;
+    this.rootGroup = ncfile.getRootGroup();
+    reparentGroup( ncfile.getRootGroup());
+    finish();
+  }
+
+all groups get reparented to NetcdfDataset, but Variables keep their ncfile
+
+------------------
+VariableDS
+
+Note that the copy constructor keeps the ncfile from the orgVar.
+
+  public VariableDS(NetcdfDataset ds, ucar.nc2.Variable ncVar) {
+    super(ncVar);
+  }
+
+  public Variable( Variable from) {
+    this.attributes = (ArrayList) from.getAttributes();
+    this.cache = from.cache; // share the cache
+    this.caching = from.caching;
+    this.cachingSet = from.cachingSet;
+    this.dataType = from.getDataType();
+    this.dimensions = (ArrayList) from.getDimensions();
+    this.elementSize = from.getElementSize();
+    this.group = from.group;
+    this.isCoordinateAxis = from.isCoordinateAxis;
+    this.isMetadata = from.isMetadata;
+    this.isSection = from.isSection;
+    this.isVlen = from.isVlen;
+    this.ncfile = from.ncfile;
+    this.orgVar = from;
+    this.parent = from.parent;
+    this.ranges = from.ranges;
+    this.shape = from.getShape();
+    this.shortName = from.shortName;
+    this.spiObject = from.spiObject;
+  }
+
+  A VariableDS either 
+    1) wraps another Variable (orgVar != null)
+    2) has self contained data array (cacheData != null)
+    3) returns missing values, or default fill values if no data is set
+
+
+------------------
+
+NcML
+
+1. explicit
+
+NcML NetcdfDataset -> referenced Dataset
+
+the objects in the refDataset are copied to the ncmlDataset
+
+2. modify
+
+NcML NetcdfDataset == referenced Dataset
+
+the objects in the ncmlDataset are modifed as needed.
+
+3. union
+
+NcML NetcdfDataset 
+  nested1
+  nested2
+
+the objects in the nested Datasest are copied to the ncmlDataset
+
+--------
+
+
+VariableDS sends to superclass
+
+  protected Array _read() throws IOException {
+    Array result = super._read();
+    result = smProxy.convertScaleOffset( result);
+    return result;
+  }
+
+  protected Array _read(java.util.List section) throws IOException, InvalidRangeException  {
+    Array result = super._read(section);
+    result = smProxy.convertScaleOffset( result);
+    return result;
+  }
+
+   // hey what about _readMemberData ??
+
+
+Variable makes calls through ncfile, orgVar:
+
+  protected Array _read() throws IOException {
+    return ncfile.readData( orgVar, orgVar.ranges);
+  }
+
+  protected Array _read(List section) throws IOException, InvalidRangeException  {
+    return ncfile.readData( orgVar, section);
+  }
+
+  protected Array _readMemberData(List section, boolean flatten) throws IOException, InvalidRangeException  {
+    return ncfile.readMemberData(orgVar, section, flatten);
+  }
+
+
+so NetcdfDataset is probably never called, as long as all VariableDS are copy constructed.
+
+  public Array readMemberData(ucar.nc2.Variable v, List section, boolean flatten) throws IOException, InvalidRangeException  {
+    return orgFile.readMemberData(v, section, flatten);
+  }
+  
+    // if NcML, send I/O to referencedDataset, else to superclass
+  public Array readData(ucar.nc2.Variable v, List section) throws IOException, InvalidRangeException  {
+    return orgFile.readData(v, section);
+  }
+
+=============================================
+
+Section processing
+
+Pass in a section, reletive to a "base variable". Compose the desired section with the Variable. 
+
+  public Variable section(List section) throws InvalidRangeException  {
+    Variable newVar = new Variable( this);
+
+    newVar.orgVar = isSection() ? orgVar : this; // is it already a section?
+    newVar.isSection = true;
+
+    newVar.ranges = makeSectionRanges( this, section); // section of the original variable.
+    newVar.shape  = Range.getShape( newVar.ranges); // shape of new variable
+
+    return newVar;
+  }
+
+  static protected List makeSectionRanges(Variable base, List section) throws InvalidRangeException {
+    
+    if (section == null) return base.getRanges();
+
+    // check individual nulls
+    ArrayList results = new ArrayList(base.getRank());
+    for (int i=0; i<base.getRank(); i++) {
+      Range r = (Range) section.get(i);
+      Range result;
+      if (r == null)
+        result = new Range( (Range) base.ranges.get(i)); // use entire range
+      else if (v.isSection())
+        result = new Range( (Range) base.ranges.get(i), r); // compose
+      else
+        result = new Range(r); // use section
+
+      results.add ( result);
+    }
+
+    return results;
+  }

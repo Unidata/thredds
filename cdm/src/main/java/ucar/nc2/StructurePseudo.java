@@ -107,7 +107,7 @@ public class StructurePseudo extends Structure {
 
     for (int i = 0; i < orgVariables.size(); i++) {
       Variable v = (Variable) orgVariables.get(i);
-      ArrayList vsection = (ArrayList) v.getRanges();
+      ArrayList vsection = (ArrayList) v.getSectionRanges();
       vsection.set( 0, r);
       Array data = v.read( vsection);
       StructureMembers.Member m = smembers.findMember( v.getName());

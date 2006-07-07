@@ -31,7 +31,7 @@ public interface VariableIF {
     public ucar.nc2.Attribute findAttributeIgnoreCase(java.lang.String attName);
 
     public ucar.nc2.Group getParentGroup();
-    public boolean isSection();
+    // public boolean isSection();
     public ucar.nc2.Variable section(java.util.List ranges) throws ucar.ma2.InvalidRangeException;
     public java.util.List getRanges();
 

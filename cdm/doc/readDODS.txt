@@ -1,0 +1,345 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Courier New;}{\f1\fswiss\fcharset0 Arial;}}
+{\*\generator Msftedit 5.41.21.2500;}\viewkind4\uc1\pard\f0\fs20 ---------------------\par
+OpenDAP -> Netcdf translation\par
+\par
+Dataset \{\par
+    Sequence \{\par
+        String name;\par
+        Int32 age;\par
+    \} person;\par
+\} SimpleSequences;\par
+\par
+DataDDS \{\par
+ String name = SimpleSequences\par
+ Vector vars \{\par
+  0=DSequence \{\par
+     String _name = person\par
+     level = 0\par
+     Vector allValues (n)\par
+\tab 0=Vector \{\par
+\tab    0=DString \{\par
+\tab\tab String _name = name\par
+\tab       String val = ...\par
+ \tab    \}  \par
+\tab    1=DInt32 \{\par
+\tab       int val = 1\par
+\tab       String _name = age\par
+\tab    \}\par
+\tab\}\par
+      1=Vector \{\par
+\tab 2=Vector ...\par
+   \} 0=person    \par
+ \} vars\par
+\} datadds\tab\par
+\par
+netcdf dods://dods.coas.oregonstate.edu:8080/dods/dts/test.07 \{\par
+ variables:\par
+   structure \{\par
+     string name; // 1 1\par
+     int age; // 4 1\par
+   \} person(*); // 5 0\par
+\}\par
+\par
+ArrayObject.D1\par
+  Object[]  \par
+    0=DODSStructure.Data\par
+\tab ArrayList members\par
+\tab   StructureData.Member\par
+\tab     Variable v = name\par
+\tab     ArrayObject.D0 data\par
+\tab       Object[]= ...\par
+\tab   StructureData.Member\par
+\tab     Variable v = age\par
+\tab     ArrayInt.D0 data\par
+\tab       int[1] = 1\tab     \par
+    1=DODSStructure.Data\par
+    2=DODSStructure.Data\par
+    ...\par
+\par
+\par
+----------------\par
+Dataset \{\par
+    Sequence \{\par
+        Int32 age;\par
+        Sequence \{\par
+            Int16 foo;\par
+        \} stuff;\par
+    \} person1;\par
+\} NestedSequences;  \par
+\par
+DataDDS \{\par
+ String name = NestedSequences\par
+ Vector vars \{\par
+  0=DSequence \{\par
+     String _name = person1\par
+     level = 0\par
+     Vector allValues (n) \{\par
+\tab 0=Vector \{ \par
+\tab    0=DInt32 \{\par
+\tab       int val = 1\par
+\tab       String _name = age\par
+\tab    \}\par
+\tab    1=DSequence \{\par
+\tab\tab String _name = stuff\par
+\tab\tab int level = 1\par
+\tab       Vector allValues \{\par
+\tab        0=Vector \{\par
+\tab\tab   0=Dint16 \{\par
+\tab\tab    String _name="foo"\par
+\tab          int val = 0\par
+\tab\tab   \}\par
+\tab\tab  \}\par
+\tab        1=Vector \{\par
+\tab\tab   0=Dint16 \{\par
+\tab\tab    String _name="foo"\par
+\tab          int val = 0\par
+\tab\tab   \}\par
+\tab\tab  \}\par
+\tab        2=Vector ...\par
+\tab\tab\}\par
+ \tab    \} \par
+\tab\}\par
+      1=Vector \par
+\tab 2=Vector ...\par
+   \} 0=person    \par
+ \} vars\par
+\} datadds\tab\par
+\par
+netcdf dods://dods.coas.oregonstate.edu:8080/dods/dts/NestedSeq \{\par
+ variables:\par
+   structure \{\par
+     int age; // 4 1\par
+     structure \{\par
+       short foo; // 2 1\par
+     \} stuff(*); // 2 0\par
+   \} person1(*); // 4 0\par
+\}\par
+\par
+---------------------\par
+\par
+Dataset \{\par
+    Structure \{\par
+        Byte b;\par
+        Int32 i32;\par
+        UInt32 ui32;\par
+        Int16 i16;\par
+        Structure \{\par
+            UInt16 ui16[10];\par
+            Float32 f32;\par
+            Float64 f64;\par
+            String s;\par
+            Url u[5];\par
+        \} ss;\par
+    \} types[10];\par
+\} WackyArray02;\par
+\par
+DataDDS \{\par
+ String name = WackyArray02\par
+ Vector vars \{\par
+  0=DArray \{\par
+     String _name = types\par
+     Vector dimVector\par
+       DArrayDimension\par
+\tab    size, start, stride, stop\par
+     PrimitiveVector vals (n) \{\par
+      DStructure var\par
+      BaseType[] vals\par
+\tab  0=DStructure \{\par
+\tab   String _name = types\par
+\tab   Vector vars\par
+\tab     DByte\par
+\tab       byte val = 0\par
+\tab       String _name = b\par
+\tab     DInt32\par
+\tab       int val = 1u\par
+\tab       String _name = i32\par
+\tab     DUInt32\par
+\tab       int val = 0\par
+\tab       String _name = i32\par
+\tab     DInt16\par
+\tab       short val = 0\par
+\tab       String _name = i16\par
+\tab     DStructure\par
+\tab       String _name = ss\par
+\tab\tab Vector vars\par
+\tab\tab   DArray\par
+\tab\tab     Vector dimeVector\par
+\tab\tab     _name ui16\par
+\tab\tab     PrimitiveVector vals\par
+\tab\tab   DFloat32 ...\par
+\tab\tab   DFloat64\par
+\tab\tab   DString\par
+\tab\tab   DArray\par
+ \tab    \} \par
+\tab  1=DStructure\par
+\tab  2=DStructure\par
+\tab  ...\par
+\tab\}\par
+   \}     \par
+ \} \par
+\} datadds\tab\par
+\par
+-----------\par
+Dataset \{\par
+    Grid \{\par
+     ARRAY:\par
+        Float64 amp[10];\par
+     MAPS:\par
+        Float64 x[10];\par
+    \} OneD;\par
+\} Simple;\par
+\par
+\par
+**************************\par
+\par
+DataDDS\par
+  Vector vars\par
+  name\par
+\par
+DArray\par
+  String _name\par
+  BaseType _myParent\par
+  Vector dimVector\par
+    DArrayDimension dim1\par
+    DArrayDimension dim2\par
+  PrimitiveVector vals (BaseType or primitiveType)\par
+\par
+DStructure\par
+  String _name\par
+  BaseType _myParent\par
+  Vector vars (nvars)\par
+    BaseType var1\par
+    BaseType var2\par
+    BaseType var3\par
+  \par
+DSequence\par
+  String _name\par
+  BaseType _myParent\par
+  int level\par
+  Vector varTemplate(nvars)\par
+  Vector allValues (nseq)\par
+    Vector vars[0] (nvars)\par
+\tab BaseType var1\par
+\tab BaseType var2\par
+\tab BaseType var3\par
+      ...\par
+    Vector vars[1]\par
+    Vector vars[2]\par
+    ...\par
+\par
+DGrid\par
+  String _name\par
+  BaseType _myParent\par
+  Vector mapVars(nmaps)\par
+    DArray map1\par
+    DArray map2\par
+  DArray arrayVar \par
+\par
+----------------------------------\par
+\par
+Dataset \{\par
+    Sequence \{\par
+        String date;\par
+        String year;\par
+        String program;\par
+        String cruise_id;\par
+        Int16 cast_no;\par
+        String stn_id;\par
+        Float64 lat;\par
+        Float64 long;\par
+        Int16 water_depth;\par
+        Byte sample_id;\par
+        Float64 min_sample_depth;\par
+        Float64 max_sample_depth;\par
+        Byte month_local;\par
+        Int16 day_local;\par
+        Int16 time_local;\par
+        String d_n_flag;\par
+        String gear_type;\par
+        Byte gear_area_m2;\par
+        Float64 gear_mesh;\par
+        Float64 vol_filt;\par
+        String counter_id;\par
+        String comments;\par
+        String perc_counted;\par
+        String local_code;\par
+        String nodc_code;\par
+        String genus_species;\par
+        String life_stage;\par
+        Float64 abund_m3;\par
+    \} MOC1;\par
+\} MOC1;\par
+\par
+request is :\par
+  ?MOC1.stn_id,MOC1.lat,MOC1.long,MOC1.water_depth\par
+\par
+return \par
+\par
+Dataset \{\par
+    Sequence \{\par
+        String stn_id;\par
+        Float64 lat;\par
+        Float64 long;\par
+        Int16 water_depth;\par
+    \} MOC1;\par
+\} MOC1;\par
+\par
+DataDDS \{\par
+ String name = MOC1\par
+ Vector vars \{\par
+   0=DSequence \{\par
+     String _name = MOC1\par
+     level = 0\par
+     Vector allValues (n)\par
+\tab 0=Vector \{\par
+\tab    0=DString \{\par
+\tab\tab String _name = stn_id\par
+\tab       String val = ...\par
+ \tab    \}  \par
+\tab    1=DFloat64 \{\par
+\tab       int val = ..\par
+\tab       String _name = lat\par
+\tab    \}\par
+\tab    2=DFloat64 \{\par
+\tab       int val = ..\par
+\tab       String _name = lon\par
+\tab    \}\par
+\tab    3=DInt16 \{\par
+\tab       int val = ..\par
+\tab       String _name = water_depth\tab    \}\par
+\par
+\tab\}\par
+      1=Vector \{\par
+\tab 2=Vector ... (n)\par
+   \} 0=MOC1    \par
+ \} vars\par
+\} datadds\tab\par
+\par
+\par
+\par
+StructureData[n]\par
+\par
+equivilent to:\par
+\par
+0=DString \{\par
+\tab\tab String _name = stn_id\par
+\tab       String val = ...\par
+ \tab    \}  \par
+\tab    1=DFloat64 \{\par
+\tab       int val = ..\par
+\tab       String _name = lat\par
+\tab    \}\par
+\tab    2=DFloat64 \{\par
+\tab       int val = ..\par
+\tab       String _name = lon\par
+\tab    \}\par
+\tab    3=DInt16 \{\par
+\tab       int val = ..\par
+\tab       String _name = water_depth\tab    \}\par
+\par
+..n\par
+\par
+\par
+\f1\par
+}
+ 
