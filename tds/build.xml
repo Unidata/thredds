@@ -12,31 +12,38 @@
 
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
-  <property name="webapp.src.dir" location="${root.dir}/src/main/webapp"/>
-  <property name="external.lib.dir" location="${root.dir}/../lib/external"/>
-  <property name="internal.lib.dir" location="${root.dir}/../lib/release"/>
+  <property name="lib.dir" location="${root.dir}/../lib"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
-  <property name="resources.dir" location="${root.dir}/resourcespath"/>
-  <property name="war.resources.dir" location="${root.dir}/resourceswar"/>
-  <property name="build.dir" location="${root.dir}/build"/>
+
+  <property name="build.dir" location="${root.dir}/target"/>
   <property name="build.classes.dir" location="${build.dir}/classes"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <property name="build.javadoc.dir" location="${build.dir}/javadoc"/>
   <property name="dist.dir" location="${root.dir}/dist"/>
-  <property name="javadoc.dir" location="${dist.dir}/javadoc"/>
+  <property name="javadoc.dir" location="${build.dir}/javadoc"/>
 
-  <property name="release.library.dir" value="O:/pub/thredds/${release.version}/"/>
+  <!--property name="release.library.dir" value="O:/pub/thredds/${release.version}/"/>
   <property name="release.doc.dir" value="O:/pub/netcdf-java/v${release.version}/"/>
 
   <property name="release.html.dir" value="Z:/content/software/netcdf-java/v${release.version}/"/>
   <property name="release.javadoc.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadoc/"/>
-  <property name="webstart_dir" location="${release.html.dir}/webstart"/>
+  <property name="webstart_dir" location="${release.html.dir}/webstart"/-->
 
   <property name="test.dir" location="${root.dir}/test"/>
   <property name="test.src.dir" location="${test.dir}/src"/>
   <property name="test.data.dir" location="${test.dir}/data"/>
   <property name="test.classes.dir" location="${build.dir}/test/classes"/>
+
+  <!-- Webapp source locations. -->
+  <property name="webapp.src.dir" location="${root.dir}/src/main/webapp"/>
+  <property name="webapp.resources.dir" location="${webapp.src.dir}/resources"/>
+
+  <!-- Information about the servlet context and such. -->
+  <property name="context.name" value="thredds"/>
+  <property name="contextPath" value="/${context.name}"/>
+  <property name="war.dir" value="${build.dir}/war/${context.name}"/>
+  <property name="warfile" value="${context.name}.war"/>
 
   <!-- Source path and target source. -->
   <path id="sourcepath">
@@ -54,64 +61,74 @@
     <include name="thredds/wcs/servlet/*.java"/>
   </patternset>
 
-  <!-- Third-party and project libraries needed for compile. -->
-  <property name="bufr.jar" value="bufr.jar"/>
-  <property name="grib.jar" value="grib.jar"/>
-  <property name="prefs.jar" value="prefsAll.jar"/>
-  <property name="visad.jar" value="visad.jar"/>
-  <property name="visadNoDods.jar" value="visadNoDods.jar"/>
-  <fileset id="internal.compile.libraries" dir="${internal.lib.dir}">
-    <include name="${bufr.jar}"/>
-    <include name="${grib.jar}"/>
-    <include name="${prefs.jar}"/>
-    <include name="${visadNoDods.jar}"/>
-  </fileset>
+  <!-- Project libraries needed for compile. -->
+  <property name="bufr.jar" value="release/bufr.jar"/>
+  <property name="cdm.jar" value="release/cdm.jar"/>
+  <property name="grib.jar" value="release/grib.jar"/>
+  <property name="prefs.jar" value="release/prefsAll.jar"/>
+  <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
-  <property name="jdom.jar" value="jdom.jar"/>
-  <property name="fileupload.jar" value="commons-fileupload-1.1.jar"/>
-  <property name="httpclient.jar" value="commons-httpclient-3.0.jar"/>
-  <property name="logging.jar" value="nlog4j-1.2.21.jar"/>
-  <fileset id="external.compile.libraries" dir="${external.lib.dir}">
-    <include name="${jdom.jar}"/>
-    <include name="${fileupload.jar}"/>
-    <include name="${httpclient.jar}"/>
-    <include name="${logging.jar}"/>
-  </fileset>
+  <!-- Third-party libraries needed for compile. -->
+  <property name="jdom.jar" value="external/jdom.jar"/>
+  <property name="fileupload.jar" value="external/commons-fileupload-1.1.jar"/>
+  <property name="httpclient.jar" value="external/commons-httpclient-3.0.jar"/>
+  <property name="logging.jar" value="external/nlog4j-1.2.21.jar"/>
 
-  <!-- Third-party and project libraries needed for runtime. -->
-  <property name="junit.jar" value="junit.jar"/>
-  <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
-
-  <property name="httpunit.jar" value="httpunit.jar"/>
-
-  <property name="commons-io.jar" value="commons-io-1.1.jar"/>
-  <property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/>
-  <property name="http-codec.jar" value="commons-codec-1.3.jar"/>
-  <property name="http-logging.jar" value="commons-logging-1.0.4.jar"/>
-  <property name="jpeg2000.jar" value="jpeg2000.jar"/>
-  <property name="xml-apis.jar" value="xml-apis.jar"/>
-  <property name="xercesImpl.jar" value="xercesImpl.jar"/>
-  <fileset id="external.runtime.libraries" dir="${external.lib.dir}">
-    <include name="${commons-io.jar}"/>
-    <include name="${gnu-regexp.jar}"/>
-    <include name="${http-codec.jar}"/>
-    <include name="${http-logging.jar}"/>
-    <include name="${jpeg2000.jar}"/>
-    <include name="${xml-apis.jar}"/>
-    <include name="${xercesImpl.jar}"/>
-  </fileset>
+  <!-- Third-party libraries needed for runtime. -->
+  <property name="commons-io.jar" value="external/commons-io-1.1.jar"/>
+  <property name="gnu-regexp.jar" value="external/gnu-regexp-1.1.4.jar"/>
+  <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
+  <property name="http-logging.jar" value="external/commons-logging-1.0.4.jar"/>
+  <property name="jpeg2000.jar" value="external/jpeg2000.jar"/>
+  <property name="xml-apis.jar" value="external/xml-apis.jar"/>
+  <property name="xercesImpl.jar" value="external/xercesImpl.jar"/>
 
   <!-- The servlet jar file is needed to compile the servlet but is not needed
     by the servlet engine, therefore, it is not needed in the war file. -->
-  <property name="servlet.jar" value="servlet-api.jar"/>
-  <fileset id="servlet.compile.libraries" dir="${external.lib.dir}">
+  <property name="servlet.jar" value="external/servlet-api.jar"/>
+
+  <!-- Some extra project and third-party libraries. -->
+  <property name="resourcesOptional.jar" value="release/resourcesOptional.jar"/>
+  <property name="threddsResources.jar" value="release/threddsResources-3.10.jar"/>
+
+  <property name="junit.jar" value="external/junit.jar"/>
+  <property name="httpunit.jar" value="external/httpunit.jar"/>
+
+  <fileset id="compile.libraries" dir="${lib.dir}">
+    <patternset id="compile.libs">
+      <include name="${bufr.jar}"/>
+      <include name="${cdm.jar}"/>
+      <include name="${grib.jar}"/>
+      <include name="${prefs.jar}"/>
+      <include name="${visadNoDods.jar}"/>
+
+      <include name="${jdom.jar}"/>
+      <include name="${fileupload.jar}"/>
+      <include name="${httpclient.jar}"/>
+      <include name="${logging.jar}"/>
+    </patternset>
+  </fileset>
+
+  <fileset id="runtime.libraries" dir="${lib.dir}">
+    <patternset id="runtime.libs">
+      <include name="${threddsResources.jar}" />
+      <include name="${commons-io.jar}"/>
+      <include name="${gnu-regexp.jar}"/>
+      <include name="${http-codec.jar}"/>
+      <include name="${http-logging.jar}"/>
+      <include name="${jpeg2000.jar}"/>
+      <include name="${xml-apis.jar}"/>
+      <include name="${xercesImpl.jar}"/>
+    </patternset>
+  </fileset>
+
+  <fileset id="servlet.compile.libraries" dir="${lib.dir}">
     <include name="${servlet.jar}"/>
   </fileset>
 
   <path id="compile.classpath">
-    <fileset refid="internal.compile.libraries"/>
-    <fileset refid="external.compile.libraries"/>
-    <fileset refid="servlet.compile.libraries"/>
+    <fileset refid="compile.libraries" />
+    <fileset refid="servlet.compile.libraries" />
   </path>
 
   <!-- targets -->
@@ -128,7 +145,7 @@
   </target>
 
   <target name="cleanCompile" depends="clean, compile"/>
-  <target name="cleanDist" depends="clean, compile, makeCatalogJar, makeJarResources, makeSrc, makeWar, makeAllZip"/>
+  <target name="cleanDist" depends="clean, compile, makeWar"/>
   <target name="cleanTestSetup" depends="clean, compile, test-setup"/>
   <target name="init">
     <mkdir dir="${build.classes.dir}"/>
@@ -150,7 +167,7 @@
     <echo>build.debuglevel=${build.debuglevel}</echo -->
   </target>
 
-  <target name="dist" depends="compile, makeCatalogJar, makeJarResources, makeSrc, makeWar, makeAllZip"/>
+  <target name="dist" depends="compile, makeWar"/>
 
   <target name="compile" depends="init, release-settings" description="TDS compile">
     <javac destdir="${build.classes.dir}" source="1.4" target="1.4" debug="${build.debug}"
@@ -161,14 +178,8 @@
     </javac>
   </target>
 
-  <!-- Information about the servlet context and such. -->
-  <property name="context.name" value="thredds"/>
-  <property name="contextPath" value="/${context.name}"/>
-  <property name="war.dir" value="${dist.dir}/${context.name}"/>
-  <property name="warfile" value="${context.name}.war"/>
-
   <!-- build war directory -->
-  <target name="war-setup" depends="compile, makeJarResources" description="create a distribution">
+  <target name="war-setup" depends="compile" description="create a distribution">
     <!-- create README file with time and version -->
     <mkdir dir="${war.dir}"/>
     <copy file="README.TEMPLATE" tofile="${war.dir}/README.txt" overwrite="true">
@@ -196,43 +207,27 @@
     <!-- copy libraries to war lib directory. -->
     <mkdir dir="${war.dir}/WEB-INF/lib"/>
     <copy todir="${war.dir}/WEB-INF/lib" flatten="true" overwrite="true" preservelastmodified="true">
-      <fileset refid="internal.compile.libraries"/>
-      <fileset refid="external.compile.libraries"/>
-      <fileset refid="internal.runtime.libraries"/>
-      <fileset refid="external.runtime.libraries"/>
+      <fileset refid="compile.libraries"/>
+      <fileset refid="runtime.libraries"/>
     </copy>
 
-    <!-- copy dods resources to war directory
-    <copy todir="${war.dir}" preservelastmodified="true" overwrite="true">
-    <fileset dir="../dodsAS/resources" excludes="CVS"/>
-    </copy> -->
-
-    <!-- copy adde resources to war directory
-    <copy todir="${war.dir}" preservelastmodified="true" overwrite="true">
-    <fileset dir="../adde/resources" excludes="CVS"/>
-    </copy > -->
-
-    <!-- Copy resources jar file to war lib directory -->
-    <copy file="${dist.dir}/${jarResourcesReleaseName}"
-          todir="${war.dir}/WEB-INF/lib" preservelastmodified="true" overwrite="true"/>
-
-    <!-- Copy web.xml into war dir. -->
-    <copy file="${war.resources.dir}/WEB-INF/web-thredds.xml"
+    <!-- Copy WEB-INF contents. (Renaming web.xml.) -->
+    <copy todir="${war.dir}/WEB-INF" overwrite="true" preservelastmodified="true">
+      <fileset>
+        <!--include name="${webapp.src.dir}/WEB-INF/web.xml" /-->
+        <include name="${webapp.src.dir}/WEB-INF/log4j.xml" />
+        <include name="${webapp.src.dir}/WEB-INF/xsl/*.xsl" />
+      </fileset>
+    </copy>
+    <copy file="${webapp.src.dir}/WEB-INF/web-thredds.xml"
           tofile="${war.dir}/WEB-INF/web.xml"
           overwrite="true" preservelastmodified="true"/>
 
-    <!-- Copy context.xml into war dir. -->
-    <!--copy file="${war.resources.dir}/META-INF/context-thredds.xml"
-          tofile="${war.dir}/META-INF/context.xml"
-          overwrite="true" preservelastmodified="true"/-->
-
     <!-- copy web resources to war directory last -->
     <copy todir="${war.dir}" preservelastmodified="true" overwrite="true">
-      <fileset dir="${war.resources.dir}">
-        <exclude name="CVS"/>
-        <exclude name="xml/**"/>
-        <exclude name="META-INF/**"/>
-        <exclude name="**/*dqcServletRedirect*"/>
+      <fileset dir="${webapp.resources.dir}">
+        <!--exclude name="CVS"/>
+        <exclude name=".svn"/-->
       </fileset>
     </copy>
 
@@ -256,7 +251,7 @@
   <!-- dist target -->
 
   <target name="makeWar" depends="war-setup" description="create a war file from the distribution directory">
-    <jar destfile="${dist.dir}/${warfile}">
+    <jar destfile="${build.dir}/${warfile}">
       <fileset dir="${war.dir}"/>
 
       <manifest>
@@ -268,26 +263,20 @@
       </manifest>
     </jar>
 
-    <war destfile="${dist.dir}/${warfile}"
-            webxml="${webapp.src.dir}/WEB-INF/web-thredds.xml">
-      <lib >
-        <fileset refid="internal.compile.libraries"/>
-        <fileset refid="external.compile.libraries"/>
-        <fileset refid="internal.runtime.libraries"/>
-        <fileset refid="external.runtime.libraries"/>
-      </lib>
-
-    </war>
   </target>
 
   <target name="makeExpWar" depends="war-setup" description="create a war file from the distribution directory">
     <!-- Copy web.xml into war dir. -->
-    <copy file="${war.resources.dir}/WEB-INF/web-expThredds.xml"
+    <copy file="${webapp.src.dir}/WEB-INF/web-expThredds.xml"
           tofile="${war.dir}/WEB-INF/web.xml"
           overwrite="true" preservelastmodified="true"/>
+    <!-- Copy web.xml into war dir. -->
+    <mkdir dir="${war.dir}/META-INF"/>
+    <copy file="${webapp.src.dir}/META-INF/context-expThredds.xml"
+          tofile="${war.dir}/META-INF/context.xml"
+          overwrite="true" preservelastmodified="true"/>
 
-
-    <jar destfile="${dist.dir}/expThredds.war">
+    <jar destfile="${build.dir}/expThredds.war">
       <fileset dir="${war.dir}"/>
 
       <manifest>
@@ -333,7 +322,8 @@
     <!-- copy libraries to war lib directory. -->
     <mkdir dir="${war.dir}/WEB-INF/lib"/>
     <copy todir="${war.dir}/WEB-INF/lib" flatten="true" overwrite="true" preservelastmodified="true">
-      <fileset refid="nj22.compile.libraries"/>
+      <fileset refid="compile.libraries"/>
+      <fileset refid="runtime.libraries"/>
     </copy>
 
     <!-- create initialContent directory with log directory -->
@@ -341,27 +331,27 @@
     <chmod file="${war.dir}/initialContent/logs" perm="775" type="dir"/>
 
     <!-- Copy index.html into war dir. -->
-    <copy file="${war.resources.dir}/index-dqcServletRedirect.html"
+    <copy file="${webapp.resources.dir}/index-dqcServletRedirect.html"
           tofile="${war.dir}/index.html"
           overwrite="true" preservelastmodified="true"/>
 
     <!-- Copy web.xml into war dir. -->
-    <copy file="${war.resources.dir}/WEB-INF/web-dqcServletRedirect.xml"
+    <copy file="${webapp.src.dir}/WEB-INF/web-dqcServletRedirect.xml"
           tofile="${war.dir}/WEB-INF/web.xml"
           overwrite="true" preservelastmodified="true"/>
 
     <!-- Copy log4j.xml into war dir. -->
-    <copy file="${war.resources.dir}/WEB-INF/log4j-dqcServletRedirect.xml"
+    <copy file="${webapp.src.dir}/WEB-INF/log4j-dqcServletRedirect.xml"
           tofile="${war.dir}/WEB-INF/log4j.xml"
           overwrite="true" preservelastmodified="true"/>
 
     <!-- Copy context.xml into war dir. -->
-    <copy file="${war.resources.dir}/META-INF/context-dqcServletRedirect.xml"
+    <copy file="${webapp.src.dir}/META-INF/context-dqcServletRedirect.xml"
           tofile="${war.dir}/META-INF/context.xml"
           overwrite="true" preservelastmodified="true"/>
 
     <!-- Create the WAR file. -->
-    <jar destfile="${dist.dir}/dqcServlet.war">
+    <jar destfile="${build.dir}/dqcServlet.war">
       <fileset dir="${war.dir}"/>
 
       <manifest>
@@ -375,180 +365,6 @@
 
   </target>
 
-  <!-- ********** BINARY CLASS RELEASE *****************
-  <property name="jarReleaseName" value="threddsCatalog-${release.version}.jar"/>
-  <target name="makeJar" depends="clean compileCatalog" description="create a thredds catalog (only) class jar file">
-    <jar destfile="${dist.dir}/${jarReleaseName}">
-      <fileset dir="${build.classes.dir}">
-        <exclude name="ucar/**"/>
-        <exclude name="dods/**"/>
-        <exclude name="thredds/cataloggen/config/**"/>
-        <exclude name="thredds/cataloggen/servlet/**"/>
-        <exclude name="thredds/dqc/**"/>
-        <exclude name="thredds/servlet/**"/>
-        <exclude name="thredds/wcs/**"/>
-      </fileset>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="THREDDS Catalog API"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-    </jar>
-  </target> -->
-
-  <!-- ********** BINARY CLASS RELEASE ***************** -->
-  <property name="catReleaseName" value="threddsCatalog-${release.version}.jar"/>
-  <target name="makeCatalogJar" depends="compileCatalog" description="create thredds catalog class jar file">
-    <jar destfile="${dist.dir}/${catReleaseName}">
-      <fileset dir="${build.classes.dir}"/>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="THREDDS CATALOG API"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-    </jar>
-  </target>
-
-  <!-- ********** RESOURCES RELEASE ***************** -->
-  <property name="jarResourcesReleaseName" value="threddsResources-${release.version}.jar"/>
-  <target name="makeJarResources" description="create a jar file of THREDDS resources">
-    <jar destfile="${dist.dir}/${jarResourcesReleaseName}">
-      <fileset dir="${resources.dir}">
-        <exclude name="CVS"/>
-      </fileset>
-
-      <fileset dir="${nj22_resources.dir}">
-        <include name="resources/nj22/coords/*"/>
-        <include name="resources/nj22/schemas/*"/>
-        <include name="resources/nj22/tables/*"/>
-        <exclude name="CVS"/>
-      </fileset>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="THREDDS Resources"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-    </jar>
-  </target>
-
-  <!-- ************* threddsAll.zip ******************** -->
-  <property name="allZipReleaseName" value="threddsAll-${release.version}.zip"/>
-  <property name="allZip.dir" location="${dist.dir}/allZip"/>
-  <target name="makeAllZip" depends="makeCatalogJar, makeJarResources"
-          description="create a zip file containing all required and optional binary class jar files">
-    <mkdir dir="${allZip.dir}"/>
-    <copy todir="${allZip.dir}" flatten="true" overwrite="true">
-      <fileset file="${dist.dir}/${catReleaseName}"/>
-      <fileset file="${dist.dir}/${jarResourcesReleaseName}"/>
-      <fileset refid="nj22.compile.libraries"/>
-      <fileset refid="thredds.compile.libraries"/>
-      <fileset refid="nj22.runtime.libraries"/>
-      <fileset refid="thredds.runtime.libraries"/>
-    </copy>
-
-    <zip destfile="${dist.dir}/${allZipReleaseName}" basedir="${allZip.dir}"/>
-  </target>
-
-  <!-- ************* threddsAll.jar??? ******************** -->
-  <!--property name="allJarReleaseName" value="threddsAll-${release.version.minor}.jar"/>
-  <property name="allJar.dir" location="${dist.dir}/allJar"/>
-  <target name="makeAllJar" depends="makeAllZip" description="create a binary class jar file containing all classes from all required and optional binary class jar files"  -->
-
-  <!--unzip all so we can make threddsAll.jar -->
-  <!--mkdir dir="${allJar.dir}"/>
-    <unzip dest="${allJar.dir}">
-      <fileset dir="${allZip.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </unzip>
-
-    <jar destfile="${dist.dir}/${allJarReleaseName}">
-      <fileset dir="${allJar.dir}"/>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="THREDDS API (ALL)"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-    </jar>
-
-  </target-->
-
-  <!-- ************* SOURCE RELEASE ******************** -->
-  <property name="srcReleaseName" value="threddsSrc-${release.version}.zip"/>
-  <property name="srcZip.dir" location="${dist.dir}/srcZip"/>
-  <target name="makeSrc" description="create source release">
-    <mkdir dir="${srcZip.dir}"/>
-    <copy file="README.TEMPLATE" tofile="${srcZip.dir}/README.txt" overwrite="true">
-      <filterset>
-        <filter token="BUILDTIME" value="${buildtime}"/>
-        <filter token="VERSION" value="${release.version}"/>
-        <filter token="VERSION.MINOR" value="${release.version.minor}"/>
-      </filterset>
-    </copy>
-    <copy todir="${srcZip.dir}" overwrite="true" preservelastmodified="true">
-      <fileset dir="${root.dir}">
-        <include name="build.xml"/>
-        <include name="README.TEMPLATE"/>
-        <include name="resourcespath/**"/>
-        <include name="resourceswar/**"/>
-      </fileset>
-    </copy>
-
-    <copy todir="${srcZip.dir}" overwrite="true" preservelastmodified="true">
-      <fileset dir="${nj22.root.dir}">
-        <include name="resources/**"/>
-      </fileset>
-    </copy>
-
-    <copy todir="${srcZip.dir}/src" overwrite="true" preservelastmodified="true">
-      <fileset dir="${src.dir}">
-        <include name="dods/**/*.java"/>
-        <include name="thredds/**/*.java"/>
-        <exclude name="thredds/adde/**"/>
-        <exclude name="dods/servers/agg/**"/>
-      </fileset>
-    </copy>
-
-    <copy todir="${srcZip.dir}/src" overwrite="true" preservelastmodified="true">
-      <fileset dir="${nj22.src.dir}">
-        <include name="dods/**/*.java"/>
-        <include name="ucar/**/*.java"/>
-        <exclude name="dods/servers/agg/**"/>
-        <exclude name="dods/servers/sql/**"/>
-        <exclude name="dods/servers/test/**"/>
-        <exclude name="dods/servlet/jake/**"/>
-        <exclude name="dods/util/geturl/**"/>
-        <exclude name="dods/util/gui/**"/>
-      </fileset>
-    </copy>
-
-    <copy todir="${srcZip.dir}/test" overwrite="true" preservelastmodified="true">
-      <fileset dir="${test.dir}"/>
-    </copy>
-
-    <copy todir="${srcZip.dir}/lib" overwrite="true" preservelastmodified="true">
-      <fileset refid="servlet.compile.libraries"/>
-      <fileset refid="nj22.compile.libraries"/>
-      <fileset refid="thredds.compile.libraries"/>
-      <fileset refid="nj22.runtime.libraries"/>
-      <fileset refid="thredds.runtime.libraries"/>
-    </copy>
-
-    <zip destfile="${dist.dir}/${srcReleaseName}" basedir="${srcZip.dir}"/>
-  </target>
-
   <!-- ********** Javadoc Realease ********** -->
   <!-- Build the Javadocs  -->
   <target name="javadoc" description="make the javadocs">
@@ -559,26 +375,22 @@
       <classpath refid="compile.classpath"/>
 
       <package name="dods.servers.netcdf"/>
-      <package name="thredds.catalog"/>
-      <package name="thredds.catalog.query"/>
-      <package name="thredds.catalog.parser.jdom"/>
-      <package name="thredds.cataloggen.*"/>
-      <package name="thredds.crawlabledataset.*"/>
-      <package name="thredds.dqc.*"/>
+      <package name="thredds.cataloggen.servlet"/>
+      <package name="thredds.dqc.server.*"/>
+      <package name="thredds.examples"/>
       <package name="thredds.servlet"/>
       <package name="thredds.servlet.ldm"/>
-      <package name="thredds.util"/>
       <package name="thredds.wcs.servlet"/>
 
     </javadoc>
   </target>
 
   <!-- Create javadoc Zip -->
-  <property name="javadocZipReleaseName" value="threddsJavadoc-${release.version}.zip"/>
-  <property name="javadocZip.dir" location="${dist.dir}/javadocZip"/>
+  <property name="javadocZipReleaseName" value="tdsJavadoc-${release.version}.zip"/>
+  <property name="javadocZip.dir" location="${build.dir}/javadocZip"/>
   <property name="javadocZip.target.dir" location="${javadocZip.dir}/thredds-${release.version.minor}/javadoc"/>
   <target name="makeJavadocZip" depends="javadoc"
-          description="create a zip file containing THREDDS javadoc">
+          description="create a zip file containing THREDDS Data Server javadoc">
     <mkdir dir="${javadocZip.target.dir}"/>
     <copy todir="${javadocZip.target.dir}" overwrite="true">
       <fileset dir="${javadoc.dir}"/>
@@ -699,7 +511,7 @@
   </target>
 
   <!-- release war file -->
-  <target name="release" description="Release war files to release directory: do 'ant makeWar' first">
+  <!--target name="release" description="Release war files to release directory: do 'ant makeWar' first">
     <copy todir="${release.library.dir}" overwrite="true">
       <fileset dir="${dist.dir}" includes="${warfile}"/>
     </copy>
@@ -707,18 +519,18 @@
       <fileset file="${war.dir}/CHANGES.txt"/>
     </copy>
 
-  </target>
+  </target-->
 
   <!-- Release catalog manual. (target from thredds/catalog/build.xml) -->
-  <target name="releaseManual" description="Copy manual to release directory">
+  <!--target name="releaseManual" description="Copy manual to release directory">
     <copy todir="${release.library.dir}" overwrite="true" file="./docs/CatalogManual.doc"/>
-  </target>
+  </target-->
 
 
   <!-- TESTING  -->
   <path id="test.classpath">
     <path refid="compile.classpath"/>
-    <fileset dir="${nj22.lib.dir}" includes="${junit.jar}"/>
+    <fileset dir="${lib.dir}" includes="${junit.jar}"/>
     <fileset dir="${lib.dir}" includes="${httpunit.jar}"/>
     <pathelement location="${build.classes.dir}"/>
     <pathelement location="${test.classes.dir}"/>
