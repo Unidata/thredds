@@ -12,7 +12,7 @@
 package dods.dap;
 import java.io.*;
 
-import dods.dap.Server.*;
+//import dods.dap.Server.*;
 
 /**
  * A helper class for <code>DVector</code>.  It allows <code>DVector</code>,
