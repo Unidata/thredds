@@ -6,6 +6,7 @@ import java.util.List;
  * The public interface to a Variable.
  * @author caron
  * @version $Revision$ $Date$
+ *
  */
 
 public interface VariableIF {
