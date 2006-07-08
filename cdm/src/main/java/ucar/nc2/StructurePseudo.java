@@ -30,6 +30,7 @@ import java.io.IOException;
  * Make a collection of variables with the same outer dimension into a fake Structure.
  * Its fake because the variables are not stored contiguously.
  * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 public class StructurePseudo extends Structure {
   private ArrayList orgVariables =  new ArrayList();
@@ -126,17 +127,3 @@ public class StructurePseudo extends Structure {
   }
 
 }
-
-/* Change History:
-   $Log: StructurePseudo.java,v $
-   Revision 1.3  2005/05/19 23:43:42  caron
-   clean up javadoc
-
-   Revision 1.2  2005/05/15 23:06:52  caron
-   add fast iterator over Structures, Datatypes
-   add convertScalarDouble to StructureData
-
-   Revision 1.1  2005/05/11 00:09:56  caron
-   refactor StuctureData, dt.point
-
-*/

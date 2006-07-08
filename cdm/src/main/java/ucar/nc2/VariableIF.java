@@ -4,6 +4,8 @@ import java.util.List;
 
 /**
  * The public interface to a Variable.
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 
 public interface VariableIF {

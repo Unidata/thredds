@@ -35,26 +35,3 @@ public interface NamedObject {
   public String getDescription(); 
 
 }
-
-
-/* Change History:
-   $Log: NamedObject.java,v $
-   Revision 1.3  2005/02/18 01:14:58  caron
-   no message
-
-   Revision 1.2  2004/07/12 23:40:19  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:28  caron
-   checkin 2.2
-
-   Revision 1.1  2003/04/08 15:06:34  caron
-   nc2 version 2.1
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.1.1.1  2002/02/15 00:01:48  caron
-   import sources
-
-*/

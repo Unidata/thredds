@@ -537,7 +537,6 @@ public class NetcdfFile {
    *  Therefore it is generally better to get the shared Dimensions from the
    *  Groups.
    * @return List of type Dimension.
-   * @deprecated use Group.getDimensions()
    */
   public List getDimensions() { return new ArrayList( dimensions); }
 
@@ -1049,8 +1048,7 @@ public class NetcdfFile {
 
     // LOOK this only works for a single structure, what about nested ?
     Range outerRange = (Range) section.get(0);
-    ArrayStructureMA structureArray = new ArrayStructureMA(members, new int[] {outerRange.length()});
-    return structureArray;
+    return new ArrayStructureMA(members, new int[] {outerRange.length()});
   }
 
   /** Debug info for this object. */

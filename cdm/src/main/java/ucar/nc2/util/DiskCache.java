@@ -73,21 +73,21 @@ import java.util.*;
     }
     doSomething( wf);
   </pre>
- * @author john
+ * @author jcaron
+ * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
  */
 public class DiskCache {
   static private String root = null;
   static private boolean standardPolicy = false;
 
   static {
-    try { root = System.getProperty("nj22.cache"); } catch (Exception e1) {}
+    root = System.getProperty("nj22.cache");
 
     if (root == null) {
-      String home = null;
-      try { home = System.getProperty("user.home"); } catch (Exception e2) {}
+      String home = System.getProperty("user.home");
 
       if (home == null)
-        try { home = System.getProperty("user.dir"); } catch (Exception e2) {}
+        home = System.getProperty("user.dir");
 
       if (home == null)
         home = ".";
@@ -95,10 +95,9 @@ public class DiskCache {
       root = home + "/.nj22/cache/";
     }
 
-    try {
-      String policy = System.getProperty("nj22.cachePolicy");
-      standardPolicy = (policy != null) && policy.equalsIgnoreCase("true");
-    } catch (Exception e1) {}
+    String policy = System.getProperty("nj22.cachePolicy");
+    if (policy != null)
+      standardPolicy = policy.equalsIgnoreCase("true");
 
   }
 

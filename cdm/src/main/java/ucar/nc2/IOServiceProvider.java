@@ -28,7 +28,7 @@ import java.util.List;
  * This is only used by service implementors.
  *
  * @author caron
- * @version 1.0
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 public interface IOServiceProvider {
 

@@ -37,13 +37,3 @@ public interface DebugFlags {
   public void set(String flagName, boolean value);
 
 }
-
-/* Change History:
-   $Log: DebugFlags.java,v $
-   Revision 1.3  2005/02/18 01:14:58  caron
-   no message
-
-   Revision 1.2  2004/08/16 20:53:52  caron
-   2.2 alpha (2)
-
-*/

@@ -23,6 +23,9 @@ package ucar.nc2;
 /**
  * A factory for implementations of netcdf-3 IOServiceProvider.
  * This allows us to switch implementations in one place, used for testing and timing.
+ * 
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 
 class SPFactory {

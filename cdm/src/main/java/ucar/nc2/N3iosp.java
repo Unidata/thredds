@@ -34,6 +34,8 @@ import java.io.File;
  *  AKA "file format version 1" files.
  *
  * @see N3raf concrete class
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 
 abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
@@ -150,9 +152,8 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
    * @return an ArrayStructure, with all the data read in.
    *
    * @throws IOException
-   * @throws InvalidRangeException
    */
-  private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, List sectionList) throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, List sectionList) throws java.io.IOException {
     // has to be 1D
     Range recordRange = (Range) sectionList.get(0);
 
@@ -215,10 +216,10 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
 
     Indexer index = new RegularIndexer( fullShape, v2.getElementSize(), vinfo.begin, sectionList, recsize);
     Object dataObject = readData( index, dataType);
-    Array result = Array.factory( dataType.getPrimitiveClassType(), Range.getShape(sectionList), dataObject);
+    return Array.factory( dataType.getPrimitiveClassType(), Range.getShape(sectionList), dataObject);
 
     //if (flatten)
-      return result;
+    //  return result;
 
     /* If flatten is false, wrap the result Array in an ArrayStructureMA
     StructureMembers members = new StructureMembers( v2.getName());
@@ -567,136 +568,4 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
 
   abstract protected void _create(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException;
 
-
 }
-
-/* Change History:
-   $Log: N3iosp.java,v $
-   Revision 1.36  2006/06/06 16:07:12  caron
-   *** empty log message ***
-
-   Revision 1.35  2006/05/08 02:47:36  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.34  2006/04/03 22:59:46  caron
-   IOSP.readNestedData() remove flatten, handle flatten=false in NetcdfFile.readMemberData(); this allows IOSPs to be simpler
-   add metar decoder from Robb's thredds.servlet.ldm package
-
-   Revision 1.33  2006/03/09 22:18:46  caron
-   bug fixes for sync, dods.
-
-   Revision 1.32  2006/02/13 19:51:24  caron
-   javadoc
-
-   Revision 1.31  2006/01/11 16:15:47  caron
-   syncExtend
-   N3iosp, FileWriter writes by record
-
-   Revision 1.30  2006/01/04 00:02:40  caron
-   dods src under our CVS
-   forecastModelRun aggregation
-   substitute M3IOVGGrid for M3IO coordSysBuilder
-   iosp setProperties uses list.
-   use jdom 1.0
-
-   Revision 1.29  2005/12/15 00:29:10  caron
-   *** empty log message ***
-
-   Revision 1.28  2005/12/09 22:26:23  caron
-   dods.DConnect suuports sessions - need new dods lib
-   improve aggregation: use DiskCache2
-   sync, release, etc
-
-   Revision 1.27  2005/12/09 04:24:41  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.26  2005/11/03 19:30:24  caron
-   no message
-
-   Revision 1.25  2005/10/11 19:36:54  caron
-   NcML add Records bug fixes
-   iosp.isValidFile( ) throws IOException
-   release 2.2.11
-
-   Revision 1.24  2005/08/26 00:32:40  caron
-   deal with NetCDF "non-canonical length" files
-
-   Revision 1.23  2005/07/25 22:20:11  caron
-   add iosp.synch()
-
-   Revision 1.22  2005/06/11 18:42:05  caron
-   no message
-
-   Revision 1.21  2005/05/23 21:52:57  caron
-   add getDetailInfo() to IOSP for error/debug info
-
-   Revision 1.20  2005/05/23 20:18:37  caron
-   refactor for scale/offset/missing
-
-   Revision 1.19  2005/05/19 00:10:46  caron
-   fix file truncation "wart"
-
-   Revision 1.18  2005/05/12 02:38:49  caron
-   fix dods structure use; Member does not reference VariableSimpleIF
-
-   Revision 1.17  2005/05/11 19:58:06  caron
-   add VariableSimpleIF, remove TypedDataVariable
-
-   Revision 1.16  2005/05/11 00:09:55  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.15  2005/05/04 17:18:43  caron
-   *** empty log message ***
-
-   Revision 1.14  2005/05/03 20:09:29  caron
-   more fixes to Point/Station
-   clean up nc2.units, add unit tests
-
-   Revision 1.13  2005/04/18 23:45:56  caron
-   _unsigned
-   FileCache
-   minFileLength
-
-   Revision 1.12  2005/03/21 22:06:39  caron
-   fix truncation when no fill and no record variables written and non-record variables not fully written
-
-   Revision 1.11  2005/02/22 22:12:13  caron
-   *** empty log message ***
-
-   Revision 1.10  2004/09/22 18:44:32  caron
-   move common to ucar.unidata
-
-   Revision 1.9  2004/09/22 13:46:35  caron
-   *** empty log message ***
-
-   Revision 1.8  2004/09/09 22:47:39  caron
-   station updates
-
-   Revision 1.7  2004/08/26 17:55:10  caron
-   no message
-
-   Revision 1.6  2004/08/17 19:20:04  caron
-   2.2 alpha (2)
-
-   Revision 1.5  2004/08/17 00:09:13  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/08/16 20:53:45  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:17  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:10  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
- */

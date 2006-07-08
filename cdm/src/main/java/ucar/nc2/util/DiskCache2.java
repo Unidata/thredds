@@ -41,7 +41,8 @@ import java.util.*;
  * <li>  through the system property "user.dir" if it exists
  * <li>  to the current working directory
  * </ol>
- * @author john
+ * @author jcaron
+ * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
  */
 public class DiskCache2 {
   public static int CACHEPATH_POLICY_ONE_DIRECTORY = 0;
@@ -67,27 +68,26 @@ public class DiskCache2 {
     this.persistMinutes = persistMinutes;
 
     if (reletiveToHome) {
-      String home = null;
-      try { home = System.getProperty("nj22.cachePersistRoot"); } catch (Exception e1) {}
+      String home = System.getProperty("nj22.cachePersistRoot");
 
       if (home == null)
-        try { home = System.getProperty("user.home"); } catch (Exception e2) {}
+        home = System.getProperty("user.home");
 
       if (home == null)
-        try { home = System.getProperty("user.dir"); } catch (Exception e2) {}
+        home = System.getProperty("user.dir");
 
       if (home == null)
         home = ".";
 
       root = home + root;
     }
-    setRootDirectory( root);
+    setRootDirectory(root);
 
     if (scourEveryMinutes > 0) {
       timer = new Timer();
       Calendar c = Calendar.getInstance(); // contains current startup time
-      c.add( Calendar.MINUTE, scourEveryMinutes);
-      timer.scheduleAtFixedRate( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * scourEveryMinutes );
+      c.add(Calendar.MINUTE, scourEveryMinutes);
+      timer.scheduleAtFixedRate(new CacheScourTask(), c.getTime(), (long) 1000 * 60 * scourEveryMinutes);
     }
 
   }

@@ -882,11 +882,13 @@ public class Variable implements VariableIF {
       if (debugCaching) System.out.println("got data from cache "+getName());
       return cache.data.copy();
     }
-    Array data = null;
+    Array data;
     try {
       Variable useVar = (orgVar != null) ? orgVar : this;
       data = ncfile.readData( useVar, useVar.getRanges());
-    } catch (InvalidRangeException e) { } // cant happen
+    } catch (InvalidRangeException e) {
+      throw new IOException(e.getMessage()); // cant happen
+    }
 
     if (isCaching()) {
       cache.data = data;

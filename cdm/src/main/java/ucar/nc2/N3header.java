@@ -30,6 +30,9 @@ import java.io.PrintStream;
 /**
  * Netcdf header reading and writing for version 3 file format.
  * This is used by N3iosp.
+ *
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 
 class N3header {
@@ -473,7 +476,7 @@ class N3header {
     }
     for (int i=0; i<numdims; i++) {
       Dimension dim = (Dimension) dims.get(i);
-      if (debugPos) out.println("  dim "+i+" pos= "+raf.getFilePointer());
+      if (debugPos && (out != null)) out.println("  dim "+i+" pos= "+raf.getFilePointer());
       writeString(dim.getName());
       raf.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       if (dim.isUnlimited()) udim = dim;
@@ -721,90 +724,3 @@ class N3header {
   }
 
 }
-
-/* Change History:
-   $Log: N3header.java,v $
-   Revision 1.24  2006/03/09 22:18:46  caron
-   bug fixes for sync, dods.
-
-   Revision 1.23  2006/01/11 16:15:47  caron
-   syncExtend
-   N3iosp, FileWriter writes by record
-
-   Revision 1.22  2005/12/15 00:29:10  caron
-   *** empty log message ***
-
-   Revision 1.21  2005/12/09 04:24:41  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.20  2005/11/03 19:30:24  caron
-   no message
-
-   Revision 1.19  2005/10/11 19:36:54  caron
-   NcML add Records bug fixes
-   iosp.isValidFile( ) throws IOException
-   release 2.2.11
-
-   Revision 1.18  2005/08/26 00:32:40  caron
-   deal with NetCDF "non-canonical length" files
-
-   Revision 1.17  2005/07/11 20:12:22  caron
-   *** empty log message ***
-
-   Revision 1.16  2005/07/08 18:49:56  caron
-   handle DODS CHAR variables
-   improve NcML-G
-   handle String array attributes
-
-   Revision 1.15  2005/05/19 21:56:02  caron
-   turn off all debugging
-
-   Revision 1.14  2005/05/19 00:10:45  caron
-   fix file truncation "wart"
-
-   Revision 1.13  2005/05/11 00:09:55  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.12  2005/05/04 17:18:43  caron
-   *** empty log message ***
-
-   Revision 1.11  2005/05/03 20:09:29  caron
-   more fixes to Point/Station
-   clean up nc2.units, add unit tests
-
-   Revision 1.10  2005/04/18 23:45:56  caron
-   _unsigned
-   FileCache
-   minFileLength
-
-   Revision 1.9  2005/03/21 22:06:39  caron
-   fix truncation when no fill and no record variables written and non-record variables not fully written
-
-   Revision 1.8  2004/10/12 02:57:06  caron
-   refactor for grib1/grib2: move common functionality up to ucar.grib
-   split GribServiceProvider
-
-   Revision 1.7  2004/09/22 18:44:32  caron
-   move common to ucar.unidata
-
-   Revision 1.6  2004/09/22 13:46:35  caron
-   *** empty log message ***
-
-   Revision 1.5  2004/08/26 17:55:10  caron
-   no message
-
-   Revision 1.4  2004/08/16 20:53:45  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:17  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:10  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
- */

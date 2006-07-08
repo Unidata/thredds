@@ -25,6 +25,8 @@ import ucar.ma2.*;
 
 /**
  * Use our RandomAccessFile class to read and write.
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 
 class N3raf extends N3iosp  {

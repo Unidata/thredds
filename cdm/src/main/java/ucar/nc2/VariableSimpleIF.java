@@ -27,6 +27,8 @@ import java.util.List;
 /**
  * A "Simple" Variable, that allows non-netcdf implementations of typed datasets.
  * @see ucar.nc2.dt.TypedDataset
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 public interface VariableSimpleIF {
   /** The full name of the data Variable */

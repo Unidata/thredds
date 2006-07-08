@@ -21,7 +21,6 @@
 package ucar.nc2.util;
 
 import java.net.URI;
-import java.io.UnsupportedEncodingException;
 
 /**
  * @author caron
@@ -67,8 +66,7 @@ public class NetworkUtils {
         return baseUrl+relativeUrl;
       int pos = baseUrl.lastIndexOf('/');
       if (pos > 0) {
-        String r = baseUrl.substring(0,pos+1) + relativeUrl;
-        return r;
+        return baseUrl.substring(0,pos+1) + relativeUrl;
       }
     }
 
@@ -78,7 +76,7 @@ public class NetworkUtils {
     return resolvedURI.toASCIIString();
   }
   
-  private static void test(String uriS) throws UnsupportedEncodingException {
+  private static void test(String uriS) {
     System.out.println(uriS);
     //uriS = URLEncoder.encode(uriS, "UTF-8");
     //System.out.println(uriS);
@@ -91,7 +89,7 @@ public class NetworkUtils {
     System.out.println();
   }
 
-  public static void main(String args[]) throws UnsupportedEncodingException {
+  public static void main(String args[]) {
     test("file:test/dir");
     test("file:/test/dir");
     test("file://test/dir");
@@ -101,26 +99,4 @@ public class NetworkUtils {
     test("file:C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 5.0\\content\\thredds\\cache");
   }
 
-
 }
-
-/* Change History:
-   $Log: NetworkUtils.java,v $
-   Revision 1.5  2006/02/13 19:51:37  caron
-   javadoc
-
-   Revision 1.4  2006/01/19 18:16:54  caron
-   finish() alwas creates a  top dataset
-
-   Revision 1.3  2005/11/11 02:16:17  caron
-   trim attributes
-   NcML aggregation
-   geogrid fixes
-
-   Revision 1.2  2005/03/04 20:38:22  caron
-   javadoc
-
-   Revision 1.1  2005/02/19 22:17:46  caron
-   no message
-
-*/

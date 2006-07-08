@@ -29,6 +29,11 @@ import java.util.zip.*;
 import java.io.IOException;
 import java.nio.*;
 
+/**
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ */
+
 class H5iosp implements IOServiceProvider {
   static boolean debug = false;
   static boolean debugPos = false;
@@ -691,77 +696,3 @@ class H5iosp implements IOServiceProvider {
     return "";
   }
 }
-
-/* Change History:
-   $Log: H5iosp.java,v $
-   Revision 1.20  2006/05/12 20:19:28  caron
-   dapper sequences
-   nexrad station db
-   Aggregation stride bug
-
-   Revision 1.19  2006/04/03 22:59:43  caron
-   IOSP.readNestedData() remove flatten, handle flatten=false in NetcdfFile.readMemberData(); this allows IOSPs to be simpler
-   add metar decoder from Robb's thredds.servlet.ldm package
-
-   Revision 1.18  2006/02/16 23:02:32  caron
-   *** empty log message ***
-
-   Revision 1.17  2006/02/03 00:59:32  caron
-   ArrayStructure refactor.
-   DODS parsing refactor.
-
-   Revision 1.16  2006/01/17 23:07:12  caron
-   *** empty log message ***
-
-   Revision 1.15  2006/01/04 00:02:39  caron
-   dods src under our CVS
-   forecastModelRun aggregation
-   substitute M3IOVGGrid for M3IO coordSysBuilder
-   iosp setProperties uses list.
-   use jdom 1.0
-
-   Revision 1.14  2005/12/15 00:29:09  caron
-   *** empty log message ***
-
-   Revision 1.13  2005/12/09 04:24:41  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.12  2005/07/25 22:20:10  caron
-   add iosp.synch()
-
-   Revision 1.11  2005/05/23 21:52:56  caron
-   add getDetailInfo() to IOSP for error/debug info
-
-   Revision 1.10  2005/05/11 00:09:55  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.9  2004/11/21 01:16:48  caron
-   ncml pass 1
-
-   Revision 1.8  2004/09/22 18:44:32  caron
-   move common to ucar.unidata
-
-   Revision 1.7  2004/09/22 13:46:35  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/08/26 17:55:10  caron
-   no message
-
-   Revision 1.5  2004/08/17 19:20:03  caron
-   2.2 alpha (2)
-
-   Revision 1.4  2004/08/16 20:53:45  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:16  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:09  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
- */

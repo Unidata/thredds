@@ -185,21 +185,3 @@ class H5chunkIndexer extends Indexer {
   }
 
 }
-/* Change History:
-   $Log: H5chunkIndexer.java,v $
-   Revision 1.5  2005/05/11 00:09:55  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.4  2004/08/16 20:53:45  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:16  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:09  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
- */

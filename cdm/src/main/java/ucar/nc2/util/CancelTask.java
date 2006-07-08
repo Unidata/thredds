@@ -25,6 +25,7 @@ package ucar.nc2.util;
  *  and you want to allow the user to cancel it.
  *
  * @author jcaron
+ * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
  */
 
 public interface CancelTask {
@@ -35,19 +36,3 @@ public interface CancelTask {
   /** Called routine got an error, so it sets a message for calling program to show to user. */
   public void setError(String msg);
 }
-
-/* Change History:
-   $Log: CancelTask.java,v $
-   Revision 1.3  2005/02/18 01:14:58  caron
-   no message
-
-   Revision 1.2  2004/07/12 23:40:19  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:28  caron
-   checkin 2.2
-
-   Revision 1.5  2003/07/12 23:08:57  caron
-   add cvs headers, trailers
-
-*/

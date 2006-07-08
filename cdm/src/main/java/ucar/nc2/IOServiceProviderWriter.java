@@ -27,7 +27,7 @@ import java.io.IOException;
  * This is only used by service implementors.
  *
  * @author caron
- * @version 1.0
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 public interface IOServiceProviderWriter extends IOServiceProvider {
 
@@ -59,16 +59,3 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
   public void flush() throws IOException;
 
 }
-
-/* Change History:
-   $Log: IOServiceProviderWriter.java,v $
-   Revision 1.3  2006/03/03 20:07:32  caron
-   grib time coordintes: check timeUnit when creating valid times; use baseTime in udunit, instead of times(0).
-
-   Revision 1.2  2006/02/13 19:51:24  caron
-   javadoc
-
-   Revision 1.1  2005/06/11 18:42:05  caron
-   no message
-
-*/

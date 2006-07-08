@@ -27,6 +27,8 @@ import java.util.Map;
  * A HashMap that removes the oldest member when it exceeds the maximum number of entries.
  *
  * @see java.util.LinkedHashMap
+ *
+ * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
  */
 public class HashMapLRU extends LinkedHashMap {
   private int max_entries = 100;
@@ -46,13 +48,3 @@ public class HashMapLRU extends LinkedHashMap {
    }
 
 }
-
-/* Change History:
-   $Log: HashMapLRU.java,v $
-   Revision 1.2  2005/05/19 23:43:42  caron
-   clean up javadoc
-
-   Revision 1.1  2005/05/11 00:10:08  caron
-   refactor StuctureData, dt.point
-
-*/

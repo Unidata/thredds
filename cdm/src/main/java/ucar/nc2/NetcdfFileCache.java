@@ -54,7 +54,8 @@ import java.util.*;
  * Uses org.apache.commons.logging for error messages.
  *
  * @see ucar.nc2.dataset.NetcdfDataset#acquireFile
- * @author jcaron
+ * @author caron
+ * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
  */
 public class NetcdfFileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileCache.class);
