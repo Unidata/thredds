@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.17"/>
-  <property name="release.version.minor" value="${release.version}.00"/>
+  <property name="release.version.minor" value="${release.version}.01"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
 
@@ -58,7 +58,10 @@
 
   <patternset id="sources">
     <include name="ucar/**/*.java"/>
+    <include name="dods/**/*.java"/>
     <include name="thredds/**/*.java"/>
+    <exclude name="thredds/util/net/*"/>
+    <exclude name="thredds/util/reflect/*"/>
   </patternset>
 
   <!-- Libraries -->
@@ -68,7 +71,7 @@
     <include name="release/${visadNoDods.jar}"/>
     <include name="external/${jdom.jar}"/>
     <include name="external/${httpclient.jar}"/>
-    <include name="external/${logging-minimal.jar}"/>
+    <include name="external/${logging.jar}"/>
   </fileset>
 
   <path id="compile.classpath">
@@ -130,13 +133,7 @@
     <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
            includeAntRuntime="false" source="1.4" target="1.4">
       <src refid="sourcepath" />
-
-      <patternset>
-        <include name="ucar/**/*.java"/>
-        <include name="thredds/catalog/parser/jdom/*.java"/>
-        <include name="thredds/catalog/crawl/*.java"/>
-      </patternset>
-
+      <patternset refid="sources"/>
       <classpath refid="compile.classpath"/>
 
     </javac>

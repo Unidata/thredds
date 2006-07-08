@@ -19,7 +19,9 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.util;
+package timing;
+
+import timing.Stat;
 
 import java.util.ArrayList;
 

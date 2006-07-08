@@ -18,7 +18,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package thredds.util;
+package timing;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -204,22 +204,4 @@ public class Stat {
       out.println("> "+intv[nbins-2]+" == "+bins[nbins-1]);
   }
 
-
-
 }
-
-/**
- * $Log: Stat.java,v $
- * Revision 1.4  2004/09/24 03:26:36  caron
- * merge nj22
- *
- * Revision 1.3  2003/01/23 21:36:10  john
- * stats
- *
- * Revision 1.2  2003/01/13 19:47:37  john
- * io,stat
- *
- * Revision 1.1  2002/12/19 23:02:19  caron
- * latest adde mods
- *
- */
