@@ -30,7 +30,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="cdm" />
-    <orderEntry type="library" name="Tomcat" level="application_server_libraries" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -40,6 +39,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Tomcat" level="application_server_libraries" />
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
@@ -122,6 +122,7 @@
       <url>jar://$MODULE_DIR$/../lib/release/visadNoDods.jar!/</url>
     </containerElement>
     <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../tds/src/main/webapp/WEB-INF/web-thredds.xml" optional="false" version="2.3" />
+    <deploymentDescriptor name="context.xml" url="file://$MODULE_DIR$/../tds/src/main/webapp/META-INF/context-thredds.xml" optional="false" version="5.x" />
     <deploymentDescriptor name="unknown.xml" url="file://$MODULE_DIR$/../tds/src/main/webapp/WEB-INF/log4j.xml" optional="false">
       <option name="DEFAULT_DIR" value="WEB-INF" />
       <option name="NAME" value="unknown.xml" />
