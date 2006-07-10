@@ -188,6 +188,14 @@ public class DateRange {
       this.start = end.subtract( duration);
     }
   }
+  
+  /** Extend this date range by the given one, if needed */
+  public void extend( DateRange dr) {
+    if (dr.getStart().getDate().before( start.getDate()))
+      setStart( dr.getStart());
+    if (dr.getEnd().getDate().after( end.getDate()))
+      setEnd( dr.getEnd());
+  }
 
   public TimeDuration getDuration() { return duration; }
   public void setDuration(TimeDuration duration) {
@@ -249,36 +257,3 @@ public class DateRange {
   private volatile int hashCode = 0; // Bloch, item 8
 
 }
-
-/* Change History:
-   $Log: DateRange.java,v $
-   Revision 1.11  2005/12/30 23:04:03  edavis
-   Fix hashCode.
-
-   Revision 1.10  2005/08/22 01:12:26  caron
-   DatasetEditor
-
-   Revision 1.9  2005/05/26 01:58:00  caron
-   fix DateRange bugs
-
-   Revision 1.8  2005/05/19 21:46:52  caron
-   fix bugs
-
-   Revision 1.7  2005/05/12 14:29:55  caron
-   more station refactoring
-   intelliJ CVS wierdness
-
-   Revision 1.6  2005/05/04 17:56:27  caron
-   use nj22.09
-
-   Revision 1.5  2005/05/03 20:09:03  caron
-   more fixes to Point/Station
-   clean up nc2.units, add unit tests
-
-   Revision 1.4  2005/04/27 21:34:10  caron
-   cleanup DirectoryScanner, InvDatasetScan
-
-   Revision 1.3  2004/09/24 03:26:32  caron
-   merge nj22
-
-*/

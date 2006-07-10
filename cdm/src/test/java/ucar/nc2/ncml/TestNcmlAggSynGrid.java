@@ -39,8 +39,8 @@ public class TestNcmlAggSynGrid extends TestCase {
       assert grid.getDataType() == DataType.DOUBLE;
 
       GridCoordSystem gcsys = grid.getGridCoordSystem();
-      assert gcsys.getLatAxis() != null;
-      assert gcsys.getLonAxis() != null;
+      assert gcsys.getYHorizAxis() != null;
+      assert gcsys.getXHorizAxis() != null;
       assert gcsys.getTimeAxis() != null;
 
       CoordinateAxis taxis = gcsys.getTimeAxis();

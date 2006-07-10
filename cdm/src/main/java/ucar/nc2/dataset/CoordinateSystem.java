@@ -155,7 +155,7 @@ public class CoordinateSystem {
   public String getName() { return name; }
 
   /** List of Dimensions that constitute the domain. */
-  public ArrayList getDomain() { return domain; }
+  public List getDomain() { return domain; }
 
   /** Get the domain rank of the coordinate system = number of dimensions it is a function of. */
   public int getRankDomain() { return domain.size(); }

@@ -28,7 +28,7 @@ public class TestVertical extends TestCase {
     GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
-    VerticalCT vct = gcs.getVerticalTransform2();
+    VerticalCT vct = gcs.getVerticalCT();
     assert vct != null;
     assert vct.getVerticalTransformType() == VerticalCT.Type.OceanS;
 
@@ -55,7 +55,7 @@ public class TestVertical extends TestCase {
     GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
-    VerticalCT vct = gcs.getVerticalTransform2();
+    VerticalCT vct = gcs.getVerticalCT();
     assert vct != null;
     assert vct.getVerticalTransformType() == VerticalCT.Type.OceanSigma;
 
@@ -82,7 +82,7 @@ public class TestVertical extends TestCase {
     GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
-    VerticalCT vct = gcs.getVerticalTransform2();
+    VerticalCT vct = gcs.getVerticalCT();
     assert vct != null;
     assert vct.getVerticalTransformType() == VerticalCT.Type.Sigma;
 
@@ -109,7 +109,7 @@ public class TestVertical extends TestCase {
     GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
-    VerticalCT vct = gcs.getVerticalTransform2();
+    VerticalCT vct = gcs.getVerticalCT();
     assert vct != null;
     assert vct.getVerticalTransformType() == VerticalCT.Type.HybridSigmaPressure : vct.getVerticalTransformType();
 
@@ -136,7 +136,7 @@ public class TestVertical extends TestCase {
     GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
-    VerticalCT vct = gcs.getVerticalTransform2();
+    VerticalCT vct = gcs.getVerticalCT();
     assert vct != null;
     assert vct.getVerticalTransformType() == VerticalCT.Type.WRFEta : vct.getVerticalTransformType();
 

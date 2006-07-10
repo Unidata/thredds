@@ -344,7 +344,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         if (vaxis != null) {
           long nvert = vaxis.getSize();
           out.print("  Vertical axis= " + vaxis.getName() + " units=" + vaxis.getUnitsString() + " size= " + nvert);
-          VerticalCT vt = gcs.getVerticalTransform2();
+          VerticalCT vt = gcs.getVerticalCT();
           if (vt != null)
             out.print(" transform= " + vt.getVerticalTransformType());
 

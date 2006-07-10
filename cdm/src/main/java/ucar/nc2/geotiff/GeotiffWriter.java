@@ -61,7 +61,7 @@ public class GeotiffWriter {
   public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale) throws IOException {
     GridCoordSystem gcs = grid.getGridCoordSystem();
 
-    if (!gcs.isProductSet())
+    if (!gcs.isRegularSpatial())
       throw new IllegalArgumentException("Must have 1D x and y axes for "+ grid.getName());
 
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
@@ -107,7 +107,7 @@ public class GeotiffWriter {
 
     if (grid == null)
       throw new IllegalArgumentException("No grid named "+ gridName+" in fileName");
-    if (!gcs.isProductSet())
+    if (!gcs.isRegularSpatial())
       throw new IllegalArgumentException("Must have 1D x and y axes for "+ grid.getName());
 
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();

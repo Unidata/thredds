@@ -134,9 +134,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
    }
 
   private LatLonRect llbbMax = null;
-  private DateRange dateRange = null;
+  private DateRange dateRangeMax = null;
 
-  private void extractGridDataset() {
+  private void makeRanges() {
 
     java.util.Iterator iter = getGridSets().iterator();
     while (iter.hasNext()) {
@@ -149,8 +149,13 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
       else
         llbbMax.extend(llbb);
 
-      CoordinateAxis1D taxis = gcs.getTimeAxis();
-      DateRange dateRange2 = gcs.getDateRange();
+      DateRange dateRange = gcs.getDateRange();
+      if (dateRange != null) {
+        if (dateRangeMax == null)
+          dateRangeMax = dateRange;
+        else
+          dateRangeMax.extend(dateRange);
+      }
     }
   }
 
@@ -173,15 +178,18 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
   }
 
   public Date getStartDate() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    if (dateRangeMax == null) makeRanges();
+    return dateRangeMax.getStart().getDate();
   }
 
   public Date getEndDate() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    if (dateRangeMax == null) makeRanges();
+    return dateRangeMax.getEnd().getDate();
   }
 
   public LatLonRect getBoundingBox() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    if (llbbMax == null) makeRanges();
+    return llbbMax;
   }
 
   public List getGlobalAttributes() {

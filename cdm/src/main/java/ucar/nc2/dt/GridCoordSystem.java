@@ -21,7 +21,6 @@
 package ucar.nc2.dt;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.VariableIF;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateUnit;
 
@@ -32,6 +31,7 @@ import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import thredds.datatype.DateRange;
 
@@ -52,11 +52,13 @@ import thredds.datatype.DateRange;
  */
 public interface GridCoordSystem {
 
+  /** The name of the Coordinate System */
   public String getName();
 
-   public ArrayList getDomain();
-   public int getRankDomain();
-   public int getRankRange();
+  /** A List of Dimension used by the Coordinate System */
+  public List getDomain();
+   //public int getRankDomain();
+   //public int getRankRange();
 
    /* public boolean containsAxes(List p0);
    public boolean containsAxis(String p0);
@@ -64,38 +66,30 @@ public interface GridCoordSystem {
    public boolean containsAxisTypes(List p0);
    public boolean containsDomain(List p0); */
 
-   public boolean isComplete(VariableIF p0);
+   //public boolean isComplete(VariableIF p0);
    // public boolean isImplicit();
-   public boolean isProductSet();
-   public boolean isRegular();
+   //public boolean isProductSet();
+   //public boolean isRegular();
 
   // axes
    public ArrayList getCoordinateAxes();
 
-   public boolean isGeoReferencing();
-   public boolean isGeoXY();
+   //public boolean isGeoReferencing();
+   // public boolean isGeoXY();
    public boolean isLatLon();
 
-   public CoordinateAxis getHeightAxis();
+   /*public CoordinateAxis getHeightAxis();
    public CoordinateAxis getLatAxis();
    public CoordinateAxis getLonAxis();
    public CoordinateAxis getPressureAxis();
    public CoordinateAxis getTaxis();
+   public CoordinateAxis getXaxis();
+   public CoordinateAxis getYaxis();
+   public CoordinateAxis getZaxis(); */
    public CoordinateAxis1D getTimeAxis();
    public CoordinateAxis1D getVerticalAxis();
    public CoordinateAxis getXHorizAxis();
-   public CoordinateAxis getXaxis();
    public CoordinateAxis getYHorizAxis();
-   public CoordinateAxis getYaxis();
-   public CoordinateAxis getZaxis();
-
-   public boolean hasTimeAxis();
-   public boolean hasVerticalAxis();
-
-   public boolean isRadial();
-   public CoordinateAxis getAzimuthAxis();
-   public CoordinateAxis getElevationAxis();
-   public CoordinateAxis getRadialAxis();
 
    // transforms
    public ArrayList getCoordinateTransforms();
@@ -104,7 +98,7 @@ public interface GridCoordSystem {
    public ProjectionCT getProjectionCT();
 
    public VerticalTransform getVerticalTransform();
-   public VerticalCT getVerticalTransform2();
+   public VerticalCT getVerticalCT();
 
    // horiz
    public boolean isRegularSpatial();
@@ -114,12 +108,14 @@ public interface GridCoordSystem {
    public LatLonRect getLatLonBoundingBox();
 
    // vertical
+   public boolean hasVerticalAxis();
    public int getLevelIndex(String p0);
    public String getLevelName(int p0);
    public ArrayList getLevels();
    public boolean isZPositive();
 
    // time
+   public boolean hasTimeAxis();
    public boolean isDate();
    public int findTimeCoordElement(Date p0);
    public DateRange getDateRange();
@@ -130,6 +126,11 @@ public interface GridCoordSystem {
    public TimeUnit getTimeResolution() throws java.lang.Exception;
    public ArrayList getTimes();
 
+   /*
+   public boolean isRadial();
+   public CoordinateAxis getAzimuthAxis();
+   public CoordinateAxis getElevationAxis();
+   public CoordinateAxis getRadialAxis();  */
 }
 
  /* public String getName();

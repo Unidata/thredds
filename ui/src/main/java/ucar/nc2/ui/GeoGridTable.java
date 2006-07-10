@@ -250,7 +250,7 @@ public class GeoGridTable extends JPanel {
 
     private String name, proj, coordTrans;
     private int domainRank, rangeRank;
-    private boolean isGeoXY, isLatLon, isProductSet, isRegular;
+    private boolean  isLatLon, isRegular;
     private int ngrids = -1;
 
     // no-arg constructor
@@ -259,31 +259,35 @@ public class GeoGridTable extends JPanel {
     public GeoCoordinateSystemBean( GridDataset.Gridset gset) {
       GridCoordSystem cs = gset.getGeoCoordSystem();
       setName( cs.getName());
-      setGeoXY( cs.isGeoXY());
       setLatLon( cs.isLatLon());
-      setProductSet( cs.isProductSet());
+      //setProductSet( cs.isProductSet());
       setDomainRank( cs.getDomain().size());
       setRangeRank( cs.getCoordinateAxes().size());
-      setRegular( cs.isRegularSpatial());
+      setRegularSpatial( cs.isRegularSpatial());
 
       setNGrids( gset.getGrids().size());
 
       ProjectionImpl proj = cs.getProjection();
       if (proj != null)
-        setProjection(proj.getName());
+        setProjection(proj.getClassName());
 
+      int count = 0;
       StringBuffer buff = new StringBuffer();
       List ctList = cs.getCoordinateTransforms();
       for (int i = 0; i < ctList.size(); i++) {
         CoordinateTransform ct = (CoordinateTransform) ctList.get(i);
-        if (i > 0) buff.append(" ");
-        buff.append( ct.getTransformType());
-        if (ct instanceof VerticalCT)
-          buff.append( "("+((VerticalCT)ct).getVerticalTransformType()+")");
+        if (count > 0) buff.append("; ");
+        // buff.append( ct.getTransformType());
+        if (ct instanceof VerticalCT) {
+          buff.append( ((VerticalCT)ct).getVerticalTransformType());
+          count++;
+        }
         if (ct instanceof ProjectionCT) {
           ProjectionCT pct = (ProjectionCT)ct;
-          if (pct.getProjection() != null)
-            buff.append( "("+pct.getProjection().getClassName()+")");
+          if (pct.getProjection() == null) { // only show CT if theres no projection
+            buff.append("-"+pct.getName());
+            count++;
+          }
         }
       }
       setCoordTransforms( buff.toString());
@@ -292,17 +296,14 @@ public class GeoGridTable extends JPanel {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public boolean isRegular() { return isRegular; }
-    public void setRegular(boolean isRegular) { this.isRegular = isRegular; }
+    public boolean isRegularSpatial() { return isRegular; }
+    public void setRegularSpatial(boolean isRegular) { this.isRegular = isRegular; }
 
-    public boolean isGeoXY() { return isGeoXY; }
-    public void setGeoXY(boolean isGeoXY) { this.isGeoXY = isGeoXY; }
-
-    public boolean getLatLon() { return isLatLon; }
+    public boolean isLatLon() { return isLatLon; }
     public void setLatLon(boolean isLatLon) { this.isLatLon = isLatLon; }
 
-    public boolean isProductSet() { return isProductSet; }
-    public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }
+    /* public boolean isProductSet() { return isProductSet; }
+    public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }  */
 
     public int getDomainRank() { return domainRank; }
     public void setDomainRank(int domainRank) { this.domainRank = domainRank; }

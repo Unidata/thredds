@@ -174,33 +174,3 @@ public class TimeDuration {
     doDuration("3 days");
   }
 }
-
-/* Change History:
-   $Log: TimeDuration.java,v $
-   Revision 1.9  2006/06/06 16:17:08  caron
-   *** empty log message ***
-
-   Revision 1.8  2006/05/08 02:47:19  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.7  2005/05/26 01:58:01  caron
-   fix DateRange bugs
-
-   Revision 1.6  2005/05/19 21:56:05  caron
-   turn off all debugging
-
-   Revision 1.5  2005/05/04 17:56:28  caron
-   use nj22.09
-
-   Revision 1.4  2005/05/03 20:09:03  caron
-   more fixes to Point/Station
-   clean up nc2.units, add unit tests
-
-   Revision 1.3  2004/09/24 03:26:32  caron
-   merge nj22
-
-*/
