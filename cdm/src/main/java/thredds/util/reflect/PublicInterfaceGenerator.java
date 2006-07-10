@@ -6,7 +6,7 @@ import java.util.*;
 
 public class PublicInterfaceGenerator {
 
-  static void generate( Class c, PrintStream out) throws SecurityException {
+  static void generate( Class c, boolean doAllMethods, PrintStream out) throws SecurityException {
 
     Class sc = c.getSuperclass();
 
@@ -16,7 +16,7 @@ public class PublicInterfaceGenerator {
     out.println(" {");
 
     ArrayList allMethods = new ArrayList();
-    addAllMethods( allMethods, c);
+    addAllMethods( allMethods, c, doAllMethods);
     Collections.sort( allMethods, new MethodComparator());
     for (int i=0; i < allMethods.size(); i++) {
        genMethod( (Method) allMethods.get(i), out);
@@ -25,10 +25,10 @@ public class PublicInterfaceGenerator {
     out.println( "}");
   }
 
-  private static void addAllMethods( ArrayList allMethods, Class c) {
+  private static void addAllMethods( ArrayList allMethods, Class c, boolean doAllMethods) {
     if (c == null) return;
     if (c == Object.class) return;
-    Method[] methodsArray = c.getDeclaredMethods();
+    Method[] methodsArray = doAllMethods ? c.getMethods() : c.getDeclaredMethods();
     allMethods.addAll( Arrays.asList(methodsArray));
 
     //addAllMethods( allMethods, c.getSuperclass());
@@ -100,7 +100,7 @@ public class PublicInterfaceGenerator {
 
 
   public static void main(String[] args)  throws SecurityException {
-    generate( ucar.nc2.dataset.grid.GridCoordSys.class, System.out);
+    generate( ucar.nc2.dataset.grid.GeoGrid.class, false, System.out);
   }
 
 }
