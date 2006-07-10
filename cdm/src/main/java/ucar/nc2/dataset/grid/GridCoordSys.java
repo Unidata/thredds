@@ -172,7 +172,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
 
   /////////////////////////////////////////////////////////////////////////////
-  private ProjectionImpl proj;
+  private CoordinateSystem cs;
   private CoordinateAxis horizXaxis, horizYaxis;
   private CoordinateAxis1D vertZaxis, timeTaxis;
   private VerticalCT vCT;
@@ -191,7 +191,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public GridCoordSys(CoordinateSystem cs) {
     super();
-    //super( cs.getCoordinateAxes(), cs.getCoordinateTransforms());
+    this.cs = cs;
 
     if (cs.isGeoXY()) {
       horizXaxis = xAxis = cs.getXaxis();
@@ -208,7 +208,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     coordAxes.add(horizXaxis);
     coordAxes.add(horizYaxis);
-    proj = cs.getProjection();
+    ProjectionImpl proj = cs.getProjection();
 
     // set canonical area
     if (proj != null)
@@ -280,6 +280,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public GridCoordSys(GridCoordSys from, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     super();
+    this.cs = from.cs;
 
     CoordinateAxis xaxis = from.getXHorizAxis();
     CoordinateAxis yaxis = from.getYHorizAxis();
@@ -311,7 +312,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     coordAxes.add(horizXaxis);
     coordAxes.add(horizYaxis);
-    proj = (ProjectionImpl) from.getProjection().clone();
+    ProjectionImpl proj = (ProjectionImpl) from.getProjection().clone();
 
     // set canonical area
     if ((proj != null) && (getBoundingBox() != null))
@@ -324,12 +325,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       // LOOK assign hAxis, pAxis or zAxis
     }
 
-    if (from.getVerticalTransform2() != null) {
+    if (from.getVerticalCT() != null) {
       VerticalTransform vt = from.getVerticalTransform();
       if (vt != null)
         vt = vt.subset(t_range, z_range, y_range, x_range);
 
-      vCT = new VerticalCT(from.getVerticalTransform2());
+      vCT = new VerticalCT(from.getVerticalCT());
       vCT.setVerticalTransform(vt);
     }
 
@@ -398,7 +399,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return vCT == null ? null : vCT.getVerticalTransform();
   }
 
-  public VerticalCT getVerticalTransform2() {
+  public VerticalCT getVerticalCT() {
     return vCT;
   }
 
@@ -458,7 +459,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the projection
    */
-  public ProjectionImpl getProjection() { return proj; }
+  public ProjectionImpl getProjection() { return cs.getProjection(); }
 
   /**
    * Get the list of level names, to be used for user selection.
@@ -919,8 +920,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (zdim >= 0) buff.append("z="+zaxis.getName()+",");
     if (tdim >= 0) buff.append("t="+taxis.getName()); */
 
-    if (proj != null)
-      buff.append("  Projection:" + proj.getName() + " " + proj.getClassName());
+    //if (proj != null)
+      // buff.append("  Projection:" + proj.getName() + " " + proj.getClassName());
     return buff.toString();
   }
 

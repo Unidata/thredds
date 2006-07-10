@@ -26,9 +26,14 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.*;
+
+import thredds.datatype.DateRange;
 
 /**
  * Make a NetcdfDataset into a collection of GeoGrids with Georeferencing coordinate systems.
@@ -128,18 +133,43 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
 
    }
 
+  private LatLonRect llbbMax = null;
+  private DateRange dateRange = null;
+
+  private void extractGridDataset() {
+
+    java.util.Iterator iter = getGridSets().iterator();
+    while (iter.hasNext()) {
+      GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
+      GridCoordSystem gcs = gset.getGeoCoordSystem();
+
+      LatLonRect llbb = gcs.getLatLonBoundingBox();
+      if (llbbMax == null)
+        llbbMax = llbb;
+      else
+        llbbMax.extend(llbb);
+
+      CoordinateAxis1D taxis = gcs.getTimeAxis();
+      DateRange dateRange2 = gcs.getDateRange();
+    }
+  }
+
   // stuff to satisfy ucar.nc2.dt.TypedDataset
 
   public String getTitle() {
-    return getName();
+    String title = ds.findAttValueIgnoreCase(null, "title", null);
+    return (title == null) ? getName() : title;
   }
 
   public String getDescription() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    String desc = ds.findAttValueIgnoreCase(null, "description", null);
+    if (desc == null)
+      desc = ds.findAttValueIgnoreCase(null, "history", null);
+    return (desc == null) ? getName() : desc;
   }
 
   public String getLocationURI() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return ds.getLocation();
   }
 
   public Date getStartDate() {
@@ -155,19 +185,19 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
   }
 
   public List getGlobalAttributes() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return ds.getGlobalAttributes();
   }
 
   public Attribute findGlobalAttributeIgnoreCase(String name) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return ds.findGlobalAttributeIgnoreCase( name);
   }
 
   public List getDataVariables() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return ds.getVariables();
   }
 
   public VariableSimpleIF getDataVariable(String shortName) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return (VariableSimpleIF) ds.findTopVariable( shortName);
   }
 
   public NetcdfFile getNetcdfFile() { return ds; }
