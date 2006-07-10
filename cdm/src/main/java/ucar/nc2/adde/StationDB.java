@@ -1,6 +1,5 @@
 package ucar.nc2.adde;
 
-import ucar.nc2.dt.StationObsDataset;
 import ucar.nc2.util.CancelTask;
 
 import java.io.*;

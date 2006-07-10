@@ -1,6 +1,6 @@
 // $Id: GridController.java,v 1.5 2005/11/17 00:48:19 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,7 +22,7 @@ package ucar.nc2.ui.grid;
 
 import ucar.ma2.Array;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
+import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.*;
 
 import thredds.viewer.ui.*;
@@ -39,14 +39,16 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
 /**
  * The controller manages the interactions between GRID data and renderers.
- * @author John Caron
- * @version $Id: GridController.java,v 1.5 2005/11/17 00:48:19 caron Exp $
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class GridController {
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
@@ -68,9 +70,9 @@ public class GridController {
   private String datasetUrlString;
   private NetcdfDataset netcdfDataset;
   private GridDataset gridDataset;
-  private GeoGrid currentField;
-  private ArrayList levels;
-  private ArrayList times;
+  private GridDatatype currentField;
+  private List levels;
+  private List times;
   private int currentLevel;
   private int currentSlice;
   private int currentTime;
@@ -428,7 +430,7 @@ public class GridController {
   /////////////////////////////////////////////////////////////////////////////
   // these are some routines exposed to GridUI
   String getDatasetName() {
-    return (null == gridDataset) ? null : gridDataset.getName();
+    return (null == gridDataset) ? null : gridDataset.getTitle();
   }
 
   String getDatasetUrlString() {
@@ -439,14 +441,14 @@ public class GridController {
     if (gridDataset == null) return "";
     try {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      gridDataset.getNetcdfDataset().writeNcML( bos, null);
+      gridDataset.getNetcdfFile().writeNcML( bos, null);
       return bos.toString();
     } catch (IOException ioe) {}
     return "";
   }
 
   NetcdfDataset getNetcdfDataset() { return netcdfDataset; }
-  GeoGrid getCurrentField() { return currentField; }
+  GridDatatype getCurrentField() { return currentField; }
   Array getCurrentHorizDataSlice() { return renderGrid.getCurrentHorizDataSlice(); }
 
   String getDatasetInfo() {
@@ -463,7 +465,7 @@ public class GridController {
 
   public void setGridDataset(GridDataset gridDataset) {
     this.gridDataset = gridDataset;
-    this.netcdfDataset = gridDataset.getNetcdfDataset();
+    this.netcdfDataset = (NetcdfDataset) gridDataset.getNetcdfFile();
     this.datasetUrlString = netcdfDataset.getLocation();
     startOK = false; // wait till redraw is hit before drawing
   }
@@ -587,11 +589,11 @@ public class GridController {
       // temp kludge for initialization
     java.util.List grids = gridDataset.getGrids();
     if ((grids == null) || grids.size() == 0) {
-      javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file "+gridDataset.getName());
+      javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file "+gridDataset.getTitle());
       return false;
     }
 
-    currentField = (GeoGrid) grids.get(0);
+    currentField = (GridDatatype) grids.get(0);
     currentSlice = 0;
     currentLevel = 0;
     currentTime = 0;
@@ -615,9 +617,9 @@ public class GridController {
     return true;
   }
 
-  //public GeoGrid getField() { return currentField; }
+  //public GridDatatype getField() { return currentField; }
   private boolean setField(String name) {
-    GeoGrid gg = gridDataset.findGridByName( name);
+    GridDatatype gg = gridDataset.findGridDatatype( name);
     if (null == gg)
       return false;
 
@@ -628,7 +630,7 @@ public class GridController {
     levels = currentField.getLevels();
     if ((levels == null) || (currentLevel >= levels.size()))
       currentLevel = 0;
-    vertPanel.setCoordSys( currentField.getCoordinateSystem(), currentLevel);
+    vertPanel.setCoordSys( currentField.getGridCoordSystem(), currentLevel);
 
       // set times
     times = currentField.getTimes();
@@ -649,7 +651,7 @@ public class GridController {
     return true;
   }
 
-  private int findIndexFromName( ArrayList list, String name) {
+  private int findIndexFromName( List list, String name) {
      Iterator iter = list.iterator();
      int count = 0;
      while (iter.hasNext()) {
@@ -824,7 +826,7 @@ public class GridController {
     store.putBeanObject(LastMapAreaName, np.getMapArea());
     store.putBeanObject(LastProjectionName, np.getProjectionImpl());
     if (gridDataset != null)
-      store.put(LastDatasetName, gridDataset.getName());
+      store.put(LastDatasetName, gridDataset.getTitle());
     store.putBeanObject(ColorScaleName, cs);
 
     store.putBoolean( "showGridAction", ((Boolean)showGridAction.getValue(BAMutil.STATE)).booleanValue());
@@ -979,68 +981,5 @@ public class GridController {
   }
   */
 }
-
-/* Change History:
-   $Log: GridController.java,v $
-   Revision 1.5  2005/11/17 00:48:19  caron
-   NcML aggregation
-   caching close/synch
-   grid subset bug
-
-   Revision 1.4  2004/12/07 02:43:23  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/12/07 01:29:32  caron
-   redo convention parsing, use _Coordinate encoding.
-
-   Revision 1.2  2004/11/10 17:00:29  caron
-   no message
-
-   Revision 1.1  2004/09/30 00:33:43  caron
-   *** empty log message ***
-
-   Revision 1.10  2004/09/24 03:26:36  caron
-   merge nj22
-
-   Revision 1.9  2004/06/12 02:11:33  caron
-   minor
-
-   Revision 1.8  2004/03/19 20:18:02  caron
-   use thredds.datamodel to connect catalog with data types
-
-   Revision 1.7  2004/03/05 23:45:31  caron
-   all resolver datasets
-
-   Revision 1.6  2004/02/20 05:02:55  caron
-   release 1.3
-
-   Revision 1.5  2003/05/29 23:07:51  john
-   bug fixes
-
-   Revision 1.4  2003/04/08 18:16:20  john
-   nc2 v2.1
-
-   Revision 1.3  2003/03/17 21:12:33  john
-   new viewer
-
-   Revision 1.2  2003/01/07 14:57:19  john
-   lib updates
-
-   Revision 1.1  2002/12/13 00:51:11  caron
-   pass 2
-
-   Revision 1.4  2002/10/18 18:21:15  caron
-   thredds server
-
-   Revision 1.3  2002/04/30 22:45:27  caron
-   fix event typecast bug for Grid
-
-   Revision 1.2  2002/04/29 22:39:21  caron
-   add StationUI, clean up
-
-   Revision 1.1.1.1  2002/02/26 17:24:49  caron
-   import sources
-
-*/
 
 

@@ -1,3 +1,23 @@
+// $Id: GridTable.java,v 1.1 2004/09/30 00:33:43 caron Exp $
+/*
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package ucar.nc2.dt.image;
 
 import ucar.ma2.*;
@@ -12,6 +32,9 @@ import javax.swing.*;
 
 /**
  * Makes a 2D Array into a java.awt.image.BufferedImage
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class ImageArrayAdapter {
 
@@ -198,26 +221,4 @@ public class ImageArrayAdapter {
   }
 
 }
-/* Change History:
-   $Log: ImageArrayAdapter.java,v $
-   Revision 1.3  2005/12/15 00:29:11  caron
-   *** empty log message ***
-
-   Revision 1.2  2005/12/02 00:15:36  caron
-   NcML 
-   Dimension.isVariableLength()
-
-   Revision 1.1  2005/02/23 20:01:03  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/10/23 21:36:10  caron
-   no message
-
-   Revision 1.2  2004/10/07 22:15:13  caron
-   add simple image viewer in the NCdump panel
-
-   Revision 1.1  2004/09/30 00:33:41  caron
-   *** empty log message ***
-
-*/
 

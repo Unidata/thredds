@@ -1,6 +1,6 @@
 // $Id: DatasetTreeView.java,v 1.7 2004/12/10 17:04:17 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,8 +37,9 @@ import javax.swing.tree.*;
 /**
  * A Tree View of the groups and variables inside a NetcdfFile.
  *
- * @author John Caron
- * @version $Id: DatasetTreeView.java,v 1.7 2004/12/10 17:04:17 caron Exp $
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class DatasetTreeView extends JPanel {
@@ -530,55 +531,3 @@ public class DatasetTreeView extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: DatasetTreeView.java,v $
-   Revision 1.7  2004/12/10 17:04:17  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/11/07 03:00:51  caron
-   *** empty log message ***
-
-   Revision 1.5  2004/10/06 19:03:43  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.4  2004/08/17 19:20:07  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/08/16 20:53:51  caron
-   2.2 alpha (2)
-
-   Revision 1.2  2004/07/12 23:40:19  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.1  2004/07/06 19:28:12  caron
-   pre-alpha checkin
-
-   Revision 1.8  2004/06/12 02:01:11  caron
-   dqc 0.3
-
-   Revision 1.7  2004/06/09 00:27:28  caron
-   version 2.0a release; cleanup javadoc
-
-   Revision 1.6  2004/05/11 23:30:32  caron
-   release 2.0a
-
-   Revision 1.5  2004/03/05 23:35:48  caron
-   rel 1.3.1 javadoc
-
-   Revision 1.4  2004/03/05 17:21:50  caron
-   1.3.1 release
-
-   Revision 1.3  2004/02/20 00:49:53  caron
-   1.3 changes
-
-   Revision 1.2  2003/12/04 22:27:45  caron
-   *** empty log message ***
-
-   Revision 1.1  2003/05/29 22:59:49  john
-   refactor choosers into toolkit framework
-
- */

@@ -10,7 +10,7 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dt.GridDataset;
 
 /**
  * Servlet handles serving data via WCS 1.0.
@@ -45,7 +45,7 @@ public class WCSServlet extends AbstractServlet {
     String datasetPath = isRemote ? datasetURL : req.getPathInfo();
 
     // convert to a GridDataset
-    GridDataset gd = isRemote ? GridDataset.open(datasetPath) : DatasetHandler.openGridDataset( datasetPath);
+    GridDataset gd = isRemote ? ucar.nc2.dataset.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset( datasetPath);
 
     // convert to a WcsDataset
     WcsDataset ds = new WcsDataset(gd, datasetPath, isRemote);

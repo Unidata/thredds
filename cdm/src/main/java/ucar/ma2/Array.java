@@ -1,6 +1,6 @@
 // $Id: Array.java,v 1.12 2006/01/26 21:31:15 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -760,41 +760,4 @@ public abstract class Array {
   }
 
 }
-
-/* Change History:
-   $Log: Array.java,v $
-   Revision 1.12  2006/01/26 21:31:15  caron
-   userAdvice
-   cdmValidate, fileupload
-
-   Revision 1.11  2005/12/15 00:29:08  caron
-   *** empty log message ***
-
-   Revision 1.10  2005/12/09 22:26:22  caron
-   dods.DConnect suuports sessions - need new dods lib
-   improve aggregation: use DiskCache2
-   sync, release, etc
-
-   Revision 1.9  2005/11/07 17:08:50  caron
-   add Array factory( DataType dataType, int [] shape)
-
-   Revision 1.8  2005/05/11 00:09:53  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.7  2005/02/22 22:12:09  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/10/22 00:49:03  caron
-   add get1DJavaArray
-
-   Revision 1.5  2004/09/24 03:54:08  caron
-   add section(origin,shape) for bkwards comp with 2.1
-
-   Revision 1.4  2004/08/16 20:53:43  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:12  caron
-   2.2 alpha 1.0 checkin
-
- */
 

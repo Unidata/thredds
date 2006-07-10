@@ -1,6 +1,6 @@
 // $Id: CoordinateSystem.java,v 1.16 2006/05/25 20:15:28 caron Exp $
 /*
- * Copyright 2002-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -163,10 +163,10 @@ public class CoordinateSystem {
   /** Get the range rank of the coordinate system = number of coordinate axes. */
   public int getRankRange() { return coordAxes.size(); }
 
-  /** Scientific Data type, if known, eg Grid, Station, etc. Considered Experimental */
+  /* Scientific Data type, if known, eg Grid, Station, etc. Considered Experimental
   public String getDataType() { return dataType; }
-  /** Set the Scientific Data type, eg Grid, Station, etc. Considered Experimental */
-  public void setDataType(String dataType) { this.dataType = dataType; }
+  /* Set the Scientific Data type, eg Grid, Station, etc. Considered Experimental
+  public void setDataType(String dataType) { this.dataType = dataType; } */
 
   ///////////////////////////////////////////////////////////////////////////
   // Convenience routines for finding georeferencing axes
@@ -289,7 +289,7 @@ public class CoordinateSystem {
    */
   public boolean isImplicit() { return isImplicit; }
   /** Set whether this Coordinate System is implicit */
-  public void setImplicit(boolean isImplicit) { this.isImplicit = isImplicit; }
+  protected void setImplicit(boolean isImplicit) { this.isImplicit = isImplicit; }
 
   /** true if has Height, Pressure, or GeoZ axis */
   public boolean hasVerticalAxis() { return (hAxis != null) || (pAxis != null) || (zAxis != null); }

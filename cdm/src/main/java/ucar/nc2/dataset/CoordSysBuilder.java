@@ -24,13 +24,6 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dataset.conv.*;
-import ucar.unidata.geoloc.projection.*;
-import ucar.unidata.geoloc.vertical.*;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.util.Parameter;
-
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
 
 import java.lang.reflect.Method;
 import java.io.IOException;

@@ -7,6 +7,14 @@ import ucar.nc2.dataset.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * "Epic In Situ", dapper conventions.
+ *
+ * @see "http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html"
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ */
 
 public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {
 

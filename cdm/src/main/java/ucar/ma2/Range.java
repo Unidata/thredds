@@ -35,7 +35,9 @@ import java.util.*;
    <pre>for (int i=range.first(); i<=range.last(); i+= range.stride()) {
    } </pre>
 
-
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class Range {

@@ -4,15 +4,12 @@ import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.NCdump;
-import ucar.nc2.Dimension;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-
-import java.io.IOException;
 
 import thredds.catalog.DataType;
 
@@ -118,7 +115,7 @@ public class TestSubset extends TestCase {
     assert result.dtype == DataType.GRID;
     assert result.gridDataset != null;
 
-    GridDataset dataset = result.gridDataset;
+    GridDataset dataset = (GridDataset) result.gridDataset;
 
     GeoGrid grid = dataset.findGridByName("Temperature");
     assert null != grid;
@@ -142,7 +139,7 @@ public class TestSubset extends TestCase {
     String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
     ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype(threddsURL, null);
     assert result.gridDataset != null;
-    GridDataset dataset = result.gridDataset;
+    GridDataset dataset = (GridDataset) result.gridDataset;
 
     GeoGrid grid = dataset.findGridByName("PT");
     assert null != grid;

@@ -28,16 +28,19 @@ import thredds.catalog.InvDatasetImpl;
 import java.io.IOException;
 import java.util.Iterator;
 
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GridCoordSys;
-import ucar.nc2.dataset.grid.GeoGrid;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.PointObsDataset;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * Extract THREDDS metadata from the undelying CDM dataset.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class MetadataExtractor {
 
@@ -67,7 +70,7 @@ public class MetadataExtractor {
         Iterator gridsets = gridDataset.getGridSets().iterator();
         while (gridsets.hasNext()) {
           GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
-          GridCoordSys gsys = gridset.getGeoCoordSys();
+          GridCoordSystem gsys = gridset.getGeoCoordSystem();
           if (llbb == null)
             llbb = gsys.getLatLonBoundingBox();
 
@@ -130,7 +133,7 @@ public class MetadataExtractor {
           ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat);
           java.util.List grids = gridDataset.getGrids();
           for (int i = 0; i < grids.size(); i++) {
-            GeoGrid grid = (GeoGrid) grids.get(i);
+            GridDatatype grid = (GridDatatype) grids.get(i);
             ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
             v.setName( grid.getName());
             v.setDescription( grid.getDescription());
@@ -157,7 +160,7 @@ public class MetadataExtractor {
           ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
           java.util.List grids = gridDataset.getGrids();
           for (int i = 0; i < grids.size(); i++) {
-            GeoGrid grid = (GeoGrid) grids.get(i);
+            GridDatatype grid = (GridDatatype) grids.get(i);
             ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
             vars.addVariable( v);
 

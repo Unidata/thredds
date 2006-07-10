@@ -1,6 +1,6 @@
 // $Id: EnhanceScaleMissing.java,v 1.5 2006/02/13 19:51:28 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -173,23 +173,3 @@ public interface EnhanceScaleMissing {
   /** Convert this double value using scale/offset/missing value if applicable */
   public double convertScaleOffsetMissing(double value);
 }
-
-/* Change History:
-   $Log: EnhanceScaleMissing.java,v $
-   Revision 1.5  2006/02/13 19:51:28  caron
-   javadoc
-
-   Revision 1.4  2005/11/07 20:46:08  caron
-   *** empty log message ***
-
-   Revision 1.3  2005/11/07 16:41:17  caron
-   NcML Aggregation
-   new projections
-
-   Revision 1.2  2005/05/23 20:18:34  caron
-   refactor for scale/offset/missing
-
-   Revision 1.1  2004/08/16 20:53:47  caron
-   2.2 alpha (2)
-
-  */

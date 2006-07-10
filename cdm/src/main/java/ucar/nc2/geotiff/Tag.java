@@ -1,6 +1,6 @@
 // $Id: Tag.java,v 1.1 2004/10/19 20:38:53 yuanho Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,7 +22,11 @@ package ucar.nc2.geotiff;
 
 import java.util.*;
 
-/** Type-safe enumeration of Tiff Tags. Not complete, just the ones weve actually seen. */
+/** Type-safe enumeration of Tiff Tags. Not complete, just the ones weve actually seen.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ */
 
 class Tag implements Comparable {
   static private HashMap map = new HashMap();
@@ -103,22 +107,3 @@ class Tag implements Comparable {
   }
 
 }
-
-/* Change History:
-   $Log: Tag.java,v $
-   Revision 1.1  2004/10/19 20:38:53  yuanho
-   geotiff checkin
-
-   Revision 1.6  2004/10/19 19:03:51  yuanho
-   geotiff checkin
-
-   Revision 1.5  2003/09/19 00:03:29  caron
-   clean up geotiff javadoc for release
-
-   Revision 1.4  2003/09/02 22:26:38  caron
-   mo better
-
-   Revision 1.3  2003/07/12 23:08:55  caron
-   add cvs headers, trailers
-
-*/

@@ -38,6 +38,9 @@ import ucar.unidata.geoloc.projection.*;
  * The pressure-based levels are converted into approximate z in meters above
  * mean sea level.
  * @invariant ncfile != null implies isValidM3IOFile()
+ *
+ * @author caron ??
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class M3IOVGGridConvention extends CoordSysBuilder {
 

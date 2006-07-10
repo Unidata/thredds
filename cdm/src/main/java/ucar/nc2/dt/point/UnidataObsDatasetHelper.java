@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Feb 8, 2006
- * Time: 4:45:38 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class UnidataObsDatasetHelper {
 

@@ -39,8 +39,8 @@ import java.util.*;
 /**
  * Helper class for using the netcdf-3 record dimension. Can be used for PointObs or StationObs.
  *
- * @author John Caron
- * @version $Id: RecordDatasetHelper.java,v 1.17 2006/05/08 02:47:32 caron Exp $
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class RecordDatasetHelper {

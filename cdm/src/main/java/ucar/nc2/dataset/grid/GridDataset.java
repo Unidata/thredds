@@ -1,6 +1,6 @@
 // $Id: GridDataset.java,v 1.17 2006/05/25 20:15:26 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,12 +21,14 @@
 package ucar.nc2.dataset.grid;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.FileWriter;
-import ucar.nc2.Variable;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.NetcdfFile;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
-import java.io.IOException;
 
 /**
  * Make a NetcdfDataset into a collection of GeoGrids with Georeferencing coordinate systems.
@@ -51,9 +53,8 @@ import java.io.IOException;
  * @version $Revision: 1.17 $ $Date: 2006/05/25 20:15:26 $
  */
 
-public class GridDataset {
+public class GridDataset implements ucar.nc2.dt.GridDataset {
   private NetcdfDataset ds;
-  private ArrayList gcsList = new ArrayList(); // GeoCoordSys
   private ArrayList grids = new ArrayList();  // GeoGrid
   private HashMap gridsetHash = new HashMap();
 
@@ -127,11 +128,54 @@ public class GridDataset {
 
    }
 
+  // stuff to satisfy ucar.nc2.dt.TypedDataset
+
+  public String getTitle() {
+    return getName();
+  }
+
+  public String getDescription() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public String getLocationURI() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public Date getStartDate() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public Date getEndDate() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public LatLonRect getBoundingBox() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public List getGlobalAttributes() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public Attribute findGlobalAttributeIgnoreCase(String name) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public List getDataVariables() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public VariableSimpleIF getDataVariable(String shortName) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public NetcdfFile getNetcdfFile() { return ds; }
+
   /** Close all resources associated with this dataset. */
   public void close() throws java.io.IOException {
     ds.close();
   }
-
 
   private void addGeoGrid( VariableEnhanced varDS, GridCoordSys gcs) {
     Gridset gridset;
@@ -154,10 +198,14 @@ public class GridDataset {
     /** get the list of GeoGrid objects contained in this dataset. */
   public List getGrids(){ return grids; }
 
+  public GridDatatype findGridDatatype(String name) {
+    return findGridByName( name);
+  }
+
   /**
-   * Return GeoGrid objects grouped by GridCoordSys. All GeoGrids in a Gridset
-   *   have the same GridCoordSys.
-   * @return Collection of type GridDataset.Gridset
+   * Return GridDatatype objects grouped by GridCoordSys. All GridDatatype in a Gridset
+   *   have the same GridCoordSystem.
+   * @return Collection of type ucar.nc2.dt.GridDataset.Gridset
    */
   public Collection getGridSets(){ return gridsetHash.values(); }
 
@@ -223,92 +271,10 @@ public class GridDataset {
     return buff.toString();
   }
 
-
-    /** Debugging info about the dataset.
-  public abstract String getDebugInfo();
-
-
-    /** Iterator returns ucar.grid.CoordAxisImpl. CHANGE TO GENERIC
-  public Iterator getAxes(){ return coordAxes.iterator(); }
-
-  public String toString() { return name; }
-
-    /// extra services
-    /** iterator returns ucar.grid.GeoGridImpl.Gridset.  CHANGE TO GENERIC
-  public Iterator getGridsets(){
-    if (null == gridsets) makeGridsets();
-    return gridsets.values().iterator();
-  }
-
-    /** find the named GeoGrid.
-  public GeoGridImpl getGridByName( String name) {
-    Iterator iter = getGrids();
-    while (iter.hasNext()) {
-      GeoGridImpl ggi = (GeoGridImpl) iter.next();
-      if (name.equals( ggi.getName()))
-        return ggi;
-    }
-    return null;
-  }
-
-    /** find the named GeoGrid.
-  public GeoGridImpl getGridByStandardName( String name) {
-    Iterator iter = getGrids();
-    while (iter.hasNext()) {
-      GeoGridImpl ggi = (GeoGridImpl) iter.next();
-      thredds.catalog.StandardQuantity sq = ggi.getStandardQuantity();
-      if ((sq != null) && name.equals( sq.getName()))
-        return ggi;
-    }
-    return null;
-  } */
-
-    //// methods used by the data providers to construct the Dataset
-
-  /** Add a GeoGrid. If g is not a GeoGridImpl, it is wrapped by a GeoGridAdapter to
-   * make it into one. This allows us to assume GeoGridImpl without loss of generality.
-   *
-  public void addGrid( GeoGrid g) {
-    if (g instanceof GeoGridImpl)
-      grids.add(g);
-    else
-      grids.add( new GeoGridAdapter( g));
-  }
-
-    // construct the gridsets : sets of grids with the same coord.sys
-  public void makeGridsets() {
-    gridsets = new java.util.HashMap();
-    coordAxes = new java.util.HashSet();
-
-    Iterator iter = getGrids();
-    while (iter.hasNext()) {
-      GeoGridImpl ggi = (GeoGridImpl) iter.next();
-      GeoCoordSysImpl gcc = ggi.getGeoCoordSysImpl();
-      Gridset gset;
-      if (null == (gset = (Gridset) gridsets.get( gcc))) { // problem with equals() ?
-        gset = new Gridset(gcc);   // create new gridset with this coordsys
-        gridsets.put( gcc, gset);
-      }
-      gset.add(ggi);
-
-      // also track all coord axes: used in toString().
-      if (gcc.getXaxis() != null)
-        coordAxes.add( gcc.getXaxis());
-      if (gcc.getYaxis() != null)
-        coordAxes.add( gcc.getYaxis());
-      if (gcc.getZaxis() != null)
-        coordAxes.add( gcc.getZaxis());
-      if (gcc.getTaxis() != null)
-        coordAxes.add( gcc.getTaxis());
-    }
-  } */
-
-
-
   /**
    * This is a set of GeoGrids with the same GeoCoordSys.
    */
-  public class Gridset {
+  public class Gridset implements ucar.nc2.dt.GridDataset.Gridset {
 
     private GridCoordSys gcc;
     private ArrayList grids = new ArrayList();
@@ -319,8 +285,13 @@ public class GridDataset {
     /** Get list of GeoGrid objects */
     public List getGrids() { return grids; }
 
-    /** all GeoGrids point to this GeoCoordSysImpl */
+    /** all GeoGrids point to this GeoCoordSysImpl.
+     * @deprecated, use getGeoCoordSystem() if possible.
+     */
     public GridCoordSys getGeoCoordSys() { return gcc; }
+
+    /** all GridDatatype point to this GridCoordSystem */
+    public GridCoordSystem getGeoCoordSystem() { return gcc; }
   }
 
   /** testing */

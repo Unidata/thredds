@@ -1,6 +1,6 @@
 // $Id: NetcdfDatasetCache.java,v 1.9 2006/05/08 02:47:31 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -50,9 +50,10 @@ import ucar.nc2.NetcdfFile;
  * Library ships with cache disabled, call init() to use. Make sure you call exit() when exiting program.
  * All methods are thread safe.
  * Cleanup is done automatically in a background thread, using LRU.
- * Uses org.apache.commons.logging for error messages.
+ * Uses org.slf4j.Logger for error messages.
  *
- * @author jcaron
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  */
 public class NetcdfDatasetCache {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfDatasetCache.class);

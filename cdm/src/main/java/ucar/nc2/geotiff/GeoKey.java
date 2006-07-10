@@ -1,6 +1,6 @@
 // $Id: GeoKey.java,v 1.2 2005/01/05 22:47:14 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,6 +25,8 @@ import java.util.*;
 /** A GeoKey is a GeoKey.Tag and a value.
  *  The value may be a String, an array of integers, or an array of doubles.
  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 class GeoKey  {
@@ -313,29 +315,4 @@ class GeoKey  {
   }
 
 }
-
-/* Change History:
-   $Log: GeoKey.java,v $
-   Revision 1.2  2005/01/05 22:47:14  caron
-   no message
-
-   Revision 1.1  2004/10/19 20:38:52  yuanho
-   geotiff checkin
-
-   Revision 1.6  2003/09/29 22:37:03  yuanho
-   merge for cvs
-
-   Revision 1.5  2003/09/19 00:03:29  caron
-   clean up geotiff javadoc for release
-
-   Revision 1.4  2003/09/18 23:06:31  yuanho
-   geo shift long function
-
-   Revision 1.3  2003/09/02 22:26:37  caron
-   mo better
-
-   Revision 1.2  2003/07/12 23:08:54  caron
-   add cvs headers, trailers
-
-*/
 

@@ -1,6 +1,6 @@
 // $Id: StructureDataA.java,v 1.2 2006/02/13 19:51:23 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,6 +22,9 @@ package ucar.ma2;
 
 /**
  * A StructureData implementation delegates everything to the containing ArrayStructure.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class StructureDataA extends StructureData {

@@ -1,6 +1,6 @@
 // $Id: MetarCollection.java,v 1.2 2006/06/06 16:07:14 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,6 +35,9 @@ import java.text.SimpleDateFormat;
 
 /**
  * Quick 'n dirty implementation for collection of Metars in UnidatObs format.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class MetarCollection {
   private ArrayList fileList = new ArrayList();
@@ -202,20 +205,3 @@ public class MetarCollection {
     System.out.print(sbuff.toString());
   }
 }
-
-/* Change History:
-   $Log: MetarCollection.java,v $
-   Revision 1.2  2006/06/06 16:07:14  caron
-   *** empty log message ***
-
-   Revision 1.1  2006/04/03 22:59:17  caron
-   IOSP.readNestedData() remove flatten, handle flatten=false in NetcdfFile.readMemberData(); this allows IOSPs to be simpler
-   add metar decoder from Robb's thredds.servlet.ldm package
-
-   Revision 1.2  2006/03/30 21:23:51  caron
-   remove DateUnit static methods - not thread safe
-
-   Revision 1.1  2005/11/03 19:30:23  caron
-   no message
-
-*/

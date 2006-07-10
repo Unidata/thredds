@@ -1,6 +1,6 @@
 // $Id: Index2NC.java,v 1.5 2006/06/15 22:31:54 rkambic Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,18 +22,10 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.bufr.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
 import ucar.nc2.util.CancelTask;
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.MAMath;
-import ucar.ma2.IndexIterator;
-import ucar.unidata.io.RandomAccessFile;
 
 import java.io.PrintStream;
-import java.io.IOException;
 import java.util.*;
 
 /**

@@ -1,6 +1,6 @@
 // $Id: GridCoordSys.java,v 1.2 2006/02/20 22:46:06 caron Exp $
 /*
- * Copyright 1997-2005 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,10 +18,12 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt.grid;
+package ucar.nc2.dt;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.VariableIF;
+import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.DateUnit;
 
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.LatLonRect;
@@ -30,6 +32,8 @@ import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import java.util.Date;
 import java.util.ArrayList;
+
+import thredds.datatype.DateRange;
 
 /**
  * A Grid Coordinate System
@@ -42,11 +46,93 @@ import java.util.ArrayList;
  *
  * We could insist on one dimensional X, Y, Z, T, and treat optional HorizontalTransform the same as VerticalTransform.
  * Its job would be to provide lat(x,y) and lon(x,y) arrays.
- * @author john
+ *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
-public interface GridCoordSys {
+public interface GridCoordSystem {
 
   public String getName();
+
+   public ArrayList getDomain();
+   public int getRankDomain();
+   public int getRankRange();
+
+   /* public boolean containsAxes(List p0);
+   public boolean containsAxis(String p0);
+   public boolean containsAxisType(AxisType p0);
+   public boolean containsAxisTypes(List p0);
+   public boolean containsDomain(List p0); */
+
+   public boolean isComplete(VariableIF p0);
+   // public boolean isImplicit();
+   public boolean isProductSet();
+   public boolean isRegular();
+
+  // axes
+   public ArrayList getCoordinateAxes();
+
+   public boolean isGeoReferencing();
+   public boolean isGeoXY();
+   public boolean isLatLon();
+
+   public CoordinateAxis getHeightAxis();
+   public CoordinateAxis getLatAxis();
+   public CoordinateAxis getLonAxis();
+   public CoordinateAxis getPressureAxis();
+   public CoordinateAxis getTaxis();
+   public CoordinateAxis1D getTimeAxis();
+   public CoordinateAxis1D getVerticalAxis();
+   public CoordinateAxis getXHorizAxis();
+   public CoordinateAxis getXaxis();
+   public CoordinateAxis getYHorizAxis();
+   public CoordinateAxis getYaxis();
+   public CoordinateAxis getZaxis();
+
+   public boolean hasTimeAxis();
+   public boolean hasVerticalAxis();
+
+   public boolean isRadial();
+   public CoordinateAxis getAzimuthAxis();
+   public CoordinateAxis getElevationAxis();
+   public CoordinateAxis getRadialAxis();
+
+   // transforms
+   public ArrayList getCoordinateTransforms();
+
+   public ProjectionImpl getProjection();
+   public ProjectionCT getProjectionCT();
+
+   public VerticalTransform getVerticalTransform();
+   public VerticalCT getVerticalTransform2();
+
+   // horiz
+   public boolean isRegularSpatial();
+   public int[] findXYCoordElement(double p0, double p1, int[] p2);
+   public ProjectionRect getBoundingBox();
+   public java.util.List getLatLonBoundingBox(LatLonRect p0);
+   public LatLonRect getLatLonBoundingBox();
+
+   // vertical
+   public int getLevelIndex(String p0);
+   public String getLevelName(int p0);
+   public ArrayList getLevels();
+   public boolean isZPositive();
+
+   // time
+   public boolean isDate();
+   public int findTimeCoordElement(Date p0);
+   public DateRange getDateRange();
+   public DateUnit getDateUnit() throws java.lang.Exception;
+   public Date[] getTimeDates();
+   public int getTimeIndex(String p0);
+   public String getTimeName(int p0);
+   public TimeUnit getTimeResolution() throws java.lang.Exception;
+   public ArrayList getTimes();
+
+}
+
+ /* public String getName();
 
   public ArrayList getCoordinateAxes();
   public ArrayList getCoordinateTransforms();
@@ -107,16 +193,4 @@ public interface GridCoordSys {
   //public GridCoordSys makeGridCoordSys(StringBuffer p0, CoordinateSystem p1, VariableEnhanced p2);
   //void makeVerticalTransform(GridDataset p0);
 
-}
-
-/* Change History:
-   $Log: GridCoordSys.java,v $
-   Revision 1.2  2006/02/20 22:46:06  caron
-   start of netcdf server
-   dods string bugs (1 on client and 1 on server)
-   add last-modified
-
-   Revision 1.1  2005/03/03 20:52:26  caron
-   datatype checkin
-
-*/
+}    */

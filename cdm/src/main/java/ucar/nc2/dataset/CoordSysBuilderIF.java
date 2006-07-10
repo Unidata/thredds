@@ -5,7 +5,8 @@ import java.io.IOException;
 
 /**
  * Implement this interface to add Coordinate Systems to a NetcdfDataset.
- * @author caron
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  */
 public interface CoordSysBuilderIF {
   /**

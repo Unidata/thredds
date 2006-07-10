@@ -9,9 +9,14 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import ucar.nc2.dt.image.ImageDatasetFactory;
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dt.GridDatatype;
 import thredds.ui.BAMutil;
 
+/**
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ */
 public class ImageViewPanel extends JPanel {
   private static boolean debug = false;
 
@@ -128,7 +133,7 @@ public class ImageViewPanel extends JPanel {
     revalidate();
   }
 
-  public void setImageFromGrid( GeoGrid grid) {
+  public void setImageFromGrid( GridDatatype grid) {
       try {
         BufferedImage image = imageFactory.openDataset( grid);
         setImage( image);
@@ -200,60 +205,4 @@ public class ImageViewPanel extends JPanel {
   }
 
 }
-/* Change History:
-   $Log: ImageViewPanel.java,v $
-   Revision 1.9  2005/12/15 00:29:13  caron
-   *** empty log message ***
-
-   Revision 1.8  2005/12/02 00:15:37  caron
-   NcML 
-   Dimension.isVariableLength()
-
-   Revision 1.7  2005/11/28 16:41:42  caron
-   geogrid subset deal with 2D lat/lon
-   movie loop on image panel
-
-   Revision 1.6  2005/03/07 20:48:33  caron
-   no message
-
-   Revision 1.5  2005/02/23 20:10:21  caron
-   no message
-
-   Revision 1.4  2004/11/10 17:00:29  caron
-   no message
-
-   Revision 1.3  2004/11/07 02:55:12  caron
-   no message
-
-   Revision 1.2  2004/10/29 00:14:11  caron
-   no message
-
-   Revision 1.1  2004/10/23 21:55:41  caron
-   new image drawing
-
-   Revision 1.6  2004/10/08 00:32:07  caron
-   add simple image viewer in the NCdump panel (2)
-
-   Revision 1.5  2004/10/07 22:15:12  caron
-   add simple image viewer in the NCdump panel
-
-   Revision 1.4  2004/09/30 00:33:39  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/09/25 00:09:44  caron
-   add images, thredds tab
-
-   Revision 1.2  2004/09/24 03:26:38  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.1  2002/04/29 22:52:27  caron
-   ADDE Cataloger verion 1
-
-   Revision 1.1.1.1  2002/02/26 17:24:47  caron
-   import sources
-
-*/
 

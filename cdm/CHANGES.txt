@@ -6,6 +6,8 @@ Changes in version 2.2.17
  Features
   * Variable.slice()
  API changes
+  * GeoGrid : getLevels(), getTimes() returns List, not ArrayList
+  * CoordinateSystem: remove get/setDataType(), make setImplicit() protected.
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs

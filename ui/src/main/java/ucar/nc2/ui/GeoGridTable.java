@@ -1,6 +1,6 @@
 // $Id: GeoGridTable.java,v 1.14 2006/06/06 16:07:15 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,6 +23,8 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.Dimension;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.grid.*;
 
@@ -44,8 +46,9 @@ import javax.swing.*;
 /**
  * A Swing widget to examine a GridDataset.
  *
- * @author John Caron
- * @version $Id: GeoGridTable.java,v 1.14 2006/06/06 16:07:15 caron Exp $
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class GeoGridTable extends JPanel {
@@ -82,7 +85,7 @@ public class GeoGridTable extends JPanel {
         GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
         if (wcs == null)
           wcs = new thredds.wcs.WcsDataset(gridDataset, "", false);
-        String dc = null;
+        String dc;
         if (gridDataset.findGridByName(vb.getName()) != null)
           try {
             dc = wcs.describeCoverage(vb.getName());
@@ -92,7 +95,6 @@ public class GeoGridTable extends JPanel {
             infoWindow.showIfNotIconified();
           } catch (IOException e1) {
             e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            return;
           }
       }
     });
@@ -138,7 +140,7 @@ public class GeoGridTable extends JPanel {
     ArrayList beanList = new ArrayList();
     java.util.List list = gridDataset.getGrids();
     for (int i=0; i<list.size(); i++) {
-      GeoGrid g = (GeoGrid) list.get(i);
+      GridDatatype g = (GridDatatype) list.get(i);
       beanList.add (new GeogridBean( g));
     }
     varTable.setBeans( beanList);
@@ -150,7 +152,7 @@ public class GeoGridTable extends JPanel {
       while (iter.hasNext()) {
         GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
         csList.add (new GeoCoordinateSystemBean( gset));
-        GridCoordSys gsys = gset.getGeoCoordSys();
+        GridCoordSystem gsys = gset.getGeoCoordSystem();
         List axes = gsys.getCoordinateAxes();
         for (int i = 0; i < axes.size(); i++) {
           CoordinateAxis axis = (CoordinateAxis) axes.get(i);
@@ -165,12 +167,12 @@ public class GeoGridTable extends JPanel {
   }
 
   public GridDataset getGridDataset() { return gridDataset; }
-  public GeoGrid getGrid() { 
+  public GridDatatype getGrid() {
     GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
     if (vb == null) {
       List grids = gridDataset.getGrids();
       if (grids.size() > 0)
-        return (GeoGrid) grids.get(0);
+        return (GridDatatype) grids.get(0);
       else
         return null;
     }
@@ -180,19 +182,19 @@ public class GeoGridTable extends JPanel {
   public class GeogridBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
-    private String name, desc, units, csys, proj;
+    private String name, desc, units, csys;
     private String dims, x, y, z, t;
 
     // no-arg constructor
     public GeogridBean() {}
 
     // create from a dataset
-    public GeogridBean( GeoGrid geogrid) {
+    public GeogridBean( GridDatatype geogrid) {
       setName( geogrid.getName());
       setDescription( geogrid.getDescription());
       setUnits( geogrid.getUnitsString());
 
-      setCoordSystem( geogrid.getCoordinateSystem().getName());
+      setCoordSystem( geogrid.getGridCoordSystem().getName());
 
             // collect dimensions
       StringBuffer buff = new StringBuffer();
@@ -255,7 +257,7 @@ public class GeoGridTable extends JPanel {
     public GeoCoordinateSystemBean() {}
 
     public GeoCoordinateSystemBean( GridDataset.Gridset gset) {
-      GridCoordSys cs = gset.getGeoCoordSys();
+      GridCoordSystem cs = gset.getGeoCoordSystem();
       setName( cs.getName());
       setGeoXY( cs.isGeoXY());
       setLatLon( cs.isLatLon());
@@ -443,81 +445,3 @@ public class GeoGridTable extends JPanel {
     }
   }
 }
-
-/* Change History:
-   $Log: GeoGridTable.java,v $
-   Revision 1.14  2006/06/06 16:07:15  caron
-   *** empty log message ***
-
-   Revision 1.13  2006/06/05 22:23:08  caron
-   wcs
-
-   Revision 1.12  2005/12/15 00:29:12  caron
-   *** empty log message ***
-
-   Revision 1.11  2005/12/02 00:15:38  caron
-   NcML 
-   Dimension.isVariableLength()
-
-   Revision 1.10  2005/10/18 23:42:50  caron
-   2.2.11.02
-
-   Revision 1.9  2005/07/13 22:26:57  caron
-   no message
-
-   Revision 1.8  2005/06/23 19:18:44  caron
-   no message
-
-   Revision 1.7  2005/05/26 01:58:04  caron
-   fix DateRange bugs
-
-   Revision 1.6  2005/05/25 21:09:44  caron
-   no message
-
-   Revision 1.5  2005/03/16 17:08:31  caron
-   add WCS capabilities to GribTable
-   fix WCS output
-
-   Revision 1.4  2005/02/18 01:14:57  caron
-   no message
-
-   Revision 1.3  2004/12/07 02:43:22  caron
-   *** empty log message ***
-
-   Revision 1.2  2004/12/01 05:53:43  caron
-   ncml pass 2, new convention parsing
-
-   Revision 1.1  2004/10/22 01:01:40  caron
-   another round
-
-   Revision 1.5  2004/10/06 19:03:43  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.4  2004/09/30 00:33:42  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/08/26 17:55:09  caron
-   no message
-
-   Revision 1.2  2004/08/17 19:20:07  caron
-   2.2 alpha (2)
-
-   Revision 1.1  2004/08/16 20:53:51  caron
-   2.2 alpha (2)
-
-   Revision 1.4  2004/07/16 17:58:16  caron
-   source build self-contained
-
-   Revision 1.3  2003/10/28 23:57:21  caron
-   minor
-
-   Revision 1.2  2003/10/02 20:33:56  caron
-   move SimpleUnit to dataset; add <units> tag; add projections to CF
-
-   Revision 1.1  2003/06/09 15:23:17  caron
-   add nc2.ui
-
- */

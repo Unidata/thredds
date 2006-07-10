@@ -1,6 +1,6 @@
 // $Id: GribVariable.java,v 1.26 2006/06/26 23:33:21 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,7 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author john
+ * A Variable for a Grib dataset.
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class GribVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribVariable.class);

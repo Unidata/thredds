@@ -1,6 +1,6 @@
 // $Id: GribVertCoord.java,v 1.3 2006/01/17 23:07:14 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,7 +31,9 @@ import java.util.*;
 
 /**
  * A Vertical Coordinate variable for a Grib variable.
- * @author john
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class GribVertCoord implements Comparable {
   private Index.GribRecord record;

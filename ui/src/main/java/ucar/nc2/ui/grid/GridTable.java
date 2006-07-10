@@ -1,6 +1,6 @@
 // $Id: GridTable.java,v 1.1 2004/09/30 00:33:43 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,7 +20,7 @@
  */
 package ucar.nc2.ui.grid;
 
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dt.GridDatatype;
 import thredds.viewer.ui.table.JTableSorted;
 import thredds.viewer.ui.table.TableRowAbstract;
 import thredds.viewer.ui.event.*;
@@ -32,12 +32,13 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 /**
- * Put the fields of a GeoGrid dataset in a JTable.
+ * Put the fields of a GridDatatype dataset in a JTable.
  * Uses ActionSourceListener for events.
  *
  * @see thredds.viewer.ui.event.ActionSourceListener
- * @author John Caron
- * @version $Id: GridTable.java,v 1.1 2004/09/30 00:33:43 caron Exp $
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class GridTable {
@@ -92,7 +93,7 @@ public class GridTable {
 
     java.util.Iterator iter = fields.iterator();
     while (iter.hasNext()) {
-      GeoGrid gg = (GeoGrid) iter.next();
+      GridDatatype gg = (GridDatatype) iter.next();
       list.add( new Row(gg));
     }
     table.setList(list);
@@ -107,12 +108,12 @@ public class GridTable {
 
   private static String[] colName = {"Name", "Dimensions", "Units", "Long Name"};
   private class Row extends TableRowAbstract {
-    GeoGrid gg;
+    GridDatatype gg;
     String dims;
 
-    Row( GeoGrid gg) {
+    Row( GridDatatype gg) {
       this.gg = gg;
-      dims = "("+gg.getCoordinateSystem().getName()+")";
+      dims = "("+gg.getGridCoordSystem().getName()+")";
     }
 
     public Object getUserObject() { return gg; }
@@ -128,40 +129,3 @@ public class GridTable {
   }
 
 }
-
-/* Change History:
-   $Log: GridTable.java,v $
-   Revision 1.1  2004/09/30 00:33:43  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/09/24 03:26:42  caron
-   merge nj22
-
-   Revision 1.2  2003/03/17 21:12:42  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:51  caron
-   import sources
-
-   Revision 1.11  2001/05/10 18:54:03  caron
-   add windrenderer
-
-   Revision 1.10  2001/04/30 23:40:23  caron
-   fix event bug
-
-   Revision 1.9  2000/08/18 04:16:26  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.8  2000/05/16 23:15:04  caron
-   use ActionSource event handling
-
-   Revision 1.7  2000/05/09 20:43:09  caron
-   change deprecated Format method
-
-   Revision 1.6  2000/02/10 17:50:38  caron
-   cleanup
-
-*/

@@ -36,6 +36,9 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of CoordTransBuilderIF.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.CoordTransBuilderIF {
   protected StringBuffer errBuffer = null;

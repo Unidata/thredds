@@ -1,8 +1,8 @@
 package ucar.nc2.ui.grid;
 
 import ucar.unidata.geoloc.*;
-import ucar.nc2.dataset.grid.*;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dt.GridCoordSystem;
 
 import thredds.viewer.ui.ScaledPanel;
 import thredds.viewer.ui.event.ActionSourceListener;
@@ -14,6 +14,9 @@ import javax.swing.*;
  *  2D Vertical "slice" drawing widget.
  *  Integrates a drawing area (ucar.unidata.ui.ScaledPanel), a slider widget
  *   (ucar.unidata.view.grid.VertScaleSlider) and a bottom axis.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class VertPanel extends JPanel {
@@ -60,9 +63,9 @@ public class VertPanel extends JPanel {
     /** User must get this Graphics2D and draw into it when panel needs redrawing */
   public ScaledPanel getDrawArea() { return drawArea; }
 
-  public void setLevels( GridCoordSys gcs, int current) { vslider.setLevels( gcs, current); }
+  public void setLevels( GridCoordSystem gcs, int current) { vslider.setLevels( gcs, current); }
 
-  public void setCoordSys( GridCoordSys geocs, int currentLevel) {
+  public void setCoordSys( GridCoordSystem geocs, int currentLevel) {
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     if (zaxis == null) return;
 

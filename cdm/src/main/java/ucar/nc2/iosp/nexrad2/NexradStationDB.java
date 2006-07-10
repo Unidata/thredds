@@ -33,11 +33,9 @@ import org.jdom.*;
 import org.jdom.input.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: May 11, 2006
- * Time: 6:14:20 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class NexradStationDB {
 

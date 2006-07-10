@@ -5,9 +5,10 @@ import junit.framework.*;
 import thredds.catalog.*;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
 
 import java.io.IOException;
@@ -31,12 +32,12 @@ public class TestDodsServer extends TestCase {
     ThreddsDataFactory.Result dataResult = fac.openDatatype( ds, null);
 
     assert dataResult != null;
-    assert dataResult.fatalError == false;
+    assert !dataResult.fatalError;
     assert dataResult.gridDataset != null;
 
-    GeoGrid grid = dataResult.gridDataset.findGridByName("Z_sfc");
+    GridDatatype grid = dataResult.gridDataset.findGridDatatype("Z_sfc");
     assert grid != null;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
     assert null == gcs.getVerticalAxis();
 

@@ -13,6 +13,9 @@ import java.util.*;
 
 /**
  * Grib1 iosp.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class Grib1ServiceProvider extends GribServiceProvider {
 

@@ -1,6 +1,6 @@
 // $Id: RadialDatasetTable.java,v 1.6 2006/02/16 23:02:38 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -47,8 +47,8 @@ import javax.swing.event.ListSelectionEvent;
 /**
  * A Swing widget to examine a RadialDataset.
  *
- * @author John Caron
- * @version $Id: RadialDatasetTable.java,v 1.6 2006/02/16 23:02:38 caron Exp $
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class RadialDatasetTable extends JPanel {

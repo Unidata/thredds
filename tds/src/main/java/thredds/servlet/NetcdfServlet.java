@@ -1,3 +1,23 @@
+// $Id: GeoGrid.java,v 1.24 2006/05/24 00:12:57 caron Exp $
+/*
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package thredds.servlet;
 
 import javax.servlet.ServletException;
@@ -9,17 +29,16 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Random;
 
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.FileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
-import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.grid.ForecastModelRun;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionPointImpl;
@@ -30,6 +49,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
+
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
@@ -146,7 +166,7 @@ public class NetcdfServlet extends AbstractServlet {
     StringBuffer buff = new StringBuffer();
     for (int i = 0; i < varList.size(); i++) {
       String varName = (String) varList.get(i);
-      if (null == gds.findGridByName(varName)) {
+      if (null == gds.findGridDatatype(varName)) {
         buff.append(varName);
         if (count > 0) buff.append(";");
         count++;
@@ -361,7 +381,7 @@ public class NetcdfServlet extends AbstractServlet {
           int stride_xy, int stride_z, int stride_time) throws IOException, InvalidRangeException {
 
 
-    NetcdfDataset ncd = gds.getNetcdfDataset();
+    NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
     ArrayList varList = new ArrayList();
     ArrayList varNameList = new ArrayList();
@@ -373,8 +393,8 @@ public class NetcdfServlet extends AbstractServlet {
         continue;
       varNameList.add( gridName);
 
-      GeoGrid grid = gds.findGridByName(gridName);
-      GridCoordSys gcsOrg = grid.getCoordinateSystem();
+      GridDatatype grid = gds.findGridDatatype(gridName);
+      GridCoordSystem gcsOrg = grid.getGridCoordSystem();
 
       Range timeRange = null;
       if (hasTime) {
@@ -385,13 +405,13 @@ public class NetcdfServlet extends AbstractServlet {
       }
 
       if ((llbb != null) || (null != timeRange)) {
-        grid = grid.subset(timeRange, null, llbb, 1, 1, 1);
+        grid = grid.makeSubset(timeRange, null, llbb, 1, 1, 1);
       }
 
       Variable gridV = (Variable) grid.getVariable();
       varList.add( gridV);
 
-      GridCoordSys gcs = grid.getCoordinateSystem();
+      GridCoordSystem gcs = grid.getGridCoordSystem();
       ArrayList axes = gcs.getCoordinateAxes();
       for (int j = 0; j < axes.size(); j++) {
         Variable axis = (Variable) axes.get(j);
@@ -437,8 +457,8 @@ public class NetcdfServlet extends AbstractServlet {
       FileWriter writer = new FileWriter( cacheFilename, true);
       writer.writeVariables( varList);
 
-      String location = gds.getNetcdfDataset().getLocation();
-      writer.writeGlobalAttribute( new Attribute("History", "GeoGrid extracted from dataset "+location));
+      String location = gds.getNetcdfFile().getLocation();
+      writer.writeGlobalAttribute( new Attribute("History", "GridDatatype extracted from dataset "+location));
 
       List gatts = ncd.getGlobalAttributes();
       for (int i = 0; i < gatts.size(); i++) {

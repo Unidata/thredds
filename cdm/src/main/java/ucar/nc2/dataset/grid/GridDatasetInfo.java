@@ -38,11 +38,11 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Mar 29, 2006
- * Time: 9:49:55 AM
- * To change this template use File | Settings | File Templates.
+ * A helper class for GridDataset to obtain information.
+ * Creates a "gridDatasetInfo" XML document, used by the TDS "Common Data Model Coordinate System Validation".
+ *
+ * @author caron
+ * @version $Revision: 1.17 $ $Date: 2006/05/25 20:15:26 $
  */
 public class GridDatasetInfo {
   private GridDataset gds;

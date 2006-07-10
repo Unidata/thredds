@@ -1,6 +1,6 @@
 // $Id: ForbiddenConversionException.java,v 1.2 2004/07/12 23:40:12 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,16 +23,12 @@ package ucar.ma2;
 /**
    Thrown for an attempt to make a forbidden conversion on primitive data values,
    eg boolean to double.
+  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
 */
 
 public final class ForbiddenConversionException extends RuntimeException {
   public ForbiddenConversionException() { super(); }
   public ForbiddenConversionException(String s) { super(s); }
 }
-
-/* Change History:
-   $Log: ForbiddenConversionException.java,v $
-   Revision 1.2  2004/07/12 23:40:12  caron
-   2.2 alpha 1.0 checkin
-
- */

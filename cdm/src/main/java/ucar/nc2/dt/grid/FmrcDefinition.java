@@ -97,6 +97,10 @@ import ucar.nc2.units.DateUnit;
  *   {{runHour, TimeCoord} X {Grid, VertTimeCoord}}
  *
  * </pre>
+ *
+ *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
 public class FmrcDefinition {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcDefinition.class);

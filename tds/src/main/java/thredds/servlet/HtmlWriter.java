@@ -1,6 +1,6 @@
 // $Id: HtmlWriter.java,v 1.19 2006/04/03 23:05:19 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,8 +24,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
 
@@ -486,7 +486,7 @@ public class HtmlWriter {
     }
 
     ///////////// Grid
-    GridDataset gds = new GridDataset( ds);
+    GridDataset gds = new ucar.nc2.dataset.grid.GridDataset( ds);
 
     // look for projections
     //List gridsets = gds.getGridSets();
@@ -507,7 +507,7 @@ public class HtmlWriter {
     shade = false;
     List grids = gds.getGrids();
     for (int i = 0; i < grids.size(); i++) {
-      GeoGrid grid = (GeoGrid) grids.get(i);
+      GridDatatype grid = (GridDatatype) grids.get(i);
       showGrid( grid, sb, shade);
       shade = !shade;
     }
@@ -573,7 +573,7 @@ public class HtmlWriter {
     sb.append("</tr>\r\n");
   }
 
-  static private void showGrid(GeoGrid grid, StringBuffer sb, boolean shade) {
+  static private void showGrid(GridDatatype grid, StringBuffer sb, boolean shade) {
 
     sb.append("<tr");
     if (shade)

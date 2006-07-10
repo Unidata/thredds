@@ -1,6 +1,6 @@
 // $Id: IndexConstant.java,v 1.4 2006/02/13 19:51:23 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,6 +23,9 @@ package ucar.ma2;
 /**
  * An Index into an Array that always returns 0. It can have any shape, so it allows you to create a
  * constant Array of any shape.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
  // LOOK : need to override section, etc !!
 public class IndexConstant extends Index {
@@ -129,21 +132,3 @@ public class IndexConstant extends Index {
     public Object next() { currElement++; return maa.getObject(0); }
   }
 }
-
-/* Change History:
-   $Log: IndexConstant.java,v $
-   Revision 1.4  2006/02/13 19:51:23  caron
-   javadoc
-
-   Revision 1.3  2005/12/15 00:29:09  caron
-   *** empty log message ***
-
-   Revision 1.2  2005/12/09 04:24:35  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.1  2005/02/22 22:12:12  caron
-   *** empty log message ***
-
-*/

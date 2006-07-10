@@ -1,6 +1,6 @@
 // $Id: ThreddsUI.java,v 1.22 2006/04/20 22:15:10 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -38,8 +38,8 @@ import javax.swing.filechooser.FileFilter;
  * This is the THREDDS User Interface for nj22 ToolsUI.
  * Throws PropertyChangeEvent when a dataset is selected, see addPropertyChangeListener.
  *
- * @author John Caron
- * @version $Id: ThreddsUI.java,v 1.22 2006/04/20 22:15:10 caron Exp $
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class ThreddsUI extends JPanel {
     // store keys
@@ -643,82 +643,5 @@ public class ThreddsUI extends JPanel {
     //gridViewer.addActionsToMenus(dataMenu, configMenu, toolMenu);
   } */
 }
-
-/* Change History:
-   $Log: ThreddsUI.java,v $
-   Revision 1.22  2006/04/20 22:15:10  caron
-   improve DL record extraction
-   CatalogCrawler improvements
-
-   Revision 1.21  2006/04/03 22:59:39  caron
-   IOSP.readNestedData() remove flatten, handle flatten=false in NetcdfFile.readMemberData(); this allows IOSPs to be simpler
-   add metar decoder from Robb's thredds.servlet.ldm package
-
-   Revision 1.20  2005/12/15 00:29:12  caron
-   *** empty log message ***
-
-   Revision 1.19  2005/12/09 04:24:39  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.18  2005/08/09 23:35:32  caron
-   *** empty log message ***
-
-   Revision 1.17  2005/08/08 19:38:55  caron
-   minor
-
-   Revision 1.16  2005/08/05 18:40:28  caron
-   no message
-
-   Revision 1.15  2005/07/21 21:16:05  caron
-   clean up thredds datatype
-   javadocs
-
-   Revision 1.14  2005/06/23 19:18:44  caron
-   no message
-
-   Revision 1.13  2005/05/25 21:09:44  caron
-   no message
-
-   Revision 1.12  2005/04/15 03:03:31  caron
-   DQC, TrajectoryViewer
-
-   Revision 1.11  2005/03/23 22:34:41  caron
-   wcs improvements
-
-   Revision 1.10  2004/12/15 00:11:46  caron
-   2.2.05
-
-   Revision 1.9  2004/12/07 02:43:22  caron
-   *** empty log message ***
-
-   Revision 1.8  2004/12/01 05:53:43  caron
-   ncml pass 2, new convention parsing
-
-   Revision 1.7  2004/11/07 03:00:51  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/11/07 02:55:13  caron
-   no message
-
-   Revision 1.5  2004/11/04 20:16:44  caron
-   no message
-
-   Revision 1.4  2004/10/08 23:23:07  caron
-   speed up startup
-
-   Revision 1.3  2004/10/06 19:03:43  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.2  2004/09/30 00:33:42  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/09/25 00:09:45  caron
-   add images, thredds tab
-*/
 
 

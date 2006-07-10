@@ -1,6 +1,6 @@
 // $Id: WcsDataset.java,v 1.12 2006/06/05 22:17:34 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,17 +20,16 @@
  */
 package thredds.wcs;
 
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridCoordSys;
 import ucar.nc2.geotiff.GeotiffWriter;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.DiskCache;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dataset.grid.GeoGrid;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
-import ucar.unidata.geoloc.LatLonRect;
 
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
@@ -90,7 +89,7 @@ public class WcsDataset {
   }
 
   public boolean hasCoverage( String coverageName) {
-    return gridDataset.findGridByName( coverageName) != null;
+    return gridDataset.findGridDatatype( coverageName) != null;
   }
 
   public String describeCoverage() throws IOException {
@@ -115,8 +114,8 @@ public class WcsDataset {
 
   public String checkCoverageParameters( GetCoverageRequest req) throws IOException {
     String vname = req.getCoverage();
-    GeoGrid geogrid = gridDataset.findGridByName(vname);
-    GridCoordSys gcs = geogrid.getCoordinateSystem();
+    GridDatatype geogrid = gridDataset.findGridDatatype(vname);
+    GridCoordSystem gcs = geogrid.getGridCoordSystem();
 
     int z = 0, t = 0;
     String vertical = req.getVertical();
@@ -136,8 +135,8 @@ public class WcsDataset {
 
   public String getCoverage( GetCoverageRequest req) throws IOException, InvalidRangeException {
     String vname = req.getCoverage();
-    GeoGrid geogrid = gridDataset.findGridByName(vname);
-    GridCoordSys gcs = geogrid.getCoordinateSystem();
+    GridDatatype geogrid = gridDataset.findGridDatatype(vname);
+    GridCoordSystem gcs = geogrid.getGridCoordSystem();
     Range t_range = null, z_range = null;
     Range y_range = null, x_range = null;
 
@@ -165,7 +164,7 @@ public class WcsDataset {
       System.out.println(" x_range="+x_range);
     }
 
-    GeoGrid subset = geogrid.subset(t_range, z_range, y_range, x_range);
+    GridDatatype subset = geogrid.makeSubset(t_range, z_range, y_range, x_range);
     Array data = subset.readDataSlice(0, 0, -1, -1);
     // Array data = geogrid.readDataSlice(t, z, -1, -1); // 2D plane, all x, y
 
@@ -186,14 +185,15 @@ public class WcsDataset {
       File ncFile = DiskCache.getCacheFile(datasetPath+"-"+vname+".nc");
       if (debug) System.out.println(" ncFile="+ncFile.getPath());
 
-      subset.writeFile( ncFile.getPath());
+      // LOOK - break encapsolation
+      ((GeoGrid)subset).writeFile( ncFile.getPath());
       return ncFile.getPath();
 
     } else
       return null;
   }
 
-  private int findTimeIndex( GridCoordSys gcs, String timeName) {
+  private int findTimeIndex( GridCoordSystem gcs, String timeName) {
     java.util.Date[] dates = gcs.getTimeDates();
 
     DateFormatter formatter = new DateFormatter();
@@ -207,7 +207,7 @@ public class WcsDataset {
 
   static public void main(String[] args) throws IOException {
     String name = "C:/data/grib2/ndfd.wmo";
-    GridDataset gd = GridDataset.open(name);
+    GridDataset gd = ucar.nc2.dataset.grid.GridDataset.open(name);
     WcsDataset wcs = new WcsDataset(gd, "ndfd.wmo", false);
     System.out.println(wcs.getCapabilities());
     System.out.println(wcs.describeCoverage());

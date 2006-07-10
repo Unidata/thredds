@@ -8,8 +8,9 @@ import java.io.IOException;
 /**
  * A RadialDataset in which the radials can be grouped into sweeps.
  * A sweep has the same gate geometry for all radials in the sweep, and has a RadialDatasetSweep.Type.
- * @author
- * @version $Revision: 1.5 $ $Date: 2006/06/29 19:48:12 $
+ *
+ * @author yuan
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
 

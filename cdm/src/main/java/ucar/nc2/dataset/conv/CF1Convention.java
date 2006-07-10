@@ -1,6 +1,6 @@
 // $Id: CF1Convention.java,v 1.18 2006/05/31 20:51:11 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *

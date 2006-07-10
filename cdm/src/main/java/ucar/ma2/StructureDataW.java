@@ -1,6 +1,6 @@
 // $Id: StructureDataW.java,v 1.3 2006/02/13 21:01:49 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,6 +26,9 @@ import java.util.List;
 /**
  * A StructureData implementation that has its data self-contained.
  * This is often the easiest to construct, but not very efficient for large arrays of Structures.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class StructureDataW extends StructureData {

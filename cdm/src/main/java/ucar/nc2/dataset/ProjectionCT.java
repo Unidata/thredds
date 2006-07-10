@@ -1,6 +1,6 @@
 // $Id: ProjectionCT.java,v 1.3 2004/09/22 21:26:42 caron Exp $
 /*
- * Copyright 2002-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -55,19 +55,3 @@ public class ProjectionCT extends CoordinateTransform {
   /** get the Projection function */
   public ProjectionImpl getProjection() { return proj; }
 }
-
-/* Change History:
-   $Log: ProjectionCT.java,v $
-   Revision 1.3  2004/09/22 21:26:42  caron
-   ucar.unidata.util.Parameter
-
-   Revision 1.2  2004/09/22 18:43:02  caron
-   move common to ucar.unidata; projections use Parameter, no tAttribute
-
-   Revision 1.1  2004/08/16 20:53:48  caron
-   2.2 alpha (2)
-
-   Revision 1.4  2003/07/12 23:08:52  caron
-   add cvs headers, trailers
-
-*/

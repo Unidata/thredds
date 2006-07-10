@@ -9,11 +9,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: john
- * Date: Aug 18, 2004
- * Time: 3:52:28 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class AddeServiceProvider implements IOServiceProvider {
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {

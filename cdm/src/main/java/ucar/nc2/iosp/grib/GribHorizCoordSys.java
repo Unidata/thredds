@@ -1,6 +1,6 @@
 // $Id: GribHorizCoordSys.java,v 1.20 2005/11/07 20:46:09 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,13 +37,15 @@ import java.util.HashMap;
 /**
  * A horizontal coordinate system created from a Grib2GridDefinitionSection.
  *
- * @author caron
  *         <p/>
  *         <p> Note on "false_easting" and "fale_northing" projection parameters:
  *         <ul><li>false_easting(northing) = The value added to all x (y) values in the rectangular coordinates for a map projection.
  *         This value frequently is assigned to eliminate negative numbers.
  *         Expressed in the unit of measure identified in Planar Coordinate Units.
  *         <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class GribHorizCoordSys {
   private TableLookup lookup;

@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dt.grid;
+package ucar.nc2.dt.fmr;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
@@ -28,13 +28,13 @@ import ucar.ma2.InvalidRangeException;
 
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
-import java.net.MalformedURLException;
 import java.io.IOException;
 
 /**
  * Forecast Model Run Collection.
  *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
 public class FmrCollection {
   private NetcdfDataset org; // should cache these NetcdfDataset, release ds from cache when all references are null
@@ -57,13 +57,13 @@ public class FmrCollection {
       if (v.isScalar() || !runDim.equals(v.getDimension(0).getName()) || runDim.equals(v.getName())) {
         VariableDS vnew = new VariableDS( root, v, false);
         root.addVariable( vnew);
-        if (debug) System.out.println(" added non-grid "+vnew.getName());
+        if (debug) System.out.println("FmrCollection: added non-grid "+vnew.getNameAndDimensions());
         continue;
       }
 
       VariableDS vnew = (VariableDS) v.slice(0, runIndex);
       root.addVariable( vnew);
-      if (debug) System.out.println(" added grid "+vnew.getName());
+      if (debug) System.out.println("FmrCollection: added grid "+vnew.getNameAndDimensions());
     }
 
     return null;
@@ -94,7 +94,9 @@ public class FmrCollection {
   public static void main(String args[]) throws IOException, InvalidRangeException {
     String filename = "file:./test/data/ncml/aggFmrc.xml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    System.out.println(" agg dataest = "+ ncfile.toString()+"\n");
+
     FmrCollection fmrc = new FmrCollection( (NetcdfDataset) ncfile);
     fmrc.makeRun(0);
   }

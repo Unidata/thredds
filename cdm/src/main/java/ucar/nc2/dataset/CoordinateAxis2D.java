@@ -1,6 +1,6 @@
 // $Id: CoordinateAxis2D.java,v 1.4 2005/11/28 16:41:41 caron Exp $
 /*
- * Copyright 2002-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,7 +21,6 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.*;
-import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +30,8 @@ import java.util.ArrayList;
  *   if you draw lines connecting the points, none would cross.
  *
  * @see CoordinateAxis#factory
- * @author caron
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  */
 
 public class CoordinateAxis2D extends CoordinateAxis {
@@ -222,23 +222,3 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
 
 }
-
-/* Change History:
-   $Log: CoordinateAxis2D.java,v $
-   Revision 1.4  2005/11/28 16:41:41  caron
-   geogrid subset deal with 2D lat/lon
-   movie loop on image panel
-
-   Revision 1.3  2004/12/01 05:53:41  caron
-   ncml pass 2, new convention parsing
-
-   Revision 1.2  2004/09/09 22:47:40  caron
-   station updates
-
-   Revision 1.1  2004/08/16 20:53:47  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2003/07/12 23:08:52  caron
-   add cvs headers, trailers
-
-*/

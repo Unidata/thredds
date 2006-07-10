@@ -1,17 +1,30 @@
+// $Id: StructureMembers.java,v 1.8 2006/05/12 20:19:26 caron Exp $
+/*
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, strlenwrite to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package ucar.nc2.thredds.server;
-
-
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.GridDataset;
 import ucar.nc2.Variable;
-import ucar.nc2.NCdump;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayInt;
@@ -19,7 +32,6 @@ import ucar.ma2.ArrayInt;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.*;
 
 
@@ -28,7 +40,7 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
   private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
   private PrintStream out = null;
 
-  MakeGribAggXML(String catalog, PrintStream out) throws IOException {
+  MakeGribAggXML(String catalog, PrintStream out) {
     this.out = out;
 
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, this);
@@ -36,7 +48,7 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
     report( out);
   }
 
-  MakeGribAggXML(InvDataset top, PrintStream out) throws IOException {
+  MakeGribAggXML(InvDataset top, PrintStream out) {
     this.out = out;
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, this);
     crawler.crawlDirectDatasets( top, null, out);
@@ -61,17 +73,16 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
         out.println("***CAN'T OPEN "+dd.getName());
         return;
       }
-      process( result.gridDataset.getNetcdfDataset());
+      process( result.gridDataset.getNetcdfFile());
       result.gridDataset.close();
 
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return;
   }
 
   private HashMap varHash = new HashMap();
-  private void process(NetcdfDataset ncd) {
+  private void process(NetcdfFile ncd) {
     out.println(" process "+ncd.getLocation());
 
     List vars = ncd.getVariables();

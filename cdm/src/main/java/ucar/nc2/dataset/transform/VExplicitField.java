@@ -29,6 +29,9 @@ import ucar.unidata.util.Parameter;
 
 /**
  * Create a Vertical Transform from an "explicit_field", where the vertical coordinate is explciitly specified as a variable.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class VExplicitField extends AbstractCoordTransBuilder {
   public String getTransformName() {

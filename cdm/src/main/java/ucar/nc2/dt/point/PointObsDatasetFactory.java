@@ -1,6 +1,6 @@
 // $Id: PointObsDatasetFactory.java,v 1.16 2006/05/12 20:19:27 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,6 +31,9 @@ import thredds.catalog.query.QueryCapability;
 
 /**
  * A factory for both PointObsDataset and StationObsDataset.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class PointObsDatasetFactory {
 

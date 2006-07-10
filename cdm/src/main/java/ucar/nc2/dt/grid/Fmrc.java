@@ -22,17 +22,15 @@
 package ucar.nc2.dt.grid;
 
 import ucar.ma2.Array;
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dt.GridDatatype;
 
 import java.util.List;
 import java.util.Date;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Mar 26, 2006
- * Time: 4:00:36 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
 public interface Fmrc {
 
@@ -71,7 +69,7 @@ public interface Fmrc {
     double[] getVertCoord(Date runTime, double offset);
     String getVertUnitString();
 
-    GeoGrid getGeoGrid(Date runTime, double offset);
+    GridDatatype getGeoGrid(Date runTime, double offset);
 
     Array readData(Date runTime, double offset);
     Array readData(Date runTime, double offset, double vertCoord);

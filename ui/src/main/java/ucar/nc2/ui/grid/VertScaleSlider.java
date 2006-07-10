@@ -12,6 +12,9 @@ import javax.swing.event.*;
 
 /**
  * Slider for Vertical scale
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class VertScaleSlider extends JPanel {
@@ -83,7 +86,7 @@ public class VertScaleSlider extends JPanel {
       /** better way to do event management */
   public ActionSourceListener getActionSourceListener() { return actionSource; }
 
-  public void setLevels( ucar.nc2.dataset.grid.GridCoordSys gcs, int current) {
+  public void setLevels( ucar.nc2.dt.GridCoordSystem gcs, int current) {
     this.zAxis = gcs.getVerticalAxis();
     if (zAxis == null) {
       slider.setEnabled( false);

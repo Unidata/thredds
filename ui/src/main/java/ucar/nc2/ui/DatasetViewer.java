@@ -1,6 +1,6 @@
 // $Id: DatasetViewer.java,v 1.18 2006/06/06 16:07:15 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -50,8 +50,9 @@ import java.beans.*;
  *  wrapping the Variables in a VariableBean.
  * A pop-up menu allows to view a Structure in a StructureTable.
  *
- * @author John Caron
- * @version $Id: DatasetViewer.java,v 1.18 2006/06/06 16:07:15 caron Exp $
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class DatasetViewer extends JPanel {
@@ -623,95 +624,3 @@ public class DatasetViewer extends JPanel {
   }  */
 
 }
-
-/* Change History:
-   $Log: DatasetViewer.java,v $
-   Revision 1.18  2006/06/06 16:07:15  caron
-   *** empty log message ***
-
-   Revision 1.17  2006/05/08 02:47:34  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.16  2006/02/16 23:02:38  caron
-   *** empty log message ***
-
-   Revision 1.15  2006/02/06 21:17:05  caron
-   more fixes to dods parsing.
-   ArraySequence.flatten()
-   ncml.xml use default namespace. Only way I can get ncml in catalog to validate.
-   ThreddsDataFactory refactor
-
-   Revision 1.14  2005/05/11 00:10:06  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.13  2005/02/22 22:12:16  caron
-   *** empty log message ***
-
-   Revision 1.12  2005/02/18 01:14:57  caron
-   no message
-
-   Revision 1.11  2004/11/07 03:00:51  caron
-   *** empty log message ***
-
-   Revision 1.10  2004/11/04 00:40:04  caron
-   no message
-
-   Revision 1.9  2004/10/29 00:14:12  caron
-   no message
-
-   Revision 1.8  2004/10/06 19:03:43  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.7  2004/10/02 21:01:07  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/09/30 00:33:41  caron
-   *** empty log message ***
-
-   Revision 1.5  2004/09/28 21:37:19  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/09/24 02:32:02  caron
-   grib2 reading
-
-   Revision 1.3  2004/09/22 18:44:33  caron
-   move common to ucar.unidata
-
-   Revision 1.2  2004/09/22 13:46:39  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/08/26 17:55:09  caron
-   no message
-
-   Revision 1.5  2004/08/19 21:38:12  caron
-   no message
-
-   Revision 1.4  2004/08/17 19:20:07  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/08/16 20:53:52  caron
-   2.2 alpha (2)
-
-   Revision 1.2  2004/07/12 23:40:19  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.1  2004/07/06 19:28:13  caron
-   pre-alpha checkin
-
-   Revision 1.3  2003/10/28 23:57:21  caron
-   minor
-
-   Revision 1.2  2003/10/02 20:33:56  caron
-   move SimpleUnit to dataset; add <units> tag; add projections to CF
-
-   Revision 1.1  2003/06/09 15:23:17  caron
-   add nc2.ui
-
- */

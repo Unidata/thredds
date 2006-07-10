@@ -14,8 +14,9 @@ import ucar.nc2.util.CancelTask;
  * A UI Component for running background tasks and letting user cancel them.
  * Also can be used as a CancelTask implementation.
  * @see ProgressMonitorTask
- * @author jcaron
- * @version 1.0
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class StopButton extends JButton implements CancelTask {

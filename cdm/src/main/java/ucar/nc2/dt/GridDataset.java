@@ -1,8 +1,6 @@
 
 package ucar.nc2.dt;
 
-import ucar.nc2.dt.grid.Grid;
-
 import java.util.*;
 
 /**
@@ -17,7 +15,7 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
   public List getGrids();
 
   /** find the named GridDatatype. */
-  public Grid getGrid( String name);
+  public GridDatatype findGridDatatype( String name);
 
   /**
    * Return GridDatatype objects grouped by GridCoordSys. All GridDatatype in a Gridset
@@ -35,7 +33,7 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
     public List getGrids();
 
     /** all GridDatatype point to this GeoCoordSysImpl */
-    public ucar.nc2.dt.grid.GridCoordSystem getGeoCoordSys();
+    public ucar.nc2.dt.GridCoordSystem getGeoCoordSystem();
   }
 
 }

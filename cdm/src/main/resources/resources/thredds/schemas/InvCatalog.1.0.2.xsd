@@ -562,6 +562,7 @@
       <xsd:simpleType>
         <xsd:restriction base="xsd:token">
           <xsd:enumeration value="Grid"/>
+          <xsd:enumeration value="ForecastModelRunCollection"/>
           <xsd:enumeration value="Image"/>
           <xsd:enumeration value="Point"/>
           <xsd:enumeration value="Radial"/>

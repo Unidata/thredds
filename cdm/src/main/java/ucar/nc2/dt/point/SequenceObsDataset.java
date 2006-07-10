@@ -1,6 +1,6 @@
 // $Id: SequenceObsDataset.java,v 1.4 2006/06/06 16:07:14 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -42,8 +42,8 @@ import java.io.IOException;
 /**
  * This handles DODS sequences that have station obs data.
  *
- * @author John Caron
- * @version $Id: SequenceObsDataset.java,v 1.4 2006/06/06 16:07:14 caron Exp $
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class SequenceObsDataset extends StationObsDatasetImpl {

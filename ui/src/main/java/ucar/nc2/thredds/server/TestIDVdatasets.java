@@ -1,6 +1,6 @@
 // $Id: TestIDVdatasets.java,v 1.2 2006/06/06 15:54:38 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,12 +27,12 @@ import java.io.*;
 import java.util.List;
 
 import ucar.nc2.NetcdfFileCache;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GridCoordSys;
 import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -63,9 +63,9 @@ public class TestIDVdatasets {
     if (maxDone > 0) this.maxDone = maxDone;
 
     out.println("******* read "+catName);
-    InvCatalogImpl cat = null;
+    InvCatalogImpl cat;
     try {
-      cat = (InvCatalogImpl) catFactory.readXML(catName);
+      cat = catFactory.readXML(catName);
       StringBuffer buff = new StringBuffer();
       boolean isValid = cat.check( buff, false);
       out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
@@ -162,14 +162,14 @@ public class TestIDVdatasets {
 
   private void extractGrid(PrintStream out, GridDataset gridDs) {
 
-    NetcdfDataset ds = gridDs.getNetcdfDataset();
+    NetcdfFile ds = gridDs.getNetcdfFile();
       if (gridDs == null) return;
 
       java.util.List grids = gridDs.getGrids();
       String fileFormat = ds.findAttValueIgnoreCase(null, "FileFormat", "");
       out.println("   "+grids.size()+" grids; file format="+fileFormat);
 
-      GridCoordSys gcsMax = null;
+      GridCoordSystem gcsMax = null;
       LatLonRect llbbMax = null;
 
       LatLonRect llbb = null;
@@ -179,7 +179,7 @@ public class TestIDVdatasets {
       java.util.Iterator iter = gridDs.getGridSets().iterator();
       while (iter.hasNext()) {
         GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
-        GridCoordSys gcs = gset.getGeoCoordSys();
+        GridCoordSystem gcs = gset.getGeoCoordSystem();
 
         // horizontal
         long nx2 = gcs.getXHorizAxis().getSize();
@@ -247,7 +247,7 @@ public class TestIDVdatasets {
         }
 
         // time
-        CoordinateAxis1D taxis = (CoordinateAxis1D) gcs.getTimeAxis();
+        CoordinateAxis1D taxis = gcs.getTimeAxis();
         DateRange dateRange2 = gcs.getDateRange();
         if (dateRange2 == null) {
           out.println("  NO DateRange");

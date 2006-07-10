@@ -1,6 +1,6 @@
 // $Id: DateUnit.java,v 1.22 2006/05/08 02:47:35 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -59,7 +59,7 @@ public class DateUnit extends SimpleUnit {
       udunitString = text;
     }
 
-    DateUnit du = null;
+    DateUnit du;
     try {
       du = new DateUnit( udunitString);
     } catch (Exception e) {
@@ -188,7 +188,7 @@ public class DateUnit extends SimpleUnit {
    * @return String or null if not time unit.
    */
   public String makeStandardDateString(double value) {
-    Date date = date = makeDate( value);
+    Date date = makeDate( value);
     if (date == null) return null;
     if (formatter == null) formatter = new DateFormatter();
     return formatter.toDateTimeStringISO(date);

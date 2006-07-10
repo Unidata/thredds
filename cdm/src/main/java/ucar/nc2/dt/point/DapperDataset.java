@@ -40,7 +40,10 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Handles datasets using Dapper doubley nested sequences
+ * Handles datasets using Dapper doubley nested sequences.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class DapperDataset extends PointObsDatasetImpl {
   static private final String ID = "_id";

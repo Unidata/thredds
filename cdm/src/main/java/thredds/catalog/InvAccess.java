@@ -1,6 +1,6 @@
 // $Id: InvAccess.java,v 1.9 2006/02/13 21:01:53 caron Exp $
 /*
- * Copyright 2002 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *

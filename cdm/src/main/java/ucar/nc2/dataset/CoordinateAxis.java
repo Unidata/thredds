@@ -1,6 +1,6 @@
 // $Id: CoordinateAxis.java,v 1.12 2006/03/07 19:56:59 caron Exp $
 /*
- * Copyright 2002-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -47,7 +47,8 @@ import java.io.IOException;
  * A CoordinateAxis is optionally marked as georeferencing with an axisType. It should have
  * a units string and optionally a description string.
  *
- * @author caron
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  * @see "NCML documentation"
  */
 

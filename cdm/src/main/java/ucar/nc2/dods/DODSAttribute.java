@@ -1,6 +1,6 @@
 // $Id: DODSAttribute.java,v 1.8 2005/01/20 00:55:32 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -100,44 +100,3 @@ public class DODSAttribute extends ucar.nc2.Attribute {
     return StringUtil.substitute(value, substAttributeStrings, escapeAttributeStrings);
   }
 }
-
-/* Change History:
-   $Log: DODSAttribute.java,v $
-   Revision 1.8  2005/01/20 00:55:32  caron
-   *** empty log message ***
-
-   Revision 1.7  2005/01/14 21:37:17  caron
-   escape/unescape names
-
-   Revision 1.6  2005/01/12 01:20:44  caron
-   use unsigned types instead of widening
-   make attribute names valid
-
-   Revision 1.5  2004/09/22 18:44:33  caron
-   move common to ucar.unidata
-
-   Revision 1.4  2004/08/17 19:20:05  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:18  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:11  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
-   Revision 1.6  2003/06/03 20:06:14  caron
-   fix javadocs
-
-   Revision 1.5  2003/04/08 15:06:31  caron
-   nc2 version 2.1
-
-   Revision 1.4  2001/09/14 21:34:29  caron
-   minor doc improvements, clean up debug flags
-
-   Revision 1.3  2001/08/10 21:17:32  caron
-   various changes part of Catalog/Agg Server
-
- */

@@ -33,10 +33,6 @@ import java.util.*;
 
 import ucar.ma2.InvalidRangeException;
 
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridCoordSys;
-
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 
@@ -45,6 +41,9 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.IOServiceProvider;
 import ucar.nc2.Variable;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 
 import ucar.unidata.geoloc.LatLonRect;
@@ -71,6 +70,9 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  *      VertCoord (optional)
  *      List Misssing
  * </pre>
+ *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
 public class ForecastModelRun {
   public static final int OPEN_NORMAL = 1; // try to open XML, if fail, open dataset and write XML
@@ -90,10 +92,10 @@ public class ForecastModelRun {
   private ForecastModelRun() { }
   private ForecastModelRun(String ncfileLocation) throws IOException {
 
-    gds = GridDataset.open( ncfileLocation);
-    name = gds.getName();
+    gds = ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation);
+    name = gds.getTitle();
 
-    NetcdfDataset ncfile = gds.getNetcdfDataset();
+    NetcdfFile ncfile = gds.getNetcdfFile();
     runTime = ncfile.findAttValueIgnoreCase(null, "_CoordinateAxisModelRunDate", null);
     if (runTime == null)
       throw new IllegalArgumentException("File must have _CoordinateAxisModelRunDate attribute ");
@@ -105,8 +107,8 @@ public class ForecastModelRun {
     // add each variable
     List vars = gds.getGrids();
     for (int i = 0; i < vars.size(); i++) {
-      GeoGrid gg = (GeoGrid) vars.get(i);
-      GridCoordSys gcs = gg.getCoordinateSystem();
+      GridDatatype gg = (GridDatatype) vars.get(i);
+      GridCoordSystem gcs = gg.getGridCoordSystem();
       Grid grid = new Grid();
       grid.name = gg.getName();
       addMissing((Variable) gg.getVariable(), gcs, grid);
@@ -181,7 +183,7 @@ public class ForecastModelRun {
   // Grib files are collections of 2D horizontal arrays.
   // LOOK: breaking encapsolation !!!
   private void getIosp() {
-    NetcdfDataset ncd = gds.getNetcdfDataset();
+    NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
     NetcdfFile ncfile = ncd.getReferencedFile();
     while (ncfile instanceof NetcdfDataset) {
        ncd = (NetcdfDataset) ncfile;
@@ -194,7 +196,7 @@ public class ForecastModelRun {
   }
   private GribServiceProvider gribIosp;
 
-  private void addMissing( Variable v, GridCoordSys gcs, Grid grid) {
+  private void addMissing( Variable v, GridCoordSystem gcs, Grid grid) {
     if (gribIosp == null) return;
     if (!gcs.hasVerticalAxis()) return;
     int ntimes = (int) gcs.getTimeAxis().getSize();
@@ -213,9 +215,9 @@ public class ForecastModelRun {
     }
     if (missing.size() > 0) {
       grid.missing = missing;
-      if (debugMissing) System.out.println("Missing "+gds.getName()+" "+v.getName()+" # ="+missing.size()+"/"+total);
+      if (debugMissing) System.out.println("Missing "+gds.getTitle()+" "+v.getName()+" # ="+missing.size()+"/"+total);
     } else
-      if (debugMissing) System.out.println(" None missing for "+gds.getName()+" "+v.getName()+" total = "+total);
+      if (debugMissing) System.out.println(" None missing for "+gds.getTitle()+" "+v.getName()+" total = "+total);
   }
 
   /////////////////////////////////////////////////////////////////////////

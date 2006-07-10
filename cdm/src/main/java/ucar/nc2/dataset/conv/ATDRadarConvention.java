@@ -1,6 +1,6 @@
 // $Id: ATDRadarConvention.java,v 1.7 2006/01/14 22:15:01 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -49,32 +49,3 @@ public class ATDRadarConvention extends CoordSysBuilder {
   }
 
 }
-
-/**
- * $Log: ATDRadarConvention.java,v $
- * Revision 1.7  2006/01/14 22:15:01  caron
- * Use CoordSysBuilderIF
- *
- * Revision 1.6  2005/02/20 00:36:59  caron
- * reorganize resources
- *
- * Revision 1.5  2005/01/05 22:47:13  caron
- * no message
- *
- * Revision 1.4  2004/12/10 17:04:17  caron
- * *** empty log message ***
- *
- * Revision 1.3  2004/12/01 05:53:39  caron
- * ncml pass 2, new convention parsing
- *
- * Revision 1.2  2004/09/28 21:30:47  caron
- * add GIEF
- *
- * Revision 1.1  2004/08/16 20:53:49  caron
- * 2.2 alpha (2)
- *
- * Revision 1.1  2003/04/08 15:06:26  caron
- * nc2 version 2.1
- *
- *
- */

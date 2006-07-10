@@ -1,6 +1,6 @@
 // $Id: ToolsUI.java,v 1.113 2006/06/06 16:07:15 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,7 +29,6 @@ import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.PointObsDatasetFactory;
 import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
 
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.util.*;
@@ -49,7 +48,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.net.MalformedURLException;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -57,8 +55,8 @@ import javax.swing.event.*;
 /**
  * Netcdf Tools user interface.
  *
- * @author John Caron
- * @version $Id: ToolsUI.java,v 1.113 2006/06/06 16:07:15 caron Exp $
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class ToolsUI extends JPanel {
@@ -445,7 +443,7 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent evt) {
         if (aboutWindow == null)
           aboutWindow = new AboutWindow();
-        aboutWindow.show();
+        aboutWindow.setVisible( true);
       }
     };
     BAMutil.setActionProperties(aboutAction, null, "About", false, 'A', 0);
@@ -642,7 +640,7 @@ public class ToolsUI extends JPanel {
 
     if (threddsData.dtype == thredds.catalog.DataType.GRID) {
       makeComponent("Grids");
-      gridPanel.setDataset( threddsData.gridDataset.getNetcdfDataset()); // LOOK
+      gridPanel.setDataset( (NetcdfDataset) threddsData.gridDataset.getNetcdfFile());
       tabbedPane.setSelectedComponent(gridPanel);
 
     } else if (threddsData.dtype == thredds.catalog.DataType.IMAGE) {
@@ -938,8 +936,6 @@ public class ToolsUI extends JPanel {
       cb.setSelectedItem(item);
       eventOK = true;
     }
-
-    ;
   }
 
   private class NCdumpPanel extends OpPanel implements GetDataRunnable {
@@ -1589,7 +1585,7 @@ public class ToolsUI extends JPanel {
       imageButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            ucar.nc2.dataset.grid.GeoGrid grid = dsTable.getGrid();
+            GridDatatype grid = dsTable.getGrid();
             if (grid == null) return;
             if (imageWindow == null) makeImageWindow();
             imageViewer.setImageFromGrid(grid);
@@ -1618,7 +1614,7 @@ public class ToolsUI extends JPanel {
           if (ds != null) {
             ucar.nc2.dataset.grid.GridDataset gridDataset = dsTable.getGridDataset();
             thredds.wcs.WcsDataset wcs = new thredds.wcs.WcsDataset(gridDataset, "", false);
-            String gc = null;
+            String gc;
             try {
               gc = wcs.getCapabilities();
               detailTA.setText(gc);
@@ -1722,7 +1718,7 @@ public class ToolsUI extends JPanel {
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           RadialDatasetSweep radialDataset = dsTable.getRadialDataset();
-          String info = null;
+          String info;
           if ((radialDataset != null) && ((info = radialDataset.getDetailInfo()) != null)) {
             detailTA.setText(info);
             detailTA.gotoTop();
@@ -1978,7 +1974,7 @@ public class ToolsUI extends JPanel {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          String info = null;
+          String info;
           if ((ds != null) && ((info = ds.getDetailInfo()) != null)) {
             detailTA.setText(info);
             detailTA.gotoTop();
@@ -2010,7 +2006,7 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         if (trajDatasetFactory == null) trajDatasetFactory = new TrajectoryObsDatasetFactory();
-        ds = trajDatasetFactory.open(location);
+        ds = TrajectoryObsDatasetFactory.open(location);
         if (ds == null)
           return false;
 
@@ -2086,7 +2082,7 @@ public class ToolsUI extends JPanel {
       readButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String item = cb.getSelectedItem().toString();
-          String fname = ((String) item).trim();
+          String fname = item.trim();
           read(fname);
         }
       });
@@ -2105,8 +2101,8 @@ public class ToolsUI extends JPanel {
           return false;
         }
 
-        GeoGrid grid = (GeoGrid) grids.get(0);
-        ucar.ma2.Array data = grid.readYXData(0, 0); // first time, level
+        GridDatatype grid = (GridDatatype) grids.get(0);
+        ucar.ma2.Array data = grid.readDataSlice(0, 0, -1, -1); // first time, level
 
         String name = Integer.toString(filename.hashCode());
         String fileOut = "C:/temp/wcs/" + name + ".tif";
@@ -2287,7 +2283,7 @@ public class ToolsUI extends JPanel {
           setVisible(false);
         }
       });
-      show();
+      setVisible(true);
       //System.out.println("AW ok getPreferredSize="+getPreferredSize()+" screenSize="+screenSize);
     }
   }
@@ -2334,7 +2330,7 @@ public class ToolsUI extends JPanel {
           setVisible(false);
         }
       });
-      show();
+      setVisible(true);
     }
   }
 
@@ -2463,7 +2459,7 @@ public class ToolsUI extends JPanel {
 
     frame.addWindowListener(new WindowAdapter() {
       public void windowActivated(WindowEvent e) {
-        splash.hide();
+        splash.setVisible(false);
         splash.dispose();
       }
 

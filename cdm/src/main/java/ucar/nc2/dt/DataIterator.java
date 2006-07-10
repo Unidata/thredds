@@ -23,6 +23,9 @@ package ucar.nc2.dt;
 
 /**
  * Just like java.util.Iterator, but may throw IOException on nextData() call.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public interface DataIterator extends java.util.Iterator {
 

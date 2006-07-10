@@ -1,6 +1,6 @@
 // $Id: MAMatrix.java,v 1.2 2004/07/12 23:40:15 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -181,19 +181,3 @@ public class MAMatrix {
   }
 
 }
-
-/*
- * $Log: MAMatrix.java,v $
- * Revision 1.2  2004/07/12 23:40:15  caron
- * 2.2 alpha 1.0 checkin
- *
- * Revision 1.1.1.1  2003/12/04 21:05:27  caron
- * checkin 2.2
- *
- * Revision 1.2  2003/06/03 20:06:02  caron
- * fix javadocs
- *
- * Revision 1.1  2000/10/24 21:30:18  caron
- * add MAMatrix, MAVector
- *
- */

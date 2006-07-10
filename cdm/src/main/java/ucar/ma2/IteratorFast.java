@@ -1,6 +1,6 @@
 // $Id: IteratorFast.java,v 1.5 2005/12/15 00:29:09 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,6 +23,9 @@ package ucar.ma2;
 
 /**
  * A "fast" iterator that can be used when the data is in canonical order.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
   /* the idea is IteratorFast can do the iteration without an Index */
   public class IteratorFast implements IndexIterator {
@@ -107,21 +110,3 @@ package ucar.ma2;
 
     public Object next() { return maa.getObject(++currElement); }
   }
-
-/* Change History:
-   $Log: IteratorFast.java,v $
-   Revision 1.5  2005/12/15 00:29:09  caron
-   *** empty log message ***
-
-   Revision 1.4  2005/12/09 04:24:35  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.3  2005/05/19 23:43:40  caron
-   clean up javadoc
-
-   Revision 1.2  2004/07/12 23:40:14  caron
-   2.2 alpha 1.0 checkin
-
- */

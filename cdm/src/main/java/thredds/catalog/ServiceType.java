@@ -1,6 +1,6 @@
 // $Id: ServiceType.java,v 1.14 2006/02/20 22:46:10 caron Exp $
 /*
- * Copyright 2002 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *

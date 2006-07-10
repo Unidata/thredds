@@ -1,6 +1,6 @@
 // $Id: GeotiffWriter.java,v 1.2 2005/01/05 22:47:14 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,12 +22,19 @@ package ucar.nc2.geotiff;
 
 import ucar.ma2.*;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
 import java.io.*;
 
+/**
+ *
+ * @author caron, yuan
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ */
 public class GeotiffWriter {
   private String fileOut;
   private GeoTiff geotiff;
@@ -51,8 +58,8 @@ public class GeotiffWriter {
    * @param greyScale if true, write greyScale image, else dataSample.
    * @throws IOException
    */
-  public void writeGrid(GridDataset dataset, GeoGrid grid, Array data, boolean greyScale) throws IOException {
-    GridCoordSys gcs = grid.getCoordinateSystem();
+  public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale) throws IOException {
+    GridCoordSystem gcs = grid.getGridCoordSystem();
 
     if (!gcs.isProductSet())
       throw new IllegalArgumentException("Must have 1D x and y axes for "+ grid.getName());
@@ -94,9 +101,9 @@ public class GeotiffWriter {
 
   public void writeGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect pt) throws IOException {
     double scaler;
-    GridDataset dataset = GridDataset.open(fileName);
-    GeoGrid grid = dataset.findGridByName( gridName);
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridDataset dataset = ucar.nc2.dataset.grid.GridDataset.open(fileName);
+    GridDatatype grid = dataset.findGridDatatype( gridName);
+    GridCoordSystem gcs = grid.getGridCoordSystem();
 
     if (grid == null)
       throw new IllegalArgumentException("No grid named "+ gridName+" in fileName");
@@ -109,7 +116,7 @@ public class GeotiffWriter {
       throw new IllegalArgumentException("Must be evenly spaced grid = "+ grid.getName());
 
     // read in data
-    Array data = grid.readYXData(time, level);
+    Array data = grid.readDataSlice(time, level, -1, -1);
     Array lon = xaxis.read();
     Array lat = yaxis.read();
 
@@ -254,9 +261,9 @@ public class GeotiffWriter {
    * @throws IOException
    * @throws IllegalArgumentException if above assumptions not valid
    */
-  public void writeGrid(GeoGrid grid, Array data, boolean greyScale, double xStart, double yStart, double xInc, double yInc, int imageNumber) throws IOException {
+  public void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc, double yInc, int imageNumber) throws IOException {
     int nextStart = 0;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
 
     // get rid of this when all projections are implemented
     if (!gcs.isLatLon() && !(gcs.getProjection() instanceof LambertConformal)
@@ -356,11 +363,11 @@ public class GeotiffWriter {
   }
    /**
    * Replace missing values with dataMinMax.min - 1.0; return a floating point data array.
-   * @param grid GeoGrid
+   * @param grid GridDatatype
    * @param data input data array
    * @return floating point data array with missing values replaced.
    */
-  private ArrayFloat replaceMissingValues( GeoGrid grid, Array data) {
+  private ArrayFloat replaceMissingValues( GridDatatype grid, Array data) {
     MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData( data);
     float minValue = (float) (dataMinMax.min - 1.0);
 
@@ -378,11 +385,11 @@ public class GeotiffWriter {
 
   /**
    * Replace missing values with 0; scale other values between 1 and 255, return a byte data array.
-   * @param grid GeoGrid
+   * @param grid GridDatatype
    * @param data input data array
    * @return byte data array with missing values replaced and data scaled from 1- 255.
    */
-  private ArrayByte replaceMissingValuesAndScale( GeoGrid grid, Array data) {
+  private ArrayByte replaceMissingValuesAndScale( GridDatatype grid, Array data) {
     MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData( data);
     double scale = 254.0/(dataMinMax.max - dataMinMax.min);
 
@@ -592,14 +599,14 @@ public class GeotiffWriter {
         else  jj = j + spoint;
 
         float dd = lon.getFloat(lonIndex.set(jj));
-        slon.setFloat(slonIndex.set(j), (float)llp.lonNormal(dd) );
+        slon.setFloat(slonIndex.set(j), (float)LatLonPointImpl.lonNormal(dd) );
 
       }
 
       if ( p0.getLongitude() == pN.getLongitude() )
       {
             float dd = slon.getFloat(slonIndex.set(lonShape[0] -1));
-            slon.setFloat(slonIndex.set( 0), -(float)llp.lonNormal(dd));
+            slon.setFloat(slonIndex.set( 0), -(float)LatLonPointImpl.lonNormal(dd));
       }
       return slon;
 
@@ -630,40 +637,6 @@ public class GeotiffWriter {
   }
 
 }
-
-/* Change History:
-   $Log: GeotiffWriter.java,v $
-   Revision 1.2  2005/01/05 22:47:14  caron
-   no message
-
-   Revision 1.1  2004/10/19 20:38:53  yuanho
-   geotiff checkin
-
-   Revision 1.8  2003/10/02 20:22:26  yuanho
-   set StripByteCounts tag to LONG
-
-   Revision 1.7  2003/09/29 22:43:39  yuanho
-   cvs merge
-
-   Revision 1.5  2003/09/22 16:44:07  yuanho
-   geoshift function bug fix
-
-   Revision 1.4  2003/09/19 21:13:46  yuanho
-   geoshift function bug fix
-
-   Revision 1.3  2003/09/19 00:03:29  caron
-   clean up geotiff javadoc for release
-
-   Revision 1.2  2003/09/18 23:05:25  yuanho
-   geo shift long function
-
-   Revision 1.1  2003/09/02 22:26:38  caron
-   mo better
-
-   Revision 1.5  2003/07/12 23:08:55  caron
-   add cvs headers, trailers
-
-*/
 
 
 

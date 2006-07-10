@@ -2,10 +2,9 @@ package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
 import ucar.nc2.*;
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridCoordSys;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.ma2.*;
 
@@ -24,7 +23,7 @@ public class TestNcmlAggSynGrid extends TestCase {
 
     public void setUp() throws IOException {
       if (gds != null) return;
-      gds = GridDataset.open(filename);
+      gds = ucar.nc2.dataset.grid.GridDataset.open(filename);
     }
 
     public void tearDown() throws IOException {
@@ -33,13 +32,13 @@ public class TestNcmlAggSynGrid extends TestCase {
     }
 
     public void testGrid() {
-      GeoGrid grid = gds.findGridByName("T");
+      GridDatatype grid = gds.findGridDatatype("T");
       assert null != grid;
       assert grid.getName().equals("T");
       assert grid.getRank() == 3;
       assert grid.getDataType() == DataType.DOUBLE;
 
-      GridCoordSys gcsys = grid.getCoordinateSystem();
+      GridCoordSystem gcsys = grid.getGridCoordSystem();
       assert gcsys.getLatAxis() != null;
       assert gcsys.getLonAxis() != null;
       assert gcsys.getTimeAxis() != null;
@@ -59,7 +58,7 @@ public class TestNcmlAggSynGrid extends TestCase {
     }
 
     public void testDimensions() {
-      NetcdfDataset ncfile = gds.getNetcdfDataset();
+      NetcdfFile ncfile = gds.getNetcdfFile();
 
       Dimension latDim = ncfile.findDimension("lat");
       assert null != latDim;
@@ -80,7 +79,7 @@ public class TestNcmlAggSynGrid extends TestCase {
     }
 
    public void testCoordVar() {
-      NetcdfDataset ncfile = gds.getNetcdfDataset();
+      NetcdfFile ncfile = gds.getNetcdfFile();
       Variable lat = ncfile.findVariable("lat");
       assert null != lat;
       assert lat.getName().equals("lat");
@@ -117,7 +116,7 @@ public class TestNcmlAggSynGrid extends TestCase {
     }
 
     public void utestAggCoordVar() throws IOException {
-      NetcdfDataset ncfile = gds.getNetcdfDataset();
+      NetcdfFile ncfile = gds.getNetcdfFile();
       Variable time = ncfile.findVariable("time");
       assert null != time;
       assert time.getName().equals("time");
@@ -139,7 +138,7 @@ public class TestNcmlAggSynGrid extends TestCase {
     }
 
     public void testReadData() {
-      NetcdfDataset ncfile = gds.getNetcdfDataset();
+      NetcdfFile ncfile = gds.getNetcdfFile();
       Variable v = ncfile.findVariable("T");
       assert null != v;
       assert v.getName().equals("T");
@@ -182,7 +181,7 @@ public class TestNcmlAggSynGrid extends TestCase {
     }
 
     public void readSlice(int[] origin, int[] shape) {
-      NetcdfDataset ncfile = gds.getNetcdfDataset();
+      NetcdfFile ncfile = gds.getNetcdfFile();
       Variable v = ncfile.findVariable("T");
 
       try {

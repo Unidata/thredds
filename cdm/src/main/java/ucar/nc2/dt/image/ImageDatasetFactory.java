@@ -1,3 +1,23 @@
+// $Id: GridTable.java,v 1.1 2004/09/30 00:33:43 caron Exp $
+/*
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package ucar.nc2.dt.image;
 
 import java.awt.image.BufferedImage;
@@ -5,22 +25,13 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.IOException;
 import java.io.File;
-import java.util.List;
-
-import thredds.catalog.*;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridCoordSys;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
 
 /**
- * Created by IntelliJ IDEA.
- * User: john
- * Date: Aug 23, 2004
- * Time: 5:18:17 PM
- * To change this template use File | Settings | File Templates.
+ * @author caron
+ * @version $Revision: 1.31 $ $Date: 2006/05/19 23:20:21 $
  */
 public class ImageDatasetFactory {
 
@@ -31,14 +42,14 @@ public class ImageDatasetFactory {
   private int currentDirFileNo = 0;
 
   // grid stuff
-  private GeoGrid grid = null;
+  private GridDatatype grid = null;
   private int time = 0;
   private int ntimes = 1;
 
-  public BufferedImage openDataset( GeoGrid grid) throws java.io.IOException {
+  public BufferedImage openDataset( GridDatatype grid) throws java.io.IOException {
     this.grid = grid;
     this.time = 0;
-    GridCoordSys gcsys = grid.getCoordinateSystem();
+    GridCoordSystem gcsys = grid.getGridCoordSystem();
     if (gcsys.hasTimeAxis())
       ntimes = (int) gcsys.getTimeAxis().getSize();
     Array data = grid.readDataSlice( this.time, 0, -1, -1);
@@ -130,7 +141,7 @@ public class ImageDatasetFactory {
         if (this.time < 0) this.time = this.ntimes-1;
       }
 
-      Array data = null;
+      Array data;
       try {
         data = grid.readDataSlice( this.time, 0, -1, -1);
         return ImageArrayAdapter.makeGrayscaleImage( data);

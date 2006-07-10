@@ -10,6 +10,10 @@ import java.util.ArrayList;
 /**
  * Experimental interface for "ForecastModelRun" grids.
  * These have two time dimensions, ForecastTime and RunTime.
+ *
+ *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
 public interface ForecastGrid extends ucar.nc2.VariableSimpleIF {
 
@@ -17,7 +21,7 @@ public interface ForecastGrid extends ucar.nc2.VariableSimpleIF {
   public Dimension getDimension(int dimIndex);
   public List getDimensions();
 
-  public ucar.nc2.dt.grid.GridCoordSys getCoordinateSystem();
+  public ucar.nc2.dt.GridCoordSystem getCoordinateSystem();
   public ucar.unidata.geoloc.ProjectionImpl getProjection();
 
   public Dimension getTimeDimension();

@@ -23,10 +23,8 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
 import ucar.nc2.dataset.transform.*;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 
@@ -34,11 +32,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: May 23, 2006
- * Time: 12:32:09 PM
- * To change this template use File | Settings | File Templates.
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  */
 public class CoordTransBuilder {
   static private ArrayList transformList = new ArrayList();

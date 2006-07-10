@@ -38,6 +38,7 @@ import java.net.URL;
  * @author John Caron : adapt to MultiArray, add getAreaNavigation
  * @author Tom Whittaker & Tommy Jasmin at SSEC
  *
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class AreaFile3 {

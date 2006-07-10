@@ -1,6 +1,6 @@
 // $Id: XMLwriter.java,v 1.7 2006/04/20 22:13:16 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,13 +21,13 @@
 
 package thredds.wcs;
 
-import ucar.nc2.dataset.grid.*;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.util.StringUtil;
 
 import org.jdom.*;
 import java.util.*;
@@ -91,8 +91,8 @@ public class XMLwriter {
     Element serviceElem = new Element("Service", wcsNS);
 
     addElement( serviceElem, "description", "Experimental THREDDS/WCS server for CDM gridded datasets");
-    addElement( serviceElem, "name", dataset.getNetcdfDataset().getLocation());
-    addElement( serviceElem, "label", "Experimental THREDDS/WCS for "+dataset.getNetcdfDataset().getLocation());
+    addElement( serviceElem, "name", dataset.getNetcdfFile().getLocation());
+    addElement( serviceElem, "label", "Experimental THREDDS/WCS for "+dataset.getNetcdfFile().getLocation());
     Element keywords = addElement( serviceElem, "keywords", null);
     addElement( keywords, "keyword", null);
     addElement( serviceElem, "fees", "NONE");
@@ -137,7 +137,7 @@ public class XMLwriter {
 
     Collection grids = dataset.getGrids();
     for (Iterator iterator = grids.iterator(); iterator.hasNext();) {
-      GeoGrid grid = (GeoGrid) iterator.next();
+      GridDatatype grid = (GridDatatype) iterator.next();
       Element elem = makeCoverageOfferingBrief(grid);
       if (null != elem)
         contentElem.addContent(elem);
@@ -146,13 +146,13 @@ public class XMLwriter {
     return contentElem;
   }
 
-  private Element makeCoverageOfferingBrief(GeoGrid grid) {
+  private Element makeCoverageOfferingBrief(GridDatatype grid) {
     Element briefElem = new Element("CoverageOfferingBrief", wcsNS);
 
     addElement(briefElem, "name",grid.getName());
     addElement(briefElem, "label",grid.getDescription());
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     if (!gcs.isRegularSpatial()) {
       System.out.println("**Coordinate System not regular for "+grid.getName());
       return null;
@@ -164,7 +164,7 @@ public class XMLwriter {
     return briefElem;
   }
 
-  private void addLonLatEnvelope(Element elem, GridCoordSys gcs) {
+  private void addLonLatEnvelope(Element elem, GridCoordSystem gcs) {
     elem.setAttribute("srsName", "WGS84(DD)");
 
     LatLonRect llbb = gcs.getLatLonBoundingBox();
@@ -186,13 +186,13 @@ public class XMLwriter {
     if (gridNames == null) {
       Collection grids = dataset.getGrids();
       for (Iterator iterator = grids.iterator(); iterator.hasNext();) {
-        GeoGrid grid = (GeoGrid) iterator.next();
+        GridDatatype grid = (GridDatatype) iterator.next();
         Element elem = makeCoverageDescription(grid);
         rootElem.addContent(elem);
       }
     } else {
       for (int i = 0; i < gridNames.length; i++) {
-        GeoGrid grid = dataset.findGridByName(gridNames[i]);
+        GridDatatype grid = dataset.findGridDatatype(gridNames[i]);
         Element elem = makeCoverageDescription(grid);
         rootElem.addContent(elem);
       }
@@ -201,8 +201,8 @@ public class XMLwriter {
     return doc;
   }
 
-  private Element makeCoverageDescription(GeoGrid grid) {
-    GridCoordSys gcs = grid.getCoordinateSystem();
+  private Element makeCoverageDescription(GridDatatype grid) {
+    GridCoordSystem gcs = grid.getGridCoordSystem();
 
     Element offeringElem = makeCoverageOfferingBrief(grid);
     offeringElem.setName("CoverageOffering");
@@ -216,12 +216,12 @@ public class XMLwriter {
     return offeringElem;
   }
 
-  private Element makeDomainSet(GeoGrid grid) {
+  private Element makeDomainSet(GridDatatype grid) {
     Element domainElem = new Element("domainSet", wcsNS);
 
     domainElem.addContent( makeSpatialDomain( grid));
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     if (gcs.isDate()) {
       java.util.Date[] dates = gcs.getTimeDates();
       int n = dates.length;
@@ -245,13 +245,13 @@ public class XMLwriter {
     return posElem;
   }
 
-  public Element makeRangeSet(GeoGrid grid) {
+  public Element makeRangeSet(GridDatatype grid) {
     Element rangeElem = new Element("rangeSet", wcsNS);
     Element RangeElem = addElement(rangeElem, "RangeSet", null);
     addElement(RangeElem, "name", "RangeSetName");
     addElement(RangeElem, "label", "RangeSetLabel");
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     CoordinateAxis zaxis = gcs.getVerticalAxis();
     if (zaxis != null) {
       Element axisElem = addElement(RangeElem, "axisDescription", null);
@@ -272,12 +272,12 @@ public class XMLwriter {
     return rangeElem;
   }
 
-  private Element makeRectifiedGrid(GridCoordSys gcs) {
+  private Element makeRectifiedGrid(GridCoordSystem gcs) {
     Element gridElem = new Element("RectifiedGrid", gmlNS);
 
     CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
-    CoordinateAxis1D zaxis = (CoordinateAxis1D) gcs.getVerticalAxis();
+    CoordinateAxis1D zaxis = gcs.getVerticalAxis();
 
     int ndim = (zaxis != null) ? 3 : 2;
     gridElem.setAttribute("dimension", Integer.toString(ndim));
@@ -330,9 +330,9 @@ public class XMLwriter {
     return gridElem;
   }
 
-  private Element makeSpatialDomain(GeoGrid grid) {
+  private Element makeSpatialDomain(GridDatatype grid) {
     Element spatialElem = new Element("spatialDomain", wcsNS);
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
 
     Element envElem = new Element("Envelope", gmlNS);
     addLonLatEnvelope(envElem, gcs);
@@ -343,7 +343,7 @@ public class XMLwriter {
     return spatialElem;
   }
 
-  private Element makeSupportedCRS(GridCoordSys gcs) {
+  private Element makeSupportedCRS(GridCoordSystem gcs) {
     Element elem = new Element("supportedCRSs", wcsNS);
     addElement(elem, "requestCRSs", "EPSG:4326");
     addElement(elem, "responseCRSs", "EPSG:4326");
@@ -460,7 +460,7 @@ public class XMLwriter {
     Element rangeElem = addElement(layerElem, "RangeSetDescription", null);
     Iterator iter = gridset.getGrids().iterator();
     while (iter.hasNext()) {
-      GeoGrid grid = (GeoGrid) iter.next();
+      GridDatatype grid = (GridDatatype) iter.next();
       rangeElem.addContent(makeGridRangeDescription(grid));
     }
     return layerElem;
@@ -706,7 +706,7 @@ public class XMLwriter {
   }
 
 
-  private Element makeGridRangeDescription(GeoGrid grid) {
+  private Element makeGridRangeDescription(GridDatatype grid) {
     Element elem = new Element("GridRangeDescription", wcsNS);
 
     addElement(elem, "RangeID", grid.getName());

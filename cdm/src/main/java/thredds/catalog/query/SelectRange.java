@@ -1,6 +1,6 @@
 // $Id: SelectRange.java,v 1.5 2004/09/24 03:26:29 caron Exp $
 /*
- * Copyright 2002 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *

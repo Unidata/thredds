@@ -7,6 +7,7 @@ import ucar.nc2.dataset.grid.GridDataset;
 import ucar.nc2.Variable;
 import ucar.nc2.NCdump;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.ma2.Array;
@@ -67,7 +68,7 @@ public class TestGribAgg implements CatalogCrawler.Listener {
         out.println("***CAN'T OPEN "+dd.getName());
         return;
       }
-      process( result.gridDataset.getNetcdfDataset());
+      process( result.gridDataset.getNetcdfFile());
       fileList.add( result.gridDataset);
 
     } catch (IOException e) {
@@ -77,7 +78,7 @@ public class TestGribAgg implements CatalogCrawler.Listener {
   }
 
   private HashMap hash = new HashMap();
-  private void process(NetcdfDataset ncd) {
+  private void process(NetcdfFile ncd) {
     out.println(" process "+ncd.getLocation());
 
     List vars = ncd.getVariables();

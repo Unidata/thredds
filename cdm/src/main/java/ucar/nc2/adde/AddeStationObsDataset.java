@@ -26,6 +26,9 @@ import thredds.datatype.DateRange;
 
 /**
  * An adde "point" dataset.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class AddeStationObsDataset extends StationObsDatasetImpl {
 

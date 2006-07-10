@@ -1,6 +1,6 @@
 // $Id: ArrayByte.java,v 1.5 2005/05/11 00:09:53 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -444,19 +444,3 @@ public class ArrayByte extends Array {
     }
   }
 }
-
-/* Change History:
-   $Log: ArrayByte.java,v $
-   Revision 1.5  2005/05/11 00:09:53  caron
-   refactor StuctureData, dt.point
-
-   Revision 1.4  2005/02/22 22:12:11  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/08/16 20:53:43  caron
-   2.2 alpha (2)
-
-   Revision 1.2  2004/07/12 23:40:12  caron
-   2.2 alpha 1.0 checkin
-
- */

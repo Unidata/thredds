@@ -324,7 +324,7 @@
       <!--package name="ucar.nc2.dataset.conv"/ -->
       <package name="ucar.nc2.dataset.grid"/>
       <!-- package name="ucar.nc2.geotiff"/ -->
-      <!--package name="ucar.nc2.dt"/ -->
+      <package name="ucar.nc2.dt"/>
       <!-- package name="ucar.nc2.dt.grid"/ -->
       <!-- package name="ucar.nc2.dt.image"/ -->
       <!-- package name="ucar.nc2.dt.radial"/-->
@@ -348,12 +348,10 @@
     <javadoc Doctitle="NetCDF-Java 2.2 API" Use="true" Windowtitle="NetCDF-Java 2.2 API"
              maxmemory="256m" sourcepathref="sourcepath" destdir="${javadocAll.dir}" protected="true" source="1.4">
       <classpath refid="compile.classpath"/>
-      <package name="dods.dap.*"/>
-      <package name="thredds.catalog.*"/>
-      <package name="ucar.ma2"/>
-      <package name="ucar.nc2"/>
-      <package name="ucar.nc2.*"/>
-      <package name="ucar.unidata.*"/>
+      <classpath refid="compileUI.classpath"/>
+      <package name="dods.*"/>
+      <package name="thredds.*"/>
+      <package name="ucar.*"/>
     </javadoc>
   </target>
 

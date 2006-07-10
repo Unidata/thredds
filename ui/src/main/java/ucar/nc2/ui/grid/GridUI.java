@@ -1,6 +1,6 @@
 // $Id: GridUI.java,v 1.12 2006/06/06 16:07:16 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,6 +31,7 @@ import thredds.viewer.ui.geoloc.NavigatedPanel;
 import thredds.viewer.gis.MapBean;
 
 import ucar.nc2.util.NamedObject;
+import ucar.nc2.dt.GridDatatype;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
@@ -38,7 +39,7 @@ import ucar.util.prefs.ui.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -46,8 +47,8 @@ import javax.swing.border.*;
 /**
  * This is the thredds Data Viewer application User Interface for Grids.
  *
- * @author John Caron
- * @version $Id: GridUI.java,v 1.12 2006/06/06 16:07:16 caron Exp $
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class GridUI extends JPanel {
   static private final String DATASET_URL = "DatasetURL";
@@ -269,14 +270,14 @@ public class GridUI extends JPanel {
     fieldChooser.setCollection(fields.iterator());
   }
 
-  void setField(GeoGrid field) {
+  void setField(GridDatatype field) {
     int idx = fieldChooser.setSelectedByName(field.getName());
     if (idx < 0)
       fieldChooser.setSelectedByIndex(0);
     fieldChooser.setToolTipText( field.getDescription());
 
       // levels
-    ArrayList levels = field.getLevels();
+    List levels = field.getLevels();
     if ((levels == null) || (levels.size() == 0)) {
       levelChooser.setCollection(null);
       levelChooser.setLabel("none");
@@ -287,7 +288,7 @@ public class GridUI extends JPanel {
     }
 
       // levels
-    ArrayList times = field.getTimes();
+    List times = field.getTimes();
     if ((times == null)  || (times.size() == 0)) {
       timeChooser.setCollection(null);
       timeChooser.setLabel("none");
@@ -814,97 +815,3 @@ public class GridUI extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: GridUI.java,v $
-   Revision 1.12  2006/06/06 16:07:16  caron
-   *** empty log message ***
-
-   Revision 1.11  2006/05/08 02:47:34  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.10  2006/01/20 20:49:04  caron
-   disambiguate DataType
-
-   Revision 1.9  2005/11/17 00:48:19  caron
-   NcML aggregation
-   caching close/synch
-   grid subset bug
-
-   Revision 1.8  2005/07/21 21:16:05  caron
-   clean up thredds datatype
-   javadocs
-
-   Revision 1.7  2004/12/07 02:43:23  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/12/01 05:53:43  caron
-   ncml pass 2, new convention parsing
-
-   Revision 1.5  2004/11/07 03:00:52  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/11/07 02:55:12  caron
-   no message
-
-   Revision 1.3  2004/10/22 01:01:40  caron
-   another round
-
-   Revision 1.2  2004/10/06 19:03:42  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.1  2004/09/30 00:33:43  caron
-   *** empty log message ***
-
-   Revision 1.12  2004/09/28 21:39:10  caron
-   *** empty log message ***
-
-   Revision 1.11  2004/09/25 00:09:43  caron
-   add images, thredds tab
-
-   Revision 1.10  2004/09/24 03:26:37  caron
-   merge nj22
-
-   Revision 1.9  2004/05/11 23:30:37  caron
-   release 2.0a
-
-   Revision 1.8  2004/03/19 20:18:02  caron
-   use thredds.datamodel to connect catalog with data types
-
-   Revision 1.7  2004/03/05 23:45:43  caron
-   1.3.1
-
-   Revision 1.5  2004/02/20 05:02:55  caron
-   release 1.3
-
-   Revision 1.4  2003/12/04 22:27:48  caron
-   *** empty log message ***
-
-   Revision 1.3  2003/05/29 23:07:51  john
-   bug fixes
-
-   Revision 1.2  2003/03/17 21:12:34  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:51:11  caron
-   pass 2
-
-   Revision 1.3  2002/10/18 18:21:16  caron
-   thredds server
-
-   Revision 1.2  2002/04/29 22:39:21  caron
-   add StationUI, clean up
-
-   Revision 1.1.1.1  2002/02/26 17:24:48  caron
-   import sources
-
-*/
-
-

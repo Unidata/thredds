@@ -1,6 +1,6 @@
 // $Id: Index3D.java,v 1.4 2005/12/15 00:29:09 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -163,20 +163,4 @@ public class Index3D extends Index {
     return offset + v0*stride0 + v1*stride1 + v2*stride2;
   }
 
-
 }
-
-/* Change History:
-   $Log: Index3D.java,v $
-   Revision 1.4  2005/12/15 00:29:09  caron
-   *** empty log message ***
-
-   Revision 1.3  2005/12/09 04:24:34  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.2  2004/07/12 23:40:14  caron
-   2.2 alpha 1.0 checkin
-
- */

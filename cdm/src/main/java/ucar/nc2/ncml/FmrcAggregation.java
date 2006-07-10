@@ -1,6 +1,6 @@
 // $Id: Aggregation.java,v 1.12 2006/05/12 20:19:28 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,29 +22,21 @@ package ucar.nc2.ncml;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.DiskCache2;
-import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.io.*;
-import java.nio.channels.FileChannel;
-import java.nio.channels.OverlappingFileLockException;
-import java.nio.channels.FileLock;
-
-import thredds.util.DateFromString;
-import org.jdom.Element;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation
  *
+ *
  * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class FmrcAggregation extends Aggregation {
   private boolean debug = false;
@@ -78,17 +70,18 @@ public class FmrcAggregation extends Aggregation {
 
     // grid
     NetcdfFile typical = getTypicalDataset();
-    GridDataset gds = new GridDataset( (NetcdfDataset) typical);
+    GridDataset gds = new ucar.nc2.dataset.grid.GridDataset( (NetcdfDataset) typical);
 
     // global attributes
     NcMLReader.transferGroupAttributes(typical.getRootGroup(), root);
     root.addAttribute(new Attribute("Conventions", "_Coordinates"));
+    root.addAttribute(new Attribute("cdm_datatype", "ForecastModelRunCollection"));
 
     // needed dimensions, coordinate variables
     Iterator gcs = gds.getGridSets().iterator();
     while (gcs.hasNext()) {
       GridDataset.Gridset gset = (GridDataset.Gridset) gcs.next();
-      GridCoordSys gcc = gset.getGeoCoordSys();
+      GridCoordSystem gcc = gset.getGeoCoordSystem();
 
       // dimensions
       Iterator domain = gcc.getDomain().iterator();
@@ -97,7 +90,7 @@ public class FmrcAggregation extends Aggregation {
         if (null == root.findDimensionLocal( d.getName())) {
           Dimension newd = new Dimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
           root.addDimension( newd);
-          if (debug) System.out.println(" added dimension "+newd.getName());
+          if (debug) System.out.println("FmrcAggregation: added dimension "+newd.getName());
         }
       }
 
@@ -141,8 +134,9 @@ public class FmrcAggregation extends Aggregation {
     if (coordVar == null) {
       coordType = getCoordinateType();
       coordVar = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
+      coordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
       newds.addVariable(null, coordVar);
-      if (debug) System.out.println(" added coordVar "+coordVar.getName());
+      if (debug) System.out.println("FmrcAggregation: added coordVar "+coordVar.getName());
 
     } else {
       coordType = coordVar.getDataType();
@@ -181,7 +175,7 @@ public class FmrcAggregation extends Aggregation {
     // promote all grid variables
     List grids = gds.getGrids();
     for (int i=0; i<grids.size(); i++) {
-      GeoGrid grid = (GeoGrid) grids.get(i);
+      GridDatatype grid = (GridDatatype) grids.get(i);
       Variable v = (Variable) grid.getVariable();
 
       // add new dimension
@@ -194,7 +188,7 @@ public class FmrcAggregation extends Aggregation {
 
       newds.removeVariable( null, v.getShortName());
       newds.addVariable( null, vagg);
-      if (debug) System.out.println(" added grid "+v.getName());
+      if (debug) System.out.println("FmrcAggregation: added grid "+v.getName());
 
     }
   }
@@ -204,7 +198,7 @@ public class FmrcAggregation extends Aggregation {
     if (null == root.findVariable(v.getShortName())) {
       root.addVariable( v); // reparent
       v.setDimensions( v.getDimensionsString()); // rediscover dimensions
-      if (debug) System.out.println(" added "+ what+" "+v.getName());
+      if (debug) System.out.println("FmrcAggregation: added "+ what+" "+v.getName());
     }
   }
 

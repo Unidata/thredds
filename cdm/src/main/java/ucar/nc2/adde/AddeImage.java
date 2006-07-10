@@ -135,40 +135,4 @@ public class AddeImage {
 
 
 }
-/* Change History:
-   $Log: AddeImage.java,v $
-   Revision 1.6  2005/02/23 20:01:01  caron
-   *** empty log message ***
-
-   Revision 1.5  2004/11/16 23:35:37  caron
-   no message
-
-   Revision 1.4  2004/11/07 02:55:10  caron
-   no message
-
-   Revision 1.3  2004/10/23 21:36:10  caron
-   no message
-
-   Revision 1.2  2004/09/30 00:33:40  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/09/25 00:09:44  caron
-   add images, thredds tab
-
-   Revision 1.2  2003/03/17 21:12:37  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.3  2002/10/18 18:20:39  caron
-   thredds server
-
-   Revision 1.2  2002/04/29 22:48:54  caron
-   add image caching
-
-   Revision 1.1.1.1  2002/02/26 17:24:48  caron
-   import sources
-
-*/
 

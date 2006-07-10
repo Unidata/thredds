@@ -27,6 +27,9 @@ import ucar.util.prefs.PreferencesExt;
 /**
  * This puts the data values of a 1D Structure or Sequence into a JTable.
  * The columns are the members of the Structure.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class StructureTable extends JPanel {
   private PreferencesExt mainPrefs;

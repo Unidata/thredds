@@ -1,6 +1,6 @@
 // $Id: CatalogExtractor.java,v 1.5 2006/05/08 02:47:18 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,7 +21,6 @@
 
 package thredds.catalog.crawl;
 
-import ucar.nc2.dataset.grid.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
@@ -29,6 +28,9 @@ import ucar.nc2.units.TimeUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.Attribute;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil;
@@ -70,7 +72,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
     InvCatalogImpl cat = catFactory.readXML(catUrl);
     StringBuffer buff = new StringBuffer();
-    boolean isValid = cat.check(buff, false);
+    if (!cat.check(buff, false))
+      return;
 
     countDatasets = 0;
     countNoAccess = 0;
@@ -116,7 +119,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       out.println("***Catalog invalid= "+catUrl+" validation output=\n" + buff);
       return;
     }
-    out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
+    out.println("catalog <" + cat.getName() + "> is valid");
     out.println(" validation output=\n" + buff);
 
     countDatasets = 0;
@@ -250,13 +253,13 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     }
 
     out.println("Global Attributes");
-    NetcdfDataset ds = gridDs.getNetcdfDataset();
+    NetcdfDataset ds = (NetcdfDataset) gridDs.getNetcdfFile();
     showAtts(out, ds.getGlobalAttributes());
     out.println();
 
       if (gridDs == null) return;
 
-      GridCoordSys gcsMax = null;
+      GridCoordSystem gcsMax = null;
       LatLonRect llbbMax = null;
 
       LatLonRect llbb = null;
@@ -266,7 +269,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       java.util.Iterator iter = gridDs.getGridSets().iterator();
       while (iter.hasNext()) {
         GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
-        GridCoordSys gcs = gset.getGeoCoordSys();
+        GridCoordSystem gcs = gset.getGeoCoordSystem();
 
         CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
         CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
@@ -386,10 +389,10 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   }
 
   private void makeGrib1Vocabulary(List grids, PrintStream out) {
-    String stdName = null;
+    String stdName;
     out.println("\n<variables vocabulary='GRIB-1'>");
     for (int i = 0; i < grids.size(); i++) {
-      GeoGrid grid = (GeoGrid) grids.get(i);
+      GridDatatype grid = (GridDatatype) grids.get(i);
       ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("GRIB_param_number");
       stdName = (att != null) ? att.getNumericValue().toString() : null;
 

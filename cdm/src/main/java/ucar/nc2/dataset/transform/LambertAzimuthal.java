@@ -30,6 +30,9 @@ import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
  * Create a LambertAzimuthal Projection from the information in the Coordinate Transform Variable.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class LambertAzimuthal extends AbstractCoordTransBuilder {
 

@@ -22,6 +22,8 @@ package ucar.nc2.dataset.grid;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Format;
@@ -45,7 +47,7 @@ import java.io.IOException;
  * @version $Revision: 1.24 $ $Date: 2006/05/24 00:12:57 $
  */
 
-public class GeoGrid implements NamedObject { // , ucar.nc2.dt.GridDatatype {
+public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   private GridDataset dataset;
   private GridCoordSys gcs;
@@ -179,14 +181,16 @@ public class GeoGrid implements NamedObject { // , ucar.nc2.dt.GridDatatype {
   public String getName() { return vs.getName(); }
   /** get the GridCoordSys for this GeoGrid. */
   public GridCoordSys getCoordinateSystem() { return gcs; }
+  public GridCoordSystem getGridCoordSystem() { return gcs; }
+
   /** get the Projection. */
   public ProjectionImpl  getProjection() { return gcs.getProjection(); }
 
     /** ArrayList of thredds.util.NamedObject, from the  GridCoordSys. */
-  public ArrayList getLevels() { return gcs.getLevels(); }
+  public List getLevels() { return gcs.getLevels(); }
 
   /** ArrayList of thredds.util.NamedObject, from the  GridCoordSys. */
-  public ArrayList getTimes() { return gcs.getTimes(); }
+  public List getTimes() { return gcs.getTimes(); }
 
   /** get the standardized description, see VariableStandardized.getDescription() */
   public String getDescription() { return vs.getDescription(); }
@@ -330,10 +334,10 @@ public class GeoGrid implements NamedObject { // , ucar.nc2.dt.GridDatatype {
 
 
   /**
-   * This reads in an arbitrary data slice, with the data in
+   * This reads an arbitrary data slice, returning the data in
    * canonical order (t-z-y-x). If any dimension does not exist, ignore it.
    *
-   * @param t if < 0, get all of time dim; if valid index, fix sliceto that value.
+   * @param t if < 0, get all of time dim; if valid index, fix slice to that value.
    * @param z if < 0, get all of z dim; if valid index, fix slice to that value.
    * @param y if < 0, get all of y dim; if valid index, fix slice to that value.
    * @param x if < 0, get all of x dim; if valid index, fix slice to that value.
@@ -497,6 +501,9 @@ public class GeoGrid implements NamedObject { // , ucar.nc2.dt.GridDatatype {
     return subset( t_range, z_range, y_range, x_range);
   }
 
+  public GridDatatype makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException  {
+    return subset(t_range, z_range, bbox, z_stride, y_stride, x_stride);
+  }
 
   /**
    * Create a new GeoGrid that is a logical subset of this GeoGrid.
@@ -538,6 +545,11 @@ public class GeoGrid implements NamedObject { // , ucar.nc2.dt.GridDatatype {
     return new GeoGrid( dataset, v_section, gcs_section);
   }
 
+  public GridDatatype makeSubset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException  {
+    return subset(t_range, z_range, y_range, x_range);
+  }
+
+  /** experimental - do not use */
   public void writeFile( String filename) throws IOException {
     FileWriter writer = new FileWriter( filename, true);
 

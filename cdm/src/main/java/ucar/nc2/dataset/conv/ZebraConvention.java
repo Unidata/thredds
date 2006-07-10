@@ -1,6 +1,6 @@
 // $Id: ZebraConvention.java,v 1.8 2006/01/14 22:15:02 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,6 +31,9 @@ import java.io.IOException;
 
 /**
  * Zebra ATD files.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class ZebraConvention extends ATDRadarConvention {
@@ -108,39 +111,3 @@ public class ZebraConvention extends ATDRadarConvention {
 
 
 }
-
-/**
- * $Log: ZebraConvention.java,v $
- * Revision 1.8  2006/01/14 22:15:02  caron
- * Use CoordSysBuilderIF
- *
- * Revision 1.7  2006/01/11 16:15:45  caron
- * syncExtend
- * N3iosp, FileWriter writes by record
- *
- * Revision 1.6  2005/02/20 00:37:00  caron
- * reorganize resources
- *
- * Revision 1.5  2005/01/05 22:47:13  caron
- * no message
- *
- * Revision 1.4  2004/12/10 17:04:17  caron
- * *** empty log message ***
- *
- * Revision 1.3  2004/12/07 01:29:29  caron
- * redo convention parsing, use _Coordinate encoding.
- *
- * Revision 1.2  2004/12/01 05:53:40  caron
- * ncml pass 2, new convention parsing
- *
- * Revision 1.1  2004/08/16 20:53:50  caron
- * 2.2 alpha (2)
- *
- * Revision 1.1  2003/04/08 15:06:28  caron
- * nc2 version 2.1
- *
- * Revision 1.1  2001/09/06 17:12:17  caron
- * zebra hack
- *
- *
- */

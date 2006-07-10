@@ -1,6 +1,6 @@
 // $Id: StructureDS.java,v 1.12 2005/11/17 00:48:18 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,8 +33,8 @@ import java.io.IOException;
 
 /**
  * An "enhanced" Structure.
- * @author John Caron
- * @version $Revision: 1.12 $ $Date: 2005/11/17 00:48:18 $
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  */
 
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
@@ -208,50 +208,3 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return smProxy.convertScaleOffsetMissing( value);
   }
 }
-
-/* Change History:
-   $Log: StructureDS.java,v $
-   Revision 1.12  2005/11/17 00:48:18  caron
-   NcML aggregation
-   caching close/synch
-   grid subset bug
-
-   Revision 1.11  2005/11/07 20:46:08  caron
-   *** empty log message ***
-
-   Revision 1.10  2005/11/07 16:41:18  caron
-   NcML Aggregation
-   new projections
-
-   Revision 1.9  2005/07/25 16:12:10  caron
-   cleanup unit testing
-   NetcdfDataset does not modify wrapped NetcdfFile, allowing it to be acquired
-
-   Revision 1.8  2005/05/23 20:18:34  caron
-   refactor for scale/offset/missing
-
-   Revision 1.7  2004/12/10 17:04:16  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/12/01 05:53:41  caron
-   ncml pass 2, new convention parsing
-
-   Revision 1.5  2004/11/21 01:16:47  caron
-   ncml pass 1
-
-   Revision 1.4  2004/11/07 03:00:49  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/10/06 19:03:41  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.2  2004/08/26 17:55:08  caron
-   no message
-
-   Revision 1.1  2004/08/16 20:53:48  caron
-   2.2 alpha (2)
-
-*/

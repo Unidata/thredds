@@ -1,6 +1,6 @@
 // $Id: CoordinateAxis1D.java,v 1.19 2006/05/03 21:29:28 caron Exp $
 /*
- * Copyright 2002-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -39,7 +39,8 @@ import java.util.ArrayList;
  *   <i>getStart()</i> + i * <i>getIncrement()</i>.
  *
  * @see CoordinateAxis#factory
- * @author caron
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {

@@ -3,10 +3,11 @@ package ucar.unidata.geoloc.vertical;
 import junit.framework.*;
 
 import ucar.ma2.*;
-import ucar.nc2.dataset.grid.*;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.TestAll;
-import ucar.unidata.util.Format;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
 
 /**
  * Test basic projection methods
@@ -21,10 +22,10 @@ public class TestVertical extends TestCase {
   public void testOceanS() throws java.io.IOException, InvalidRangeException {
     GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open(TestAll.testdataDir + "grid/netcdf/cf/roms_ocean_s_coordinate.nc");
 
-    GeoGrid grid = gds.findGridByName("temp");
+    GridDatatype grid = gds.findGridDatatype("temp");
     assert grid != null;
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalTransform2();
@@ -48,10 +49,10 @@ public class TestVertical extends TestCase {
   public void testOceanSigma() throws java.io.IOException, InvalidRangeException {
     GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open("R:/testdata/grid/netcdf/cf/gomoos_cf.nc");
 
-    GeoGrid grid = gds.findGridByName("temp");
+    GridDatatype grid = gds.findGridDatatype("temp");
     assert grid != null;
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalTransform2();
@@ -75,10 +76,10 @@ public class TestVertical extends TestCase {
   public void testAtmSigma() throws java.io.IOException, InvalidRangeException {
     GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open("R:/testdata/grid/netcdf/cf/temperature.nc");
 
-    GeoGrid grid = gds.findGridByName("Temperature");
+    GridDatatype grid = gds.findGridDatatype("Temperature");
     assert grid != null;
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalTransform2();
@@ -102,10 +103,10 @@ public class TestVertical extends TestCase {
   public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
     GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open("R:/testdata/grid/netcdf/cf/ccsm2.nc");
 
-    GeoGrid grid = gds.findGridByName("T");
+    GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalTransform2();
@@ -129,10 +130,10 @@ public class TestVertical extends TestCase {
   public void testWrfEta() throws java.io.IOException, InvalidRangeException {
     GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open("R:/testdata/grid/netcdf/wrf/wrfout_v2_Lambert.nc");
 
-    GeoGrid grid = gds.findGridByName("T");
+    GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalTransform2();
@@ -159,12 +160,12 @@ public class TestVertical extends TestCase {
     String url= "dods://lead4.unidata.ucar.edu:8080/thredds/dodsC/model/UCAR/UNIDATA/WRF/STEERED/wrfout_d01_2006-04-20_00_00_00.nc";
     GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open( url);
 
-    GeoGrid grid = gds.findGridByName("T");
+    GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;
 
-    grid = grid.subset(null,null,null,1,2,4);
+    grid = grid.makeSubset(null,null,null,1,2,4);
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     assert gcs != null;
 
     VerticalTransform vt = gcs.getVerticalTransform();

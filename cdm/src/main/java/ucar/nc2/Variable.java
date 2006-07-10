@@ -1,6 +1,6 @@
 // $Id: Variable.java,v 1.50 2006/05/19 23:20:52 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -930,6 +930,13 @@ public class Variable implements VariableIF {
 
   /*******************************************/
   /** nicely formatted string representation */
+
+  /** display name plus the dimensions */
+  public String getNameAndDimensions() {
+    StringBuffer buf = new StringBuffer();
+    getNameAndDimensions( buf, true, true);
+    return buf.toString();
+  }
 
   /** display name plus the dimensions */
   public void getNameAndDimensions(StringBuffer buf, boolean useFullName, boolean showDimLength) {

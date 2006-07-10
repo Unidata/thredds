@@ -1,6 +1,6 @@
 // $Id: GridCoordSys.java,v 1.38 2006/05/24 17:47:45 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -59,7 +59,7 @@ import thredds.datatype.DateRange;
  * @version $Revision: 1.38 $ $Date: 2006/05/24 17:47:45 $
  */
 
-public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.grid.GridCoordSys {
+public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCoordSystem {
   private static SimpleUnit kmUnit = SimpleUnit.factory("km");
 
   /**
@@ -117,7 +117,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.grid.G
       return false;
     }
 
-    int countRangeRank = 2;
+    //int countRangeRank = 2;
 
     CoordinateAxis z = cs.getHeightAxis();
     if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
@@ -132,7 +132,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.grid.G
       if (sbuff != null) sbuff.append(cs.getName()+" T axis must be 1D\n");
       return false;
     }
-    if (t != null) countRangeRank++;
+    // if (t != null) countRangeRank++;
 
 
     /* if (cs.getRankDomain() < countRangeRank) {

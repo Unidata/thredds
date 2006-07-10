@@ -1,6 +1,6 @@
 // $Id: Nids2Dataset.java,v 1.6 2006/06/29 19:50:39 yuanho Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -30,12 +30,11 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.List;
 
-
 /**
  * Make a Nids NetcdfDataset into a RadialDataset.
  *
- * @author
- * @version
+ * @author yuan
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class Nids2Dataset extends RadialDatasetSweepAdapter {

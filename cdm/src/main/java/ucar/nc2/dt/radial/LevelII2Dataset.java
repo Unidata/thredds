@@ -1,6 +1,6 @@
 // $Id: LevelII2Dataset.java,v 1.10 2006/06/29 19:49:09 yuanho Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,8 +33,8 @@ import java.util.List;
 /**
  * Make a LevelII2 NetcdfDataset into a RadialDataset.
  *
- * @author
- * @version $Revision: 1.10 $ $Date: 2006/06/29 19:49:09 $
+ * @author yuan
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class LevelII2Dataset extends RadialDatasetSweepAdapter {

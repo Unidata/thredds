@@ -1,6 +1,6 @@
 // $Id: M3IOConvention.java,v 1.4 2006/03/07 19:56:58 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -285,25 +285,3 @@ public class M3IOConvention extends CoordSysBuilder {
   }
 
 }
-
-/**
- * $Log: M3IOConvention.java,v $
- * Revision 1.4  2006/03/07 19:56:58  caron
- * fmr collection, servlet
- *
- * Revision 1.3  2004/12/07 01:29:28  caron
- * redo convention parsing, use _Coordinate encoding.
- *
- * Revision 1.2  2004/12/03 04:46:25  caron
- * no message
- *
- * Revision 1.1  2004/08/16 20:53:49  caron
- * 2.2 alpha (2)
- *
- * Revision 1.2  2003/07/12 23:30:08  caron
- * fix javadoc
- *
- * Revision 1.1  2003/06/26 22:35:45  caron
- * M3IO convention
- *
- */

@@ -1,6 +1,6 @@
 // $Id: DataRootHandler.java,v 1.5 2006/05/19 19:23:05 edavis Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *

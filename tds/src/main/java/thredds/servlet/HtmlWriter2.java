@@ -11,7 +11,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dt.GridDatatype;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
@@ -642,7 +642,7 @@ public class HtmlWriter2
     List grids = gds.getGrids();
     for ( int i = 0; i < grids.size(); i++ )
     {
-      GeoGrid grid = (GeoGrid) grids.get( i );
+      GridDatatype grid = (GridDatatype) grids.get( i );
       showGrid( grid, sb, shade );
       shade = !shade;
     }
@@ -696,7 +696,7 @@ public class HtmlWriter2
     sb.append( "</tr>\r\n" );
   }
 
-  private void showGrid( GeoGrid grid, StringBuffer sb, boolean shade )
+  private void showGrid( GridDatatype grid, StringBuffer sb, boolean shade )
   {
 
     sb.append( "<tr" );

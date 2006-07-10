@@ -20,7 +20,6 @@
  */
 package ucar.nc2.thredds;
 
-import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 
@@ -33,7 +32,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 
 import thredds.catalog.*;
-import thredds.datatype.DateRange;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -56,6 +54,9 @@ import java.io.IOException;
  * It annotates the NetcdfDataset with info from the InvDataset.
  *
  * You can reuse a ThreddsDataFactory, but do not share across threads.
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class ThreddsDataFactory {
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -84,7 +85,7 @@ public class ThreddsDataFactory {
     public StringBuffer errLog = new StringBuffer();
 
     public thredds.catalog.DataType dtype;
-    public ucar.nc2.dataset.grid.GridDataset gridDataset;
+    public ucar.nc2.dt.GridDataset gridDataset;
     public ucar.nc2.dt.PointObsDataset pobsDataset;
     public ucar.nc2.dt.RadialDatasetSweep radialDataset;
     public String imageURL;
@@ -413,7 +414,7 @@ public class ThreddsDataFactory {
     }
 
     // ready to open it through netcdf API
-    NetcdfDataset ds = null;
+    NetcdfDataset ds;
 
     // open DODS type
     if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS)) {
@@ -642,7 +643,7 @@ public class ThreddsDataFactory {
   // see if theres an access method we can open through the netcdf API
   private InvAccess chooseImageAccess(List accessList) {
 
-    InvAccess access = null;
+    InvAccess access;
 
     access = findAccessByDataFormatType( accessList, DataFormatType.JPEG);
     if (access != null) return access;
@@ -684,7 +685,5 @@ public class ThreddsDataFactory {
     }
     return null;
   }
-
-
 
 }

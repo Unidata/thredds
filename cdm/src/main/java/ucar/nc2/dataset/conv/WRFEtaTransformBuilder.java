@@ -28,6 +28,11 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 
+/**
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ */
 public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
   private CoordinateSystem cs;
 

@@ -5,9 +5,9 @@ import junit.framework.TestCase;
 import java.io.IOException;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.grid.GridDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridCoordSys;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
@@ -21,10 +21,10 @@ public class TestNcmlAggDirDateFormat extends TestCase {
   public void testNcmlGrid() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "aggDateFormat.xml";
 
-    GridDataset gds = GridDataset.open( filename);
+    GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open( filename);
     System.out.println(" TestNcmlAggDirDateFormat.openGrid "+ filename);
 
-    NetcdfFile ncfile = gds.getNetcdfDataset();
+    NetcdfFile ncfile = gds.getNetcdfFile();
     testDimensions( ncfile);
     testAggCoordVar( ncfile);
     testReadData( gds);
@@ -75,7 +75,7 @@ public class TestNcmlAggDirDateFormat extends TestCase {
   }
 
   public void testReadData(GridDataset gds) throws IOException {
-    GeoGrid g = gds.findGridByName("IR_WV");
+    GridDatatype g = gds.findGridDatatype("IR_WV");
     assert null != g;
     assert g.getName().equals("IR_WV");
     assert g.getRank() == 3;
@@ -84,7 +84,7 @@ public class TestNcmlAggDirDateFormat extends TestCase {
     assert g.getShape()[2] == 1536;
     assert g.getDataType() == DataType.BYTE;
 
-    GridCoordSys gsys = g.getCoordinateSystem();
+    GridCoordSystem gsys = g.getGridCoordSystem();
     assert gsys.getXHorizAxis() != null;
     assert gsys.getYHorizAxis() != null;
     assert gsys.getTimeAxis() != null;

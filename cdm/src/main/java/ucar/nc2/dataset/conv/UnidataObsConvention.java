@@ -1,6 +1,6 @@
 // $Id: UnidataObsConvention.java,v 1.3 2005/08/18 14:30:38 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,7 +34,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * @author john
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class UnidataObsConvention extends CoordSysBuilder {
 

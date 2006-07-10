@@ -1,6 +1,6 @@
 // $Id: SimpleUnit.java,v 1.9 2006/02/16 23:02:39 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -106,14 +106,14 @@ public class SimpleUnit {
     try {
       uu1 = format.parse(unitString1);
     } catch (Exception e) {
-      if (true || debugParse) System.out.println("Parse " +unitString1 +" got Exception1 " +e);
+      if (debugParse) System.out.println("Parse " +unitString1 +" got Exception1 " +e);
       return false;
     }
 
     try {
       uu2 = format.parse(unitString2);
     } catch (Exception e) {
-      if (true || debugParse) System.out.println("Parse " +unitString2 +" got Exception2 " +e);
+      if (debugParse) System.out.println("Parse " +unitString2 +" got Exception2 " +e);
       return false;
     }
 
@@ -239,65 +239,3 @@ public class SimpleUnit {
   }
 
 }
-
-
-/**
- * $Log: SimpleUnit.java,v $
- * Revision 1.9  2006/02/16 23:02:39  caron
- * *** empty log message ***
- *
- * Revision 1.8  2006/02/03 00:59:32  caron
- * ArrayStructure refactor.
- * DODS parsing refactor.
- *
- * Revision 1.7  2005/10/19 17:21:40  caron
- * Lambert Conformal Projection now allows false origin
- *
- * Revision 1.6  2005/05/19 23:43:41  caron
- * clean up javadoc
- *
- * Revision 1.5  2005/05/19 21:56:02  caron
- * turn off all debugging
- *
- * Revision 1.4  2005/05/04 17:18:47  caron
- * *** empty log message ***
- *
- * Revision 1.3  2005/05/01 19:16:05  caron
- * move station to point package
- * add implementations for common interfaces
- * refactor station adapters
- *
- * Revision 1.2  2005/04/28 19:28:23  caron
- * grix x,y has to be in km
- *
- * Revision 1.1  2004/09/11 00:04:22  caron
- * *** empty log message ***
- *
- * Revision 1.3  2004/08/16 20:53:52  caron
- * 2.2 alpha (2)
- *
- * Revision 1.2  2004/07/12 23:40:20  caron
- * 2.2 alpha 1.0 checkin
- *
- * Revision 1.1  2004/07/06 19:28:13  caron
- * pre-alpha checkin
- *
- * Revision 1.1  2004/06/07 20:24:55  caron
- * move SimpleUnit to ucar.unit.units, add aliases in UnitDB
- *
- * Revision 1.2  2004/05/11 23:30:37  caron
- * release 2.0a
- *
- * Revision 1.4  2004/03/18 23:55:15  caron
- * better detection of Date unit
- *
- * Revision 1.3  2004/02/06 21:29:19  caron
- * add  getDateOrigin()
- *
- * Revision 1.2  2003/10/28 23:57:20  caron
- * minor
- *
- * Revision 1.1  2003/10/02 20:33:48  caron
- * move SimpleUnit to dataset; add <units> tag; add projections to CF
- *
- */

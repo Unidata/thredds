@@ -1,6 +1,6 @@
 // $Id: RadialCoordSys.java,v 1.8 2006/06/26 23:33:20 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -217,36 +217,3 @@ public class RadialCoordSys {
   }
 
 }
-
-
-/**
- * $Log: RadialCoordSys.java,v $
- * Revision 1.8  2006/06/26 23:33:20  caron
- * bug fixes for IDV:
- *   Vert transform subsets now have correct units
- *   WRFEta slightly less buggy
- *   Radial CoordSys caching was stupid
- *   GribVariable ignore duplicate rcords (take 1st)
- *
- * Revision 1.7  2005/10/20 18:39:41  caron
- * pass 2 on  RadialDatasset
- *
- * Revision 1.6  2005/05/19 23:43:41  caron
- * clean up javadoc
- *
- * Revision 1.5  2005/04/27 22:07:59  caron
- * no message
- *
- * Revision 1.4  2005/04/21 01:34:03  caron
- * clean up radar adapters
- *
- * Revision 1.3  2005/03/07 20:48:31  caron
- * no message
- *
- * Revision 1.2  2005/03/04 19:36:17  caron
- * improve javadoc
- *
- * Revision 1.1  2005/02/23 20:01:03  caron
- * *** empty log message ***
- *
- */

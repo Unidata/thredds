@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.List;
 
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dt.GridDatatype;
 import ucar.ma2.Array;
 
 /**
@@ -76,7 +76,7 @@ public class TimeTDS {
         if (tdata.dtype == DataType.GRID) {
           List grids = tdata.gridDataset.getGrids();
           if (grids.size() > 0) {
-            GeoGrid grid = (GeoGrid) grids.get(0);
+            GridDatatype grid = (GridDatatype) grids.get(0);
             Array data = grid.readDataSlice(0, -1, -1, -1);
             out.println(" -- read " + data.getSize());
           } else {

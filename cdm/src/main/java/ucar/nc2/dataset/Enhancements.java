@@ -1,6 +1,6 @@
 // $Id: Enhancements.java,v 1.4 2005/11/07 20:46:08 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -58,20 +58,3 @@ public interface Enhancements {
   public Variable getOriginalVariable();
 
 }
-
-/* Change History:
-   $Log: Enhancements.java,v $
-   Revision 1.4  2005/11/07 20:46:08  caron
-   *** empty log message ***
-
-   Revision 1.3  2005/11/07 16:41:18  caron
-   NcML Aggregation
-   new projections
-
-   Revision 1.2  2005/02/22 22:12:14  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/08/16 20:53:47  caron
-   2.2 alpha (2)
-
-  */

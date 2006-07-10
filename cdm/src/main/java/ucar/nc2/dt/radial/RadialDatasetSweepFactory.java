@@ -6,6 +6,9 @@ import ucar.nc2.dataset.*;
 
 /**
  * Factory to create RadialDatasets
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class RadialDatasetSweepFactory {
 
@@ -33,6 +36,5 @@ public class RadialDatasetSweepFactory {
 
     return null;
   }
-
 
 }

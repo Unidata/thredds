@@ -27,7 +27,9 @@ import ucar.nc2.Dimension;
 /**
  * Implement this interface to add a Coordinate Transform to a NetcdfDataset.
  * Must be able to know how to build one from the info in a Coordinate Transform Variable.
- * @author caron
+ *
+ * @author john caron
+ * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
  */
 public interface CoordTransBuilderIF {
 

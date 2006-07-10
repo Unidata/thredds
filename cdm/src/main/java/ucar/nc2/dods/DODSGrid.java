@@ -1,6 +1,6 @@
 // $Id: DODSGrid.java,v 1.17 2006/02/16 23:02:35 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -125,71 +125,3 @@ public class DODSGrid extends DODSVariable {
   } */
 
 }
-
-/* Change History:
-   $Log: DODSGrid.java,v $
-   Revision 1.17  2006/02/16 23:02:35  caron
-   *** empty log message ***
-
-   Revision 1.16  2006/02/03 00:59:31  caron
-   ArrayStructure refactor.
-   DODS parsing refactor.
-
-   Revision 1.15  2006/01/23 21:14:43  caron
-   start refactor of DODS parsing
-   sequence reading
-   allow ".' in netcdf object name (??)
-
-   Revision 1.14  2006/01/13 19:57:14  caron
-   * Point/StationObs: check altitude units, convert values to meters.
-     * DODS: unescape dimension, structure names; dodsName dont change.
-
-   Revision 1.13  2005/06/23 19:18:43  caron
-   no message
-
-   Revision 1.12  2005/04/18 23:45:55  caron
-   _unsigned
-   FileCache
-   minFileLength
-
-   Revision 1.11  2005/01/12 01:20:44  caron
-   use unsigned types instead of widening
-   make attribute names valid
-
-   Revision 1.10  2004/11/07 03:00:50  caron
-   *** empty log message ***
-
-   Revision 1.9  2004/11/07 02:55:11  caron
-   no message
-
-   Revision 1.8  2004/11/04 00:38:18  caron
-   no message
-
-   Revision 1.7  2004/09/30 20:48:24  caron
-   GDS grids
-
-   Revision 1.6  2004/09/28 21:24:26  caron
-   Grid subclass of Variable
-
-   Revision 1.5  2004/08/19 21:38:12  caron
-   no message
-
-   Revision 1.4  2004/08/17 19:20:05  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/08/16 20:53:51  caron
-   2.2 alpha (2)
-
-   Revision 1.2  2004/07/12 23:40:18  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.1  2004/07/06 19:28:12  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
-   Revision 1.1  2003/04/08 15:06:31  caron
-   nc2 version 2.1
-
- */

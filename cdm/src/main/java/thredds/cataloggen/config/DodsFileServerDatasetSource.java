@@ -1,7 +1,7 @@
 // $Id: DodsFileServerDatasetSource.java,v 1.9 2006/01/20 02:08:23 caron Exp $
 
 /*
- * Copyright 2002 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,7 +29,7 @@ import java.util.List;
 // $Id: DodsFileServerDatasetSource.java,v 1.9 2006/01/20 02:08:23 caron Exp $
 
 /*
- * Copyright 2002 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *

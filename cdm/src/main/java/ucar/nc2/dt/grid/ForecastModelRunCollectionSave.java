@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Date;
 
 /**
+ *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
 public interface ForecastModelRunCollectionSave {
 

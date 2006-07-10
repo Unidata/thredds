@@ -24,8 +24,11 @@ package ucar.nc2.units;
 import java.util.Date;
 
 /**
- * Date parsing and formatting. always uses GMT.
- * Use one of these in each thread for thread dafety.
+ * Date parsing and formatting. Always uses GMT.
+ * Use one of these in each thread for thread safety.
+ *
+ * @author caron
+ * @version $Revision$ $Date$
  */
 public class DateFormatter {
 

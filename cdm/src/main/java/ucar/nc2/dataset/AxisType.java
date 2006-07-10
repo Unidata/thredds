@@ -1,6 +1,6 @@
 // $Id: AxisType.java,v 1.3 2006/02/13 19:51:26 caron Exp $
 /*
- * Copyright 2002-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,37 +34,45 @@ public class AxisType {
   private static java.util.HashMap hash = new java.util.HashMap(10);
 
   /**
+   * represents the runTime coordinate
+   */
+  public final static AxisType RunTime = new AxisType("RunTime", 0);
+  /**
+   * represents the ensemble coordinate
+   */
+  public final static AxisType Ensemble = new AxisType("Ensemble", 1);
+  /**
    * represents the time coordinate
    */
-  public final static AxisType Time = new AxisType("Time", 0);
+  public final static AxisType Time = new AxisType("Time", 2);
   /**
    * represents a x coordinate
    */
-  public final static AxisType GeoX = new AxisType("GeoX", 3);
+  public final static AxisType GeoX = new AxisType("GeoX", 5);
   /**
    * represents a y coordinate
    */
-  public final static AxisType GeoY = new AxisType("GeoY", 2);
+  public final static AxisType GeoY = new AxisType("GeoY", 4);
   /**
    * represents a z coordinate
    */
-  public final static AxisType GeoZ = new AxisType("GeoZ", 1);
+  public final static AxisType GeoZ = new AxisType("GeoZ", 3);
   /**
    * represents a latitude coordinate
    */
-  public final static AxisType Lat = new AxisType("Lat", 2);
+  public final static AxisType Lat = new AxisType("Lat", 4);
   /**
    * represents a longitude coordinate
    */
-  public final static AxisType Lon = new AxisType("Lon", 3);
+  public final static AxisType Lon = new AxisType("Lon", 5);
   /**
    * represents a vertical height coordinate
    */
-  public final static AxisType Height = new AxisType("Height", 1);
+  public final static AxisType Height = new AxisType("Height", 3);
   /**
    * represents a vertical pressure coordinate
    */
-  public final static AxisType Pressure = new AxisType("Pressure", 1);
+  public final static AxisType Pressure = new AxisType("Pressure", 3);
   /**
    * represents a radial azimuth coordinate
    */
@@ -78,7 +86,7 @@ public class AxisType {
    */
   public final static AxisType RadialElevation = new AxisType("RadialElevation", 3);
 
-  private int order; // canonical ordering time - z - y - x  or elev - azimuth - distance
+  private int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
   private String _AxisType;
 
   private AxisType(String s, int order) {
@@ -115,23 +123,3 @@ public class AxisType {
   }
 
 }
-
-
-/**
- * $Log: AxisType.java,v $
- * Revision 1.3  2006/02/13 19:51:26  caron
- * javadoc
- *
- * Revision 1.2  2005/02/23 20:01:02  caron
- * *** empty log message ***
- *
- * Revision 1.1  2004/08/16 20:53:47  caron
- * 2.2 alpha (2)
- *
- * Revision 1.2  2003/06/03 20:06:07  caron
- * fix javadocs
- *
- * Revision 1.1  2003/04/08 15:06:23  caron
- * nc2 version 2.1
- *
- */

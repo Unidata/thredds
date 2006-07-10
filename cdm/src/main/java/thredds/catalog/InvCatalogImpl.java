@@ -1,6 +1,6 @@
 // $Id: InvCatalogImpl.java,v 1.31 2006/06/08 23:08:41 edavis Exp $
 /*
- * Copyright 2002 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *

@@ -1,6 +1,6 @@
 // $Id: GridWriter.java,v 1.4 2006/01/15 20:38:31 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,9 +22,9 @@ package thredds.wcs;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridCoordSys;
-import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.TransformType;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -36,13 +36,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Helper class to copy a Netcdf File to another. This allows you to create a "view" of another
- *  NetcdfFile using NcML, and/or to write a remote or OpenDAP file into a local netcdf file.
- *  All metadata and data is copied out of the NetcdfFile and into the NetcdfFileWritable.
- *
- * <p>
- * If the NetcdfDataset doesnt have a uriString (which refers to the backing store), then only metadata is written,
- *  so ncml can be used like ncgen.
+ * Not sure if this is used.
  *
  * @see ucar.nc2.NetcdfFile
  * @author caron
@@ -56,13 +50,13 @@ public class GridWriter {
   /**
    * Wrie a Grid to a physical file, using Netcdf-3 file format.
    *
-   * @param fileIn write from this NetcdfFile
+   * @param grid write this grid
    * @param fileOutName write to this local file
-   * @param fill use fill mode
+   * @param timeIdx which time index ?
    *
    * @return NetcdfFile that was written. It remains open for reading or writing.
    */
-  public static NetcdfFile writeToFile(GeoGrid grid, String fileOutName, int timeIdx) throws IOException {
+  public static NetcdfFile writeToFile(GridDatatype grid, String fileOutName, int timeIdx) throws IOException {
 
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew( fileOutName, false);
     if (debug) {
@@ -71,7 +65,7 @@ public class GridWriter {
 
     ncfile.addGlobalAttribute("Conventions", "_Coordinates");
 
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getGridCoordSystem();
     gcs.getTimeName(timeIdx);
     ncfile.addGlobalAttribute("time", gcs.getTimeName(timeIdx));
 
@@ -187,7 +181,7 @@ public class GridWriter {
     if (oldVar == null)
       return;
 
-      Array data = (Array) oldVar.read(); // LOOK: read all in one gulp!!
+      Array data = oldVar.read(); // LOOK: read all in one gulp!!
       try {
         ncfile.write(oldVar.getName(), data);
       } catch (InvalidRangeException e) {
@@ -201,7 +195,7 @@ public class GridWriter {
     String filenameOut = (arg.length > 1) ? arg[1] : "C:/temp/thredds/testGridWriter.nc";
 
     GridDataset gridDs  = ucar.nc2.dataset.grid.GridDataset.open(datasetIn);
-    GeoGrid grid = gridDs.findGridByName("T");
+    GridDatatype grid = gridDs.findGridDatatype("T");
     NetcdfFile ncfileOut = GridWriter.writeToFile( grid, filenameOut, 0);
 
     gridDs.close();

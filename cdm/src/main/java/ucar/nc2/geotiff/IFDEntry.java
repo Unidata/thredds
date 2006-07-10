@@ -1,6 +1,6 @@
 // $Id: IFDEntry.java,v 1.1 2004/10/19 20:38:53 yuanho Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,7 +22,11 @@ package ucar.nc2.geotiff;
 
 import java.util.*;
 
-
+/**
+ *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ */
 class IFDEntry implements Comparable {
   protected Tag tag;
   protected FieldType type;
@@ -131,17 +135,4 @@ class IFDEntry implements Comparable {
   }
 
 }
-
-/* Change History:
-   $Log: IFDEntry.java,v $
-   Revision 1.1  2004/10/19 20:38:53  yuanho
-   geotiff checkin
-
-   Revision 1.3  2003/09/19 00:03:29  caron
-   clean up geotiff javadoc for release
-
-   Revision 1.2  2003/07/12 23:08:55  caron
-   add cvs headers, trailers
-
-*/
 

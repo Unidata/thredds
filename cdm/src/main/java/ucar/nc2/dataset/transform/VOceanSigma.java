@@ -31,6 +31,9 @@ import java.util.StringTokenizer;
 
 /**
  * Create a ocean_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 public class VOceanSigma extends AbstractCoordTransBuilder {
   private String s = "", eta = "", depth = "";

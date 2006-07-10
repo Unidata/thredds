@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.util.List;
 
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.dataset.grid.GeoGrid;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.dt.GridDatatype;
 import ucar.ma2.Array;
 
 /**
@@ -96,7 +96,7 @@ public class TimeTDSfixed {
         if (tdata.dtype == DataType.GRID) {
           List grids = tdata.gridDataset.getGrids();
           if (grids.size() > 0) {
-            GeoGrid grid = (GeoGrid) grids.get(0);
+            GridDatatype grid = (GridDatatype) grids.get(0);
             Array data = grid.readDataSlice(0, -1, -1, -1);
             if (out != null) out.println(" -- read " + data.getSize());
           } else {

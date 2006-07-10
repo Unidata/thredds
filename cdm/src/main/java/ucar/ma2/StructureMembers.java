@@ -1,6 +1,6 @@
 // $Id: StructureMembers.java,v 1.8 2006/05/12 20:19:26 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,6 +26,9 @@ import java.util.*;
 
 /**
  * A Collection of members that comprise a StructureData.
+ *  *
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class StructureMembers {
@@ -235,6 +238,5 @@ public class StructureMembers {
    /** Set an opaque data object, for use behind the scenes.  */
    public void setDataObject2( Object o) { this.dataObject2 = o; }
   }
-
 
 }

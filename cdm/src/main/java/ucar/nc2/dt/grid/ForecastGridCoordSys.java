@@ -11,11 +11,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Feb 19, 2006
- * Time: 2:10:52 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author caron
+ * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
  */
 public interface ForecastGridCoordSys {
 

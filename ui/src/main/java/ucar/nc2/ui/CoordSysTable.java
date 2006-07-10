@@ -1,6 +1,6 @@
 // $Id: CoordSysTable.java,v 1.16 2006/06/06 16:07:15 caron Exp $
 /*
- * Copyright 1997-2000 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -45,8 +45,8 @@ import javax.swing.event.ListSelectionEvent;
 /**
  * A Swing widget to examine Coordinate Systems.
  *
- * @author John Caron
- * @version $Id: CoordSysTable.java,v 1.16 2006/06/06 16:07:15 caron Exp $
+ * @author caron
+ * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
  */
 
 public class CoordSysTable extends JPanel {
@@ -425,98 +425,4 @@ public class CoordSysTable extends JPanel {
     public void setRegular(String incr) { this.incr = incr; }
   }
 
-
 }
-
-/* Change History:
-   $Log: CoordSysTable.java,v $
-   Revision 1.16  2006/06/06 16:07:15  caron
-   *** empty log message ***
-
-   Revision 1.15  2006/05/08 02:47:34  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.14  2006/01/12 22:46:26  caron
-   grib now uses valid time = refTime + forecastHour
-   minor nexradiosp changes
-
-   Revision 1.13  2005/06/23 19:18:44  caron
-   no message
-
-   Revision 1.12  2005/06/11 18:42:03  caron
-   no message
-
-   Revision 1.11  2005/05/26 01:58:04  caron
-   fix DateRange bugs
-
-   Revision 1.10  2005/05/25 21:09:43  caron
-   no message
-
-   Revision 1.9  2005/03/23 22:34:41  caron
-   wcs improvements
-
-   Revision 1.8  2005/03/11 23:02:14  caron
-   *** empty log message ***
-
-   Revision 1.7  2005/03/07 20:49:25  caron
-   *** empty log message ***
-
-   Revision 1.6  2005/03/07 20:48:33  caron
-   no message
-
-   Revision 1.5  2005/01/20 00:55:32  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/12/09 00:17:32  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/12/08 18:08:32  caron
-   implement _CoordinateAliasForDimension
-
-   Revision 1.2  2004/12/07 02:43:22  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/12/06 19:37:20  caron
-   no message
-
-   Revision 1.2  2004/12/01 05:53:43  caron
-   ncml pass 2, new convention parsing
-
-   Revision 1.1  2004/10/22 01:01:40  caron
-   another round
-
-   Revision 1.5  2004/10/06 19:03:43  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.4  2004/09/30 00:33:42  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/08/26 17:55:09  caron
-   no message
-
-   Revision 1.2  2004/08/17 19:20:07  caron
-   2.2 alpha (2)
-
-   Revision 1.1  2004/08/16 20:53:51  caron
-   2.2 alpha (2)
-
-   Revision 1.4  2004/07/16 17:58:16  caron
-   source build self-contained
-
-   Revision 1.3  2003/10/28 23:57:21  caron
-   minor
-
-   Revision 1.2  2003/10/02 20:33:56  caron
-   move SimpleUnit to dataset; add <units> tag; add projections to CF
-
-   Revision 1.1  2003/06/09 15:23:17  caron
-   add nc2.ui
-
- */
