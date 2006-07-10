@@ -29,6 +29,7 @@ import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Date;
 
 /**
  * Make a Nids NetcdfDataset into a RadialDataset.
@@ -343,12 +344,12 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
         }
       }
 
-      public float getStartingTime() {
-        return startDate.getTime();
+      public Date getStartingTime() {
+          return startDate;
       }
 
-      public float getEndingTime() {
-        return endDate.getTime();
+      public Date getEndingTime() {
+          return endDate;
       }
 
       public boolean isGateSizeConstant() {

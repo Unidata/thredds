@@ -28,6 +28,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Date;
 
 
 /**
@@ -285,12 +286,12 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
                 return  origin;
             }
 
-            public float getStartingTime() {
-                return startDate.getTime();
+            public Date getStartingTime() {
+                return startDate;
             }
 
-            public float getEndingTime() {
-                return endDate.getTime();
+            public Date getEndingTime() {
+                return endDate;
             }
 
             public int getNumRadials() {

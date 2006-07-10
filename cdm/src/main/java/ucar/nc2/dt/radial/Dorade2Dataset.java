@@ -346,13 +346,14 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
                 return 0f;
             }
 
-            public float getStartingTime() {
-                return rt;
+            public Date getStartingTime() {
+                return dateUnits.makeDate(rt);
             }
 
-            public float getEndingTime() {
-                return rt;
+            public Date getEndingTime() {
+                return dateUnits.makeDate(rt);
             }
+        
         } // Dorade2Sweep class
 
     } // Dorade2Variable

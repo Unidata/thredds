@@ -235,12 +235,12 @@ public class RadialDatasetTable extends JPanel {
       return sweep.getMeanAzimuth();
     }
 
-    public String getStartingTime() {
-      return dateUnit.makeStandardDateString( sweep.getStartingTime());
+    public Date getStartingTime() {
+      return sweep.getStartingTime();
     }
 
-    public String getEndingTime() {
-      return dateUnit.makeStandardDateString( sweep.getEndingTime());
+    public Date getEndingTime() {
+      return sweep.getEndingTime();
     }
 
   }

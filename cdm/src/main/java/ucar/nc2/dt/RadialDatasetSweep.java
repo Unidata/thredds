@@ -4,6 +4,7 @@ import ucar.ma2.Array;
 import ucar.nc2.VariableSimpleIF;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * A RadialDataset in which the radials can be grouped into sweeps.
@@ -16,7 +17,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
 
   /**  return radar name */
   public String getRadarID();
-    
+
   /**  return radar name */
   public String getRadarName();
 
@@ -125,10 +126,10 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
     public float getTime(int radial) throws IOException;
 
     /** @return the starting time of the sweep, in units of getTimeUnits(). */
-    public float getStartingTime();
+    public Date getStartingTime();
 
     /** @return the ending time of the sweep, in units of getTimeUnits(). */
-    public float getEndingTime();
+    public Date getEndingTime();
   }
 
   static public final class Type {
