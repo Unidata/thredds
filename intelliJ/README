@@ -1,9 +1,17 @@
 IntelliJ IDEA project and module files
 
-You should be able to use these files "As Is". Just select the thredds.ipr
-file from the IntelliJ IDEA "File | Open Project ..." menu item. Click on
-the "Project" side-bar item on the left side of the IDEA window to open up
-the project view.
+You should be able to use these files "As Is" (see below for some exceptions).
+Just select the thredds.ipr file from the IntelliJ IDEA "File | Open Project..."
+menu item. Click on the "Project" side-bar item on the left side of the IDEA
+window to open up the project view. You should see the following modules:
+
+"cdm" - the client side netcdf-java and thredds code
+"intelliJ" - the IntelliJ IDEA project files (Please don't add or commit
+             things to Subversion in this module unless you are sure everyone
+             will want that change.)
+"lib" - the libraries used by  the various THREDDS modules
+"tds" - the THREDDS Data Server (TDS) code
+"ui" - the ToolsUI code
 
 Now for the non-"As Is" part. There are several things to setup that are
 specific to your local machine and working directory:
