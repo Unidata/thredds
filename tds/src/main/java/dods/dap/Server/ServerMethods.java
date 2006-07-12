@@ -40,7 +40,7 @@ import dods.dap.Server.SBHException;
 /** 
  *
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author ndp
  * @see BaseType
  * @see DDS
@@ -67,7 +67,7 @@ import dods.dap.Server.SBHException;
     @see ServerArrayMethods
     @see Operator
     
-    @version $Revision: 1.1 $
+    @version $Revision$
     @author jhrg & ndp */
 
 

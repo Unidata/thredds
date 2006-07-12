@@ -1,4 +1,4 @@
-// $Id: TestCollectionLevelScanner.java,v 1.3 2006/05/19 19:23:06 edavis Exp $
+// $Id$
 package thredds.cataloggen;
 
 import junit.framework.*;

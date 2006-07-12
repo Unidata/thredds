@@ -1,4 +1,4 @@
-// $Id: JplQuikScatCalendar.java,v 1.5 2006/03/01 23:13:06 edavis Exp $
+// $Id$
 package thredds.dqc.server.jplQuikSCAT;
 
 import java.util.Date;

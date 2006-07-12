@@ -1,4 +1,4 @@
-// $Id: DLwriterServlet.java,v 1.1 2006/04/03 23:05:18 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

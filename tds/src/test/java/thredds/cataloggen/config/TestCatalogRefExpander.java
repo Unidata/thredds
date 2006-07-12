@@ -1,4 +1,4 @@
-// $Id: TestCatalogRefExpander.java,v 1.4 2006/01/20 02:08:25 caron Exp $
+// $Id$
 package thredds.cataloggen.config;
 
 import junit.framework.TestCase;

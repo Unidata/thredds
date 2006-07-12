@@ -1,4 +1,4 @@
-// $Id: DqcHandlerInstantiationException.java,v 1.3 2004/08/23 16:50:34 edavis Exp $
+// $Id$
 package thredds.dqc.server;
 
 /**

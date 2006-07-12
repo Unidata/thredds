@@ -1,4 +1,4 @@
-// $Id: TestDqcServletConfig.java,v 1.2 2006/01/23 22:11:14 edavis Exp $
+// $Id$
 package thredds.dqc.server;
 
 import junit.framework.TestCase;

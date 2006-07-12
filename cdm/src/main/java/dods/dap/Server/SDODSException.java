@@ -49,7 +49,7 @@ import dods.dap.DODSException;
 /**
  * SDODS exception. This is the root of all the DODS Server exception classes.
  *
- * @version $Revision$
+ * @version $Revision:48 $
  * @author ndp
  */
 public class SDODSException extends DODSException {

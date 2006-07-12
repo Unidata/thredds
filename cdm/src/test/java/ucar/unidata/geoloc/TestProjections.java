@@ -7,7 +7,7 @@ import java.awt.geom.Point2D;
 /** test methods projections have in common
  *
  * @author John Caron
- * @version $Id: TestProjections.java,v 1.5 2005/11/17 00:48:23 caron Exp $
+ * @version $Id$
  */
 
 public class TestProjections extends TestCase {

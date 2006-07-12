@@ -1,4 +1,4 @@
-// $Id: DqcServletRedirect.java,v 1.10 2006/03/30 23:22:09 edavis Exp $
+// $Id$
 
 package thredds.dqc.server;
 

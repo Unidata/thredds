@@ -1,4 +1,4 @@
-// $Id: TestLatestModel.java,v 1.5 2006/01/20 20:42:06 caron Exp $
+// $Id$
 package thredds.dqc.server;
 
 import junit.framework.TestCase;

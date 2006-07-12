@@ -1,4 +1,4 @@
-// $Id: DataServiceProvider.java,v 1.2 2006/04/28 21:45:15 edavis Exp $
+// $Id$
 package thredds.servlet;
 
 import thredds.crawlabledataset.CrawlableDataset;

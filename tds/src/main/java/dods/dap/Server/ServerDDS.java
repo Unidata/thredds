@@ -27,7 +27,7 @@ import dods.dap.*;
     <p>
     All of the variables contained by a ServerDDS <em>must</em> implement the
     Projection interface.
-    @version $Revision: 1.1 $
+    @version $Revision$
     @author jhrg
     @see DDS
     @see CEEvaluator */

@@ -36,7 +36,7 @@ import dods.dap.NoSuchVariableException;
 /**
  * Holds a DODS Server <code>Int32</code> value.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author ndp
  * @see BaseType
  */

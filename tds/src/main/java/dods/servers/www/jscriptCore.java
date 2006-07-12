@@ -4,7 +4,7 @@ public class jscriptCore {
     public static String jScriptCode = "\n"
         + "// -*- Java -*-\n"
         + "\n"
-        + "// $Id: jscriptCore.java,v 1.1 2005/12/16 22:36:37 caron Exp $\n"
+        + "// $Id$\n"
         + "\n"
         + "// (c) COPYRIGHT URI/MIT 1999\n"
         + "// Please read the full copyright statement in the file COPYRIGHT.\n"

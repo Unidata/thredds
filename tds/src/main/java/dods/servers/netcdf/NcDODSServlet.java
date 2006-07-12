@@ -1,4 +1,4 @@
-// $Id: NcDODSServlet.java,v 1.38 2006/05/19 19:23:02 edavis Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import ucar.nc2.NetcdfFile;
  * NetCDF DODS server.
  *
  * @author John Caron
- * @version $Id: NcDODSServlet.java,v 1.38 2006/05/19 19:23:02 edavis Exp $
+ * @version $Id$
  */
 
 public class NcDODSServlet extends dods.servlet.DODSServlet {

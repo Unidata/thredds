@@ -41,7 +41,7 @@ import dods.dap.DODSException;
  * is either the wrong type, is missing, or it's value is 
  * unacceptable.
  *
- * @version $Revision$
+ * @version $Revision:48 $
  * @author ndp
  */
 public class InvalidParameterException extends SDODSException {

@@ -8,7 +8,7 @@ import ucar.unidata.geoloc.vertical.*;
  *
  *
  * @author John Caron
- * @version $Id: TestGeoloc.java,v 1.1 2005/02/18 01:15:01 caron Exp $
+ * @version $Id$
  */
 public class TestGeoloc {
 

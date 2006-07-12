@@ -53,7 +53,7 @@ import dods.dap.DODSException;
  * Yes, its the garbage dump of our exception
  * classes.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author ndp
  */
 public class SBHException extends SDODSException {

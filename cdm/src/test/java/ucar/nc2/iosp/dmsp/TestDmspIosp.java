@@ -1,4 +1,4 @@
-// $Id: TestDmspIosp.java,v 1.5 2006/05/31 19:04:41 edavis Exp $
+// $Id$
 package ucar.nc2.iosp.dmsp;
 
 import junit.framework.TestCase;

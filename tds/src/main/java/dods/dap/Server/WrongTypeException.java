@@ -17,7 +17,7 @@ import dods.dap.DODSException;
  * using relational operators on arrays, using the dot notation on variables
  * that are not aggregate types.
  * @author jhrg
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @see SDODSException
  * @see DODSException */
 

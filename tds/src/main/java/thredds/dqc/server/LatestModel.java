@@ -1,4 +1,4 @@
-// $Id: LatestModel.java,v 1.15 2006/01/20 20:42:04 caron Exp $
+// $Id$
 package thredds.dqc.server;
 
 import thredds.dqc.server.latest.LatestDqcHandler;

@@ -1,4 +1,4 @@
-// $Id: HtmlWriter2.java,v 1.6 2006/06/14 22:26:28 edavis Exp $
+// $Id$
 package thredds.servlet;
 
 import thredds.catalog.InvCatalogImpl;

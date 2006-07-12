@@ -34,7 +34,7 @@ import java.io.*;
 /**
  * Holds a DODS Server <code>List</code> value.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author ndp
  * @see BaseType
  */

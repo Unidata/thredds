@@ -1,4 +1,4 @@
-// $Id: NcSDFloat64.java,v 1.6 2006/04/20 22:25:22 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import ucar.unidata.util.StringUtil;
  * Wraps a netcdf scalar double variable.
  *
  * @author jcaron
- * @version $Revision: 1.6 $
+ * @version $Revision$
  */
 public class NcSDFloat64 extends SDFloat64 implements HasNetcdfVariable {
   private Variable ncVar;

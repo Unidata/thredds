@@ -1,4 +1,4 @@
-// $Id: GeoGrid.java,v 1.24 2006/05/24 00:12:57 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -58,7 +58,7 @@ import org.jdom.transform.XSLTransformer;
 /**
  * Netcdf Grid subsetting.
  * @author caron
- * @version $Revision: 1.5 $ $Date: 2006/06/05 22:17:33 $
+ * @version $Revision$ $Date$
  */
 public class NetcdfServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;

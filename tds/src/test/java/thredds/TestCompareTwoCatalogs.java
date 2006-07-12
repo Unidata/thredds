@@ -1,4 +1,4 @@
-// $Id: TestCompareTwoCatalogs.java,v 1.5 2006/03/20 19:26:18 edavis Exp $
+// $Id$
 package thredds;
 
 import junit.framework.TestCase;

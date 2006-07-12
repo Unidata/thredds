@@ -1,4 +1,4 @@
-// $Id: TestDODSStructureForSequence.java,v 1.5 2006/02/16 23:02:44 caron Exp $
+// $Id$
 package ucar.nc2.dods;
 
 import junit.framework.TestCase;

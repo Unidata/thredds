@@ -9,7 +9,7 @@ import ucar.ma2.Array;
  * Static utililities for testing
  *
  * @author Russ Rew
- * @version $Id: TestUtils.java,v 1.5 2005/11/07 20:46:11 caron Exp $ */
+ * @version $Id$ */
 
 public class TestUtils  {
 

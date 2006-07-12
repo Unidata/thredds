@@ -1,4 +1,4 @@
-// $Id: TestWildcardMatchOnNameFilter.java,v 1.4 2005/12/30 00:18:56 edavis Exp $
+// $Id$
 package thredds.crawlabledataset.filter;
 
 import junit.framework.*;

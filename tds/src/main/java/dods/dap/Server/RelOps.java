@@ -18,7 +18,7 @@ import dods.dap.BaseType;
     the relational operators (e.g. DByte won't know how to match a regular
     expression but DString will). For those operators that are nonsensical a
     class should throw InvalidOperator.
-    @version $Revision: 1.1 $
+    @version $Revision$
     @author jhrg */
 
 public interface RelOps {

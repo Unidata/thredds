@@ -1,4 +1,4 @@
-// $Id: TestRealTimeUpdate.java,v 1.1 2006/02/09 22:57:12 edavis Exp $
+// $Id$
 package ucar.nc2.dt.trajectory;
 
 import junit.framework.*;

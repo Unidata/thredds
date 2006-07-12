@@ -1,4 +1,4 @@
-// $Id: TestAllDqc.java,v 1.1 2005/03/30 23:56:07 edavis Exp $
+// $Id$
 
 package thredds.dqc.server;
 

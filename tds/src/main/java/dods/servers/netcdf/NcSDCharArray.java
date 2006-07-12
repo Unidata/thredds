@@ -1,4 +1,4 @@
-// $Id: NcSDCharArray.java,v 1.10 2006/04/20 22:25:21 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import java.util.*;
  * Wraps a netcdf char variable with rank > 1 as an SDArray.
  *
  * @author jcaron
- * @version $Revision: 1.10 $
+ * @version $Revision$
  */
 public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDCharArray.class);

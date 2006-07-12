@@ -1,4 +1,4 @@
-// $Id: DqcHandler.java,v 1.12 2006/01/20 20:42:04 caron Exp $
+// $Id$
 
 package thredds.dqc.server;
 
@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
  * </p>
  *
  * @author Ethan Davis
- * @version $Id: DqcHandler.java,v 1.12 2006/01/20 20:42:04 caron Exp $
+ * @version $Id$
  */
 abstract public class DqcHandler
 {

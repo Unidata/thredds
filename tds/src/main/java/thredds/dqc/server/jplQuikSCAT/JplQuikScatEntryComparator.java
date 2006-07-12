@@ -1,4 +1,4 @@
-// $Id: JplQuikScatEntryComparator.java,v 1.3 2006/01/20 20:42:03 caron Exp $
+// $Id$
 package thredds.dqc.server.jplQuikSCAT;
 
 import java.util.Comparator;

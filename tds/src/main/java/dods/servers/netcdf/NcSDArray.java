@@ -1,4 +1,4 @@
-// $Id: NcSDArray.java,v 1.12 2006/04/20 22:25:21 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import java.util.ArrayList;
  * For char arrays, use NcSDString (rank 0 or 1) or NcSDCharArray (rank > 1).
  *
  * @author jcaron
- * @version $Revision: 1.12 $
+ * @version $Revision$
  * @see NcSDCharArray
  */
 public class NcSDArray extends SDArray implements HasNetcdfVariable {

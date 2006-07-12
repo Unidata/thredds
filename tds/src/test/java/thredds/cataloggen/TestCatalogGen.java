@@ -1,4 +1,4 @@
-// $Id: TestCatalogGen.java,v 1.6 2006/01/20 02:08:25 caron Exp $
+// $Id$
 package thredds.cataloggen;
 
 import junit.framework.*;

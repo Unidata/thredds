@@ -1,4 +1,4 @@
-// $Id: ForecastModelRunServlet.java,v 1.6 2006/04/20 22:25:23 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -40,7 +40,7 @@ import ucar.unidata.util.StringUtil;
 /**
  * Servlet shows Forecast Model Run Collection Inventory.
  * @author caron
- * @version $Revision: 1.6 $ $Date: 2006/04/20 22:25:23 $
+ * @version $Revision$ $Date$
  */
 public class ForecastModelRunServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;

@@ -1,4 +1,4 @@
-// $Id: LatestConfig.java,v 1.3 2006/03/01 23:11:26 edavis Exp $
+// $Id$
 package thredds.dqc.server.latest;
 
 import java.util.*;

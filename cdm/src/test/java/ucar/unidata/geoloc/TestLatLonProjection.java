@@ -6,7 +6,7 @@ import junit.framework.*;
 /**
  *
  * @author John Caron
- * @version $Id: TestLatLonProjection.java,v 1.2 2005/02/19 22:17:54 caron Exp $
+ * @version $Id$
  */
 public class TestLatLonProjection extends TestCase {
 

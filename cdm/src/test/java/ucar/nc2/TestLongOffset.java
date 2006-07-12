@@ -10,7 +10,7 @@ import java.io.*;
  * output is not legal CDL that can be used as input for ncgen.
  *
  * @author: Russ Rew
- * @version: $Id: TestLongOffset.java,v 1.11 2005/12/15 00:24:38 caron Exp $ */
+ * @version: $Id$ */
 
 public class TestLongOffset extends TestCase  {
 

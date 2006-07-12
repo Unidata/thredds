@@ -1,4 +1,4 @@
-// $Id: NcDAS.java,v 1.11 2006/04/20 22:25:21 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Netcdf DAS object
  *
- * @version $Revision: 1.11 $
+ * @version $Revision$
  * @author jcaron
  */
 

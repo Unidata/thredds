@@ -1,4 +1,4 @@
-// $Id: TestDateFromString.java,v 1.1 2005/11/30 21:01:47 edavis Exp $
+// $Id$
 package thredds.util;
 
 import junit.framework.*;

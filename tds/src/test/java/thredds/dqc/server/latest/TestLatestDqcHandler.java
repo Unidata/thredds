@@ -1,4 +1,4 @@
-// $Id: TestLatestDqcHandler.java,v 1.2 2006/01/23 18:51:07 edavis Exp $
+// $Id$
 package thredds.dqc.server.latest;
 
 import junit.framework.*;

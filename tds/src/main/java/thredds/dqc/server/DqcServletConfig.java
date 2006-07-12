@@ -1,4 +1,4 @@
-// $Id: DqcServletConfig.java,v 1.8 2006/01/20 20:42:04 caron Exp $
+// $Id$
 
 package thredds.dqc.server;
 

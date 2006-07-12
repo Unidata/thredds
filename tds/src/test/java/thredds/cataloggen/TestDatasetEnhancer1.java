@@ -1,4 +1,4 @@
-// $Id: TestDatasetEnhancer1.java,v 1.2 2006/01/20 02:08:26 caron Exp $
+// $Id$
 package thredds.cataloggen;
 
 import junit.framework.*;

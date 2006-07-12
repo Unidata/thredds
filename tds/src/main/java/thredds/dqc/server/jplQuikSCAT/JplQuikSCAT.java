@@ -1,4 +1,4 @@
-// $Id: JplQuikSCAT.java,v 1.9 2006/05/22 17:29:25 caron Exp $
+// $Id$
 package thredds.dqc.server.jplQuikSCAT;
 
 import thredds.dqc.SelectFromRange;

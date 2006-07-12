@@ -1,4 +1,4 @@
-// $Id: CoordSysValidatorServlet.java,v 1.5 2006/06/05 22:17:33 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -47,7 +47,7 @@ import ucar.unidata.util.StringUtil;
 /**
  * Servlet handles CDM Coordinate System validation.
  * @author caron
- * @version $Revision: 1.5 $ $Date: 2006/06/05 22:17:33 $
+ * @version $Revision$ $Date$
  */
 public class CoordSysValidatorServlet extends AbstractServlet {
   private DiskCache2 cdmValidateCache = null;

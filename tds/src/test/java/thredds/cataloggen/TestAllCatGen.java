@@ -1,4 +1,4 @@
-// $Id: TestAllCatGen.java,v 1.4 2006/01/20 20:42:06 caron Exp $
+// $Id$
 package thredds.cataloggen;
 
 import junit.framework.*;

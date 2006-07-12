@@ -129,8 +129,29 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     CoordinateAxis t = cs.getTaxis();
     if ((t != null) && !(t instanceof CoordinateAxis1D)) {
-      if (sbuff != null) sbuff.append(cs.getName()+" T axis must be 1D\n");
-      return false;
+      CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
+      if (rt == null) {
+        if (sbuff != null) sbuff.append(cs.getName()+" T axis must be 1D\n");
+        return false;
+      }
+      if (!(rt instanceof CoordinateAxis1D)) {
+        if (sbuff != null) sbuff.append(cs.getName()+" RunTime axis must be 1D\n");
+        return false;
+      }
+
+      if (t.getRank() != 2) {
+        if (sbuff != null) sbuff.append(cs.getName()+" Time axis must be 2D when used with RunTime dimension\n");
+        return false;
+      }
+
+      CoordinateAxis1D rt1D = (CoordinateAxis1D) rt;
+      Dimension rtdim = rt1D.getDimension(0);
+      Dimension tdim = t.getDimension(0);
+
+      if (rtdim.equals(tdim)) {
+        if (sbuff != null) sbuff.append(cs.getName()+" Time axis must be use RunTime dimension\n");
+        return false;
+      }
     }
     // if (t != null) countRangeRank++;
 
@@ -699,7 +720,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   public boolean has1DTimeAxis() {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return (getTimeAxis() != null);
   }
 
   public CoordinateAxis1DTime getTimeAxisForRun(int run_index) {

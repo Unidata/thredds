@@ -1,4 +1,4 @@
-// $Id: TestServerSite.java,v 1.6 2006/03/25 00:09:25 caron Exp $
+// $Id$
 package thredds;
 
 import com.meterware.httpunit.*;

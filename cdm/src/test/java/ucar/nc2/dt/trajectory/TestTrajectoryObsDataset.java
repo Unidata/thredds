@@ -1,4 +1,4 @@
-// $Id: TestTrajectoryObsDataset.java,v 1.14 2006/06/06 16:07:18 caron Exp $
+// $Id$
 package ucar.nc2.dt.trajectory;
 
 import junit.framework.Test;

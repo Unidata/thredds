@@ -1,4 +1,4 @@
-// $Id: TimeTDS.java,v 1.2 2006/05/22 23:42:23 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

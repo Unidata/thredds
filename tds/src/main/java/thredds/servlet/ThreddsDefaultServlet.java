@@ -1,4 +1,4 @@
-// $Id: ThreddsDefaultServlet.java,v 1.7 2006/06/29 17:00:49 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import thredds.crawlabledataset.CrawlableDatasetFile;
  * THREDDS default servlet - handles everything not explicitly mapped.
  * You should map this servlet to "/*" in web.xml.
  * @author caron
- * @version $Revision: 1.7 $ $Date: 2006/06/29 17:00:49 $
+ * @version $Revision$ $Date$
  */
 public class ThreddsDefaultServlet extends AbstractServlet {
   static String version = null;

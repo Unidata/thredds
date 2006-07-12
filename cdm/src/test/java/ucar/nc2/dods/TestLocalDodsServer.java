@@ -1,4 +1,4 @@
-// $Id: TestLocalDodsServer.java,v 1.1 2006/03/25 00:12:37 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

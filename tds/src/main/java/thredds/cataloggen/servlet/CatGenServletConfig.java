@@ -1,4 +1,4 @@
-// $Id: CatGenServletConfig.java,v 1.9 2006/01/20 20:42:03 caron Exp $
+// $Id$
 
 package thredds.cataloggen.servlet;
 

@@ -1,4 +1,4 @@
-// $Id: TestDirectoryScanner.java,v 1.15 2006/03/30 21:50:15 edavis Exp $
+// $Id$
 package thredds.cataloggen;
 
 import junit.framework.TestCase;

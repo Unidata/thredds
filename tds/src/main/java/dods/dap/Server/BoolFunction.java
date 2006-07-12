@@ -1,6 +1,6 @@
 
 
-/* $Id: BoolFunction.java,v 1.1 2005/12/16 22:06:59 caron Exp $
+/* $Id$
 *
 */
 

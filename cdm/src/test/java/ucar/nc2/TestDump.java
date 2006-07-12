@@ -11,7 +11,7 @@ import java.io.*;
  * output is not legal CDL that can be used as input for ncgen.
  *
  * @author Russ Rew
- * @version $Id: TestDump.java,v 1.8 2005/12/15 00:24:37 caron Exp $ */
+ * @version $Id$ */
 
 public class TestDump extends TestCase  {
 

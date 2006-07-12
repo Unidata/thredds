@@ -1,4 +1,4 @@
-// $Id: MockOpendapDSP.java,v 1.2 2006/04/18 20:39:54 edavis Exp $
+// $Id$
 package thredds.examples;
 
 import thredds.servlet.DataServiceProvider;

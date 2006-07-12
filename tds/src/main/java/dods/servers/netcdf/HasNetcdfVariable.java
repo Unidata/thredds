@@ -1,4 +1,4 @@
-// $Id: HasNetcdfVariable.java,v 1.2 2005/07/27 23:25:37 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * Tag that Object has a netcdf variable, and the data can be set externally by an Array.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision$
  * @author jcaron
  */
 public interface HasNetcdfVariable {

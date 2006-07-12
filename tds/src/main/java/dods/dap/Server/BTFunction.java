@@ -1,6 +1,6 @@
 
 
-/* $Id: BTFunction.java,v 1.1 2005/12/16 22:06:58 caron Exp $
+/* $Id$
 *
 */
 

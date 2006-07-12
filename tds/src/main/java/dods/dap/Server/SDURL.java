@@ -35,7 +35,7 @@ import dods.dap.parser.ExprParserConstants;
 /**
  * Holds a DODS Server <code>URL</code> value.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author ndp
  * @see BaseType
  */

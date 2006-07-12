@@ -4,14 +4,18 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.17
  Features
+  * Refactor the GeoGrid API - now use ucar.nc2.dt.Grid* interfaces; add ensemble, runtime dimensions.
+    GridCoordSystem allows time to depend on runtime.
   * Variable.slice()
  API changes
+  * AxisType.Ensemble, AxisType.RunTime
   * GeoGrid : getLevels(), getTimes() returns List, not ArrayList
   * CoordinateSystem: remove get/setDataType(), make setImplicit() protected.
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
  ToolsUI
+  * Grid Viewer will show ensemble, runtime coordinates if they exist.
   * Radial Tab now works with RadialDatasetSweep interface
  Libraries
 
