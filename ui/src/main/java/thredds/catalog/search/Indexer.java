@@ -1,4 +1,4 @@
-// $Id: Indexer.java,v 1.2 2004/09/24 03:26:30 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.util.*;
  * Creates a lucene index for a list of datasets .
  *
  * @author John Caron
- * @version $Id: Indexer.java,v 1.2 2004/09/24 03:26:30 caron Exp $
+ * @version $Id$
  */
 
 public class Indexer {

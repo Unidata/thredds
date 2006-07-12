@@ -1,4 +1,4 @@
-// $Id: UIChangeListener.java,v 1.2 2004/09/24 03:26:40 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@
 package thredds.viewer.ui.event;
 /** Listeners for UIChangeEvents.
  * @author John Caron
- * @version $Id: UIChangeListener.java,v 1.2 2004/09/24 03:26:40 caron Exp $
+ * @version $Id$
  */
 public interface UIChangeListener extends java.util.EventListener {
     public void processChange( UIChangeEvent e);

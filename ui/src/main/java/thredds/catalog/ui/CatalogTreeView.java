@@ -1,4 +1,4 @@
-// $Id: CatalogTreeView.java,v 1.20 2005/09/30 17:34:58 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -65,7 +65,7 @@ import javax.swing.tree.*;
  * @see ThreddsDatasetChooser
  *
  * @author John Caron
- * @version $Id: CatalogTreeView.java,v 1.20 2005/09/30 17:34:58 caron Exp $
+ * @version $Id$
  */
 
 public class CatalogTreeView extends JPanel implements CatalogSetCallback {

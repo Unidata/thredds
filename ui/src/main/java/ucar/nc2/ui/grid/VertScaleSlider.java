@@ -14,7 +14,7 @@ import javax.swing.event.*;
  * Slider for Vertical scale
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 
 public class VertScaleSlider extends JPanel {

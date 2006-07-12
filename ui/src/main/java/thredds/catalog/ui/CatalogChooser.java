@@ -1,4 +1,4 @@
-// $Id: CatalogChooser.java,v 1.35 2005/11/18 17:47:41 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -81,7 +81,7 @@ import javax.swing.event.*;
  * @see thredds.catalog.InvDataset
  *
  * @author John Caron
- * @version $Id: CatalogChooser.java,v 1.35 2005/11/18 17:47:41 caron Exp $
+ * @version $Id$
  */
 
 public class CatalogChooser extends JPanel {

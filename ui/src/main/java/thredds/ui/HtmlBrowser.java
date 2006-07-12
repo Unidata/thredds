@@ -1,4 +1,4 @@
-// $Id: HtmlBrowser.java,v 1.9 2004/10/15 19:16:07 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import javax.swing.text.html.*;
  * A simple HTML Browser based on JEditPane.
  *
  * @author John Caron
- * @version $Id: HtmlBrowser.java,v 1.9 2004/10/15 19:16:07 caron Exp $
+ * @version $Id$
  */
 
 public class HtmlBrowser extends JPanel {

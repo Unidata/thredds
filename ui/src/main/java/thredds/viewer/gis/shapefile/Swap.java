@@ -1,4 +1,4 @@
-// $Id: Swap.java,v 1.2 2004/09/24 03:26:38 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ package thredds.viewer.gis.shapefile;
  *
  * @author  Kirk Waters
  * @author  Russ Rew, 1998, added documentation
- * @version $Id: Swap.java,v 1.2 2004/09/24 03:26:38 caron Exp $
+ * @version $Id$
  */
 
 public class Swap {

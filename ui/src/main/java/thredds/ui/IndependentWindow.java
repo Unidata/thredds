@@ -1,4 +1,4 @@
-// $Id: IndependentWindow.java,v 1.5 2004/09/30 00:33:38 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import javax.swing.*;
  *   </pre>
  *
  * @author John Caron
- * @version $Id: IndependentWindow.java,v 1.5 2004/09/30 00:33:38 caron Exp $
+ * @version $Id$
  */
 public class IndependentWindow extends JFrame {
 

@@ -1,4 +1,4 @@
-// $Id: CatalogIndexer.java,v 1.3 2004/09/30 00:33:36 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -42,7 +42,7 @@ import javax.swing.event.*;
  * Experimental widget for extracting and modifying catalogs. Do not use yet.
  *
  * @author John Caron
- * @version $Id: CatalogIndexer.java,v 1.3 2004/09/30 00:33:36 caron Exp $
+ * @version $Id$
  */
 
 public class CatalogIndexer extends JPanel {

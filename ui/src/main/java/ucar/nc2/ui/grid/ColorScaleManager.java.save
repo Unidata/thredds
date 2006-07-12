@@ -1,4 +1,4 @@
-// $Id: ColorScaleManager.java.save,v 1.1 2004/09/30 00:33:42 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2000 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import javax.swing.event.*;
  * ColorScale editing Manager.
  *
  * @author John Caron
- * @version $Id: ColorScaleManager.java.save,v 1.1 2004/09/30 00:33:42 caron Exp $
+ * @version $Id$
  */
 public class ColorScaleManager implements PersistentDataManager, PersistentObject.ManagerBean {
   private static final Color SELECTED_COLOR = Color.magenta;

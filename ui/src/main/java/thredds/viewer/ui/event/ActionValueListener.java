@@ -1,4 +1,4 @@
-// $Id: ActionValueListener.java,v 1.2 2004/09/24 03:26:40 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@ package thredds.viewer.ui.event;
 
 /** Listeners for ActionValueEvents.
  * @author John Caron
- * @version $Id: ActionValueListener.java,v 1.2 2004/09/24 03:26:40 caron Exp $
+ * @version $Id$
  */
 public interface ActionValueListener extends java.util.EventListener {
   public void actionPerformed( ActionValueEvent e);

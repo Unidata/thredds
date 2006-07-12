@@ -1,4 +1,4 @@
-// $Id: MFlowLayout.java,v 1.2 2004/09/24 03:26:34 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ import java.awt.*;
 /**
  * Extends java.awt.FlowLayout, which has a bug where it cant deal with multiple lines.
  * @author John Caron
- * @version $Id: MFlowLayout.java,v 1.2 2004/09/24 03:26:34 caron Exp $
+ * @version $Id$
  */
 
 public class MFlowLayout extends FlowLayout {

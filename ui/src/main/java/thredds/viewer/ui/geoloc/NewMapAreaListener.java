@@ -1,4 +1,4 @@
-// $Id: NewMapAreaListener.java,v 1.2 2004/09/24 03:26:41 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@ package thredds.viewer.ui.geoloc;
 /**
  * Listeners for new world bounding box events.
  * @author John Caron
- * @version $Id: NewMapAreaListener.java,v 1.2 2004/09/24 03:26:41 caron Exp $
+ * @version $Id$
  */
 public interface NewMapAreaListener extends java.util.EventListener {
     public void actionPerformed( NewMapAreaEvent e);

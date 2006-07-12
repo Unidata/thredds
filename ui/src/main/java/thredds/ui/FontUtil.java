@@ -1,4 +1,4 @@
-// $Id: FontUtil.java,v 1.3 2004/09/24 03:26:33 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import java.awt.*;
  *    g2.setFont( fontu.getFont());
  * </pre>
  * @author John Caron
- * @version $Id: FontUtil.java,v 1.3 2004/09/24 03:26:33 caron Exp $
+ * @version $Id$
  */
 public class FontUtil  {
 //  private static GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();

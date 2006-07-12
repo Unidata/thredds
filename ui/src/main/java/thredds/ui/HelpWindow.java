@@ -1,4 +1,4 @@
-// $Id: HelpWindow.java,v 1.2 2004/09/24 03:26:33 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

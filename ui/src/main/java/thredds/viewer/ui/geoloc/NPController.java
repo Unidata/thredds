@@ -1,4 +1,4 @@
-// $Id: NPController.java,v 1.5 2005/06/11 19:03:58 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import java.beans.PropertyChangeListener;
  * An abstract superclass for Navigated Panel controllers
  *
  * @author John Caron
- * @version $Id: NPController.java,v 1.5 2005/06/11 19:03:58 caron Exp $
+ * @version $Id$
  */
 public class NPController extends JPanel {
   protected NavigatedPanel np;

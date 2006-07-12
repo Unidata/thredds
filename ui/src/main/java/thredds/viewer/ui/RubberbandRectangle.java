@@ -1,4 +1,4 @@
-// $Id: RubberbandRectangle.java,v 1.3 2004/09/24 03:26:39 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ import java.awt.*;
 /** Rectangle Rubberbanding.
  * @author David M. Geary
  * @author John Caron
- * @version $Id: RubberbandRectangle.java,v 1.3 2004/09/24 03:26:39 caron Exp $
+ * @version $Id$
  */
 public class RubberbandRectangle extends Rubberband {
 

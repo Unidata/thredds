@@ -1,4 +1,4 @@
-// $Id: WorldMap.java,v 1.6 2005/02/20 00:36:59 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import thredds.util.Resource;
 
 /** A simple "default" world map Renderer.
  * @author John Caron
- * @version $Id: WorldMap.java,v 1.6 2005/02/20 00:36:59 caron Exp $
+ * @version $Id$
  */
 
 public class WorldMap extends thredds.viewer.gis.GisFeatureRenderer {

@@ -1,4 +1,4 @@
-// $Id: CursorMoveEvent.java,v 1.2 2004/09/24 03:26:40 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ import java.awt.geom.Point2D;
 /**
  * Cursor has moved to a new location.
  * @author John Caron
- * @version $Id: CursorMoveEvent.java,v 1.2 2004/09/24 03:26:40 caron Exp $
+ * @version $Id$
  */
 public class CursorMoveEvent extends java.util.EventObject {
   private Point2D world;

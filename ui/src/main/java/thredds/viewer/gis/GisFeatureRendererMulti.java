@@ -1,4 +1,4 @@
-// $Id: GisFeatureRendererMulti.java,v 1.5 2005/03/05 03:48:19 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -43,7 +43,7 @@ import java.util.List;
  * Superclass for rendering collections of GisFeatures.
  *
  * @author: John Caron
- * @version: $Id: GisFeatureRendererMulti.java,v 1.5 2005/03/05 03:48:19 caron Exp $
+ * @version: $Id$
  */
 public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   private static boolean useDiscretization = false;

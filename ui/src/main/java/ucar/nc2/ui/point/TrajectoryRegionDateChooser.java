@@ -1,4 +1,4 @@
-// $Id: TrajectoryRegionDateChooser.java,v 1.1 2005/06/11 18:42:03 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ import ucar.nc2.dt.PointObsDatatype;
 /**
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class TrajectoryRegionDateChooser extends StationRegionDateChooser {
   private TrajectoryRenderer trajRenderer;

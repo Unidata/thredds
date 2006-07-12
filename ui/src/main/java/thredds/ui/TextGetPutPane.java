@@ -1,4 +1,4 @@
-// $Id: TextGetPutPane.java,v 1.19 2005/12/10 00:34:09 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import javax.swing.event.EventListenerList;
  * A text widget that does get and put to a web URL.
  *
  * @author John Caron
- * @version $Id: TextGetPutPane.java,v 1.19 2005/12/10 00:34:09 caron Exp $
+ * @version $Id$
  */
 
 public class TextGetPutPane extends TextHistoryPane {

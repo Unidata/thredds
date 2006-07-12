@@ -1,4 +1,4 @@
-// $Id: DLCrawler.java,v 1.2 2006/06/06 16:17:07 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -49,7 +49,7 @@ import thredds.ui.*;
  * Experimental widget for extracting and modifying catalogs. Do not use yet.
  *
  * @author John Caron
- * @version $Id: DLCrawler.java,v 1.2 2006/06/06 16:17:07 caron Exp $
+ * @version $Id$
  */
 
 public class DLCrawler extends JPanel {

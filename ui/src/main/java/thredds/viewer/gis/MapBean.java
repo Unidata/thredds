@@ -1,4 +1,4 @@
-// $Id: MapBean.java,v 1.5 2005/06/11 19:03:57 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import javax.swing.*;
 /** Wrap map Renderers as beans.
   *
   * @author John Caron
-  * @version $Id: MapBean.java,v 1.5 2005/06/11 19:03:57 caron Exp $
+  * @version $Id$
   **/
 
 

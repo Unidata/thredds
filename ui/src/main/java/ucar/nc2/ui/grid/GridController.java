@@ -1,4 +1,4 @@
-// $Id: GridController.java,v 1.5 2005/11/17 00:48:19 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -48,7 +48,7 @@ import javax.swing.event.ChangeEvent;
  * The controller manages the interactions between GRID data and renderers.
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class GridController {
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec

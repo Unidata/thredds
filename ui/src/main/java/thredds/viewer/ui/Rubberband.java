@@ -1,4 +1,4 @@
-// $Id: Rubberband.java,v 1.3 2004/09/24 03:26:39 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ import java.awt.event.*;
  * Implements XOR rubberbanding.
  * @author David M. Geary
  * @author John Caron
- * @version $Id: Rubberband.java,v 1.3 2004/09/24 03:26:39 caron Exp $
+ * @version $Id$
  */
 abstract public class Rubberband {
   protected Point anchorPt    = new Point(0,0);

@@ -1,4 +1,4 @@
-// $Id: TDServerConfigurator.java,v 1.17 2006/01/23 21:14:47 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -46,7 +46,7 @@ import thredds.util.net.HttpSession;
  * Experimental widget for creating Thredds Data server configuration Catalogs.
  *
  * @author John Caron
- * @version $Id: TDServerConfigurator.java,v 1.17 2006/01/23 21:14:47 caron Exp $
+ * @version $Id$
  */
 
 public class TDServerConfigurator extends JPanel {

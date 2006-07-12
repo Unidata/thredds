@@ -1,4 +1,4 @@
-// $Id: ToolsUI.java,v 1.113 2006/06/06 16:07:15 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -56,7 +56,7 @@ import javax.swing.event.*;
  * Netcdf Tools user interface.
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 
 public class ToolsUI extends JPanel {

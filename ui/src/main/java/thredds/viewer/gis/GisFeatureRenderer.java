@@ -1,4 +1,4 @@
-// $Id: GisFeatureRenderer.java,v 1.4 2004/09/24 03:26:37 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -43,7 +43,7 @@ import java.util.List;
  * Superclass for rendering collections of GisFeatures.
  *
  * @author: John Caron
- * @version: $Id: GisFeatureRenderer.java,v 1.4 2004/09/24 03:26:37 caron Exp $
+ * @version: $Id$
  */
 public abstract class GisFeatureRenderer implements thredds.viewer.ui.Renderer {
   private Color color = Color.blue;                   // default color of polylines

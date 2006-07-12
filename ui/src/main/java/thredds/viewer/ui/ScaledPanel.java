@@ -1,4 +1,4 @@
-// $Id: ScaledPanel.java,v 1.2 2004/09/24 03:26:39 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import javax.swing.event.*;
  * BufferedImage and draw in it itself.
  *
  * @author John Caron
- * @version $Id: ScaledPanel.java,v 1.2 2004/09/24 03:26:39 caron Exp $
+ * @version $Id$
  */
 
 public class ScaledPanel extends JPanel {

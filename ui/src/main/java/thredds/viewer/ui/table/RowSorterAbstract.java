@@ -1,4 +1,4 @@
-// $Id: RowSorterAbstract.java,v 1.2 2004/09/24 03:26:43 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import javax.swing.table.*;
  * @see RowSorter
  *
  * @author John Caron
- * @version $Id: RowSorterAbstract.java,v 1.2 2004/09/24 03:26:43 caron Exp $
+ * @version $Id$
  */
 
 public abstract class RowSorterAbstract implements RowSorter {

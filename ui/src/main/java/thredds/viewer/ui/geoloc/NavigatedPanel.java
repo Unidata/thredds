@@ -1,4 +1,4 @@
-// $Id: NavigatedPanel.java,v 1.7 2004/09/25 00:09:44 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -79,7 +79,7 @@ import javax.swing.*;
  *
  * @see NPController
  * @author John Caron
- * @version $Id: NavigatedPanel.java,v 1.7 2004/09/25 00:09:44 caron Exp $
+ * @version $Id$
  */
 
 public class NavigatedPanel extends JPanel {

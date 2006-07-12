@@ -1,4 +1,4 @@
-// $Id: EsriShapefileRenderer.java,v 1.5 2005/04/02 19:50:56 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -46,7 +46,7 @@ import java.util.List;
  *
  * @author Russ Rew
  * @author John Caron
- * @version $Id: EsriShapefileRenderer.java,v 1.5 2005/04/02 19:50:56 caron Exp $
+ * @version $Id$
  */
 public class EsriShapefileRenderer extends thredds.viewer.gis.GisFeatureRendererMulti {
   private static java.util.Map sfileHash = new HashMap(); // map of (filename -> EsriShapefileRenderer)

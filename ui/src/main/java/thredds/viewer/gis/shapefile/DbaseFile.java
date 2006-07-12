@@ -1,4 +1,4 @@
-// $Id: DbaseFile.java,v 1.2 2004/09/24 03:26:38 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.io.DataOutputStream;
  *
  * @author  Kirk Waters, NOAA Coastal Services Center, 1997.
  * @author  Russ Rew, modified to restrict access to read-only
- * @version $Id: DbaseFile.java,v 1.2 2004/09/24 03:26:38 caron Exp $
+ * @version $Id$
  */
 public class DbaseFile extends Object {
 

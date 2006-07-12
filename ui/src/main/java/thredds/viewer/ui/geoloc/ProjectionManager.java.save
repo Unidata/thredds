@@ -1,4 +1,4 @@
-// $Id: ProjectionManager.java.save,v 1.1 2002/12/13 00:55:08 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2000 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -48,7 +48,7 @@ import thredds.viewer.ui.NPController;
  *       hard-wired list of class names. This should be rethunk.
  * </pre>
  * @author John Caron
- * @version $Id: ProjectionManager.java.save,v 1.1 2002/12/13 00:55:08 caron Exp $
+ * @version $Id$
  */
 public class ProjectionManager {
 

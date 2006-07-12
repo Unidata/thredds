@@ -1,4 +1,4 @@
-// $Id: WindRenderer.java.save,v 1.1 2004/09/30 00:33:43 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2000 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -40,7 +40,7 @@ import javax.swing.*;
  * Render wind vectors using Java2D API.
  *
  * @author John Caron
- * @version $Id: WindRenderer.java.save,v 1.1 2004/09/30 00:33:43 caron Exp $
+ * @version $Id$
  */
 
 public class WindRenderer {
