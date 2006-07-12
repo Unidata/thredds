@@ -1,4 +1,4 @@
-// $Id: LatestCompleteProxyDsHandler.java,v 1.1 2006/05/19 19:23:03 edavis Exp $
+// $Id$
 package thredds.cataloggen.inserter;
 
 import thredds.cataloggen.ProxyDatasetHandler;

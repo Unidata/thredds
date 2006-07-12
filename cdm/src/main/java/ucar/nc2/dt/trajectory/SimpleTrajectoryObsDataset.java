@@ -1,4 +1,4 @@
-// $Id: SimpleTrajectoryObsDataset.java,v 1.11 2006/02/09 22:57:12 edavis Exp $
+// $Id$
 package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.Dimension;

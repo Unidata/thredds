@@ -1,4 +1,4 @@
-// $Id: UnitFormat.java,v 1.5 2000/08/18 04:17:36 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.units;
  * Interface for classes that parse and format unit specifications.
  *
  * @author Steven R. Emmerson
- * @version $Id: UnitFormat.java,v 1.5 2000/08/18 04:17:36 russ Exp $
+ * @version $Id$
  */
 public interface
 UnitFormat

@@ -5,7 +5,7 @@ import java.util.Stack;
 import dods.dap.*;
 
 public class DASParser implements DASParserConstants {
-    /* $Id: DASParser.java,v 1.2 2006/05/08 02:47:29 caron Exp $ */
+    /* $Id$ */
     private DAS das;
     private Stack stack;
     private String name;

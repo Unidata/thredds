@@ -1,4 +1,4 @@
-// $Id: Doradeheader.java,v 1.5 2006/04/19 20:24:09 yuanho Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

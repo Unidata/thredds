@@ -8,7 +8,7 @@ import ucar.nc2.dataset.NetcdfDataset;
  * A Variable implemented through an ADDE server.
  *  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class AddeVariable extends ucar.nc2.dataset.VariableDS {
   private int nparam;

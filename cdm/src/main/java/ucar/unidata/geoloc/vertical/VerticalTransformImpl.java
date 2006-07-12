@@ -1,5 +1,5 @@
 /*
- * $Id: VerticalTransformImpl.java,v 1.7 2006/06/26 23:33:21 caron Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import java.io.IOException;
  * such as height or pressure.
  *
  * @author  Unidata Development Team
- * @version $Revision: 1.7 $
+ * @version $Revision$
  */
 
 public abstract class VerticalTransformImpl implements VerticalTransform {

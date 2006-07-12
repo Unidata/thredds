@@ -1,4 +1,4 @@
-// $Id: ArrayStructureAdde.java,v 1.2 2006/02/03 00:59:29 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import edu.wisc.ssec.mcidas.McIDASUtil;
  * Data storage is in 1D java array of bytes, which is converted to member data on the fly.
  *
  * @author caron
- * @version $Revision: 1.2 $ $Date: 2006/02/03 00:59:29 $
+ * @version $Revision$ $Date$
  * @see Array
  */
 public class ArrayStructureAdde extends ArrayStructure {

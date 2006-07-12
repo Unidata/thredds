@@ -1,4 +1,4 @@
-// $Id: DateRange.java,v 1.11 2005/12/30 23:04:03 edavis Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import java.text.ParseException;
  *   "last 3 days" uses endDate = "present" and duration = "3 days".
  *
  * @author john caron
- * @version $Revision: 1.11 $ $Date: 2005/12/30 23:04:03 $
+ * @version $Revision$ $Date$
  */
 
 public class DateRange {

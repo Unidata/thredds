@@ -9,9 +9,9 @@ import java.util.Date;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision: 1.2 $ $Date: 2005/04/26 16:25:14 $
+ * @version $Revision$ $Date$
  */
-/* $Id: DoradeSWIB.java,v 1.2 2005/04/26 16:25:14 yuanho Exp $ */
+/* $Id$ */
 
 class DoradeSWIB extends DoradeDescriptor {
 

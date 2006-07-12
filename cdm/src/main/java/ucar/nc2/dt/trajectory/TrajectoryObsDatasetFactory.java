@@ -1,4 +1,4 @@
-// $Id: TrajectoryObsDatasetFactory.java,v 1.9 2006/02/13 19:51:33 caron Exp $
+// $Id$
 package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.dataset.NetcdfDataset;

@@ -1,4 +1,4 @@
-// $Id: GridWriter.java,v 1.4 2006/01/15 20:38:31 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,6 +27,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.TransformType;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;
@@ -40,7 +41,7 @@ import java.util.*;
  *
  * @see ucar.nc2.NetcdfFile
  * @author caron
- * @version $Revision: 1.4 $ $Date: 2006/01/15 20:38:31 $
+ * @version $Revision$ $Date$
  */
 
 public class GridWriter {
@@ -66,8 +67,8 @@ public class GridWriter {
     ncfile.addGlobalAttribute("Conventions", "_Coordinates");
 
     GridCoordSystem gcs = grid.getGridCoordSystem();
-    gcs.getTimeName(timeIdx);
-    ncfile.addGlobalAttribute("time", gcs.getTimeName(timeIdx));
+    CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+    ncfile.addGlobalAttribute("time", taxis.getCoordName(timeIdx));
 
     // copy all dimensions except time
     Dimension timeDim = grid.getTimeDimension();

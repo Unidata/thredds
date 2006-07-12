@@ -14,7 +14,7 @@ package dods.dap;
 /**
  * DAS exception. This is the root of all the DAS exception classes.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see DODSException
  */

@@ -1,4 +1,4 @@
-// $Id: DatasetFilter.java,v 1.2 2004/03/11 23:35:20 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.*;
  * @see InvCatalog#filter
  *
  * @author john caron
- * @version $Revision: 1.2 $ $Date: 2004/03/11 23:35:20 $
+ * @version $Revision$ $Date$
  */
 
 public abstract class DatasetFilter {

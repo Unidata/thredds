@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nc:netcdf xmlns:nc="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-   location="file:test/data/example1.nc">
+   location="file:src/test/data/example1.nc">
 	
 	<nc:dimension name="time" length="2" isUnlimited="true"/>
 	<nc:dimension name="lat" length="3"/>

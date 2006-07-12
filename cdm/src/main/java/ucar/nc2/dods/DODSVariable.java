@@ -1,4 +1,4 @@
-// $Id: DODSVariable.java,v 1.19 2006/01/13 19:57:14 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @see ucar.nc2.Variable
  * @author caron
- * @version $Revision: 1.19 $ $Date: 2006/01/13 19:57:14 $
+ * @version $Revision$ $Date$
  */
 
 public class DODSVariable extends ucar.nc2.Variable {

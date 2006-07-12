@@ -1,4 +1,4 @@
-// $Id: Nexrad2IOServiceProvider.java,v 1.26 2006/05/12 20:19:27 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -38,7 +38,7 @@ import java.util.Date;
  *
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class Nexrad2IOServiceProvider implements IOServiceProvider {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Nexrad2IOServiceProvider.class);

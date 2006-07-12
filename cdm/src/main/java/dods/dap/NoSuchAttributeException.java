@@ -15,7 +15,7 @@ package dods.dap;
  * Thrown by <code>AttributeTable</code> when an attempt is made to alias to
  * a non-existent attribute.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see AttributeTable#addAlias(String, String)
  */

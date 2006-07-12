@@ -13,7 +13,7 @@ import java.util.List;
  * @see "http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html"
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 
 public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {

@@ -1,4 +1,4 @@
-// $Id: DiskCache.java,v 1.7 2006/06/29 16:58:59 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -74,7 +74,7 @@ import java.util.*;
     doSomething( wf);
   </pre>
  * @author jcaron
- * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
+ * @version $Revision$ $Date$
  */
 public class DiskCache {
   static private String root = null;

@@ -1,4 +1,4 @@
-// $Id: TypedDatasetImpl.java,v 1.8 2006/03/28 19:57:01 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import java.util.*;
  * Superclass for implementations of TypedDataset.
  *
  * @author John Caron
- * @version $Id: TypedDatasetImpl.java,v 1.8 2006/03/28 19:57:01 caron Exp $
+ * @version $Id$
  */
 
 public abstract class TypedDatasetImpl implements TypedDataset {

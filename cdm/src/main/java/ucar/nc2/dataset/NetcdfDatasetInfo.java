@@ -1,4 +1,4 @@
-// $Id: NetcdfDatasetInfo.java,v 1.6 2006/02/14 01:00:57 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import java.io.OutputStream;
 /**
  * Helper class for obtaining information about a NetcdfDataset.
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  */
 public class NetcdfDatasetInfo {
   private NetcdfDataset ds;
@@ -83,7 +83,7 @@ public class NetcdfDatasetInfo {
     for (int i = 0; i < csList.size(); i++) {
       CoordinateSystem cs = (CoordinateSystem) csList.get(i);
       if (GridCoordSys.isGridCoordSys( null, cs)) {
-        GridCoordSys gcs = new GridCoordSys( cs);
+        GridCoordSys gcs = new GridCoordSys( cs, null);
         if (gcs.isComplete( ve))
           return gcs;
       }
@@ -134,7 +134,7 @@ public class NetcdfDatasetInfo {
       CoordinateSystem cs =  (CoordinateSystem) csList.get(i);
       Element csElem;
       if (GridCoordSys.isGridCoordSys( null, cs)) {
-        GridCoordSys gcs = new GridCoordSys( cs);
+        GridCoordSys gcs = new GridCoordSys( cs, null);
         csElem = new Element("gridCoordSystem");
         csElem.setAttribute("name", cs.getName());
         csElem.setAttribute("horizX", gcs.getXHorizAxis().getName());

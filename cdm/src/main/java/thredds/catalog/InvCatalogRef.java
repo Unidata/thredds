@@ -1,4 +1,4 @@
-// $Id: InvCatalogRef.java,v 1.20 2006/02/13 19:52:21 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -47,7 +47,7 @@ import java.net.URI;
  * @see thredds.catalog.ui.CatalogTreeView as example to read asynchronously
  *
  * @author john caron
- * @version $Revision: 1.20 $ $Date: 2006/02/13 19:52:21 $
+ * @version $Revision$ $Date$
  */
 
 public class InvCatalogRef extends InvDatasetImpl {

@@ -1,4 +1,4 @@
-// $Id: InvDataset.java,v 1.19 2006/05/19 19:23:03 edavis Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ import java.util.*;
  * Public interface to a thredds dataset, basic abstraction for data.
  *
  * @author john caron
- * @version $Revision: 1.19 $ $Date: 2006/05/19 19:23:03 $
+ * @version $Revision$ $Date$
  */
 
 public abstract class InvDataset {

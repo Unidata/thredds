@@ -34,7 +34,7 @@ import java.io.IOException;
  * Forecast Model Run Collection.
  *
  * @author caron
- * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
+ * @version $Revision$ $Date$
  */
 public class FmrCollection {
   private NetcdfDataset org; // should cache these NetcdfDataset, release ds from cache when all references are null

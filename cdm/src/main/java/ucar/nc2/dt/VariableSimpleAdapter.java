@@ -1,4 +1,4 @@
-// $Id: VariableSimpleAdapter.java,v 1.1 2005/05/23 20:18:36 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Adapt a VariableSimpleIF into another VariableSimpleIF, so it can be subclassed.
  * @author caron
- * @version $Revision: 1.1 $ $Date: 2005/05/23 20:18:36 $
+ * @version $Revision$ $Date$
  */
 
 public class VariableSimpleAdapter implements VariableSimpleIF {

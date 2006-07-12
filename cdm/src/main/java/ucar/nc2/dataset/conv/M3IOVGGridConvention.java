@@ -11,7 +11,7 @@ NOTES:   These are similar to Vis5D data sets except that the data are
          The pressure-based levels are converted into approximate z in
          meters above mean sea level.
 HISTORY: 2003/06/26 @author plessel.todd@epa.gov, based on WRFConvention.java
-         @version $Revision: 1.2 $ $Date: 2006/01/17 23:07:13 $
+         @version $Revision$ $Date$
 STATUS:  unreviewed, untested.
 ******************************************************************************/
 
@@ -40,7 +40,7 @@ import ucar.unidata.geoloc.projection.*;
  * @invariant ncfile != null implies isValidM3IOFile()
  *
  * @author caron ??
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class M3IOVGGridConvention extends CoordSysBuilder {
 

@@ -15,7 +15,7 @@ import java.io.*;
 /**
  * A vector of doubles.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see PrimitiveVector
  */

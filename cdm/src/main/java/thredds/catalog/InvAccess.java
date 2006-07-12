@@ -1,4 +1,4 @@
-// $Id: InvAccess.java,v 1.9 2006/02/13 21:01:53 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package thredds.catalog;
  * Public interface to an access element, defining how to access a specific web resource.
  *
  * @author john caron
- * @version $Revision: 1.9 $ $Date: 2006/02/13 21:01:53 $
+ * @version $Revision$ $Date$
  */
 
 abstract public class InvAccess {

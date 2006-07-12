@@ -1,4 +1,4 @@
-// $Id: DatasetFilter.java,v 1.15 2005/12/16 23:19:34 edavis Exp $
+// $Id$
 
 package thredds.cataloggen.config;
 

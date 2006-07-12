@@ -1,4 +1,4 @@
-// $Id: DODSAttribute.java,v 1.8 2005/01/20 00:55:32 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.util.*;
  * @see ucar.nc2.Attribute
  *
  * @author caron
- * @version $Revision: 1.8 $ $Date: 2005/01/20 00:55:32 $
+ * @version $Revision$ $Date$
  */
 
 

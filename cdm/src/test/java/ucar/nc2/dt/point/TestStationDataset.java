@@ -3,7 +3,6 @@ package ucar.nc2.dt.point;
 import junit.framework.*;
 
 import ucar.ma2.*;
-import ucar.nc2.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.units.DateUnit;
@@ -33,7 +32,7 @@ public class TestStationDataset extends TestCase {
     long start = System.currentTimeMillis();
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
-    ThreddsDataFactory.Result result = fac.openDatatype( "http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.xml#NWS/METAR/Surface_METAR_20060701_0000.nc", null);
+    ThreddsDataFactory.Result result = fac.openDatatype( "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/latest.xml", null);
     PointObsDataset sod = result.pobsDataset;
     long took = System.currentTimeMillis() - start;
     System.out.println(" open took = "+took+" msec");
@@ -260,25 +259,25 @@ public class TestStationDataset extends TestCase {
         DataType dt = member.getDataType();
         if (dt == DataType.FLOAT) {
           sdata.getScalarFloat(member);
-          sdata.getArrayFloat(member);
+          sdata.getJavaArrayFloat(member);
         } else if (dt == DataType.DOUBLE) {
           sdata.getScalarDouble(member);
-          sdata.getArrayDouble(member);
+          sdata.getJavaArrayDouble(member);
         } else if (dt == DataType.BYTE) {
           sdata.getScalarByte(member);
-          sdata.getArrayByte(member);
+          sdata.getJavaArrayByte(member);
         } else if (dt == DataType.SHORT) {
           sdata.getScalarShort(member);
-          sdata.getArrayShort(member);
+          sdata.getJavaArrayShort(member);
         } else if (dt == DataType.INT) {
           sdata.getScalarInt(member);
-          sdata.getArrayInt(member);
+          sdata.getJavaArrayInt(member);
         } else if (dt == DataType.LONG) {
           sdata.getScalarLong(member);
-          sdata.getArrayLong(member);
+          sdata.getJavaArrayLong(member);
         } else if (dt == DataType.CHAR) {
           sdata.getScalarChar(member);
-          sdata.getArrayChar(member);
+          sdata.getJavaArrayChar(member);
           sdata.getScalarString(member);
         } else if (dt == DataType.STRING) {
           sdata.getScalarString(member);

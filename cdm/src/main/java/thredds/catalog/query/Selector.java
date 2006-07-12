@@ -1,4 +1,4 @@
-// $Id: Selector.java,v 1.11 2005/05/19 23:43:45 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.*;
  * Abstract class for DQC selector elements.
  *
  * @author john caron
- * @version $Revision: 1.11 $ $Date: 2005/05/19 23:43:45 $
+ * @version $Revision$ $Date$
  */
 
 public abstract class Selector {

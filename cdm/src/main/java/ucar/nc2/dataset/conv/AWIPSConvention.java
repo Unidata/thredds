@@ -1,4 +1,4 @@
-// $Id: AWIPSConvention.java,v 1.21 2006/01/14 22:15:01 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -38,7 +38,7 @@ import java.util.*;
  * AWIPS netcdf output.
  *
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/01/14 22:15:01 $
+ * @version $Revision$ $Date$
  */
 
 public class AWIPSConvention extends CoordSysBuilder {

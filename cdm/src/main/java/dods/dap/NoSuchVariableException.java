@@ -14,7 +14,7 @@ package dods.dap;
 /**
  * Thrown when an attempt is made to access a variable that does not exist.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  */
 public class NoSuchVariableException extends DDSException {

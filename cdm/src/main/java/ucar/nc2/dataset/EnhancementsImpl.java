@@ -1,4 +1,4 @@
-// $Id: EnhancementsImpl.java,v 1.13 2005/11/17 00:48:17 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.
  * @author caron
- * @version $Revision: 1.13 $ $Date: 2005/11/17 00:48:17 $
+ * @version $Revision$ $Date$
  */
 class EnhancementsImpl implements Enhancements {
   private Variable forVar;
@@ -63,6 +63,10 @@ class EnhancementsImpl implements Enhancements {
   /** Add a CoordinateSystem to the dataset. */
   public void addCoordinateSystem( CoordinateSystem cs){
     coordSys.add(cs);
+  }
+
+  public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
+    coordSys.remove( p0);
   }
 
   /** Get the original variable */

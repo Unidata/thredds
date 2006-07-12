@@ -1,4 +1,4 @@
-// $Id: CrawlableDatasetFile.java,v 1.7 2006/05/19 19:23:05 edavis Exp $
+// $Id$
 package thredds.crawlabledataset;
 
 import java.io.File;

@@ -6,9 +6,9 @@ package ucar.atd.dorade;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision: 1.1 $ $Date: 2004/12/09 20:18:52 $
+ * @version $Revision$ $Date$
  */
-/* $Id: DoradeRDAT.java,v 1.1 2004/12/09 20:18:52 jeffmc Exp $ */
+/* $Id$ */
 
 import java.io.RandomAccessFile;
 

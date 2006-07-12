@@ -35,7 +35,7 @@ import java.io.*;
 /**
  * A vector of shorts. (as in 16bit ints :)
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author npotter
  * @see PrimitiveVector
  */

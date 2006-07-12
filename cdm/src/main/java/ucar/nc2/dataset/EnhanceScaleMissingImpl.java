@@ -1,4 +1,4 @@
-// $Id: EnhanceScaleMissingImpl.java,v 1.11 2005/11/17 00:48:17 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import ucar.nc2.*;
  *
  * @see EnhanceScaleMissing
  * @author caron
- * @version $Revision: 1.11 $ $Date: 2005/11/17 00:48:17 $
+ * @version $Revision$ $Date$
  */
 class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    // Default fill values, used unless _FillValue variable attribute is set.

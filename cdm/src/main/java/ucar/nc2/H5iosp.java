@@ -1,4 +1,4 @@
-// $Id: H5iosp.java,v 1.20 2006/05/12 20:19:28 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ import java.nio.*;
 
 /**
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 
 class H5iosp implements IOServiceProvider {

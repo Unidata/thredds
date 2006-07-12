@@ -1,4 +1,4 @@
-// $Id: GeoGrid.java,v 1.24 2006/05/24 00:12:57 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -44,7 +44,7 @@ import java.io.IOException;
  * <p> Note: these classes should be considered experimental and will likely be refactored in the next release.
  *
  * @author caron
- * @version $Revision: 1.24 $ $Date: 2006/05/24 00:12:57 $
+ * @version $Revision$ $Date$
  */
 
 public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
@@ -52,8 +52,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   private GridDataset dataset;
   private GridCoordSys gcs;
   private VariableEnhanced vs;
-  private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1;
-  private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1;
+  private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
+  private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1, rtDimNewIndex = -1;
   private ArrayList mydims;
 
   private boolean debugArrayShape = false;
@@ -80,10 +80,20 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     if (gcs.getVerticalAxis() != null) zDimOrgIndex = findDimension( gcs.getVerticalAxis().getDimension(0));
     if (gcs.getTimeAxis() != null) tDimOrgIndex = findDimension( gcs.getTimeAxis().getDimension(0));
+    if (gcs.getEnsembleAxis() != null) eDimOrgIndex = findDimension( gcs.getEnsembleAxis().getDimension(0));
+    if (gcs.getRunTimeAxis() != null) rtDimOrgIndex = findDimension( gcs.getRunTimeAxis().getDimension(0));
 
     // construct canonical dimension list
     int count = 0;
     this.mydims = new ArrayList();
+    if (rtDimOrgIndex >= 0) {
+      mydims.add( dsvar.getDimension( rtDimOrgIndex));
+      rtDimNewIndex = count++;
+    }
+    if (eDimOrgIndex >= 0) {
+      mydims.add( dsvar.getDimension( eDimOrgIndex));
+      eDimNewIndex = count++;
+    }
     if (tDimOrgIndex >= 0) {
       mydims.add( dsvar.getDimension( tDimOrgIndex));
       tDimNewIndex = count++;
@@ -98,7 +108,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     }
     if (xDimOrgIndex >= 0) {
       mydims.add( dsvar.getDimension( xDimOrgIndex));
-      xDimNewIndex = count++;
+      xDimNewIndex = count;
     }
   }
 
@@ -131,14 +141,18 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return (Dimension) mydims.get(i);
   }
 
-  /** get the time Dimension, or null if none */
+  /** get the time Dimension, if it exists */
   public Dimension getTimeDimension() { return tDimNewIndex < 0 ? null : getDimension( tDimNewIndex); }
-  /** get the z Dimension, or null if none */
+  /** get the z Dimension, if it exists */
   public Dimension getZDimension() { return zDimNewIndex < 0 ? null : getDimension( zDimNewIndex); }
-  /** get the y Dimension, */
+  /** get the y Dimension, if it exists */
   public Dimension getYDimension() { return yDimNewIndex < 0 ? null : getDimension( yDimNewIndex); }
-  /** get the x Dimension */
+  /** get the x Dimension, if it exists */
   public Dimension getXDimension() { return xDimNewIndex < 0 ? null : getDimension( xDimNewIndex); }
+  /** get the ensemble Dimension, if it exists */
+  public Dimension getEnsembleDimension() { return eDimNewIndex < 0 ? null : getDimension( eDimNewIndex); }
+  /** get the run time Dimension, if it exists */
+  public Dimension getRunTimeDimension() { return rtDimNewIndex < 0 ? null : getDimension( rtDimNewIndex); }
 
   /** get the time Dimension index in the geogrid (canonical order), or -1 if none */
   public int getTimeDimensionIndex() { return tDimNewIndex; }
@@ -148,6 +162,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   public int getYDimensionIndex() { return yDimNewIndex; }
   /** get the x Dimension index in the geogrid (canonical order) */
   public int getXDimensionIndex() { return xDimNewIndex; }
+  /** get the ensemble Dimension index in the geogrid (canonical order) */
+  public int getEDimensionIndex() { return eDimNewIndex; }
+  /** get the runtime Dimension index in the geogrid (canonical order) */
+  public int getRunTimeDimensionIndex() { return rtDimNewIndex; }
 
   /**
    * Convenience function; lookup Attribute by name.
@@ -332,7 +350,6 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return readDataSlice( t, z, y, x);
   }
 
-
   /**
    * This reads an arbitrary data slice, returning the data in
    * canonical order (t-z-y-x). If any dimension does not exist, ignore it.
@@ -345,6 +362,24 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @return data[t,z,y,x], eliminating missing or fixed dimension.
    */
   public Array readDataSlice(int t, int z, int y, int x) throws java.io.IOException {
+    return readDataSlice(0, 0, t, z, y, x);
+  }
+
+  /**
+   * This reads an arbitrary data slice, returning the data in
+   * canonical order (rt-e-t-z-y-x). If any dimension does not exist, ignore it.
+   *
+   * @param rt if < 0, get all of runtime dim; if valid index, fix slice to that value.
+   * @param e if < 0, get all of ensemble dim; if valid index, fix slice to that value.
+   * @param t if < 0, get all of time dim; if valid index, fix slice to that value.
+   * @param z if < 0, get all of z dim; if valid index, fix slice to that value.
+   * @param y if < 0, get all of y dim; if valid index, fix slice to that value.
+   * @param x if < 0, get all of x dim; if valid index, fix slice to that value.
+   *
+   * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
+   */
+  public Array readDataSlice(int rt, int e, int t, int z, int y, int x) throws java.io.IOException {
+
     int rank = vs.getRank();
     int [] start = new int[rank];
     int [] shape = new int[rank];
@@ -356,8 +391,26 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     Dimension ydim = getYDimension( );
     Dimension zdim = getZDimension( );
     Dimension tdim = getTimeDimension( );
+    Dimension edim = getEnsembleDimension( );
+    Dimension rtdim = getRunTimeDimension( );
 
       // construct the shape of the data volume to be read
+    if (rtdim != null) {
+      if ((rt >= 0) && (rt < rtdim.getLength()))
+        start[ rtDimOrgIndex] = rt;  // fix rt
+      else {
+        shape[ rtDimOrgIndex] = rtdim.getLength(); // all of rt
+      }
+    }
+
+    if (edim != null) {
+      if ((e >= 0) && (e < edim.getLength()))
+        start[ eDimOrgIndex] = e;  // fix e
+      else {
+        shape[ eDimOrgIndex] = edim.getLength(); // all of e
+      }
+    }
+
     if (tdim != null) {
       if ((t >= 0) && (t < tdim.getLength()))
         start[ tDimOrgIndex] = t;  // fix t
@@ -400,10 +453,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     Array dataVolume;
     try {
       dataVolume = vs.read( start, shape);
-    } catch (Exception e) {
+    } catch (Exception ex) {
       System.out.println("Exception: GeoGrid.getdataSlice() on dataset "+getName());
-      e.printStackTrace();
-      throw new java.io.IOException(e.getMessage());
+      ex.printStackTrace();
+      throw new java.io.IOException(ex.getMessage());
     }
 
     // LOOK: the real problem is the lack of named dimensions in the Array object
@@ -411,10 +464,12 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     ArrayList oldDims = new ArrayList( vs.getDimensions());
     int [] permuteIndex = new int[dataVolume.getRank()];
     int count = 0;
+    if (oldDims.contains(rtdim)) permuteIndex[count++] = oldDims.indexOf(rtdim);
+    if (oldDims.contains(edim)) permuteIndex[count++] = oldDims.indexOf(edim);
     if (oldDims.contains(tdim)) permuteIndex[count++] = oldDims.indexOf(tdim);
     if (oldDims.contains(zdim)) permuteIndex[count++] = oldDims.indexOf(zdim);
     if (oldDims.contains(ydim)) permuteIndex[count++] = oldDims.indexOf(ydim);
-    if (oldDims.contains(xdim)) permuteIndex[count++] = oldDims.indexOf(xdim);
+    if (oldDims.contains(xdim)) permuteIndex[count] = oldDims.indexOf(xdim);
 
     if (debugArrayShape) {
       System.out.println("oldDims = ");
@@ -425,11 +480,19 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
         System.out.println("   oldDim index = "+permuteIndex[i]);
     }
 
-    // permute to the order t,z,y,x
+    // permute to the order rt,e,t,z,y,x
     dataVolume = dataVolume.permute(permuteIndex);
 
     // eliminate fixed dimensions, but not all dimensions of length 1.
     count = 0;
+    if (rtdim != null) {
+      if (rt >= 0) dataVolume = dataVolume.reduce(count);
+      else count++;
+    }
+    if (edim != null) {
+      if (e >= 0) dataVolume = dataVolume.reduce(count);
+      else count++;
+    }
     if (tdim != null) {
       if (t >= 0) dataVolume = dataVolume.reduce(count);
       else count++;
@@ -444,8 +507,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     }
     if (xdim != null) {
       if (x >= 0) dataVolume = dataVolume.reduce(count);
-      else count++;
     }
+
     return dataVolume;
   }
 
@@ -475,7 +538,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
     Range y_range = null, x_range = null;
     if (bbox != null) {
-      List yx_ranges = gcs.getLatLonBoundingBox(bbox);
+      List yx_ranges = gcs.getRangesFromLatLonRect(bbox);
       y_range = (Range) yx_ranges.get(0);
       x_range = (Range) yx_ranges.get(1);
     }
@@ -556,7 +619,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     ArrayList varList = new ArrayList();
     varList.add( vs);
 
-    ArrayList axes = gcs.getCoordinateAxes();
+    List axes = gcs.getCoordinateAxes();
     for (int i = 0; i < axes.size(); i++) {
       Variable v = (Variable) axes.get(i);
       varList.add(v);
@@ -589,9 +652,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     GeoGrid d = (GeoGrid) oo;
     // if (!dataset.getName().equals(d.getDataset().getName())) return false;
     if (!getName().equals(d.getName())) return false;
-    if (!getCoordinateSystem().equals(d.getCoordinateSystem())) return false;
 
-    return true;
+    return getCoordinateSystem().equals(d.getCoordinateSystem());
   }
 
   /**

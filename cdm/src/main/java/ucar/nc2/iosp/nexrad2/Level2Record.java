@@ -1,5 +1,5 @@
 /*
- * $Id: Level2Record.java,v 1.9 2006/04/19 20:20:57 yuanho Exp $
+ * $Id$
  *
  * Copyright © 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -44,7 +44,7 @@ import java.util.Date;
  *
  * @author caron
  * @author David Priegnitz
- * @version $Revision: 1.9 $ $Date: 2006/04/19 20:20:57 $
+ * @version $Revision$ $Date$
  */
 public class Level2Record {
 

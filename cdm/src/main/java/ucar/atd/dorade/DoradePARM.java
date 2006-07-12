@@ -8,9 +8,9 @@ import java.io.RandomAccessFile;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision: 1.2 $ $Date: 2005/04/26 16:32:04 $
+ * @version $Revision$ $Date$
  */
-/* $Id: DoradePARM.java,v 1.2 2005/04/26 16:32:04 yuanho Exp $ */
+/* $Id$ */
 
 public class DoradePARM extends DoradeDescriptor {
 

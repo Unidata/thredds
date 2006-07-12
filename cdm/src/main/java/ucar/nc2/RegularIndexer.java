@@ -1,4 +1,4 @@
-// $Id: RegularIndexer.java,v 1.4 2004/08/16 20:53:46 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import java.util.*;
  * Also handles netcdf3 record dimensions.
  *
  * @author caron
- * @version $Revision: 1.4 $ $Date: 2004/08/16 20:53:46 $
+ * @version $Revision$ $Date$
  */
 class RegularIndexer extends Indexer {
   private int elemSize; // size of each element

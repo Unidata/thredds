@@ -1,4 +1,4 @@
-// $Id: SectionType.java,v 1.1 2005/03/23 22:34:44 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package thredds.wcs;
  * Type-safe enumeration of WCS Section Type.
  *
  * @author john caron
- * @version $Revision: 1.1 $ $Date: 2005/03/23 22:34:44 $
+ * @version $Revision$ $Date$
  */
 
 public final class SectionType {

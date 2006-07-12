@@ -19,7 +19,7 @@ import java.io.IOException;
  * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class StationDatasetHelper {
   private StationObsDataset obsDataset;

@@ -16,7 +16,7 @@ package dods.dap;
  * feedback to the user on the status of the current deserialize operation.
  * The user can also cancel the current deserialize through this interface.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see DataDDS
  */

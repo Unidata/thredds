@@ -1,4 +1,4 @@
-// $Id: GribHorizCoordSys.java,v 1.20 2005/11/07 20:46:09 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -45,7 +45,7 @@ import java.util.HashMap;
  *         <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class GribHorizCoordSys {
   private TableLookup lookup;

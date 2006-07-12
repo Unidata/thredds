@@ -1,4 +1,4 @@
-// $Id: UnitDBImpl.java,v 1.5 2000/08/18 04:17:35 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import java.util.TreeSet;
  * Provides most of a concrete implementation of a database of units.
  *
  * @author Steven R. Emmerson
- * @version $Id: UnitDBImpl.java,v 1.5 2000/08/18 04:17:35 russ Exp $
+ * @version $Id$
  */
 public class
 UnitDBImpl

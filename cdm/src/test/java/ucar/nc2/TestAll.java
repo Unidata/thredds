@@ -17,6 +17,7 @@ public class TestAll {
 
   // public static String testdataDir = "/upc/share/testdata/";
   public static String testdataDir = "R:/testdata/";
+  public static String reletiveDir = "./src/test/data/";
   public static long startTime;
 
   public static junit.framework.Test suite ( ) {

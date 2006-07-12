@@ -3,7 +3,7 @@ package ucar.nc2;
 /**
  * A factory for opening a NetcdfFile, used by NetcdfFileCache
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 public interface NetcdfFileFactory {
 

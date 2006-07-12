@@ -1,4 +1,4 @@
-// $Id: Fmrc.java,v 1.1 2006/03/28 19:57:00 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import java.util.Date;
 /**
  *
  * @author caron
- * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
+ * @version $Revision$ $Date$
  */
 public interface Fmrc {
 

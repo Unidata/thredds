@@ -1,4 +1,4 @@
-// $Id: DatasetNamerType.java,v 1.2 2004/05/11 20:38:46 edavis Exp $
+// $Id$
 
 package thredds.cataloggen.config;
 
@@ -6,7 +6,7 @@ package thredds.cataloggen.config;
  * Type-safe enumeration of CatalogGen DatasetNamer types.
  *
  * @author Ethan Davis (from John Caron's thredds.catalog.ServiceType)
- * @version $Revision: 1.2 $
+ * @version $Revision$
  */
 public final class DatasetNamerType
 {

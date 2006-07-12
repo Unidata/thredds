@@ -1,4 +1,4 @@
-// $Id: FieldType.java,v 1.1 2004/10/19 20:38:52 yuanho Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.nc2.geotiff;
 /**
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 
 class FieldType {

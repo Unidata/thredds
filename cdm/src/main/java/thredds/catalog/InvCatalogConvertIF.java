@@ -1,4 +1,4 @@
-// $Id: InvCatalogConvertIF.java,v 1.6 2006/01/17 01:46:52 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ import java.io.IOException;
  *
  * @see InvCatalogFactory
  * @author John Caron
- * @version $Id: InvCatalogConvertIF.java,v 1.6 2006/01/17 01:46:52 caron Exp $
+ * @version $Id$
  */
 
 public interface InvCatalogConvertIF {

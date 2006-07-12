@@ -1,4 +1,4 @@
-// $Id: UnitDimension.java,v 1.6 2002/01/29 17:33:43 steve Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ package ucar.units;
  * Instances of this class are immutable.
  *
  * @author Steven R. Emmerson
- * @version $Id: UnitDimension.java,v 1.6 2002/01/29 17:33:43 steve Exp $
+ * @version $Id$
  */
 public final class
 UnitDimension

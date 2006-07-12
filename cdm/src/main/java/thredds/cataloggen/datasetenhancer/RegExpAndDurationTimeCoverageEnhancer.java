@@ -1,4 +1,4 @@
-// $Id: RegExpAndDurationTimeCoverageEnhancer.java,v 1.5 2006/03/27 21:52:20 edavis Exp $
+// $Id$
 package thredds.cataloggen.datasetenhancer;
 
 import thredds.cataloggen.DatasetEnhancer;

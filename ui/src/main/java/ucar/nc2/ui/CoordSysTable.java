@@ -231,7 +231,7 @@ public class CoordSysTable extends JPanel {
           firstCoordSys = cs;
 
         if (GridCoordSys.isGridCoordSys( null, cs)) {
-          GridCoordSys gcs = new GridCoordSys( cs);
+          GridCoordSys gcs = new GridCoordSys( cs, null);
           if (gcs.isComplete( v))
             addDataType("grid");
         } else {

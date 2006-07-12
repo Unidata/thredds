@@ -1,4 +1,4 @@
-// $Id: RegExpMatchOnNameFilter.java,v 1.2 2005/12/30 00:18:53 edavis Exp $
+// $Id$
 package thredds.crawlabledataset.filter;
 
 import thredds.crawlabledataset.CrawlableDatasetFilter;

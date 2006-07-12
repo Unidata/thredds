@@ -1,4 +1,4 @@
-// $Id: UnidataObsConvention.java,v 1.3 2005/08/18 14:30:38 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import java.util.StringTokenizer;
 /**
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class UnidataObsConvention extends CoordSysBuilder {
 

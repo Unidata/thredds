@@ -1,5 +1,5 @@
 /*
- * $Id: AlbersEqualArea.java,v 1.9 2005/11/16 15:49:49 dmurray Exp $
+ * $Id$
  *
  * Copyright  1997-2005 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import ucar.unidata.util.Parameter;
  * @see Projection
  * @see ProjectionImpl
  * @author Unidata Development Team
- * @version $Id: AlbersEqualArea.java,v 1.9 2005/11/16 15:49:49 dmurray Exp $
+ * @version $Id$
  */
 
 public class AlbersEqualArea extends ProjectionImpl {

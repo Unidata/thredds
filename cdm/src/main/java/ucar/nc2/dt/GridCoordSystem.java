@@ -1,4 +1,4 @@
-// $Id: GridCoordSys.java,v 1.2 2006/02/20 22:46:06 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,174 +24,203 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateUnit;
 
-import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
-
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 import thredds.datatype.DateRange;
 
 /**
- * A Grid Coordinate System
+ * A Coordinate System for gridded data. Assume:
  * <ul>
- * <li> Seperable X-Y, Z, T
  * <li> X and Y are 1 or 2 dimensional
- * <li> Z, T are 1-dimensional
+ * <li> T is 1 or 2 dimensional. The 2D case is that it depends on runtime.
+ * <li> We can create Dates out of the T and RT coordinate values.
+ * <li> Z, E, RT are 1-dimensional
  * <li> An optional VerticalTransform can provide a height or pressure coordinate that may be 1-4 dimensional.
  * </ul>
- *
+ * <p/>
  * We could insist on one dimensional X, Y, Z, T, and treat optional HorizontalTransform the same as VerticalTransform.
  * Its job would be to provide lat(x,y) and lon(x,y) arrays.
  *
  * @author caron
- * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
+ * @version $Revision$ $Date$
  */
 public interface GridCoordSystem {
 
-  /** The name of the Coordinate System */
+  /**
+   * The name of the Grid Coordinate System.
+   */
   public String getName();
 
-  /** A List of Dimension used by the Coordinate System */
+  /**
+   * Get the list of dimensions used by any of the Axes in the Coordinate System.
+   * @return List of Dimension
+   */
   public List getDomain();
-   //public int getRankDomain();
-   //public int getRankRange();
-
-   /* public boolean containsAxes(List p0);
-   public boolean containsAxis(String p0);
-   public boolean containsAxisType(AxisType p0);
-   public boolean containsAxisTypes(List p0);
-   public boolean containsDomain(List p0); */
-
-   //public boolean isComplete(VariableIF p0);
-   // public boolean isImplicit();
-   //public boolean isProductSet();
-   //public boolean isRegular();
 
   // axes
-   public ArrayList getCoordinateAxes();
 
-   //public boolean isGeoReferencing();
-   // public boolean isGeoXY();
-   public boolean isLatLon();
+  /**
+   * Get the list of all axes.
+   * @return List of CoordinateAxis.
+   */
+  public List getCoordinateAxes();
 
-   /*public CoordinateAxis getHeightAxis();
-   public CoordinateAxis getLatAxis();
-   public CoordinateAxis getLonAxis();
-   public CoordinateAxis getPressureAxis();
-   public CoordinateAxis getTaxis();
-   public CoordinateAxis getXaxis();
-   public CoordinateAxis getYaxis();
-   public CoordinateAxis getZaxis(); */
-   public CoordinateAxis1D getTimeAxis();
-   public CoordinateAxis1D getVerticalAxis();
-   public CoordinateAxis getXHorizAxis();
-   public CoordinateAxis getYHorizAxis();
-
-   // transforms
-   public ArrayList getCoordinateTransforms();
-
-   public ProjectionImpl getProjection();
-   public ProjectionCT getProjectionCT();
-
-   public VerticalTransform getVerticalTransform();
-   public VerticalCT getVerticalCT();
-
-   // horiz
-   public boolean isRegularSpatial();
-   public int[] findXYCoordElement(double p0, double p1, int[] p2);
-   public ProjectionRect getBoundingBox();
-   public java.util.List getLatLonBoundingBox(LatLonRect p0);
-   public LatLonRect getLatLonBoundingBox();
-
-   // vertical
-   public boolean hasVerticalAxis();
-   public int getLevelIndex(String p0);
-   public String getLevelName(int p0);
-   public ArrayList getLevels();
-   public boolean isZPositive();
-
-   // time
-   public boolean hasTimeAxis();
-   public boolean isDate();
-   public int findTimeCoordElement(Date p0);
-   public DateRange getDateRange();
-   public DateUnit getDateUnit() throws java.lang.Exception;
-   public Date[] getTimeDates();
-   public int getTimeIndex(String p0);
-   public String getTimeName(int p0);
-   public TimeUnit getTimeResolution() throws java.lang.Exception;
-   public ArrayList getTimes();
-
-   /*
-   public boolean isRadial();
-   public CoordinateAxis getAzimuthAxis();
-   public CoordinateAxis getElevationAxis();
-   public CoordinateAxis getRadialAxis();  */
-}
-
- /* public String getName();
-
-  public ArrayList getCoordinateAxes();
-  public ArrayList getCoordinateTransforms();
-
-  public CoordinateAxis getHeightAxis();
-  public CoordinateAxis getLatAxis();
-  public CoordinateAxis getLonAxis();
-  public CoordinateAxis getPressureAxis();
-  public CoordinateAxis getTaxis();
-  public CoordinateAxis getXaxis();
-  public CoordinateAxis getYaxis();
-  public CoordinateAxis getZaxis();
-
-  public ProjectionImpl getProjection();
-
-  public ArrayList getDomain(); // Dimensions
-  public int getRankDomain();
-  public int getRankRange();
-
-  public boolean hasTimeAxis();
-  public boolean hasVerticalAxis();
-
-  public boolean isComplete(VariableIF v);
-  public boolean isGeoReferencing();
-  public boolean isGeoXY();
-  public boolean isImplicit();
-  public boolean isLatLon();
+  /**
+   * True if all axes are 1 dimensional.
+   */
   public boolean isProductSet();
-  public boolean isRegular();
 
-  // grid
-  public ProjectionRect getBoundingBox();
-  public LatLonRect getLatLonBoundingBox();
+  /**
+   * Get the X axis. May be 1 or 2 dimensional.
+   * @return X CoordinateAxis, may not be null.
+   */
+  public CoordinateAxis getXHorizAxis();
 
-  //public ProjectionImpl getProjection();
-  public VerticalTransform getVerticalTransform();
+  /**
+   * Get the Y axis. May be 1 or 2 dimensional.
+   * @return Y CoordinateAxis, may not be null.
+   */
+  public CoordinateAxis getYHorizAxis();
 
+  /**
+   * Get the Z axis. Must be 1 dimensional.
+   * @return Y CoordinateAxis, may be null.
+   */
   public CoordinateAxis1D getVerticalAxis();
-  public CoordinateAxis1D getTimeAxis();
-  public CoordinateAxis getXHorizAxis(); // require 1D ??
-  public CoordinateAxis getYHorizAxis(); // require 1D ??
 
-  public ArrayList getLevels(); // NamedObject
-  public ArrayList getTimes(); // NamedObject
-  public String getLevelName(int index);
-  public String getTimeName(int index);
-  public boolean isDate();
-  public Date[] getTimeDates();
+  /**
+   * Get the Time axis, if has1DTimeAxis() is true. Otherwise use getTimeAxisForRun.
+   * A time coordinate must be a udunit date or ISO String, so it can always be converted to a Date.
+   * Typical meaning is the date of measurement or valid forecast time.
+   * @return the time coordinate axis, may be null.
+   */
+  public CoordinateAxis1DTime getTimeAxis();
 
-  public int findTimeCoordElement(Date p0);
-  public int[] findXYCoordElement(double xpos, double ypos, int[] result);
+  /**
+   * Get the ensemble axis. Must be 1 dimensional.
+   * Typical meaning is an enumeration of ensemble Model runs.
+   * @return ensemble CoordinateAxis, may be null.
+   */
+  public CoordinateAxis1D getEnsembleAxis();
 
-  //public boolean isGridCoordSys(StringBuffer p0, CoordinateSystem p1);
-  //public boolean isLatLon();
+  /**
+   * Get the RunTime axis. Must be 1 dimensional.
+   * A runtime coordinate must be a udunit date or ISO String, so it can always be converted to a Date.
+   * Typical meaning is the date that a Forecast Model Run is made.
+   * @return RunTime CoordinateAxis, may be null.
+   */
+  public CoordinateAxis1DTime getRunTimeAxis();
 
+  // transforms
+
+  /**
+   * Get the list of all CoordinateTransforms.
+   * @return List of CoordinateTransform.
+   */
+  public List getCoordinateTransforms();
+
+  /**
+   * Get the Projection CoordinateTransform. It must exist if !isLatLon().
+   * @return ProjectionCT or null.
+   */
+  public ProjectionCT getProjectionCT();
+
+  /**
+   * Get the Projection that performs the transform math.
+   * Same as getProjectionCT().getProjection().
+   * @return ProjectionImpl or null.
+   */
+  public ucar.unidata.geoloc.ProjectionImpl getProjection();
+
+  /**
+   * Get the Vertical CoordinateTransform, it it exists.
+   * @return VerticalCT or null.
+   */
+  public VerticalCT getVerticalCT();
+
+  /**
+   * Get the VerticalTransform that performs the transform math.
+   * Same as getVerticalCT().getVerticalTransform().
+   * @return VerticalTransform or null.
+   */
+  public ucar.unidata.geoloc.vertical.VerticalTransform getVerticalTransform();
+
+  // horiz
+
+  /**
+   * Does this uese lat/lon horizontal axes?
+   * If not, then the horizontal axes are GeoX, GeoY, and there must be a Projection defined.
+   * @return true if lat/lon horizontal axes
+   */
+  public boolean isLatLon();
+
+  /**
+   * Get horizontal bounding box in lat, lon coordinates.
+   * For projection, only an approximation based on corners.
+   * @return LatLonRect bounding box.
+   */
+  public ucar.unidata.geoloc.LatLonRect getLatLonBoundingBox();
+
+   /**
+   * Get horizontal bounding box in projection coordinates.
+   * For lat/lon, the ProjectionRect has units of degrees north and east.
+   * @return ProjectionRect bounding box.
+   */
+  public ucar.unidata.geoloc.ProjectionRect getBoundingBox();
+
+  /**
+   * True if both X and Y axes are 1 dimensional and are regularly spaced.
+   */
+  public boolean isRegularSpatial();
+
+  /**
+   * Get Index Ranges for the given lat, lon bounding box.
+   * For projection, only an approximation based on corners.
+   * Must have CoordinateAxis1D or 2D for x and y axis.
+   *
+   * @param llbb a lat/lon bounding box.
+   * @return list of 2 Range objects, first y then x.
+   */
+  public java.util.List getRangesFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb);
+
+  /**
+   * Given a point in x,y coordinate space, find the x,y indices.
+   * Not implemented yet for 2D.
+   *
+   * @param x_coord position in x coordinate space, ie, units of getXHorizAxis().
+   * @param y_coord position in y coordinate space, ie, units of getYHorizAxis().
+   * @param result  optionally pass in the result array to use.
+   * @return int[2], 0=x, 1=y indices of the point. These will be -1 if out of range.
+   */
+  public int[] findXYindexFromCoord(double x_coord, double y_coord, int[] result);
+
+  // vertical
+
+  /**
+   * True if increasing z coordinate values means "up" in altitude
+   */
   public boolean isZPositive();
 
-  //public GridCoordSys makeGridCoordSys(StringBuffer p0, CoordinateSystem p1, VariableEnhanced p2);
-  //void makeVerticalTransform(GridDataset p0);
+  // time
 
-}    */
+  /**
+   * If there is a time coordinate, get the
+   * @return DateRange or null if no time coordinate
+   */
+  public thredds.datatype.DateRange getDateRange();
+
+  /**
+   * True if getTimeAxis() != null, and getTimeAxis() instanceof CoordinateAxis1D.
+   */
+  public boolean has1DTimeAxis();
+
+  /**
+   * This is the case of a 2D time axis, which depends on the run index.
+   * A time coordinate must be a udunit date or ISO String, so it can always be converted to a Date.
+   * @param run_index which run?
+   * @return 1D time axis for that run.
+   */
+  public CoordinateAxis1DTime getTimeAxisForRun(int run_index);
+
+}

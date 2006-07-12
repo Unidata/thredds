@@ -1,4 +1,4 @@
-// $Id: IOServiceProviderWriter.java,v 1.3 2006/03/03 20:07:32 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ import java.io.IOException;
  * This is only used by service implementors.
  *
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 public interface IOServiceProviderWriter extends IOServiceProvider {
 

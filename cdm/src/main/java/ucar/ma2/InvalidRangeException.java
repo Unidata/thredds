@@ -1,4 +1,4 @@
-// $Id: InvalidRangeException.java,v 1.2 2004/07/12 23:40:14 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.ma2;
    Range to index an array.
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 
 public final class InvalidRangeException extends Exception {

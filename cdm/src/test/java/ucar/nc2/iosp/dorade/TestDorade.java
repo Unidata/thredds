@@ -14,8 +14,8 @@ import java.io.IOException;
 
 public class TestDorade extends TestCase {
 
-  public static String groundDroadeFile = "test/data/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
-  public static String airDoradeFile = "test/data/dorade/swp.1030524195200.TA-ELDR.291.-16.5_AIR_v-999";
+  public static String groundDroadeFile = TestAll.reletiveDir+ "dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
+  public static String airDoradeFile = TestAll.reletiveDir+ "dorade/swp.1030524195200.TA-ELDR.291.-16.5_AIR_v-999";
 
 
   public static boolean dumpFile = false;

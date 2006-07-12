@@ -1,4 +1,4 @@
-// $Id: GridDataset.java,v 1.17 2006/05/25 20:15:26 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,10 +26,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.*;
 
@@ -55,7 +52,7 @@ import thredds.datatype.DateRange;
    </pre>
  *
  * @author caron
- * @version $Revision: 1.17 $ $Date: 2006/05/25 20:15:26 $
+ * @version $Revision$ $Date$
  */
 
 public class GridDataset implements ucar.nc2.dt.GridDataset {

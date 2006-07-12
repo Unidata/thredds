@@ -1,4 +1,4 @@
-// $Id: GeoTiff.java,v 1.4 2005/12/02 00:15:37 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.util.*;
  *
  * @author John Caron
  * @author Yuan Ho
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class GeoTiff {
   private String filename;

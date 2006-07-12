@@ -1,4 +1,4 @@
-// $Id: NetworkUtils.java,v 1.5 2006/02/13 19:51:37 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ import java.net.URL;
  * Utility class to read and parse a fixed length table.
  *
  * @author caron
- * @version $Revision: 1.5 $ $Date: 2006/02/13 19:51:37 $
+ * @version $Revision$ $Date$
  */
 public class TableParser {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: Level2VolumeScan.java,v 1.18 2006/06/27 17:28:21 caron Exp $
+ * $Id$
  *
  * Copyright 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -47,7 +47,7 @@ import ucar.unidata.io.bzip2.CBZip2InputStream;
  *
  * @author caron
  * @author David Priegnitz
- * @version $Revision: 1.18 $ $Date: 2006/06/27 17:28:21 $
+ * @version $Revision$ $Date$
  */
 public class Level2VolumeScan {
 

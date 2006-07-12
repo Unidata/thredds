@@ -1,4 +1,4 @@
-// $Id: DatasetNamer.java,v 1.9 2006/01/20 02:08:23 caron Exp $
+// $Id$
 
 package thredds.cataloggen.config;
 

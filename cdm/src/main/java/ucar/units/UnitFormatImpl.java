@@ -1,4 +1,4 @@
-// $Id: UnitFormatImpl.java,v 1.6 2004/11/04 23:48:51 jeffmc Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Provides support for classes that parse and format unit specifications.
  *
  * @author Steven R. Emmerson
- * @version $Id: UnitFormatImpl.java,v 1.6 2004/11/04 23:48:51 jeffmc Exp $
+ * @version $Id$
  */
 public abstract class
 UnitFormatImpl

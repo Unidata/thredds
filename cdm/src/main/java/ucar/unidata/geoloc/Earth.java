@@ -1,5 +1,5 @@
 /*
- * $Id: Earth.java,v 1.14 2005/11/02 20:04:13 dmurray Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ package ucar.unidata.geoloc;
  * Defines any necessary properties of the earth for use in georeferencing.
  *
  * @author Russ Rew
- * @version $Id: Earth.java,v 1.14 2005/11/02 20:04:13 dmurray Exp $
+ * @version $Id$
  */
 public class Earth {
 

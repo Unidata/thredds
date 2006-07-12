@@ -1,4 +1,4 @@
-// $Id: CoordinateSystem.java,v 1.16 2006/05/25 20:15:28 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -57,7 +57,7 @@ import java.util.*;
  *
  * @see ucar.nc2.dataset.grid.GridCoordSys
  * @author caron
- * @version $Revision: 1.16 $ $Date: 2006/05/25 20:15:28 $
+ * @version $Revision$ $Date$
  */
 public class CoordinateSystem {
 
@@ -148,9 +148,9 @@ public class CoordinateSystem {
   }
 
   /** get the List of CoordinateAxis objects */
-  public ArrayList getCoordinateAxes() { return coordAxes; }
+  public List getCoordinateAxes() { return coordAxes; }
   /** get the List of CoordinateTransform objects */
-  public ArrayList getCoordinateTransforms() { return coordTrans; }
+  public List getCoordinateTransforms() { return coordTrans; }
   /** get the name of the Coordinate System */
   public String getName() { return name; }
 
@@ -170,6 +170,23 @@ public class CoordinateSystem {
 
   ///////////////////////////////////////////////////////////////////////////
   // Convenience routines for finding georeferencing axes
+
+  /**
+   * Find the CoordinateAxis that has the given AxisType.
+   * If more than one, return the one with lesser rank.
+   * @param type
+   * @return  CoordinateAxis of the given AxisType, else null.
+   */
+  public CoordinateAxis findAxis( AxisType type) {
+    CoordinateAxis result = null;
+    for (int i=0; i<coordAxes.size(); i++) {
+      CoordinateAxis axis = (CoordinateAxis) coordAxes.get(i);
+      AxisType axisType = axis.getAxisType();
+      if ((axisType != null) && (axisType == type))
+        result = lesserRank( result, axis);
+    }
+    return result;
+  }
 
   /** get the CoordinateAxis with AxisType.GeoX, or null if none.
    *  if more than one, choose one with smallest rank */

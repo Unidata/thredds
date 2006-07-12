@@ -1,4 +1,4 @@
-// $Id: Index0D.java,v 1.4 2005/12/15 00:29:08 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.ma2;
  *
  * @see Index
  * @author caron
- * @version $Revision: 1.4 $ $Date: 2005/12/15 00:29:08 $
+ * @version $Revision$ $Date$
  */
 public class Index0D extends Index {
 

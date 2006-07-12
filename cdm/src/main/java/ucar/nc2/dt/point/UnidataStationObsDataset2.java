@@ -1,4 +1,4 @@
-// $Id: UnidataStationObsDataset2.java,v 1.5 2006/06/06 16:07:14 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.util.*;
  * @deprecated You should use UnidataStationObsDataset instead of this.
  *
  * @author John Caron
- * @version $Id: UnidataStationObsDataset2.java,v 1.5 2006/06/06 16:07:14 caron Exp $
+ * @version $Id$
  */
 
 public class UnidataStationObsDataset2 extends StationObsDatasetImpl {

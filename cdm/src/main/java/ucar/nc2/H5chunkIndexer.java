@@ -1,4 +1,4 @@
-// $Id: H5chunkIndexer.java,v 1.5 2005/05/11 00:09:55 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -47,7 +47,7 @@ import java.util.*;
  * </pre>
  *
  * @author caron
- * @version $Revision: 1.5 $ $Date: 2005/05/11 00:09:55 $
+ * @version $Revision$ $Date$
  */
 class H5chunkIndexer extends Indexer {
 

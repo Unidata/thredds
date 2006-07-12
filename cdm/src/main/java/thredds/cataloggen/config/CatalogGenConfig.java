@@ -1,4 +1,4 @@
-// $Id: CatalogGenConfig.java,v 1.8 2006/01/20 02:08:22 caron Exp $
+// $Id$
 
 package thredds.cataloggen.config;
 

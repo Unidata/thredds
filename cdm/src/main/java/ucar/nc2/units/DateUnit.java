@@ -1,4 +1,4 @@
-// $Id: DateUnit.java,v 1.22 2006/05/08 02:47:35 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * It tracks the value, the base time unit, and the date origin seperately.
  *
  * @author caron
- * @version $Revision: 1.22 $ $Date: 2006/05/08 02:47:35 $
+ * @version $Revision$ $Date$
  */
 
 public class DateUnit extends SimpleUnit {

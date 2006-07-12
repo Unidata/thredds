@@ -1,4 +1,4 @@
-// $Id: GribCoordSys.java,v 1.7 2005/05/17 21:04:13 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

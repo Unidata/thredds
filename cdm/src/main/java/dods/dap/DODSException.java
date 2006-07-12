@@ -23,7 +23,7 @@ import dods.dap.parser.ParseException;
  * get the various fields sent by the server, and a <code>parse</code> method
  * to parse the <code>Error</code> sent from the server.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see DODSException
  */

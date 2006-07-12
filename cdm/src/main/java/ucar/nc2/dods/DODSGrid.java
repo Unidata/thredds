@@ -1,4 +1,4 @@
-// $Id: DODSGrid.java,v 1.17 2006/02/16 23:02:35 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.io.IOException;
  *
  * @see ucar.nc2.Variable
  * @author caron
- * @version $Revision: 1.17 $ $Date: 2006/02/16 23:02:35 $
+ * @version $Revision$ $Date$
  */
 
 public class DODSGrid extends DODSVariable {

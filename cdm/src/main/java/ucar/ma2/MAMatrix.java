@@ -1,4 +1,4 @@
-// $Id: MAMatrix.java,v 1.2 2004/07/12 23:40:15 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ package ucar.ma2;
  * All operations done in double precision (??)
  *
  * @author @caron
- * @version $Revision: 1.2 $ $Date: 2004/07/12 23:40:15 $
+ * @version $Revision$ $Date$
  */
 
 public class MAMatrix {

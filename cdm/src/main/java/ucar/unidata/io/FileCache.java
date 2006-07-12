@@ -1,4 +1,4 @@
-// $Id: FileCache.java,v 1.7 2006/01/27 20:17:07 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

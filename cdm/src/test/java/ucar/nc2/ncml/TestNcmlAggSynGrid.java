@@ -6,6 +6,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -43,12 +44,11 @@ public class TestNcmlAggSynGrid extends TestCase {
       assert gcsys.getXHorizAxis() != null;
       assert gcsys.getTimeAxis() != null;
 
-      CoordinateAxis taxis = gcsys.getTimeAxis();
+      CoordinateAxis1DTime taxis = gcsys.getTimeAxis();
       assert taxis.getDataType() == DataType.STRING : taxis.getDataType();
 
-      assert gcsys.isDate();
-      List names = gcsys.getTimes();
-      java.util.Date[] dates = gcsys.getTimeDates();
+      List names = taxis.getNames();
+      java.util.Date[] dates = taxis.getTimeDates();
       assert dates != null;
       for (int i = 0; i < dates.length; i++) {
         Date d = dates[i];

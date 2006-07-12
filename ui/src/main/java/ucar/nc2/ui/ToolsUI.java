@@ -1300,24 +1300,6 @@ public class ToolsUI extends JPanel {
       coordSysTable = new CoordSysTable(prefs);
       add(coordSysTable, BorderLayout.CENTER);
 
-      /* JButton ncmlButton = new JButton("NcML");
-      ncmlButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if ((ds != null) && (ds.getParseInfo() != null)) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            try {
-              ds.writeNcML( bos, true, null);
-            } catch (IOException e1) {
-              e1.printStackTrace();
-            }
-            detailTA.setText( bos.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add( ncmlButton); */
-
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -1420,7 +1402,11 @@ public class ToolsUI extends JPanel {
 
       AbstractAction saveAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          String filename = fileChooser.chooseFilename();
+          String location = ds.getLocation();
+          int pos = location.lastIndexOf(".");
+          if (pos > 0)
+            location = location.substring(0,pos);
+          String filename = fileChooser.chooseFilename(location+".ncml");
           if (filename == null) return;
           doSave(ta.getText(), filename);
         }

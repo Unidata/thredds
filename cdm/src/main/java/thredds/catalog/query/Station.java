@@ -1,4 +1,4 @@
-// $Id: Station.java,v 1.5 2004/09/24 03:26:30 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package thredds.catalog.query;
  * Implementation of a DQC  station element. This extends Choice with a location.
  *
  * @author john caron
- * @version $Revision: 1.5 $ $Date: 2004/09/24 03:26:30 $
+ * @version $Revision$ $Date$
  */
 
 public class Station extends ListChoice {

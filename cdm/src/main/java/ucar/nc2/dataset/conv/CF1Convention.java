@@ -1,4 +1,4 @@
-// $Id: CF1Convention.java,v 1.18 2006/05/31 20:51:11 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -45,13 +45,14 @@ import java.io.IOException;
  * </i>
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/31 20:51:11 $
+ * @version $Revision$ $Date$
  */
 
 public class CF1Convention extends CSMConvention {
 
 
-  private static String[] vertical_coords = {"atmosphere_sigma_coordinate",
+  private static String[] vertical_coords = {
+          "atmosphere_sigma_coordinate",
           "atmosphere_hybrid_sigma_pressure_coordinate",
           "atmosphere_hybrid_height_coordinate",
           "atmosphere_sleve_coordinate",
@@ -78,6 +79,16 @@ public class CF1Convention extends CSMConvention {
           continue;
         }
 
+        if (sname.equalsIgnoreCase("forecast_reference_time")) { // experimental
+          v.addAttribute(new Attribute("_CoordinateAxisType", AxisType.RunTime.toString()));
+          continue;
+        }
+
+        if (sname.equalsIgnoreCase("ensemble")) {  // experimental
+          v.addAttribute(new Attribute("_CoordinateAxisType", AxisType.Ensemble.toString()));
+          continue;
+        }
+
         for (int j = 0; j < vertical_coords.length; j++)
           if (sname.equalsIgnoreCase(vertical_coords[j])) {
             v.addAttribute(new Attribute("_CoordinateTransformType", TransformType.Vertical.toString()));
@@ -88,7 +99,7 @@ public class CF1Convention extends CSMConvention {
       // look for horiz transforms
       String grid_mapping_name = ds.findAttValueIgnoreCase(v, "grid_mapping_name", null);
       if (grid_mapping_name != null) {
-        grid_mapping_name = grid_mapping_name.trim();
+        //grid_mapping_name = grid_mapping_name.trim();
         v.addAttribute(new Attribute("_CoordinateTransformType", TransformType.Projection.toString()));
         v.addAttribute(new Attribute("_CoordinateAxisTypes", "GeoX GeoY"));
       }
@@ -240,7 +251,7 @@ public class CF1Convention extends CSMConvention {
       String varName = stoke.nextToken();
       Variable formulaV = ds.findVariable(varName);
       if (null == formulaV) {
-        parseInfo.append("*** Cant find formula variable "+varName);
+        parseInfo.append("*** Cant find formula variable="+varName+" for term="+what);
         continue;
       }
       domain.addAll(formulaV.getDimensions());

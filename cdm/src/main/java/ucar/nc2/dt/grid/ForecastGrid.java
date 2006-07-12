@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  *
  * @author caron
- * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
+ * @version $Revision$ $Date$
  */
 public interface ForecastGrid extends ucar.nc2.VariableSimpleIF {
 

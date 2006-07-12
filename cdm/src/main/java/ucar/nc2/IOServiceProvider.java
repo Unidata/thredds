@@ -1,4 +1,4 @@
-// $Id: IOServiceProvider.java,v 1.16 2006/04/03 22:59:44 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.List;
  * This is only used by service implementors.
  *
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 public interface IOServiceProvider {
 

@@ -1,4 +1,4 @@
-// $Id: QueryAction.java,v 1.3 2006/01/20 20:42:04 caron Exp $
+// $Id$
 package thredds.dqc;
 
 /**

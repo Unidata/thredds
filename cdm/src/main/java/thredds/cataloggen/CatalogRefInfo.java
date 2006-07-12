@@ -1,4 +1,4 @@
-// $Id: CatalogRefInfo.java,v 1.2 2005/03/21 23:04:52 edavis Exp $
+// $Id$
 package thredds.cataloggen;
 
 import thredds.catalog.InvDataset;

@@ -1,4 +1,4 @@
-// $Id: IFPSConvention.java,v 1.3 2006/01/14 22:15:02 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import java.util.*;
 /**
  * IFPS Convention Allows Local NWS forecast office generated forecast datasets to be brought into IDV.
  * @author Burks
- * @version $Revision: 1.3 $ $Date: 2006/01/14 22:15:02 $
+ * @version $Revision$ $Date$
  */
 
 public class IFPSConvention extends CoordSysBuilder {

@@ -18,7 +18,7 @@ import java.util.zip.DeflaterOutputStream;
  * The DataDDS class extends DDS to add new methods for retrieving data from
  * the server, and printing out the contents of the data.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision$
  * @author jehamby
  * @see DDS
  */

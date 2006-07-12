@@ -1,4 +1,4 @@
-// $Id: SelectFromRange.java,v 1.3 2006/01/20 20:42:05 caron Exp $
+// $Id$
 package thredds.dqc;
 
 /**

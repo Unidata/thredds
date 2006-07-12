@@ -1,4 +1,4 @@
-// $Id: DateFromString.java,v 1.3 2005/12/15 00:52:55 caron Exp $
+// $Id$
 package thredds.util;
 
 import java.util.Date;

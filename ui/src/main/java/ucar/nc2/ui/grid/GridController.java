@@ -71,11 +71,12 @@ public class GridController {
   private NetcdfDataset netcdfDataset;
   private GridDataset gridDataset;
   private GridDatatype currentField;
-  private List levels;
-  private List times;
+  private List levelNames, timeNames, ensembleNames, runtimeNames;
   private int currentLevel;
   private int currentSlice;
   private int currentTime;
+  private int currentEnsemble;
+  private int currentRunTime;
   private boolean drawWinds = false;
   boolean drawHorizOn = true, drawVertOn = false;
 
@@ -100,7 +101,7 @@ public class GridController {
 
   JSpinner strideSpinner;
 
-  private ActionSourceListener fieldSource, levelSource, timeSource;
+  private ActionSourceListener levelSource;
   private boolean eventsOK = true;
   private boolean startOK = false;
 
@@ -157,10 +158,10 @@ public class GridController {
   void finishInit() {
 
       // some widgets from the GridUI
-    np = ui.getNavigatedPanel();
-    vertPanel = ui.getVertPanel();
-    dataValueLabel = ui.getDataValueLabel();
-    posLabel = ui.getPositionLabel();
+    np = ui.panz;
+    vertPanel = ui.vertPanel;
+    dataValueLabel = ui.dataValueLabel;
+    posLabel = ui.positionLabel;
 
       // get last saved Projection
     project = (ProjectionImpl) store.getBean(LastProjectionName, null);
@@ -288,11 +289,11 @@ public class GridController {
     String actionName = "field";
     ActionCoordinator fieldCoordinator = new ActionCoordinator(actionName);
       // connect to the fieldChooser
-    fieldCoordinator.addActionSourceListener(ui.getFieldChooser().getActionSourceListener());
+    fieldCoordinator.addActionSourceListener(ui.fieldChooser.getActionSourceListener());
       // connect to the gridTable
-    fieldCoordinator.addActionSourceListener(ui.getGridTable().getActionSourceListener());
+    fieldCoordinator.addActionSourceListener(ui.gridTable.getActionSourceListener());
       // heres what to do when the currentField changes
-    fieldSource = new ActionSourceListener(actionName) {
+    ActionSourceListener fieldSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
         if (setField( e.getValue().toString())) {
           if (e.getActionCommand().equals("redrawImmediate")) {
@@ -309,9 +310,9 @@ public class GridController {
     actionName = "level";
     ActionCoordinator levelCoordinator = new ActionCoordinator(actionName);
       // connect to the levelChooser
-    levelCoordinator.addActionSourceListener(ui.getLevelChooser().getActionSourceListener());
+    levelCoordinator.addActionSourceListener(ui.levelChooser.getActionSourceListener());
       // connect to the vertPanel
-    levelCoordinator.addActionSourceListener(ui.getVertPanel().getActionSourceListener());
+    levelCoordinator.addActionSourceListener(ui.vertPanel.getActionSourceListener());
       // also manage Pick events from the vertPanel
     vertPanel.getDrawArea().addPickEventListener( new PickEventListener() {
       public void actionPerformed(PickEvent e) {
@@ -319,7 +320,7 @@ public class GridController {
          if ((level != -1) && (level != currentLevel)) {
           currentLevel = level;
           redrawLater();
-          String selectedName = ((NamedObject)levels.get(currentLevel)).getName();
+          String selectedName = ((NamedObject)levelNames.get(currentLevel)).getName();
           if (Debug.isSet("pick/event"))
             System.out.println("pick.event Vert: "+selectedName);
           levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
@@ -329,7 +330,7 @@ public class GridController {
       // heres what to do when a level changes
     levelSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        int level = findIndexFromName( levels, e.getValue().toString());
+        int level = findIndexFromName( levelNames, e.getValue().toString());
         if ((level != -1) && (level != currentLevel)) {
           currentLevel = level;
           if (e.getActionCommand().equals("redrawImmediate")) {
@@ -345,11 +346,11 @@ public class GridController {
     actionName = "time";
     ActionCoordinator timeCoordinator = new ActionCoordinator(actionName);
       // connect to the timeChooser
-    timeCoordinator.addActionSourceListener(ui.getTimeChooser().getActionSourceListener());
+    timeCoordinator.addActionSourceListener(ui.timeChooser.getActionSourceListener());
       // heres what to do when the time changes
-    timeSource = new ActionSourceListener(actionName) {
+    ActionSourceListener timeSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        int time = findIndexFromName( times, e.getValue().toString());
+        int time = findIndexFromName( timeNames, e.getValue().toString());
         if ((time != -1) && (time != currentTime)) {
           currentTime = time;
           if (e.getActionCommand().equals("redrawImmediate")) {
@@ -361,6 +362,46 @@ public class GridController {
       }
     };
     timeCoordinator.addActionSourceListener(timeSource);
+
+    //// manage runtime selection events
+    actionName = "runtime";
+    ActionCoordinator runtimeCoordinator = new ActionCoordinator(actionName);
+      // connect to the timeChooser
+    runtimeCoordinator.addActionSourceListener(ui.runtimeChooser.getActionSourceListener());
+      // heres what to do when the time changes
+    ActionSourceListener runtimeSource = new ActionSourceListener(actionName) {
+      public void actionPerformed(ActionValueEvent e) {
+        int runtime = findIndexFromName( runtimeNames, e.getValue().toString());
+        if ((runtime != -1) && (runtime != currentRunTime)) {
+          currentRunTime = runtime;
+          if (e.getActionCommand().equals("redrawImmediate")) {
+            draw(true);
+          } else
+            redrawLater();
+        }
+      }
+    };
+    runtimeCoordinator.addActionSourceListener(runtimeSource);
+
+    //// manage runtime selection events
+    actionName = "ensemble";
+    ActionCoordinator ensembleCoordinator = new ActionCoordinator(actionName);
+      // connect to the timeChooser
+    ensembleCoordinator.addActionSourceListener(ui.ensembleChooser.getActionSourceListener());
+      // heres what to do when the time changes
+    ActionSourceListener ensembleSource = new ActionSourceListener(actionName) {
+      public void actionPerformed(ActionValueEvent e) {
+        int ensIndex = findIndexFromName( ensembleNames, e.getValue().toString());
+        if ((ensIndex != -1) && (ensIndex != currentEnsemble)) {
+          currentEnsemble = ensIndex;
+          if (e.getActionCommand().equals("redrawImmediate")) {
+            draw(true);
+          } else
+            redrawLater();
+        }
+      }
+    };
+    ensembleCoordinator.addActionSourceListener(ensembleSource);
 
       // get Projection Events from the navigated panel
     np.addNewProjectionListener( new thredds.viewer.ui.geoloc.NewProjectionListener() {
@@ -597,6 +638,8 @@ public class GridController {
     currentSlice = 0;
     currentLevel = 0;
     currentTime = 0;
+    currentEnsemble = 0;
+    currentRunTime = 0;
 
     eventsOK = false; // dont let this trigger redraw
     renderGrid.setGeoGrid( currentField);
@@ -619,37 +662,50 @@ public class GridController {
 
   //public GridDatatype getField() { return currentField; }
   private boolean setField(String name) {
-    GridDatatype gg = gridDataset.findGridDatatype( name);
+    GridDatatype gg = gridDataset.findGridDatatype(name);
     if (null == gg)
       return false;
 
-    renderGrid.setGeoGrid( gg);
+    renderGrid.setGeoGrid(gg);
     currentField = gg;
 
-      // set levels
-    levels = currentField.getLevels();
-    if ((levels == null) || (currentLevel >= levels.size()))
+    // set levels
+    GridCoordSystem gcs = gg.getGridCoordSystem();
+    CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+    levelNames = (vaxis == null) ? new ArrayList() : vaxis.getNames();
+    if ((levelNames == null) || (currentLevel >= levelNames.size()))
       currentLevel = 0;
-    vertPanel.setCoordSys( currentField.getGridCoordSystem(), currentLevel);
+    vertPanel.setCoordSys(currentField.getGridCoordSystem(), currentLevel);
 
-      // set times
-    times = currentField.getTimes();
-    if ((times == null) || (currentTime >= times.size()))
+    // set times
+    CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+    timeNames = (taxis == null) ? new ArrayList() : taxis.getNames();
+    if ((timeNames == null) || (currentTime >= timeNames.size()))
       currentTime = 0;
 
-    ui.setField( gg);
+    // set ensembles
+    CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
+    ensembleNames = (eaxis == null) ? new ArrayList() : eaxis.getNames();
+    currentEnsemble = ensembleNames.size() > 0 ? 0 : -1;
+
+    // set runtimes
+    CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
+    runtimeNames = (rtaxis == null) ? new ArrayList() : rtaxis.getNames();
+    currentRunTime = runtimeNames.size() > 0 ? 0 : -1;
+
+    ui.setField(gg);
     return true;
   }
 
-  public int getCurrentLevelIndex() { return currentLevel; }
-  public int getCurrentTimeIndex() { return currentTime; }
+  // public int getCurrentLevelIndex() { return currentLevel; }
+  /* public int getCurrentTimeIndex() { return currentTime; }
   public boolean setLevel(int index) {
-    if ((index >= 0) && (index < levels.size())) {
+    if ((index >= 0) && (index < levelNames.size())) {
       currentLevel = index;
     }
     redrawLater();
     return true;
-  }
+  } */
 
   private int findIndexFromName( List list, String name) {
      Iterator iter = list.iterator();
@@ -664,14 +720,14 @@ public class GridController {
      return -1;
   }
 
-  public int getTimeIndex() { return currentTime; }
+  /* public int getTimeIndex() { return currentTime; }
   public boolean setTime(int index) {
-    if ((index >= 0) && (index < times.size())) {
+    if ((index >= 0) && (index < timeNames.size())) {
       currentTime = index;
     }
     redrawLater();
     return true;
-  }
+  } */
 
   /* public Printable getPrintable() {
     if (printer == null)
@@ -685,6 +741,8 @@ public class GridController {
     renderGrid.setLevel( currentLevel);
     renderGrid.setTime( currentTime);
     renderGrid.setSlice( currentSlice);
+    renderGrid.setEnsemble( currentEnsemble);
+    renderGrid.setRunTime( currentRunTime);
 
     if (drawHorizOn)
       drawH(immediate);

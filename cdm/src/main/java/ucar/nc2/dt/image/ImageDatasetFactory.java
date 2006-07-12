@@ -1,4 +1,4 @@
-// $Id: GridTable.java,v 1.1 2004/09/30 00:33:43 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ import ucar.ma2.Array;
 
 /**
  * @author caron
- * @version $Revision: 1.31 $ $Date: 2006/05/19 23:20:21 $
+ * @version $Revision$ $Date$
  */
 public class ImageDatasetFactory {
 
@@ -50,7 +50,7 @@ public class ImageDatasetFactory {
     this.grid = grid;
     this.time = 0;
     GridCoordSystem gcsys = grid.getGridCoordSystem();
-    if (gcsys.hasTimeAxis())
+    if (gcsys.getTimeAxis() != null)
       ntimes = (int) gcsys.getTimeAxis().getSize();
     Array data = grid.readDataSlice( this.time, 0, -1, -1);
     return ImageArrayAdapter.makeGrayscaleImage( data);

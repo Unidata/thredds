@@ -1,4 +1,4 @@
-// $Id: GisPart.java,v 1.2 2004/09/24 03:26:32 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package thredds.datamodel.gis;
  * An interface for simple GIS parts, (analogous to ESRI Shapefile parts).
  *
  * @author Russ Rew
- * @version $Revision: 1.2 $ $Date: 2004/09/24 03:26:32 $
+ * @version $Revision$ $Date$
  */
 
 public interface GisPart  {

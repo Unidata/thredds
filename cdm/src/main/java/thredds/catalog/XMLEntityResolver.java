@@ -1,4 +1,4 @@
-// $Id: XMLEntityResolver.java,v 1.12 2006/05/08 02:47:19 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import java.util.*;
  * The Crimson parser wont do schema validation.
  *
  * @author John Caron
- * @version $Id: XMLEntityResolver.java,v 1.12 2006/05/08 02:47:19 caron Exp $
+ * @version $Id$
  */
 
 /*

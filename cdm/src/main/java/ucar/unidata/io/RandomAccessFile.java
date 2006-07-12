@@ -1,4 +1,4 @@
-// $Id: RandomAccessFile.java,v 1.33 2006/03/25 00:20:13 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -57,7 +57,7 @@ import java.util.Collections;
  * @author Russ Rew
  * @author john caron
  *
- * @version $Id: RandomAccessFile.java,v 1.33 2006/03/25 00:20:13 caron Exp $
+ * @version $Id$
  * @see DataInput
  * @see DataOutput
  * @see java.io.RandomAccessFile

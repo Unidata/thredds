@@ -1,4 +1,4 @@
-// $Id: CoordinateAxis1D.java,v 1.19 2006/05/03 21:29:28 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,25 +22,27 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A 1-dimensional Coordinate Axis. Its values must be monotonic.
  *
- * If this is string valued, it will have rank 2, otherwise it will have rank 1.
+ * If this is char valued, it will have rank 2, otherwise it will have rank 1.
  * <p>
- * If string valued, only <i>getCoordName()</i> can be called.
+ * If string or char valued, only <i>getCoordName()</i> can be called.
  * <p>
  * If the coordinates are regularly spaced, <i>isRegular()</i> is true, and the values are equal to
  *   <i>getStart()</i> + i * <i>getIncrement()</i>.
  *
  * @see CoordinateAxis#factory
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
@@ -73,9 +75,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @throws InvalidRangeException
    */
   public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    CoordinateAxis1D vs = new CoordinateAxis1D( this);
     ArrayList section = new ArrayList();
     section.add(r);
+    return (CoordinateAxis1D) section(section);
+  }
+
+    // override to keep section a CoordinateAxis1D
+  public Variable section(List section) throws InvalidRangeException  {
+    Variable vs = new CoordinateAxis1D( this);
     makeSection( vs, section);
     return vs;
   }
@@ -387,8 +394,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
       for (int i=1; i< getSize(); i++)
         if (!closeEnough(getCoordValue(i) - getCoordValue(i-1), increment)) {
           isRegular = false;
-          //double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
-          //System.out.println(" diff= "+diff);
+          double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
+          // System.out.println(i+" diff= "+diff);
           break;
         }
     }
@@ -482,47 +489,51 @@ public class CoordinateAxis1D extends CoordinateAxis {
       midpoint[i] = (edge[i] + edge[i+1])/2;
   }
 
+  ////////////////////////////////////////////////////////////////////
+  protected ArrayList named;
+  private void makeNames() {
+    named = new ArrayList();
+    int n = (int) getSize();
+    for (int i = 0; i < n; i++)
+      named.add(new NamedAnything(getCoordName(i), getUnitsString()));
+  }
 
-  //////////////////////
-  /* nicely formatted string representation
-  public String getInfo() {
-    StringBuffer buf = new StringBuffer(200);
-    buf.append(getName());
-    Format.tab(buf, 15, true);
-    buf.append(getSize()+"");
-    Format.tab(buf, 20, true);
-    buf.append(getUnitString());
-    if (axisType != null) {
-      Format.tab(buf, 40, true);
-      buf.append(axisType.toString());
+  /**
+   * Get the list of names, to be used for user selection.
+   * The ith one refers to the ith coordinate.
+   *
+   * @return List of ucar.nc2.util.NamedObject, or empty list.
+   */
+  public List getNames() {
+    if (named == null) makeNames();
+    return named;
+  }
+
+  /**
+   * Get the index corresponding to the name.
+   * @param name
+   * @return index, or -1 if not found
+   */
+  public int getIndex(String name) {
+    if (named == null) makeNames();
+    for (int i = 0; i < named.size(); i++) {
+      NamedAnything level = (NamedAnything) named.get(i);
+      if (level.getName().trim().equals(name)) return i;
     }
-    Format.tab(buf, 47, true);
-    buf.append(getDescription());
+    return -1;
+  }
 
+  protected static class NamedAnything implements NamedObject {
+    private String name, desc;
 
-    /* if (isNumeric) {
-      boolean debugCoords = ucar.util.prefs.ui.Debug.isSet("Dataset/showCoordValues");
-      int ndigits = debugCoords ? 9 : 4;
-      for (int i=0; i< getNumElements(); i++) {
-        buf.append(Format.d(getCoordValue(i), ndigits));
-        buf.append(" ");
-      }
-      if (debugCoords) {
-        buf.append("\n      ");
-        for (int i=0; i<=getNumElements(); i++) {
-          buf.append(Format.d(getCoordEdge(i), ndigits));
-          buf.append(" ");
-        }
-      }
-    } else {
-      for (int i=0; i< getNumElements(); i++) {
-        buf.append(getCoordName(i));
-        buf.append(" ");
-      }
+    NamedAnything(String name, String desc) {
+      this.name = name;
+      this.desc = desc;
     }
 
-    //buf.append("\n");
-    return buf.toString();
-  } */
+    public String getName() { return name; }
+    public String getDescription() { return desc; }
+    public String toString() { return name; }
+  }
 
 }

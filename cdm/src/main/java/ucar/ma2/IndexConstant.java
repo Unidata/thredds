@@ -1,4 +1,4 @@
-// $Id: IndexConstant.java,v 1.4 2006/02/13 19:51:23 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.ma2;
  * constant Array of any shape.
  *  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
  // LOOK : need to override section, etc !!
 public class IndexConstant extends Index {

@@ -1,4 +1,4 @@
-// $Id: ForecastModelRunCollectionSave.java,v 1.1 2006/03/13 20:43:42 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  *
  * @author caron
- * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
+ * @version $Revision$ $Date$
  */
 public interface ForecastModelRunCollectionSave {
 

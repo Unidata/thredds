@@ -1,4 +1,4 @@
-// $Id: EarthLocation.java,v 1.5 2006/02/13 19:51:31 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.nc2.dt;
 /**
  * A location on the Earth.
  * @author caron
- * @version $Revision: 1.5 $ $Date: 2006/02/13 19:51:31 $
+ * @version $Revision$ $Date$
  */
 public interface EarthLocation {
   /** latitude in decimal degrees north */

@@ -1,4 +1,4 @@
-// $Id: DateType.java,v 1.14 2006/03/29 23:26:29 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -45,7 +45,7 @@ import java.text.SimpleDateFormat;
  * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateType"
  * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateTypeFormatted"
  * @author john caron
- * @version $Revision: 1.14 $ $Date: 2006/03/29 23:26:29 $
+ * @version $Revision$ $Date$
  */
 
 public class DateType {

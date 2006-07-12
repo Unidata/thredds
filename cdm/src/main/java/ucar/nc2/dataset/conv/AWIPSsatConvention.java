@@ -1,4 +1,4 @@
-// $Id: AWIPSsatConvention.java,v 1.9 2006/01/14 22:15:02 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import java.util.*;
  * AWIPS netcdf output.
  *
  * @author caron
- * @version $Revision: 1.9 $ $Date: 2006/01/14 22:15:02 $
+ * @version $Revision$ $Date$
  *
  * @see "http://www-md.fsl.noaa.gov/eft/AWIPS/16c/onlinehelp/ifpServerSatelliteNETCDF.html"
  * @see "http://www.nws.noaa.gov/mdl/awips/aifmdocs/sec_4_e.htm"

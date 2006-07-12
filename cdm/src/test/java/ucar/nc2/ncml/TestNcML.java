@@ -7,7 +7,7 @@ import junit.framework.*;
  *
  */
 public class TestNcML {
-  public static String topDir = "test/data/ncml/";
+  public static String topDir = "./src/test/data/ncml/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
@@ -33,7 +33,7 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestNcmlAggDirectory.class));  //
     suite.addTest(new TestSuite(TestNcmlAggDirDateFormat.class));  //
 
-    suite.addTest(new TestSuite(TestAggForecastModel.class));  //  */
+    // suite.addTest(new TestSuite(TestAggForecastModel.class));  //  */
 
         // test add coordinate systems
     // suite.addTest(new TestSuite(TestNcMLWriteReadwithCoords.class)); // write and read back NcML adding coord systems

@@ -1,5 +1,5 @@
 /*
- * $Id: TransverseMercator.java,v 1.24 2005/11/02 20:04:15 dmurray Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import ucar.unidata.util.SpecialMathFunction;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id: TransverseMercator.java,v 1.24 2005/11/02 20:04:15 dmurray Exp $
+ *   @version $Id$
  */
 
 

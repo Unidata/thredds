@@ -1,4 +1,4 @@
-// $Id: OffsetUnit.java,v 1.9 2005/08/22 17:05:52 steve Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.units;
  * the unit "degree Celsius" is offset from the reference unit "kelvin").
  * Instances of this class are immutable.
  * @author Steven R. Emmerson
- * @version $Id: OffsetUnit.java,v 1.9 2005/08/22 17:05:52 steve Exp $
+ * @version $Id$
  */
 public final class
 OffsetUnit

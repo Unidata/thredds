@@ -1,4 +1,4 @@
-// $Id: Index.java,v 1.9 2006/01/31 21:15:53 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @see Array
  * @author caron
- * @version $Revision: 1.9 $ $Date: 2006/01/31 21:15:53 $
+ * @version $Revision$ $Date$
  */
 
 public class Index implements Cloneable {

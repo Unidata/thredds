@@ -1,4 +1,4 @@
-// $Id: MetadataType.java,v 1.10 2006/02/13 19:52:21 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package thredds.catalog;
  * Type-safe enumeration of THREDDS Metadata types.
  *
  * @author john caron
- * @version $Revision: 1.10 $ $Date: 2006/02/13 19:52:21 $
+ * @version $Revision$ $Date$
  */
 
 public final class MetadataType {

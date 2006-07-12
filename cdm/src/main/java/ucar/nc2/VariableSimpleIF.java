@@ -1,4 +1,4 @@
-// $Id: VariableSimpleIF.java,v 1.4 2006/02/13 19:51:26 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.List;
  * A "Simple" Variable, that allows non-netcdf implementations of typed datasets.
  * @see ucar.nc2.dt.TypedDataset
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 public interface VariableSimpleIF {
   /** The full name of the data Variable */

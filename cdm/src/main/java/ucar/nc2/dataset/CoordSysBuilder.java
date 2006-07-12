@@ -1,4 +1,4 @@
-// $Id: CoordSysBuilder.java,v 1.49 2006/05/25 20:15:28 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -65,7 +65,7 @@ import java.util.*;
  *
  *
  * @author caron
- * @version $Revision: 1.49 $ $Date: 2006/05/25 20:15:28 $
+ * @version $Revision$ $Date$
  */
 
 /*
@@ -588,6 +588,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     for (int i = 0; i < varList.size(); i++) {
       VarProcess vp = (VarProcess) varList.get(i);
       VariableEnhanced ve = (VariableEnhanced) vp.v;
+      CoordinateSystem implicit = null;
 
       if ((ve.getCoordinateSystems().size() > 1) || !vp.isData()) continue;
 
@@ -596,6 +597,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         existing = (CoordinateSystem) ve.getCoordinateSystems().get(0);
         if (!existing.isImplicit()) continue; // cant overrrride explicit
         if (existing.getRankRange() >= ve.getRank()) continue; // looks ok
+        implicit = existing;
       }
 
       // look through all axes that fit
@@ -634,11 +636,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         String csName = CoordinateSystem.makeName(axisList);
         CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
         if (cs != null) {
+          if (null != implicit) ve.removeCoordinateSystem(implicit);
           ve.addCoordinateSystem(cs);
           parseInfo.append(" assigned maximal coord System " + cs.getName() + " for var= " + ve.getName() + "\n");
         } else {
           CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
           csnew.setImplicit( true);
+          if (null != implicit) ve.removeCoordinateSystem(implicit);
           ve.addCoordinateSystem(csnew);
           ncDataset.addCoordinateSystem(csnew);
           parseInfo.append(" created maximal coord System " + csnew.getName() + " for var= " + ve.getName() + "\n");

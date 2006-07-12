@@ -1,4 +1,4 @@
-// $Id: N3header.java,v 1.24 2006/03/09 22:18:46 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.io.PrintStream;
  * This is used by N3iosp.
  *
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 
 class N3header {

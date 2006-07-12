@@ -1,4 +1,4 @@
-// $Id: DerivedUnitImpl.java,v 1.6 2003/11/03 16:14:57 steve Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.Vector;
 /**
  * Provides support for a concrete implementation of derived units.
  * @author Steven R. Emmerson
- * @version $Id: DerivedUnitImpl.java,v 1.6 2003/11/03 16:14:57 steve Exp $
+ * @version $Id$
  */
 public class
 DerivedUnitImpl

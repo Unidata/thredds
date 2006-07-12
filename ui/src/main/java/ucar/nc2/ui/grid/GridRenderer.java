@@ -22,7 +22,6 @@ package ucar.nc2.ui.grid;
 
 import ucar.ma2.*;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.*;
@@ -68,7 +67,9 @@ public class GridRenderer {
   private Array dataH, dataV;
   //private Index imaH, imaV;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
+  private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1;   // last data read
+  private int lastRunTime = -1, lastEnsemble = -1;   // last data read
   private GridDatatype lastGrid = null;
 
     // drawing optimization
@@ -158,6 +159,16 @@ public class GridRenderer {
   public int getTime() {return wantTime; }
     /* set what time slice to draw */
   public void setTime(int time) {wantTime = time; }
+
+  /* get what runtime slice to draw */
+  public int getRunTime() {return wantRunTime; }
+    /* set what runtime slice to draw */
+  public void setRunTime(int runtime) {wantRunTime = runtime; }
+    /* get what ensemble slice to draw */
+  public int getEnsemble() {return wantEnsemble; }
+    /* set what ensemble slice to draw */
+  public void setEnsemble(int ensemble) {wantEnsemble = ensemble; }
+
     /* get what y-z slice to draw */
   public int getSlice() { return wantSlice; }
     /* set what y-z slice to draw */
@@ -217,7 +228,7 @@ public class GridRenderer {
     CoordinateAxis xaxis = geocs.getXHorizAxis();
      if (xaxis == null || !(xaxis instanceof CoordinateAxis1D))
       return -1;
-    int[] index = geocs.findXYCoordElement( pp.getX(),  pp.getY(), null);
+    int[] index = geocs.findXYindexFromCoord( pp.getX(),  pp.getY(), null);
     return index[0];
   }
 
@@ -237,7 +248,7 @@ public class GridRenderer {
 
      // find the grid indexes
     GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
-    valueIndex = geocs.findXYCoordElement( loc.getX(), loc.getY(), valueIndex);
+    valueIndex = geocs.findXYindexFromCoord( loc.getX(), loc.getY(), valueIndex);
     int wantx = valueIndex[0];
     int wanty = valueIndex[1];
 
@@ -295,7 +306,7 @@ public class GridRenderer {
     if (zaxis == null)
       return "";
 
-    valueIndex = geocs.findXYCoordElement( loc.getX(), lastSlice, valueIndex);
+    valueIndex = geocs.findXYindexFromCoord( loc.getX(), lastSlice, valueIndex);
 
     int wanty = valueIndex[1];
     int wantz = zaxis.findCoordElement( loc.getY());
@@ -391,7 +402,7 @@ public class GridRenderer {
     dataVolumeChanged = true;
   } */
 
-  private Array makeHSlice( GridDatatype useG, int level, int time) {
+  private Array makeHSlice( GridDatatype useG, int level, int time, int ensemble, int runtime) {
 
     // make sure x, y exists
     GridCoordSystem gcs = useG.getGridCoordSystem();
@@ -403,12 +414,13 @@ public class GridRenderer {
       return null;
 
     // make sure we need new one
-    if (useG.equals(lastGrid) && (time == lastTime) && (level == lastLevel) && (horizStride == lastStride))
+    if (useG.equals(lastGrid) && (time == lastTime) && (level == lastLevel) && (horizStride == lastStride)
+            && (ensemble == lastEnsemble) && (runtime == lastRunTime))
       return dataH; // nothing changed
 
     // get the data slice
     try {
-      dataH = useG.readDataSlice(time, level, -1, -1);
+      dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
       // imaH = dataH.getIndex();
     } catch (java.io.IOException e) {
       System.out.println("GridRender.makeHSlice Error reading netcdf file= "+e);
@@ -418,6 +430,8 @@ public class GridRenderer {
     lastGrid = useG;
     lastTime = time;
     lastLevel = level;
+    lastEnsemble = ensemble;
+    lastRunTime = runtime;
     lastStride = horizStride;
 
     /*
@@ -437,7 +451,7 @@ public class GridRenderer {
     return dataH;
   }
 
-  private Array makeVSlice( GridDatatype g, int vSlice, int time) {
+  private Array makeVSlice( GridDatatype g, int vSlice, int time, int ensemble, int runtime) {
     // make sure we have x, z
     GridCoordSystem gcs = g.getGridCoordSystem();
     CoordinateAxis xaxis = gcs.getXHorizAxis();
@@ -449,13 +463,13 @@ public class GridRenderer {
 
 
     // make sure we need it
-    if (g.equals(lastGrid) && (time == lastTime) && (vSlice == lastSlice))
+    if (g.equals(lastGrid) && (time == lastTime) && (vSlice == lastSlice)
+            && (ensemble == lastEnsemble) && (runtime == lastRunTime))
       return dataV; // nothing changed
 
     // get the slice
     try {
-      dataV = g.readDataSlice(time, -1, -1, vSlice);
-      // imaV = dataV.getIndex();
+      dataV = g.readDataSlice(runtime, ensemble, time, -1, -1, vSlice);
     } catch (java.io.IOException e) {
       System.out.println("GridRender.makeHSlice Error reading netcdf file= "+e);
       return null;
@@ -464,15 +478,14 @@ public class GridRenderer {
     lastGrid = g;
     lastTime = time;
     lastSlice = vSlice;
+    lastEnsemble = ensemble;
+    lastRunTime = runtime;
 
     if (debugArrayShape) {
       System.out.println("Vert shape = ");
       for (int i=0; i<dataV.getRank(); i++)
         System.out.println("   shape = "+dataV.getShape()[i]);
     }
-
-    // imaV = dataV.getIndex();
-    lastSlice = vSlice;
 
     return dataV;
   }
@@ -499,9 +512,9 @@ public class GridRenderer {
 
     Array dataArr;
     if ( dataMinMaxType == HORIZ_MinMaxType)
-      dataArr = makeHSlice( stridedGrid, wantLevel, wantTime);
+      dataArr = makeHSlice( stridedGrid, wantLevel, wantTime, wantEnsemble, wantRunTime);
     else
-      dataArr = makeVSlice( stridedGrid, wantSlice, wantTime); // LOOK what about Volume?
+      dataArr = makeVSlice( stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
 
     if (dataArr != null) {
       MAMath.MinMax minmax = stridedGrid.hasMissingData() ?
@@ -525,7 +538,7 @@ public class GridRenderer {
     if (!drawGrid && !drawContours)
       return;
 
-    dataV = makeVSlice( stridedGrid, wantSlice, wantTime);
+    dataV = makeVSlice( stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
     if (dataV == null)
       return;
 
@@ -608,7 +621,7 @@ public class GridRenderer {
     // no anitaliasing
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-    dataH = makeHSlice( stridedGrid, wantLevel, wantTime);
+    dataH = makeHSlice( stridedGrid, wantLevel, wantTime, wantEnsemble, wantRunTime);
     if (dataH == null)
       return;
 

@@ -1,4 +1,4 @@
-// $Id: VariableEnhanced.java,v 1.2 2005/05/23 20:18:35 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import ucar.nc2.VariableSimpleIF;
 /**
  * Public interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package.
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  */
 
 public interface VariableEnhanced extends VariableSimpleIF, VariableIF, Enhancements, EnhanceScaleMissing {

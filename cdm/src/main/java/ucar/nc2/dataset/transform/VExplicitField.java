@@ -1,4 +1,4 @@
-// $Id: VExplicitField.java,v 1.1 2006/05/24 00:12:58 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ import ucar.unidata.util.Parameter;
  * Create a Vertical Transform from an "explicit_field", where the vertical coordinate is explciitly specified as a variable.
  *  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class VExplicitField extends AbstractCoordTransBuilder {
   public String getTransformName() {

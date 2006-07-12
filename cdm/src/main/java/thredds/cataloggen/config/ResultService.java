@@ -1,4 +1,4 @@
-// $Id: ResultService.java,v 1.8 2005/05/31 16:12:10 caron Exp $
+// $Id$
 
 package thredds.cataloggen.config;
 

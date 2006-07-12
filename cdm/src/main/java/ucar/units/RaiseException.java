@@ -1,4 +1,4 @@
-// $Id: RaiseException.java,v 1.5 2000/08/18 04:17:31 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.units;
  * Provides support for failure to raise a unit to a power.
  *
  * @author Steven R. Emmerson
- * @version $Id: RaiseException.java,v 1.5 2000/08/18 04:17:31 russ Exp $
+ * @version $Id$
  */
 public final class
 RaiseException

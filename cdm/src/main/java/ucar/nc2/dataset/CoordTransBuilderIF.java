@@ -1,4 +1,4 @@
-// $Id: CoordTransBuilderIF.java,v 1.1 2006/05/24 00:12:59 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ import ucar.nc2.Dimension;
  * Must be able to know how to build one from the info in a Coordinate Transform Variable.
  *
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  */
 public interface CoordTransBuilderIF {
 

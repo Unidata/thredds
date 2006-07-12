@@ -9,9 +9,9 @@ import java.util.*;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision: 1.2 $ $Date: 2005/04/26 16:30:12 $
+ * @version $Revision$ $Date$
  */
-/* $Id: DoradeRADD.java,v 1.2 2005/04/26 16:30:12 yuanho Exp $ */
+/* $Id$ */
 
 class DoradeRADD extends DoradeDescriptor {
 

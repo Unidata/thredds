@@ -1,4 +1,4 @@
-// $Id: HTTPRandomAccessFile3.java,v 1.6 2005/10/11 19:39:51 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

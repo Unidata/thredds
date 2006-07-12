@@ -1,5 +1,5 @@
 /*
- * $Id: LatLonPoint.java,v 1.14 2005/05/13 18:29:08 jeffmc Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ package ucar.unidata.geoloc;
  * Latitude is always between -90 and +90 deg.
  *
  * @author John Caron
- * @version $Id: LatLonPoint.java,v 1.14 2005/05/13 18:29:08 jeffmc Exp $
+ * @version $Id$
  */
 public interface LatLonPoint {
 

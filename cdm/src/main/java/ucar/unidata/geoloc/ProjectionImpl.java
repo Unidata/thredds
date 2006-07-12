@@ -1,5 +1,5 @@
 /*
- * $Id: ProjectionImpl.java,v 1.38 2005/11/02 20:04:13 dmurray Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -59,7 +59,7 @@ import java.util.*;
  *
  * @see Projection
  * @author John Caron
- * @version $Revision: 1.38 $
+ * @version $Revision$
  */
 public abstract class ProjectionImpl
         implements Projection, Cloneable, java.io.Serializable {

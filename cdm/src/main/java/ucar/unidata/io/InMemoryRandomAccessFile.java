@@ -1,4 +1,4 @@
-// $Id: InMemoryRandomAccessFile.java,v 1.5 2005/08/09 23:35:33 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

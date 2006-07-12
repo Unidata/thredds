@@ -1,4 +1,4 @@
-// $Id: SimpleUnit.java,v 1.9 2006/02/16 23:02:39 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import ucar.units.*;
  *
  *
  * @author caron
- * @version $Revision: 1.9 $ $Date: 2006/02/16 23:02:39 $
+ * @version $Revision$ $Date$
  */
 
 public class SimpleUnit {

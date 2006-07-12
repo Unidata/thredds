@@ -1,4 +1,4 @@
-// $Id: ArrayStructureW.java,v 1.11 2006/02/13 19:51:23 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ package ucar.ma2;
  *  of Structures due to excessive object creation.
  *
  * @author caron
- * @version $Revision: 1.11 $ $Date: 2006/02/13 19:51:23 $
+ * @version $Revision$ $Date$
  * @see Array
  */
 public class ArrayStructureW extends ArrayStructure {

@@ -1,5 +1,5 @@
 /*
- * $Id: ProjectionRect.java,v 1.14 2006/04/07 21:14:20 jeffmc Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.io.*;
  *   "upper left point" of the rectangle.
  *
  * @author John Caron
- * @version $Id: ProjectionRect.java,v 1.14 2006/04/07 21:14:20 jeffmc Exp $
+ * @version $Id$
  */
 public class ProjectionRect extends java.awt.geom.Rectangle2D.Double
         implements java.io.Serializable {

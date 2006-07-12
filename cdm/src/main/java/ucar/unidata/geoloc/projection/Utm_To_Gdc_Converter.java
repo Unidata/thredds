@@ -63,7 +63,7 @@ import ucar.unidata.geoloc.EarthEllipsoid;
  *
  * timing: inverse(f(x)) takes 2 - 3 microseconds.
  *
- * @version $Id: Utm_To_Gdc_Converter.java,v 1.4 2006/01/14 22:15:59 caron Exp $
+ * @version $Id$
  */
 
 class Utm_To_Gdc_Converter {

@@ -1,4 +1,4 @@
-// $Id: ProjectionCT.java,v 1.3 2004/09/22 21:26:42 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import java.util.*;
  * A Projection CoordinateTransform is a function from (GeoX, GeoY) -> (Lat, Lon).
  *
  * @author caron
- * @version $Revision: 1.3 $ $Date: 2004/09/22 21:26:42 $
+ * @version $Revision$ $Date$
  */
 
 public class ProjectionCT extends CoordinateTransform {

@@ -4,7 +4,7 @@ import java.util.Date;
 
 /** A collection of observations at one time and location.
  * @author caron
- * @version $Revision: 1.7 $ $Date: 2005/05/11 22:16:04 $
+ * @version $Revision$ $Date$
  */
 public interface PointObsDatatype  {
 

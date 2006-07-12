@@ -33,6 +33,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -247,7 +248,7 @@ public class TestIDVdatasets {
         }
 
         // time
-        CoordinateAxis1D taxis = gcs.getTimeAxis();
+        CoordinateAxis1DTime taxis = gcs.getTimeAxis();
         DateRange dateRange2 = gcs.getDateRange();
         if (dateRange2 == null) {
           out.println("  NO DateRange");
@@ -257,8 +258,9 @@ public class TestIDVdatasets {
             long ntimes = taxis.getSize();
             try {
               TimeUnit tUnit = null;
-              if (taxis.isRegular())
-                tUnit = gcs.getTimeResolution();
+              if (taxis.isRegular()) {
+                tUnit = taxis.getTimeResolution();
+              }
               dateRange = new DateRange(dateRange2, "1 hour");
               out.println("   DateRange == " + "start= "+dateRange.getStart() +" end= "+dateRange.getEnd()+
                   " duration= "+ dateRange.getDuration()+" ntimes = "+ntimes+" data resolution = "+tUnit);
@@ -277,7 +279,7 @@ public class TestIDVdatasets {
           if (vt != null)
             out.print(" transform= "+vt.getVerticalTransformType());
 
-          List vertNames = gcs.getLevels();
+          List vertNames = vaxis.getNames();
           for (int i = 0; i < vertNames.size(); i++) {
             out.print(" "+vertNames.get(i));
           }

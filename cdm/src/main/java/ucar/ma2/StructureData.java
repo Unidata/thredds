@@ -1,4 +1,4 @@
-// $Id: StructureData.java,v 1.7 2006/02/13 21:01:48 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.List;
  * This is the abstract supertype for all implementations.
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 
 abstract public class StructureData {

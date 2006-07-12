@@ -13,7 +13,7 @@ import java.util.List;
  * increase monotonically along the trajectory).
  *
  * @author caron
- * @version $Revision: 1.12 $ $Date: 2006/05/08 02:47:33 $
+ * @version $Revision$ $Date$
  */
 public interface TrajectoryObsDatatype {
 

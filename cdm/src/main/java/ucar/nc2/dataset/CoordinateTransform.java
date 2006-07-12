@@ -1,4 +1,4 @@
-// $Id: CoordinateTransform.java,v 1.4 2006/05/25 20:15:29 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import ucar.unidata.util.Parameter;
  * "reference" CoordinateSystem, such as lat, lon.
  *
  * @author caron
- * @version $Revision: 1.4 $ $Date: 2006/05/25 20:15:29 $
+ * @version $Revision$ $Date$
  */
 
 public class CoordinateTransform {

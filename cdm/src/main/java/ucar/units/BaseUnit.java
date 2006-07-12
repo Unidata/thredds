@@ -1,4 +1,4 @@
-// $Id: BaseUnit.java,v 1.5 2000/08/18 04:17:26 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ import java.util.TreeMap;
 /**
  * Provides support for base units.
  * @author Steven R. Emmerson
- * @version $Id: BaseUnit.java,v 1.5 2000/08/18 04:17:26 russ Exp $
+ * @version $Id$
  */
 public class
 BaseUnit

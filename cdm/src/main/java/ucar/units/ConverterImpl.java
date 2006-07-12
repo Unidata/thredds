@@ -1,4 +1,4 @@
-// $Id: ConverterImpl.java,v 1.5 2000/08/18 04:17:26 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ package ucar.units;
  * interface <code>Converter</code>.
  * 
  * @author Steven R. Emmerson
- * @version $Id: ConverterImpl.java,v 1.5 2000/08/18 04:17:26 russ Exp $
+ * @version $Id$
  */
 public abstract class
 ConverterImpl

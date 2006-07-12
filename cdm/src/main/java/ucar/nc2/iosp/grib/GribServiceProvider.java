@@ -19,7 +19,7 @@ import java.net.URL;
  * Superclass for grib1 and grib2 iosp.
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public abstract class GribServiceProvider implements IOServiceProvider {
   protected NetcdfFile ncfile;

@@ -53,7 +53,7 @@ import dods.dap.Server.InvalidParameterException;
  *
  * NB: DODS uses zero-based indexing.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see DGrid
  * @see DVector

@@ -1,4 +1,4 @@
-// $Id: VerticalCT.java,v 1.7 2006/05/24 00:12:59 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import ucar.nc2.Dimension;
  * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform;
  *
  * @author caron
- * @version $Revision: 1.7 $ $Date: 2006/05/24 00:12:59 $
+ * @version $Revision$ $Date$
  */
 
 public class VerticalCT extends CoordinateTransform {

@@ -1,4 +1,4 @@
-// $Id: NetcdfDatasetFactory.java,v 1.4 2006/02/13 19:51:29 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.nc2.dataset;
 /**
  * Used by NetcdfDatasetCache
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  */
 public interface NetcdfDatasetFactory {
 

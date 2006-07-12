@@ -41,7 +41,7 @@ import ucar.unidata.util.Parameter;
  * (WRF) model's vertical Eta coordinate
  *
  * @author IDV Development Team
- * @version $Revision: 1.17 $
+ * @version $Revision$
  */
 public class WRFEta extends VerticalTransformImpl {
 

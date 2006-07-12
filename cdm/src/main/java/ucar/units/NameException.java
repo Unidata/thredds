@@ -1,4 +1,4 @@
-// $Id: NameException.java,v 1.5 2000/08/18 04:17:28 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.units;
 /**
  * Provides support for bad unit names.
  * @author Steven R. Emmerson
- * @version $Id: NameException.java,v 1.5 2000/08/18 04:17:28 russ Exp $
+ * @version $Id$
  */
 public final class
 NameException

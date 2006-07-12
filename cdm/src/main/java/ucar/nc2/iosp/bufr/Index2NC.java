@@ -1,4 +1,4 @@
-// $Id: Index2NC.java,v 1.5 2006/06/15 22:31:54 rkambic Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

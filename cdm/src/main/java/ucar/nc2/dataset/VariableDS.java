@@ -1,4 +1,4 @@
-// $Id: VariableDS.java,v 1.27 2006/03/25 00:20:11 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * An "enhanced" Variable.
  * @author John Caron
- * @version $Revision: 1.27 $ $Date: 2006/03/25 00:20:11 $
+ * @version $Revision$ $Date$
  */
 
 public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
@@ -104,6 +104,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
     proxy.addCoordinateSystem( p0);
+  }
+
+  public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
+    proxy.removeCoordinateSystem( p0);
   }
 
   public java.util.List getCoordinateSystems() {

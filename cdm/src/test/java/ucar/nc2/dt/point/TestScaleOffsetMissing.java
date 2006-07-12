@@ -37,7 +37,7 @@ public class TestScaleOffsetMissing extends TestCase {
   }
 
   public void testNetcdfFile() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfFile.open("C:/dev/netcdf-java-2.2/test/data/testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.reletiveDir+"testScaleRecord.nc");
     Variable v = ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.SHORT;
@@ -86,7 +86,7 @@ public class TestScaleOffsetMissing extends TestCase {
   }
 
   public void testNetcdfDataset() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset("C:/dev/netcdf-java-2.2/test/data/testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.reletiveDir+"testScaleRecord.nc");
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.FLOAT;
@@ -125,7 +125,7 @@ public class TestScaleOffsetMissing extends TestCase {
   }
 
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset("C:/dev/netcdf-java-2.2/test/data/testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.reletiveDir+"testScaleRecord.nc");
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.FLOAT;

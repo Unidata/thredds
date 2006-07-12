@@ -1,4 +1,4 @@
-// $Id: InvCatalogImpl.java,v 1.31 2006/06/08 23:08:41 edavis Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import javax.swing.event.EventListenerList;
  * @see InvCatalog
  *
  * @author john caron
- * @version $Revision: 1.31 $ $Date: 2006/06/08 23:08:41 $
+ * @version $Revision$ $Date$
  */
 
 public class InvCatalogImpl extends InvCatalog {

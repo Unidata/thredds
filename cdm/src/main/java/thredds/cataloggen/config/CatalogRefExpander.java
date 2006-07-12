@@ -1,4 +1,4 @@
-// $Id: CatalogRefExpander.java,v 1.3 2006/01/20 02:08:22 caron Exp $
+// $Id$
 package thredds.cataloggen.config;
 import thredds.catalog.InvDataset;
 

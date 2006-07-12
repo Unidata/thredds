@@ -1,5 +1,5 @@
 /*
- * $Id: Projection.java,v 1.19 2005/05/26 01:58:28 caron Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ package ucar.unidata.geoloc;
  *  to represent the coordinates on the projective plane.
  *
  * @author John Caron
- * @version $Id: Projection.java,v 1.19 2005/05/26 01:58:28 caron Exp $
+ * @version $Id$
  */
 
 public interface Projection {

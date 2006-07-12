@@ -1,4 +1,4 @@
-// $Id: NUWGConvention.java,v 1.21 2005/12/10 00:34:10 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import java.util.*;
  * see http://www.unidata.ucar.edu/packages/netcdf/NUWG/
  *
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2005/12/10 00:34:10 $
+ * @version $Revision$ $Date$
  */
 
 public class NUWGConvention extends CoordSysBuilder {

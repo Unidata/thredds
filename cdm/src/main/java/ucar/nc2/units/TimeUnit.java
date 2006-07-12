@@ -1,4 +1,4 @@
-// $Id: TimeUnit.java,v 1.16 2006/02/13 19:51:36 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import java.util.Calendar;
  * The underlying ucar.units.Unit always has a value of "1.0", ie is a base unit.
  *
  * @author John Caron
- * @version $Revision: 1.16 $ $Date: 2006/02/13 19:51:36 $
+ * @version $Revision$ $Date$
  */
 public class TimeUnit extends SimpleUnit {
   private double value;

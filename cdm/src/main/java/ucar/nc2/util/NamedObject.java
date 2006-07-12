@@ -1,4 +1,4 @@
-// $Id: NamedObject.java,v 1.3 2005/02/18 01:14:58 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.nc2.util;
 /**
  * An object that has a name and a description.
  * @author caron
- * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
+ * @version $Revision$ $Date$
  */
 
 public interface NamedObject {

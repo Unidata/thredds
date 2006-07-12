@@ -1,5 +1,5 @@
 /*
- * $Id: Bearing.java,v 1.23 2006/03/01 19:43:00 dmurray Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.lang.Math;
  * two lat-lon positions on the Earth's surface. Reference ellipsoid is the WGS-84.
  *
  * @author Unidata Development Team
- * @version $Id: Bearing.java,v 1.23 2006/03/01 19:43:00 dmurray Exp $
+ * @version $Id$
  */
 public class Bearing {
 

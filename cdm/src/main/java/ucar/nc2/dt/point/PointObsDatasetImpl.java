@@ -1,4 +1,4 @@
-// $Id: PointObsDatasetImpl.java,v 1.6 2006/01/13 22:55:43 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.io.IOException;
  *
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 
 abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements PointObsDataset {

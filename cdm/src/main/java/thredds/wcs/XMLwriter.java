@@ -1,4 +1,4 @@
-// $Id: XMLwriter.java,v 1.7 2006/04/20 22:13:16 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@
 package thredds.wcs;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -222,14 +222,13 @@ public class XMLwriter {
     domainElem.addContent( makeSpatialDomain( grid));
 
     GridCoordSystem gcs = grid.getGridCoordSystem();
-    if (gcs.isDate()) {
-      java.util.Date[] dates = gcs.getTimeDates();
-      int n = dates.length;
-      if (useTimeRange)
-        domainElem.addContent( makeTemporalDomainRange( dates[0], dates[n-1]));
-      else
-        domainElem.addContent( makeTemporalDomain( dates));
-    }
+    CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+    java.util.Date[] dates = taxis.getTimeDates();
+    int n = dates.length;
+    if (useTimeRange)
+      domainElem.addContent( makeTemporalDomainRange( dates[0], dates[n-1]));
+    else
+      domainElem.addContent( makeTemporalDomain( dates));
     return domainElem;
   }
 
@@ -252,7 +251,7 @@ public class XMLwriter {
     addElement(RangeElem, "label", "RangeSetLabel");
 
     GridCoordSystem gcs = grid.getGridCoordSystem();
-    CoordinateAxis zaxis = gcs.getVerticalAxis();
+    CoordinateAxis1D zaxis = gcs.getVerticalAxis();
     if (zaxis != null) {
       Element axisElem = addElement(RangeElem, "axisDescription", null);
       Element AxisElem = addElement(axisElem, "AxisDescription", null);
@@ -261,7 +260,7 @@ public class XMLwriter {
 
       Element valueElem = addElement(AxisElem, "values", null);
       for (int z=0; z<zaxis.getSize(); z++)
-        addElement(valueElem, "singleValue", gcs.getLevelName(z).trim());
+        addElement(valueElem, "singleValue", zaxis.getCoordName(z).trim());
     }
 
     if (grid.hasMissingData()) {

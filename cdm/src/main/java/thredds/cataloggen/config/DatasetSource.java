@@ -1,4 +1,4 @@
-// $Id: DatasetSource.java,v 1.31 2006/01/20 02:08:23 caron Exp $
+// $Id$
 
 package thredds.cataloggen.config;
 
@@ -34,7 +34,7 @@ import java.util.List;
  * </p>
  *
  * @author Ethan Davis
- * @version $Id: DatasetSource.java,v 1.31 2006/01/20 02:08:23 caron Exp $
+ * @version $Id$
  */
 abstract public class DatasetSource
 {

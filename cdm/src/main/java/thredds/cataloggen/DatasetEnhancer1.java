@@ -1,4 +1,4 @@
-// $Id: DatasetEnhancer1.java,v 1.5 2006/03/01 22:55:07 edavis Exp $
+// $Id$
 package thredds.cataloggen;
 
 import thredds.catalog.InvCatalogRef;

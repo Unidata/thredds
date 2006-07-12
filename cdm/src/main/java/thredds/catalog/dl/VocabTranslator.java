@@ -1,4 +1,4 @@
-// $Id: VocabTranslator.java,v 1.2 2005/07/11 20:06:16 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

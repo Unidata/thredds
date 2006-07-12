@@ -1,4 +1,4 @@
-// $Id: ArrayBoolean.java,v 1.5 2005/05/11 00:09:53 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ package ucar.ma2;
  *
  * @see Array
  * @author caron
- * @version $Revision: 1.5 $ $Date: 2005/05/11 00:09:53 $
+ * @version $Revision$ $Date$
  */
 public class ArrayBoolean extends Array {
 

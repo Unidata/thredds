@@ -1,4 +1,4 @@
-// $Id: DqcConvert2.java,v 1.8 2006/01/17 01:46:51 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.util.*;
  * Reads DQC.xml files, constructs object representation.
  *
  * @author John Caron
- * @version $Id: DqcConvert2.java,v 1.8 2006/01/17 01:46:51 caron Exp $
+ * @version $Id$
  */
 
 public class DqcConvert2 implements DqcConvertIF {

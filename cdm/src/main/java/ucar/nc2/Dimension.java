@@ -1,4 +1,4 @@
-// $Id: Dimension.java,v 1.21 2006/05/08 02:47:36 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.util.List;
  * Unlimited Dimension can grow.
  *
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 
 public class Dimension {

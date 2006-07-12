@@ -1,5 +1,5 @@
 /*
- * $Id: UtmProjection.java,v 1.5 2005/08/11 22:42:12 dmurray Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import ucar.unidata.geoloc.*;
  * The central meridian = (zone * 6 - 183) degrees, where zone in [1,60].
  *
  * @author John Caron
- * @version $Id: UtmProjection.java,v 1.5 2005/08/11 22:42:12 dmurray Exp $
+ * @version $Id$
  */
 
 

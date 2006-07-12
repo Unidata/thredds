@@ -29,7 +29,7 @@ import java.util.Vector;
  * be created as an alias pointing to another <code>Attribute</code> of any
  * type, including container.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see AttributeTable
  */

@@ -27,7 +27,6 @@ import ucar.ma2.Range;
 import ucar.ma2.MAMath;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -64,19 +63,21 @@ public interface GridDatatype {
   public int getTimeDimensionIndex();
 
   public GridCoordSystem getGridCoordSystem();
-  public List getLevels();
+  //public List getLevels();
   public ProjectionImpl getProjection();
-  public List getTimes();
+  //public List getTimes();
 
   public boolean hasMissingData();
-  public boolean isMissingData(double p0);
-  public MAMath.MinMax getMinMaxSkipMissingData(Array p0);
-  public float[] setMissingToNaN(float[] p0);
+  public boolean isMissingData(double vl);
+  public MAMath.MinMax getMinMaxSkipMissingData(Array data);
+  public float[] setMissingToNaN(float[] data);
 
   /**
    * This reads an arbitrary data slice, returning the data in
    * canonical order (t-z-y-x). If any dimension does not exist, ignore it.
    *
+   * @param rt_index if < 0, get all of runtime dim; if valid index, fix slice to that value.
+   * @param e_index if < 0, get all of ensemble dim; if valid index, fix slice to that value.
    * @param t_index if < 0, get all of time dim; if valid index, fix slice to that value.
    * @param z_index if < 0, get all of z dim; if valid index, fix slice to that value.
    * @param y_index if < 0, get all of y dim; if valid index, fix slice to that value.
@@ -84,8 +85,10 @@ public interface GridDatatype {
    *
    * @return data[t,z,y,x], eliminating missing or fixed dimension.
    */
+  public Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
+
   public Array readDataSlice(int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
-  public Array readVolumeData(int p0) throws java.io.IOException;
+  public Array readVolumeData(int t_index) throws java.io.IOException;
   /* public Array readYXData(int p0, int p1) throws java.io.IOException;
   public Array readZYData(int p0, int p1) throws java.io.IOException; */
 

@@ -1,4 +1,4 @@
-// $Id: NetcdfDataset.java,v 1.63 2006/06/05 22:17:36 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -43,7 +43,7 @@ import java.util.*;
  * A NetcdfDataset either wraps a NetcdfFile, or is defined by an NcML document.
  *
  * @author caron
- * @version $Revision: 1.63 $ $Date: 2006/06/05 22:17:36 $
+ * @version $Revision$ $Date$
  * @see ucar.nc2.NetcdfFile
  */
 

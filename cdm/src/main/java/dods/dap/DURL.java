@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 /**
  * Holds a DODS <code>URL</code> value.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see BaseType
  */

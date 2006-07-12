@@ -1,4 +1,4 @@
-// $Id: NetcdfFileWriteable.java,v 1.15 2006/01/11 16:15:47 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import java.io.IOException;
  *
  * @see NetcdfFile
  * @author caron
- * @version $Revision: 1.15 $ $Date: 2006/01/11 16:15:47 $
+ * @version $Revision$ $Date$
  */
 
 public class NetcdfFileWriteable extends NetcdfFile {

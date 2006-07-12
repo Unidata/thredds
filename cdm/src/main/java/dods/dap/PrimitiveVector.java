@@ -23,7 +23,7 @@ import java.io.*;
  * <code>BaseTypePrimitiveVector</code> class handles <code>DArray</code>s
  * and <code>DList</code>s of compound types.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see BaseType
  * @see DVector

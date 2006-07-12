@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialMathFunction.java,v 1.10 2006/05/05 19:19:37 jeffmc Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -71,7 +71,7 @@ import java.lang.Math;
  * or most accurate algorithms.
  *
  * @author Leigh Brookshaw
- * @version $Id: SpecialMathFunction.java,v 1.10 2006/05/05 19:19:37 jeffmc Exp $
+ * @version $Id$
  */
 
 

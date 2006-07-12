@@ -1,4 +1,4 @@
-// $Id: StructureDS.java,v 1.12 2005/11/17 00:48:18 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.io.IOException;
 /**
  * An "enhanced" Structure.
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  */
 
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
@@ -108,6 +108,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   // VariableEnhanced implementation
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
     proxy.addCoordinateSystem( p0);
+  }
+
+  public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
+    proxy.removeCoordinateSystem( p0);
   }
 
   public java.util.List getCoordinateSystems() {

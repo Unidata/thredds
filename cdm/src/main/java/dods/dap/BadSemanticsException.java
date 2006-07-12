@@ -16,7 +16,7 @@ package dods.dap;
  * method is called and the variable is not valid (the name is null or some
  * other semantic violation).
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see BaseType
  */

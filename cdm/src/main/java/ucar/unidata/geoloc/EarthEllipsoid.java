@@ -1,4 +1,4 @@
-// $Id: EarthEllipsoid.java,v 1.4 2005/08/11 22:42:11 dmurray Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * Type-safe enumeration of Earth Ellipsoids. Follows EPSG.
  *
  * @author john caron
- * @version $Revision: 1.4 $ $Date: 2005/08/11 22:42:11 $
+ * @version $Revision$ $Date$
  *
  * @see "http://www.epsg.org/"
  */

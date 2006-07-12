@@ -1,4 +1,4 @@
-// $Id: PrefixExistsException.java,v 1.5 2000/08/18 04:17:30 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.units;
  * Provides support for prefix database failures.
  *
  * @author Steven R. Emmerson
- * @version $Id: PrefixExistsException.java,v 1.5 2000/08/18 04:17:30 russ Exp $
+ * @version $Id$
  */
 public class
 PrefixExistsException

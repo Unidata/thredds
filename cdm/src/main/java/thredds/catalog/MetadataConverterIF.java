@@ -1,4 +1,4 @@
-// $Id: MetadataConverterIF.java,v 1.5 2006/01/04 00:16:34 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ package thredds.catalog;
  * @see InvCatalogConvertIF
  * @see InvCatalogFactory
  * @author John Caron
- * @version $Id: MetadataConverterIF.java,v 1.5 2006/01/04 00:16:34 caron Exp $
+ * @version $Id$
  */
 
 public interface MetadataConverterIF {

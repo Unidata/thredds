@@ -18,7 +18,7 @@ import java.io.IOException;
    </pre>
  *
  * @author caron
- * @version $Revision: 1.4 $ $Date: 2006/02/09 22:57:12 $
+ * @version $Revision$ $Date$
  */
 public interface TrajectoryObsDataset extends ucar.nc2.dt.TypedDataset {
 

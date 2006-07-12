@@ -1,5 +1,5 @@
 /*
- * $Id: LatLonPointImpl.java,v 1.22 2006/01/25 18:05:17 jeffmc Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import ucar.unidata.util.Format;
  * @see LatLonPoint
  * @author Russ Rew
  * @author John Caron
- * @version $Id: LatLonPointImpl.java,v 1.22 2006/01/25 18:05:17 jeffmc Exp $
+ * @version $Id$
  */
 public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
 

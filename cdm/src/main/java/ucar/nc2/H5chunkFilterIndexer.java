@@ -1,4 +1,4 @@
-// $Id: H5chunkFilterIndexer.java,v 1.3 2004/08/16 20:53:45 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -43,7 +43,7 @@ import ucar.ma2.InvalidRangeException;
  * </pre>
  *
  * @author caron
- * @version $Revision: 1.3 $ $Date: 2004/08/16 20:53:45 $
+ * @version $Revision$ $Date$
  */
 class H5chunkFilterIndexer extends Indexer {
 

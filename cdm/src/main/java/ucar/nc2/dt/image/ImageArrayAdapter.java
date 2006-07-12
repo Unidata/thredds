@@ -1,4 +1,4 @@
-// $Id: GridTable.java,v 1.1 2004/09/30 00:33:43 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import javax.swing.*;
  * Makes a 2D Array into a java.awt.image.BufferedImage
  *
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  */
 public class ImageArrayAdapter {
 

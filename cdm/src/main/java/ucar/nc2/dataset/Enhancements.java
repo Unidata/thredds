@@ -1,4 +1,4 @@
-// $Id: Enhancements.java,v 1.4 2005/11/07 20:46:08 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import ucar.ma2.DataType;
  * if those "standard attributes" are present.
  *
  * @author caron
- * @version $Revision: 1.4 $ $Date: 2005/11/07 20:46:08 $
+ * @version $Revision$ $Date$
  */
 
 public interface Enhancements {
@@ -53,6 +53,9 @@ public interface Enhancements {
 
   /** Add a CoordinateSystem to the dataset. */
   public void addCoordinateSystem( CoordinateSystem cs);
+
+  /** Remove a CoordinateSystem from the dataset. */
+  public void removeCoordinateSystem( CoordinateSystem cs);
 
   /** Get the original variable */
   public Variable getOriginalVariable();

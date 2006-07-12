@@ -7,12 +7,14 @@ import ucar.nc2.dataset.AxisType;
 import ucar.nc2.TestAll;
 
 import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
 public class TestReadandCount extends TestCase {
   private String outDir = "test/data/dataset/out/";
-  private static boolean show = false, showCount = true;
+  private static boolean show = false, showCount = false;
 
   public TestReadandCount( String name) {
     super(name);
@@ -111,6 +113,14 @@ public class TestReadandCount extends TestCase {
       AxisType t = axis.getAxisType();
       if ((t == AxisType.GeoZ) || (t == AxisType.Height) || (t == AxisType.Pressure) )
         countVertCooordAxes++;
+    }
+
+    Iterator iter = gridDs.getGridSets().iterator();
+    while (iter.hasNext()) {
+      GridDataset.Gridset gridset = (GridDataset.Gridset) iter.next();
+      GridCoordSys gcs = gridset.getGeoCoordSys();
+      if (gcs.hasTimeAxis())
+        System.out.println(" "+gcs.isDate()+" "+gcs.getName());
     }
 
     if (showCount) {

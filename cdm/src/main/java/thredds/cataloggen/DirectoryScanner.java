@@ -1,4 +1,4 @@
-// $Id: DirectoryScanner.java,v 1.32 2006/05/19 19:23:04 edavis Exp $
+// $Id$
 package thredds.cataloggen;
 
 import thredds.catalog.InvCatalog;

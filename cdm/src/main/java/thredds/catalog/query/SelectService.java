@@ -1,4 +1,4 @@
-// $Id: SelectService.java,v 1.6 2004/06/19 00:45:43 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.*;
  * A SelectService contains a list of Objects of type ServiceChoice.
  *
  * @author john caron
- * @version $Revision: 1.6 $ $Date: 2004/06/19 00:45:43 $
+ * @version $Revision$ $Date$
  */
 
 public class SelectService extends Selector {

@@ -26,7 +26,7 @@ import java.util.Vector;
  * semantics as the other <code>BaseType</code> classes, eliminating the need
  * to worry about <code>DSequence</code> as a special case.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see BaseType
  * @see DConstructor

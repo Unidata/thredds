@@ -1,4 +1,4 @@
-// $Id: ListChoice.java,v 1.2 2004/06/19 00:45:42 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.*;
  * Implementation of a thredds query choice element.
  *
  * @author john caron
- * @version $Revision: 1.2 $ $Date: 2004/06/19 00:45:42 $
+ * @version $Revision$ $Date$
  */
 
 public class ListChoice implements Choice {

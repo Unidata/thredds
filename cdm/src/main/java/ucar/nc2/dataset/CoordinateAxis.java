@@ -1,4 +1,4 @@
-// $Id: CoordinateAxis.java,v 1.12 2006/03/07 19:56:59 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -48,7 +48,7 @@ import java.io.IOException;
  * a units string and optionally a description string.
  *
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  * @see "NCML documentation"
  */
 

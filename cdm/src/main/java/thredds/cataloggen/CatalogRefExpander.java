@@ -1,4 +1,4 @@
-// $Id: CatalogRefExpander.java,v 1.1 2005/12/16 23:19:35 edavis Exp $
+// $Id$
 package thredds.cataloggen;
 
 /**

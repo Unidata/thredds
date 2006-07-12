@@ -1,4 +1,4 @@
-// $Id: UnitImpl.java,v 1.9 2004/08/26 12:03:28 dmurray Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Provides support for classes that implement units.
  *
  * @author Steven R. Emmerson
- * @version $Id: UnitImpl.java,v 1.9 2004/08/26 12:03:28 dmurray Exp $
+ * @version $Id$
  */
 public abstract class
 UnitImpl

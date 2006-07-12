@@ -1,4 +1,4 @@
-// $Id: DODSNetcdfFile.java,v 1.56 2006/05/23 00:05:19 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @see ucar.nc2.NetcdfFile
  * @author caron
- * @version $Revision: 1.56 $ $Date: 2006/05/23 00:05:19 $
+ * @version $Revision$ $Date$
  */
 
 public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {

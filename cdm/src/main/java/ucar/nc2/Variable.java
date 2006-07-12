@@ -1,4 +1,4 @@
-// $Id: Variable.java,v 1.50 2006/05/19 23:20:52 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.io.IOException;
  *
  * @see ucar.ma2.Array
  * @author caron
- * @version $Revision: 1.50 $ $Date: 2006/05/19 23:20:52 $
+ * @version $Revision$ $Date$
  */
 
 public class Variable implements VariableIF {

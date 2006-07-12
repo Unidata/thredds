@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * A dataset containing Grid objects.
  * @author caron
- * @version $Revision: 1.2 $ $Date: 2005/03/04 19:36:18 $
+ * @version $Revision$ $Date$
  */
 
 public interface GridDataset extends ucar.nc2.dt.TypedDataset {

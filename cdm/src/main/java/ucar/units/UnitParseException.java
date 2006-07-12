@@ -1,4 +1,4 @@
-// $Id: UnitParseException.java,v 1.6 2005/09/02 20:24:05 steve Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.units;
  * Provides support for errors in unit specifications.
  *
  * @author Steven R. Emmerson
- * @version $Id: UnitParseException.java,v 1.6 2005/09/02 20:24:05 steve Exp $
+ * @version $Id$
  */
 public class
 UnitParseException

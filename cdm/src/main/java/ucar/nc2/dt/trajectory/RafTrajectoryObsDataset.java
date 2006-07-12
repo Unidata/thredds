@@ -1,4 +1,4 @@
-// $Id: RafTrajectoryObsDataset.java,v 1.14 2006/03/30 21:07:14 edavis Exp $
+// $Id$
 package ucar.nc2.dt.trajectory;
 
 import ucar.ma2.*;

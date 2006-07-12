@@ -1,4 +1,4 @@
-// $Id: DMSPHeader.java,v 1.4 2004/12/07 23:27:09 edavis Exp $
+// $Id$
 package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.Attribute;

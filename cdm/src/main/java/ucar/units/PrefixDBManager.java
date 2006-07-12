@@ -1,4 +1,4 @@
-// $Id: PrefixDBManager.java,v 1.5 2000/08/18 04:17:30 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Provides support for managing a database of unit prefixes.
  *
  * @author Steven R. Emmerson
- * @version $Id: PrefixDBManager.java,v 1.5 2000/08/18 04:17:30 russ Exp $
+ * @version $Id$
  */
 public final class
 PrefixDBManager

@@ -1,4 +1,4 @@
-// $Id: Factor.java,v 1.5 2000/08/18 04:17:27 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Provides support for a Base/exponent pair.  Instances of this class are
  * immutable.
  * @author Steven R. Emmerson
- * @version $Id: Factor.java,v 1.5 2000/08/18 04:17:27 russ Exp $
+ * @version $Id$
  */
 public final class
 Factor

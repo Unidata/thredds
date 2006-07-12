@@ -412,7 +412,7 @@ public class NetcdfServlet extends AbstractServlet {
       varList.add( gridV);
 
       GridCoordSystem gcs = grid.getGridCoordSystem();
-      ArrayList axes = gcs.getCoordinateAxes();
+      List axes = gcs.getCoordinateAxes();
       for (int j = 0; j < axes.size(); j++) {
         Variable axis = (Variable) axes.get(j);
         if (!varNameList.contains(axis.getName())) {

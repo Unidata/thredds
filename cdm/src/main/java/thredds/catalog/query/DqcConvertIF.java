@@ -1,4 +1,4 @@
-// $Id: DqcConvertIF.java,v 1.3 2006/01/17 01:46:51 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ package thredds.catalog.query;
  *
  * @see DqcFactory
  * @author John Caron
- * @version $Id: DqcConvertIF.java,v 1.3 2006/01/17 01:46:51 caron Exp $
+ * @version $Id$
  */
 
 public interface DqcConvertIF {

@@ -1,4 +1,4 @@
-// $Id: InvCatalogFactory6.java,v 1.25 2006/01/17 01:46:51 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import java.util.*;
  * Reads InvCatalog.xml files, constructs object representation.
  *
  * @author John Caron
- * @version $Id: InvCatalogFactory6.java,v 1.25 2006/01/17 01:46:51 caron Exp $
+ * @version $Id$
  */
 
 public class InvCatalogFactory6 implements InvCatalogConvertIF, MetadataConverterIF {

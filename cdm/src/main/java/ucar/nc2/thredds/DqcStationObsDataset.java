@@ -1,4 +1,4 @@
-// $Id: DqcStationObsDataset.java,v 1.17 2006/05/08 02:47:34 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import thredds.catalog.query.*;
  * This implements a StationObsDataset with a DQC.
  *
  * @author John Caron
- * @version $Id: DqcStationObsDataset.java,v 1.17 2006/05/08 02:47:34 caron Exp $
+ * @version $Id$
  */
 
 public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImpl {

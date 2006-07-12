@@ -1,4 +1,4 @@
-// $Id: ForecastModelRun.java,v 1.7 2006/06/06 16:07:13 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -72,7 +72,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * </pre>
  *
  * @author caron
- * @version $Revision: 1.88 $ $Date: 2006/06/26 23:33:21 $
+ * @version $Revision$ $Date$
  */
 public class ForecastModelRun {
   public static final int OPEN_NORMAL = 1; // try to open XML, if fail, open dataset and write XML
@@ -198,7 +198,7 @@ public class ForecastModelRun {
 
   private void addMissing( Variable v, GridCoordSystem gcs, Grid grid) {
     if (gribIosp == null) return;
-    if (!gcs.hasVerticalAxis()) return;
+    if (gcs.getVerticalAxis() == null) return;
     int ntimes = (int) gcs.getTimeAxis().getSize();
     int nverts = (int) gcs.getVerticalAxis().getSize();
     int total = ntimes * nverts;

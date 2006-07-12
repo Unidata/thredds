@@ -1,4 +1,4 @@
-// $Id: DatasetSourceType.java,v 1.4 2003/08/29 21:41:46 edavis Exp $
+// $Id$
 
 package thredds.cataloggen.config;
 
@@ -6,7 +6,7 @@ package thredds.cataloggen.config;
  * Type-safe enumeration of CatalogGen DatasetSource types.
  *
  * @author Ethan Davis (from John Caron's thredds.catalog.ServiceType)
- * @version $Revision: 1.4 $
+ * @version $Revision$
  */
 public final class DatasetSourceType
 {

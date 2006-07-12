@@ -1,4 +1,4 @@
-// $Id: Structure.java,v 1.27 2006/05/08 02:47:36 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import java.io.IOException;
  *  Arrays in the StructureData.
  *
  * @author caron
- * @version $Revision: 1.27 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 
 public class Structure extends Variable {

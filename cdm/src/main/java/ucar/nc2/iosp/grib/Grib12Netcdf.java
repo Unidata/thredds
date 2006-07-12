@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;   	// Extra utilities from sun
 /***************************************************************************
  *
  * @author kambic
- * @version $Revision: 1.18 $ $Date: 2006/05/24 00:12:56 $
+ * @version $Revision$ $Date$
  *
  ****************************************************************************/
 public class Grib12Netcdf {

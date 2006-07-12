@@ -1,4 +1,4 @@
-// $Id: CatalogExtractor.java,v 1.5 2006/05/08 02:47:18 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -21,9 +21,7 @@
 
 package thredds.catalog.crawl;
 
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.dataset.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -46,7 +44,7 @@ import thredds.catalog.*;
  * Utilities for extracting info from a catalog.
  *
  * @author John Caron
- * @version $Id: CatalogExtractor.java,v 1.5 2006/05/08 02:47:18 caron Exp $
+ * @version $Id$
  */
 
 public class CatalogExtractor implements CatalogCrawler.Listener {
@@ -60,7 +58,6 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   private String copyDir = null;
 
   /**
-   *
    * @param verbose
    */
   public CatalogExtractor(boolean verbose) {
@@ -79,29 +76,29 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     countNoAccess = 0;
     countNoOpen = 0;
     int countCatRefs = 0;
-    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
       public void getDataset(InvDataset dd) {
         InvAccess access = tdataFactory.chooseDatasetAccess(dd.getAccess());
-        if (null != access) transfer( access.getStandardUrlName(), copyDir);
+        if (null != access) transfer(access.getStandardUrlName(), copyDir);
       }
     });
 
     long start = System.currentTimeMillis();
     try {
-      countCatRefs = crawler.crawl( cat, task, out);
+      countCatRefs = crawler.crawl(cat, task, out);
     } finally {
-      int took = (int) (System.currentTimeMillis() - start)/1000;
+      int took = (int) (System.currentTimeMillis() - start) / 1000;
 
-      out.println("***Done "+catUrl+" took = "+took+" secs\n"+
-                  "   datasets="+countDatasets+" no access="+ countNoAccess+" open failed="+ countNoOpen+" total catalogs="+countCatRefs);
-      if (verbose) System.out.println("***Done "+catUrl+" took = "+took+" secs\n"+
-                  "   datasets="+countDatasets+" no access="+ countNoAccess+" open failed="+ countNoOpen+" total catalogs="+countCatRefs);
+      out.println("***Done " + catUrl + " took = " + took + " secs\n" +
+              "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
+      if (verbose) System.out.println("***Done " + catUrl + " took = " + took + " secs\n" +
+              "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
     }
   }
 
   public void extractLoop(PrintStream out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
     while (true) {
-      extract( out, catUrl, type, skipDatasetScan, task);
+      extract(out, catUrl, type, skipDatasetScan, task);
       if ((task != null) && task.isCancel()) break;
     }
   }
@@ -115,8 +112,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     StringBuffer buff = new StringBuffer();
     boolean isValid = cat.check(buff, false);
     if (!isValid) {
-      System.out.println("***Catalog invalid= "+catUrl+" validation output=\n" + buff);
-      out.println("***Catalog invalid= "+catUrl+" validation output=\n" + buff);
+      System.out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);
+      out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);
       return;
     }
     out.println("catalog <" + cat.getName() + "> is valid");
@@ -126,26 +123,26 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     countNoAccess = 0;
     countNoOpen = 0;
     int countCatRefs = 0;
-    CatalogCrawler crawler = new CatalogCrawler( type, skipDatasetScan, this);
+    CatalogCrawler crawler = new CatalogCrawler(type, skipDatasetScan, this);
     long start = System.currentTimeMillis();
     try {
-      countCatRefs = crawler.crawl( cat, task, out);
+      countCatRefs = crawler.crawl(cat, task, out);
     } finally {
-      int took = (int) (System.currentTimeMillis() - start)/1000;
+      int took = (int) (System.currentTimeMillis() - start) / 1000;
 
-      out.println("***Done "+catUrl+" took = "+took+" secs\n"+
-                    "   datasets="+countDatasets+" no access="+ countNoAccess+" open failed="+ countNoOpen+" total catalogs="+countCatRefs);
+      out.println("***Done " + catUrl + " took = " + took + " secs\n" +
+              "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
 
       if (verbose) {
-        System.out.println("***Done "+catUrl+" took = "+took+" secs\n"+
-                    "   datasets="+countDatasets+" no access="+ countNoAccess+" open failed="+ countNoOpen+" total catalogs="+countCatRefs);
+        System.out.println("***Done " + catUrl + " took = " + took + " secs\n" +
+                "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
       }
     }
   }
 
   public void getDataset(InvDataset ds) {
     countDatasets++;
-    openDataset( out, ds);
+    openDataset(out, ds);
     //return extractTypedDatasetInfo( out, ds);
   }
 
@@ -163,26 +160,27 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     try {
       // ncd = NetcdfDataset.openDataset( access.getStandardUrlName());
       StringBuffer log = new StringBuffer();
-      ncd = tdataFactory.openDataset( access, true, null, log);
+      ncd = tdataFactory.openDataset(access, true, null, log);
       if (ncd == null) {
         countNoOpen++;
-        out.println("  **FAILED to open " + access.getStandardUrlName()+" "+log);
-        System.out.println("  **FAILED to open " + access.getStandardUrlName()+" "+log);
-        transfer( access.getStandardUrlName(), transferDir);
+        out.println("  **FAILED to open " + access.getStandardUrlName() + " " + log);
+        System.out.println("  **FAILED to open " + access.getStandardUrlName() + " " + log);
+        transfer(access.getStandardUrlName(), transferDir);
         return false;
       }
 
 
       int took = (int) (System.currentTimeMillis() - start);
       boolean ok = true; // ucar.nc2.iosp.nexrad2.TestNexrad2.testCoordSystem( ncd);
-      out.println("  **Open " + ds.getDataType()+" "+ncd.getLocation() + " (" + ds.getName()+ ") "+took + " msecs");
-      if (verbose) System.out.println("  **Open " + ds.getDataType()+" "+ncd.getLocation() + " (" + ds.getName()+ ") "+took + " msecs; ok="+ok);
+      out.println("  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs");
+      if (verbose)
+        System.out.println("  **Open " + ds.getDataType() + " " + ncd.getLocation() + " (" + ds.getName() + ") " + took + " msecs; ok=" + ok);
 
     } catch (Throwable e) {
       countNoOpen++;
       out.println("  **FAILED to open " + access.getStandardUrlName());
       System.out.println("  **FAILED to open " + access.getStandardUrlName());
-      transfer( access.getStandardUrlName(), transferDir);
+      transfer(access.getStandardUrlName(), transferDir);
       return false;
 
     } finally {
@@ -198,13 +196,13 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     return true;
   }
 
-  private void transfer(String url, String copyToDir ) {
-    String new_url =  StringUtil.substitute(url, "dodsC", "fileServer");
+  private void transfer(String url, String copyToDir) {
+    String new_url = StringUtil.substitute(url, "dodsC", "fileServer");
     int pos = url.lastIndexOf("/");
-    String filename = url.substring(pos+1);
+    String filename = url.substring(pos + 1);
     File file = new File(copyToDir, filename);
     IO.readURLtoFile(new_url, file);
-    System.out.println("  **copied to " + file.getPath()+" size="+file.length());
+    System.out.println("  **copied to " + file.getPath() + " size=" + file.length());
   }
 
   public boolean extractTypedDatasetInfo(PrintStream out, InvDataset ds) {
@@ -215,8 +213,9 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     try {
       tdata = tdataFactory.openDatatype(ds, null);
       int took = (int) (System.currentTimeMillis() - start);
-      if (verbose) System.out.println("  **Open " + tdata.dtype+" "+tdata.location + " (" + ds.getName()+ ") "+took + " msecs");
-      out.println("  **Open " + tdata.dtype+" "+tdata.location + " (" + ds.getName()+ ") "+took + " msecs");
+      if (verbose)
+        System.out.println("  **Open " + tdata.dtype + " " + tdata.location + " (" + ds.getName() + ") " + took + " msecs");
+      out.println("  **Open " + tdata.dtype + " " + tdata.location + " (" + ds.getName() + ") " + took + " msecs");
 
       if (tdata == null)
         ok = false;
@@ -235,7 +234,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
       if (tdata != null) try {
         tdata.close();
-        out.println("   Close " + tdata.dtype+" "+tdata.location);
+        out.println("   Close " + tdata.dtype + " " + tdata.location);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -248,7 +247,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   private void extractGridDataset(PrintStream out, GridDataset gridDs) {
 
     if (!verbose) {
-      out.println("    ngrids = "+ gridDs.getGrids().size());
+      out.println("    ngrids = " + gridDs.getGrids().size());
       return;
     }
 
@@ -257,126 +256,127 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     showAtts(out, ds.getGlobalAttributes());
     out.println();
 
-      if (gridDs == null) return;
+    if (gridDs == null) return;
 
-      GridCoordSystem gcsMax = null;
-      LatLonRect llbbMax = null;
+    GridCoordSystem gcsMax = null;
+    LatLonRect llbbMax = null;
 
-      LatLonRect llbb = null;
-      DateRange dateRange = null;
-      long nx = 0, ny = 0;
+    LatLonRect llbb = null;
+    DateRange dateRange = null;
+    long nx = 0, ny = 0;
 
-      java.util.Iterator iter = gridDs.getGridSets().iterator();
-      while (iter.hasNext()) {
-        GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
-        GridCoordSystem gcs = gset.getGeoCoordSystem();
+    java.util.Iterator iter = gridDs.getGridSets().iterator();
+    while (iter.hasNext()) {
+      GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
+      GridCoordSystem gcs = gset.getGeoCoordSystem();
 
-        CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
-        CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
-        long nx2 = xaxis.getSize();
-        long ny2 = yaxis.getSize();
-        if ((nx != nx2) || (ny != ny2)) {
-          nx = nx2;
-          ny = ny2;
-          double dx = xaxis.getIncrement();
-          double dy = yaxis.getIncrement();
-          out.println("  horizontal = " + nx + " by " + ny + " points, resolution " + Format.d(dx, 4) + " " + Format.d(dy, 4)
-                  + " " + xaxis.getUnitsString());
+      CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
+      CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
+      long nx2 = xaxis.getSize();
+      long ny2 = yaxis.getSize();
+      if ((nx != nx2) || (ny != ny2)) {
+        nx = nx2;
+        ny = ny2;
+        double dx = xaxis.getIncrement();
+        double dy = yaxis.getIncrement();
+        out.println("  horizontal = " + nx + " by " + ny + " points, resolution " + Format.d(dx, 4) + " " + Format.d(dy, 4)
+                + " " + xaxis.getUnitsString());
+      }
+
+      ProjectionImpl proj = gcs.getProjection();
+      if (proj != null) {
+        out.println(", " + proj.getClassName() + " projection;");
+
+        List params = proj.getProjectionParameters();
+        for (int i = 0; i < params.size(); i++) {
+          ucar.unidata.util.Parameter p = (ucar.unidata.util.Parameter) params.get(i);
+          out.println("       " + p.getName() + " " + p.getStringValue());
         }
+      } else
+        out.println();
 
-        ProjectionImpl proj = gcs.getProjection();
-        if (proj != null) {
-          out.println(", " + proj.getClassName() + " projection;");
+      LatLonRect llbb2 = gcs.getLatLonBoundingBox();
+      if ((llbb == null) || !llbb2.equals(llbb)) {
+        llbb = llbb2;
 
-          List params = proj.getProjectionParameters();
-          for (int i = 0; i < params.size(); i++) {
-            ucar.unidata.util.Parameter p = (ucar.unidata.util.Parameter) params.get(i);
-            out.println("       " + p.getName() + " " + p.getStringValue());
-          }
-        } else
-          out.println();
+        if (llbbMax == null)
+          llbbMax = llbb;
+        else
+          llbbMax.extend(llbb);
 
-        LatLonRect llbb2 = gcs.getLatLonBoundingBox();
-        if ((llbb == null) || !llbb2.equals(llbb)) {
-          llbb = llbb2;
+        if (llbb.getWidth() >= 360.0) {
+          out.println("  BoundingBox == GLOBAL");
 
-          if (llbbMax == null)
-            llbbMax = llbb;
-          else
-            llbbMax.extend(llbb);
-
-          if (llbb.getWidth() >= 360.0) {
-            out.println("  BoundingBox == GLOBAL");
-
-          } else {
-            StringBuffer buff = new StringBuffer();
-            LatLonPointImpl ll = llbb.getLowerLeftPoint();
-            LatLonPointImpl ur = llbb.getUpperRightPoint();
-            buff.append(Double.toString(ll.getLongitude()));
-            buff.append(" ");
-            buff.append(Double.toString(ll.getLatitude()));
-            buff.append(" ");
-            buff.append(Double.toString(ur.getLongitude()));
-            buff.append(" ");
-            buff.append(Double.toString(ur.getLatitude()));
-            buff.append(" ");
-            out.println("  BoundingBox == " + llbb + " width= " + llbb.getWidth() + " " + (llbb.getWidth() >= 360.0 ? "global" : ""));
-          }
-
-        }
-
-        CoordinateAxis1D taxis = gcs.getTimeAxis();
-        DateRange dateRange2 = gcs.getDateRange();
-        if ((taxis != null) && ((dateRange == null) || !dateRange2.equals(dateRange))) {
-
-          long ntimes = taxis.getSize();
-          try {
-            TimeUnit tUnit = gcs.getTimeResolution();
-            dateRange = new DateRange(dateRange2, "1 hour");
-            out.println("  DateRange == " + "start= " + dateRange.getStart() + " end= " + dateRange.getEnd() +
-                    " duration= " + dateRange.getDuration() + " ntimes = " + ntimes + " data resolution = " + tUnit);
-          } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-          }
-        }
-
-        CoordinateAxis1D vaxis = gcs.getVerticalAxis();
-        if (vaxis != null) {
-          long nvert = vaxis.getSize();
-          out.print("  Vertical axis= " + vaxis.getName() + " units=" + vaxis.getUnitsString() + " size= " + nvert);
-          VerticalCT vt = gcs.getVerticalCT();
-          if (vt != null)
-            out.print(" transform= " + vt.getVerticalTransformType());
-
-          List vertNames = gcs.getLevels();
-          for (int i = 0; i < vertNames.size(); i++) {
-            out.print(" " + vertNames.get(i));
-          }
-          out.println();
-
-          if ((gcsMax == null) || (gcsMax.getVerticalAxis().getSize() < vaxis.getSize()))
-            gcsMax = gcs;
+        } else {
+          StringBuffer buff = new StringBuffer();
+          LatLonPointImpl ll = llbb.getLowerLeftPoint();
+          LatLonPointImpl ur = llbb.getUpperRightPoint();
+          buff.append(Double.toString(ll.getLongitude()));
+          buff.append(" ");
+          buff.append(Double.toString(ll.getLatitude()));
+          buff.append(" ");
+          buff.append(Double.toString(ur.getLongitude()));
+          buff.append(" ");
+          buff.append(Double.toString(ur.getLatitude()));
+          buff.append(" ");
+          out.println("  BoundingBox == " + llbb + " width= " + llbb.getWidth() + " " + (llbb.getWidth() >= 360.0 ? "global" : ""));
         }
 
       }
 
-      /* ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
-      gc.setBoundingBox(llbbMax);
-      if (gcsMax != null) {
-        gc.setVertical(gcsMax.getVerticalAxis());
-        gc.setZPositiveUp(gcsMax.isZPositive());
+      CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+
+      DateRange dateRange2 = gcs.getDateRange();
+      if ((taxis != null) && ((dateRange == null) || !dateRange2.equals(dateRange))) {
+
+        long ntimes = taxis.getSize();
+        try {
+          TimeUnit tUnit = taxis.getTimeResolution();
+          dateRange = new DateRange(dateRange2, "1 hour");
+          out.println("  DateRange == " + "start= " + dateRange.getStart() + " end= " + dateRange.getEnd() +
+                  " duration= " + dateRange.getDuration() + " ntimes = " + ntimes + " data resolution = " + tUnit);
+        } catch (Exception e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
       }
 
-      try {
-        gc.toXML(out);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }     */
+      CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+      if (vaxis != null) {
+        long nvert = vaxis.getSize();
+        out.print("  Vertical axis= " + vaxis.getName() + " units=" + vaxis.getUnitsString() + " size= " + nvert);
+        VerticalCT vt = gcs.getVerticalCT();
+        if (vt != null)
+          out.print(" transform= " + vt.getVerticalTransformType());
 
-      /* java.util.List grids = gridDs.getGrids();
-      String fileFormat = ds.findAttValueIgnoreCase(null, "FileFormat", "");
-      if (fileFormat.equals("GRIB-1"))
-          makeGrib1Vocabulary(grids, out);   */
+        List vertNames = vaxis.getNames();
+        for (int i = 0; i < vertNames.size(); i++) {
+          out.print(" " + vertNames.get(i));
+        }
+        out.println();
+
+        if ((gcsMax == null) || (gcsMax.getVerticalAxis().getSize() < vaxis.getSize()))
+          gcsMax = gcs;
+      }
+
+    }
+
+    /* ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
+gc.setBoundingBox(llbbMax);
+if (gcsMax != null) {
+ gc.setVertical(gcsMax.getVerticalAxis());
+ gc.setZPositiveUp(gcsMax.isZPositive());
+}
+
+try {
+ gc.toXML(out);
+} catch (IOException e) {
+ e.printStackTrace();
+}     */
+
+    /* java.util.List grids = gridDs.getGrids();
+String fileFormat = ds.findAttValueIgnoreCase(null, "FileFormat", "");
+if (fileFormat.equals("GRIB-1"))
+makeGrib1Vocabulary(grids, out);   */
 
 
   }

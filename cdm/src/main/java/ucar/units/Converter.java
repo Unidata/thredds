@@ -1,4 +1,4 @@
-// $Id: Converter.java,v 1.5 2000/08/18 04:17:26 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.units;
 /**
  * Interface for converting numeric values from one unit to another.
  * @author Steven R. Emmerson
- * @version $Id: Converter.java,v 1.5 2000/08/18 04:17:26 russ Exp $
+ * @version $Id$
  * @see Unit#getConverterTo(Unit)
  */
 public interface

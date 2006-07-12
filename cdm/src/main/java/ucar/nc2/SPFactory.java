@@ -1,4 +1,4 @@
-// $Id: SPFactory.java,v 1.4 2005/06/11 18:42:06 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.nc2;
  * This allows us to switch implementations in one place, used for testing and timing.
  * 
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 
 class SPFactory {

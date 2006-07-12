@@ -1,4 +1,4 @@
-// $Id: OperationException.java,v 1.6 2004/02/27 21:25:02 jeffmc Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.units;
 /**
  * Provides support for unit operation failures (ex: multiplication).
  * @author Steven R. Emmerson
- * @version $Id: OperationException.java,v 1.6 2004/02/27 21:25:02 jeffmc Exp $
+ * @version $Id$
  */
 public abstract class
 OperationException

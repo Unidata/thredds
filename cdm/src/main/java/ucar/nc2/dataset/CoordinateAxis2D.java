@@ -1,4 +1,4 @@
-// $Id: CoordinateAxis2D.java,v 1.4 2005/11/28 16:41:41 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ import java.util.ArrayList;
  *
  * @see CoordinateAxis#factory
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2006/02/13 19:51:26 $
+ * @version $Revision$ $Date$
  */
 
 public class CoordinateAxis2D extends CoordinateAxis {

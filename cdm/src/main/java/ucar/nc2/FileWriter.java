@@ -1,4 +1,4 @@
-// $Id: FileWriter.java,v 1.18 2006/04/01 02:30:22 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -40,7 +40,7 @@ import java.util.*;
  *
  * @see ucar.nc2.NetcdfFile
  * @author caron
- * @version $Revision: 1.18 $ $Date: 2006/04/01 02:30:22 $
+ * @version $Revision$ $Date$
  */
 
 public class FileWriter {

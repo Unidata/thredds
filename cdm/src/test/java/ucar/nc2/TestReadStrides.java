@@ -16,7 +16,7 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesCached() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestNC2.open("test/data/ncml/nc/time0.nc");
+    NetcdfFile ncfile = TestNC2.openFile("ncml/nc/time0.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("T")));
@@ -101,7 +101,7 @@ public class TestReadStrides extends TestCase {
   }
 
   public void testReadStridesNoCache() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestNC2.open("test/data/ncml/nc/time0.nc");
+    NetcdfFile ncfile = TestNC2.openFile("ncml/nc/time0.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("T")));
@@ -176,11 +176,11 @@ public class TestReadStrides extends TestCase {
 
   public void testReadStridesAll() throws IOException, InvalidRangeException {
     //testReadStrides("test/data/ncml/nc/time0.nc");
-    testReadStrides("test/data/gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
+    testReadStrides("gini/HI-NATIONAL_14km_IR_20050918_2000.gini");
   }
 
   private void testReadStrides(String filename) throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestNC2.open(filename);
+    NetcdfFile ncfile = TestNC2.openFile(filename);
 
     List vars = ncfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {

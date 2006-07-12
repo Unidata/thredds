@@ -1,4 +1,4 @@
-// $Id: UnitName.java,v 1.6 2000/08/18 04:17:38 russ Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.units;
  * Provides support for unit names.
  *
  * @author Steven R. Emmerson
- * @version $Id: UnitName.java,v 1.6 2000/08/18 04:17:38 russ Exp $
+ * @version $Id$
  */
 public final class
 UnitName

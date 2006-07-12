@@ -1,4 +1,4 @@
-// $Id: ArrayStructure.java,v 1.12 2006/05/12 20:19:26 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.ma2;
  * Superclass for implementations of Array of StructureData.
  *
  * @author caron
- * @version $Revision: 1.12 $ $Date: 2006/05/12 20:19:26 $
+ * @version $Revision$ $Date$
  * @see Array
  */
 public abstract class ArrayStructure extends Array {

@@ -1,4 +1,4 @@
-// $Id: SelectGeoRegion.java,v 1.3 2004/09/24 03:26:29 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package thredds.catalog.query;
  * Implementation of a DQC select geo region.
  *
  * @author john caron
- * @version $Revision: 1.3 $ $Date: 2004/09/24 03:26:29 $
+ * @version $Revision$ $Date$
  */
 
 public class SelectGeoRegion extends Selector {

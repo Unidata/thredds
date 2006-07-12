@@ -1,4 +1,4 @@
-// $Id: JavaDateUnit.java,v 1.6 2006/02/13 19:51:36 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,

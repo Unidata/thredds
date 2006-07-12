@@ -3,9 +3,9 @@
 
   <aggregation  dimName="time" type="joinNew">
     <variableAgg name="T"/>
-    <netcdf location="file:test/data/ncml/nc/time0.nc" coordValue="2005-11-22 22:19:53Z"/>
-    <netcdf location="file:test/data/ncml/nc/time1.nc" coordValue="2005-11-22 23:19:53Z"/>
-    <netcdf location="file:test/data/ncml/nc/time2.nc" coordValue="2005-11-23 00:19:59Z"/>
+    <netcdf location="file:src/test/data/ncml/nc/time0.nc" coordValue="2005-11-22 22:19:53Z"/>
+    <netcdf location="file:src/test/data/ncml/nc/time1.nc" coordValue="2005-11-22 23:19:53Z"/>
+    <netcdf location="file:src/test/data/ncml/nc/time2.nc" coordValue="2005-11-23 00:19:59Z"/>
   </aggregation>
 
 </netcdf>

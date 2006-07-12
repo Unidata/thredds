@@ -1,5 +1,5 @@
 /*
- * $Id: BeLeDataInputStream.java,v 1.8 2005/05/13 18:31:26 jeffmc Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -40,7 +40,7 @@ import java.net.URL;
  * big- and little-endian representations.
  *
  * @author Russ Rew
- * @version $Id: BeLeDataInputStream.java,v 1.8 2005/05/13 18:31:26 jeffmc Exp $
+ * @version $Id$
  */
 public class BeLeDataInputStream extends DataInputStream {
 

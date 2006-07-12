@@ -1,4 +1,4 @@
-// $Id: LexigraphicByNameSorter.java,v 1.2 2005/12/30 00:18:53 edavis Exp $
+// $Id$
 package thredds.crawlabledataset.sorter;
 
 import thredds.crawlabledataset.CrawlableDatasetSorter;

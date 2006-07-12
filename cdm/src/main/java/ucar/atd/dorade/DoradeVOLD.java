@@ -11,9 +11,9 @@ import java.util.TimeZone;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision: 1.2 $ $Date: 2005/04/26 16:25:38 $
+ * @version $Revision$ $Date$
  */
-/* $Id: DoradeVOLD.java,v 1.2 2005/04/26 16:25:38 yuanho Exp $ */
+/* $Id$ */
 
 class DoradeVOLD extends DoradeDescriptor {
 

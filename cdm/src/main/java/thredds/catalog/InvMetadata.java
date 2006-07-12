@@ -1,4 +1,4 @@
-// $Id: InvMetadata.java,v 1.14 2005/04/27 21:34:09 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ package thredds.catalog;
  * @see InvMetadata for public interface
  *
  * @author john caron
- * @version $Revision: 1.14 $ $Date: 2005/04/27 21:34:09 $
+ * @version $Revision$ $Date$
  */
 
 public class InvMetadata {

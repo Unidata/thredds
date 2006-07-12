@@ -1,4 +1,4 @@
-// $Id: RegExpAndReplaceOnPathLabeler.java,v 1.1 2005/12/30 00:18:54 edavis Exp $
+// $Id$
 package thredds.crawlabledataset;
 
 /**

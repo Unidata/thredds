@@ -1,5 +1,5 @@
 /*
- * $Id: VerticalTransform.java,v 1.11 2006/02/07 13:28:53 caron Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import ucar.ma2.Range;
  * such as height or pressure.
  *
  * @author  Unidata Development Team
- * @version $Revision: 1.11 $
+ * @version $Revision$
  */
 
 public interface VerticalTransform {

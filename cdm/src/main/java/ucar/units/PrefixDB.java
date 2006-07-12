@@ -1,4 +1,4 @@
-// $Id: PrefixDB.java,v 1.6 2004/08/23 18:54:36 dmurray Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ import java.util.Iterator;
 /**
  * Interface for a database of unit prefixes.
  * @author Steven R. Emmerson
- * @version $Id: PrefixDB.java,v 1.6 2004/08/23 18:54:36 dmurray Exp $
+ * @version $Id$
  */
 public interface
 PrefixDB

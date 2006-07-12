@@ -1,4 +1,4 @@
-// $Id: ArrayStructureMA.java,v 1.6 2006/05/24 17:47:44 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -144,7 +144,7 @@ package ucar.ma2;
  </pre>
 
  * @author caron
- * @version $Revision: 1.6 $ $Date: 2006/05/24 17:47:44 $
+ * @version $Revision$ $Date$
  * @see Array
  */
 public class ArrayStructureMA extends ArrayStructure {

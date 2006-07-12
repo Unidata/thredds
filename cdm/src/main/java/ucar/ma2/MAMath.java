@@ -1,4 +1,4 @@
-// $Id: MAMath.java,v 1.5 2006/02/16 23:02:31 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.ma2;
  *
  * @see Index
  * @author @caron
- * @version $Revision: 1.5 $ $Date: 2006/02/16 23:02:31 $
+ * @version $Revision$ $Date$
  */
 public class MAMath {
 

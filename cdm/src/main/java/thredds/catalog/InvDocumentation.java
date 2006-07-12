@@ -1,4 +1,4 @@
-// $Id: InvDocumentation.java,v 1.8 2005/09/13 15:58:55 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ import java.net.URISyntaxException;
  * TODO: XHTML
  *
  * @author john caron
- * @version $Revision: 1.8 $ $Date: 2005/09/13 15:58:55 $
+ * @version $Revision$ $Date$
  */
 
 

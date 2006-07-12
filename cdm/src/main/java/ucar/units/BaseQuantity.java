@@ -1,4 +1,4 @@
-// $Id: BaseQuantity.java,v 1.6 2004/02/27 21:25:02 jeffmc Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import java.io.Serializable;
  * Provides support for abstract base quantities (ex: length, time).
  *
  * @author Steven R. Emmerson
- * @version $Id: BaseQuantity.java,v 1.6 2004/02/27 21:25:02 jeffmc Exp $
+ * @version $Id$
  */
 public abstract class
 BaseQuantity

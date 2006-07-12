@@ -1,4 +1,4 @@
-// $Id: Prefix.java,v 1.6 2004/08/23 18:54:36 dmurray Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ package ucar.units;
  * Instances of this class are immutable.
  *
  * @author Steven R. Emmerson
- * @version $Id: Prefix.java,v 1.6 2004/08/23 18:54:36 dmurray Exp $
+ * @version $Id$
  */
 public abstract class
 Prefix

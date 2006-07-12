@@ -1,4 +1,4 @@
-// $Id: InvProperty.java,v 1.4 2004/06/09 00:27:25 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ package thredds.catalog;
  * A Property is a name/value pair.
  *
  * @author john caron
- * @version $Revision: 1.4 $ $Date: 2004/06/09 00:27:25 $
+ * @version $Revision$ $Date$
  */
 
 public class InvProperty {

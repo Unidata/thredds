@@ -4,7 +4,7 @@ package ucar.nc2.dt;
 /** A collection of data in a time series.
  * Underlying data can be of any type.
  * @author caron
- * @version $Revision: 1.3 $ $Date: 2005/04/27 22:07:59 $
+ * @version $Revision$ $Date$
  */
 public interface TimeSeriesCollection {
 

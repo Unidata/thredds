@@ -1,4 +1,4 @@
-// $Id: DerivableUnit.java,v 1.7 2005/07/23 16:00:24 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.units;
  * underlying derived unit.
  *
  * @author Steven R. Emmerson
- * @version $Id: DerivableUnit.java,v 1.7 2005/07/23 16:00:24 caron Exp $
+ * @version $Id$
  */
 public interface
 DerivableUnit

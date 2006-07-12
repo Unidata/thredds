@@ -1,4 +1,4 @@
-// $Id: CatalogCrawler.java,v 1.9 2006/06/06 16:17:07 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -50,7 +50,7 @@ import thredds.catalog.InvCatalogRef;
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, listener);
  * </pre>
  * @author John Caron
- * @version $Id: CatalogCrawler.java,v 1.9 2006/06/06 16:17:07 caron Exp $
+ * @version $Id$
  */
 
 public class CatalogCrawler {

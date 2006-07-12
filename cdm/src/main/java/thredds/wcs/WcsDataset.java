@@ -1,4 +1,4 @@
-// $Id: WcsDataset.java,v 1.12 2006/06/05 22:17:34 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,6 +27,8 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
@@ -116,11 +118,12 @@ public class WcsDataset {
     String vname = req.getCoverage();
     GridDatatype geogrid = gridDataset.findGridDatatype(vname);
     GridCoordSystem gcs = geogrid.getGridCoordSystem();
+    CoordinateAxis1D vaxis = gcs.getVerticalAxis();
 
     int z = 0, t = 0;
     String vertical = req.getVertical();
     if (vertical != null) {
-      z = gcs.getLevelIndex( vertical);
+      z = vaxis.getIndex( vertical);
       if (z < 0) return "Level= "+vertical;
     }
 
@@ -148,12 +151,13 @@ public class WcsDataset {
 
     String vertical = req.getVertical();
     if (vertical != null) {
-      int z = gcs.getLevelIndex( vertical);
+      CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+      int z = vaxis.getIndex( vertical);
       z_range = new Range(z,z);
     }
 
     if (null != req.getBoundingBox()) {
-      List ranges = gcs.getLatLonBoundingBox(req.getBoundingBox());
+      List ranges = gcs.getRangesFromLatLonRect(req.getBoundingBox());
       y_range = (Range) ranges.get(0);
       x_range = (Range) ranges.get(1);
     }
@@ -194,7 +198,8 @@ public class WcsDataset {
   }
 
   private int findTimeIndex( GridCoordSystem gcs, String timeName) {
-    java.util.Date[] dates = gcs.getTimeDates();
+    CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+    java.util.Date[] dates = taxis.getTimeDates();
 
     DateFormatter formatter = new DateFormatter();
     for (int i = 0; i < dates.length; i++) {

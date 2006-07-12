@@ -1,4 +1,4 @@
-// $Id: DqcFactory.java,v 1.6 2006/01/17 01:46:51 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -47,7 +47,7 @@ import java.util.*;
  * Uses a pluggable "converter" to transform the DOM to the thredds.catalog.query objects.
  *
  * @author John Caron
- * @version $Id: DqcFactory.java,v 1.6 2006/01/17 01:46:51 caron Exp $
+ * @version $Id$
  */
 
 public class DqcFactory {

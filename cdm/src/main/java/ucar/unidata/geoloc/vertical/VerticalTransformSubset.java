@@ -1,5 +1,5 @@
 /*
- * $Id: VerticalTransformSubset.java,v 1.5 2006/06/26 23:33:21 caron Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * A subset of a vertical transform.
  *
  * @author  Unidata Development Team
- * @version $Revision: 1.5 $
+ * @version $Revision$
  */
 public class VerticalTransformSubset extends VerticalTransformImpl {
   private VerticalTransform original;

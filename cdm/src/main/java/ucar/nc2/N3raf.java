@@ -1,4 +1,4 @@
-// $Id: N3raf.java,v 1.10 2006/03/09 22:18:46 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import ucar.ma2.*;
 /**
  * Use our RandomAccessFile class to read and write.
  * @author caron
- * @version $Revision: 1.21 $ $Date: 2006/05/08 02:47:36 $
+ * @version $Revision$ $Date$
  */
 
 class N3raf extends N3iosp  {

@@ -1,5 +1,5 @@
 /*
- * $Id: LatLonRect.java,v 1.13 2006/04/01 02:30:22 caron Exp $
+ * $Id$
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ package ucar.unidata.geoloc;
  *
  * @author Russ Rew
  * @author John Caron
- * @version $Id: LatLonRect.java,v 1.13 2006/04/01 02:30:22 caron Exp $
+ * @version $Id$
  */
 public class LatLonRect {
 

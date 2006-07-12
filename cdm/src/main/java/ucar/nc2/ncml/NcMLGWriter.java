@@ -1,4 +1,4 @@
-// $Id: NcMLGWriter.java,v 1.6 2006/04/20 22:15:09 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import thredds.catalog.XMLEntityResolver;
  *
  * @see ucar.nc2.NetcdfFile
  * @author caron
- * @version $Revision: 1.6 $ $Date: 2006/04/20 22:15:09 $
+ * @version $Revision$ $Date$
  */
 
 public class NcMLGWriter {
@@ -352,14 +352,14 @@ public class NcMLGWriter {
       }
     } */
 
-    ArrayList axes = cs.getCoordinateAxes();
+    List axes = cs.getCoordinateAxes();
     for (int i=0; i<axes.size(); i++) {
       Element axisElem = new Element("coordinateAxisRef", ncNS);
       axisElem.setAttribute("ref", ((VariableDS)axes.get(i)).getName());
       csElem.addContent( axisElem);
     }
 
-    ArrayList transforms = cs.getCoordinateTransforms();
+    List transforms = cs.getCoordinateTransforms();
     if (transforms != null)
     for (int i=0; i<transforms.size(); i++) {
       CoordinateTransform ct = (CoordinateTransform) transforms.get(i);

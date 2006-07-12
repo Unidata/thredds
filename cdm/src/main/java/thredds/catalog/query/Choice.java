@@ -1,4 +1,4 @@
-// $Id: Choice.java,v 1.6 2004/09/24 03:26:29 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package thredds.catalog.query;
  * Abstraction of a choice a user can make.
  *
  * @author john caron
- * @version $Revision: 1.6 $ $Date: 2004/09/24 03:26:29 $
+ * @version $Revision$ $Date$
  */
 
 public interface Choice {

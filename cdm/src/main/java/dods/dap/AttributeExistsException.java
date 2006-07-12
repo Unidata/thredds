@@ -16,7 +16,7 @@ package dods.dap;
  * attribute that already exists. Creating an alias with the name of an
  * existing attribute will also trigger this exception.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  * @author jehamby
  * @see AttributeTable
  */

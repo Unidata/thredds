@@ -30,16 +30,16 @@ import ucar.nc2.dataset.*;
 import thredds.viewer.ui.geoloc.NavigatedPanel;
 import thredds.viewer.gis.MapBean;
 
-import ucar.nc2.util.NamedObject;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridCoordSystem;
 
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -59,25 +59,29 @@ public class GridUI extends JPanel {
   private JFrame parent;
   private FileManager fileChooser;
 
+  // Package private access
+  SuperComboBox fieldChooser, levelChooser, timeChooser, ensembleChooser, runtimeChooser;
+  NavigatedPanel panz = new NavigatedPanel();
+  VertPanel vertPanel;
+  GridTable gridTable;
+  JLabel dataValueLabel, positionLabel;
+
   // the main components
   private GridController controller;
-  private NavigatedPanel panz = new NavigatedPanel();
   private ColorScale.Panel colorScalePanel;
-  private VertPanel vertPanel;
-  private GridTable gridTable;
+
   private ucar.nc2.ui.GeoGridTable dsTable;
 
   // UI components that need global scope
   private TextHistoryPane datasetInfoTA, ncmlTA;
-  private SuperComboBox fieldChooser, levelChooser, timeChooser;
   private JPanel drawingPanel;
   private JSplitPane splitDraw;
-  private JLabel dataValueLabel, positionLabel;
   private JComboBox csDataMinMax;
   private thredds.ui.PopupMenu mapBeanMenu;
 
-  private Field.TextCombo gridUrlIF;
-  private PrefPanel gridPP;
+  private JLabel datasetNameLabel;
+  // private Field.TextCombo gridUrlIF;
+  // private PrefPanel gridPP;
 
   // the various managers and dialog boxes
   //private ProjectionManager projManager;
@@ -89,7 +93,7 @@ public class GridUI extends JPanel {
   private FileManager geotiffFileChooser;
 
   // toolbars
-  private JPanel toolPanel;
+  private JPanel fieldPanel, toolPanel;
   private JToolBar navToolbar, moveToolbar;
   private AbstractAction navToolbarAction, moveToolbarAction;
   private JMenu configMenu;
@@ -117,9 +121,17 @@ public class GridUI extends JPanel {
     this.fileChooser = fileChooser;
 
     try  {
+      choosers = new ArrayList();
       fieldChooser = new SuperComboBox(root, "field", true, null);
+      choosers.add( new Chooser("field", fieldChooser, true));
       levelChooser = new SuperComboBox(root, "level", false, null);
+      choosers.add( new Chooser("level", levelChooser, false));
       timeChooser = new SuperComboBox(root, "time", false, null);
+      choosers.add( new Chooser("time", timeChooser, false));
+      ensembleChooser = new SuperComboBox(root, "ensemble", false, null);
+      choosers.add( new Chooser("ensemble", ensembleChooser, false));
+      runtimeChooser = new SuperComboBox(root, "runtime", false, null);
+      choosers.add( new Chooser("runtime", runtimeChooser, false));
 
       makeActionsDataset();
       makeActionsToolbars();
@@ -149,14 +161,14 @@ public class GridUI extends JPanel {
   }
 
     // give access to the Controller
-  NavigatedPanel getNavigatedPanel() { return panz; }
-  VertPanel getVertPanel() { return vertPanel; }
-  SuperComboBox getFieldChooser() { return fieldChooser; }
-  SuperComboBox getLevelChooser() { return levelChooser; }
-  SuperComboBox getTimeChooser() { return timeChooser; }
-  GridTable getGridTable() { return gridTable; }
-  JLabel getDataValueLabel() { return dataValueLabel; }
-  JLabel getPositionLabel() { return positionLabel; }
+    /* NavigatedPanel getNavigatedPanel() { return panz; }
+    VertPanel getVertPanel() { return vertPanel; }
+    SuperComboBox getFieldChooser() { return fieldChooser; }
+    SuperComboBox getLevelChooser() { return levelChooser; }
+    SuperComboBox getTimeChooser() { return timeChooser; }
+    GridTable getGridTable() { return gridTable; }
+    JLabel getDataValueLabel() { return dataValueLabel; }
+    JLabel getPositionLabel() { return positionLabel; } */
 
       /** save all data in the PersistentStore */
   public void storePersistentData() {
@@ -249,7 +261,7 @@ public class GridUI extends JPanel {
          if (e.getActionCommand().equals("success")) {
            controller.showDataset();
            gridTable.setDataset(controller.getFields());
-           gridUrlIF.setText(controller.getDatasetUrlString());
+           datasetNameLabel.setText("Dataset:  "+ controller.getDatasetUrlString());
            setSelected(true);
            gtWindow.hide();
          }
@@ -262,7 +274,7 @@ public class GridUI extends JPanel {
   public void setDataset(GridDataset ds) {
      controller.setGridDataset( ds);
      controller.showDataset();
-     gridUrlIF.setText(controller.getDatasetUrlString());
+     datasetNameLabel.setText("Dataset:  "+ controller.getDatasetUrlString());
      gridTable.setDataset(controller.getFields());
    }
 
@@ -276,27 +288,43 @@ public class GridUI extends JPanel {
       fieldChooser.setSelectedByIndex(0);
     fieldChooser.setToolTipText( field.getDescription());
 
-      // levels
-    List levels = field.getLevels();
-    if ((levels == null) || (levels.size() == 0)) {
-      levelChooser.setCollection(null);
-      levelChooser.setLabel("none");
-    } else {
-      levelChooser.setCollection(levels.iterator());
-      NamedObject no = (NamedObject)levels.get(controller.getCurrentLevelIndex());
-      levelChooser.setSelectedByName(no.getName());
-    }
+    GridCoordSystem gcs = field.getGridCoordSystem();
 
       // levels
-    List times = field.getTimes();
-    if ((times == null)  || (times.size() == 0)) {
-      timeChooser.setCollection(null);
-      timeChooser.setLabel("none");
-    } else {
-      timeChooser.setCollection(times.iterator());
-      NamedObject no = (NamedObject) times.get(controller.getCurrentTimeIndex());
-      timeChooser.setSelectedByName(no.getName());
+    CoordinateAxis1D axis = gcs.getVerticalAxis();
+    setChooserWanted("level", axis != null);
+    if (axis != null) {
+      List levels = axis.getNames();
+      levelChooser.setCollection(levels.iterator());
+      levelChooser.setSelectedByIndex( 0);
     }
+
+      // times
+    axis = gcs.getTimeAxis();
+    setChooserWanted("time", axis != null);
+    if (axis != null) {
+      List names = axis.getNames();
+      timeChooser.setCollection(names.iterator());
+      timeChooser.setSelectedByIndex( 0);
+    }
+
+    axis = gcs.getEnsembleAxis();
+    setChooserWanted("ensemble", axis != null);
+    if (axis != null) {
+      List names = axis.getNames();
+      ensembleChooser.setCollection(names.iterator());
+      ensembleChooser.setSelectedByIndex(0);
+    }
+
+    axis = gcs.getRunTimeAxis();
+    setChooserWanted("runtime", axis != null);
+    if (axis != null) {
+      List names = axis.getNames();
+      runtimeChooser.setCollection(names.iterator());
+      runtimeChooser.setSelectedByIndex(0);
+    }
+
+    setChoosers();
 
     colorScalePanel.setUnitString( field.getUnitsString());
   }
@@ -601,8 +629,9 @@ public class GridUI extends JPanel {
 
   private void makeUI(int defaultHeight) {
 
-    gridPP = new PrefPanel("GridView", (PreferencesExt) store.node("GridViewPrefs"));
-    gridUrlIF = gridPP.addTextComboField("url", "Gridded Data URL", null, 10, true);
+    datasetNameLabel = new JLabel();
+    /* gridPP = new PrefPanel("GridView", (PreferencesExt) store.node("GridViewPrefs"));
+    gridUrlIF = gridPP.addTextComboField("url", "Gridded Data URL", null, 10, false);
     gridPP.addButton( BAMutil.makeButtconFromAction( chooseLocalDatasetAction ));
     gridPP.finish(true, BorderLayout.EAST);
     gridPP.addActionListener(new ActionListener() {
@@ -610,12 +639,12 @@ public class GridUI extends JPanel {
         InvDatasetImpl ds = new InvDatasetImpl( gridUrlIF.getText(), thredds.catalog.DataType.GRID, ServiceType.NETCDF);
         setDataset( ds);
       }
-    });
+    }); */
 
     // top tool panel
     toolPanel = new JPanel();
     toolPanel.setBorder(new EtchedBorder());
-    toolPanel.setLayout(new MFlowLayout(FlowLayout.LEFT, 0, 0));
+    toolPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
     // menus
     JMenu dataMenu = new JMenu("Dataset");
@@ -632,9 +661,9 @@ public class GridUI extends JPanel {
     toolPanel.add(menuBar);
 
     // field choosers
-    toolPanel.add( fieldChooser);
-    toolPanel.add( levelChooser);
-    toolPanel.add( timeChooser);
+    fieldPanel = new JPanel();
+    fieldPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    toolPanel.add( fieldPanel);
 
     // stride
     toolPanel.add( controller.strideSpinner);
@@ -699,7 +728,7 @@ public class GridUI extends JPanel {
     JPanel northPanel = new JPanel();
     //northPanel.setLayout( new BoxLayout(northPanel, BoxLayout.Y_AXIS));
     northPanel.setLayout( new BorderLayout());
-    northPanel.add( gridPP, BorderLayout.NORTH);
+    northPanel.add( datasetNameLabel, BorderLayout.NORTH);
     northPanel.add( toolPanel, BorderLayout.SOUTH);
 
     setLayout(new BorderLayout());
@@ -709,6 +738,34 @@ public class GridUI extends JPanel {
     add(drawingPanel, BorderLayout.CENTER);
 
     setDrawHorizAndVert( controller.drawHorizOn, controller.drawVertOn);
+  }
+
+  private ArrayList choosers;
+  private void setChoosers() {
+    fieldPanel.removeAll();
+    for (int i = 0; i < choosers.size(); i++) {
+      Chooser c = (Chooser) choosers.get(i);
+      if (c.isWanted)
+        fieldPanel.add(c.field);
+    }
+  }
+
+  private class Chooser {
+    Chooser(String name, SuperComboBox field, boolean want){
+      this.name = name;
+      this.field = field;
+      this.isWanted = want;
+    }
+    boolean isWanted;
+    String  name;
+    SuperComboBox field;
+  }
+
+  private void setChooserWanted(String name, boolean want) {
+    for (int i = 0; i < choosers.size(); i++) {
+      Chooser chooser = (Chooser) choosers.get(i);
+      if (chooser.name.equals(name)) chooser.isWanted = want;
+    }
   }
 
   private void addToolbarOption(String toolbarName, JToolBar toolbar, AbstractAction act) {

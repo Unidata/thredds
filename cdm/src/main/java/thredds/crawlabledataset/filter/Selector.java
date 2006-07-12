@@ -1,4 +1,4 @@
-// $Id: Selector.java,v 1.1 2005/11/15 18:40:48 edavis Exp $
+// $Id$
 package thredds.crawlabledataset.filter;
 
 import thredds.crawlabledataset.CrawlableDataset;

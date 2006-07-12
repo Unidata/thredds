@@ -1,4 +1,4 @@
-// $Id: Test.java,v 1.9 2005/09/15 17:28:11 steve Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.units;
  * Provides support for testing the ucar.units package.
  *
  * @author Steven R. Emmerson
- * @version $Id: Test.java,v 1.9 2005/09/15 17:28:11 steve Exp $
+ * @version $Id$
  */
 public class
 Test

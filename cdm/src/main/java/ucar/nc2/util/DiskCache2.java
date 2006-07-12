@@ -1,4 +1,4 @@
-// $Id: DiskCache2.java,v 1.8 2006/05/08 02:47:35 caron Exp $
+// $Id$
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -42,7 +42,7 @@ import java.util.*;
  * <li>  to the current working directory
  * </ol>
  * @author jcaron
- * @version $Revision: 1.3 $ $Date: 2005/02/18 01:14:58 $
+ * @version $Revision$ $Date$
  */
 public class DiskCache2 {
   public static int CACHEPATH_POLICY_ONE_DIRECTORY = 0;

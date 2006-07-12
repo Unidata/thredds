@@ -1,4 +1,4 @@
-// $Id: MultiSelectorFilter.java,v 1.4 2006/03/01 23:08:35 edavis Exp $
+// $Id$
 package thredds.crawlabledataset.filter;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-// $Id: CatalogBuilder.java,v 1.7 2006/05/19 19:23:04 edavis Exp $
+// $Id$
 package thredds.cataloggen;
 
 import thredds.catalog.InvCatalog;
