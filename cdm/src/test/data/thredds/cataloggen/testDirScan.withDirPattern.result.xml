@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="myServer" serviceType="DODS" base="http://localhost:8080/thredds/dodsC/"/>
+  <dataset name="2004*/KBMX" ID="idBase/uahRadarLevelII/2004*/KBMX">
+    <metadata inherited="true">
+      <serviceName>myServer</serviceName>
+    </metadata>
+    <catalogRef xlink:href="20041214/KBMX/catalog.xml" xlink:title="20041214/KBMX"
+                ID="idBase/uahRadarLevelII/20041214/KBMX" name=""/>
+    <catalogRef xlink:href="20041215/KBMX/catalog.xml" xlink:title="20041215/KBMX"
+                ID="idBase/uahRadarLevelII/20041215/KBMX" name=""/>
+  </dataset>
+</catalog>

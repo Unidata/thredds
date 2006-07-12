@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Example THREDDS Inventory Catalog" version="1.0" 
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+     
+	<dataset name="top-level collection" ID="top">
+		<!--	all referenced servers -->
+		<service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
+		<service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
+		
+		<!-- simple collection -->
+		<dataset name="Flux measurements" ID="nest1" authority="divine">
+		     <metadata inherited="true">
+		          <property name="GoodThing" value="Where have you gone?"/>
+		          <dataType>Grid</dataType>
+		          <dataFormat>NcML</dataFormat>
+		          <serviceName>ACD</serviceName>
+		     </metadata>
+		         
+		     <metadata metadataType="NetCDF" xlink:title="Your mama"  xlink:href="any.xml" />
+		     <documentation>HEY</documentation>
+		     
+			<dataset name="CO2" urlPath="flux/CO2.nc" ID="nest11" />
+			<dataset name="NO2" urlPath="flux/NO2.nc" ID="nest12" dataType="Imagine" serviceName="local" authority="human">
+			    <property name="GoodThing" value="override"/>
+			    <dataset name="CO22" urlPath="flux/CO22.nc" ID="nest121" />
+              </dataset>
+		</dataset >
+
+		<dataset name="Flux measurements" ID="nest2" />
+	</dataset>
+</catalog>

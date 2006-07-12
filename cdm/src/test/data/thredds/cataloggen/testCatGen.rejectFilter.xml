@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Gridded Data"
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:catGen="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5">
+  <dataset name="Test rejectFilter">
+    <metadata inherited="true">
+      <dataType>Grid</dataType>
+    </metadata>
+
+    <metadata metadataType="CatalogGenConfig">
+      <catGen:catalogGenConfig type="Catalog">
+        <catGen:datasetSource name="Test rejectFilter"
+                              type="Local" structure="DirTree"
+                              accessPoint="src/test/data/thredds/cataloggen/testData/modelNotFlat">
+          <catGen:resultService name="thisDODS" serviceType="DODS"
+                                base="/thredds/dodsC/"
+                                accessPointHeader="src/test/data/thredds/cataloggen/"/>
+          <catGen:datasetFilter name="Accept all files"
+                                type="RegExp" matchPattern=".*$"/>
+          <catGen:datasetFilter name="Accept all directories"
+                                type="RegExp" matchPattern=""
+                                applyToCollectionDatasets="true"
+                                applyToAtomicDatasets="false"/>
+          <catGen:datasetFilter name="Reject eta_211/ directories"
+                                type="RegExp" matchPattern="eta_211"
+                                applyToCollectionDatasets="true"
+                                applyToAtomicDatasets="false"
+                                rejectMatchingDatasets="true"/>
+          <catGen:datasetFilter name="Reject CVS/ directories"
+                                type="RegExp" matchPattern=".svn"
+                                applyToCollectionDatasets="true"
+                                applyToAtomicDatasets="false"
+                                rejectMatchingDatasets="true"/>
+        </catGen:datasetSource>
+      </catGen:catalogGenConfig>
+    </metadata>
+
+  </dataset>
+</catalog>

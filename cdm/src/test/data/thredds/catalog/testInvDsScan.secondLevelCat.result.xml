@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="DODS" base="http://localhost:8080/thredds/docsC"/>
+  <dataset name="trajectory" ID="testData/trajectory">
+    <serviceName>ncdods</serviceName>
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <catalogRef xlink:href="aircraft/catalog.xml" xlink:title="aircraft" ID="testData/trajectory/aircraft" name=""/>
+    <catalogRef xlink:href=".svn/catalog.xml" xlink:title=".svn" ID="testData/trajectory/.svn" name=""/>
+  </dataset>
+</catalog>
+

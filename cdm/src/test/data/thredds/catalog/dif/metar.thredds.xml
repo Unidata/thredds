@@ -1,0 +1,287 @@
+<?xml version="1.0" ?> 
+
+<cat:metadata xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+  xmlns="http://gcmd.gsfc.nasa.gov/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd
+                                        http://gcmd.gsfc.nasa.gov/  file://P:/schemas/other/gcmd/dif.xsd"
+  >
+
+  <Entry_ID>DOC_NOAA_NWS_THREDDS_000000</Entry_ID>
+  <Entry_Title>Surface data originating from METAR reports for last 5 days</Entry_Title>
+  <Discipline>EARTH SCIENCE > Atmosphere</Discipline>
+  
+  <Parameters>
+    <Category>TEMPORAL</Category>
+    <Topic>TIME</Topic>
+    <Term>UTC TIME</Term>
+    <Variable>DATE TIME</Variable>
+    <Detailed_Variable>datetime</Detailed_Variable>
+  </Parameters>
+  
+  <Parameters>
+    <Category>TEMPORAL</Category>
+    <Topic>TIME</Topic>
+    <Term>UTC SECONDS SINCE 1970-01-01 00 UTC</Term>
+    <Variable>SECONDS </Variable>
+    <Detailed_Variable>time_observation</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>TEMPORAL</Category>
+    <Topic>TIME</Topic>
+    <Term>UTC SECONDS SINCE 1970-01-01 00 UTC</Term>
+    <Variable>SECONDS </Variable>
+    <Detailed_Variable>time_nominal</Detailed_Variable>
+  </Parameters>
+  
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_from_direction</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_speed</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_gust</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_from_direction_min</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_from_direction_max</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_peak_from_direction</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_peak_speed</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERIC WINDS</Term>
+    <Variable>SURFACE WINDS</Variable>
+    <Detailed_Variable>wind_peak_time</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>VISIBILITY</Term>
+    <Variable>VISIBILITY IN AIR</Variable>
+    <Detailed_Variable>visibility_in_air</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>VISIBILITY</Term>
+    <Variable>VISIBILITY IN AIR</Variable>
+    <Detailed_Variable>visibility_in_air_direction</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>VISIBILITY</Term>
+    <Variable>VISIBILITY IN AIR</Variable>
+    <Detailed_Variable>visibility_in_air_vertical</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>VISIBILITY</Term>
+    <Variable>VISIBILITY IN AIR</Variable>
+    <Detailed_Variable>visibility_in_air_surface</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>CLOUDS</Term>
+    <Variable>CLOUD AMOUNT/FEQUENCY</Variable>
+    <Detailed_Variable>low_cloud_area_fraction</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>CLOUDS</Term>
+    <Variable>CLOUD HEIGHT</Variable>
+    <Detailed_Variable>low_cloud_base_altitude</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>CLOUDS</Term>
+    <Variable>CLOUD AMOUNT/FEQUENCY</Variable>
+    <Detailed_Variable>middle_cloud_area_fraction</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>CLOUDS</Term>
+    <Variable>CLOUD HEIGHT</Variable>
+    <Detailed_Variable>middle_cloud_base_altitude</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>CLOUDS</Term>
+    <Variable>CLOUD AMOUNT/FEQUENCY</Variable>
+    <Detailed_Variable>high_cloud_area_fraction</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>CLOUDS</Term>
+    <Variable>CLOUD HEIGHT</Variable>
+    <Detailed_Variable>high_cloud_base_altitude</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERE TEMPERATURE</Term>
+    <Variable>AIR TEMPERATURE</Variable>
+    <Detailed_Variable>air_temperature</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERE WATER VAPOR</Term>
+    <Variable>DEW POINT</Variable>
+    <Detailed_Variable>dew_point_temperature</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERE PRESSURE</Term>
+    <Variable>SURFACE PRESSURE</Variable>
+    <Detailed_Variable>air_pressure</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERE PRESSURE</Term>
+    <Variable>SEA LEVEL PRESSURE</Variable>
+    <Detailed_Variable>air_pressure_at_sea_level</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>ATMOSPHERE PHENOMEIA</Term>
+    <Variable>STORMS</Variable>
+    <Detailed_Variable>weather</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>PRECIPITATION</Term>
+    <Variable>SNOW </Variable>
+    <Detailed_Variable>snowfall_amount_last_hour</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>PRECIPITATION</Term>
+    <Variable>SNOW </Variable>
+    <Detailed_Variable>snowfall_amount</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>PRECIPITATION</Term>
+    <Variable>PRECIPITATION AMOUNT </Variable>
+    <Detailed_Variable>precipitation_amount_hourly</Detailed_Variable>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>ATMOSPHERE</Topic>
+    <Term>PRECIPITATION</Term>
+    <Variable>PRECIPITATION AMOUNT </Variable>
+    <Detailed_Variable>precipitation_amount_24</Detailed_Variable>
+  </Parameters>
+  <Keyword>SURFACE DATA</Keyword>
+  <Keyword>METAR</Keyword>
+  <Temporal_Coverage>
+    <Start_Date>last 5 days </Start_Date>
+    <Stop_Date>last 5 days </Stop_Date>
+  </Temporal_Coverage>
+  <Spatial_Coverage>
+    <Southernmost_Latitude>-90</Southernmost_Latitude>
+    <Northernmost_Latitude>90</Northernmost_Latitude>
+    <Westernmost_Longitude>-180</Westernmost_Longitude>
+    <Easternmost_Longitude>180</Easternmost_Longitude>
+  </Spatial_Coverage>
+  <Data_Center>
+    <Data_Center_Name>DOC/NOAA/NWS > National Weather Service, NOAA, U.S. Department of Commerce </Data_Center_Name>
+    <Personnel>
+      <Role>DATA CENTER CONTACT</Role>
+      <First_Name>Howard</First_Name>
+      <Last_Name>Diamond</Last_Name>
+      <Email>hdiamond@smtpgate.ssmc.noaa.gov</Email>
+      <Phone> </Phone>
+      <Fax> </Fax>
+      <Address>
+            	U.S Department of Commerece
+            	National Oceanic and Atmospheric Administration (NOAA)
+            	NOAA Satellite and Information Services (NESDIS)
+            	1335 East-West Highway
+            	Silver Spring Maryland 20910-3226
+        </Address>
+    </Personnel>
+  </Data_Center>
+  <Summary>
+    METAR is the international standard code format for hourly surface weather 
+    observations which is analogous to the SA coding currently used in the US. 
+    The acronym roughly translates from French as Aviation Routine Weather Report. 
+    SPECI is merely the code name given to METAR formatted products which are 
+    issued on a special non-routine basis as dictated by changing meteorological 
+    conditions. The SPECI acronym roughly translates as Aviation Selected Special 
+    Weather Report.
+</Summary>
+  <Related_URL>
+    <URL>http://metar.noaa.gov</URL>
+    <Description>
+              Home page for METAR
+    </Description>
+  </Related_URL>
+  <Related_URL>
+    <URL>http://motherlode.ucar.edu:8080/thredds/cgi-bin/MetarServer.pl?format=qc</URL>
+    <Description>
+              THREDDS Data Capability Document for METARs
+    </Description>
+  </Related_URL>
+  <Related_URL>
+    <URL>http://motherlode.ucar.edu:8080/thredds/cgi-bin/MetarServer.pl?format=html&amp;stn=KDEN&amp;time=latest</URL>
+    <Description>
+              THREDDS sample data access for KDEN (Denver International Airport)
+    </Description>
+  </Related_URL>
+  <IDN_Node>UCAR/UNIDATA</IDN_Node>
+  <DIF_Creation_Date>2004-04-06</DIF_Creation_Date>
+  <Last_DIF_Revision_Date>2004-04-06</Last_DIF_Revision_Date>
+  
+</cat:metadata>

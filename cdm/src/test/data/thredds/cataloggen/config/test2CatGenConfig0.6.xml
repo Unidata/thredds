@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: test2CatGenConfig0.6.xml,v 1.2 2005/03/30 19:55:08 edavis Exp $ -->
+<!--
+- Simple example CatalogGenConfig file.
+  -->
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd">
+<catalog name="THREDDS CatalogGen test config file" version="0.6">
+  <dataset name="THREDDS CatalogGen test config file">
+      <metadata metadataType="CatalogGenConfig">
+        <catalogGenConfig type="Catalog">
+          <datasetSource name="model data source" type="Local"
+            structure="Flat"
+            accessPoint="src/test/data/thredds/cataloggen/testData/model">
+            <resultService name="mlode" serviceType="DODS"
+              base="http://localhost:8080/thredds/cataloggen/"
+              accessPointHeader="src/test/data/thredds/cataloggen/"/>
+            <datasetFilter name="Accept netCDF files only" type="RegExp"
+              matchPattern="/[0-9][^/]*\.nc$"/>
+            <datasetNamer name="NCEP Eta 80km CONUS model data"
+              type="RegExp" addLevel="true"
+              matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_eta_211.nc$"
+              substitutePattern="NCEP Eta 80km CONUS $1-$2-$3 $4:00:00 GMT"/>
+            <datasetNamer name="NCEP GFS 80km CONUS model data"
+              type="RegExp" addLevel="true"
+              matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_gfs_211.nc$"
+              substitutePattern="NCEP GFS 80km CONUS $1-$2-$3 $4:00:00 GMT"/>
+          </datasetSource>
+        </catalogGenConfig>
+      </metadata>
+  </dataset>
+</catalog>

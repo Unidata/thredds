@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: testCatGen.dirTree.InvCat1.0.xml,v 1.3 2005/06/07 22:50:23 edavis Exp $ -->
+<!--
+- Test DirTree structured DatasetSource.
+  -->
+<catalog name="DirTree (InvCat1.0) test"
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:catGen="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5"
+  >
+  <dataset name="DirTree (InvCat1.0) test">
+    <metadata metadataType="CatalogGenConfig">
+      <catGen:catalogGenConfig type="Catalog">
+        <catGen:datasetSource name="model data source" type="Local"
+          structure="DirTree"
+          accessPoint="src/test/data/thredds/cataloggen/testData/modelNotFlat">
+          <catGen:resultService name="mlode" serviceType="DODS"
+            base="http://localhost:8080/thredds/cataloggen/"
+            accessPointHeader="src/test/data/thredds/cataloggen/"/>
+          <catGen:datasetFilter name="Accept netCDF files only" type="RegExp"
+            matchPattern="/[0-9][^/]*\.nc$"/>
+          <catGen:datasetFilter name="Accept all subdirs" type="RegExp"
+            applyToCollectionDatasets="true" applyToAtomicDatasets="false"
+            matchPattern=""/>
+          <catGen:datasetNamer name="NCEP Eta 80km CONUS model data"
+            type="RegExp" addLevel="true"
+            matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_eta_211.nc$"
+            substitutePattern="NCEP Eta 80km CONUS $1-$2-$3 $4:00:00 GMT"/>
+          <catGen:datasetNamer name="NCEP GFS 80km CONUS model data"
+            type="RegExp" addLevel="true"
+            matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_gfs_211.nc$"
+            substitutePattern="NCEP GFS 80km CONUS $1-$2-$3 $4:00:00 GMT"/>
+        </catGen:datasetSource>
+      </catGen:catalogGenConfig>
+    </metadata>
+  </dataset>
+</catalog>

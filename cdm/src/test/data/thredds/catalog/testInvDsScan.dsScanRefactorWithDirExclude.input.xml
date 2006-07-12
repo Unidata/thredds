@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  name="Test Data Catalog for NetCDF-OPeNDAP Server" version="1.0.1">
+
+  <service name="ncdods" serviceType="OpenDAP" base=""/>
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <datasetScan name="Data" ID="myGridDataID"
+               path="myGridData" location="c:/Ethan/data/mlode/grid">
+    <!--crawlableDatasetImpl className="thredds.crawlabledataset.CrawlableDatasetFile" /-->
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+
+    <filter>
+      <include wildcard="*.grib1" atomic="true" collection="false"/>
+      <exclude wildcard="NAM" atomic="false" collection="true"/>
+    </filter>
+    <addID/> <!-- Added by default. This could be expanded to allow alternate ID formulations. (???) -->
+    <sort>
+      <lexigraphicByName increasing="false" />
+    </sort>
+    <addLatest/>
+    <addDatasetSize/>
+    <addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"
+                     startTimeSubstitutionPattern="$1-$2-$3T$4:$5"
+                     duration="7 days"/>
+  </datasetScan>
+
+</catalog>

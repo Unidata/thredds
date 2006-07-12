@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="UAH/ITSC Data Pool Server">
+  <service name="Data Pool server" serviceType="HTTP" base="http://moby.itsc.uah.edu/ftpdata/data/lead/raw/craft/" />
+  <dataset name="UAH/ITSC Data Pool NEXRAD Level 2">
+    <metadata inherited="true">
+      <serviceName>Data Pool server</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+    <dataset name="NEXRAD Level 2 for KBMX">
+      <dataset name="NEXRAD Level 2 for site KBMX, Year 2004 Month 12 Day 15 Time 1025" urlPath="uahRadarLevelII/20041215/KBMX/KBMX_20041215_1025.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+      <dataset name="NEXRAD Level 2 for site KBMX, Year 2004 Month 12 Day 15 Time 1014" urlPath="uahRadarLevelII/20041215/KBMX/KBMX_20041215_1014.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+      <dataset name="NEXRAD Level 2 for site KBMX, Year 2004 Month 12 Day 14 Time 1025" urlPath="uahRadarLevelII/20041214/KBMX/KBMX_20041214_1025.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+      <dataset name="NEXRAD Level 2 for site KBMX, Year 2004 Month 12 Day 14 Time 1014" urlPath="uahRadarLevelII/20041214/KBMX/KBMX_20041214_1014.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+    </dataset>
+    <dataset name="NEXRAD Level 2 for KFTG">
+      <dataType>Grid</dataType>
+      <dataset name="NEXRAD Level 2 for site KFTG, Year 2004 Month 12 Day 15 Time 1026" urlPath="uahRadarLevelII/20041215/KFTG/KFTG_20041215_1026.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+      <dataset name="NEXRAD Level 2 for site KFTG, Year 2004 Month 12 Day 15 Time 1013" urlPath="uahRadarLevelII/20041215/KFTG/KFTG_20041215_1013.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+      <dataset name="NEXRAD Level 2 for site KFTG, Year 2004 Month 12 Day 14 Time 1026" urlPath="uahRadarLevelII/20041214/KFTG/KFTG_20041214_1026.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+      <dataset name="NEXRAD Level 2 for site KFTG, Year 2004 Month 12 Day 14 Time 1013" urlPath="uahRadarLevelII/20041214/KFTG/KFTG_20041214_1013.bz2">
+        <serviceName>Data Pool server</serviceName>
+      </dataset>
+    </dataset>
+  </dataset>
+</catalog>

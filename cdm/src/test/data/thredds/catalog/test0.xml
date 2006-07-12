@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Example THREDDS Inventory Catalog" version="1.0" 
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+     
+	<dataset name="top-level collection" ID="top">
+		<!--	all referenced servers -->
+		<service name="ACD" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
+		<service name="local" serviceType="NetCDF" base="file://E:/metapps/data/"/>
+
+		<dataset name="Flux measurements" ID="nest2" />
+		
+	</dataset>
+</catalog>

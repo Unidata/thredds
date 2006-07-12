@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="service" serviceType="DODS" base=""/>
+  <dataset name="eta_211">
+    <metadata inherited="true">
+      <serviceName>service</serviceName>
+    </metadata>
+    <dataset name="2004050300_eta_211.nc" urlPath="2004050300_eta_211.nc"/>
+    <dataset name="2004050312_eta_211.nc" urlPath="2004050312_eta_211.nc"/>
+    <dataset name="2004050400_eta_211.nc" urlPath="2004050400_eta_211.nc"/>
+    <dataset name="2004050412_eta_211.nc" urlPath="2004050412_eta_211.nc"/>
+    <catalogRef xlink:href=".svn/catalog.xml" xlink:title=".svn" name=""/>
+  </dataset>
+</catalog>

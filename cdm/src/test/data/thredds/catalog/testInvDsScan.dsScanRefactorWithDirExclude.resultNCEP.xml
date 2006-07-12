@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="OPENDAP" base="" />
+  <dataset name="NCEP" ID="myGridDataID/NCEP">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <catalogRef xlink:href="GFS/catalog.xml" xlink:title="GFS" ID="myGridDataID/NCEP/GFS" name="" />
+  </dataset>
+</catalog>

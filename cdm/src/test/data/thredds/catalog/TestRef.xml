@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog name="Test CatalogRef proxy" version="0.6" xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <dataset name="Example THREDDS Inventory Catalog Final extra good version">
+    <catalogRef xlink:href="InvRef.xml" xlink:title="ETA data (CatalogRef)">
+      <documentation>Doesnt eliminate top dataset</documentation>
+    </catalogRef>
+    <catalogRef xlink:href="InvRef.xml" xlink:title="ETA data (inside CatalogRef)">
+      <documentation>Does eliminate top dataset</documentation>
+    </catalogRef>
+  </dataset>
+</catalog>

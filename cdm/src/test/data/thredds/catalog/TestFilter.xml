@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog name="Example THREDDS Inventory Catalog extra really good version" version="0.6" xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+	<dataset name="Example THREDDS Inventory Catalog Final extra good version">
+		<property name="GoodThing" value="Where have you gone?"/>
+	
+		<!--	all referenced servers -->
+		<service name="adde" serviceType="ADDE" base="http://www.acd.ucar.edu/adde/testServer/"/>
+		<service name="dods" serviceType="DODS" base="http://www.acd.ucar.edu/dods/testServer/"/>
+		<service name="netcdf" serviceType="NetCDF" base="file://C:/data/"/>
+		
+		<service name="compound" serviceType="Compound" base="">
+			<service name="MotherlodeFTP" serviceType="FTP" base="ftp://motherlode.ucar.edu/ftp/pub/thredds/"/>
+			<service name="MotherlodeDODS" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/"/>
+		</service>
+		
+		<!-- dods-->
+		<dataset name="Flux measurements from DODS" dataType="Grid" serviceName="dods" ID="testSubset">
+		     <property name="GoodThing" value="?Why have you gone?"/>
+			<dataset name="CO2d" urlPath="flux/CO2.nc" dataType="Image" />
+			<dataset name="NO2d" urlPath="flux/NO2.nc"/>
+		</dataset>
+		
+		<!-- netcdf-->
+		<dataset name="Flux measurements from netcdf" dataType="Grid" serviceName="netcdf" ID="testSubset">
+			<dataset name="CO2n" urlPath="flux/CO2.nc" dataType="Image" />
+			<dataset name="GoodNetcdf" urlPath="test.nc"/>
+		</dataset>
+		
+		<!-- adde-->
+		<dataset name="Flux measurements from adde" dataType="Grid" serviceName="adde" ID="testSubset">
+			<dataset name="CO2a" urlPath="flux/CO2.nc" dataType="Image" />
+			<dataset name="NO2a" urlPath="flux/NO2.nc"/>
+		</dataset>
+		
+		<!-- compound -->
+		<dataset name="Flux measurements from compound" dataType="Grid" serviceName="compound">
+			<dataset name="CO2c" urlPath="flux/CO2.nc" />
+			<dataset name="NO2c" urlPath="flux/NO2.nc"/>
+		</dataset>
+		
+		
+		<!-- example of catalog Reference -->
+		<catalogRef xlink:href="InvRef.xml" xlink:title="ETA data (CatalogRef)" />
+	</dataset>
+</catalog>

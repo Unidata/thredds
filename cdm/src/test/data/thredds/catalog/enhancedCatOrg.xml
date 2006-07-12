@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata IDD Model Data" version="0.6">
+  <dataset name="Unidata IDD Model Data" dataType="Grid" ID="ucar.unidata.idd.model" authority="Unidata">
+    <service name="latest" serviceType="Resolver" base="/thredds/dqc/latestModelNew" />
+    <dataset name="NCEP Eta 80km CONUS model data" ID="ucar.unidata.idd.model.eta_211">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/eta_211.dc.xml" />
+      <property name="DateMin" value="2003-10-12 00:00:00 GMT" />
+      <property name="StandardQuantities" value="-, eastward_wind, air_pressure, omega, northward_wind, atmosphere_absolute_vorticity, geopotential_height, relative_humidity, atmosphere_water_vapour_content, air_temperature, convective_precipitation_amount, precipitation_amount, " />
+      <property name="DateMax" value="2003-10-18 00:00:00 GMT" />
+      <property name="BoundingBox" value="-134.21974779579452 11.117185679858316 -47.439550658064036 57.652010263253956 " />
+      <dataset name="Latest NCEP Eta 80km CONUS model data" serviceName="latest" urlPath="?eta_211" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-13 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101312_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-12 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101212_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_eta_211.nc" />
+    </dataset>
+    <dataset name="NCEP GFS 80km CONUS model data" ID="ucar.unidata.idd.model.gfs_211">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_211.dc.xml" />
+      <dataset name="Latest NCEP GFS 80km CONUS model data" serviceName="latest" urlPath="?gfs_211" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-15 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101518_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-15 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101506_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-14 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101418_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-14 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101406_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-13 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101318_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-13 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101312_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-13 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101306_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-12 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101218_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-12 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101212_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-12 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101206_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_gfs_211.nc" />
+      <dataset name="NCEP GFS 80km CONUS 2003-10-11 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101118_gfs_211.nc" />
+    </dataset>
+    <dataset name="NCEP GFS Global 5.0 x 2.5 degree model data" ID="ucar.unidata.idd.model.gfs_37-44">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_37-44.dc.xml" />
+      <dataset name="Latest NCEP GFS Global 5.0 x 2.5 degree model data" serviceName="latest" urlPath="?gfs_37-44" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-15 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101518_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-15 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101506_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-14 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101418_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-14 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101406_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-13 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101318_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-13 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101312_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-13 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101306_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-12 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101218_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-12 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101212_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-12 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101206_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_gfs_37-44.nc" />
+      <dataset name="NCEP GFS Global 5.0 x 2.5 degree 2003-10-11 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101118_gfs_37-44.nc" />
+    </dataset>
+    <dataset name="NCEP GFS Global 5.0x2.5 degree model data" ID="ucar.unidata.idd.model.gfs_21-24">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_21-24.dc.xml" />
+      <dataset name="Latest NCEP GFS Global 5.0x2.5 degree model data" serviceName="latest" urlPath="?gfs_21-24" />
+      <dataset name="NCEP GFS Global 5.0x2.5 degree 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_gfs_21-24.nc" />
+      <dataset name="NCEP GFS Global 5.0x2.5 degree 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_gfs_21-24.nc" />
+      <dataset name="NCEP GFS Global 5.0x2.5 degree 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_gfs_21-24.nc" />
+      <dataset name="NCEP GFS Global 5.0x2.5 degree 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_gfs_21-24.nc" />
+    </dataset>
+    <dataset name="NCEP GFS Global 5.0x5.0 degree model data" ID="ucar.unidata.idd.model.gfs_25-26">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_25-26.dc.xml" />
+      <dataset name="Latest NCEP GFS Global 5.0x5.0 degree model data" serviceName="latest" urlPath="?gfs_25-26" />
+      <dataset name="NCEP GFS Global 5.0x5.0 degree 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_gfs_25-26.nc" />
+      <dataset name="NCEP GFS Global 5.0x5.0 degree 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_gfs_25-26.nc" />
+      <dataset name="NCEP GFS Global 5.0x5.0 degree 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_gfs_25-26.nc" />
+      <dataset name="NCEP GFS Global 5.0x5.0 degree 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_gfs_25-26.nc" />
+    </dataset>
+    <dataset name="NCEP NGM 80km CONUS model data" ID="ucar.unidata.idd.model.ngm_211">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ngm_211.dc.xml" />
+      <dataset name="Latest NCEP NGM 80km CONUS model data" serviceName="latest" urlPath="?ngm_211" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_ngm_211.nc" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_ngm_211.nc" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_ngm_211.nc" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_ngm_211.nc" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-13 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101312_ngm_211.nc" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_ngm_211.nc" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-12 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101212_ngm_211.nc" />
+      <dataset name="NCEP NGM 80km CONUS 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_ngm_211.nc" />
+    </dataset>
+    <dataset name="NCEP RUC 80km CONUS model data" ID="ucar.unidata.idd.model.ruc_211">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ruc_211.dc.xml" />
+      <dataset name="Latest NCEP RUC 80km CONUS model data" serviceName="latest" urlPath="?ruc_211" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101521_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 20:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101520_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 19:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101519_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101518_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 17:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101517_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 16:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101516_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 15:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101515_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 14:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101514_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 13:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101513_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 11:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101511_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 10:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101510_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 09:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101509_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 08:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101508_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 07:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101507_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101506_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 05:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101505_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 04:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101504_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 03:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101503_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 02:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101502_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 01:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101501_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 23:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101423_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 22:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101422_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101421_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 20:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101420_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 19:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101419_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101418_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 17:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101417_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 16:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101416_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 15:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101415_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 14:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101414_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 13:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101413_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 11:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101411_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 10:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101410_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 09:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101409_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 08:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101408_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 07:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101407_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101406_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 05:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101405_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 04:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101404_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 03:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101403_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 02:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101402_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 01:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101401_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 23:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101323_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 22:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101322_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101321_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 20:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101320_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 19:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101319_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101318_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 17:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101317_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 16:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101316_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 15:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101315_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 14:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101314_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 13:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101313_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101312_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 11:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101311_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 10:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101310_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 09:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101309_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 08:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101308_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 07:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101307_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101306_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 05:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101305_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 04:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101304_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 03:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101303_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 02:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101302_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 01:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101301_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 23:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101223_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 22:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101222_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101221_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 20:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101220_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 19:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101219_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101218_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 17:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101217_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 16:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101216_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 15:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101215_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 14:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101214_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 13:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101213_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101212_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 11:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101211_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 10:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101210_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 09:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101209_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 08:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101208_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 07:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101207_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101206_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 05:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101205_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 04:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101204_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 03:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101203_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 02:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101202_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 01:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101201_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-11 23:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101123_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-11 22:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101122_ruc_211.nc" />
+      <dataset name="NCEP RUC 80km CONUS 2003-10-11 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101121_ruc_211.nc" />
+    </dataset>
+    <dataset name="NCEP RUC2 40km CONUS model data" ID="ucar.unidata.idd.model.ruc2_236">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ruc2_236.dc.xml" />
+      <dataset name="Latest NCEP RUC2 40km CONUS model data" serviceName="latest" urlPath="?ruc2_236" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101521_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 20:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101520_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 19:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101519_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101518_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 17:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101517_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 16:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101516_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 15:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101515_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 14:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101514_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 13:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101513_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 11:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101511_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 10:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101510_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 09:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101509_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 08:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101508_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 07:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101507_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101506_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 05:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101505_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 04:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101504_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 03:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101503_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 02:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101502_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 01:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101501_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 23:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101423_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 22:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101422_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101421_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 20:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101420_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 19:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101419_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101418_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 17:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101417_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 16:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101416_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 15:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101415_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 14:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101414_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 13:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101413_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 11:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101411_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 10:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101410_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 09:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101409_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 08:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101408_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 07:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101407_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101406_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 05:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101405_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 04:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101404_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 03:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101403_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 02:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101402_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 01:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101401_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-13 23:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101323_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-13 22:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101322_ruc2_236.nc" />
+      <dataset name="NCEP RUC2 40km CONUS 2003-10-13 21:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101321_ruc2_236.nc" />
+    </dataset>
+    <dataset name="NCEP SST Global 5.0x2.5 degree model data" ID="ucar.unidata.idd.model.sst_21-24">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/sst_21-24.dc.xml" />
+      <dataset name="Latest NCEP SST Global 5.0x2.5 degree model data" serviceName="latest" urlPath="?sst_21-24" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_sst_21-24.nc" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_sst_21-24.nc" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_sst_21-24.nc" />
+      <dataset name="NCEP SST Global 5.0x2.5 degree 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_sst_21-24.nc" />
+    </dataset>
+    <dataset name="NCEP SST Global 2.0x2.0 degree model data" ID="ucar.unidata.idd.model.sst_61-64">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/sst_61-64.dc.xml" />
+      <dataset name="Latest NCEP SST Global 2.0x2.0 degree model data" serviceName="latest" urlPath="?sst_61-64" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_sst_61-64.nc" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_sst_61-64.nc" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_sst_61-64.nc" />
+      <dataset name="NCEP SST Global 2.0x2.0 degree 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_sst_61-64.nc" />
+    </dataset>
+    <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree model data" ID="ucar.unidata.idd.model.ocean_21-24">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <metadata metadataType="DublinCore" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ocean_21-24.dc.xml" />
+      <dataset name="Latest NCEP Wind-Wave Global 5.0x2.5 degree model data" serviceName="latest" urlPath="?ocean_21-24" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_ocean_21-24.nc" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-15 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101500_ocean_21-24.nc" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_ocean_21-24.nc" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_ocean_21-24.nc" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-13 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101312_ocean_21-24.nc" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-13 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101300_ocean_21-24.nc" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-12 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101212_ocean_21-24.nc" />
+      <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree 2003-10-12 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101200_ocean_21-24.nc" />
+    </dataset>
+    <dataset name="Locally Run Workstation Eta model data" ID="ucar.unidata.idd.model.wseta_255">
+      <service name="mlode" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/" />
+      <dataset name="Latest Workstation Eta model data" serviceName="latest" urlPath="?wseta_255" />
+      <dataset name="Workstation Eta 2003-10-15 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101518_wseta_255.nc" />
+      <dataset name="Workstation Eta 2003-10-15 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101512_wseta_255.nc" />
+      <dataset name="Workstation Eta 2003-10-15 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101506_wseta_255.nc" />
+      <dataset name="Workstation Eta 2003-10-14 18:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101418_wseta_255.nc" />
+      <dataset name="Workstation Eta 2003-10-14 12:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101412_wseta_255.nc" />
+      <dataset name="Workstation Eta 2003-10-14 06:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101406_wseta_255.nc" />
+      <dataset name="Workstation Eta 2003-10-14 00:00:00 GMT" serviceName="mlode" urlPath="dods/model.new/2003101400_wseta_255.nc" />
+    </dataset>
+  </dataset>
+</catalog>
+

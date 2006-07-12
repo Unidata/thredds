@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="DODS" base=""/>
+  <dataset name="dmsp" ID="testData/dmsp">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <dataset name="headerOnly.OIS" ID="testData/dmsp/headerOnly.OIS" urlPath="headerOnly.OIS">
+      <dataSize units="Kbytes">6.08</dataSize>
+    </dataset>
+    <dataset name="F14200307192230.s.OIS" ID="testData/dmsp/F14200307192230.s.OIS" urlPath="F14200307192230.s.OIS">
+      <dataSize units="Mbytes">4.961</dataSize>
+    </dataset>
+    <dataset name="F14200307192230.n.OIS" ID="testData/dmsp/F14200307192230.n.OIS" urlPath="F14200307192230.n.OIS">
+      <dataSize units="Mbytes">2.103</dataSize>
+    </dataset>
+    <catalogRef xlink:href=".svn/catalog.xml" xlink:title=".svn" ID="testData/dmsp/.svn" name=""/>
+  </dataset>
+</catalog>

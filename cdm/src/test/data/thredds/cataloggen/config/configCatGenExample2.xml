@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: configCatGenExample2.xml,v 1.1 2005/03/30 05:41:07 edavis Exp $ -->
+<!-- Example CatalogGenConfig file for servlet config example. -->
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/CatalogGenConfig.0.5.dtd">
+<catalog name="Unidata IDD Server" version="0.6">
+  <dataset name="Unidata IDD Server">
+    <dataset name="test 1">
+      <metadata metadataType="CatalogGenConfig">
+        <catalogGenConfig type="Catalog">
+          <datasetSource name="first ds source" type="Local" structure="Flat" accessPoint="/my/data/models">
+            <resultService name="mlode" serviceType="DODS" base="http://my.server.edu/cgi-bin/dods/nph-dods/" accessPointHeader="/my/data/"/>
+            <datasetFilter name="Accept netCDF files only" type="RegExp" matchPattern="\.nc$"/>
+            <datasetNamer name="NCEP AVN-Q model data" type="RegExp" addLevel="false" matchPattern="([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])_avn-q.nc$" substitutePattern="NCEP AVN-Q $1-$2-$3 $4:00:00 GMT"/>
+          </datasetSource>
+        </catalogGenConfig>
+      </metadata>
+    </dataset>
+  </dataset>
+</catalog>

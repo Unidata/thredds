@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="DODS" base=""/>
+  <dataset name="Test Data" ID="testData">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <catalogRef xlink:href="trajectory/catalog.xml" xlink:title="trajectory" ID="testData/trajectory" name=""/>
+    <dataset name="testWriteRecord.nc" ID="testData/testWriteRecord.nc" urlPath="testWriteRecord.nc"/>
+    <dataset name="testWrite.nc" ID="testData/testWrite.nc" urlPath="testWrite.nc"/>
+    <dataset name="standardVar.nc" ID="testData/standardVar.nc" urlPath="standardVar.nc"/>
+    <dataset name="rankTest2.nc" ID="testData/rankTest2.nc" urlPath="rankTest2.nc"/>
+    <dataset name="rankTest.nc" ID="testData/rankTest.nc" urlPath="rankTest.nc"/>
+    <dataset name="permuteTest.nc" ID="testData/permuteTest.nc" urlPath="permuteTest.nc"/>
+    <catalogRef xlink:href="nids/catalog.xml" xlink:title="nids" ID="testData/nids" name=""/>
+    <catalogRef xlink:href="ncml/catalog.xml" xlink:title="ncml" ID="testData/ncml" name="" />
+    <dataset name="mydata1.nc" ID="testData/mydata1.nc" urlPath="mydata1.nc"/>
+    <dataset name="longOffset.nc" ID="testData/longOffset.nc" urlPath="longOffset.nc"/>
+    <dataset name="jan.nc" ID="testData/jan.nc" urlPath="jan.nc"/>
+    <catalogRef xlink:href="gini/catalog.xml" xlink:title="gini" ID="testData/gini" name=""/>
+    <dataset name="feb.nc" ID="testData/feb.nc" urlPath="feb.nc"/>
+    <dataset name="example1.nc" ID="testData/example1.nc" urlPath="example1.nc"/>
+    <catalogRef xlink:href="dorade/catalog.xml" xlink:title="dorade" ID="testData/dorade" name=""/>
+    <catalogRef xlink:href="dmsp/catalog.xml" xlink:title="dmsp" ID="testData/dmsp" name=""/>
+    <catalogRef xlink:href="dataset/catalog.xml" xlink:title="dataset" ID="testData/dataset" name=""/>
+    <catalogRef xlink:href="catalog/catalog.xml" xlink:title="catalog" ID="testData/catalog" name=""/>
+    <catalogRef xlink:href=".svn/catalog.xml" xlink:title=".svn" ID="testData/.svn" name=""/>
+  </dataset>
+</catalog>

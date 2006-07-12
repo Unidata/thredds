@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS CatalogGen test config file" version="0.6">
+  <dataset name="THREDDS CatalogGen test config file">
+    <service name="mlode" serviceType="DODS" base="http://localhost:8080/thredds/cataloggen/"/>
+    <dataset name="NCEP GFS 80km CONUS model data" serviceName="mlode">
+      <dataset name="NCEP GFS 80km CONUS 2004-05-03 18:00:00 GMT" urlPath="testData/model/2004050318_gfs_211.nc"/>
+      <dataset name="NCEP GFS 80km CONUS 2004-05-03 12:00:00 GMT" urlPath="testData/model/2004050312_gfs_211.nc"/>
+      <dataset name="NCEP GFS 80km CONUS 2004-05-03 06:00:00 GMT" urlPath="testData/model/2004050306_gfs_211.nc"/>
+      <dataset name="NCEP GFS 80km CONUS 2004-05-03 00:00:00 GMT" urlPath="testData/model/2004050300_gfs_211.nc"/>
+    </dataset>
+    <dataset name="NCEP Eta 80km CONUS model data" serviceName="mlode">
+      <dataset name="NCEP Eta 80km CONUS 2004-05-04 12:00:00 GMT" urlPath="testData/model/2004050412_eta_211.nc"/>
+      <dataset name="NCEP Eta 80km CONUS 2004-05-04 00:00:00 GMT" urlPath="testData/model/2004050400_eta_211.nc" />
+      <dataset name="NCEP Eta 80km CONUS 2004-05-03 12:00:00 GMT" urlPath="testData/model/2004050312_eta_211.nc"/>
+      <dataset name="NCEP Eta 80km CONUS 2004-05-03 00:00:00 GMT" urlPath="testData/model/2004050300_eta_211.nc" />
+    </dataset>
+  </dataset>
+</catalog>
+

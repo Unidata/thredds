@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="CatGen Test for Bad Access Points">
+  <dataset name="CatGen Test for Bad Access Points">
+    <metadata inherited="true">
+      <serviceName>testServer</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+    <dataset name="Test 1: a NonExistent Local Directory for accessPoint">
+      <dataset name="Error: IOException on fullExpand() of DatasetSource &lt;Test 1: a NonExistent Local Directory for accessPoint&gt;: The accessPoint local file does not exist &lt;.\test\data\thredds\cataloggen\testData\aNonExistentDir&gt;." />
+    </dataset>
+    <dataset name="Test 2: a NonExistent Local Directory for accessPointHeader">
+      <dataset name="Error: IOException on fullExpand() of DatasetSource &lt;Test 2: a NonExistent Local Directory for accessPointHeader&gt;: The accessPointHeader local file does not exist &lt;.\test\data\thredds\cataloggen\testDat&gt;." />
+    </dataset>
+  </dataset>
+</catalog>

@@ -1,0 +1,133 @@
+  <catalog  name="Unidata IDD Model Data"
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd" 
+  >
+
+    <service name="latest" serviceType="Resolver"
+             base="/thredds/dqc/latestModelNew" />
+
+  <dataset name="Unidata IDD Model Data"  ID="ucar.unidata.idd.model">
+           
+   <metadata inherited="true">
+      <dataType>Grid</dataType>
+    </metadata>
+ 
+
+    <!-- Eta 80km CONUS (211)            *_eta_211.nc [eta] -->
+    <dataset name="NCEP Eta 80km CONUS model data"
+             ID="ucar.unidata.idd.model.eta_211">
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/eta_211.dc.xml" />
+      <dataset name="Latest NCEP Eta 80km CONUS model data"
+                     serviceName="latest" urlPath="?eta_211" />
+    </dataset>
+    
+    <!-- GFS 80km CONUS (211)            *_gfs_211.nc   [avn-q, gfs211] -->
+    <dataset name="NCEP GFS 80km CONUS model data"
+             ID="ucar.unidata.idd.model.gfs_211">
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_211.dc.xml" />
+      <dataset name="Latest NCEP GFS 80km CONUS model data"
+               serviceName="latest" urlPath="?gfs_211" />
+    </dataset>
+    
+    <!-- GFS Global 5.0 x 2.5 degree (37-44) *_gfs_37-44.nc [avn-x, gfs255] -->
+    <dataset name="NCEP GFS Global 5.0 x 2.5 degree model data"
+             ID="ucar.unidata.idd.model.gfs_37-44">
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_37-44.dc.xml" />
+      <dataset name="Latest NCEP GFS Global 5.0 x 2.5 degree model data"
+                     serviceName="latest" urlPath="?gfs_37-44" />
+    </dataset>
+    
+    <!-- GFS Global 5.0x2.5 degree (21-24)   *_gfs_21-24.nc [mrf-a] -->
+    <dataset name="NCEP GFS Global 5.0x2.5 degree model data"
+             ID="ucar.unidata.idd.model.gfs_21-24">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_21-24.dc.xml" />
+      <dataset name="Latest NCEP GFS Global 5.0x2.5 degree model data"
+                     serviceName="latest" urlPath="?gfs_21-24" />
+    </dataset>
+    
+    <!--  GFS Global 5.0x5.0 degree (25-26)   *_gfs_25-26.nc [mrf-e] -->
+    <dataset name="NCEP GFS Global 5.0x5.0 degree model data"
+             ID="ucar.unidata.idd.model.gfs_25-26">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/gfs_25-26.dc.xml" />
+      <dataset name="Latest NCEP GFS Global 5.0x5.0 degree model data"
+                     serviceName="latest" urlPath="?gfs_25-26" />
+    </dataset>
+    
+    <!--  NGM 80km CONUS (211)            *_ngm_211.nc   [ngm-q] -->
+    <dataset name="NCEP NGM 80km CONUS model data"
+             ID="ucar.unidata.idd.model.ngm_211">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ngm_211.dc.xml" />
+      <dataset name="Latest NCEP NGM 80km CONUS model data"
+                     serviceName="latest" urlPath="?ngm_211" />
+    </dataset>
+    <!-- RUC 80km CONUS (211)            *_ruc_211.nc   [ruc] -->
+    <dataset name="NCEP RUC 80km CONUS model data"
+             ID="ucar.unidata.idd.model.ruc_211">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ruc_211.dc.xml" />
+      <dataset name="Latest NCEP RUC 80km CONUS model data"
+                     serviceName="latest" urlPath="?ruc_211" />
+    </dataset>
+    <!-- RUC2 40km CONUS (236)           *_ruc2_236.nc  [ruc2] -->
+    <dataset name="NCEP RUC2 40km CONUS model data"
+             ID="ucar.unidata.idd.model.ruc2_236">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ruc2_236.dc.xml" />
+      <dataset name="Latest NCEP RUC2 40km CONUS model data"
+                     serviceName="latest" urlPath="?ruc2_236" />
+    </dataset>
+    <!-- SST Global 5.0x2.5 degree (21-24)   *_sst_21-24.nc [sst-a] -->
+    <dataset name="NCEP SST Global 5.0x2.5 degree model data"
+             ID="ucar.unidata.idd.model.sst_21-24">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/sst_21-24.dc.xml" />
+      <dataset name="Latest NCEP SST Global 5.0x2.5 degree model data"
+                     serviceName="latest" urlPath="?sst_21-24" />
+    </dataset>
+    <!-- SST Global 2.0x2.0 degree (61-64)   *_sst_61-64.nc [sst-t] -->
+    <dataset name="NCEP SST Global 2.0x2.0 degree model data"
+             ID="ucar.unidata.idd.model.sst_61-64">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/sst_61-64.dc.xml" />
+      <dataset name="Latest NCEP SST Global 2.0x2.0 degree model data"
+                     serviceName="latest" urlPath="?sst_61-64" />
+    </dataset>
+
+    <!-- Wind-Wave Global 5.0x2.5 degree (21-24) *_ocean_21-24.nc [ocean] -->
+    <!-- NOW and PWAV Global 5.0 x 2.5 degree (21-24)
+         *_ocean_21-24.nc [ocean] -->
+    <dataset name="NCEP Wind-Wave Global 5.0x2.5 degree model data"
+             ID="ucar.unidata.idd.model.ocean_21-24">
+
+      <metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/ocean_21-24.dc.xml" />
+      <dataset name="Latest NCEP Wind-Wave Global 5.0x2.5 degree model data"
+                     serviceName="latest" urlPath="?ocean_21-24" />
+    </dataset>
+    <!-- Locally Run Workstation Eta (255) *_wseta_255.nc [wseta] -->
+    <dataset name="Locally Run Workstation Eta model data"
+             ID="ucar.unidata.idd.model.wseta_255">
+
+      <!--metadata metadataType="DublinCore"
+                xlink:type="simple" xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/wseta_255.dc.xml" /-->
+      <dataset name="Latest Workstation Eta model data"
+                     serviceName="latest" urlPath="?wseta_255" />
+    </dataset>
+  </dataset>
+</catalog>
+

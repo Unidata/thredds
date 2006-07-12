@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="CatGen Test for Bad Access Points"
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:catGen="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd"
+>
+<!--?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/schemas/thredds/CatalogGenConfig.0.5.dtd"-->
+  <dataset name="CatGen Test for Bad Access Points">
+      <metadata inherited="true">
+          <serviceName>testServer</serviceName>
+          <dataType>Grid</dataType>
+      </metadata>
+
+      <dataset name="Test 1: a NonExistent Local Directory for accessPoint">
+        <metadata metadataType="CatalogGenConfig">
+          <catGen:catalogGenConfig type="Catalog">
+            <catGen:datasetSource name="Test 1: a NonExistent Local Directory for accessPoint" type="Local" structure="Flat"
+		           accessPoint="src/test/data/thredds/cataloggen/testData/aNonExistentDir">
+              <catGen:resultService name="Data Pool server" serviceType="HTTP"
+                             base="http://server/"
+			     accessPointHeader="src/test/data/thredds/cataloggen/testData/" />
+              <catGen:datasetFilter name="Accept Bzipped files only" type="RegExp"
+                             matchPattern="/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/KBMX/KBMX.*\.bz2$" />
+            </catGen:datasetSource>
+          </catGen:catalogGenConfig>
+        </metadata>
+      </dataset>
+
+      <dataset name="Test 2: a NonExistent Local Directory for accessPointHeader">
+        <metadata metadataType="CatalogGenConfig">
+          <catGen:catalogGenConfig type="Catalog">
+            <catGen:datasetSource name="Test 2: a NonExistent Local Directory for accessPointHeader" type="Local"
+                           structure="Flat"
+		           accessPoint="src/test/data/thredds/cataloggen/testData/uahRadarLevelII">
+              <catGen:resultService name="Data Pool server" serviceType="HTTP"
+                             base="http://server/"
+			     accessPointHeader="src/test/data/thredds/cataloggen/testDat/" />
+              <catGen:datasetFilter name="Accept Bzipped files only" type="RegExp"
+                             matchPattern="/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/KFTG/KFTG.*\.bz2$" />
+            </catGen:datasetSource>
+          </catGen:catalogGenConfig>
+        </metadata>
+      </dataset>
+
+  </dataset> 
+</catalog>
+

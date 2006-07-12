@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="UAH/ITSC Data Pool Server"
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:catGen="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd"
+>
+<!--?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/schemas/thredds/CatalogGenConfig.0.5.dtd"-->
+  <dataset name="UAH/ITSC Data Pool NEXRAD Level 2">
+      <metadata inherited="true">
+          <serviceName>Data Pool server</serviceName>
+          <dataType>Grid</dataType>
+      </metadata>
+
+      <dataset name="NEXRAD Level 2 for KBMX">
+        <metadata metadataType="CatalogGenConfig">
+          <catGen:catalogGenConfig type="Catalog">
+            <catGen:datasetSource name="NEXRAD Level 2 for KBMX" type="Local"
+                           structure="Flat"
+		           accessPoint="src/test/data/thredds/cataloggen/testData/uahRadarLevelII">
+              <catGen:resultService name="Data Pool server" serviceType="HTTP"
+                             base="http://moby.itsc.uah.edu/ftpdata/data/lead/raw/craft/"
+			     accessPointHeader="src/test/data/thredds/cataloggen/testData/" />
+              <catGen:datasetFilter name="Accept Bzipped files only" type="RegExp"
+                             matchPattern="/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/KBMX/KBMX.*\.bz2$" />
+              <catGen:datasetFilter name="Accept date directories" type="RegExp"
+                             matchPattern="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
+                             applyToCollectionDatasets="true"
+                             applyToAtomicDatasets="false" />
+              <catGen:datasetFilter name="Accept KBMX directories" type="RegExp"
+                             matchPattern="KBMX$"
+                             applyToCollectionDatasets="true"
+                             applyToAtomicDatasets="false" />
+    
+              <catGen:datasetNamer name="NEXRAD Level 2" type="RegExp" addLevel="false"
+                            matchPattern="([A-Z][A-Z][A-Z][A-Z])_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])_([0-9][0-9][0-9][0-9]).bz2$"
+			    substitutePattern="NEXRAD Level 2 for site $1, Year $2 Month $3 Day $4 Time $5" />
+            </catGen:datasetSource>
+          </catGen:catalogGenConfig>
+        </metadata>
+      </dataset>
+
+      <dataset name="NEXRAD Level 2 for KFTG" dataType="Grid" >
+        <metadata metadataType="CatalogGenConfig">
+          <catGen:catalogGenConfig type="Catalog">
+            <catGen:datasetSource name="NEXRAD Level 2 for KFTG" type="Local"
+                           structure="Flat"
+		           accessPoint="src/test/data/thredds/cataloggen/testData/uahRadarLevelII">
+              <catGen:resultService name="Data Pool server" serviceType="HTTP"
+                             base="http://moby.itsc.uah.edu/ftpdata/data/lead/raw/craft/"
+			     accessPointHeader="src/test/data/thredds/cataloggen/testData/" />
+              <catGen:datasetFilter name="Accept Bzipped files only" type="RegExp"
+                             matchPattern="/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]/KFTG/KFTG.*\.bz2$" />
+              <catGen:datasetFilter name="Accept date directories" type="RegExp"
+                             matchPattern="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
+                             applyToCollectionDatasets="true"
+                             applyToAtomicDatasets="false" />
+              <catGen:datasetFilter name="Accept KFTG directories" type="RegExp"
+                             matchPattern="KFTG$"
+                             applyToCollectionDatasets="true"
+                             applyToAtomicDatasets="false" />
+
+              <catGen:datasetNamer name="NEXRAD Level 2" type="RegExp" addLevel="false"
+                            matchPattern="([A-Z][A-Z][A-Z][A-Z])_([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])_([0-9][0-9][0-9][0-9]).bz2$"
+			    substitutePattern="NEXRAD Level 2 for site $1, Year $2 Month $3 Day $4 Time $5" />
+            </catGen:datasetSource>
+          </catGen:catalogGenConfig>
+        </metadata>
+      </dataset>
+
+  </dataset> 
+</catalog>
+

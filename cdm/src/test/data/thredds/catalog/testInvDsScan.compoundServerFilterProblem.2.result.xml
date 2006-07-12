@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="myserver" serviceType="Compound" base="">
+    <service name="tdsDods" serviceType="DODS" base="/thredds/dodsC"/>
+    <service name="tdsHttp" serviceType="HTTPServer" base="/thredds/fileServer"/>
+    <service name="tdsWcs" serviceType="WCS" base="/thredds/wcs"/>
+  </service>
+  <dataset name="Eta" ID="test/eta">
+    <metadata inherited="true">
+      <serviceName>myserver</serviceName>
+    </metadata>
+    <metadata inherited="true">
+      <serviceName>myserver</serviceName>
+    </metadata>
+    <dataset name="2004050412_eta_211.nc" ID="test/eta/2004050412_eta_211.nc" urlPath="testRelativeEta/2004050412_eta_211.nc">
+      <dataSize units="Kbytes">54.73</dataSize>
+    </dataset>
+    <dataset name="2004050400_eta_211.nc" ID="test/eta/2004050400_eta_211.nc" urlPath="testRelativeEta/2004050400_eta_211.nc">
+      <dataSize units="Kbytes">54.73</dataSize>
+    </dataset>
+    <dataset name="2004050312_eta_211.nc" ID="test/eta/2004050312_eta_211.nc" urlPath="testRelativeEta/2004050312_eta_211.nc">
+      <dataSize units="Kbytes">54.73</dataSize>
+    </dataset>
+    <dataset name="2004050300_eta_211.nc" ID="test/eta/2004050300_eta_211.nc" urlPath="testRelativeEta/2004050300_eta_211.nc">
+      <dataSize units="Kbytes">54.73</dataSize>
+    </dataset>
+  </dataset>
+</catalog>
