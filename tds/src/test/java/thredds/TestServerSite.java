@@ -796,34 +796,3 @@ public class TestServerSite extends TestCase
 
 }
 
-/*
- * $Log: TestServerSite.java,v $
- * Revision 1.6  2006/03/25 00:09:25  caron
- * Forecast Model Run
- * Grib Sync()
- *
- * Revision 1.5  2006/01/23 18:51:07  edavis
- * Move CatalogGen.main() to CatalogGenMain.main(). Stop using
- * CrawlableDatasetAlias for now. Get new thredds/build.xml working.
- *
- * Revision 1.4  2006/01/17 20:58:51  edavis
- * Several small fixes to read/write of datasetScan element. A few documentation updates.
- *
- * Revision 1.3  2005/10/26 23:19:33  edavis
- * Updated TDS site tests.
- *
- * Revision 1.2  2005/08/22 19:39:13  edavis
- * Changes to switch /thredds/dqcServlet URLs to /thredds/dqc.
- * Expand testing for server installations: TestServerSiteFirstInstall
- * and TestServerSite. Fix problem with compound services breaking
- * the filtering of datasets.
- *
- * Revision 1.1  2005/08/04 22:54:50  edavis
- * Rename TestMotherlode to TestServerSite and centralize modifications
- * needed to test other sites (though still not configurable).
- *
- * Revision 1.1  2005/07/27 17:18:38  edavis
- * Added some basic HttpUnit testing of motherlode:8088 server.
- *
- *
- */
