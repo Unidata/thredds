@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog SYSTEM "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd">
+<catalog name="Example Invalid - services" version="0.6" xmlns="http://www.unidata.ucar.edu/thredds" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<dataset name="top-level collection">
+		<!-- compound service error -->
+		<service name="Motherlode" serviceType="DODS" base="">
+			<service name="MotherlodeFTP" serviceType="FTP" base="ftp://motherlode.ucar.edu/ftp/pub/thredds/"/>
+			<service name="MotherlodeDODS" serviceType="DODS" base="http://motherlode.ucar.edu/cgi-bin/dods/"/>
+		</service>
+		<service name="Motherlode2" serviceType="Compound" base="Glorp"/>
+		<!-- missing service error -->
+		<dataset name="Flux measurements" dataType="Grid" serviceName="ACD">
+			<dataset name="CO2" urlPath="flux/CO2.nc"/>
+			<dataset name="NO2" urlPath="flux/NO2.nc"/>
+		</dataset >
+		<!-- no datatype, no service -->
+		<dataset name="NO2" ID="NO2_Flux"/>
+		<!-- bad service -->
+		<dataset name="NO2" serviceName="badOne"/>
+		<!-- bad access -->
+		<dataset name="NO2" dataType="Grid">
+			<access serviceName="MotherlodeFTP" urlPath="ftp/flux/NO2.nc" serviceType="DODS"/>
+			<access serviceName="badOne" urlPath="1998/NO2.nc"/>
+			<access serviceType="FTP" urlPath="1998/NO2.nc"/>
+			<access serviceType="FTP" urlPath="ftp://ftp.ucar.edu/1998/NO2.nc"/>
+			<access serviceName="MotherlodeFTP" urlPath=";reallyba dOne:youThink::Not?ok//mabbee"/>
+		</dataset>
+	</dataset >
+</catalog>

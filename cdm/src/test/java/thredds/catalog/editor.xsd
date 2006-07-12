@@ -1,0 +1,53 @@
+<schema targetNamespace="http://www.xml-schema.com/examples/schema/Editor"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:e="http://www.xml-schema.com/examples/schema/Editor"
+        elementFormDefault="qualified">        
+
+  <annotation>
+    <documentation xml:lang="en">
+     Editor document definition defines an html based editor
+    </documentation>
+  </annotation>
+
+  <element name="htmlEditor" type="e:HtmlEditorType"/>
+
+  <element name="updateTime" type="dateTime"/>
+
+  <complexType name="HtmlEditorType">
+    <sequence>
+      <element ref="e:updateTime" minOccurs="1" maxOccurs="1" />
+      <element name="fields" type="e:Fields" minOccurs="1" maxOccurs="1" />
+    </sequence>
+  </complexType>
+
+  <complexType name="Fields">
+    <sequence>
+      <element name="field" minOccurs="1" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="shortDesc" type="string" minOccurs="1" maxOccurs="1"/>
+            <element name="htmlType" type="e:HtmlTypeType" minOccurs="1" maxOccurs="1"/>
+            <element name="allowNull" type="boolean" minOccurs="1" maxOccurs="1" />
+            <element name="defaultVal"  type="string"/>
+          </sequence>
+          <attribute name="columnName" type="string" use="required"/>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="HtmlTypeType">
+    <sequence> 
+      <element name="name" type="string" /> 
+      <element name="value" type="string" /> 
+    </sequence>  
+    <attribute name="name" type="e:HtmlNameType" use="required"/>  
+  </complexType>
+ 
+  <simpleType name="HtmlNameType">
+    <restriction base="NMTOKEN">   
+      <enumeration value="select"/>
+      <enumeration value="text"/>
+    </restriction>   
+  </simpleType>
+</schema>

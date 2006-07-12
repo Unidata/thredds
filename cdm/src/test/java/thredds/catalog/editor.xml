@@ -1,0 +1,19 @@
+<!DOCTYPE htmlEditor >
+<htmlEditor
+  xmlns="http://www.xml-schema.com/examples/schema/Editor"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.xml-schema.com/examples/schema/Editor N:/thredds/src/test/catalog/editor.xsd">
+   
+  <updateTime>1999-05-31T13:20:00</updateTime>
+  <fields>
+    <field columnName="nickname">
+      <shortDesc>Short Desc</shortDesc>
+      <htmlType name="select">
+        <name>firstName</name>
+        <value>lastName</value>
+      </htmlType>
+      <allowNull>true</allowNull>
+      <defaultVal>Blueberry</defaultVal>
+    </field>
+  </fields>
+</htmlEditor>
