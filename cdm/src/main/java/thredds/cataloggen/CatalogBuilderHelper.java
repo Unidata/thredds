@@ -80,18 +80,3 @@ public class CatalogBuilderHelper
     }
   }
 }
-/*
- * $Log: CatalogBuilderHelper.java,v $
- * Revision 1.3  2006/05/19 19:23:04  edavis
- * Convert DatasetInserter to ProxyDatasetHandler and allow for a list of them (rather than one) in
- * CatalogBuilders and CollectionLevelScanner. Clean up division between use of url paths (req.getPathInfo())
- * and translated (CrawlableDataset) paths.
- *
- * Revision 1.2  2006/01/26 18:20:45  edavis
- * Add CatalogRootHandler.findRequestedDataset() method (and supporting methods)
- * to check that the requested dataset is allowed, i.e., not filtered out.
- *
- * Revision 1.1  2005/12/16 23:19:35  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- */
