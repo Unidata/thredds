@@ -75,21 +75,3 @@ public interface CatalogBuilder
   public String generateCatalogAsString( CrawlableDataset catalogCrDs ) throws IOException;
 
 }
-/*
- * $Log: CatalogBuilder.java,v $
- * Revision 1.7  2006/05/19 19:23:04  edavis
- * Convert DatasetInserter to ProxyDatasetHandler and allow for a list of them (rather than one) in
- * CatalogBuilders and CollectionLevelScanner. Clean up division between use of url paths (req.getPathInfo())
- * and translated (CrawlableDataset) paths.
- *
- * Revision 1.6  2006/01/26 18:20:45  edavis
- * Add CatalogRootHandler.findRequestedDataset() method (and supporting methods)
- * to check that the requested dataset is allowed, i.e., not filtered out.
- *
- * Revision 1.5  2005/12/16 23:19:35  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.4  2005/12/06 19:39:20  edavis
- * Last CatalogBuilder/CrawlableDataset changes before start using in InvDatasetScan.
- *
- */
