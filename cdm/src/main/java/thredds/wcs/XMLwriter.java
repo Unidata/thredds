@@ -34,6 +34,11 @@ import java.util.*;
 
 import thredds.catalog.XMLEntityResolver;
 
+/**
+ * Writes the WCS XML responses .
+ * @author caron
+ * @version $Revision$ $Date$
+ */
 public class XMLwriter {
   protected static final Namespace wcsNS = Namespace.getNamespace("http://www.opengis.net/wcs");
   protected static final Namespace xlinkNS = Namespace.getNamespace("xlink", "http://www.w3.org/1999/xlink");

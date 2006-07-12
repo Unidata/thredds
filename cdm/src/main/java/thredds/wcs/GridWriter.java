@@ -37,9 +37,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Not sure if this is used.
- *
- * @see ucar.nc2.NetcdfFile
+ * Not used.
  * @author caron
  * @version $Revision$ $Date$
  */

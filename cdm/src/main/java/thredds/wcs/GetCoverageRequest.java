@@ -5,6 +5,11 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.StringTokenizer;
 
+/**
+ * Handles the GetCoverage Request.
+ * @author caron
+ * @version $Revision$ $Date$
+ */
 public class GetCoverageRequest {
   private String coverage, time, vertical;
   private Format format;

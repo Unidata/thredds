@@ -41,8 +41,11 @@ import java.io.*;
 import java.util.List;
 
 /**
- * @author john
+ * Encapsolates a GridDataset.
+ * @author caron
+ * @version $Revision$ $Date$
  */
+
 public class WcsDataset {
   private String serverURL = "http://localhost:8080/thredds/wcs?";
 
