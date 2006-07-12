@@ -16,17 +16,21 @@ window to open up the project view. You should see the following modules:
 Now for the non-"As Is" part. There are several things to setup that are
 specific to your local machine and working directory:
 
-1) Make sure a valid JDK is selected.
+1) Set the version control system to Subversion.
   a) Bring up the "Settings" window by clicking on the "wrench and bolt" icon.
-  b) Bring up the "Modules" window.
-  c) Select the "Libraries" tab.
-  d) If the JDK is shown in red, click the "..." button and select a valid JDK.
-2) Make sure a valid web application server (like Tomcat) is selected.
+  b) Brint up the "Version Control" window.
+  c) In the "Default Module Version Control" pull-down, select "Subversion".
+  d) Select the "OK" button to close the "Version Control" window.
+2) Make sure a valid JDK is selected.
+  a) Bring up the "Modules" window.
+  b) Select the "Libraries" tab.
+  c) If the JDK is shown in red, click the "..." button and select a valid JDK.
+3) Make sure a valid web application server (like Tomcat) is selected.
   a) Back in the "Modules" window, make sure the "tds" module is selected.
   b) Select the "Web Module Settings" tab.
   c) If the "Application Server" is shown in red, click the "Configure ..."
      button and select a valid application server.
-3) Setup the Ant builds (optional).
+4) Setup the Ant builds (optional).
   a) From the right sidebar, click on the "Ant Build" item.
   b) Click on the "Add" button at the top of the "Ant Build" window.
   c) Browse through your directory structure to the location where you checked
@@ -35,7 +39,7 @@ specific to your local machine and working directory:
      in the "cdm" directory and on in the "tds" directory.
   e) Select one of the build scripts and select "OK".
   f) Repeat steps b-e for any other build scripts.
-4) The TDS Ant build uses some Tomcat deploy add-ons. To use the TDS build
+5) The TDS Ant build uses some Tomcat deploy add-ons. To use the TDS build
    script, the catalina-ant.jar file must be available to Ant. There are two
    ways to set this up. Either:
    1) Setup IntelliJ IDEA to run Ant with catalina-ant.jar on the class path.
