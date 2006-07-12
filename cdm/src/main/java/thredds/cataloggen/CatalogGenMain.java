@@ -268,10 +268,3 @@ public class CatalogGenMain
                 "      you want to generate the catalogs those catalogRefs reference." );
   }
 }
-/*
- * $Log: CatalogGenMain.java,v $
- * Revision 1.1  2006/01/23 18:51:06  edavis
- * Move CatalogGen.main() to CatalogGenMain.main(). Stop using
- * CrawlableDatasetAlias for now. Get new thredds/build.xml working.
- *
- */
