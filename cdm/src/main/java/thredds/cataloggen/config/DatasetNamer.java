@@ -483,34 +483,3 @@ public class DatasetNamer
     }
   }
 }
-/*
- * $Log: DatasetNamer.java,v $
- * Revision 1.9  2006/01/20 02:08:23  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.8  2005/04/05 22:37:01  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.7  2005/01/20 21:56:42  edavis
- * Remove an old main() method full of test stuff.
- *
- * Revision 1.6  2004/11/30 23:06:42  edavis
- * Update for simplified CatGenConfig 0.5 DTD and XSD and for new datasetFilter attributes (matchPatternTarget, applyToCollectionDataset, applyToAtomicDataset, invertMatchMeaning).
- *
- * Revision 1.5  2004/08/23 16:45:20  edavis
- * Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
- *
- * Revision 1.4  2004/05/11 20:38:46  edavis
- * Update for changes to thredds.catalog object model (still InvCat 0.6).
- * Start adding some logging statements.
- *
- * Revision 1.3  2003/08/20 18:00:10  edavis
- * Change how validity of type is tested.
- *
- * Revision 1.2  2003/04/30 18:25:30  edavis
- * Fix regular expression naming.
- *
- * Revision 1.1.1.1  2002/12/11 22:27:54  edavis
- * CatGen into reorged thredds CVS repository.
- *
- */

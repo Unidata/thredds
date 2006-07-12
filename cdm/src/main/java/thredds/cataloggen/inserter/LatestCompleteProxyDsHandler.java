@@ -209,11 +209,3 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
     }
   }
 }
-/*
- * $Log: LatestCompleteProxyDsHandler.java,v $
- * Revision 1.1  2006/05/19 19:23:03  edavis
- * Convert DatasetInserter to ProxyDatasetHandler and allow for a list of them (rather than one) in
- * CatalogBuilders and CollectionLevelScanner. Clean up division between use of url paths (req.getPathInfo())
- * and translated (CrawlableDataset) paths.
- *
- */

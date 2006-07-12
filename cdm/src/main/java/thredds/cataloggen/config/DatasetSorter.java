@@ -91,25 +91,3 @@ public class DatasetSorter
   }
 
 }
-
-/*
- * $Log: DatasetSorter.java,v $
- * Revision 1.4  2006/01/20 02:08:23  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.3  2005/12/06 19:39:19  edavis
- * Last CatalogBuilder/CrawlableDataset changes before start using in InvDatasetScan.
- *
- * Revision 1.2  2005/06/24 22:00:56  edavis
- * Write DatasetEnhancer1 to allow adding metadata to datasets.
- * Implement DatasetEnhancers for adding timeCoverage and for
- * adding ID to datasets. Also fix DatasetFilter so that 1) if
- * no filter is applicable for collection datasets, allow all
- * collection datasets and 2) if no filter is applicable for
- * atomic datasets, allow all atomic datasets.
- *
- * Revision 1.1  2005/04/27 23:05:40  edavis
- * Move sorting capabilities into new DatasetSorter class.
- * Fix a bunch of tests and such.
- *
- */

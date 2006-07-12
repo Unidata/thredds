@@ -27,9 +27,3 @@ public class BooleanCatalogRefExpander implements CatalogRefExpander
     return expandAll;  
   }
 }
-/*
- * $Log: BooleanCatalogRefExpander.java,v $
- * Revision 1.1  2005/12/16 23:19:34  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- */

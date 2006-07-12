@@ -150,16 +150,3 @@ public class CatalogRefExpander
     return( val.toString());
   }
 }
-
-/*
- * $Log: CatalogRefExpander.java,v $
- * Revision 1.3  2006/01/20 02:08:22  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.2  2005/04/05 22:37:01  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.1  2004/12/14 22:47:22  edavis
- * Add simple interface to thredds.cataloggen and continue adding catalogRef capabilities.
- *
- */

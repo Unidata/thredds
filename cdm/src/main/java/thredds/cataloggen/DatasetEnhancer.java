@@ -29,15 +29,3 @@ public interface DatasetEnhancer
    */
   public Object getConfigObject();
 }
-/*
- * $Log: DatasetEnhancer.java,v $
- * Revision 1.8  2005/12/30 00:18:53  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.7  2005/12/06 19:39:20  edavis
- * Last CatalogBuilder/CrawlableDataset changes before start using in InvDatasetScan.
- *
- */

@@ -161,23 +161,3 @@ public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
     }
   }
 }
-/*
- * $Log: SimpleLatestProxyDsHandler.java,v $
- * Revision 1.1  2006/05/19 19:23:03  edavis
- * Convert DatasetInserter to ProxyDatasetHandler and allow for a list of them (rather than one) in
- * CatalogBuilders and CollectionLevelScanner. Clean up division between use of url paths (req.getPathInfo())
- * and translated (CrawlableDataset) paths.
- *
- * Revision 1.2  2005/12/30 00:18:52  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.1  2005/12/16 23:19:34  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.1  2005/12/01 00:15:02  edavis
- * More work on move to using CrawlableDataset.
- *
- */

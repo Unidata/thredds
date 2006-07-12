@@ -86,29 +86,3 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
   }
 
 }
-
-/*
- * $Log: MultiSelectorFilter.java,v $
- * Revision 1.4  2006/03/01 23:08:35  edavis
- * Minor fix.
- *
- * Revision 1.3  2006/01/10 23:21:14  edavis
- * Document changes to datasetScan. Also, make a few simplifying and clarifying changes to code and XSD that came up while documenting.
- *
- * Revision 1.2  2005/12/30 00:18:53  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.1  2005/11/15 18:40:47  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.1  2005/08/31 17:10:55  edavis
- * Update DqcServletRedirect for release as dqcServlet.war. It forwards
- * /dqcServlet/*, /dqcServlet/dqc/*, and /dqcServlet/dqcServlet/* requests
- * to /thredds/dqc/*. It also provides some URLs for testing various HTTP
- *  redirections (301, 302, 305) and forwarding (i.e.,
- * javax.servlet.RequestDispatcher.forward()) at /dqcServlet/redirect-test/.
- *
- */

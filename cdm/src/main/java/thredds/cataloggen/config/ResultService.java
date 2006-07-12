@@ -115,33 +115,3 @@ public class ResultService extends InvService
             " accessPointHeader:<" + this.getAccessPointHeader() + ">]");
   }
 }
-/*
- * $Log: ResultService.java,v $
- * Revision 1.8  2005/05/31 16:12:10  caron
- * delegate directory scanning to CatalogHandler
- *
- * Revision 1.7  2005/04/27 21:34:09  caron
- * cleanup DirectoryScanner, InvDatasetScan
- *
- * Revision 1.6  2005/03/21 23:04:52  edavis
- * Update CatalogGen.main() so that all the catalogs referenced by catalogRefs
- * in the generated catalogs are in turn generated.
- *
- * Revision 1.5  2004/12/15 17:51:03  edavis
- * Changes to clean up ResultService. Changes to add a server title to DirectoryScanner (becomes the title of the top-level dataset).
- *
- * Revision 1.4  2004/06/12 02:03:01  caron
- * invservice can have ddesc
- *
- * Revision 1.3  2004/06/03 20:21:41  edavis
- * Modify for changes to the InvService constructors. Remove main() method
- * which was used for testing.
- *
- * Revision 1.2  2004/05/11 20:38:46  edavis
- * Update for changes to thredds.catalog object model (still InvCat 0.6).
- * Start adding some logging statements.
- *
- * Revision 1.1.1.1  2002/12/11 22:27:54  edavis
- * CatGen into reorged thredds CVS repository.
- *
- */

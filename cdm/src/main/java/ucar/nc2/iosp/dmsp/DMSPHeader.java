@@ -833,19 +833,3 @@ public class DMSPHeader
 
   }
 }
-
-/*
- * $Log: DMSPHeader.java,v $
- * Revision 1.4  2004/12/07 23:27:09  edavis
- * Add a time variable and various global and variable attributes to comply with the "_Coordinates" convention.
- *
- * Revision 1.3  2004/10/13 15:25:47  edavis
- * Add some general metadata as global attributes (includes some THREDDS specific metadata).
- *
- * Revision 1.2  2004/10/06 21:25:28  edavis
- * Fix parsing of "start time UTC" and "end time UTC" attributes.
- *
- * Revision 1.1  2004/09/30 17:52:06  edavis
- * New DMSP IOServiceProvider.
- *
- */

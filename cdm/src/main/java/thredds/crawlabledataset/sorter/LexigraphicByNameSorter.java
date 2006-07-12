@@ -48,15 +48,3 @@ public class LexigraphicByNameSorter implements CrawlableDatasetSorter
     Collections.sort( datasetList, this.comparator );
   }
 }
-/*
- * $Log: LexigraphicByNameSorter.java,v $
- * Revision 1.2  2005/12/30 00:18:53  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.1  2005/11/18 23:51:04  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- */

@@ -44,12 +44,3 @@ public final class DatasetSourceStructure
   }
 
 }
-/*
- * $Log: DatasetSourceStructure.java,v $
- * Revision 1.2  2003/08/20 17:55:25  edavis
- * Made some minor changes, mostly renaming variables.
- *
- * Revision 1.1.1.1  2002/12/11 22:27:55  edavis
- * CatGen into reorged thredds CVS repository.
- *
- */

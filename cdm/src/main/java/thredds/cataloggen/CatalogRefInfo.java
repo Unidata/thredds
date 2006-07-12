@@ -44,23 +44,3 @@ public class CatalogRefInfo
     return datasetSource;
   }
 }
-
-/*
- * $Log: CatalogRefInfo.java,v $
- * Revision 1.2  2005/03/21 23:04:52  edavis
- * Update CatalogGen.main() so that all the catalogs referenced by catalogRefs
- * in the generated catalogs are in turn generated.
- *
- * Revision 1.1  2004/12/29 21:53:21  edavis
- * Added catalogRef generation capability to DatasetSource: 1) a catalogRef
- * is generated for all accepted collection datasets; 2) once a DatasetSource
- * is expanded, information about each catalogRef is available. Added tests
- * for new catalogRef generation capability.
- *
- * Revision 1.1  2004/12/14 22:47:22  edavis
- * Add simple interface to thredds.cataloggen and continue adding catalogRef capabilities.
- *
- * Revision 1.1  2004/11/30 23:58:56  edavis
- * Initial attempt at a way to keep track of a group of catalogs contected by CatalogRefs.
- *
- */

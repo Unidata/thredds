@@ -44,13 +44,3 @@ public final class DatasetNamerType
   }
 
 }
-/*
- * $Log: DatasetNamerType.java,v $
- * Revision 1.2  2004/05/11 20:38:46  edavis
- * Update for changes to thredds.catalog object model (still InvCat 0.6).
- * Start adding some logging statements.
- *
- * Revision 1.1.1.1  2002/12/11 22:27:55  edavis
- * CatGen into reorged thredds CVS repository.
- *
- */

@@ -36,19 +36,3 @@ public interface CrawlableDatasetFilter
    */
   public Object getConfigObject();
 }
-
-/*
- * $Log: CrawlableDatasetFilter.java,v $
- * Revision 1.2  2005/12/30 00:18:54  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.1  2005/11/15 18:40:49  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.1  2005/06/24 22:08:32  edavis
- * Second stab at the CrawlableDataset interface.
- *
- */

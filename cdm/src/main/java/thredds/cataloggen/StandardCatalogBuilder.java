@@ -193,29 +193,3 @@ public class StandardCatalogBuilder implements CatalogBuilder
     return CatalogBuilderHelper.convertCatalogToString( generateCatalog( catalogCrDs ) );
   }
 }
-/*
- * $Log: StandardCatalogBuilder.java,v $
- * Revision 1.5  2006/05/19 19:23:04  edavis
- * Convert DatasetInserter to ProxyDatasetHandler and allow for a list of them (rather than one) in
- * CatalogBuilders and CollectionLevelScanner. Clean up division between use of url paths (req.getPathInfo())
- * and translated (CrawlableDataset) paths.
- *
- * Revision 1.4  2006/05/12 20:20:37  caron
- * improve DL writing
- * dont inherit harvest flag
- * catalog crawler bug
- *
- * Revision 1.3  2006/01/26 18:20:45  edavis
- * Add CatalogRootHandler.findRequestedDataset() method (and supporting methods)
- * to check that the requested dataset is allowed, i.e., not filtered out.
- *
- * Revision 1.2  2005/12/30 00:18:53  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.1  2005/12/16 23:19:36  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- */

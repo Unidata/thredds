@@ -222,39 +222,3 @@ public class CrawlableDatasetAlias implements CrawlableDataset
 
 
 }
-
-/*
- * $Log: CrawlableDatasetAlias.java,v $
- * Revision 1.6  2006/02/08 20:46:11  edavis
- * Add comment.
- *
- * Revision 1.5  2006/01/20 02:08:24  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.4  2005/12/30 00:18:54  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.3  2005/12/16 23:19:36  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.2  2005/11/18 23:51:04  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.1  2005/11/15 18:40:48  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.3  2005/08/22 17:40:23  edavis
- * Another round on CrawlableDataset: make CrawlableDatasetAlias a subclass
- * of CrawlableDataset; start generating catalogs (still not using in
- * InvDatasetScan or CatalogGen, yet).
- *
- * Revision 1.2  2005/07/13 22:54:22  edavis
- * Fix CrawlableDatasetAlias.
- *
- * Revision 1.1  2005/06/24 22:08:32  edavis
- * Second stab at the CrawlableDataset interface.
- *
- */

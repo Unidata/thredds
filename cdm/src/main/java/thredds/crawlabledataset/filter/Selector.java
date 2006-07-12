@@ -29,9 +29,3 @@ public interface Selector
   /** Test if the given dataset matches this selector. */
   public boolean match( CrawlableDataset dataset );
 }
-/*
- * $Log: Selector.java,v $
- * Revision 1.1  2005/11/15 18:40:48  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- */

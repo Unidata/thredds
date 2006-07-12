@@ -195,29 +195,3 @@ public class Dqc
 //
 //  }
 }
-
-/*
- * $Log: Dqc.java,v $
- * Revision 1.3  2006/01/20 20:42:04  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.2  2005/04/05 22:37:03  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.1  2004/03/05 06:33:40  edavis
- * Classes to handle DQC and user query information.
- *
-
-  <xsd:element name="queryCapability">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element ref="qc:query"/>
-        <xsd:element ref="qc:selector" minOccurs="1" maxOccurs="unbounded" />
-        <xsd:element ref="qc:userInterface" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-      <xsd:attribute name="version" type="xsd:token" default="0.3"/>
-      <xsd:attribute name="name" type="xsd:token" use="optional"/>
-    </xsd:complexType>
-
- */

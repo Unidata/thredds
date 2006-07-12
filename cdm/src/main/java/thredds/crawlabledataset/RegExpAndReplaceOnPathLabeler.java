@@ -42,16 +42,3 @@ public class RegExpAndReplaceOnPathLabeler implements CrawlableDatasetLabeler
     return startTime.toString();
   }
 }
-/*
- * $Log: RegExpAndReplaceOnPathLabeler.java,v $
- * Revision 1.1  2005/12/30 00:18:54  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.1  2005/11/18 23:51:05  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- *
- */
