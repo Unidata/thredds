@@ -16,7 +16,7 @@ public class TestCatGenServletConfig extends TestCase
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestCatGenServletConfig.class );
 
   // @todo Modify CatGenServletConfig so that these tests can be run on resources rather than files.
-  private String configPath = "/Ethan/code/threddsDev/thredds/build/test/classes/thredds/cataloggen/servlet";
+  private String configPath = "src/test/classes/thredds/cataloggen/servlet";
 
   private String configEmptyFileName = "configEmpty.xml";
   private String configOneItemFileName = "configOneItem.xml";

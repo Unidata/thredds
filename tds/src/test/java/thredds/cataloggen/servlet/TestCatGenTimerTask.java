@@ -19,7 +19,7 @@ public class TestCatGenTimerTask extends TestCase
           org.slf4j.LoggerFactory.getLogger( TestCatGenTimerTask.class );
 
   // @todo Modify CatGenTimerTask so that these tests can be run on resources rather than files.
-  private String configPath = "/Ethan/code/threddsDev/thredds/build/test/classes/thredds/cataloggen/config";
+  private String configPath = "src/test/data/thredds/cataloggen/config";
 
   private CatGenTimerTask taskOne = null;
   private String taskOneName = "Task1";

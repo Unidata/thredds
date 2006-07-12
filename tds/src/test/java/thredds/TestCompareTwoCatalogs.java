@@ -15,7 +15,8 @@ import java.net.URISyntaxException;
 import thredds.catalog.*;
 
 /**
- * A description
+ * Testing tool for comparing two catalogs. Information about the two catalogs
+ * to compare is given in thredds/tds/src/test/data/thredds/testCompareTwoCatalogs.config.xml.
  *
  * @author edavis
  * @since 15 July 2005 15:50:59 -0600
@@ -24,7 +25,7 @@ public class TestCompareTwoCatalogs extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestCompareTwoCatalogs.class);
 
-  private String configFilePath = "test/data/thredds/testCompareTwoCatalogs.config.xml";
+  private String configFilePath = "src/test/data/thredds/testCompareTwoCatalogs.config.xml";
 
   private int desiredDepth;
   private boolean doAssert;

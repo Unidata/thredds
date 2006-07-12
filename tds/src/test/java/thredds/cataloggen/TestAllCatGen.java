@@ -22,23 +22,9 @@ public class TestAllCatGen extends TestCase
   public static Test suite()
   {
     TestSuite suite = new TestSuite();
-    suite.addTestSuite( thredds.cataloggen.config.TestResultService.class );
-    suite.addTestSuite( thredds.cataloggen.config.TestDatasetFilterType.class );
-    suite.addTestSuite( thredds.cataloggen.config.TestDatasetFilter.class );
-    suite.addTestSuite( thredds.cataloggen.config.TestDatasetNamerType.class );
-    suite.addTestSuite( thredds.cataloggen.config.TestDatasetNamer.class );
-    suite.addTestSuite( thredds.cataloggen.config.TestCatGenConfigMetadataFactory.class );
-    suite.addTestSuite( thredds.cataloggen.config.TestCatalogRefExpander.class );
-    suite.addTestSuite( thredds.cataloggen.config.TestDatasetSource.class );
 
     suite.addTestSuite( thredds.cataloggen.servlet.TestCatGenTimerTask.class );
     suite.addTestSuite( thredds.cataloggen.servlet.TestCatGenServletConfig.class );
-
-    suite.addTestSuite( thredds.cataloggen.TestDatasetEnhancer1.class );
-    suite.addTestSuite( thredds.cataloggen.TestDirectoryScanner.class );
-    suite.addTestSuite( thredds.cataloggen.TestCollectionLevelScanner.class );
-    suite.addTestSuite( thredds.cataloggen.TestSimpleCatalogBuilder.class );
-    suite.addTestSuite( thredds.cataloggen.TestCatalogGen.class );
 
     return suite;
   }
