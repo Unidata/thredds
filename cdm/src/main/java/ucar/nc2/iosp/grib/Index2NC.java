@@ -13,7 +13,7 @@ import java.util.*;
  * Create a Netcdf File from a ucar.grib.Index
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Index2NC  {
 

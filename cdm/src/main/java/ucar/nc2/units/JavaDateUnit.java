@@ -1,4 +1,4 @@
-// $Id$
+// $Id:JavaDateUnit.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.nc2.units;
 /**
  * A DateUnit that uses the same units as java.util.Date, namely "secs since 1970-01-01T00:00:00Z".
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class JavaDateUnit extends DateUnit {
 

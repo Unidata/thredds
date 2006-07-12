@@ -1,4 +1,4 @@
-// $Id$
+// $Id:DateFromString.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.util;
 
 import java.util.Date;

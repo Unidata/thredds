@@ -1,7 +1,7 @@
 /*
  * $Header: /upc/share/CVS/thredds/src/thredds/util/net/EasySSLProtocolSocketFactory.java,v 1.2 2006/01/20 02:08:24 caron Exp $
- * $Revision$
- * $Date$
+ * $Revision:63 $
+ * $Date:2006-07-12 21:50:51Z $
  *
  * ====================================================================
  *

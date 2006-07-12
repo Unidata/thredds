@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 /**
  * Handles the GetCoverage Request.
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GetCoverageRequest {
   private String coverage, time, vertical;

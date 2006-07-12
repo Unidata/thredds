@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id:AtmosSigma.java 63 2006-07-12 21:50:51Z edavis $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -37,7 +37,7 @@ import java.io.IOException;
  * <p><strong>pressure(x,y,z) = ptop + sigma(z)*surfacePressure(x,y)</strong>
  *
  * @author Unidata Development Team
- * @version $Revision$
+ * @version $Revision:63 $
  */
 
 public class AtmosSigma extends VerticalTransformImpl {

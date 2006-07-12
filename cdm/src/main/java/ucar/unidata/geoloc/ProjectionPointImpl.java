@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id:ProjectionPointImpl.java 63 2006-07-12 21:50:51Z edavis $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.awt.geom.Point2D;
  *
  * @see ProjectionPoint
  * @author John Caron
- * @version $Id$
+ * @version $Id:ProjectionPointImpl.java 63 2006-07-12 21:50:51Z edavis $
  */
 public class ProjectionPointImpl extends Point2D.Double
         implements ProjectionPoint, java.io.Serializable {

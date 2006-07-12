@@ -1,4 +1,4 @@
-// $Id$
+// $Id:DiskCache2.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -42,7 +42,7 @@ import java.util.*;
  * <li>  to the current working directory
  * </ol>
  * @author jcaron
- * @version $Revision$ $Date$
+ * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class DiskCache2 {
   public static int CACHEPATH_POLICY_ONE_DIRECTORY = 0;

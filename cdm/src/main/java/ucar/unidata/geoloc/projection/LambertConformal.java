@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id:LambertConformal.java 63 2006-07-12 21:50:51Z edavis $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import ucar.units.*;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id$
+ *   @version $Id:LambertConformal.java 63 2006-07-12 21:50:51Z edavis $
  */
 
 public class LambertConformal extends ProjectionImpl {

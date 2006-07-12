@@ -1,4 +1,4 @@
-// $Id$
+// $Id:HashMapLRU.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ import java.util.Map;
  * @see java.util.LinkedHashMap
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class HashMapLRU extends LinkedHashMap {
   private int max_entries = 100;

@@ -1,4 +1,4 @@
-// $Id$
+// $Id:AbstractGisFeature.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.awt.Shape;
  *
  * @author Russ Rew
  * @author John Caron
- * @version $Id$
+ * @version $Id:AbstractGisFeature.java 63 2006-07-12 21:50:51Z edavis $
  */
 
 public abstract class AbstractGisFeature implements GisFeature {
