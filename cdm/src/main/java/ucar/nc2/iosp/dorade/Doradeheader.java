@@ -1,6 +1,6 @@
-// $Id:Doradeheader.java 63 2006-07-12 21:50:51Z edavis $
+// $Id: Doradeheader.java,v 1.5 2006/04/19 20:24:09 yuanho Exp $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,13 +24,17 @@ package ucar.nc2.iosp.dorade;
 import ucar.nc2.*;
 
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.grid.GeoGrid;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
-
+import ucar.ma2.IndexIterator;
 import ucar.atd.dorade.*;
 
+
 import java.io.*;
+
 import java.util.*;
 
 
@@ -361,7 +365,7 @@ public class Doradeheader {
         nc.addAttribute(null, new Attribute("format", "Unidata/netCDF/Dorade"));
         nc.addAttribute(null, new Attribute("Radar_Name", mySweep.getSensorName(0)));
         nc.addAttribute(null, new Attribute("Project_name", ""+mySweep.getProjectName()));
-        nc.addAttribute(null, new Attribute("Scan_Mode", mySweep.getScanMode(0).getName()));
+        nc.addAttribute(null, new Attribute("VolumeCoveragePatternName", mySweep.getScanMode(0).getName()));
         nc.addAttribute(null, new Attribute("Volume_Number", ""+mySweep.getVolumnNumber()));
         nc.addAttribute(null, new Attribute("Sweep_Number", ""+mySweep.getSweepNumber()));
         nc.addAttribute(null, new Attribute("Sweep_Date", mySweep.getTime().toString()));
