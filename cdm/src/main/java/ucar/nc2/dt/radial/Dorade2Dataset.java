@@ -85,8 +85,8 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
         return "Dorade Radar";
     }
 
-    public String getDataFormatName() {
-        return "Dorade Radar";
+    public String getDataFormat() {
+        return "DORADE";
     }
 
     public ucar.nc2.dt.EarthLocation  getCommonOrigin() {
@@ -102,9 +102,9 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
     }
 
 
-    public boolean isRadial() {
-         return true;
-    }
+    //public boolean isRadial() {
+    //     return true;
+    //}
 
     public boolean isVolume() {
          return false;
@@ -191,7 +191,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
         protected VariableEnhanced ve;
         int nrays, ngates;
         float ele, azi, alt, lon, lat;
-        float rt;
+        //float rt;
         RadialDatasetSweep.Sweep sweep;
 
 
@@ -347,13 +347,12 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
             }
 
             public Date getStartingTime() {
-                return dateUnits.makeDate(rt);
+                return startDate;
             }
 
             public Date getEndingTime() {
-                return dateUnits.makeDate(rt);
+                return endDate;
             }
-        
         } // Dorade2Sweep class
 
     } // Dorade2Variable
