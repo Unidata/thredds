@@ -39,7 +39,7 @@ import java.io.*;
  * @version $Revision$ $Date$
  */
 public class FmrcAggregation extends Aggregation {
-  private boolean debug = false;
+  private boolean debug = true;
 
   public FmrcAggregation(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
     super(ncd, dimName, typeName, recheckS);

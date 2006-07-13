@@ -132,11 +132,30 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       return;
     }
 
+    // hack something in here so it doesnt fail
+
+    // if in time unit, use CF convention "since 1-1-1 0:0:0"
+    if ((su != null) && (su instanceof TimeUnit)) {
+      su = SimpleUnit.factory( units+" since 0001-01-01 00:00:00");
+    } else {
+      su = SimpleUnit.factory("secs since 0001-01-01 00:00:00");
+    }
     if (errMessages != null)
-      errMessages.append("Time Coordinate must be udunits or ISO String\n");
+      errMessages.append("Time Coordinate must be udunits or ISO String: hack since 0001-01-01 00:00:00\n");
     else
-      System.out.println("Time Coordinate must be udunits or ISO String\n");
-    throw new IllegalArgumentException();
+      System.out.println("Time Coordinate must be udunits or ISO String: hack since 0001-01-01 00:00:00\n");
+
+    Array data = org.read();
+    IndexIterator ii = data.getIndexIterator();
+    DateFormatter formatter = new DateFormatter();
+    dateUnit = (DateUnit) su;
+    for (int i = 0; i < n; i++) {
+      double val = ii.getDoubleNext();
+      Date d = dateUnit.makeDate( val);
+      String name = formatter.toDateTimeString(d);
+      named.add(new NamedAnything(name, "date/time"));
+      timeDates[i] = d;
+    }
   }
 
   /**

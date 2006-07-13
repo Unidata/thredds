@@ -257,8 +257,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         try {
           if (t instanceof CoordinateAxis1DTime)
             timeTaxis = (CoordinateAxis1DTime) t;
-          else
+          else {
             timeTaxis = new CoordinateAxis1DTime(t, sbuff);
+          }
 
           tAxis = timeTaxis;
           coordAxes.add(timeTaxis);

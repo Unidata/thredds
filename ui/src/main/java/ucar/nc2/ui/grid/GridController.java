@@ -374,6 +374,7 @@ public class GridController {
       public void actionPerformed(ActionValueEvent e) {
         int runtime = findIndexFromName( runtimeNames, e.getValue().toString());
         if ((runtime != -1) && (runtime != currentRunTime)) {
+          currentRunTime = runtime;
           if (hasDependentTimeAxis) {
             GridCoordSystem gcs = currentField.getGridCoordSystem();
             CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
@@ -384,7 +385,6 @@ public class GridController {
             ui.timeChooser.setSelectedByIndex( currentTime);
           }
 
-          currentRunTime = runtime;
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
           } else
@@ -714,7 +714,9 @@ public class GridController {
 
   public int getCurrentLevelIndex() { return currentLevel; }
   public int getCurrentTimeIndex() { return currentTime; }
-  public boolean setLevel(int index) {
+  public int getCurrentEnsembleIndex() { return currentEnsemble; }
+  public int getCurrentRunTimeIndex() { return currentRunTime; }
+  /* public boolean setLevel(int index) {
     if ((index >= 0) && (index < levelNames.size())) {
       currentLevel = index;
     }

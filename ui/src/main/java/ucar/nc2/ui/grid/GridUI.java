@@ -320,7 +320,8 @@ public class GridUI extends JPanel {
     if (axis != null) {
       List names = axis.getNames();
       ensembleChooser.setCollection(names.iterator());
-      ensembleChooser.setSelectedByIndex(0);
+      NamedObject no = (NamedObject) names.get(controller.getCurrentEnsembleIndex());
+      ensembleChooser.setSelectedByName(no.getName());
     }
 
     axis = gcs.getRunTimeAxis();
@@ -328,7 +329,8 @@ public class GridUI extends JPanel {
     if (axis != null) {
       List names = axis.getNames();
       runtimeChooser.setCollection(names.iterator());
-      runtimeChooser.setSelectedByIndex(0);
+      NamedObject no = (NamedObject) names.get(controller.getCurrentRunTimeIndex());
+      runtimeChooser.setSelectedByName(no.getName());
     }
 
     setChoosers();

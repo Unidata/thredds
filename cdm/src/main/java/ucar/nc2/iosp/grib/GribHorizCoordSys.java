@@ -131,7 +131,7 @@ public class GribHorizCoordSys {
               "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
       double[] xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDx(), "km",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
-      //addLatLon2D(ncfile, xData, yData);
+      if (GribServiceProvider.addLatLon) addLatLon2D(ncfile, xData, yData);
       add2DCoordSystem(ncfile, "projectionCoordSys", "time y x");
     }
   }

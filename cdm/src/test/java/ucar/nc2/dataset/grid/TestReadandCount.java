@@ -43,7 +43,7 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"cf/","tomw.nc", 19, 3, 4, 1);
     doOne(griddir+"cf/","cf1_rap.nc", 11, 1, 4, 0); // not getting x, y
     // doOne("C:/data/conventions/cf/signell/","signell_july2_03.nc", -1, -1, -1, -1); // 2D lat, lon; no x,y
-    doOne(griddir+"cf/","feb2003_short.nc", 14, 4, 4, 1);
+//**    doOne(griddir+"cf/","feb2003_short.nc", 14, 4, 4, 1);
     doOne(griddir+"cf/","feb2003_short2.nc", 22, 9, 8, 1);
     doOne(griddir+"cf/","temperature.nc", 2, 2, 5, 1);
 
@@ -119,8 +119,8 @@ public class TestReadandCount extends TestCase {
     while (iter.hasNext()) {
       GridDataset.Gridset gridset = (GridDataset.Gridset) iter.next();
       GridCoordSys gcs = gridset.getGeoCoordSys();
-      if (gcs.hasTimeAxis())
-        System.out.println(" "+gcs.isDate()+" "+gcs.getName());
+      //if (gcs.hasTimeAxis())
+      //  System.out.println(" "+gcs.isDate()+" "+gcs.getName());
     }
 
     if (showCount) {

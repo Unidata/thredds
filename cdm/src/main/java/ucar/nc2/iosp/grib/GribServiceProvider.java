@@ -35,6 +35,7 @@ public abstract class GribServiceProvider implements IOServiceProvider {
   // debugging
   static boolean debugOpen = false, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
 
+  static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
   static public boolean forceNewIndex = false; // force that a new index file is written
   static public boolean useMaximalCoordSys = false;
   static public boolean extendIndex = true; // check if index needs to be extended

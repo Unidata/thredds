@@ -35,6 +35,7 @@ import ucar.ma2.InvalidRangeException;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.conv._Coordinate;
 
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -96,12 +97,12 @@ public class ForecastModelRun {
     name = gds.getTitle();
 
     NetcdfFile ncfile = gds.getNetcdfFile();
-    runTime = ncfile.findAttValueIgnoreCase(null, "_CoordinateAxisModelRunDate", null);
+    runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
     if (runTime == null)
-      throw new IllegalArgumentException("File must have _CoordinateAxisModelRunDate attribute ");
+      throw new IllegalArgumentException("File must have "+_Coordinate.ModelRunDate+" attribute ");
     runDate = DateUnit.getStandardOrISO(runTime);
     if (runDate == null)
-      throw new IllegalArgumentException("_CoordinateAxisModelRunDate must be ISO date string "+runTime);
+      throw new IllegalArgumentException( _Coordinate.ModelRunDate+" must be ISO date string "+runTime);
     getIosp();
 
     // add each variable

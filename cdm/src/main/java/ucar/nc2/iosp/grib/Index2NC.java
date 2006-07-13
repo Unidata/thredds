@@ -2,7 +2,7 @@ package ucar.nc2.iosp.grib;
 
 import ucar.grib.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 
@@ -82,7 +82,7 @@ public class Index2NC  {
     ncfile.addAttribute(null, new Attribute("DataType", "GRID"));
     ncfile.addAttribute(null, new Attribute("DatasetLocation", ncfile.getLocation()));
     ncfile.addAttribute(null, new Attribute("Processing", "direct read of GRIB into NetCDF-Java 2.2 API"));
-    ncfile.addAttribute(null, new Attribute("_CoordinateAxisModelRunDate", formatter.toDateTimeString(lookup.getFirstBaseTime())));
+    ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, formatter.toDateTimeString(lookup.getFirstBaseTime())));
 
     if (GribServiceProvider.useMaximalCoordSys)
       makeMaximalCoordSys(ncfile, lookup, cancelTask);

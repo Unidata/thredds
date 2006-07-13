@@ -417,20 +417,25 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected void findCoordinateAxes( NetcdfDataset ncDataset) {
     for (int i = 0; i < varList.size(); i++) {
       VarProcess vp = (VarProcess) varList.get(i);
-      if (vp.coordAxes != null) {
-        StringTokenizer stoker = new StringTokenizer( vp.coordAxes);
-        while (stoker.hasMoreTokens()) {
-          String vname = stoker.nextToken();
-          VarProcess ap = findVarProcess( vname); // LOOK: full vs short name
-          if (ap != null) {
-            if (!ap.isCoordinateAxis)
-              parseInfo.append(" CoordinateAxis = "+vname+" added; referenced from var= "+vp.v.getName()+"\n");
-            ap.isCoordinateAxis = true;
-          } else {
-            parseInfo.append("***Cant find coordAxis "+vname+" referenced from var= "+vp.v.getName()+"\n");
-            userAdvice.append("***Cant find coordAxis "+vname+" referenced from var= "+vp.v.getName()+"\n");
-          }
-        }
+      if (vp.coordAxes != null)
+        findCoordinateAxes(vp, vp.coordAxes);
+      if (vp.coordinates != null)
+        findCoordinateAxes(vp, vp.coordinates);
+    }
+  }
+
+  private void findCoordinateAxes(VarProcess vp, String coordinates) {
+    StringTokenizer stoker = new StringTokenizer(coordinates);
+    while (stoker.hasMoreTokens()) {
+      String vname = stoker.nextToken();
+      VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+      if (ap != null) {
+        if (!ap.isCoordinateAxis)
+          parseInfo.append(" CoordinateAxis = " + vname + " added; referenced from var= " + vp.v.getName() + "\n");
+        ap.isCoordinateAxis = true;
+      } else {
+        parseInfo.append("***Cant find coordAxis " + vname + " referenced from var= " + vp.v.getName() + "\n");
+        userAdvice.append("***Cant find coordAxis " + vname + " referenced from var= " + vp.v.getName() + "\n");
       }
     }
   }
@@ -554,16 +559,18 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       if (!vp.hasCoordinateSystem() && (vp.coordAxes != null) && vp.isData()) {
         List dataAxesList = getAxes(vp.coordAxes, vp.v.getName());
-        String coordSysName = CoordinateSystem.makeName(dataAxesList);
-        CoordinateSystem cs = ncDataset.findCoordinateSystem(coordSysName);
-        if (cs != null) {
-          ve.addCoordinateSystem(cs);
-          parseInfo.append(" assigned explicit CoordSystem '" + cs.getName() + "' for var= " + vp.v.getName() + "\n");
-        } else {
-          CoordinateSystem csnew = new CoordinateSystem(ncDataset, dataAxesList, null);
-          ve.addCoordinateSystem(csnew);
-          ncDataset.addCoordinateSystem(csnew);
-          parseInfo.append(" created explicit CoordSystem '" + csnew.getName() + "' for var= " + vp.v.getName() + "\n");
+        if (dataAxesList.size() > 1) {
+          String coordSysName = CoordinateSystem.makeName(dataAxesList);
+          CoordinateSystem cs = ncDataset.findCoordinateSystem(coordSysName);
+          if (cs != null) {
+            ve.addCoordinateSystem(cs);
+            parseInfo.append(" assigned explicit CoordSystem '" + cs.getName() + "' for var= " + vp.v.getName() + "\n");
+          } else {
+            CoordinateSystem csnew = new CoordinateSystem(ncDataset, dataAxesList, null);
+            ve.addCoordinateSystem(csnew);
+            ncDataset.addCoordinateSystem(csnew);
+            parseInfo.append(" created explicit CoordSystem '" + csnew.getName() + "' for var= " + vp.v.getName() + "\n");
+          }
         }
       }
     }
@@ -604,14 +611,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
         if (cs != null) {
           ve.addCoordinateSystem(cs);
-          parseInfo.append(" assigned implicit coord System " + cs.getName() + " for var= " + vp.v.getName() + "\n");
+          parseInfo.append(" assigned implicit coord System '" + cs.getName() + "' for var= " + vp.v.getName() + "\n");
         } else {
           CoordinateSystem csnew = new CoordinateSystem(ncDataset, dataAxesList, null);
           csnew.setImplicit( true);
 
           ve.addCoordinateSystem(csnew);
           ncDataset.addCoordinateSystem(csnew);
-          parseInfo.append(" created implicit coord System " + csnew.getName() + " for var= " + vp.v.getName() + "\n");
+          parseInfo.append(" created implicit coord System '" + csnew.getName() + "' for var= " + vp.v.getName() + "\n");
         }
       }
     }
@@ -678,14 +685,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         if (cs != null) {
           if (null != implicit) ve.removeCoordinateSystem(implicit);
           ve.addCoordinateSystem(cs);
-          parseInfo.append(" assigned maximal coord System " + cs.getName() + " for var= " + ve.getName() + "\n");
+          parseInfo.append(" assigned maximal coord System '" + cs.getName() + "' for var= " + ve.getName() + "\n");
         } else {
           CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
           csnew.setImplicit( true);
           if (null != implicit) ve.removeCoordinateSystem(implicit);
           ve.addCoordinateSystem(csnew);
           ncDataset.addCoordinateSystem(csnew);
-          parseInfo.append(" created maximal coord System " + csnew.getName() + " for var= " + ve.getName() + "\n");
+          parseInfo.append(" created maximal coord System '" + csnew.getName() + "' for var= " + ve.getName() + "\n");
         }
 
     }
@@ -871,6 +878,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     public boolean isCoordinateAxis;
     public AxisType axisType;
     public String coordAxes, coordSys, coordVarAlias, positive, coordAxisTypes;
+    public String coordinates;// CF : partial coordAxes
 
     // coord systems
     public boolean isCoordinateSystem;
@@ -1041,6 +1049,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       if (coordAxes != null) { // explicit axes
         StringTokenizer stoker = new StringTokenizer( coordAxes);
+        while (stoker.hasMoreTokens()) {
+          String vname = stoker.nextToken();
+          VarProcess ap = findVarProcess( vname); // LOOK: full vs short name
+          if (ap != null)
+            axesList.add( ap.v);
+        }
+      } else if (coordinates != null) { // CF partial listing of axes
+        StringTokenizer stoker = new StringTokenizer( coordinates);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess( vname); // LOOK: full vs short name

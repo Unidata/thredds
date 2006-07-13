@@ -1,4 +1,4 @@
-// $Id$
+// $Id:CF1Convention.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -45,7 +45,7 @@ import java.io.IOException;
  * </i>
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class CF1Convention extends CSMConvention {
@@ -80,18 +80,18 @@ public class CF1Convention extends CSMConvention {
         }
 
         if (sname.equalsIgnoreCase("forecast_reference_time")) { // experimental
-          v.addAttribute(new Attribute("_CoordinateAxisType", AxisType.RunTime.toString()));
+          v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
           continue;
         }
 
         if (sname.equalsIgnoreCase("ensemble")) {  // experimental
-          v.addAttribute(new Attribute("_CoordinateAxisType", AxisType.Ensemble.toString()));
+          v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Ensemble.toString()));
           continue;
         }
 
         for (int j = 0; j < vertical_coords.length; j++)
           if (sname.equalsIgnoreCase(vertical_coords[j])) {
-            v.addAttribute(new Attribute("_CoordinateTransformType", TransformType.Vertical.toString()));
+            v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
             // v.addAttribute( new Attribute("_CoordinateAxes", v.getName())); LOOK: may also be time dependent
           }
       }
@@ -100,8 +100,8 @@ public class CF1Convention extends CSMConvention {
       String grid_mapping_name = ds.findAttValueIgnoreCase(v, "grid_mapping_name", null);
       if (grid_mapping_name != null) {
         //grid_mapping_name = grid_mapping_name.trim();
-        v.addAttribute(new Attribute("_CoordinateTransformType", TransformType.Projection.toString()));
-        v.addAttribute(new Attribute("_CoordinateAxisTypes", "GeoX GeoY"));
+        v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
+        v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
       }
 
     }
@@ -165,8 +165,8 @@ public class CF1Convention extends CSMConvention {
               levelVar.getDimensionsString(), units,
               "Vertical Pressure coordinate synthesized from atmosphere_ln_pressure_coordinate formula");
       p.setCachedData(pressureData, false);
-      p.addAttribute(new Attribute("_CoordinateAxisType", "Pressure"));
-      p.addAttribute(new Attribute("_CoordinateAliasForDimension", p.getDimensionsString()));
+      p.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      p.addAttribute(new Attribute(_Coordinate.AliasForDimension, p.getDimensionsString()));
       ds.addVariable(null, p);
       Dimension d = p.getDimension(0);
       d.addCoordinateVariable(p);

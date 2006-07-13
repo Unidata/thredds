@@ -123,7 +123,7 @@ public class GribVariable {
     v.addAttribute(new Attribute("long_name", param.getDescription() + " @ " + getVertName()));
     v.addAttribute(new Attribute("missing_value", new Float(lookup.getFirstMissingValue())));
     if (!hcs.isLatLon()) {
-      v.addAttribute(new Attribute("coordinates", "lat lon"));
+      if (GribServiceProvider.addLatLon) v.addAttribute(new Attribute("coordinates", "lat lon"));
       v.addAttribute(new Attribute("grid_mapping", hcs.getGridName()));
     }
 

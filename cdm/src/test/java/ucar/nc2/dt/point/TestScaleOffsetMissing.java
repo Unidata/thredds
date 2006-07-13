@@ -37,7 +37,7 @@ public class TestScaleOffsetMissing extends TestCase {
   }
 
   public void testNetcdfFile() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.reletiveDir+"testScaleRecord.nc");
+    NetcdfFile ncfile = NetcdfDataset.openFile(TestAll.reletiveDir+"testScaleRecord.nc", null);
     Variable v = ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.SHORT;

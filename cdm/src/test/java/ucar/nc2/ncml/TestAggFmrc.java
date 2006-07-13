@@ -17,9 +17,9 @@ public class TestAggFmrc extends TestCase {
   }
 
   public void testNUWGdatasets() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggFmrc.xml";
+    String filename = "file:./"+TestNcML.topDir + "aggFmrcNetcdf.xml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
 
     testDimensions(ncfile, 15);
@@ -31,63 +31,16 @@ public class TestAggFmrc extends TestCase {
     ncfile.close();
   }
 
-  public void testForecastModelExtend() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggForecastModel.xml";
-    String newModel = "C:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc";
-    String newModelsave = "C:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc.save";
-    File newModelFile = new File(newModel);
-    File newModelFileSave = new File(newModelsave);
-    boolean ok = newModelFile.renameTo(newModelFileSave);
-    if (!ok) throw new IOException("cant rename file");
+  public void testGribdatasets() throws IOException, InvalidRangeException {
+    String filename = "file:./"+TestNcML.topDir + "aggFmrcGrib.xml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
-
-    testDimensions(ncfile, 14);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 14, 122100, 12);
-    testReadData(ncfile, 14);
-    testReadSlice(ncfile);
-
-    // new file arrives
-    ok = newModelFileSave.renameTo(newModelFile);
-    if (!ok) throw new IOException("cant rename file");
-
-    ncfile.sync();
+    System.out.println("file="+ncfile);
 
     testDimensions(ncfile, 15);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15, 122100, 12);;
-    testReadData(ncfile, 15);
-    testReadSlice(ncfile);
-
-    ncfile.close();
-  }
-
-  public void testForecastConstant() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggForecastConstant.xml";
-
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-    System.out.println(" aggForecastConstant.open "+ filename);
-
-    testDimensions(ncfile, 6);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 6, 122160, 0);
-    testReadData(ncfile, 6);
-    testReadSlice(ncfile);
-
-    ncfile.close();
-  }
-
-  public void testForecastOffset() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggForecastOffset.xml";
-
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-    System.out.println(" aggForecastOffset.open "+ filename);
-
-    testDimensions(ncfile, 15);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15, 122106, 12);
+    testAggCoordVar(ncfile, 15, 122100, 12);
     testReadData(ncfile, 15);
     testReadSlice(ncfile);
 

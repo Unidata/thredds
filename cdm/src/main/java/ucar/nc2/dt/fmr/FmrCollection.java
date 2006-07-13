@@ -92,7 +92,7 @@ public class FmrCollection {
 
 
   public static void main(String args[]) throws IOException, InvalidRangeException {
-    String filename = "file:./test/data/ncml/aggFmrc.xml";
+    String filename = "file:./test/data/ncml/aggFmrcNetcdf.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" agg dataest = "+ ncfile.toString()+"\n");
