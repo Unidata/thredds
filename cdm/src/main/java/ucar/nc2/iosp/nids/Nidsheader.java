@@ -1434,7 +1434,7 @@ class Nidsheader{
           addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
         }
-        else if (cname.startsWith("Velocity") || cname.startsWith("StormMeanVelocity") ) {
+        else if (cname.startsWith("RadialVelocity") || cname.startsWith("StormMeanVelocity") ) {
 
           addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
@@ -1644,7 +1644,7 @@ class Nidsheader{
       cmemo = "Rad Vel "+ prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
       ctitle = "VEL: Radial Velocity" ;
       cunit = "KT" ;
-      cname = "Velocity";
+      cname = "RadialVelocity";
     } else if (prod_type == StrmRelMeanVel) {
       radial               = 1;
       prod_elevation  = pinfo.p3;
@@ -2613,6 +2613,9 @@ class Nidsheader{
 
 /* Change History:
    $Log: Nidsheader.java,v $
+   Revision 1.32  2006/07/11 17:55:48  yuanho
+   changed variable name velocity to radialVelocity
+
    Revision 1.31  2006/06/28 21:35:56  yuanho
    changing  raster data product setting
 
