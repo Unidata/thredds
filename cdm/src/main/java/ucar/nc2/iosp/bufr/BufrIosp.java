@@ -342,7 +342,7 @@ public class BufrIosp implements IOServiceProvider {
        }
        // compressed data is organized by field, not sequential obs
        if( ((String)atts.get( "compressdata")).equals( "true") ) {
-          //System.out.println( "compressed data");
+          System.out.println( "compressed data");
           readDataCompressed( (String)atts.get( "table"), locations, range, 
              observations, vars, iiHash, dataHash, members );
           return ama;
