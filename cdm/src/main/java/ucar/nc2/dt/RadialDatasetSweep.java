@@ -14,6 +14,8 @@ import java.util.Date;
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
+  /* definition of data format for level2*/
+  public static final String LevelII = "Level II";
 
   /**  return radar name */
   public String getRadarID();
@@ -22,7 +24,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
   public String getRadarName();
 
   /**  return data name */
-  public String getDataFormatName();
+  public String getDataFormat();
 
   /** If all the sweeps are the same type, return it here, else NONE */
   public RadialDatasetSweep.Type getCommonType();
@@ -47,7 +49,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
    * @return 0 if this is not a radial product
    */
 
-  public boolean isRadial();
+ // public boolean isRadial();
 
   /**
    * Get the basic property of Radar,
