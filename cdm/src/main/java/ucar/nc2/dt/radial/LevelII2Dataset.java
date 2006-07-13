@@ -79,13 +79,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
         return ds.findGlobalAttribute( "StationName").getStringValue();
     }
 
-    public String getDataFormatName() {
-        return "level II radar";
+    public String getDataFormat() {
+        return RadialDatasetSweep.LevelII;
     }
 
-    public boolean isRadial() {
-        return true;
-    }
+    //public boolean isRadial() {
+    //    return true;
+    //}
 
     public boolean isVolume() {
         return true;
@@ -384,11 +384,11 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
             System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
             int nrays = sw.getRadialNumber();
             float [] az = new float[nrays];
-            for (int j = 0; i < nrays; i++) {
+            for (int j = 0; j < nrays; j++) {
                 float azi =  sw.getAzimuth(j);
                 az[j] = azi;
             }
-            System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
+            //System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
         }
         sw = rv.getSweep(0);
         float [] ddd = sw.readData();
