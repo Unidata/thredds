@@ -544,7 +544,6 @@ public class NetcdfFile {
    * Retrieve a dimension by fullName.
    * @param name dimension full name, (using parent group names if not in the root group)
    * @return the dimension, or null if not found
-   * @deprecated use Group.findDimension()
    */
   public Dimension findDimension(String name) {
     for (int i=0; i<dimensions.size(); i++) {

@@ -9,71 +9,64 @@ import java.util.Date;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateUnit;
 
-public class TestAggFmrc extends TestCase {
+public class TestAggFmrcGrib extends TestCase {
 
-  public TestAggFmrc( String name) {
+  public TestAggFmrcGrib( String name) {
     super(name);
   }
 
-  public void testNUWGdatasets() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggFmrcNetcdf.xml";
-
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
-
-    testDimensions(ncfile, 15);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15, 122100, 12);
-    testReadData(ncfile, 15);
-    testReadSlice(ncfile);
-
-    ncfile.close();
-  }
-
-  public void testGribdatasets() throws IOException, InvalidRangeException {
+  public void testGribdatasets() throws Exception, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggFmrcGrib.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
-    System.out.println("file="+ncfile);
+    //System.out.println("file="+ncfile);
 
-    testDimensions(ncfile, 15);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15, 122100, 12);
-    testReadData(ncfile, 15);
-    testReadSlice(ncfile);
+    testDimensions(ncfile, 7);
+    testCoordVar(ncfile, 257);
+    testAggCoordVar(ncfile, 7, 122100, 12);
+    testTimeCoordVar(ncfile, 7, 29);
+
+//    testReadData(ncfile, 15);
+ //   testReadSlice(ncfile);
 
     ncfile.close();
   }
 
-  public void testDimensions(NetcdfFile ncfile, int nagg) {
+  private void testDimensions(NetcdfFile ncfile, int nagg) {
     Dimension latDim = ncfile.findDimension("x");
     assert null != latDim;
     assert latDim.getName().equals("x");
-    assert latDim.getLength() == 93;
+    assert latDim.getLength() == 369;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("y");
     assert null != lonDim;
     assert lonDim.getName().equals("y");
-    assert lonDim.getLength() == 65;
+    assert lonDim.getLength() == 257;
     assert !lonDim.isUnlimited();
 
-    Dimension timeDim = ncfile.findDimension("run");
+    Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
-    assert timeDim.getName().equals("run");
-    assert timeDim.getLength() == nagg : timeDim.getLength();
+    assert timeDim.getName().equals("time");
+    assert timeDim.getLength() == 29;
+
+    Dimension runDim = ncfile.findDimension("run");
+    assert null != runDim;
+    assert runDim.getName().equals("run");
+    assert runDim.getLength() == nagg : runDim.getLength();
   }
 
- public void testCoordVar(NetcdfFile ncfile) {
+ private void testCoordVar(NetcdfFile ncfile, int n) {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
     assert lat.getName().equals("y");
     assert lat.getRank() == 1;
-    assert lat.getSize() == 65;
-    assert lat.getShape()[0] == 65;
+    assert lat.getSize() == n;
+    assert lat.getShape()[0] == n;
     assert lat.getDataType() == DataType.DOUBLE;
 
     assert !lat.isUnlimited();
@@ -91,19 +84,19 @@ public class TestAggFmrc extends TestCase {
     try {
       Array data = lat.read();
       assert data.getRank() == 1;
-      assert data.getSize() == 65;
-      assert data.getShape()[0] == 65;
+      assert data.getSize() == n;
+      assert data.getShape()[0] == n;
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert TestUtils.close(dataI.getDoubleNext(), -832.6983183345455);
-      assert TestUtils.close(dataI.getDoubleNext(), -751.4273183345456);
-      assert TestUtils.close(dataI.getDoubleNext(), -670.1563183345455);
+      assert TestUtils.close(dataI.getDoubleNext(), -832.6982610175637);
+      assert TestUtils.close(dataI.getDoubleNext(), -812.3802610175637);
+      assert TestUtils.close(dataI.getDoubleNext(), -792.0622610175637);
     } catch (IOException io) {}
 
   }
 
-  public void testAggCoordVar(NetcdfFile ncfile, int nagg, int start, int incr) {
+  private void testAggCoordVar(NetcdfFile ncfile, int nagg, int start, int incr) {
     Variable time = ncfile.findVariable("run");
     assert null != time;
     assert time.getName().equals("run");
@@ -134,7 +127,42 @@ public class TestAggFmrc extends TestCase {
 
   }
 
-  public void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
+  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes) throws Exception {
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getName().equals("time");
+    assert time.getRank() == 2;
+    assert time.getSize() == nagg * ntimes;
+    assert time.getShape()[0] == nagg;
+    assert time.getShape()[1] == ntimes;
+    assert time.getDataType() == DataType.INT;
+
+    String units = time.getUnitsString();
+    DateUnit du = new DateUnit( units);
+
+    DateFormatter formatter = new DateFormatter();
+    try {
+      Array data = time.read();
+      assert data.getSize() == nagg * ntimes;
+      assert data.getShape()[0] == nagg;
+      assert data.getShape()[1] == ntimes;
+      assert data.getElementType() == int.class;
+
+      IndexIterator dataI = data.getIndexIterator();
+      while (dataI.hasNext()) {
+        double val = dataI.getDoubleNext();
+        Date date = du.makeDate(val);
+        System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
+      }
+
+    } catch (IOException io) {
+      io.printStackTrace();
+      assert false;
+    }
+
+  }
+
+  private void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
     Variable v = ncfile.findVariable("P_sfc");
     assert null != v;
     assert v.getName().equals("P_sfc");
@@ -170,7 +198,7 @@ public class TestAggFmrc extends TestCase {
 
   }
 
-  public void testReadSlice(NetcdfFile ncfile, int[] origin, int[] shape) throws IOException, InvalidRangeException {
+  private void testReadSlice(NetcdfFile ncfile, int[] origin, int[] shape) throws IOException, InvalidRangeException {
 
     Variable v = ncfile.findVariable("P_sfc");
 
@@ -194,7 +222,7 @@ public class TestAggFmrc extends TestCase {
 
   }
 
-  public void testReadSlice(NetcdfFile ncfile) throws IOException, InvalidRangeException {
+  private void testReadSlice(NetcdfFile ncfile) throws IOException, InvalidRangeException {
     testReadSlice( ncfile, new int[] {0, 0, 0, 0}, new int[] {1, 11, 3, 4} );
     testReadSlice( ncfile, new int[] {0, 0, 0, 0}, new int[] {3, 2, 3, 2} );
     testReadSlice( ncfile, new int[] {3, 5, 0, 0}, new int[] {1, 5, 3, 4} );

@@ -162,7 +162,8 @@
       <xsd:attribute name="dimName" type="xsd:token" />
       <xsd:attribute name="type" type="AggregationType" use="required"/>
       <xsd:attribute name="recheckEvery" type="xsd:string" />
-      
+      <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
+
       <xsd:attribute name="forecastDate" type="xsd:string" />
       <xsd:attribute name="forecastDateVariable" type="xsd:string" />
       <xsd:attribute name="forecastOffset" type="xsd:string" />

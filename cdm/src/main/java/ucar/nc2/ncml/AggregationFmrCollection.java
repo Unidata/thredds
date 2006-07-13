@@ -22,10 +22,12 @@ package ucar.nc2.ncml;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 
 import java.util.*;
@@ -34,15 +36,19 @@ import java.io.*;
 /**
  * Implement NcML Forecast Model Run Collection Aggregation
  *
- *
  * @author caron
  * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
-public class FmrcAggregation extends Aggregation {
-  private boolean debug = true;
+public class AggregationFmrCollection extends Aggregation {
+  private boolean debug = false;
+  private boolean timeUnitsChange = false;
 
-  public FmrcAggregation(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
+  public AggregationFmrCollection(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
     super(ncd, dimName, typeName, recheckS);
+  }
+
+  public void setTimeUnitsChange( boolean timeUnitsChange) {
+    this.timeUnitsChange = timeUnitsChange;
   }
 
   // all elements are processed, finish construction
@@ -78,8 +84,8 @@ public class FmrcAggregation extends Aggregation {
 
     // global attributes
     NcMLReader.transferGroupAttributes(typical.getRootGroup(), root);
-    root.addAttribute(new Attribute("Conventions", "_Coordinates"));
-    root.addAttribute(new Attribute("cdm_datatype", "ForecastModelRunCollection"));
+    root.addAttribute(new Attribute("Conventions", _Coordinate.Convention));
+    root.addAttribute(new Attribute("cdm_datatype", Aggregation.Type.FORECAST_MODEL_COLLECTION.toString()));
 
     // needed dimensions, coordinate variables
     Iterator gcs = gds.getGridSets().iterator();
@@ -102,9 +108,9 @@ public class FmrcAggregation extends Aggregation {
       List axes = gcc.getCoordinateAxes();
       for (int i = 0; i < axes.size(); i++) {
         CoordinateAxis axis = (CoordinateAxis) axes.get(i);
-        if (axis.getAxisType() == AxisType.Time)
-          timeAxes.add(axis);
-        else
+        if (axis.getAxisType() == AxisType.Time) {
+          if (!timeAxes.contains(axis)) timeAxes.add(axis);
+        } else
           addVariable(root, axis, "axis");
       }
     }
@@ -114,10 +120,10 @@ public class FmrcAggregation extends Aggregation {
     List vars = typical.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      if (null != v.findAttribute("_CoordinateTransformType") || null != v.findAttribute("_CoordinateAxisTypes"))
+      if (null != v.findAttribute(_Coordinate.TransformType) || null != v.findAttribute(_Coordinate.AxisTypes))
         addVariable(root, v, "coordTransform");
 
-      String coordTransVarNames = typical.findAttValueIgnoreCase(v, "_CoordinateTransforms", null);
+      String coordTransVarNames = typical.findAttValueIgnoreCase(v, _Coordinate.Transforms, null);
       if (null != coordTransVarNames) {
         StringTokenizer stoker = new StringTokenizer(coordTransVarNames);
         int n = stoker.countTokens();
@@ -163,6 +169,7 @@ public class FmrcAggregation extends Aggregation {
           coordData.setObject(ima.set(i), nested.getCoordValueString());
         else
           coordData.setDouble(ima.set(i), nested.getCoordValue());
+        if (cancelTask != null && cancelTask.isCancel()) return;
       }
       runtimeCoordVar.setCachedData(coordData, true);
     } else {
@@ -172,11 +179,12 @@ public class FmrcAggregation extends Aggregation {
       for (int i = 0; i < nestedDataset.size(); i++) {
         Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
         nested.setCoordValue(ii.getDoubleNext());
+        if (cancelTask != null && cancelTask.isCancel()) return;
       }
     }
 
     if (isDate()) {
-      runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("_CoordinateAxisType", "RunTime"));
+      runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
     }
 
     // promote all grid variables
@@ -194,50 +202,110 @@ public class FmrcAggregation extends Aggregation {
       NcMLReader.transferVariableAttributes(v, vagg);
 
       // we need to explicitly list the coordinate axes, because time coord is now 2D
-      vagg.addAttribute(new Attribute("_CoordinateAxes", dimName + " " + grid.getGridCoordSystem().getName()));
+      vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getGridCoordSystem().getName()));
 
       newds.removeVariable(null, v.getShortName());
       newds.addVariable(null, vagg);
       if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());
     }
 
-    // assume the units are all the same
     // promote the time coordinate(s)
     for (int i = 0; i < timeAxes.size(); i++) {
       CoordinateAxis1DTime v = (CoordinateAxis1DTime) timeAxes.get(i);
 
-      // add new dimension
-      String dims = dimName + " " + v.getDimensionsString();
-
       // construct new variable, replace old one
+      String dims = dimName + " " + v.getDimensionsString();
       VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-      vagg.setAggregation(this);
       NcMLReader.transferVariableAttributes(v, vagg);
-      Attribute att = vagg.findAttribute("_CoordinateVariableAlias");
+      Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
       if (att != null) vagg.remove(att);
 
       newds.removeVariable(null, v.getShortName());
       newds.addVariable(null, vagg);
+
+      if (!timeUnitsChange)
+        // Case 1: assume the units are all the same, so its just another agg variable
+        vagg.setAggregation(this);
+      else {
+        // Case 2: assume the time units differ for each nested file
+        readTimeCoordinates( vagg, cancelTask);
+      }
+
       if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
+      if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-    /* promote the time coordinate(s)
-   for (int i = 0; i < timeAxes.size(); i++) {
-     CoordinateAxis1DTime timeAxis = (CoordinateAxis1DTime) timeAxes.get(i);
-     String name = timeAxis.getName();
-     Dimension timeDim = timeAxis.getDimension(0);
-     String dims = dimName+" "+timeDim.getName();
+  }
 
-     VariableDS timeVar = new VariableDS(newds, null, null, name, DataType.STRING, dims, null, null);
-     newds.removeVariable(null, name);
-     newds.addVariable(null, timeVar);
+  private void readTimeCoordinates( VariableDS vagg, CancelTask cancelTask) throws IOException {
+    ArrayList dateList = new ArrayList();
+    int maxTimes = 0;
+    String units = null;
 
-     NcMLReader.transferVariableAttributes(timeAxis, timeVar);
-     timeVar.addAttribute(new Attribute("History", "Synthesized by CDM FmrcAggregation"));
+    for (int i = 0; i < nestedDatasets.size(); i++) {
+      Dataset dataset = null;
+      try {
+        dataset = (Dataset) nestedDatasets.get(i);
+        NetcdfDataset ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
+        VariableDS v = (VariableDS) ncfile.findVariable( vagg.getName());
+        CoordinateAxis1DTime timeCoordVar = new CoordinateAxis1DTime( v, null);
+        java.util.Date[] dates = timeCoordVar.getTimeDates();
+        maxTimes = Math.max( maxTimes, dates.length);
+        dateList.add( dates);
 
-     setTimeCoordinates( timeVar);
-     if (debug) System.out.println("FmrcAggregation: promoted timeCoordVar "+name);
-   } */
+        if (i == 0)
+          units = v.getUnitsString();
+
+      } finally {
+        dataset.releaseFile(ncd);
+      }
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
+
+    int[] shape = vagg.getShape();
+    int ntimes = shape[1];
+    if (ntimes != maxTimes) {  //LOOK!!
+      shape[1] = maxTimes;
+      Dimension d = vagg.getDimension(1);
+      d.setLength(maxTimes);
+      vagg.setDimensions( vagg.getDimensionsString());
+    }
+
+    Array timeCoordVals = Array.factory(vagg.getDataType(), shape);
+    Index ima = timeCoordVals.getIndex();
+    vagg.setCachedData(timeCoordVals, false);
+    
+    // check if its a String or a udunit
+    if (vagg.getDataType() == DataType.STRING) {
+
+      for (int i = 0; i < dateList.size(); i++) {
+        Date[] dates = (Date[]) dateList.get(i);
+        for (int j = 0; j < dates.length; j++) {
+          Date date = dates[j];
+          timeCoordVals.setObject(ima.set(i, j), formatter.toDateTimeStringISO(date));
+        }
+      }
+
+    } else {
+
+      DateUnit du;
+      try {
+        du = new DateUnit(units);
+      } catch (Exception e) {
+        throw new IOException(e.getMessage());
+      }
+      vagg.addAttribute(new Attribute("units", units));
+
+      for (int i = 0; i < dateList.size(); i++) {
+        Date[] dates = (Date[]) dateList.get(i);
+        for (int j = 0; j < dates.length; j++) {
+          Date date = dates[j];
+          double val = du.makeValue(date);
+          timeCoordVals.setDouble(ima.set(i,j), val);
+        }
+      }
+    }
+
   }
 
   private void addVariable(Group root, Variable v, String what) {

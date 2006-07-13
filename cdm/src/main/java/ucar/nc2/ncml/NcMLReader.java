@@ -883,6 +883,7 @@ public class NcMLReader {
     String dimName = aggElem.getAttributeValue("dimName");
     String type = aggElem.getAttributeValue("type");
     String recheck = aggElem.getAttributeValue("recheckEvery");
+    String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
 
     String forecastDate = aggElem.getAttributeValue("forecastDate");
     String forecastDateVariable = aggElem.getAttributeValue("forecastDateVariable");
@@ -891,25 +892,34 @@ public class NcMLReader {
     String referenceDateVariable = aggElem.getAttributeValue("referenceDateVariable");
 
     Aggregation agg;
-    if (type.equals("forecastModelRunCollection"))
-      agg = new FmrcAggregation( newds, dimName, type, recheck);
-    else {
-      agg = new Aggregation( newds, dimName, type, recheck);
+    if (type.equals("forecastModelRunCollection")) {
+      AggregationFmrCollection aggc = new AggregationFmrCollection(newds, dimName, type, recheck);
+      agg = aggc;
+
+      if (timeUnitsChange != null)
+        aggc.setTimeUnitsChange(timeUnitsChange.equalsIgnoreCase("true"));
+
+    } else if (type.equals("forecastModelRun")) {
+      AggregationFmr aggf = new AggregationFmr(newds, dimName, type, recheck);
+      agg = aggf;
 
       if (forecastDate != null)
-        agg.setForecastDate(forecastDate, forecastDateVariable);
+        aggf.setForecastDate(forecastDate, forecastDateVariable);
       else if (forecastOffset != null)
-        agg.setForecastOffset(forecastOffset);
+        aggf.setForecastOffset(forecastOffset);
       else if (forecastTimeOffset != null)
-        agg.setForecastTimeOffset(forecastTimeOffset, forecastDateVariable, referenceDateVariable);
+        aggf.setForecastTimeOffset(forecastTimeOffset, forecastDateVariable, referenceDateVariable);
 
-      // look for variable names
-      java.util.List list = aggElem.getChildren("variableAgg", ncNS);
-      for (int j=0; j< list.size(); j++) {
-        Element e = (Element) list.get(j);
-        String varName = e.getAttributeValue("name");
-        agg.addVariable( varName);
-      }
+    } else {
+      agg = new Aggregation(newds, dimName, type, recheck);
+    }
+
+        // look for variable names
+    java.util.List list = aggElem.getChildren("variableAgg", ncNS);
+    for (int j=0; j< list.size(); j++) {
+      Element e = (Element) list.get(j);
+      String varName = e.getAttributeValue("name");
+      agg.addVariable( varName);
     }
 
      // nested netcdf elements
