@@ -35,7 +35,7 @@ import java.io.*;
 /**
  * Holds a DODS Server <code>Sequence</code> value.
  *
- * @version $Revision$
+ * @version $Revision: 51 $
  * @author ndp
  * @see BaseType
  */

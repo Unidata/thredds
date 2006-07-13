@@ -1,4 +1,4 @@
-// $Id$
+// $Id: GridRenderer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import java.util.*;
  * Render grids using Java2D API.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class GridRenderer {

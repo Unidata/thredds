@@ -18,7 +18,7 @@ import java.util.Vector;
  * A <code>DStructure</code> in DODS can hold <em>N</em> instances of any of
  * the other datatypes, including other structures.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see BaseType
  * @see DConstructor

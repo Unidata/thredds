@@ -1,4 +1,4 @@
-// $Id$
+// $Id: DatasetSourceStructure.java 63 2006-07-12 21:50:51Z edavis $
 
 package thredds.cataloggen.config;
 
@@ -6,7 +6,7 @@ package thredds.cataloggen.config;
  * Type-safe enumeration of CatalogGen DatasetSource structures.
  *
  * @author Ethan Davis (from John Caron's thredds.catalog.ServiceType)
- * @version $Revision$
+ * @version $Revision: 63 $
  */
 public final class DatasetSourceStructure
 {

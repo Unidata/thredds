@@ -32,7 +32,7 @@ import java.io.*;
  * by a DODS client to retrieve the variable's declaration and value(s) from
  * a DODS server.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see DDS
  * @see ClientIO

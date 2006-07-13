@@ -1,4 +1,4 @@
-// $Id$
+// $Id: StationRenderer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.nc2.ui.point;
  * Renders collections of stations. package private.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 import thredds.ui.FontUtil;

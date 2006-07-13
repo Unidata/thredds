@@ -60,7 +60,7 @@ import javax.swing.table.*;
  * @author Dan van Enckevort
  * @author Parwinder Sekhon
  * @version 2.0 02/27/04
- * @version $Revision$ $Date$
+ * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class TableSorter extends AbstractTableModel {

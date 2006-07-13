@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id:DoradeAsciiDump.java 51 2006-07-12 17:13:13Z caron $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.io.FileOutputStream;
 /**
  * A dunper for DORADE radar data
  * @author IDV Development Team @ ATD
- * @version $Revision$
+ * @version $Revision:51 $
  */
 public class DoradeAsciiDump {
 

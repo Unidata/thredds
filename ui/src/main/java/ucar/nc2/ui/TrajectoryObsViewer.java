@@ -1,4 +1,4 @@
-// $Id$
+// $Id: TrajectoryObsViewer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -44,7 +44,7 @@ import javax.swing.event.*;
  * The obs are shown in a StructureTabel.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class TrajectoryObsViewer extends JPanel {

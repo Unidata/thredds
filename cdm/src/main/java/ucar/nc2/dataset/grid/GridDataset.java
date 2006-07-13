@@ -1,4 +1,4 @@
-// $Id$
+// $Id: GridDataset.java 48 2006-07-12 16:15:40Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -52,7 +52,7 @@ import thredds.datatype.DateRange;
    </pre>
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class GridDataset implements ucar.nc2.dt.GridDataset {

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: BeLeDataInputStream.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.net.URL;
  * big- and little-endian representations.
  *
  * @author Russ Rew
- * @version $Id$ */
+ * @version $Id: BeLeDataInputStream.java 50 2006-07-12 16:30:06Z caron $ */
 public class BeLeDataInputStream extends DataInputStream
 {
     private byte w[] = new byte[8]; // work array for buffering bytes

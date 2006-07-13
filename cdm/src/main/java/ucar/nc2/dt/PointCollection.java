@@ -10,7 +10,7 @@ import java.util.Iterator;
  * User can subset by bounding box and by date range.
  * Underlying data can be of any type, but all points have the same type.
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public interface PointCollection {
 

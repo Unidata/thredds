@@ -1,4 +1,4 @@
-// $Id$
+// $Id:ConvertD2N.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import ucar.nc2.Variable;
  * Convert Dods object tree to netcdf.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ConvertD2N {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);

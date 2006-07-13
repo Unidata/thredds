@@ -1,4 +1,4 @@
-// $Id$
+// $Id: TestInvDatasetScan.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.catalog;
 
 import junit.framework.TestCase;

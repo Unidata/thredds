@@ -52,7 +52,7 @@ import org.jdom.Element;
  * </pre>
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class ForecastModelRunCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ForecastModelRunCollection.class);

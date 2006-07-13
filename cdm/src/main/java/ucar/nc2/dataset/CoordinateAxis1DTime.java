@@ -43,7 +43,7 @@ import thredds.datatype.DateRange;
  * May use udunit dates, or ISO Strings.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private Date[] timeDates;

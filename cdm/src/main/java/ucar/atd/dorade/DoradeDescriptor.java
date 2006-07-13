@@ -18,9 +18,9 @@ import java.util.HashMap;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
-/* $Id$ */
+/* $Id:DoradeDescriptor.java 51 2006-07-12 17:13:13Z caron $ */
 
 abstract class DoradeDescriptor {
 
@@ -41,7 +41,7 @@ abstract class DoradeDescriptor {
      * <code>DoradeDescriptor</code>-s.</p>
      * <p>Copyright: Copyright (c) 2003</p>
      * <p>Company: University Corporation for Atmospheric Research</p>
-     * @version $Revision$ $Date$
+     * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
      */
     static class DescriptorException extends Exception {
         protected DescriptorException(String message) {

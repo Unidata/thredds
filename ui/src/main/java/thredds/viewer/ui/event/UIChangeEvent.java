@@ -1,4 +1,4 @@
-// $Id$
+// $Id: UIChangeEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package thredds.viewer.ui.event;
 import java.awt.Rectangle;
 /** Change events for UI objects.
  * @author John Caron
- * @version $Id$
+ * @version $Id: UIChangeEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class UIChangeEvent extends java.util.EventObject {
   private String property;

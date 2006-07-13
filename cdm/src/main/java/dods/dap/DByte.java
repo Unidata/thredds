@@ -15,7 +15,7 @@ import java.io.*;
 /**
  * Holds a DODS <code>Byte</code> value.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see BaseType
  */

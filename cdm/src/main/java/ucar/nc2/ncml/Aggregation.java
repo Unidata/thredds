@@ -1,4 +1,4 @@
-// $Id$
+// $Id: Aggregation.java 69 2006-07-13 00:12:58Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -48,7 +48,7 @@ import org.jdom.Element;
  *
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */
 public class Aggregation {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);

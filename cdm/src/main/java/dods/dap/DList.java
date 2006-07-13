@@ -21,7 +21,7 @@ import java.io.PrintWriter;
  * DODS does not support Lists of Lists. This restriction is enforced by the
  * DDS parser.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see BaseType
  * @see DVector

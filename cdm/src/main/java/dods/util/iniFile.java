@@ -40,7 +40,7 @@ import java.util.*;
  * the file isn't accesible or is unparsable then the class will
  * not contain any usable configuration information.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author ndp
  */
 

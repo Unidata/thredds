@@ -36,7 +36,7 @@ import dods.dap.Server.ServerMethods;
 /**
  * Holds a DODS Server <code>Structure</code> value.
  *
- * @version $Revision$
+ * @version $Revision: 51 $
  * @author ndp
  * @see BaseType
  */

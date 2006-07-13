@@ -1,4 +1,4 @@
-// $Id$
+// $Id: UrlAuthenticatorDialog.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -40,7 +40,7 @@ import thredds.util.net.HttpSession;
  *    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: UrlAuthenticatorDialog.java 50 2006-07-12 16:30:06Z caron $
  */
 public class UrlAuthenticatorDialog extends Authenticator implements
         thredds.util.net.CredentialsProviderExt {

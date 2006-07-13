@@ -16,7 +16,7 @@ import ucar.nc2.util.CancelTask;
  * @see ProgressMonitorTask
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class StopButton extends JButton implements CancelTask {

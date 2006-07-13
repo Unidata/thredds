@@ -12,7 +12,7 @@
 package dods.dap;
 
 /** Thrown when an attempt is made to access a function that does not exist.
-    @version $Revision$
+    @version $Revision: 48 $
     @author jhrg */
 
 public class NoSuchFunctionException extends DDSException {

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: DMSPiosp.java 63 2006-07-12 21:50:51Z edavis $
 package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.*;

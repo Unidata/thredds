@@ -16,7 +16,7 @@ import java.util.Vector;
 /**
  * The Util class holds static methods used by this package.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  */
 class Util {

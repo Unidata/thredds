@@ -1,4 +1,4 @@
-// $Id$
+// $Id: WildcardMatchOnNameSelector.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.crawlabledataset.filter;
 
 import thredds.crawlabledataset.CrawlableDataset;

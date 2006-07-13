@@ -15,7 +15,7 @@ import java.io.*;
 /**
  * A vector of <code>BaseType</code>.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see PrimitiveVector
  */

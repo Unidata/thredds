@@ -25,7 +25,7 @@ package ucar.nc2.dataset.conv;
  * Class Description.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public interface _Coordinate {
   static public final String AliasForDimension = "_CoordinateAliasForDimension";

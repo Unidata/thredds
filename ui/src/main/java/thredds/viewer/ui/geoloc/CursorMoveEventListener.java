@@ -1,4 +1,4 @@
-// $Id$
+// $Id: CursorMoveEventListener.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@ package thredds.viewer.ui.geoloc;
 /**
  * Listeners for "Cursor Move" events.
  * @author John Caron
- * @version $Id$
+ * @version $Id: CursorMoveEventListener.java 50 2006-07-12 16:30:06Z caron $
  */
 public interface CursorMoveEventListener extends java.util.EventListener {
     public void actionPerformed( CursorMoveEvent e);

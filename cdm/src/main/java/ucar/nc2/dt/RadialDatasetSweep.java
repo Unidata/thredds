@@ -11,7 +11,7 @@ import java.util.Date;
  * A sweep has the same gate geometry for all radials in the sweep, and has a RadialDatasetSweep.Type.
  *
  * @author yuan
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
 

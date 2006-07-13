@@ -1,4 +1,4 @@
-// $Id$
+// $Id:AbstractCoordTransBuilder.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -38,7 +38,7 @@ import java.io.IOException;
  * Abstract superclass for implementations of CoordTransBuilderIF.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.CoordTransBuilderIF {
   protected StringBuffer errBuffer = null;

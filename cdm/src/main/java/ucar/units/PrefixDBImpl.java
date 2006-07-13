@@ -1,4 +1,4 @@
-// $Id$
+// $Id: PrefixDBImpl.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.util.TreeSet;
  * Instances of this class are modifiable.
  *
  * @author Steven R. Emmerson
- * @version $Id$
+ * @version $Id: PrefixDBImpl.java 64 2006-07-12 22:30:50Z edavis $
  */
 public class
 PrefixDBImpl

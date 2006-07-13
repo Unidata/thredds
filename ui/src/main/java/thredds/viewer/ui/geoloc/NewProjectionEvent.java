@@ -1,4 +1,4 @@
-// $Id$
+// $Id: NewProjectionEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
 
 /** Used to notify listeners that there is a new Projection.
  * @author John Caron
- * @version $Id$
+ * @version $Id: NewProjectionEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class NewProjectionEvent extends java.util.EventObject {
   private ProjectionImpl project;

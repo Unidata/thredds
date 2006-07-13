@@ -8,9 +8,9 @@ import java.io.RandomAccessFile;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
-/* $Id$ */
+/* $Id:DoradeCFAC.java 51 2006-07-12 17:13:13Z caron $ */
 
 class DoradeCFAC extends DoradeDescriptor {
 

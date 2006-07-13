@@ -1,4 +1,4 @@
-// $Id$
+// $Id: UnknownUnit.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +29,7 @@ import java.util.TreeMap;
  * only be convertible with units derived from "foo" (e.g. "20 foo").
  *
  * @author Steven R. Emmerson
- * @version $Id$
+ * @version $Id: UnknownUnit.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class
 UnknownUnit

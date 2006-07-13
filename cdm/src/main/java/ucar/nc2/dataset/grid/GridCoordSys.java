@@ -1,4 +1,4 @@
-// $Id$
+// $Id: GridCoordSys.java 70 2006-07-13 15:16:05Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -56,7 +56,7 @@ import thredds.datatype.DateRange;
  * axis corresponding to X, Y, Z, and T. It gives preference to one dimensional axes (CoordinateAxis1D).
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 
 public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCoordSystem {

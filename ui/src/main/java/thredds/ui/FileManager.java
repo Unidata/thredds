@@ -1,4 +1,4 @@
-// $Id$
+// $Id: FileManager.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -57,7 +57,7 @@ import javax.swing.filechooser.*;
  </pre>
 
  * @author John Caron
- * @version $Id$
+ * @version $Id: FileManager.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class FileManager {

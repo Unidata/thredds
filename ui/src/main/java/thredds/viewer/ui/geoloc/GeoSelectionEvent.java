@@ -1,4 +1,4 @@
-// $Id$
+// $Id: GeoSelectionEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@ package thredds.viewer.ui.geoloc;
 /**
  * Used to notify listeners that there is a new geographic area selection.
  * @author John Caron
- * @version $Id$
+ * @version $Id: GeoSelectionEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class GeoSelectionEvent extends java.util.EventObject {
   private ucar.unidata.geoloc.ProjectionRect pr;

@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id$
+// $Id: Parameter.java 64 2006-07-12 22:30:50Z edavis $
 
 package ucar.unidata.util;
 
@@ -28,7 +28,7 @@ package ucar.unidata.util;
  * value that is String, a double, or an array of doubles.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 64 $ $Date: 2006-07-12 16:30:50 -0600 (Wed, 12 Jul 2006) $
  */
 
 public class Parameter {

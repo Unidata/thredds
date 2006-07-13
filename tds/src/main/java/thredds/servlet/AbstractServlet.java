@@ -1,4 +1,4 @@
-// $Id$
+// $Id: AbstractServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import javax.servlet.http.*;
  * Abstract superclass for THREDDS servlets.
  * Provides some common services for servlets: debugging, logging, and file serving.
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public abstract class AbstractServlet extends HttpServlet {
   protected org.slf4j.Logger log;

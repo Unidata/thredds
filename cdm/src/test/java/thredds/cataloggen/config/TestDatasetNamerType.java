@@ -1,4 +1,4 @@
-// $Id$
+// $Id: TestDatasetNamerType.java 61 2006-07-12 21:36:00Z edavis $
 
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for

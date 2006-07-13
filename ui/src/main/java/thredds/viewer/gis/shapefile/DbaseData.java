@@ -1,4 +1,4 @@
-// $Id$
+// $Id: DbaseData.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -21,7 +21,7 @@
 /**
  *  Class to contain a single field of data from a dbase file
  * @author Russ Rew
- * @version $Id$
+ * @version $Id: DbaseData.java 50 2006-07-12 16:30:06Z caron $
  */
 package thredds.viewer.gis.shapefile;
 

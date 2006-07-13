@@ -1,4 +1,4 @@
-// $Id$
+// $Id:Array.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -59,7 +59,7 @@ import java.util.ArrayList;
  * @see IndexIterator
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public abstract class Array {
     public static Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared

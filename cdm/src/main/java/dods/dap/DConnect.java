@@ -26,7 +26,7 @@ import java.util.Iterator;
  * DDS, etc. objects. Rather, the methods <code>getDAS</code>, etc. return
  * instances of those objects.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  */
 public class DConnect {

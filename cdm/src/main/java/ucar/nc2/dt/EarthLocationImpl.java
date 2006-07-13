@@ -1,4 +1,4 @@
-// $Id$
+// $Id: EarthLocationImpl.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package ucar.nc2.dt;
 /**
  * Concrete implementaion of a EarthLocation.
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class EarthLocationImpl implements EarthLocation {
   protected double lat, lon, alt;

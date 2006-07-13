@@ -1,4 +1,4 @@
-// $Id$
+// $Id: GridUI.java 70 2006-07-13 15:16:05Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -49,7 +49,7 @@ import javax.swing.border.*;
  * This is the thredds Data Viewer application User Interface for Grids.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class GridUI extends JPanel {
   static private final String DATASET_URL = "DatasetURL";

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: NcSDString.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import ucar.unidata.util.StringUtil;
  * Wraps a netcdf scalar or 1D char variable.
  *
  * @author jcaron
- * @version $Revision$
+ * @version $Revision: 51 $
  */
 public class NcSDString extends SDString implements HasNetcdfVariable {
   private Variable ncVar;

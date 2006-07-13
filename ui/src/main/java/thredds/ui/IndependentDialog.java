@@ -1,4 +1,4 @@
-// $Id$
+// $Id: IndependentDialog.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import javax.swing.*;
      infoWindow.setLocation(100,100);
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: IndependentDialog.java 50 2006-07-12 16:30:06Z caron $
  */
 public class IndependentDialog extends JDialog {
   protected JFrame parent;

@@ -34,7 +34,7 @@ import java.io.*;
 /**
  * Holds a DODS <code>Int16</code> value.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author ndp
  * @see BaseType
  */

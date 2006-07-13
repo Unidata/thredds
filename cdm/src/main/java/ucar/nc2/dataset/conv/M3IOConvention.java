@@ -1,4 +1,4 @@
-// $Id$
+// $Id:M3IOConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +36,7 @@ import java.util.*;
  *  is the standard data access library for both NCSC's EDSS project and EPA's Models-3.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see "http://www.emc.mcnc.org/products/ioapi/index.html"
  */
 

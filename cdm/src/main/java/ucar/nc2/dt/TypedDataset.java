@@ -13,7 +13,7 @@ import java.util.*;
  * Implementations may or may not have a NetcdfFile underneath.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public interface TypedDataset {

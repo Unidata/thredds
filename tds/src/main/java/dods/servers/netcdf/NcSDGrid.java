@@ -1,4 +1,4 @@
-// $Id$
+// $Id: NcSDGrid.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * Wraps a netcdf variable with rank > 0, whose dimensions all
  * have coordinate variables, as an SDGrid.
  *
- * @version $Revision$
+ * @version $Revision: 51 $
  * @author jcaron
  */
 

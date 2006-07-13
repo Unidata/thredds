@@ -35,7 +35,7 @@ import dods.dap.parser.ExprParserConstants;
 /**
  * Holds a DODS Server <code>Unsigned Int16</code> value.
  *
- * @version $Revision$
+ * @version $Revision: 51 $
  * @author ndp
  * @see BaseType
  */

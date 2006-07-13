@@ -1,4 +1,4 @@
-// $Id$
+// $Id: TestRegExpAndDurationTimeCoverageEnhancer.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.cataloggen.datasetenhancer;
 
 import junit.framework.*;

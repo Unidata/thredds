@@ -17,7 +17,7 @@ import java.io.*;
  * the "Data:" line.  This is required because overzealous buffering in the
  * DDSParser will read the data as well as the DDS otherwise.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see DConnect
  */

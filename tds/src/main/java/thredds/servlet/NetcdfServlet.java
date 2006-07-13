@@ -1,4 +1,4 @@
-// $Id$
+// $Id: NetcdfServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -58,7 +58,7 @@ import org.jdom.transform.XSLTransformer;
 /**
  * Netcdf Grid subsetting.
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class NetcdfServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: TestServerSite.java 55 2006-07-12 19:40:44Z edavis $
 package thredds;
 
 import com.meterware.httpunit.*;

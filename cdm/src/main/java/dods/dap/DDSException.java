@@ -14,7 +14,7 @@ package dods.dap;
 /**
  * DDS exception. This is the root of all the DDS exception classes.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see DODSException
  */

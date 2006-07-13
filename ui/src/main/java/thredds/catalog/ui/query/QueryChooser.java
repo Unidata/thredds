@@ -44,7 +44,7 @@ import javax.swing.event.*;
  * </pre>
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: QueryChooser.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class QueryChooser extends JPanel {

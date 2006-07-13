@@ -33,7 +33,7 @@ import java.io.*;
 /**
  * Holds a DODS <code>FLoat32</code> value.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author ndp
  * @see BaseType
  */

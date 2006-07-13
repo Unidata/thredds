@@ -1,4 +1,4 @@
-// $Id$
+// $Id: DateFormatter.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,7 +28,7 @@ import java.util.Date;
  * Use one of these in each thread for thread safety.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 public class DateFormatter {
 

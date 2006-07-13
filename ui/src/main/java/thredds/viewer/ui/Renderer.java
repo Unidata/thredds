@@ -1,4 +1,4 @@
-// $Id$
+// $Id: Renderer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,7 +23,7 @@ package thredds.viewer.ui;
 /** A Renderer does the actual work of drawing objects.
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: Renderer.java 50 2006-07-12 16:30:06Z caron $
  */
 public interface Renderer {
 

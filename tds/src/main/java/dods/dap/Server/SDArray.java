@@ -36,7 +36,7 @@ import dods.dap.*;
 /**
  * Holds a DODS Server <code>Array</code> value.
  *
- * @version $Revision$
+ * @version $Revision: 51 $
  * @author ndp
  * @see BaseType
  */

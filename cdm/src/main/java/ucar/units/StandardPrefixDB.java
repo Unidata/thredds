@@ -1,4 +1,4 @@
-// $Id$
+// $Id: StandardPrefixDB.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,7 +24,7 @@ package ucar.units;
  * Provides support for a database of standard unit prefixes.
  *
  * @author Steven R. Emmerson
- * @version $Id$
+ * @version $Id: StandardPrefixDB.java 64 2006-07-12 22:30:50Z edavis $
  */
 public final class
 StandardPrefixDB

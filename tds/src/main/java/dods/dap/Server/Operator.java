@@ -21,7 +21,7 @@ import dods.dap.parser.ExprParserConstants;
     out which actual BaseType were passed in and perform (if
     appropriate) the RelOp comparison on the 2 types.
     @author ndp
-    @version $Revision$
+    @version $Revision: 51 $
  */
 
 

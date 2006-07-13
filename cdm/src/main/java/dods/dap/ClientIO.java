@@ -22,7 +22,7 @@ import java.io.EOFException;
  * interface does, rather it sends only the binary data values. Other software
  * is responsible for sending variable type information (see <code>DDS</code>).
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see BaseType
  * @see DDS

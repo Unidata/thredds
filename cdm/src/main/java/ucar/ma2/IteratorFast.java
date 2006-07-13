@@ -1,4 +1,4 @@
-// $Id$
+// $Id:IteratorFast.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,7 @@ package ucar.ma2;
  * A "fast" iterator that can be used when the data is in canonical order.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
   /* the idea is IteratorFast can do the iteration without an Index */
   public class IteratorFast implements IndexIterator {

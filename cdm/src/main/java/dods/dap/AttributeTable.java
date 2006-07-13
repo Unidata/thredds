@@ -48,7 +48,7 @@ import java.io.*;
  * simple attributes, <em>actual_range</em> is a container attribute, and
  * <em>New_Attribute</em> is an alias pointing to <em>Old_Attribute</em>.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see DAS
  * @see Attribute

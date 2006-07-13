@@ -1,4 +1,4 @@
-// $Id$
+// $Id: CatGenServlet.java 54 2006-07-12 19:37:21Z edavis $
 
 package thredds.cataloggen.servlet;
 

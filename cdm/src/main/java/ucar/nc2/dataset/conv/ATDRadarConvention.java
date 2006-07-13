@@ -1,4 +1,4 @@
-// $Id$
+// $Id:ATDRadarConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -31,7 +31,7 @@ import java.io.IOException;
  * ATD Radar file (ad hoc guesses).
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class ATDRadarConvention extends CoordSysBuilder {

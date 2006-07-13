@@ -1,4 +1,4 @@
-// $Id$
+// $Id: GeoGridTable.java 68 2006-07-13 00:08:20Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -48,7 +48,7 @@ import javax.swing.*;
  *
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 68 $ $Date: 2006-07-13 00:08:20Z $
  */
 
 public class GeoGridTable extends JPanel {

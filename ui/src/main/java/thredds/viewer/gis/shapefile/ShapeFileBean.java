@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ShapeFileBean.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +26,7 @@ import thredds.viewer.ui.Renderer;
 /** Wraps shapefile maps into a MapBean
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: ShapeFileBean.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class ShapeFileBean extends thredds.viewer.gis.MapBean {

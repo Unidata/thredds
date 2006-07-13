@@ -1,4 +1,4 @@
-// $Id$
+// $Id: TestCatGenConfigMetadataFactory.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.cataloggen.config;
 
 import junit.framework.TestCase;

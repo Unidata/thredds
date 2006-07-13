@@ -1,4 +1,4 @@
-// $Id$
+// $Id: DateField.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,7 +33,7 @@ import javax.swing.text.*;
  * Input field for thredds.datatype.DateType, part of ucar.util.prefs.ui.
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: DateField.java 50 2006-07-12 16:30:06Z caron $
  * @see ucar.util.prefs.ui.Field
  */
 

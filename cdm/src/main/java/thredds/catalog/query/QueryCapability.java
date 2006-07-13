@@ -1,4 +1,4 @@
-// $Id$
+// $Id: QueryCapability.java 48 2006-07-12 16:15:40Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,7 @@ import java.util.*;
  * Implementation of a thredds DQC object.
  *
  * @author john caron
- * @version $Revision$ $Date$
+ * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class QueryCapability {

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: SelectFromRange.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.dqc;
 
 /**

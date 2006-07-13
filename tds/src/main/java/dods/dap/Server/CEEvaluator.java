@@ -50,7 +50,7 @@ import dods.util.Debug;
  * More details are found in the documentation for the respective classes.
  *
  * @author jhrg
- * @version $Revision$
+ * @version $Revision: 51 $
  * @see ServerDDS
  * @see ServerMethods
  * @see ClauseFactory

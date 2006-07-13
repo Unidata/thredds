@@ -1,4 +1,4 @@
-// $Id$
+// $Id: InvCatalogFactory.java 48 2006-07-12 16:15:40Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -78,7 +78,7 @@ import thredds.util.IO;
  * The schemas are read from a local resource, see XMLEntityResolver
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: InvCatalogFactory.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public class InvCatalogFactory {

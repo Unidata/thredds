@@ -1,4 +1,4 @@
-// $Id$
+// $Id: NewMapAreaEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@ package thredds.viewer.ui.geoloc;
 /**
  * Used to notify listeners that there is a new world bounding box.
  * @author John Caron
- * @version $Id$
+ * @version $Id: NewMapAreaEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class NewMapAreaEvent extends java.util.EventObject {
 

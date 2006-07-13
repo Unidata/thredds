@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id$
+// $Id: StringUtil.java 64 2006-07-12 22:30:50Z edavis $
 
 
 package ucar.unidata.util;
@@ -39,7 +39,7 @@ import java.util.regex.*;
 /**
  * String utilities
  * @author John Caron
- * @version $Id$
+ * @version $Id: StringUtil.java 64 2006-07-12 22:30:50Z edavis $
  */
 
 public class StringUtil {

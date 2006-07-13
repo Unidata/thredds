@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id:DoradeSweep.java 51 2006-07-12 17:13:13Z caron $ */
 package ucar.atd.dorade;
 
 import ucar.atd.dorade.DoradeDescriptor.DescriptorException;
@@ -13,7 +13,7 @@ import java.util.Date;
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class DoradeSweep {
 

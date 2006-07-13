@@ -15,7 +15,7 @@ import thredds.ui.BAMutil;
 /**
  *  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class ImageViewPanel extends JPanel {
   private static boolean debug = false;

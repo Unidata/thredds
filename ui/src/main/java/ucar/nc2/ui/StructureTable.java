@@ -29,7 +29,7 @@ import ucar.util.prefs.PreferencesExt;
  * The columns are the members of the Structure.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class StructureTable extends JPanel {
   private PreferencesExt mainPrefs;

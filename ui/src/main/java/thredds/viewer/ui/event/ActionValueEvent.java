@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ActionValueEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -22,7 +22,7 @@ package thredds.viewer.ui.event;
 
 /** Extend ActionEvent to contain a String value.
  * @author John Caron
- * @version $Id$
+ * @version $Id: ActionValueEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class ActionValueEvent extends java.awt.event.ActionEvent {
   private Object value;

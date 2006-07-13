@@ -54,7 +54,7 @@ import java.util.Enumeration;
  * array is now exactly fixed at (0,0), and the point in the last row
  * and last column is at (8,27). 
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see BaseType
  * @see DArray

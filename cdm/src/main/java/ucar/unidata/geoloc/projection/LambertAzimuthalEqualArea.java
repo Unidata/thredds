@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: LambertAzimuthalEqualArea.java 63 2006-07-12 21:50:51Z edavis $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -39,7 +39,7 @@ import ucar.units.*;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author Unidata Development Team
- *   @version $Id$
+ *   @version $Id: LambertAzimuthalEqualArea.java 63 2006-07-12 21:50:51Z edavis $
  */
 
 public class LambertAzimuthalEqualArea extends ProjectionImpl {

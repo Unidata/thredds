@@ -1,4 +1,4 @@
-// $Id$
+// $Id:NCdump.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +35,7 @@ import java.util.*;
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)
  *
  * @author Russ Rew, John Caron
- * @version $Id$
+ * @version $Id:NCdump.java 51 2006-07-12 17:13:13Z caron $
  */
 
 public class NCdump {

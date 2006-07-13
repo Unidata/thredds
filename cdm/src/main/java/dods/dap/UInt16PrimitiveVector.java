@@ -34,7 +34,7 @@ import java.io.*;
 /**
  * A vector of unsigned ints.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author ndp
  * @see PrimitiveVector
  */

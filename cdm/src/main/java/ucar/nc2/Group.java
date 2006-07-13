@@ -1,4 +1,4 @@
-// $Id$
+// $Id:Group.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ import java.io.PrintStream;
  * There is always at least one Group in a dataset, the root Group, whose name is the empty string.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class Group {
   protected NetcdfFile ncfile;

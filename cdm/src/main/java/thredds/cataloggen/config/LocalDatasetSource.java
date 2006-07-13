@@ -1,4 +1,4 @@
-// $Id$
+// $Id: LocalDatasetSource.java 63 2006-07-12 21:50:51Z edavis $
 
 package thredds.cataloggen.config;
 
@@ -15,7 +15,7 @@ import java.util.Iterator;
  * Concrete implementation of DatasetSource for local disk sources.
  *
  * @author Ethan Davis
- * @version $Id$
+ * @version $Id: LocalDatasetSource.java 63 2006-07-12 21:50:51Z edavis $
  */
 
 public class LocalDatasetSource extends DatasetSource

@@ -14,7 +14,7 @@ package dods.dap;
 /**
  * Thrown when DODS encounters an exception while reading from a data set.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see ClientIO#deserialize(DataInputStream, ServerVersion, StatusUI)
  */

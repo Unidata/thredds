@@ -1,4 +1,4 @@
-// $Id$
+// $Id:StructurePseudo.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,7 +30,7 @@ import java.io.IOException;
  * Make a collection of variables with the same outer dimension into a fake Structure.
  * Its fake because the variables are not stored contiguously.
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class StructurePseudo extends Structure {
   private ArrayList orgVariables =  new ArrayList();

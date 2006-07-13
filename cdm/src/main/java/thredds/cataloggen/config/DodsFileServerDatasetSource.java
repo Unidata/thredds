@@ -1,4 +1,4 @@
-// $Id$
+// $Id: DodsFileServerDatasetSource.java 63 2006-07-12 21:50:51Z edavis $
 
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
@@ -26,7 +26,7 @@ import thredds.catalog.InvCatalog;
 
 import java.util.List;
 
-// $Id$
+// $Id: DodsFileServerDatasetSource.java 63 2006-07-12 21:50:51Z edavis $
 
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for

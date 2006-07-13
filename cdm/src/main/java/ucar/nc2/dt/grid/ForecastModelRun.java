@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ForecastModelRun.java 70 2006-07-13 15:16:05Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -73,7 +73,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * </pre>
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class ForecastModelRun {
   public static final int OPEN_NORMAL = 1; // try to open XML, if fail, open dataset and write XML

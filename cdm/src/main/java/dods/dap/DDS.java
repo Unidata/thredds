@@ -100,7 +100,7 @@ import dods.dap.parser.ParseException;
  * See <em>The DODS User Guide</em>, or the documentation of the
  * BaseType class for descriptions of the DODS data types.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see BaseType
  * @see BaseTypeFactory

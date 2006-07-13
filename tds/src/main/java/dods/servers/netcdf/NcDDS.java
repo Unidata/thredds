@@ -1,4 +1,4 @@
-// $Id$
+// $Id: NcDDS.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.util.*;
  * NcDDS is a specialization of ServerDDS for netcdf files.
  * This creates a ServerDDS from the netcdf file.
  *
- *   @version $Revision$
+ *   @version $Revision: 51 $
  *   @author jcaron
  */
 

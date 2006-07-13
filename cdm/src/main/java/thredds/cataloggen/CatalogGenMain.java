@@ -1,4 +1,4 @@
-// $Id$
+// $Id: CatalogGenMain.java 56 2006-07-12 20:20:03Z edavis $
 package thredds.cataloggen;
 
 import org.apache.log4j.*;

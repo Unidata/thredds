@@ -1,4 +1,4 @@
-// $Id$
+// $Id: DodsDirDatasetSource.java 63 2006-07-12 21:50:51Z edavis $
 
 package thredds.cataloggen.config;
 
@@ -19,7 +19,7 @@ import java.io.IOException;
  * <p>Copyright: Copyright (c) 2001</p>
  * <p>Company: UCAR/Unidata</p>
  * @author Ethan Davis
- * @version $Id$
+ * @version $Id: DodsDirDatasetSource.java 63 2006-07-12 21:50:51Z edavis $
  */
 
 public class DodsDirDatasetSource extends DatasetSource

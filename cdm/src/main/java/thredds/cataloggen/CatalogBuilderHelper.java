@@ -1,4 +1,4 @@
-// $Id$
+// $Id: CatalogBuilderHelper.java 57 2006-07-12 20:20:43Z edavis $
 package thredds.cataloggen;
 
 import thredds.catalog.*;

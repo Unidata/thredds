@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id$
+// $Id: Format.java 64 2006-07-12 22:30:50Z edavis $
 
 package ucar.unidata.util;
 
@@ -26,7 +26,7 @@ package ucar.unidata.util;
 /**
  * static formatting utilities. Replace with standard java library when possible.
  * @author John Caron
- * @version $Id$
+ * @version $Id: Format.java 64 2006-07-12 22:30:50Z edavis $
  */
 public class Format {
 

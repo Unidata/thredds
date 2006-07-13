@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ThreddsMetadata.java 48 2006-07-12 16:15:40Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,7 +41,7 @@ import org.jdom.Element;
  * Metadata for "enhanced catalogs", type THREDDS.
  *
  * @author John Caron
- * @version $Id$
+ * @version $Id: ThreddsMetadata.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public class ThreddsMetadata {

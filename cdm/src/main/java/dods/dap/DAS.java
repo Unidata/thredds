@@ -76,7 +76,7 @@ import java.io.*;
  * provided to a DODS client by a server, and the DAS is how this
  * data is packaged for sending (and how it is received). 
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see DDS 
  * @see AttributeTable

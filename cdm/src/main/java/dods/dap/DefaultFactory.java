@@ -22,7 +22,7 @@ package dods.dap;
 /**
  * The default client-side Factory for BaseType objects.
  *
- * @version $Revision$
+ * @version $Revision: 48 $
  * @author jehamby
  * @see BaseTypeFactory
  */
