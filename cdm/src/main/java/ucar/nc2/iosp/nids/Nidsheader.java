@@ -1901,19 +1901,19 @@ class Nidsheader{
 
       buf.get(b2, 0, 2);
       pcode = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("Product_station", stationId));
+      ncfile.addAttribute(null, new Attribute("ProductStation", stationId));
       buf.get(b2, 0, 2);
       opmode = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("Operational_Mode", new Short(opmode)));
+      ncfile.addAttribute(null, new Attribute("OperationalMode", new Short(opmode)));
       buf.get(b2, 0, 2);
       volumnScanPattern = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("volumn_scan_pattern", new Short(volumnScanPattern)));
+      ncfile.addAttribute(null, new Attribute("VolumeCoveragePatternName", new Short(volumnScanPattern)));
       buf.get(b2, 0, 2);
       sequenceNumber = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("sequence_number", new Short(sequenceNumber)));
+      ncfile.addAttribute(null, new Attribute("SequenceNumber", new Short(sequenceNumber)));
       buf.get(b2, 0, 2);
       volumeScanNumber = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("volume_scan_number", new Short(volumeScanNumber)));
+      ncfile.addAttribute(null, new Attribute("VolumeScanNumber", new Short(volumeScanNumber)));
       buf.get(b2, 0, 2);
       volumeScanDate = (short)getUInt(b2, 2);
       buf.get(b4, 0, 4);
@@ -1924,14 +1924,14 @@ class Nidsheader{
       productTime = getUInt(b4, 4);
       java.util.Date pDate = getDate( productDate, productTime*1000);
       String dstring = formatter.toDateTimeStringISO(pDate);
-      ncfile.addAttribute(null, new Attribute("date_created", dstring));
+      ncfile.addAttribute(null, new Attribute("DateCreated", dstring));
       buf.get(b2, 0, 2);
       p1 = (short)getInt(b2, 2);
       buf.get(b2, 0, 2);
       p2 = (short)getInt(b2, 2);
       buf.get(b2, 0, 2);
       elevationNumber = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("elevation_number",new Short(elevationNumber)));
+      ncfile.addAttribute(null, new Attribute("ElevationNumber",new Short(elevationNumber)));
       buf.get(b2, 0, 2);
       p3 = (short)getInt(b2, 2);
       off += 40;
@@ -1961,7 +1961,7 @@ class Nidsheader{
 
       buf.get(b2, 0, 2);
       numberOfMaps = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("number_of_maps",new Short(numberOfMaps)));
+      ncfile.addAttribute(null, new Attribute("NumberOfMaps",new Short(numberOfMaps)));
       off += 2;
       buf.get(b4, 0, 4);
       //tInt = (Integer)convert(b4, DataType.INT, -1);
