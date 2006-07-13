@@ -99,12 +99,12 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
 
     sbuff.append(" Radar ID = "+getRadarID()+"\n");
     sbuff.append(" Radar Name = "+getRadarName()+"\n");
-    sbuff.append(" Data Format Name= "+getDataFormatName()+"\n");
+    sbuff.append(" Data Format Name= "+getDataFormat()+"\n");
     sbuff.append(" Common Type = "+getCommonType()+"\n");
     sbuff.append(" Common Origin = "+getCommonOrigin()+"\n");
     sbuff.append(" Date Unit = "+getTimeUnits().getUnitsString()+"\n");
     sbuff.append(" isStationary = "+isStationary()+"\n");
-    sbuff.append(" isRadial = "+isRadial()+"\n");
+    //sbuff.append(" isRadial = "+isRadial()+"\n");
     sbuff.append(" isVolume = "+isVolume()+"\n");
     sbuff.append("\n");
     sbuff.append(super.getDetailInfo());
