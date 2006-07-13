@@ -398,7 +398,7 @@ public class NetcdfServlet extends AbstractServlet {
 
       Range timeRange = null;
       if (hasTime) {
-        CoordinateAxis1D timeAxis = gcsOrg.getTimeAxis();
+        CoordinateAxis1D timeAxis = gcsOrg.getTimeAxis1D();
         int startIndex = timeAxis.findCoordElement(time_start);
         int endIndex = timeAxis.findCoordElement(time_end);
         timeRange = new Range(startIndex, endIndex);

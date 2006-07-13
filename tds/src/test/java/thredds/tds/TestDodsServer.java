@@ -41,7 +41,7 @@ public class TestDodsServer extends TestCase {
     assert gcs != null;
     assert null == gcs.getVerticalAxis();
 
-    CoordinateAxis1D time = gcs.getTimeAxis();
+    CoordinateAxis1D time = gcs.getTimeAxis1D();
     assert time != null;
     assert time.getSize() == 1;
     assert 102840.0 == time.readScalarDouble();
