@@ -70,7 +70,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public String getRadarID() {
-        return ds.findGlobalAttribute( "Product_station").getStringValue();
+        return ds.findGlobalAttribute( "ProductStation").getStringValue();
   }
 
   public boolean isStationary(){
@@ -78,7 +78,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public String getRadarName() {
-        return ds.findGlobalAttribute( "Product_station").getStringValue();
+        return ds.findGlobalAttribute( "ProductStation").getStringValue();
   }
 
   public String getDataFormat() {
@@ -410,7 +410,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
         //String et = rds.getEndDate().toString();
         //String id = rds.getRadarID();
         //String name = rds.getRadarName();
-
+        rds.getRadarID();
         //List rvars = rds.getDataVariables();
         RadialDatasetSweep.RadialVariable rf = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("BaseReflectivity");
         rf.getSweep(0);
@@ -420,7 +420,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
         RadialDatasetSweep rds1 =  datasetFactory1.open( fileIn1, null);
 
         //List rvars1 = rds1.getDataVariables();
-        RadialDatasetSweep.RadialVariable rf1 = (RadialDatasetSweep.RadialVariable) rds1.getDataVariable("Velocity");
+        RadialDatasetSweep.RadialVariable rf1 = (RadialDatasetSweep.RadialVariable) rds1.getDataVariable("RadialVelocity");
         rf1.getSweep(0);
 
         testRadialVariable(rf);
