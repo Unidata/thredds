@@ -1,4 +1,4 @@
-// $Id$
+// $Id:CoordSysBuilder.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -65,7 +65,7 @@ import java.util.*;
  *
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 /*
@@ -520,8 +520,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * Assign explicit CoordinateSystem objects to variables.
    */
   protected void assignExplicitCoordinateSystems( NetcdfDataset ncDataset) {
+
+    // look for explicit references to coord sys variables
     for (int i = 0; i < varList.size(); i++) {
       VarProcess vp = (VarProcess) varList.get(i);
+
       if (vp.coordSys != null && !vp.isCoordinateTransform) {
         StringTokenizer stoker = new StringTokenizer( vp.coordSys);
         while (stoker.hasMoreTokens()) {
@@ -543,6 +546,43 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         }
       }
     }
+
+    // look for explicit listings of coordinate axes
+    for (int i = 0; i < varList.size(); i++) {
+      VarProcess vp = (VarProcess) varList.get(i);
+      VariableEnhanced ve = (VariableEnhanced) vp.v;
+
+      if (!vp.hasCoordinateSystem() && (vp.coordAxes != null) && vp.isData()) {
+        List dataAxesList = getAxes(vp.coordAxes, vp.v.getName());
+        String coordSysName = CoordinateSystem.makeName(dataAxesList);
+        CoordinateSystem cs = ncDataset.findCoordinateSystem(coordSysName);
+        if (cs != null) {
+          ve.addCoordinateSystem(cs);
+          parseInfo.append(" assigned explicit CoordSystem '" + cs.getName() + "' for var= " + vp.v.getName() + "\n");
+        } else {
+          CoordinateSystem csnew = new CoordinateSystem(ncDataset, dataAxesList, null);
+          ve.addCoordinateSystem(csnew);
+          ncDataset.addCoordinateSystem(csnew);
+          parseInfo.append(" created explicit CoordSystem '" + csnew.getName() + "' for var= " + vp.v.getName() + "\n");
+        }
+      }
+    }
+  }
+
+  private List getAxes( String names, String varName) {
+    ArrayList axesList = new ArrayList();
+    StringTokenizer stoker = new StringTokenizer( names);
+    while (stoker.hasMoreTokens()) {
+      String vname = stoker.nextToken();
+      VarProcess ap = findVarProcess( vname); // LOOK: full vs short name
+      if (ap != null)
+        axesList.add( ap.v);
+      else {
+        parseInfo.append("***Cant find Coordinate Axis "+vname+" referenced from var= "+varName+"\n");
+        userAdvice.append("***Cant find Coordinate Axis "+vname+" referenced from var= "+varName+"\n");
+      }
+    }
+    return axesList;
   }
 
   /**
@@ -554,7 +594,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     for (int i = 0; i < varList.size(); i++) {
       VarProcess vp = (VarProcess) varList.get(i);
 
-      if (vp.coordSys == null && vp.isData()) {
+      if (!vp.hasCoordinateSystem() && vp.isData()) {
         List dataAxesList = vp.findCoordinateAxes( true);
         if (dataAxesList.size() < 2)
           continue;
@@ -590,7 +630,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       VariableEnhanced ve = (VariableEnhanced) vp.v;
       CoordinateSystem implicit = null;
 
-      if ((ve.getCoordinateSystems().size() > 1) || !vp.isData()) continue;
+      if (vp.hasCoordinateSystem() || !vp.isData()) continue;
 
       CoordinateSystem existing = null;
       if (ve.getCoordinateSystems().size() == 1) {
@@ -923,6 +963,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     public boolean isData() {
       return !isCoordinateVariable && !isCoordinateAxis && !isCoordinateSystem && !isCoordinateTransform;
+    }
+
+    public boolean hasCoordinateSystem() {
+      return ((VariableEnhanced) v).getCoordinateSystems().size() > 0;
     }
 
     /**

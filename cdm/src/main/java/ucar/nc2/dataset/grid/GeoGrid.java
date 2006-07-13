@@ -69,7 +69,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     this.vs = dsvar;
     this.gcs = gcs;
 
-    if (gcs.isProductSet()) {
+    CoordinateAxis xaxis = gcs.getXHorizAxis();
+    if (xaxis instanceof CoordinateAxis1D) {
       xDimOrgIndex = findDimension( gcs.getXHorizAxis().getDimension(0));
       yDimOrgIndex = findDimension( gcs.getYHorizAxis().getDimension(0));
 
@@ -79,7 +80,12 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     }
 
     if (gcs.getVerticalAxis() != null) zDimOrgIndex = findDimension( gcs.getVerticalAxis().getDimension(0));
-    if (gcs.getTimeAxis() != null) tDimOrgIndex = findDimension( gcs.getTimeAxis().getDimension(0));
+    if (gcs.getTimeAxis() != null) {
+      if (gcs.getTimeAxis1D() != null)
+        tDimOrgIndex = findDimension( gcs.getTimeAxis1D().getDimension(0));
+      else
+        tDimOrgIndex = findDimension( gcs.getTimeAxis().getDimension(1));
+    }
     if (gcs.getEnsembleAxis() != null) eDimOrgIndex = findDimension( gcs.getEnsembleAxis().getDimension(0));
     if (gcs.getRunTimeAxis() != null) rtDimOrgIndex = findDimension( gcs.getRunTimeAxis().getDimension(0));
 

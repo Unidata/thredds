@@ -44,7 +44,7 @@ public class TestNcmlAggSynGrid extends TestCase {
       assert gcsys.getXHorizAxis() != null;
       assert gcsys.getTimeAxis() != null;
 
-      CoordinateAxis1DTime taxis = gcsys.getTimeAxis();
+      CoordinateAxis1DTime taxis = gcsys.getTimeAxis1D();
       assert taxis.getDataType() == DataType.STRING : taxis.getDataType();
 
       List names = taxis.getNames();

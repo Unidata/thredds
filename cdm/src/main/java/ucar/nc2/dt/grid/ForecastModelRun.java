@@ -114,7 +114,7 @@ public class ForecastModelRun {
       addMissing((Variable) gg.getVariable(), gcs, grid);
 
       // LOOK: Note this assumes a dense coordinate system
-      CoordinateAxis1D axis = gcs.getTimeAxis();
+      CoordinateAxis1D axis = gcs.getTimeAxis1D();
       if (axis != null) {
         TimeCoord tc = getTimeCoordinate(axis);
         tc.vars.add( grid);

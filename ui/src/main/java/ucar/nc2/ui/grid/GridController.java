@@ -79,6 +79,7 @@ public class GridController {
   private int currentRunTime;
   private boolean drawWinds = false;
   boolean drawHorizOn = true, drawVertOn = false;
+  private boolean hasDependentTimeAxis = false;
 
     // rendering
   private AffineTransform atI = new AffineTransform();  // identity transform
@@ -373,6 +374,16 @@ public class GridController {
       public void actionPerformed(ActionValueEvent e) {
         int runtime = findIndexFromName( runtimeNames, e.getValue().toString());
         if ((runtime != -1) && (runtime != currentRunTime)) {
+          if (hasDependentTimeAxis) {
+            GridCoordSystem gcs = currentField.getGridCoordSystem();
+            CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
+            timeNames = taxis.getNames();
+            ui.timeChooser.setCollection(timeNames.iterator());
+            if (currentTime >= timeNames.size())
+              currentTime = 0;
+            ui.timeChooser.setSelectedByIndex( currentTime);
+          }
+
           currentRunTime = runtime;
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
@@ -678,10 +689,14 @@ public class GridController {
     vertPanel.setCoordSys(currentField.getGridCoordSystem(), currentLevel);
 
     // set times
-    CoordinateAxis1DTime taxis = gcs.getTimeAxis();
-    timeNames = (taxis == null) ? new ArrayList() : taxis.getNames();
-    if ((timeNames == null) || (currentTime >= timeNames.size()))
-      currentTime = 0;
+    if (gcs.hasTimeAxis()) {
+      CoordinateAxis1DTime taxis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
+      timeNames = (taxis == null) ? new ArrayList() : taxis.getNames();
+      if ((timeNames == null) || (currentTime >= timeNames.size()))
+        currentTime = 0;
+      hasDependentTimeAxis = !gcs.hasTimeAxis1D();
+    } else
+      hasDependentTimeAxis = false;
 
     // set ensembles
     CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
@@ -697,8 +712,8 @@ public class GridController {
     return true;
   }
 
-  // public int getCurrentLevelIndex() { return currentLevel; }
-  /* public int getCurrentTimeIndex() { return currentTime; }
+  public int getCurrentLevelIndex() { return currentLevel; }
+  public int getCurrentTimeIndex() { return currentTime; }
   public boolean setLevel(int index) {
     if ((index >= 0) && (index < levelNames.size())) {
       currentLevel = index;

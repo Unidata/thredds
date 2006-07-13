@@ -1,4 +1,4 @@
-// $Id$
+// $Id:GridCoordSystem.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -43,12 +43,12 @@ import thredds.datatype.DateRange;
  * Its job would be to provide lat(x,y) and lon(x,y) arrays.
  *
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public interface GridCoordSystem {
 
   /**
-   * The name of the Grid Coordinate System.
+   * The name of the Grid Coordinate System, consisting of the list of coordinate axes, seperated by blanks.
    */
   public String getName();
 
@@ -90,12 +90,13 @@ public interface GridCoordSystem {
   public CoordinateAxis1D getVerticalAxis();
 
   /**
-   * Get the Time axis, if has1DTimeAxis() is true. Otherwise use getTimeAxisForRun.
+   * Get the Time axis, if it exists. May be 1 or 2 dimensional.
+   * If 1D, will be a CoordinateAxis1DTime. If 2D, then you can use getTimeAxisForRun().
    * A time coordinate must be a udunit date or ISO String, so it can always be converted to a Date.
    * Typical meaning is the date of measurement or valid forecast time.
    * @return the time coordinate axis, may be null.
    */
-  public CoordinateAxis1DTime getTimeAxis();
+  public CoordinateAxis getTimeAxis();
 
   /**
    * Get the ensemble axis. Must be 1 dimensional.
@@ -209,11 +210,22 @@ public interface GridCoordSystem {
    * @return DateRange or null if no time coordinate
    */
   public thredds.datatype.DateRange getDateRange();
+   
+  /**
+   * True if there is a Time Axis.
+   */
+  public boolean hasTimeAxis();
 
   /**
-   * True if getTimeAxis() != null, and getTimeAxis() instanceof CoordinateAxis1D.
+   * True if there is a Time Axis and it is 1D.
    */
-  public boolean has1DTimeAxis();
+  public boolean hasTimeAxis1D();
+
+  /**
+   * Get the Time axis, if it exists, and its 1-dimensional.
+   * @return the time coordinate axis, may be null.
+   */
+  public CoordinateAxis1DTime getTimeAxis1D();
 
   /**
    * This is the case of a 2D time axis, which depends on the run index.

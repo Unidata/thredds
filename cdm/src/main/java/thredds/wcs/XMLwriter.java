@@ -227,7 +227,7 @@ public class XMLwriter {
     domainElem.addContent( makeSpatialDomain( grid));
 
     GridCoordSystem gcs = grid.getGridCoordSystem();
-    CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+    CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
     java.util.Date[] dates = taxis.getTimeDates();
     int n = dates.length;
     if (useTimeRange)

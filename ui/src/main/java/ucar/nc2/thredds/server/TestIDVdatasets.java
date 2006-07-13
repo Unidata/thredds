@@ -248,7 +248,7 @@ public class TestIDVdatasets {
         }
 
         // time
-        CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+        CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
         DateRange dateRange2 = gcs.getDateRange();
         if (dateRange2 == null) {
           out.println("  NO DateRange");

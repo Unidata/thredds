@@ -26,7 +26,7 @@
 <div class="head">
   <h1 align="left">Performance</h1>
   <address>
-  last update: July 09, 2005
+  last update: July 12, 2006
   </address>
 
 <br>
@@ -46,8 +46,7 @@ export JAVA_OPTS</pre>
 <p>starts Tomcat with the Server JVM, and gives it 128 Mbytes of memory to start with, and allows a maximum of 512 Mbytes. These are suggested numbers, use more if you can. You will need to restart Tomcat for this to take effect.</p>
 <h2>Tomcat</h2>
 <h3>Version</h3>
-<p>Tomcat 5.0 should have better performance than Tomcat 4.X. We recommend 5.0.28  as the best stable version available as of the date of this writing. </p>
-<p>Tomcat 5.5 may have better performance than 5.0, but we have not tested. We hope to do some performance tests soon and give more specific recommendations. If you are in the position to do so, please let us know the results! </p>
+<p>We recommend the latest stable version of Tomcat 5.5, which supposedly has better stability and performance than Tomcat 5.0. </p>
 <h3>Automatic Startup </h3>
 <p>In a production environment, Tomcat should be automatically restarted when the machine starts. How to do this depends on what OS you are running. This <a href="http://wiki.apache.org/jakarta-tomcat/HowTo">FAQ</a> has a bit of info. </p>
 <h3>Resources</h3>
@@ -57,10 +56,14 @@ export JAVA_OPTS</pre>
 </ul>
 <p>&nbsp;</p>
 <h2>Thredds Data Server </h2>
-<h3>Memory Use</h3>
-<p>The OPeNDAP-Java layer of the server currently has to read the entire data request into memory before sending it to the client (we hope to get a streaming I/O solution working eventually). Generally clients only request subsets of large files, but if you need to support large data requests, make sure that the <em><strong>-Xmx512m</strong></em> parameter above is set accordingly. </p>
-<h3>File Handles</h3>
-<p>The OPeNDAP-NetCDF server will keep up to 100 NetCDF files open at a time. This  is set in <strong>{tomcat_home}/webapps/thredds/WEB-INF/web.xml</strong> file, in the parameter called <em><strong>maxNetcdfFilesCached. </strong></em>You can change it, but beware that it gets overwritten when a new thredds.war is installed. </p>
+<h3>File Handles and Caching </h3>
+<p>The TDS caches file handles to minimize OS overhead. Currently this is hardwired to allow   400 - 600 open files for OPeNDAP and WCS, and 20 - 40 for HTTP file serving. This means that your OS must allow at least that many file handles per process, else you can get a &quot;out of file handles&quot; message, and the server may freeze up. </p>
+<p>These numbers limit performance, but not functionality. For example, the number of files in an aggregation is not limited by these file handle limits. </p>
+<p>We will make these limits user-settable in a future version of the TDS. </p>
+<p>&nbsp;</p>
+<h3>OPeNDAP Memory Use</h3>
+<p>The OPeNDAP-Java layer of the server currently has to read the entire data request into memory before sending it to the client (we hope to get a streaming I/O solution working eventually). Generally clients only request subsets of large files, but if you need to support large data requests, make sure that the <em><strong>-Xmx</strong></em> parameter above is set accordingly. </p>
+<h3>&nbsp;</h3>
 <hr width="100%">
 <p> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@support.unidata.ucar.edu">THREDDS support</a> </span></i></p>
 <p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../thredds.jpg" width="95" height="79"></p>

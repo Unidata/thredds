@@ -78,18 +78,18 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public static boolean isGridCoordSys(StringBuffer sbuff, CoordinateSystem cs) {
     if (cs.getRankDomain() < 2) {
-      if (sbuff != null) sbuff.append(cs.getName()+" domain rank < 2\n");
+      if (sbuff != null) sbuff.append(cs.getName()+": domain rank < 2\n");
       return false;
     }
 
     if (!cs.isLatLon()) {
       // do check for GeoXY ourself
       if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
-        if (sbuff != null) sbuff.append(cs.getName()+" NO Lat,Lon or X,Y axis\n");
+        if (sbuff != null) sbuff.append(cs.getName()+": NO Lat,Lon or X,Y axis\n");
         return false;
       }
       if (null == cs.getProjection()) {
-        if (sbuff != null) sbuff.append(cs.getName()+" NO projection found\n");
+        if (sbuff != null) sbuff.append(cs.getName()+": NO projection found\n");
         return false;
       }
     }
@@ -99,11 +99,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       xaxis = cs.getXaxis();
       yaxis = cs.getYaxis();
       if (!kmUnit.isCompatible(xaxis.getUnitsString())) {
-        sbuff.append(cs.getName()+" X axis units must be convertible to km\n");
+        sbuff.append(cs.getName()+": X axis units must be convertible to km\n");
         return false;
       }
       if (!kmUnit.isCompatible(yaxis.getUnitsString())) {
-        sbuff.append(cs.getName()+" Y axis units must be convertible to km\n");
+        sbuff.append(cs.getName()+": Y axis units must be convertible to km\n");
         return false;
       }
     } else {
@@ -113,7 +113,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     // check ranks
     if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-      if (sbuff != null) sbuff.append(cs.getName()+" X or Y axis rank must be <= 2\n");
+      if (sbuff != null) sbuff.append(cs.getName()+": X or Y axis rank must be <= 2\n");
       return false;
     }
 
@@ -123,7 +123,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getPressureAxis();
     if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
     if ((z != null) && !(z instanceof CoordinateAxis1D)) {
-      if (sbuff != null) sbuff.append(cs.getName()+" Z axis must be 1D\n");
+      if (sbuff != null) sbuff.append(cs.getName()+": Z axis must be 1D\n");
       return false;
     }
 
@@ -131,16 +131,16 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if ((t != null) && !(t instanceof CoordinateAxis1D)) {
       CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
       if (rt == null) {
-        if (sbuff != null) sbuff.append(cs.getName()+" T axis must be 1D\n");
+        if (sbuff != null) sbuff.append(cs.getName()+": T axis must be 1D\n");
         return false;
       }
       if (!(rt instanceof CoordinateAxis1D)) {
-        if (sbuff != null) sbuff.append(cs.getName()+" RunTime axis must be 1D\n");
+        if (sbuff != null) sbuff.append(cs.getName()+": RunTime axis must be 1D\n");
         return false;
       }
 
       if (t.getRank() != 2) {
-        if (sbuff != null) sbuff.append(cs.getName()+" Time axis must be 2D when used with RunTime dimension\n");
+        if (sbuff != null) sbuff.append(cs.getName()+": Time axis must be 2D when used with RunTime dimension\n");
         return false;
       }
 
@@ -148,8 +148,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       Dimension rtdim = rt1D.getDimension(0);
       Dimension tdim = t.getDimension(0);
 
-      if (rtdim.equals(tdim)) {
-        if (sbuff != null) sbuff.append(cs.getName()+" Time axis must be use RunTime dimension\n");
+      if (!rtdim.equals(tdim)) {
+        if (sbuff != null) sbuff.append(cs.getName()+": Time axis must use RunTime dimension\n");
         return false;
       }
     }
@@ -250,20 +250,29 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     // timeTaxis must be CoordinateAxis1DTime
     CoordinateAxis t = cs.getTaxis();
-    if ((t != null) && (t instanceof CoordinateAxis1D)) {
+    if (t != null) {
 
-      try {
-        if (t instanceof CoordinateAxis1DTime)
-          timeTaxis = (CoordinateAxis1DTime) t;
-        else
-          timeTaxis = new CoordinateAxis1DTime(t, sbuff);
+      if (t instanceof CoordinateAxis1D) {
 
-        tAxis = timeTaxis;
-        coordAxes.add(timeTaxis);
-        timeDim = t.getDimension(0);
+        try {
+          if (t instanceof CoordinateAxis1DTime)
+            timeTaxis = (CoordinateAxis1DTime) t;
+          else
+            timeTaxis = new CoordinateAxis1DTime(t, sbuff);
 
-      } catch (IOException e) {
-        if (sbuff != null) sbuff.append("Error reading time coord= " + t.getName() + " " + e.getMessage());
+          tAxis = timeTaxis;
+          coordAxes.add(timeTaxis);
+          timeDim = t.getDimension(0);
+
+        } catch (IOException e) {
+          if (sbuff != null) sbuff.append("Error reading time coord= " + t.getName() + " " + e.getMessage());
+        }
+
+      } else { // 2d
+
+        tAxis = t;
+        timeTaxis = null;
+        coordAxes.add(t); // LOOK ??
       }
     }
 
@@ -385,9 +394,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       vCT.setVerticalTransform(vt);
     }
 
-    CoordinateAxis1DTime taxis = from.getTimeAxis();
+    CoordinateAxis taxis = from.getTimeAxis(); // LOOK!!
     if (taxis != null) {
-      tAxis = timeTaxis = (t_range == null) ? taxis : (CoordinateAxis1DTime) taxis.section( t_range);
+      CoordinateAxis1DTime taxis1D = (CoordinateAxis1DTime) taxis;
+      tAxis = timeTaxis = (t_range == null) ? taxis1D : (CoordinateAxis1DTime) taxis1D.section( t_range);
       coordAxes.add(timeTaxis);
       timeDim = timeTaxis.getDimension(0);
     }
@@ -505,7 +515,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the Time axis
    */
-  public CoordinateAxis1DTime getTimeAxis() { return timeTaxis; }
+  public CoordinateAxis getTimeAxis() { return tAxis; }
+
+  /**
+   * get the Time axis, if its 1-dimensional
+   */
+  public CoordinateAxis1DTime getTimeAxis1D() { return timeTaxis; }
 
   /**
    * get the RunTime axis, else null
@@ -719,12 +734,45 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return null;
   }
 
-  public boolean has1DTimeAxis() {
-    return (getTimeAxis() != null);
-  }
+  /**
+   * True if there is a Time Axis.
+   */
+  public boolean hasTimeAxis() { return tAxis != null; }
+
+  /**
+   * True if there is a Time Axis and it is 1D.
+   */
+  public boolean hasTimeAxis1D() { return timeTaxis != null; }
 
   public CoordinateAxis1DTime getTimeAxisForRun(int run_index) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    if (!hasTimeAxis() || hasTimeAxis1D()) return null;
+    int nruns = (int) runTimeAxis.getSize();
+    if ((run_index < 0) || (run_index >= nruns))
+      throw new IllegalArgumentException("getTimeAxisForRun index out of bounds= "+run_index);
+
+    if (timeAxisForRun == null)
+      timeAxisForRun = new CoordinateAxis1DTime[nruns];
+
+    if (timeAxisForRun[run_index] == null)
+      makeTimeAxisForRun(run_index);
+
+    return timeAxisForRun[run_index];
+  }
+
+  private CoordinateAxis1DTime[] timeAxisForRun;
+  private void makeTimeAxisForRun(int run_index) {
+    VariableDS section = null;
+    try {
+      section = (VariableDS) tAxis.slice(0, run_index);
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
+
+    try {
+      timeAxisForRun[run_index] = new CoordinateAxis1DTime(section, null);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public DateUnit getDateUnit() throws Exception {
@@ -732,9 +780,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return (DateUnit) SimpleUnit.factory(tUnits);
   }
 
-  /** only if isRegular() */
+  /** return null if !isRegular() */
   public TimeUnit getTimeResolution() throws Exception {
-    CoordinateAxis1D taxis = getTimeAxis();
+    if (!isRegular()) return null;
+
+    CoordinateAxis1DTime taxis = (CoordinateAxis1DTime) getTimeAxis();
     String tUnits = taxis.getUnitsString();
     StringTokenizer stoker = new StringTokenizer( tUnits);
     double tResolution = taxis.getIncrement();

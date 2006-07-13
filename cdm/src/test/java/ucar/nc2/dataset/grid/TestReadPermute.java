@@ -195,7 +195,7 @@ public class TestReadPermute extends TestCase {
   private void doRead4Volume( GridDataset ds, String varName) throws IOException {
 
     GeoGrid gg = ds.findGridByName( varName);
-    CoordinateAxis1D timeAxis = gg.getCoordinateSystem().getTimeAxis();
+    CoordinateAxis1D timeAxis = gg.getCoordinateSystem().getTimeAxis1D();
     for (int t=0; t<timeAxis.getSize(); t++) {
       Array aa = gg.readVolumeData(t);
 
@@ -219,7 +219,7 @@ public class TestReadPermute extends TestCase {
   private void doRead3Volume( GridDataset ds, String varName) throws IOException {
 
     GeoGrid gg = ds.findGridByName( varName);
-    CoordinateAxis1D timeAxis = gg.getCoordinateSystem().getTimeAxis();
+    CoordinateAxis1D timeAxis = gg.getCoordinateSystem().getTimeAxis1D();
     int[] w = getWeights( gg);
 
     for (int t=0; t<timeAxis.getSize(); t++) {

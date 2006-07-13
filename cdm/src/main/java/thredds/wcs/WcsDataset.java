@@ -201,7 +201,7 @@ public class WcsDataset {
   }
 
   private int findTimeIndex( GridCoordSystem gcs, String timeName) {
-    CoordinateAxis1DTime taxis = gcs.getTimeAxis();
+    CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
     java.util.Date[] dates = taxis.getTimeDates();
 
     DateFormatter formatter = new DateFormatter();

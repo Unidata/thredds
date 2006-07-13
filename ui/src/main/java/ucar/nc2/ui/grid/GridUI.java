@@ -32,6 +32,7 @@ import thredds.viewer.gis.MapBean;
 
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.util.NamedObject;
 
 import ucar.util.prefs.PreferencesExt;
 
@@ -296,16 +297,22 @@ public class GridUI extends JPanel {
     if (axis != null) {
       List levels = axis.getNames();
       levelChooser.setCollection(levels.iterator());
-      levelChooser.setSelectedByIndex( 0);
+      NamedObject no = (NamedObject)levels.get( controller.getCurrentLevelIndex());
+      levelChooser.setSelectedByName(no.getName());
     }
 
       // times
-    axis = gcs.getTimeAxis();
-    setChooserWanted("time", axis != null);
-    if (axis != null) {
-      List names = axis.getNames();
-      timeChooser.setCollection(names.iterator());
-      timeChooser.setSelectedByIndex( 0);
+    if (gcs.hasTimeAxis()) {
+      axis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
+      setChooserWanted("time", axis != null);
+      if (axis != null) {
+        List names = axis.getNames();
+        timeChooser.setCollection(names.iterator());
+        NamedObject no = (NamedObject) names.get(controller.getCurrentTimeIndex());
+        timeChooser.setSelectedByName(no.getName());
+      }
+    } else {
+      setChooserWanted("time", false);
     }
 
     axis = gcs.getEnsembleAxis();

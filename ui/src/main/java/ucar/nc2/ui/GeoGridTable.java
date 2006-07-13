@@ -183,7 +183,7 @@ public class GeoGridTable extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
 
     private String name, desc, units, csys;
-    private String dims, x, y, z, t;
+    private String dims, x, y, z, t, ens, rt;
 
     // no-arg constructor
     public GeogridBean() {}
@@ -212,8 +212,24 @@ public class GeoGridTable extends JPanel {
       if (d != null) setY( d.getName());
       d= geogrid.getZDimension();
       if (d != null) setZ( d.getName());
+
+      GridCoordSystem gcs = geogrid.getGridCoordSystem();
+
       d= geogrid.getTimeDimension();
-      if (d != null) setT( d.getName());
+      if (d != null)
+        setT( d.getName());
+      else {
+        CoordinateAxis taxis = gcs.getTimeAxis();
+        if (taxis != null) setT( taxis.getName());
+      }
+
+      CoordinateAxis1D axis = gcs.getEnsembleAxis();
+      if (axis != null)
+        setEns( axis.getDimension(0).getName());
+
+      axis = gcs.getRunTimeAxis();
+      if (axis != null)
+        setRt( axis.getDimension(0).getName());
     }
 
     public String getName() { return name; }
@@ -239,6 +255,12 @@ public class GeoGridTable extends JPanel {
 
     public String getT() { return t; }
     public void setT(String t) { this.t = t; }
+
+    public String getEns() { return ens; }
+    public void setEns(String ens) { this.ens = ens; }
+
+    public String getRt() { return rt; }
+    public void setRt(String rt) { this.rt = rt; }
 
     public String getShape() { return dims; }
     public void setShape(String dims) { this.dims = dims; }

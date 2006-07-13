@@ -1,4 +1,4 @@
-// $Id$
+// $Id:CoordinateSystem.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -57,7 +57,7 @@ import java.util.*;
  *
  * @see ucar.nc2.dataset.grid.GridCoordSys
  * @author caron
- * @version $Revision$ $Date$
+ * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class CoordinateSystem {
 
@@ -68,7 +68,7 @@ public class CoordinateSystem {
     StringBuffer buff = new StringBuffer();
     for (int i=0; i<axesSorted.size(); i++) {
       CoordinateAxis axis = (CoordinateAxis) axesSorted.get(i);
-      if (i>0) buff.append("-");
+      if (i>0) buff.append(" ");
       buff.append( axis.getName());
     }
     return buff.toString();
@@ -294,7 +294,8 @@ public class CoordinateSystem {
     List dims = v.getDimensionsAll();
     for (int i=0; i<dims.size(); i++) {
       Dimension d = (Dimension) dims.get(i);
-      if (!(domain.contains(d))) return false;
+      if (!(domain.contains(d)))
+        return false;
     }
 
     return true;
