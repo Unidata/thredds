@@ -81,13 +81,13 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
         return ds.findGlobalAttribute( "Product_station").getStringValue();
   }
 
-  public String getDataFormatName() {
-        return "level III radar";
+  public String getDataFormat() {
+        return "Level III";
   }
 
-  public boolean isRadial() {
-        return (ds.findGlobalAttribute( "isRadial").getNumericValue().intValue() == 1);
-  }
+  //public boolean isRadial() {
+  //      return (ds.findGlobalAttribute( "isRadial").getNumericValue().intValue() == 1);
+  //}
 
   public boolean isVolume() {
         return false;
