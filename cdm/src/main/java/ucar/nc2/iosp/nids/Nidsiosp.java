@@ -189,7 +189,7 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
         }
         else if ( v2.getName().equals( "rays_time"))
         {
-            String rt = ncfile.findGlobalAttribute("date_created").getStringValue();
+            String rt = ncfile.findGlobalAttribute("DateCreated").getStringValue();
             java.util.Date pDate = DateUnit.getStandardOrISO(rt);
             double lt = pDate.getTime();
             double [] dd = new double[ vinfo.yt];
