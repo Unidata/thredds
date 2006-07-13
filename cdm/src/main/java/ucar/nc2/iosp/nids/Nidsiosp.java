@@ -593,7 +593,7 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
 
           return fdata;
 
-      } else if ( vName.startsWith( "Velocity" )  ) {
+      } else if ( vName.startsWith( "RadialVelocity" )  ) {
           int [] levels = vinfo.len;
           int iscale = vinfo.code;
           float [] fdata = new float[npixel];
