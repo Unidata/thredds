@@ -181,7 +181,7 @@ public class TestNids extends TestCase {
       assert(false);
     }
 
-    v = ncfile.findVariable("Velocity");
+    v = ncfile.findVariable("RadialVelocity");
     testReadData(v);
     assert(null != v.getDimension(0));
     assert(null != v.getDimension(1));
@@ -196,7 +196,7 @@ public class TestNids extends TestCase {
       e.printStackTrace();
       assert(false);
     }
-    v = ncfile.findVariable("Velocity");
+    v = ncfile.findVariable("RadialVelocity");
     testReadData(v);
     assert(null != v.getDimension(0));
     assert(null != v.getDimension(1));
