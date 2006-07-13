@@ -45,7 +45,7 @@ public class FmrcAggregation extends Aggregation {
     super(ncd, dimName, typeName, recheckS);
   }
 
-   // all elements are processed, finish construction
+  // all elements are processed, finish construction
   public void finish(CancelTask cancelTask) throws IOException {
     nestedDatasets = new ArrayList();
 
@@ -58,19 +58,23 @@ public class FmrcAggregation extends Aggregation {
     // if ((diskCache2 != null) && (type == Type.JOIN_EXISTING)) persistRead();
 
     // for the moment, each file is considered 1 complete run, and is one slice of the runTime dimension
-    buildCoords( cancelTask);
-    buildDataset( false, ncd, cancelTask);
+    buildCoords(cancelTask);
+    buildDataset(false, ncd, cancelTask);
 
     this.lastChecked = System.currentTimeMillis();
   }
 
-  private void buildDataset( boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
+  /**
+   * Construct a new dataset "by hand" rather than through a copy constructor
+   */
+  private void buildDataset(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
 
     Group root = newds.getRootGroup();
+    ArrayList timeAxes = new ArrayList();
 
     // grid
     NetcdfFile typical = getTypicalDataset();
-    GridDataset gds = new ucar.nc2.dataset.grid.GridDataset( (NetcdfDataset) typical);
+    GridDataset gds = new ucar.nc2.dataset.grid.GridDataset((NetcdfDataset) typical);
 
     // global attributes
     NcMLReader.transferGroupAttributes(typical.getRootGroup(), root);
@@ -87,10 +91,10 @@ public class FmrcAggregation extends Aggregation {
       Iterator domain = gcc.getDomain().iterator();
       while (domain.hasNext()) {
         Dimension d = (Dimension) domain.next();
-        if (null == root.findDimensionLocal( d.getName())) {
+        if (null == root.findDimensionLocal(d.getName())) {
           Dimension newd = new Dimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
-          root.addDimension( newd);
-          if (debug) System.out.println("FmrcAggregation: added dimension "+newd.getName());
+          root.addDimension(newd);
+          if (debug) System.out.println("FmrcAggregation: added dimension " + newd.getName());
         }
       }
 
@@ -98,55 +102,58 @@ public class FmrcAggregation extends Aggregation {
       List axes = gcc.getCoordinateAxes();
       for (int i = 0; i < axes.size(); i++) {
         CoordinateAxis axis = (CoordinateAxis) axes.get(i);
-        addVariable( root, axis, "axis");
+        if (axis.getAxisType() == AxisType.Time)
+          timeAxes.add(axis);
+        else
+          addVariable(root, axis, "axis");
       }
     }
 
     // look for coordinate transforms
     // LOOK: perhaps should make these accessible through CoordinateTransform object ??
     List vars = typical.getVariables();
-    for (int i=0; i<vars.size(); i++) {
+    for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
       if (null != v.findAttribute("_CoordinateTransformType") || null != v.findAttribute("_CoordinateAxisTypes"))
-        addVariable( root, v, "coordTransform");
+        addVariable(root, v, "coordTransform");
 
       String coordTransVarNames = typical.findAttValueIgnoreCase(v, "_CoordinateTransforms", null);
       if (null != coordTransVarNames) {
-        StringTokenizer stoker = new StringTokenizer( coordTransVarNames);
+        StringTokenizer stoker = new StringTokenizer(coordTransVarNames);
         int n = stoker.countTokens();
         while (stoker.hasMoreTokens()) {
           String toke = stoker.nextToken();
           Variable vt = typical.findVariable(toke);
-          addVariable( root, vt, "coordTransform");
+          addVariable(root, vt, "coordTransform");
         }
       }
     }
 
     // create aggregation dimension
     String dimName = getDimensionName();
-    Dimension aggDim = new Dimension( dimName, getTotalCoords(), true);
-    newds.removeDimension( null, dimName); // remove previous declaration, if any
-    newds.addDimension( null, aggDim);
+    Dimension aggDim = new Dimension(dimName, getTotalCoords(), true);
+    newds.removeDimension(null, dimName); // remove previous declaration, if any
+    newds.addDimension(null, aggDim);
 
     // create aggregation coordinate variable
     DataType coordType;
-    Variable coordVar = newds.getRootGroup().findVariable(dimName);
-    if (coordVar == null) {
+    Variable runtimeCoordVar = newds.getRootGroup().findVariable(dimName);
+    if (runtimeCoordVar == null) {
       coordType = getCoordinateType();
-      coordVar = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
-      coordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
-      newds.addVariable(null, coordVar);
-      if (debug) System.out.println("FmrcAggregation: added coordVar "+coordVar.getName());
+      runtimeCoordVar = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
+      runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
+      newds.addVariable(null, runtimeCoordVar);
+      if (debug) System.out.println("FmrcAggregation: added runtimeCoordVar " + runtimeCoordVar.getName());
 
     } else {
-      coordType = coordVar.getDataType();
-      coordVar.setDimensions(dimName); // reset its dimension
-      if (!isNew) coordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
+      coordType = runtimeCoordVar.getDataType();
+      runtimeCoordVar.setDimensions(dimName); // reset its dimension
+      if (!isNew) runtimeCoordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
     }
 
     // if not already set, set its values
-    if (!coordVar.hasCachedData()) {
-      int[] shape = new int[] { getTotalCoords() };
+    if (!runtimeCoordVar.hasCachedData()) {
+      int[] shape = new int[]{getTotalCoords()};
       Array coordData = Array.factory(coordType.getPrimitiveClassType(), shape);
       Index ima = coordData.getIndex();
       List nestedDataset = getNestedDatasets();
@@ -157,135 +164,103 @@ public class FmrcAggregation extends Aggregation {
         else
           coordData.setDouble(ima.set(i), nested.getCoordValue());
       }
-      coordVar.setCachedData( coordData, true);
+      runtimeCoordVar.setCachedData(coordData, true);
     } else {
-      Array data = coordVar.read();
+      Array data = runtimeCoordVar.read();
       IndexIterator ii = data.getIndexIterator();
       List nestedDataset = getNestedDatasets();
       for (int i = 0; i < nestedDataset.size(); i++) {
         Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-        nested.setCoordValue( ii.getDoubleNext());
+        nested.setCoordValue(ii.getDoubleNext());
       }
     }
 
     if (isDate()) {
-      coordVar.addAttribute( new ucar.nc2.Attribute("_CoordinateAxisType", "RunTime"));
+      runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("_CoordinateAxisType", "RunTime"));
     }
 
     // promote all grid variables
     List grids = gds.getGrids();
-    for (int i=0; i<grids.size(); i++) {
+    for (int i = 0; i < grids.size(); i++) {
       GridDatatype grid = (GridDatatype) grids.get(i);
       Variable v = (Variable) grid.getVariable();
 
       // add new dimension
-      String dims = dimName +" "+ v.getDimensionsString();
+      String dims = dimName + " " + v.getDimensionsString();
 
       // construct new variable, replace old one
       VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-      vagg.setAggregation( this);
-      NcMLReader.transferVariableAttributes( v, vagg);
+      vagg.setAggregation(this);
+      NcMLReader.transferVariableAttributes(v, vagg);
 
-      newds.removeVariable( null, v.getShortName());
-      newds.addVariable( null, vagg);
-      if (debug) System.out.println("FmrcAggregation: added grid "+v.getName());
+      // we need to explicitly list the coordinate axes, because time coord is now 2D
+      vagg.addAttribute(new Attribute("_CoordinateAxes", dimName + " " + grid.getGridCoordSystem().getName()));
 
+      newds.removeVariable(null, v.getShortName());
+      newds.addVariable(null, vagg);
+      if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());
     }
+
+    // assume the units are all the same
+    // promote the time coordinate(s)
+    for (int i = 0; i < timeAxes.size(); i++) {
+      CoordinateAxis1DTime v = (CoordinateAxis1DTime) timeAxes.get(i);
+
+      // add new dimension
+      String dims = dimName + " " + v.getDimensionsString();
+
+      // construct new variable, replace old one
+      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(), dims, null, null);
+      vagg.setAggregation(this);
+      NcMLReader.transferVariableAttributes(v, vagg);
+      Attribute att = vagg.findAttribute("_CoordinateVariableAlias");
+      if (att != null) vagg.remove(att);
+
+      newds.removeVariable(null, v.getShortName());
+      newds.addVariable(null, vagg);
+      if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
+    }
+
+    /* promote the time coordinate(s)
+   for (int i = 0; i < timeAxes.size(); i++) {
+     CoordinateAxis1DTime timeAxis = (CoordinateAxis1DTime) timeAxes.get(i);
+     String name = timeAxis.getName();
+     Dimension timeDim = timeAxis.getDimension(0);
+     String dims = dimName+" "+timeDim.getName();
+
+     VariableDS timeVar = new VariableDS(newds, null, null, name, DataType.STRING, dims, null, null);
+     newds.removeVariable(null, name);
+     newds.addVariable(null, timeVar);
+
+     NcMLReader.transferVariableAttributes(timeAxis, timeVar);
+     timeVar.addAttribute(new Attribute("History", "Synthesized by CDM FmrcAggregation"));
+
+     setTimeCoordinates( timeVar);
+     if (debug) System.out.println("FmrcAggregation: promoted timeCoordVar "+name);
+   } */
   }
 
   private void addVariable(Group root, Variable v, String what) {
     if (null == v) return;
     if (null == root.findVariable(v.getShortName())) {
-      root.addVariable( v); // reparent
-      v.setDimensions( v.getDimensionsString()); // rediscover dimensions
-      if (debug) System.out.println("FmrcAggregation: added "+ what+" "+v.getName());
+      root.addVariable(v); // reparent
+      v.setDimensions(v.getDimensionsString()); // rediscover dimensions
+      if (debug) System.out.println("FmrcAggregation: added " + what + " " + v.getName());
     }
   }
 
-/*
-  private void buildDataset( boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
-    // open a "typical"  nested dataset and copy it to newds
-    NetcdfFile typical = getTypicalDataset();
-    NcMLReader.transferDataset(typical, newds, isNew ? null : new MyReplaceVariableCheck());
+  // neet to change the time Axis to 2D.
+  private void setTimeCoordinates(VariableDS timeVar) {
+    int[] shape = timeVar.getShape();
+    Array coordData = Array.factory(String.class, shape);
 
-    // create aggregation dimension
-    String dimName = getDimensionName();
-    Dimension aggDim = new Dimension( dimName, getTotalCoords(), true);
-    newds.removeDimension( null, dimName); // remove previous declaration, if any
-    newds.addDimension( null, aggDim);
-
-    // create aggregation coordinate variable
-    DataType coordType;
-    Variable coordVar = newds.getRootGroup().findVariable(dimName);
-    if (coordVar == null) {
-      coordType = getCoordinateType();
-      coordVar = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
-      newds.addVariable(null, coordVar);
-    } else {
-      coordType = coordVar.getDataType();
-      coordVar.setDimensions(dimName); // reset its dimension
-      if (!isNew) coordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
-    }
-
-    // if not already set, set its values
-    if (!coordVar.hasCachedData()) {
-      int[] shape = new int[] { getTotalCoords() };
-      Array coordData = Array.factory(coordType.getPrimitiveClassType(), shape);
-      Index ima = coordData.getIndex();
-      List nestedDataset = getNestedDatasets();
-      for (int i = 0; i < nestedDataset.size(); i++) {
-        Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-        if (coordType == DataType.STRING)
-          coordData.setObject(ima.set(i), nested.getCoordValueString());
-        else
-          coordData.setDouble(ima.set(i), nested.getCoordValue());
-      }
-      coordVar.setCachedData( coordData, true);
-    } else {
-      Array data = coordVar.read();
-      IndexIterator ii = data.getIndexIterator();
-      List nestedDataset = getNestedDatasets();
-      for (int i = 0; i < nestedDataset.size(); i++) {
-        Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-        nested.setCoordValue( ii.getDoubleNext());
-      }
-    }
-
-    if (isDate()) {
-      coordVar.addAttribute( new ucar.nc2.Attribute("_CoordinateAxisType", "Time"));
-    }
-
-    // promote all grid variables
-    GridDataset gds = new GridDataset( (NetcdfDataset) typical);
-    List grids = gds.getGrids();
-    for (int i=0; i<grids.size(); i++) {
-      GeoGrid grid = (GeoGrid) grids.get(i);
-      Variable v = newds.getRootGroup().findVariable( grid.getName());
-      if (v == null) {
-        logger.error(ncd.getLocation()+" aggNewDimension cant find variable "+grid.getName());
-        continue;
-      }
-
-      // if theres an unlimited dimension, remove it
-      Dimension udim = v.getDimension(0);
-      if (udim.isUnlimited())
-      udim.setUnlimited( false);
-
-      // add new dimension
-      String dims = dimName +" "+ v.getDimensionsString();
-
-      // construct new variable, replace old one
-      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-      vagg.setAggregation( this);
-      NcMLReader.transferVariableAttributes( v, vagg);
-
-      newds.removeVariable( null, v.getShortName());
-      newds.addVariable( null, vagg);
+    Index ima = coordData.getIndex();
+    List nestedDataset = getNestedDatasets();
+    for (int i = 0; i < nestedDataset.size(); i++) {
+      Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
+      coordData.setObject(ima.set(i), nested.getCoordValueString());
     }
   }
-
-
-*/
 
   // not ready yet
   public boolean syncExtend() throws IOException {
@@ -387,87 +362,71 @@ public class FmrcAggregation extends Aggregation {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
- /* public Array read(VariableDS mainv, CancelTask cancelTask) throws IOException {
+  /* public Array read(VariableDS mainv, CancelTask cancelTask) throws IOException {
 
-    Array allData = Array.factory(mainv.getOriginalDataType().getPrimitiveClassType(), mainv.getShape());
-    int destPos = 0;
+Array allData = Array.factory(mainv.getOriginalDataType().getPrimitiveClassType(), mainv.getShape());
+int destPos = 0;
 
-    //System.out.println("Variable read "+mainv.getName()+" has length "+allData.getSize());
-    Iterator iter = nestedDatasets.iterator();
-    while (iter.hasNext()) {
-      Dataset vnested = (Dataset) iter.next();
-      Array varData = vnested.read(mainv, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
+//System.out.println("Variable read "+mainv.getName()+" has length "+allData.getSize());
+Iterator iter = nestedDatasets.iterator();
+while (iter.hasNext()) {
+Dataset vnested = (Dataset) iter.next();
+Array varData = vnested.read(mainv, cancelTask);
+if ((cancelTask != null) && cancelTask.isCancel())
+ return null;
 
-      //System.out.println("  copy "+varData.getSize()+" starting at "+destPos);
-      Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
-      destPos += varData.getSize();
-    }
+//System.out.println("  copy "+varData.getSize()+" starting at "+destPos);
+Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
+destPos += varData.getSize();
+}
 
-    return allData;
-  }
+return allData;
+}
 
-  public Array read(VariableDS mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+public Array read(VariableDS mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
 
-    Array sectionData = Array.factory(mainv.getOriginalDataType(), Range.getShape(section));
-    int destPos = 0;
+Array sectionData = Array.factory(mainv.getOriginalDataType(), Range.getShape(section));
+int destPos = 0;
 
-    Range joinRange = (Range) section.get(0);
-    List nestedSection = new ArrayList(section); // copy
-    List innerSection = section.subList(1, section.size());
+Range joinRange = (Range) section.get(0);
+List nestedSection = new ArrayList(section); // copy
+List innerSection = section.subList(1, section.size());
 
-    /* if (type == Type.JOIN_NEW) {
-      // iterate over the outer range
-      for (int i=joinRange.first(); i<=joinRange.last(); i+= joinRange.stride()) {
-        Dataset nested = (Dataset) nestedDatasets.get(i);
-        Array varData = nested.read(mainv, cancelTask, innerSection);
-        if ((cancelTask != null) && cancelTask.isCancel()) return null;
+/* if (type == Type.JOIN_NEW) {
+// iterate over the outer range
+for (int i=joinRange.first(); i<=joinRange.last(); i+= joinRange.stride()) {
+ Dataset nested = (Dataset) nestedDatasets.get(i);
+ Array varData = nested.read(mainv, cancelTask, innerSection);
+ if ((cancelTask != null) && cancelTask.isCancel()) return null;
 
-        // copy the result
-        Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
-        destPos += varData.getSize();
-      }
-    } else {   */
+ // copy the result
+ Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
+ destPos += varData.getSize();
+}
+} else {   */
 
-      /* if (debug) System.out.println("agg wants range="+joinRange);
+  /* if (debug) System.out.println("agg wants range="+joinRange);
 
-      Iterator iter = nestedDatasets.iterator();
-      while (iter.hasNext()) {
-        Aggregation.Dataset nested = (Aggregation.Dataset) iter.next();
-        Range nestedJoinRange = nested.getNestedJoinRange(joinRange);
-        if (nestedJoinRange == null)
-          continue;
-        if (debug) System.out.println("agg use "+nested.aggStart+":"+nested.aggEnd+" range= "+nestedJoinRange+" file "+nested.getLocation());
+     Iterator iter = nestedDatasets.iterator();
+     while (iter.hasNext()) {
+       Aggregation.Dataset nested = (Aggregation.Dataset) iter.next();
+       Range nestedJoinRange = nested.getNestedJoinRange(joinRange);
+       if (nestedJoinRange == null)
+         continue;
+       if (debug) System.out.println("agg use "+nested.aggStart+":"+nested.aggEnd+" range= "+nestedJoinRange+" file "+nested.getLocation());
 
-        Array varData;
-          nestedSection.set(0, nestedJoinRange);
-          varData = nested.read(mainv, cancelTask, nestedSection);
+       Array varData;
+         nestedSection.set(0, nestedJoinRange);
+         varData = nested.read(mainv, cancelTask, nestedSection);
 
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
+       if ((cancelTask != null) && cancelTask.isCancel())
+         return null;
 
-        Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
-        destPos += varData.getSize();
-      }
-    // }
+       Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
+       destPos += varData.getSize();
+     }
+   // }
 
-    return sectionData;
-  } */
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /* private class PolymorphicReader implements NetcdfFileFactory, NetcdfDatasetFactory {
-
-      public NetcdfDataset openDataset(String cacheName, ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
-         NetcdfDataset ncfile = NetcdfDataset.openDataset(location, true, cancelTask);
-         return ncfile;
-      }
-
-      public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-        NetcdfFile ncfile = NetcdfDataset.openFile(location, cancelTask);
-        return ncfile;
-      }
-    }
-  } */
-
+   return sectionData;
+ } */
 }

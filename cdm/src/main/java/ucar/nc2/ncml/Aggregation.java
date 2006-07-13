@@ -1271,7 +1271,7 @@ public class Aggregation {
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private class PolymorphicReader implements NetcdfFileFactory, NetcdfDatasetFactory {
+    class PolymorphicReader implements NetcdfFileFactory, NetcdfDatasetFactory {
 
       public NetcdfDataset openDataset(String cacheName, ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
          NetcdfDataset ncfile = NetcdfDataset.openDataset(location, true, cancelTask);
@@ -1345,4 +1345,5 @@ public class Aggregation {
       return o.hashCode() == this.hashCode();
     }
   }
+
 }
