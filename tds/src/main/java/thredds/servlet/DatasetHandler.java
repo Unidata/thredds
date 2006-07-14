@@ -58,15 +58,15 @@ public class DatasetHandler {
     }
 
     // otherwise, must have a datasetRoot in the path
-    String filePath = DataRootHandler2.getInstance().translatePath( reqPath);
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler2.findRequestedDataset( path )).getFile();
+    String filePath = DataRootHandler.getInstance().translatePath( reqPath);
+    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
     if (filePath == null) return null;
 
     // acquire it
     NetcdfFile ncfile = NetcdfDataset.acquireFile(filePath, null);
 
     // wrap with ncml if needed
-    org.jdom.Element netcdfElem = DataRootHandler2.getInstance().getNcML( reqPath);
+    org.jdom.Element netcdfElem = DataRootHandler.getInstance().getNcML( reqPath);
     if (netcdfElem != null) {
       NetcdfDataset ncd = new NetcdfDataset( ncfile, false); // do not enhance !!
       new NcMLReader().readNetcdf( reqPath, ncd, ncd, netcdfElem, null);

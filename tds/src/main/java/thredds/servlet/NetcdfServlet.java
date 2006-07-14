@@ -108,8 +108,8 @@ public class NetcdfServlet extends AbstractServlet {
     if (pathInfo.endsWith(".nc"))
        pathInfo = pathInfo.substring(0,pathInfo.length()-3);
 
-    String datasetPath = DataRootHandler2.getInstance().translatePath( pathInfo );
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler2.findRequestedDataset( path )).getFile();
+    String datasetPath = DataRootHandler.getInstance().translatePath( pathInfo );
+    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
     if (datasetPath == null) {
       ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
       res.sendError(HttpServletResponse.SC_NOT_FOUND);

@@ -325,8 +325,8 @@ public class CatGenTimerTask
  * Revision 1.9  2006/06/08 23:08:41  edavis
  * 1) Use catalog "expires" attribute to determine if TDS static catalog cache is stale:
  *     a) Setup CatalogGen tasks to add "expires" attribute to generated catalog.
- *     b) Add checking for expired catalog and re-reading of catalog from disk in DataRootHandler2.getCatalog()
- * 2) Fix DataRootHandler2 singleton init() and getInstance().
+ *     b) Add checking for expired catalog and re-reading of catalog from disk in DataRootHandler.getCatalog()
+ * 2) Fix DataRootHandler singleton init() and getInstance().
  *
  * Revision 1.8  2006/01/20 20:42:03  caron
  * convert logging

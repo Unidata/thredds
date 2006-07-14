@@ -147,7 +147,7 @@ public class CatalogServicesServlet extends HttpServlet {
     // check if they want to show as html
     if ( cmd.equals( "show" ) )
     {
-      HtmlWriter2.getInstance().writeCatalog( res, catalog, false ); // show catalog as HTML
+      HtmlWriter.getInstance().writeCatalog( res, catalog, false ); // show catalog as HTML
       return;
     }
 
@@ -241,10 +241,10 @@ public class CatalogServicesServlet extends HttpServlet {
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
-    sb.append(HtmlWriter2.getInstance().getUserCSS());
+    sb.append(HtmlWriter.getInstance().getUserCSS());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
-    sb.append(HtmlWriter2.getInstance().getUserHead());
+    sb.append(HtmlWriter.getInstance().getUserHead());
 
     sb.append("<h2> Catalog " + catURL+" :</h2>\r\n");
 
@@ -271,10 +271,10 @@ public class CatalogServicesServlet extends HttpServlet {
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
-    sb.append(HtmlWriter2.getInstance().getUserCSS());
+    sb.append(HtmlWriter.getInstance().getUserCSS());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
-    sb.append(HtmlWriter2.getInstance().getUserHead());
+    sb.append(HtmlWriter.getInstance().getUserHead());
 
     sb.append("<h2> Catalog " + catURL+" has fatal errors:</h2>\r\n");
 
@@ -306,10 +306,10 @@ public class CatalogServicesServlet extends HttpServlet {
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
-    sb.append(HtmlWriter2.getInstance().getUserCSS());
+    sb.append(HtmlWriter.getInstance().getUserCSS());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
-    sb.append(HtmlWriter2.getInstance().getUserHead());
+    sb.append(HtmlWriter.getInstance().getUserHead());
 
     sb.append("<h2> Catalog " + catURL+"</h2>\r\n");
 

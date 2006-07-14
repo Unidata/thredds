@@ -65,7 +65,7 @@ public class CatalogServlet extends HttpServlet {
       }
     }
 
-    DataRootHandler2 drh = DataRootHandler2.getInstance();
+    DataRootHandler drh = DataRootHandler.getInstance();
 
     // Check for proxy dataset resolver requests.
     if ( drh.isProxyDatasetResolver( req.getPathInfo()))

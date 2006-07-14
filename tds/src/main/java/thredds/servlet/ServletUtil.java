@@ -466,7 +466,7 @@ public class ServletUtil {
           return;
         }
 
-        HtmlWriter2.getInstance().writeDirectory( res, file, path );
+        HtmlWriter.getInstance().writeDirectory( res, file, path );
         return;
       }
 

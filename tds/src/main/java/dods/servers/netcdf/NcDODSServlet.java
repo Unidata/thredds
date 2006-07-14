@@ -155,8 +155,8 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
     else
       return -1;
 
-    String filePath = DataRootHandler2.getInstance().translatePath(path);
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler2.findRequestedDataset( path )).getFile();
+    String filePath = DataRootHandler.getInstance().translatePath(path);
+    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
     if (filePath == null) return -1;
     File file = new File(filePath);
     if (file.exists())
@@ -261,12 +261,12 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
         return;
 
       } else if (path.endsWith("latest.xml")) {
-        DataRootHandler2.getInstance().processReqForLatestDataset(this, req, res);
+        DataRootHandler.getInstance().processReqForLatestDataset(this, req, res);
         return;
 
         // need to pass normal "html" on to super class
       } else if (path.endsWith("catalog.xml") || path.endsWith("catalog.html") || path.endsWith("/")) {
-        if (DataRootHandler2.getInstance().processReqForCatalog( req, res))
+        if (DataRootHandler.getInstance().processReqForCatalog( req, res))
           return;
       }
 

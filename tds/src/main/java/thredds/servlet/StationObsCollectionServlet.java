@@ -77,8 +77,8 @@ import org.jdom.transform.XSLTransformer;
       log.debug("**StationObsCollectionServlet req=" + ServletUtil.getRequest(req));
       // log.debug( ServletUtil.showRequestDetail(this, req));
 
-      String datasetPath = DataRootHandler2.getInstance().translatePath( req );
-      // @todo Should instead use ((CrawlableDatasetFile)catHandler2.findRequestedDataset( path )).getFile();
+      String datasetPath = DataRootHandler.getInstance().translatePath( req );
+      // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
       if (datasetPath == null) {
         ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
         res.sendError(HttpServletResponse.SC_NOT_FOUND);

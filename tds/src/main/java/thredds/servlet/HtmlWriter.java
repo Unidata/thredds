@@ -1,4 +1,4 @@
-// $Id: HtmlWriter2.java 51 2006-07-12 17:13:13Z caron $
+// $Id: HtmlWriter.java 51 2006-07-12 17:13:13Z caron $
 package thredds.servlet;
 
 import thredds.catalog.InvCatalogImpl;
@@ -28,12 +28,12 @@ import java.io.*;
  * @author edavis
  * @since Feb 24, 2006 3:18:50 PM
  */
-public class HtmlWriter2
+public class HtmlWriter
 {
   static private org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( HtmlWriter2.class );
+          org.slf4j.LoggerFactory.getLogger( HtmlWriter.class );
 
-  private static HtmlWriter2 singleton;
+  private static HtmlWriter singleton;
 
   private String contextPath;
   private String contextName;
@@ -62,30 +62,30 @@ public class HtmlWriter2
     {
       log.warn( "init(): this method has already been called; it should only be called once." );
       return;
-      //throw new IllegalStateException( "HtmlWriter2.init() has already been called.");
+      //throw new IllegalStateException( "HtmlWriter.init() has already been called.");
     }
-    singleton = new HtmlWriter2( contextPath, contextName, contextVersion,
-                                 docsPath, userCssPath,
-                                 contextLogoPath, instituteLogoPath );
+    singleton = new HtmlWriter( contextPath, contextName, contextVersion,
+                                docsPath, userCssPath,
+                                contextLogoPath, instituteLogoPath );
   }
 
-  public static HtmlWriter2 getInstance()
+  public static HtmlWriter getInstance()
   {
     if ( singleton == null )
     {
       log.warn( "getInstance(): init() has not been called.");
       return null;
-      //throw new IllegalStateException( "HtmlWriter2.init() has not been called." );
+      //throw new IllegalStateException( "HtmlWriter.init() has not been called." );
     }
     return singleton;
   }
 
   /** @noinspection UNUSED_SYMBOL*/
-  private HtmlWriter2() {}
+  private HtmlWriter() {}
 
-  private HtmlWriter2( String contextPath, String contextName, String contextVersion,
-                       String docsPath, String userCssPath,
-                       String contextLogoPath, String instituteLogoPath )
+  private HtmlWriter( String contextPath, String contextName, String contextVersion,
+                      String docsPath, String userCssPath,
+                      String contextLogoPath, String instituteLogoPath )
   {
     this.contextPath = contextPath;
     this.contextName = contextName;
@@ -735,12 +735,12 @@ public class HtmlWriter2
 
 }
 /*
- * $Log: HtmlWriter2.java,v $
+ * $Log: HtmlWriter.java,v $
  * Revision 1.6  2006/06/14 22:26:28  edavis
  * THREDDS Servlet Framework (TSF) changes:
  * 1) Allow developer to specify the logo files to be used by in HTML responses.
  * 2) Allow developer to specify the servlet path to be used for catalog requests.  
- * 3) Improve thread safety in DataRootHandler2.
+ * 3) Improve thread safety in DataRootHandler.
  *
  * Revision 1.5  2006/04/20 22:25:23  caron
  * dods server: handle name escaping consistently

@@ -4,7 +4,7 @@ package thredds.cataloggen.servlet;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.AbstractServlet;
-import thredds.servlet.DataRootHandler2;
+import thredds.servlet.DataRootHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -166,7 +166,7 @@ public class CatGenServlet extends AbstractServlet
     {
 
       // see if its a static catalog
-      if (DataRootHandler2.getInstance().processReqForCatalog(req, res))
+      if (DataRootHandler.getInstance().processReqForCatalog(req, res))
         return;
 
       this.doGetFiles( path, req, res );

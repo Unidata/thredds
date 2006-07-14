@@ -27,10 +27,10 @@ public class DebugHandler {
     pw.println("<head>");
     pw.println("<title> THREDDS Debug</title>");
     pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html\">");
-    pw.println(HtmlWriter2.getInstance().getUserCSS());
+    pw.println(HtmlWriter.getInstance().getUserCSS());
     pw.println("</head>");
     pw.println("<body>");
-    pw.println(HtmlWriter2.getInstance().getUserHead());
+    pw.println(HtmlWriter.getInstance().getUserHead());
     pw.println("<br><a href='content/logs/'>Show Logs</a>");
     pw.println("<h2>Debug Actions</h2>");
     pw.println("<body><pre>");

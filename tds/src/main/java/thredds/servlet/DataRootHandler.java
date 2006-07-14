@@ -1,4 +1,4 @@
-// $Id: DataRootHandler2.java 51 2006-07-12 17:13:13Z caron $
+// $Id: DataRootHandler.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -45,10 +45,10 @@ import java.io.*;
  *
  * @author caron
  */
-public class DataRootHandler2 {
+public class DataRootHandler {
   // @todo Decide if need to Guard/synchronize singleton. Probably not since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
-  static private DataRootHandler2 singleton = null;
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler2.class);
+  static private DataRootHandler singleton = null;
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
 
   /**
    * Initialize the CatalogHandler singleton instance.
@@ -64,7 +64,7 @@ public class DataRootHandler2 {
       log.error( "init(): Can only call init() once: failed call -- init(\"" + contentPath + "\",\"" + servletContextPath + "\"); and successful call -- init(\""+singleton.contentPath+"\",\""+singleton.servletContextPath+"\").");
       throw new IllegalStateException( "Can only call init() once. [Context path: failed="+servletContextPath+"; initialized="+singleton.servletContextPath+".");
     }
-    singleton = new DataRootHandler2(contentPath, servletContextPath);
+    singleton = new DataRootHandler(contentPath, servletContextPath);
   }
 
   /**
@@ -76,7 +76,7 @@ public class DataRootHandler2 {
    *
    * @throws IllegalStateException if init() has not been called.
    */
-  static public DataRootHandler2 getInstance() {
+  static public DataRootHandler getInstance() {
     if ( singleton == null)
     {
       log.error( "getInstance(): Called without init() having been called.");
@@ -104,7 +104,7 @@ public class DataRootHandler2 {
    * @param contentPath all catalogs are reletive to this file path, eg {tomcat_home}/content/thredds
    * @param servletContextPath all catalogs are reletive to this URL path, eg thredds
    */
-  private DataRootHandler2(String contentPath, String servletContextPath) {
+  private DataRootHandler(String contentPath, String servletContextPath) {
     this.contentPath = contentPath;
     this.servletContextPath = servletContextPath;
     this.factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
@@ -153,7 +153,7 @@ public class DataRootHandler2 {
       thredds.util.IO.writeContents(contents, fos);
       fos.close();
     } catch (IOException ioe) {
-      log.error("DataRootHandler2.writeCatalogErrorLog error ", ioe);
+      log.error("DataRootHandler.writeCatalogErrorLog error ", ioe);
     }
   }
 
@@ -186,7 +186,7 @@ public class DataRootHandler2 {
     synchronized ( this )
     {
       if ( staticCatalogHash.containsKey(path)) {
-        log.warn("DataRootHandler2.initCatalog has already seen catalog=" + catalogFullPath + " possible loop");
+        log.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop");
         return;
       }
     }
@@ -567,7 +567,7 @@ public class DataRootHandler2 {
    *
    * @param req the request
    * @return the translated path.
-   * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler2.findRequestedDataset( path )).getFile();
+   * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler.findRequestedDataset( path )).getFile();
 
    */
   public String translatePath(HttpServletRequest req) {
@@ -586,7 +586,7 @@ public class DataRootHandler2 {
    *
    * @param path the reletive path, ie req.getPathInfo()
    * @return the translated path, as a CrawlableDataset path, or null if no dataroot matches.
-   * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler2.findRequestedDataset( path )).getFile();
+   * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler.findRequestedDataset( path )).getFile();
    */
   public String translatePath(String path) {
     if (path.startsWith("/"))
@@ -893,7 +893,7 @@ public class DataRootHandler2 {
 
     // Return HTML view of catalog.
     if (isHtmlReq) {
-      HtmlWriter2.getInstance().writeCatalog(res, catalog, true);
+      HtmlWriter.getInstance().writeCatalog(res, catalog, true);
       return true;
     }
 
@@ -1236,7 +1236,7 @@ public class DataRootHandler2 {
 
     act = new DebugHandler.Action("showError", "Show catalog error logs") {
      public void doAction(DebugHandler.Event e) {
-       synchronized ( DataRootHandler2.this )
+       synchronized ( DataRootHandler.this )
        {
          e.pw.println( StringUtil.quoteHtmlContent( "\n"+catalogErrorLog.toString()));
        }
@@ -1248,7 +1248,7 @@ public class DataRootHandler2 {
      public void doAction(DebugHandler.Event e) {
        ArrayList list;
        StringBuffer sbuff = new StringBuffer();
-       synchronized ( DataRootHandler2.this )
+       synchronized ( DataRootHandler.this )
        {
          list = new ArrayList( staticCatalogHash.keySet());
          Collections.sort(list);
@@ -1264,7 +1264,7 @@ public class DataRootHandler2 {
 
     act = new DebugHandler.Action("showRoots", "Show data roots") {
       public void doAction(DebugHandler.Event e) {
-        synchronized ( DataRootHandler2.this )
+        synchronized ( DataRootHandler.this )
         {
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {

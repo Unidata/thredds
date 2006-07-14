@@ -65,7 +65,7 @@ public class WCSServlet extends AbstractServlet {
       log.debug( ServletUtil.showRequestDetail(this, req));
 
     // check on static or dynamic catalogs
-    //if (DataRootHandler2.getInstance().processReqForCatalog( req, res))
+    //if (DataRootHandler.getInstance().processReqForCatalog( req, res))
     // return;
 
     // wcs request

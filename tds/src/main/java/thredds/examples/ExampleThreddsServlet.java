@@ -28,7 +28,7 @@ public class ExampleThreddsServlet extends HttpServlet
   protected String contentPath; // Path to ${tomcat_home}/content/thredds
   // @todo Is this allowed in all servlet engines?
 
-  protected DataRootHandler2 dataRootHandler;
+  protected DataRootHandler dataRootHandler;
 
   protected String getVersion()
   {
@@ -93,8 +93,8 @@ public class ExampleThreddsServlet extends HttpServlet
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
     InvDatasetScan.setContext( ServletUtil.getContextPath( this) );
     InvDatasetScan.setCatalogServletName( "");
-    DataRootHandler2.init( contentPath, ServletUtil.getContextPath( this ) );
-    dataRootHandler = DataRootHandler2.getInstance();
+    DataRootHandler.init( contentPath, ServletUtil.getContextPath( this ) );
+    dataRootHandler = DataRootHandler.getInstance();
     try
     {
       dataRootHandler.initCatalog( "catalog.xml" );
@@ -109,7 +109,7 @@ public class ExampleThreddsServlet extends HttpServlet
     dataRootHandler.makeDebugActions();
     DatasetHandler.makeDebugActions();
 
-    HtmlWriter2.init( ServletUtil.getContextPath( this ),
+    HtmlWriter.init( ServletUtil.getContextPath( this ),
                       this.getServletContext().getServletContextName(),
                       this.getVersion(), this.getDocsPath(),
                       this.getUserCssPath(), this.getContextLogoPath(), this.getInstituteLogoPath());
@@ -426,7 +426,7 @@ public class ExampleThreddsServlet extends HttpServlet
  * THREDDS Servlet Framework (TSF) changes:
  * 1) Allow developer to specify the logo files to be used by in HTML responses.
  * 2) Allow developer to specify the servlet path to be used for catalog requests.  
- * 3) Improve thread safety in DataRootHandler2.
+ * 3) Improve thread safety in DataRootHandler.
  *
  * Revision 1.5  2006/05/19 19:23:05  edavis
  * Convert DatasetInserter to ProxyDatasetHandler and allow for a list of them (rather than one) in

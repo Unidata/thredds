@@ -35,7 +35,6 @@ import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import thredds.catalog.InvDatasetScan;
-import thredds.crawlabledataset.CrawlableDatasetFile;
 
 /**
  * THREDDS default servlet - handles everything not explicitly mapped.
@@ -57,7 +56,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   protected String getInstituteLogoPath() { return "unidataLogo.gif"; }
 
 
-  protected DataRootHandler2 catHandler2;
+  protected DataRootHandler catHandler;
 
     // cache scouring
   private Timer timer;
@@ -102,21 +101,21 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     aggCache.setLogger( cacheLog);
 
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
-    DataRootHandler2.init(contentPath, contextPath);
-    catHandler2 = DataRootHandler2.getInstance();
+    DataRootHandler.init(contentPath, contextPath);
+    catHandler = DataRootHandler.getInstance();
 
     List catList = getExtraCatalogs();
     catList.add(0, "catalog.xml"); // always first
     for (int i = 0; i < catList.size(); i++) {
       String catFilename = (String) catList.get(i);
       try {
-        catHandler2.initCatalog(catFilename);
+        catHandler.initCatalog(catFilename);
       } catch (Throwable e) {
         log.error( "Error initializing catalog "+catFilename+"; "+e.getMessage(), e);
       }
     }
 
-    catHandler2.makeDebugActions();
+    catHandler.makeDebugActions();
     DatasetHandler.makeDebugActions();
 
     // Make sure the version info gets calculated.
@@ -134,7 +133,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     c.add( Calendar.MINUTE, 30);
     timer.scheduleAtFixedRate( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 );
 
-    HtmlWriter2.init( contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
+    HtmlWriter.init( contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
                       this.getUserCssPath(), this.getContextLogoPath(), this.getInstituteLogoPath() );
 
     cacheLog.info("Restarted");
@@ -196,7 +195,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
         path = path.substring(9);
         File file =  getMappedFile(path);
         if ((file != null) && file.exists() && file.isDirectory())
-          HtmlWriter2.getInstance().writeDirectory( res, file, path);
+          HtmlWriter.getInstance().writeDirectory( res, file, path);
         else
           res.sendError(HttpServletResponse.SC_NOT_FOUND);
           ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
@@ -206,7 +205,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       if (!path.startsWith("/content/")) {
 
         // see if its a catalog
-        if (catHandler2.processReqForCatalog( req, res)) {
+        if (catHandler.processReqForCatalog( req, res)) {
           return;
         }
 
@@ -217,7 +216,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       }
 
       if ( path.endsWith( "/latest.xml") ) {
-        catHandler2.processReqForLatestDataset( this, req, res);
+        catHandler.processReqForLatestDataset( this, req, res);
         return;
       }
 
@@ -271,7 +270,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
         } else {
           // normal thing to do
-          HtmlWriter2.getInstance().writeDirectory(res, staticFile, path);
+          HtmlWriter.getInstance().writeDirectory(res, staticFile, path);
           return;
         }
       }
@@ -378,8 +377,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
   private File getMappedFile(String path) {
     if (path == null) return null;
-    String filePath = catHandler2.translatePath( path);
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler2.findRequestedDataset( path )).getFile();
+    String filePath = catHandler.translatePath( path);
+    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
 
     if (filePath == null) return null;
     File file = new File( filePath);

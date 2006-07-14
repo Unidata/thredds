@@ -87,8 +87,8 @@ public class ForecastModelRunServlet extends AbstractServlet {
       return;
     }
 
-    DataRootHandler2 h = DataRootHandler2.getInstance();
-    DataRootHandler2.DataRootMatch match = h.findDataRootMatch( req );
+    DataRootHandler h = DataRootHandler.getInstance();
+    DataRootHandler.DataRootMatch match = h.findDataRootMatch( req );
 
     if (match != null) {
       if (debug) System.out.println("match="+match.rootPath+" rem="+match.remaining+" dir="+match.dirLocation);
