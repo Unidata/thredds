@@ -92,7 +92,7 @@ public class CF1Convention extends CSMConvention {
         for (int j = 0; j < vertical_coords.length; j++)
           if (sname.equalsIgnoreCase(vertical_coords[j])) {
             v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
-            // v.addAttribute( new Attribute("_CoordinateAxes", v.getName())); LOOK: may also be time dependent
+            // v.addAttribute( new Attribute(_Coordinate.Axes", v.getName())); LOOK: may also be time dependent
           }
       }
 

@@ -208,7 +208,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     if (grib.ct != null) {
       VariableDS v = makeCoordinateTransformVariable(ds, grib.ct);
-      v.addAttribute( new Attribute("_CoordinateAxes", xaxisName+" "+yaxisName));
+      v.addAttribute( new Attribute(_Coordinate.Axes, xaxisName+" "+yaxisName));
       ds.addVariable(null, v);
     }
 
@@ -223,7 +223,7 @@ public class NUWGConvention extends CoordSysBuilder {
       return false;
 
     if (!dim.getName().equals(ncvar.getShortName())) {
-      ncvar.addAttribute( new Attribute("_CoordinateVariableAlias", dim.getName()));
+      ncvar.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
     }
 
@@ -517,7 +517,7 @@ public class NUWGConvention extends CoordSysBuilder {
     CoordinateAxis makeXCoordAxis( NetcdfDataset ds, String xname) {
       CoordinateAxis v = new CoordinateAxis1D( ds, null, xname, DataType.DOUBLE, xname,
           (0 == grid_code) ? "degrees_east" : "km", "synthesized X coord");
-      v.addAttribute( new Attribute( "_CoordinateAxisType", (0 == grid_code) ? "Lon" : "GeoX"));
+      v.addAttribute( new Attribute( _Coordinate.AxisType, (0 == grid_code) ? AxisType.Lon.toString() : AxisType.GeoX.toString()));
       ds.setValues( v, nx, startx, dx);
       ds.addCoordinateAxis( v);
       return v;
@@ -526,7 +526,7 @@ public class NUWGConvention extends CoordSysBuilder {
     CoordinateAxis makeYCoordAxis( NetcdfDataset ds, String yname) {
       CoordinateAxis v = new CoordinateAxis1D( ds, null, yname, DataType.DOUBLE, yname,
             ((0 == grid_code) ? "degrees_north" : "km"), "synthesized Y coord");
-      v.addAttribute( new Attribute( "_CoordinateAxisType", (0 == grid_code) ? " Lat" : "GeoY"));
+      v.addAttribute( new Attribute( _Coordinate.AxisType, (0 == grid_code) ? AxisType.Lat.toString() : AxisType.GeoY.toString()));
       ds.setValues( v, ny, starty, dy);
       ds.addCoordinateAxis( v);
       return v;
@@ -551,8 +551,7 @@ public class NUWGConvention extends CoordSysBuilder {
       dx = navInfo.getDouble( "Dx")/1000.0; // need to be km : unit conversion LOOK;
       dy = navInfo.getDouble( "Dy")/1000.0; // need to be km : unit conversion LOOK;
 
-      ProjectionCT rs = new ProjectionCT(grid_name, "FGDC", lc);
-      return rs;
+      return new ProjectionCT(grid_name, "FGDC", lc);
     }
 
     // polar stereographic
@@ -578,8 +577,7 @@ public class NUWGConvention extends CoordSysBuilder {
       dx = navInfo.getDouble( "Dx")/1000.0;
       dy = navInfo.getDouble( "Dy")/1000.0;
 
-      ProjectionCT rs = new ProjectionCT(grid_name, "FGDC", ps);
-      return rs;
+      return new ProjectionCT(grid_name, "FGDC", ps);
     }
 
     private void processLatLonProjection() throws NoSuchElementException {

@@ -34,6 +34,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.StructureDS;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.StructureData;
 
 import java.util.*;
@@ -141,7 +142,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl {
     List varList = ds.getVariables();
     for (int i = 0; i < varList.size(); i++) {
       Variable v = (Variable) varList.get(i);
-      String axisType = ds.findAttValueIgnoreCase(v, "_CoordinateAxisType", null);
+      String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
       if ((axisType != null) && axisType.equals(a.toString()))
         return v;
     }
@@ -149,7 +150,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl {
     varList = sequenceVar.getVariables();
     for (int i = 0; i < varList.size(); i++) {
       Variable v = (Variable) varList.get(i);
-      String axisType = ds.findAttValueIgnoreCase(v, "_CoordinateAxisType", null);
+      String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
       if ((axisType != null) && axisType.equals(a.toString()))
         return v;
     }

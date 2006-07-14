@@ -1044,7 +1044,7 @@ public class NcMLReader {
     }
 
     if (agg.isDate()) {
-      coordVar.addAttribute( new ucar.nc2.Attribute("_CoordinateAxisType", "Time"));
+      coordVar.addAttribute( new ucar.nc2.Attribute(_Coordinate.AxisType", "Time"));
     }
 
     // if not already set, set its values

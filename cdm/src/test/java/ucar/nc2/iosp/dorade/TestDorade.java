@@ -5,6 +5,7 @@ import junit.framework.*;
 import ucar.nc2.NetcdfFile;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 
@@ -50,7 +51,7 @@ public class TestDorade extends TestCase {
 
     /* test some att  */
     Attribute testAtt = ncfile.getRootGroup().findAttribute("Conventions");
-    assert( testAtt.getStringValue().equals( "_Coordinates") );
+    assert( testAtt.getStringValue().equals( _Coordinate.Convention) );
 
     testAtt = ncfile.getRootGroup().findAttribute("format");
     assert( testAtt.getStringValue().equals( "Unidata/netCDF/Dorade") );

@@ -25,6 +25,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -101,8 +102,8 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
       ct.addAttribute( new Attribute("center_latitude", new Double(volScan.getStationLatitude())));
       ct.addAttribute( new Attribute("center_longitude", new Double(volScan.getStationLongitude())));
       ct.addAttribute( new Attribute("center_elevation", new Double(volScan.getStationElevation())));
-      ct.addAttribute( new Attribute("_CoordinateTransformType", "Radial"));
-      ct.addAttribute( new Attribute("_CoordinateAxesTypes", "RadialElevation RadialAzimuth RadialDistance"));
+      ct.addAttribute( new Attribute(_Coordinate.TransformType, "Radial"));
+      ct.addAttribute( new Attribute(_Coordinate.AxisTypes, "RadialElevation RadialAzimuth RadialDistance"));
 
       Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[0], new char[] {' '});
       ct.setCachedData(data, true);
@@ -111,7 +112,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
 
     DateFormatter formatter = new DateFormatter();
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "_Coordinates"));
+    ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", volScan.getDataFormat()));
     Date d = Level2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
@@ -204,7 +205,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     timeVar.addAttribute( new Attribute("long_name", "time since base date"));
     timeVar.addAttribute( new Attribute("units", units));
     timeVar.addAttribute( new Attribute("missing_value", new Float(MISSING_INT)));
-    timeVar.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Time.toString()));
+    timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     // add elevation coordinate variable
     String elevCoordName = "elevation"+abbrev;
@@ -216,7 +217,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     elevVar.addAttribute( new Attribute("units", "degrees"));
     elevVar.addAttribute( new Attribute("long_name", "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
     elevVar.addAttribute( new Attribute("missing_value", new Float(MISSING_FLOAT)));
-    elevVar.addAttribute( new Attribute("_CoordinateAxisType", AxisType.RadialElevation.toString()));
+    elevVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
 
     // add azimuth coordinate variable
     String aziCoordName = "azimuth"+abbrev;
@@ -228,7 +229,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     aziVar.addAttribute( new Attribute("units", "degrees"));
     aziVar.addAttribute( new Attribute("long_name", "azimuth angle in degrees: 0 = true north, 90 = east"));
     aziVar.addAttribute( new Attribute("missing_value", new Float(MISSING_FLOAT)));
-    aziVar.addAttribute( new Attribute("_CoordinateAxisType", AxisType.RadialAzimuth.toString()));
+    aziVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString()));
 
     // add gate coordinate variable
     String gateCoordName = "distance"+abbrev;
@@ -243,7 +244,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
 
     gateVar.addAttribute( new Attribute("units", "m"));
     gateVar.addAttribute( new Attribute("long_name", "radial distance to start of gate"));
-    gateVar.addAttribute( new Attribute("_CoordinateAxisType", AxisType.RadialDistance.toString()));
+    gateVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString()));
 
     // add number of radials variable
     String nradialsName = "numRadials"+abbrev;
@@ -265,7 +266,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
 
     // back to the data variable
     String coordinates = timeCoordName+" "+elevCoordName +" "+ aziCoordName+" "+gateCoordName;
-    v.addAttribute( new Attribute("_CoordinateAxes", coordinates));
+    v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
 
     // make the record map
     int nradials = radialDim.getLength();
@@ -307,8 +308,8 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     v.addAttribute( new Attribute("add_offset", new Float( Level2Record.getDatatypeAddOffset(datatype))));
     v.addAttribute( new Attribute("_unsigned", "true"));
 
-    Attribute fromAtt = from.findAttribute("_CoordinateAxes");
-    v.addAttribute( new Attribute("_CoordinateAxes", fromAtt));
+    Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
+    v.addAttribute( new Attribute(_Coordinate.Axes, fromAtt));
 
     Vgroup vgFrom = (Vgroup) from.getSPobject();
     Vgroup vg = new Vgroup(datatype, vgFrom.map);

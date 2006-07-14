@@ -98,7 +98,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
 
     if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
-        v.addAttribute( new Attribute("_CoordinateAxes", "x y"));
+        v.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
         ds.addVariable(null, v);
     }
 
@@ -183,8 +183,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
       parseInfo.append("  makeProjectionLC calc dy= "+dy+" file dy= "+fdy+"\n");
     }
 
-    ProjectionCT ct = new ProjectionCT(name, "FGDC", proj);
-    return ct;
+    return new ProjectionCT(name, "FGDC", proj);
   }
 
  private ProjectionCT makeMercatorProjection(NetcdfDataset ds, String name, int nx, int ny) throws NoSuchElementException {

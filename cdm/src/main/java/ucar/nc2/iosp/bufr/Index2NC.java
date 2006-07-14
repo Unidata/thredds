@@ -22,6 +22,7 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.bufr.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.DataType;
 
@@ -199,21 +200,21 @@ public class Index2NC {
     ncfile.addVariable(null, v);
     v = new Variable(ncfile, ncfile.getRootGroup(), null, "latitude" );
     v.addAttribute( new Attribute("long_name", "latitude for this station"));
-    v.addAttribute( new Attribute( "_CoordinateAxisType", "Lat" ) );
+    v.addAttribute( new Attribute( _Coordinate.AxisType, "Lat" ) );
     setLat = false;
     v.setDimensions( ds );
     v.setDataType( DataType.FLOAT  );
     ncfile.addVariable(null, v);
     v = new Variable(ncfile, ncfile.getRootGroup(), null, "longitude" );
     v.addAttribute( new Attribute("long_name", "longitude for this station"));
-    v.addAttribute( new Attribute( "_CoordinateAxisType", "Lon" ) );
+    v.addAttribute( new Attribute( _Coordinate.AxisType, "Lon" ) );
     setLon = false;
     v.setDimensions( ds );
     v.setDataType( DataType.FLOAT  );
     ncfile.addVariable(null, v);
     v = new Variable(ncfile, ncfile.getRootGroup(), null, "altitude" );
     v.addAttribute( new Attribute("long_name", "altitude for this station"));
-    v.addAttribute( new Attribute( "_CoordinateAxisType", "Height" ) );
+    v.addAttribute( new Attribute( _Coordinate.AxisType, "Height" ) );
     setHgt = false;
     v.setDimensions( ds );
     v.setDataType( DataType.INT  );
@@ -384,20 +385,20 @@ public class Index2NC {
     if( parm.key.equals( "0-4-250" ) ) {
       v = new Variable(ncfile, ncfile.getRootGroup(), recordStructure, "time_observation");
       if( setTime )
-         v.addAttribute( new Attribute( "_CoordinateAxisType", "Time" ) );
+         v.addAttribute( new Attribute( _Coordinate.AxisType, "Time" ) );
       setTime = false;
     } else if( parm.key.equals( "0-5-1" ) || parm.key.equals( "0-5-2" ) ||
       parm.key.equals( "0-27-1" ) || parm.key.equals( "0-27-2" ) ) {
       v = new Variable(ncfile, ncfile.getRootGroup(), recordStructure, parm.name);
       if( setLat )
-        v.addAttribute( new Attribute( "_CoordinateAxisType", "Lat" ) );
+        v.addAttribute( new Attribute( _Coordinate.AxisType, "Lat" ) );
       setLat = false;
 
     } else if( parm.key.equals( "0-6-1" ) || parm.key.equals( "0-6-2" ) ||
       parm.key.equals( "0-28-1" ) || parm.key.equals( "0-28-2" ) ) {
       v = new Variable(ncfile, ncfile.getRootGroup(), recordStructure, parm.name);
       if( setLon )
-        v.addAttribute( new Attribute( "_CoordinateAxisType", "Lon" ) );
+        v.addAttribute( new Attribute( _Coordinate.AxisType, "Lon" ) );
       setLon = false;
 
     } else if( parm.key.equals( "0-7-1" ) || parm.key.equals( "0-7-2" ) || parm.key.equals( "0-7-6" ) ) {
@@ -405,7 +406,7 @@ public class Index2NC {
       //parm.key.equals( "0-10-1" ) || parm.key.equals( "0-10-2" ) || parm.key.equals( "0-10-7" )) {
       v = new Variable(ncfile, ncfile.getRootGroup(), recordStructure, parm.name);
       if( setHgt )
-        v.addAttribute( new Attribute( "_CoordinateAxisType", "Height" ) );
+        v.addAttribute( new Attribute( _Coordinate.AxisType, "Height" ) );
       setHgt = false;
 
     } else {

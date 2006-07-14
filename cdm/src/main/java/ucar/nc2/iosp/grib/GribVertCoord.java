@@ -24,6 +24,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.grib.Index;
 import ucar.grib.TableLookup;
 
@@ -137,16 +138,16 @@ public class GribVertCoord implements Comparable {
       v.addAttribute( new Attribute("positive", positive));
 
     if (units != null) {
-      AxisType axis;
+      AxisType axisType;
       if (SimpleUnit.isCompatible("millibar", units))
-        axis = AxisType.Pressure;
+        axisType = AxisType.Pressure;
       else if (SimpleUnit.isCompatible("m", units))
-        axis = AxisType.Height;
+        axisType = AxisType.Height;
       else
-        axis = AxisType.GeoZ;
+        axisType = AxisType.GeoZ;
 
       v.addAttribute( new Attribute("GRIB_level_type", Integer.toString(record.levelType1)));
-      v.addAttribute( new Attribute("_CoordinateAxisType", axis.toString()));
+      v.addAttribute( new Attribute(_Coordinate.AxisType, axisType.toString()));
     }
 
     double[] data = new double[nlevs];

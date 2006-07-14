@@ -24,6 +24,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.grib.Index;
 import ucar.grib.TableLookup;
 
@@ -142,20 +143,20 @@ public class GribCoordSys {
       v.addAttribute( new Attribute("positive", positive));
 
     if (units != null) {
-      AxisType axis;
+      AxisType axisType;
       if (SimpleUnit.isCompatible("millibar", units))
-        axis = AxisType.Pressure;
+        axisType = AxisType.Pressure;
       else if (SimpleUnit.isCompatible("m", units))
-        axis = AxisType.Height;
+        axisType = AxisType.Height;
       else
-        axis = AxisType.GeoZ;
+        axisType = AxisType.GeoZ;
 
       v.addAttribute( new Attribute("GRIB_level_type", Integer.toString(record.levelType1)));
 
-      v.addAttribute( new Attribute("_CoordinateAxisType", axis.toString()));
-      v.addAttribute( new Attribute("_CoordinateAxes", dims));
+      v.addAttribute( new Attribute(_Coordinate.AxisType, axisType.toString()));
+      v.addAttribute( new Attribute(_Coordinate.Axes, dims));
       if (!hcs.isLatLon())
-        v.addAttribute( new Attribute("_CoordinateTransforms", hcs.getGridName()));
+        v.addAttribute( new Attribute(_Coordinate.Transforms, hcs.getGridName()));
     }
 
     double[] data = new double[nlevs];
@@ -185,7 +186,7 @@ public class GribCoordSys {
         Attribute att = v.findAttribute("GRIB_level_type");
         if ((att == null) || (att.getNumericValue().intValue() != levelType)) continue;
 
-        v.addAttribute( new Attribute("_CoordinateTransformType", "Vertical"));
+        v.addAttribute( new Attribute(_Coordinate.TransformType, "Vertical"));
         v.addAttribute( new Attribute("transform_name", "Existing3DField"));
       }
     }

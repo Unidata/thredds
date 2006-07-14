@@ -22,6 +22,7 @@ package ucar.nc2.iosp.gini;
 
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
@@ -571,7 +572,7 @@ class Giniheader {
     xaxis.setDimensions( "x");
     xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
     xaxis.addAttribute( new Attribute("units", "km"));
-    xaxis.addAttribute( new Attribute("_CoordinateAxisType", "GeoX"));
+    xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
     double[] data = new double[nx];
     for (int i = 0; i < data.length; i++)
       data[i] = startx + i*dxKm;
@@ -584,7 +585,7 @@ class Giniheader {
     yaxis.setDimensions( "y");
     yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
     yaxis.addAttribute( new Attribute("units", "km"));
-    yaxis.addAttribute( new Attribute("_CoordinateAxisType", "GeoY"));
+    yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
     data = new double[ny];
     double endy = starty + dyKm * data.length; // apparently lat1,lon1 is always the lower ledt, but data is upper left
     for (int i = 0; i < data.length; i++)
@@ -602,15 +603,15 @@ class Giniheader {
       Parameter p = (Parameter) params.get(i);
       ct.addAttribute( new Attribute(p));
     }
-    ct.addAttribute( new Attribute("_CoordinateTransformType", "Projection"));
-    ct.addAttribute( new Attribute("_CoordinateAxes", "x y"));
+    ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
+    ct.addAttribute( new Attribute(_Coordinate.Axes, "x y "));
     // fake data
     dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
     dataA.setChar(dataA.getIndex(), ' ');
     ct.setCachedData(dataA, false);
 
     ncfile.addVariable(null, ct);
-    ncfile.addAttribute( null, new Attribute("Conventions", "_Coordinates"));
+    ncfile.addAttribute( null, new Attribute("Conventions", _Coordinate.Convention));
 
     // finish
     ncfile.finish();

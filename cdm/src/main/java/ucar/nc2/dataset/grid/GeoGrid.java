@@ -26,6 +26,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.Format;
 import ucar.unidata.geoloc.*;
 
@@ -636,13 +637,13 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     ProjectionCT projCT = gcs.getProjectionCT();
     if (projCT != null) {
       VariableDS v = CoordTransBuilder.makeDummyTransformVariable(dataset.getNetcdfDataset(), projCT);
-      v.addAttribute( new Attribute("_CoordinateAxisTypes", "GeoX GeoY"));
+      v.addAttribute( new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
       writer.writeVariable( v);
     }
 
     String location = dataset.getNetcdfDataset().getLocation();
     writer.writeGlobalAttribute( new Attribute("History", "GeoGrid extracted from dataset "+location));
-    writer.writeGlobalAttribute( new Attribute("Convention", "_Coordinates"));
+    writer.writeGlobalAttribute( new Attribute("Convention", _Coordinate.Convention));
     writer.finish();
   }
 

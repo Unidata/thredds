@@ -3,6 +3,7 @@ package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -107,12 +108,12 @@ public class DMSPiosp implements IOServiceProvider
       if ( curVariable.getName().equals( "latitude"))
       {
         curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
-        curVariable.addAttribute( new Attribute( "_CoordinateAxisType", AxisType.Lat.toString()));
+        curVariable.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Lat.toString()));
       }
       else if ( curVariable.getName().equals( "longitude"))
       {
         curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));
-        curVariable.addAttribute( new Attribute( "_CoordinateAxisType", AxisType.Lon.toString()));
+        curVariable.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Lon.toString()));
       }
       else if ( curVariable.getName().equals( "time"))
       {
@@ -128,11 +129,11 @@ public class DMSPiosp implements IOServiceProvider
                                  "> not parseable with format string <" + DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString() + ">.");
         }
         curVariable.addAttribute( new Attribute( "units", "seconds since " + this.startDateString));
-        curVariable.addAttribute( new Attribute( "_CoordinateAxisType", AxisType.Time.toString()));
+        curVariable.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Time.toString()));
       }
       else if ( curVariable.getName().equals( "infraredImagery"))
       {
-        curVariable.addAttribute( new Attribute( "_CoordinateAxes", "latitude longitude time"));
+        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude time"));
         curVariable.addAttribute( new Attribute( "_unsigned", "true"));
         curVariable.addAttribute( new Attribute( "scale_factor", new Float((310.0-190.0)/(256.0-1.0))));
         curVariable.addAttribute( new Attribute( "add_offset", new Float( 190.0)));
@@ -143,7 +144,7 @@ public class DMSPiosp implements IOServiceProvider
       }
       else if ( curVariable.getName().equals( "visibleImagery"))
       {
-        curVariable.addAttribute( new Attribute( "_CoordinateAxes", "latitude longitude time"));
+        curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude time"));
         curVariable.addAttribute( new Attribute( "_unsigned", "true"));
         curVariable.addAttribute( new Attribute( "description",
                                                  "Visible pixels are relative values ranging from 0 to 63 rather than " +

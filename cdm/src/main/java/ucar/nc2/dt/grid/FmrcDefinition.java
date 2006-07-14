@@ -31,8 +31,6 @@ import org.jdom.input.SAXBuilder;
 import java.io.*;
 import java.util.*;
 
-import ucar.nc2.units.DateUnit;
-
 /**
  * Defines the expected inventory of a Forecast Model Run Collection.
  *
@@ -191,9 +189,9 @@ public class FmrcDefinition {
     return errs;
   }  */
 
-  private ForecastModelRun.TimeCoord findTimeCoord( String id) {
+  private ForecastModelRunInventory.TimeCoord findTimeCoord( String id) {
     for (int i = 0; i < timeCoords.size(); i++) {
-      ForecastModelRun.TimeCoord tc = (ForecastModelRun.TimeCoord) timeCoords.get(i);
+      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
       if (tc.getId().equals(id))
         return tc;
     }
@@ -244,9 +242,9 @@ public class FmrcDefinition {
 
   class Run {
     double runHour; // hour since 00:00
-    ForecastModelRun.TimeCoord tc;
+    ForecastModelRunInventory.TimeCoord tc;
 
-    Run(ForecastModelRun.TimeCoord tc, double runHour) {
+    Run(ForecastModelRunInventory.TimeCoord tc, double runHour) {
       this.tc = tc;
       this.runHour = runHour;
     }
@@ -255,7 +253,7 @@ public class FmrcDefinition {
   // A sequence of Runs.
   class RunSeq {
     boolean isAll = false;    // true if they all use the same OffsetHours
-    ForecastModelRun.TimeCoord allUseOffset; // they all use this one
+    ForecastModelRunInventory.TimeCoord allUseOffset; // they all use this one
     ArrayList runs = new ArrayList(); // list of Run
     ArrayList vars = new ArrayList(); // list of ForecastModelRun.Grid
 
@@ -288,7 +286,7 @@ public class FmrcDefinition {
      * @param runTime  run date
      * @return TimeCoord, or null if no match.
      */
-    ForecastModelRun.TimeCoord findTimeCoordByRuntime( Date runTime) {
+    ForecastModelRunInventory.TimeCoord findTimeCoordByRuntime( Date runTime) {
       if (isAll)
         return allUseOffset;
       double hour = getHour( runTime);
@@ -378,19 +376,19 @@ public class FmrcDefinition {
 
   /* vertical coordinates that depend on the offset hour */
   class VertTimeCoord {
-    ForecastModelRun.VertCoord vc;
-    ForecastModelRun.TimeCoord tc; // optional
+    ForecastModelRunInventory.VertCoord vc;
+    ForecastModelRunInventory.TimeCoord tc; // optional
     int ntimes, nverts;
     double[][] vcForTimeIndex;  // vcForTimeIndex[ntimes]
     ArrayList restrictList;
 
-    VertTimeCoord(ForecastModelRun.VertCoord vc) {
+    VertTimeCoord(ForecastModelRunInventory.VertCoord vc) {
       this.vc = vc;
       ntimes = (tc == null) ? 1 : tc.getOffsetHours().length;
       nverts = vc.getValues().length;
     }
 
-    VertTimeCoord(ForecastModelRun.VertCoord vc, RunSeq runSeq) {
+    VertTimeCoord(ForecastModelRunInventory.VertCoord vc, RunSeq runSeq) {
       if (runSeq.isAll) {
         this.tc = runSeq.allUseOffset;
       } else {
@@ -407,7 +405,7 @@ public class FmrcDefinition {
           Double d = (Double) valueList.get(i);
           values[i] = d.doubleValue();
         }
-        this.tc = new ForecastModelRun.TimeCoord();
+        this.tc = new ForecastModelRunInventory.TimeCoord();
         this.tc.setOffsetHours( values);
         this.tc.setId( "union");
       }
@@ -509,7 +507,7 @@ public class FmrcDefinition {
     // list all the vertical coordinaates
     for (int i = 0; i < vertTimeCoords.size(); i++) {
       VertTimeCoord vtc = (VertTimeCoord) vertTimeCoords.get(i);
-      ForecastModelRun.VertCoord vc = vtc.vc;
+      ForecastModelRunInventory.VertCoord vc = vtc.vc;
 
       Element vcElem = new Element("vertCoord");
       rootElem.addContent(vcElem);
@@ -529,7 +527,7 @@ public class FmrcDefinition {
 
     // list all the offset hours
     for (int i = 0; i < timeCoords.size(); i++) {
-      ForecastModelRun.TimeCoord tc = (ForecastModelRun.TimeCoord) timeCoords.get(i);
+      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
 
       Element offsetElem = new Element("offsetHours");
       rootElem.addContent(offsetElem);
@@ -610,7 +608,7 @@ public class FmrcDefinition {
     java.util.List vList = rootElem.getChildren("vertCoord");
     for (int i=0; i< vList.size(); i++) {
       Element vcElem = (Element) vList.get(i);
-      ForecastModelRun.VertCoord vc = new ForecastModelRun.VertCoord();
+      ForecastModelRunInventory.VertCoord vc = new ForecastModelRunInventory.VertCoord();
       vc.setId( vcElem.getAttributeValue("id"));
       vc.setName( vcElem.getAttributeValue("name"));
       vc.setUnits( vcElem.getAttributeValue("units"));
@@ -635,7 +633,7 @@ public class FmrcDefinition {
     java.util.List tList = rootElem.getChildren("offsetHours");
     for (int i=0; i< tList.size(); i++) {
       Element timeElem = (Element) tList.get(i);
-      ForecastModelRun.TimeCoord tc = new ForecastModelRun.TimeCoord();
+      ForecastModelRunInventory.TimeCoord tc = new ForecastModelRunInventory.TimeCoord();
       timeCoords.add( tc);
       tc.setId( timeElem.getAttributeValue("id"));
 
@@ -666,7 +664,7 @@ public class FmrcDefinition {
         for (int j=0; j< runList.size(); j++) {
           Element runElem = (Element) runList.get(j);
           String id = runElem.getAttributeValue("offsetHourSeq");
-          ForecastModelRun.TimeCoord tc = findTimeCoord( id);
+          ForecastModelRunInventory.TimeCoord tc = findTimeCoord( id);
           String hour = runElem.getAttributeValue("runHour");
 
           Run run = new Run(tc, Double.parseDouble( hour));
@@ -707,14 +705,14 @@ public class FmrcDefinition {
 
   //////////////////////////////////////////////////////////////////////
 
-  public void makeFromCollectionInventory(ForecastModelRunCollection fmrc) {
+  public void makeFromCollectionInventory(FmrcInventory fmrc) {
     this.name = fmrc.getName();
 
     this.timeCoords = fmrc.getTimeCoords();
 
     this.vertTimeCoords = new ArrayList();
     for (int i = 0; i < fmrc.getVertCoords().size(); i++) {
-      ForecastModelRun.VertCoord vc = (ForecastModelRun.VertCoord) fmrc.getVertCoords().get(i);
+      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) fmrc.getVertCoords().get(i);
       vertTimeCoords.add( new VertTimeCoord(vc));
     }
 
@@ -723,13 +721,13 @@ public class FmrcDefinition {
     // Convert the run sequences, containing variables
     List seqs = fmrc.getRunSequences();
     for (int i = 0; i < seqs.size(); i++) {
-      ForecastModelRunCollection.RunSeq invSeq = (ForecastModelRunCollection.RunSeq) seqs.get(i);
+      FmrcInventory.RunSeq invSeq = (FmrcInventory.RunSeq) seqs.get(i);
 
       // check to see if all runs use the same tc
       boolean isAll = true;
-      ForecastModelRun.TimeCoord oneTc = null;
+      ForecastModelRunInventory.TimeCoord oneTc = null;
       for (int j = 0; j < invSeq.runs.size(); j++) {
-        ForecastModelRunCollection.Run run = (ForecastModelRunCollection.Run) invSeq.runs.get(j);
+        FmrcInventory.Run run = (FmrcInventory.Run) invSeq.runs.get(j);
         if (j == 0)
           oneTc = run.tc;
         else {
@@ -744,7 +742,7 @@ public class FmrcDefinition {
       }  else {
         ArrayList runs = new ArrayList();
         for (int j = 0; j < invSeq.runs.size(); j++) {
-          ForecastModelRunCollection.Run invRun = (ForecastModelRunCollection.Run) invSeq.runs.get(j);
+          FmrcInventory.Run invRun = (FmrcInventory.Run) invSeq.runs.get(j);
 
           Run run = new Run(  invRun.tc, getHour( invRun.runTime) );
           runs.add( run);
@@ -756,7 +754,7 @@ public class FmrcDefinition {
       // convert UberGrids to Grid
       List vars = invSeq.getVariables();
       for (int j = 0; j < vars.size(); j++) {
-        ForecastModelRunCollection.UberGrid uv = (ForecastModelRunCollection.UberGrid) vars.get(j);
+        FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
         Grid grid = new Grid( uv.getName());
         runSeq.vars.add( grid);
         if (uv.vertCoordUnion != null)
@@ -766,22 +764,22 @@ public class FmrcDefinition {
   }
 
   /** Add just the vertical coord info to the definition */
-  public void addVertCoordsFromCollectionInventory(ForecastModelRunCollection fmrc) {
+  public void addVertCoordsFromCollectionInventory(FmrcInventory fmrc) {
     this.vertTimeCoords = new ArrayList();
     for (int i = 0; i < fmrc.getVertCoords().size(); i++) {
-      ForecastModelRun.VertCoord vc = (ForecastModelRun.VertCoord) fmrc.getVertCoords().get(i);
+      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) fmrc.getVertCoords().get(i);
       vertTimeCoords.add( new VertTimeCoord(vc));
     }
 
     // Convert the run sequences, containing variables
     List seqs = fmrc.getRunSequences();
     for (int i = 0; i < seqs.size(); i++) {
-      ForecastModelRunCollection.RunSeq invSeq = (ForecastModelRunCollection.RunSeq) seqs.get(i);
+      FmrcInventory.RunSeq invSeq = (FmrcInventory.RunSeq) seqs.get(i);
 
       // convert UberGrids to Grid
       List vars = invSeq.getVariables();
       for (int j = 0; j < vars.size(); j++) {
-        ForecastModelRunCollection.UberGrid uv = (ForecastModelRunCollection.UberGrid) vars.get(j);
+        FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
         if (uv.vertCoordUnion != null) {
           Grid grid = findGrid( uv.getName());
           grid.vtc = new VertTimeCoord( uv.vertCoordUnion);

@@ -75,7 +75,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * @author caron
  * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
-public class ForecastModelRun {
+public class ForecastModelRunInventory {
   public static final int OPEN_NORMAL = 1; // try to open XML, if fail, open dataset and write XML
   public static final int OPEN_FORCE_NEW = 2;  // only open dataset and write XML new
   public static final int OPEN_XML_ONLY = 3; // only open XML, if not exist, return
@@ -90,8 +90,8 @@ public class ForecastModelRun {
 
   private boolean debugMissing = false;
 
-  private ForecastModelRun() { }
-  private ForecastModelRun(String ncfileLocation) throws IOException {
+  private ForecastModelRunInventory() { }
+  private ForecastModelRunInventory(String ncfileLocation) throws IOException {
 
     gds = ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation);
     name = gds.getTitle();
@@ -651,7 +651,7 @@ public class ForecastModelRun {
    * @return ForecastModelRun
    * @throws IOException
    */
-  public static ForecastModelRun readXML(String xmlLocation) throws IOException {
+  public static ForecastModelRunInventory readXML(String xmlLocation) throws IOException {
     if (debug) System.out.println(" read from XML "+xmlLocation);
 
     InputStream is = new BufferedInputStream( new FileInputStream( xmlLocation));
@@ -664,7 +664,7 @@ public class ForecastModelRun {
     }
 
     Element rootElem = doc.getRootElement();
-    ForecastModelRun fmr = new ForecastModelRun();
+    ForecastModelRunInventory fmr = new ForecastModelRunInventory();
     fmr.runTime = rootElem.getAttributeValue("runTime");
 
     DateFormatter formatter = new  DateFormatter();
@@ -758,7 +758,7 @@ public class ForecastModelRun {
    * @return ForecastModelRun
    * @throws IOException
    */
-  public static ForecastModelRun open(ucar.nc2.util.DiskCache2 cache, String ncfileLocation, int mode) throws IOException {
+  public static ForecastModelRunInventory open(ucar.nc2.util.DiskCache2 cache, String ncfileLocation, int mode) throws IOException {
     boolean force = (mode == OPEN_FORCE_NEW);
     boolean xml_only = (mode == OPEN_XML_ONLY);
 
@@ -788,7 +788,7 @@ public class ForecastModelRun {
 
     // otherwise, make it
     if (debug) System.out.println(" read from dataset "+ncfileLocation+" write to XML "+summaryFileLocation);
-    ForecastModelRun fmr = new ForecastModelRun(ncfileLocation);
+    ForecastModelRunInventory fmr = new ForecastModelRunInventory(ncfileLocation);
     fmr.writeXML(summaryFileLocation);
     fmr.releaseDataset();
 

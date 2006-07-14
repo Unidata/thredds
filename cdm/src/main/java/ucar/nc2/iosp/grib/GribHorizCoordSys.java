@@ -26,6 +26,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -157,7 +158,7 @@ public class GribHorizCoordSys {
     v.addAttribute(new Attribute("long_name", desc));
     v.addAttribute(new Attribute("standard_name", standard_name));
     v.addAttribute(new Attribute("grid_spacing", incr + " " + units));
-    v.addAttribute(new Attribute("_CoordinateAxisType", axis.toString()));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, axis.toString()));
 
     ncfile.addVariable(g, v);
     return data;
@@ -171,7 +172,7 @@ public class GribHorizCoordSys {
     latVar.addAttribute(new Attribute("units", "degrees_north"));
     latVar.addAttribute(new Attribute("long_name", "latitude coordinate"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
-    latVar.addAttribute(new Attribute("_CoordinateAxisType", AxisType.Lat.toString()));
+    latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     Variable lonVar = new Variable(ncfile, g, null, "lon");
     lonVar.setDataType(DataType.DOUBLE);
@@ -179,7 +180,7 @@ public class GribHorizCoordSys {
     lonVar.addAttribute(new Attribute("units", "degrees_east"));
     lonVar.addAttribute(new Attribute("long_name", "longitude coordinate"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));
-    lonVar.addAttribute(new Attribute("_CoordinateAxisType", AxisType.Lon.toString()));
+    lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     int nx = xData.length;
     int ny = yData.length;
@@ -251,9 +252,9 @@ public class GribHorizCoordSys {
     v.setDimensions(new ArrayList()); // scalar
     Array dataArray = Array.factory(DataType.CHAR.getClassType(), new int[0], new char[]{'0'});
     v.setCachedData(dataArray, false);
-    v.addAttribute(new Attribute("_CoordinateAxes", dims));
+    v.addAttribute(new Attribute(_Coordinate.Axes, dims));
     if (!isLatLon())
-      v.addAttribute(new Attribute("_CoordinateTransforms", getGridName()));
+      v.addAttribute(new Attribute(_Coordinate.Transforms, getGridName()));
     ncfile.addVariable(g, v);
   }
 

@@ -3,6 +3,7 @@ package ucar.nc2.dt.radial;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 
 /**
  * Factory to create RadialDatasets
@@ -24,7 +25,7 @@ public class RadialDatasetSweepFactory {
   public RadialDatasetSweep open( NetcdfDataset ncd) {
 
     String convention = ncd.findAttValueIgnoreCase(null, "Conventions", null);
-    if ((null != convention) && convention.equals("_Coordinates")) {
+    if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ncd.findAttValueIgnoreCase(null, "Format", null);
       if (format.equals("Unidata/netCDF/Dorade"))
         return new Dorade2Dataset( ncd);

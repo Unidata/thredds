@@ -1,6 +1,6 @@
-// $Id: Doradeheader.java,v 1.5 2006/04/19 20:24:09 yuanho Exp $
+// $Id:Doradeheader.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,17 +24,14 @@ package ucar.nc2.iosp.dorade;
 import ucar.nc2.*;
 
 import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
-import ucar.ma2.IndexIterator;
+
 import ucar.atd.dorade.*;
 
-
 import java.io.*;
-
 import java.util.*;
 
 
@@ -159,13 +156,13 @@ public class Doradeheader {
     // add elevation coordinate variable
     String vName = "elevation";
     String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
-    Attribute att = new Attribute("_CoordinateAxisType", AxisType.RadialElevation.toString());
+    Attribute att = new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString());
     addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
 
     // add azimuth coordinate variable
     vName = "azimuth";
     lName = "azimuth angle in degrees: 0 = true north, 90 = east";
-    att = new Attribute("_CoordinateAxisType", AxisType.RadialAzimuth.toString());
+    att = new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString());
     addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
 
 
@@ -174,7 +171,7 @@ public class Doradeheader {
         int j = i + 1;
         vName = "distance_"+j;
         lName = "Radial distance to the start of gate";
-        att = new Attribute("_CoordinateAxisType", AxisType.RadialDistance.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString());
         addParameter(vName, lName, ncfile, dims2[i], att, DataType.FLOAT, "meters");
     }
 
@@ -184,29 +181,29 @@ public class Doradeheader {
         int j = i + 1;
         vName = "latitudes_" + j;
         lName = "Latitude of the instrument " + j;
-        att = new Attribute("_CoordinateAxisType", AxisType.Lat.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Lat.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
 
         vName = "longitudes_" + j;
         lName = "Longitude of the instrument " + j;
-        att = new Attribute("_CoordinateAxisType", AxisType.Lon.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Lon.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees");
 
         vName = "altitudes_" + j;
         lName = "Altitude in meters (asl) of the instrument " + j;
-        att = new Attribute("_CoordinateAxisType", AxisType.Height.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Height.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "meters");
 
         vName = "rays_time";
         lName = "rays time";
-        att = new Attribute("_CoordinateAxisType", AxisType.Time.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "seconds since 1970-01-01 00:00 UTC");
 
     }
 
     vName = "Range_to_First_Cell";
     lName = "Range to the center of the first cell";
-    att = new Attribute("_CoordinateAxes", "latitudes_1 longitudes_1 altitudes_1");
+    att = new Attribute(_Coordinate.Axes, "latitudes_1 longitudes_1 altitudes_1");
     addParameter(vName, lName, ncfile, null, null, DataType.FLOAT, "meters");
 
     vName = "Cell_Spacing";
@@ -328,7 +325,7 @@ public class Doradeheader {
       v.addAttribute( new Attribute("long_name", dparm.getDescription()));
       v.addAttribute( new Attribute("units", dparm.getUnits()));
       String coordinates = "elevation azimuth distance_1 " + "latitudes_1 longitudes_1 altitudes_1";
-      v.addAttribute( new Attribute("_CoordinateAxes", coordinates));
+      v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
       /*
       v.addAttribute( new Attribute("missing_value", new Float(dparm.getBadDataFlag())));
       v.addAttribute( new Attribute("_FillValue", new Float(dparm.getBadDataFlag())));
@@ -361,7 +358,7 @@ public class Doradeheader {
         nc.addAttribute(null, new Attribute("time_coverage_start",  dd[0].toString()));
         nc.addAttribute(null, new Attribute("time_coverage_end",  dd[dd.length-1].toString()));
         nc.addAttribute(null, new Attribute("Content", "This file contains one scan of remotely sensed data"));
-        nc.addAttribute(null, new Attribute("Conventions", "_Coordinates"));
+        nc.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
         nc.addAttribute(null, new Attribute("format", "Unidata/netCDF/Dorade"));
         nc.addAttribute(null, new Attribute("Radar_Name", mySweep.getSensorName(0)));
         nc.addAttribute(null, new Attribute("Project_name", ""+mySweep.getProjectName()));

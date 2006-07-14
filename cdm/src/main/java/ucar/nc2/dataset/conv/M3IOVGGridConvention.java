@@ -76,9 +76,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @pre ncfile != null
    */
   public static boolean isMine( NetcdfFile ncFile ) {
-    final boolean result = ncFile.findGlobalAttribute( "VGLVLS" ) != null &&
-                           isValidM3IOFile_( ncFile );
-    return result;
+    return ncFile.findGlobalAttribute( "VGLVLS" ) != null && isValidM3IOFile_( ncFile );
   }
 
 
@@ -148,7 +146,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     if ( p != null ) {
       ct = new ProjectionCT( p.getClassName(), "FGDC", p );
       VariableDS v = makeCoordinateTransformVariable(ds, ct);
-      v.addAttribute( new Attribute("_CoordinateAxisTypes", "GeoX GeoY"));
+      v.addAttribute( new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
       ds.addVariable(null, v);
     }
 
@@ -182,7 +180,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     ds.setValues(axis, dim.getLength(), xorig, xcell);
     axis.addAttribute( new Attribute( "units", newUnits ) );
     axis.addAttribute( new Attribute( "long_name", desc ) );
-    axis.addAttribute( new Attribute( "_CoordinateAxisType", AxisType.GeoX.toString() ) );
+    axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.GeoX.toString() ) );
     ds.addCoordinateAxis( axis );
   }
 
@@ -207,7 +205,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     ds.setValues(axis,  dim.getLength(), yorig, ycell );
     axis.addAttribute( new Attribute( "units", newUnits ) );
     axis.addAttribute( new Attribute( "long_name", desc ) );
-    axis.addAttribute( new Attribute( "_CoordinateAxisType", AxisType.GeoY.toString() ) );
+    axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.GeoY.toString() ) );
     ds.addCoordinateAxis( axis );
   }
 
@@ -240,7 +238,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     ds.setValues(axis, vgArray );
     axis.addAttribute( new Attribute( "units", "km" ) );
     axis.addAttribute( new Attribute( "long_name", desc ) );
-    axis.addAttribute( new Attribute( "_CoordinateAxisType", AxisType.Height.toString() ) );
+    axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Height.toString() ) );
     ds.addCoordinateAxis( axis );
   }
 
@@ -279,7 +277,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     axis.setCachedData( data, true);
     axis.addAttribute( new Attribute( "long_name", desc));
     axis.addAttribute( new Attribute( "units", units ));
-    axis.addAttribute( new Attribute( "_CoordinateAxisType", AxisType.Time.toString() ) );
+    axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Time.toString() ) );
     ds.addCoordinateAxis( axis );
   }
 
@@ -313,9 +311,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     java.text.SimpleDateFormat dateFormatOut =
       new java.text.SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
     dateFormatOut.setTimeZone( java.util.TimeZone.getTimeZone( "GMT" ) );
-    String result =
-      "seconds since " + dateFormatOut.format( cal.getTime() ) + " UTC";
-    return result;
+    return "seconds since " + dateFormatOut.format( cal.getTime() ) + " UTC";
   }
 
 
@@ -357,9 +353,8 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    */
   protected String getZPositive( CoordinateAxis axis ) {
     String unit = axis.getUnitsString( );
-    final String result =
-      unit != null && SimpleUnit.isCompatible( "m", unit ) ? "up" : "";
-    return result;
+    boolean isup = (unit != null) && SimpleUnit.isCompatible( "m", unit );
+    return  isup ? "up" : "";
   }
 
 

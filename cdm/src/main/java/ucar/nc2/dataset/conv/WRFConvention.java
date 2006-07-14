@@ -26,12 +26,9 @@ import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Parameter;
 
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.vertical.WRFEta;
 import ucar.unidata.geoloc.projection.*;
 
 import java.io.IOException;
@@ -140,7 +137,7 @@ public class WRFConvention extends CoordSysBuilder {
 
     if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
-        v.addAttribute( new Attribute("_CoordinateAxisTypes", "GeoX GeoY"));
+        v.addAttribute( new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
         ds.addVariable(null, v);
     }
 
@@ -232,9 +229,9 @@ public class WRFConvention extends CoordSysBuilder {
 
     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoX coordinate from DX attribute");
     ds.setValues( v, nx, startx, dx);
-    v.addAttribute( new Attribute("_CoordinateAxisType", "GeoX"));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
     if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute("_CoordinateVariableAlias", dim.getName()));
+      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
     //ADD: is staggered grid being dealt with?
     return v;
@@ -249,9 +246,9 @@ public class WRFConvention extends CoordSysBuilder {
 
     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoY coordinate from DY attribute");
     ds.setValues( v, ny, starty, dy);
-    v.addAttribute( new Attribute("_CoordinateAxisType", "GeoY"));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
     if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute("_CoordinateVariableAlias", dim.getName()));
+      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
     //ADD: is staggered grid being dealt with?
     return v;
   }
@@ -259,15 +256,15 @@ public class WRFConvention extends CoordSysBuilder {
   private CoordinateAxis makeZCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.SHORT, dim.getName(),"", "eta values");
-    v.addAttribute( new Attribute("_CoordinateAxisType", "GeoZ"));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute("_CoordinateVariableAlias", dim.getName()));
+      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
     //use eta values from file variables: ZNU, ZNW
     //But they are a function of time though the values are the same in the sample file
     //NOTE: Use first time sample assuming all are the same!
     //ADD: Is this a safe assumption???
-    Variable etaVar = null;
+    Variable etaVar;
     if (axisName.endsWith("stag")) etaVar = ds.findVariable("ZNW");
     else etaVar = ds.findVariable("ZNU");
     if (etaVar == null) return makeFakeCoordAxis(ds, axisName, dim);
@@ -294,9 +291,9 @@ public class WRFConvention extends CoordSysBuilder {
   private CoordinateAxis makeFakeCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.SHORT, dim.getName(), "", "synthesized coordinate: only an index");
-    v.addAttribute( new Attribute("_CoordinateAxisType", "GeoZ"));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute("_CoordinateVariableAlias", dim.getName()));
+      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
     ds.setValues( v, dim.getLength(), 0, 1);
     return v;
@@ -308,7 +305,7 @@ public class WRFConvention extends CoordSysBuilder {
     Variable timeV = ds.findVariable("Times");
     if (timeV == null) return null;
 
-    Array timeData = null;
+    Array timeData;
     try {
       timeData = timeV.read();
     } catch (IOException ioe) {
@@ -358,9 +355,9 @@ public class WRFConvention extends CoordSysBuilder {
 
     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(),
       "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
-    v.addAttribute( new Attribute("_CoordinateAxisType", "Time"));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, "Time"));
     if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute("_CoordinateVariableAlias", dim.getName()));
+      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
     v.setCachedData( values, true);
     return v;
@@ -382,19 +379,19 @@ public class WRFConvention extends CoordSysBuilder {
       return null;
 
     if (coordVar.getRank() == 1) {
-      coordVar.addAttribute( new Attribute("_CoordinateAxisType", "GeoZ"));
+      coordVar.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
       if (!coordVarName.equals( soilDim.getName()) )
-        coordVar.addAttribute( new Attribute("_CoordinateVariableAlias", soilDim.getName()));
+        coordVar.addAttribute( new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
       return (VariableDS) coordVar;
     }
 
     String units = ds.findAttValueIgnoreCase(coordVar, "units", "");
 
     CoordinateAxis v = new CoordinateAxis1D( ds, null, "soilDepth", DataType.SHORT, soilDim.getName(), units, "soil depth");
-    v.addAttribute( new Attribute("_CoordinateAxisType", "GeoZ"));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
     v.addAttribute( new Attribute("units", "units"));
     if (!v.getShortName().equals( soilDim.getName()) )
-      v.addAttribute( new Attribute("_CoordinateVariableAlias", soilDim.getName()));
+      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
 
     //read first time slice
     int n = coordVar.getShape()[1];

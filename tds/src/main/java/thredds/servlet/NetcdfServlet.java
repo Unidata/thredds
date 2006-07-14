@@ -30,12 +30,13 @@ import java.util.List;
 import java.util.Random;
 
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.FileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.dt.grid.ForecastModelRun;
+import ucar.nc2.dt.grid.ForecastModelRunInventory;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -118,7 +119,7 @@ public class NetcdfServlet extends AbstractServlet {
     log.debug("**NetcdfService req="+datasetPath);
 
     // for convenince, we open as an FMR, since it already has the XML we need for the form
-    ForecastModelRun fmr = ForecastModelRun.open( fmrCache, datasetPath, ForecastModelRun.OPEN_NORMAL);
+    ForecastModelRunInventory fmr = ForecastModelRunInventory.open( fmrCache, datasetPath, ForecastModelRunInventory.OPEN_NORMAL);
     fmr.setName( req.getRequestURI());
 
     String wantXML = req.getParameter("wantXML");
@@ -491,7 +492,7 @@ public class NetcdfServlet extends AbstractServlet {
     latVar.addAttribute(new Attribute("units", "degrees_north"));
     latVar.addAttribute(new Attribute("long_name", "latitude coordinate"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
-    latVar.addAttribute(new Attribute("_CoordinateAxisType", AxisType.Lat.toString()));
+    latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     Variable lonVar = new Variable(ncfile, null, null, "lon");
     lonVar.setDataType(DataType.DOUBLE);
@@ -499,7 +500,7 @@ public class NetcdfServlet extends AbstractServlet {
     lonVar.addAttribute(new Attribute("units", "degrees_east"));
     lonVar.addAttribute(new Attribute("long_name", "longitude coordinate"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));
-    lonVar.addAttribute(new Attribute("_CoordinateAxisType", AxisType.Lon.toString()));
+    lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     int nx = xData.length;
     int ny = yData.length;
@@ -528,7 +529,7 @@ public class NetcdfServlet extends AbstractServlet {
   }
 
 
-  private void showForm(HttpServletResponse res, ForecastModelRun fmr, boolean wantXml) throws IOException {
+  private void showForm(HttpServletResponse res, ForecastModelRunInventory fmr, boolean wantXml) throws IOException {
     String infoString;
 
     if (wantXml) {

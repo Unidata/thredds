@@ -25,6 +25,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -1230,7 +1231,7 @@ class Nidsheader{
         v.addAttribute( new Attribute("long_name", ctitle));
         v.addAttribute( new Attribute("units", cunit));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, pkcode, 0));
-        v.addAttribute( new Attribute("_CoordinateAxes", coordinates));
+        v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
 
         if( cname.startsWith("VertLiquid")){
           addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
@@ -1251,7 +1252,7 @@ class Nidsheader{
         xaxis.setDimensions("x");
         xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
         xaxis.addAttribute( new Attribute("units", "km/4"));
-        xaxis.addAttribute( new Attribute("_CoordinateAxisType", "GeoX"));
+        xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
         double[] data1 = new double[numX];
         for (int i = 0; i < numX; i++)
           data1[i] = (double) (numX0 + i);
@@ -1264,7 +1265,7 @@ class Nidsheader{
         yaxis.setDimensions( "y");
         yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
         yaxis.addAttribute( new Attribute("units", "km/4"));
-        yaxis.addAttribute( new Attribute("_CoordinateAxisType", "GeoY"));
+        yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
         data1 = new double[numY];
         for (int i = 0; i < numY; i++)
           data1[i] = numY0 + i;
@@ -1282,8 +1283,8 @@ class Nidsheader{
           Parameter p = (Parameter) params.get(i);
           ct.addAttribute( new Attribute(p));
         }
-        ct.addAttribute( new Attribute("_CoordinateTransformType", "Projection"));
-        ct.addAttribute( new Attribute("_CoordinateAxes", "x y"));
+        ct.addAttribute( new Attribute(_Coordinate.TransformType, "Projection"));
+        ct.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
         // fake data
         dataA = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {});
         dataA.setChar(dataA.getIndex(), ' ');
@@ -1372,42 +1373,42 @@ class Nidsheader{
         // add elevation coordinate variable
         String vName = "elevation";
         String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
-        Attribute att = new Attribute("_CoordinateAxisType", AxisType.RadialElevation.toString());
+        Attribute att = new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, p3);
 
         // add azimuth coordinate variable
         vName = "azimuth";
         lName = "azimuth angle in degrees: 0 = true north, 90 = east";
-        att = new Attribute("_CoordinateAxisType", AxisType.RadialAzimuth.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, 0);
 
 
         // add gate coordinate variable
         vName = "gate";
         lName = "Radial distance to the start of gate";
-        att = new Attribute("_CoordinateAxisType", AxisType.RadialDistance.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString());
         addParameter(vName, lName, ncfile, dims2, att, DataType.FLOAT, "meters",hoff, hedsiz, isZ, radp_scale);
 
         // add radial coordinate variable
 
         vName = "latitude";
         lName = "Latitude of the instrument";
-        att = new Attribute("_CoordinateAxisType", AxisType.Lat.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Lat.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, 0);
 
         vName = "longitude";
         lName = "Longitude of the instrument";
-        att = new Attribute("_CoordinateAxisType", AxisType.Lon.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Lon.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, 0);
 
         vName = "altitude";
         lName = "Altitude in meters (asl) of the instrument";
-        att = new Attribute("_CoordinateAxisType", AxisType.Height.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Height.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "meters",hoff, hedsiz, isZ, 0);
 
         vName = "rays_time";
         lName = "rays time";
-        att = new Attribute("_CoordinateAxisType", AxisType.Time.toString());
+        att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "seconds since 1970-01-01 00:00 UTC"
                     ,hoff, hedsiz, isZ, 0);
 
@@ -1417,7 +1418,7 @@ class Nidsheader{
         ncfile.addVariable(null, v);
         v.addAttribute( new Attribute("units", cunit));
         String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
-        v.addAttribute( new Attribute("_CoordinateAxes", coordinates));
+        v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, 0, 0));
 
         //add RAW, BRIT variables for all radial variable
@@ -1477,7 +1478,7 @@ class Nidsheader{
       ncfile.addVariable(null, v);
       v.addAttribute( new Attribute("long_name", longName));
       v.addAttribute( new Attribute("units", ut));
-      v.addAttribute( new Attribute("_CoordinateAxes", coordinates));
+      v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
       v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, iscale, nlevel));
 
   }
@@ -1681,7 +1682,7 @@ class Nidsheader{
     ncfile.addAttribute(null, new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." +
               " There are total 41 products, and " + summary ));
     ncfile.addAttribute(null, new Attribute("keywords_vocabulary", ctilt));
-    ncfile.addAttribute(null, new Attribute("conventions", "_Coordinates"));
+    ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat_min)));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat_max)));

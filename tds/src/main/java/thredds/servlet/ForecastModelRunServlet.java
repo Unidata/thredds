@@ -31,10 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
-import ucar.nc2.dt.grid.ForecastModelRunCollection;
+import ucar.nc2.dt.grid.FmrcInventory;
 import ucar.nc2.dt.grid.FmrcDefinition;
 import ucar.nc2.dt.grid.FmrcReport;
-import ucar.nc2.dt.grid.ForecastModelRun;
+import ucar.nc2.dt.grid.ForecastModelRunInventory;
 import ucar.unidata.util.StringUtil;
 
 /**
@@ -67,7 +67,7 @@ public class ForecastModelRunServlet extends AbstractServlet {
           throws ServletException, IOException {
 
     ServletUtil.logServerAccessSetup(req);
-    ForecastModelRunCollection fmr;
+    FmrcInventory fmr;
     String varName;
 
     String path = req.getPathInfo();
@@ -108,8 +108,8 @@ public class ForecastModelRunServlet extends AbstractServlet {
           if (name.endsWith("-")) name = name.substring(0, name.length()-1);
 
           if (debug) System.out.println("  fmrcDefinitionPath="+contentPath+" name="+name+" dir="+match.dirLocation);
-          fmr = ForecastModelRunCollection.make(contentPath, name, fmrCache, match.dirLocation, suffix,
-                  ForecastModelRun.OPEN_XML_ONLY);
+          fmr = FmrcInventory.make(contentPath, name, fmrCache, match.dirLocation, suffix,
+                  ForecastModelRunInventory.OPEN_XML_ONLY);
 
         } catch (Exception e) {
           e.printStackTrace();
@@ -152,7 +152,7 @@ public class ForecastModelRunServlet extends AbstractServlet {
     showInventory( res, fmr, varName, query, false);
   }
 
-  private void showOffsetHour(HttpServletResponse res, ForecastModelRunCollection fmrc, String varName, String offsetHour) throws IOException {
+  private void showOffsetHour(HttpServletResponse res, FmrcInventory fmrc, String varName, String offsetHour) throws IOException {
     res.setContentType("text/plain; charset=iso-8859-1");
     String contents = fmrc.showOffsetHour(varName, offsetHour);
 
@@ -180,8 +180,8 @@ public class ForecastModelRunServlet extends AbstractServlet {
 
       //System.out.println("  fmrcDefinitionPath="+contentPath+" name="+name+" dir="+dir);
       ps.println("\n*******Dataset" + dir);
-      ForecastModelRunCollection fmrc = ForecastModelRunCollection.make(contentPath, name, fmrCache, dir, ".grib1",
-              ForecastModelRun.OPEN_XML_ONLY);
+      FmrcInventory fmrc = FmrcInventory.make(contentPath, name, fmrCache, dir, ".grib1",
+              ForecastModelRunInventory.OPEN_XML_ONLY);
       if (null == fmrc) {
         ps.println("  ERROR - no files were found");
       }  else {
@@ -194,7 +194,7 @@ public class ForecastModelRunServlet extends AbstractServlet {
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
   }
 
-  private void showDefinition(HttpServletResponse res, ForecastModelRunCollection fmrc, String define) throws IOException {
+  private void showDefinition(HttpServletResponse res, FmrcInventory fmrc, String define) throws IOException {
     res.setContentType("text/xml; charset=iso-8859-1");
     FmrcDefinition def = fmrc.getDefinition();
 
@@ -224,7 +224,7 @@ public class ForecastModelRunServlet extends AbstractServlet {
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, xmlString.length());
   }
 
-  private void showInventory(HttpServletResponse res, ForecastModelRunCollection fmr, String varName, String type, boolean wantXml) throws IOException {
+  private void showInventory(HttpServletResponse res, FmrcInventory fmr, String varName, String type, boolean wantXml) throws IOException {
 
     String infoString;
 

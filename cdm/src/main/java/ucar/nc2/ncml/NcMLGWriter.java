@@ -23,6 +23,7 @@ package ucar.nc2.ncml;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.*;
 
 import org.jdom.*;
@@ -84,7 +85,7 @@ public class NcMLGWriter {
     if (ncd.getCoordSysWereAdded()) {
       String conv = ncd.findAttValueIgnoreCase(null, "Conventions", null);
       if (conv == null)
-        ncd.addAttribute( null, new Attribute("Conventions", "_Coordinates"));
+        ncd.addAttribute( null, new Attribute("Conventions", _Coordinate.Convention));
       else
         ncd.addAttribute( null, new Attribute("Conventions", conv + ", _Coordinates"));
     }
@@ -461,7 +462,7 @@ public class NcMLGWriter {
     Element elem = new Element("values", ncNS);
 
     StringBuffer buff = new StringBuffer();
-    Array a = null;
+    Array a;
     try {
       a = v.read();
     } catch (IOException ioe) {

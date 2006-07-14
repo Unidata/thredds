@@ -26,8 +26,6 @@ import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Parameter;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -127,7 +125,7 @@ public class ADASConvention extends CoordSysBuilder {
 
     if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
-        v.addAttribute( new Attribute("_CoordinateAxisTypes", "GeoX GeoY"));
+        v.addAttribute( new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
         ds.addVariable(null, v);
     }
 
@@ -140,7 +138,7 @@ public class ADASConvention extends CoordSysBuilder {
 
     Variable zsoil = ds.findVariable("ZPSOIL");
     if (zsoil != null)
-      zsoil.addAttribute( new Attribute("_CoordinateAxisType", AxisType.GeoZ.toString()));
+      zsoil.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
 
     ds.finish();
   }

@@ -3,6 +3,7 @@ package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.dataset.conv._Coordinate;
 
 import java.io.IOException;
 import java.util.*;
@@ -279,7 +280,7 @@ public class DMSPHeader
                                                    .append( " data with start time ")
                                                    .append( startDateAtt.getStringValue())
                                                    .toString()));
-    this.ncFile.addAttribute( null, new Attribute( "Convention", "_Coordinates"));
+    this.ncFile.addAttribute( null, new Attribute( "Convention", _Coordinate.Convention));
 
     // Add some THREDDS specific metadata in global attributes.
     this.ncFile.addAttribute( null, new Attribute( "thredds_creator", "DOD/USAF/SMC > Space and Missile Systems Center (SMC), U.S. Air Force, U.S. Department of Defense"));

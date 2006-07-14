@@ -7,6 +7,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -88,12 +89,12 @@ public class UnidataObsDatasetHelper {
           for( int j = 0; j < vars.size(); j++ ) {
             Variable vs = (Variable) vars.get( j );
             //System.out.println( "vs =" + vs.getShortName() );
-            String axisType = ds.findAttValueIgnoreCase(vs, "_CoordinateAxisType", null);
+            String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
             if ((axisType != null) && axisType.equals(a.toString()))
               return vs;
           }
        } else {
-         String axisType = ds.findAttValueIgnoreCase(v, "_CoordinateAxisType", null);
+         String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
          if ((axisType != null) && axisType.equals(a.toString()))
            return v;
       }

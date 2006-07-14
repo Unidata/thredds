@@ -51,7 +51,7 @@ public class GDVConvention extends CSMConvention {
       String xname = findCoordinateName( ds, AxisType.GeoX);
       String yname = findCoordinateName( ds, AxisType.GeoY);
       if (xname != null && yname != null)
-        v.addAttribute( new Attribute("_CoordinateAxes", xname+" "+yname));
+        v.addAttribute( new Attribute(_Coordinate.Axes, xname+" "+yname));
     }
 
     ds.finish();
@@ -175,7 +175,7 @@ public class GDVConvention extends CSMConvention {
     parseInfo.append("GDV Conventions projection "+projection+" params = "+
       p[0]+" "+ p[1]+" "+ p[2]+" "+ p[3]+"\n");
 
-    ProjectionImpl proj = null;
+    ProjectionImpl proj;
     if (projection.equalsIgnoreCase("LambertConformal"))
       proj = new LambertConformal(p[0], p[1], p[2], p[3]);
     else if (projection.equalsIgnoreCase("TransverseMercator"))

@@ -18,6 +18,8 @@ public class TestDataset {
     suite.addTest(new TestSuite(TestStandardVar.class));
     suite.addTest(new TestSuite(TestDatasetWrap.class));
 
+    suite.addTest(new TestSuite(TestCoordinates.class));
+
     return suite;
   }
 }

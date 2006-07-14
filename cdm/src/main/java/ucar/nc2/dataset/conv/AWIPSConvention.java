@@ -87,7 +87,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       ds.addCoordinateAxis( timeCoord);
       Dimension d =  timeCoord.getDimension(0);
       if (!d.getName().equals( timeCoord.getShortName()) )
-        timeCoord.addAttribute( new Attribute("_CoordinateVariableAlias", d.getName()));
+        timeCoord.addAttribute( new Attribute(_Coordinate.AliasForDimension, d.getName()));
     }
 
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
@@ -112,7 +112,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
-        v.addAttribute( new Attribute("_CoordinateAxes", "x y"));
+        v.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
         ds.addVariable(null, v);
     }
 
@@ -220,7 +220,7 @@ public class AWIPSConvention extends CoordSysBuilder {
        makeUnitsName( units), makeLongName(name));
     String positive = getZisPositive( ds, v);
     if (null != positive)
-      v.addAttribute( new Attribute("_CoordinateZisPositive", positive));
+      v.addAttribute( new Attribute(_Coordinate.ZisPositive, positive));
 
     ds.setValues( v, values);
     ds.addCoordinateAxis(v);
@@ -412,10 +412,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     parseInfo.append("                        end at proj coord "+pt+"\n");
     parseInfo.append("                        scale= "+scale+"\n");
 
-
-    ProjectionCT ct = new ProjectionCT(name, "FGDC", proj);
-
-    return ct;
+    return new ProjectionCT(name, "FGDC", proj);
   }
 
   private CoordinateAxis makeXCoordAxis(NetcdfDataset ds, int nx, String xname) {
@@ -448,7 +445,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     double d = findAttributeDouble(ds, "dx");
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_east", "longitude");
     ds.setValues(v, n, min, d);
-    v.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Lon.toString()));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     double maxCalc = min + d * n;
     parseInfo.append("Created Lon Coordinate Axis (max calc= "+maxCalc+" should be "+max+") ");
@@ -464,7 +461,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     double d = findAttributeDouble(ds, "dy");
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_north", "latitude");
     ds.setValues(v, n, min, d);
-    v.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Lat.toString()));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     double maxCalc = min + d * n;
     parseInfo.append("Created Lat Coordinate Axis (max calc= "+maxCalc+" should be "+max+") ");
@@ -475,9 +472,9 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   private CoordinateAxis makeTimeCoordAxis( NetcdfDataset ds) {
-    Variable timeVar = (Variable) ds.findVariable("valtimeMINUSreftime");
+    Variable timeVar = ds.findVariable("valtimeMINUSreftime");
     Dimension recordDim = ds.findDimension("record");
-    Array vals = null;
+    Array vals;
 
     try {
       vals = timeVar.read();
@@ -545,9 +542,9 @@ public class AWIPSConvention extends CoordSysBuilder {
 
   // construct time coordinate from reftime variable
   private CoordinateAxis makeTimeCoordAxisFromReference( NetcdfDataset ds, Variable timeVar, Array vals) {
-    Variable refVar = (Variable) ds.findVariable("reftime");
+    Variable refVar = ds.findVariable("reftime");
     if (refVar == null) return null;
-    double refValue = 0.0;
+    double refValue;
     try {
       Array refArray = refVar.read();
       refValue = refArray.getDouble(refArray.getIndex()); // get the first value

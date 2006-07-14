@@ -24,6 +24,7 @@ package ucar.nc2.dataset;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.transform.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.Parameter;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
@@ -176,7 +177,7 @@ public class CoordTransBuilder {
         v.addAttribute( new Attribute(p.getName(), dataA));
       }
     }
-    v.addAttribute( new Attribute("_CoordinateTransformType", ct.getTransformType().toString()));
+    v.addAttribute( new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data
     Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {}, new char[] {' '});

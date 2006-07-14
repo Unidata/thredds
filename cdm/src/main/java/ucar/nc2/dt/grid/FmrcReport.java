@@ -21,7 +21,6 @@
 
 package ucar.nc2.dt.grid;
 
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 
 import java.io.PrintStream;
@@ -31,32 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Definition
- *  List RunSeq
- *    List Run - runHour dependent TimeCoord
- *      double hour
- *      TimeCoord
- *
- *    List Grid
- *     String name
- *     VertTimeCoord - time dependent vertical coordinate
- *       VertCoord
- *       TimeCoord (optional)
- *
- * Collection
- *  List RunSeq    // sequence of runs; ie sequence of TimeCoords; ie actual time coord
- *    List Run run;
- *      Date runDate
- *      TimeCoord
- *
- *    List UberGrid
- *     String name
- *     List RunExpected  // corresponds to the runs in the RunSeq, matches to expected inventory
- *       Run run;                              //  actual time coord
- *       ForecastModelRun.Grid grid;           //  contains actual vert coord for this Run
- *       ForecastModelRun.TimeCoord expected;  // expected time coord
- *       FmrcDefinition.Grid expectedGrid;     // expected grid, vertCoord
- *
+ * Helper class to generate a report for  orecastModelRunServlet.
  *
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
@@ -65,7 +39,7 @@ import java.util.Collections;
 public class FmrcReport {
   private boolean debug = false;
 
-  public void report( ForecastModelRunCollection fmrc, PrintStream out, boolean showMissing) {
+  public void report( FmrcInventory fmrc, PrintStream out, boolean showMissing) {
     out.println("ForecastModelRunCollection "+fmrc.getDefinitionPath());
 
     FmrcDefinition def = fmrc.getDefinition();
@@ -79,11 +53,11 @@ public class FmrcReport {
 
     List runSequences = fmrc.getRunSequences();
     for (int i = 0; i < runSequences.size(); i++) {
-      ForecastModelRunCollection.RunSeq haveSeq = (ForecastModelRunCollection.RunSeq) runSequences.get(i);
+      FmrcInventory.RunSeq haveSeq = (FmrcInventory.RunSeq) runSequences.get(i);
 
       List vars = haveSeq.getVariables();
       for (int j = 0; j < vars.size(); j++) {
-        ForecastModelRunCollection.UberGrid uv = (ForecastModelRunCollection.UberGrid) vars.get(j);
+        FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
 
         FmrcDefinition.Grid g = def.findGrid(uv.name);
         if (g == null) {
@@ -93,9 +67,9 @@ public class FmrcReport {
         if (debug) System.out.println(uv.name);
 
         for (int k = 0; k < uv.runs.size(); k++) {
-          ForecastModelRunCollection.RunExpected rune = (ForecastModelRunCollection.RunExpected) uv.runs.get(k);
-          ForecastModelRun.TimeCoord haveTc = rune.run.tc;
-          ForecastModelRun.TimeCoord wantTc = rune.expected;
+          FmrcInventory.RunExpected rune = (FmrcInventory.RunExpected) uv.runs.get(k);
+          ForecastModelRunInventory.TimeCoord haveTc = rune.run.tc;
+          ForecastModelRunInventory.TimeCoord wantTc = rune.expected;
 
           if (debug) System.out.println(" "+rune.run.runTime);
 
@@ -167,7 +141,7 @@ public class FmrcReport {
         currentType = null;
       }
 
-      if (err.type != currentType) {
+      if (!err.type.equals(currentType)) {
         out.println("  "+err.type);
         currentType = err.type;
       }
@@ -258,8 +232,8 @@ public class FmrcReport {
   }
 
   static void doit(String dir) throws Exception {
-    ForecastModelRunCollection fmrc = ForecastModelRunCollection.make("C:/data/grib/"+dir+"/", "test", null,
-            "C:/data/grib/"+dir, "grib1", ForecastModelRun.OPEN_NORMAL);
+    FmrcInventory fmrc = FmrcInventory.make("C:/data/grib/"+dir+"/", "test", null,
+            "C:/data/grib/"+dir, "grib1", ForecastModelRunInventory.OPEN_NORMAL);
     FmrcReport report = new FmrcReport();
     report.report( fmrc, System.out, true);
   }

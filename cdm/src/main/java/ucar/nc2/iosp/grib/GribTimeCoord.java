@@ -26,6 +26,7 @@ import ucar.grib.TableLookup;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 
@@ -126,7 +127,7 @@ public class GribTimeCoord {
     v.addAttribute( new Attribute("units", timeUnit+" since "+ refDate));
     v.addAttribute( new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO( d)));
     v.addAttribute( new Attribute("GRIB2_significanceOfRTName", lookup.getFirstSignificanceOfRTName()));
-    v.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Time.toString()));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     ncfile.addVariable( g, v);
   }

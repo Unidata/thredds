@@ -28,6 +28,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;
@@ -62,7 +63,7 @@ public class GridWriter {
       System.out.println("GridWriter write "+grid.getName()+" to "+fileOutName);
     }
 
-    ncfile.addGlobalAttribute("Conventions", "_Coordinates");
+    ncfile.addGlobalAttribute("Conventions", _Coordinate.Convention);
 
     GridCoordSystem gcs = grid.getGridCoordSystem();
     CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
@@ -172,8 +173,8 @@ public class GridWriter {
         ncfile.addVariableAttribute(varName, p.getName(), dataA);
       }
     }
-    ncfile.addVariableAttribute(varName, "_CoordinateTransformType", TransformType.Projection.toString());
-    ncfile.addVariableAttribute(varName, "_CoordinateAxisTypes", "GeoX GeoY");
+    ncfile.addVariableAttribute(varName, _Coordinate.TransformType, TransformType.Projection.toString());
+    ncfile.addVariableAttribute(varName, _Coordinate.AxisTypes, "GeoX GeoY");
   }
 
   private static void writeVariable(NetcdfFileWriteable ncfile, VariableEnhanced oldVar) throws IOException {

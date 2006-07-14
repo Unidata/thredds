@@ -73,26 +73,27 @@ public class UnidataObsConvention extends CoordSysBuilder {
       }
     }
 
-    // altitude
-    if (!hasAxisType( ds, AxisType.Height)) { // already has _CoordinateAxisType
+      // altitude
+      if (!hasAxisType(ds, AxisType.Height)) { // already has _CoordinateAxisType
 
-      if ( !addAxisType( ds, "altitude", AxisType.Height)) { // directly named
-        if ( !addAxisType( ds, "depth", AxisType.Height)) { // directly named
+        if (!addAxisType(ds, "altitude", AxisType.Height)) { // directly named
+          if (!addAxisType(ds, "depth", AxisType.Height)) { // directly named
 
-        String vname = ds.findAttValueIgnoreCase(null, "altitude_coordinate", null);
-        if (!addAxisType( ds, vname, AxisType.Height)) { // attribute named
+            String vname = ds.findAttValueIgnoreCase(null, "altitude_coordinate", null);
+            if (!addAxisType(ds, vname, AxisType.Height)) { // attribute named
 
-          for (int i = 0; i < ds.getVariables().size(); i++) {
-            VariableEnhanced ve = (VariableEnhanced) ds.getVariables().get(i);
-            String positive = ds.findAttValueIgnoreCase(null, "positive", null);
-            if (positive != null)
-              addAxisType( (Variable) ve, AxisType.Height); // CF-1
-              break;
+              for (int i = 0; i < ds.getVariables().size(); i++) {
+                VariableEnhanced ve = (VariableEnhanced) ds.getVariables().get(i);
+                String positive = ds.findAttValueIgnoreCase(null, "positive", null);
+                if (positive != null) {
+                  addAxisType((Variable) ve, AxisType.Height); // CF-1
+                  break;
+                }
+              }
             }
           }
         }
       }
-    }
 
      // time
     if (!hasAxisType( ds, AxisType.Time)) { // already has _CoordinateAxisType
@@ -155,7 +156,7 @@ public class UnidataObsConvention extends CoordSysBuilder {
   }
 
   private void addAxisType(Variable v, AxisType a) {
-    v.addAttribute( new Attribute("_CoordinateAxisType", a.toString()));
+    v.addAttribute( new Attribute(_Coordinate.AxisType, a.toString()));
   }
 
 }

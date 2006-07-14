@@ -57,9 +57,9 @@ public class IFPSConvention extends CoordSysBuilder {
    // Figure out projection info. Assume the same for all variables
     Variable lonVar = ds.findVariable("longitude");
     lonVar.addAttribute( new Attribute("units", "degrees_east"));
-    lonVar.addAttribute( new Attribute("_CoordinateAxisType", "Lon"));
+    lonVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lon"));
     Variable latVar = ds.findVariable("latitude");
-    latVar.addAttribute( new Attribute("_CoordinateAxisType", "Lat"));
+    latVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lat"));
     latVar.addAttribute( new Attribute("units", "degrees_north"));
 
     projVar = latVar;
@@ -81,7 +81,7 @@ public class IFPSConvention extends CoordSysBuilder {
     while (vars.hasNext()) {
         VariableDS ncvar = (VariableDS) vars.next();
         //variables that are used but not displayable or have no data have DIM_0, also don't want history, since those are just how the person edited the grids
-        if ((ncvar.getDimension(0).getName().equals("DIM_0") != true) && !ncvar.getName().endsWith("History")
+        if ((!ncvar.getDimension(0).getName().equals("DIM_0")) && !ncvar.getName().endsWith("History")
               && (ncvar.getRank() > 2) && !ncvar.getName().startsWith("Tool")) {
             createTimeCoordinate(ds,ncvar);
         } else if (ncvar.getName().equals("Topo")){
@@ -139,7 +139,7 @@ public class IFPSConvention extends CoordSysBuilder {
     timeCoord.setCachedData(timesArray, true);
     timeCoord.addAttribute(new Attribute("long_name",  desc));
     timeCoord.addAttribute(new Attribute("units",  units));
-    timeCoord.addAttribute(new Attribute("_CoordinateAxisType", "Time"));
+    timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     ds.addCoordinateAxis(timeCoord);
 
     parseInfo.append(" added coordinate variable "+ dimName+"\n");
@@ -150,7 +150,7 @@ public class IFPSConvention extends CoordSysBuilder {
     ncVar.setDimensions( dimsList);
 
     // better to explicitly set the coordinate system
-    ncVar.addAttribute(new Attribute("_CoordinateAxes", dimName+" yCoord xCoord"));
+    ncVar.addAttribute(new Attribute(_Coordinate.Axes, dimName+" yCoord xCoord"));
 
     // fix the attributes
     Attribute att = ncVar.findAttribute("fillValue");
@@ -179,7 +179,7 @@ public class IFPSConvention extends CoordSysBuilder {
     // make Coordinate Transform Variable
     ProjectionCT ct = new ProjectionCT("lambertConformalProjection", "FGDC", lc);
     VariableDS ctVar = makeCoordinateTransformVariable(ds, ct);
-    ctVar.addAttribute( new Attribute("_CoordinateAxes", "xCoord yCoord"));
+    ctVar.addAttribute( new Attribute(_Coordinate.Axes, "xCoord yCoord"));
     ds.addVariable(null, ctVar);
 
     return lc;
@@ -224,12 +224,12 @@ public class IFPSConvention extends CoordSysBuilder {
     VariableDS xaxis = new VariableDS(ds, null, null, "xCoord", DataType.FLOAT, x_dim.getName(), "km", "x on projection");
     xaxis.addAttribute(new Attribute("units", "km"));
     xaxis.addAttribute(new Attribute("long_name", "x on projection"));
-    xaxis.addAttribute(new Attribute("_CoordinateAxisType", "GeoX"));
+    xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
     VariableDS yaxis = new VariableDS(ds, null, null, "yCoord", DataType.FLOAT, y_dim.getName(), "km", "y on projection");
     yaxis.addAttribute(new Attribute("units", "km"));
     yaxis.addAttribute(new Attribute("long_name", "y on projection"));
-    yaxis.addAttribute(new Attribute("_CoordinateAxisType", "GeoY"));
+    yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
 
     xaxis.setCachedData( xData, true);
     yaxis.setCachedData( yData, true);

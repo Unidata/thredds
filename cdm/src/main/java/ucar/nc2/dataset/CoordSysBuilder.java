@@ -97,7 +97,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   // search in the order added
   static { // wont get loaded unless explicitly called
-    registerConvention("_Coordinates", CoordSysBuilder.class);
+    registerConvention(_Coordinate.Convention, CoordSysBuilder.class);
     registerConvention("Unidata Observation Dataset v1.0", UnidataObsConvention.class);
 
     registerConvention("COARDS", COARDSConvention.class);
@@ -313,7 +313,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  protected String conventionName = "_Coordinates"; // name of Convention
+  protected String conventionName = _Coordinate.Convention; // name of Convention
   protected ArrayList varList = new ArrayList(); // varProcess objects
   protected StringBuffer parseInfo = new StringBuffer();
   protected StringBuffer userAdvice = new StringBuffer();
@@ -903,7 +903,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (isCoordinateVariable)
         parseInfo.append(" Coordinate Variable added = "+v.getName()+"\n");
 
-      Attribute att = v.findAttributeIgnoreCase("_CoordinateAxisType");
+      Attribute att = v.findAttributeIgnoreCase(_Coordinate.AxisType);
       if (att != null) {
         String axisName = att.getStringValue();
         axisType = AxisType.getType( axisName);
@@ -911,7 +911,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         parseInfo.append(" Coordinate Axis added = "+v.getName()+" type= "+axisName+"\n");
       }
 
-      coordVarAlias = ds.findAttValueIgnoreCase(v, "_CoordinateVariableAlias", null);
+      coordVarAlias = ds.findAttValueIgnoreCase(v, _Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {
@@ -931,7 +931,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         }
       }
 
-      positive = ds.findAttValueIgnoreCase(v, "_CoordinateZIsPositive", null);
+      positive = ds.findAttValueIgnoreCase(v, _Coordinate.ZisPositive, null);
       if (positive == null)
         positive = ds.findAttValueIgnoreCase(v, "positive", null);
       else {
@@ -939,13 +939,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         positive = positive.trim();
       }
 
-      coordAxes = ds.findAttValueIgnoreCase(v, "_CoordinateAxes", null);
-      coordSys = ds.findAttValueIgnoreCase(v, "_CoordinateSystems", null);
-      coordTransforms = ds.findAttValueIgnoreCase(v, "_CoordinateTransforms", null);
+      coordAxes = ds.findAttValueIgnoreCase(v, _Coordinate.Axes, null);
+      coordSys = ds.findAttValueIgnoreCase(v, _Coordinate.Systems, null);
+      coordTransforms = ds.findAttValueIgnoreCase(v, _Coordinate.Transforms, null);
       isCoordinateSystem = (coordTransforms != null);
 
-      coordAxisTypes = ds.findAttValueIgnoreCase(v, "_CoordinateAxisTypes", null);
-      coordTransformType = ds.findAttValueIgnoreCase(v, "_CoordinateTransformType", null);
+      coordAxisTypes = ds.findAttValueIgnoreCase(v, _Coordinate.AxisTypes, null);
+      coordTransformType = ds.findAttValueIgnoreCase(v, _Coordinate.TransformType, null);
       isCoordinateTransform = (coordTransformType != null) || (coordAxisTypes != null);
 
       // this is the case of a Coordinate System with no references or coordinate transforms
@@ -996,12 +996,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       if (axisType != null) {
         ca.setAxisType( axisType);
-        ca.addAttribute( new Attribute("_CoordinateAxisType", axisType.toString()));
+        ca.addAttribute( new Attribute(_Coordinate.AxisType, axisType.toString()));
 
         if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ)) &&
             (positive != null)) {
           ca.setPositive( positive);
-          ca.addAttribute( new Attribute("_CoordinateZisPositive", positive));
+          ca.addAttribute( new Attribute(_Coordinate.ZisPositive, positive));
         }
       }
 

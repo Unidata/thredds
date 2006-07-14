@@ -43,13 +43,13 @@ public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {
     if (att == null) return;
     String axisType = att.getStringValue();
     if (axisType.equalsIgnoreCase("X"))
-      v.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Lon .toString()));
+      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon .toString()));
     else if (axisType.equalsIgnoreCase("Y"))
-      v.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Lat.toString()));
+      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     else if (axisType.equalsIgnoreCase("Z"))
-      v.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Height.toString()));
+      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     else if (axisType.equalsIgnoreCase("T"))
-      v.addAttribute( new Attribute("_CoordinateAxisType", AxisType.Time.toString()));
+      v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
   }
 
 }

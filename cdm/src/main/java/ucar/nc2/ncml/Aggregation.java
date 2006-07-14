@@ -26,6 +26,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dataset.NetcdfDatasetFactory;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
@@ -686,7 +687,7 @@ public class Aggregation {
     }
 
     if (isDate()) {
-      coordVar.addAttribute( new ucar.nc2.Attribute("_CoordinateAxisType", "Time"));
+      coordVar.addAttribute( new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
     }
 
     // now we can create all the aggNew variables

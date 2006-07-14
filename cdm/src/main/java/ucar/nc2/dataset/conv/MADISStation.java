@@ -52,7 +52,7 @@ public class MADISStation extends CoordSysBuilder {
       String vname = stoker.nextToken();
       Variable v = ds.findVariable(vname);
       if (v != null) {
-        v.addAttribute(new Attribute("_CoordinateAxisType", AxisType.Time.toString()));
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
       } else {
         parseInfo.append(" cant find time variable "+vname);
       }
@@ -66,7 +66,7 @@ public class MADISStation extends CoordSysBuilder {
       Variable v = ds.findVariable(vname);
       if (v != null) {
         AxisType atype = count == 0 ? AxisType.Lat : count == 1 ? AxisType.Lon : AxisType.Height;
-        v.addAttribute(new Attribute("_CoordinateAxisType", atype.toString()));
+        v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));
       } else {
         parseInfo.append(" cant find time variable "+vname);
       }

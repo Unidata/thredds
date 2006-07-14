@@ -22,7 +22,7 @@
 package thredds.servlet;
 
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.dt.grid.ForecastModelRun;
+import ucar.nc2.dt.grid.ForecastModelRunInventory;
 import ucar.nc2.dt.point.MetarCollection;
 
 import javax.servlet.ServletException;
@@ -130,7 +130,7 @@ import org.jdom.transform.XSLTransformer;
       }
     }
 
-    private void showForm(HttpServletResponse res, ForecastModelRun fmr, boolean wantXml) throws IOException {
+    private void showForm(HttpServletResponse res, ForecastModelRunInventory fmr, boolean wantXml) throws IOException {
       String infoString;
 
       if (wantXml) {

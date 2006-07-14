@@ -147,7 +147,7 @@ public class GribVariable {
 
     /* String coordSysName = getVertIsUsed() ? getVertName() :
         (hcs.isLatLon() ? "latLonCoordSys" : "projectionCoordSys");
-    v.addAttribute( new Attribute("_CoordinateSystems", coordSysName)); */
+    v.addAttribute( new Attribute(_Coordinate.Systems", coordSysName)); */
 
     v.setSPobject( this);
 

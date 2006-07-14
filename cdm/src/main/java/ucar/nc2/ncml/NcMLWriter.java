@@ -24,6 +24,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.StringUtil;
 
 import thredds.catalog.XMLEntityResolver;
@@ -138,9 +139,9 @@ public class NcMLWriter {
     if (ncd.getCoordSysWereAdded()) {
       String conv = ncd.findAttValueIgnoreCase(null, "Conventions", null);
       if (conv == null)
-        rootGroup.addAttribute( new Attribute("Conventions", "_Coordinates"));
+        rootGroup.addAttribute( new Attribute("Conventions", _Coordinate.Convention));
       else
-        rootGroup.addAttribute( new Attribute("Conventions", conv + ", _Coordinates"));
+        rootGroup.addAttribute( new Attribute("Conventions", conv + ", "+_Coordinate.Convention));
 
     }
 
@@ -428,9 +429,9 @@ public class NcMLWriter {
  /* private Element makeCoordinateAxis( CoordinateAxis var) {
     var.addAttribute( new Attribute("units", var.getUnitsString()));
     if (var.getAxisType() != null)
-      var.addAttribute( new Attribute("_CoordinateAxisType", var.getAxisType().toString()));
+      var.addAttribute( new Attribute(_Coordinate.AxisType", var.getAxisType().toString()));
     if (var.getPositive() != null)
-      var.addAttribute( new Attribute("_CoordinateZisPositive", var.getPositive()));
+      var.addAttribute( new Attribute(_Coordinate.ZisPositive", var.getPositive()));
 
     return makeVariable(var);
   } */
@@ -439,7 +440,7 @@ public class NcMLWriter {
     Element elem = new Element("values", ncNS);
 
     StringBuffer buff = new StringBuffer();
-    Array a = null;
+    Array a;
     try {
       a = v.read();
     } catch (IOException ioe) {
