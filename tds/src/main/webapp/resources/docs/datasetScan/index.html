@@ -320,7 +320,7 @@ determine the time coverage: </p>
 <p>Example 1: The <strong>addTimeCoverage</strong> element,</p>
 
 
-<pre>&lt;datasetScan name="My Data" path="myData" scanDir="c:/my/data/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_gfs_211.nc$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
+<pre>&lt;datasetScan name="My Data" path="myData" location="c:/my/data/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_gfs_211.nc$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
 
 
 <p>results in the following timeCoverage element:</p>
