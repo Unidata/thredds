@@ -1,5 +1,3 @@
-// $Id: TestCatGenServletConfig.java 62 2006-07-12 21:41:46Z edavis $
-
 package thredds.cataloggen.servlet;
 
 import junit.framework.TestCase;
@@ -8,6 +6,9 @@ import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 
+// @todo Straighten out test file names.
+// @todo Change testReadEmpty() to testReadOldEmpty()
+// @todo Add testReadNewEmpty()
 /**
  *
  */
@@ -15,8 +16,7 @@ public class TestCatGenServletConfig extends TestCase
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestCatGenServletConfig.class );
 
-  // @todo Modify CatGenServletConfig so that these tests can be run on resources rather than files.
-  private String configPath = "src/test/classes/thredds/cataloggen/servlet";
+  private String configPath = "src/test/data/thredds/cataloggen/servlet";
 
   private String configEmptyFileName = "configEmpty.xml";
   private String configOneItemFileName = "configOneItem.xml";
@@ -36,7 +36,6 @@ public class TestCatGenServletConfig extends TestCase
   private int taskTwoPeriodInMinutes = 60;
 
   private CatGenServletConfig me = null;
-  private CatGenTimerTask aTask = null;
 
   public TestCatGenServletConfig( String name)
   {
@@ -48,12 +47,10 @@ public class TestCatGenServletConfig extends TestCase
     taskOne = new CatGenTimerTask( taskOneName, taskOneConfigDocName,
                                    taskOneResultsFileName,
                                    taskOnePeriodInMinutes, taskOneDelayInMinutes);
-    taskOne.init( new File( configPath), new File( configPath));
 
     taskTwo = new CatGenTimerTask( taskTwoName, taskTwoConfigDocName,
                                    taskTwoResultsFileName,
                                    taskTwoPeriodInMinutes, taskTwoDelayInMinutes);
-    taskTwo.init( new File( configPath), new File( configPath));
 
     return;
   }
@@ -81,7 +78,7 @@ public class TestCatGenServletConfig extends TestCase
     }
     assertTrue( me != null);
     assertTrue( me.getServletConfigDocName().equals( configEmptyFileName));
-    assertTrue( ! me.getTaskIterator().hasNext());
+    assertTrue( ! me.getUnmodTaskIterator().hasNext());
   }
 
   /** Test reading a config file with one item.
@@ -103,10 +100,10 @@ public class TestCatGenServletConfig extends TestCase
     }
     assertTrue( "Config doc name <" + me.getServletConfigDocName() + "> does not match expected <" + configOneItemFileName + ">.",
                 me.getServletConfigDocName().equals( configOneItemFileName));
-    Iterator it = me.getTaskIterator();
+    Iterator it = me.getUnmodTaskIterator();
     assertTrue( "Config doc <" + me.getServletConfigDocName() + "> has no tasks.",
                 it.hasNext());
-    aTask = (CatGenTimerTask) it.next();
+    CatGenTimerTask aTask = (CatGenTimerTask) it.next();
     assertTrue( "The name of the task listed in config doc <" + aTask.getName() + "> does not match expected <" + taskOneName + ">.",
                 aTask.getName().equals( taskOneName));
     assertTrue( "The config doc <" + me.getServletConfigDocName() + "> contains a second task.",
@@ -199,72 +196,3 @@ public class TestCatGenServletConfig extends TestCase
   }
 
 }
-/*
- * $Log: TestCatGenServletConfig.java,v $
- * Revision 1.5  2006/03/30 21:50:15  edavis
- * Minor fixes to get tests running.
- *
- * Revision 1.4  2006/01/20 20:42:06  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.3  2005/07/14 20:01:26  edavis
- * Make ID generation mandatory for datasetScan generated catalogs.
- * Also, remove log4j from some tests.
- *
- * Revision 1.2  2005/06/07 22:50:25  edavis
- * Fixed catalogRef links so relative to catalog instead of to service.
- * Fixed all tests in TestAllCatalogGen (including changing directory
- * filters because catalogRef names no longer contain slashes ("/").
- *
- * Revision 1.1  2005/03/30 05:41:19  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.1  2004/05/11 16:29:08  edavis
- * Updated to work with new thredds.catalog 0.6 stuff and the THREDDS
- * servlet framework.
- *
- * Revision 1.3  2003/08/29 21:38:23  edavis
- * The following changes where made:
- *
- *  1) Added more extensive logging (changed from thredds.util.Log and
- * thredds.util.Debug to using Log4j).
- *
- * 2) Improved existing error handling and added additional error
- * handling where problems could fall through the cracks. Added some
- * catching and throwing of exceptions but also, for problems that aren't
- * fatal, added the inclusion in the resulting catalog of datasets with
- * the error message as its name.
- *
- * 3) Change how the CatGenTimerTask constructor is given the path to the
- * config files and the path to the resulting files so that resulting
- * catalogs are placed in the servlet directory space. Also, add ability
- * for servlet to serve the resulting catalogs.
- *
- * 4) Switch from using java.lang.String to using java.io.File for
- * handling file location information so that path seperators will be
- * correctly handled. Also, switch to java.net.URI rather than
- * java.io.File or java.lang.String where necessary to handle proper
- * URI/URL character encoding.
- *
- * 5) Add handling of requests when no path ("") is given, when the root
- * path ("/") is given, and when the admin path ("/admin") is given.
- *
- * 6) Fix the PUTting of catalogGenConfig files.
- *
- * 7) Start adding GDS DatasetSource capabilities.
- *
- * Revision 1.2  2003/08/20 17:32:26  edavis
- * Fix to work in new test environment.
- *
- * Revision 1.1  2003/05/01 23:50:46  edavis
- * Added TestCatGenServletConfig.java for testing the reading of config files and
- * adding items to the config files.  Added data files (config files)
- * for the TestCatGenServletConfig tests.
- *
- *
- */

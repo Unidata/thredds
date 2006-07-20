@@ -1,5 +1,3 @@
-// $Id: CatGenServlet.java 54 2006-07-12 19:37:21Z edavis $
-
 package thredds.cataloggen.servlet;
 
 import thredds.servlet.ServletUtil;
@@ -326,12 +324,11 @@ public class CatGenServlet extends AbstractServlet
         log.debug( "doPost(): adding Task.");
 
         // Create new task with given values.
-        CatGenTimerTask newTask = new CatGenTimerTask();
-        newTask.setName( req.getParameter( "taskName"));
-        newTask.setConfigDocName( req.getParameter( "fileName"));
-        newTask.setResultFileName( req.getParameter( "resultFileName"));
-        newTask.setPeriodInMinutes( Integer.parseInt( req.getParameter( "period")));
-        newTask.setDelayInMinutes( Integer.parseInt( req.getParameter( "delay")));
+        CatGenTimerTask newTask = new CatGenTimerTask( req.getParameter( "taskName"),
+                                                       req.getParameter( "fileName"),
+                                                       req.getParameter( "resultFileName"),
+                                                       Integer.parseInt( req.getParameter( "period")),
+                                                       Integer.parseInt( req.getParameter( "delay")));
         newTask.init( this.catGenResultPath, this.catGenConfigPath);
 
         // Check validity of the new task.
@@ -395,12 +392,11 @@ public class CatGenServlet extends AbstractServlet
         this.mainConfig.removeTask( oldTask);
 
         // Create new task with given values.
-        CatGenTimerTask newTask = new CatGenTimerTask();
-        newTask.setName( req.getParameter( "taskName"));
-        newTask.setConfigDocName( req.getParameter( "fileName"));
-        newTask.setResultFileName( req.getParameter( "resultFileName"));
-        newTask.setPeriodInMinutes( Integer.parseInt( req.getParameter( "period")));
-        newTask.setDelayInMinutes( Integer.parseInt( req.getParameter( "delay")));
+        CatGenTimerTask newTask = new CatGenTimerTask( req.getParameter( "taskName"),
+                                                       req.getParameter( "fileName"),
+                                                       req.getParameter( "resultFileName"),
+                                                       Integer.parseInt( req.getParameter( "period")),
+                                                       Integer.parseInt( req.getParameter( "delay")));
         newTask.init( this.catGenResultPath, this.catGenConfigPath);
 
         // Check validity of the new task.
@@ -686,8 +682,8 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "<h1>Catalog Generator Servlet</h1>\n" );
 
       retValue.append( "<p>\n" );
-      retValue.append( "<a href=\"" + req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/" + "\">List Current Tasks</a>\n" );
+      retValue.append( "<a href=\"" ).append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/" + "\">List Current Tasks</a>\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( "</body>\n" );
@@ -717,8 +713,8 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "</p>\n" );
 
       retValue.append( "<p>\n" );
-      retValue.append( "<a href=\"" + req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/" + "\">List Current Tasks</a>\n" );
+      retValue.append( "<a href=\"" ).append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/" + "\">List Current Tasks</a>\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( "</body>\n" );
@@ -756,41 +752,24 @@ public class CatGenServlet extends AbstractServlet
       retVal.append( "</tr>\n" );
 
       CatGenTimerTask curTask = null;
-      java.util.Iterator iter = config.getTaskIterator();
+      java.util.Iterator iter = config.getUnmodTaskIterator();
       while ( iter.hasNext() )
       {
         curTask = (CatGenTimerTask) iter.next();
         retVal.append( "<tr>\n" );
-        retVal.append( "<td>" + curTask.getName() + "</td>\n" );
-        retVal.append( "<td> <a href=\"" +
-                       req.getContextPath() + req.getServletPath() + "/" +
-                       this.catGenConfigDirName + "/" +
-                       curTask.getConfigDocName() + "\">" +
-                       curTask.getConfigDocName() + "</a></td>\n" );
-        retVal.append( "<td> <a href=\"" +
-                       req.getContextPath() + req.getServletPath() + "/" +
-                       this.catGenResultCatalogsDirName + "/" +
-                       curTask.getResultFileName() + "\">" +
-                       curTask.getResultFileName() + "</a></td>\n" );
+        retVal.append( "<td>" ).append( curTask.getName() ).append( "</td>\n" );
+        retVal.append( "<td> <a href=\"" ).append( req.getContextPath() ).append( req.getServletPath() ).append( "/" ).append( this.catGenConfigDirName ).append( "/" ).append( curTask.getConfigDocName() ).append( "\">" ).append( curTask.getConfigDocName() ).append( "</a></td>\n" );
+        retVal.append( "<td> <a href=\"" ).append( req.getContextPath() ).append( req.getServletPath() ).append( "/" ).append( this.catGenResultCatalogsDirName ).append( "/" ).append( curTask.getResultFileName() ).append( "\">" ).append( curTask.getResultFileName() ).append( "</a></td>\n" );
         retVal.append( "</td>\n" );
-        retVal.append( "<td>" + curTask.getPeriodInMinutes() + "</td>\n" );
-        retVal.append( "<td>" + curTask.getDelayInMinutes() + "</td>\n" );
+        retVal.append( "<td>" ).append( curTask.getPeriodInMinutes() ).append( "</td>\n" );
+        retVal.append( "<td>" ).append( curTask.getDelayInMinutes() ).append( "</td>\n" );
         retVal.append( "<td>\n" );
-        retVal.append( "[<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminEditTaskPath + curTask.getConfigDocName() +
-                       "\">Edit</a>]" +
-                       "[<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminDeleteTaskPath +  curTask.getConfigDocName() +
-                       "\">Delete</a>]\n" );
+        retVal.append( "[<a href=\"" ).append( req.getContextPath() ).append( req.getServletPath() ).append( this.adminEditTaskPath ).append( curTask.getConfigDocName() ).append( "\">Edit</a>]" + "[<a href=\"" ).append( req.getContextPath() ).append( req.getServletPath() ).append( this.adminDeleteTaskPath ).append( curTask.getConfigDocName() ).append( "\">Delete</a>]\n" );
         retVal.append( "</td>\n" );
         retVal.append( "</tr>\n" );
       }
       retVal.append( "</table>\n" );
-      retVal.append( "<a href=\"" +
-                     req.getContextPath() + req.getServletPath() +
-                     this.adminAddTaskPath + "\">Add a new task</a>\n" );
+      retVal.append( "<a href=\"" ).append( req.getContextPath() ).append( req.getServletPath() ).append( this.adminAddTaskPath ).append( "\">Add a new task</a>\n" );
       retVal.append( "<hr>\n" );
       retVal.append( "<p>Note: If period is zero (0), the task will not be scheduled to run.</p>\n" );
       retVal.append( "<hr>\n" );
@@ -861,9 +840,10 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "<h1>Catalog Generator Servlet - Delete Task</h1>\n" );
       retValue.append( "<hr>\n" );
 
-      retValue.append( "<form method=\"POST\" action=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminDoDeleteTaskPath + task.getConfigDocName() + "\">\n" );
+      retValue.append( "<form method=\"POST\" action=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminDoDeleteTaskPath ).append( task.getConfigDocName() )
+              .append( "\">\n" );
 
       retValue.append( "<h2>Task to Delete</h2>\n" );
 
@@ -871,10 +851,10 @@ public class CatGenServlet extends AbstractServlet
 
       retValue.append( "<p>\n" );
       retValue.append( "To delete this task, click on the \"Submit\" button.\n" );
-      retValue.append( "To stop this task but not delete it, <a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminEditTaskPath + task.getConfigDocName() +
-                       "\">edit the task</a> and set \n" );
+      retValue.append( "To stop this task but not delete it, <a href=\"" )
+              .append( req.getContextPath()).append( req.getServletPath() )
+              .append( this.adminEditTaskPath).append( task.getConfigDocName() )
+              .append( "\">edit the task</a> and set \n" );
       retValue.append( "the value of \"Period\" to zero.\n" );
       retValue.append( "</p>\n" );
 
@@ -909,9 +889,10 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "Resulting task is duplicate (in name and/or config doc name)\n" );
       retValue.append( "of a different existing task. Change the task below and\n" );
       retValue.append( "try adding again, or go back to the\n" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/" + "\">list of tasks (minus this task)</a>.\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/" )
+              .append( "\">list of tasks (minus this task)</a>.\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( this.getHtmlAddForm( req, newTask ) );
@@ -941,14 +922,15 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "<h1>Catalog Generator Servlet - Task Edit Results</h1>\n" );
 
       retValue.append( "<p>Resulting task is invalid.</p>\n" );
-      retValue.append( "<p>Message: " + messages.toString() + "</p>\n" );
+      retValue.append( "<p>Message: " ).append( messages.toString() ).append( "</p>\n" );
 
       retValue.append( "<p>\n" );
       retValue.append( "Change the task below and" );
       retValue.append( "try adding it again, or go back to the" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/" + "\">list of tasks (minus this task)</a>.\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/" )
+              .append( "\">list of tasks (minus this task)</a>.\n" );
       retValue.append( "To keep this task and edit the configuration, change the period to zero (0).\n" );
       retValue.append( "</p>\n" );
 
@@ -982,9 +964,10 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "</p>\n" );
 
       retValue.append( "<p>\n" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/" +  "\">List Current Tasks</a>\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/" )
+              .append(  "\">List Current Tasks</a>\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( "</body>\n" );
@@ -1014,9 +997,9 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "Resulting task is a duplicate (in name and/or config doc name)\n" );
       retValue.append( "of a different existing task. Change the task below and\n" );
       retValue.append( "try adding it again, or go back to the\n" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/\">list of current tasks</a>.\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/\">list of current tasks</a>.\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( this.getHtmlAddForm( req, newTask ) );
@@ -1045,14 +1028,15 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "<h1>Catalog Generator Servlet - Task Add Results</h1>\n" );
 
       retValue.append( "<p>Resulting task is invalid.</p>\n" );
-      retValue.append( "<p>Message: " + messages.toString() + "</p>\n" );
+      retValue.append( "<p>Message: " ).append( messages.toString() ).append( "</p>\n" );
 
       retValue.append( "<p>\n" );
       retValue.append( "Change the task below and\n" );
       retValue.append( "try adding it again, or go back to the\n" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/\">list of tasks (minus this task)</a>.\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath )
+              .append( "/\">list of tasks (minus this task)</a>.\n" );
       retValue.append( "To keep this task and edit the configuration, change the period to zero (0).\n" );
       retValue.append( "</p>\n" );
 
@@ -1085,9 +1069,9 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "</p>\n" );
 
       retValue.append( "<p>\n" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/\">List Current Tasks</a>\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/\">List Current Tasks</a>\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( "</body>\n" );
@@ -1117,9 +1101,9 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "</p>\n" );
 
       retValue.append( "<p>\n" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/\">List Current Tasks</a>\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/\">List Current Tasks</a>\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( "</body>\n" );
@@ -1148,9 +1132,9 @@ public class CatGenServlet extends AbstractServlet
       retValue.append( "</p>\n" );
 
       retValue.append( "<p>\n" );
-      retValue.append( "<a href=\"" +
-                       req.getContextPath() + req.getServletPath() +
-                       this.adminPath + "/\">List Current Tasks</a>\n" );
+      retValue.append( "<a href=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminPath ).append( "/\">List Current Tasks</a>\n" );
       retValue.append( "</p>\n" );
 
       retValue.append( "</body>\n" );
@@ -1183,37 +1167,38 @@ public class CatGenServlet extends AbstractServlet
         taskDelayInMinutes = Integer.toString( task.getDelayInMinutes() );
       }
 
-      buf.append( "<form method=\"POST\" action=\"" +
-                  req.getContextPath() + req.getServletPath() +
-                  this.adminDoAddTaskPath + "\">" + "\n" );
+      buf.append( "<form method=\"POST\" action=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminDoAddTaskPath ).append( "\">" ).append( "\n" );
 
-      buf.append( "<h2>Task to Add</h2>" + "\n" );
-      buf.append( "<table border=\"1\">" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Task Name</th>" + "\n" );
-      buf.append( "<td> <input name=\"taskName\" size=\"40\" value=\"" + taskName + "\"></td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Configuration Document</th>" + "\n" );
-      buf.append( "<td> <input name=\"fileName\" size=\"40\" value=\"" + taskConfigDocName + "\"></td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th>Resulting Catalog</th>" + "\n" );
-      buf.append( "<td> <input name=\"resultFileName\" size=\"80\" value=\"" + taskResultFileName + "\"></td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Period (minutes)</th>" + "\n" );
-      buf.append( "<td> <input name=\"period\" size=\"10\" value=\"" + taskPeriodInMinutes + "\"></td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Initial Delay (minutes)</th>" + "\n" );
-      buf.append( "<td> <input name=\"delay\" size=\"10\" value=\"" + taskDelayInMinutes + "\"></td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "</table>" + "\n" );
+      buf.append( "<h2>Task to Add</h2>" ).append( "\n" );
+      buf.append( "<table border=\"1\">" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Task Name</th>" ).append( "\n" );
+      buf.append( "<td> <input name=\"taskName\" size=\"40\" value=\"" )
+              .append( taskName ).append( "\"></td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Configuration Document</th>" ).append( "\n" );
+      buf.append( "<td> <input name=\"fileName\" size=\"40\" value=\"" ).append( taskConfigDocName ).append( "\"></td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th>Resulting Catalog</th>" ).append( "\n" );
+      buf.append( "<td> <input name=\"resultFileName\" size=\"80\" value=\"" ).append( taskResultFileName ).append( "\"></td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Period (minutes)</th>" ).append( "\n" );
+      buf.append( "<td> <input name=\"period\" size=\"10\" value=\"" ).append( taskPeriodInMinutes ).append( "\"></td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Initial Delay (minutes)</th>" ).append( "\n" );
+      buf.append( "<td> <input name=\"delay\" size=\"10\" value=\"" ).append( taskDelayInMinutes ).append( "\"></td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "</table>" ).append( "\n" );
 
-      buf.append( "<input type=\"submit\" value=\"Submit\">" + "\n" );
-      buf.append( "<input type=\"reset\" value=\"Reset Values\">" + "\n" );
-      buf.append( "</form>" + "\n" );
+      buf.append( "<input type=\"submit\" value=\"Submit\">" ).append( "\n" );
+      buf.append( "<input type=\"reset\" value=\"Reset Values\">" ).append( "\n" );
+      buf.append( "</form>" ).append( "\n" );
 
       return ( buf.toString() );
     }
@@ -1226,36 +1211,37 @@ public class CatGenServlet extends AbstractServlet
       StringBuffer buf = new StringBuffer();
       log.debug( "getHtmlEditForm(): start" );
 
-      buf.append( "<form method=\"POST\" action=\"" +
-                  req.getContextPath() + req.getServletPath() +
-                  this.adminDoEditTaskPath + task.getConfigDocName() + "\">\n" );
+      buf.append( "<form method=\"POST\" action=\"" )
+              .append( req.getContextPath() ).append( req.getServletPath() )
+              .append( this.adminDoEditTaskPath ).append( task.getConfigDocName() )
+              .append( "\">\n" );
 
       buf.append( "<h2>Task to Edit</h2>\n" );
       buf.append( "<table border=\"1\">\n" );
-      buf.append( "<tr>" + "\n" );
+      buf.append( "<tr>" ).append( "\n" );
       buf.append( "<th> Task Name</th>\n" );
-      buf.append( "<td> <input name=\"taskName\" size=\"40\" value=\"" +
-                  task.getName() + "\"></td>\n" );
+      buf.append( "<td> <input name=\"taskName\" size=\"40\" value=\"" )
+              .append( task.getName() ).append( "\"></td>\n" );
       buf.append( "</tr>\n" );
       buf.append( "<tr>\n" );
       buf.append( "<th> Configuration Document</th>\n" );
-      buf.append( "<td> <input name=\"fileName\" size=\"40\" value=\"" +
-                  task.getConfigDocName() + "\"></td>\n" );
+      buf.append( "<td> <input name=\"fileName\" size=\"40\" value=\"" )
+              .append( task.getConfigDocName() ).append( "\"></td>\n" );
       buf.append( "</tr>\n" );
       buf.append( "<tr>\n" );
       buf.append( "<th>Resultin Catalog</th>\n" );
-      buf.append( "<td> <input name=\"resultFileName\" size=\"80\" value=\"" +
-                  task.getResultFileName() + "\"></td>\n" );
+      buf.append( "<td> <input name=\"resultFileName\" size=\"80\" value=\"" )
+              .append( task.getResultFileName() ).append( "\"></td>\n" );
       buf.append( "</tr>\n" );
       buf.append( "<tr>\n" );
       buf.append( "<th> Period (minutes)</th>\n" );
-      buf.append( "<td> <input name=\"period\" size=\"10\" value=\"" +
-                  task.getPeriodInMinutes() + "\"></td>\n" );
+      buf.append( "<td> <input name=\"period\" size=\"10\" value=\"" )
+              .append( task.getPeriodInMinutes() ).append( "\"></td>\n" );
       buf.append( "</tr>\n" );
       buf.append( "<tr>\n" );
       buf.append( "<th> Initial Delay (minutes)</th>\n" );
-      buf.append( "<td> <input name=\"delay\" size=\"10\" value=\"" +
-                  task.getDelayInMinutes() + "\"></td>\n" );
+      buf.append( "<td> <input name=\"delay\" size=\"10\" value=\"" )
+              .append( task.getDelayInMinutes() ).append( "\"></td>\n" );
       buf.append( "</tr>\n" );
       buf.append( "</table>\n" );
 
@@ -1275,28 +1261,28 @@ public class CatGenServlet extends AbstractServlet
       StringBuffer buf = new StringBuffer();
       log.debug( "getHtmlListTable(): start" );
 
-      buf.append( "<table border=\"1\">" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Task Name</th>" + "\n" );
-      buf.append( "<td>" + task.getName() + "</td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Configuration Document</th>" + "\n" );
-      buf.append( "<td>" + task.getConfigDocName() + "</td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th>Resulting Catalog</th>" + "\n" );
-      buf.append( "<td>" + task.getResultFileName() + "</td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Period (minutes)</th>" + "\n" );
-      buf.append( "<td>" + task.getPeriodInMinutes() + "</td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "<tr>" + "\n" );
-      buf.append( "<th> Initial Delay (minutes)</th>" + "\n" );
-      buf.append( "<td>" + task.getDelayInMinutes() + "</td>" + "\n" );
-      buf.append( "</tr>" + "\n" );
-      buf.append( "</table>" + "\n" );
+      buf.append( "<table border=\"1\">" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Task Name</th>" ).append( "\n" );
+      buf.append( "<td>" ).append( task.getName() ).append( "</td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Configuration Document</th>" ).append( "\n" );
+      buf.append( "<td>" ).append( task.getConfigDocName() ).append( "</td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th>Resulting Catalog</th>" ).append( "\n" );
+      buf.append( "<td>" ).append( task.getResultFileName() ).append( "</td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Period (minutes)</th>" ).append( "\n" );
+      buf.append( "<td>" ).append( task.getPeriodInMinutes() ).append( "</td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "<tr>" ).append( "\n" );
+      buf.append( "<th> Initial Delay (minutes)</th>" ).append( "\n" );
+      buf.append( "<td>" ).append( task.getDelayInMinutes() ).append( "</td>" ).append( "\n" );
+      buf.append( "</tr>" ).append( "\n" );
+      buf.append( "</table>" ).append( "\n" );
 
       return ( buf.toString() );
     }

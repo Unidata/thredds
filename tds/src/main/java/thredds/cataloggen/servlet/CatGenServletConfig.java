@@ -1,9 +1,8 @@
-// $Id: CatGenServletConfig.java 51 2006-07-12 17:13:13Z caron $
-
 package thredds.cataloggen.servlet;
 
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.XMLStore;
+import org.jdom.*;
+import org.jdom.output.XMLOutputter;
+import org.jdom.input.*;
 
 import java.io.*;
 import java.util.*;
@@ -18,18 +17,18 @@ public class CatGenServletConfig
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( CatGenServletConfig.class);
 
-  private File resultPath, configPath;
-  private String servletConfigDocName;
+  private final File resultPath;
+  private final File configPath;
+  private final String servletConfigDocName;
 
-  /** The XMLStore for the config file. */
-  private XMLStore configStore = null;
-
-  /** The preferences stored in the config file. */
-  private PreferencesExt configPrefs = null;
+  private final ConfigDocumentParser configDocParser;
 
   /** The collection of configuration tasks. */
-  private Collection configTasks = null;
+  // @GuardedBy("this")
+  private List configTasks;
+  // @GuardedBy("this")
   private HashMap configTaskHash = new HashMap();
+  // @GuardedBy("this")
   private HashMap configTaskHashByConfigDocName = new HashMap();
 
   /** Timer for scheduling tasks. */
@@ -49,13 +48,15 @@ public class CatGenServletConfig
     this.configPath = configPath;
     this.servletConfigDocName = servletConfigDocName;
 
+    this.configDocParser = new ConfigDocumentParser();
+
     // Make sure paths exist.
     if ( ! this.resultPath.exists() )
     {
       if ( ! this.resultPath.mkdirs())
       {
         String tmpMsg = "Creation of results directory failed";
-        log.debug( "CatGenServletConfig(): " + tmpMsg + " <" + this.resultPath.getAbsolutePath() + ">" );
+        log.error( "CatGenServletConfig(): " + tmpMsg + " <" + this.resultPath.getAbsolutePath() + ">" );
         throw new IOException( tmpMsg );
       }
     }
@@ -64,74 +65,56 @@ public class CatGenServletConfig
       if ( ! this.configPath.mkdirs() )
       {
         String tmpMsg = "Creation of config directory failed";
-        log.debug( "CatGenServletConfig(): " + tmpMsg + " <" + this.configPath.getAbsolutePath() + ">" );
+        log.error( "CatGenServletConfig(): " + tmpMsg + " <" + this.configPath.getAbsolutePath() + ">" );
         throw new IOException( tmpMsg );
       }
     }
 
     // Make sure config file exists.
     File configFile = new File( this.configPath, this.servletConfigDocName);
+    log.debug( "CatGenServletConfig(): reading config file <" + configFile.getPath() + ">." );
     if ( configFile.createNewFile() )
     {
-      // Write an empty XMLStore file.
-      log.debug( "CatGenServletConfig(): no config file exists, writing empty config file <"
-                    + configFile.getAbsolutePath() + ">.");
-      OutputStream out = new BufferedOutputStream( new FileOutputStream( configFile ) );
-      XMLStore store = new XMLStore();
-      store.save( out );
-      out.close();
+      // Write an empty config file.
+      log.debug( "CatGenServletConfig(): no config file exists, writing empty config file <" + configFile.getAbsolutePath() + ">.");
+      configDocParser.writeXML( configFile, Collections.EMPTY_LIST );
     }
 
-    // Try opening ucar.util.prefs XML store.
-    log.debug( "CatGenServletConfig(): reading config (" + configFile.toString() + ")" );
-    try
-    {
-      // @todo Use createFromInputStream instead.
-      this.configStore = XMLStore.createFromFile( configFile.toString(), null);
-    }
-    catch ( java.io.IOException e)
-    {
-      log.error( "CatGenServletConfig(): XMLStore creation failed for " + this.servletConfigDocName);
-      // @todo throw exception and handle in CatGenServlet
-    }
+    // Read config file.
+    configTasks = configDocParser.parseXML( configFile );
 
-    // Get preferences, i.e., the collection of Beans named "config".
-    this.configPrefs = this.configStore.getPreferences();
-    if ( this.configPrefs == null)
+    if ( this.configTasks == null )
     {
-      log.warn( "CatGenServletConfig(): null preferences from the config file (???)." );
+      log.error( "CatGenServletConfig(): invalid config file." );
+      this.configTasks = Collections.EMPTY_LIST;
     }
-    this.configTasks = (Collection) this.configPrefs.getBean( "config", new ArrayList());
-    if ( this.configTasks.isEmpty())
+    else if ( this.configTasks.isEmpty() )
     {
       log.debug( "CatGenServletConfig(): task list empty");
     }
-
-    // If configTasks is not empty, initialize and schedule each task.
-    if ( ! this.configTasks.isEmpty())
+    else
     {
       log.debug( "CatGenServletConfig(): at least one task in config file.");
 
-      CatGenTimerTask curTask = null;
-      java.util.Iterator iter = this.configTasks.iterator();
-      while ( iter.hasNext())
+      for ( Iterator it = this.configTasks.iterator(); it.hasNext(); )
       {
-        curTask =  (CatGenTimerTask) iter.next();
+        CatGenTimerTask curTask =  (CatGenTimerTask) it.next();
         curTask.init( this.resultPath, this.configPath);
         this.configTaskHash.put( curTask.getName(), curTask);
         this.configTaskHashByConfigDocName.put( curTask.getConfigDocName(), curTask);
         log.debug( "CatGenServletConfig(): task name = " + curTask.getName());
 
-        // ??? Check that config file is read/write/etc-able?
-        // ??? Check that config file is valid CatalogGenConfig?
-
-        // Schedule the current task.
-        this.scheduleTask( curTask);
+        StringBuffer msg = new StringBuffer();
+        if ( ! curTask.isValid( msg ))
+        {
+          log.warn( "ctor(): not scheduling invalid task <" + curTask.getName() + ">: " + msg.toString());
+        }
+        else
+        {
+          // Schedule the current task.
+          this.scheduleTask( curTask);
+        }
       }
-    }
-    else
-    {
-      log.debug( "CatGenServletConfig(): no tasks in config file.");
     }
   }
 
@@ -143,24 +126,31 @@ public class CatGenServletConfig
   /** Return the filename for the configuration file. */
   public String getServletConfigDocName() { return( this.servletConfigDocName); }
 
+  public synchronized List getUnmodTasks()
+  {
+    return Collections.unmodifiableList( this.configTasks );
+  }
   /** Return an iterator of the config tasks in this config. */
-  public java.util.Iterator getTaskIterator()
-  { return( this.configTasks.iterator()); }
+  public synchronized java.util.Iterator getUnmodTaskIterator()
+  {
+    List unModList = Collections.unmodifiableList( this.configTasks);
+    return( unModList.iterator());
+  }
 
   /** Find a task with the given name. */
-  public CatGenTimerTask findTask( String taskName)
+  public synchronized CatGenTimerTask findTask( String taskName)
   {
     return( (CatGenTimerTask) configTaskHash.get( taskName));
   }
 
   /** Find a task with the given config file name. */
-  public CatGenTimerTask findTaskByConfigDocName( String configDocName)
+  public synchronized CatGenTimerTask findTaskByConfigDocName( String configDocName)
   {
     return( (CatGenTimerTask) configTaskHashByConfigDocName.get( configDocName));
   }
 
   /** Add the given task unless it is a duplicate. */
-  public boolean addTask( CatGenTimerTask task)
+  public synchronized boolean addTask( CatGenTimerTask task)
           throws IOException
   {
     log.debug( "addTask(): start.");
@@ -192,15 +182,23 @@ public class CatGenServletConfig
     this.configTaskHash.put( task.getName(), task);
     this.configTaskHashByConfigDocName.put( task.getConfigDocName(), task);
     this.writeConfig();
-    this.scheduleTask( task);
 
-    log.debug( "addTask(): task added (" + task.getName() + ").");
+    log.debug( "addTask(): added task <" + task.getName() + "> to config." );
+    StringBuffer msg = new StringBuffer();
+    if ( ! task.isValid( msg ) )
+    {
+      log.warn( "addTask(): invalid task <" + task.getName() + ">, not scheduling: " + msg.toString() );
+    }
+    else
+    {
+      this.scheduleTask( task );
+    }
 
     return( true);
   }
 
   /** Remove the given task. */
-  public boolean removeTask( CatGenTimerTask task)
+  public synchronized boolean removeTask( CatGenTimerTask task)
           throws IOException
  {
     log.debug( "removeTask(): start.");
@@ -228,7 +226,7 @@ public class CatGenServletConfig
   }
 
   /** Remove the task with the given name. */
-  public boolean removeTask( String taskName)
+  public synchronized boolean removeTask( String taskName)
           throws IOException
  {
     return( this.removeTask( this.findTask( taskName)));
@@ -241,7 +239,7 @@ public class CatGenServletConfig
    *
    * @param configDocName - the name of the CatGen config doc.
    */
-  public void notifyNewConfigDoc( String configDocName)
+  public synchronized void notifyNewConfigDoc( String configDocName)
   {
     log.debug( "notifyNewConfigDoc(): start." );
     CatGenTimerTask task = this.findTaskByConfigDocName( configDocName);
@@ -251,14 +249,22 @@ public class CatGenServletConfig
 
       CatGenTimerTask newTask = new CatGenTimerTask( task );
       newTask.init( this.resultPath, this.configPath );
-      this.scheduleTask( newTask );
+      StringBuffer msg = new StringBuffer();
+      if ( ! newTask.isValid( msg ) )
+      {
+        log.warn( "notifyNewConfigDoc(): invalid task <" + newTask.getName() + ">, not scheduling: " + msg.toString() );
+      }
+      else
+      {
+        this.scheduleTask( newTask );
+      }
 
       log.debug( "notifyNewConfigDoc(): done." );
     }
     return;
   }
 
-  private boolean scheduleTask( CatGenTimerTask task)
+  private synchronized boolean scheduleTask( CatGenTimerTask task)
   {
     log.debug( "scheduleTask(): start.");
     if ( task == null) return( false);
@@ -283,17 +289,17 @@ public class CatGenServletConfig
       }
       Date date = cal.getTime();
 
-      this.timer.scheduleAtFixedRate( task, date, periodInMillis);
+      this.timer.scheduleAtFixedRate( task.getTimerTask(), date, periodInMillis);
       log.debug( "scheduleTask(): task scheduled.");
 
       return( true);
     }
   }
 
-  private boolean unScheduleTask( CatGenTimerTask task)
+  private synchronized boolean unScheduleTask( CatGenTimerTask task)
   {
     log.debug( "unScheduleTask(): start: (" + task.getName() + ").");
-    return( task.cancel());
+    return( task.getTimerTask().cancel());
   }
 
   /* Write the configuration to the XMLStore. */
@@ -302,16 +308,16 @@ public class CatGenServletConfig
   {
     log.debug( "writeConfig(): start.");
 
-    this.configPrefs.putBeanCollection( "config", configTasks);
-    //try
-    //{
-      this.configStore.save();
-    //}
-    //catch (java.io.IOException e)
-    //{
-    //  log.debug( "writeConfig(): config file written (" + this.servletConfigDocName + ").");
-    //  // @todo throw exception and deal ith it in CatGenServlet.
-    //}
+    // Make sure config file exists.
+    File configFile = new File( this.configPath, this.servletConfigDocName );
+    if ( ! configFile.canWrite() )
+    {
+      // Write an empty config file.
+      log.error( "CatGenServletConfig(): cannot write to config file <" + configFile.getPath() + ">." );
+      return; // @todo throw exception?
+    }
+
+    this.configDocParser.writeXML( configFile, this.getUnmodTasks());
   }
 
   /* Write the configuration to the XMLStore. */
@@ -319,15 +325,13 @@ public class CatGenServletConfig
           throws java.io.IOException
   {
     log.debug( "writeConfig(): writing config to XMLStore (OutputStream)." );
-
-    this.configPrefs.putBeanCollection( "config", configTasks );
-    this.configStore.save( os );
+    this.configDocParser.writeXML( os, this.getUnmodTasks() );
   }
 
 /**
    * Build the HTML returned from a hit on the servlet with path "/admin/config"
    *
-   * @return
+   * @return a String containing the "/admin/config" HTML document.
    */
   public String toHtml()
   {
@@ -353,24 +357,24 @@ public class CatGenServletConfig
     tmpString.append( "<th> Edit/Delete Task</th>");
     tmpString.append( "</tr>");
 
-    CatGenTimerTask curTask = null;
-    java.util.Iterator iter = this.configTasks.iterator();
-    while ( iter.hasNext())
+    for ( Iterator it = this.getUnmodTaskIterator(); it.hasNext(); )
     {
-      curTask =  (CatGenTimerTask) iter.next();
+      CatGenTimerTask curTask =  (CatGenTimerTask) it.next();
       tmpString.append( "<tr>");
-      tmpString.append( "<td>" + curTask.getName() + "</td>");
-      tmpString.append( "<td> <a href=\"./" +
-                        curTask.getConfigDocName() + "\">" +
-                        curTask.getConfigDocName() + "</a></td>");
+      tmpString.append( "<td>" ).append( curTask.getName() ).append( "</td>" );
+      tmpString.append( "<td> <a href=\"./" )
+              .append( curTask.getConfigDocName() ).append( "\">" )
+              .append( curTask.getConfigDocName() ).append( "</a></td>" );
       tmpString.append( "<td>");
       tmpString.append( curTask.getResultFileName());
       tmpString.append( "</td>");
-      tmpString.append( "<td>" + curTask.getPeriodInMinutes() + "</td>");
-      tmpString.append( "<td>" + curTask.getDelayInMinutes() + "</td>");
+      tmpString.append( "<td>" ).append( curTask.getPeriodInMinutes() ).append( "</td>" );
+      tmpString.append( "<td>" ).append( curTask.getDelayInMinutes() ).append( "</td>" );
       tmpString.append( "<td>");
-      tmpString.append( "[<a href=\"./editTask-" + curTask.getConfigDocName() + "\">Edit</a>]");
-      tmpString.append( "[<a href=\"./deleteTask-" + curTask.getConfigDocName() + "\">Delete</a>]");
+      tmpString.append( "[<a href=\"./editTask-" )
+              .append( curTask.getConfigDocName() ).append( "\">Edit</a>]" );
+      tmpString.append( "[<a href=\"./deleteTask-" )
+              .append( curTask.getConfigDocName() ).append( "\">Delete</a>]" );
       tmpString.append( "</td>");
       tmpString.append( "</tr>");
     }
@@ -388,65 +392,188 @@ public class CatGenServletConfig
     return( tmpString.toString());
   }
 
+  private class ConfigDocumentParser
+  {
+    private String rootElemName = "preferences";
+    private String extXmlVerAttName = "EXTERNAL_XML_VERSION";
+    private String extXmlVerAttVal = "1.0";
+
+    private String rootUserElemName = "root";
+    private String rootUserAttName = "type";
+    private String rootUserAttVal = "user";
+
+    private String mapElemName = "map";
+
+    private String beanCollElemName = "beanCollection";
+    private String beanCollKeyAttName = "key";
+    private String beanCollKeyAttVal = "config";
+    private String beanCollClassAttName = "class";
+    private String beanCollClassAttVal = "thredds.cataloggen.servlet.CatGenTimerTask";
+
+    private String beanElemName = "bean";
+    private String beanNameAttName = "name";
+    private String beanConfigDocNameAttName = "configDocName";
+    private String beanResultFileNameAttName = "resultFileName";
+    private String beanDelayAttName = "delayInMinutes";
+    private String beanPeriodAttName = "periodInMinutes";
+
+    /** Private default constructor. */
+    private ConfigDocumentParser() {}
+
+    /**
+     * Parse the given config file for CatGenServlet.
+     *
+     * @param inFile the config file.
+     * @return a List of CatGenTimerTask items (which may be empty), or null if config file is malformed.
+     * @throws IOException if could not read File.
+     */
+    public List parseXML( File inFile )
+            throws IOException
+    {
+      FileInputStream inStream = new FileInputStream( inFile );
+      List config = parseXML( inStream, inFile.getPath() );
+      inStream.close();
+      return config;
+    }
+
+    /**
+     * Parse the given config document for CatGenServlet.
+     *
+     * @param inStream an InputStream of the config document.
+     * @return a List of CatGenTimerTask items (which may be empty), or null if config file is malformed.
+     * @throws IOException if could not read InputStream.
+     */
+    public List parseXML( InputStream inStream, String docId )
+            throws IOException
+    {
+      SAXBuilder builder = new SAXBuilder();
+      Document doc;
+      log.debug( "parseXML(): Parsing latest config doc \"" + docId + "\"." );
+      try
+      {
+        doc = builder.build( inStream );
+      }
+      catch ( JDOMException e )
+      {
+        log.error( "parseXML(): Bad config doc <" + docId + ">: " + e.getMessage() );
+        return null;
+      }
+      List config = readConfig( doc.getRootElement() );
+
+      if ( config == null )
+      {
+        log.error( "parseXML(): Config doc <" + docId + "> not in valid format." );
+      }
+      else if ( config.isEmpty() )
+      {
+        log.warn( "parseXML(): Empty config file <" + docId + ">." );
+      }
+
+      return config;
+    }
+
+    /**
+     * Read the contents of the config document and return a List of CatGenTimerTask objects.
+     *
+     * @param rootElem the root element in the config document.
+     * @return a List (which may be empty), or null if the config document is malformed.
+     */
+    private List readConfig( Element rootElem )
+    {
+      if ( ! rootElem.getName().equals( rootElemName ) )
+      {
+        log.error( "readConfig(): Root element <" + rootElem.getName() + "> not as expected <" + rootElemName + ">." );
+        return null;
+      }
+      Element rootUserElem = rootElem.getChild( rootUserElemName );
+      Element mapElem = rootUserElem.getChild( mapElemName );
+      Element beanColElem = mapElem.getChild( beanCollElemName );
+      // Catch empty "map" elements that were possible with the
+      // former ucar.util.prefs implementation.
+      if ( beanColElem == null )
+        return null;
+      String keyAttVal = beanColElem.getAttributeValue( beanCollKeyAttName );
+      String classAttVal = beanColElem.getAttributeValue( beanCollClassAttName );
+      if ( ! keyAttVal.equals( beanCollKeyAttVal ))
+      {
+        log.error( "readConfig(): bean collection element key attribute <" + keyAttVal + "> not as expected <" + beanCollKeyAttVal + ">." );
+        return null;
+      }
+      if ( ! classAttVal.equals( beanCollClassAttVal ))
+      {
+        log.error( "readConfig(): bean collection element class attribute <" + classAttVal + "> not as expected <" + beanCollClassAttVal + ">." );
+        return null;
+      }
+
+      List configList = new ArrayList();
+      java.util.List list = beanColElem.getChildren( beanElemName );
+      for ( Iterator it = list.iterator(); it.hasNext(); )
+      {
+        Element curBeanElem = (Element) it.next();
+        String name = curBeanElem.getAttributeValue( beanNameAttName );
+        String configDocName = curBeanElem.getAttributeValue( beanConfigDocNameAttName );
+        String resultFileName = curBeanElem.getAttributeValue( beanResultFileNameAttName );
+        int delayInMinutes;
+        int periodInMinutes;
+        try
+        {
+          delayInMinutes = curBeanElem.getAttribute( beanDelayAttName ).getIntValue();
+          periodInMinutes = curBeanElem.getAttribute( beanPeriodAttName ).getIntValue();
+        }
+        catch ( DataConversionException e )
+        {
+          log.error( "readConfig(): bean element delay or period attribute not an integer value: " + e.getMessage() );
+          return null;
+        }
+
+        configList.add( new CatGenTimerTask( name, configDocName, resultFileName, periodInMinutes, delayInMinutes));
+      }
+
+      return configList;
+    }
+
+    public void writeXML( File outFile, List configList )
+            throws IOException
+    {
+      FileOutputStream outStream = new FileOutputStream( outFile );
+      writeXML( outStream, configList );
+      outStream.close();
+    }
+
+    public void writeXML( OutputStream outStream, List configList )
+            throws IOException
+    {
+      Element rootElem = new Element( rootElemName );
+      rootElem.setAttribute( extXmlVerAttName, extXmlVerAttVal );
+      Document doc = new Document( rootElem );
+
+      Element rootUserElem = new Element( rootUserElemName );
+      rootUserElem.setAttribute( rootUserAttName, rootUserAttVal );
+      rootElem.addContent( rootUserElem );
+
+      Element mapElem = new Element( mapElemName );
+      rootUserElem.addContent( mapElem );
+
+      Element beanCollElem = new Element( beanCollElemName );
+      beanCollElem.setAttribute( beanCollKeyAttName, beanCollKeyAttVal );
+      beanCollElem.setAttribute( beanCollClassAttName, beanCollClassAttVal );
+      mapElem.addContent( beanCollElem );
+
+      for ( Iterator it = configList.iterator(); it.hasNext(); )
+      {
+        CatGenTimerTask curItem = (CatGenTimerTask) it.next();
+        Element curItemElem = new Element( beanElemName );
+        curItemElem.setAttribute( beanNameAttName, curItem.getName() );
+        curItemElem.setAttribute( beanConfigDocNameAttName, curItem.getConfigDocName() );
+        curItemElem.setAttribute( beanResultFileNameAttName, curItem.getResultFileName() );
+        curItemElem.setAttribute( beanDelayAttName, Integer.toString( curItem.getDelayInMinutes() ) );
+        curItemElem.setAttribute( beanPeriodAttName, Integer.toString( curItem.getPeriodInMinutes() ) );
+
+        beanCollElem.addContent( curItemElem );
+      }
+
+      XMLOutputter outputter = new XMLOutputter();
+      outputter.output( doc, outStream );
+    }
+  }
 }
-/*
- * $Log: CatGenServletConfig.java,v $
- * Revision 1.9  2006/01/20 20:42:03  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.8  2005/04/05 22:37:02  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.7  2004/05/11 20:21:04  edavis
- * Update init() so that it gets the directory for the resulting catalogs
- * rather than the directory to the servlet root. Add some more logging. Add
- * some functionality to allow tasks to be updated when config files are PUT.
- *
- * Revision 1.6  2003/09/05 22:05:05  edavis
- * Minor change to logging message.
- *
- * Revision 1.5  2003/08/29 21:41:47  edavis
- * The following changes where made:
- *
- *  1) Added more extensive logging (changed from thredds.util.Log and
- * thredds.util.Debug to using Log4j).
- *
- * 2) Improved existing error handling and added additional error
- * handling where problems could fall through the cracks. Added some
- * catching and throwing of exceptions but also, for problems that aren't
- * fatal, added the inclusion in the resulting catalog of datasets with
- * the error message as its name.
- *
- * 3) Change how the CatGenTimerTask constructor is given the path to the
- * config files and the path to the resulting files so that resulting
- * catalogs are placed in the servlet directory space. Also, add ability
- * for servlet to serve the resulting catalogs.
- *
- * 4) Switch from using java.lang.String to using java.io.File for
- * handling file location information so that path seperators will be
- * correctly handled. Also, switch to java.net.URI rather than
- * java.io.File or java.lang.String where necessary to handle proper
- * URI/URL character encoding.
- *
- * 5) Add handling of requests when no path ("") is given, when the root
- * path ("/") is given, and when the admin path ("/admin") is given.
- *
- * 6) Fix the PUTting of catalogGenConfig files.
- *
- * 7) Start adding GDS DatasetSource capabilities.
- *
- * Revision 1.4  2003/08/20 17:48:21  edavis
- * Import statments optimized.
- *
- * Revision 1.3  2003/05/01 23:43:18  edavis
- * Added a few comments.
- *
- * Revision 1.2  2003/04/30 18:29:53  edavis
- * Added main() for testing.
- *
- * Revision 1.1  2003/03/04 23:09:37  edavis
- * Added for 0.7 release (addition of CatGenServlet).
- *
- *
- */

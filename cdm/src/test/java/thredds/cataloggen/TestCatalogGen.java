@@ -1,4 +1,3 @@
-// $Id: TestCatalogGen.java,v 1.6 2006/01/20 02:08:25 caron Exp $
 package thredds.cataloggen;
 
 import junit.framework.*;
@@ -62,6 +61,8 @@ public class TestCatalogGen extends TestCase
   private InvCatalogFactory factory;
   private InvCatalogImpl justWrittenCatalog;
 
+  private boolean displayComparedCatalogs = false;
+
   public TestCatalogGen( String name )
   {
     super( name );
@@ -81,19 +82,7 @@ public class TestCatalogGen extends TestCase
     expandConfigDoc( configDocName );
 
     // Compare the expanded catalog to the expected catalog.
-    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName);
-//    String catAsString = null;
-//    try
-//    {
-//      catAsString = factory.writeXML( (InvCatalogImpl) me.getCatalog());
-//    }
-//    catch ( IOException e )
-//    {
-//      String tmpMsg = "IOException thrown trying to write catalog as String: " + e.getMessage();
-//      log.debug( "testDirTreeInvCat1_0(): " + tmpMsg, e );
-//      assertTrue( tmpMsg, false );
-//    }
-//    System.out.print( catAsString);
+    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName, displayComparedCatalogs);
   }
 
   public void testRejectFilter()
@@ -105,19 +94,7 @@ public class TestCatalogGen extends TestCase
     expandConfigDoc( configDocName );
 
     // Compare the expanded catalog to the expected catalog.
-    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName);
-//    String catAsString = null;
-//    try
-//    {
-//      catAsString = factory.writeXML( (InvCatalogImpl) me.getCatalog());
-//    }
-//    catch ( IOException e )
-//    {
-//      String tmpMsg = "IOException thrown trying to write catalog as String: " + e.getMessage();
-//      log.debug( "testDirTreeInvCat1_0(): " + tmpMsg, e );
-//      assertTrue( tmpMsg, false );
-//    }
-//    System.out.print( catAsString);
+    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName, displayComparedCatalogs);
   }
 
   public void testDirTreeInvCat1_0()
@@ -129,19 +106,7 @@ public class TestCatalogGen extends TestCase
     expandConfigDoc( configDocName );
 
     // Compare the expanded catalog to the expected catalog.
-    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName);
-//    String catAsString = null;
-//    try
-//    {
-//      catAsString = factory.writeXML( (InvCatalogImpl) me.getCatalog());
-//    }
-//    catch ( IOException e )
-//    {
-//      String tmpMsg = "IOException thrown trying to write catalog as String: " + e.getMessage();
-//      log.debug( "testDirTreeInvCat1_0(): " + tmpMsg, e );
-//      assertTrue( tmpMsg, false );
-//    }
-//    System.out.print( catAsString);
+    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName, displayComparedCatalogs);
   }
 
   public void testUahRadarLevelII()
@@ -153,7 +118,7 @@ public class TestCatalogGen extends TestCase
     expandConfigDoc( configDocName );
 
     // Compare the expanded catalog to the expected catalog.
-    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName);
+    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName, displayComparedCatalogs);
   }
 
   public void testBadAccessPoint()
@@ -165,7 +130,7 @@ public class TestCatalogGen extends TestCase
     expandConfigDoc( configDocName );
 
     // Compare the expanded catalog to the expected catalog.
-    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName);
+    compareCatalogToCatalogResource( me.getCatalog(), expectedDocResourceName, displayComparedCatalogs);
   }
 
   /**
@@ -293,7 +258,7 @@ public class TestCatalogGen extends TestCase
     me.expand();
 
     // Compare the expanded catalog to the expected catalog.
-    compareCatalogToCatalogResource( me.getCatalog(), expectedCatalogResourceName);
+    compareCatalogToCatalogResource( me.getCatalog(), expectedCatalogResourceName, displayComparedCatalogs);
   }
 
   private void writeCatalogGenTest( String expandedCatalogFileName )
@@ -386,7 +351,7 @@ public class TestCatalogGen extends TestCase
     me.expand();
   }
 
-  public static void compareCatalogToCatalogResource( InvCatalog expandedCatalog, String expectedCatalogResourceName)
+  public static void compareCatalogToCatalogResource( InvCatalog expandedCatalog, String expectedCatalogResourceName, boolean display)
   {
     // Open expected catalog document resource as an InputStream.
     String expectedCatalogURIName = "http://TestCatalogGen.resource" + expectedCatalogResourceName;
@@ -417,6 +382,31 @@ public class TestCatalogGen extends TestCase
       String tmpMsg = "IOException thrown closing InputStream: " + e.getMessage();
       log.debug( "compareCatalogToCatalogResource(): " + tmpMsg, e );
       assertTrue( tmpMsg, false );
+    }
+
+    if ( display )
+    {
+      // Print expected and resulting catalogs to std out.
+      String expectedCatalogAsString;
+      String catalogAsString;
+      try
+      {
+        expectedCatalogAsString = factory.writeXML( (InvCatalogImpl) expectedCatalog );
+        catalogAsString = factory.writeXML( (InvCatalogImpl) expandedCatalog );
+      }
+      catch ( IOException e )
+      {
+        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
+        return;
+      }
+      System.out.println( "Expected catalog (" + expectedCatalogResourceName + "):" );
+      System.out.println( "--------------------" );
+      System.out.println( expectedCatalogAsString );
+      System.out.println( "--------------------" );
+      System.out.println( "Resulting catalog (" + expandedCatalog.getUriString() + "):" );
+      System.out.println( "--------------------" );
+      System.out.println( catalogAsString );
+      System.out.println( "--------------------\n" );
     }
 
     // Compare the two catalogs.

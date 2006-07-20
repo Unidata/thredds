@@ -1,4 +1,3 @@
-// $Id: TestInvDatasetScan.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.catalog;
 
 import junit.framework.TestCase;
@@ -94,22 +93,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testTopLevelCatalog()
@@ -158,22 +143,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
 
-    if (debugShowCatalogs)
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName);
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs);
   }
 
   public void testSecondLevelCatalog()
@@ -222,22 +193,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/trajectory/catalog.xml" );
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testAddTimeCoverage()
@@ -298,22 +255,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testAddIdLowerLevel()
@@ -373,22 +316,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testAddIdTopLevel()
@@ -448,22 +377,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testCompoundServiceLower()
@@ -525,22 +440,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testAddDatasetSize()
@@ -581,22 +482,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/dmsp/catalog.xml" );
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testAddLatest()
@@ -660,19 +547,8 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
 
-    // Print catalog to std out.
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testAddLatestServiceBaseNotEmpty()
@@ -736,22 +612,11 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
 
-    // Print catalog to std out.
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
     System.out.println( "NEEDS WORK: don't have a real use case here - probably need a different ProxyDatasetHandler." );
     System.out.println( "            Possible use case: current DQC Latest server URLs like \"/thredds/dqc/latest?eta_211\"." );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
   }
 
   public void testCompoundServerFilterProblem()
@@ -866,22 +731,9 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalog catalog2 = dsScan2.makeCatalogForDirectory( reqURI2, "testRelativeEta/catalog.xml" );
 
-    // Print catalog to std out.
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) catalog1 ) );
-      System.out.println( "" );
-      System.out.println( fac.writeXML( (InvCatalogImpl) catalog2 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog1, expectedCatalog1ResourceName );
-    TestCatalogGen.compareCatalogToCatalogResource( catalog2, expectedCatalog2ResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog1, expectedCatalog1ResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog2, expectedCatalog2ResourceName, debugShowCatalogs );
   }
 
   /**
@@ -904,16 +756,7 @@ public class TestInvDatasetScan extends TestCase
     InvDataset targetDs = cat.findDatasetByID( targetDatasetID );
     cat.subset( targetDs );
 
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    TestCatalogGen.compareCatalogToCatalogResource( cat, configResourcePath + "/" + resFileName );
+    TestCatalogGen.compareCatalogToCatalogResource( cat, configResourcePath + "/" + resFileName, debugShowCatalogs );
   }
 
   public void testDsScanPreRefactor()
@@ -984,36 +827,9 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalogImpl cat3 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/Alaska_191km/catalog.xml" );
 
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat1 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat2 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat3 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name );
+    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name, debugShowCatalogs );
   }
 
   public void testDsScanRefactor()
@@ -1084,36 +900,9 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalogImpl cat3 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/Alaska_191km/catalog.xml" );
 
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat1 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat2 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat3 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name );
+    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name, debugShowCatalogs );
   }
 
   public void testDsScanRefactorWithNamer()
@@ -1184,36 +973,9 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalogImpl cat3 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/Alaska_191km/catalog.xml" );
 
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat1 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat2 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat3 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name );
+    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name, debugShowCatalogs );
   }
 
   public void testDsScanRefactorWithDirExclude()
@@ -1297,177 +1059,11 @@ public class TestInvDatasetScan extends TestCase
     }
     InvCatalogImpl cat4 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/NAM/catalog.xml" );
 
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat1 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat2 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) cat3 ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
-    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name );
-    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name );
+    TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( cat3, res3Name, debugShowCatalogs );
 
     assertTrue( "Unexpected non-null NAM catalog, should be excluded by filter.",
                 cat4 == null );
   }
 }
-
-/*
- * $Log: TestInvDatasetScan.java,v $
- * Revision 1.20  2006/05/19 19:23:06  edavis
- * Convert DatasetInserter to ProxyDatasetHandler and allow for a list of them (rather than one) in
- * CatalogBuilders and CollectionLevelScanner. Clean up division between use of url paths (req.getPathInfo())
- * and translated (CrawlableDataset) paths.
- *
- * Revision 1.19  2006/03/30 21:50:15  edavis
- * Minor fixes to get tests running.
- *
- * Revision 1.18  2006/01/26 18:20:46  edavis
- * Add CatalogRootHandler.findRequestedDataset() method (and supporting methods)
- * to check that the requested dataset is allowed, i.e., not filtered out.
- *
- * Revision 1.17  2006/01/10 23:21:15  edavis
- * Document changes to datasetScan. Also, make a few simplifying and clarifying changes to code and XSD that came up while documenting.
- *
- * Revision 1.16  2005/12/30 00:18:55  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.15  2005/12/16 23:19:38  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.14  2005/12/06 19:39:21  edavis
- * Last CatalogBuilder/CrawlableDataset changes before start using in InvDatasetScan.
- *
- * Revision 1.13  2005/11/18 23:51:05  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.12  2005/10/12 21:02:48  edavis
- * Add handling of inherited metadata when subsetting a catalog.
- *
- * Revision 1.11  2005/08/22 19:39:13  edavis
- * Changes to switch /thredds/dqcServlet URLs to /thredds/dqc.
- * Expand testing for server installations: TestServerSiteFirstInstall
- * and TestServerSite. Fix problem with compound services breaking
- * the filtering of datasets.
- *
- * Revision 1.10  2005/07/22 16:19:51  edavis
- * Allow DatasetSource and InvDatasetScan to add dataset size metadata.
- *
- * Revision 1.9  2005/07/21 17:19:18  edavis
- * Fix for InvDatasetScan and catalog relative services.
- *
- * Revision 1.8  2005/07/20 22:44:55  edavis
- * Allow InvDatasetScan to work with a service that is not catalog relative.
- * (DatasetSource can now add a prefix path name to resulting urlPaths.)
- *
- * Revision 1.7  2005/07/14 20:01:26  edavis
- * Make ID generation mandatory for datasetScan generated catalogs.
- * Also, remove log4j from some tests.
- *
- * Revision 1.6  2005/06/30 14:42:00  edavis
- * Change how LocalDatasetSource compares datasets to the accessPointHeader.
- * Using File.getPath() has problems with this (".") and parent ("..") directories.
- * Using File.getCanonicalPath() has problems if a symbolic link is in the dataset
- * path above the accessPointHeader path. So, do both if necessary.
- *
- * Revision 1.5  2005/06/28 18:36:30  edavis
- * Fixes to adding TimeCoverage and ID to datasets.
- *
- * Revision 1.4  2005/06/24 22:00:57  edavis
- * Write DatasetEnhancer1 to allow adding metadata to datasets.
- * Implement DatasetEnhancers for adding timeCoverage and for
- * adding ID to datasets. Also fix DatasetFilter so that 1) if
- * no filter is applicable for collection datasets, allow all
- * collection datasets and 2) if no filter is applicable for
- * atomic datasets, allow all atomic datasets.
- *
- * Revision 1.3  2005/06/08 21:20:15  edavis
- * Fixed naming of top dataset in InvDatasetScan produced catalogs
- * (removed "/" from end of name). Added to TestInvDatasetScan.
- *
- * Revision 1.2  2005/06/07 22:50:24  edavis
- * Fixed catalogRef links so relative to catalog instead of to service.
- * Fixed all tests in TestAllCatalogGen (including changing directory
- * filters because catalogRef names no longer contain slashes ("/").
- *
- * Revision 1.1  2005/06/06 18:25:53  edavis
- * Update DirectoryScanner to allow all directories even if name
- * doesn't send with "/".
- *
- * Revision 1.7  2005/06/03 19:12:42  edavis
- * Start adding wildcard handling in DirectoryScanner. Change
- * how DatasetSource names datasets and how catalogRefs are
- * constructed in DatasetSource.expand().
- *
- * Revision 1.6  2005/05/04 03:37:06  edavis
- * Remove several unnecessary methods in DirectoryScanner.
- *
- * Revision 1.5  2005/05/03 17:11:31  edavis
- * Fix TestDirectoryScanner.testWithDirPattern().
- *
- * Revision 1.4  2005/05/03 17:04:03  edavis
- * Add sort to datasetScan element and handle wildcard character in directory name.
- *
- * Revision 1.3  2005/04/29 14:55:57  edavis
- * Fixes for change in InvCatalogFactory.writeXML( cat, filename) method
- * signature. And start on allowing wildcard characters in pathname given
- * to DirectoryScanner.
- *
- * Revision 1.2  2005/04/27 23:05:41  edavis
- * Move sorting capabilities into new DatasetSorter class.
- * Fix a bunch of tests and such.
- *
- * Revision 1.1  2005/03/30 05:41:19  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.5  2005/02/01 22:55:16  edavis
- * Add dataset filtering to DirectoryScanner.
- *
- * Revision 1.4  2005/01/20 23:13:30  edavis
- * Extend DirectoryScanner to handle catalog generation for a list of top-level
- * data directories:
- * 1) add getMainCatalog(List):void to DirectoryScanner;
- * 2) add expand(List):void to DatasetSource, and
- * 3) two changes to the abstract methods in DatasetSource:
- *   a) add createDataset(String):InvDataset and
- *   b) rename getTopLevelDataset():InvDataset to
- *      createSkeletonCatalog():InvDataset.
- *
- * Revision 1.3  2005/01/14 18:02:24  edavis
- * Add createCatalogRef to DirectoryScanner constructor. Add testing.
- *
- * Revision 1.2  2004/12/15 17:51:03  edavis
- * Changes to clean up ResultService. Changes to add a server title to DirectoryScanner (becomes the title of the top-level dataset).
- *
- * Revision 1.1  2004/12/14 22:47:22  edavis
- * Add simple interface to thredds.cataloggen and continue adding catalogRef capabilities.
- *
- */

@@ -1,5 +1,3 @@
-// $Id: TestDatasetSource.java 61 2006-07-12 21:36:00Z edavis $
-
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,9 +31,9 @@ import java.io.*;
  */
 public class TestDatasetSource extends TestCase
 {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestDatasetSource.class);
+  //static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestDatasetSource.class);
 
-  private boolean debugShowCatalogs_expandFlat = true;
+  private boolean debugShowCatalogs = true;
 
   private String configResourcePath = "/thredds/cataloggen/config";
   private String test1DatasetSourceResultCatalog_1_0_ResourceName = "test1ResultCatalog1.0.dss.xml";
@@ -43,20 +41,11 @@ public class TestDatasetSource extends TestCase
   private String testDatasetSource_allCatalogRef_ResultCatalog_ResourceName = "testDatasetSource.allCatalogRef.result.xml";
   private String testDsSource_expandFlatAddTimecoverage_ResourceName = "testDsSource.expandFlatAddTimecoverage.result.xml";
 
-  private InvCatalogFactory factory;
-  private InvCatalogImpl expectedCatalog;
-
   private DatasetSource me1 = null;
   private DatasetSource me2 = null;
   private DatasetSource me3 = null;
 
-  private ResultService rService1 = null;
-
-  private String parentDsName1 = null;
-  private String parentDsName2 = null;
-
   private InvDatasetImpl parentDs1 = null;
-  private InvDatasetImpl parentDs2 = null;
 
   private String name1 = null;
   private String name2 = null;
@@ -65,14 +54,8 @@ public class TestDatasetSource extends TestCase
   private String typeName2 = null;
   private String typeName3 = null;
 
-  private DatasetSourceType type1 = null;
-  private DatasetSourceType type2 = null;
-  private DatasetSourceType type3 = null;
-
   private String structName1 = null;
   private String structName2 = null;
-  private DatasetSourceStructure structure1 = null;
-  private DatasetSourceStructure structure2 = null;
 
   private String accessPoint1 = null;
   private String accessPoint2 = null;
@@ -87,10 +70,8 @@ public class TestDatasetSource extends TestCase
 
   protected void setUp()
   {
-    parentDsName1 = "parent dataset 1";
-    parentDsName2 = "parent dataset 2";
+    String parentDsName1 = "parent dataset 1";
     parentDs1 = new InvDatasetImpl( null, parentDsName1 );
-    parentDs2 = new InvDatasetImpl( null, parentDsName2 );
 
     name1 = "name 1";
     name2 = "name 2";
@@ -98,30 +79,27 @@ public class TestDatasetSource extends TestCase
     typeName1 =  "Local";
     typeName2 =  "DodsFileServer";
     typeName3 =  "DodsDir";
-    type1 = DatasetSourceType.getType( typeName1 );
-    type2 = DatasetSourceType.getType( typeName2 );
-    type3 = DatasetSourceType.getType( typeName3 );
+    DatasetSourceType type1 = DatasetSourceType.getType( typeName1 );
+    DatasetSourceType type2 = DatasetSourceType.getType( typeName2 );
+    DatasetSourceType type3 = DatasetSourceType.getType( typeName3 );
 
     structName1 = "Flat";
     structName2 = "DirTree";
-    structure1 = DatasetSourceStructure.getStructure( structName1 );
-    structure2 = DatasetSourceStructure.getStructure( structName2 );
+    DatasetSourceStructure structure1 = DatasetSourceStructure.getStructure( structName1 );
 
     accessPoint1 = "access point 1";
     accessPoint2 = "access point 2";
 
     out = new StringBuffer();
 
-    rService1 = new ResultService( "fred", ServiceType.DODS, "http://server/dods", null, "access point header 1");
+    ResultService rService = new ResultService( "fred", ServiceType.DODS, "http://server/dods", null, "access point header 1");
 
     me1 = DatasetSource.newDatasetSource( name1,
-                                          type1, structure1, accessPoint1, rService1 );
+                                          type1, structure1, accessPoint1, rService );
     me2 = DatasetSource.newDatasetSource( name1,
-                                          type2, structure1, accessPoint1, rService1 );
+                                          type2, structure1, accessPoint1, rService );
     me3 = DatasetSource.newDatasetSource( name1,
-                                          type3, structure1, accessPoint1, rService1 );
-
-    this.factory = new InvCatalogFactory( "default", true );
+                                          type3, structure1, accessPoint1, rService );
   }
 
   //protected void tearDown()
@@ -164,21 +142,8 @@ public class TestDatasetSource extends TestCase
       throw new IllegalArgumentException( "Given directory is not a collection dataset <" + accessPoint + ">.");
     }
 
-    if ( debugShowCatalogs_expandFlat )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) ds.getParentCatalog() ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( ds.getParentCatalog(), expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( ds.getParentCatalog(), expectedCatalogResourceName, debugShowCatalogs );
   }
 
   // Expand a nested collection dataset using directory filtering.
@@ -221,18 +186,9 @@ public class TestDatasetSource extends TestCase
       throw new IllegalArgumentException( "Given directory is not a collection dataset <" + service1AccessPoint + ">.");
 
     }
-    try
-    {
-      this.factory.writeXML( (InvCatalogImpl) ds.getParentCatalog(), System.out);
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on test write of expanded catalog.",
-                  false);
-    }
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource(ds.getParentCatalog(), expectedCatalogResourceName);
+    TestCatalogGen.compareCatalogToCatalogResource(ds.getParentCatalog(), expectedCatalogResourceName, debugShowCatalogs);
   }
 
   // Expand a nested collection dataset creating catalogRefs for all sub-collection datasets.
@@ -265,18 +221,9 @@ public class TestDatasetSource extends TestCase
       throw new IllegalArgumentException( "Given directory is not a collection dataset <" + service1AccessPoint + ">." );
 
     }
-    try
-    {
-      this.factory.writeXML( (InvCatalogImpl) ds.getParentCatalog(), System.out );
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on test write of expanded catalog.",
-                  false );
-    }
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( ds.getParentCatalog(), expectedCatalogResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( ds.getParentCatalog(), expectedCatalogResourceName, debugShowCatalogs );
   }
 
   // Expand a nested collection dataset creating catalogRefs for all sub-collection datasets.
@@ -314,18 +261,9 @@ public class TestDatasetSource extends TestCase
       throw new IllegalArgumentException( "Given directory is not a collection dataset <" + service1AccessPoint + ">.");
 
     }
-    try
-    {
-      this.factory.writeXML( (InvCatalogImpl) cat, System.out);
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException on test write of expanded catalog.",
-                  false);
-    }
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, expectedCatalogResourceName);
+    TestCatalogGen.compareCatalogToCatalogResource( cat, expectedCatalogResourceName, debugShowCatalogs);
   }
 
   public void testGetSet()
@@ -410,75 +348,3 @@ public class TestDatasetSource extends TestCase
   }
 
 }
-
-/*
- * $Log: TestDatasetSource.java,v $
- * Revision 1.8  2006/01/20 02:08:25  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.7  2005/12/06 19:39:21  edavis
- * Last CatalogBuilder/CrawlableDataset changes before start using in InvDatasetScan.
- *
- * Revision 1.6  2005/11/18 23:51:05  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.5  2005/07/08 18:35:00  edavis
- * Fix problem dealing with service URLs that are relative
- * to the catalog (base="") and those that are relative to
- * the collection (base URL is not empty).
- *
- * Revision 1.4  2005/06/28 18:36:31  edavis
- * Fixes to adding TimeCoverage and ID to datasets.
- *
- * Revision 1.3  2005/06/24 22:00:58  edavis
- * Write DatasetEnhancer1 to allow adding metadata to datasets.
- * Implement DatasetEnhancers for adding timeCoverage and for
- * adding ID to datasets. Also fix DatasetFilter so that 1) if
- * no filter is applicable for collection datasets, allow all
- * collection datasets and 2) if no filter is applicable for
- * atomic datasets, allow all atomic datasets.
- *
- * Revision 1.2  2005/06/07 22:50:24  edavis
- * Fixed catalogRef links so relative to catalog instead of to service.
- * Fixed all tests in TestAllCatalogGen (including changing directory
- * filters because catalogRef names no longer contain slashes ("/").
- *
- * Revision 1.1  2005/03/30 05:41:19  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.8  2005/01/14 21:24:33  edavis
- * Add handling of datasetSource@createCatalogRefs to DTD/XSD and
- * CatGenConfigMetadataFactory and testing.
- *
- * Revision 1.7  2004/12/29 21:53:20  edavis
- * Added catalogRef generation capability to DatasetSource: 1) a catalogRef
- * is generated for all accepted collection datasets; 2) once a DatasetSource
- * is expanded, information about each catalogRef is available. Added tests
- * for new catalogRef generation capability.
- *
- * Revision 1.6  2004/12/22 22:29:00  edavis
- * 1) Fix collection vs atomic dataset filtering includes fix so that default values are handled properly for the DatasetFilter attributes applyToCollectionDataset, applyToAtomicDataset, and invertMatchMeaning.
- * 2) Convert DatasetSource subclasses to use isCollection(), getTopLevelDataset(), and expandThisLevel() instead of expandThisType().
- *
- * Revision 1.5  2004/12/15 17:51:03  edavis
- * Changes to clean up ResultService. Changes to add a server title to DirectoryScanner (becomes the title of the top-level dataset).
- *
- * Revision 1.4  2004/11/30 22:19:26  edavis
- * Clean up some CatalogGen tests and add testing for DatasetSource (without and with filtering on collection datasets).
- *
- * Revision 1.3  2004/06/03 20:39:51  edavis
- * Added tests to check that CatGen config files are parsed correctly and
- * expanded catalogs are written correctly.
- *
- * Revision 1.2  2004/05/11 16:29:07  edavis
- * Updated to work with new thredds.catalog 0.6 stuff and the THREDDS
- * servlet framework.
- *
- * Revision 1.1  2003/08/20 17:23:42  edavis
- * Initial version.
- *
- */

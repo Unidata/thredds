@@ -30,8 +30,8 @@
   <property name="release.javadoc.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadoc/"/>
   <property name="webstart_dir" location="${release.html.dir}/webstart"/-->
 
-  <property name="test.dir" location="${root.dir}/test"/>
-  <property name="test.src.dir" location="${test.dir}/src"/>
+  <property name="test.dir" location="${root.dir}/src/test"/>
+  <property name="test.src.dir" location="${test.dir}/java"/>
   <property name="test.data.dir" location="${test.dir}/data"/>
   <property name="test.classes.dir" location="${build.dir}/test/classes"/>
 

@@ -1,5 +1,3 @@
-// $Id: CatGenTimerTask.java 51 2006-07-12 17:13:13Z caron $
-
 package thredds.cataloggen.servlet;
 
 import java.util.*;
@@ -20,39 +18,30 @@ import thredds.datatype.DateType;
  *
  */
 public class CatGenTimerTask
-  extends TimerTask
-  implements java.lang.Cloneable
 {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger( CatGenTimerTask.class);
 
   /** The name of this task. */
-  private String name = null;
-
-  /** The path (i.e., minus the name) of the configuration document
-   *  to be used by this task. (Should be private to servlet.) */
-  private File configDocPath = null;
+  private final String name;
 
   /** The name of the configuration document to be used by this task. */
-  private String configDocName = null;
+  private final String configDocName;
+
+  /** The filename in which to store the results of this task. */
+  private final String resultFileName;
+
+  /** The time in minutes between runs of this task. */
+  private final int periodInMinutes;
+
+  /** The time in minutes to delay the initial run of this task. */
+  private final int delayInMinutes;
 
   private File configDoc = null;
   private URL configDocURL = null;
-
-  /** The servlets real path. */
-  private File resultPath = null;
-
-  /** The filename in which to store the results of this task. */
-  private String resultFileName = null;
   private File resultFile = null;
 
-  /** The time in minutes between runs of this task. */
-  private int periodInMinutes = 0;
-
-  /** The time in minutes to delay the initial run of this task. */
-  private int delayInMinutes = 0;
-
-  /** Constructor required by ucar.util.prefs (or to be a Bean?). */
-  public CatGenTimerTask() { super(); }
+  // @GuardedBy("this")
+  private MyTimerTask timerTask = null;
 
   /**
    * Constructor
@@ -69,7 +58,21 @@ public class CatGenTimerTask
                           int periodInMinutes,
                           int delayInMinutes)
   {
-    super();
+    if ( name == null || name.equals( "") )
+    {
+      logger.error( "ctor(): The name cannot be null or empty string." );
+      throw new IllegalArgumentException( "The name cannot be null or empty string." );
+    }
+    if ( configDocName == null || configDocName.equals( "") )
+    {
+      logger.error( "ctor(): The config doc name cannot be null or empty string." );
+      throw new IllegalArgumentException( "The config doc name cannot be null or empty string." );
+    }
+    if ( resultFileName == null || resultFileName.equals( "") )
+    {
+      logger.error("ctor(): The result file name cannot be null or empty string.");
+      throw new IllegalArgumentException( "The result file name cannot be null or empty string.");
+    }
     this.name = name;
     this.configDocName = configDocName;
     this.resultFileName = resultFileName;
@@ -79,7 +82,6 @@ public class CatGenTimerTask
 
   public CatGenTimerTask( CatGenTimerTask task )
   {
-    super();
     this.name = task.getName();
     this.configDocName = task.getConfigDocName();
     this.resultFileName = task.getResultFileName();
@@ -87,17 +89,45 @@ public class CatGenTimerTask
     this.delayInMinutes = task.getDelayInMinutes();
   }
 
+  /** Return the value of name. */
+  public String getName() { return( this.name); }
+
+  /** Return the value of configDocName. */
+  public String getConfigDocName() { return( this.configDocName); }
+
+  /** Return the value of resultFileName. */
+  public String getResultFileName() { return( this.resultFileName); }
+
+  /** Return the value of periodInMinutes. */
+  public int getPeriodInMinutes() { return( this.periodInMinutes); }
+
+  /** Return the value of delayInMinutes. */
+  public int getDelayInMinutes() { return( this.delayInMinutes); }
+
+  public synchronized TimerTask getTimerTask()
+  {
+    if ( this.timerTask == null )
+    {
+      logger.error( "getTimerTask(): CatGenTimerTask <" + this.name + "> has not been initialized." );
+      throw new IllegalStateException( "Must call init() first.");
+    }
+    return this.timerTask;
+  }
+
   /**
    * Initialize with resultPath and configDocPath.
    *
    * @param configDocPath - the URL for the config file.
    */
-  public void init( File resultPath, File configDocPath)
+  public synchronized void init( File resultPath, File configDocPath)
   {
-    this.resultPath = resultPath;
-    this.configDocPath = configDocPath;
+    if ( this.timerTask != null )
+    {
+      logger.error( "init(): CatGenTimerTask <" + this.name + "> has already been initialized." );
+      throw new IllegalStateException( "init() has already been called.");
+    }
 
-    this.configDoc = new File( this.configDocPath, this.configDocName);
+    this.configDoc = new File( configDocPath, this.configDocName);
     try
     {
       URI tmpURI = this.configDoc.toURI();
@@ -105,13 +135,11 @@ public class CatGenTimerTask
     }
     catch ( MalformedURLException e )
     {
-      logger.error( "init(): Config Doc to URL caused MallformedURLException");
-      logger.error( e.getMessage());
-      // @todo throw this exception and handle in CatGenServletConfig
-      // throw( e);
+      logger.error( "init(): Bad URL for config File <" + this.configDoc.getPath() + ">: " + e.getMessage());
+      throw new IllegalArgumentException( "init(): config file doesn't convert to valid URI: " + e.getMessage() );
     }
 
-    this.resultFile = new File( this.resultPath, this.resultFileName);
+    this.resultFile = new File( resultPath, this.resultFileName);
     // Check that the result file exists and if not check if need to create subdirectory(ies).
     if ( ! this.resultFile.exists())
     {
@@ -123,47 +151,37 @@ public class CatGenTimerTask
         }
         else
         {
-          logger.warn( "init(): Could not creat directory \"" +
+          logger.error( "init(): Could not create directory \"" +
                        this.resultFile.getParentFile().getAbsolutePath() + "\", result file " +
                        "(" + this.resultFile.getAbsolutePath() + ")invalid.");
-          // @todo Throw an IOException here.
+          throw new IllegalArgumentException( "Result file directory doesn't exist and couldn't be created." );
         }
       }
     }
 
-    logger.debug( "init(): result path is " + this.resultPath.toString());
-    logger.debug( "init(): config doc path is " + this.configDocPath.toString());
+    logger.debug( "init(): result path is " + resultPath.toString());
+    logger.debug( "init(): config doc path is " + configDocPath.toString());
     logger.debug( "init(): config doc URL is " + this.configDocURL.toString());
     logger.debug( "init(): config doc is " + this.configDoc.toString());
     logger.debug( "init(): result file is " + this.resultFile.toString());
+
+    this.timerTask = new MyTimerTask( this.configDocURL, this.resultFile, this.periodInMinutes );
   }
 
   /**
    * Test whether this task is valid, including the validity of the config file.
-   * @param messages - StringBuffer containing error and warning messages.
+   * @param messages - StringBuffer for appending error and warning messages.
    * @return - true if task is valid, false if invalid (errors)
    */
-  public boolean isValid( StringBuffer messages)
+  public synchronized boolean isValid( StringBuffer messages)
   {
-    boolean isValid = true;
-    String tmpMsg = null;
+    if ( this.timerTask == null )
+    {
+      logger.error( "isValid(): CatGenTimerTask <" + this.name + "> has not been initialized.");
+      return false;
+    }
 
-    // Check that task name is valid.
-    logger.debug( "isValid(): Check name <" + this.getName() + "> for validity." );
-    if ( this.getName() == null)
-    {
-      tmpMsg = "Tasks name not set (null).";
-      logger.debug( "isValid(): " + tmpMsg);
-      messages.append( "CatGenTimerTask.isValid(): " ).append( tmpMsg );
-      isValid = false;
-    }
-    if ( this.getName().equals( ""))
-    {
-      tmpMsg = "Task name is empty (\"\").";
-      logger.debug( "isValid(): " + tmpMsg);
-      messages.append( "CatGenTimerTask.isValid(): " ).append( tmpMsg );
-      isValid = false;
-    }
+    boolean isValid = true;
 
     // Only check for validity if period is not zero (if zero task not run).
     logger.debug( "isValid(): If period is not zero <" + this.getPeriodInMinutes() + "> check validity.");
@@ -182,7 +200,7 @@ public class CatGenTimerTask
       {
         if ( ! this.resultFile.canWrite())
         {
-          messages.append( "CatGenTimerTask.isValid() - result file not writeable.");
+          messages.append( "CatGenTimerTask.isValid() - result file not writeable.\n");
           logger.warn( "isValid(): Result file is not writable.");
           isValid = false;
         }
@@ -196,7 +214,7 @@ public class CatGenTimerTask
             // @todo Test to find out when this might happen. Perhaps when direcotry is not writable.
             messages.append( "CatGenTimerTask.isValid() - result file (" )
                     .append( this.resultFile.getPath() )
-                    .append( ") doesn't exist and can't be created (1)." );
+                    .append( ") doesn't exist and can't be created (1).\n" );
             isValid = false;
           }
         }
@@ -204,7 +222,7 @@ public class CatGenTimerTask
         {
           messages.append( "CatGenTimerTask.isValid() - result file (" )
                   .append( this.resultFile.getPath() )
-                  .append( ") doesn't exist and can't be created (2)." );
+                  .append( ") doesn't exist and can't be created (2).\n" );
           isValid = false;
         }
       }
@@ -212,20 +230,20 @@ public class CatGenTimerTask
       // Check that period is valid.
       if ( this.getPeriodInMinutes() < 0)
       {
-        messages.append( "CatGenTimerTask.isValid() - period must be zero or above.");
+        messages.append( "CatGenTimerTask.isValid() - period must be zero or above.\n");
         isValid = false;
       }
 
       // Check that delay is valid.
       if ( this.getDelayInMinutes() < 0)
       {
-        messages.append( "CatGenTimerTask.isValid() - delay must be zero or above.");
+        messages.append( "CatGenTimerTask.isValid() - delay must be zero or above.\n");
         isValid = false;
       }
     }
     else
     {
-      messages.append( "CatGenTimerTask.isValid() - period set to zero, skipping all but \"task name\" validity tests.");
+      messages.append( "CatGenTimerTask.isValid() - period set to zero, skipping all but \"task name\" validity tests.\n");
     }
 
     if ( isValid )
@@ -242,145 +260,57 @@ public class CatGenTimerTask
     return( isValid);
   }
 
-  //public boolean cancel() // from TimerTask
-  //public long scheduledExecutionTime() // from TimerTask
-  /** Implementation of the <tt>TimerTask</tt> abstract method, run(). */
-  public void run()
+  private class MyTimerTask extends TimerTask
   {
-    logger.info( "run(): generating catalog <" + this.resultFile.toString() + "> from config doc, " + this.configDocURL.toString());
-    CatalogGen catGen = new CatalogGen( this.configDocURL);
-    StringBuffer messages = new StringBuffer();
-    if ( catGen.isValid( messages))
+    private final int periodInMinutes;
+    private final URL configDocURL;
+    private final File resultFile;
+
+
+    private MyTimerTask( URL configDocURL, File resultFile,
+                         int periodInMinutes )
     {
-      catGen.expand();
-
-      // Set the catalog expires date.
-      long expireMillis = System.currentTimeMillis() + ( this.periodInMinutes * 60 * 1000);
-      Date expireDate = new Date( expireMillis );
-      DateType expireDateType = new DateType( false, expireDate);
-      catGen.setCatalogExpiresDate( expireDateType);
-
-      // Write the catalog
-      if ( catGen.writeCatalog( this.resultFile.toString()))
+      this.configDocURL = configDocURL;
+      this.resultFile = resultFile;
+      this.periodInMinutes = periodInMinutes;
+    }
+    /**
+     * Implementation of the <tt>TimerTask</tt> abstract method, run().
+     */
+    public void run()
+    {
+      logger.info( "run(): generating catalog <" + this.resultFile.toString() + "> from config doc, " + this.configDocURL.toString() );
+      CatalogGen catGen = new CatalogGen( this.configDocURL );
+      StringBuffer messages = new StringBuffer();
+      if ( catGen.isValid( messages ) )
       {
-        logger.debug( "run(): Catalog written (" + this.resultFile.toString() + ").");
+        catGen.expand();
+
+        // Set the catalog expires date.
+        long expireMillis = System.currentTimeMillis() + ( this.periodInMinutes * 60 * 1000 );
+        Date expireDate = new Date( expireMillis );
+        DateType expireDateType = new DateType( false, expireDate );
+        catGen.setCatalogExpiresDate( expireDateType );
+
+        // Write the catalog
+        if ( catGen.writeCatalog( this.resultFile.toString() ) )
+        {
+          logger.debug( "run(): Catalog written (" + this.resultFile.toString() + ")." );
+        }
+        else
+        {
+          logger.error( "run(): catalog not written (" + this.resultFile.toString() + ")." );
+        }
       }
       else
       {
-        logger.error( "run(): catalog not written (" + this.resultFile.toString() + ").");
+        // Invalid CatGen, write to log.
+        logger.error( "run(): Tried running CatalogGen with invalid config doc, " + this.configDocURL.toString() +
+                      "\n" + messages.toString() );
+        this.cancel();
       }
-    }
-    else
-    {
-      // Invalid CatGen, write to log.
-      logger.error( "run(): Tried running CatalogGen with invalid config doc, " + this.configDocURL.toString() +
-                    "\n" + messages.toString() );
-      // @todo unschedule task by setting period to zero, removing and
-      //   adding this task from/to servlet config. How affect servlet config?*/
-    }
 
-    return;
+      return;
+    }
   }
-
-  /** Set the value of name. */
-  public void setName( String name) { this.name = name; }
-  /** Return the value of name. */
-  public String getName() { return( this.name); }
-
-  /** Set the value of configDocName. */
-  public void setConfigDocName( String configDocName)
-  { this.configDocName = configDocName; }
-  /** Return the value of configDocName. */
-  public String getConfigDocName() { return( this.configDocName); }
-
-//  /** Set the value of configDocURLPath. */
-//  public void setConfigDocURLPath( String configDocURLPath)
-//  { this.configDocURLPath = configDocURLPath; }
-//  /** Return the value of configDocURLPath. */
-//  public String getConfigDocURLPath() { return( this.configDocName); }
-//                                  //  { return( "*** Server Dependent ***"); }
-//                                  //  { return( this.configDocName); }
-
-  /** Set the value of resultFileName. */
-  public void setResultFileName( String resultFileName)
-  { this.resultFileName = resultFileName; }
-  /** Return the value of resultFileName. */
-  public String getResultFileName() { return( this.resultFileName); }
-
-  /** Set the value of periodInMinutes. */
-  public void setPeriodInMinutes( int periodInMinutes)
-  { this.periodInMinutes = periodInMinutes; }
-  /** Return the value of periodInMinutes. */
-  public int getPeriodInMinutes() { return( this.periodInMinutes); }
-
-  /** Set the value of delayInMinutes. */
-  public void setDelayInMinutes( int delayInMinutes)
-  { this.delayInMinutes = delayInMinutes; }
-  /** Return the value of delayInMinutes. */
-  public int getDelayInMinutes() { return( this.delayInMinutes); }
-
 }
-/*
- * $Log: CatGenTimerTask.java,v $
- * Revision 1.9  2006/06/08 23:08:41  edavis
- * 1) Use catalog "expires" attribute to determine if TDS static catalog cache is stale:
- *     a) Setup CatalogGen tasks to add "expires" attribute to generated catalog.
- *     b) Add checking for expired catalog and re-reading of catalog from disk in DataRootHandler.getCatalog()
- * 2) Fix DataRootHandler singleton init() and getInstance().
- *
- * Revision 1.8  2006/01/20 20:42:03  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.7  2005/12/16 23:19:35  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.6  2005/07/13 22:48:06  edavis
- * Improve server logging, includes adding a final log message
- * containing the response time for each request.
- *
- * Revision 1.5  2005/04/05 22:37:02  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.4  2004/05/11 20:07:52  edavis
- * Hand init() the path for the result files rather than the path of the
- * servlet root. Add some logging.
- *
- * Revision 1.3  2003/09/20 16:16:10  edavis
- * Create subdirectories if needed for result catalog.
- *
- * Revision 1.2  2003/08/29 21:41:47  edavis
- * The following changes where made:
- *
- *  1) Added more extensive logging (changed from thredds.util.Log and
- * thredds.util.Debug to using Log4j).
- *
- * 2) Improved existing error handling and added additional error
- * handling where problems could fall through the cracks. Added some
- * catching and throwing of exceptions but also, for problems that aren't
- * fatal, added the inclusion in the resulting catalog of datasets with
- * the error message as its name.
- *
- * 3) Change how the CatGenTimerTask constructor is given the path to the
- * config files and the path to the resulting files so that resulting
- * catalogs are placed in the servlet directory space. Also, add ability
- * for servlet to serve the resulting catalogs.
- *
- * 4) Switch from using java.lang.String to using java.io.File for
- * handling file location information so that path seperators will be
- * correctly handled. Also, switch to java.net.URI rather than
- * java.io.File or java.lang.String where necessary to handle proper
- * URI/URL character encoding.
- *
- * 5) Add handling of requests when no path ("") is given, when the root
- * path ("/") is given, and when the admin path ("/admin") is given.
- *
- * 6) Fix the PUTting of catalogGenConfig files.
- *
- * 7) Start adding GDS DatasetSource capabilities.
- *
- * Revision 1.1  2003/03/04 23:09:37  edavis
- * Added for 0.7 release (addition of CatGenServlet).
- *
- *
- */

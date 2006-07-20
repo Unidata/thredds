@@ -1,12 +1,9 @@
-// $Id: TestSimpleCatalogBuilder.java,v 1.4 2005/12/30 00:18:56 edavis Exp $
 package thredds.cataloggen;
 
 import junit.framework.*;
 
 import java.io.IOException;
 
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalog;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFactory;
@@ -21,6 +18,8 @@ public class TestSimpleCatalogBuilder extends TestCase
 {
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( TestSimpleCatalogBuilder.class );
+
+  private boolean debugShowCatalogs = true;
 
   public TestSimpleCatalogBuilder( String name )
   {
@@ -78,18 +77,7 @@ public class TestSimpleCatalogBuilder extends TestCase
                   false );
     }
 
-    // Print catalog to std out.
-    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-    try
-    {
-      System.out.println( fac.writeXML( (InvCatalogImpl) catalog ) );
-    }
-    catch ( IOException e )
-    {
-      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, "/thredds/cataloggen/testSimpleCatBuilder.basic.result.xml" );
+    TestCatalogGen.compareCatalogToCatalogResource( catalog, "/thredds/cataloggen/testSimpleCatBuilder.basic.result.xml", debugShowCatalogs );
   }
 }

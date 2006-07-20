@@ -1,4 +1,3 @@
-// $Id: TestCollectionLevelScanner.java,v 1.3 2006/05/19 19:23:06 edavis Exp $
 package thredds.cataloggen;
 
 import junit.framework.*;
@@ -78,22 +77,8 @@ public class TestCollectionLevelScanner extends TestCase
       return;
     }
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) cat ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName, debugShowCatalogs );
 
   }
 
@@ -136,22 +121,8 @@ public class TestCollectionLevelScanner extends TestCase
       return;
     }
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) cat ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName, debugShowCatalogs );
 
   }
 
@@ -194,22 +165,8 @@ public class TestCollectionLevelScanner extends TestCase
       return;
     }
 
-    if ( debugShowCatalogs )
-    {
-      // Print catalog to std out.
-      InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
-      try
-      {
-        System.out.println( fac.writeXML( (InvCatalogImpl) cat ) );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-      }
-    }
-
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName );
+    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName, debugShowCatalogs );
 
   }
 }

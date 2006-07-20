@@ -1,11 +1,8 @@
-// $Id: TestCatGenTimerTask.java 62 2006-07-12 21:41:46Z edavis $
-
 package thredds.cataloggen.servlet;
 
 import junit.framework.*;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  *
@@ -28,6 +25,7 @@ public class TestCatGenTimerTask extends TestCase
   private int taskOneDelayInMinutes = 1;
   private int taskOnePeriodInMinutes = 30;
 
+  private CatGenTimerTask taskTwo = null;
   private String taskTwoName = "Task2";
   private String taskTwoConfigDocName = "test1CatGenConfig1.0.xml";
   private String taskTwoResultsFileName = "myCatalogExample2.xml";
@@ -47,6 +45,10 @@ public class TestCatGenTimerTask extends TestCase
                                    taskOnePeriodInMinutes, taskOneDelayInMinutes );
     taskOne.init( new File( configPath ), new File( configPath ) );
 
+    taskTwo = new CatGenTimerTask( taskTwoName, taskTwoConfigDocName,
+                                   taskTwoResultsFileName,
+                                   taskTwoPeriodInMinutes, taskTwoDelayInMinutes );
+    taskTwo.init( new File( configPath ), new File( configPath ) );
   }
 
 //  protected void tearDown()
@@ -55,6 +57,7 @@ public class TestCatGenTimerTask extends TestCase
 
   public void testValid()
   {
+    // Test task one.
     assertTrue( "Task name <" + taskOne.getName() + "> doesn't match expected <" + taskOneName + ">.",
                 taskOne.getName().equals( taskOneName));
     assertTrue( "Task config doc name <" + taskOne.getConfigDocName() + "> doesn't match expected <" + taskOneConfigDocName + ">.",
@@ -71,76 +74,34 @@ public class TestCatGenTimerTask extends TestCase
                   "; result doc name=" + taskOne.getResultFileName() + "" +
                   "; period in minutes=" + taskOne.getPeriodInMinutes() + "" +
                   "; delay in minutes=" + taskOne.getDelayInMinutes() + ".");
+
     StringBuffer msg = new StringBuffer();
-    boolean testIsValid = taskOne.isValid( msg);
+    boolean valid = taskOne.isValid( msg );
     assertTrue( "Task <" + taskOne.getName() + " - " + taskOne.getConfigDocName() + "> is not valid: " + msg,
-                testIsValid );
+                valid );
 
+    // Test task two.
+    assertTrue( "Task name <" + taskTwo.getName() + "> doesn't match expected <" + taskTwoName + ">.",
+                taskTwo.getName().equals( taskTwoName));
+    assertTrue( "Task config doc name <" + taskTwo.getConfigDocName() + "> doesn't match expected <" + taskTwoConfigDocName + ">.",
+                taskTwo.getConfigDocName().equals( taskTwoConfigDocName ) );
+    assertTrue( "Task result doc name <" + taskTwo.getResultFileName() + "> doesn't match expected <" + taskTwoResultsFileName + ">.",
+                taskTwo.getResultFileName().equals( taskTwoResultsFileName ) );
+    assertTrue( "Task period in minutes <" + taskTwo.getPeriodInMinutes() + "> doesn't match expected <" + taskTwoPeriodInMinutes + ">.",
+                taskTwo.getPeriodInMinutes() == taskTwoPeriodInMinutes );
+    assertTrue( "Task delay in minutes <" + taskTwo.getDelayInMinutes() + "> doesn't match expected <" + taskTwoDelayInMinutes + ">.",
+                taskTwo.getDelayInMinutes() == taskTwoDelayInMinutes );
 
-    taskOne.setName( taskTwoName);
-    assertTrue( "Setting new task name <" + taskTwoName + "> failed.",
-                taskOne.getName( ).equals( taskTwoName));
-    taskOne.setConfigDocName( taskTwoConfigDocName);
-    assertTrue( "Setting new task config doc name <" + taskTwoConfigDocName + "> failed.",
-                taskOne.getConfigDocName().equals( taskTwoConfigDocName ) );
-    taskOne.setResultFileName( taskTwoResultsFileName);
-    assertTrue( "Setting new task results file name <" + taskTwoResultsFileName + "> failed.",
-                taskOne.getResultFileName().equals( taskTwoResultsFileName ) );
-    taskOne.setPeriodInMinutes( taskTwoPeriodInMinutes);
-    assertTrue( "Setting new task period in minutes <" + taskTwoPeriodInMinutes + "> failed.",
-                taskOne.getPeriodInMinutes() == taskTwoPeriodInMinutes );
-    taskOne.setDelayInMinutes( taskTwoDelayInMinutes );
-    assertTrue( "Setting new task delay in minutes <" + taskTwoDelayInMinutes + "> failed.",
-                taskOne.getDelayInMinutes() == taskTwoDelayInMinutes );
+    log.debug( "testValid(): taskTwo - name=" + taskTwo.getName() +
+                  "; config doc name=" + taskTwo.getConfigDocName() + "" +
+                  "; result doc name=" + taskTwo.getResultFileName() + "" +
+                  "; period in minutes=" + taskTwo.getPeriodInMinutes() + "" +
+                  "; delay in minutes=" + taskTwo.getDelayInMinutes() + ".");
 
-    testIsValid = taskOne.isValid( msg );
-    assertTrue( "Task <" + taskOne.getName() + " - " + taskOne.getConfigDocName() + "> is not valid: " + msg,
-                testIsValid );
+    msg = new StringBuffer();
+    valid = taskTwo.isValid( msg );
+    assertTrue( "Task <" + taskTwo.getName() + " - " + taskTwo.getConfigDocName() + "> is not valid: " + msg,
+                valid );
   }
 
 }
-/*
- * $Log: TestCatGenTimerTask.java,v $
- * Revision 1.5  2006/03/30 21:50:15  edavis
- * Minor fixes to get tests running.
- *
- * Revision 1.4  2006/01/20 20:42:06  caron
- * convert logging
- * use nj22 libs
- *
- * Revision 1.3  2005/07/14 20:01:26  edavis
- * Make ID generation mandatory for datasetScan generated catalogs.
- * Also, remove log4j from some tests.
- *
- * Revision 1.2  2005/04/27 23:05:41  edavis
- * Move sorting capabilities into new DatasetSorter class.
- * Fix a bunch of tests and such.
- *
- * Revision 1.1  2005/03/30 05:41:19  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.6  2004/08/23 16:45:17  edavis
- * Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
- *
- * Revision 1.5  2004/06/03 20:40:59  edavis
- * Modified tests to handle changes to code.
- *
- * Revision 1.4  2004/05/11 16:29:08  edavis
- * Updated to work with new thredds.catalog 0.6 stuff and the THREDDS
- * servlet framework.
- *
- * Revision 1.3  2003/08/20 17:32:58  edavis
- * Minor name change.
- *
- * Revision 1.2  2003/05/01 23:45:41  edavis
- * Minor fix.
- *
- * Revision 1.1  2003/03/04 23:11:32  edavis
- * Added for 0.7 release (addition of CatGenServlet). Not fully implemented.
- *
- *
- */
