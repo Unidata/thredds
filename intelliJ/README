@@ -42,26 +42,39 @@ specific to your local machine and working directory:
      in the "cdm" directory and on in the "tds" directory.
   e) Select one of the build scripts and select "OK".
   f) Repeat steps b-e for any other build scripts.
-  
-5) The TDS Ant build uses some Tomcat deploy add-ons. To use the TDS build
-   script, the catalina-ant.jar file must be available to Ant. There are two
-   ways to set this up. Either:
-   1) Setup IntelliJ IDEA to run Ant with catalina-ant.jar on the class path.
-     a) In the "Ant Build" window, select the "tds" build script. Bring up
-        the "Properties" window by clicking on the "Properties" icon (looks
-        like a check list) at the top of the "Ant Build" window.
-     b) Select the "Additional Classpath" tab.
-     c) Click on the "Add" button.
-     d) Browse your directory tree to find a copy of catalina-ant.jar. The
-        Tomcat distribution contains one in the server/lib directory.
-     e) Select the copy of catalina-ant.jar and click on the "OK" button.
-   OR
-   2) Copy catalina-ant.jar (distributed with Tomcat) into the lib directory
-      of the Ant being used by IntelliJ IDEA.
-     a) In the "Ant Build" window, select the "tds" build script. Bring up
-        the "Properties" window by clicking on the "Properties" icon (looks
-        like a check list) at the top of the "Ant Build" window.
-     b) Select the "Execution" tab.
-     c) Look at the setup of the Ant being used (default or custom) to
-        determine the location of the Ant lib directory.
-     d) Copy catalina-ant.jar to the Ant lib directory.
+
+  g) The TDS Ant build uses some Tomcat deploy add-ons. To use the TDS build
+     script, the catalina-ant.jar file must be available to Ant. There are two
+     ways to set this up. Either:
+     1) Setup IntelliJ IDEA to run Ant with catalina-ant.jar on the class path.
+       a) In the "Ant Build" window, select the "tds" build script. Bring up
+          the "Properties" window by clicking on the "Properties" icon (looks
+          like a check list) at the top of the "Ant Build" window.
+       b) Select the "Additional Classpath" tab.
+       c) Click on the "Add" button.
+       d) Browse your directory tree to find a copy of catalina-ant.jar. The
+          Tomcat distribution contains one in the server/lib directory.
+       e) Select the copy of catalina-ant.jar and click on the "OK" button.
+     OR
+     2) Copy catalina-ant.jar (distributed with Tomcat) into the lib directory
+        of the Ant being used by IntelliJ IDEA.
+       a) In the "Ant Build" window, select the "tds" build script. Bring up
+          the "Properties" window by clicking on the "Properties" icon (looks
+          like a check list) at the top of the "Ant Build" window.
+       b) Select the "Execution" tab.
+       c) Look at the setup of the Ant being used (default or custom) to
+          determine the location of the Ant lib directory.
+       d) Copy catalina-ant.jar to the Ant lib directory.
+
+5) Setup Run/Debug configuration (optional)
+  a) From the IntelliJ IDEA toolbar, find the "Run/Debug Configuration"
+     pull-down and select "Edit Configuration".
+  b) You can setup to run/debug apps, web apps, JUnit tests, and others.
+  c) A few possibilities:
+     1) NetCDF-java ToolsUI: ucar.nc2.ui.ToolsUI
+     2) TDS: (more on this to come)
+     3) Some JUnit tests:
+        a) ucar.nc2.TestAll
+        b) thredds.tds.TestTDSAll
+        c) thredds.TestCompareTwoCatalogs
+        d) (more to come)
