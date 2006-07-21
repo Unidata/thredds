@@ -105,7 +105,7 @@ public class CatGenTimerTask
   /** Return the value of delayInMinutes. */
   public int getDelayInMinutes() { return( this.delayInMinutes); }
 
-  public synchronized TimerTask getTimerTask()
+  synchronized TimerTask getTimerTask()
   {
     if ( this.timerTask == null )
     {
@@ -120,7 +120,7 @@ public class CatGenTimerTask
    *
    * @param configDocPath - the URL for the config file.
    */
-  public synchronized void init( File resultPath, File configDocPath)
+  synchronized void init( File resultPath, File configDocPath)
   {
     if ( this.timerTask != null )
     {
@@ -174,7 +174,7 @@ public class CatGenTimerTask
    * @param messages - StringBuffer for appending error and warning messages.
    * @return - true if task is valid, false if invalid (errors)
    */
-  public synchronized boolean isValid( StringBuffer messages)
+  synchronized boolean isValid( StringBuffer messages)
   {
     if ( this.timerTask == null )
     {
@@ -184,9 +184,13 @@ public class CatGenTimerTask
 
     boolean isValid = true;
 
-    // Only check for validity if period is not zero (if zero task not run).
-    logger.debug( "isValid(): If period is not zero <" + this.getPeriodInMinutes() + "> check validity.");
-    if ( this.getPeriodInMinutes() != 0)
+    // Skip most validation if period set to zero.
+    if ( this.getPeriodInMinutes() == 0 )
+    {
+      messages.append( "CatGenTimerTask.isValid() - period set to zero, skipping all but \"task name\" validity tests.\n");
+    }
+    // Otherwise, do full validation.
+    else
     {
       // Check that catalog is valid.
       CatalogGen catGen = new CatalogGen( this.configDocURL);
@@ -220,10 +224,6 @@ public class CatGenTimerTask
         messages.append( "CatGenTimerTask.isValid() - delay must be zero or above.\n");
         isValid = false;
       }
-    }
-    else
-    {
-      messages.append( "CatGenTimerTask.isValid() - period set to zero, skipping all but \"task name\" validity tests.\n");
     }
 
     if ( isValid )

@@ -14,7 +14,7 @@ import java.util.*;
  * the tasks being handled by this Catalog Generator.
  *
  */
-public class CatGenServletConfig
+class CatGenServletConfig
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( CatGenServletConfig.class);
 
@@ -34,7 +34,7 @@ public class CatGenServletConfig
 
   /** Timer for scheduling tasks. */
   // private static Timer timer = new Timer(); // Why static?
-  private Timer timer = new Timer();
+  private Timer timer;
 
   /**
    * Constructor. Read config file and initialize any tasks contained therein.
@@ -42,7 +42,7 @@ public class CatGenServletConfig
    * @param configPath
    * @param servletConfigDocName
    */
-  public CatGenServletConfig( File resultPath, File configPath, String servletConfigDocName)
+  CatGenServletConfig( File resultPath, File configPath, String servletConfigDocName)
           throws IOException
   {
     this.resultPath = resultPath;
@@ -84,6 +84,8 @@ public class CatGenServletConfig
     // Read config file.
     configTasks = configDocParser.parseXML( configFile );
 
+    timer = new Timer();
+
     if ( this.configTasks == null )
     {
       log.error( "CatGenServletConfig(): invalid config file." );
@@ -119,39 +121,42 @@ public class CatGenServletConfig
     }
   }
 
-  public void cancelTimer()
+  void cancelTimer()
   {
     this.timer.cancel();
   }
 
   /** Return the filename for the configuration file. */
-  public String getServletConfigDocName() { return( this.servletConfigDocName); }
+  String getServletConfigDocName()
+  {
+    return( this.servletConfigDocName);
+  }
 
-  public synchronized List getUnmodTasks()
+  synchronized List getUnmodTasks()
   {
     return Collections.unmodifiableList( this.configTasks );
   }
   /** Return an iterator of the config tasks in this config. */
-  public synchronized java.util.Iterator getUnmodTaskIterator()
+  synchronized java.util.Iterator getUnmodTaskIterator()
   {
     List unModList = Collections.unmodifiableList( this.configTasks);
     return( unModList.iterator());
   }
 
   /** Find a task with the given name. */
-  public synchronized CatGenTimerTask findTask( String taskName)
+  synchronized CatGenTimerTask findTask( String taskName)
   {
     return( (CatGenTimerTask) configTaskHash.get( taskName));
   }
 
   /** Find a task with the given config file name. */
-  public synchronized CatGenTimerTask findTaskByConfigDocName( String configDocName)
+  synchronized CatGenTimerTask findTaskByConfigDocName( String configDocName)
   {
     return( (CatGenTimerTask) configTaskHashByConfigDocName.get( configDocName));
   }
 
   /** Add the given task unless it is a duplicate. */
-  public synchronized boolean addTask( CatGenTimerTask task)
+  synchronized boolean addTask( CatGenTimerTask task)
           throws IOException
   {
     log.debug( "addTask(): start.");
@@ -199,7 +204,7 @@ public class CatGenServletConfig
   }
 
   /** Remove the given task. */
-  public synchronized boolean removeTask( CatGenTimerTask task)
+  synchronized boolean removeTask( CatGenTimerTask task)
           throws IOException
  {
     log.debug( "removeTask(): start.");
@@ -227,7 +232,7 @@ public class CatGenServletConfig
   }
 
   /** Remove the task with the given name. */
-  public synchronized boolean removeTask( String taskName)
+  synchronized boolean removeTask( String taskName)
           throws IOException
  {
     return( this.removeTask( this.findTask( taskName)));
@@ -240,7 +245,7 @@ public class CatGenServletConfig
    *
    * @param configDocName - the name of the CatGen config doc.
    */
-  public synchronized void notifyNewConfigDoc( String configDocName)
+  synchronized void notifyNewConfigDoc( String configDocName)
   {
     log.debug( "notifyNewConfigDoc(): start." );
     CatGenTimerTask task = this.findTaskByConfigDocName( configDocName);
@@ -304,7 +309,7 @@ public class CatGenServletConfig
   }
 
   /* Write the configuration to the XMLStore. */
-  public void writeConfig()
+  void writeConfig()
           throws java.io.IOException
   {
     log.debug( "writeConfig(): start.");
@@ -322,7 +327,7 @@ public class CatGenServletConfig
   }
 
   /* Write the configuration to the XMLStore. */
-  public void writeConfig( OutputStream os )
+  void writeConfig( OutputStream os )
           throws java.io.IOException
   {
     log.debug( "writeConfig(): writing config to XMLStore (OutputStream)." );
@@ -334,7 +339,7 @@ public class CatGenServletConfig
    *
    * @return a String containing the "/admin/config" HTML document.
    */
-  public String toHtml()
+  String toHtml()
   {
     StringBuffer tmpString = new StringBuffer();
     log.debug( "toHtml(): start.");
@@ -428,7 +433,7 @@ public class CatGenServletConfig
      * @return a List of CatGenTimerTask items (which may be empty), or null if config file is malformed.
      * @throws IOException if could not read File.
      */
-    public List parseXML( File inFile )
+    List parseXML( File inFile )
             throws IOException
     {
       FileInputStream inStream = new FileInputStream( inFile );
@@ -444,7 +449,7 @@ public class CatGenServletConfig
      * @return a List of CatGenTimerTask items (which may be empty), or null if config file is malformed.
      * @throws IOException if could not read InputStream.
      */
-    public List parseXML( InputStream inStream, String docId )
+    List parseXML( InputStream inStream, String docId )
             throws IOException
     {
       SAXBuilder builder = new SAXBuilder();
@@ -533,7 +538,7 @@ public class CatGenServletConfig
       return configList;
     }
 
-    public void writeXML( File outFile, List configList )
+    void writeXML( File outFile, List configList )
             throws IOException
     {
       FileOutputStream outStream = new FileOutputStream( outFile );
@@ -541,7 +546,7 @@ public class CatGenServletConfig
       outStream.close();
     }
 
-    public void writeXML( OutputStream outStream, List configList )
+    void writeXML( OutputStream outStream, List configList )
             throws IOException
     {
       Element rootElem = new Element( rootElemName );
