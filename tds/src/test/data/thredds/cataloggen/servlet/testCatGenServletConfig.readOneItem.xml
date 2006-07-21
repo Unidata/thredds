@@ -3,7 +3,7 @@
   <root type="user">
     <map>
       <beanCollection key="config" class="thredds.cataloggen.servlet.CatGenTimerTask">
-        <bean name="Task1" configDocName="configCatGenExample1.xml" resultFileName="myCatalogExample1.xml" delayInMinutes="1" periodInMinutes="0" />
+        <bean name="Task1" configDocName="testCatGenServletConfig.exampleTaskConfig1.xml" resultFileName="testCatGenServletConfig.resultCatalog1.xml" delayInMinutes="1" periodInMinutes="0" />
       </beanCollection>
     </map>
   </root>

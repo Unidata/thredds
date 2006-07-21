@@ -24,15 +24,15 @@ public class TestCatGenServletConfig extends TestCase
 
   private CatGenTimerTask taskOne = null;
   private String taskOneName = "Task1";
-  private String taskOneConfigDocName = "configCatGenExample1.xml";
-  private String taskOneResultsFileName = "myCatalogExample1.xml";
+  private String taskOneConfigDocName = "testCatGenServletConfig.exampleTaskConfig1.xml";
+  private String taskOneResultsFileName = "testCatGenServletConfig.resultCatalog1.xml";
   private int taskOneDelayInMinutes = 1;
   private int taskOnePeriodInMinutes = 0;
 
   private CatGenTimerTask taskTwo = null;
   private String taskTwoName = "Task2";
-  private String taskTwoConfigDocName = "configCatGenExample2.xml";
-  private String taskTwoResultsFileName = "myCatalogExample2.xml";
+  private String taskTwoConfigDocName = "testCatGenServletConfig.exampleTaskConfig2.xml";
+  private String taskTwoResultsFileName = "testCatGenServletConfig.resultCatalog2.xml";
   private int taskTwoDelayInMinutes = 2;
   private int taskTwoPeriodInMinutes = 60;
 
