@@ -69,7 +69,7 @@ public class CatGenConfigMetadataFactory
 
     if (showParsedXML)
     {
-      XMLOutputter xmlOut = new XMLOutputter();
+      XMLOutputter xmlOut = new XMLOutputter( Format.getPrettyFormat() );
       System.out.println ("*** catalog/showParsedXML = \n"+xmlOut.outputString(doc)+"\n*******");
     }
 

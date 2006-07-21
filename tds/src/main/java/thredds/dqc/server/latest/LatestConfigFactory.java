@@ -3,6 +3,7 @@ package thredds.dqc.server.latest;
 
 import org.jdom.*;
 import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 import org.jdom.input.*;
 
 import java.io.*;
@@ -103,7 +104,7 @@ public class LatestConfigFactory
     Document doc = new Document();
     doc.setRootElement( rootElem );
 
-    XMLOutputter outputter = new XMLOutputter();
+    XMLOutputter outputter = new XMLOutputter( Format.getPrettyFormat() );
     FileOutputStream outStream = new FileOutputStream( outFile );
     
     outputter.output( doc, outStream );

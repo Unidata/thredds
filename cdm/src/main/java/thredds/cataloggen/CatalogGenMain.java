@@ -190,16 +190,17 @@ public class CatalogGenMain
     if ( catGen.isValid( msgLog ) )
     {
       catGen.expand();
-      if ( catGen.writeCatalog( outFileName ) )
+      try
       {
-        log.debug( "CatalogGen: the catalog was written to " + outFileName + "." );
-        //System.exit( 0);
+        catGen.writeCatalog( outFileName );
       }
-      else
+      catch (IOException e )
       {
-        log.error( "CatalogGen: the catalog was not written to " + outFileName + "." );
+        log.error( "CatalogGen: could not write catalog: " + e.getMessage() );
         System.exit( 1 );
+
       }
+      log.debug( "CatalogGen: wrote catalog <" + outFileName + ">." );
 
       if ( genCatalogRefs )
       {

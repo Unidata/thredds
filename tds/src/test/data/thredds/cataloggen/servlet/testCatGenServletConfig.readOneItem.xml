@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences EXTERNAL_XML_VERSION="1.0">
+  <root type="user">
+    <map>
+      <beanCollection key="config" class="thredds.cataloggen.servlet.CatGenTimerTask">
+        <bean name="Task1" configDocName="configCatGenExample1.xml" resultFileName="myCatalogExample1.xml" delayInMinutes="1" periodInMinutes="0" />
+      </beanCollection>
+    </map>
+  </root>
+</preferences>
+

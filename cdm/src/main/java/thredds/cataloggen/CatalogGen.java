@@ -215,8 +215,11 @@ public class CatalogGen
    * is written to standard out.
    *
    * @param outFileName - the pathname of the output file.
+   *
+   * @throws IOException if can't write catalog
    */
-  public boolean writeCatalog( String outFileName)
+  public void writeCatalog( String outFileName)
+          throws IOException
   {
     log.debug( "writeCatalog(): writing catalog to " + outFileName + ".");
 
@@ -228,51 +231,31 @@ public class CatalogGen
     // Print the catalog as an XML document.
     if ( outFileName == null)
     {
-      try
-      {
-        log.debug( "writeCatalog(): write catalog to System.out.");
-        this.catFactory.writeXML( (InvCatalogImpl) catalog, System.out);
-      }
-      catch ( java.io.IOException e)
-      {
-        log.debug( "writeCatalog(): exception when writing to stdout.\n" +
-                e.toString());
-        //e.printStackTrace();
-        return( false);
-      }
-      return( true);
+      log.debug( "writeCatalog(): write catalog to System.out.");
+      this.catFactory.writeXML( (InvCatalogImpl) catalog, System.out);
     }
     else
     {
       log.debug( "writeCatalog(): try writing catalog to the output file (" + outFileName + ").");
-      try
+
+      if ( ! this.catalog.getVersion().equals( "1.0" ) )
       {
-
-        if ( ! this.catalog.getVersion().equals( "1.0" ) )
-        {
-          this.catFactory.writeXML( (InvCatalogImpl) catalog, outFileName );
-        }
-        else
-        {
-          // Override default output catalog version. (kludge for IDV backward compatibility)
-          InvCatalogFactory10 fac10 = (InvCatalogFactory10) this.catFactory.getCatalogConverter( XMLEntityResolver.CATALOG_NAMESPACE_10 );
-          fac10.setVersion( this.catalog.getVersion() );
-          BufferedOutputStream osCat = new BufferedOutputStream( new FileOutputStream( outFileName ) );
-          fac10.writeXML( (InvCatalogImpl) catalog, osCat );
-          osCat.close();
-        }
-
-
-
+        this.catFactory.writeXML( (InvCatalogImpl) catalog, outFileName );
       }
-      catch ( IOException e )
+      else
       {
-        log.debug( "writeCatalog(): IOException, catalog not written to " + outFileName + ": " + e.getMessage() );
-        return ( false );
+        // Override default output catalog version. (kludge for IDV backward compatibility)
+        InvCatalogFactory10 fac10 = (InvCatalogFactory10) this.catFactory.getCatalogConverter( XMLEntityResolver.CATALOG_NAMESPACE_10 );
+        fac10.setVersion( this.catalog.getVersion() );
+        BufferedOutputStream osCat = new BufferedOutputStream( new FileOutputStream( outFileName ) );
+        fac10.writeXML( (InvCatalogImpl) catalog, osCat );
+        osCat.close();
       }
+
       log.debug( "writeCatalog(): catalog written to " + outFileName + "." );
-      return ( true );
     }
+
+    return;
   }
 
   InvCatalog getCatalog() { return( this.catalog ); }

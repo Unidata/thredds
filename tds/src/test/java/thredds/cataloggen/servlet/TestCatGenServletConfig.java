@@ -18,8 +18,9 @@ public class TestCatGenServletConfig extends TestCase
 
   private String configPath = "src/test/data/thredds/cataloggen/servlet";
 
-  private String configEmptyFileName = "configEmpty.xml";
-  private String configOneItemFileName = "configOneItem.xml";
+  private String testCGSC_readOldEmpty_FileName = "testCatGenServletConfig.readOldEmpty.xml";
+  private String testCGSC_readNewEmpty_FileName = "testCatGenServletConfig.readNewEmpty.xml";
+  private String testCGSC_readOneItem_FileName = "testCatGenServletConfig.readOneItem.xml";
 
   private CatGenTimerTask taskOne = null;
   private String taskOneName = "Task1";
@@ -62,23 +63,48 @@ public class TestCatGenServletConfig extends TestCase
   /** Test reading an empty config file.
    *  Succeeds if not null, has same file name as given, and contains no tasks.
    */
-  public void testReadEmpty()
+  public void testReadOldEmpty()
   {
     try
     {
-      me = new CatGenServletConfig( new File( configPath), new File( configPath), configEmptyFileName);
+      me = new CatGenServletConfig( new File( configPath), new File( configPath), testCGSC_readOldEmpty_FileName );
     }
     catch ( IOException e )
     {
       String tmpMsg = "Exception thrown while creating a CatGenServletConfig " +
                       "<resultPath=" + this.configPath + " - configPath=" + this.configPath +
-                      " - filename=" + this.configEmptyFileName + ">:" + e.getMessage();
-      log.info( "testReadEmpty(): " + tmpMsg );
+                      " - filename=" + this.testCGSC_readOldEmpty_FileName + ">:" + e.getMessage();
+      log.info( "testReadOldEmpty(): " + tmpMsg );
       assertTrue( tmpMsg, false );
     }
-    assertTrue( me != null);
-    assertTrue( me.getServletConfigDocName().equals( configEmptyFileName));
-    assertTrue( ! me.getUnmodTaskIterator().hasNext());
+    assertTrue( "Failed to create a CatGenServletConfig.",
+                me != null);
+    assertTrue( "Config doc name <" + me.getServletConfigDocName() + "> not as expected <" + testCGSC_readOldEmpty_FileName + ">.",
+                me.getServletConfigDocName().equals( testCGSC_readOldEmpty_FileName ));
+    assertTrue( "Empty config doc resulted in non-empty list.",
+                ! me.getUnmodTaskIterator().hasNext());
+  }
+
+  public void testReadNewEmpty()
+  {
+    try
+    {
+      me = new CatGenServletConfig( new File( configPath ), new File( configPath ), testCGSC_readNewEmpty_FileName );
+    }
+    catch ( IOException e )
+    {
+      String tmpMsg = "Exception thrown while creating a CatGenServletConfig " +
+                      "<resultPath=" + this.configPath + " - configPath=" + this.configPath +
+                      " - filename=" + this.testCGSC_readOldEmpty_FileName + ">:" + e.getMessage();
+      log.info( "testReadNewEmpty(): " + tmpMsg );
+      assertTrue( tmpMsg, false );
+    }
+    assertTrue( "Failed to create a CatGenServletConfig.",
+                me != null );
+    assertTrue( "Config doc name <" + me.getServletConfigDocName() + "> not as expected <" + testCGSC_readNewEmpty_FileName + ">.",
+                me.getServletConfigDocName().equals( testCGSC_readNewEmpty_FileName ) );
+    assertTrue( "Empty config doc resulted in non-empty list.",
+                ! me.getUnmodTaskIterator().hasNext() );
   }
 
   /** Test reading a config file with one item.
@@ -88,42 +114,42 @@ public class TestCatGenServletConfig extends TestCase
   {
     try
     {
-      me = new CatGenServletConfig( new File( configPath), new File( configPath), configOneItemFileName);
+      me = new CatGenServletConfig( new File( configPath), new File( configPath), testCGSC_readOneItem_FileName );
     }
     catch ( IOException e )
     {
       String tmpMsg = "Exception thrown while creating a CatGenServletConfig " +
                       "<resultPath=" + this.configPath + " - configPath=" + this.configPath +
-                      " - filename=" + this.configOneItemFileName + ">:" + e.getMessage();
+                      " - filename=" + this.testCGSC_readOneItem_FileName + ">:" + e.getMessage();
       log.info( "testReadOneItem(): " + tmpMsg );
       assertTrue( tmpMsg, false );
     }
-    assertTrue( "Config doc name <" + me.getServletConfigDocName() + "> does not match expected <" + configOneItemFileName + ">.",
-                me.getServletConfigDocName().equals( configOneItemFileName));
+    assertTrue( "Config doc name <" + me.getServletConfigDocName() + "> not as expected <" + testCGSC_readOneItem_FileName + ">.",
+                me.getServletConfigDocName().equals( testCGSC_readOneItem_FileName ));
     Iterator it = me.getUnmodTaskIterator();
     assertTrue( "Config doc <" + me.getServletConfigDocName() + "> has no tasks.",
                 it.hasNext());
     CatGenTimerTask aTask = (CatGenTimerTask) it.next();
-    assertTrue( "The name of the task listed in config doc <" + aTask.getName() + "> does not match expected <" + taskOneName + ">.",
+    assertTrue( "Config doc's task name <" + aTask.getName() + "> not as expected <" + taskOneName + ">.",
                 aTask.getName().equals( taskOneName));
-    assertTrue( "The config doc <" + me.getServletConfigDocName() + "> contains a second task.",
+    assertTrue( "Single item config doc <" + me.getServletConfigDocName() + "> has extra item(s).",
                 ! it.hasNext());
   }
 
-  /** Test adding an item to a config file.
+  /** Test adding and then removing an item to a config file.
    *  Succeeds if task is not in config before add and is after.
    */
-  public void testAddItem()
+  public void testAddAndRemoveItem()
   {
     try
     {
-      me = new CatGenServletConfig( new File( configPath), new File( configPath), configOneItemFileName);
+      me = new CatGenServletConfig( new File( configPath), new File( configPath), testCGSC_readOneItem_FileName );
     }
     catch ( IOException e )
     {
       String tmpMsg = "Exception thrown while creating a CatGenServletConfig " +
                       "<resultPath=" + this.configPath + " - configPath=" + this.configPath +
-                      " - filename=" + this.configOneItemFileName + ">:" + e.getMessage();
+                      " - filename=" + this.testCGSC_readOneItem_FileName + ">:" + e.getMessage();
       log.info( "testAddItem(): " + tmpMsg );
       assertTrue( tmpMsg, false );
     }
@@ -168,13 +194,13 @@ public class TestCatGenServletConfig extends TestCase
   {
     try
     {
-      me = new CatGenServletConfig( new File( configPath), new File( configPath), configOneItemFileName);
+      me = new CatGenServletConfig( new File( configPath), new File( configPath), testCGSC_readOneItem_FileName );
     }
     catch ( IOException e )
     {
       String tmpMsg = "Exception thrown while creating a CatGenServletConfig " +
                       "<resultPath=" + this.configPath + " - configPath=" + this.configPath +
-                      " - filename=" + this.configOneItemFileName + ">:" + e.getMessage();
+                      " - filename=" + this.testCGSC_readOneItem_FileName + ">:" + e.getMessage();
       log.info( "testAddItem(): " + tmpMsg );
       assertTrue( tmpMsg, false );
     }
@@ -182,7 +208,7 @@ public class TestCatGenServletConfig extends TestCase
                 me.findTask( taskOne.getName()).getName().equals( taskOne.getName()));
     try
     {
-      assertFalse( "Adding duplicate task <" + taskOne.getName() + "> failed.",
+      assertFalse( "Adding duplicate task <" + taskOne.getName() + "> succeeded.",
                    me.addTask( taskOne));
     }
     catch ( IOException e )

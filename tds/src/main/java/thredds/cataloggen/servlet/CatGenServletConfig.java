@@ -2,6 +2,7 @@ package thredds.cataloggen.servlet;
 
 import org.jdom.*;
 import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 import org.jdom.input.*;
 
 import java.io.*;
@@ -572,7 +573,7 @@ public class CatGenServletConfig
         beanCollElem.addContent( curItemElem );
       }
 
-      XMLOutputter outputter = new XMLOutputter();
+      XMLOutputter outputter = new XMLOutputter( Format.getPrettyFormat() );
       outputter.output( doc, outStream );
     }
   }

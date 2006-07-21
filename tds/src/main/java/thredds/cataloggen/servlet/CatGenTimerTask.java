@@ -5,6 +5,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.io.File;
+import java.io.IOException;
 
 import thredds.cataloggen.*;
 import thredds.datatype.DateType;
@@ -195,34 +196,13 @@ public class CatGenTimerTask
         isValid = false;
       }
 
-      // Check that result file exists and is writeable.
+      // If the result file already exists, make sure we can write to it.
       if ( this.resultFile.exists())
       {
         if ( ! this.resultFile.canWrite())
         {
           messages.append( "CatGenTimerTask.isValid() - result file not writeable.\n");
           logger.warn( "isValid(): Result file is not writable.");
-          isValid = false;
-        }
-      }
-      else
-      {
-        try
-        {
-          if ( ! this.resultFile.createNewFile())
-          {
-            // @todo Test to find out when this might happen. Perhaps when direcotry is not writable.
-            messages.append( "CatGenTimerTask.isValid() - result file (" )
-                    .append( this.resultFile.getPath() )
-                    .append( ") doesn't exist and can't be created (1).\n" );
-            isValid = false;
-          }
-        }
-        catch (java.io.IOException e)
-        {
-          messages.append( "CatGenTimerTask.isValid() - result file (" )
-                  .append( this.resultFile.getPath() )
-                  .append( ") doesn't exist and can't be created (2).\n" );
           isValid = false;
         }
       }
@@ -248,13 +228,11 @@ public class CatGenTimerTask
 
     if ( isValid )
     {
-      logger.debug( "Config doc valid (" + this.configDoc.toString() + "):");
-      logger.debug( messages.toString());
+      logger.debug( "Config doc valid (" + this.configDoc.toString() + "): " + messages.toString());
     }
     else
     {
-      logger.debug( "Invalid config doc (" + this.configDoc.toString() + "):");
-      logger.debug( messages.toString());
+      logger.debug( "Invalid config doc (" + this.configDoc.toString() + "): " + messages.toString());
     }
 
     return( isValid);
@@ -293,14 +271,17 @@ public class CatGenTimerTask
         catGen.setCatalogExpiresDate( expireDateType );
 
         // Write the catalog
-        if ( catGen.writeCatalog( this.resultFile.toString() ) )
+        try
         {
-          logger.debug( "run(): Catalog written (" + this.resultFile.toString() + ")." );
+          catGen.writeCatalog( this.resultFile.toString() );
         }
-        else
+        catch ( IOException e )
         {
-          logger.error( "run(): catalog not written (" + this.resultFile.toString() + ")." );
+          logger.error( "run(): couldn't write catalog: " + e.getMessage() );
+          return;
         }
+
+        logger.debug( "run(): Catalog written (" + this.resultFile.toString() + ")." );
       }
       else
       {
