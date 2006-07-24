@@ -289,7 +289,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
         } catch (ucar.ma2.InvalidRangeException e) {
             throw new IOException( e.getMessage());
         }
-        return (float [])rayData.get1DJavaArray(Float.class);
+        return (float [])rayData.get1DJavaArray(float.class);
       }
 
 
