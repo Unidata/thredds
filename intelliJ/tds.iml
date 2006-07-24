@@ -17,16 +17,9 @@
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/servlet-api.jar!/" />
         </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/nlog4j-1.2.21.jar!/" />
-        </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://java.sun.com/products/servlet/2.3/javadoc/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
@@ -36,7 +29,9 @@
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/commons-fileupload-1.1.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://jakarta.apache.org/commons/fileupload/apidocs/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
@@ -49,6 +44,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Tomcat" level="application_server_libraries" />
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
@@ -141,11 +137,7 @@
       <option name="NAME" value="unknown.xml" />
       <option name="DESCRIPTION" value="Additional Resource" />
     </deploymentDescriptor>
-    <deploymentDescriptor name="" url="file://$MODULE_DIR$/../tds/src/main/webapp/META-INF/context-thredds.xml" optional="false">
-      <option name="DEFAULT_DIR" value="WEB-INF" />
-      <option name="NAME" value="" />
-      <option name="DESCRIPTION" value="" />
-    </deploymentDescriptor>
+    <deploymentDescriptor name="context.xml" url="file://$MODULE_DIR$/../tds/src/main/webapp/META-INF/context-thredds.xml" optional="false" version="5.x" />
     <webroots>
       <root url="file://$MODULE_DIR$/../tds/src/main/webapp/resources" relative="/" />
       <root url="file://$MODULE_DIR$/../tds/src/main/webapp/WEB-INF/xsl" relative="/WEB-INF/xsl" />
