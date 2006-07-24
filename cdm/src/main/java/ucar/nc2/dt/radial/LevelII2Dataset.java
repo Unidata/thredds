@@ -192,8 +192,10 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
 
             LevelII2Sweep( int sweepno) {
                 this.sweepno = sweepno;
-            }
 
+            }
+            //int[] shape ;
+            //int[] origin ;
            /* read 2d sweep data nradials * ngates */
             public float[] readData() throws java.io.IOException {
                 Array sweepData ;
@@ -208,15 +210,17 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
                 } catch (ucar.ma2.InvalidRangeException e) {
                     throw new IOException( e.getMessage());
                 }
-                return (float [])sweepData.get1DJavaArray(Float.class);
+                return (float [])sweepData.get1DJavaArray(Float.TYPE);
             }
-
+             //              private Object MUTEX =new Object();
             /* read 1d data ngates */
             public float[] readData(int ray) throws java.io.IOException {
                 Array rayData;
-
-                int[] shape = ve.getShape();
-                int[] origin = new int[ ve.getRank()];
+                 //synchronized(MUTEX) {
+                 //    if(shape ==null) {
+                int [] shape = ve.getShape();
+                int [] origin = new int[ ve.getRank()];
+                //     }
                 shape[0] = 1;
                 origin[0] = sweepno;
                 shape[1] = 1;
@@ -227,7 +231,8 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter {
                 } catch (ucar.ma2.InvalidRangeException e) {
                     throw new IOException( e.getMessage());
                 }
-                return (float [])rayData.get1DJavaArray(Float.class);
+                // }
+                return (float [])rayData.get1DJavaArray(Float.TYPE);
             }
 
             public float getMeanElevation() {
