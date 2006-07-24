@@ -41,6 +41,7 @@ public class NexradStationDB {
 
   private static boolean showStations = false;
   private static HashMap stationTableHash = null;
+  private static HashMap stationTableHash1 = null;
 
   public static synchronized void init() throws IOException {
     if (stationTableHash == null)
@@ -49,9 +50,11 @@ public class NexradStationDB {
 
   public static Station get(String id) { return (Station) stationTableHash.get(id); }
 
+  public static Station getByIdNumber(String idn) { return (Station) stationTableHash1.get(idn); }
+
   private static void readStationTableXML() throws IOException {
     stationTableHash = new HashMap();
-
+    stationTableHash1 = new HashMap();
     ClassLoader cl = Level2VolumeScan.class.getClassLoader();
     InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexradstns.xml");
 
@@ -84,6 +87,7 @@ public class NexradStationDB {
       s.elev = Double.parseDouble(elev);
 
       stationTableHash.put(s.id, s);
+      stationTableHash1.put(idn, s);
       if (showStations) System.out.println(" station= "+s);
     }
   }
