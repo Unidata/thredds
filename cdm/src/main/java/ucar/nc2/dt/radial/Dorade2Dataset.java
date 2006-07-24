@@ -56,13 +56,13 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
         desc = "dorade radar dataset";
         //EarthLocation y = getEarthLocation() ;
         try{
-            elev = (float [])ncd.findVariable("elevation").read().get1DJavaArray(Float.class);
-            aziv = (float [])ncd.findVariable("azimuth").read().get1DJavaArray(Float.class);
-            altv = (float [])ncd.findVariable("altitudes_1").read().get1DJavaArray(Float.class);
-            lonv = (float [])ncd.findVariable("longitudes_1").read().get1DJavaArray(Float.class);
-            latv = (float [])ncd.findVariable("latitudes_1").read().get1DJavaArray(Float.class);
-            disv = (float [])ncd.findVariable("distance_1").read().get1DJavaArray(Float.class);
-            timv = (double [])ncd.findVariable("rays_time").read().get1DJavaArray(Double.class);
+            elev = (float [])ncd.findVariable("elevation").read().get1DJavaArray(Float.TYPE);
+            aziv = (float [])ncd.findVariable("azimuth").read().get1DJavaArray(Float.TYPE);
+            altv = (float [])ncd.findVariable("altitudes_1").read().get1DJavaArray(Float.TYPE);
+            lonv = (float [])ncd.findVariable("longitudes_1").read().get1DJavaArray(Float.TYPE);
+            latv = (float [])ncd.findVariable("latitudes_1").read().get1DJavaArray(Float.TYPE);
+            disv = (float [])ncd.findVariable("distance_1").read().get1DJavaArray(Float.TYPE);
+            timv = (double [])ncd.findVariable("rays_time").read().get1DJavaArray(Double.TYPE);
 
             angv = ncd.findVariable("Fixed_Angle").readScalarFloat();
             nyqv = ncd.findVariable("Nyquist_Velocity").readScalarFloat();
@@ -227,7 +227,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
             }catch (IOException e) {
                 throw new IOException( e.getMessage());
             }
-            return (float [])allData.get1DJavaArray(Float.class);
+            return (float [])allData.get1DJavaArray(Float.TYPE);
         }
 
       //////////////////////////////////////////////////////////////////////
@@ -274,7 +274,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter {
                 }catch (ucar.ma2.InvalidRangeException e) {
                     throw new IOException( e.getMessage());
                 }
-                return (float [])rayData.get1DJavaArray(Float.class);
+                return (float [])rayData.get1DJavaArray(Float.TYPE);
             }
 
             public float getBeamWidth() { // degrees
