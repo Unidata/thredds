@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 
-// @todo Look into calling CatGenServletConfig.cancelTimer() when asserts fail. E.g., catch AssertFailedError, call cancelTimer(), then rethrow AssertFailedError.
 /**
  *
  */
@@ -54,9 +53,10 @@ public class TestCatGenServletConfig extends TestCase
     return;
   }
 
-//  protected void tearDown()
-//  {
-//  }
+  protected void tearDown()
+  {
+    if ( me != null ) me.cancelTimer();
+  }
 
   /** Test reading an empty config file.
    *  Succeeds if not null, has same file name as given, and contains no tasks.
@@ -81,8 +81,6 @@ public class TestCatGenServletConfig extends TestCase
                 me.getServletConfigDocName().equals( testCGSC_readOldEmpty_FileName ));
     assertTrue( "Empty config doc resulted in non-empty list.",
                 ! me.getUnmodTaskIterator().hasNext());
-
-    me.cancelTimer();
   }
 
   public void testReadNewEmpty()
@@ -105,8 +103,6 @@ public class TestCatGenServletConfig extends TestCase
                 me.getServletConfigDocName().equals( testCGSC_readNewEmpty_FileName ) );
     assertTrue( "Empty config doc resulted in non-empty list.",
                 ! me.getUnmodTaskIterator().hasNext() );
-
-    me.cancelTimer();
   }
 
   /** Test reading a config file with one item.
@@ -136,8 +132,6 @@ public class TestCatGenServletConfig extends TestCase
                 aTask.getName().equals( taskOneName));
     assertTrue( "Single item config doc <" + me.getServletConfigDocName() + "> has extra item(s).",
                 ! it.hasNext());
-
-    me.cancelTimer();
   }
 
   /** Test adding and then removing an item to a config file.
@@ -189,8 +183,6 @@ public class TestCatGenServletConfig extends TestCase
     }
     assertTrue( "Found removed task <" + taskTwo.getName() + ">.",
                 me.findTask( taskTwo.getName()) == null );
-
-    me.cancelTimer();
   }
 
   /** Test adding a duplicate item to a config file.
@@ -225,7 +217,5 @@ public class TestCatGenServletConfig extends TestCase
     }
     assertTrue( "Name of found duplicate task does not equal search name <" + taskOne.getName() + ">.",
                 me.findTask( taskOne.getName()).getName().equals( taskOne.getName()));
-
-    me.cancelTimer();
   }
 }
