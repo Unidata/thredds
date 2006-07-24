@@ -33,7 +33,9 @@
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/lucene.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://lucene.apache.org/java/docs/api/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
