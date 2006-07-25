@@ -1,6 +1,6 @@
-// $Id:Doradeiosp.java 63 2006-07-12 21:50:51Z edavis $
+// $Id: Doradeiosp.java,v 1.12 2006/04/19 20:24:49 yuanho Exp $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -94,36 +94,7 @@ public class Doradeiosp implements ucar.nc2.IOServiceProvider {
 
   }
 
-  public void open1(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile file,
-                   ucar.nc2.util.CancelTask cancelTask) throws IOException {
-
-    ncfile = file;
-
-    try {
-        mySweep = new DoradeSweep(raf.getLocation());
-     } catch (DoradeSweep.DoradeSweepException ex) {
-            ex.printStackTrace();
-
-    } catch (java.io.IOException ex) {
-            ex.printStackTrace();
-    }
-
-    if(mySweep.getScanMode(0)  != ScanMode.MODE_SUR) {
-            System.err.println("Skipping:" + raf.getLocation());
-            System.exit(1);
-	}
-
-    try {
-        headerParser = new Doradeheader();
-        headerParser.read(mySweep, ncfile, null);
-    } catch (DoradeSweep.DoradeSweepException e) {
-         e.printStackTrace();
-    }
-
-    ncfile.finish();
-
-
-  }
+  
   public Array readData(ucar.nc2.Variable v2, java.util.List section) throws IOException, InvalidRangeException  {
 
     Array outputData = null;
