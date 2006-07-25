@@ -111,6 +111,7 @@ class Nidsheader{
   int block_length = 0;
   short number_layers = 0;
   String stationId;
+  boolean noHeader = false;
 
   DateFormatter formatter = new DateFormatter();
 
@@ -160,9 +161,13 @@ class Nidsheader{
     String pib = new String(b);
     if(  pib.indexOf("SDUS")!= -1){
         return 1;
-    } else {
+    } else if ( raf.getLocation().indexOf(".nids") != -1) {
+        noHeader = true;
+        return 1;
+    } else if(checkMsgHeader(raf) == 1) {
+        return 1;
+    } else
         return 0;
-    }
   }
 
   public byte[] getUncompData(int offset, int len){
@@ -219,64 +224,70 @@ class Nidsheader{
         out.println(" error reading nids product header");
     }
 
-    //Get product message header into a string for processing
-    String pib = new String(b, 0, 100);
-    type = 0;
-    pos = pib.indexOf ( "\r\r\n" );
-    while ( pos != -1 ) {
-        hoff =  pos + 3;
-        type++;
-        pos = pib.indexOf ( "\r\r\n" , pos+1);
-    }
-    raf.seek(hoff);
-
-    // Test the next two bytes to see if the image portion looks like
-    // it is zlib-compressed.
-    byte[] b2 = new byte[2];
-    // byte[] b4 = new byte[4];
-    System.arraycopy(b, hoff, b2, 0, 2);
-
-    zlibed = isZlibHed( b2 );
-    if ( zlibed == 0){
-        encrypt = IsEncrypt( b2 );
-        if(encrypt == 1){
-            out.println( "error reading encryted product " );
-            throw new IOException("unable to handle the product with encrypt code " + encrypt);
+    if( !noHeader ) {
+        //Get product message header into a string for processing
+        String pib = new String(b, 0, 100);
+        type = 0;
+        pos = pib.indexOf ( "\r\r\n" );
+        while ( pos != -1 ) {
+            hoff =  pos + 3;
+            type++;
+            pos = pib.indexOf ( "\r\r\n" , pos+1);
         }
-    }
-   // process product description for station ID
-    byte[] b3 = new byte[3];
-    //byte[] uncompdata = null;
+        raf.seek(hoff);
 
-    switch ( type ) {
-      case 0:
-        out.println( "ReadNexrInfo:: Unable to seek to ID ");
-        break;
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-        System.arraycopy(b, hoff - 6, b3, 0, 3);
-        stationId  = new String(b3);
-        break;
+        // Test the next two bytes to see if the image portion looks like
+        // it is zlib-compressed.
+        byte[] b2 = new byte[2];
+        // byte[] b4 = new byte[4];
+        System.arraycopy(b, hoff, b2, 0, 2);
 
-      default:
-        break;
-    }
+        zlibed = isZlibHed( b2 );
+        if ( zlibed == 0){
+            encrypt = IsEncrypt( b2 );
+            if(encrypt == 1){
+                out.println( "error reading encryted product " );
+                throw new IOException("unable to handle the product with encrypt code " + encrypt);
+            }
+        }
+       // process product description for station ID
+        byte[] b3 = new byte[3];
+        //byte[] uncompdata = null;
 
-    if ( zlibed == 1 ) {
-          isZ = true;
-          uncompdata = GetZlibedNexr( b, readLen,  hoff );
-          //uncompdata = Nidsiosp.readCompData(hoff, 160) ;
-          if ( uncompdata == null ) {
-            out.println( "ReadNexrInfo:: error uncompressing image" );
-          }
-    }
-    else {
-         uncompdata = new byte[b.length-hoff];
-         System.arraycopy(b, hoff, uncompdata, 0, b.length- hoff);
-    }
+        switch ( type ) {
+          case 0:
+            out.println( "ReadNexrInfo:: Unable to seek to ID ");
+            break;
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+            System.arraycopy(b, hoff - 6, b3, 0, 3);
+            stationId  = new String(b3);
+            break;
 
+          default:
+            break;
+        }
+
+        if ( zlibed == 1 ) {
+              isZ = true;
+              uncompdata = GetZlibedNexr( b, readLen,  hoff );
+              //uncompdata = Nidsiosp.readCompData(hoff, 160) ;
+              if ( uncompdata == null ) {
+                out.println( "ReadNexrInfo:: error uncompressing image" );
+              }
+        }
+        else {
+             uncompdata = new byte[b.length-hoff];
+             System.arraycopy(b, hoff, uncompdata, 0, b.length- hoff);
+        }
+    } else {
+        uncompdata = new byte[b.length];
+        System.arraycopy(b, 0, uncompdata, 0, b.length);
+        // stationId  = "YYY";
+    }
+    byte[] b2 = new byte[2];
     ByteBuffer bos = ByteBuffer.wrap(uncompdata);
     rc = read_msghead( bos, 0 );
     hedsiz = 18;
@@ -927,6 +938,32 @@ class Nidsheader{
       dist.setSPobject( new Vinfo (0, 0, 0, 0, hoff, 0, isR, isZ, pos1, null, 4, 0));
 
       return 1;
+    }
+
+    int checkMsgHeader(ucar.unidata.io.RandomAccessFile raf ) throws IOException
+    {
+        int      rc;
+        long     actualSize ;
+        int      readLen ;
+
+        actualSize = raf.length();
+        int pos = 0;
+        raf.seek(pos);
+
+        // Read in the whole contents of the NEXRAD Level III product since
+        // some product require to go through the whole file to build the  struct of file.
+
+        readLen = (int)actualSize;
+
+        byte[] b = new byte[readLen];
+        rc = raf.read(b);
+        if ( rc != readLen )
+        {
+            out.println(" error reading nids product header");
+        }
+        ByteBuffer bos = ByteBuffer.wrap(b);
+        return read_msghead( bos, 0 );
+
     }
 
     /**
@@ -1682,7 +1719,7 @@ class Nidsheader{
     ncfile.addAttribute(null, new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." +
               " There are total 41 products, and " + summary ));
     ncfile.addAttribute(null, new Attribute("keywords_vocabulary", ctilt));
-    ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
+    ncfile.addAttribute(null, new Attribute("conventions", "_Coordinates"));
     ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat_min)));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat_max)));
@@ -1759,6 +1796,17 @@ class Nidsheader{
       mlength = getInt(b4, 4);
       buf.get(b2, 0, 2);
       msource = (short) getInt(b2, 2);
+      if(stationId == null) {
+          try {
+              NexradStationDB.init(); // make sure database is initialized
+              NexradStationDB.Station station = NexradStationDB.getByIdNumber("000"+Short.toString(msource));
+              if (station != null) {
+                stationId = station.id;
+              }
+            } catch (IOException ioe) {
+              log.error("NexradStationDB.init", ioe);
+            }
+      }
       buf.get(b2, 0, 2);
       mdestId = (short) getInt(b2, 2);
       buf.get(b2, 0, 2);
