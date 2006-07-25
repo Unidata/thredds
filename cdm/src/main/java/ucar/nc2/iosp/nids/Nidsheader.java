@@ -1719,7 +1719,7 @@ class Nidsheader{
     ncfile.addAttribute(null, new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." +
               " There are total 41 products, and " + summary ));
     ncfile.addAttribute(null, new Attribute("keywords_vocabulary", ctilt));
-    ncfile.addAttribute(null, new Attribute("conventions", "_Coordinates"));
+    ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat_min)));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat_max)));
