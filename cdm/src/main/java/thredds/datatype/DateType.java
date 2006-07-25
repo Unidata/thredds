@@ -148,6 +148,7 @@ public class DateType {
   }
   public String getFormat() { return format; }
   public String getType() { return type; }
+  public void setType( String type ) { this.type = type; }
 
   public boolean before( Date d) {
     if (isPresent()) return false;

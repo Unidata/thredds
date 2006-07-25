@@ -521,6 +521,53 @@ public class InvDatasetImpl extends InvDataset {
     hashCode = 0;
   }
 
+  public DateType getLastModifiedDate()
+  {
+    // Look for a last modified date.
+    for ( Iterator it = tm.getDates().iterator(); it.hasNext(); )
+    {
+      DateType curDateType = (DateType) it.next();
+
+      if ( curDateType.getType() != null && curDateType.getType().equals( "modified"))
+      {
+        return curDateType;
+      }
+    }
+    return null;
+  }
+
+  public void setLastModifiedDate( DateType lastModDate )
+  {
+    if ( lastModDate == null )
+      throw new IllegalArgumentException( "Last modified date can't be null.");
+    if ( lastModDate.getType() == null || ! lastModDate.getType().equals( "modified" ) )
+    {
+      throw new IllegalArgumentException( "Date type must be \"modified\" (was \"" + lastModDate.getType() + "\").");
+    }
+
+    // Check for existing last modified date and remove if one exists.
+    DateType curLastModDateType = this.getLastModifiedDate();
+    if ( curLastModDateType != null )
+    {
+      tm.getDates().remove( curLastModDateType );
+    }
+
+    // Set the last modified date with the given DateType.
+    tm.addDate( lastModDate );
+    hashCode = 0;
+  }
+
+  public void setLastModifiedDate( Date lastModDate )
+  {
+    if ( lastModDate == null )
+      throw new IllegalArgumentException( "Last modified date can't be null." );
+
+    // Set the last modified date with the given Date.
+    DateType lastModDateType = new DateType( false, lastModDate );
+    lastModDateType.setType( "modified" );
+    setLastModifiedDate( lastModDateType );
+  }
+
   public void setServiceName(String serviceName) {
     tm.setServiceName(serviceName);
     hashCode = 0;

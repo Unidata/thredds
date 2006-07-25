@@ -170,6 +170,8 @@ public class CollectionLevelScanner
   private CrawlableDatasetLabeler namer;
   private boolean doAddDataSize = false;
 
+  private boolean addLastModified = true;
+
   private List childEnhancerList;
 
   private InvDatasetImpl topLevelMetadataContainer;
@@ -511,7 +513,7 @@ public class CollectionLevelScanner
         {
           // Create proxy CrawlableDataset and corresponding InvDataset
           CrawlableDataset crDsToAdd = curProxy.createProxyDataset( currentLevel );
-          InvDataset invDsToAdd = createInvDatasetFromCrawlableDataset( crDsToAdd, topInvDs, proxyService );
+          InvDatasetImpl invDsToAdd = createInvDatasetFromCrawlableDataset( crDsToAdd, topInvDs, proxyService );
 
           // Add dataset info to appropriate lists.
           InvCrawlablePair dsInfo = new InvCrawlablePair( crDsToAdd, invDsToAdd );
@@ -697,7 +699,7 @@ public class CollectionLevelScanner
     return catalog;
   }
 
-  private InvDataset createInvDatasetFromCrawlableDataset( CrawlableDataset crawlableDs, InvDatasetImpl parentInvDs, InvService service )
+  private InvDatasetImpl createInvDatasetFromCrawlableDataset( CrawlableDataset crawlableDs, InvDatasetImpl parentInvDs, InvService service )
   {
     // Determine name of dataset.
     String newName = null;
@@ -723,6 +725,13 @@ public class CollectionLevelScanner
       if ( this.doAddDataSize && crawlableDs.length() != -1 )
       {
         curInvDs.setDataSize( crawlableDs.length() );
+      }
+
+      if ( this.addLastModified )
+      {
+        Date lastModDate = crawlableDs.lastModified();
+        if ( lastModDate != null )
+          curInvDs.setLastModifiedDate( lastModDate );
       }
     }
 

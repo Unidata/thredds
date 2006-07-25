@@ -179,9 +179,12 @@ public class CrawlableDatasetFile implements CrawlableDataset
 
   public Date lastModified()
   {
+    long lastModDate = this.file.lastModified();
+    if ( lastModDate == 0 ) return null;
+    
     Calendar cal = Calendar.getInstance();
     cal.clear();
-    cal.setTimeInMillis( this.file.lastModified());
+    cal.setTimeInMillis( lastModDate );
     return( cal.getTime() );
   }
 

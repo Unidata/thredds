@@ -4,6 +4,7 @@ package thredds.servlet;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvCatalogRef;
+import thredds.datatype.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
 import ucar.nc2.dataset.AxisType;
@@ -524,7 +525,24 @@ public class HtmlWriter
       sb.append( "</tt></td>\r\n" );
 
       sb.append( "<td align=\"right\"><tt>" );
-      sb.append( formatter.toDateTimeString( new Date() ) );
+
+      // Get last modified time.
+      DateType lastModDateType = ds.getLastModifiedDate();
+      if ( lastModDateType == null )
+      {
+        if ( ! ds.hasAccess())
+          sb.append( "");
+        else
+          sb.append( "Unknown");
+      }
+      else
+      {
+        if ( lastModDateType.isPresent() )
+          sb.append( formatter.toDateTimeString( new Date() ) );
+        if ( lastModDateType.getDate() != null )
+          sb.append( formatter.toDateTimeString( lastModDateType.getDate() ) );
+      }
+
       sb.append( "</tt></td>\r\n" );
 
       sb.append( "</tr>\r\n" );
