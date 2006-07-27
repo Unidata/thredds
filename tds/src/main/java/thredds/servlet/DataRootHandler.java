@@ -1,4 +1,3 @@
-// $Id: DataRootHandler.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -686,7 +685,7 @@ public class DataRootHandler {
 
     return (ProxyDatasetHandler) pdhMap.get( proxyName );
   }
-
+  /** @deprecated */
   public void handleRequestForProxyDatasetResolverCatalog( HttpServletRequest req, HttpServletResponse res )
           throws IOException
   {
@@ -958,6 +957,9 @@ public class DataRootHandler {
     if (catalog == null)
       catalog = makeDynamicCatalog(workPath, baseURI);
 
+    // Check for proxy dataset resolver catalog.
+    if ( catalog == null && this.isProxyDatasetResolver( workPath ) )
+      catalog = (InvCatalogImpl) this.getProxyDatasetResolverCatalog( workPath, baseURI );
 
     return catalog;
   }

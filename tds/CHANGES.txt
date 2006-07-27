@@ -1,0 +1,147 @@
+CHANGES for THREDDS Data Server (TDS)
+Version @VERSION.MINOR@
+Build Date = @BUILDTIME@
+
+Changes in version 3.11
+  Features
+   * Generated catalogs now contain <date type="modified" /> elements where
+     appropriate indicating the last modified time for that dataset.
+     [This is done in CollectionLevelScanner using CrawlableDataset.lastModified().
+   * The HTML catalog view now uses information from <date type="modified" />
+     elements to populate "Last Modified" field in dataset listings.
+  API
+   *
+  BUGS
+   * Improve thread safety of thredds.cataloggen.servlet.
+  LIBRARIES
+
+Changes in version 3.9
+ Features
+  * ServletParams allows persistent user init params; implement cache paths
+  * WCS, NetcdfServer allows NcML aggregation, wrapping.
+  * default ncml behavior: dont enhance, but allow enhance on ncml
+  * dataRoots use req.getPathInfo(), ie exclude context and servlet paths.
+  * review URL usage
+    - move dynamic catalogs to use /thredds/catalog/ to avoid name conflicts
+    - use CatalogServices mostly only for external catalogs
+    - use catalog.html, ?dataset=id  in HTML
+  * context name now comes from web.xml
+  * add FileServerServlet, CatalogServlet, ViewServlet; rename servlets, reorganize
+  * NetcdfServer Servlet: subset GRIB Forecast Model Run Collection, server as CF-1 Netcdf
+  * InvDatasetScan and CollectionLevelScanner framework:
+    - switch from single DatasetInserter (addLatest) to list of ProxyDatasetHandlers
+    - add LatestCompleteProxyDsHandler to select latest that hasn't been updated in a given amount of time
+  * THREDDS Servlet Framework:
+    - Clean up where url paths are used and where translated (CrawlableDataset) paths are used
+ API
+  * InvCatalog.1.0.2.xsd :
+    - add vocabulary_id attribute to variable element.
+    - add addProxies child element to datasetScan element to replace/extend addLatest.
+    - addProxies can contain simpleLatest and/or latestComplete elements
+ Bugs
+  * fix jnlp files for view IDV, ToolsUI
+  * InvDatasetScan/StandardCatalogBuilder: dont transfer harvest=true to subcatalogs
+  * strided access on aggregation outer join was wrong.
+  * Dont send NcML elements to a client
+  * DiskCache2 might mistakenly remove the root cache directory
+  * WCS server: when # vertical coords < 3 were getting isRegular = false, should be true.
+  * dods server: grids must use coordinate variables whose names match the dimension; dont put Grids inside of Structures.
+  * documentation XLink should not be resolved in InvDatasetImpl.writeHtml, probably not in InvDocumentation either.
+  * DODS Server now removes "-" from variable names, workaround for lower level parsing bug
+  * Fix static DateFormatters - not thread safe
+ Libraries
+
+Changes in version 3.8
+ Bugs
+  * dont inherit harvest on DatasetScan
+  * Add Michael Godin patch for aggregation
+  * various fixes to forcast model runs
+  * grib sync() works
+
+Changes in version 3.7
+ Features
+  * improve error handling and logging, esp in DODS server
+  * New Web Service: Common Data Model Coordinate System Validation
+  * Forecast Model Run Collection Servlet
+ API
+  * N3iosp.setProperty("syncExtendOnly") 
+ Bugs
+  * NetcdfFile.empty - new Group() was not getting parent = null
+    (note called from cache.acquire() - NetcdfFile.sync(). But for netcdf-3 files, only need a syncExtend() !)
+ Libraries
+
+Changes in version 3.6
+ Bugs
+  * DODS Strings were not correctly being filled with data.
+  * Reduce NetcdfFileCache size to 200-300, because grib files are keeping their index in memory and so we are
+    running out of memory.
+
+Changes in version 3.5
+ Features
+  * Add Last-Modified header for OpenDAP responses.
+  * Add "Coordinate System Validation" service.
+  * write catalog validation messages to /content/thredds/logs/catalogErrorLog.txt
+  * Validate catalogs when initializing, messages appear in debug/Show catalog error logs.
+  * Validation errors now include line number, column number
+ API
+  * InvCatalogConvertIF, DqcConvertIF, MetadataConverterIF use jdom, not dom elements.
+ Bugs
+  * bug in dods strings (server side)
+  * use /thredds/upc.css anywhere we want a stylesheet.
+  * XDODS-Server header has to follow "dods/version"
+  * ThreddsMetadataSpatialCoverage now allows nulls for eastwest, northsouth ranges.
+  * nj22 resources werent getting included in thredds.war
+  * NcDDS errors not getting to threddsServlet.log
+  * ncdods using name instead of short name
+ Libraries
+  * include xerces 2.7.1 in WEB-INF/lib
+  * use jdom 1.0
+  * use nj22.12, has dods code inside it. use visadNoDods
+
+Changes in version 3.3
+  * ncdods sessions
+  * NcML aggregation
+  * ncdods now uses NetcdfDataset.acquire(), so can serve NcML, DODS, etc.
+  * add showHtmlForm
+  * clean up nexrad level 2 processing - use logging for debug and error messages (iosp.nexrad2)
+  * use nj22.11
+ Bugs
+  * catalog.html for absolute catrefs
+  * bugs in grib subsetting
+  * ncdods always add attribute container: strlen was not being set when no attributes
+  * ncdods guard against infinite loop with bad URL
+  * WCS now supports subsetting grids
+
+Changes in version 3.2
+ Features
+  * Default MIME is "application/octet-stream"
+  * Range byte file serving
+ Bugs
+  * nj22.10.01 update
+
+Changes in version 3.1
+ Features
+  * add IDV as viewer for Grids.
+  * use HTTPS for remote access
+  * DatasetScan element may have NcML
+  * extraCatalogs.txt lists other catalogs besides catalog.xml
+  * allow catalog.html; default when ending in "/"
+  * allow access element on datasetScan, transfer to generated catalog
+  * nj22 cache automatically scoured every night
+  * rework catalog service URL naming
+  * improved directory, catalog HTML
+  * implement DatasetScan
+  * catalogRef now subtype of dataset, can have full metadata.
+ OPenDAP Server
+  * serve Structures
+  * deal with DataType.STRING
+  * serve compressed data; needed to be buffered
+ WCS
+  * put dataset name in URL path, dont use dataset=name KVP
+  * only X,Y axes need to be regular.
+ Bugs
+  * wcs, catgen now serve catalog.html files
+  * DODS server; adds extra dimensions
+  * enum types compare with ignore case
+  * handle DODS FileNotFound better - modify dods.jar
+  * NcDDS char coordinate variable

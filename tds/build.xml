@@ -182,7 +182,7 @@
   <target name="war-setup" depends="compile" description="create a distribution">
     <!-- create README file with time and version -->
     <mkdir dir="${war.dir}"/>
-    <copy file="README.TEMPLATE" tofile="${war.dir}/README.txt" overwrite="true">
+    <copy file="README.TEMPLATE" tofile="${war.dir}/docs/README.txt" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${buildtime}"/>
         <filter token="VERSION" value="${release.version.minor}"/>
@@ -190,7 +190,7 @@
       </filterset>
     </copy>
 
-    <copy file="CHANGES.txt" tofile="${war.dir}/CHANGES.txt" overwrite="true">
+    <copy file="CHANGES.txt" tofile="${war.dir}/docs/CHANGES.txt" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${buildtime}"/>
         <filter token="VERSION" value="${release.version}"/>
@@ -211,12 +211,11 @@
       <fileset refid="runtime.libraries"/>
     </copy>
 
-    <!-- Copy WEB-INF contents. (Renaming web.xml.) -->
+    <!-- Copy WEB-INF contents including web.xml. -->
     <copy todir="${war.dir}/WEB-INF" overwrite="true" preservelastmodified="true">
-      <fileset>
-        <!--include name="${webapp.src.dir}/WEB-INF/web.xml" /-->
-        <include name="${webapp.src.dir}/WEB-INF/log4j.xml" />
-        <include name="${webapp.src.dir}/WEB-INF/xsl/*.xsl" />
+      <fileset dir="${webapp.src.dir}/WEB-INF">
+        <include name="log4j.xml" />
+        <include name="xsl/*.xsl" />
       </fileset>
     </copy>
     <copy file="${webapp.src.dir}/WEB-INF/web-thredds.xml"
@@ -232,14 +231,14 @@
     </copy>
 
     <!-- Copy CatalogGen test data to initialContent/ directory for example setup. -->
-    <copy todir="${war.dir}/initialContent/cataloggen/testData/model" preservelastmodified="true" overwrite="true">
+    <!--copy todir="${war.dir}/initialContent/cataloggen/testData/model" preservelastmodified="true" overwrite="true">
       <fileset dir="${test.data.dir}/thredds/cataloggen/testData/model"/>
-    </copy>
+    </copy-->
 
     <!-- Copy DqcServlet test data to initialContent/ directory for example setup. -->
-    <copy todir="${war.dir}/initialContent/dqcServlet/testData" preservelastmodified="true" overwrite="true">
+    <!--copy todir="${war.dir}/initialContent/dqcServlet/testData" preservelastmodified="true" overwrite="true">
       <fileset dir="${test.data.dir}/thredds/cataloggen/testData/model"/>
-    </copy>
+    </copy-->
 
     <!-- Servlet engine needs write permission on log, config, and catalog directories. -->
     <chmod file="${war.dir}/initialContent/logs" perm="775" type="dir"/>
@@ -257,7 +256,7 @@
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="THREDDS-IDD-OPeNDAP Server"/>
+        <attribute name="Implementation-Title" value="THREDDS Data Server"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>
@@ -265,7 +264,7 @@
 
   </target>
 
-  <target name="makeExpWar" depends="war-setup" description="create a war file from the distribution directory">
+  <target name="makeWar-ExampleThredds" depends="war-setup" description="create a war file from the distribution directory">
     <!-- Copy web.xml into war dir. -->
     <copy file="${webapp.src.dir}/WEB-INF/web-expThredds.xml"
           tofile="${war.dir}/WEB-INF/web.xml"

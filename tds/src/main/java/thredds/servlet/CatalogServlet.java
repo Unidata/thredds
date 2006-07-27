@@ -1,4 +1,3 @@
-// $Id: CatalogServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -66,14 +65,6 @@ public class CatalogServlet extends HttpServlet {
     }
 
     DataRootHandler drh = DataRootHandler.getInstance();
-
-    // Check for proxy dataset resolver requests.
-    if ( drh.isProxyDatasetResolver( req.getPathInfo()))
-    {
-      drh.handleRequestForProxyDatasetResolverCatalog( req, res );
-      // drh.processReqForLatestDataset( this, req, res );
-      return;
-    }
 
     // see if its a catalog
     boolean ok = drh.processReqForCatalog( req, res);

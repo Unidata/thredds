@@ -1,9 +1,6 @@
-// $Id: HtmlWriter.java 51 2006-07-12 17:13:13Z caron $
 package thredds.servlet;
 
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.InvCatalogRef;
+import thredds.catalog.*;
 import thredds.datatype.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
@@ -15,10 +12,7 @@ import ucar.nc2.dataset.grid.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Date;
+import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.io.*;
@@ -403,15 +397,15 @@ public class HtmlWriter
 
     // Render the column headings
     sb.append( "<tr>\r\n" );
-    sb.append( "<td align=\"left\"><font size=\"+1\"><strong>" );
+    sb.append( "<th align=\"left\"><font size=\"+1\">" );
     sb.append( "Dataset" );
-    sb.append( "</strong></font></td>\r\n" );
-    sb.append( "<td align=\"center\"><font size=\"+1\"><strong>" );
+    sb.append( "</font></th>\r\n" );
+    sb.append( "<th align=\"center\"><font size=\"+1\">" );
     sb.append( "Size" );
-    sb.append( "</strong></font></td>\r\n" );
-    sb.append( "<td align=\"right\"><font size=\"+1\"><strong>" );
+    sb.append( "</font></th>\r\n" );
+    sb.append( "<th align=\"right\"><font size=\"+1\">" );
     sb.append( "Last Modified" );
-    sb.append( "</strong></font></td>\r\n" );
+    sb.append( "</font></th>\r\n" );
     sb.append( "</tr>" );
 
     // Recursively render the datasets
@@ -493,23 +487,48 @@ public class HtmlWriter
         sb.append( name );
         sb.append( "/</tt></a></td>\r\n" );
       }
-      else if ( ds.getID() != null )
+      else // Not an InvCatalogRef
       {
-        // Write link to HTML dataset page.
-        sb.append( "<a href=\"" );
-        // sb.append("catalog.html?cmd=subset&catalog=");
-        sb.append( StringUtil.quoteHtmlContent( catHtml ) );
-        sb.append( "dataset=" );
-        sb.append( StringUtil.quoteHtmlContent( ds.getID() ) );
-        sb.append( "\"><tt>" );
-        sb.append( name );
-        sb.append( "</tt></a></td>\r\n" );
-      }
-      else
-      {
-        sb.append( "<tt>" );
-        sb.append( name );
-        sb.append( "</tt></td>\r\n" );
+        // Check if dataset has single resolver service.
+        if ( ds.getAccess().size() == 1 &&
+             ( (InvAccess) ds.getAccess().get( 0)).getService().getServiceType().equals( ServiceType.RESOLVER ) )
+        {
+          InvAccess access = (InvAccess) ds.getAccess().get( 0);
+          String accessUrlName = access.getUnresolvedUrlName();
+          int pos = accessUrlName.lastIndexOf( ".xml");
+          if ( pos != -1 )
+            accessUrlName = accessUrlName.substring( 0, pos ) + ".html";
+          sb.append( "<a href=\"" );
+          sb.append( StringUtil.quoteHtmlContent( accessUrlName ) );
+          sb.append( "\"><tt>" );
+          String tmpName = name;
+          if ( tmpName.endsWith( ".xml"))
+          {
+            tmpName = tmpName.substring( 0, tmpName.lastIndexOf( '.' ) );
+          }
+          sb.append( tmpName );
+          sb.append( "</tt></a></td>\r\n" );
+        }
+        // Dataset with an ID.
+        else if ( ds.getID() != null )
+        {
+          // Write link to HTML dataset page.
+          sb.append( "<a href=\"" );
+          // sb.append("catalog.html?cmd=subset&catalog=");
+          sb.append( StringUtil.quoteHtmlContent( catHtml ) );
+          sb.append( "dataset=" );
+          sb.append( StringUtil.quoteHtmlContent( ds.getID() ) );
+          sb.append( "\"><tt>" );
+          sb.append( name );
+          sb.append( "</tt></a></td>\r\n" );
+        }
+        // Dataset without an ID.
+        else
+        {
+          sb.append( "<tt>" );
+          sb.append( name );
+          sb.append( "</tt></td>\r\n" );
+        }
       }
 
       sb.append( "<td align=\"right\"><tt>" );
@@ -752,32 +771,3 @@ public class HtmlWriter
   }
 
 }
-/*
- * $Log: HtmlWriter.java,v $
- * Revision 1.6  2006/06/14 22:26:28  edavis
- * THREDDS Servlet Framework (TSF) changes:
- * 1) Allow developer to specify the logo files to be used by in HTML responses.
- * 2) Allow developer to specify the servlet path to be used for catalog requests.  
- * 3) Improve thread safety in DataRootHandler.
- *
- * Revision 1.5  2006/04/20 22:25:23  caron
- * dods server: handle name escaping consistently
- * rename, reorganize servlets
- * update Paths doc
- *
- * Revision 1.4  2006/04/03 23:05:19  caron
- * add DLwriterServlet, StationObsCollectionServlet
- * rename various servlets, CatalogRootHandler -> DataRootHandler
- *
- * Revision 1.3  2006/03/30 23:22:11  edavis
- * Refactor THREDDS servlet framework, especially CatalogRootHandler and ServletUtil.
- *
- * Revision 1.2  2006/03/28 19:56:56  caron
- * remove DateUnit static methods - not thread safe
- * bugs in ForecasstModelRun interactions with external indexer
- *
- * Revision 1.1  2006/03/07 23:45:33  edavis
- * Remove hardwiring of "/thredds" as the context path in TDS framework.
- * Start refactoring URL mappings in TDS framework, use ExampleThreddsServlet as test servlet.
- *
- */
