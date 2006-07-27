@@ -157,7 +157,7 @@ public class AggregationFmrCollection extends Aggregation {
       if (!isNew) runtimeCoordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
     }
 
-    // if not already set, set its values
+    /* if not already set, set its values
     if (!runtimeCoordVar.hasCachedData()) {
       int[] shape = new int[]{getTotalCoords()};
       Array coordData = Array.factory(coordType.getPrimitiveClassType(), shape);
@@ -181,7 +181,7 @@ public class AggregationFmrCollection extends Aggregation {
         nested.setCoordValue(ii.getDoubleNext());
         if (cancelTask != null && cancelTask.isCancel()) return;
       }
-    }
+    } */
 
     if (isDate()) {
       runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));

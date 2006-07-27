@@ -154,6 +154,7 @@
             <xsd:attribute name="suffix" type="xsd:string" />
             <xsd:attribute name="dateFormatMark" type="xsd:string" />
             <xsd:attribute name="enhance" type="xsd:boolean"/>
+            <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
           </xsd:complexType>
         </xsd:element>
 

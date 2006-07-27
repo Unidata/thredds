@@ -61,7 +61,7 @@ See http://www.gnu.org/copyleft/gpl.html for the details.
  */
 class PicturePane extends JComponent implements ScalablePictureListener {
 
-  private boolean scaleToFit = true;
+  private boolean scaleToFit = false;
 
 	/**
 	 *   The currently diplayed ScalablePicture.

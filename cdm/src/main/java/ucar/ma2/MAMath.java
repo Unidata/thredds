@@ -103,6 +103,45 @@ public class MAMath {
     return true;
   }
 
+  /**
+   * Copy using iterators. Will copy until !from.hasNext().
+   * @param dataType use this operation type (eg DataType.DOUBLE uses getDoubleNext())
+   * @param from copy from here
+   * @param to  copy to here
+   * @exception IllegalArgumentException a and b are not conformable
+   * @exception UnsupportedOperationException dont support this data type
+   */
+  public static void copy( DataType dataType, IndexIterator from, IndexIterator to) throws IllegalArgumentException {
+    if (dataType == DataType.DOUBLE) {
+      while (from.hasNext())
+        to.setDoubleNext(from.getDoubleNext());
+    } else if (dataType == DataType.FLOAT) {
+      while (from.hasNext())
+        to.setFloatNext(from.getFloatNext());
+    } else if (dataType == DataType.LONG) {
+      while (from.hasNext())
+        to.setLongNext(from.getLongNext());
+    } else if (dataType == DataType.INT) {
+      while (from.hasNext())
+        to.setIntNext(from.getIntNext());
+    } else if (dataType == DataType.SHORT) {
+      while (from.hasNext())
+        to.setShortNext(from.getShortNext());
+    } else if (dataType == DataType.CHAR) {
+      while (from.hasNext())
+        to.setCharNext(from.getCharNext());
+    } else if (dataType == DataType.BYTE) {
+      while (from.hasNext())
+        to.setByteNext(from.getByteNext());
+    } else if (dataType == DataType.BOOLEAN) {
+      while (from.hasNext())
+        to.setBooleanNext(from.getBooleanNext());
+    } else {
+      while (from.hasNext())
+        to.setObjectNext(from.getObjectNext());
+    }
+  }
+
   /** copy array a to array result, the result array will be in canonical order
    *  The operation type is taken from the type of a.
    * @exception IllegalArgumentException a and b are not conformable
@@ -152,7 +191,7 @@ public class MAMath {
    */
   public static void copyFloat( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
@@ -167,7 +206,7 @@ public class MAMath {
    */
   public static void copyLong( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
@@ -183,7 +222,7 @@ public class MAMath {
    */
   public static void copyInt( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
@@ -198,7 +237,7 @@ public class MAMath {
    */
   public static void copyShort( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
@@ -213,7 +252,7 @@ public class MAMath {
    */
   public static void copyChar( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
@@ -229,7 +268,7 @@ public class MAMath {
    */
   public static void copyByte( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
@@ -243,7 +282,7 @@ public class MAMath {
    */
   public static void copyBoolean( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();
@@ -257,7 +296,7 @@ public class MAMath {
    */
   public static void copyObject( Array result, Array a) throws IllegalArgumentException {
     if (!conformable(a, result))
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("copy arrays are not conformable");
 
     IndexIterator iterA = a.getIndexIterator();
     IndexIterator iterR = result.getIndexIterator();

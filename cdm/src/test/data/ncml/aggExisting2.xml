@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+   <variable name="time">
+     <attribute name="units" value="hours since 2006-06-16 00:00"/>
+     <attribute name="_CoordinateAxisType" value="Time" />
+   </variable>
+
+  <aggregation type='joinExisting' dimName='time' >
+    <variableAgg name="CGusfc" />
+    <netcdf location='file:src/test/data/ncml/nc/cg/CG2006158_120000h_usfc.nc' ncoords='1' coordValue='12' />
+    <netcdf location='file:src/test/data/ncml/nc/cg/CG2006158_130000h_usfc.nc' ncoords='1' coordValue='13' />
+    <netcdf location='file:src/test/data/ncml/nc/cg/CG2006158_140000h_usfc.nc' ncoords='1' coordValue='14' />
+  </aggregation>
+
+</netcdf>

@@ -23,6 +23,7 @@ package ucar.nc2;
 import ucar.ma2.*;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.UncompressInputStream;
+import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.nc2.util.DiskCache;
 
 import java.util.*;
@@ -240,8 +241,8 @@ public class NetcdfFile {
     String suffix = filename.substring(pos+1);
     String uncompressedFilename = filename.substring(0, pos);
 
-    if ( !suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip") &&
-        !suffix.equalsIgnoreCase("gz"))
+    if ( !suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip")
+            && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
       return null;
 
     // see if already decompressed, look in cache if need be
@@ -258,6 +259,22 @@ public class NetcdfFile {
       FileOutputStream out = null;
       try {
         zin = new ZipInputStream( new FileInputStream( filename));
+        out = new FileOutputStream( uncompressedFile);
+        copy(zin, out, 100000);
+      } catch (IOException e) {
+        e.printStackTrace();
+        throw e;
+      } finally {
+        if (zin != null) zin.close();
+        if (out != null) out.close();
+      }
+      if (debugCompress) System.out.println("unzipped "+filename+" to "+uncompressedFile);
+
+    } else if (suffix.equalsIgnoreCase("bz2")) {
+      CBZip2InputStream zin = null;
+      FileOutputStream out = null;
+      try {
+        zin = new CBZip2InputStream( new FileInputStream( filename), true);
         out = new FileOutputStream( uncompressedFile);
         copy(zin, out, 100000);
       } catch (IOException e) {

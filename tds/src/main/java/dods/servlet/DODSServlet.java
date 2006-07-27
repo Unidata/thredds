@@ -570,6 +570,8 @@ public abstract class DODSServlet extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
+        } catch (java.io.FileNotFoundException fe) {
+            anyExceptionHandler(fe, response, rs);
         } catch (DODSException de) {
             dodsExceptionHandler(de, response);
         } catch (ParseException pe) {

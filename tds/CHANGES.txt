@@ -6,14 +6,21 @@ Changes in version 3.11
   Features
    * Generated catalogs now contain <date type="modified" /> elements where
      appropriate indicating the last modified time for that dataset.
-     [This is done in CollectionLevelScanner using CrawlableDataset.lastModified().
+     This is done in CollectionLevelScanner using CrawlableDataset.lastModified().
    * The HTML catalog view now uses information from <date type="modified" />
      elements to populate "Last Modified" field in dataset listings.
   API
    *
   BUGS
+   * DODS Server should treat FileNotFoundException as user error, not a server error.
    * Improve thread safety of thredds.cataloggen.servlet.
   LIBRARIES
+   * netcdf-java-2.2.17
+
+Changes in version 3.10
+ Bugs
+  * bugs in nj22 - upgrade to 2.2.16.03
+  * static catalogs now cached -  need to be checked for when they change
 
 Changes in version 3.9
  Features

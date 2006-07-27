@@ -695,25 +695,26 @@ public class ToolsUI extends JPanel {
 
   // LOOK put in background task ??
   private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
-    NetcdfDataset ncd = null;
     try {
-      if (addCoords)
+      NetcdfDataset ncd = NetcdfDataset.openDataset( location, addCoords, task);
+
+      /* if (addCoords)
         ncd = NetcdfDatasetCache.acquire(location, task);
       else {
          NetcdfFile ncfile = NetcdfFileCache.acquire(location, task);
          if (ncfile != null) ncd = new NetcdfDataset( ncfile, false);
-      }
-      
-      if (ncd == null)
-        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location);
-      else if (setUseRecordStructure)
+      } */
+
+      if (setUseRecordStructure)
         ncd.addRecordStructure();
+
+      return ncd;
 
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + ioe.getMessage());
+      return null;
     }
 
-    return ncd;
   }
 
   private NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {

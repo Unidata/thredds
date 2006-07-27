@@ -161,7 +161,7 @@ public class TestNcmlAggSynthetic extends TestCase {
     try {
       Array data = time.read();
 
-      assert (data instanceof ArrayInt.D1);
+      assert (data instanceof ArrayInt.D1) : data.getClass().getName();
       ArrayInt.D1 dataI = (ArrayInt.D1) data;
       assert dataI.get(0) == 0;
       assert dataI.get(1) == 10;

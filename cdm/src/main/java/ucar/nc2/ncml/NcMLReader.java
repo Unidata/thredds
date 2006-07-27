@@ -49,7 +49,7 @@ public class NcMLReader {
   public static final Namespace ncNS = Namespace.getNamespace("nc", XMLEntityResolver.NJ22_NAMESPACE);
   private static boolean debugURL = false, debugXML = false, showParsedXML = false;
   private static boolean debugOpen = false, debugConstruct = false, debugCmd = false;
-  private static boolean debugAgg = false, debugAggDetail = false;
+  private static boolean debugAggDetail = false;
 
   static public void setDebugFlags( ucar.nc2.util.DebugFlags debugFlag) {
     debugURL =  debugFlag.isSet("NcML/debugURL");
@@ -58,7 +58,6 @@ public class NcMLReader {
     debugCmd =  debugFlag.isSet("NcML/debugCmd");
     debugOpen =  debugFlag.isSet("NcML/debugOpen");
     debugConstruct =  debugFlag.isSet("NcML/debugConstruct");
-    debugAgg =  debugFlag.isSet("NcML/debugAgg");
     debugAggDetail =  debugFlag.isSet("NcML/debugAggDetail");
   }
 
@@ -954,8 +953,9 @@ public class NcMLReader {
      String suffix = scanElem.getAttributeValue("suffix");
      String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
      String enhance = scanElem.getAttributeValue("enhance");
+     String subdirs = scanElem.getAttributeValue("subdirs");
 
-     agg.addDirectoryScan( dirLocation, suffix, dateFormatMark, enhance);
+     agg.addDirectoryScan( dirLocation, suffix, dateFormatMark, enhance, subdirs);
 
      if ((cancelTask != null) && cancelTask.isCancel())
        return null;
@@ -977,8 +977,7 @@ public class NcMLReader {
 
     public NetcdfFile open(String cacheName, CancelTask cancelTask) throws IOException {
       if (debugAggDetail) System.out.println(" NcmlElementReader open nested dataset " + cacheName);
-      NetcdfDataset nested = readNcML(ncmlLocation, location, netcdfElem, cancelTask);
-      return nested;
+      return readNcML(ncmlLocation, location, netcdfElem, cancelTask);
     }
   }
 

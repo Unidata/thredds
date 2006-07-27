@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.17"/>
-  <property name="release.version.minor" value="${release.version}.01"/>
+  <property name="release.version.minor" value="${release.version}.02"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
 
@@ -528,7 +528,18 @@
       <fileset dir="${dist.dir}" includes="${jarMain}"/>
       <fileset dir="${dist.dir}" includes="${srcRelease}"/>
       <fileset dir="${dist.dir}" includes="${idv.jar}"/>
+      <fileset dir="${dist.dir}" includes="${jarUI}"/>
+      <fileset dir="${dist.dir}" includes="${toolsUI}"/>
+      <fileset dir="${dist.dir}" includes="${ncAll}"/>
     </copy>
+
+    <checksum>
+      <fileset dir="${release.library.dir}">
+        <include name="*.jar"/>
+        <include name="*.zip"/>
+      </fileset>
+    </checksum>
+
     <copy todir="${release.javadoc.dir}" overwrite="true">
       <fileset dir="${javadoc.dir}"/>
     </copy>

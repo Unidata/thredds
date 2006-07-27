@@ -149,8 +149,16 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   public CBZip2InputStream() {
   }
 
-
   public CBZip2InputStream(InputStream zStream) {
+    setStream(zStream);
+  }
+
+  public CBZip2InputStream(InputStream zStream, boolean skip) throws IOException {
+    if (skip) {
+      char c =  (char) zStream.read();
+      char c2 = (char) zStream.read();
+      //System.out.println(c+""+c2);
+    }
     setStream(zStream);
   }
 
@@ -179,9 +187,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     rTPos = 0;
     j2=0;
     z=0;
-
-
-
 
     bsSetStream(zStream);
     initialize();

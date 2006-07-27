@@ -26,7 +26,7 @@
 <div class="head">
   <h1>TDS Caching</h1>
   <address>
-  last update: Jan 24, 2006 
+  last update: Jul 14, 2006 
   </address>
   <hr>
   <h3>DiskCache</h3>
@@ -35,23 +35,17 @@
     <li>writing grib index files</li>
     <li>uncompressing radar level 2 files </li>
   </ol>
-  <p>The following directory is used for caching: <strong>${tomcat_home}/content/thredds/cache/</strong></p>
-  <p>The following controls are set in ThreddsDefault.java. These need to be externalized:</p>
-  <pre> // set the cache directory 
- DiskCache.setRootDirectory( contentPath + &quot;cache/&quot;);
+  <p>The following directory is used for caching: <strong>${tomcat_home}/content/thredds/cache/, </strong>unless overridden in     <em><strong>contentPath+&quot;/params.xml&quot;</strong></em>:</p>
+  <pre>    String cache = ServletParams.getInitParameter(&quot;CachePath&quot;, contentPath + &quot;cache/&quot;);<br>    DiskCache.setRootDirectory(cache);<br>    DiskCache.setCachePolicy(false); // allow to write into data directory if possible
 
- // allow to write into data directory if possible
- DiskCache.setCachePolicy( false);
-
- // each hour, starting in 30 minutes
- timer.scheduleAtFixedRate( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 );</pre>
-  <p>The files are written in the data directory if possible, so that they have the same lifetime as the data file. </p>
-  <p>When that is not possible, the files are written to <strong>/content/thredds/cache</strong>. This directory is scoured (by a Timer in ThreddsDefault) every hour, to remove oldest files when disk capacity is exceeded. </p>
+   // each hour, starting in 30 minutes
+   timer.scheduleAtFixedRate( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 );</pre>
+  <p>The files are written in the data directory if possible, so that they have the same lifetime as the data file. When that is not possible, the files are written to <strong>/content/thredds/cache</strong>. This directory is scoured (by a Timer in ThreddsDefault) every hour, to remove oldest files when disk capacity is exceeded. </p>
   <h3>DiskCache2</h3>
   <p>This disk-based cache  is used by  <strong>ucar.nc2.ncml.Aggregation</strong>, to persist NcML files, to make aggregation as efficient as possible. </p>
   <p>The following directory is used for caching: <strong>${tomcat_home}/content/thredds/cachePersist/</strong></p>
   <p>The following controls are set in ThreddsDefault.java. These need to be externalized:</p>
-  <pre>  // for efficiency, persist aggregations. every 12 hours, delete stuff older than 10 days<br>  aggCache = new DiskCache2(contentPath + &quot;cachePersist/&quot;, false, 60 * 24 * 10, 60 * 12);</pre>
+  <pre>    // for efficiency, persist aggregations. every 12 hours, delete stuff older than 10 days<br>    String cache2 = ServletParams.getInitParameter(&quot;CacheAged&quot;, contentPath + &quot;cacheAged/&quot;);</pre>
   <p>    The directory is scoured (by a Timer in DiskCache2) removing files that are older than a certain date. </p>
   <h3>NetcdfFileCache</h3>
   <p>NetcdfFile objects are cached in memory for performance. When acquired, the object is locked so another thread cannot use. When closed, the lock is removed. When the cache is full, older objects are removed from the cache, and all resources released. </p>
@@ -67,7 +61,7 @@
   <pre>    // allow 100 - 200 open files, cleanup every 2 minutes<br>    FileCache.init(100, 200, 2 * 60, 2 * 60);</pre>
 </div>
 <hr width="100%">
-<p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@support.unidata.ucar.edu">THREDDS support</a> </span></i></p>
+<p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a> </span></i></p>
 <p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../../thredds.jpg" height="79" width="95"><br>
 </p>
 </body>

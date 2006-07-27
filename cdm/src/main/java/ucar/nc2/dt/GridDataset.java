@@ -20,9 +20,9 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
   /**
    * Return GridDatatype objects grouped by GridCoordSys. All GridDatatype in a Gridset
    *   have the same GridCoordSys.
-   * @return Collection of type GridDataset.Gridset
+   * @return List of type GridDataset.Gridset
    */
-  public Collection getGridSets();
+  public List getGridSets();
 
 
   /**

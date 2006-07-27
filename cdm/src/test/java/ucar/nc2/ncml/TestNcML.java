@@ -26,6 +26,7 @@ public class TestNcML {
     // test aggregations
     suite.addTest(new TestSuite(TestNcmlUnionSimple.class));
     suite.addTest(new TestSuite(TestNcmlUnion.class)); //
+    suite.addTest(new TestSuite(TestAggExistingCoordVars.class));
     suite.addTest(new TestSuite(TestNcmlAggExisting.class));
     suite.addTest(new TestSuite(TestNcmlAggSynthetic.class)); // */
     suite.addTest(new TestSuite(TestNcmlAggSynGrid.class));
@@ -34,8 +35,8 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestNcmlAggDirDateFormat.class));  //
 
     // suite.addTest(new TestSuite(TestAggForecastModel.class));  //  */
-    suite.addTest(new TestSuite(TestAggFmrcNetcdf.class));  //  */
-    suite.addTest(new TestSuite(TestAggFmrcGrib.class));  //  */
+    //suite.addTest(new TestSuite(TestAggFmrcNetcdf.class));  //  */
+    //suite.addTest(new TestSuite(TestAggFmrcGrib.class));  //  */
 
         // test add coordinate systems
     // suite.addTest(new TestSuite(TestNcMLWriteReadwithCoords.class)); // write and read back NcML adding coord systems

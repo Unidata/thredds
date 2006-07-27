@@ -176,9 +176,9 @@ public class NcMLWriter {
       Aggregation.Dataset ds = (Aggregation.Dataset) dsList.get(i);
       Element e = new Element("netcdf", ncNS);
       e.setAttribute("location", ds.getLocation());
-      if (type == Aggregation.Type.JOIN_EXISTING)
+      //if (type == Aggregation.Type.JOIN_EXISTING)
         e.setAttribute("ncoords", Integer.toString(ds.getNcoords(null)));
-      else if (type == Aggregation.Type.JOIN_NEW)
+      if (null != ds.getCoordValueString())
         e.setAttribute("coordValue", ds.getCoordValueString());
       aggElem.addContent(e);
     }

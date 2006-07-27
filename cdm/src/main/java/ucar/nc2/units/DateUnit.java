@@ -79,7 +79,7 @@ public class DateUnit extends SimpleUnit {
     Date result = getStandardDate( text);
     if (result == null) {
       DateFormatter formatter = new DateFormatter();
-      result = formatter. getISODate( text);
+      result = formatter.getISODate( text);
     }
     return result;
   }

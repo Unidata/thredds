@@ -336,6 +336,10 @@ public class Level2Record {
     out.println(" pattern = "+vcp+" cut= "+cut);
   }
 
+  public void dump2(PrintStream out) {
+    out.println(recno+"= "+elevation_num+" size = "+message_size);
+  }
+
   public boolean checkOk() {
     boolean ok = true;
 
@@ -502,14 +506,14 @@ public class Level2Record {
 
  /**
    * Instances which have same content are equal.
-   */
+   *
   public boolean equals(Object oo) {
     if (this == oo) return true;
     if ( !(oo instanceof Level2Record)) return false;
     return hashCode() == oo.hashCode();
   }
 
-  /** Override Object.hashCode() to implement equals. */
+  /** Override Object.hashCode() to implement equals. *
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
@@ -520,7 +524,7 @@ public class Level2Record {
     }
     return hashCode;
   }
-  private volatile int hashCode = 0;
+  private volatile int hashCode = 0;  */
 
   public String toString() {
     return "elev= "+elevation_num+" radial_num = "+radial_num;

@@ -155,7 +155,7 @@ public class TimeUnit extends SimpleUnit {
     Calendar cal = Calendar.getInstance();
     cal.setTime( d);
     cal.add( Calendar.SECOND, (int) getValueInSeconds());
-    return (Date) cal.getTime();
+    return cal.getTime();
   }
 
   /** TimeUnits with same value and unitString are equal */

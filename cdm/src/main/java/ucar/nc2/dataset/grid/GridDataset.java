@@ -240,9 +240,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
   /**
    * Return GridDatatype objects grouped by GridCoordSys. All GridDatatype in a Gridset
    *   have the same GridCoordSystem.
-   * @return Collection of type ucar.nc2.dt.GridDataset.Gridset
+   * @return List of type ucar.nc2.dt.GridDataset.Gridset
    */
-  public Collection getGridSets(){ return gridsetHash.values(); }
+  public List getGridSets(){ return new ArrayList( gridsetHash.values()); }
 
   /** find the named GeoGrid. */
   public GeoGrid findGridByName( String name) {

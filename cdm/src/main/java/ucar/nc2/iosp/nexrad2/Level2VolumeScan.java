@@ -78,7 +78,7 @@ public class Level2VolumeScan {
   // List of List of Level2Record
   private ArrayList reflectivityGroups, dopplerGroups;
 
-  private boolean showMessages = false, showData = false, debugScans = false,  debugGroups2 = false;
+  private boolean showMessages = false, showData = false, debugScans = false,  debugGroups2 = false, debugRadials = false;
 
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {
     this.raf = orgRaf;
@@ -149,7 +149,7 @@ public class Level2VolumeScan {
         continue;
       }
 
-      if (showData) r.dump(System.out);
+      if (showData) r.dump2(System.out);
 
       /* skip bad
       if (!r.checkOk()) {
@@ -162,8 +162,9 @@ public class Level2VolumeScan {
       if (first == null) first = r;
       last = r;
 
-      if (!r.checkOk())
+      if (!r.checkOk()) {
         continue;
+      }
 
       if (r.hasReflectData)
         reflectivity.add(r);
@@ -172,7 +173,7 @@ public class Level2VolumeScan {
 
       if ((cancelTask != null) && cancelTask.isCancel()) return;
     }
-    if (debug) log.debug(" reflect ok= "+reflectivity.size()+" doppler ok= "+doppler.size());
+    if (debugRadials) System.out.println(" reflect ok= "+reflectivity.size()+" doppler ok= "+doppler.size());
 
     reflectivityGroups = sortScans( "reflect", reflectivity);
     dopplerGroups = sortScans( "doppler", doppler);
@@ -180,30 +181,44 @@ public class Level2VolumeScan {
 
   private ArrayList sortScans( String name, List scans) {
 
-    // now group by elevation_num, cut
-    HashMap groupHash = new HashMap(100);
+    // now group by elevation_num
+    HashMap groupHash = new HashMap(600);
     for (int i = 0; i < scans.size(); i++) {
       Level2Record record = (Level2Record) scans.get(i);
-      Integer hashcode = new Integer(record.hashCode());
+      Integer groupNo = new Integer(record.elevation_num);
 
-      ArrayList group = (ArrayList) groupHash.get( hashcode);
+      ArrayList group = (ArrayList) groupHash.get( groupNo);
       if (null == group) {
         group = new ArrayList();
-        groupHash.put( hashcode, group);
+        groupHash.put( groupNo, group);
       }
 
       group.add( record);
     }
 
-    // whattawegot ?
+    // sort the groups by elevation_num
     ArrayList groups = new ArrayList(groupHash.values());
     Collections.sort( groups, new GroupComparator());
 
+    // use the maximum radials
     for (int i = 0; i < groups.size(); i++) {
       ArrayList group =  (ArrayList) groups.get(i);
       testScan(name, group);
       max_radials = Math.max( max_radials, group.size());
       min_radials = Math.min( min_radials, group.size());
+    }
+    if (debugRadials) {
+      System.out.println(name+" min_radials= "+min_radials+" max_radials= "+max_radials);
+      for (int i = 0; i < groups.size(); i++) {
+        ArrayList group =  (ArrayList) groups.get(i);
+        Level2Record lastr = (Level2Record) group.get(0);
+        for (int j = 1; j < group.size(); j++) {
+          Level2Record r =  (Level2Record) group.get(j);
+          if (r.data_msecs < lastr.data_msecs)
+            System.out.println(" out of order "+j);
+          lastr = r;
+        }
+      }
     }
 
     testVariable(name, groups);
@@ -598,7 +613,7 @@ public class Level2VolumeScan {
     NexradStationDB.init();
 
     RandomAccessFile raf = new RandomAccessFile("R:/testdata/radar/nexrad/level2/problem/KCCX_20060627_1701", "r");
-    Level2VolumeScan scan = new Level2VolumeScan(raf, null);
+    new Level2VolumeScan(raf, null);
   }
 
 }

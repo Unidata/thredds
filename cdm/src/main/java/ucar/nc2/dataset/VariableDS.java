@@ -233,10 +233,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   // regular Variables.
   protected Array _read() throws IOException {
     Array result;
-    if (agg != null)
-     result = agg.read( this, null);
-    else if (hasCachedData())
+
+    if (hasCachedData())
       result = super._read();
+    else if (agg != null)
+     result = agg.read( this, null);
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
@@ -256,10 +257,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   // section of regular Variable
   protected Array _read(java.util.List section) throws IOException, InvalidRangeException  {
     Array result;
-    if (agg != null)
-      result = agg.read( this, null, section);
-    else if (hasCachedData())
+    
+    if (hasCachedData())
       result = super._read(section);
+    else if (agg != null)
+      result = agg.read( this, null, section);
     else if (orgVar != null)
       result = orgVar.read(section);
     else { // return fill value in a "constant array"

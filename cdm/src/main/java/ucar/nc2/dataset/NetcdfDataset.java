@@ -479,12 +479,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public synchronized void close() throws java.io.IOException {
     if (isCached() == 2)
       NetcdfDatasetCache.release(this);
-    else if (isCached() == 1)
+    else if (isCached() == 1) {
+      if (agg != null) agg.persist();
       NetcdfFileCache.release(this);
-    else {
+    } else {
       if (isClosed) return;
       if (agg != null) agg.close();
+      agg = null;
       if (orgFile != null) orgFile.close();
+      orgFile = null;
       isClosed = true;
     }
 
