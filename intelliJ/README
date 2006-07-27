@@ -30,8 +30,8 @@ specific to your local machine and working directory:
 3) Make sure a valid web application server (like Tomcat) is selected.
   a) Back in the "Modules" window, make sure the "tds" module is selected.
   b) Select the "Web Module Settings" tab.
-  c) If the "Application Server" is shown in red, click the "Configure ..."
-     button and select a valid application server.
+  c) If the "Application Server" is shown in red (or is blank?), click the
+     "Configure ..." button and select a valid application server (Tomcat).
 
 4) Setup the Ant builds (optional).
   a) From the right sidebar, click on the "Ant Build" item.
@@ -46,35 +46,59 @@ specific to your local machine and working directory:
   g) The TDS Ant build uses some Tomcat deploy add-ons. To use the TDS build
      script, the catalina-ant.jar file must be available to Ant. There are two
      ways to set this up. Either:
-     1) Setup IntelliJ IDEA to run Ant with catalina-ant.jar on the class path.
-       a) In the "Ant Build" window, select the "tds" build script. Bring up
-          the "Properties" window by clicking on the "Properties" icon (looks
-          like a check list) at the top of the "Ant Build" window.
-       b) Select the "Additional Classpath" tab.
-       c) Click on the "Add" button.
-       d) Browse your directory tree to find a copy of catalina-ant.jar. The
-          Tomcat distribution contains one in the server/lib directory.
-       e) Select the copy of catalina-ant.jar and click on the "OK" button.
-     OR
-     2) Copy catalina-ant.jar (distributed with Tomcat) into the lib directory
-        of the Ant being used by IntelliJ IDEA.
-       a) In the "Ant Build" window, select the "tds" build script. Bring up
-          the "Properties" window by clicking on the "Properties" icon (looks
-          like a check list) at the top of the "Ant Build" window.
-       b) Select the "Execution" tab.
-       c) Look at the setup of the Ant being used (default or custom) to
-          determine the location of the Ant lib directory.
-       d) Copy catalina-ant.jar to the Ant lib directory.
+    1) Setup IntelliJ IDEA to run Ant with catalina-ant.jar on the class path.
+      a) In the "Ant Build" window, select the "tds" build script. Bring up
+         the "Properties" window by clicking on the "Properties" icon (looks
+         like a check list) at the top of the "Ant Build" window.
+      b) Select the "Additional Classpath" tab.
+      c) Click on the "Add" button.
+      d) Browse your directory tree to find a copy of catalina-ant.jar. The
+         Tomcat distribution contains one in the server/lib directory.
+      e) Select the copy of catalina-ant.jar and click on the "OK" button.
+    OR
+    2) Copy catalina-ant.jar (distributed with Tomcat) into the lib directory
+       of the Ant being used by IntelliJ IDEA.
+      a) In the "Ant Build" window, select the "tds" build script. Bring up
+         the "Properties" window by clicking on the "Properties" icon (looks
+         like a check list) at the top of the "Ant Build" window.
+      b) Select the "Execution" tab.
+      c) Look at the setup of the Ant being used (default or custom) to
+         determine the location of the Ant lib directory.
+      d) Copy catalina-ant.jar to the Ant lib directory.
 
 5) Setup Run/Debug configuration (optional)
-  a) From the IntelliJ IDEA toolbar, find the "Run/Debug Configuration"
-     pull-down and select "Edit Configuration".
-  b) You can setup to run/debug apps, web apps, JUnit tests, and others.
-  c) A few possibilities:
-     1) NetCDF-java ToolsUI: ucar.nc2.ui.ToolsUI
-     2) TDS: (more on this to come)
-     3) Some JUnit tests:
-        a) ucar.nc2.TestAll
-        b) thredds.tds.TestTDSAll
-        c) thredds.TestCompareTwoCatalogs
-        d) (more to come)
+  a) Bring up the "Run/Debug Configuration" window. (From the IntelliJ IDEA
+     toolbar, find the "Run/Debug Configuration" pull-down and select
+     "Edit Configuration".)
+  b) Set some defaults:
+    1) Bring up the "Application Default Settings" window. (Under the
+       "Application" tab, select the "Edit Defaults" button.)
+    2) Set the "VM Parameters" to: "-Xmx512m -ea"
+    3) Set the "Working directory" to "<yourThreddsCheckoutDir>/cdm" and
+       select "cdm" for the "Use classpath and JDK of module" item. [You can
+       replace "cdm" with "tds" or "ui" if you like depending on where the
+       majority of your applications will reside.]
+    4) Close the "Application Default Settings" window by clicking the "OK" button.
+    5) Bring up the "JUnit Default Settings" window. (Under the
+       "JUnit" tab, select the "Edit Defaults" button.)
+    6) Repeat steps 2 and 3.
+    4) Close the "JUnit Default Settings" window by clicking the "OK" button.
+  c) Setup to run/debug the desired apps, web apps, and JUnit tests.
+     A few possibilities:
+    1) Some JUnit tests:
+      a) ucar.nc2.TestAll
+      b) thredds.tds.TestTDSAll
+      c) thredds.TestCompareTwoCatalogs
+      d) (more to come)
+    2) NetCDF-java ToolsUI: ucar.nc2.ui.ToolsUI
+    3) TDS:
+      a) In the "Run/Debug Configuration" window, select the "Web Server" tab.
+      b) Add a new application by clicking on the "+" icon and selecting "Local".
+      c) Name the new application "TDS".
+      d) Under the "Server" tab:
+        1) For "Application Server", select your Tomcat server.
+        2) Deselect the "Start browser" option.
+      e) Under the "Deployment tab:
+        1) Select the "tds" web module.
+        2) Change the "Application Context" field from "/" to "/thredds".
+  d) Close the "Run/Debug Configuration" window by clicking the "OK" button.
