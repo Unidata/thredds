@@ -1,4 +1,4 @@
-// $Id:Nidsheader.java 63 2006-07-12 21:50:51Z edavis $
+// $Id: Nidsheader.java,v 1.35 2006/07/25 22:16:18 yuanho Exp $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -111,7 +111,7 @@ class Nidsheader{
   int block_length = 0;
   short number_layers = 0;
   String stationId;
-  boolean noHeader = false;
+  private boolean noHeader;
 
   DateFormatter formatter = new DateFormatter();
 
@@ -160,12 +160,14 @@ class Nidsheader{
 
     String pib = new String(b);
     if(  pib.indexOf("SDUS")!= -1){
+        noHeader = false;
         return 1;
     } else if ( raf.getLocation().indexOf(".nids") != -1) {
         noHeader = true;
         return 1;
-    } else if(checkMsgHeader(raf) == 1) {
-        return 1;
+   // } else if(checkMsgHeader(raf) == 1) {
+    //    noHeader = true;
+   //     return 1;
     } else
         return 0;
   }
@@ -206,7 +208,7 @@ class Nidsheader{
     int      encrypt;
     long     actualSize ;
     int      readLen ;
-
+    int     p = readWMO( raf );
     this.ncfile = ncfile;
     actualSize = raf.length();
     int pos = 0;
@@ -2662,6 +2664,15 @@ class Nidsheader{
 
 /* Change History:
    $Log: Nidsheader.java,v $
+   Revision 1.35  2006/07/25 22:16:18  yuanho
+   removed checkMsgHeader
+
+   Revision 1.34  2006/07/25 22:14:34  yuanho
+   removed checkMsgHeader
+
+   Revision 1.33  2006/07/25 21:07:58  yuanho
+   moved from svn
+
    Revision 1.32  2006/07/11 17:55:48  yuanho
    changed variable name velocity to radialVelocity
 
