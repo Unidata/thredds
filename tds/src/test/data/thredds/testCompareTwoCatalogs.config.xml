@@ -9,6 +9,8 @@
                  catPath="thredds/catalog.xml"/>
                  catPath="thredds/idv/rt-models.1.0.xml"/>
                  catPath="thredds/topcatalog.xml"/>
-                 catPath="thredds/idd/nexrad/level3/NVW/YUX/20060315/catalog.xml"/>
+                 catPath="thredds/catalog/nexrad/level3/NVW/YUX/20060315/catalog.xml"/>
+                              Change this date as appropriate --^^^^^^^^
+                                   (we keep about 7 days on motherlode)
     -->
 </testCompareTwoCatalogsConfig>
