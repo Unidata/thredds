@@ -62,7 +62,7 @@ public class TestDorade extends TestCase {
     testAtt = ncfile.getRootGroup().findAttribute("Radar_Name");
     assert( testAtt.getStringValue().equalsIgnoreCase("SPOL") );
 
-    testAtt = ncfile.getRootGroup().findAttribute("Scan_Mode");
+    testAtt = ncfile.getRootGroup().findAttribute("VolumeCoveragePatternName");
     assert( testAtt.getStringValue().equalsIgnoreCase("SUR") );
 
     testAtt = ncfile.getRootGroup().findAttribute("Volume_Number");
