@@ -1,7 +1,7 @@
 /*
  * $Id:Level2Record.java 63 2006-07-12 21:50:51Z edavis $
  *
- * Copyright © 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright ï¿½ 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -117,7 +117,7 @@ public class Level2Record {
     switch (datatype) {
       case REFLECTIVITY : return "Reflectivity";
       case VELOCITY_HI :
-      case VELOCITY_LOW : return "Velocity";
+      case VELOCITY_LOW : return "RadialVelocity";
       case SPECTRUM_WIDTH : return "SpectrumWidth";
       default : throw new IllegalArgumentException();
     }
