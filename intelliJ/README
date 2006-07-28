@@ -27,13 +27,19 @@ specific to your local machine and working directory:
   b) Select the "Libraries" tab.
   c) If the JDK is shown in red, click the "..." button and select a valid JDK.
 
-3) Make sure a valid web application server (like Tomcat) is selected.
+3) Mark the IntelliJ IDEA project files as "Exclude from commit". (This will
+   make sure they don't accidentally get checked in.)
+  a) From the "Version Control" menu item, select "Commit project".
+  b) Select the "IntellJ" module.
+  c) Click the "Exclude from commit" icon (the "+" icon).
+
+4) Make sure a valid web application server (like Tomcat) is selected.
   a) Back in the "Modules" window, make sure the "tds" module is selected.
   b) Select the "Web Module Settings" tab.
   c) If the "Application Server" is shown in red (or is blank?), click the
      "Configure ..." button and select a valid application server (Tomcat).
 
-4) Setup the Ant builds (optional).
+5) Setup the Ant builds (optional).
   a) From the right sidebar, click on the "Ant Build" item.
   b) Click on the "Add" button at the top of the "Ant Build" window.
   c) Browse through your directory structure to the location where you checked
@@ -66,7 +72,7 @@ specific to your local machine and working directory:
          determine the location of the Ant lib directory.
       d) Copy catalina-ant.jar to the Ant lib directory.
 
-5) Setup Run/Debug configuration (optional)
+6) Setup Run/Debug configuration (optional)
   a) Bring up the "Run/Debug Configuration" window. (From the IntelliJ IDEA
      toolbar, find the "Run/Debug Configuration" pull-down and select
      "Edit Configuration".)
