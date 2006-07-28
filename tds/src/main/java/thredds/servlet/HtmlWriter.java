@@ -550,9 +550,9 @@ public class HtmlWriter
       if ( lastModDateType == null )
       {
         if ( ! ds.hasAccess())
-          sb.append( "");
+          sb.append( "--");// "");
         else
-          sb.append( "Unknown");
+          sb.append( "--");// "Unknown");
       }
       else
       {
