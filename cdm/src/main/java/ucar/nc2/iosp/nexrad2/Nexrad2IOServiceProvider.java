@@ -75,7 +75,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
 
     makeVariable( ncfile, Level2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups());
     int velocity_type =  (volScan.getDopplarResolution() == Level2Record.DOPPLER_RESOLUTION_HIGH_CODE) ? Level2Record.VELOCITY_HI : Level2Record.VELOCITY_LOW;
-    Variable v = makeVariable( ncfile, velocity_type, "Velocity", "Radial Velocity", "V", volScan.getVelocityGroups());
+    Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups());
     makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v);
 
     if (volScan.getStationId() != null) {

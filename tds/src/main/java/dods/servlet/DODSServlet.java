@@ -257,7 +257,7 @@ public abstract class DODSServlet extends HttpServlet {
     String mess = e.toString();
     if (mess.startsWith("ClientAbortException")) {
       log.info("DODSServlet.anyExceptionHandler " + mess);
-    } else {
+    } else if (!(e instanceof java.io.FileNotFoundException)) {
       log.error("DODSServlet.anyExceptionHandler", e);
     }
 
@@ -566,8 +566,7 @@ public abstract class DODSServlet extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch (java.io.FileNotFoundException fe) {
-            anyExceptionHandler(fe, response, rs);
+
         } catch (DODSException de) {
             dodsExceptionHandler(de, response);
         } catch (ParseException pe) {
@@ -665,8 +664,7 @@ public abstract class DODSServlet extends HttpServlet {
               deflater.finish();
 
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch (java.io.FileNotFoundException fe) {
-            anyExceptionHandler(fe, response, rs);
+
         } catch (DODSException de) {
             dodsExceptionHandler(de, response);
         } catch (ParseException pe) {
