@@ -263,15 +263,15 @@ public class Level2VolumeScan {
       } */
 
       if (r.getGateSize(datatype) != first.getGateSize(datatype)) {
-        log.error(raf.getLocation()+" different gate size ("+r.getGateSize(datatype)+") in record "+name+ " "+r);
+        log.warn(raf.getLocation()+" different gate size ("+r.getGateSize(datatype)+") in record "+name+ " "+r);
         ok = false;
       }
       if (r.getGateStart(datatype) != first.getGateStart(datatype)) {
-        log.error(raf.getLocation()+" different gate start ("+r.getGateStart(datatype)+") in record "+name+ " "+r);
+        log.warn(raf.getLocation()+" different gate start ("+r.getGateStart(datatype)+") in record "+name+ " "+r);
         ok = false;
       }
       if (r.resolution != first.resolution) {
-        log.error(raf.getLocation()+" different resolution ("+r.resolution+") in record "+name+ " "+r);
+        log.warn(raf.getLocation()+" different resolution ("+r.resolution+") in record "+name+ " "+r);
         ok = false;
       }
 
@@ -280,7 +280,7 @@ public class Level2VolumeScan {
         continue;
       }
       if (radial[r.radial_num] > 0) {
-        log.error(raf.getLocation()+" duplicate radial = "+r.radial_num+" in record "+name+ " "+r);
+        log.warn(raf.getLocation()+" duplicate radial = "+r.radial_num+" in record "+name+ " "+r);
         ok = false;
       }
       radial[r.radial_num] = r.recno+1;
@@ -293,7 +293,7 @@ public class Level2VolumeScan {
     for (int i = 1; i < radial.length; i++) {
       if (0 == radial[i]) {
         if (n != (i-1)) {
-          log.error(" missing radial(s)");
+          log.warn(" missing radial(s)");
           ok = false;
         }
         break;
@@ -311,7 +311,7 @@ public class Level2VolumeScan {
   private boolean testVariable (String name, List scans) {
     int datatype = name.equals("reflect") ? Level2Record.REFLECTIVITY : Level2Record.VELOCITY_HI;
     if (scans.size() == 0) {
-      log.error(" No data for = "+name);
+      log.warn(" No data for = "+name);
       return false;
     }
 
@@ -328,14 +328,14 @@ public class Level2VolumeScan {
       Level2Record record = (Level2Record) scan.get(0);
 
       if ((datatype == Level2Record.VELOCITY_HI) && (record.resolution != firstRecord.resolution)) { // do all velocity resolutions match ??
-        log.error(name+" scan "+i+" diff resolutions = "+record.resolution+", "+firstRecord.resolution+
+        log.warn(name+" scan "+i+" diff resolutions = "+record.resolution+", "+firstRecord.resolution+
             " elev= "+record.elevation_num+" "+record.getElevation());
         ok = false;
         hasDifferentDopplarResolutions = true;
       }
 
       if (record.getGateSize(datatype) != firstRecord.getGateSize(datatype)) {
-        log.error(name+" scan "+i+" diff gates size = "+record.getGateSize(datatype)+" "+firstRecord.getGateSize(datatype)+
+        log.warn(name+" scan "+i+" diff gates size = "+record.getGateSize(datatype)+" "+firstRecord.getGateSize(datatype)+
             " elev= "+record.elevation_num+" "+record.getElevation());
         ok = false;
 
@@ -343,7 +343,7 @@ public class Level2VolumeScan {
         System.out.println(" ok gates size elev= "+record.elevation_num+" "+record.getElevation());
 
       if (record.getGateStart(datatype) != firstRecord.getGateStart(datatype)) {
-        log.error(name+" scan "+i+" diff gates start = "+record.getGateStart(datatype)+" "+firstRecord.getGateStart(datatype)+
+        log.warn(name+" scan "+i+" diff gates start = "+record.getGateStart(datatype)+" "+firstRecord.getGateStart(datatype)+
             " elev= "+record.elevation_num+" "+record.getElevation());
       ok = false;
 

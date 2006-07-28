@@ -48,12 +48,13 @@ public class TestNcmlAggExistingCached extends TestCase {
     NetcdfFileCache.init(50, 70, 20 * 60);
   }
 
-  public void testNcmlDirect() throws IOException, InvalidRangeException {
-    String filename = "file:"+TestNcML.topDir + "aggExisting4.ncml";
+      // String filename = "file:"+TestNcML.topDir + "aggExisting4.ncml";
+    String filename = "dods://localhost:8080/thredds/dodsC/aggCacheTest/aggExisting4.ncml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+  public void testNcmlDirect() throws IOException, InvalidRangeException {
+    NetcdfFile ncfile = NetcdfDataset.openDataset(filename, false, null);
     System.out.println("\n TestNcmlAggExistingCached.open "+ filename);
-    // System.out.println(" "+ ncfile);
+    System.out.println(" "+ ncfile);
 
     testAggCoordVar( ncfile);
 
@@ -61,8 +62,6 @@ public class TestNcmlAggExistingCached extends TestCase {
   }
 
   public void testNcmlCached() throws IOException, InvalidRangeException {
-    String filename = "file:"+TestNcML.topDir + "aggExisting4.ncml";
-
     System.out.println("\n TestNcmlAggExistingCached.acquire at "+ new Date());
     NetcdfFile ncfile = NetcdfDataset.acquireDataset(filename, null);
     testAggCoordVar( ncfile);
@@ -87,10 +86,12 @@ public class TestNcmlAggExistingCached extends TestCase {
     System.out.println("\n TestNcmlAggExistingCached.acquire after flushing cache "+ new Date());
     ncfile = NetcdfDataset.acquireDataset(filename, null);
     testAggCoordVar( ncfile);
+    testAggCoordVarSubset( ncfile);
     ncfile.close();
 
   }
 
+  double[] result = new double[] {1.1496816E9, 1.1496852E9, 1.1496888E9  };
   public void testAggCoordVar(NetcdfFile ncfile) {
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -103,7 +104,6 @@ public class TestNcmlAggExistingCached extends TestCase {
 
     assert time.getCoordinateDimension() == ncfile.findDimension("time");
 
-    double[] result = new double[] {1.1496816E9, 1.1496852E9, 1.1496888E9  };
     try {
       Array data = time.read();
       assert data.getRank() == 1;
@@ -121,6 +121,46 @@ public class TestNcmlAggExistingCached extends TestCase {
     } catch (IOException io) {
       io.printStackTrace();
       assert false;
+    }
+
+  }
+
+  public void testAggCoordVarSubset(NetcdfFile ncfile) throws InvalidRangeException, IOException {
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+
+    assert time.getName().equals("time");
+    assert time.getRank() == 1;
+    assert time.getSize() == 3;
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.DOUBLE;
+
+    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+
+    Array data = time.read("1:2");
+    assert data.getRank() == 1;
+    assert data.getSize() == 2;
+    assert data.getShape()[0] == 2;
+    assert data.getElementType() == double.class;
+
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count+1]);
+      count++;
+    }
+
+    data = time.read("0:2:2");
+    assert data.getRank() == 1;
+    assert data.getSize() == 2;
+    assert data.getShape()[0] == 2;
+    assert data.getElementType() == double.class;
+
+    count = 0;
+    dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count*2]);
+      count++;
     }
 
   }

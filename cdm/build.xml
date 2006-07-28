@@ -556,6 +556,14 @@
     </copy>
   </target>
 
+  <target name="temp">
+    <checksum>
+      <fileset dir="O:/pub/netcdf-java/v2.1/">
+        <include name="*.jar"/>
+      </fileset>
+    </checksum>
+  </target>
+
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>
 	<property name="test.dir" location="${root.dir}/target/build/test"/>

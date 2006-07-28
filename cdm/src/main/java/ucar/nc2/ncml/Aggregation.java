@@ -483,8 +483,10 @@ public class Aggregation {
     Date now = new Date();
     Date lastCheckedDate = new Date(lastChecked);
     Date need = recheck.add(lastCheckedDate);
-    if (now.before(need))
+    if (now.before(need)) {
+      if (debug) System.out.println(" *Sync not needed, last= "+lastCheckedDate+" now = "+now);
       return false;
+    }
 
     // ok were gonna recheck
     if (debug) System.out.println(" *Sync ");
@@ -778,7 +780,7 @@ public class Aggregation {
     if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask);
 
-    Array allData = Array.factory(mainv.getOriginalDataType(), mainv.getShape());
+    Array allData = Array.factory(mainv.getOriginalDataType(), mainv.getShape()); // LOOK why getOriginalDataType() ?
     int destPos = 0;
 
     Iterator iter = nestedDatasets.iterator();
@@ -804,65 +806,40 @@ public class Aggregation {
     while (iter.hasNext()) {
       Dataset vnested = (Dataset) iter.next();
 
-      // we have the coordinates as a String
-      if (vnested.coordValue != null) {
-
-        // joinNew only can have 1 coord
-        if ((type == Type.JOIN_NEW)) {
-          if (dtype == DataType.STRING) {
-            result.setObjectNext(vnested.coordValue);
-          } else {
-            double val = Double.parseDouble(vnested.coordValue);
-            result.setDoubleNext(val);
-          }
-
-        } else {
-
-          // joinExisting can have multiple coords
-          int count = 0;
-          StringTokenizer stoker = new StringTokenizer(vnested.coordValue, " ,");
-          while (stoker.hasMoreTokens()) {
-            String toke = stoker.nextToken();
-            if (dtype == DataType.STRING) {
-              result.setObjectNext(toke);
-            } else {
-              double val = Double.parseDouble(toke);
-              result.setDoubleNext(val);
-            }
-            count++;
-          }
-
-          if (count != vnested.ncoord)
-            logger.error("readAggCoord incorrect number of coordinates dataset=" + vnested.location);
-        }
-
-      } else { // we gotta read it
-
-        Array varData = vnested.read(aggCoord, cancelTask);
-        MAMath.copy(dtype, varData.getIndexIterator(), result);
+      try {
+        readAggCoord(aggCoord, cancelTask, vnested, dtype, result, null, null, null);
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();  // cant happen
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
     }
 
-    // cache it so we dont have to come here again
+    // cache it so we dont have to come here again; make sure we invalidate cache when data changes!
     aggCoord.setCachedData(allData, false);
 
     return allData;
   }
-
 
   /**
    * Read a section of an aggregation variable.
    *
    * @param mainv      the aggregation variable
    * @param cancelTask allow the user to cancel
-   * @param section    read just this section of the data
+   * @param section    read just this section of the data, array of Range
    * @return the data array section
    * @throws IOException
    */
   public Array read(VariableDS mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    // If its full sized, then use full read, so that data gets cached.
+    long size = Range.computeSize( section);
+    if (size == mainv.getSize())
+      return read( mainv, cancelTask);
+
+    // the case of the agg coordinate var for joinExisting or joinNew
+    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING)) && mainv.getShortName().equals(dimName))
+      return readAggCoord(mainv, cancelTask, section);
 
     Array sectionData = Array.factory(mainv.getOriginalDataType(), Range.getShape(section));
     int destPos = 0;
@@ -871,7 +848,7 @@ public class Aggregation {
     List nestedSection = new ArrayList(section); // copy
     List innerSection = section.subList(1, section.size());
 
-    if (debug) System.out.println("agg wants range=" + joinRange);
+    if (debug) System.out.println("   agg wants range=" + mainv.getName()+"("+joinRange+")");
 
     Iterator iter = nestedDatasets.iterator();
     while (iter.hasNext()) {
@@ -880,7 +857,7 @@ public class Aggregation {
       if (nestedJoinRange == null)
         continue;
       if (debug)
-        System.out.println("agg use " + nested.aggStart + ":" + nested.aggEnd + " range= " + nestedJoinRange + " file " + nested.getLocation());
+        System.out.println("   agg use " + nested.aggStart + ":" + nested.aggEnd + " range= " + nestedJoinRange + " file " + nested.getLocation());
 
       Array varData;
       if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
@@ -898,6 +875,91 @@ public class Aggregation {
     }
 
     return sectionData;
+  }
+
+  private Array readAggCoord(VariableDS aggCoord, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    DataType dtype = aggCoord.getDataType();
+    Array allData = Array.factory(dtype, Range.getShape(section));
+    IndexIterator result = allData.getIndexIterator();
+
+    Range joinRange = (Range) section.get(0);
+    List nestedSection = new ArrayList(section); // copy
+    List innerSection = section.subList(1, section.size());
+
+    Iterator iter = nestedDatasets.iterator();
+    while (iter.hasNext()) {
+      Dataset vnested = (Dataset) iter.next();
+      Range nestedJoinRange = vnested.getNestedJoinRange(joinRange);
+      if (nestedJoinRange == null)
+        continue;
+      if (debug)
+        System.out.println("   agg use " + vnested.aggStart + ":" + vnested.aggEnd + " range= " + nestedJoinRange + " file " + vnested.getLocation());
+
+      readAggCoord(aggCoord, cancelTask, vnested, dtype, result, nestedJoinRange, nestedSection, innerSection);
+
+      if ((cancelTask != null) && cancelTask.isCancel())
+        return null;
+    }
+
+    return allData;
+  }
+
+  // handle the case of cached agg coordinate variables
+  private void readAggCoord(VariableDS aggCoord, CancelTask cancelTask, Dataset vnested, DataType dtype, IndexIterator result,
+          Range nestedJoinRange, List nestedSection, List innerSection) throws IOException, InvalidRangeException {
+
+    // we have the coordinates as a String
+    if (vnested.coordValue != null) {
+
+      // joinNew only can have 1 coord
+      if ((type == Type.JOIN_NEW)) {
+        if (dtype == DataType.STRING) {
+          result.setObjectNext(vnested.coordValue);
+        } else {
+          double val = Double.parseDouble(vnested.coordValue);
+          result.setDoubleNext(val);
+        }
+
+      } else {
+
+        // joinExisting can have multiple coords
+        int count = 0;
+        StringTokenizer stoker = new StringTokenizer(vnested.coordValue, " ,");
+        while (stoker.hasMoreTokens()) {
+          String toke = stoker.nextToken();
+          if ((nestedJoinRange != null) && !nestedJoinRange.contains(count))
+            continue;
+
+          if (dtype == DataType.STRING) {
+            result.setObjectNext(toke);
+          } else {
+            double val = Double.parseDouble(toke);
+            result.setDoubleNext(val);
+          }
+          count++;
+        }
+
+        if (count != vnested.ncoord)
+          logger.error("readAggCoord incorrect number of coordinates dataset=" + vnested.location);
+      }
+
+    } else { // we gotta read it
+
+      Array varData;
+      if (nestedJoinRange == null) {  // all data
+        varData = vnested.read(aggCoord, cancelTask);
+
+      } else if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+        varData = vnested.read(aggCoord, cancelTask, innerSection);
+      } else {
+        nestedSection.set(0, nestedJoinRange);
+        varData = vnested.read(aggCoord, cancelTask, nestedSection);
+      }
+
+      // copy it to the result
+      MAMath.copy(dtype, varData.getIndexIterator(), result);
+    }
+
   }
 
   //////////////////////////////////////////////////////////////////
@@ -1206,10 +1268,15 @@ public class Aggregation {
       return location;
     }
 
-    // wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd
-    // if this overlaps, set the Range required for the nested dataset
-    // if no overlap, return null
-    // note this should handle strides ok
+    /**
+     * Get the desired Range, reletive to this Dataset, if no overlap, return null.
+     * <p> wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd.
+     * if this overlaps, set the Range required for the nested dataset.
+     * note this should handle strides ok.
+     * @param totalRange desired range, reletive to aggregated dimension.
+     * @return desired Range or null if theres nothing wanted from this datase.
+     * @throws InvalidRangeException
+     */
     private Range getNestedJoinRange(Range totalRange) throws InvalidRangeException {
       int wantStart = totalRange.first();
       int wantStop = totalRange.last() + 1; // Range has last inclusive, we use last exclusive

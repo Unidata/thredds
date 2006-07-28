@@ -31,7 +31,7 @@ import java.util.List;
 public class TestTrajectoryObsDataset extends TestCase
 {
   // @todo Use properties or env vars to override default values.
-  private static String testDataDir = "./test/data";
+  private static String testDataDir = "./src/test/data";
   private static String remoteTestDataDir = "R:/testdata";
 
   public TestTrajectoryObsDataset( String name )

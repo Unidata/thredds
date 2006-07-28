@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="3.10"/>
-  <property name="release.version.minor" value="${release.version}.2.0"/>
+  <property name="release.version.minor" value="${release.version}.4"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
   </tstamp>
@@ -213,9 +213,15 @@
     <copy todir="${war.dir}/WEB-INF" overwrite="true" preservelastmodified="true">
       <fileset dir="${webapp.src.dir}/WEB-INF">
         <include name="log4j.xml" />
+      </fileset>
+    </copy>
+
+    <copy todir="${war.dir}/WEB-INF/classes/resources/" overwrite="true" preservelastmodified="true">
+      <fileset dir="${webapp.src.dir}/WEB-INF">
         <include name="xsl/*.xsl" />
       </fileset>
     </copy>
+
     <copy file="${webapp.src.dir}/WEB-INF/web-thredds.xml"
           tofile="${war.dir}/WEB-INF/web.xml"
           overwrite="true" preservelastmodified="true"/>

@@ -194,6 +194,7 @@ public abstract class DODSServlet extends HttpServlet {
             // C++ slients don't barf as they would if I sent "plain" AND
             // the C++ don't expect compressed data if I do this...
             response.setHeader("Content-Encoding", "");
+            response.setContentType("text/plain");
 
             // Strip any double quotes out of the parser error message.
             // These get stuck in auto-magically by the javacc generated parser
@@ -230,6 +231,7 @@ public abstract class DODSServlet extends HttpServlet {
             // C++ slients don't barf as they would if I sent "plain" AND
             // the C++ don't expect compressed data if I do this...
             response.setHeader("Content-Encoding", "");
+            response.setContentType("text/plain");
 
             de.print(eOut);
             de.print(System.out);
@@ -244,46 +246,40 @@ public abstract class DODSServlet extends HttpServlet {
     }
 
 
-    /**
-     * ************************************************************************
-     * Sends an error to the client.
-     *
-     * @param e        The exception that caused the problem.
-     * @param response The <code>HttpServletResponse</code> for the client.
-     */
-    public void anyExceptionHandler(Throwable e, HttpServletResponse response, ReqState rs) {
-      String mess = e.toString();
-      if (mess.startsWith("ClientAbortException")) {
-        log.info("DODSServlet.anyExceptionHandler " + mess);
-      } else {
-        log.error("DODSServlet.anyExceptionHandler", e);
+  /**
+   * ************************************************************************
+   * Sends an error to the client.
+   *
+   * @param e        The exception that caused the problem.
+   * @param response The <code>HttpServletResponse</code> for the client.
+   */
+  public void anyExceptionHandler(Throwable e, HttpServletResponse response, ReqState rs) {
+    String mess = e.toString();
+    if (mess.startsWith("ClientAbortException")) {
+      log.info("DODSServlet.anyExceptionHandler " + mess);
+    } else {
+      log.error("DODSServlet.anyExceptionHandler", e);
+    }
+
+      try {
+          DataOutputStream dos = new DataOutputStream(response.getOutputStream());
+          response.setHeader("Content-Description", "dods_error");
+
+          // This should probably be set to "plain" but this works, the
+          // C++ slients don't barf as they would if I sent "plain" AND
+          // the C++ don't expect compressed data if I do this...
+          response.setHeader("Content-Encoding", "");
+          response.setContentType("text/plain");
+
+          dos.writeUTF("DODServlet ERROR: " + e.getMessage());
+
+      } catch (IOException ioe) {
+          //System.out.println("Cannot respond to client! IO Error: " + ioe.getMessage());
+          log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
       }
 
-        try {
-            DataOutputStream dos = new DataOutputStream(response.getOutputStream());
-            response.setHeader("Content-Description", "dods_error");
 
-            // This should probably be set to "plain" but this works, the
-            // C++ slients don't barf as they would if I sent "plain" AND
-            // the C++ don't expect compressed data if I do this...
-            response.setHeader("Content-Encoding", "");
-            dos.writeUTF("DODServlet ERROR: " + e.getMessage());
-
-            /* System.out.println("DODServlet ERROR (anyExceptionHandler): " + e);
-            System.out.println(rs);
-            if (track) {
-                RequestDebug reqD = (RequestDebug) rs.getUserObject();
-                System.out.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
-            }
-            e.printStackTrace();  */
-
-        } catch (IOException ioe) {
-            //System.out.println("Cannot respond to client! IO Error: " + ioe.getMessage());
-            log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
-        }
-
-
-    }
+  }
 
 
     /**
@@ -669,6 +665,8 @@ public abstract class DODSServlet extends HttpServlet {
               deflater.finish();
 
             response.setStatus(HttpServletResponse.SC_OK);
+        } catch (java.io.FileNotFoundException fe) {
+            anyExceptionHandler(fe, response, rs);
         } catch (DODSException de) {
             dodsExceptionHandler(de, response);
         } catch (ParseException pe) {

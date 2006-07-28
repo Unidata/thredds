@@ -346,42 +346,42 @@ public class Level2Record {
     if (message_type != 1) return ok;
 
     if ((seg_count != 1) || (seg_number != 1)) {
-      logger.error("*** segment = "+seg_number+"/"+seg_count+who());
+      logger.warn("*** segment = "+seg_number+"/"+seg_count+who());
     }
 
     if ((reflect_offset < 0) || (reflect_offset > RADAR_DATA_SIZE)) {
-      logger.error("****"+recno+ " HAS bad reflect offset= "+reflect_offset+who());
+      logger.warn("****"+recno+ " HAS bad reflect offset= "+reflect_offset+who());
       ok = false;
     }
 
     if ((velocity_offset < 0) || (velocity_offset > RADAR_DATA_SIZE)) {
-      logger.error("****"+recno+ " HAS bad velocity offset= "+velocity_offset+who());
+      logger.warn("****"+recno+ " HAS bad velocity offset= "+velocity_offset+who());
       ok = false;
     }
 
     if ((spectWidth_offset < 0) || (spectWidth_offset > RADAR_DATA_SIZE)) {
-      logger.error("****"+recno+ " HAS bad spwidth offset= "+reflect_offset+who());
+      logger.warn("****"+recno+ " HAS bad spwidth offset= "+reflect_offset+who());
       ok = false;
     }
 
     if ((velocity_offset > 0) && (spectWidth_offset <= 0)) {
-      logger.error("****"+recno+ " HAS velocity NOT spectWidth!!"+who());
+      logger.warn("****"+recno+ " HAS velocity NOT spectWidth!!"+who());
       ok = false;
     }
 
     if ((velocity_offset <= 0) && (spectWidth_offset > 0)) {
-      logger.error("****"+recno+ " HAS spectWidth AND NOT velocity!!"+who());
+      logger.warn("****"+recno+ " HAS spectWidth AND NOT velocity!!"+who());
       ok = false;
     }
 
     if (mess_julian_date != data_julian_date) {
-      logger.error("*** message date = "+mess_julian_date+" : "+mess_msecs+who()+"\n"+
+      logger.warn("*** message date = "+mess_julian_date+" : "+mess_msecs+who()+"\n"+
          " data date = "+data_julian_date+" : "+data_msecs);
       ok = false;
     }
 
     if (!hasReflectData && !hasDopplerData) {
-      logger.error("*** no reflect or dopplar = "+who());
+      logger.info("*** no reflect or dopplar = "+who());
     }
 
     return ok;

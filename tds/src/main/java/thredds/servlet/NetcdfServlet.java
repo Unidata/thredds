@@ -365,7 +365,7 @@ public class NetcdfServlet extends AbstractServlet {
       sendFile(req, res, gds, varList, llbb, hasTimeRange, time_start, time_end, addLatLon, stride_xy, stride_z, stride_time);
     } catch (InvalidRangeException e) {
       ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon Range");
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       return;
     }
   }
@@ -568,7 +568,7 @@ public class NetcdfServlet extends AbstractServlet {
 
   static private InputStream getXSLT(String xslName) {
     Class c = ForecastModelRunServlet.class;
-    return c.getResourceAsStream("/resources/thredds/xsl/" + xslName);
+    return c.getResourceAsStream("/resources/xsl/" + xslName);
   }
 
 }

@@ -248,7 +248,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
 
   static private InputStream getXSLT() {
     Class c = CoordSysValidatorServlet.class;
-    return c.getResourceAsStream("/resources/thredds/xsl/cdmValidation.xsl"); 
+    return c.getResourceAsStream("/resources/xsl/cdmValidation.xsl"); 
   }
 }
 

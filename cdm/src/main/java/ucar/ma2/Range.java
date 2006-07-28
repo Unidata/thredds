@@ -329,6 +329,20 @@ public class Range {
   }
 
   /**
+     Is the ith element contained in this Range?
+     @param i	index in the original Range
+     @return true if the ith element would be returned by the Range iterator
+   */
+  public boolean contains(int i) {
+    if (i < min())
+      return false;
+    if (i >= max())
+      return false;
+    if (stride == 1) return true;
+    return (i-first) % stride == 0;
+  }
+
+  /**
      Return the i-th element of a range, no check
      @param i	index of the element
    */

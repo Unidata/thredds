@@ -276,7 +276,7 @@ public class ForecastModelRunServlet extends AbstractServlet {
 
   static private InputStream getXSLT(String xslName) {
     Class c = ForecastModelRunServlet.class;
-    return c.getResourceAsStream("/resources/thredds/xsl/" + xslName);
+    return c.getResourceAsStream("/resources/xsl/" + xslName);
   }
 
   private String[] getDatasetPaths() {
