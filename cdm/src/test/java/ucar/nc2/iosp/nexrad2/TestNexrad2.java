@@ -81,7 +81,7 @@ public class TestNexrad2 extends TestCase {
     assert v != null;
     Array data = v.read();
 
-    v =  nexrad2.findVariable("Velocity");
+    v =  nexrad2.findVariable("RadialVelocity");
     assert v != null;
     data = v.read();
 
