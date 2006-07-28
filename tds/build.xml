@@ -176,6 +176,34 @@
     </javac>
   </target>
 
+  <target name="makeJar-TSF" >
+    <jar jarfile="${build.dir}/$tsf-${release.version.minor}.jar" index="true">
+      <fileset dir="${build.classes.dir}">
+        <include name="thredds/catalog/*"/>
+        <include name="thredds/crawlabledataset/**/*.class"/>
+        <include name="thredds/cataloggen/**/*.class"/>
+        <include name="ucar/nc2/*"/>
+        <include name="ucar/nc2/util/NetcdfFileCache.class"/>
+        <include name="ucar/unidata/io/*"/>
+        <include name="ucar/unidata/io/http/*"/>
+        <include name="ucar/unidata/util/StringUtil.class"/>
+      </fileset>
+      <fileset dir="${build.dir}" includes="README"/>
+      <fileset dir="${build.dir}" includes="CHANGES"/>
+      <!--fileset dir="${lib.dir}/slf4j" /-->
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="NetCDF-Java-MinimalLibrary"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+
+    </jar>
+
+  </target>
+
   <!-- build war directory -->
   <target name="war-setup" depends="compile" description="create a distribution">
     <!-- create README file with time and version -->
