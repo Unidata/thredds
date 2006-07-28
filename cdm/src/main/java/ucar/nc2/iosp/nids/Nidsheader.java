@@ -2464,6 +2464,8 @@ class Nidsheader{
           case 27:
               if(elevation == 0) pname = "N0V";
               else if (elevation == 1) pname = "N1V";
+              else if (elevation == 2) pname = "N2V";
+              else if (elevation == 3) pname = "N3V";
             break;
           case 37:
             pname = "NCR";
