@@ -53,7 +53,7 @@ import java.io.IOException;
  * @author edavis
  * @since May 3, 2005 20:18:59 -0600
  *
- * @see thredds.cataloggen.CollectionLevelScanner uses CrawlableDatasets to scan a dataset collection and create a THREDDS catalog.
+ * @see thredds.cataloggen.CollectionLevelScanner CollectionLevelScanner uses CrawlableDatasets to scan a dataset collection and create a THREDDS catalog.
  */
 public interface CrawlableDataset
 {
