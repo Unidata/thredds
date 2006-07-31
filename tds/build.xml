@@ -12,6 +12,7 @@
 
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
+  <property name="resources.dir" location="${root.dir}/src/main/resources"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
 
@@ -236,10 +237,8 @@
       </fileset>
     </copy>
 
-    <copy todir="${war.dir}/WEB-INF/classes/resources/" overwrite="true" preservelastmodified="true">
-      <fileset dir="${webapp.src.dir}/WEB-INF">
-        <include name="xsl/*.xsl" />
-      </fileset>
+    <copy todir="${war.dir}/WEB-INF/classes/resources" overwrite="true" preservelastmodified="true">
+      <fileset dir="${resources.dir}" />
     </copy>
 
     <copy file="${webapp.src.dir}/WEB-INF/web-thredds.xml"
