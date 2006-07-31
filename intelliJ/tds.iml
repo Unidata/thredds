@@ -140,7 +140,7 @@
     </deploymentDescriptor>
     <webroots>
       <root url="file://$MODULE_DIR$/../tds/src/main/webapp/resources" relative="/" />
-      <root url="file://$MODULE_DIR$/../tds/src/main/webapp/WEB-INF/xsl" relative="/WEB-INF/xsl" />
+      <root url="file://$MODULE_DIR$/../tds/src/main/resources/xsl" relative="/WEB-INF/xsl" />
     </webroots>
   </component>
   <component name="WeblogicWebModuleProperties">
