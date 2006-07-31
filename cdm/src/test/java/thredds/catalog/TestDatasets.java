@@ -37,7 +37,7 @@ public class TestDatasets extends TestCase {
     a = ds.getAccess(ServiceType.NETCDF);
     assert a != null;
     assert a.getUnresolvedUrlName().equals("1998/CO2.nc") : a.getUnresolvedUrlName();
-    assert a.getStandardUrlName().equals("file:/"+TestCatalogAll.dataDir +"1998/CO2.nc") : a.getStandardUrlName();
+    assert a.getStandardUrlName().equals(TestCatalogAll.makeFilepath() +"1998/CO2.nc") : a.getStandardUrlName();
 
   }
 

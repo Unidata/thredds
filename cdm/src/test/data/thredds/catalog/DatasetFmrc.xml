@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+  <catalog
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+  >
+
+  <service base="http://acd.ucar.edu/models/MOZART/DATA_COMP/datasets_nc/solve1/" serviceType="HTTP" name="disk"/>
+
+    <datasetFmrc name="Formica" path="fmrc/GFS/Alaska_191km" ID="models/GFS/Alaska_191km">
+      <ncml:netcdf xmlns:ncml="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="C:/data/MM_cnrm_129_red.nc"/>
+    </datasetFmrc>
+
+</catalog>

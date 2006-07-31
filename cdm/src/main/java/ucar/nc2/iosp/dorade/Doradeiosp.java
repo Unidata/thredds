@@ -47,7 +47,8 @@ public class Doradeiosp implements ucar.nc2.IOServiceProvider {
   public static DoradeSweep mySweep = null;
   boolean littleEndian;
 
-  public void setProperties( List iospProperties) { }
+  public void setSpecial( Object special) {}
+
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 

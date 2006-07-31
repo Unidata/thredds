@@ -931,7 +931,7 @@ public class BufrIosp implements IOServiceProvider {
     raf.close();
   }
 
-  public void setProperties( List iospProperties) {
+  public void setSpecial( Object special) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 

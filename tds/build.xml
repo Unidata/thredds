@@ -22,6 +22,7 @@
   <property name="build.javadoc.dir" location="${build.dir}/javadoc"/>
   <property name="javadoc.dir" location="${build.dir}/javadoc"/>
 
+  <property name="release.dir" value="O:/pub/thredds/${release.version}/"/>
   <!--property name="release.library.dir" value="O:/pub/thredds/${release.version}/"/>
   <property name="release.doc.dir" value="O:/pub/netcdf-java/v${release.version}/"/>
 
@@ -533,15 +534,14 @@
   </target>
 
   <!-- release war file -->
-  <!--target name="release" description="Release war files to release directory: do 'ant makeWar' first">
-    <copy todir="${release.library.dir}" overwrite="true">
+  <target name="release" description="Release war files to release directory: do 'ant makeWar' first">
+    <copy todir="${release.dir}" overwrite="true">
       <fileset dir="${build.dir}" includes="${warfile}"/>
     </copy>
-    <copy todir="${release.library.dir}" overwrite="true">
-      <fileset file="${war.dir}/CHANGES.txt"/>
+    <copy todir="${release.dir}" overwrite="true">
+      <fileset file="${war.dir}/docs/CHANGES.txt"/>
     </copy>
-
-  </target-->
+  </target>
 
   <!-- Release catalog manual. (target from thredds/catalog/build.xml) -->
   <!--target name="releaseManual" description="Copy manual to release directory">

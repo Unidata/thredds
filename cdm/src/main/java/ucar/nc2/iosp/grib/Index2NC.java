@@ -2,9 +2,11 @@ package ucar.nc2.iosp.grib;
 
 import ucar.grib.*;
 import ucar.nc2.*;
+import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
@@ -16,11 +18,13 @@ import java.util.*;
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Index2NC  {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
 
   private HashMap hcsHash = new HashMap( 10); // GribHorizCoordSys
   private DateFormatter formatter = new DateFormatter();
+  private boolean debug = true;
 
-  public void open(Index index, TableLookup lookup, int version, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+  void open(Index index, TableLookup lookup, int version, NetcdfFile ncfile, FmrcCoordSys fmrcCoordSys, CancelTask cancelTask) throws IOException {
 
     // create the HorizCoord Systems : one for each gds
     List hcsList = index.getHorizCoordSys();
@@ -36,7 +40,6 @@ public class Index2NC  {
 
       // (Index.GdsRecord gdsIndex, String grid_name, String shape_name, Group g)
       GribHorizCoordSys hcs = new GribHorizCoordSys( gdsIndex, lookup, g);
-      // hcs.addToNetcdfFile( ncfile);
 
       hcsHash.put(gdsIndex.gdsKey, hcs);
      }
@@ -56,7 +59,7 @@ public class Index2NC  {
       String name = pname +"_"+vname;
       GribVariable pv = (GribVariable) hcs.varHash.get(name); // combo gds, param name and level name
       if (null == pv) {
-        pv = new GribVariable( name, pname, hcs);
+        pv = new GribVariable( name, pname, hcs, lookup);
         hcs.varHash.put(name, pv);
 
          // keep track of all products with same desc
@@ -84,7 +87,9 @@ public class Index2NC  {
     ncfile.addAttribute(null, new Attribute("Processing", "direct read of GRIB into NetCDF-Java 2.2 API"));
     ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, formatter.toDateTimeString(lookup.getFirstBaseTime())));
 
-    if (GribServiceProvider.useMaximalCoordSys)
+    if (fmrcCoordSys != null)
+      makeDefinedCoordSys(ncfile, lookup, fmrcCoordSys);
+    else if (GribServiceProvider.useMaximalCoordSys)
       makeMaximalCoordSys(ncfile, lookup, cancelTask);
     else
       makeDenseCoordSys(ncfile, lookup, cancelTask);
@@ -227,7 +232,7 @@ public class Index2NC  {
 
         if (plist.size() == 1) {
           GribVariable pv = (GribVariable) plist.get(0);
-          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), lookup, true);
+          Variable v = pv.makeVariable(ncfile, hcs.getGroup(),  true);
           ncfile.addVariable( hcs.getGroup(), v);
 
         } else {
@@ -246,7 +251,7 @@ public class Index2NC  {
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GribVariable pv = (GribVariable) plist.get(k);
-            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), lookup, k == 0));
+            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), k == 0));
           }
         } // multipe vertical levels
 
@@ -345,7 +350,7 @@ public class Index2NC  {
         if (plist.size() == 1) {
           GribVariable pv = (GribVariable) plist.get(0);
           pv.setTimeCoord( tcs);
-          ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), lookup, true));
+          ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), true));
         } else {
 
           // find the one with the most vertical levels
@@ -362,7 +367,7 @@ public class Index2NC  {
           for (int k = 0; k < plist.size(); k++) {
             GribVariable pv = (GribVariable) plist.get(k);
             pv.setTimeCoord( tcs);
-            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), lookup, (pv == maxV)));
+            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (pv == maxV)));
           }
         } // multipe vertical levels
 
@@ -381,6 +386,118 @@ public class Index2NC  {
 
   }
 
+
+
+  // make coordinate system from a Definitioon object
+  private void makeDefinedCoordSys(NetcdfFile ncfile, TableLookup lookup, FmrcCoordSys fmr) throws IOException {
+    ArrayList timeCoords = new ArrayList();
+    ArrayList vertCoords = new ArrayList();
+
+    // loop over HorizCoordSys
+    Iterator iterHcs = hcsHash.values().iterator();
+    while (iterHcs.hasNext()) {
+      GribHorizCoordSys hcs =  (GribHorizCoordSys) iterHcs.next();
+
+      // loop over GribVariables in the HorizCoordSys
+      // create the time and vertical coordinates
+      Iterator iter = hcs.varHash.values().iterator();
+      while (iter.hasNext()) {
+        GribVariable pv =  (GribVariable) iter.next();
+        Index.GribRecord record = pv.getFirstRecord();
+
+        // LOOK - problem is we dont know the final variable name yet !!!
+        // get the vertical coordinate for this variable, if it exists
+        String searchName = pv.getSearchName();
+        if (!fmr.hasVariable( searchName)) {
+          logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+searchName+" for " +
+                ncfile.getLocation());
+          continue;
+        }
+        pv.setVarName( fmr.getName( searchName));
+        FmrcCoordSys.VertCoord vc_def = fmr.findVertCoordForVariable( searchName);
+        if (vc_def != null) {
+          String vc_name = vc_def.getName();
+
+          // look to see if GribVertCoord already made
+          GribVertCoord useVertCoord = null;
+          for (int i = 0; i < vertCoords.size(); i++) {
+            GribVertCoord gvcs = (GribVertCoord) vertCoords.get(i);
+            if (vc_name.equals( gvcs.getLevelName()))
+                useVertCoord = gvcs;
+          }
+          if (useVertCoord == null) { // nope, got to create it
+            useVertCoord = new GribVertCoord(record, vc_name, lookup, vc_def.getValues());
+            useVertCoord.addDimensionsToNetcdfFile( ncfile, hcs.getGroup());
+            vertCoords.add( useVertCoord);
+          }
+          pv.setVertCoord( useVertCoord);
+
+        } else {
+          pv.setVertCoord( new GribVertCoord(searchName)); // fake
+        }
+
+        // get the time coordinate for this variable
+        FmrcCoordSys.TimeCoord tc_def = fmr.findTimeCoordForVariable( searchName);
+        String tc_name = tc_def.getName();
+
+        // look to see if GribTimeCoord already made
+        GribTimeCoord useTimeCoord = null;
+        for (int i = 0; i < timeCoords.size(); i++) {
+          GribTimeCoord gtc = (GribTimeCoord) timeCoords.get(i);
+          if (tc_name.equals( gtc.getName()))
+              useTimeCoord = gtc;
+        }
+        if (useTimeCoord == null) { // nope, got to create it
+          useTimeCoord = new GribTimeCoord(tc_name, tc_def.getOffsetHours(), lookup);
+          useTimeCoord.addDimensionsToNetcdfFile( ncfile, hcs.getGroup());
+          timeCoords.add( useTimeCoord);
+        }
+        pv.setTimeCoord( useTimeCoord);
+      }
+
+      // add x, y dimensions
+      hcs.addDimensionsToNetcdfFile( ncfile);
+
+      // create a variable for each entry, but check for other products with same desc
+      // to disambiguate by vertical coord
+      ArrayList products = new ArrayList(hcs.productHash.values());
+      Collections.sort( products, new CompareGribVariableListByName());
+      for (int i = 0; i < products.size(); i++) {
+        ArrayList plist = (ArrayList) products.get(i); // all the products with the same name
+
+        if (plist.size() == 1) {
+          GribVariable pv = (GribVariable) plist.get(0);
+          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), true);
+          ncfile.addVariable( hcs.getGroup(), v);
+
+        } else {
+
+          Collections.sort( plist, new CompareGribVariableByNumberVertLevels());
+          for (int k = 0; k < plist.size(); k++) {
+            GribVariable pv = (GribVariable) plist.get(k);
+            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), k == 0));
+          }
+        } // multipe vertical levels
+
+      } // create variable
+
+      // add coordinate variables at the end
+      for (int i = 0; i < timeCoords.size(); i++) {
+        GribTimeCoord tcs = (GribTimeCoord) timeCoords.get(i);
+        tcs.addToNetcdfFile( ncfile, hcs.getGroup());
+      }
+      hcs.addToNetcdfFile( ncfile);
+      for (int i = 0; i < vertCoords.size(); i++) {
+        GribVertCoord gvcs = (GribVertCoord) vertCoords.get(i);
+        gvcs.addToNetcdfFile( ncfile, hcs.getGroup());
+      }
+
+    } // loop over hcs
+
+    if (debug) System.out.println("Index2NC.makeDefinedCoordSys for "+ncfile.getLocation());
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private class CompareGribVariableListByName implements Comparator {
 

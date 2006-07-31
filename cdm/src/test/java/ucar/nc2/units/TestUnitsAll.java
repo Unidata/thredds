@@ -12,7 +12,7 @@ import ucar.nc2.TestIndexer;
  * TestSuite that runs all nj22 unit tests.
  *
  */
-public class TestAll {
+public class TestUnitsAll {
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

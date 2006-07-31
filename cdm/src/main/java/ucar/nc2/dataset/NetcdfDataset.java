@@ -147,7 +147,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return NetcdfDataset object
    */
   static public NetcdfDataset openDataset(String location, boolean enhance, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    NetcdfFile ncfile = openFile(location, cancelTask);
+    return openDataset(location, enhance, -1, cancelTask, null);
+  }
+
+  /**
+   * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
+   *
+   * @param location   location of file
+   * @param enhance    if true, process scale/offset/missing and add Coordinate Systems
+   * @param  buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param  cancelTask allow task to be cancelled; may be null.
+   * @param  spiObject sent to iosp.setSpecial() if not null
+   * @return NetcdfDataset object
+   */
+  static public NetcdfDataset openDataset(String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+    NetcdfFile ncfile = openFile(location, buffer_size, cancelTask, spiObject);
     NetcdfDataset ds;
     if (ncfile instanceof NetcdfDataset) {
       ds = (NetcdfDataset) ncfile;
@@ -219,8 +233,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       // return NcMLReader.readNcML(location, cancelTask);
 
       // acquire as a NcML file
-      ncfile = NetcdfFileCache.acquire(location, cancelTask, new NetcdfFileFactory() {
-        public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
+      ncfile = NetcdfFileCache.acquire(location, -1, cancelTask, null, new NetcdfFileFactory() {
+        public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
           return NcMLReader.readNcML(location, cancelTask);
         }
       });
@@ -243,28 +257,42 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
+    * Factory method for opening a NetcdfFile through the netCDF API.
+    *
+    * @param location location of dataset.
+    * @param cancelTask use to allow task to be cancelled; may be null.
+    * @return NetcdfFile object
+    * @throws IOException
+    */
+   public static NetcdfFile openFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+     return openFile(location, -1, cancelTask, null);
+   }
+
+  /**
    * Factory method for opening a NetcdfFile through the netCDF API. May be any kind of file that
    * can be read through the netCDF API, including OpenDAP and NcML.
    * <p/>
    * <p> This does not necessarily turn it into a NetcdfDataset (it may), use NetcdfDataset.open()
    * method for that. It definitely does not add coordinate systems
    *
-   * @param location   location of file. This may be a
-   *                   <ol>
-   *                   <li>local filename (with a file: prefix or no prefix) for netCDF (version 3), hdf5 files, or any file type
-   *                   registered with NetcdfFile.register().
-   *                   <li>OpenDAP dataset URL (with a dods: or http: prefix).
-   *                   <li>NcML file or URL if the location ends with ".xml" or ".ncml"
-   *                   <li>NetCDF file through an HTTP server (http: prefix)
-   *                   </ol>
-   * @param cancelTask use to allow task to be cancelled; may be null.
+   * @param location location of dataset. This may be a
+   *  <ol>
+   *    <li>local filename (with a file: prefix or no prefix) for netCDF (version 3), hdf5 files, or any file type
+   *        registered with NetcdfFile.registerIOProvider().
+   *    <li>OpenDAP dataset URL (with a dods: or http: prefix).
+   *    <li>NcML file or URL if the location ends with ".xml" or ".ncml"
+   *    <li>NetCDF file through an HTTP server (http: prefix)
+   *    <li>thredds dataset, see ThreddsDataFactory.openDataset(String location, ...));
+   *  </ol>
+   * @param  buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param  cancelTask allow task to be cancelled; may be null.
+   * @param  spiObject sent to iosp.setSpecial() if not null
    * @return NetcdfFile object
    * @throws IOException
-   * @see ucar.nc2.util.CancelTask
    */
-  public static NetcdfFile openFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  public static NetcdfFile openFile(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
-    if (location == null)
+     if (location == null)
       throw new IOException("NetcdfDataset.openFile: location is null");
 
     NetcdfFile ncfile;
@@ -292,13 +320,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       if (isDODS(location)) {
         ncfile = openDODS(location, cancelTask); // try as a dods file
       } else {
-        ncfile = NetcdfFile.open(location, cancelTask); // try as an http netcdf3 file
+        ncfile = NetcdfFile.open(location, buffer_size, cancelTask, spiObject); // try as an http netcdf3 file
       }
 
     } else {
 
       // try it as a NetcdfFile; this handles various local file formats
-      ncfile = NetcdfFile.open(location, cancelTask);
+      ncfile = NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
     }
 
     return ncfile;
@@ -323,8 +351,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile acquireDODS(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return NetcdfFileCache.acquire(location, cancelTask, new NetcdfFileFactory() {
-      public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
+    return NetcdfFileCache.acquire(location, -1, cancelTask, null, new NetcdfFileFactory() {
+      public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
         return openDODS(location, cancelTask);
       }
     });

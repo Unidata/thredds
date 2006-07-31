@@ -1,4 +1,4 @@
-// $Id: NetcdfDatasetFactory.java 51 2006-07-12 17:13:13Z caron $
+// $Id: $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -18,23 +18,30 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dataset;
+
+package ucar.nc2.dt.fmr;
+
+import java.util.List;
 
 /**
- * Used by NetcdfDatasetCache
- * @author john caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
+ * Class Description.
+ *
+ * @author caron
  */
-public interface NetcdfDatasetFactory {
+public interface FmrcCoordSys {
 
-  /**
-   * Open the NetcdfDataset.
-   * @param location location of the dataset
-   * @param  buffer_size RandomAccessFile buffer size, if <= 0, use default size
-   * @param  cancelTask allow task to be cancelled; may be null.
-   * @param  spiObject sent to iosp.setSpecial() if not null
-   * @return a valid NetcdfDataset
-   * @throws java.io.IOException
-   */
-  public NetcdfDataset openDataset(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException;
+  public boolean hasVariable( String searchName);
+  public String getName( String searchName);
+  public VertCoord findVertCoordForVariable( String searchName);
+  public TimeCoord findTimeCoordForVariable( String searchName);
+
+  public interface VertCoord {
+    public String getName();
+    public double[] getValues();
+  }
+
+  public interface TimeCoord {
+    public String getName();
+    public double[] getOffsetHours();
+  }
 }

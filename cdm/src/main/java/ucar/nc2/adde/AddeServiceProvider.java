@@ -37,7 +37,7 @@ public class AddeServiceProvider implements IOServiceProvider {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  public void setProperties( List iospProperties) { }
+  public void setSpecial( Object special) {}
 
   public String toStringDebug(Object o) {
     return null;  //To change body of implemented methods use File | Settings | File Templates.

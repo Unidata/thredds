@@ -30,10 +30,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Helper class to generate a report for  orecastModelRunServlet.
+ * Helper class to generate a report for ForecastModelRunServlet.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class FmrcReport {
@@ -58,8 +57,8 @@ public class FmrcReport {
       List vars = haveSeq.getVariables();
       for (int j = 0; j < vars.size(); j++) {
         FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
-
-        FmrcDefinition.Grid g = def.findGrid(uv.name);
+        String sname = (uv.getSearchName() != null) ? uv.getSearchName() : uv.getName();  // LOOK can remove name when all is converted      
+        FmrcDefinition.Grid g = def.findGrid(sname);
         if (g == null) {
           errs.add( new ErrMessage(new Date(0), uv.name, "Extra Variable (not in definition)", ""));
           continue;

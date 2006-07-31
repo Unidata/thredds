@@ -167,19 +167,19 @@ public class NetcdfFileCache {
    * @see NetcdfFile#open
    */
   static public NetcdfFile acquire(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return acquire( location, cancelTask, null);
+    return acquire( location, -1, cancelTask, null, null);
   }
 
-  static public NetcdfFile acquire(String location, ucar.nc2.util.CancelTask cancelTask, NetcdfFileFactory factory) throws IOException {
-    // see if its in the cache
+  static public NetcdfFile acquire(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject, NetcdfFileFactory factory) throws IOException {
+    // see if its in the cache LOOK problem is what if spiObject has changed ???
     NetcdfFile ncfile = acquireCacheOnly( location);
     if (ncfile != null) return ncfile;
 
     // open the file
     if (factory == null)
-      ncfile = NetcdfFile.open(location, cancelTask);
+      ncfile = NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
     else
-      ncfile = factory.open(location, cancelTask);
+      ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {

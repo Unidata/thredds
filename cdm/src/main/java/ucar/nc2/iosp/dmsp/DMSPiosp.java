@@ -54,7 +54,7 @@ public class DMSPiosp implements IOServiceProvider
   private float[] cachedScannerOffset = null;
   private byte[] cachedScanDirection = null;
 
-  public void setProperties( List iospProperties) { }
+  public void setSpecial( Object special) {}
 
   public String getDetailInfo() {
     return "";

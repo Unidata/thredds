@@ -195,7 +195,7 @@ public class FmrcInventory {
             log.warn("FmrcCollection Definition "+name+" does not contain variable "+grid.name);
             continue; // skip it
           }  else {
-            uv = new UberGrid(grid.name);
+            uv = new UberGrid(grid.name, grid.sname);
             uvHash.put(grid.name, uv);
           }
         }
@@ -433,7 +433,7 @@ public class FmrcInventory {
 
   // The collection across runs of one variable
   class UberGrid implements Comparable {
-    String name;
+    String name, searchName;
     ArrayList runs = new ArrayList();  // List of RunExpected
     ForecastModelRunInventory.VertCoord vertCoordUnion = null;
     int countInv, countExpected;
@@ -442,8 +442,9 @@ public class FmrcInventory {
     FmrcDefinition.RunSeq expectedSeq; // expected sequence
     FmrcDefinition.Grid expectedGrid; // expected vert coordinate (optional)
 
-    UberGrid(String name) {
+    UberGrid(String name, String searchName) {
       this.name = name;
+      this.searchName = searchName;
       if (definition != null) {
         expectedSeq = definition.findSeqForVariable( name);
         expectedGrid = expectedSeq.findGrid( name);
@@ -451,6 +452,7 @@ public class FmrcInventory {
     }
 
     String getName() { return name; }
+    String getSearchName() { return searchName; }
     /* int getExpectedVertCoordLength() {
       return (expectedVertCoord == null) ? 1 : expectedVertCoord.getValues().length;
     } */

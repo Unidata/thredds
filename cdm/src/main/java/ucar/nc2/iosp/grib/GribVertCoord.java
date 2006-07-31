@@ -37,15 +37,24 @@ import java.util.*;
  * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 public class GribVertCoord implements Comparable {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
+
   private Index.GribRecord record;
   private String levelName;
   private TableLookup lookup;
   private int seq = 0;
 
-  private List levels = new ArrayList();
+  private List levels = new ArrayList(); // Double
+  private double[] coordValues;
+
   boolean dontUseVertical = false;
   String positive = "up";
   String units;
+
+  GribVertCoord(String name) {
+    this.levelName = name;
+    dontUseVertical = true;
+  }
 
   GribVertCoord(List records, String levelName, TableLookup lookup) {
     this.record = (Index.GribRecord) records.get(0);
@@ -61,6 +70,23 @@ public class GribVertCoord implements Comparable {
     if (GribServiceProvider.debugVert)
       System.out.println("GribVertCoord: "+getVariableName()+"("+record.levelType1+") useVertical= "+
           (!dontUseVertical)+" positive="+positive+" units="+units);
+  }
+
+  GribVertCoord(Index.GribRecord record, String levelName, TableLookup lookup, double[] coordValues) {
+    this.record = record;
+    this.levelName = levelName;
+    this.lookup = lookup;
+
+    dontUseVertical = !lookup.isVerticalCoordinate(record);
+    positive = lookup.isPositiveUp(record) ? "up" : "down";
+    units = lookup.getLevelUnit(record);
+
+    this.coordValues = coordValues;
+
+    levels = new ArrayList(coordValues.length);
+    for (int i = 0; i < coordValues.length; i++) {
+      levels.add(new Double(coordValues[i]));
+    }
   }
 
   void setSequence( int seq) { this.seq = seq; }
@@ -79,7 +105,7 @@ public class GribVertCoord implements Comparable {
         levels.add(d);
       if (dontUseVertical && levels.size() > 1) {
         if (GribServiceProvider.debugVert)
-          System.out.println("GribCoordSys: unused level coordinate has > 1 levels = "+levelName+" "+record.levelType1+" "+levels.size());
+          logger.warn("GribCoordSys: unused level coordinate has > 1 levels = "+levelName+" "+record.levelType1+" "+levels.size());
       }
     }
     Collections.sort( levels );
@@ -124,8 +150,6 @@ public class GribVertCoord implements Comparable {
     if (g == null)
       g = ncfile.getRootGroup();
 
-    int nlevs = levels.size();
-
     // coordinate axis
     Variable v = new Variable( ncfile, g, null, getVariableName());
     v.setDataType( DataType.DOUBLE);
@@ -150,20 +174,24 @@ public class GribVertCoord implements Comparable {
       v.addAttribute( new Attribute(_Coordinate.AxisType, axisType.toString()));
     }
 
-    double[] data = new double[nlevs];
-    for (int i = 0; i < levels.size(); i++) {
-      Double d = (Double) levels.get(i);
-      data[i] = d.doubleValue();
+    if (coordValues == null) {
+      coordValues = new double[levels.size()];
+      for (int i = 0; i < levels.size(); i++) {
+        Double d = (Double) levels.get(i);
+        coordValues[i] = d.doubleValue();
+      }
     }
-    Array dataArray = Array.factory( DataType.DOUBLE.getClassType(), new int [] {nlevs}, data);
+    Array dataArray = Array.factory( DataType.DOUBLE.getClassType(), new int [] {coordValues.length}, coordValues);
 
     v.setDimensions( getVariableName());
-    v.setCachedData(dataArray, true);
+    v.setCachedData( dataArray, true);
 
     ncfile.addVariable( g, v);
   }
 
   int getIndex(Index.GribRecord record) {
+    if (dontUseVertical) return 0;
+    
     Double d = new Double( record.levelValue1);
     return levels.indexOf( d);
   }

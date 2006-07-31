@@ -122,14 +122,14 @@ public class DatasetHandler {
 
   static private NetcdfFile getNcmlDataset( InvDatasetImpl ds) throws IOException {
     String cacheName = ds.getUniqueID();
-    return NetcdfFileCache.acquire(cacheName, null, new NcmlFileFactory(ds));
+    return NetcdfFileCache.acquire(cacheName, -1, null, null, new NcmlFileFactory(ds));
   }
 
   static private class NcmlFileFactory implements NetcdfFileFactory {
     private InvDatasetImpl ds;
     NcmlFileFactory( InvDatasetImpl ds) { this.ds = ds; }
 
-    public NetcdfFile open(String cacheName, CancelTask cancelTask) throws IOException {
+    public NetcdfFile open(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
       /* File ncmlFile = DiskCache.getCacheFile(cacheName);
 
       if (ncmlFile.exists()) {
@@ -155,21 +155,6 @@ public class DatasetHandler {
       return ncd;
     }
   }
-
-/*  static private void writeNcML( InvDatasetImpl ds, File file) throws IOException {
-
-    Aggregation agg = ds.getAggregation();
-
-    FileOutputStream fout = new FileOutputStream( file);
-    PrintStream out = new PrintStream( fout);
-    out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
-    out.print("<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' >\n");
-    out.print("  <aggregation dimName='"+agg.getDimensionName()+"' type='"+agg.getType()+"' >\n");
-    out.print("    <fileScan dirLocation='"+agg.getDirLocation()+"' suffix='.nc' />\n");
-    out.print("  </aggregation>\n");
-    out.print("</netcdf>\n");
-    out.close();
-  }      */
 
 
 }

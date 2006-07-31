@@ -33,6 +33,7 @@
       <!-- for aggregations -->
       <xsd:attribute name="ncoords" type="xsd:string"/>
       <xsd:attribute name="coordValue" type="xsd:string"/>
+      <xsd:attribute name="fmrcDefinition" type="xsd:string" />
     </xsd:complexType>
   </xsd:element>
 
@@ -160,8 +161,9 @@
 
       </xsd:sequence>
 
-      <xsd:attribute name="dimName" type="xsd:token" />
       <xsd:attribute name="type" type="AggregationType" use="required"/>
+      <xsd:attribute name="dimName" type="xsd:token" />
+      <xsd:attribute name="fmrcDefinition" type="xsd:string" />
       <xsd:attribute name="recheckEvery" type="xsd:string" />
       <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
 

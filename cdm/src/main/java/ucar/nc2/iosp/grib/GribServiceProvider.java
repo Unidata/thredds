@@ -6,6 +6,7 @@ import ucar.grib.grib2.Grib2IndexExtender;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
+import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 
@@ -25,6 +26,7 @@ public abstract class GribServiceProvider implements IOServiceProvider {
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
   protected StringBuffer parseInfo = new StringBuffer();
+  protected FmrcCoordSys fmrcCoordSys;
 
   // keep this info to reopen index when extending or syncing
   private Index saveIndex = null;    // the Grid record index
@@ -300,8 +302,9 @@ public abstract class GribServiceProvider implements IOServiceProvider {
     raf.close();
   }
 
-  public void setProperties( List iospProperties) {
-    //To change body of implemented methods use File | Settings | File Templates.
+  public void setSpecial( Object special) {
+    if (special instanceof FmrcCoordSys)
+      fmrcCoordSys = (FmrcCoordSys) special;
   }
 
   public String toStringDebug(Object o) {

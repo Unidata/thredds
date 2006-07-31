@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dt.fmr;
+package ucar.nc2.dt.grid;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;

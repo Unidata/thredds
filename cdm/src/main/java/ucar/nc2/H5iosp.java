@@ -66,7 +66,7 @@ class H5iosp implements IOServiceProvider {
   private boolean showBytes = false;
   private boolean showHeaderBytes = false;
 
-  public void setProperties( List iospProperties) { }
+  public void setSpecial( Object special) {}
 
   /////////////////////////////////////////////////////////////////////////////
   // reading

@@ -37,10 +37,11 @@ import java.util.List;
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GribVariable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribVariable.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
 
-  private String name, desc;
+  private String name, desc, vname;
   private Index.GribRecord firstRecord;
+  private TableLookup lookup;
 
   private GribHorizCoordSys hcs;
   private GribCoordSys vcs; // maximal strategy (old way)
@@ -53,10 +54,11 @@ public class GribVariable {
   private int decimalScale = 0;
   private boolean hasVert = false;
 
-  GribVariable (String name, String desc,  GribHorizCoordSys hcs) {
+  GribVariable (String name, String desc,  GribHorizCoordSys hcs, TableLookup lookup) {
     this.name = name; // used to get unique grouping of products
     this.desc = desc;
     this.hcs = hcs;
+    this.lookup = lookup;
   }
 
   void addProduct( Index.GribRecord record) {
@@ -65,12 +67,14 @@ public class GribVariable {
   }
 
   List getRecords() { return records; }
+  Index.GribRecord getFirstRecord() { return (Index.GribRecord) records.get(0); }
 
   GribHorizCoordSys getHorizCoordSys() { return hcs; }
   GribCoordSys getVertCoordSys() { return vcs; }
   GribVertCoord getVertCoord() { return vc; }
   boolean hasVert() { return hasVert; }
 
+  void setVarName(String vname) { this.vname = vname; }
   void setVertCoordSys(GribCoordSys vcs) { this.vcs = vcs; }
   void setVertCoord( GribVertCoord vc) {  this.vc = vc; }
   void setTimeCoord( GribTimeCoord tcs) {  this.tcs = tcs; }
@@ -81,6 +85,10 @@ public class GribVariable {
 
   String getVertName() {
     return (vcs == null) ? vc.getVariableName() : vcs.getVerticalName();
+  }
+
+  String getVertLevelName() {
+    return (vcs == null) ? vc.getLevelName() : vcs.getVerticalName();
   }
 
   boolean getVertIsUsed() {
@@ -95,17 +103,25 @@ public class GribVariable {
     return (tcs == null) ? 1 : tcs.getNTimes();
   }
 
-  Variable makeVariable(NetcdfFile ncfile, Group g, TableLookup lookup, boolean useDesc) {
+  String getSearchName() {
+    Parameter param = lookup.getParameter( firstRecord);
+    String vname = lookup.getLevelName( firstRecord);
+    return param.getDescription() + " @ " + vname;
+  }
+
+  Variable makeVariable(NetcdfFile ncfile, Group g, boolean useDesc) {
     nlevels = getVertNlevels();
     ntimes = tcs.getNTimes();
     decimalScale = firstRecord.decimalScale;
 
-    String vname = NetcdfFile.createValidNetcdfObjectName(useDesc ? desc : name);
+    if (vname == null)
+      vname = NetcdfFile.createValidNetcdfObjectName(useDesc ? desc : name);
+
     //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
     Variable v = new Variable( ncfile, g, null, vname);
     v.setDataType( DataType.FLOAT);
 
-    String dims = tcs.getVariableName();
+    String dims = tcs.getName();
     if (getVertIsUsed()) {
       dims = dims + " " + getVertName();
       hasVert = true;
@@ -120,7 +136,7 @@ public class GribVariable {
     Parameter param = lookup.getParameter( firstRecord);
 
     v.addAttribute(new Attribute("units", param.getUnit()));
-    v.addAttribute(new Attribute("long_name", param.getDescription() + " @ " + getVertName()));
+    v.addAttribute(new Attribute("long_name", getSearchName()));
     v.addAttribute(new Attribute("missing_value", new Float(lookup.getFirstMissingValue())));
     if (!hcs.isLatLon()) {
       if (GribServiceProvider.addLatLon) v.addAttribute(new Attribute("coordinates", "lat lon"));
@@ -156,14 +172,18 @@ public class GribVariable {
       Index.GribRecord p = (Index.GribRecord) records.get(i);
       int level = getVertIndex( p);
       if (!getVertIsUsed() && level > 0) {
+        log.warn("inconsistent level encoding="+level);
         level = 0; // inconsistent level encoding ??
       }
       int time = tcs.getIndex( p);
+      // System.out.println("time="+time+" level="+level);
+      if ((time < 0) || (level < 0))
+        System.out.println("barf");
       int recno = time*nlevels + level;
       if (recordTracker[recno] == null)
         recordTracker[recno] = p;
       else
-        log.warn("Duplicate record; level="+level+" time= "+time+" for "+getName());
+        log.warn("Duplicate record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation());
     }
 
     return v;
@@ -208,6 +228,7 @@ public class GribVariable {
   }
 
   public String getName() { return name; }
+  public String getParamName() { return desc; }
   public int getDecimalScale() { return decimalScale; }
 
   /** Override Object.hashCode() to implement equals. */

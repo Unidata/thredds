@@ -45,6 +45,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 
 import ucar.unidata.geoloc.LatLonRect;
@@ -110,8 +111,7 @@ public class ForecastModelRunInventory {
     for (int i = 0; i < vars.size(); i++) {
       GridDatatype gg = (GridDatatype) vars.get(i);
       GridCoordSystem gcs = gg.getGridCoordSystem();
-      Grid grid = new Grid();
-      grid.name = gg.getName();
+      Grid grid = new Grid(gg.getName(), gg.getDescription());
       addMissing((Variable) gg.getVariable(), gcs, grid);
 
       // LOOK: Note this assumes a dense coordinate system
@@ -178,6 +178,19 @@ public class ForecastModelRunInventory {
     }
 
   }
+
+ public Grid findGrid( String name) {
+   for (int i = 0; i < times.size(); i++) {
+     TimeCoord tc = (TimeCoord) times.get(i);
+     List grids = tc.getGrids();
+     for (int j = 0; j < grids.size(); j++) {
+       Grid g = (Grid) grids.get(j);
+       if (g.name.equals(name))
+       return g;
+     }
+   }
+   return null;
+ }
 
   //////////////////////////////////////////////////////////
 
@@ -250,7 +263,7 @@ public class ForecastModelRunInventory {
    *  Represents a list of valid times.
    *  Tracks a list of variables that all have the same list of valid times.
    */
-  public static class TimeCoord {
+  public static class TimeCoord implements FmrcCoordSys.TimeCoord {
     private CoordinateAxis1D axis; // is null when read from XML
     private ArrayList vars = new ArrayList();  // list of Grid
     private String id; // unique id
@@ -278,6 +291,8 @@ public class ForecastModelRunInventory {
     public String getId() { return id; }
     /** Set the unique id for this TimeCoord */
     public void setId(String id) { this.id = id; }
+
+    public String getName() { return id.equals("0") ? "time" : "time"+id; }
 
     /** The list of valid times, in units of hours since the run time */
     public double[] getOffsetHours() { return offset; }
@@ -325,10 +340,15 @@ public class ForecastModelRunInventory {
    *   2) if 3D, inventory = timeCoord * vertCoord - Missing
    */
   public static class Grid implements Comparable {
-    String name;
+    String name, sname;
     TimeCoord parent = null;
     VertCoord vc = null; // optional
     ArrayList missing; // array of Missing
+
+    Grid( String name, String sname) {
+      this.name = name;
+      this.sname = sname;
+    }
 
     public int compareTo(Object o) {
       Grid other = (Grid) o;
@@ -369,29 +389,6 @@ public class ForecastModelRunInventory {
       }
       return getVertCoordLength() - count;
     }
-
-    /**
-     * count missing inventory at a particular time coord = hourOffset
-     * @param hourOffset : may or may not be in the list of time coords
-     * @return # missing at that hourOffset
-     *
-    public int countMissing(double hourOffset) {
-
-      int timeIndex = parent.findIndex( hourOffset);
-      if (timeIndex < 0)
-        return getVertCoordLength(); // if not in list of time coordinates, then entire inventory is missing
-
-      // otherwise, count the Missing with this time index
-      if (missing == null) return 0;
-
-      int count = 0;
-      for (int i = 0; i < missing.size(); i++) {
-        Missing m = (Missing) missing.get(i);
-        if (m.timeIndex == timeIndex)
-        count++;
-      }
-      return count;
-    } */
 
     /**
      * Get inventory as an array of vert coords, at a particular time coord = hourOffset
@@ -469,7 +466,7 @@ public class ForecastModelRunInventory {
    *  Represents a vertical coordinate.
    *  Tracks a list of variables that all have the same list of valid times.
    */
-  public static class VertCoord {
+  public static class VertCoord implements FmrcCoordSys.VertCoord {
     private CoordinateAxis1D axis; // is null when read from XML
     private String name, units;
     private String id; // unique id
@@ -611,6 +608,8 @@ public class ForecastModelRunInventory {
         Element varElem = new Element("variable");
         offsetElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
+        if (grid.sname != null)
+          varElem.setAttribute("searchName", grid.sname);
         if (grid.vc != null)
           varElem.setAttribute("vert_id", grid.vc.id);
 
@@ -711,8 +710,7 @@ public class ForecastModelRunInventory {
       java.util.List varList = timeElem.getChildren("variable");
       for (int j=0; j< varList.size(); j++) {
         Element vElem = (Element) varList.get(j);
-        Grid grid = new Grid();
-        grid.name = vElem.getAttributeValue("name");
+        Grid grid = new Grid( vElem.getAttributeValue("name"), vElem.getAttributeValue("searchName"));
         grid.vc = fmr.getVertCoordinate( vElem.getAttributeValue("vert_id"));
         tc.vars.add( grid);
         grid.parent = tc;

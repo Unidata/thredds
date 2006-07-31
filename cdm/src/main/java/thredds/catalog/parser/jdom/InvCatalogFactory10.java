@@ -53,7 +53,6 @@ import ucar.unidata.util.Format;
  * Reads InvCatalog.xml files, constructs object representation.
  *
  * @author John Caron
- * @version $Id: InvCatalogFactory10.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConverterIF  {
@@ -133,9 +132,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       Element e = (Element) allChildren.get(j);
       if (e.getName().equals("dataset")) {
         catalog.addDataset( readDataset( catalog, null, e, baseURI));
-      } /* else if (e.getName().equals("datasetAggregation")) {
-        catalog.addDataset( readDatasetAgg( catalog, null, e, baseURI));
-      } */ else if (e.getName().equals("datasetScan")) {
+      } else if (e.getName().equals("datasetFmrc")) {
+        catalog.addDataset( readDatasetFmrc( catalog, null, e, baseURI));
+      } else if (e.getName().equals("datasetScan")) {
         catalog.addDataset( readDatasetScan( catalog, null, e, baseURI));
       } else if (e.getName().equals("catalogRef")) {
         catalog.addDataset( readCatalogRef( catalog, null, e, baseURI));
@@ -267,41 +266,20 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         dataset.addDataset( ds);
       } else if (e.getName().equals("datasetScan")) {
         dataset.addDataset( readDatasetScan( catalog, dataset, e, base));
-      } /* else if (e.getName().equals("datasetAggregation")) {
-        dataset.addDataset( readDatasetAgg( catalog, dataset, e, base));
-      } */
+      } else if (e.getName().equals("datasetFmrc")) {
+        dataset.addDataset( readDatasetFmrc( catalog, dataset, e, base));
+      }
     }
   }
 
 
-  /* protected InvDatasetImpl readDatasetAgg( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
+  protected InvDatasetImpl readDatasetFmrc( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
     String name = dsElem.getAttributeValue("name");
-    InvDatasetImpl ds = new InvDatasetImpl( parent, name);
-    readDatasetInfo( catalog, ds, dsElem, base);
-
-    String type = dsElem.getAttributeValue("type");
-    String dimName = dsElem.getAttributeValue("dimName");
-    String scanDir = dsElem.getAttributeValue("dirLocation");
-    String filter = dsElem.getAttributeValue("filter");
-
-    if (scanDir != null) {
-      int last = scanDir.length()-1;
-      if (scanDir.charAt(last) != '/') scanDir = scanDir + '/';
-    }
-
-    Aggregation agg = new Aggregation(dimName, type, scanDir);
-    ds.setAggregation( agg);
-
-    /* look for ncml
-    Element ncmlElem = dsElem.getChild( "netcdf", ncmlNS );
-    if (ncmlElem != null) {
-      ncmlElem.detach();
-      //ds.setNcmlElement( ncmlElem);
-      //System.out.println(" found ncml= "+ncmlElem);
-    }
-
-    return ds;
-  } */
+    String path = dsElem.getAttributeValue("path");
+    InvDatasetFmrc dsFmrc = new InvDatasetFmrc( parent, name, path);
+    readDatasetInfo( catalog, dsFmrc, dsElem, base);
+    return dsFmrc;
+  }
 
       // read a dataset scan element
   protected InvDatasetScan readDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {

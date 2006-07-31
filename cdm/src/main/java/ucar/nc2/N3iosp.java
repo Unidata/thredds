@@ -91,6 +91,8 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   // properties
   protected boolean useRecordStructure;
 
+  public void setSpecial( Object special) {}
+  
   public void setProperties( List iospProperties) {
     for (int i = 0; i < iospProperties.size(); i++) {
       Attribute att = (Attribute) iospProperties.get(i);

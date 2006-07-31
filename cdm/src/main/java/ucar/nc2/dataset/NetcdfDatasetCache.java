@@ -180,15 +180,27 @@ public class NetcdfDatasetCache {
    * @throws IOException on error
    */
   static public NetcdfDataset acquire(String cacheName, ucar.nc2.util.CancelTask cancelTask, NetcdfDatasetFactory factory) throws IOException {
+    return acquire(cacheName, -1, cancelTask, null, factory);
+  }
+
+  /** Same as acquire(), but use a factory to open the dataset.
+     * @param cacheName : use this as the cache name, may or may not be the same as the location. This is also passed to the
+     *  factory object.
+     * @param cancelTask user can cancel the task, ok to be null.
+     * @param factory use this to open; if null use NetcdfDataset.openDataset(). factory should not use NetcdfFileCache.
+     * @return NetcdfFile corresponding to location.
+     * @throws IOException on error
+     */
+    static public NetcdfDataset acquire(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject, NetcdfDatasetFactory factory) throws IOException {
     // see if its in the cache
     NetcdfDataset ncd = acquireCacheOnly( cacheName, cancelTask);
     if (ncd != null) return ncd;
 
     // open the file
     if (factory != null)
-      ncd = factory.openDataset(cacheName, cancelTask);
+      ncd = factory.openDataset(cacheName, buffer_size, cancelTask, spiObject);
     else
-      ncd = NetcdfDataset.openDataset(cacheName, true, cancelTask);
+      ncd = NetcdfDataset.openDataset(cacheName, true, buffer_size, cancelTask, spiObject);
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {

@@ -262,7 +262,7 @@ public class NcMLReader {
    * @return NetcdfDataset the constructed dataset
    * @throws IOException
    */
-  NetcdfDataset readNcML( String ncmlLocation, String referencedDatasetUri,
+  private NetcdfDataset readNcML( String ncmlLocation, String referencedDatasetUri,
                             Element netcdfElem, CancelTask cancelTask) throws IOException {
 
     referencedDatasetUri = NetworkUtils.resolve(ncmlLocation,  referencedDatasetUri);
@@ -273,12 +273,12 @@ public class NcMLReader {
 
     // enhance means do scale/offset and add CoordSystems
     String enhanceS = netcdfElem.getAttributeValue("enhance");
-    enhance = enhanceS != null && enhanceS.equalsIgnoreCase("true");
+    enhance = (enhanceS != null) && enhanceS.equalsIgnoreCase("true");
 
     // open the referenced dataset
     NetcdfDataset refds = null;
     if (referencedDatasetUri != null) {
-      refds = NetcdfDataset.openDataset( referencedDatasetUri, false, cancelTask);  // LOOK can we acquire instead ??
+      refds = NetcdfDataset.openDataset( referencedDatasetUri, false, cancelTask);
     }
 
     Element elemE = netcdfElem.getChild("explicit", ncNS);
@@ -883,6 +883,7 @@ public class NcMLReader {
     String type = aggElem.getAttributeValue("type");
     String recheck = aggElem.getAttributeValue("recheckEvery");
     String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
+    String fmrcDefinition = aggElem.getAttributeValue("fmrcDefinition");
 
     String forecastDate = aggElem.getAttributeValue("forecastDate");
     String forecastDateVariable = aggElem.getAttributeValue("forecastDateVariable");
@@ -897,6 +898,9 @@ public class NcMLReader {
 
       if (timeUnitsChange != null)
         aggc.setTimeUnitsChange(timeUnitsChange.equalsIgnoreCase("true"));
+
+      if (fmrcDefinition != null)
+        aggc.setInventoryDefinition(fmrcDefinition);
 
     } else if (type.equals("forecastModelRun")) {
       AggregationFmr aggf = new AggregationFmr(newds, dimName, type, recheck);
@@ -975,7 +979,7 @@ public class NcMLReader {
       this.netcdfElem = netcdfElem;
     }
 
-    public NetcdfFile open(String cacheName, CancelTask cancelTask) throws IOException {
+    public NetcdfFile open(String cacheName, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
       if (debugAggDetail) System.out.println(" NcmlElementReader open nested dataset " + cacheName);
       return readNcML(ncmlLocation, location, netcdfElem, cancelTask);
     }

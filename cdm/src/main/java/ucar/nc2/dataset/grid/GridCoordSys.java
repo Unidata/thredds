@@ -585,12 +585,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   /**
-   * true if all spatial axes are CoordinateAxis1D and are regular
+   * true if x and y axes are CoordinateAxis1D and are regular
    */
   public boolean isRegularSpatial() {
     if (!isRegularSpatial(getXHorizAxis())) return false;
     if (!isRegularSpatial(getYHorizAxis())) return false;
-    if (!isRegularSpatial(getVerticalAxis())) return false;
+    //if (!isRegularSpatial(getVerticalAxis())) return false; LOOK removed July 30, 2006 for WCS
     return true;
   }
 

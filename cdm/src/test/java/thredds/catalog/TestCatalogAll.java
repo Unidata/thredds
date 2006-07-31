@@ -8,9 +8,9 @@ import junit.framework.*;
  *
  */
 public class TestCatalogAll extends TestCase {
-  public static String topDir = "C:/dev/thredds/";
-  public static String tmpDir = topDir + "tmp/";
-  public static String dataDir = topDir+"test/data/thredds/catalog/";
+  public static String topDir = "";
+  public static String tmpDir = topDir + "test/tmp/";
+  public static String dataDir = topDir+"src/test/data/thredds/catalog/";
   static private boolean showValidation = false;
   static boolean debug = true, showValidationMessages = true;
 
@@ -19,7 +19,7 @@ public class TestCatalogAll extends TestCase {
   }
 
   public static String makeFilepath() {
-    return "file:/"+dataDir;
+    return "file:"+dataDir;
   }
 
   public static InvCatalogImpl open(String catalogName, boolean validate) {
@@ -104,7 +104,7 @@ public class TestCatalogAll extends TestCase {
     suite.addTest(new TestSuite(TestCatalogReference.class)); //
     suite.addTest(new TestSuite(TestVariables.class)); // */
 
-    suite.addTest(new TestSuite(TestWrite.class)); // */
+    //suite.addTest(new TestSuite(TestWrite.class)); // */
     //suite.addTest(new TestSuite(TestConvert.class)); // */
     suite.addTest(new TestSuite(TestSpatialCoverage.class)); // */
     suite.addTest(new TestSuite(TestTimeCoverage.class)); // */

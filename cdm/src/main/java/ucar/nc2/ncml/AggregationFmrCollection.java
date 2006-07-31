@@ -26,6 +26,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.grid.FmrcDefinition;
+import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
@@ -37,11 +39,11 @@ import java.io.*;
  * Implement NcML Forecast Model Run Collection Aggregation
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class AggregationFmrCollection extends Aggregation {
   private boolean debug = false;
   private boolean timeUnitsChange = false;
+  private String invDef;
 
   public AggregationFmrCollection(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
     super(ncd, dimName, typeName, recheckS);
@@ -49,6 +51,17 @@ public class AggregationFmrCollection extends Aggregation {
 
   public void setTimeUnitsChange( boolean timeUnitsChange) {
     this.timeUnitsChange = timeUnitsChange;
+  }
+
+  public void setInventoryDefinition(String invDef) {
+    this.invDef = invDef;
+    FmrcDefinition fmrc_def = new FmrcDefinition();
+    try {
+      fmrc_def.readDefinitionXML(invDef);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    spiObject = fmrc_def;
   }
 
   // all elements are processed, finish construction
@@ -65,7 +78,7 @@ public class AggregationFmrCollection extends Aggregation {
 
     // for the moment, each file is considered 1 complete run, and is one slice of the runTime dimension
     buildCoords(cancelTask);
-    buildDataset(false, ncd, cancelTask);
+    buildDataset( ncd, cancelTask);
 
     this.lastChecked = System.currentTimeMillis();
   }
@@ -73,7 +86,7 @@ public class AggregationFmrCollection extends Aggregation {
   /**
    * Construct a new dataset "by hand" rather than through a copy constructor
    */
-  private void buildDataset(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
+  private void buildDataset(NetcdfDataset newds, CancelTask cancelTask) throws IOException {
 
     Group root = newds.getRootGroup();
     ArrayList timeAxes = new ArrayList();
@@ -143,7 +156,7 @@ public class AggregationFmrCollection extends Aggregation {
 
     // create aggregation coordinate variable
     DataType coordType;
-    Variable runtimeCoordVar = newds.getRootGroup().findVariable(dimName);
+    VariableDS runtimeCoordVar = (VariableDS) newds.getRootGroup().findVariable(dimName);
     if (runtimeCoordVar == null) {
       coordType = getCoordinateType();
       runtimeCoordVar = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
@@ -152,10 +165,11 @@ public class AggregationFmrCollection extends Aggregation {
       if (debug) System.out.println("FmrcAggregation: added runtimeCoordVar " + runtimeCoordVar.getName());
 
     } else {
-      coordType = runtimeCoordVar.getDataType();
+      coordType = runtimeCoordVar.getDataType(); // use the existing DataType
       runtimeCoordVar.setDimensions(dimName); // reset its dimension
-      if (!isNew) runtimeCoordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
+      runtimeCoordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
     }
+    runtimeCoordVar.setAggregation( this);
 
     /* if not already set, set its values
     if (!runtimeCoordVar.hasCachedData()) {

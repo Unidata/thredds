@@ -67,7 +67,7 @@ public class Grib2ServiceProvider extends GribServiceProvider {
 
     // make it into netcdf objects
     Index2NC delegate = new Index2NC();
-    delegate.open( index, lookup, 2, ncfile, cancelTask);
+    delegate.open( index, lookup, 2, ncfile, fmrcCoordSys, cancelTask);
 
     ncfile.finish();
 

@@ -17,7 +17,7 @@ public class TestAggFmrcGrib extends TestCase {
     super(name);
   }
 
-  public void testGribdatasets() throws Exception, InvalidRangeException {
+  public void testSimple() throws Exception, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggFmrcGrib.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -28,6 +28,25 @@ public class TestAggFmrcGrib extends TestCase {
     testCoordVar(ncfile, 257);
     testAggCoordVar(ncfile, 7, 122100, 12);
     testTimeCoordVar(ncfile, 7, 29);
+
+//    testReadData(ncfile, 15);
+ //   testReadSlice(ncfile);
+
+    ncfile.close();
+  }
+
+  public void testRunseq() throws Exception, InvalidRangeException {
+    String filename = "file:./"+TestNcML.topDir + "aggFmrcGribRunseq.xml";
+
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    System.out.println(" TestAggForecastModel.open "+ filename);
+    //System.out.println("file="+ncfile);
+
+    int naggs = 4;
+    testDimensions(ncfile, naggs);
+    testCoordVar(ncfile, 257);
+    testAggCoordVar(ncfile, naggs, 122100, 12);
+    testTimeCoordVar(ncfile, naggs, 29);
 
 //    testReadData(ncfile, 15);
  //   testReadSlice(ncfile);

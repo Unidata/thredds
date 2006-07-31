@@ -428,7 +428,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
   public boolean syncExtend() { return false; }
   public boolean sync() { return false; }
 
-public void setProperties( List iospProperties) { }
+  public void setSpecial( Object special) {}
 
   public String toStringDebug(Object o) {
     return null;  //To change body of implemented methods use File | Settings | File Templates.

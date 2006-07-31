@@ -54,7 +54,8 @@ public class Giniiosp implements ucar.nc2.IOServiceProvider {
   protected boolean debug = false, debugSize = false, debugSPIO = false;
   protected boolean showHeaderBytes = false;
 
-  public void setProperties( List iospProperties) { }
+  public void setSpecial( Object special) {}
+
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 

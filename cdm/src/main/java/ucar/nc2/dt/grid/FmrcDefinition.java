@@ -100,7 +100,7 @@ import java.util.*;
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
-public class FmrcDefinition {
+public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcDefinition.class);
 
   //  utilities - move to fmrc ?
@@ -198,19 +198,50 @@ public class FmrcDefinition {
     return null;
   }
 
+  public boolean hasVariable(String searchName) {
+    return findGrid( searchName) != null;
+  }
+
+  public String getName( String searchName) {
+    Grid grid = findGrid( searchName);
+    return (grid != null) ? grid.name : null;
+  }
+
+
+  public ucar.nc2.dt.fmr.FmrcCoordSys.VertCoord findVertCoordForVariable(String searchName) {
+    Grid grid = findGrid( searchName);
+    return (grid.vtc == null) ? null : grid.vtc.vc;
+  }
+
+  public ucar.nc2.dt.fmr.FmrcCoordSys.TimeCoord findTimeCoordForVariable(String searchName) {
+    for (int i = 0; i < runSequences.size(); i++) {
+      RunSeq runSeq = (RunSeq) runSequences.get(i);
+      Grid grid = runSeq.findGrid( searchName);
+      if (null != grid) {
+        if (runSeq.allUseOffset != null)
+          return runSeq.allUseOffset;
+
+        Run run = (Run) runSeq.runs.get(0); // take first one for now
+        return run.tc;
+      }
+    }
+    return null;
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   // encapsolates a Grid and its vertical coordinate, which may be time-dependent
   public static class Grid implements Comparable {
-    private String name;
+    private String name, searchName;
     private VertTimeCoord vtc = null;
 
-    Grid (String name) {
+    Grid (String name, String searchName) {
       this.name = name;
+      this.searchName = searchName;
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    //public String getName() { return name; }
+    //public void setName(String name) { this.name = name; }
     public VertTimeCoord getVertTimeCoord() { return vtc; }
 
     public int countVertCoords( double offsetHour) {
@@ -255,7 +286,7 @@ public class FmrcDefinition {
     boolean isAll = false;    // true if they all use the same OffsetHours
     ForecastModelRunInventory.TimeCoord allUseOffset; // they all use this one
     ArrayList runs = new ArrayList(); // list of Run
-    ArrayList vars = new ArrayList(); // list of ForecastModelRun.Grid
+    ArrayList vars = new ArrayList(); // list of Grid
 
     RunSeq(String id) {
       this.isAll = true;
@@ -304,10 +335,18 @@ public class FmrcDefinition {
       return null;
     }
 
-    Grid findGrid( String name) {
+    Grid findGrid( String searchName) {
+      if (searchName == null) return null;
+
       for (int j = 0; j < vars.size(); j++) {
         Grid grid = (Grid) vars.get(j);
-        if (grid.name.equals(name))
+        if (searchName.equals( grid.searchName))
+          return grid;
+      }
+      // can remove this after everything is converted to use search name
+      for (int j = 0; j < vars.size(); j++) {
+        Grid grid = (Grid) vars.get(j);
+        if (searchName.equals(grid.name))
           return grid;
       }
       return null;
@@ -568,6 +607,8 @@ public class FmrcDefinition {
         Element varElem = new Element("variable");
         seqElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
+        if (null != grid.searchName)
+          varElem.setAttribute("searchName", grid.searchName);
         if (grid.vtc != null) {
           varElem.setAttribute("vertCoord", grid.vtc.getId());
 
@@ -679,7 +720,8 @@ public class FmrcDefinition {
       for (int j=0; j< varList.size(); j++) {
         Element varElem = (Element) varList.get(j);
         String name = varElem.getAttributeValue("name");
-        Grid grid = new Grid(name);
+        String searchName = varElem.getAttributeValue("searchName");
+        Grid grid = new Grid(name, searchName);
         rseq.vars.add( grid);
         grid.vtc = findVertCoord( varElem.getAttributeValue("vertCoord"));
 
@@ -697,6 +739,7 @@ public class FmrcDefinition {
           }
         }
       }
+      Collections.sort( rseq.vars);
 
     }
 
@@ -755,7 +798,7 @@ public class FmrcDefinition {
       List vars = invSeq.getVariables();
       for (int j = 0; j < vars.size(); j++) {
         FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
-        Grid grid = new Grid( uv.getName());
+        Grid grid = new Grid( uv.getName(), uv.getSearchName());
         runSeq.vars.add( grid);
         if (uv.vertCoordUnion != null)
           grid.vtc = new VertTimeCoord( uv.vertCoordUnion);
@@ -781,11 +824,38 @@ public class FmrcDefinition {
       for (int j = 0; j < vars.size(); j++) {
         FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
         if (uv.vertCoordUnion != null) {
-          Grid grid = findGrid( uv.getName());
+          String sname = (uv.getSearchName() != null) ? uv.getSearchName() : uv.getName();  // LOOK can remove name when all is converted
+          Grid grid = findGrid( sname);
           grid.vtc = new VertTimeCoord( uv.vertCoordUnion);
         }
       }
     }
+  }
+
+  public static void convert(String datasetName, String defName) throws IOException {
+    ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW);
+    FmrcDefinition fmrDef = new FmrcDefinition();
+    fmrDef.readDefinitionXML(defName);
+
+    for (int i = 0; i < fmrDef.runSequences.size(); i++) {
+      RunSeq runSeq = (RunSeq) fmrDef.runSequences.get(i);
+      for (int j = 0; j < runSeq.vars.size(); j++) {
+        Grid grid =  (Grid) runSeq.vars.get(j);
+        ForecastModelRunInventory.Grid grid2 = fmrInv.findGrid( grid.name);
+        if (grid2 != null)
+          grid.searchName = grid2.sname;
+        else
+          System.out.println(" cant find grid= "+grid.name);
+      }
+    }
+
+    FileOutputStream fout = new FileOutputStream( defName+".new");
+    fmrDef.writeDefinitionXML( fout);
+  }
+
+  public static void main(String args[]) throws IOException {
+    convert("C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1", "C:/data/grib/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml");
+    convert("C:/data/grib/nam/c20ss/NAM_CONUS_20km_selectsurface_20060729_1800.grib1", "C:/data/grib/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml");
   }
 
 

@@ -38,15 +38,17 @@ import java.util.*;
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GribTimeCoord {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribTimeCoord.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
 
     // for parsing dates
   private DateFormatter formatter = new DateFormatter();
   private Calendar calendar;
-  
-  TableLookup lookup;
-  ArrayList times = new ArrayList(); //  Date
-  int seq = 0;
+
+  private String name;
+  private TableLookup lookup;
+  private ArrayList times = new ArrayList(); //  Date
+  //private double[] offsetHours;
+  private int seq = 0;
 
   GribTimeCoord() {
      // need to have this non-static for thread safety
@@ -59,6 +61,31 @@ public class GribTimeCoord {
     this.lookup = lookup;
     addTimes( records);
     Collections.sort( times);
+  }
+
+  GribTimeCoord(String name, double[] offsetHours, TableLookup lookup) {
+    this();
+    this.name = name;
+    //this.offsetHours = offsetHours;
+    this.lookup = lookup;
+
+    Date baseTime = lookup.getFirstBaseTime();
+    String refDate = formatter.toDateTimeStringISO( baseTime);
+
+    // the offset hours are reletive to whatever the base date is
+    DateUnit convertUnit = null;
+    try {
+      convertUnit = new DateUnit("hours since "+ refDate);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    // now create a list of valid dates
+    times = new ArrayList( offsetHours.length);
+    for (int i = 0; i < offsetHours.length; i++) {
+      double offsetHour = offsetHours[i];
+      times.add( convertUnit.makeDate(offsetHour));
+    }
   }
 
   void addTimes( List records) {
@@ -86,19 +113,22 @@ public class GribTimeCoord {
   }
 
   void setSequence( int seq) { this.seq = seq; }
-  String getVariableName() {
+
+  String getName() {
+    if (name != null) return name;
     return (seq == 0) ? "time" : "time"+seq;
   }
 
   void addDimensionsToNetcdfFile( NetcdfFile ncfile, Group g) {
     Collections.sort( times);
-    ncfile.addDimension(g, new Dimension(getVariableName(), getNTimes(), true));
+    ncfile.addDimension(g, new Dimension(getName(), getNTimes(), true));
   }
 
   void addToNetcdfFile( NetcdfFile ncfile, Group g) {
-    Variable v = new Variable( ncfile, g, null, getVariableName());
+    Variable v = new Variable( ncfile, g, null, getName());
     v.setDataType( DataType.INT);
     v.addAttribute( new Attribute("long_name", "forecast time"));
+    //v.addAttribute( new Attribute("standard_name", "forecast_reference_time"));
 
     int ntimes  = getNTimes();
     int[] data = new int[ntimes];
@@ -113,6 +143,7 @@ public class GribTimeCoord {
       e.printStackTrace();
     }
 
+    // convert the date into the time unit.
     for (int i = 0; i < times.size(); i++) {
       Date validTime = (Date) times.get(i);
       data[i] = (int) dateUnit.makeValue( validTime);

@@ -103,10 +103,11 @@ public interface IOServiceProvider {
   public boolean sync() throws IOException;
 
   /**
-   * Each Service Provider defines what properties it accepts and what their meaning is.
-   * @param iospProperties list of Attribute
+   * A way to communicate arbitrary information to an iosp.
+   * Typically this is set before open() is called.
+   * @param special opaque special settings.
    */
-  public void setProperties( List iospProperties);
+  public void setSpecial( Object special);
 
   /** Debug info for this object. */
   public String toStringDebug(Object o);

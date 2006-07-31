@@ -25,8 +25,9 @@ public class TestAggFmrcNetcdf extends TestCase {
     int nagg = 14;
 
     testDimensions(ncfile, nagg);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, nagg, 122100, 12);
+    testYCoordVar(ncfile);
+    testRunCoordVar(ncfile, nagg);
+    testTimeCoordVar(ncfile, nagg, 11);
     testReadData(ncfile, nagg);
     testReadSlice(ncfile);
 
@@ -52,7 +53,7 @@ public class TestAggFmrcNetcdf extends TestCase {
     assert timeDim.getLength() == nagg : timeDim.getLength();
   }
 
- private void testCoordVar(NetcdfFile ncfile) {
+ private void testYCoordVar(NetcdfFile ncfile) {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
@@ -89,7 +90,8 @@ public class TestAggFmrcNetcdf extends TestCase {
 
   }
 
-  private void testAggCoordVar(NetcdfFile ncfile, int nagg, int start, int incr) {
+
+  private void testRunCoordVar(NetcdfFile ncfile, int nagg) {
     Variable time = ncfile.findVariable("run");
     assert null != time;
     assert time.getName().equals("run");
@@ -119,6 +121,51 @@ public class TestAggFmrcNetcdf extends TestCase {
     }
 
   }
+
+  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int noff) throws IOException {
+    Variable time = ncfile.findVariable("valtime");
+    assert null != time;
+    assert time.getName().equals("valtime");
+    assert time.getRank() == 2;
+    assert time.getSize() == nagg * noff;
+    assert time.getShape()[0] == nagg;
+    assert time.getShape()[1] == noff;
+    assert time.getDataType() == DataType.DOUBLE;
+
+    Array data = time.read();
+    assert data.getRank() == 2;
+    assert data.getSize() == nagg * noff;
+    assert data.getShape()[0] == nagg;
+    assert data.getShape()[1] == noff;
+    assert data.getElementType() == double.class;
+
+    double[][] result =  new double[][]
+       {{122100.0, 122106.0, 122112.0, 122118.0, 122124.0, 122130.0, 122136.0, 122142.0, 122148.0, 122154.0, 122160.0},
+        {122112.0, 122118.0, 122124.0, 122130.0, 122136.0, 122142.0, 122148.0, 122154.0, 122160.0, 122166.0, 122172.0},
+        {122124.0, 122130.0, 122136.0, 122142.0, 122148.0, 122154.0, 122160.0, 122166.0, 122172.0, 122178.0, 122184.0},
+        {122136.0, 122142.0, 122148.0, 122154.0, 122160.0, 122166.0, 122172.0, 122178.0, 122184.0, 122190.0, 122196.0},
+        {122148.0, 122154.0, 122160.0, 122166.0, 122172.0, 122178.0, 122184.0, 122190.0, 122196.0, 122202.0, 122208.0},
+        {122160.0, 122166.0, 122172.0, 122178.0, 122184.0, 122190.0, 122196.0, 122202.0, 122208.0, 122214.0, 122220.0},
+        {122172.0, 122178.0, 122184.0, 122190.0, 122196.0, 122202.0, 122208.0, 122214.0, 122220.0, 122226.0, 122232.0},
+        {122184.0, 122190.0, 122196.0, 122202.0, 122208.0, 122214.0, 122220.0, 122226.0, 122232.0, 122238.0, 122244.0},
+        {122196.0, 122202.0, 122208.0, 122214.0, 122220.0, 122226.0, 122232.0, 122238.0, 122244.0, 122250.0, 122256.0},
+        {122208.0, 122214.0, 122220.0, 122226.0, 122232.0, 122238.0, 122244.0, 122250.0, 122256.0, 122262.0, 122268.0},
+        {122220.0, 122226.0, 122232.0, 122238.0, 122244.0, 122250.0, 122256.0, 122262.0, 122268.0, 122274.0, 122280.0},
+        {122232.0, 122238.0, 122244.0, 122250.0, 122256.0, 122262.0, 122268.0, 122274.0, 122280.0, 122286.0, 122292.0},
+        {122244.0, 122250.0, 122256.0, 122262.0, 122268.0, 122274.0, 122280.0, 122286.0, 122292.0, 122298.0, 122304.0},
+        {122256.0, 122262.0, 122268.0, 122274.0, 122280.0, 122286.0, 122292.0, 122298.0, 122304.0, 122310.0, 122316.0}};
+
+    Index ima = data.getIndex();
+    for (int i=0; i < nagg; i++)
+      for (int j=0; j < noff; j++) {
+        double val = data.getDouble(ima.set(i,j));
+        assert TestAll.closeEnough(val, result[i][j]);
+      }
+
+
+  }
+
+
 
   private void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
     Variable v = ncfile.findVariable("P_sfc");

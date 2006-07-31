@@ -45,7 +45,8 @@ import org.jdom.Element;
 /**
  * Implement NcML Aggregation.
  *
- * <h3>Implementation Notes</h3>
+ * <h2>Implementation Notes</h2>
+ * <h3>Caching</h3>
  * <ul>
  *  <li>Case 1. Explicit list / Scan static directories (recheck=null)
  *   <ul>
@@ -60,7 +61,21 @@ import org.jdom.Element;
  *    <li>B. NetcdfFileCache - write on close if changed. On sync, if recheck time, then rescan.
  *   </ul>
  *  </ul>
- *
+ * <h3>Aggregation Coordinate Variable (aggCoord) Processing</h3>
+ * Construction:
+ * <ol>
+ * <li> The aggregation element is processed first.
+ * <li> agg.finish() is called.
+ * <li> If the user has defined the aggCoord in the NcML, it is then processed, overriding whatever the aggregation has constructed.
+ * If values are defined, they are cached in the new variable.
+ * </ol>
+ * Data Reading:
+ * <ol>
+ * <li> If values are cached, agg.read() is never called.
+ * <li> Each Dataset may have a coordinate value(s) defined in the NcML coordValue attribute.
+ * <li> If not, the coordinate value(s) is cached when the dataset is opened.
+ * <li> agg.read() uses those if they exist, else reads and caches.
+ * </ol>
  * @author caron
  * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */
@@ -81,6 +96,7 @@ public class Aggregation {
   private int totalCoords = 0;  // the aggregation dimension size
   private NetcdfFile typical = null; // metadata and non-agg variables come from a "typical" nested file.
   private Dataset typicalDataset = null; // metadata and non-agg variables come from a "typical" nested file.
+  protected Object spiObject;
 
   // explicit
   private ArrayList vars = new ArrayList(); // variable names (String)
@@ -98,7 +114,7 @@ public class Aggregation {
   private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false;
+  protected boolean debug = false, debugOpenFile = true, debugCacheDetail = false, debugSyncDetail = false;
 
   /**
    * Create an Aggregation for the NetcdfDataset.
@@ -297,14 +313,6 @@ public class Aggregation {
 
         if (dataset.coordValue != null)
           out.print("coordValue='" + dataset.coordValue + "' ");
-
-        /* if (type == Type.JOIN_NEW) {
-          if (dataset.coordValue != null)
-            out.print("coordValue='" + dataset.coordValue + "' ");
-        } else if (type == Type.JOIN_EXISTING) {
-          if (dataset.coordValuesExisting != null)
-            out.print("coordValue='" + dataset.coordValuesExisting + "' ");
-        } */
 
         out.print("/>\n");
       }
@@ -655,10 +663,6 @@ public class Aggregation {
       newds.removeVariable(null, v.getShortName());
       newds.addVariable(null, vagg);
 
-      // gotta handle the agg coord special
-      //if (v.getShortName().equals(dimName))
-      //  joinAggCoord = vagg;
-
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
   }
@@ -777,7 +781,7 @@ public class Aggregation {
   public Array read(VariableDS mainv, CancelTask cancelTask) throws IOException {
 
     // the case of the agg coordinate var for joinExisting or joinNew
-    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING)) && mainv.getShortName().equals(dimName))
+    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask);
 
     Array allData = Array.factory(mainv.getOriginalDataType(), mainv.getShape()); // LOOK why getOriginalDataType() ?
@@ -838,7 +842,7 @@ public class Aggregation {
       return read( mainv, cancelTask);
 
     // the case of the agg coordinate var for joinExisting or joinNew
-    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING)) && mainv.getShortName().equals(dimName))
+    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask, section);
 
     Array sectionData = Array.factory(mainv.getOriginalDataType(), Range.getShape(section));
@@ -911,8 +915,8 @@ public class Aggregation {
     // we have the coordinates as a String
     if (vnested.coordValue != null) {
 
-      // joinNew only can have 1 coord
-      if ((type == Type.JOIN_NEW)) {
+      // joinNew, fmrc only can have 1 coord
+      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         if (dtype == DataType.STRING) {
           result.setObjectNext(vnested.coordValue);
         } else {
@@ -981,7 +985,7 @@ public class Aggregation {
     for (int i = 0; i < fileList.size(); i++) {
       MyFile myf = (MyFile) fileList.get(i);
       String location = myf.file.getAbsolutePath();
-      String coordValue = (type == Type.JOIN_NEW) ? myf.dateCoordS : null;
+      String coordValue = (type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
       myf.nested = makeDataset(location, location, null, coordValue, myf.enhance, null);
       // if (myf.nested.checkOK(cancelTask))
       result.add(myf.nested);
@@ -1171,7 +1175,7 @@ public class Aggregation {
         }
       }
 
-      if (type == Type.JOIN_NEW) {
+      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         if (coordValue == null) {
           int pos = this.location.lastIndexOf("/");
           this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
@@ -1314,9 +1318,9 @@ public class Aggregation {
 
       NetcdfFile ncfile;
       if (enhance)
-        ncfile = NetcdfDatasetCache.acquire(cacheName, cancelTask, (NetcdfDatasetFactory) reader);
+        ncfile = NetcdfDatasetCache.acquire(cacheName, -1, cancelTask, spiObject, (NetcdfDatasetFactory) reader);
       else
-        ncfile = NetcdfFileCache.acquire(cacheName, cancelTask, reader);
+        ncfile = NetcdfFileCache.acquire(cacheName, -1, cancelTask, spiObject, reader);
 
       if (debugOpenFile) System.out.println(" acquire " + cacheName);
       if ((type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL))
@@ -1334,9 +1338,9 @@ public class Aggregation {
     private NetcdfFile openFile(CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile;
       if (enhance)
-        ncfile = NetcdfDataset.openDataset(location, true, cancelTask);
+        ncfile = NetcdfDataset.openDataset(location, true, -1, cancelTask, spiObject);
       else
-        ncfile = NetcdfDataset.openFile(location, cancelTask);
+        ncfile = NetcdfDataset.openFile(location, -1, cancelTask, spiObject);
 
       if (debugOpenFile) System.out.println(" open " + location);
 
@@ -1442,12 +1446,12 @@ public class Aggregation {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     class PolymorphicReader implements NetcdfFileFactory, NetcdfDatasetFactory {
 
-      public NetcdfDataset openDataset(String cacheName, ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
-        return NetcdfDataset.openDataset(location, true, cancelTask);
+      public NetcdfDataset openDataset(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException {
+        return NetcdfDataset.openDataset(location, true, buffer_size, cancelTask, spiObject);
       }
 
-      public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-        return NetcdfDataset.openFile(location, cancelTask);
+      public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+        return NetcdfDataset.openFile(location, buffer_size, cancelTask, spiObject);
       }
     }
   }

@@ -6,8 +6,6 @@ import junit.extensions.TestSetup;
 import java.util.List;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -24,7 +22,7 @@ public class TestAll {
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
-    suite.addTest( ucar.nc2.units.TestAll.suite());
+    suite.addTest( ucar.nc2.units.TestUnitsAll.suite());
     suite.addTest( ucar.nc2.TestNC2.suite());
 
     suite.addTest( ucar.ma2.TestMA2.suite());
@@ -40,7 +38,7 @@ public class TestAll {
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
     suite.addTest( ucar.nc2.dods.TestDODS.suite()); // */
 
-//    suite.addTest( thredds.catalog.TestAll.suite()); // */
+    suite.addTest( thredds.catalog.TestCatalogAll.suite()); // */
 
     TestSetup wrapper = new TestSetup(suite) {
 

@@ -298,6 +298,20 @@
   </xsd:element>
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+  <!-- DatasetFmrc element -->
+  <!-- Define a Forecast Model Run Collection dataset -->
+  <xsd:element name="datasetFmrc" substitutionGroup="dataset">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="DatasetType">
+          <xsd:attribute name="path" type="xsd:string" use="required"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+
+  <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- Documentation element -->
   <!-- this is human readable info, as text or XHTML, or an Xlink to text or HTML -->
   <xsd:complexType name="documentationType" mixed="true">

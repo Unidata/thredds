@@ -161,42 +161,53 @@ public class NetcdfFile {
 
    /**
    * Open an existing file (read only), with option of cancelling.
-     * If file ends with ".Z", it will uncompress and write to file without the ".Z".
    *
    * @param location location of the file.
    * @param cancelTask allow task to be cancelled; may be null.
    *
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException
-   *
-   * @see ucar.nc2.util.CancelTask
    */
   static public NetcdfFile open(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return open(location, default_buffersize, cancelTask);
+    return open(location, -1, cancelTask);
   }
 
   /**
    * Open an existing file (read only), with option of cancelling, setting the RandomAccessFile buffer size for efficiency.
    *
-   * @param location location of file. This may be a
-   * <ol>
-   *  <li>local netcdf-3 filename (with a file: prefix or no prefix)
-   *  <li>remote netcdf-3 filename (with an http: prefix)
-   *  <li>local netcdf-4 filename (with a file: prefix or no prefix)
-   *  <li>local hdf-5 filename (with a file: prefix or no prefix)
-   *  <li>local iosp filename (with a file: prefix or no prefix)
-   * </ol>
-   * If file ends with ".Z", it will uncompress and write to file without the ".Z".
-   * If file ends with ".zip", ".gzip", or ".gz", it will unzip and write to file without the suffix.
-   *
    * @param  buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException
-   *
-   * @see ucar.nc2.util.CancelTask
    */
   static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    return open(location, buffer_size, cancelTask,  null);
+  }
+
+    /**
+     * Open an existing file (read only), with option of cancelling, setting the RandomAccessFile buffer size for efficiency,
+     * with an optional special object for the iosp.
+     *
+     * @param location location of file. This may be a
+     * <ol>
+     *  <li>local netcdf-3 filename (with a file: prefix or no prefix)
+     *  <li>remote netcdf-3 filename (with an http: prefix)
+     *  <li>local netcdf-4 filename (with a file: prefix or no prefix)
+     *  <li>local hdf-5 filename (with a file: prefix or no prefix)
+     *  <li>local iosp filename (with a file: prefix or no prefix)
+     * </ol>
+     * If file ends with ".Z", ".zip", ".gzip", ".gz", or ".bz2", it will uncompress/unzip and write to new file without the suffix,
+     *   then use the uncompressed file. It will look for the uncompressed file before it does any of that. Generally it prefers to
+     *   place the uncompressed file in the same directory as the original file. If it does not have write permission on that directory,
+     *   it will use the directory defined by ucar.nc2.util.DiskCache class.
+     *
+     * @param  buffer_size RandomAccessFile buffer size, if <= 0, use default size
+     * @param  cancelTask allow task to be cancelled; may be null.
+     * @param  spiObject sent to iosp.setSpecial() if not null
+     * @return NetcdfFile object, or null if cant find IOServiceProver
+     * @throws IOException
+     */
+  static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
     // get rid of file prefix, if any
     String uriString = location.trim();
@@ -207,6 +218,9 @@ public class NetcdfFile {
 
     // get rid of crappy microsnot \ replace with happy /
     uriString = StringUtil.replace(uriString, '\\', "/");
+
+    if (buffer_size <= 0)
+      buffer_size = default_buffersize;
 
     ucar.unidata.io.RandomAccessFile raf;
     if (uriString.startsWith("http:")) { // open through URL
@@ -227,7 +241,7 @@ public class NetcdfFile {
     }
 
     try {
-      return open(raf, location, cancelTask);
+      return open(raf, location, cancelTask, spiObject);
     } catch (IOException ioe) {
       raf.close();
       throw ioe;
@@ -321,10 +335,11 @@ public class NetcdfFile {
    */
   public static NetcdfFile openInMemory(String location, byte[] data) throws IOException {
     ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(location, data);
-    return open( raf, location, null);
+    return open( raf, location, null, null);
   }
 
-  private static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  private static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
+          Object spiObject) throws IOException {
 
     IOServiceProvider spi = null;
     if (debugSPI) System.out.println("NetcdfFile try to open = "+location);
@@ -362,8 +377,8 @@ public class NetcdfFile {
       throw new IOException("Cant read "+location+": not a valid NetCDF file.");
     }
 
-    //if (prop != null)
-    //  spi.setProperty(prop);
+    if (spiObject != null)
+      spi.setSpecial(spiObject);
 
     return new NetcdfFile(spi, raf, location, cancelTask);
   }
