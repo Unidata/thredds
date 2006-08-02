@@ -27,17 +27,23 @@ specific to your local machine and working directory:
   b) Select the "Libraries" tab.
   c) If the JDK is shown in red, click the "..." button and select a valid JDK.
 
-3) Mark the IntelliJ IDEA project files as "Exclude from commit". (This will
-   make sure they don't accidentally get checked in.)
-  a) From the "Version Control" menu item, select "Commit project".
-  b) Select the "IntellJ" module.
-  c) Click the "Exclude from commit" icon (the "+" icon).
-
-4) Make sure a valid web application server (like Tomcat) is selected.
+3) Make sure a valid web application server (like Tomcat) is selected.
   a) Back in the "Modules" window, make sure the "tds" module is selected.
   b) Select the "Web Module Settings" tab.
   c) If the "Application Server" is shown in red (or is blank?), click the
      "Configure ..." button and select a valid application server (Tomcat).
+
+4) Mark the IntelliJ IDEA project files as "Exclude from commit". (This will
+   make sure they don't accidentally get checked in.)
+  a) Make sure a file in the intelliJ module has changed (it will turn from
+     black to blue in the project window). I generally just add a space or
+     something to this README file and then save it. Make sure the README
+     file turns blue in the project window. (If it still isn't blue, try
+     minimizing your IntelliJ IDEA window and then opening it back up.)
+  b) From the "Version Control" menu item, select "Commit project".
+  c) Select the "intellJ" module.
+  d) Click the "Exclude from commit" (the minus sign, "-") icon.
+  e) Close the "Commit Project" window by clicking on the "Close" button.
 
 5) Setup the Ant builds (optional).
   a) From the right sidebar, click on the "Ant Build" item.
