@@ -70,7 +70,10 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public String getRadarID() {
-        return ds.findGlobalAttribute( "ProductStation").getStringValue();
+      ucar.nc2.Attribute att = ds.findGlobalAttribute( "ProductStation");
+      if(att == null )
+         att = ds.findGlobalAttribute( "Product_station");
+      return att.getStringValue();
   }
 
   public boolean isStationary(){
@@ -78,7 +81,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
   }
 
   public String getRadarName() {
-        return ds.findGlobalAttribute( "ProductStation").getStringValue();
+        return  ds.findGlobalAttribute( "ProductStationName").getStringValue();
   }
 
   public String getDataFormat() {
@@ -95,10 +98,35 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
 
 
   protected void setEarthLocation() {
-    double lat = ds.findGlobalAttribute( "RadarLatitude").getNumericValue().doubleValue();
-    double lon = ds.findGlobalAttribute( "RadarLongitude").getNumericValue().doubleValue();
-    double elev = ds.findGlobalAttribute( "RadarAltitude").getNumericValue().intValue();
+    double lat = 0.0;
+    double lon = 0.0;
+    double elev= 0.0;
+    ucar.nc2.Attribute attLat = ds.findGlobalAttribute( "RadarLatitude");
+    ucar.nc2.Attribute attLon = ds.findGlobalAttribute( "RadarLongitude");
+    ucar.nc2.Attribute attElev = ds.findGlobalAttribute( "RadarAltitude");
+    try {
+        if(attLat != null)
+            lat = attLat.getNumericValue().doubleValue();
+        else
+            throw new IOException ("Unable to init radar location!\n");
 
+
+        if(attLon != null)
+            lon = attLon.getNumericValue().doubleValue();
+        else
+            throw new IOException ("Unable to init radar location!\n");
+
+
+        if(attElev != null)
+            elev = attElev.getNumericValue().intValue();
+        else
+            throw new IOException ("Unable to init radar location!\n");
+
+
+    } catch (Throwable e) {
+      System.err.println("CDM radial dataset failed to open this dataset "+e);
+
+    }
     origin = new EarthLocationImpl(lat, lon, elev);
   }
 
