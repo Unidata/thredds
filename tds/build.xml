@@ -6,6 +6,8 @@
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
   </tstamp>
 
+  <property name="cdmAll.javadoc.url"
+            value="http://www.unidata.ucar.edu/software/netcdf-java/v2.2.17/javadocAll/" />
   <!-- load env -->
   <property environment="env"/>
   <property file="${user.home}/build.properties"/>
@@ -403,6 +405,8 @@
       <package name="thredds.servlet"/>
       <package name="thredds.servlet.ldm"/>
       <package name="thredds.wcs.servlet"/>
+
+      <link href="${cdmAll.javadoc.url}" />
 
     </javadoc>
   </target>

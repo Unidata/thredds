@@ -18,7 +18,7 @@ import thredds.datatype.DateType;
  * so that it can be stored using the ucar.util.prefs package.
  *
  */
-public class CatGenTimerTask
+class CatGenTimerTask
 {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger( CatGenTimerTask.class);
 
@@ -53,7 +53,7 @@ public class CatGenTimerTask
    * @param periodInMinutes - the time in minutes between runs of this task
    * @param delayInMinutes - the time to wait before the first run of this task
    */
-  public CatGenTimerTask( String name,
+  CatGenTimerTask( String name,
                           String configDocName,
                           String resultFileName,
                           int periodInMinutes,
@@ -81,7 +81,7 @@ public class CatGenTimerTask
     this.delayInMinutes = delayInMinutes;
   }
 
-  public CatGenTimerTask( CatGenTimerTask task )
+  CatGenTimerTask( CatGenTimerTask task )
   {
     this.name = task.getName();
     this.configDocName = task.getConfigDocName();
@@ -91,19 +91,19 @@ public class CatGenTimerTask
   }
 
   /** Return the value of name. */
-  public String getName() { return( this.name); }
+  String getName() { return( this.name); }
 
   /** Return the value of configDocName. */
-  public String getConfigDocName() { return( this.configDocName); }
+  String getConfigDocName() { return( this.configDocName); }
 
   /** Return the value of resultFileName. */
-  public String getResultFileName() { return( this.resultFileName); }
+  String getResultFileName() { return( this.resultFileName); }
 
   /** Return the value of periodInMinutes. */
-  public int getPeriodInMinutes() { return( this.periodInMinutes); }
+  int getPeriodInMinutes() { return( this.periodInMinutes); }
 
   /** Return the value of delayInMinutes. */
-  public int getDelayInMinutes() { return( this.delayInMinutes); }
+  int getDelayInMinutes() { return( this.delayInMinutes); }
 
   synchronized TimerTask getTimerTask()
   {

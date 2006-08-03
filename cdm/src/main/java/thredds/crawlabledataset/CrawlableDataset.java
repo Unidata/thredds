@@ -1,4 +1,3 @@
-// $Id: CrawlableDataset.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.crawlabledataset;
 
 import java.util.Date;
@@ -21,24 +20,24 @@ import java.io.IOException;
  * hierarchical dataset collection. Parent and child datasets can be accessed
  * allowing the collection to be crawled.
  *
- * The CrawlableDataset interface is a generalization (and simplification) of
+ * <p> The CrawlableDataset interface is a generalization (and simplification) of
  * the java.io.File class. A CrawlableDataset path is made up of ONE or more
  * path segments each seperated by a slash ("/"). The path may start with a
- * slash ("/") but may not end with a slash ("/").
+ * slash ("/") but may not end with a slash ("/").</p>
  *
- * The CrawlableDatasetFile class stretches the definition of the
+ * <p> The CrawlableDatasetFile class stretches the definition of the
  * seperator character ("/") by allowing files to be given in their native
  * formats including Unix (/my/file), Windows (c:\my\file), and UNC file paths
- * (\\myhost\my\file).
+ * (\\myhost\my\file).</p>
  *
- * Implementation Notes:<br>
- * 1) The thredds.crawlabledataset.CrawlableDatasetFactory requires each
+ * <p>Implementation Notes:</p>
+ * <ol>
+ * <li> The thredds.crawlabledataset.CrawlableDatasetFactory requires each
  * CrawlableDataset implementation to define a public constructor with one
  * String argument and one Object argument. The String argument is the path
  * for the CrawlableDataset being constructed, the Object argument is a
- * configuration object.
- * <br>
- * 2) The thredds.cataloggen.CollectionLevelScanner framework does not support
+ * configuration object.</li>
+ * <li> The thredds.cataloggen.CollectionLevelScanner framework does not support
  * building a catalog for the collection based at the CrawlableDataset path "/"
  * (this is related to the assumption, specified above, that paths do not end
  * with a "/"). So, do not implement your CrawlableDataset so that the path "/"
@@ -48,7 +47,8 @@ import java.io.IOException;
  * collection. If the backend data source on top of which you are implementing
  * CrawlabeDataset uses "/" as its root, you can simply prepend a string (e.g.,
  * "myDataCollection" or "root") to the backend path for the CrawlableDataset
- * view of the path.  
+ * view of the path.</li>
+ * </ol>
  *
  * @author edavis
  * @since May 3, 2005 20:18:59 -0600

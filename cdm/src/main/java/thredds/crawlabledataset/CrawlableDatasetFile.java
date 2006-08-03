@@ -1,4 +1,3 @@
-// $Id: CrawlableDatasetFile.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.crawlabledataset;
 
 import java.io.File;
@@ -9,7 +8,12 @@ import java.util.*;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * A description
+ * An implementation of CrawlableDataset where the dataset being represented
+ * is a local file (java.io.File).
+ *
+ * <p>This is the default implementation of CrawlableDataset used by
+ * CrawlableDatasetFactory if the class name handed to the
+ * createCrawlableDataset() method is null.</p>
  *
  * @author edavis
  * @since Jun 8, 2005 15:34:04 -0600
@@ -19,20 +23,30 @@ public class CrawlableDatasetFile implements CrawlableDataset
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CrawlableDatasetFile.class);
   //private static Log log = LogFactory.getLog( CrawlableDatasetFile.class );
 
-  private File file;
-  private String path;
-  private String name;
+  private final File file;
+  private final String path;
+  private final String name;
 
-  private Object configObj = null;
+  private final Object configObj;
 
-  protected CrawlableDatasetFile() {}
-  protected CrawlableDatasetFile( String path, Object configObj ) throws IOException
+  //protected CrawlableDatasetFile() {}
+
+  /**
+   * Constructor required by CrawlableDatasetFactory.
+   *
+   * @param path the path of the CrawlableDataset being constructed.
+   * @param configObj the configuration object required by CrawlableDatasetFactory; it is ignored.
+   * @throws IOException if the file does not exist.
+   */
+  CrawlableDatasetFile( String path, Object configObj ) throws IOException
   {
     if ( configObj != null )
     {
       log.debug( "CrawlableDatasetFile(): config object not null, it will be ignored <" + configObj.toString() + ">.");
       this.configObj = configObj;
     }
+    else
+      this.configObj = null;
 
     if ( path.startsWith( "file:" ) )
     {
@@ -80,6 +94,11 @@ public class CrawlableDatasetFile implements CrawlableDataset
     }
   }
 
+  /**
+   * Provide access to the java.io.File that this CrawlableDataset represents.
+   *
+   * @return the java.io.File that this CrawlableDataset represents.
+   */
   public File getFile()
   {
     return file;

@@ -3,7 +3,6 @@ package thredds.catalog;
 import junit.framework.TestCase;
 import thredds.cataloggen.TestCatalogGen;
 
-import java.io.IOException;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -91,7 +90,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -141,7 +140,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs);
@@ -191,7 +190,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/trajectory/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/trajectory/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -253,7 +252,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -314,7 +313,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + s + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/eta_211/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -375,7 +374,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + s + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -438,7 +437,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/eta_211/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -480,7 +479,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/dmsp/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/dmsp/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -545,7 +544,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + s + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/eta_211/catalog.xml", reqURI );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
@@ -610,7 +609,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + s + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog = me.makeCatalogForDirectory( reqURI, dsScanPath + "/eta_211/catalog.xml" );
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/eta_211/catalog.xml", reqURI );
 
     System.out.println( "NEEDS WORK: don't have a real use case here - probably need a different ProxyDatasetHandler." );
     System.out.println( "            Possible use case: current DQC Latest server URLs like \"/thredds/dqc/latest?eta_211\"." );
@@ -717,7 +716,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog1 = dsScan1.makeCatalogForDirectory( reqURI, "testRelative/catalog.xml" );
+    InvCatalog catalog1 = dsScan1.makeCatalogForDirectory( "testRelative/catalog.xml", reqURI );
     URI reqURI2 = null;
     String reqUriString2 = baseURL + "/testRelativeEta/catalog.xml";
     try
@@ -729,7 +728,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString2 + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalog catalog2 = dsScan2.makeCatalogForDirectory( reqURI2, "testRelativeEta/catalog.xml" );
+    InvCatalog catalog2 = dsScan2.makeCatalogForDirectory( "testRelativeEta/catalog.xml", reqURI2 );
 
     // Compare the resulting catalog an the expected catalog resource.
     TestCatalogGen.compareCatalogToCatalogResource( catalog1, expectedCatalog1ResourceName, debugShowCatalogs );
@@ -801,7 +800,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( reqURI, "myGridData/catalog.xml" );
+    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( "myGridData/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/GFS/catalog.xml";
     try
@@ -813,7 +812,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/catalog.xml" );
+    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/GFS/Alaska_191km/catalog.xml";
     try
@@ -825,7 +824,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/Alaska_191km/catalog.xml" );
+    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/Alaska_191km/catalog.xml", reqURI );
 
     TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
     TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );
@@ -874,7 +873,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( reqURI, "myGridData/catalog.xml" );
+    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( "myGridData/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/GFS/catalog.xml";
     try
@@ -886,7 +885,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/catalog.xml" );
+    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/GFS/Alaska_191km/catalog.xml";
     try
@@ -898,7 +897,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/Alaska_191km/catalog.xml" );
+    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/Alaska_191km/catalog.xml", reqURI );
 
     TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
     TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );
@@ -947,7 +946,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( reqURI, "myGridData/catalog.xml" );
+    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( "myGridData/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/GFS/catalog.xml";
     try
@@ -959,7 +958,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/catalog.xml" );
+    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/GFS/Alaska_191km/catalog.xml";
     try
@@ -971,7 +970,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/Alaska_191km/catalog.xml" );
+    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/Alaska_191km/catalog.xml", reqURI );
 
     TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
     TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );
@@ -1021,7 +1020,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( reqURI, "myGridData/catalog.xml" );
+    InvCatalogImpl cat1 = scan.makeCatalogForDirectory( "myGridData/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/catalog.xml";
     try
@@ -1033,7 +1032,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/catalog.xml" );
+    InvCatalogImpl cat2 = scan.makeCatalogForDirectory( "myGridData/NCEP/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/GFS/catalog.xml";
     try
@@ -1045,7 +1044,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/GFS/catalog.xml" );
+    InvCatalogImpl cat3 = scan.makeCatalogForDirectory( "myGridData/NCEP/GFS/catalog.xml", reqURI );
 
     reqUriString = baseURI + "/myGridData/NCEP/NAM/catalog.xml";
     try
@@ -1057,7 +1056,7 @@ public class TestInvDatasetScan extends TestCase
       assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
                   false );
     }
-    InvCatalogImpl cat4 = scan.makeCatalogForDirectory( reqURI, "myGridData/NCEP/NAM/catalog.xml" );
+    InvCatalogImpl cat4 = scan.makeCatalogForDirectory( "myGridData/NCEP/NAM/catalog.xml", reqURI );
 
     TestCatalogGen.compareCatalogToCatalogResource( cat1, res1Name, debugShowCatalogs );
     TestCatalogGen.compareCatalogToCatalogResource( cat2, res2Name, debugShowCatalogs );

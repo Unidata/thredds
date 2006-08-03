@@ -215,10 +215,10 @@ public class ThreddsDefaultServlet extends AbstractServlet {
         }
       }
 
-      if ( path.endsWith( "/latest.xml") ) {
-        catHandler.processReqForLatestDataset( this, req, res);
-        return;
-      }
+//      if ( path.endsWith( "/latest.xml") ) {
+//        catHandler.processReqForLatestDataset( this, req, res);
+//        return;
+//      }
 
       // debugging
       if (path.equals("/debug") || path.equals("/debug/")) {

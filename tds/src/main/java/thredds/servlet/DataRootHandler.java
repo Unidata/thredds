@@ -375,7 +375,7 @@ public class DataRootHandler {
       return false;
     }
 
-    // LOOK !!
+    // LOOK !! We should restrict this to content/thredds/testData rather than allow anything under content/thredds
     // rearrange scanDir if it starts with content
     if (dscan.getScanDir().startsWith("content/"))
       dscan.setScanDir(contentPath + dscan.getScanDir().substring(8));
@@ -749,6 +749,17 @@ public class DataRootHandler {
     return cat;
   }
 
+  /**
+   * DO NOT USE, this is Ethan's attempt at designing a generic way to handle data requests.
+   *
+   * Only use is in ExampleThreddsServlet.
+   *
+   * @param path
+   * @param dsp
+   * @param req
+   * @param res
+   * @throws IOException
+   */
   public void handleRequestForDataset( String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res )
           throws IOException
   {
@@ -847,10 +858,10 @@ public class DataRootHandler {
 
     String catPath = req.getPathInfo();
     StringBuffer catBase = req.getRequestURL();
-    /* if (catPath == null) {
+    if (catPath == null) {
       return false;
 
-    } else */ if (catPath.endsWith("/")) {
+    } else if (catPath.endsWith("/")) {
       isHtmlReq = true;
       catPath = catPath + "catalog.xml";
       catBase.append( "catalog.xml");
@@ -995,7 +1006,7 @@ public class DataRootHandler {
 
     InvDatasetScan dscan = dataRoot.scan;
     log.debug("Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
-    InvCatalogImpl cat = dscan.makeCatalogForDirectory(baseURI, path);
+    InvCatalogImpl cat = dscan.makeCatalogForDirectory( path, baseURI );
 
     if (null == cat) {
       log.error("makeCatalogForDirectory failed = " + workPath);
@@ -1056,17 +1067,22 @@ public class DataRootHandler {
   }  */
 
   /**
-   * Process a request for the "latest" dataset. This must be configured through the datasetScan element.
-   * Typically you call if the path ends with "latest.xml".
-   * Actually this is a "resolver" service, that returns a catalog.xml containing latest dataset.
+   * Process a request for the "latest" dataset. This must be configured
+   * through the datasetScan element. Typically you call if the path ends with
+   * "latest.xml". Actually this is a "resolver" service, that returns a
+   * catalog.xml containing latest dataset.
    *
    * @param servlet requesting servlet
    * @param req     request
    * @param res     response
    * @return true if request was processed successfully.
-   * @throws IOException
+   * @throws IOException if have I/O trouble writing response.
+   *
+   * @deprecated  Instead use {@link #processReqForCatalog(HttpServletRequest, HttpServletResponse) processReqForCatalog()} which provides more general proxy dataset handling.
    */
-  public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException {
+  public boolean processReqForLatestDataset(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
+          throws IOException
+  {
     String orgPath = req.getPathInfo();
     if (orgPath.startsWith("/"))
       orgPath = orgPath.substring(1);
@@ -1130,7 +1146,7 @@ public class DataRootHandler {
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
       return false;
     }
-    InvCatalog cat = dscan.makeLatestCatalogForDirectory(reqBaseURI, orgPath);
+    InvCatalog cat = dscan.makeLatestCatalogForDirectory(orgPath, reqBaseURI );
 
     if (null == cat) {
       String resMsg = "Failed to build response catalog <" + path + ">.";

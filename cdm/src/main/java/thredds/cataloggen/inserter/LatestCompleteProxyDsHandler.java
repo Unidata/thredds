@@ -1,4 +1,3 @@
-// $Id: LatestCompleteProxyDsHandler.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.cataloggen.inserter;
 
 import thredds.cataloggen.ProxyDatasetHandler;
@@ -140,14 +139,14 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
     return actualName ;
   }
 
-  private static class LatestCompleteCrDS extends CrawlableDatasetFile
-  {
-    private CrawlableDataset parent;
-    private String name;
-    private CrawlableDatasetFile proxyCrDs;
-
-
-  }
+//  private static class LatestCompleteCrDS extends CrawlableDatasetFile
+//  {
+//    private CrawlableDataset parent;
+//    private String name;
+//    private CrawlableDatasetFile proxyCrDs;
+//
+//
+//  }
 
   /**
    *

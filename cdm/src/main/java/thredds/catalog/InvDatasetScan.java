@@ -1,4 +1,3 @@
-// $Id: InvDatasetScan.java 48 2006-07-12 16:15:40Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,12 +33,29 @@ import java.util.*;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Used to automatically generate catalogs.
+ * Represents server-side information on how to scan a collection of datasets
+ * for catalog generation.
+ *
+ * <p>Used by the THREDDS Data Server (TDS) to automatically generate catalogs.</p>
+ *
+ * <p>Typically built from the information given by a datasetScan element in a
+ * TDS config catalog.</p>
+ *
+ * <p>Usage notes:
+ * <ol>
+ * <li>The static methods setContext() and setCatalogServletName() should only
+ * be called once per web application instance. For instance, in your
+ * HttpServlet implementations init() method.</li>
+ * <li>The method setScanDir() should not be used; it is "public by accident".
+ * </li>
+ * </ol>
+ *
+ * <p>Should be thread safe except that the above two usage notes are not enforced.
  */
 public class InvDatasetScan extends InvCatalogRef {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InvDatasetScan.class);
   static private String context = "/thredds";
-  static public void setContext(String c) { context = c; }
+  static public void setContext( String c ) { context = c; }
   static private String catalogServletName = "/catalog";
   static public void setCatalogServletName( String catServletName ) { catalogServletName = catServletName; }
   static private String makeHref(String path)
@@ -48,12 +64,13 @@ public class InvDatasetScan extends InvCatalogRef {
   }
 
   ////////////////////////////////////////////////
-  private String rootPath, scanDir;
+  private final String rootPath;
+  private String scanDir;
 
-  private String crDsClassName;
-  private Object crDsConfigObj;
+  private final String crDsClassName;
+  private final Object crDsConfigObj;
 
-  private CrawlableDatasetFilter filter;
+  private final CrawlableDatasetFilter filter;
 
   private CrawlableDatasetLabeler identifier;
   private CrawlableDatasetLabeler namer;
@@ -159,9 +176,17 @@ public class InvDatasetScan extends InvCatalogRef {
   }
 
   public String getPath() { return rootPath; }
-  public void setPath( String path) { this.rootPath = path; }
+  //public void setPath( String path) { this.rootPath = path; }
 
   public String getScanDir() { return scanDir; }
+
+  /**
+   * Resets the location being scanned (DO NOT USE THIS METHOD, "public by accident").
+   *
+   * <p>Used by DataRootHandler to allow scanning an aliased directory ("content").
+   *
+   * @param scanDir the scan location.
+   */
   public void setScanDir(String scanDir) {
     this.scanDir = scanDir;
   }
@@ -282,12 +307,16 @@ public class InvDatasetScan extends InvCatalogRef {
   }
 
   /**
+   * Try to build a catalog for the given path by scanning the location
+   * associated with this InvDatasetScan. The given path must start with
+   * the path of this InvDatasetScan.
    *
-   * @param baseURI the base URL for the catalog, used to resolve relative URLs.
    * @param orgPath the part of the baseURI that is the path
-   * @return the catalog for this path, uses version 1.1
+   * @param baseURI the base URL for the catalog, used to resolve relative URLs.
+   *
+   * @return the catalog for this path (uses version 1.1) or null if build unsuccessful.
    */
-  public InvCatalogImpl makeCatalogForDirectory( URI baseURI, String orgPath ) {
+  public InvCatalogImpl makeCatalogForDirectory( String orgPath, URI baseURI ) {
 
     if ( log.isDebugEnabled())
     {
@@ -366,6 +395,17 @@ public class InvDatasetScan extends InvCatalogRef {
     return catalog;
   }
 
+  /**
+   * Try to build a catalog for the given resolver path by scanning the
+   * location associated with this InvDatasetScan. The given path must start
+   * with the path of this InvDatasetScan and refer to a resolver
+   * ProxyDatasetHandler that is part of this InvDatasetScan.
+   *
+   * @param path the part of the baseURI that is the path
+   * @param baseURI the base URL for the catalog, used to resolve relative URLs.
+   *
+   * @return the resolver catalog for this path (uses version 1.1) or null if build unsuccessful.
+   */
   public InvCatalogImpl makeProxyDsResolverCatalog( String path, URI baseURI )
   {
     if ( path == null ) return null;
@@ -438,9 +478,25 @@ public class InvDatasetScan extends InvCatalogRef {
     return catalog;
   }
 
-  public InvCatalog makeLatestCatalogForDirectory( URI baseURI, String orgPath )
+  /**
+   * Try to build a catalog for the given path by scanning the location
+   * associated with this InvDatasetScan. The given path must start with
+   * the path of this InvDatasetScan.
+   *
+   * @param orgPath the part of the baseURI that is the path
+   * @param baseURI the base URL for the catalog, used to resolve relative URLs.
+   *
+   * @return the catalog for this path (uses version 1.1) or null if build unsuccessful.
+   *
+   * @param orgPath
+   * @param baseURI
+   * @return
+   *
+   * @deprecated  Instead use {@link #makeProxyDsResolverCatalog(String, URI) makeProxyDsResolver()} which provides more general proxy dataset handling.
+   */
+  public InvCatalog makeLatestCatalogForDirectory( String orgPath, URI baseURI )
  {
-   InvCatalogImpl cat = this.makeCatalogForDirectory( baseURI, orgPath );
+   InvCatalogImpl cat = this.makeCatalogForDirectory( orgPath, baseURI );
    if ( cat == null ) return null;
    InvDatasetImpl topDs = (InvDatasetImpl) cat.getDatasets().get( 0); // Assumes catalog has one top-level dataset.
 

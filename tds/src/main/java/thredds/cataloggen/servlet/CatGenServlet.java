@@ -12,14 +12,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * <p>Title: Catalog Generator</p>
- * <p>Description: Tool for generating THREDDS catalogs.</p>
- * <p>Copyright: Copyright (c) 2001</p>
- * <p>Company: UCAR/Unidata</p>
+ * The Catalog Generation servlet provides a web interface for scheduling
+ * catalog generation tasks.
+ *
+ * In the TDS, this is mapped to "/thredds/cataloggen/*" and access to these
+ * URLs requires user authentication.
+ *
  * @author Ethan Davis
- * @version 1.0
  */
-
 public class CatGenServlet extends AbstractServlet
 {
   /* Requests that will be handled (for the URL, prepend path with
@@ -122,11 +122,11 @@ public class CatGenServlet extends AbstractServlet
   }
 
   /**
-   * Handle all GET requests. This includes requests for: documentation files,
+   * Handle all GET requests, includes requests for: documentation files,
    * configuration files, the resulting catalogs, and the HTML admin pages.
    *
-   * @param req - the HttpServletRequest
-   * @param res - the HttpServletResponse
+   * @param req the HttpServletRequest
+   * @param res the HttpServletResponse
    * @throws ServletException if the request could not be handled for some reason.
    * @throws IOException if an I/O error is detected (when communicating with client not for servlet internal IO problems?).
    */
@@ -191,12 +191,13 @@ public class CatGenServlet extends AbstractServlet
   }
 
   /**
-   * Handle all PUT requests.
+   * Handle PUT requests, only PUT requests for the CatGenServlet config
+   * files are allowed (authentication required).
    *
-   * @param req
-   * @param res
-   * @throws ServletException
-   * @throws IOException
+   * @param req the HttpServletRequest
+   * @param res the HttpServletResponse
+   * @throws ServletException if the request could not be handled for some reason.
+   * @throws IOException if an I/O error is detected (when communicating with client not for servlet internal IO problems?).
    */
   public void doPut(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException
