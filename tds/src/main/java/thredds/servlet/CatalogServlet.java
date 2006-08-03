@@ -36,10 +36,18 @@ public class CatalogServlet extends HttpServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     ServletUtil.logServerAccessSetup( req );
 
-    if ( req.getPathInfo().startsWith( "/redirectTest/"))
+    String path = req.getPathInfo();
+    //StringBuffer reqURL = req.getRequestURL();
+
+    if ( path == null )
     {
-      String path = req.getPathInfo();
-      StringBuffer reqURL = req.getRequestURL();
+      // Redirect "/thredds/catalog" request to "/thredds/catalog.html".
+      ServletUtil.sendPermanentRedirect( "/thredds/catalog.html", req, res );
+      return;
+    }
+
+    if ( path.startsWith( "/redirectTest/"))
+    {
       if ( path.startsWith( "/redirectTest/good/"))
       {
         this.getServletContext().getRequestDispatcher( "/catalog.xml").forward( req, res);

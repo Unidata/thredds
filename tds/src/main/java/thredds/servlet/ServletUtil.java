@@ -1,4 +1,3 @@
-// $Id: ServletUtil.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -482,28 +481,45 @@ public class ServletUtil {
   }
 
   /**
-   * Send a permanent redirect (HTTP status 301 "Moved Permanently")
-   * with the given target path in the "Location" header.
+   * Send a permanent redirect (HTTP status 301 "Moved Permanently") response
+   * with the given target path.
    *
-   * @param targetPath redirect the client to this path
-   * @param req the HttpServletRequest being handled
+   * The given target path may be relative or absolute. If it is relative, it
+   * will be resolved against the request URL.
+   *
+   * @param targetPath the path to which the client is redirected.
+   * @param req the HttpServletRequest
    * @param res the HttpServletResponse
-   * @throws IOException if an IO exception occurs
+   * @throws IOException if can't write the response.
    */
   public static void sendPermanentRedirect(String targetPath, HttpServletRequest req, HttpServletResponse res)
           throws IOException
   {
+    // Absolute URL needed so resolve the target path against the request URL.
+    URI uri = null;
+    try
+    {
+      uri = new URI( req.getRequestURL().toString() );
+    }
+    catch ( URISyntaxException e )
+    {
+      log.error( "sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
+      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+      return;
+    }
+    String absolutePath = uri.resolve( targetPath ).toString();
+    absolutePath = res.encodeRedirectURL( absolutePath );
 
-    targetPath = res.encodeRedirectURL( targetPath );
     res.setStatus( HttpServletResponse.SC_MOVED_PERMANENTLY );
-    res.addHeader( "Location", targetPath );
+    res.addHeader( "Location", absolutePath );
 
     String title = "Permanently Moved - 301";
     String body = new StringBuffer()
             .append( "<p>" )
             .append( "The requested URL <" ).append( req.getRequestURL() )
             .append( "> has been permanently moved (HTTP status code 301)." )
-            .append( " Instead, please use the following URL: <a href=\"" ).append( targetPath ).append( "\">" ).append( targetPath ).append( "</a>." )
+            .append( " Instead, please use the following URL: <a href=\"" ).append( absolutePath ).append( "\">" ).append( absolutePath ).append( "</a>." )
             .append( "</p>" )
             .toString();
     String htmlResp = new StringBuffer()
