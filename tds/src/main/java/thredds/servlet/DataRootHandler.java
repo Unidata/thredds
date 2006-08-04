@@ -21,6 +21,7 @@ package thredds.servlet;
 
 import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
+import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.util.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.datatype.DateType;
@@ -470,34 +471,28 @@ public class DataRootHandler {
   }
 
   private class DataRoot {
-    String path;         // match this path
-    String dirLocation; // to this directory
-    InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
+    final String path;         // match this path
+    final String dirLocation; // to this directory
+    final InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
+
+    // Use this to access CrawlableDataset in dirLocation.
+    final InvDatasetScan datasetRootProxy;
 
     DataRoot(String path, InvDatasetScan scan) {
       //this.path = path;
       this.path = scan.getPath();
       this.scan = scan;
       this.dirLocation = scan.getScanDir();
+      this.datasetRootProxy = null;
     }
 
     DataRoot(String path, String dirLocation) {
       this.path = path;
       this.dirLocation = dirLocation;
-    }
+      this.scan = null;
 
-    void setPath(String path) {
-      if (path.startsWith("/"))
-        this.path = path.substring(1);
-      else
-        this.path = path;
-    }
-
-    void setDirLocation(String dirLocation) {
-      if (dirLocation.startsWith("/"))
-        this.dirLocation = dirLocation.substring(1);
-      else
-        this.dirLocation = dirLocation;
+      this.datasetRootProxy = new InvDatasetScan( null, "", this.path, this.dirLocation,
+                                                  null, null, null, null, null, false, null, null, null, null );
     }
 
     // used by PathMatcher
@@ -644,7 +639,7 @@ public class DataRootHandler {
    * @return the requested CrawlableDataset or null if the requested dataset is not allowed by the matching InvDatasetScan.
    * @throws IllegalStateException if the request is not for a descendent of (or the same as) the matching DatasetRoot collection location.
    */
-  public CrawlableDataset findRequestedDataset(String path) {
+  public CrawlableDataset getCrawlableDataset(String path) {
     if (path.length() > 0) {
       if (path.startsWith("/"))
         path = path.substring(1);
@@ -653,13 +648,34 @@ public class DataRootHandler {
     DataRoot reqDataRoot = matchPath2(path);
     if (reqDataRoot == null)
       return null;
-    if (reqDataRoot.scan == null)
-      return null;
+    if ( reqDataRoot.scan != null)
+      return reqDataRoot.scan.requestCrawlableDataset( path );
+    if ( reqDataRoot.dirLocation != null )
+      return reqDataRoot.datasetRootProxy.requestCrawlableDataset( path );
 
-    //noinspection UnnecessaryLocalVariable
-    CrawlableDataset crDs = reqDataRoot.scan.requestCrawlableDataset( path );
+    return null;
+  }
 
-    return crDs;
+  /**
+   * Return the java.io.File represented by the CrawlableDataset to which the
+   * given path maps. Null is returned if the dataset does not exist, the
+   * matching InvDatasetScan or DataRoot filters out the requested 
+   * CrawlableDataset, or the CrawlableDataset does not represent a File
+   * (i.e., it is not a CrawlableDatasetFile).
+   *
+   * @param path the request path.
+   * @return the requested java.io.File or null.
+   * @throws IllegalStateException if the request is not for a descendent of (or the same as) the matching DatasetRoot collection location.
+   */
+  public File getCrawlableDatasetAsFile( String path )
+  {
+    CrawlableDataset crDs = getCrawlableDataset( path );
+    if ( crDs == null ) return null;
+    File retFile = null;
+    if ( crDs instanceof CrawlableDatasetFile )
+      retFile = ((CrawlableDatasetFile) crDs).getFile();
+
+    return retFile;
   }
 
   public boolean isProxyDatasetResolver( String path )
@@ -792,7 +808,7 @@ public class DataRootHandler {
     }
 
     // Find the CrawlableDataset represented by the request path.
-    CrawlableDataset crDs = this.findRequestedDataset( crDsPath );
+    CrawlableDataset crDs = this.getCrawlableDataset( crDsPath );
     if ( crDs == null )
     {
       // @todo Check if this is a proxy dataset request (not resolver).
@@ -988,7 +1004,7 @@ public class DataRootHandler {
       workPath = workPath.substring(0, pos);
 
     // Check that path is allowed.
-    if (findRequestedDataset(workPath) == null)
+    if (getCrawlableDataset(workPath) == null)
       return null;
 
     // now look through the InvDatasetScans and get a maximal match
@@ -1185,6 +1201,7 @@ public class DataRootHandler {
       return null;
     }
 
+    // @todo Should we do this for datasetRoot as well? Would need to bubble up all the way to InvCatalogFactory10.
     InvDatasetScan dscan = dataRoot.scan;
     if (dscan == null) return null;
     return dscan.getNcmlElement();
