@@ -66,6 +66,19 @@ public class DoradeSweep {
         }
     }
 
+    public DoradeSweep( RandomAccessFile file)
+                throws DoradeSweepException, java.io.FileNotFoundException{
+            //file = new RandomAccessFile(filename, "r");
+            try {
+                littleEndian = DoradeDescriptor.sweepfileIsLittleEndian(file);
+
+                mySSWB = new DoradeSSWB(file, littleEndian);
+                myVOLD = new DoradeVOLD(file, littleEndian);
+                mySWIB = new DoradeSWIB(file, littleEndian, myVOLD);
+            } catch (Exception ex) {
+                throw new DoradeSweepException(ex);
+            }
+    }
     /**
      * Is this sweepfile little-endian?
      * @return a boolean indicating whether the file is little-endian
