@@ -487,9 +487,9 @@ public class DoradeSweep {
 
 
     // unidata added
-    public static boolean IsDoradeSweep(String filename)
-            throws DoradeSweepException, java.io.FileNotFoundException {
-        RandomAccessFile file = new RandomAccessFile(filename, "r");
+    public static boolean isDoradeSweep(RandomAccessFile file)
+            throws DoradeSweepException {
+        //RandomAccessFile file = new RandomAccessFile(filename, "r");
         try {
             if( findName(file, "SSWB" ) )
                 return true;
@@ -501,12 +501,14 @@ public class DoradeSweep {
     }
 
     // Unidata added: finding the first 4 byte for string matching
-    private static boolean findName(RandomAccessFile file, String expectedName)
+    private static boolean findName( RandomAccessFile file, String expectedName)
             throws IOException {
         byte[] nameBytes = new byte[4];
+
         try {
             long filepos = file.getFilePointer();
-            if (file.read(nameBytes) == -1)
+            file.seek(0);
+            if (file.read(nameBytes, 0, 4) == -1)
                 return false;  // EOF
             file.seek(filepos);
         } catch (Exception ex) {
