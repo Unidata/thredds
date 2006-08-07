@@ -187,6 +187,9 @@ public class RandomAccessFile implements DataInput, DataOutput {
         }
     }
 
+    public java.io.RandomAccessFile getRandomAccessFile() {
+        return this.file;
+    }
     /**
      * _more_
      *
