@@ -111,6 +111,7 @@ class Nidsheader{
   int block_length = 0;
   short number_layers = 0;
   String stationId;
+  String stationName;
   private boolean noHeader;
 
   DateFormatter formatter = new DateFormatter();
@@ -266,6 +267,15 @@ class Nidsheader{
           case 4:
             System.arraycopy(b, hoff - 6, b3, 0, 3);
             stationId  = new String(b3);
+            try {
+              NexradStationDB.init(); // make sure database is initialized
+              NexradStationDB.Station station = NexradStationDB.get("K"+stationId);
+              if (station != null) {
+                stationName = station.name;
+              }
+            } catch (IOException ioe) {
+              log.error("NexradStationDB.init", ioe);
+            }
             break;
 
           default:
@@ -1798,12 +1808,13 @@ class Nidsheader{
       mlength = getInt(b4, 4);
       buf.get(b2, 0, 2);
       msource = (short) getInt(b2, 2);
-      if(stationId == null) {
+      if(stationId == null || stationName == null) {
           try {
               NexradStationDB.init(); // make sure database is initialized
               NexradStationDB.Station station = NexradStationDB.getByIdNumber("000"+Short.toString(msource));
               if (station != null) {
                 stationId = station.id;
+                stationName = station.name;
               }
             } catch (IOException ioe) {
               log.error("NexradStationDB.init", ioe);
@@ -1940,6 +1951,7 @@ class Nidsheader{
             latitude = station.lat;
             longitude = station.lon;
             height = station.elev;
+            stationName = station.name;
           }
         } catch (IOException ioe) {
           log.error("NexradStationDB.init", ioe);
@@ -1953,6 +1965,7 @@ class Nidsheader{
       buf.get(b2, 0, 2);
       pcode = (short)getInt(b2, 2);
       ncfile.addAttribute(null, new Attribute("ProductStation", stationId));
+      ncfile.addAttribute(null, new Attribute("ProductStationName", stationName));
       buf.get(b2, 0, 2);
       opmode = (short)getInt(b2, 2);
       ncfile.addAttribute(null, new Attribute("OperationalMode", new Short(opmode)));
