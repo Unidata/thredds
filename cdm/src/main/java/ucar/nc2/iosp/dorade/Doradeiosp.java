@@ -44,7 +44,7 @@ public class Doradeiosp implements ucar.nc2.IOServiceProvider {
   private ucar.unidata.io.RandomAccessFile myRaf;
   protected Doradeheader headerParser;
 
-  public static DoradeSweep mySweep = null;
+  public DoradeSweep mySweep = null;
   boolean littleEndian;
 
   public void setSpecial( Object special) {}
@@ -71,7 +71,7 @@ public class Doradeiosp implements ucar.nc2.IOServiceProvider {
     myRaf = raf;
 
     try {
-        mySweep = new DoradeSweep(raf.getLocation());
+        mySweep = new DoradeSweep(raf.getRandomAccessFile());
      } catch (DoradeSweep.DoradeSweepException ex) {
             ex.printStackTrace();
 
@@ -95,7 +95,7 @@ public class Doradeiosp implements ucar.nc2.IOServiceProvider {
 
   }
 
-  
+
   public Array readData(ucar.nc2.Variable v2, java.util.List section) throws IOException, InvalidRangeException  {
 
     Array outputData = null;
