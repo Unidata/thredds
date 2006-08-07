@@ -60,7 +60,7 @@ public class Doradeiosp implements ucar.nc2.IOServiceProvider {
         return( localHeader.isValidFile( raf ));
     }
 
-
+  public void setProperties( List iospProperties) { }
   /////////////////////////////////////////////////////////////////////////////
   // reading
 
