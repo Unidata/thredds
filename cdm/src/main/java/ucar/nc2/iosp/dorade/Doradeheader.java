@@ -51,15 +51,16 @@ public class Doradeheader {
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
   {
         try {
-            boolean t = DoradeSweep.IsDoradeSweep(raf.getLocation());
+            //RandomAccessFile f = raf.;
+            boolean t = DoradeSweep.isDoradeSweep(raf.getRandomAccessFile());
             if (!t) return false;
             //DoradeSweep mySweep = new DoradeSweep(raf.getLocation());
         } catch (DoradeSweep.DoradeSweepException ex) {
             ex.printStackTrace();
             return false;
-        } catch (java.io.IOException ex) {
-            ex.printStackTrace();
-            return false;
+       // } catch (java.io.IOException ex) {
+      //      ex.printStackTrace();
+       //     return false;
         }
       return true;
   }
