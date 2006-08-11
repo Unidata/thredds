@@ -273,7 +273,7 @@
             <xsd:attribute name="name" type="xsd:string"/>
             <xsd:attribute name="top" type="xsd:boolean"/>
             <xsd:attribute name="serviceName" type="xsd:string"/>
-            <xsd:attribute name="lastModifiedLimit" type="xsd:float"/> // In minutes
+            <xsd:attribute name="lastModifiedLimit" type="xsd:float"/>
           </xsd:complexType>
         </xsd:element>
       </xsd:sequence>
