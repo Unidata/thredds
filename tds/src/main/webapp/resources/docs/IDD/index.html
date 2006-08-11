@@ -35,19 +35,19 @@
 </blockquote>
   <li>The following pqact files implement the standard directory layout:
     <ul>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/pqact.thredds">pqact.thredds</a> captures raw data files and netCDF decoded files </li>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/pqact.threddsconduit">pqact.threddsconduit</a> captures raw data files from the conduit feed </li>
-      <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/pqact.threddsradar">pqact.threddsradar</a> captures level2 and level3 NEXRAD radar data.</li>
+      <li><a href="pqact.thredds">pqact.thredds</a> captures raw data files and netCDF decoded files </li>
+      <li><a href="pqact.threddsconduit">pqact.threddsconduit</a> captures raw data files from the conduit feed </li>
+      <li><a href="pqact.threddsradar">pqact.threddsradar</a> captures level2 and level3 NEXRAD radar data.</li>
     </ul>
   </li> 
   <p>(Note: The LDM uses tabs as separators between parts of these entries. Make sure you download these files in a way that preserves the tabs, e.g. use right-click and &quot;Save Link As&quot; or equivalent) </p>
-  <li>The LDM configuration file <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/ldmd.conf">ldmd.conf</a> references these pqact files. </li>
+  <li>The LDM configuration file <a href="ldmd.conf">ldmd.conf</a> references these pqact files. </li>
 </ol>
 
 <p>Both the pqact file and the standard IDD catalogs are being improved with better metadata and are changing as the IDD data changes. Its a good idea to periodically check for updated pqact and standard IDD catalogs. For this reason, minimize and track any changes you make to your local copy.<br>
 </p>
 <h3>Scouring files</h3>
-<p>Typically you want to scour old files from your file directory each day. You can run this <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/manageFilesDirs.pl">manageFilesDirs.pl</a> perl script to removes files from the standard directory layout. It should be run once a day from cron. It uses <a href="http://www.unidata.ucar.edu/content/projects/THREDDS/tech/server/manageFilesDirs.conf">manageFilesDirs.conf</a> to set
+<p>Typically you want to scour old files from your file directory each day. You can run this <a href="manageFilesDirs.pl">manageFilesDirs.pl</a> perl script to removes files from the standard directory layout. It should be run once a day from cron. It uses <a href="manageFilesDirs.conf">manageFilesDirs.conf</a> to set
 the number of days of data to keep. An example command line to run this script is: </p>
 <blockquote>
   <pre><strong>&gt; manageFilesDirs.pl -f manageFilesDirs.conf > ~ldm/logs/manageFilesDirs.log
@@ -55,7 +55,7 @@ the number of days of data to keep. An example command line to run this script i
 </blockquote>
 <h3>Pre-indexing GRIB files </h3>
 <p>If you are serving GRIB files through the nj22/OpenDAP server, you may want to index the grib files automatically for performance. This can take up to 30 seconds for large grib files. Experience shows that preindexing reduces the user wait time to a second or two. </p>
-<p>Run the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/server/GribIndexer.pl">GribIndexer.pl</a> perl script to indexe GRIB files from the standard directory layout. You can run as often as you want' motherlode is currently  running it every ten minutes from cron. It uses the <a href="http://www.unidata.ucar.edu/content/projects/THREDDS/tech/server/GribIndexer.conf">GribIndexer.conf</a> file to set
+<p>Run the <a href="GribIndexer.pl">GribIndexer.pl</a> perl script to indexe GRIB files from the standard directory layout. You can run as often as you want' motherlode is currently  running it every ten minutes from cron. It uses the <a href="GribIndexer.conf">GribIndexer.conf</a> file to set
   the directories to index.
 An example command line to run this script is: 
 
