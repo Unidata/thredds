@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>Dataset Query Capabilities - Issues</title><meta name="author" content="Ethan Davis"></head><body>
+<h1>Dataset Query Capabilities - Issues</h1>
+<hr width="100%" size="2">
+<h3>Issues:</h3>
+
+
+<ul>
+  <li><a href="#What_is_Returned">What is Returned</a></li>
+  <li><a href="#Selectors_That_Require_Multiple_Values">Selectors that Require Multiple Values</a></li>
+</ul>
+
+
+<h3>Related Resources:</h3>
+<ul>
+  <li>Return to the <a href="DqcSpec.html">DQC Spec</a></li>
+</ul>
+<hr width="100%" size="2">
+<h3><a name="What_is_Returned"></a>What is Returned</h3>
+
+
+<p>Currently, a resulting queryURL can return a THREDDS catalog. DQC
+documents could be used to build queryURLs that reference non-THREDDS
+services, e.g., an OPeNDAP server. The results of dereferencing a
+queryURL in these cases would be dependent on the service and,
+currently, can not
+be represented in the DQC document other than with an "other" value in
+the returns attribute of the query element. How a queries returns type
+is indicated may need to be expanded if the DQC is used in other
+contexts.<br>
+</p>
+
+
+<h4>Further Discussion of Return Type</h4>
+
+
+<p>We have decided not to investigate other return types until we have
+more need for them.<br>
+</p>
+
+
+<p>Some thoughts:<br>
+</p>
+
+
+<ul>
+<li>What is the DQC:</li><ul><li>a redirection layer</li><li>a more complex access method (a subsetting access method)<br>
+    </li></ul><li>What is the result of the DQC:</li><ul><li>a queryURL that returns catalog (no crossing of the protocol
+boundary)</li><li>a queryURL that returns a dataset, e.g., DODS data (cross the
+protocol boundary)</li><ul><li>Can't allow client to get queryURL and then try to constrain
+further. E.g., ?xy[10:13]?xy[0] causes error instead of returning
+xy[10] of the original var. However, since a DQC result is generally a
+final result that is then dereferenced this shouldn't happen. Is this
+related to the "Resolver" idea? Could we use the DQC to provide more
+information on "Resolver" issues? E.g., if time range is selected,
+result is a "time series".<br>
+      </li></ul><li>a catalog, i.e., tempate as catalog. For example
+template="&lt;catalog&gt;&lt;dataset urlpath={path}&gt;&lt;service
+name="xyz"/&gt;&lt;metadata&gt;abc&lt;/metadata&gt;&lt;/dataset&gt;"</li><ul><li>This keeps things more cleanly in the THREDDS realm (i.e.,
+queryURL is the access method)<br>
+      </li></ul></ul><li>the queryURL is a urlPath of a dataset (e.g., DODS URL w/ CE)</li><li>DQC just another way to build an access URL (like serviceBase +
+urlPath) but that allows subsetting<br>
+  </li><ul><li>How differentiate between access to full dataset and subset of
+dataset?</li></ul>
+</ul>
+
+
+<h4>DODS File Server (DFS) Thoughts</h4>
+
+
+<p>Several possibilities:<br>
+</p>
+
+
+<ul>
+<li>Build DQC documents that build a DFS query. So return is a DODS
+dataset containing catalog information.</li><ul><li>Pros</li><ul><li>Could be done<br>
+      </li></ul><li>Cons</li><ul><li>Requires crossing of THREDDS/DODS protocol boundary before
+out of catalog realm<br>
+      </li></ul><ul><li>Might require some added complexity to the DQC spec?<br>
+      </li><li>No metadata for each dataset except for selection criterion
+columns<br>
+      </li></ul></ul><li>Build DQC document that describes a DFS and service that replys
+with THREDDS catalog. <br>
+  </li><ul><li>On top of existing DFS</li><li>Replace existing DFS<br>
+    </li></ul>
+</ul>
+<br>
+<h3><a name="Selectors_That_Require_Multiple_Values"></a><span style="color: rgb(0, 0, 0);">Selectors That Require Multiple Values</span></h3>
+
+
+<p><span style="color: rgb(0, 0, 0);">"How to Indicate a Selector
+Requires More than One Value" OR "Replacement Strings/Macros vs
+Selection Items"</span></p>
+
+
+
+<p>Reasons we might want <span style="font-weight: bold; font-style: italic;">selectionItem</span>
+type functionality:<br>
+</p>
+
+
+<ul>
+<li>So DQC can specify that different selectionItems can satisfy a
+selection (i.e., allow and/or of items). For instance, in the <span style="font-style: italic;"><span style="font-weight: bold;">selectStation</span></span>
+element could allow selection of one <span style="font-weight: bold; font-style: italic;">station </span>or one <span style="font-weight: bold; font-style: italic;">boundingBox</span>. Or
+selectFromRange can allow selection of&nbsp; a range (i.e., one
+selectItem for min value and one for max value) or selection of a point
+(i.e., selectItem for point)</li>
+</ul>
+
+
+<p>Example for range where either a point or a range may be selected:<br>
+</p>
+
+
+<pre>&lt;selectFromRange title="Select Date Range" required="false"<br>                 min="17193600.0" max="157680000.0" units="seconds since 1999-01-01"&gt;<br>  &lt;selectionItemOR id="dateRange" template="{dateRange}"&gt;<br>    &lt;selectionItemAND&gt;<br>      &lt;selectionItem id="min" template="minDate={min}" /&gt;<br>      &lt;selectionItem id="max" template="maxDate={max}" /&gt;<br>    &lt;/selectionItemAND&gt;<br>    &lt;selectionItem id="point" template="pointDate={point}" /&gt;<br>  &lt;/selectionItemOR&gt;<br>&lt;/selectFromRange&gt;<br></pre>
+
+
+
+<h4>Macros (Replacement Strings)</h4>
+
+
+<p>Currently, selectors that require multiple values are indicated by
+the template containing multiple replacement strings (or macros), e.g.,
+template="min={min}max={max}". The set of allowed replacement strings
+is defined (in the spec only) for each selector that requires multiple
+values. Which combinations of the replacement strings are also defined
+only in the spec. For instance, the <span style="font-weight: bold; font-style: italic;">selectFromRange</span>
+element defines {min}, {max}, {units}, {point}, and {proximity} where
+there are two possibilities for use. Either {min} and {max} may be used
+or {point} and {proximity} may be used (though {proximity} is
+optional). In both cases {units} may be used.<br>
+</p>
+
+
+<p>Pros<br>
+</p>
+
+
+<ul>
+<li>simple</li><li>template can be fairly complicated</li>
+</ul>
+
+
+<p>Cons<br>
+</p>
+
+
+<ul>
+<li>Does not take advantage of XML encoding for structured
+information. I.e., requires the apps (not XML parser) to parse
+attribute structure. (If
+attribute needs structure, maybe it should be an element.)</li><li>can't be used when construction type is "paramValue" (or rather
+it can't be guarenteed that the template fits in the "paramValue"
+scheme)???</li><li>when elements aren't required and or multiple selections are
+allowed, can be hard to get delimiters between values correct. E.g., if
+all selectors are optional and no selection on the final selector is
+made, might end up with "...?min=5&amp;max=6&amp;stn=AKC&amp;"<br>
+  </li>
+</ul>
+
+
+<h4>Selection Items</h4>
+
+
+Alternate:<br>
+
+
+<ul>
+<li><span style="font-weight: bold; font-style: italic;">queryCapability</span>
+element contains 0..* <span style="font-weight: bold; font-style: italic;">selection</span>
+elements</li><li><span style="font-style: italic;"><span style="font-weight: bold;">selection</span></span>
+element contains 0..* <span style="font-style: italic;"><span style="font-weight: bold;">selectionItem</span></span> elements</li><li><span style="font-style: italic;"><span style="font-weight: bold;">selectionItem</span></span>
+elements have <span style="font-style: italic;"><span style="font-weight: bold;">id</span></span> attributes that are used
+as id in "paramValue" scheme or in template</li>
+</ul>
+
+
+<p>For <span style="font-weight: bold; font-style: italic;">selectors</span>
+that require a single value to make a selection, this can work the same
+as above except that the template macro name or parameter name are
+defined by <span style="font-weight: bold; font-style: italic;">selection</span>
+id value. However, if a <span style="font-weight: bold; font-style: italic;">selectionItem</span>
+element is present, then all is the same as above except that the <span style="font-weight: bold; font-style: italic;">selectionItem</span> id
+value defines the template macro name or parameter name.<br>
+</p>
+
+
+<p>For <span style="font-weight: bold; font-style: italic;">selectors</span>
+that require multiple values to make a selection, <span style="font-weight: bold; font-style: italic;">selectionItem</span>
+elements are required for each of the required values. The id of each <span style="font-weight: bold; font-style: italic;">selectionItem</span>
+element is used to define the template macro names or parameter names.<br>
+</p>
+
+
+<p>An example DQC that shows the above methods and this method is
+available at <a href="file:///C:/Ethan/dev/thredds/catalog/doc/DqcExample-twoDFS.xml">DqcExample-twoDFS.xml</a><br>
+</p>
+
+
+<h3>selectionItem element<br>
+</h3>
+
+
+<pre>&lt;xsd:element name="selectionItem" type="" abstract="true" /&gt;<br>&lt;xsd:complexType name="selectionItemType"&gt;<br>  &lt;xsd:attribute name="id" type="xsd:token" use="required"/&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+
+
+<p>The <span style="font-style: italic;"><span style="font-weight: bold;">selectionItem</span></span> element ...
+Possible element to indicate that multiple values are required for the
+containing selector.<br>
+</p>
+
+
+<h3>selectFromRange2 element<br>
+</h3>
+
+
+<pre>&lt;xsd:element name="selectFromRange2" type="qc:selectFromRange2Type" substitutionGroup="qc:selector" /&gt;<br>&lt;xsd:complexType name="selectFromRange2Type"&gt;<br>  &lt;xsd:complexContent&gt;<br>    &lt;xsd:extension base="qc:selectorType"&gt;<br>      &lt;xsd:sequence&gt;<br>        &lt;xsd:choice&gt;<br>          &lt;xsd:sequence&gt;<br>            &lt;xsd:element ref="qc:selectedMin" /&gt;<br>            &lt;xsd:element ref="qc:selectedMax" /&gt;<br>          &lt;/xsd:sequence&gt;<br>          &lt;xsd:sequence&gt;<br>            &lt;xsd:element ref="qc:selectedPoint" /&gt;<br>            &lt;xsd:element ref="qc:selectedProximity" minOccurs="0" /&gt;<br>          &lt;/xsd:sequence&gt;<br>        &lt;/xsd:choice&gt;<br>        &lt;xsd:element ref="qc:selectedUnits" minOccurs="0" maxOccurs="1" /&gt;<br>      &lt;/xsd:sequence&gt;<br>      &lt;xsd:attribute name="min" type="xsd:float" /&gt;<br>      &lt;xsd:attribute name="max" type="xsd:float" /&gt;<br>      &lt;xsd:attribute name="units" type="xsd:float" /&gt;<br>    &lt;/xsd:extension&gt;<br>  &lt;/xsd:complexContent&gt;<br>&lt;/xsd:complexType&gt;<br><br>&lt;xsd:element name="selectedMin" type="qc:selectedFloatValueType" substitutionGroup="qc:selectionItem" /&gt;<br>&lt;xsd:element name="selectedMax" type="qc:selectedFloatValueType" substitutionGroup="qc:selectionItem" /&gt;<br>&lt;xsd:element name="selectedPoint" type="qc:selectedFloatValueType" substitutionGroup="qc:selectionItem" /&gt;<br>&lt;xsd:element name="selectedProximity" type="qc:selectedProximityValueType" substitutionGroup="qc:selectionItem" /&gt;<br>&lt;xsd:element name="selectedUnits" type="qc:selectedStringValueType" substitutionGroup="qc:selectionItem" /&gt;<br><br>&lt;xsd:complexType name="selectedFloatValueType"&gt;<br>  &lt;xsd:complexContent&gt;<br>    &lt;xsd:extension base="qc:selectionItemType"&gt;<br>      &lt;xsd:attribute name="value" type="xsd:float" /&gt;<br>    &lt;/xsd:extension&gt;<br>  &lt;/xsd:complexContent&gt;<br>&lt;/xsd:complexType&gt;<br><br>&lt;xsd:complexType name="selectedStringValueType"&gt;<br>  &lt;xsd:complexContent&gt;<br>    &lt;xsd:extension base="qc:selectionItemType"&gt;<br>      &lt;xsd:attribute name="value" type="xsd:string" /&gt;<br>    &lt;/xsd:extension&gt;<br>  &lt;/xsd:complexContent&gt;<br>&lt;/xsd:complexType&gt;<br><br>&lt;xsd:complexType name="selectedProximityValueType"&gt;<br>  &lt;xsd:complexContent&gt;<br>    &lt;xsd:extension base="qc:selectionItemType"&gt;<br>      &lt;xsd:attribute name="value" type="qc:proximityType" default="closest" /&gt;<br>    &lt;/xsd:extension&gt;<br>  &lt;/xsd:complexContent&gt;<br>&lt;/xsd:complexType&gt;<br><br>&lt;xsd:simpleType name="proximityType"&gt;<br>  &lt;xsd:restriction base="xsd:token"&gt;<br>    &lt;xsd:enumeration value="closest" /&gt;<br>    &lt;xsd:enumeration value="closestAbove" /&gt;<br>    &lt;xsd:enumeration value="closestBelow" /&gt;<br>  &lt;/xsd:restriction&gt;<br>&lt;/xsd:simpleType&gt;<br></pre>
+
+
+<p>Example:<br>
+</p>
+
+
+<pre>&lt;selectFromRange name="DateRange" description="The date range ..." required="false"<br>                 min="-5.0" max="0.0" units="days since present"&gt;<br>  &lt;selectedMin id="minDate" /&gt;<br>  &lt;selectedMax id="maxDate" /&gt;<br>&lt;/selectDateRange&gt;</pre>
+
+
+<p><span style="color: rgb(255, 0, 0);">LOOK</span> Note the
+propposed
+way of specing the reletive time.<br>
+</p>
+<hr width="100%" size="2">
+<p><br>
+</p>
+</body></html>

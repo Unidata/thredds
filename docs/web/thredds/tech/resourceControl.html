@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+<style type="text/css">
+<!--
+.style1 {color: #CC0000}
+.style2 {color: #990000}
+-->
+</style>
+</head>
+
+<body>
+<h1>Proposal for adding access control to TDS at dataset granule</h1>
+<p><em>June 26, 2006 </em></p>
+<p>Note that this is TDS specific, not implemented by general THREDDS catalogs. </p>
+<h3>1. Add resourceControl attribute to the dataset element of the Catalog XML.<p:colorscheme
+ colors="#FFFFFF,#000000,#808080,#000000,#BBE0E3,#333399,#009999,#99CC00"/> </h3>
+<div v:shape="_x0000_s1026" class=O>
+  <div style='mso-line-spacing:&quot;100 20 0&quot;;mso-margin-left-alt:216;mso-char-wrap:
+1;mso-kinsoku-overflow:1'>
+    <pre>  &lt;dataset name=&quot;GOES West 4km Visible&quot; urlPath=&quot;satellite/WEST-CONUS_4km&quot;<span style='mso-spacerun:yes'> </span><b>resourceControl=&quot;resourceName&quot;</b>&gt;</pre>
+  </div>
+</div>
+<p>The value of the <strong>resourceControl</strong> attribute is a logical name for the kind of resource you wish to control. It can be any String. </p>
+<p>In what follows, <em><strong>resource</strong></em> is the value of the <strong>resourceControl</strong> attribute.</p>
+<p>Note: perhaps should be inheritable element in the metadata ?</p>
+<h3>2. Any attempt to access a dataset with a <strong>resourceControl</strong> attribute will be intercepted by TDS and authorization will be checked.</h3>
+<p>This will also apply to all children of a datasetScan. </p>
+<p class="style2">Do all  accesses to a dataset children  need to be checked (?). This could be a problem. </p>
+<h3>3. Default authorization will use Tomcat security.</h3>
+<p> Call <strong>HttpServletRequest.isUserInRole(<em>resource</em>). </strong></p>
+<p>This will succeed only if </p>
+<ol>
+  <li>the user is already authenticated (logged in) with a session established.</li>
+  <li>the user has been given the role named <em><strong>resource</strong></em> (eg through &quot;users.xml&quot;)</li>
+</ol>
+<p class="style1">Not sure what happens if session not previously established, but the client sends along an <strong>Authorization</strong> header with the request. Does Tomcat identify the user? I think this is &quot;preemptive authorization&quot;.</p>
+<p>Note this is not secure if not using HTTPS, since the password is in cleartext (Basic) or can be replayed (Digest). But we dont want to encode the actual data!</p>
+<h3>4. If authorization fails, a 401 response is made. </h3>
+<p>Not sure if I have info to send an <strong>WWW-Authenticate</strong> header:</p>
+<p>response.setHeader(&quot;WWW-Authenticate&quot;,&quot;Basic realm=\&quot;<strong><em>resource</em></strong>\&quot;&quot;);</p>
+<p>how do I know its Basic? If Digest, which algorithm? nonce? </p>
+<p class="style2">Presumably client resends request with Authorization, which triggers an authentication. Or client could be forced to logon.</p>
+<h3>5. TDS administrator can add their own authorization checker, which will override  the default. </h3>
+<p>This is done by  specifying the class name in the TDS configuration (TBD).</p>
+<p>Note that Tomcat-managed security is left intact (ie using &lt;auth-contract&gt; elements in web.xml).</p>
+<p>&nbsp;</p>
+<h2>Implications for clients</h2>
+<h3>Browsers</h3>
+<p>Browsers know how to handle 401 challenges, HTTPS, and they pass session cookies. So should be able to control bulk transfers. </p>
+<h3>OPeNDAP</h3>
+<p><strong> The libdap library:</strong></p>
+<ol>
+  <li> looks at the URL for a username and password in the form <strong>http://user:passwd@host. </strong>If it finds it, it adds the <strong>Authentication</strong> header to the request.</li>
+  <li>keeps sending the Auth header for each request (for that dataset i assume).</li>
+  <li>does not pass session cookies.</li>
+  <li>does not respond to 401 requests, ie does not prompt user somehow.</li>
+</ol>
+<p><strong>The Java/OpenDAP library:</strong></p>
+<ol>
+  <li> does not seem to handle <strong>WWW-Authenticate</strong> or parse<strong> http://user:passwd@host. </strong></li>
+  <li>However, an application can set an Authenticator call-back in the underlying Java network library, which allows 401 challenges to be met. but the results of this are not available to the opendap library.</li>
+  <li>nj22 version of the opendap library has been modified to accept and return session cookies.  </li>
+</ol>
+<h3>WCS </h3>
+<p>Dunno<br>
+</p>
+</body>
+</html>

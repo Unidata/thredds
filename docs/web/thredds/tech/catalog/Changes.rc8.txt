@@ -1,0 +1,100 @@
+changes for rc8
+---------
+ * <abstract>, <rights> goes back to <documentation type="abstract"> etc. make the type an enumeration, 
+   with these identified (abstract changed to summary)
+    funding
+    rights
+    history
+    processing_level
+    summary
+
+  * change serviceType HTTP to HTTPServer
+  * georeferncing ranges use "start" and "size" to disambiguate longitude
+  * added "creator", so now "creator" and "publisher" have dataType "source"; creator gets mapped to 
+    DIF "Originating Center", and publisher gets mapped to "Data Center".
+  * add optional attribute on dates with this enumerations (from DC):
+	created, valid, available, issued, modified 
+  * add "desc" attribute to service
+  * metadataType not deprecated
+
+changes up to rc7
+---------
+add ESML, Gempak, video/realtime to DataFormatType enum
+add Swath to DataType enum
+
+publisher url not required
+add property element to catalog
+add date element to ThreddsMetadataGroup
+add type element to dateFormatted element.
+refactor geospatialCoverage, add resolution
+add resolution to timeCoverage.
+
+seperate timeCoverage element from type
+seperate publisher element from type
+
+add creator element, type publisherType to ThreddsMetaddataGroup
+remove abstract, rights, use <documentation type="">
+add documentationTypes
+add HTTPServer, OpenDAP, OpenDAP-G, LAS as Service Types
+add dateEnumTypes
+range -> spatialRange
+spatialRange origin/size
+zpositive "up" or "down"
+
+changes from 0.6 DTD
+------- ------- -------
+
+general 
+  use schemas and namespaces
+  change inheritence mechanism - now must use metadata inherited=true
+  all enumerations also allow "non standard" values
+
+catalog
+  add expires attribute
+  name is optional
+  allow service elements
+  allow multiple datasets
+
+dataset
+  allow any of the new metadata elements
+  add harvest attribute
+  add dataFormat attribute
+  add dataSize attribute
+  add collectionType attribute
+  add authority as an element, so it can be inherited
+
+access
+  remove serviceType (no anonymous service)
+  add dataFormat attribute
+  add dataSize attribute
+
+documentation
+  allow any in the xhtml namespace
+
+metadata
+  add inherited attribute, default=false
+  metdataType deprecated, allow any string
+  allow any
+
+dataTypeEnum
+  add Trajectory
+
+new elements
+ abstract
+ rights
+ keyword
+ project
+ contributor
+ geospatialCoverage
+ timeCoverage
+ publisher
+ dateType
+ dataTypeFormatted
+ duration
+
+ collectionTypeEnum
+ dataFormatEnum
+
+remove
+ metadataTypEnum
+
