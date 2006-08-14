@@ -42,7 +42,7 @@ public class CrawlableDatasetFile implements CrawlableDataset
   {
     if ( configObj != null )
     {
-      log.debug( "CrawlableDatasetFile(): config object not null, it will be ignored <" + configObj.toString() + ">.");
+      log.warn( "CrawlableDatasetFile(): config object not null, it will be ignored <" + configObj.toString() + ">.");
       this.configObj = configObj;
     }
     else
@@ -137,30 +137,7 @@ public class CrawlableDatasetFile implements CrawlableDataset
     List list = new ArrayList();
     for ( int i = 0; i < allFiles.length; i++ )
     {
-      try
-      {
-        list.add( CrawlableDatasetFactory.createCrawlableDataset( allFiles[i].getPath(), this.getClass().getName(), null ) );
-      }
-      catch ( ClassNotFoundException e )
-      {
-        log.warn( "listDatasets(): Can't make CrawlableDataset for child file <" + allFiles[i].getPath() + ">: " + e.getMessage() );
-      }
-      catch ( NoSuchMethodException e )
-      {
-        log.warn( "listDatasets(): Can't make CrawlableDataset for child file <" + allFiles[i].getPath() + ">: " + e.getMessage() );
-      }
-      catch ( IllegalAccessException e )
-      {
-        log.warn( "listDatasets(): Can't make CrawlableDataset for child file <" + allFiles[i].getPath() + ">: " + e.getMessage() );
-      }
-      catch ( InvocationTargetException e )
-      {
-        log.warn( "listDatasets(): Can't make CrawlableDataset for child file <" + allFiles[i].getPath() + ">: " + e.getMessage() );
-      }
-      catch ( InstantiationException e )
-      {
-        log.warn( "listDatasets(): Can't make CrawlableDataset for child file <" + allFiles[i].getPath() + ">: " + e.getMessage() );
-      }
+      list.add( new CrawlableDatasetFile( allFiles[i].getPath(), null ) );
     }
 
     return ( list );

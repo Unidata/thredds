@@ -1,13 +1,10 @@
 package thredds.cataloggen.inserter;
 
-import thredds.cataloggen.ProxyDatasetHandler;
-import thredds.cataloggen.InvCrawlablePair;
 import thredds.catalog.InvService;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.InvDataset;
+import thredds.cataloggen.InvCrawlablePair;
+import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.CrawlableDatasetFile;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,14 +22,15 @@ import java.util.*;
  */
 public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( LatestCompleteProxyDsHandler.class );
+//  private static org.slf4j.Logger log =
+//          org.slf4j.LoggerFactory.getLogger( LatestCompleteProxyDsHandler.class );
 
-  private String latestName;
-  private boolean locateAtTopOrBottom;
-  private InvService service;
+  private final String latestName;
+  private final boolean locateAtTopOrBottom;
+  private final InvService service;
+  private final boolean isResolver;
 
-  private long lastModifiedLimit;
+  private final long lastModifiedLimit;
 
   /**
    * Constructor.
@@ -49,11 +47,13 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
   public LatestCompleteProxyDsHandler( String latestName,
                                        boolean locateAtTopOrBottom,
                                        InvService service,
+                                       boolean isResolver,
                                        long lastModifiedLimit )
   {
     this.latestName = latestName;
     this.locateAtTopOrBottom = locateAtTopOrBottom;
     this.service = service;
+    this.isResolver = isResolver;
 
     this.lastModifiedLimit = lastModifiedLimit;
   }
@@ -96,7 +96,7 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
 
   public boolean isProxyDatasetResolver()
   {
-    return true;
+    return this.isResolver;
   }
 
   public InvCrawlablePair getActualDataset( List atomicDsInfo )
@@ -119,7 +119,8 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
     }
 
     // Get the maximum item according to lexigraphic comparison of InvDataset names.
-    InvCrawlablePair theDs = (InvCrawlablePair) Collections.max( tmpList, new Comparator()
+
+    return (InvCrawlablePair) Collections.max( tmpList, new Comparator()
     {
       public int compare( Object obj1, Object obj2 )
       {
@@ -128,15 +129,12 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
         return ( dsInfo1.getInvDataset().getName().compareTo( dsInfo2.getInvDataset().getName() ) );
       }
     } );
-
-    return theDs;
   }
 
   public String getActualDatasetName( InvCrawlablePair actualDataset, String baseName )
   {
     if ( baseName == null ) baseName = "";
-    String actualName = baseName.equals( "" ) ? "Latest" : "Latest " + baseName;
-    return actualName ;
+    return baseName.equals( "" ) ? "Latest" : "Latest " + baseName ;
   }
 
 //  private static class LatestCompleteCrDS extends CrawlableDatasetFile

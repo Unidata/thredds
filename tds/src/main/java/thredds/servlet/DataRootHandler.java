@@ -678,16 +678,22 @@ public class DataRootHandler {
     return retFile;
   }
 
+  public boolean isProxyDataset( String path )
+  {
+    ProxyDatasetHandler pdh = this.getMatchingProxyDataset( path );
+    return pdh != null;
+  }
+
   public boolean isProxyDatasetResolver( String path )
   {
-    ProxyDatasetHandler pdh = this.matchProxyDataset( path );
+    ProxyDatasetHandler pdh = this.getMatchingProxyDataset( path );
     if ( pdh == null )
       return false;
 
     return pdh.isProxyDatasetResolver();
   }
 
-  private ProxyDatasetHandler matchProxyDataset( String path )
+  private ProxyDatasetHandler getMatchingProxyDataset( String path )
   {
     DataRoot reqDataRoot = matchPath2( path );
     if ( reqDataRoot == null || reqDataRoot.scan == null )
@@ -701,6 +707,31 @@ public class DataRootHandler {
 
     return (ProxyDatasetHandler) pdhMap.get( proxyName );
   }
+
+  public InvCatalog getProxyDatasetResolverCatalog( String path, URI baseURI )
+  {
+    if ( ! isProxyDatasetResolver( path ) )
+      throw new IllegalArgumentException( "Not a proxy dataset resolver path <" + path + ">." );
+
+    DataRoot reqDataRoot = matchPath2( path );
+
+    // Call the matching InvDatasetScan to make the proxy dataset resolver catalog.
+    //noinspection UnnecessaryLocalVariable
+    InvCatalogImpl cat = reqDataRoot.scan.makeProxyDsResolverCatalog( path, baseURI );
+
+    return cat;
+  }
+
+//  public CrawlableDataset getProxyDatasetActualDatset( String path)
+//  {
+//    ProxyDatasetHandler pdh = this.getMatchingProxyDataset( path );
+//    if ( pdh == null )
+//      return null;
+//
+//    pdh.getActualDataset( );
+//
+//  }
+
   /** @deprecated */
   public void handleRequestForProxyDatasetResolverCatalog( HttpServletRequest req, HttpServletResponse res )
           throws IOException
@@ -751,18 +782,6 @@ public class DataRootHandler {
     res.getOutputStream().write( result.getBytes() );
 
     return;
-  }
-
-  public InvCatalog getProxyDatasetResolverCatalog( String path, URI baseURI )
-  {
-    if ( ! isProxyDatasetResolver( path )) throw new IllegalArgumentException( "Not a proxy dataset resolver path <" + path + ">.");
-    DataRoot reqDataRoot = matchPath2( path );
-
-    // Call the matching InvDatasetScan to make the proxy dataset resolver catalog.
-    //noinspection UnnecessaryLocalVariable
-    InvCatalogImpl cat = reqDataRoot.scan.makeProxyDsResolverCatalog( path, baseURI );
-
-    return cat;
   }
 
   /**

@@ -59,6 +59,18 @@ public interface ProxyDatasetHandler
 
   public boolean isProxyDatasetResolver();
 
+  /**
+   * Given a list of InvCrawlablePair objects, determine which of those objects
+   * is being proxied by this ProxyDatasetHandler.
+   * Return the InvCrawlablePair from the given list that is the match for this
+   * proxy dataset handler. The
+   * given list contains of possible datasets
+   *
+   * How do we obtain a list of possibleDatasets????
+   *
+   * @param possibleDatasets
+   * @return the InvCrawlablePair that corresponds to this proxy dataset
+   */
   public InvCrawlablePair getActualDataset( List possibleDatasets );
   
   public String getActualDatasetName( InvCrawlablePair actualDataset, String baseName );

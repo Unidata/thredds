@@ -646,6 +646,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     {
       // Check for simpleLatest element.
       Element simpleLatestElem = addLatestElem.getChild( "simpleLatest", defNS );
+      // Get a SimpleLatestDsHandler, use default values if element is null.
       ProxyDatasetHandler pdh = readDatasetScanAddLatest( simpleLatestElem, catalog );
         if ( pdh != null )
           allProxyDsHandlers.put( pdh.getProxyDatasetName(), pdh );
@@ -715,8 +716,15 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           else
             lastModLimit = Long.parseLong( lastModLimitVal);
 
+          // Get isResolver.
+          String isResolverString = curChildElem.getAttributeValue( "isResolver");
+          boolean isResolver = true;
+          if ( isResolverString != null )
+            if ( isResolverString.equalsIgnoreCase( "false"))
+              isResolver = false;
+
           // Build the SimpleLatestProxyDsHandler and add to map.
-          curPdh = new LatestCompleteProxyDsHandler( latestName, latestOnTop, service, lastModLimit );
+          curPdh = new LatestCompleteProxyDsHandler( latestName, latestOnTop, service, isResolver, lastModLimit );
         }
         else
         {
@@ -741,12 +749,21 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return allProxyDsHandlers;
 }
 
+  /**
+   * Return a SimpleLatestProxyDsHandler, use default values if element is null.
+   *
+   * @param simpleLatestElem the simpleLatest element
+   * @param catalog the catalog containing the simpleLatest element.
+   * @return a SimpleLatestProxyDsHandler
+   */
   private ProxyDatasetHandler readDatasetScanAddLatest( Element simpleLatestElem, InvCatalogImpl catalog )
   {
+    // Default values is simpleLatestElem is null.
     ProxyDatasetHandler latestAdder = null;
     String latestName = "latest.xml";
     boolean latestOnTop = true;
     String latestServiceName = "latest";
+    boolean isResolver = true;
 
     // If simpleLatestElem exists, read values.
     if ( simpleLatestElem != null )
@@ -774,6 +791,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       String tmpLatestServiceName = simpleLatestElem.getAttributeValue( "serviceName" );
       if ( tmpLatestServiceName != null )
         latestServiceName = tmpLatestServiceName;
+
+      // Get isResolver.
+      String isResolverString = simpleLatestElem.getAttributeValue( "isResolver" );
+      if ( isResolverString != null )
+        if ( isResolverString.equalsIgnoreCase( "false" ) )
+          isResolver = false;
     }
 
     // Build the SimpleLatestProxyDsHandler
@@ -781,7 +804,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if ( service == null )
       logger.warn( "readDatasetScanAddLatest(): named service <" + latestServiceName + "> not found." );
     else
-      latestAdder = new SimpleLatestProxyDsHandler( latestName, latestOnTop, service );
+      latestAdder = new SimpleLatestProxyDsHandler( latestName, latestOnTop, service, isResolver );
 
     return latestAdder;
   }

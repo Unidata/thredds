@@ -26,7 +26,7 @@
       <xsd:attribute name="base" type="xsd:anyURI" />
       <xsd:attribute name="name" type="xsd:string"/>
       <xsd:attribute name="expires" type="dateType"/>
-      <xsd:attribute name="version" type="xsd:token" default="1.0.1"/>
+      <xsd:attribute name="version" type="xsd:token" default="1.0.2"/>
     </xsd:complexType>
 
     <!-- Enforce dataset ID references:
@@ -246,13 +246,7 @@
   <xsd:element name="addLatest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="simpleLatest" minOccurs="0">
-          <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="top" type="xsd:boolean"/>
-            <xsd:attribute name="serviceName" type="xsd:string"/>
-          </xsd:complexType>
-        </xsd:element>
+        <xsd:element ref="simpleLatest" minOccurs="0"/>
         <!--xsd:element name="datasetInserterImpl" minOccurs="0" type="UserImplType"/-->
       </xsd:sequence>
     </xsd:complexType>
@@ -262,22 +256,27 @@
   <xsd:element name="addProxies">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="simpleLatest" minOccurs="0">
-          <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="top" type="xsd:boolean"/>
-            <xsd:attribute name="serviceName" type="xsd:string"/>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="latestComplete" minOccurs="0">
-          <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string"/>
-            <xsd:attribute name="top" type="xsd:boolean"/>
-            <xsd:attribute name="serviceName" type="xsd:string"/>
-            <xsd:attribute name="lastModifiedLimit" type="xsd:float"/>  
-          </xsd:complexType>
-        </xsd:element>
+        <xsd:element ref="simpleLatest" minOccurs="0"/>
+        <xsd:element ref="latestComplete" minOccurs="0"/>
       </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="simpleLatest">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="top" type="xsd:boolean"/>
+      <xsd:attribute name="isResolver" type="xsd:boolean"/>
+      <xsd:attribute name="serviceName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="latestComplete">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="top" type="xsd:boolean"/>
+      <xsd:attribute name="serviceName" type="xsd:string"/>
+      <xsd:attribute name="isResolver" type="xsd:boolean"/>
+      <xsd:attribute name="lastModifiedLimit" type="xsd:float"/>
     </xsd:complexType>
   </xsd:element>
 

@@ -19,12 +19,12 @@ import org.jdom.Document;
  * @author edavis
  * @since Dec 7, 2005 2:04:28 PM
  */
-public class CatalogBuilderHelper
+class CatalogBuilderHelper
 {
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( CatalogBuilderHelper.class );
 
-  public static CrawlableDataset verifyDescendentDataset( CrawlableDataset ancestorCrDs,
+  static CrawlableDataset verifyDescendentDataset( CrawlableDataset ancestorCrDs,
                                                           String path,
                                                           CrawlableDatasetFilter filter )
           throws IOException
@@ -58,7 +58,7 @@ public class CatalogBuilderHelper
     return curCrDs;
   }
 
-  public static Document convertCatalogToDocument( InvCatalog catalog )
+  static Document convertCatalogToDocument( InvCatalog catalog )
   {
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
     InvCatalogConvertIF converter = fac.getCatalogConverter( XMLEntityResolver.CATALOG_NAMESPACE_10 );
@@ -67,7 +67,7 @@ public class CatalogBuilderHelper
     return fac10.writeCatalog( (InvCatalogImpl) catalog );
   }
 
-  public static String convertCatalogToString( InvCatalog catalog )
+  static String convertCatalogToString( InvCatalog catalog )
   {
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
     try

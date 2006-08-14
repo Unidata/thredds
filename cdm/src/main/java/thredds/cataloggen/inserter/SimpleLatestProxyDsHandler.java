@@ -24,6 +24,7 @@ public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
   private String latestName;
   private boolean locateAtTopOrBottom;
   private InvService service;
+  private final boolean isResolver;
 
   /**
    * Constructor.
@@ -36,11 +37,13 @@ public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
    * @param locateAtTopOrBottom indicates where to locate the latest dataset (true - locate on top; false - locate on bottom).
    * @param service the InvService used by the created dataset.
    */
-  public SimpleLatestProxyDsHandler( String latestName, boolean locateAtTopOrBottom, InvService service )
+  public SimpleLatestProxyDsHandler( String latestName, boolean locateAtTopOrBottom,
+                                     InvService service, boolean isResolver )
   {
     this.latestName = latestName;
     this.locateAtTopOrBottom = locateAtTopOrBottom;
     this.service = service;
+    this.isResolver = isResolver;
   }
 
   public boolean isLocateAtTopOrBottom() { return locateAtTopOrBottom; }
@@ -72,7 +75,7 @@ public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
 
   public boolean isProxyDatasetResolver()
   {
-    return true;
+    return this.isResolver;
   }
 
   public InvCrawlablePair getActualDataset( List atomicDsInfo )
@@ -81,7 +84,7 @@ public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
       return null;
 
     // Get the maximum item according to lexigraphic comparison of InvDataset names.
-    InvCrawlablePair theDs = (InvCrawlablePair) Collections.max( atomicDsInfo, new Comparator()
+    return (InvCrawlablePair) Collections.max( atomicDsInfo, new Comparator()
     {
       public int compare( Object obj1, Object obj2 )
       {
@@ -90,15 +93,12 @@ public class SimpleLatestProxyDsHandler implements ProxyDatasetHandler
         return ( dsInfo1.getInvDataset().getName().compareTo( dsInfo2.getInvDataset().getName() ) );
       }
     } );
-
-    return theDs;
   }
 
   public String getActualDatasetName( InvCrawlablePair actualDataset, String baseName )
   {
     if ( baseName == null ) baseName = "";
-    String actualName = baseName.equals( "" ) ? "Latest" : "Latest " + baseName;
-    return actualName;
+    return baseName.equals( "" ) ? "Latest" : "Latest " + baseName;
   }
 
   /**

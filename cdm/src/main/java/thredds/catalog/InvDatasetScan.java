@@ -132,7 +132,7 @@ public class InvDatasetScan extends InvCatalogRef {
         InvService service = catalog.findService( "latest" );
         if ( service != null )
         {
-          ProxyDatasetHandler proxyDsHandler = new SimpleLatestProxyDsHandler( "latest.xml", true, service );
+          ProxyDatasetHandler proxyDsHandler = new SimpleLatestProxyDsHandler( "latest.xml", true, service, true );
           this.proxyDatasetHandlers.put( "latest.xml", proxyDsHandler );
         }
       }
@@ -450,12 +450,12 @@ public class InvDatasetScan extends InvCatalogRef {
     }
     catch ( IOException e )
     {
-      log.error( "makeCatalogForDirectory(): failed to create CrawlableDataset for catalogLevel <" + dsDirPath + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "makeProxyDsResolverCatalog(): failed to create CrawlableDataset for catalogLevel <" + dsDirPath + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     if ( catalogCrDs == null )
     {
-      log.warn( "makeCatalogForDirectory(): requested catalog level <" + dsDirPath + "> not allowed (filtered out)." );
+      log.warn( "makeProxyDsResolverCatalog(): requested catalog level <" + dsDirPath + "> not allowed (filtered out)." );
       return null;
     }
 
@@ -467,7 +467,7 @@ public class InvDatasetScan extends InvCatalogRef {
     }
     catch ( IOException e )
     {
-      log.error( "makeCatalogForDirectory(): catalog generation failed <" + catalogCrDs.getPath() + ">: " + e.getMessage() );
+      log.error( "makeProxyDsResolverCatalog(): catalog generation failed <" + catalogCrDs.getPath() + ">: " + e.getMessage() );
       return null;
     }
 
