@@ -3,14 +3,24 @@
   <property name="release.version" value="3.13"/>
   <property name="release.version.minor" value="${release.version}.00"/>
   <tstamp>
-    <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
+    <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
 
-  <property name="cdmAll.javadoc.url"
-            value="http://www.unidata.ucar.edu/software/netcdf-java/v2.2.17/javadocAll/" />
-  <!-- load env -->
+  <!-- Load environment and user properties. -->
   <property environment="env"/>
   <property file="${user.home}/build.properties"/>
+
+  <!-- Current CDM javadoc URL. -->
+  <property name="cdmAll.javadoc.url"
+            value="http://www.unidata.ucar.edu/software/netcdf-java/v2.2.17/javadocAll/"/>
+
+  <!-- Directories for releasing to FTP or WWW site, defaults are John's.
+       Override by adding to build.properties file. -->
+  <property name="uni.ftp.dir" value="O:"/>
+  <property name="uni.www.dir" value="Z:"/>
+
+  <!-- TOMCAT_HOME directory, override in build.properties file. -->
+  <property name="tomcat_root" value="C:/Program Files/Apache Group/jakarta-tomcat-5.0.28"/>
 
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
@@ -22,16 +32,17 @@
   <property name="build.classes.dir" location="${build.dir}/classes"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
-  <property name="build.javadoc.dir" location="${build.dir}/javadoc"/>
   <property name="javadoc.dir" location="${build.dir}/javadoc"/>
 
-  <property name="release.dir" value="O:/pub/thredds/${release.version}/"/>
-  <!--property name="release.library.dir" value="O:/pub/thredds/${release.version}/"/>
-  <property name="release.doc.dir" value="O:/pub/netcdf-java/v${release.version}/"/>
+  <property name="release.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/"/>
+  <!--
+  <property name="release.library.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/"/>
+  <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
 
-  <property name="release.html.dir" value="Z:/content/software/netcdf-java/v${release.version}/"/>
-  <property name="release.javadoc.dir" value="Z:/content/software/netcdf-java/v${release.version}/javadoc/"/>
-  <property name="webstart_dir" location="${release.html.dir}/webstart"/-->
+  <property name="release.html.dir" value="${uni.ftp.dir}/content/software/netcdf-java/v${release.version}/"/>
+  <property name="release.javadoc.dir" value="${uni.ftp.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
+  <property name="webstart_dir" location="${release.html.dir}/webstart"/>
+  -->
 
   <property name="test.dir" location="${root.dir}/src/test"/>
   <property name="test.src.dir" location="${test.dir}/java"/>
@@ -329,7 +340,7 @@
     <mkdir dir="${war.dir}"/>
 
     <!-- create README file with time and version -->
-    <copy file="README.TEMPLATE" tofile="${war.dir}/README.txt" overwrite="true">
+    <copy file="README.TEMPLATE" tofile="${war.dir}/docs/README.txt" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${buildtime}"/>
         <filter token="VERSION" value="${release.version}"/>
@@ -426,7 +437,6 @@
   </target>
 
   <!-- ************* Create Digests ******************** -->
-  <property name="tomcat_root" value="C:/Program Files/Apache Group/jakarta-tomcat-5.0.28/"/>
   <path id="tomcatClassPath">
     <fileset dir="${tomcat_root}/bin">
       <include name="*.jar"/>
