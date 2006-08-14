@@ -43,14 +43,14 @@ import java.io.IOException;
  */
 public class VTfromExistingData extends VerticalTransformImpl {
 
-    /** _more_          */
+    /** The name of the Parameter whose value is the variable that contains the 2D Height or Pressure field */
     public final static String existingDataField = "existingDataField";
 
-    /** _more_          */
+    /** The variable that contains the 2D Height or Pressure field */
     private VariableDS existingData;
 
     /**
-     * _more_
+     * Constructor.
      *
      * @param ds _more_
      * @param timeDim _more_

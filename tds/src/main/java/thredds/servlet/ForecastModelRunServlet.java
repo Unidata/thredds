@@ -30,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.HashMap;
 
 import ucar.nc2.dt.grid.FmrcInventory;
 import ucar.nc2.dt.grid.FmrcDefinition;
@@ -44,7 +45,8 @@ import ucar.unidata.util.StringUtil;
  */
 public class ForecastModelRunServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
-  private boolean debug = false;
+  private boolean debug = true;
+  private HashMap defNameHash = new HashMap();
 
   public void init() throws ServletException {
     super.init();
@@ -100,12 +102,20 @@ public class ForecastModelRunServlet extends AbstractServlet {
           String suffix = req.getParameter("suffix");
           if (suffix == null) suffix = "grib1";
 
-          // LOOK major kludge
-          int pos = match.dirLocation.indexOf("grid/");
-          String name = match.dirLocation.substring(pos+5);
-          name = StringUtil.replace(name, '/', "-");
-          if (name.startsWith("-")) name = name.substring(1);
-          if (name.endsWith("-")) name = name.substring(0, name.length()-1);
+          String name = req.getParameter("def");
+          if (name != null) {
+             defNameHash.put(match.dirLocation, name);
+          } else {
+            name = (String) defNameHash.get(match.dirLocation);
+            if (name == null) {
+              // LOOK major kludge
+              int pos = match.dirLocation.indexOf("grid/");
+              name = match.dirLocation.substring(pos+5);
+              name = StringUtil.replace(name, '/', "-");
+              if (name.startsWith("-")) name = name.substring(1);
+              if (name.endsWith("-")) name = name.substring(0, name.length()-1);
+            }
+          }
 
           if (debug) System.out.println("  fmrcDefinitionPath="+contentPath+" name="+name+" dir="+match.dirLocation);
           fmr = FmrcInventory.make(contentPath, name, fmrCache, match.dirLocation, suffix,

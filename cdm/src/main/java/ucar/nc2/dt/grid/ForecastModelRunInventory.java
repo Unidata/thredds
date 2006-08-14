@@ -111,7 +111,7 @@ public class ForecastModelRunInventory {
     for (int i = 0; i < vars.size(); i++) {
       GridDatatype gg = (GridDatatype) vars.get(i);
       GridCoordSystem gcs = gg.getGridCoordSystem();
-      Grid grid = new Grid(gg.getName(), gg.getDescription());
+      Grid grid = new Grid(gg.getName());
       addMissing((Variable) gg.getVariable(), gcs, grid);
 
       // LOOK: Note this assumes a dense coordinate system
@@ -123,7 +123,7 @@ public class ForecastModelRunInventory {
       }
 
       CoordinateAxis1D vaxis = gcs.getVerticalAxis();
-      if ((vaxis != null) && (vaxis.getSize() > 1)) {
+      if (vaxis != null) {
         grid.vc = getVertCoordinate(vaxis);
       }
 
@@ -340,14 +340,13 @@ public class ForecastModelRunInventory {
    *   2) if 3D, inventory = timeCoord * vertCoord - Missing
    */
   public static class Grid implements Comparable {
-    String name, sname;
+    String name; // , sname;
     TimeCoord parent = null;
     VertCoord vc = null; // optional
     ArrayList missing; // array of Missing
 
-    Grid( String name, String sname) {
+    Grid( String name) {
       this.name = name;
-      this.sname = sname;
     }
 
     public int compareTo(Object o) {
@@ -369,7 +368,7 @@ public class ForecastModelRunInventory {
     }
 
     int getVertCoordLength() {
-      return (vc == null) ? 1 : vc.getValues().length;
+      return (vc == null) ? 1 : vc.getValues1().length;
     }
 
     public int countInventory(double hourOffset) {
@@ -407,7 +406,7 @@ public class ForecastModelRunInventory {
         return result;
       }
 
-      double[] result = (double[]) vc.getValues().clone();
+      double[] result = (double[]) vc.getValues1().clone();
       if (null != missing) {
         for (int i = 0; i < missing.size(); i++) {
           Missing m = (Missing) missing.get(i);
@@ -467,10 +466,10 @@ public class ForecastModelRunInventory {
    *  Tracks a list of variables that all have the same list of valid times.
    */
   public static class VertCoord implements FmrcCoordSys.VertCoord {
-    private CoordinateAxis1D axis; // is null when read from XML
+    CoordinateAxis1D axis; // is null when read from XML
     private String name, units;
     private String id; // unique id
-    private double[] values;
+    double[] values1, values2;
 
     VertCoord() { }
 
@@ -480,9 +479,13 @@ public class ForecastModelRunInventory {
       this.units = axis.getUnitsString();
 
       int n = (int) axis.getSize();
-      values = new double[n];
-      for (int i = 0; i < axis.getSize(); i++) {
-        values[i] = axis.getCoordValue(i);
+      if (axis.isLayer()) {
+        values1 = axis.getBound1();
+        values2 = axis.getBound2();
+      } else {
+        values1 = new double[n];
+        for (int i = 0; i < axis.getSize(); i++)
+          values1[i] = axis.getCoordValue(i);
       }
     }
 
@@ -491,7 +494,8 @@ public class ForecastModelRunInventory {
       this.name = vc.getName();
       this.units = vc.getUnits();
       this.id = vc.getId();
-      this.values = (double[]) vc.getValues().clone();
+      this.values1 = (double[]) vc.getValues1().clone();
+      this.values2 = (vc.getValues2() == null) ? null : (double[]) vc.getValues2().clone();
     }
 
     public String getId() { return id; }
@@ -503,16 +507,34 @@ public class ForecastModelRunInventory {
     public String getUnits() { return units; }
     public void setUnits(String units) { this.units = units; }
 
-    public double[] getValues() { return values; }
-    public void setValues(double[] values) { this.values = values; }
+    public double[] getValues1() { return values1; }
+    public void setValues1(double[] values) { this.values1 = values; }
+
+    public double[] getValues2() { return values2; }
+    public void setValues2(double[] values) { this.values2 = values; }
 
     public boolean equalsData(VertCoord other) {
-      if (values.length != other.values.length)
+      if (values1.length != other.values1.length)
         return false;
-      for (int i = 0; i < values.length ; i++) {
-        if ( !closeEnough(values[i], other.values[i]))
+
+      for (int i = 0; i < values1.length ; i++) {
+        if ( !closeEnough(values1[i], other.values1[i]))
           return false;
       }
+
+      if ((values2 == null) && (other.values2 == null))
+        return true;
+
+      if ((values2 == null) || (other.values2 == null))
+        return false;
+
+      if (values2.length != other.values2.length)
+        return false;
+      for (int i = 0; i < values2.length ; i++) {
+        if ( !closeEnough(values2[i], other.values2[i]))
+          return false;
+      }
+
       return true;
     }
   }
@@ -581,9 +603,13 @@ public class ForecastModelRunInventory {
         vcElem.setAttribute("units", vc.units);
 
       StringBuffer sbuff = new StringBuffer();
-      for (int j = 0; j < vc.values.length; j++) {
+      for (int j = 0; j < vc.values1.length; j++) {
         if (j > 0) sbuff.append(" ");
-        sbuff.append( Double.toString(vc.values[j]));
+        sbuff.append( Double.toString(vc.values1[j]));
+        if (vc.values2 != null) {
+          sbuff.append(",");
+          sbuff.append( Double.toString(vc.values2[j]));
+        }
       }
       vcElem.addContent(sbuff.toString());
     }
@@ -608,8 +634,6 @@ public class ForecastModelRunInventory {
         Element varElem = new Element("variable");
         offsetElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
-        if (grid.sname != null)
-          varElem.setAttribute("searchName", grid.sname);
         if (grid.vc != null)
           varElem.setAttribute("vert_id", grid.vc.id);
 
@@ -682,10 +706,22 @@ public class ForecastModelRunInventory {
       String values = vertElem.getText();
       StringTokenizer stoke = new StringTokenizer(values);
       int n = stoke.countTokens();
-      vc.values = new double[n];
+      vc.values1 = new double[n];
       int count = 0;
       while (stoke.hasMoreTokens()) {
-        vc.values[count++] = Double.parseDouble( stoke.nextToken());
+        String toke = stoke.nextToken();
+        int pos = toke.indexOf(',');
+        if (pos < 0)
+          vc.values1[count] = Double.parseDouble( toke);
+        else {
+          if (vc.values2 == null)
+            vc.values2 = new double[n];
+          String val1 = toke.substring(0,pos);
+          String val2 = toke.substring(pos+1);
+          vc.values1[count] = Double.parseDouble( val1);
+          vc.values2[count] = Double.parseDouble( val2);
+        }
+        count++;
       }
     }
 
@@ -710,7 +746,7 @@ public class ForecastModelRunInventory {
       java.util.List varList = timeElem.getChildren("variable");
       for (int j=0; j< varList.size(); j++) {
         Element vElem = (Element) varList.get(j);
-        Grid grid = new Grid( vElem.getAttributeValue("name"), vElem.getAttributeValue("searchName"));
+        Grid grid = new Grid( vElem.getAttributeValue("name"));
         grid.vc = fmr.getVertCoordinate( vElem.getAttributeValue("vert_id"));
         tc.vars.add( grid);
         grid.parent = tc;
@@ -788,7 +824,7 @@ public class ForecastModelRunInventory {
     if (debug) System.out.println(" read from dataset "+ncfileLocation+" write to XML "+summaryFileLocation);
     ForecastModelRunInventory fmr = new ForecastModelRunInventory(ncfileLocation);
     fmr.writeXML(summaryFileLocation);
-    fmr.releaseDataset();
+    // fmr.releaseDataset();    LOOK temporary
 
     if (showXML)
       thredds.util.IO.copyFile(summaryFileLocation, System.out);
@@ -798,8 +834,9 @@ public class ForecastModelRunInventory {
 
   private static boolean debug = false, showXML = false;
   public static void main(String args[]) throws Exception {
-    // String def = "C:/data/grib/c20p/RUC2_CONUS_20km_pressure_20060227_1100.grib1";
-    String def = "C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1";
+    //String def = "C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1";
+    // String def = "C:/data/radarMosaic/RADAR_10km_mosaic_20060807_2220.grib1";
+    String def = "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1";
     String datasetName =  (args.length < 1) ? def : args[0];
     // ucar.nc2.util.DiskCache2 cache = new ucar.nc2.util.DiskCache2("C:/data/grib", false, -1, -1);
     // cache.setCachePathPolicy(DiskCache2.CACHEPATH_POLICY_NESTED_TRUNCATE, "RUC");

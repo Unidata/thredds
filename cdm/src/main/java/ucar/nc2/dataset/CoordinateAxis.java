@@ -44,7 +44,7 @@ import java.io.IOException;
  * either a CoordinateAxis1D if the variable is one-dimensional, a CoordinateAxis2D if its 2D, or a
  * CoordinateAxis for the general case.
  * <p>
- * A CoordinateAxis is optionally marked as georeferencing with an axisType. It should have
+ * A CoordinateAxis is optionally marked as georeferencing with an AxisType. It should have
  * a units string and optionally a description string.
  *
  * @author john caron
@@ -167,9 +167,9 @@ public class CoordinateAxis extends VariableDS {
         (getDataType() != DataType.STRUCTURE);
   }
 
-   /** If the edges are contiguous or disjoint. Assumed true unless set otherwise. */
+  /** If the edges are contiguous or disjoint. Assumed true unless set otherwise. */
   public boolean isContiguous() { return isContiguous; }
-   /** Set if the edges are contiguous or disjoint. */
+  /** Set if the edges are contiguous or disjoint. */
   public void setContiguous(boolean isContiguous) { this.isContiguous = isContiguous; }
 
   /** Get the direction of increasing values, used only for vertical Axes.

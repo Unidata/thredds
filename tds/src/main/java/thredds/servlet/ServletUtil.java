@@ -1185,6 +1185,43 @@ public class ServletUtil {
     return serverInfo.substring(slash + 1, space);
   }
 
+  static public void showThreads(PrintStream pw) {
+    Thread current = Thread.currentThread();
+    ThreadGroup group = current.getThreadGroup();
+    while (true) {
+      if (group.getParent() == null) break;
+      group = group.getParent();
+    }
+    showThreads( pw, group, current);
+  }
+
+  static private void showThreads(PrintStream pw, ThreadGroup g, Thread current) {
+    int nthreads = g.activeCount();
+    pw.println("\nThread Group = "+g.getName()+" activeCount= "+nthreads);
+    Thread[] tarray = new Thread[nthreads];
+    int n = g.enumerate(tarray, false);
+    for (int i = 0; i < n; i++) {
+      Thread thread = tarray[i];
+      ClassLoader loader = thread.getContextClassLoader();
+      String loaderName = (loader == null) ? "Default" : loader.getClass().getName();
+      Thread.State state = thread.getState(); // LOOK JDK 1.5
+      pw.print("   "+thread.getId() +" "+thread.getName() +" "+state +" "+loaderName);
+      if (thread == current)
+        pw.println(" **** CURRENT ***");
+      else
+        pw.println();
+    }
+
+    int ngroups = g.activeGroupCount();
+    ThreadGroup[] garray = new ThreadGroup[ngroups];
+    int ng = g.enumerate(garray, false);
+    for (int i = 0; i < ng; i++) {
+      ThreadGroup nested = garray[i];
+      showThreads(pw, nested, current);
+    }
+
+  }
+
   public static void main(String[] args) {
     String s = "C:/Program Files/you";
     System.out.println("FileURL = "+getFileURL(s));

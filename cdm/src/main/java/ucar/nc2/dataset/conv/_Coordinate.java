@@ -37,5 +37,6 @@ public interface _Coordinate {
   static public final String Systems = "_CoordinateSystems";
   static public final String Transforms = "_CoordinateTransforms";
   static public final String TransformType = "_CoordinateTransformType";
+  static public final String ZisLayer = "_CoordinateZisLayer";
   static public final String ZisPositive = "_CoordinateZisPositive";
 }

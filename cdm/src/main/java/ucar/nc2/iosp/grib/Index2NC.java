@@ -1,6 +1,7 @@
 package ucar.nc2.iosp.grib;
 
 import ucar.grib.*;
+import ucar.grib.grib1.Grib1Lookup;
 import ucar.nc2.*;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.dataset.conv._Coordinate;
@@ -18,11 +19,50 @@ import java.util.*;
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Index2NC  {
+
+    /// hack - move into ucar.grib.TableLookup
+  static public boolean isLayer(Index.GribRecord gr, TableLookup lookup) {
+    if (lookup instanceof Grib1Lookup) {
+      if (gr.levelType1 == 101) return true;
+      if (gr.levelType1 == 104) return true;
+      if (gr.levelType1 == 106) return true;
+      if (gr.levelType1 == 108) return true;
+      if (gr.levelType1 == 110) return true;
+      if (gr.levelType1 == 112) return true;
+      if (gr.levelType1 == 114) return true;
+      if (gr.levelType1 == 116) return true;
+      if (gr.levelType1 == 120) return true;
+      if (gr.levelType1 == 121) return true;
+      if (gr.levelType1 == 128) return true;
+      if (gr.levelType1 == 141) return true;
+      return false;
+    } else {
+      return (gr.levelType2 != 255);
+    }
+  }
+
+  static public String makeLevelName(Index.GribRecord gr, TableLookup lookup) {
+    String vname = lookup.getLevelName( gr);
+    boolean isGrib1 = (lookup instanceof Grib1Lookup); // for grib2, we need to add the layer to disambiguate
+    return (!isGrib1 && isLayer(gr, lookup)) ? vname + "_layer" : vname;
+  }
+
+  static public String makeVariableName(Index.GribRecord gr, TableLookup lookup) {
+    Parameter param = lookup.getParameter(gr);
+    return param.getDescription() + "_" + makeLevelName( gr, lookup);
+  }
+
+  static public String makeLongName(Index.GribRecord gr, TableLookup lookup) {
+    Parameter param = lookup.getParameter(gr);
+    return param.getDescription() + " @ " + makeLevelName( gr, lookup);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
 
   private HashMap hcsHash = new HashMap( 10); // GribHorizCoordSys
   private DateFormatter formatter = new DateFormatter();
-  private boolean debug = true;
+  private boolean debug = false;
 
   void open(Index index, TableLookup lookup, int version, NetcdfFile ncfile, FmrcCoordSys fmrcCoordSys, CancelTask cancelTask) throws IOException {
 
@@ -53,16 +93,14 @@ public class Index2NC  {
       if (firstRecord == null) firstRecord = gribRecord;
 
       GribHorizCoordSys hcs = (GribHorizCoordSys) hcsHash.get(gribRecord.gdsKey);
-      Parameter param = lookup.getParameter(gribRecord);
-      String pname = param.getDescription();
-      String vname = lookup.getLevelName( gribRecord);
-      String name = pname +"_"+vname;
+      String name = makeVariableName( gribRecord, lookup);
       GribVariable pv = (GribVariable) hcs.varHash.get(name); // combo gds, param name and level name
       if (null == pv) {
+        String pname = lookup.getParameter(gribRecord).getDescription();
         pv = new GribVariable( name, pname, hcs, lookup);
         hcs.varHash.put(name, pv);
 
-         // keep track of all products with same desc
+         // keep track of all products with same parameter name
         ArrayList plist = (ArrayList) hcs.productHash.get(pname);
         if (null == plist) {
           plist = new ArrayList();
@@ -76,21 +114,29 @@ public class Index2NC  {
     // global stuff
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
 
-    // LOOK : might want to put in groups?
-    ncfile.addAttribute(null, new Attribute("Originating_center", lookup.getFirstCenterName() +
-        " subcenter = "+lookup.getFirstSubcenterId()) );
-    ncfile.addAttribute(null, new Attribute("Product_Status", lookup.getFirstProductStatusName()) );
+    String creator = lookup.getFirstCenterName() + " subcenter = "+lookup.getFirstSubcenterId();
+    if (creator != null)
+      ncfile.addAttribute(null, new Attribute("Originating_center", creator) );
+    String genType = lookup.getTypeGenProcessName( firstRecord);
+    if (genType != null)
+      ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType) );
+    if (null != lookup.getFirstProductStatusName())
+      ncfile.addAttribute(null, new Attribute("Product_Status", lookup.getFirstProductStatusName()) );
     ncfile.addAttribute(null, new Attribute("Product_Type", lookup.getFirstProductTypeName()) );
-    ncfile.addAttribute(null, new Attribute("FileFormat", "GRIB-"+version));
-    ncfile.addAttribute(null, new Attribute("DataType", "GRID"));
-    ncfile.addAttribute(null, new Attribute("DatasetLocation", ncfile.getLocation()));
-    ncfile.addAttribute(null, new Attribute("Processing", "direct read of GRIB into NetCDF-Java 2.2 API"));
-    ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, formatter.toDateTimeString(lookup.getFirstBaseTime())));
+
+    // dataset discovery
+    ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+    ncfile.addAttribute(null, new Attribute("creator_name", creator));
+    ncfile.addAttribute(null, new Attribute("file_format", "GRIB-"+version));
+    ncfile.addAttribute(null, new Attribute("location", ncfile.getLocation()));
+    ncfile.addAttribute(null, new Attribute("history", "Direct read of GRIB into NetCDF-Java 2.2 API"));
+
+    ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, formatter.toDateTimeStringISO(lookup.getFirstBaseTime())));
 
     if (fmrcCoordSys != null)
       makeDefinedCoordSys(ncfile, lookup, fmrcCoordSys);
-    else if (GribServiceProvider.useMaximalCoordSys)
-      makeMaximalCoordSys(ncfile, lookup, cancelTask);
+    /* else if (GribServiceProvider.useMaximalCoordSys)
+      makeMaximalCoordSys(ncfile, lookup, cancelTask); */
     else
       makeDenseCoordSys(ncfile, lookup, cancelTask);
 
@@ -150,7 +196,7 @@ public class Index2NC  {
         GribVariable pv =  (GribVariable) iter.next();
         List recordList = pv.getRecords();
         Index.GribRecord record = (Index.GribRecord) recordList.get(0);
-        String vname = lookup.getLevelName( record);
+        String vname = makeLevelName( record, lookup);
 
         // look to see if vertical already exists
         GribVertCoord useVertCoord = null;
@@ -294,8 +340,9 @@ public class Index2NC  {
     }
   }
 
-  // make coordinate system by taking the union of all time steps, vertical levels
+  /* make coordinate system by taking the union of all time steps, vertical levels
   // means that there can be a fair amount of missing data
+  // probably should be deprecated
   private void makeMaximalCoordSys(NetcdfFile ncfile, TableLookup lookup, CancelTask cancelTask) throws IOException {
 
     // loop over HorizCoordSys
@@ -384,7 +431,7 @@ public class Index2NC  {
 
     } // loop over hcs
 
-  }
+  } */
 
 
 
@@ -405,15 +452,14 @@ public class Index2NC  {
         GribVariable pv =  (GribVariable) iter.next();
         Index.GribRecord record = pv.getFirstRecord();
 
-        // LOOK - problem is we dont know the final variable name yet !!!
-        // get the vertical coordinate for this variable, if it exists
-        String searchName = pv.getSearchName();
-        if (!fmr.hasVariable( searchName)) {
-          logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+searchName+" for " +
-                ncfile.getLocation());
+        // we dont know the name for sure yet, so have to try several
+        String searchName = findVariableName(record, lookup, fmr);
+        if (searchName == null) {
           continue;
         }
-        pv.setVarName( fmr.getName( searchName));
+        pv.setVarName( searchName);
+
+        // get the vertical coordinate for this variable, if it exists
         FmrcCoordSys.VertCoord vc_def = fmr.findVertCoordForVariable( searchName);
         if (vc_def != null) {
           String vc_name = vc_def.getName();
@@ -426,7 +472,7 @@ public class Index2NC  {
                 useVertCoord = gvcs;
           }
           if (useVertCoord == null) { // nope, got to create it
-            useVertCoord = new GribVertCoord(record, vc_name, lookup, vc_def.getValues());
+            useVertCoord = new GribVertCoord(record, vc_name, lookup, vc_def.getValues1(), vc_def.getValues2());
             useVertCoord.addDimensionsToNetcdfFile( ncfile, hcs.getGroup());
             vertCoords.add( useVertCoord);
           }
@@ -458,28 +504,13 @@ public class Index2NC  {
       // add x, y dimensions
       hcs.addDimensionsToNetcdfFile( ncfile);
 
-      // create a variable for each entry, but check for other products with same desc
-      // to disambiguate by vertical coord
-      ArrayList products = new ArrayList(hcs.productHash.values());
-      Collections.sort( products, new CompareGribVariableListByName());
-      for (int i = 0; i < products.size(); i++) {
-        ArrayList plist = (ArrayList) products.get(i); // all the products with the same name
-
-        if (plist.size() == 1) {
-          GribVariable pv = (GribVariable) plist.get(0);
-          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), true);
-          ncfile.addVariable( hcs.getGroup(), v);
-
-        } else {
-
-          Collections.sort( plist, new CompareGribVariableByNumberVertLevels());
-          for (int k = 0; k < plist.size(); k++) {
-            GribVariable pv = (GribVariable) plist.get(k);
-            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), k == 0));
-          }
-        } // multipe vertical levels
-
-      } // create variable
+      // create a variable for each entry
+      Iterator iter2 = hcs.varHash.values().iterator();
+      while (iter2.hasNext()) {
+        GribVariable pv =  (GribVariable) iter2.next();
+        Variable v = pv.makeVariable(ncfile, hcs.getGroup(), true);
+        ncfile.addVariable( hcs.getGroup(), v);
+      }
 
       // add coordinate variables at the end
       for (int i = 0; i < timeCoords.size(); i++) {
@@ -495,6 +526,21 @@ public class Index2NC  {
     } // loop over hcs
 
     if (debug) System.out.println("Index2NC.makeDefinedCoordSys for "+ncfile.getLocation());
+  }
+
+  private String findVariableName(Index.GribRecord gr, TableLookup lookup, FmrcCoordSys fmr) {
+    String name = NetcdfFile.createValidNetcdfObjectName( makeVariableName(gr, lookup));
+    if (fmr.hasVariable( name))
+      return name;
+
+    String pname = NetcdfFile.createValidNetcdfObjectName( lookup.getParameter(gr).getDescription());
+    if (fmr.hasVariable( pname))
+      return pname;
+
+    System.out.println("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname);
+    logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname);
+
+    return null;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////

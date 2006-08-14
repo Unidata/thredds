@@ -377,13 +377,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
   private File getMappedFile(String path) {
     if (path == null) return null;
-    String filePath = catHandler.translatePath( path);
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
-
-    if (filePath == null) return null;
-    File file = new File( filePath);
-    if (file.exists())
-        return file;
+    File file = catHandler.getCrawlableDatasetAsFile( path);
+    if ((file != null) && file.exists())
+      return file;
 
     return null;
   }
@@ -537,6 +533,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
         e.pw.println(" totalMemory= "+scale * runt.totalMemory()+" Mb");
         e.pw.println(" maxMemory= "+scale * runt.maxMemory()+" Mb");
         e.pw.println(" availableProcessors= "+runt.availableProcessors());
+        e.pw.println();
+        ServletUtil.showThreads(e.pw);
       }
     };
     debugHandler.addAction(act);

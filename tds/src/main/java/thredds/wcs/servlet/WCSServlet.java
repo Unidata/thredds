@@ -96,8 +96,9 @@ public class WCSServlet extends AbstractServlet {
 
         OutputStream os= res.getOutputStream();
         res.setContentType("text/xml");
-        wcsDataset.getCapabilities(os, sectionType);
+        int len = wcsDataset.getCapabilities(os, sectionType);
 
+        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
         res.setStatus(HttpServletResponse.SC_OK);
         os.flush();
 
@@ -115,8 +116,9 @@ public class WCSServlet extends AbstractServlet {
 
         OutputStream os= res.getOutputStream();
         res.setContentType("text/xml");
-        wcsDataset.describeCoverage(os, coverages);
+        int len = wcsDataset.describeCoverage(os, coverages);
 
+        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
         res.setStatus(HttpServletResponse.SC_OK);
         os.flush();
 
@@ -139,7 +141,7 @@ public class WCSServlet extends AbstractServlet {
           return;
         }
 
-        String errMessage = null;
+        String errMessage;
         if (null != (errMessage = wcsDataset.checkCoverageParameters( r))) {
           makeServiceException(res, "InvalidParameterValue", errMessage);
           return;
@@ -201,6 +203,7 @@ public class WCSServlet extends AbstractServlet {
     ps.println("</ServiceExceptionReport>");
 
     ps.flush();
+    log.error("makeServiceException", t);
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1); // LOOK, actual return is 200 = OK !
   }
 

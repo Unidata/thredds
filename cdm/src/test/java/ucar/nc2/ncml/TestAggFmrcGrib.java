@@ -22,7 +22,7 @@ public class TestAggFmrcGrib extends TestCase {
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
-    //System.out.println("file="+ncfile);
+    System.out.println("file="+ncfile);
 
     testDimensions(ncfile, 7);
     testCoordVar(ncfile, 257);

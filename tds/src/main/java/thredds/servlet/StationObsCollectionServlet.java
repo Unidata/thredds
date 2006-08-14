@@ -76,21 +76,23 @@ import org.jdom.transform.XSLTransformer;
 
       log.debug("**StationObsCollectionServlet req=" + ServletUtil.getRequest(req));
       // log.debug( ServletUtil.showRequestDetail(this, req));
+      String reqPath = req.getPathInfo();
+      if (reqPath.length() > 0) {
+        if (reqPath.startsWith("/"))
+          reqPath = reqPath.substring(1);
+      }
 
-      String datasetPath = DataRootHandler.getInstance().translatePath( req );
-      // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
-      if (datasetPath == null) {
+      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( reqPath);
+      if (file == null) {
         ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
         res.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
-      log.debug("**StationObsCollectionServlet req="+datasetPath);
+      log.debug("**StationObsCollectionServlet req="+file.getPath());
 
-      String path = req.getRequestURI();
-      MetarCollection dataset = new MetarCollection( datasetPath);
+      MetarCollection dataset = new MetarCollection( file.getPath());
 
       ParamParser pp = new ParamParser();
-
       pp.parseNames(req, "stn");
       pp.parseBB(req, null);
       pp.parseDateRange(req, true);
@@ -126,7 +128,6 @@ import org.jdom.transform.XSLTransformer;
       } catch (Exception e) {
         ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-        return;
       }
     }
 

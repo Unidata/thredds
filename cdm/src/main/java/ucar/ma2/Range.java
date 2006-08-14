@@ -336,7 +336,7 @@ public class Range {
   public boolean contains(int i) {
     if (i < min())
       return false;
-    if (i >= max())
+    if (i > max())
       return false;
     if (stride == 1) return true;
     return (i-first) % stride == 0;
@@ -363,6 +363,9 @@ public class Range {
   /** stride, may be negetive */
   public int stride() { return stride;  }
 
+  /**
+   * Minimum index, inclusive.
+   */
   public int min() {
     if (n > 0) {
       if (stride > 0)
@@ -375,6 +378,9 @@ public class Range {
     }
   }
 
+  /**
+   * Maximum index, inclusive.
+   */
   public int max() {
     if (n > 0) {
       if (stride > 0)

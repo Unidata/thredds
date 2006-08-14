@@ -26,9 +26,48 @@
 <div class="head">
   <h1>TDS Caching</h1>
   <address>
-  last update: Jul 14, 2006 
+  last update: Aug 10, 2006 
   </address>
   <hr>
+  <h2>Disk Caching</h2>
+  <p>Settings on motherlode 3.12: </p>
+  <table width="890" border="1">
+    <tr>
+      <td width="255"><p><strong>NetcdfFile, Nexrad2</strong> (compress) </p>
+      <p><strong>GribIOSP, BufrIOSP</strong> (index) </p>
+      <p><strong>WCS </strong>(temp file) </p></td>
+      <td width="152">CachePath</td>
+      <td width="201">/data/tmp/thredds/cache/</td>
+      <td width="96"><strong>DiskCache</strong></td>
+      <td width="152"><p>scour hourly</p>
+        <p>allow 1 Gbyte </p></td>
+    </tr>
+    <tr>
+      <td><strong>Aggregation </strong>(joinExisting)</td>
+      <td>CacheAged</td>
+      <td>/data/tmp/thredds/cacheAged/</td>
+      <td><strong>DiskCache2</strong></td>
+      <td><p>scour 12 hours</p>
+      <p>over 10 days old </p></td>
+    </tr>
+    <tr>
+      <td><strong>NetcdfServlet </strong>(temp file) </td>
+      <td>NetcdfServletCachePath</td>
+      <td>/data/tmp/thredds/ncCache/</td>
+      <td><strong>DiskCache2</strong></td>
+      <td><p>scour daily </p>
+      <p>over 1 day old</p></td>
+    </tr>
+    <tr>
+      <td><strong>CoordSysValidatorServlet </strong>(upload file)</td>
+      <td>CdmValidatorCachePath</td>
+      <td>/data/tmp/thredds/cdmCache/</td>
+      <td><strong>DiskCache2</strong></td>
+      <td><p>scour daily </p>
+      <p>over  30 days</p></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
   <h3>DiskCache</h3>
   <p>This disk-based cache is used when you need to write into a directory, but you dont have write permission, for example: </p>
   <ol>
@@ -47,6 +86,8 @@
   <p>The following controls are set in ThreddsDefault.java. These need to be externalized:</p>
   <pre>    // for efficiency, persist aggregations. every 12 hours, delete stuff older than 10 days<br>    String cache2 = ServletParams.getInitParameter(&quot;CacheAged&quot;, contentPath + &quot;cacheAged/&quot;);</pre>
   <p>    The directory is scoured (by a Timer in DiskCache2) removing files that are older than a certain date. </p>
+  <hr>
+  <h2>Object Caching </h2>
   <h3>NetcdfFileCache</h3>
   <p>NetcdfFile objects are cached in memory for performance. When acquired, the object is locked so another thread cannot use. When closed, the lock is removed. When the cache is full, older objects are removed from the cache, and all resources released. </p>
   <p>The raf object is left open while its in the cache. This  creates a read lock which may prevent the file from being opened in write mode. However. multiple readers can access.???</p>

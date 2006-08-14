@@ -2,6 +2,20 @@ CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 3.13
+ Features
+  * WCS logs have length
+ Bugs
+
+Changes in version 3.12
+ Features
+  * WCS log messages, exceptions to log
+  * add Thread dump (debug/show runtime) to look for lost threads
+ Bugs
+  * Grib iosp - handle duplicates
+  * GridCoordSystem.isRegularSpatial() - remove Z axis from test, to allow non-regular variables in WCS
+  * ucar.ma2.Range.contains() off-by-one : joinExisting aggregations read.section() failing
+
 Changes in version 3.11
   Features
    * Generated catalogs now contain <date type="modified" /> elements where

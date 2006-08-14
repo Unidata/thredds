@@ -109,17 +109,16 @@ public class NetcdfServlet extends AbstractServlet {
     if (pathInfo.endsWith(".nc"))
        pathInfo = pathInfo.substring(0,pathInfo.length()-3);
 
-    String datasetPath = DataRootHandler.getInstance().translatePath( pathInfo );
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
-    if (datasetPath == null) {
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( pathInfo);
+    if (file == null) {
       ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
-    log.debug("**NetcdfService req="+datasetPath);
+    log.debug("**NetcdfService req="+file.getPath());
 
     // for convenince, we open as an FMR, since it already has the XML we need for the form
-    ForecastModelRunInventory fmr = ForecastModelRunInventory.open( fmrCache, datasetPath, ForecastModelRunInventory.OPEN_NORMAL);
+    ForecastModelRunInventory fmr = ForecastModelRunInventory.open( fmrCache, file.getPath(), ForecastModelRunInventory.OPEN_NORMAL);
     fmr.setName( req.getRequestURI());
 
     String wantXML = req.getParameter("wantXML");
@@ -143,7 +142,7 @@ public class NetcdfServlet extends AbstractServlet {
       OutputStream out = res.getOutputStream();
       PrintStream ps = new PrintStream( out);
 
-      ps.println("**NetcdfService req="+datasetPath);
+      ps.println("**NetcdfService req="+file.getPath());
       ps.println(ServletUtil.showRequestDetail( this, req ));
       ps.flush();
       return;

@@ -212,7 +212,18 @@ public class NcMLReader {
        System.out.println ("*** NetcdfDataset/showParsedXML = \n"+xmlOut.outputString(doc)+"\n*******");
      }
 
-     Element netcdfElem = doc.getRootElement();
+    Element netcdfElem = doc.getRootElement();
+    NetcdfDataset ncd =  readNcML( netcdfElem, cancelTask);
+    if (debugOpen) System.out.println("***NcMLReader.readNcML (stream) result= \n"+ncd);
+    return ncd;
+  }
+
+    /**
+      * Read NcML doc from an InputStream, and construct a NetcdfDataset.
+      * @param netcdfElem the NcML as a JDOM element
+      * @param cancelTask allow user to cancel the task; may be null
+      */
+   static public NetcdfDataset readNcML(Element netcdfElem, CancelTask cancelTask) throws IOException, java.net.MalformedURLException {
 
      // the ncml probably refers to another dataset, but doesnt have to
      String referencedDatasetUri = netcdfElem.getAttributeValue("location");
@@ -221,7 +232,6 @@ public class NcMLReader {
 
      NcMLReader reader = new NcMLReader();
      NetcdfDataset ncd = reader.readNcML( null, referencedDatasetUri, netcdfElem, cancelTask);
-     if (debugOpen) System.out.println("***NcMLReader.readNcML (stream) result= \n"+ncd);
      return ncd;
    }
 
@@ -353,14 +363,17 @@ public class NcMLReader {
     }
 
     // the root group
-   readGroup( newds, refds, null, null, netcdfElem);
+    readGroup( newds, refds, null, null, netcdfElem);
+
+    newds.finish();
 
     // enhance means do scale/offset and add CoordSystems
     String enhanceS = netcdfElem.getAttributeValue("enhance");
-    if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
+    if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true")) {
       newds.enhance();  // LOOK not sure
+      newds.finish();
+    }
 
-    newds.finish();
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -893,7 +906,7 @@ public class NcMLReader {
 
     Aggregation agg;
     if (type.equals("forecastModelRunCollection")) {
-      AggregationFmrCollection aggc = new AggregationFmrCollection(newds, dimName, type, recheck);
+      AggregationFmrc aggc = new AggregationFmrc(newds, dimName, type, recheck);
       agg = aggc;
 
       if (timeUnitsChange != null)
@@ -1246,7 +1259,7 @@ public class NcMLReader {
    * @param target
    * @param replaceCheck if null, only add if a Variable of the same name doesnt already exist, otherwise
    */
-  static void transferDataset(NetcdfFile src, NetcdfDataset target, ReplaceVariableCheck replaceCheck) {
+  static public void transferDataset(NetcdfFile src, NetcdfDataset target, ReplaceVariableCheck replaceCheck) {
     transferGroup( src, src.getRootGroup(), target.getRootGroup(), replaceCheck);
   }
 

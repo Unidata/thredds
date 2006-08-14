@@ -155,11 +155,8 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
     else
       return -1;
 
-    String filePath = DataRootHandler.getInstance().translatePath(path);
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
-    if (filePath == null) return -1;
-    File file = new File(filePath);
-    if (file.exists())
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( path);
+    if ((file != null) && file.exists())
       return file.lastModified();
 
     return -1;

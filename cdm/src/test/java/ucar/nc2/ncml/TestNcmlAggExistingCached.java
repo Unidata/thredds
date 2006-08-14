@@ -54,9 +54,11 @@ public class TestNcmlAggExistingCached extends TestCase {
   public void testNcmlDirect() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = NetcdfDataset.openDataset(filename, false, null);
     System.out.println("\n TestNcmlAggExistingCached.open "+ filename);
-    System.out.println(" "+ ncfile);
+    //System.out.println(" "+ ncfile);
 
     testAggCoordVar( ncfile);
+    testAggCoordVarSubset( ncfile);
+    testAggCoordVarSubsetDefeatLocalCache( ncfile);
 
     ncfile.close();
   }
@@ -162,6 +164,47 @@ public class TestNcmlAggExistingCached extends TestCase {
       assert TestAll.closeEnough(dataI.getDoubleNext(), result[count*2]);
       count++;
     }
-
   }
+  public void testAggCoordVarSubsetDefeatLocalCache(NetcdfFile ncfile) throws InvalidRangeException, IOException {
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+
+    assert time.getName().equals("time");
+    assert time.getRank() == 1;
+    assert time.getSize() == 3;
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.DOUBLE;
+
+    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+
+    time.setCachedData(null, false);
+    Array data = time.read("1:2");
+    assert data.getRank() == 1;
+    assert data.getSize() == 2;
+    assert data.getShape()[0] == 2;
+    assert data.getElementType() == double.class;
+
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count+1]);
+      count++;
+    }
+
+    time.setCachedData(null, false);
+    data = time.read("0:2:2");
+    assert data.getRank() == 1;
+    assert data.getSize() == 2;
+    assert data.getShape()[0] == 2;
+    assert data.getElementType() == double.class;
+
+    count = 0;
+    dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count*2]);
+      count++;
+    }
+  }
+
+
 }

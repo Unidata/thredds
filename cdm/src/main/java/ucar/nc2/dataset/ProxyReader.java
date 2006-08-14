@@ -19,27 +19,22 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dt.fmr;
+package ucar.nc2.dataset;
+
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.Variable;
+
+import java.util.List;
+import java.io.IOException;
 
 /**
  * Class Description.
  *
  * @author caron
  */
-public interface FmrcCoordSys {
-
-  public boolean hasVariable( String searchName);
-  public VertCoord findVertCoordForVariable( String searchName);
-  public TimeCoord findTimeCoordForVariable( String searchName);
-
-  public interface VertCoord {
-    public String getName();
-    public double[] getValues1();
-    public double[] getValues2();
-  }
-
-  public interface TimeCoord {
-    public String getName();
-    public double[] getOffsetHours();
-  }
+public interface ProxyReader {
+  public Array read(Variable mainv, CancelTask cancelTask) throws IOException;
+  public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException;
 }

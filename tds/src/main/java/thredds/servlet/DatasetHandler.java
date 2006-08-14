@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.InvDatasetFmrc;
 
 
 /**
@@ -57,13 +58,21 @@ public class DatasetHandler {
       return getNcmlDataset( ds);
     }
 
+    // look for an fmrc dataset
+    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch( reqPath);
+    if ((match != null) && (match.dataRoot.fmrc != null)) {
+      InvDatasetFmrc fmrc = match.dataRoot.fmrc;
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFmrc= "+fmrc);
+      return fmrc.getDataset( match.remaining);
+    }
+
     // otherwise, must have a datasetRoot in the path
-    String filePath = DataRootHandler.getInstance().translatePath( reqPath);
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
-    if (filePath == null) return null;
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( reqPath);
+    if (file == null)
+      return null;
 
     // acquire it
-    NetcdfFile ncfile = NetcdfDataset.acquireFile(filePath, null);
+    NetcdfFile ncfile = NetcdfDataset.acquireFile(file.getPath(), null);
 
     // wrap with ncml if needed
     org.jdom.Element netcdfElem = DataRootHandler.getInstance().getNcML( reqPath);
@@ -106,21 +115,12 @@ public class DatasetHandler {
     ncmlDatasetHash.put( path, ds);
   }
 
-  /*
-  static void putNcmlDataset( String path, InvDatasetImpl ds) {
-    List accessList = ds.getAccess();
-    for (int i = 0; i < accessList.size(); i++) {
-      InvAccess access = (InvAccess) accessList.get(i);
-      String fullPath = access.getUrlPath();
-      //String fullPath = access.getUnresolvedUrlName();
-      //if (fullPath.startsWith( contextPath + "/")) fullPath = fullPath.substring( contextPath.length() + 1 );
-      // System.out.println("putAggregationDataset urlPath= "+ds.getUrlPath()+" fullPath= "+fullPath);
-      ncmlDatasetHash.put( fullPath, ds);
-    }
-  }
- */
-
   static private NetcdfFile getNcmlDataset( InvDatasetImpl ds) throws IOException {
+    String cacheName = ds.getUniqueID();
+    return NetcdfFileCache.acquire(cacheName, -1, null, null, new NcmlFileFactory(ds));
+  }
+
+  static private NetcdfFile getFmrcDataset( InvDatasetImpl ds) throws IOException {
     String cacheName = ds.getUniqueID();
     return NetcdfFileCache.acquire(cacheName, -1, null, null, new NcmlFileFactory(ds));
   }

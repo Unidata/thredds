@@ -699,7 +699,7 @@ public class Variable implements VariableIF {
       dimsAll = new ArrayList();
       getDimensionsAll( dimsAll, this);
     }
-    return dimsAll;
+    return new ArrayList(dimsAll);
   }
   private ArrayList dimsAll = null;
 

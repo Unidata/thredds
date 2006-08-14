@@ -1262,7 +1262,7 @@ class Nidsheader{
         dims.add( iDim);
         ncfile.addDimension( null, iDim);
         ncfile.addDimension( null, jDim);
-        ncfile.addAttribute(null, new Attribute("cdm_data_type", "Grid"));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
 
         //Variable dist = new Variable(ncfile, null, null, "distance");
         //dist.setDataType(DataType.INT);
@@ -1387,7 +1387,7 @@ class Nidsheader{
 
         //prod_info_size = 2 * (int) (num_bin * scale + 0.5);
         //dimensions: radial, bin
-        ncfile.addAttribute(null, new Attribute("cdm_data_type", "Radial"));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.RADIAL.toString()));
         Dimension radialDim = new Dimension("azimuth", num_radials, true);
         ncfile.addDimension( null, radialDim);
 

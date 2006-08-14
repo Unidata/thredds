@@ -25,13 +25,12 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.dataset.*;
 import ucar.ma2.Array;
 import ucar.unidata.util.Parameter;
 
 import java.util.StringTokenizer;
+import java.util.List;
 import java.io.IOException;
 
 /**
@@ -135,5 +134,17 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
       return null;
     }
     return formula;
+  }
+
+  protected String getUnits(NetcdfDataset ds) {
+        // kind o' kludge
+    List axes = ds.getCoordinateAxes();
+    for (int i = 0; i < axes.size(); i++) {
+      CoordinateAxis axis =  (CoordinateAxis) axes.get(i);
+      if (axis.getAxisType() == AxisType.GeoX) {
+        return axis.getUnitsString();
+      }
+    }
+    return null;
   }
 }

@@ -62,8 +62,20 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     named = new ArrayList(); // declared in CoordinateAxis1D superclass
 
-    int n = (int) org.getSize();
-    timeDates = new Date[n];
+    int ncoords = (int) org.getSize();
+
+    // deal with type char- basically make it into a string
+    if (org.getDataType() == DataType.CHAR) {
+      int rank = org.getRank();
+      int strlen = org.getShape()[rank-1];
+      ncoords /= strlen;
+
+      /* setDataType( DataType.STRING);
+      List dims = org.getDimensions();
+      dims.remove( dims.size()-1); // remove the last one.
+      setDimensions(dims); */
+    }
+    timeDates = new Date[ncoords];
 
     // see if it has a valid udunits unit
     SimpleUnit su = null;
@@ -76,7 +88,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       IndexIterator ii = data.getIndexIterator();
       DateFormatter formatter = new DateFormatter();
       dateUnit = (DateUnit) su;
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < ncoords; i++) {
         double val = ii.getDoubleNext();
         Date d = dateUnit.makeDate( val);
         String name = formatter.toDateTimeString(d);
@@ -91,7 +103,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       ArrayObject data = (ArrayObject) org.read();
       IndexIterator ii = data.getIndexIterator();
       DateFormatter formatter = new DateFormatter();
-      for (int i=0; i<n; i++) {
+      for (int i=0; i<ncoords; i++) {
         String coordValue = (String) ii.getObjectNext();
         Date d = DateUnit.getStandardOrISO( coordValue);
         if (d == null) {
@@ -109,13 +121,13 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       return;
     }
 
-    // otherwise, see if its a String, and if we can parse the values as an ISO date
+    // otherwise, see if its a CHAR, and if we can parse the values as an ISO date
     if (org.getDataType() == DataType.CHAR) {
       ArrayChar data = (ArrayChar) org.read();
       ArrayChar.StringIterator ii = data.getStringIterator();
       DateFormatter formatter = new DateFormatter();
-      for (int i=0; i<n; i++) {
-        String coordValue = (String) ii.next();
+      for (int i=0; i<ncoords; i++) {
+        String coordValue = ii.next();
         Date d = DateUnit.getStandardOrISO( coordValue);
         if (d == null) {
           if (errMessages != null)
@@ -149,7 +161,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     IndexIterator ii = data.getIndexIterator();
     DateFormatter formatter = new DateFormatter();
     dateUnit = (DateUnit) su;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < ncoords; i++) {
       double val = ii.getDoubleNext();
       Date d = dateUnit.makeDate( val);
       String name = formatter.toDateTimeString(d);

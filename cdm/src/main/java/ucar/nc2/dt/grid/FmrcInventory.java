@@ -195,7 +195,7 @@ public class FmrcInventory {
             log.warn("FmrcCollection Definition "+name+" does not contain variable "+grid.name);
             continue; // skip it
           }  else {
-            uv = new UberGrid(grid.name, grid.sname);
+            uv = new UberGrid(grid.name);
             uvHash.put(grid.name, uv);
           }
         }
@@ -433,7 +433,7 @@ public class FmrcInventory {
 
   // The collection across runs of one variable
   class UberGrid implements Comparable {
-    String name, searchName;
+    String name;
     ArrayList runs = new ArrayList();  // List of RunExpected
     ForecastModelRunInventory.VertCoord vertCoordUnion = null;
     int countInv, countExpected;
@@ -442,9 +442,8 @@ public class FmrcInventory {
     FmrcDefinition.RunSeq expectedSeq; // expected sequence
     FmrcDefinition.Grid expectedGrid; // expected vert coordinate (optional)
 
-    UberGrid(String name, String searchName) {
+    UberGrid(String name) {
       this.name = name;
-      this.searchName = searchName;
       if (definition != null) {
         expectedSeq = definition.findSeqForVariable( name);
         expectedGrid = expectedSeq.findGrid( name);
@@ -452,10 +451,6 @@ public class FmrcInventory {
     }
 
     String getName() { return name; }
-    String getSearchName() { return searchName; }
-    /* int getExpectedVertCoordLength() {
-      return (expectedVertCoord == null) ? 1 : expectedVertCoord.getValues().length;
-    } */
 
     void addRun(Run run, ForecastModelRunInventory.Grid grid) {
       ForecastModelRunInventory.TimeCoord xtc = (expectedSeq == null) ? null : expectedSeq.findTimeCoordByRuntime( run.runTime);
@@ -511,28 +506,36 @@ public class FmrcInventory {
      * @param vcList list of VertCoord, may be empty
      */
     public void normalize(ForecastModelRunInventory.VertCoord result, List vcList) {
-      // get all values into a HashSet of Double
+      // get all values into a HashSet of LevelCoord
       HashSet valueSet = new HashSet();
-      addValues( valueSet, result.getValues());
+      addValues( valueSet, result.getValues1(), result.getValues2());
       for (int i = 0; i < vcList.size(); i++) {
         ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) vcList.get(i);
-        addValues( valueSet, vc.getValues());
+        addValues( valueSet, vc.getValues1(), vc.getValues2());
       }
 
       // now create a sorted list, transfer to values array
       List valueList = Arrays.asList( valueSet.toArray());
       Collections.sort( valueList);
-      double[] values = new double[valueList.size()];
+      double[] values1 = new double[valueList.size()];
+      double[] values2 = new double[valueList.size()];
+      boolean has_values2 = false;
       for (int i = 0; i < valueList.size(); i++) {
-        Double d = (Double) valueList.get(i);
-        values[i] = d.doubleValue();
+        LevelCoord lc = (LevelCoord) valueList.get(i);
+        values1[i] = lc.value1;
+        values2[i] = lc.value2;
+        if (lc.value2 != 0.0)
+          has_values2 = true;
       }
-      result.setValues(values);
+      result.setValues1(values1);
+      if (has_values2)
+        result.setValues2(values2);
     }
 
-    private void addValues(HashSet valueSet, double[] values) {
-      for (int i = 0; i < values.length; i++) {
-        valueSet.add( new Double(values[i]));
+    private void addValues(HashSet valueSet, double[] values1, double[] values2) {
+      for (int i = 0; i < values1.length; i++) {
+        double val2 = (values2 == null) ? 0.0 : values2[i];
+        valueSet.add( new LevelCoord(values1[i], val2));
       }
     }
 
@@ -572,6 +575,38 @@ public class FmrcInventory {
     }  */
 
   } // end UberGrid
+
+  class  LevelCoord implements Comparable {
+    double mid;
+    double value1, value2;
+    LevelCoord( double value1, double value2) {
+      this.value1 = value1;
+      this.value2 = value2;
+      mid = (value2 == 0) ? value1 : (value1 + value2)/2;
+    }
+
+    public int compareTo(Object o) {
+      LevelCoord other = (LevelCoord) o;
+      if (closeEnough(value1, other.value1) && closeEnough(value2, other.value2)) return 0;
+      return (int) (mid - other.mid);
+    }
+
+    public boolean equals(Object oo) {
+      if (this == oo) return true;
+      if ( !(oo instanceof LevelCoord)) return false;
+      LevelCoord other = (LevelCoord) oo;
+      return (closeEnough(value1, other.value1) && closeEnough(value2, other.value2));
+    }
+
+    public int hashCode() {
+      return (int) (value1 * 100000 + value2 * 100);
+    }
+  }
+
+  private double TOL = 1.0e-8;
+  private boolean closeEnough( double v1, double v2) {
+    return Math.abs(v1 - v2) < TOL;
+  }
 
   class RunExpected implements Comparable {
     Run run;                              // this has actual time coord
@@ -1230,9 +1265,9 @@ public class FmrcInventory {
 
   private static boolean debugTiming = false;
   public static void main(String args[]) throws Exception {
-    String dir = "nam/conus12";
-    FmrcInventory fmrc = make("C:/data/grib/"+dir+"/", "NCEP-NAM-CONUS_12km", null, "C:/data/grib/"+dir, "grib2",
-            ForecastModelRunInventory.OPEN_NORMAL);
+    String dir = "nam/c20s";
+    FmrcInventory fmrc = make("R:/testdata/motherlode/grid/inv/new/", "NCEP-NAM-CONUS_20km-surface", null, "C:/data/grib/"+dir, "grib1",
+            ForecastModelRunInventory.OPEN_FORCE_NEW);
 
     FmrcDefinition def = fmrc.getDefinition();
     if (null != def) {

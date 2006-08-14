@@ -124,15 +124,34 @@ public class FileWriter {
     for (int i=0; i<varlist.size(); i++) {
       Variable oldVar = (Variable) varlist.get(i);
 
-      // copy dimensions LOOK anon dimensions
-      Dimension[] dims = new Dimension[ oldVar.getRank()];
+      // copy dimensions LOOK what about anon dimensions
+      ArrayList dims = new ArrayList();
       List dimvList = oldVar.getDimensions();
       for (int j=0; j< dimvList.size(); j++) {
         Dimension oldD = (Dimension) dimvList.get(j);
-        dims[j] = (Dimension) dimHash.get( oldD.getName());
+        dims.add( dimHash.get( oldD.getName()));
       }
 
-      ncfile.addVariable( oldVar.getName(), oldVar.getDataType(), dims);
+      DataType newType = oldVar.getDataType();
+
+      // convert STRING to CHAR
+      if (oldVar.getDataType() == DataType.STRING) {
+        Array data = oldVar.read();
+        IndexIterator ii = data.getIndexIterator();
+        int max_len = 0;
+        while (ii.hasNext()) {
+          String s =  (String) ii.getObjectNext();
+          max_len = Math.max( max_len, s.length());
+        }
+
+        // add last dimension
+        Dimension newD = ncfile.addDimension(oldVar.getName()+"_strlen", max_len);
+        dims.add( newD);
+
+        newType = DataType.CHAR;
+      }
+
+      ncfile.addVariable( oldVar.getName(), newType, dims);
       if (debug) System.out.println("add var= "+oldVar.getName());
 
           // attributes
@@ -166,7 +185,7 @@ public class FileWriter {
     long total = 0;
     for (int i=0; i<varlist.size(); i++) {
       Variable oldVar = (Variable) varlist.get(i);
-      if (useRecordDimension && oldVar.isUnlimited()) continue; // skip recoord variables
+      if (useRecordDimension && oldVar.isUnlimited()) continue; // skip record variables
 
       if (debug) System.out.println("write var= "+oldVar.getName()+ " size = "+oldVar.getSize()+" type="+
           oldVar.getDataType());
@@ -174,6 +193,9 @@ public class FileWriter {
 
       Array data = oldVar.read();
       try {
+        if (oldVar.getDataType() == DataType.STRING) {
+          data = convertToChar( ncfile.findVariable(oldVar.getName()), data);
+        }
         ncfile.write(oldVar.getName(), data);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
@@ -193,7 +215,7 @@ public class FileWriter {
         origin[0] = count;
         try {
           Array recordData = recordVar.read( origin, size);
-          ncfile.write("record",  origin, recordData);
+          ncfile.write("record", origin, recordData);
           if (debugExtend) System.out.println("write record var; size = "+sdataSize+" recno="+count);
          } catch (InvalidRangeException e) {
           e.printStackTrace();
@@ -216,6 +238,20 @@ public class FileWriter {
     if (debug) System.out.println("FileWriter done total bytes = "+total);
 
     return ncfile;
+  }
+
+  private static Array convertToChar( Variable newVar, Array oldData) {
+    ArrayChar newData = (ArrayChar) Array.factory(DataType.CHAR, newVar.getShape());
+    Index ima = newData.getIndex();
+    IndexIterator ii = oldData.getIndexIterator();
+    while (ii.hasNext()) {
+      String s =  (String) ii.getObjectNext();
+      int[] c = ii.getCurrentCounter(); 
+      for (int i = 0; i < c.length; i++)
+        ima.setDim(i, c[i]);
+      newData.setString(ima, s);
+    }
+    return newData;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

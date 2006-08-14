@@ -25,10 +25,12 @@ import ucar.nc2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.dataset.grid.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
+import ucar.ma2.Array;
 import thredds.ui.*;
 
 import java.awt.*;
@@ -37,6 +39,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.List;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -81,14 +84,38 @@ public class CoordSysTable extends JPanel {
 
     axisTable = new BeanTableSorted(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
 
-    JTable jtable = varTable.getJTable();
-    thredds.ui.PopupMenu csPopup = new thredds.ui.PopupMenu(jtable, "Options");
-    csPopup.addAction("Show Declaration", new AbstractAction() {
+    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(varTable.getJTable(), "Options");
+    varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
         Variable v = ds.findVariable( vb.getName());
         infoTA.clear();
         infoTA.appendLine( v.toString());
+        infoTA.gotoTop();
+        infoWindow.showIfNotIconified();
+      }
+    });
+
+    thredds.ui.PopupMenu axisPopup = new thredds.ui.PopupMenu(axisTable.getJTable(), "Options");
+    axisPopup.addAction("Show Values", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
+        infoTA.clear();
+        try {
+          infoTA.appendLine( NCdump.printVariableData( axis, null));
+          if (axis instanceof CoordinateAxis1D && axis.isNumeric() ) {
+            CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
+            if (axis1D.isContiguous()) {
+              printArray("edges=",axis1D.getCoordEdges());
+            } else {
+              printArray("bound1=",axis1D.getBound1());
+              printArray("bound2=",axis1D.getBound2());
+            }
+          }
+        } catch (IOException e1) {
+          infoTA.appendLine(e1.getMessage());
+        }
         infoTA.gotoTop();
         infoWindow.showIfNotIconified();
       }
@@ -107,6 +134,16 @@ public class CoordSysTable extends JPanel {
 
     setLayout(new BorderLayout());
     add(split2, BorderLayout.CENTER);
+  }
+
+  private void printArray( String title, double vals[]) {
+    StringBuffer sbuff = new StringBuffer();
+    sbuff.append(" "+title);
+    for (int i = 0; i < vals.length; i++) {
+      sbuff.append(" "+vals[i]);
+    }
+    sbuff.append("\n");
+    infoTA.appendLine( sbuff.toString());
   }
 
   public PreferencesExt getPrefs() { return prefs; }
@@ -352,7 +389,7 @@ public class CoordSysTable extends JPanel {
     CoordinateSystem firstCoordSys = null;
     String name, desc, units, axisType="", positive= "", incr = "";
     String dims, shape, csNames;
-    boolean isCoordVar;
+    boolean isCoordVar, isLayer;
 
     // no-arg constructor
     public AxisBean() {}
@@ -394,7 +431,11 @@ public class CoordSysTable extends JPanel {
         CoordinateAxis1D v1 = (CoordinateAxis1D) v;
         if (v1.isRegular())
           setRegular( Double.toString( v1.getIncrement()));
+        isLayer = (null != axis.findAttribute(_Coordinate.ZisLayer));
+
       }
+
+      boolean isLayer = null != axis.findAttribute(_Coordinate.ZisLayer);
     }
 
     public String getName() { return name; }
@@ -402,6 +443,9 @@ public class CoordSysTable extends JPanel {
 
     public boolean isCoordVar() { return isCoordVar; }
     public void setCoordVar(boolean isCoordVar) { this.isCoordVar = isCoordVar; }
+
+    public boolean isContig() { return axis.isContiguous(); }
+    public boolean isLayer() { return isLayer; }
 
     public String getShape() { return shape; }
     public void setShape(String shape) { this.shape = shape; }

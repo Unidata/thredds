@@ -21,12 +21,11 @@
 
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.unidata.geoloc.ProjectionImpl;
+
+import java.util.List;
 
 /**
  * Create a LambertAzimuthal Projection from the information in the Coordinate Transform Variable.
@@ -52,7 +51,9 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
     double lat0 = readAttributeDouble(ctv, "latitude_of_projection_origin");
     double false_easting = readAttributeDouble(ctv, "false_easting");
     double false_northing = readAttributeDouble(ctv, "false_northing");
-    String units = ds.findAttValueIgnoreCase(ctv, "units", null);
+    String units = ds.findAttValueIgnoreCase( ctv, "units", null);
+    if (units == null) 
+      units = getUnits( ds);
 
     ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
             new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing, units,

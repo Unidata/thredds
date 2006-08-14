@@ -127,11 +127,11 @@ public class Index2NC {
     ncfile.addAttribute( null, new Attribute( "geospatial_lon_max", "360" ) );
     ncfile.addAttribute( null, new Attribute( "geospatial_lon_min", "0" ) );
     if( pointDS || satelliteDS ) {
-      ncfile.addAttribute( null, new Attribute( "cdm_datatype", "Point" ) );
+      ncfile.addAttribute( null, new Attribute( "cdm_data_type", thredds.catalog.DataType.POINT.toString() ) );
     } else if( stationDS ) {
-      ncfile.addAttribute( null, new Attribute( "cdm_datatype", "Station" ) );
+      ncfile.addAttribute( null, new Attribute( "cdm_data_type", thredds.catalog.DataType.STATION.toString() ) );
     } else if( trajectoryDS ) {
-      ncfile.addAttribute( null, new Attribute( "cdm_datatype", "Trajectory" ) );
+      ncfile.addAttribute( null, new Attribute( "cdm_data_type", thredds.catalog.DataType.TRAJECTORY.toString() ) );
     }
     // create variables
     if( stationDS ) {

@@ -46,7 +46,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
 
   /** Constructor */
   NcDDS( String name, NetcdfFile ncfile) {
-    super(name);
+    super( StringUtil.escape( name, ""));
 
     // get coordinate variables
     // LOOK: this should get optimized to store data once

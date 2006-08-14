@@ -85,12 +85,14 @@ public class WcsDataset {
     return fmt.outputString( writer.makeCapabilities( serverURL, gridDataset, null)); // LOOK  should cache
   }
 
-  public void getCapabilities(java.io.OutputStream out, SectionType section) throws IOException {
+  public int getCapabilities(java.io.OutputStream out, SectionType section) throws IOException {
     XMLwriter writer = new XMLwriter();
     Document doc = writer.makeCapabilities( serverURL, gridDataset, section);
-    fmt.output( doc, out);
+    String result = fmt.outputString(doc);
+    out.write( result.getBytes());
     if (showDoc)
-      fmt.output( doc, System.out);
+      System.out.println(result);
+    return result.length();
   }
 
   public boolean hasCoverage( String coverageName) {
@@ -109,12 +111,14 @@ public class WcsDataset {
     return fmt.outputString( writer.makeDescribeCoverage( gridDataset, coverageNames)); // LOOK  should cache
   }
 
-  public void describeCoverage(java.io.OutputStream out, String[] coverageNames) throws IOException {
+  public int describeCoverage(java.io.OutputStream out, String[] coverageNames) throws IOException {
     XMLwriter writer = new XMLwriter();
     Document doc = writer.makeDescribeCoverage( gridDataset, coverageNames);
-    fmt.output( doc, out);
+    String result = fmt.outputString(doc);
+    out.write( result.getBytes());
     if (showDoc)
-      fmt.output( doc, System.out);
+      System.out.println(result);
+    return result.length();
   }
 
   public String checkCoverageParameters( GetCoverageRequest req) throws IOException {
@@ -173,7 +177,6 @@ public class WcsDataset {
 
     GridDatatype subset = geogrid.makeSubset(t_range, z_range, y_range, x_range);
     Array data = subset.readDataSlice(0, 0, -1, -1);
-    // Array data = geogrid.readDataSlice(t, z, -1, -1); // 2D plane, all x, y
 
     if (req.getFormat() == GetCoverageRequest.Format.GeoTIFF || req.getFormat() == GetCoverageRequest.Format.GeoTIFFfloat) {
       //String dname = (datasetURL != null) ? datasetURL : datasetPath;

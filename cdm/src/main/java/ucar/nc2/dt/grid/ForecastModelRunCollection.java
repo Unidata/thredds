@@ -88,4 +88,12 @@ public interface ForecastModelRunCollection {
    */
   public NetcdfDataset getBestTimeSeries( );
 
+
+  /**
+   * Get a NetcdfDataset that is the underlying datasets with the "2d time"
+   * @return the NetcdfDataset containing that data.
+   */
+  public NetcdfDataset getFmrcDataset( );
+
+
 }

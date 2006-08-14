@@ -57,12 +57,15 @@ public class FileServerServlet extends HttpServlet {
   }
 
   private File getFile(HttpServletRequest req) {
-    String filePath = DataRootHandler.getInstance().translatePath( req);
-    // @todo Should instead use ((CrawlableDatasetFile)catHandler.findRequestedDataset( path )).getFile();
-    if (filePath == null)
-      return null;
+    String reqPath = req.getPathInfo();
+    if (reqPath.length() > 0) {
+      if (reqPath.startsWith("/"))
+        reqPath = reqPath.substring(1);
+    }
 
-    File file = new File( filePath);
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( reqPath);
+    if (file == null)
+      return null;
     if (!file.exists())
       return null;
 

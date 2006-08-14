@@ -57,8 +57,8 @@ public class FmrcReport {
       List vars = haveSeq.getVariables();
       for (int j = 0; j < vars.size(); j++) {
         FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
-        String sname = (uv.getSearchName() != null) ? uv.getSearchName() : uv.getName();  // LOOK can remove name when all is converted      
-        FmrcDefinition.Grid g = def.findGrid(sname);
+        String sname = uv.getName();
+        FmrcDefinition.Grid g = def.findGridByName(sname);
         if (g == null) {
           errs.add( new ErrMessage(new Date(0), uv.name, "Extra Variable (not in definition)", ""));
           continue;

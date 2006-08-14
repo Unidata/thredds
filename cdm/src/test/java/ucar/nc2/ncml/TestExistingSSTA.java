@@ -19,27 +19,28 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dt.fmr;
+package ucar.nc2.ncml;
 
-/**
- * Class Description.
- *
- * @author caron
- */
-public interface FmrcCoordSys {
+import junit.framework.TestCase;
 
-  public boolean hasVariable( String searchName);
-  public VertCoord findVertCoordForVariable( String searchName);
-  public TimeCoord findTimeCoordForVariable( String searchName);
+import java.io.IOException;
 
-  public interface VertCoord {
-    public String getName();
-    public double[] getValues1();
-    public double[] getValues2();
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
+
+public class TestExistingSSTA extends TestCase {
+
+  public TestExistingSSTA( String name) {
+    super(name);
   }
 
-  public interface TimeCoord {
-    public String getName();
-    public double[] getOffsetHours();
+  public void testSSTA() throws IOException, InvalidRangeException {
+    String filename = "file:./"+TestNcML.topDir + "aggExistingSSTA.xml";
+
+    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    System.out.println(" "+ncfile);
+
+    ncfile.close();
   }
 }

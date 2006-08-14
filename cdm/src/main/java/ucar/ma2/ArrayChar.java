@@ -355,7 +355,7 @@ public class ArrayChar extends Array {
   public void setString(int index, String val) {
     int rank = getRank();
     if (rank != 2)
-      throw new IllegalArgumentException("ArayChar.setString rank must be 2");
+      throw new IllegalArgumentException("ArrayChar.setString rank must be 2");
 
     Index ima = getIndex();
     setString( ima.set(index), val);
@@ -388,7 +388,7 @@ public class ArrayChar extends Array {
   public void setString(Index ima, String val) {
     int rank = getRank();
     if (rank == 0)
-      throw new IllegalArgumentException("ArayChar.setString rank must not be 0");
+      throw new IllegalArgumentException("ArrayChar.setString rank must not be 0");
     int arrayLen = getShape()[rank-1];
     int strLen = Math.min(val.length(), arrayLen);
 

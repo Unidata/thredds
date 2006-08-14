@@ -216,7 +216,7 @@ public class DataRootHandler {
     String dirPath = ( pos > 0 ) ? path.substring( 0, pos + 1 ) : "";
 
     // look for datasetScans and NcML elements
-    findSpecialDatasets( dirPath, cat.getDatasets() );
+    findSpecialDatasets( cat.getDatasets() );
 
     // add catalog to hash tables
     synchronized ( this )
@@ -285,10 +285,9 @@ public class DataRootHandler {
 
   /**
    * Look for datasetScans and NcML elements recursively in a list of InvDatasetImpl, but dont follow catRefs
-   * @param dirPath directory path of catalog, not including "catalog.xml"
    * @param dsList the list of InvDatasetImpl
    */
-  private void findSpecialDatasets(String dirPath, List dsList) {
+  private void findSpecialDatasets( List dsList) {
     Iterator iter = dsList.iterator();
     while (iter.hasNext()) {
       InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
@@ -303,57 +302,19 @@ public class DataRootHandler {
 
         addRoot(ds);
 
-        /* boolean ok = addRoot(dirPath + ds.getPath(), ds);
-        if (addRoot(ds)) {
-          if (ds.getNcmlElement() != null)
-            DatasetHandler.putNcmlDataset(ds.getPath(), ds);
-        }
+      } else if (invDataset instanceof InvDatasetFmrc) {
+          InvDatasetFmrc fmrc = (InvDatasetFmrc) invDataset;
+          addRoot(fmrc);
+          //DatasetHandler.putFmrcDataset(fmrc.getPath(), fmrc);
 
-        /* the non-blank and Compound services need extra attention
-        String serviceBase = service.getBase();
-        if (service.getServiceType() != ServiceType.COMPOUND) {
-
-          if (serviceBase.length() != 0) { // not blank
-            if (servletContextPath != null) {
-              if (serviceBase.startsWith(servletContextPath + "/"))
-                serviceBase = serviceBase.substring(servletContextPath.length() + 1);
-            }
-            if (!serviceBase.equals(dirPath)) { // dont add again if it matches the reletive path
-              //ok = addRoot(serviceBase + ds.getPath(), ds);
-              ok = addRoot(ds);
-              hasScans = hasScans || ok;
-            }
-          }
-
-        } else { // compound type
-
-          java.util.List serviceList = service.getServices();
-          for (int i = 0; i < serviceList.size(); i++) {
-            InvService nestedService = (InvService) serviceList.get(i);
-            String nestedServiceBase = nestedService.getBase();
-            if (servletContextPath != null) {
-              if (nestedServiceBase.startsWith(servletContextPath + "/"))
-                nestedServiceBase = nestedServiceBase.substring(servletContextPath.length() + 1);
-            }
-            if (!nestedServiceBase.equals(dirPath)) { // dont add again if it matches the reletive path
-              //ok = addRoot(nestedServiceBase + ds.getPath(), ds);
-              ok = addRoot(ds);
-              hasScans = hasScans || ok;
-            }
-          }
-
-        } */
-
+        // not a DatasetScan or InvDatasetFmrc
+      } else if (invDataset.getNcmlElement() != null) {
+          DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
       }
 
-      // not a DatasetScan
-      else if (invDataset.getNcmlElement() != null) {
-        DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
-      }
-
-      if (!(invDataset instanceof InvCatalogRef)) {
+      if (!(invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetFmrc)) {
         // recurse
-        findSpecialDatasets(dirPath, invDataset.getDatasets());
+        findSpecialDatasets( invDataset.getDatasets());
       }
     }
 
@@ -376,16 +337,40 @@ public class DataRootHandler {
       return false;
     }
 
-    // LOOK !! We should restrict this to content/thredds/testData rather than allow anything under content/thredds
+    // LOOK !!
     // rearrange scanDir if it starts with content
     if (dscan.getScanDir().startsWith("content/"))
       dscan.setScanDir(contentPath + dscan.getScanDir().substring(8));
 
     // add it
-    droot = new DataRoot(path, dscan);
+    droot = new DataRoot(dscan);
     pathMatcher.put(path, droot);
 
     log.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanDir() + ">");
+    return true;
+  }
+
+  private synchronized boolean addRoot(InvDatasetFmrc fmrc) {
+    // check for duplicates
+    String path = fmrc.getPath();
+
+    if (path == null) {
+      log.error(fmrc.getFullName()+" missing a path attribute.");
+      return false;
+    }
+
+    DataRoot droot = (DataRoot) pathMatcher.get(path);
+    if (droot != null) {
+        log.warn(" already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+            " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
+      return false;
+    }
+
+    // add it
+    droot = new DataRoot(fmrc);
+    pathMatcher.put(path, droot);
+
+    log.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
     return true;
   }
 
@@ -449,13 +434,13 @@ public class DataRootHandler {
     while (iter.hasNext()) {
       InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
 
-      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan)) {
+      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
         InvCatalogRef catref = (InvCatalogRef) invDataset;
         String href = catref.getXlinkHref();
         if (!href.startsWith("http:")) // must be a reletive catref
           initCatalog(dirPath + href, true ); // go check it out
 
-      } else if (!(invDataset instanceof InvDatasetScan)) {
+      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
         // recurse through nested datasets
         check4Catrefs(dirPath, invDataset.getDatasets());
       }
@@ -466,20 +451,26 @@ public class DataRootHandler {
 
   public class DataRootMatch {
     String rootPath;     // this is the matching part of the URL
-    String dirLocation;  // this is the directory that should be substituted for the rootPath
     String remaining;   // this is the part of the URL that didnt match
+    String dirLocation;   // this is the directory that should be substituted for the rootPath
+    DataRoot dataRoot;  // this is the directory that should be substituted for the rootPath
   }
 
-  private class DataRoot {
-    final String path;         // match this path
-    final String dirLocation; // to this directory
-    final InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
+  public class DataRoot {
+    String path;         // match this path
+    String dirLocation; // to this directory
+    InvDatasetScan scan; // the InvDatasetScan that created this (may be null)
+    InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
 
     // Use this to access CrawlableDataset in dirLocation.
-    final InvDatasetScan datasetRootProxy;
+    InvDatasetScan datasetRootProxy;
 
-    DataRoot(String path, InvDatasetScan scan) {
-      //this.path = path;
+    DataRoot(InvDatasetFmrc fmrc) {
+      this.path = fmrc.getPath();
+      this.fmrc = fmrc;
+    }
+
+    DataRoot(InvDatasetScan scan) {
       this.path = scan.getPath();
       this.scan = scan;
       this.dirLocation = scan.getScanDir();
@@ -542,6 +533,10 @@ public class DataRootHandler {
         spath = spath.substring(1);
     }
 
+    return findDataRootMatch( spath);
+  }
+
+  public DataRootMatch findDataRootMatch(String spath) {
     DataRoot dataRoot = matchPath2(spath);
     if (dataRoot == null)
       return null;
@@ -552,18 +547,18 @@ public class DataRootHandler {
     if (match.remaining.startsWith("/"))
       match.remaining = match.remaining.substring(1);
     match.dirLocation = dataRoot.dirLocation;
+    match.dataRoot = dataRoot;
     return match;
   }
 
-
-  /**
+  /*
    * Extract the path from the request and call translatePath.
    *
    * @param req the request
    * @return the translated path.
    * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler.findRequestedDataset( path )).getFile();
 
-   */
+   *
   public String translatePath(HttpServletRequest req) {
     String spath = req.getPathInfo(); // was req.getServletPath() + req.getPathInfo();
 
@@ -575,13 +570,13 @@ public class DataRootHandler {
     return translatePath(spath);
   }
 
-  /**
+  /*
    * Try to match the given path with all available data roots. If match, then translate into a CrawlableDataset path.
    *
    * @param path the reletive path, ie req.getPathInfo()
    * @return the translated path, as a CrawlableDataset path, or null if no dataroot matches.
    * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler.findRequestedDataset( path )).getFile();
-   */
+   *
   public String translatePath(String path) {
     if (path.startsWith("/"))
       path = path.substring(1);
@@ -605,7 +600,7 @@ public class DataRootHandler {
     if (log.isDebugEnabled()) log.debug(" translatePath= " + path + " to dataset path= " + fullPath);
 
     return fullPath;
-  }
+  } */
 
   /**
    * Return true if the given path matches a dataRoot, otherwise return false.
@@ -659,7 +654,7 @@ public class DataRootHandler {
   /**
    * Return the java.io.File represented by the CrawlableDataset to which the
    * given path maps. Null is returned if the dataset does not exist, the
-   * matching InvDatasetScan or DataRoot filters out the requested 
+   * matching InvDatasetScan or DataRoot filters out the requested
    * CrawlableDataset, or the CrawlableDataset does not represent a File
    * (i.e., it is not a CrawlableDatasetFile).
    *
@@ -1022,24 +1017,29 @@ public class DataRootHandler {
     if (pos >= 0)
       workPath = workPath.substring(0, pos);
 
-    // Check that path is allowed.
-    if (getCrawlableDataset(workPath) == null)
-      return null;
-
     // now look through the InvDatasetScans and get a maximal match
-    DataRoot dataRoot = matchPath2(workPath);
-    if (dataRoot == null) {
-      log.warn("makeDynamicCatalog(): No InvDatasetScan for =" + workPath + " request path= " + path); // LOOK why should there be a messaage ?
+    DataRootMatch match = findDataRootMatch(workPath);
+    if (match == null) {
+      log.warn("makeDynamicCatalog(): No DataRoot for =" + workPath + " request path= " + path); // LOOK why should there be a messaage ?
       return null;
     }
 
-    // its gotta be a DatasetScan, not a DatasetRoot
-    if (dataRoot.scan == null) {
+    // look for the fmrc
+    if (match.dataRoot.fmrc != null) {
+      return match.dataRoot.fmrc.makeCatalog( match.remaining);
+    }
+
+    // Check that path is allowed, ie not filtered out
+    if (getCrawlableDataset(workPath) == null)
+      return null;
+
+    // at this point, its gotta be a DatasetScan, not a DatasetRoot
+    if (match.dataRoot.scan == null) {
       log.warn("makeDynamicCatalog(): No InvDatasetScan for =" + workPath + " request path= " + path);
       return null;
     }
 
-    InvDatasetScan dscan = dataRoot.scan;
+    InvDatasetScan dscan = match.dataRoot.scan;
     log.debug("Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
     InvCatalogImpl cat = dscan.makeCatalogForDirectory( path, baseURI );
 
@@ -1323,9 +1323,15 @@ public class DataRootHandler {
           Iterator iter = pathMatcher.iterator();
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
-            String url = servletContextPath + "/dataDir/" + ds.path+"/";
-            e.pw.print("  " + ds.path + "  for directory= ");
-            e.pw.println(" <a href='" +url+"'>"+ds.dirLocation+"</a>");
+            e.pw.print(" <b>" + ds.path+"</b>");
+            if (ds.fmrc == null) {
+              String type = (ds.scan == null) ? "root":"scan";
+              String url = servletContextPath + "/dataDir/" + ds.path+"/";
+              e.pw.println(" for "+type+" directory= <a href='" +url+"'>"+ds.dirLocation+"</a> ");
+            } else {
+              String url = servletContextPath + "/"+ ds.path;
+              e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.fmrc.getXlinkHref()+"</a>");
+            }
           }
         }
       }

@@ -79,7 +79,7 @@ import org.jdom.Element;
  * @author caron
  * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */
-public class Aggregation {
+public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   static protected DiskCache2 diskCache2 = null;
 
@@ -89,7 +89,7 @@ public class Aggregation {
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
-  protected NetcdfDataset ncd; // the aggregation nelongs to this dataset
+  protected NetcdfDataset ncDataset; // the aggregation belongs to this dataset
   protected String dimName; // the aggregation dimension name
   private Type type; // the aggregation type
   protected ArrayList nestedDatasets; // working set of Aggregation.Dataset
@@ -126,7 +126,7 @@ public class Aggregation {
    * @param recheckS how often to check if files have changes (secs)
    */
   public Aggregation(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
-    this.ncd = ncd;
+    this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = Type.getType(typeName);
 
@@ -257,8 +257,8 @@ public class Aggregation {
   // Document root is aggregation
   // has the name getCacheName()
   private String getCacheName() {
-    String cacheName = ncd.getLocation();
-    if (cacheName == null) cacheName = ncd.getCacheName();
+    String cacheName = ncDataset.getLocation();
+    if (cacheName == null) cacheName = ncDataset.getCacheName();
     return cacheName;
   }
 
@@ -421,11 +421,11 @@ public class Aggregation {
     buildCoords(cancelTask);
 
     if (getType() == Aggregation.Type.JOIN_NEW)
-      aggNewDimension(true, ncd, cancelTask);
+      aggNewDimension(true, ncDataset, cancelTask);
     else if (getType() == Aggregation.Type.JOIN_EXISTING)
-      aggExistingDimension(true, ncd, cancelTask);
+      aggExistingDimension(true, ncDataset, cancelTask);
     else if (getType() == Aggregation.Type.FORECAST_MODEL)
-      aggExistingDimension(true, ncd, cancelTask);
+      aggExistingDimension(true, ncDataset, cancelTask);
 
     this.lastChecked = System.currentTimeMillis();
     wasChanged = true;
@@ -537,13 +537,13 @@ public class Aggregation {
 
     // rebuild the metadata
     if (getType() == Aggregation.Type.JOIN_NEW)
-      aggNewDimension(false, ncd, null);
+      aggNewDimension(false, ncDataset, null);
     else if (getType() == Aggregation.Type.JOIN_EXISTING)
-      aggExistingDimension(false, ncd, null);
+      aggExistingDimension(false, ncDataset, null);
     else if (getType() == Aggregation.Type.FORECAST_MODEL)
-      aggExistingDimension(false, ncd, null);
+      aggExistingDimension(false, ncDataset, null);
 
-    ncd.finish();
+    ncDataset.finish();
 
     return true;
   }
@@ -657,7 +657,7 @@ public class Aggregation {
 
       VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(),
               v.getDimensionsString(), null, null);
-      vagg.setAggregation(this);
+      vagg.setProxyReader(this);
       NcMLReader.transferVariableAttributes(v, vagg);
 
       newds.removeVariable(null, v.getShortName());
@@ -712,33 +712,7 @@ public class Aggregation {
       joinAggCoord.setDimensions(dimName); // reset its dimension
       if (!isNew) joinAggCoord.setCachedData(null, false); // get rid of any cached data, since its now wrong
     }
-    joinAggCoord.setAggregation(this);
-
-    /* if not already set, set its values
-    if (!coordVar.hasCachedData()) {
-      int[] shape = new int[] { getTotalCoords() };
-      Array coordData = Array.factory(coordType.getPrimitiveClassType(), shape);
-      Index ima = coordData.getIndex();
-      List nestedDataset = getNestedDatasets();
-      for (int i = 0; i < nestedDataset.size(); i++) {
-        Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-        if (coordType == DataType.STRING)
-          coordData.setObject(ima.set(i), nested.getCoordValueString());
-        else
-          coordData.setDouble(ima.set(i), nested.getCoordValue());
-
-        if (cancelTask != null && cancelTask.isCancel()) return;
-      }
-      coordVar.setCachedData( coordData, true);
-    } else {
-      Array data = coordVar.read();
-      IndexIterator ii = data.getIndexIterator();
-      List nestedDataset = getNestedDatasets();
-      for (int i = 0; i < nestedDataset.size(); i++) {
-        Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-        nested.setCoordValue( ii.getDoubleNext());
-      }
-    } */
+    joinAggCoord.setProxyReader(this);
 
     if (isDate()) {
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
@@ -751,14 +725,14 @@ public class Aggregation {
       String varname = (String) vars.get(i);
       Variable v = newds.getRootGroup().findVariable(varname);
       if (v == null) {
-        logger.error(ncd.getLocation() + " aggNewDimension cant find variable " + varname);
+        logger.error(ncDataset.getLocation() + " aggNewDimension cant find variable " + varname);
         continue;
       }
 
       // construct new variable, replace old one
       VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(),
               dimName + " " + v.getDimensionsString(), null, null);
-      vagg.setAggregation(this);
+      vagg.setProxyReader(this);
       NcMLReader.transferVariableAttributes(v, vagg);
 
       newds.removeVariable(null, v.getShortName());
@@ -778,13 +752,14 @@ public class Aggregation {
    * @return the data array
    * @throws IOException
    */
-  public Array read(VariableDS mainv, CancelTask cancelTask) throws IOException {
+  public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
 
     // the case of the agg coordinate var for joinExisting or joinNew
     if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask);
 
-    Array allData = Array.factory(mainv.getOriginalDataType(), mainv.getShape()); // LOOK why getOriginalDataType() ?
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType();
+    Array allData = Array.factory(dtype, mainv.getShape()); // LOOK why getOriginalDataType() ?
     int destPos = 0;
 
     Iterator iter = nestedDatasets.iterator();
@@ -801,7 +776,7 @@ public class Aggregation {
     return allData;
   }
 
-  private Array readAggCoord(VariableDS aggCoord, CancelTask cancelTask) throws IOException {
+  private Array readAggCoord(Variable aggCoord, CancelTask cancelTask) throws IOException {
     DataType dtype = aggCoord.getDataType();
     Array allData = Array.factory(dtype, aggCoord.getShape());
     IndexIterator result = allData.getIndexIterator();
@@ -835,7 +810,7 @@ public class Aggregation {
    * @return the data array section
    * @throws IOException
    */
-  public Array read(VariableDS mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+  public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
     // If its full sized, then use full read, so that data gets cached.
     long size = Range.computeSize( section);
     if (size == mainv.getSize())
@@ -845,7 +820,8 @@ public class Aggregation {
     if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask, section);
 
-    Array sectionData = Array.factory(mainv.getOriginalDataType(), Range.getShape(section));
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType();
+    Array sectionData = Array.factory(dtype, Range.getShape(section));
     int destPos = 0;
 
     Range joinRange = (Range) section.get(0);
@@ -881,7 +857,7 @@ public class Aggregation {
     return sectionData;
   }
 
-  private Array readAggCoord(VariableDS aggCoord, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+  private Array readAggCoord(Variable aggCoord, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
     DataType dtype = aggCoord.getDataType();
     Array allData = Array.factory(dtype, Range.getShape(section));
     IndexIterator result = allData.getIndexIterator();
@@ -909,7 +885,7 @@ public class Aggregation {
   }
 
   // handle the case of cached agg coordinate variables
-  private void readAggCoord(VariableDS aggCoord, CancelTask cancelTask, Dataset vnested, DataType dtype, IndexIterator result,
+  private void readAggCoord(Variable aggCoord, CancelTask cancelTask, Dataset vnested, DataType dtype, IndexIterator result,
           Range nestedJoinRange, List nestedSection, List innerSection) throws IOException, InvalidRangeException {
 
     // we have the coordinates as a String
@@ -1384,7 +1360,7 @@ public class Aggregation {
       return ncoord;
     }
 
-    protected Array read(VariableDS mainv, CancelTask cancelTask) throws IOException {
+    protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);
@@ -1400,7 +1376,7 @@ public class Aggregation {
       }
     }
 
-    private Array read(VariableDS mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    private Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);

@@ -21,11 +21,10 @@
 
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
+
+import java.util.List;
 
 /**
  * Create a LambertConformalConic Projection from the information in the Coordinate Transform Variable.
@@ -52,6 +51,8 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
     double false_easting = readAttributeDouble( ctv, "false_easting");
     double false_northing = readAttributeDouble( ctv, "false_northing");
     String units = ds.findAttValueIgnoreCase( ctv, "units", null);
+    if (units == null)
+      units = getUnits( ds);
 
     ucar.unidata.geoloc.projection.LambertConformal lc = new ucar.unidata.geoloc.projection.LambertConformal(lat0, lon0, pars[0], pars[1], false_easting, false_northing, units);
     return new ProjectionCT(ctv.getShortName(), "FGDC", lc);

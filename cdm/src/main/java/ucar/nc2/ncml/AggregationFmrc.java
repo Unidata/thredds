@@ -27,7 +27,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.FmrcDefinition;
-import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
@@ -40,12 +39,12 @@ import java.io.*;
  *
  * @author caron
  */
-public class AggregationFmrCollection extends Aggregation {
+public class AggregationFmrc extends Aggregation {
   private boolean debug = false;
   private boolean timeUnitsChange = false;
   private String invDef;
 
-  public AggregationFmrCollection(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
+  public AggregationFmrc(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
     super(ncd, dimName, typeName, recheckS);
   }
 
@@ -78,9 +77,102 @@ public class AggregationFmrCollection extends Aggregation {
 
     // for the moment, each file is considered 1 complete run, and is one slice of the runTime dimension
     buildCoords(cancelTask);
-    buildDataset( ncd, cancelTask);
+    makeDataset( true, ncDataset, cancelTask);
 
     this.lastChecked = System.currentTimeMillis();
+  }
+
+  private void makeDataset(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
+    // open a "typical"  nested dataset and copy it to newds
+    NetcdfFile typical = getTypicalDataset();
+    NcMLReader.transferDataset(typical, newds, isNew ? null : new MyReplaceVariableCheck());
+
+    // some additional global attributes
+    Group root = newds.getRootGroup();
+    root.addAttribute(new Attribute("Conventions", _Coordinate.Convention));
+    root.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+
+    // create aggregation dimension
+    String dimName = getDimensionName();
+    Dimension aggDim = new Dimension(dimName, getTotalCoords(), true);
+    newds.removeDimension(null, dimName); // remove previous declaration, if any
+    newds.addDimension(null, aggDim);
+
+    // create aggregation coordinate variable
+    DataType coordType;
+    VariableDS runtimeCoordVar = (VariableDS) newds.getRootGroup().findVariable(dimName);
+    if (runtimeCoordVar == null) {
+      coordType = getCoordinateType();
+      runtimeCoordVar = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
+      runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
+      newds.addVariable(null, runtimeCoordVar);
+      if (debug) System.out.println("FmrcAggregation: added runtimeCoordVar " + runtimeCoordVar.getName());
+
+    } else {
+      coordType = runtimeCoordVar.getDataType(); // use the existing DataType
+      runtimeCoordVar.setDimensions(dimName); // reset its dimension
+      runtimeCoordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
+    }
+    runtimeCoordVar.setProxyReader( this);
+
+    runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
+
+    // promote all grid variables
+    HashSet timeAxes = new HashSet();
+    GridDataset gds = new ucar.nc2.dataset.grid.GridDataset((NetcdfDataset) typical);
+    List grids = gds.getGrids();
+    for (int i = 0; i < grids.size(); i++) {
+      GridDatatype grid = (GridDatatype) grids.get(i);
+      Variable v = (Variable) grid.getVariable();
+
+      // add new dimension
+      String dims = dimName + " " + v.getDimensionsString();
+
+      // construct new variable, replace old one
+      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(), dims, null, null);
+      vagg.setProxyReader(this);
+      NcMLReader.transferVariableAttributes(v, vagg);
+
+      // we need to explicitly list the coordinate axes, because time coord is now 2D
+      vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getGridCoordSystem().getName()));
+
+      newds.removeVariable(null, v.getShortName());
+      newds.addVariable(null, vagg);
+      if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());
+
+      // track the time axes
+      GridCoordSystem gcc = grid.getGridCoordSystem();
+      CoordinateAxis1D timeAxis = gcc.getTimeAxis1D();
+      if (null != timeAxis)
+        timeAxes.add(timeAxis);
+    }
+
+    // promote the time coordinate(s)
+    Iterator iter = timeAxes.iterator();
+    while( iter.hasNext()) {
+      CoordinateAxis1DTime v = (CoordinateAxis1DTime) iter.next();
+
+      // construct new variable, replace old one
+      String dims = dimName + " " + v.getDimensionsString();
+      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(), dims, null, null);
+      NcMLReader.transferVariableAttributes(v, vagg);
+      Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
+      if (att != null) vagg.remove(att);
+
+      newds.removeVariable(null, v.getShortName());
+      newds.addVariable(null, vagg);
+
+      if (!timeUnitsChange)
+        // Case 1: assume the units are all the same, so its just another agg variable
+        vagg.setProxyReader(this);
+      else {
+        // Case 2: assume the time units differ for each nested file
+        readTimeCoordinates( vagg, cancelTask);
+      }
+
+      if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
   }
 
   /**
@@ -98,7 +190,7 @@ public class AggregationFmrCollection extends Aggregation {
     // global attributes
     NcMLReader.transferGroupAttributes(typical.getRootGroup(), root);
     root.addAttribute(new Attribute("Conventions", _Coordinate.Convention));
-    root.addAttribute(new Attribute("cdm_datatype", Aggregation.Type.FORECAST_MODEL_COLLECTION.toString()));
+    root.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
 
     // needed dimensions, coordinate variables
     Iterator gcs = gds.getGridSets().iterator();
@@ -169,7 +261,7 @@ public class AggregationFmrCollection extends Aggregation {
       runtimeCoordVar.setDimensions(dimName); // reset its dimension
       runtimeCoordVar.setCachedData(null, false); // get rid of any cached data, since its now wrong
     }
-    runtimeCoordVar.setAggregation( this);
+    runtimeCoordVar.setProxyReader( this);
 
     /* if not already set, set its values
     if (!runtimeCoordVar.hasCachedData()) {
@@ -212,7 +304,7 @@ public class AggregationFmrCollection extends Aggregation {
 
       // construct new variable, replace old one
       VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-      vagg.setAggregation(this);
+      vagg.setProxyReader(this);
       NcMLReader.transferVariableAttributes(v, vagg);
 
       // we need to explicitly list the coordinate axes, because time coord is now 2D
@@ -239,7 +331,7 @@ public class AggregationFmrCollection extends Aggregation {
 
       if (!timeUnitsChange)
         // Case 1: assume the units are all the same, so its just another agg variable
-        vagg.setAggregation(this);
+        vagg.setProxyReader(this);
       else {
         // Case 2: assume the time units differ for each nested file
         readTimeCoordinates( vagg, cancelTask);
@@ -258,9 +350,10 @@ public class AggregationFmrCollection extends Aggregation {
 
     for (int i = 0; i < nestedDatasets.size(); i++) {
       Dataset dataset = null;
+      NetcdfDataset ncfile = null;
       try {
         dataset = (Dataset) nestedDatasets.get(i);
-        NetcdfDataset ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
+        ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
         VariableDS v = (VariableDS) ncfile.findVariable( vagg.getName());
         CoordinateAxis1DTime timeCoordVar = new CoordinateAxis1DTime( v, null);
         java.util.Date[] dates = timeCoordVar.getTimeDates();
@@ -271,7 +364,7 @@ public class AggregationFmrCollection extends Aggregation {
           units = v.getUnitsString();
 
       } finally {
-        dataset.releaseFile(ncd);
+        dataset.releaseFile(ncfile);
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }

@@ -40,7 +40,7 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib2/data/","CLDGRIB2.2005040905", 5, 1, 3, 0);
     //doOne("grib2/data/","LMPEF_CLM_050518_1200.grb", 1, 1, 5, 1);
     doOne("grib2/data/","AVOR_000.grb", 1, 2, 4, 1);
-    doOne("grib2/data/","AVN.5deg.wmo", 116, 15, 16, 12);
+    doOne("grib2/data/","AVN.5deg.wmo", 116, 16, 17, 13);
 
     NetcdfFileCache.clearCache( true);
   }

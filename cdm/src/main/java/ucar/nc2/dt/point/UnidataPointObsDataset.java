@@ -48,7 +48,8 @@ import java.io.IOException;
 public class UnidataPointObsDataset extends PointObsDatasetImpl {
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if ( !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase("Point"))
+    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.POINT.toString()) &&
+            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(thredds.catalog.DataType.POINT.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

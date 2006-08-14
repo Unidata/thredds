@@ -22,6 +22,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 import ucar.unidata.geoloc.*;
@@ -46,11 +47,13 @@ import java.util.List;
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
 
   /** create a 1D coordinate axis from an existing Variable */
   public CoordinateAxis1D(VariableDS vds) {
     super( vds);
+    setIsLayer();
   }
 
   /** Constructor when theres no underlying variable. You better set the values too!
@@ -66,6 +69,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
                           DataType dataType, String dims, String units, String desc) {
 
     super( ds, group, shortName, dataType, dims, units, desc);
+    setIsLayer();
   }
 
   /**
@@ -86,28 +90,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     makeSection( vs, section);
     return vs;
   }
-
-  /** Create a 1D coordinate axis from NcML attributes.
-    * @param ds the containing dataset.
-    * @param group the containing group; if null, use rootGroup
-    * @param name axis name.
-    * @param type data type, must match nc2.DataType.
-    * @param shapeS list of dimensions
-    * @param units units of coordinates, preferably udunit compatible.
-    * @param positive "true" if its a z axis with positive = up, else "false", null if dont know
-    * @param boundaryRef name of variable name used as boundaries of this coordinate.
-    *
-  public CoordinateAxis1D( NetcdfDataset ds, Group group, String shortName, DataType type, String shapeS,
-      String units, String positive, String boundaryRef) {
-
-    super( ds, group, shortName, type, shapeS, units, positive, boundaryRef);
-  }
-
-
-  // for subclasses
-  protected CoordinateAxis1D(NetcdfDataset dataset, Group group, Structure parentStructure, String shortName) {
-    super(dataset, group, parentStructure, shortName);
-  } */
 
   /** The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
    *  If numeric, this will return a String representation of the coordinate.
@@ -149,7 +131,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return Math.max( midpoint[0], midpoint[(int) getSize() -1]);
   }
 
-  /** Get the ith coordinate edge. This is the value where the underlying grid element switches
+  /** Get the ith coordinate edge. only use this if isContiguous() is true.
+   *  This is the value where the underlying grid element switches
    *  from "belonging to" coordinate value i-1 to "belonging to" coordinate value i.
    *  In some grids, this may not be well defined, and so should be considered an
    *  approximation or a visualization hint.
@@ -192,6 +175,31 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return edge;
   }
 
+  /** Get the coordinate bound1 as a double array.
+   *  bound1[i] # coordValue[i] # bound2[i], where # is < or >
+   *  @return coordinate bound1.
+   *  @exception UnsupportedOperationException if !isNumeric()
+   */
+  public double[] getBound1() {
+    if (!isNumeric())
+       throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
+    if (!wasRead) doRead();
+    return bound1;
+  }
+
+  /** Get the coordinate bound1 as a double array.
+   *  bound1[i] # coordValue[i] # bound2[i], whgere # is < or >
+   *  @return coordinate bound2.
+   *  @exception UnsupportedOperationException if !isNumeric()
+   */
+  public double[] getBound2() {
+    if (!isNumeric())
+       throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
+    if (!wasRead) doRead();
+    return bound2;
+  }
+
+
   /** Get the coordinate edges for the ith coordinate.
    *  Can use this for isContiguous() true or false.
    * @param i coordinate index
@@ -199,22 +207,16 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   public double[] getCoordEdges(int i) {
     if (!wasRead) doRead();
+    double[] e = new double[2];
     if (isContiguous()) {
-      double[] e = new double[2];
       e[0] = getCoordEdge(i);
       e[1] = getCoordEdge(i+1);
-      return e;
-    } else
-      throw new UnsupportedOperationException("not yet implemented");
+    } else {
+      e[0] = bound1[i];
+      e[1] = bound2[i];
+    }
+    return e;
   }
-
-  /* public double getMinValue() {
-    return Math.min( getCoordValue(0), getCoordValue( (int) getSize() - 1));
-  }
-
-  public double getMaxValue() {
-    return Math.max( getCoordValue(0), getCoordValue( (int) getSize() - 1));
-  } */
 
   /** Given a coordinate position, find what grid element contains it.
     This means that
@@ -370,6 +372,19 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return increment;
   }
 
+
+  private boolean isLayer = false;
+  /** If coordinate lies between a layer, or is at a point. */
+  public boolean isLayer() { return isLayer; }
+  /** If coordinate lies between a layer, or is at a point. */
+  public void setLayer(boolean isLayer) { this.isLayer = isLayer; }
+
+  private void setIsLayer() {
+    Attribute att = findAttribute(_Coordinate.ZisLayer) ;
+    if ((att != null) && att.getStringValue().equalsIgnoreCase("true"))
+      this.isLayer = true;
+  }
+
   /**
    * If evenly spaced.
    * Then value(i) = <i>getStart()</i> + i * <i>getIncrement()</i>.
@@ -394,7 +409,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       for (int i=1; i< getSize(); i++)
         if (!closeEnough(getCoordValue(i) - getCoordValue(i-1), increment)) {
           isRegular = false;
-          double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
+          // double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
           // System.out.println(i+" diff= "+diff);
           break;
         }
@@ -415,7 +430,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (isNumeric()) {
       readValues();
       wasRead = true;
-      isAscending = (getSize() < 2) || getCoordEdge(0) < getCoordEdge(1);
+
+      if (getSize() < 2)
+        isAscending = true;
+      else
+        isAscending = getCoordValue(0) < getCoordValue(1);
+
       //  calcIsRegular();
     } else if (getDataType() == DataType.STRING) {
       readStringValues();
@@ -469,7 +489,71 @@ public class CoordinateAxis1D extends CoordinateAxis {
     while (iter.hasNext())
       midpoint[count++] = iter.getDoubleNext();
 
-    makeEdges();
+    if (!makeBoundsFromAux()) {
+      makeEdges();
+      makeBoundsFromEdges();
+    }
+  }
+
+  private double[] bound1, bound2;
+  private boolean makeBoundsFromAux() {
+    Attribute boundsAtt = findAttributeIgnoreCase("bounds");
+    if ((null == boundsAtt) || !boundsAtt.isString()) return false;
+    String boundsVarName = boundsAtt.getStringValue();
+    Variable boundsVar = ncfile.findVariable(boundsVarName);
+    if (null == boundsVar) return false;
+    if (2 != boundsVar.getRank()) return false;
+
+    if (getDimension(0) != boundsVar.getDimension(0)) return false;
+    if (2 != boundsVar.getDimension(1).getLength()) return false;
+
+    Array data;
+    try {
+      data = boundsVar.read();
+    } catch (IOException e) {
+      log.warn("CoordinateAxis1D.hasBounds read failed ", e);
+      return false;
+    }
+
+    // extract the bounds
+    int n = shape[0];
+    double[] value1 = new double[n];
+    double[] value2 = new double[n];
+    int[] shape = data.getShape();
+    Index ima = data.getIndex();
+    for (int i = 0; i < shape[0]; i++) {
+      ima.set0(i);
+      value1[i] = data.getDouble(ima.set1(0));
+      value2[i] = data.getDouble(ima.set1(1));
+    }
+
+    // flip if needed
+    if (value1[0] > value2[0]) {
+      double[] temp = value1;
+      value1 = value2;
+      value2 = temp;
+    }
+
+    // decide if they are contiguous
+    boolean contig = true;
+    for (int i = 0; i < n-1; i++) {
+      if (!closeEnough(value1[i+1], value2[i]))
+        contig = false;
+    }
+
+    if (contig) {
+      edge = new double[n+1];
+      edge[0] = value1[0];
+      for(int i=1; i<n+1; i++)
+        edge[i] = value2[i-1];
+    } else {
+      setContiguous(false);
+    }
+
+    bound1 = value1;
+    bound2 = value2;
+
+    return true;
   }
 
   private void makeEdges() {
@@ -487,6 +571,23 @@ public class CoordinateAxis1D extends CoordinateAxis {
     midpoint = new double[size];
     for(int i=0; i<size; i++)
       midpoint[i] = (edge[i] + edge[i+1])/2;
+  }
+
+  private void makeBoundsFromEdges() {
+    int size = (int) getSize();
+    bound1 = new double[size];
+    bound2 = new double[size];
+    for(int i=0; i<size; i++) {
+      bound1[i] = edge[i];
+      bound2[i] = edge[i+1];
+    }
+
+    // flip if needed
+    if (bound1[0] > bound2[0]) {
+      double[] temp = bound1;
+      bound1 = bound2;
+      bound2 = temp;
+    }
   }
 
   ////////////////////////////////////////////////////////////////////

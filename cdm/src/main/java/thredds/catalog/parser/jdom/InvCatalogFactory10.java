@@ -280,7 +280,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     readDatasetInfo( catalog, dsFmrc, dsElem, base);
     return dsFmrc;
   }
-
       // read a dataset scan element
   protected InvDatasetScan readDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
     InvDatasetScan datasetScan = null;
@@ -1557,6 +1556,23 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return dsElem;
   }
 
+  private Element writeDatasetFmrc( InvDatasetFmrc ds) {
+    Element dsElem;
+
+    if ( raw ) {
+      dsElem = new Element( "datasetFmrc", defNS );
+      dsElem.setAttribute( "name", ds.getName() );
+      dsElem.setAttribute( "path", ds.getPath() );
+      writeDatasetInfo( ds, dsElem, false, true );
+
+    } else {
+      dsElem = writeCatalogRef( ds);
+      dsElem.addContent( writeProperty( new InvProperty( "DatasetFmrc", ds.getPath() ) ) ); /// LOOK experimental
+    }
+
+    return dsElem;
+  }
+
   private Element writeDatasetRoot( InvProperty prop) {
     Element drootElem = new Element("datasetRoot", defNS);
     drootElem.setAttribute("path", prop.getName());
@@ -1922,6 +1938,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       InvDatasetImpl nested = (InvDatasetImpl) datasets.next();
       if (nested instanceof InvDatasetScan)
         dsElem.addContent( writeDatasetScan( (InvDatasetScan) nested));
+      else if (nested instanceof InvDatasetFmrc)
+        dsElem.addContent( writeDatasetFmrc( (InvDatasetFmrc) nested));
       else if (nested instanceof InvCatalogRef)
         dsElem.addContent( writeCatalogRef( (InvCatalogRef) nested));
       else

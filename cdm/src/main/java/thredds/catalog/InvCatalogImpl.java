@@ -82,7 +82,7 @@ public class InvCatalogImpl extends InvCatalog {
     finish();
   }
 
-  private void findServices( ArrayList result, InvDatasetImpl ds) {
+  void findServices( ArrayList result, InvDatasetImpl ds) {
     if (ds instanceof InvCatalogRef) return;
 
     // look for access elements with unresolved services
@@ -227,6 +227,7 @@ public class InvCatalogImpl extends InvCatalog {
     addDatasetByID( ds);
 
     if (ds instanceof InvCatalogRef) return;
+    //if (ds instanceof InvDatasetFmrc) return;
 
     // recurse into nested
     Iterator iter = ds.getDatasets().iterator();

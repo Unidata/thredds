@@ -31,6 +31,9 @@ import org.jdom.input.SAXBuilder;
 import java.io.*;
 import java.util.*;
 
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.conv._Coordinate;
+
 /**
  * Defines the expected inventory of a Forecast Model Run Collection.
  *
@@ -199,17 +202,11 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   }
 
   public boolean hasVariable(String searchName) {
-    return findGrid( searchName) != null;
+    return findGridByName( searchName) != null;
   }
-
-  public String getName( String searchName) {
-    Grid grid = findGrid( searchName);
-    return (grid != null) ? grid.name : null;
-  }
-
 
   public ucar.nc2.dt.fmr.FmrcCoordSys.VertCoord findVertCoordForVariable(String searchName) {
-    Grid grid = findGrid( searchName);
+    Grid grid = findGridByName( searchName);
     return (grid.vtc == null) ? null : grid.vtc.vc;
   }
 
@@ -232,12 +229,11 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   // encapsolates a Grid and its vertical coordinate, which may be time-dependent
   public static class Grid implements Comparable {
-    private String name, searchName;
+    private String name; // , searchName;
     private VertTimeCoord vtc = null;
 
-    Grid (String name, String searchName) {
+    Grid (String name) {
       this.name = name;
-      this.searchName = searchName;
     }
 
     //public String getName() { return name; }
@@ -335,20 +331,15 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       return null;
     }
 
-    Grid findGrid( String searchName) {
-      if (searchName == null) return null;
+    Grid findGrid( String name) {
+      if (name == null) return null;
 
       for (int j = 0; j < vars.size(); j++) {
         Grid grid = (Grid) vars.get(j);
-        if (searchName.equals( grid.searchName))
+        if (name.equals( grid.name))
           return grid;
       }
-      // can remove this after everything is converted to use search name
-      for (int j = 0; j < vars.size(); j++) {
-        Grid grid = (Grid) vars.get(j);
-        if (searchName.equals(grid.name))
-          return grid;
-      }
+
       return null;
     }
 
@@ -388,7 +379,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     return null;
   }
 
-  Grid findGrid( String name) {
+  Grid findGridByName( String name) {
     for (int i = 0; i < runSequences.size(); i++) {
       RunSeq runSeq = (RunSeq) runSequences.get(i);
       Grid grid = runSeq.findGrid( name);
@@ -399,22 +390,48 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   }
 
   VertTimeCoord findVertCoord( String id) {
-    if (id == null)
-      return null;
+     if (id == null)
+       return null;
 
-    for (int i = 0; i < vertTimeCoords.size(); i++) {
-      VertTimeCoord vc = (VertTimeCoord) vertTimeCoords.get(i);
-      if (vc.getId().equals(id))
-        return vc;
-    }
-    return null;
-  }
+     for (int i = 0; i < vertTimeCoords.size(); i++) {
+       VertTimeCoord vc = (VertTimeCoord) vertTimeCoords.get(i);
+       if (vc.getId().equals(id))
+         return vc;
+     }
+     return null;
+   }
+
+  VertTimeCoord findVertCoordByName( String name) {
+     for (int i = 0; i < vertTimeCoords.size(); i++) {
+       VertTimeCoord vc = (VertTimeCoord) vertTimeCoords.get(i);
+       if (vc.getName().equals(name))
+         return vc;
+     }
+     return null;
+   }
+
+  boolean replaceVertCoord( ForecastModelRunInventory.VertCoord vc) {
+     for (int i = 0; i < vertTimeCoords.size(); i++) {
+       VertTimeCoord vtc = (VertTimeCoord) vertTimeCoords.get(i);
+       if (vtc.getName().equals(vc.getName())) {
+         vtc.vc.values1 = vc.values1;
+         vtc.vc.values2 = vc.values2;
+         vtc.vc.setId( vc.getId());
+         vtc.vc.setUnits( vc.getUnits());
+         return true;
+       }
+     }
+
+     // make a new one
+     vertTimeCoords.add( new VertTimeCoord(vc));
+     return false;
+   }
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   /* vertical coordinates that depend on the offset hour */
-  class VertTimeCoord {
+  class VertTimeCoord implements Comparable {
     ForecastModelRunInventory.VertCoord vc;
     ForecastModelRunInventory.TimeCoord tc; // optional
     int ntimes, nverts;
@@ -424,7 +441,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     VertTimeCoord(ForecastModelRunInventory.VertCoord vc) {
       this.vc = vc;
       ntimes = (tc == null) ? 1 : tc.getOffsetHours().length;
-      nverts = vc.getValues().length;
+      nverts = vc.getValues1().length;
     }
 
     VertTimeCoord(ForecastModelRunInventory.VertCoord vc, RunSeq runSeq) {
@@ -452,7 +469,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       this.vc = vc;
 
       ntimes = (tc == null) ? 1 : tc.getOffsetHours().length;
-      nverts = vc.getValues().length;
+      nverts = vc.getValues1().length;
     }
 
     private void addValues(HashSet valueSet, double[] values) {
@@ -477,7 +494,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         restrictList = new ArrayList();
         vcForTimeIndex = new double[ntimes][];
         for (int i = 0; i < vcForTimeIndex.length; i++) {
-          vcForTimeIndex[i] = vc.getValues();
+          vcForTimeIndex[i] = vc.getValues1(); // LOOK WRONG
         }
       }
 
@@ -497,7 +514,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     double[] getVertCoords( double offsetHour) {
       if ((tc == null) || (null == vcForTimeIndex))
-        return vc.getValues();
+        return vc.getValues1(); // LOOK WRONG
 
       int index = tc.findIndex(offsetHour);
       if (index < 0)
@@ -508,7 +525,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     int countVertCoords( double offsetHour) {
       if ((tc == null) || (null == vcForTimeIndex))
-        return vc.getValues().length;
+        return vc.getValues1().length;
 
       int index = tc.findIndex(offsetHour);
       if (index < 0)
@@ -517,6 +534,10 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       return vcForTimeIndex[index].length;
     }
 
+    public int compareTo(Object o) {
+      VertTimeCoord other = (VertTimeCoord) o;
+      return getName().compareTo( other.getName());
+    }
   }
 
 
@@ -556,10 +577,16 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         vcElem.setAttribute("units", vc.getUnits());
 
       StringBuffer sbuff = new StringBuffer();
-      double[] values = vc.getValues();
-      for (int j = 0; j < values.length; j++) {
+      double[] values1 = vc.getValues1();
+      double[] values2 = vc.getValues2();
+
+      for (int j = 0; j < values1.length; j++) {
         if (j > 0) sbuff.append(" ");
-        sbuff.append( Double.toString(values[j]));
+        sbuff.append( Double.toString(values1[j]));
+        if (values2 != null) {
+          sbuff.append(",");
+          sbuff.append( Double.toString(values2[j]));
+        }
       }
       vcElem.addContent(sbuff.toString());
     }
@@ -607,8 +634,6 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         Element varElem = new Element("variable");
         seqElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
-        if (null != grid.searchName)
-          varElem.setAttribute("searchName", grid.searchName);
         if (grid.vtc != null) {
           varElem.setAttribute("vertCoord", grid.vtc.getId());
 
@@ -654,7 +679,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       vc.setName( vcElem.getAttributeValue("name"));
       vc.setUnits( vcElem.getAttributeValue("units"));
 
-      // parse the values
+      /* parse the values
       String values = vcElem.getText();
       StringTokenizer stoke = new StringTokenizer(values);
       int n = stoke.countTokens();
@@ -663,7 +688,33 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       while (stoke.hasMoreTokens()) {
         vals[count++] = Double.parseDouble( stoke.nextToken());
       }
-      vc.setValues( vals);
+      vc.setValues( vals); */
+
+            // parse the values
+      String values = vcElem.getText();
+      StringTokenizer stoke = new StringTokenizer(values);
+      int n = stoke.countTokens();
+      double[] values1 = new double[n];
+      double[] values2 = null;
+      int count = 0;
+      while (stoke.hasMoreTokens()) {
+        String toke = stoke.nextToken();
+        int pos = toke.indexOf(',');
+        if (pos < 0)
+          values1[count] = Double.parseDouble( toke);
+        else {
+          if (values2 == null)
+            values2 = new double[n];
+          String val1 = toke.substring(0,pos);
+          String val2 = toke.substring(pos+1);
+          values1[count] = Double.parseDouble( val1);
+          values2[count] = Double.parseDouble( val2);
+        }
+        count++;
+      }
+      vc.setValues1( values1);
+      if (values2 != null)
+        vc.setValues2( values2);
 
       // wrap it as a VertTimeCoord
       VertTimeCoord vtc = new VertTimeCoord(vc);
@@ -720,8 +771,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       for (int j=0; j< varList.size(); j++) {
         Element varElem = (Element) varList.get(j);
         String name = varElem.getAttributeValue("name");
-        String searchName = varElem.getAttributeValue("searchName");
-        Grid grid = new Grid(name, searchName);
+        Grid grid = new Grid(name);
         rseq.vars.add( grid);
         grid.vtc = findVertCoord( varElem.getAttributeValue("vertCoord"));
 
@@ -798,7 +848,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       List vars = invSeq.getVariables();
       for (int j = 0; j < vars.size(); j++) {
         FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
-        Grid grid = new Grid( uv.getName(), uv.getSearchName());
+        Grid grid = new Grid( uv.getName());
         runSeq.vars.add( grid);
         if (uv.vertCoordUnion != null)
           grid.vtc = new VertTimeCoord( uv.vertCoordUnion);
@@ -824,39 +874,161 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       for (int j = 0; j < vars.size(); j++) {
         FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
         if (uv.vertCoordUnion != null) {
-          String sname = (uv.getSearchName() != null) ? uv.getSearchName() : uv.getName();  // LOOK can remove name when all is converted
-          Grid grid = findGrid( sname);
+          String sname =  uv.getName();
+          Grid grid = findGridByName( sname);
           grid.vtc = new VertTimeCoord( uv.vertCoordUnion);
         }
       }
     }
   }
 
-  public static void convert(String datasetName, String defName) throws IOException {
+  static void convert(String datasetName, String defName) throws IOException {
+    System.out.println(datasetName);
     ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW);
+
     FmrcDefinition fmrDef = new FmrcDefinition();
     fmrDef.readDefinitionXML(defName);
 
+    // replace vert coords
+    List vcList = fmrInv.getVertCoords();
+    for (int i = 0; i < vcList.size(); i++) {
+      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) vcList.get(i);
+      CoordinateAxis1D axis = vc.axis;
+      if (axis == null)
+        System.out.println("*** No Axis "+vc.getName());
+      else {
+       // boolean isLayer = null != axis.findAttribute(_Coordinate.ZisLayer);
+        //if (isLayer) {
+          System.out.print(" "+vc.getName()+" contig= "+axis.isContiguous());
+          // see if theres any TimeCoord that use this
+          //findGridsForVertCoord( fmrDef, vc);
+          boolean ok = fmrDef.replaceVertCoord(vc);
+          System.out.println(" = "+ok);
+        //}
+      }
+    }
+    Collections.sort( fmrDef.vertTimeCoords);
+
+    // reset vert id on grids
     for (int i = 0; i < fmrDef.runSequences.size(); i++) {
       RunSeq runSeq = (RunSeq) fmrDef.runSequences.get(i);
       for (int j = 0; j < runSeq.vars.size(); j++) {
-        Grid grid =  (Grid) runSeq.vars.get(j);
-        ForecastModelRunInventory.Grid grid2 = fmrInv.findGrid( grid.name);
-        if (grid2 != null)
-          grid.searchName = grid2.sname;
-        else
-          System.out.println(" cant find grid= "+grid.name);
+        Grid gridDef =  (Grid) runSeq.vars.get(j);
+        ForecastModelRunInventory.Grid gridInv = fmrInv.findGrid( gridDef.name);
+        if (gridInv == null) {
+          System.out.println("*** cant find grid= "+gridDef.name);
+          continue;
+        }
+        if (gridInv.vc != null) {
+          VertTimeCoord new_vtc = fmrDef.findVertCoordByName(gridInv.vc.getName());
+          if (new_vtc == null) {
+           System.out.println("*** cant find VertCoord= "+gridInv.vc.getName());
+            continue;
+          }
+          gridDef.vtc = new_vtc;
+          System.out.println(" ok= "+gridDef.name);
+        }
       }
     }
 
-    FileOutputStream fout = new FileOutputStream( defName+".new");
+    int pos = defName.lastIndexOf("/");
+    String newDef = defName.substring(0,pos) + "/new/" + defName.substring(pos);
+    FileOutputStream fout = new FileOutputStream( newDef);
     fmrDef.writeDefinitionXML( fout);
   }
 
-  public static void main(String args[]) throws IOException {
-    convert("C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1", "C:/data/grib/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml");
-    convert("C:/data/grib/nam/c20ss/NAM_CONUS_20km_selectsurface_20060729_1800.grib1", "C:/data/grib/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml");
+  static void showVertCoords(String datasetName, String defName ) throws IOException {
+    System.out.println("--------------------------------------");
+    System.out.println(defName);
+    FmrcDefinition fmrDef = new FmrcDefinition();
+    fmrDef.readDefinitionXML(defName);
+
+    /* List vtList = fmrDef.vertTimeCoords;
+    for (int i = 0; i < vtList.size(); i++) {
+      VertTimeCoord vtc = (VertTimeCoord) vtList.get(i);
+      System.out.println(" "+vtc.getName());
+    } */
+
+    System.out.println(datasetName);
+    ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW);
+    List vcList = fmrInv.getVertCoords();
+    for (int i = 0; i < vcList.size(); i++) {
+      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) vcList.get(i);
+      CoordinateAxis1D axis = vc.axis;
+      if (axis == null)
+        System.out.println(" No Axis "+vc.getName());
+      else {
+        if (axis.isLayer()) {
+          System.out.println(" Layer "+vc.getName()+" contig= "+axis.isContiguous());
+          // see if theres any TimeCoord that use this
+          findGridsForVertCoord( fmrDef, vc);
+        }
+      }
+      boolean got = fmrDef.findVertCoordByName(vc.getName()) != null;
+      if (! got)
+        System.out.println(" ***NOT "+vc.getName());
+    }
   }
 
+  static void findGridsForVertCoord(FmrcDefinition fmrDef, ForecastModelRunInventory.VertCoord vc) {
+    for (int i = 0; i < fmrDef.runSequences.size(); i++) {
+      RunSeq runSeq = (RunSeq) fmrDef.runSequences.get(i);
+      for (int j = 0; j < runSeq.vars.size(); j++) {
+        Grid grid = (Grid) runSeq.vars.get(j);
+        if ((grid.vtc != null) && (grid.vtc.vc == vc)) {
+          List restrictList = grid.vtc.restrictList;
+          if (restrictList != null && restrictList.size() > 0)
+            System.out.println(" TimeVertCoord refers to this vertical coordinate");
+        }
+      }
+    }
+  }
+
+  private static String[] defs = {
+    "R:/testdata/motherlode/grid/GFS_Alaska_191km_20060802_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_CONUS_80km_20060802_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_CONUS_191km_20060802_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_CONUS_95km_20060802_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_95km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Global_2p5deg_20060801_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Global_onedeg_20060802_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Hawaii_160km_20060730_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_N_Hemisphere_381km_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Puerto_Rico_191km_20060731_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
+
+    "R:/testdata/motherlode/grid/NAM_Alaska_22km_20060731_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Alaska_45km_conduit_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Alaska_45km_noaaport_20060730_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Alaska_95km_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_20km_noaaport_20060731_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_20km_selectsurface_20060801_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_20km_surface_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_40km_conduit_20060801_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_40km_noaaport_20060731_1800.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml", //*/
+    "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Polar_90km_20060730_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Polar_90km.fmrcDefinition.xml",
+
+    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_hybrid_20060802_2100.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_pressure_20060802_2000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_surface_20060802_1700.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/RUC_CONUS_40km_20060802_2000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
+    "R:/testdata/motherlode/grid/RUC_CONUS_80km_20060802_2000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC-CONUS_80km.fmrcDefinition.xml",  };
+
+   /*  "R:/testdata/motherlode/grid/DGEX_Alaska_12km_20060731_0000.grib2", "R:/testdata/motherlode/grid/inv/NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/DGEX_CONUS_12km_20060730_1800.grib2", "R:/testdata/motherlode/grid/inv/NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Global_0p5deg_20060726_0600.grib2", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Alaska_11km_20060802_1200.grib2", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_12km_20060801_1200.grib2", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NDFD_CONUS_5km_20060731_1200.grib2", "R:/testdata/motherlode/grid/inv/NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" };  // */
+
+  public static void main(String args[]) throws IOException {
+
+    for (int i = 0; i < defs.length; i+=2)
+      convert(defs[i], defs[i+1]);
+
+    //for (int i = 0; i < defs.length; i+=2)
+    //  showVertCoords(defs[i], defs[i+1]);
+
+
+  }
 
 }

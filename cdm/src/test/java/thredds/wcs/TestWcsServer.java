@@ -20,6 +20,19 @@ public class TestWcsServer extends TestCase {
     super(name);
   }
 
+  public void testPfeg() throws IOException {
+    String dataset = "http://localhost:8080/thredds/wcs/satellite/AT/ssta/1day?";
+    //String url = "http://oceanwatch.pfeg.noaa.gov:8081/thredds/wcs/satellite/AG/ssta/14day?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&coverage=AGssta&Vertical=.0&time=2006-01-09T23:59:59Z&bbox=220,20,250,50";
+    //String dataset = "http://oceanwatch.pfeg.noaa.gov:8081/thredds/wcs/satellite/AG/ssta/14day?";
+    //String contents = thredds.util.IO.readURLcontentsWithException( dataset+"?request=GetCapabilities&version=1.0.0&service=WCS");
+    //System.out.println(dataset+" response length= "+ contents.length()+"\n"+contents);
+
+    showGetCapabilities(dataset);
+    showDescribeCoverage(dataset, "ATssta");
+    showGetCoverage(dataset, "ATssta", "2006-01-04T23:59:59Z",null,"220,20,250,50");
+  }
+
+
   public void eTestForEthan() throws IOException
   {
     showGetCapabilities( ncdcWcsDataset + "?" );
@@ -77,7 +90,7 @@ public class TestWcsServer extends TestCase {
       getURL = getURL + "&bbox="+bb;
 
     System.out.println("req= "+getURL);
-    File file = new File("C:/TEMP/"+grid+"3.nc");
+    File file = new File("C:/TEMP/"+grid+".nc");
     thredds.util.IO.readURLtoFile(getURL, file);
     System.out.println(" copied contents to "+file.getPath());
 

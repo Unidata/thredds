@@ -21,13 +21,14 @@
 
 package ucar.nc2.dt.grid;
 
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.*;
+import ucar.ma2.*;
 
 import java.util.*;
 import java.io.IOException;
@@ -41,77 +42,238 @@ import java.io.IOException;
  * @version $Revision$ $Date$
  */
 public class FmrcImpl implements ForecastModelRunCollection {
-  private GridDataset gds;
-  private CoordinateAxis1DTime runtimeCoord;
-  private HashMap timeMap = new HashMap();
-  private HashMap offsetMap = new HashMap();
-  private ArrayList forecasts = new ArrayList();
-  private ArrayList offsetHours = new ArrayList();
+  private NetcdfDataset org_ncd;
+  private Date baseDate;
+  private String runtimeDimName;
+
+  private ArrayList gridsets;
+  private HashMap gridHash = new HashMap();
+  private HashSet coordSet = new HashSet();
+
+  private HashMap runMapAll = new HashMap(); // key = run Date, value = List<Invenory>
+  private HashMap timeMapAll = new HashMap(); // key = forecasst Date, value = List<Invenory>
+  private HashMap offsetMapAll = new HashMap(); // key = offset Double, value = List<Invenory>
+  private List bestListAll = new ArrayList();  // best List<Invenory>  */
+
+  private List runtimes;  // List of all possible runtime Date
+  private List forecasts;  // List of all possible forecast Date
+  private List offsets;  // List of all possible offset Double
 
   public FmrcImpl(String filename) throws IOException {
-    this.gds = ucar.nc2.dataset.grid.GridDataset.open( filename);
+    this( ucar.nc2.dataset.NetcdfDatasetCache.acquire( filename, null));
+  }
 
-    List gridsets = gds.getGridSets();
-    if (gridsets.size() == 0)
+  public FmrcImpl(NetcdfDataset ncd) throws IOException {
+    init( ncd);
+  }
+
+  private void init(NetcdfDataset ncd) {
+    this.org_ncd = ncd;
+
+    // collect the grids based on what time axis they use
+    HashMap timeAxisHash = new HashMap();
+    ucar.nc2.dt.GridDataset gds = new ucar.nc2.dataset.grid.GridDataset( ncd);
+    List grids = gds.getGrids();
+    if (grids.size() == 0)
       throw new IllegalArgumentException("no grids");
-    GridDataset.Gridset gset = (GridDataset.Gridset) gridsets.get(0);
-    GridCoordSystem gcs = gset.getGeoCoordSystem();
 
-    if (!gcs.hasTimeAxis() || gcs.hasTimeAxis1D())
-       throw new IllegalArgumentException("must have 2D time axis");
-
-    runtimeCoord = gcs.getRunTimeAxis();
-    if (null == runtimeCoord)
-      throw new IllegalArgumentException("no runtime coordinate");
-    Date[] runDates = runtimeCoord.getTimeDates();
-
-    CoordinateAxis2D forecastCoord = (CoordinateAxis2D) gcs.getTimeAxis();
-    int[] shape = forecastCoord.getShape();
-    int nruns = shape[0];
-    int ntimes = shape[1];
-    System.out.println(" nruns="+nruns+" ntimes="+ntimes);
-
-    for (int run = 0; run < nruns; run++) {
-      Date runDate = runDates[run];
-
-      CoordinateAxis1DTime timeCoordRun = gcs.getTimeAxisForRun( run);
-      Date[] forecastDates = timeCoordRun.getTimeDates();
-
-      for (int time = 0; time < ntimes; time++) {
-        Date forecastDate = forecastDates[time];
-        double hourOffset = getOffsetHour(runDate, forecastDate);
-
-        Inventory inv = new Inventory(runDate, forecastDate, hourOffset, run, time);
-
-        Double dd = new Double(hourOffset);
-        ArrayList offsetList = (ArrayList) offsetMap.get(dd);
-        if (offsetList == null) {
-          offsetList = new ArrayList();
-          offsetMap.put(dd, offsetList);
-          offsetHours.add( dd);
+    for (int i = 0; i < grids.size(); i++) {
+      ucar.nc2.dt.GridDatatype grid = (ucar.nc2.dt.GridDatatype) grids.get(i);
+      ucar.nc2.dt.GridCoordSystem gcs = grid.getGridCoordSystem();
+      CoordinateAxis timeAxis = gcs.getTimeAxis();
+      if (timeAxis != null) {
+        Gridset gset = (Gridset) timeAxisHash.get( timeAxis);
+        if (gset == null) {
+          gset = new Gridset(timeAxis, gcs);
+          timeAxisHash.put( timeAxis, gset);
+          coordSet.add( timeAxis.getName());
         }
-        offsetList.add(inv);
+        gset.gridList.add( grid);
+        gridHash.put( grid.getName(), gset);
+      }
 
-        ArrayList timeList = (ArrayList) timeMap.get(forecastDate);
-        if (timeList == null) {
-          timeList = new ArrayList();
-          timeMap.put(forecastDate, timeList);
-          forecasts.add( forecastDate);
-        }
-        timeList.add(inv);
+      // assume runtimes are always the same
+      if ((runtimes == null) && (gcs.getRunTimeAxis() != null)) {
+        CoordinateAxis1DTime runtimeCoord = gcs.getRunTimeAxis();
+        Date[] runDates = runtimeCoord.getTimeDates();
+        baseDate = runDates[0];
+        runtimes = Arrays.asList(runDates);
+        runtimeDimName = runtimeCoord.getDimension(0).getName();
+        coordSet.add( runtimeCoord.getName());
       }
     }
 
-    Collections.sort( forecasts);
-    Collections.sort( offsetHours);
+    if (runtimes == null)
+      throw new IllegalArgumentException("no runtime dimension");
+
+    // generate the lists of possible forecasts, offsets
+    HashSet forecastSet = new HashSet();
+    HashSet offsetSet = new HashSet();
+    gridsets = new ArrayList( timeAxisHash.values());
+    for (int i = 0; i < gridsets.size(); i++) {
+      Gridset gridset = (Gridset) gridsets.get(i);
+
+      for (int run = 0; run < runtimes.size(); run++) {
+        Date runDate = (Date) runtimes.get(run);
+
+        // here we assume that with the same taxis, we get the same results here
+        CoordinateAxis1DTime timeCoordRun = gridset.gcs.getTimeAxisForRun( run);
+        Date[] forecastDates = timeCoordRun.getTimeDates();
+
+        for (int time = 0; time < forecastDates.length; time++) {
+          Date forecastDate = forecastDates[time];
+          forecastSet.add(forecastDate);
+
+          double hourOffset = getOffsetHour(runDate, forecastDate);
+          offsetSet.add( new Double(hourOffset));
+        }
+      }
+    }
+    forecasts = Arrays.asList( forecastSet.toArray());
+    Collections.sort(forecasts);
+    offsets = Arrays.asList( offsetSet.toArray());
+    Collections.sort(offsets);
+
+    // now work with each set in turn
+    for (int i = 0; i < gridsets.size(); i++) {
+      Gridset gridset = (Gridset) gridsets.get(i);
+      gridset.generateInventory();
+    }
+
+    // now we want the union of all gridsets
+    for (int run = 0; run < runtimes.size(); run++) {
+      Date rundate = (Date) runtimes.get(run);
+      HashSet all = new HashSet();
+
+      for (int i = 0; i < gridsets.size(); i++) {
+        Gridset gridset = (Gridset) gridsets.get(i);
+        List invList = (List) gridset.runMap.get(rundate);
+        if (invList != null) all.addAll( invList);
+      }
+      List invList = Arrays.asList( all.toArray());
+      Collections.sort(invList);
+      runMapAll.put( rundate, invList);
+    }
+
+    for (int time = 0; time < forecasts.size(); time++) {
+      Date timedate = (Date) forecasts.get(time);
+      HashSet all = new HashSet();
+
+      for (int i = 0; i < gridsets.size(); i++) {
+        Gridset gridset = (Gridset) gridsets.get(i);
+        List invList = (List) gridset.timeMap.get(timedate);
+        if (invList != null) all.addAll( invList);
+      }
+      List invList = Arrays.asList( all.toArray());
+      Collections.sort(invList, new InvRuntimeComparator());
+      timeMapAll.put( timedate, invList);
+    }
+
+    for (int offset = 0; offset < offsets.size(); offset++) {
+      Double offsetHour = (Double) offsets.get(offset);
+      HashSet all = new HashSet();
+
+      for (int i = 0; i < gridsets.size(); i++) {
+        Gridset gridset = (Gridset) gridsets.get(i);
+        List invList = (List) gridset.offsetMap.get(offsetHour);
+        if (invList != null) all.addAll( invList);
+      }
+      List invList = Arrays.asList( all.toArray());
+      Collections.sort(invList);
+      offsetMapAll.put( offsetHour, invList);
+    }
+
+    HashSet all = new HashSet();
+    for (int i = 0; i < gridsets.size(); i++) {
+      Gridset gridset = (Gridset) gridsets.get(i);
+      all.addAll( gridset.bestList);
+    }
+    bestListAll = Arrays.asList( all.toArray());
+    Collections.sort(bestListAll);
+
   }
 
-    private double getOffsetHour( Date run, Date forecast) {
+  private double getOffsetHour( Date run, Date forecast) {
     double diff = forecast.getTime() - run.getTime();
     return diff / 1000.0 / 60.0 / 60.0;
   }
 
-  private class Inventory {
+  ////////////////////////////////////////////////////
+  // all grids in a gridset have same time coordinate
+  private class Gridset {
+    ArrayList gridList = new ArrayList();  // ucar.nc2.dt.GridDatatype
+    ucar.nc2.dt.GridCoordSystem gcs;
+    CoordinateAxis timeAxis;
+    String timeDimName;
+
+    HashMap runMap = new HashMap(); // key = run Date, value = List<Invenory>
+    HashMap timeMap = new HashMap(); // key = forecast Date, value = List<Invenory>
+    HashMap offsetMap = new HashMap(); // key = offset Double, value = List<Invenory>
+    ArrayList bestList = new ArrayList();  // best List<Invenory>  */
+
+    Gridset(CoordinateAxis timeAxis, ucar.nc2.dt.GridCoordSystem gcs ) {
+      this.gcs = gcs;
+      this.timeAxis = timeAxis;
+      timeDimName = timeAxis.getDimension(1).getName();
+    }
+
+    String makeDimensions( List dims) {
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append( timeDimName);
+      for (int i = 0; i < dims.size(); i++) {
+        Dimension d = (Dimension) dims.get(i);
+        if (d.getName().equals(runtimeDimName) || d.getName().equals(timeDimName)) continue;
+        sbuff.append(" "+d.getName());
+      }
+      return sbuff.toString();
+    }
+
+    void generateInventory() {
+      HashMap bestMap = new HashMap();
+
+      int nruns = runtimes.size();
+      for (int run = 0; run < nruns; run++) {
+        Date runDate = (Date) runtimes.get(run);
+
+        // we assume that with the same taxis, we get the same CoordinateAxis1DTime
+        CoordinateAxis1DTime timeCoordRun = gcs.getTimeAxisForRun( run);
+        Date[] forecastDates = timeCoordRun.getTimeDates();
+
+        ArrayList runList = new ArrayList();
+        runMap.put( runDate, runList);
+
+        for (int time = 0; time < forecastDates.length; time++) {
+          Date forecastDate = forecastDates[time];
+          double hourOffset = getOffsetHour(runDate, forecastDate);
+
+          Inventory inv = new Inventory(runDate, forecastDate, hourOffset, run, time);
+          runList.add(inv);
+          bestMap.put( forecastDate, inv); // later ones will be used
+
+          Double dd = new Double(hourOffset);
+          ArrayList offsetList = (ArrayList) offsetMap.get(dd);
+          if (offsetList == null) {
+            offsetList = new ArrayList();
+            offsetMap.put(dd, offsetList);
+          }
+          offsetList.add(inv);
+
+          ArrayList timeList = (ArrayList) timeMap.get(forecastDate);
+          if (timeList == null) {
+            timeList = new ArrayList();
+            timeMap.put(forecastDate, timeList);
+          }
+          timeList.add(inv);
+        }
+      }
+
+      bestList = new ArrayList(bestMap.values());
+      Collections.sort( bestList);
+    }
+  }
+
+  /////////////////////////////////////////////////
+  private class Inventory implements Comparable {
     Date forecastTime;
     Date runTime;
     double hourOffset;
@@ -124,14 +286,68 @@ public class FmrcImpl implements ForecastModelRunCollection {
       this.run = run;
       this.time = time;
     }
+
+    public int compareTo(Object o) {
+      Inventory other = (Inventory) o;
+      return forecastTime.compareTo( other.forecastTime);
+    }
   }
 
+  private class InvRuntimeComparator implements Comparator {
+    public int compare(Object o1, Object o2) {
+      Inventory inv1 = (Inventory) o1;
+      Inventory inv2 = (Inventory) o2;
+      return inv1.runTime.compareTo(inv2.runTime);
+    }
+  }
+
+  private interface InventoryGetter {
+    public List get(Gridset gridset);
+  }
+
+  private class RuntimeInvGetter implements InventoryGetter {
+    Date wantRuntime;
+    RuntimeInvGetter(Date wantRuntime) { this.wantRuntime= wantRuntime; }
+
+    public List get(Gridset gridset) {
+      if (gridset == null)
+        return (List) runMapAll.get(wantRuntime);
+      else
+        return (List) gridset.runMap.get( wantRuntime);
+    }
+  }
+
+  private class ForecastInvGetter implements InventoryGetter {
+    Date forecastTime;
+    ForecastInvGetter(Date forecastTime) { this.forecastTime= forecastTime; }
+
+    public List get(Gridset gridset) {
+      if (gridset == null)
+        return (List) timeMapAll.get( forecastTime);
+      else
+        return (List) gridset.timeMap.get( forecastTime);
+    }
+  }
+
+  private class OffsetInvGetter implements InventoryGetter {
+    Double hours;
+    OffsetInvGetter(double hours) { this.hours = new Double(hours); }
+
+    public List get(Gridset gridset) {
+      if (gridset == null)
+        return (List) offsetMapAll.get( hours);
+      else
+        return (List) gridset.offsetMap.get( hours);
+    }
+  }
+
+  /////////////////////////////////////////////////////////////
   public List getRunDates() {
-    return Arrays.asList( runtimeCoord.getTimeDates() );
+    return runtimes;
   }
 
-  public NetcdfDataset getRunTimeDataset(Date runTime) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  public NetcdfDataset getRunTimeDataset(Date wantRuntime) {
+    return createDataset(new RuntimeInvGetter(wantRuntime));
   }
 
   public List getForecastDates() {
@@ -139,38 +355,331 @@ public class FmrcImpl implements ForecastModelRunCollection {
   }
 
   public NetcdfDataset getForecastTimeDataset(Date forecastTime) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return createDataset(new ForecastInvGetter(forecastTime));
   }
 
   public List getForecastOffsets() {
-    return offsetHours;
+    return offsets;
   }
 
   public NetcdfDataset getForecastOffsetDataset(double hours) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return createDataset(new OffsetInvGetter(hours));
   }
 
   public NetcdfDataset getBestTimeSeries() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return createDataset(new InventoryGetter() {
+      public List get(Gridset gridset) {
+        return (gridset == null) ? bestListAll : gridset.bestList;
+      }
+    });
   }
 
+  public NetcdfDataset getFmrcDataset() {
+    return org_ncd;
+  }
+
+  /////////////////////////
+  private NetcdfDataset createDataset(InventoryGetter invGetter) {
+    NetcdfDataset newds = new NetcdfDataset();
+    addRunTimeCoordinate( newds, invGetter.get( null));
+
+    Group src = org_ncd.getRootGroup();
+    Group target = newds.getRootGroup();
+
+    // group attributes
+    Iterator iterAtt = src.getAttributes().iterator();
+    while (iterAtt.hasNext()) {
+      ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();
+       target.addAttribute(a);
+    }
+
+        // dimensions
+    Iterator iterDim = src.getDimensions().iterator();
+    while (iterDim.hasNext()) {
+      Dimension d = (Dimension) iterDim.next();
+      target.addDimension( d);
+    }
+
+    // take each gridset seperately
+    for (int i = 0; i < gridsets.size(); i++) {
+      Gridset gridset = (Gridset) gridsets.get(i);
+      List invList = invGetter.get( gridset);
+      if (invList == null) continue;
+
+      addTimeCoordinate( newds, gridset, invList);
+      Subsetter subs = new Subsetter(invList);
+
+      List grids = gridset.gridList;
+      for (int j = 0; j < grids.size(); j++) {
+        ucar.nc2.dt.GridDatatype grid =  (ucar.nc2.dt.GridDatatype) grids.get(j);
+        Variable orgVar = org_ncd.findVariable(grid.getName());
+
+        VariableDS v = new VariableDS( target, orgVar, false);
+        v.setDimensions( gridset.makeDimensions( v.getDimensions()));
+        v.setProxyReader(subs);
+        v.remove( v.findAttribute(_Coordinate.Axes));
+        target.addVariable(v); // reparent
+      }
+    }
+
+    // any non-grid variables
+    Iterator iterVar = src.getVariables().iterator();
+    while (iterVar.hasNext()) {
+      VariableDS v = (VariableDS) iterVar.next();
+      if ((null == gridHash.get(v.getName()) && !coordSet.contains(v.getName())))
+        target.addVariable(v); // reparent
+    }
+
+    newds.finish();
+    return newds;
+  }
+
+  private void addTimeCoordinate(NetcdfDataset newds, Gridset gridset, List invList) {
+    DateFormatter formatter = new DateFormatter();
+
+    // add the time dimensions
+    int n = invList.size();
+    Group g = newds.getRootGroup();
+    g.remove( g.findDimension( gridset.timeDimName));
+    g.addDimension( new Dimension( gridset.timeDimName, n, true));
+
+    // make the coordinate variable data
+    ArrayDouble.D1 offsetData = new ArrayDouble.D1( n);
+    for (int i = 0; i < n; i++) {
+      Inventory inv = (Inventory) invList.get(i);
+      double offsetHour = getOffsetHour( baseDate, inv.forecastTime);
+      offsetData.set( i, offsetHour);
+    }
+
+    // add the coordinate variables
+    VariableDS timeCoordinate = new VariableDS(newds, g, null, gridset.timeDimName, DataType.DOUBLE, gridset.timeDimName,
+            "hours since "+formatter.toDateTimeStringISO(baseDate), "time coordinate");
+    timeCoordinate.setCachedData(offsetData, true);
+    timeCoordinate.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    newds.addVariable(g, timeCoordinate);
+  }
+
+  private void addRunTimeCoordinate(NetcdfDataset newds, List invList) {
+    DateFormatter formatter = new DateFormatter();
+
+    // add the time dimensions
+    int n = invList.size();
+    Group g = newds.getRootGroup();
+    g.remove( g.findDimension( runtimeDimName));
+    g.addDimension( new Dimension( runtimeDimName, n, true));
+
+    // make the coordinate variable data
+    ArrayObject.D1 runData = new ArrayObject.D1( String.class, n);
+    for (int i = 0; i < n; i++) {
+      Inventory inv = (Inventory) invList.get(i);
+      runData.set(i, formatter.toDateTimeStringISO(inv.runTime));
+    }
+
+    // add the coordinate variables
+    VariableDS runtimeCoordinate = new VariableDS(newds, newds.getRootGroup(), null, runtimeDimName, DataType.STRING, runtimeDimName,
+            null, "run dates");
+    runtimeCoordinate.setCachedData(runData, true);
+    newds.addVariable(newds.getRootGroup(), runtimeCoordinate);
+  }
+
+  ////////////////////////
+
+  /* LOOK we really need to acquire our own copy of the source
+  private NetcdfDataset createDataset(NetcdfDataset src, List invList) {
+    NetcdfDataset newds = new NetcdfDataset();
+
+    DateFormatter formatter = new DateFormatter();
+
+    // add the time dimensions
+    int n = invList.size();
+    newds.getRootGroup().addDimension( new Dimension( runtimeCoordName, n, true));
+    newds.getRootGroup().addDimension( new Dimension( timeCoordName, n, true));
+
+    // add the coordinate variables
+    ArrayDouble.D1 offsetData = new ArrayDouble.D1( n);
+    ArrayObject.D1 runData = new ArrayObject.D1( String.class, n);
+    for (int i = 0; i < n; i++) {
+      Inventory inv = (Inventory) invList.get(i);
+      double offsetHour = getOffsetHour( baseDate, inv.forecastTime);
+      offsetData.set( i, offsetHour);
+      runData.set(i, formatter.toDateTimeStringISO(inv.runTime));
+    }
+    VariableDS runtimeCoordinate = new VariableDS(newds, newds.getRootGroup(), null, runtimeCoordName, DataType.STRING, runtimeCoordName,
+            null, "run dates");
+    runtimeCoordinate.setCachedData(runData, true);
+    newds.addVariable(newds.getRootGroup(), runtimeCoordinate);
+
+    VariableDS timeCoordinate = new VariableDS(newds, newds.getRootGroup(), null, timeCoordName, DataType.DOUBLE, timeCoordName,
+            "hours since "+formatter.toDateTimeStringISO(baseDate), "time coordinate");
+    timeCoordinate.setCachedData(offsetData, true);
+    timeCoordinate.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    newds.addVariable(newds.getRootGroup(), timeCoordinate);
+
+    transferGroup( newds, src.getRootGroup(), newds.getRootGroup(), new Subsetter(invList));
+    newds.finish();
+    return newds;
+  }
+
+  private void transferGroup( NetcdfDataset newds, Group src, Group target, Subsetter subs) {
+
+    // group attributes
+    Iterator iterAtt = src.getAttributes().iterator();
+    while (iterAtt.hasNext()) {
+      ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();
+      if (null == target.findAttribute( a.getName())) // LOOK why check ??
+        target.addAttribute(a);
+    }
+
+    // dimensions
+    Iterator iterDim = src.getDimensions().iterator();
+    while (iterDim.hasNext()) {
+      Dimension d =  (Dimension) iterDim.next();
+      if (d.getName().equals(org_runtimeDimName) || d.getName().equals(org_timeDimName)) continue;
+      target.addDimension( d);
+    }
+
+    // variables
+    Iterator iterVar = src.getVariables().iterator();
+    while (iterVar.hasNext()) {
+      VariableDS v = (VariableDS) iterVar.next();
+      if (v.getName().equals(org_runtimeCoord.getName()) || v.getName().equals(org_timeVarName)) continue;
+
+      if (hasRuntime(v)) {
+        v = new VariableDS( target, v, false);
+        v.setDimensions( makeDimensions( v.getDimensions()));
+        v.setProxyReader(subs);
+        v.remove( v.findAttribute(_Coordinate.Axes));
+      }
+
+      target.addVariable(v); // reparent
+    }
+
+    // nested groups
+    for (Iterator iter = src.getGroups().iterator(); iter.hasNext(); ) {
+      Group srcNested = (Group) iter.next();
+      Group nested = new Group( newds, target, srcNested.getName());
+      target.addGroup( nested);
+      transferGroup( newds, srcNested, nested, subs);
+    }
+  }
+
+  private boolean hasRuntime(Variable v) {
+    if (v.getRank() < 1)
+      return false;
+    Dimension d = v.getDimension(0);
+    return runtimeCoordName.equals(d.getName());
+  } */
+
+  /////////////////////////////
+  private class Subsetter implements ucar.nc2.dataset.ProxyReader {
+    List invList;
+    Subsetter( List invList) {
+      this.invList = invList;
+    }
+
+    public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
+      Variable orgVar = org_ncd.findVariable(mainv.getName());
+      List section = orgVar.getRanges();
+      boolean hasTime = true; // orgVar.findDimensionIndex(org_timeDimName) >= 0;
+
+      Array allData = Array.factory( mainv.getDataType(), mainv.getShape()); // LOOK why getOriginalDataType() ?
+      int destPos = 0;
+
+      // wants it "all"
+      for (int i = 0; i < invList.size(); i++) {
+        Inventory inv = (Inventory) invList.get(i);
+
+        Array varData;
+        try {
+          section.set(0, new Range(inv.run, inv.run));
+          if (hasTime)
+            section.set(1, new Range(inv.time, inv.time));
+
+          varData = orgVar.read( section);
+
+        } catch (InvalidRangeException e) {
+          throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
+        destPos += varData.getSize();
+
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return null;
+      }
+
+      return allData;
+    }
+
+    public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+      // If its full sized, then use full read, so that data gets cached.
+      long size = Range.computeSize(section);
+      if (size == mainv.getSize())
+        return read(mainv, cancelTask);
+
+      Variable orgVar = org_ncd.findVariable(mainv.getName());
+      boolean hasTime = true; // orgVar.findDimensionIndex(org_timeDimName) >= 0;
+
+      Array sectionData = Array.factory(mainv.getDataType(), Range.getShape(section));
+      int destPos = 0;
+
+      Range timeRange = (Range) section.get(0);
+      ArrayList allSection = new ArrayList( section);
+      allSection.add(0, null); // need 1 more.
+
+      Range.Iterator iter = timeRange.getIterator();
+      while (iter.hasNext()) {
+        int index = iter.next();
+        Inventory inv = (Inventory) invList.get(index);
+
+        Array varData;
+        try {
+          allSection.set(0, new Range(inv.run, inv.run));
+          if (hasTime)
+            allSection.set(1, new Range(inv.time, inv.time));
+
+          varData = orgVar.read( allSection);
+
+        } catch (InvalidRangeException e) {
+          throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
+        destPos += varData.getSize();
+
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return null;
+      }
+
+      return sectionData;
+    }
+  } // subsetter
+
+  /////////////////////////////
+
   public static void main(String args[]) throws IOException {
-    FmrcImpl fmrc = new FmrcImpl("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcNetcdf.xml");
+    FmrcImpl fmrc = new FmrcImpl("R:/testdata/fmrc/NAMfmrc.nc");
     DateFormatter df = new DateFormatter();
 
     List dates = fmrc.getRunDates();
     System.out.println("\nRun Dates= "+dates.size());
     for (int i = 0; i < dates.size(); i++) {
       Date date = (Date) dates.get(i);
-      System.out.println(" "+df.toDateTimeString(date));
+      System.out.print(" "+df.toDateTimeString(date)+" (");
+      List list = (List) fmrc.runMapAll.get(date);
+      for (int j = 0; j < list.size(); j++) {
+        Inventory inv = (Inventory) list.get(j);
+        System.out.print(" "+inv.hourOffset);
+      }
+      System.out.println(")");
     }
 
     dates = fmrc.getForecastDates();
     System.out.println("\nForecast Dates= "+dates.size());
     for (int i = 0; i < dates.size(); i++) {
       Date date = (Date) dates.get(i);
-      ArrayList list = (ArrayList) fmrc.timeMap.get(date);
       System.out.print(" "+df.toDateTimeString(date)+" (");
+      List list = (List) fmrc.timeMapAll.get(date);
       for (int j = 0; j < list.size(); j++) {
         Inventory inv = (Inventory) list.get(j);
         System.out.print(" "+inv.hourOffset);
@@ -182,9 +691,25 @@ public class FmrcImpl implements ForecastModelRunCollection {
     System.out.println("\nForecast Hours= "+hours.size());
     for (int i = 0; i < hours.size(); i++) {
       Double hour = (Double) hours.get(i);
-      ArrayList offsetList = (ArrayList) fmrc.offsetMap.get(hour);
-      System.out.println(" "+hour+" ("+offsetList.size()+")");
+      List offsetList = (List) fmrc.offsetMapAll.get(hour);
+      System.out.print(" "+hour+": (");
+      for (int j = 0; j < offsetList.size(); j++) {
+        Inventory inv = (Inventory) offsetList.get(j);
+        if (j>0) System.out.print(",");
+        System.out.print(df.toDateTimeStringISO(inv.forecastTime));
+      }
+      System.out.println(")");
     }
+
+    List best = fmrc.bestListAll;
+    System.out.println("\nBest Forecast = "+best.size());
+    for (int i = 0; i < best.size(); i++) {
+      Inventory inv = (Inventory) best.get(i);
+      System.out.println(" "+df.toDateTimeStringISO(inv.forecastTime)+" (run="+df.toDateTimeStringISO(inv.runTime)+") offset="+inv.hourOffset);
+    }
+
+    //NetcdfDataset ncd = fmrc.getForecastOffsetDataset(0.0);
+    //System.out.println(""+ncd);
 
   }
 

@@ -12,7 +12,7 @@ public class TestNcML {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
 
-    // test reading XML
+    /* test reading XML
     suite.addTest(new TestSuite(TestNcMLequals.class)); // ncml == referenced dataset
     suite.addTest(new TestSuite(TestNcMLRead.class)); // explicit;  metadata in xml
     suite.addTest(new TestSuite(TestNcMLRead.TestRead2.class)); // readMetadata //
@@ -25,18 +25,21 @@ public class TestNcML {
 
     // test aggregations
     suite.addTest(new TestSuite(TestNcmlUnionSimple.class));
-    suite.addTest(new TestSuite(TestNcmlUnion.class)); //
+    suite.addTest(new TestSuite(TestNcmlUnion.class));
+
     suite.addTest(new TestSuite(TestAggExistingCoordVars.class));
     suite.addTest(new TestSuite(TestNcmlAggExisting.class));
-    suite.addTest(new TestSuite(TestNcmlAggSynthetic.class)); // */
+    suite.addTest(new TestSuite(TestExistingSSTA.class));
+
+    suite.addTest(new TestSuite(TestNcmlAggSynthetic.class)); //
     suite.addTest(new TestSuite(TestNcmlAggSynGrid.class));
 
     suite.addTest(new TestSuite(TestNcmlAggDirectory.class));  //
-    suite.addTest(new TestSuite(TestNcmlAggDirDateFormat.class));  //
+    suite.addTest(new TestSuite(TestNcmlAggDirDateFormat.class));  // */
 
-    // suite.addTest(new TestSuite(TestAggForecastModel.class));  //  */
-    //suite.addTest(new TestSuite(TestAggFmrcNetcdf.class));  //  */
-    //suite.addTest(new TestSuite(TestAggFmrcGrib.class));  //  */
+    // deprecated suite.addTest(new TestSuite(TestAggForecastModel.class));  //  */
+    suite.addTest(new TestSuite(TestAggFmrcNetcdf.class));  //  */
+    suite.addTest(new TestSuite(TestAggFmrcGrib.class));  //  */
 
         // test add coordinate systems
     // suite.addTest(new TestSuite(TestNcMLWriteReadwithCoords.class)); // write and read back NcML adding coord systems

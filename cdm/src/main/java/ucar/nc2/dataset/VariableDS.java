@@ -38,7 +38,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   private EnhanceScaleMissingImpl smProxy;
   private boolean isEnhanced;
   private DataType orgDataType;
-  private ucar.nc2.ncml.Aggregation agg = null; // for NcML
+  private ProxyReader proxyReader = null;
 
   /** Constructor when theres no underlying variable.  */
   public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName,
@@ -69,7 +69,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
     if (ncVar instanceof VariableDS) {
       VariableDS ncVarDS = (VariableDS) ncVar;
-      this.agg = ncVarDS.agg;
+      this.proxyReader = ncVarDS.proxyReader;
     }
 
     this.proxy = new EnhancementsImpl( this);
@@ -123,7 +123,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   /**
-   * When this wraps another Variabloe, get the original Variable's DataType.
+   * When this wraps another Variable, get the original Variable's DataType.
    */
   public DataType getOriginalDataType() {
     return orgDataType;
@@ -203,7 +203,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   /** If its an NcML aggregation, it has an Aggregation object associated. */
-  public void setAggregation( ucar.nc2.ncml.Aggregation agg) {this.agg = agg; }
+  public void setProxyReader( ProxyReader agg) {this.proxyReader = agg; }
 
   /** If this Variable has been "enhanced", ie processed for scale/offset/missing value */
   public boolean isEnhanced() { return isEnhanced; }
@@ -236,14 +236,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
     if (hasCachedData())
       result = super._read();
-    else if (agg != null)
-     result = agg.read( this, null);
+    else if (proxyReader != null)
+     result = proxyReader.read( (orgVar != null) ? orgVar : this, null);
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
       Object data = smProxy.getFillValue( getDataType());
-      Array array = Array.factoryConstant( dataType.getPrimitiveClassType(), getShape(), data);
-      return array;
+      return Array.factoryConstant( dataType.getPrimitiveClassType(), getShape(), data);
     }
 
     if (smProxy.hasScaleOffset())
@@ -260,14 +259,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     
     if (hasCachedData())
       result = super._read(section);
-    else if (agg != null)
-      result = agg.read( this, null, section);
+    else if (proxyReader != null)
+      result = proxyReader.read( (orgVar != null) ? orgVar : this, null, section);
     else if (orgVar != null)
       result = orgVar.read(section);
     else { // return fill value in a "constant array"
       Object data = smProxy.getFillValue( getDataType());
-      Array array = Array.factoryConstant( dataType.getPrimitiveClassType(), Range.getShape(section), data);
-      return array;
+      return Array.factoryConstant( dataType.getPrimitiveClassType(), Range.getShape(section), data);
     }
 
     if (smProxy.hasScaleOffset())

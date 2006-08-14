@@ -60,6 +60,8 @@ import javax.swing.event.*;
  */
 
 public class ToolsUI extends JPanel {
+  static private final String WorldDetailMap = "/optional/nj22/maps/Countries.zip";
+  static private final String USMap = "/optional/nj22/maps/US.zip";
 
   static private final String FRAME_SIZE = "FrameSize";
   static private final String DEBUG_FRAME_SIZE = "DebugWindowSize";
@@ -1624,8 +1626,8 @@ public class ToolsUI extends JPanel {
 
        gridUI = new GridUI((PreferencesExt) prefs.node("GridUI"), viewerWindow, fileChooser, 800);
        gridUI.addMapBean(new thredds.viewer.gis.worldmap.WorldMapBean());
-       gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", "/resources/nj22/maps/Countries.zip"));
-       gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", "/resources/nj22/maps/US.zip"));
+       gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
+       gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
 
        viewerWindow.setComponent(gridUI);
        viewerWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));

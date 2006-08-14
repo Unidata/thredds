@@ -140,8 +140,8 @@ public abstract class MapBean {
         // standard maps
     ArrayList standardMaps = new ArrayList();
     standardMaps.add( new thredds.viewer.gis.worldmap.WorldMapBean());
-    standardMaps.add( new thredds.viewer.gis.shapefile.ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", "/resources/nj22/maps/Countries.zip"));
-    standardMaps.add( new thredds.viewer.gis.shapefile.ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", "/resources/nj22/maps/US.zip"));
+    standardMaps.add( new thredds.viewer.gis.shapefile.ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", "/optional/nj22/maps/Countries.zip"));
+    standardMaps.add( new thredds.viewer.gis.shapefile.ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", "/optional/nj22/maps/US.zip"));
     
     for (int i = 0; i < standardMaps.size(); i++) {
       MapBean mb = (MapBean) standardMaps.get(i);

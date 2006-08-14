@@ -99,8 +99,13 @@ public class VertScaleSlider extends JPanel {
     setSelectedIndex(current);
 
     int n = (int) zAxis.getSize();
-    min = Math.min(zAxis.getCoordEdge(0), zAxis.getCoordEdge(n));
-    max = Math.max(zAxis.getCoordEdge(0), zAxis.getCoordEdge(n));
+    if (zAxis.isContiguous()) {
+      min = Math.min(zAxis.getCoordEdge(0), zAxis.getCoordEdge(n));
+      max = Math.max(zAxis.getCoordEdge(0), zAxis.getCoordEdge(n));
+    } else {
+      min = zAxis.getMinValue();
+      max = zAxis.getMaxValue();     
+    }
 
     setLabels();
     slider.setPaintLabels( true );

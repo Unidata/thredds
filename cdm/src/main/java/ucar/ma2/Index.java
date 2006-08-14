@@ -58,7 +58,7 @@ public class Index implements Cloneable {
   /** Iterator implementation */
   protected boolean fastIterator = true;
 
-  /** constructor for subclasses only */
+  /** General case Index - use when you want to manipulate current elements yourself */
   protected Index(int rank) {
     shape = new int[rank];
     this.rank = rank;
