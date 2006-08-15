@@ -44,15 +44,17 @@ import ucar.unidata.util.StringUtil;
 public class InvDatasetFmrc extends InvCatalogRef {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFmrc.class);
 
-  private final String FMRC = "fmrc.ncd";
-  private final String BEST = "best.ncd";
-  private final String RUNS = "runs";
-  private final String FORECAST = "forecast";
-  private final String OFFSET = "offset";
+  static private final String FMRC = "fmrc.ncd";
+  static private final String BEST = "best.ncd";
+  static private final String RUNS = "runs";
+  static private final String FORECAST = "forecast";
+  static private final String OFFSET = "offset";
 
-  private final String TITLE_RUNS = "Forecast Model Run Datasets";
-  private final String TITLE_FORECAST = "Constant Forecast Offset Datasets";
-  private final String TITLE_OFFSET = "Constant Forecast Date Datasets";
+  static private final String TITLE_RUNS = "Forecast Model Run";
+  static private final String TITLE_OFFSET = "Constant Forecast Offset";
+  static private final String TITLE_FORECAST = "Constant Forecast Date";
+
+  //////////////////////////////////////////////
 
   private boolean madeDatasets = false, madeFmrc = false;
   private String path;
@@ -97,7 +99,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       catalog = new InvCatalogImpl( getName(), parent.getVersion(), getURI());
       InvDatasetImpl top = new InvDatasetImpl(this);
-      top.transferMetadata( top ); // make all inherited metadata local
+      top.setParent(null);
+      top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
       catalog.addDataset(top);
 
       // any referenced services need to be local
@@ -121,7 +124,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       catalogRuns = new InvCatalogImpl( getName(), parent.getVersion(), parent.resolveUri(getCatalogHref(RUNS)));
       InvDatasetImpl top = new InvDatasetImpl(this);
-      top.transferMetadata( top ); // make all inherited metadata local
+      top.setParent(null);
+      //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
       top.setName(TITLE_RUNS);
       catalogRuns.addDataset(top);
 
@@ -146,7 +150,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       catalogOffsets = new InvCatalogImpl( getName(), parent.getVersion(), parent.resolveUri(getCatalogHref(OFFSET)));
       InvDatasetImpl top = new InvDatasetImpl(this);
-      top.transferMetadata( top ); // make all inherited metadata local
+      top.setParent(null);
+      //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
+
       top.setName(TITLE_OFFSET);
       catalogOffsets.addDataset(top);
 
@@ -171,7 +177,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       catalogForecasts = new InvCatalogImpl( getName(), parent.getVersion(), parent.resolveUri(getCatalogHref(FORECAST)));
       InvDatasetImpl top = new InvDatasetImpl(this);
-      top.transferMetadata( top ); // make all inherited metadata local
+      top.setParent(null);
+      // top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
       top.setName(TITLE_FORECAST);
       catalogForecasts.addDataset(top);
 
@@ -200,14 +207,18 @@ public class InvDatasetFmrc extends InvCatalogRef {
       if (id == null)
         id = getPath();
 
-      InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection Dataset (2D time coordinates)");
+      InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
       ds.setUrlPath(path+"/"+FMRC);
       ds.setID(id+"/"+FMRC);
+      ThreddsMetadata tm = ds.getLocalMetadata();
+      tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
       datasets.add( ds);
 
-      ds = new InvDatasetImpl(this, "Best Time Series Dataset");
+      ds = new InvDatasetImpl(this, "Best Time Series");
       ds.setUrlPath(path+"/"+BEST);
       ds.setID(id+"/"+BEST);
+      tm = ds.getLocalMetadata();
+      tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
       datasets.add( ds);
 
       // run datasets as catref
@@ -266,6 +277,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvDatasetImpl nested = new InvDatasetImpl(this, "Run "+name);
       nested.setUrlPath(path+"/"+RUNS+"/"+name);
       nested.setID(id+"/"+RUNS+"/"+name);
+      ThreddsMetadata tm = nested.getLocalMetadata();
+      tm.addDocumentation("summary", "Data from Run "+name);
       datasets.add( nested);
     }
 
@@ -288,6 +301,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
        InvDatasetImpl nested = new InvDatasetImpl(this, "Constant Offset "+name);
        nested.setUrlPath(path+"/"+OFFSET+"/"+name);
        nested.setID(id+"/"+OFFSET+"/"+name);
+       ThreddsMetadata tm = nested.getLocalMetadata();
+       tm.addDocumentation("summary", "Data from the "+offset+" hour forecasts, across different model runs.");
        datasets.add( nested);
      }
 
@@ -311,6 +326,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
        InvDatasetImpl nested = new InvDatasetImpl(this, "Constant Forecast "+name);
        nested.setUrlPath(path+"/"+FORECAST+"/"+name);
        nested.setID(id+"/"+FORECAST+"/"+name);
+       ThreddsMetadata tm = nested.getLocalMetadata();
+       tm.addDocumentation("summary", "Data with the same forecast date, "+name+", across different model runs.");
        datasets.add( nested);
      }
 

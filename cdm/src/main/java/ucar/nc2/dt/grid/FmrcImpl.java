@@ -23,8 +23,6 @@ package ucar.nc2.dt.grid;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
@@ -42,6 +40,13 @@ import java.io.IOException;
  * @version $Revision$ $Date$
  */
 public class FmrcImpl implements ForecastModelRunCollection {
+  static private final String BEST = "best";
+  static private final String RUN = "run";
+  static private final String FORECAST = "forecast";
+  static private final String OFFSET = "offset";
+
+  ///////////////////////////
+
   private NetcdfDataset org_ncd;
   private Date baseDate;
   private String runtimeDimName;
@@ -347,7 +352,13 @@ public class FmrcImpl implements ForecastModelRunCollection {
   }
 
   public NetcdfDataset getRunTimeDataset(Date wantRuntime) {
-    return createDataset(new RuntimeInvGetter(wantRuntime));
+    NetcdfDataset ncd = createDataset( new RuntimeInvGetter(wantRuntime),RUN);
+
+    DateFormatter df = new DateFormatter();
+    ncd.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, df.toDateTimeStringISO(wantRuntime)));
+    ncd.finish();
+
+    return ncd;
   }
 
   public List getForecastDates() {
@@ -355,7 +366,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
   }
 
   public NetcdfDataset getForecastTimeDataset(Date forecastTime) {
-    return createDataset(new ForecastInvGetter(forecastTime));
+    return createDataset(new ForecastInvGetter(forecastTime), FORECAST);
   }
 
   public List getForecastOffsets() {
@@ -363,7 +374,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
   }
 
   public NetcdfDataset getForecastOffsetDataset(double hours) {
-    return createDataset(new OffsetInvGetter(hours));
+    return createDataset(new OffsetInvGetter(hours), OFFSET);
   }
 
   public NetcdfDataset getBestTimeSeries() {
@@ -371,7 +382,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       public List get(Gridset gridset) {
         return (gridset == null) ? bestListAll : gridset.bestList;
       }
-    });
+    }, BEST);
   }
 
   public NetcdfDataset getFmrcDataset() {
@@ -379,19 +390,24 @@ public class FmrcImpl implements ForecastModelRunCollection {
   }
 
   /////////////////////////
-  private NetcdfDataset createDataset(InventoryGetter invGetter) {
+  private NetcdfDataset createDataset(InventoryGetter invGetter, String type) {
     NetcdfDataset newds = new NetcdfDataset();
-    addRunTimeCoordinate( newds, invGetter.get( null));
+    //addRunTimeCoordinate( newds, invGetter.get( null));
 
     Group src = org_ncd.getRootGroup();
     Group target = newds.getRootGroup();
 
-    // group attributes
+    // global attributes
     Iterator iterAtt = src.getAttributes().iterator();
     while (iterAtt.hasNext()) {
       ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();
        target.addAttribute(a);
     }
+    String oldHistory = org_ncd.findAttValueIgnoreCase(null, "history", null);
+    String newHistory = "Synthetic dataset from TDS fmrc ("+type+") aggregation, original data from "+org_ncd.getLocation();
+    String history = (oldHistory != null) ? oldHistory + "; "+newHistory : newHistory;
+    target.addAttribute( new Attribute("history", history));
+    target.remove( target.findAttribute(_Coordinate.ModelRunDate));
 
         // dimensions
     Iterator iterDim = src.getDimensions().iterator();
@@ -406,7 +422,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       List invList = invGetter.get( gridset);
       if (invList == null) continue;
 
-      addTimeCoordinate( newds, gridset, invList);
+      addTimeCoordinates( newds, gridset, invList, type);
       Subsetter subs = new Subsetter(invList);
 
       List grids = gridset.gridList;
@@ -434,32 +450,70 @@ public class FmrcImpl implements ForecastModelRunCollection {
     return newds;
   }
 
-  private void addTimeCoordinate(NetcdfDataset newds, Gridset gridset, List invList) {
+  private void addTimeCoordinates(NetcdfDataset newds, Gridset gridset, List invList, String type) {
     DateFormatter formatter = new DateFormatter();
+    boolean useRun = type.equals(FORECAST);
 
     // add the time dimensions
     int n = invList.size();
-    Group g = newds.getRootGroup();
-    g.remove( g.findDimension( gridset.timeDimName));
-    g.addDimension( new Dimension( gridset.timeDimName, n, true));
+    String dimName = gridset.timeDimName;
 
-    // make the coordinate variable data
+    Group g = newds.getRootGroup();
+    g.remove( g.findDimension( dimName));
+    g.addDimension( new Dimension( dimName, n, true));
+
+    // make the time coordinate variable data
     ArrayDouble.D1 offsetData = new ArrayDouble.D1( n);
     for (int i = 0; i < n; i++) {
       Inventory inv = (Inventory) invList.get(i);
-      double offsetHour = getOffsetHour( baseDate, inv.forecastTime);
+      double offsetHour = getOffsetHour( baseDate, useRun ? inv.runTime : inv.forecastTime);
       offsetData.set( i, offsetHour);
     }
 
-    // add the coordinate variables
-    VariableDS timeCoordinate = new VariableDS(newds, g, null, gridset.timeDimName, DataType.DOUBLE, gridset.timeDimName,
-            "hours since "+formatter.toDateTimeStringISO(baseDate), "time coordinate");
+    // add the time coordinate variable
+    String typeName = useRun ? "run" : "forecast";
+    String desc = typeName + " time coordinate";
+    VariableDS timeCoordinate = new VariableDS(newds, g, null, dimName, DataType.DOUBLE, dimName,
+            "hours since "+formatter.toDateTimeStringISO(baseDate), desc);
     timeCoordinate.setCachedData(offsetData, true);
+    timeCoordinate.addAttribute( new Attribute("long_name", desc));
     timeCoordinate.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     newds.addVariable(g, timeCoordinate);
+
+    // make the other coordinate variable data
+    Array data;
+    boolean useOffset = type.equals(RUN) || type.equals(FORECAST);
+    typeName = useOffset ? "offset" : "run";
+    DataType dataType = useOffset ? DataType.DOUBLE : DataType.STRING;
+
+    if (useOffset) {
+      ArrayDouble.D1 runData = new ArrayDouble.D1( n);
+      for (int i = 0; i < n; i++) {
+        Inventory inv = (Inventory) invList.get(i);
+        runData.set(i, inv.hourOffset);
+      }
+      data = runData;
+      desc = "hour offset from start of run for coordinate = "+dimName;
+
+    } else {
+      ArrayObject.D1 runData = new ArrayObject.D1( String.class, n);
+      for (int i = 0; i < n; i++) {
+        Inventory inv = (Inventory) invList.get(i);
+        runData.set(i, formatter.toDateTimeStringISO(useRun ? inv.runTime : inv.forecastTime));
+      }
+      data = runData;
+      desc = "model run dates for coordinate = "+dimName;
+    }
+
+    VariableDS otherCoordinate = new VariableDS(newds, newds.getRootGroup(), null, typeName+"_"+dimName,
+      dataType, dimName, null, desc);
+    if (!useOffset) otherCoordinate.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
+    otherCoordinate.setCachedData(data, true);
+    otherCoordinate.addAttribute( new Attribute("long_name", desc));
+    newds.addVariable(newds.getRootGroup(), otherCoordinate);
   }
 
-  private void addRunTimeCoordinate(NetcdfDataset newds, List invList) {
+  /* private void addRunTimeCoordinate(NetcdfDataset newds, List invList) {
     DateFormatter formatter = new DateFormatter();
 
     // add the time dimensions
@@ -480,7 +534,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
             null, "run dates");
     runtimeCoordinate.setCachedData(runData, true);
     newds.addVariable(newds.getRootGroup(), runtimeCoordinate);
-  }
+  } */
 
   ////////////////////////
 
@@ -658,9 +712,15 @@ public class FmrcImpl implements ForecastModelRunCollection {
   /////////////////////////////
 
   public static void main(String args[]) throws IOException {
-    FmrcImpl fmrc = new FmrcImpl("R:/testdata/fmrc/NAMfmrc.nc");
+    //String def = "R:/testdata/fmrc/NAMfmrc.nc";
+    String def = "C:/dev/thredds/cdm/src/test/data/ncml/AggFmrcGrib.xml";
+
+
+    String location = (args.length > 0) ? args[0] : def;
+    FmrcImpl fmrc = new FmrcImpl(location);
     DateFormatter df = new DateFormatter();
 
+    System.out.println("Fmrc for dataset= "+location);
     List dates = fmrc.getRunDates();
     System.out.println("\nRun Dates= "+dates.size());
     for (int i = 0; i < dates.size(); i++) {
@@ -695,8 +755,8 @@ public class FmrcImpl implements ForecastModelRunCollection {
       System.out.print(" "+hour+": (");
       for (int j = 0; j < offsetList.size(); j++) {
         Inventory inv = (Inventory) offsetList.get(j);
-        if (j>0) System.out.print(",");
-        System.out.print(df.toDateTimeStringISO(inv.forecastTime));
+        if (j>0) System.out.print(", ");
+        System.out.print(df.toDateTimeStringISO(inv.runTime));
       }
       System.out.println(")");
     }
@@ -708,8 +768,10 @@ public class FmrcImpl implements ForecastModelRunCollection {
       System.out.println(" "+df.toDateTimeStringISO(inv.forecastTime)+" (run="+df.toDateTimeStringISO(inv.runTime)+") offset="+inv.hourOffset);
     }
 
-    //NetcdfDataset ncd = fmrc.getForecastOffsetDataset(0.0);
-    //System.out.println(""+ncd);
+    NetcdfDataset fmrcd = fmrc.getFmrcDataset();
+    Variable time = fmrcd.findVariable("time");
+    Array data = time.read();
+    NCdump.printArray( data, "2D time", System.out, null);
 
   }
 

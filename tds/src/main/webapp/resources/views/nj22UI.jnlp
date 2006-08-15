@@ -15,26 +15,26 @@
   </security>
 
   <resources>
-    <j2se version="1.4+" max-heap-size="512m"/>
-    <jar href="netcdfUI.jar"/>
-    <jar href="bzip2.jar"/>
-    <jar href="codec.jar"/>
-    <jar href="gnu-regexp.jar"/>
-    <jar href="grib.jar"/>
-    <jar href="httpclient.jar"/>
-    <jar href="httplogging.jar"/>
-    <jar href="jdom.jar"/>
-    <jar href="jpeg2000.jar"/>
-    <jar href="logging.jar"/>
-    <jar href="prefs.jar"/>
-    <jar href="resourcesOptional.jar"/>
-    <jar href="visadNoDods.jar"/>
-    <jar href="xml-apis.jar"/>
-    <jar href="xercesImpl.jar"/>
+      <j2se version="1.4+" max-heap-size="512m"/>
+      <jar href="netcdfUI.jar"/>
+      <jar href="bufr.jar"/>
+      <jar href="codec.jar"/>
+      <jar href="gnu-regexp.jar"/>
+      <jar href="grib.jar"/>
+      <jar href="httpclient.jar"/>
+      <jar href="httplogging.jar"/>
+      <jar href="jdom.jar"/>
+      <jar href="jpeg2000.jar"/>
+      <jar href="logging.jar"/>
+      <jar href="prefs.jar"/>
+      <jar href="resourcesOptional.jar"/>
+      <jar href="visadNoDods.jar"/>
+      <jar href="xml-apis.jar"/>
+      <jar href="xercesImpl.jar"/>
 
-    <property name="javax.xml.parsers.DocumentBuilderFactory"
-              value="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
+      <property name="javax.xml.parsers.DocumentBuilderFactory" value="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
   </resources>
+
 
   <application-desc main-class="ucar.nc2.ui.ToolsUI">
     <argument>{catalog}#{dataset}</argument>

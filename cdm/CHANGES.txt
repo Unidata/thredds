@@ -40,6 +40,11 @@ Changes in version 2.2.17
 
 Changes in version 2.2.16
  Bugs
+  * NetcdfFile: check if compressed file exists
+  * Dorade fixes
+  * RadialVelocity nexrad2.
+  * ucar.nc2.dt.radial.Nids2Dataset check for both versions of Nids attribute(s) like "ProductStation".
+  * Yuan/JeffMcW's performance improvements.
   * nexrad2 iosp: SpectrumWidth is now in bytes, unsigned with scale and offset. Also correct the time units.
   * ucar.nc2.dt.radial.NexradIIDataset: dont cache origin, shape arrays
   * Nexrad2 error when ngates different within a scan; unneeded, removed.

@@ -32,6 +32,12 @@ public class TestWcsServer extends TestCase {
     showGetCoverage(dataset, "ATssta", "2006-01-04T23:59:59Z",null,"220,20,250,50");
   }
 
+  public void testFmrc() throws IOException {
+    String dataset = "http://motherlode.ucar.edu:9080/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/best.ncd?";
+    showGetCapabilities(dataset);
+    showDescribeCoverage(dataset, "Precipitable_water");
+    showGetCoverage(dataset, "Precipitable_water", "2006-08-11T18:00:00Z",null,"220,20,250,50");
+  }
 
   public void eTestForEthan() throws IOException
   {

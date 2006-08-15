@@ -263,8 +263,15 @@ public class NetcdfFile {
     File uncompressedFile = DiskCache.getFileStandardPolicy( uncompressedFilename);
     if (uncompressedFile.exists()) {
       if (debugCompress) System.out.println("found uncompressed "+uncompressedFile+" for "+filename);
+      return uncompressedFile.getPath();
+    }
 
-    } else if (suffix.equalsIgnoreCase("Z")) {
+    // make sure compressed file exists
+    File file = new File(filename);
+    if (!file.exists())
+      return null; // bail out  */
+
+    if (suffix.equalsIgnoreCase("Z")) {
       UncompressInputStream.uncompress( filename, new FileOutputStream(uncompressedFile));
       if (debugCompress) System.out.println("uncompressed "+filename+" to "+uncompressedFile);
 
