@@ -246,7 +246,7 @@
   <xsd:element name="addLatest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element ref="simpleLatest" minOccurs="0"/>
+        <xsd:element ref="simpleLatest" minOccurs="0" maxOccurs="unbounded"/>
         <!--xsd:element name="datasetInserterImpl" minOccurs="0" type="UserImplType"/-->
       </xsd:sequence>
     </xsd:complexType>
@@ -255,10 +255,10 @@
   <!-- Allow addition of proxy datasets (e.g., latest). -->
   <xsd:element name="addProxies">
     <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element ref="simpleLatest" minOccurs="0"/>
-        <xsd:element ref="latestComplete" minOccurs="0"/>
-      </xsd:sequence>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="simpleLatest"/>
+        <xsd:element ref="latestComplete"/>
+      </xsd:choice>
     </xsd:complexType>
   </xsd:element>
 
