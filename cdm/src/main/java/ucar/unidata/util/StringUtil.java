@@ -346,7 +346,7 @@ public class StringUtil {
         for (int i = 0; i < sb.length(); i++) {
             if (sb.charAt(i) == out) {
                 sb.replace(i, i + 1, in);
-                i += in.length();
+                i += in.length()-1;
             }
         }
     }

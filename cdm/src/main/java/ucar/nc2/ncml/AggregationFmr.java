@@ -161,7 +161,7 @@ public class AggregationFmr extends Aggregation {
           System.out.println(" didnt find date " + formatter.toDateTimeString(want) + " in file " + ncfile.getLocation());
         return false;
       } finally {
-        releaseFile(ncfile);
+        if (ncfile != null) ncfile.close();
       }
     }
 

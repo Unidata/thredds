@@ -202,8 +202,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     smProxy.setUseNaNs( useNaNs);
   }
 
-  /** If its an NcML aggregation, it has an Aggregation object associated. */
+  /** Set the proxy reader. */
   public void setProxyReader( ProxyReader agg) {this.proxyReader = agg; }
+
+  /** Does this have a proxy reader. */
+  public boolean hasProxyReader() { return this.proxyReader != null; }
 
   /** If this Variable has been "enhanced", ie processed for scale/offset/missing value */
   public boolean isEnhanced() { return isEnhanced; }

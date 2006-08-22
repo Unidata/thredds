@@ -1,6 +1,8 @@
 package ucar.nc2.dt.grid;
 
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.DiskCache2;
+import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.io.*;
@@ -10,6 +12,10 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
 import org.jdom.Element;
+import thredds.catalog.crawl.CatalogCrawler;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvAccess;
+import thredds.catalog.ServiceType;
 
 /**
  * A collection of ForecastModelRun (aka "run").
@@ -1249,7 +1255,7 @@ public class FmrcInventory {
       if (!file.getPath().endsWith(suffix))
         continue;
 
-      ForecastModelRunInventory fmr = ForecastModelRunInventory.open(fmr_cache, file.getPath(), mode);
+      ForecastModelRunInventory fmr = ForecastModelRunInventory.open(fmr_cache, file.getPath(), mode, true);
       if (null != fmr)
         fmrCollection.addRun( fmr);
     }
@@ -1264,7 +1270,7 @@ public class FmrcInventory {
   }
 
   private static boolean debugTiming = false;
-  public static void main(String args[]) throws Exception {
+  public static void main2(String args[]) throws Exception {
     String dir = "nam/c20s";
     FmrcInventory fmrc = make("R:/testdata/motherlode/grid/inv/new/", "NCEP-NAM-CONUS_20km-surface", null, "C:/data/grib/"+dir, "grib1",
             ForecastModelRunInventory.OPEN_FORCE_NEW);
@@ -1295,5 +1301,108 @@ public class FmrcInventory {
     System.out.println( fmrc.showOffsetHour(varName,"7.0"));
   }
 
+  /**
+    * Create a ForecastModelRun Collection from the datasets in a catalog.
+    * @param urlFragment  scan this catalog
+    * @throws Exception
+    */
+   public static void makeDefinitionFromCatalog(String urlFragment) throws Exception {
+
+     System.out.println("***makeFromCatalog "+urlFragment);
+
+     String catURL = "http://motherlode.ucar.edu:9080/thredds/catalog/model/"+urlFragment+"/catalog.xml";
+     String collectionName = StringUtil.replace(urlFragment, '/',"-");
+
+     long startTime = System.currentTimeMillis();
+     final FmrcInventory fmrCollection = new FmrcInventory(fmrcDefinitionPath, collectionName);
+
+     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
+       public void getDataset(InvDataset dd) {
+         InvAccess access = dd.getAccess(ServiceType.OPENDAP);
+         if (access == null) {
+           System.out.println(" no access");
+           return;
+         }
+         System.out.println(" access "+access.getStandardUrlName());
+         ForecastModelRunInventory fmr = null;
+         try {
+           fmr = ForecastModelRunInventory.open(cache, access.getStandardUrlName(), ForecastModelRunInventory.OPEN_NORMAL, false);
+         } catch (IOException e) {
+           e.printStackTrace();
+           return;
+         }
+         if (null != fmr)
+           fmrCollection.addRun(fmr);
+       }
+     });
+
+     crawler.crawl(catURL, null, System.out);
+
+
+     fmrCollection.finish();
+     if (debugTiming) {
+       long took = System.currentTimeMillis() - startTime;
+       System.out.println("that took = "+took+" msecs");
+     }
+
+     System.out.println("write definition to "+fmrCollection.getDefinitionPath());
+     FmrcDefinition def = new FmrcDefinition();
+     def.makeFromCollectionInventory( fmrCollection);
+     FileOutputStream fos = new FileOutputStream( fmrCollection.getDefinitionPath());
+     def.writeDefinitionXML( fos);
+  }
+  private static DiskCache2 cache;
+  private static String fmrcDefinitionPath;
+
+  private static String[] catalogs  = {
+          "NCEP/GFS/Alaska_191km",
+          "NCEP/GFS/CONUS_80km",
+          "NCEP/GFS/CONUS_191km",
+          "NCEP/GFS/CONUS_95km", // */
+          "NCEP/GFS/Global_2p5deg",
+          "NCEP/GFS/Global_onedeg",
+          "NCEP/GFS/Hawaii_160km",
+          "NCEP/GFS/N_Hemisphere_381km",
+          "NCEP/GFS/Puerto_Rico_191km",
+
+          "NCEP/NAM/Alaska_22km",
+          "NCEP/NAM/Alaska_45km/conduit",
+          "NCEP/NAM/Alaska_45km/noaaport",
+          "NCEP/NAM/Alaska_95km",
+          "NCEP/NAM/CONUS_20km/noaaport",
+          "NCEP/NAM/CONUS_20km/selectsurface",
+          "NCEP/NAM/CONUS_20km/surface",
+          "NCEP/NAM/CONUS_40km/conduit",
+          "NCEP/NAM/CONUS_40km/noaaport",
+          "NCEP/NAM/CONUS_80km",
+          "NCEP/NAM/Polar_90km",
+
+          "NCEP/RUC2/CONUS_20km/hybrid",
+          "NCEP/RUC2/CONUS_20km/pressure",
+          "NCEP/RUC2/CONUS_20km/surface",
+          "NCEP/RUC/CONUS_40km", //
+          "NCEP/RUC/CONUS_80km",
+
+          "NCEP/DGEX/Alaska_12km",
+          "NCEP/DGEX/CONUS_12km",
+          "NCEP/GFS/Global_0p5deg",
+          "NCEP/NAM/Alaska_11km",
+          "NCEP/NAM/CONUS_12km",
+          "NCEP/NDFD/CONUS_5km",
+  };
+
+  public static void main(String args[]) throws Exception {
+    String work = "R:/testdata/motherlode/grid2/";
+    fmrcDefinitionPath = work+"def/";
+    cache = new DiskCache2(work+"inv/", false, -1, -1);
+
+    File file = new File(work+"def/");
+    file.mkdirs();
+
+    for (int i = 0; i < catalogs.length; i++) {
+      String catalog = catalogs[i];
+      makeDefinitionFromCatalog(catalog);
+    }
+  }
 
 }

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition>
+  <vertCoord id="27" name="altitude_above_msl" units="m">914.0 1524.0 1829.0 2134.0 2743.0 3658.0</vertCoord>
+  <vertCoord id="22" name="depth_below_surface" units="cm">300.0</vertCoord>
+  <vertCoord id="23" name="height_above_ground" units="m">2.0 10.0</vertCoord>
+  <vertCoord id="11" name="height_above_ground1" units="m">10.0</vertCoord>
+  <vertCoord id="17" name="height_above_ground2" units="m">2.0</vertCoord>
+  <vertCoord id="30" name="hybrid" units="">1.0 2.0</vertCoord>
+  <vertCoord id="2" name="hybrid1" units="">1.0</vertCoord>
+  <vertCoord id="7" name="isobaric" units="hPa">10.0 20.0 30.0 50.0 75.0 100.0 125.0 150.0 175.0 200.0 225.0 250.0 275.0 300.0 325.0 350.0 375.0 400.0 425.0 450.0 475.0 500.0 525.0 550.0 575.0 600.0 625.0 650.0 675.0 700.0 725.0 750.0 775.0 800.0 825.0 850.0 875.0 900.0 925.0 950.0 975.0 1000.0</vertCoord>
+  <vertCoord id="15" name="isobaric1" units="hPa">50.0 75.0 100.0 125.0 150.0 175.0 200.0 225.0 250.0 275.0 300.0 325.0 350.0 375.0 400.0 425.0 450.0 475.0 500.0 525.0 550.0 575.0 600.0 625.0 650.0 675.0 700.0 725.0 750.0 775.0 800.0 825.0 850.0 875.0 900.0 925.0 950.0 975.0 1000.0</vertCoord>
+  <vertCoord id="3" name="isobaric2" units="hPa">30.0 50.0 75.0 100.0 125.0 150.0 175.0 200.0 225.0 250.0 275.0 300.0 325.0 350.0 375.0 400.0 425.0 450.0 475.0 500.0 525.0 550.0 575.0 600.0 625.0 650.0 675.0 700.0 725.0 750.0 775.0 800.0 825.0 850.0 875.0 900.0 925.0 950.0 975.0 1000.0</vertCoord>
+  <vertCoord id="25" name="isobaric3" units="hPa">250.0</vertCoord>
+  <vertCoord id="0" name="isobaric4" units="hPa">250.0 400.0 500.0 700.0 750.0 850.0 1000.0</vertCoord>
+  <vertCoord id="8" name="isobaric5" units="hPa">850.0 950.0</vertCoord>
+  <vertCoord id="5" name="isobaric6" units="hPa">100.0 150.0 200.0 250.0 300.0 400.0 500.0 700.0 850.0 1000.0</vertCoord>
+  <vertCoord id="21" name="layer_between_two_depths_below_surface" units="cm">0.0,10.0 10.0,40.0 40.0,100.0 100.0,200.0</vertCoord>
+  <vertCoord id="10" name="layer_between_two_depths_below_surface1" units="cm">0.0,100.0</vertCoord>
+  <vertCoord id="20" name="layer_between_two_depths_below_surface2" units="cm">0.0,200.0</vertCoord>
+  <vertCoord id="24" name="layer_between_two_heights_above_ground" units="m">0.0,1000.0 0.0,3000.0</vertCoord>
+  <vertCoord id="29" name="layer_between_two_heights_above_ground1" units="m">0.0,6000.0</vertCoord>
+  <vertCoord id="26" name="layer_between_two_isobaric" units="hPa">500.0,1000.0</vertCoord>
+  <vertCoord id="13" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,30.0 30.0,60.0 60.0,90.0 90.0,120.0 120.0,150.0 150.0,180.0</vertCoord>
+  <vertCoord id="4" name="layer_between_two_pressure_difference_from_ground1" units="hPa">0.0,90.0 0.0,180.0</vertCoord>
+  <vertCoord id="6" name="layer_between_two_pressure_difference_from_ground2" units="hPa">0.0,30.0</vertCoord>
+  <vertCoord id="16" name="layer_between_two_pressure_difference_from_ground3" units="hPa">0.0,30.0 60.0,90.0 150.0,180.0</vertCoord>
+  <vertCoord id="18" name="layer_between_two_pressure_difference_from_ground4" units="hPa">0.0,30.0 60.0,90.0 120.0,150.0 150.0,180.0</vertCoord>
+  <vertCoord id="1" name="layer_between_two_pressure_difference_from_ground5" units="hPa">0.0,180.0</vertCoord>
+  <vertCoord id="19" name="layer_between_two_sigmas" units="sigma">18.0,47.0 33.0,67.0 33.0,100.0 47.0,96.0 67.0,100.0 84.0,98.0</vertCoord>
+  <vertCoord id="9" name="layer_between_two_sigmas1" units="sigma">85.0,100.0</vertCoord>
+  <vertCoord id="12" name="layer_between_two_sigmas2" units="sigma">33.0,100.0</vertCoord>
+  <vertCoord id="28" name="sigma" units="sigma">7848.0 8967.0 9823.0</vertCoord>
+  <vertCoord id="14" name="sigma1" units="sigma">9823.0</vertCoord>
+  <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Absolute_vorticity" vertCoord="0" />
+    <variable name="Accumulated_snow" />
+    <variable name="Albedo" />
+    <variable name="Baseflow-groundwater_runoff" />
+    <variable name="Best_4-layer_lifted_index" vertCoord="1" />
+    <variable name="Blackadars_mixing_length_scale" vertCoord="2" />
+    <variable name="Brunt-Vaisala_frequency2" />
+    <variable name="Categorical_freezing_rain" />
+    <variable name="Categorical_ice_pellets" />
+    <variable name="Categorical_rain" />
+    <variable name="Categorical_rain_surface" />
+    <variable name="Categorical_snow" />
+    <variable name="Cloud_Ice" vertCoord="3" />
+    <variable name="Cloud_Ice_hybrid" vertCoord="2" />
+    <variable name="Cloud_water" vertCoord="3" />
+    <variable name="Cloud_water_hybrid" vertCoord="2" />
+    <variable name="Convective_Avail_Pot_Energy" vertCoord="4" />
+    <variable name="Convective_Avail_Pot_Energy_surface" />
+    <variable name="Convective_inhibition" vertCoord="4" />
+    <variable name="Convective_inhibition_surface" />
+    <variable name="Convective_precipitation" />
+    <variable name="Dew_point_temperature" vertCoord="5" />
+    <variable name="Dew_point_temperature_layer_between_two_pressure_difference_from_ground" vertCoord="6" />
+    <variable name="Downward_long_wave_flux" />
+    <variable name="Downward_short_wave_flux" />
+    <variable name="Drag_coefficient" />
+    <variable name="Evaporation" />
+    <variable name="Exchange_coefficient" />
+    <variable name="Friction_velocity" />
+    <variable name="Geopotential_height" vertCoord="7" />
+    <variable name="Geopotential_height_highest_tropospheric_freezing" />
+    <variable name="Geopotential_height_hybrid" vertCoord="2" />
+    <variable name="Geopotential_height_lowest_level_of_wet_bulb_zero" />
+    <variable name="Geopotential_height_maximum_wind" />
+    <variable name="Geopotential_height_surface" />
+    <variable name="Geopotential_height_zeroDegC_isotherm" />
+    <variable name="Ground_heat_flux" />
+    <variable name="High_level_cloud_cover" />
+    <variable name="Horizontal_moisture_divergence" vertCoord="8" />
+    <variable name="Horizontal_moisture_divergence_hybrid" vertCoord="2" />
+    <variable name="Horizontal_moisture_divergence_layer_between_two_pressure_difference_from_ground" vertCoord="6" />
+    <variable name="Horizontal_moisture_divergence_layer_between_two_sigmas" vertCoord="9" />
+    <variable name="Ice_concentration_ice1no_ice0" />
+    <variable name="K_index" vertCoord="3" />
+    <variable name="K_index_hybrid" vertCoord="2" />
+    <variable name="Land_cover_land1sea0" />
+    <variable name="Large_scale_precipitation" />
+    <variable name="Latent_heat_flux" />
+    <variable name="Low_level_cloud_cover" />
+    <variable name="Mean_sea_level_pressure_ETA_model" />
+    <variable name="Meridional_momentum_flux" />
+    <variable name="Mid_level_cloud_cover" />
+    <variable name="Moisture_availability" vertCoord="10" />
+    <variable name="N3-hr_pressure_tendency_Std_Atmos_Red" />
+    <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="6" />
+    <variable name="Planetary_boundary_layer_height" />
+    <variable name="Plant_canopy_surface_water" />
+    <variable name="Pot_evaporation" />
+    <variable name="Potential_temperature" vertCoord="11" />
+    <variable name="Potential_temperature_layer_between_two_pressure_difference_from_ground" vertCoord="6" />
+    <variable name="Potential_vorticity_mass-weighted" />
+    <variable name="Precipitable_water" />
+    <variable name="Precipitable_water_layer_between_two_pressure_difference_from_ground" vertCoord="6" />
+    <variable name="Precipitable_water_layer_between_two_sigmas" vertCoord="12" />
+    <variable name="Precipitation_rate" />
+    <variable name="Pressure" vertCoord="13" />
+    <variable name="Pressure_hybrid" vertCoord="2" />
+    <variable name="Pressure_maximum_wind" />
+    <variable name="Pressure_reduced_to_MSL" />
+    <variable name="Pressure_sigma" vertCoord="14" />
+    <variable name="Pressure_surface" />
+    <variable name="Pressure_tropopause" />
+    <variable name="Pressure_vertical_velocity" vertCoord="15" />
+    <variable name="Pressure_vertical_velocity_hybrid" vertCoord="2" />
+    <variable name="Pressure_vertical_velocity_layer_between_two_pressure_difference_from_ground" vertCoord="16" />
+    <variable name="Prob_of_frozen_precipitation" />
+    <variable name="Rain_water_mixing_ratio" vertCoord="3" />
+    <variable name="Rain_water_mixing_ratio_hybrid" vertCoord="2" />
+    <variable name="Relative_humidity" vertCoord="7" />
+    <variable name="Relative_humidity_height_above_ground" vertCoord="17" />
+    <variable name="Relative_humidity_hybrid" vertCoord="2" />
+    <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="18" />
+    <variable name="Relative_humidity_layer_between_two_sigmas" vertCoord="19" />
+    <variable name="Relative_humidity_sigma" vertCoord="14" />
+    <variable name="Relative_humidity_zeroDegC_isotherm" />
+    <variable name="Sensible_heat_flux" />
+    <variable name="Snow_melt" />
+    <variable name="Snow_mixing_ratio" vertCoord="3" />
+    <variable name="Snow_mixing_ratio_hybrid" vertCoord="2" />
+    <variable name="Snow_phase-change_heat_flux" />
+    <variable name="Soil_moisture_content" vertCoord="20" />
+    <variable name="Soil_temperature" vertCoord="21" />
+    <variable name="Soil_temperature_depth_below_surface" vertCoord="22" />
+    <variable name="Specific_humidity" vertCoord="7" />
+    <variable name="Specific_humidity_height_above_ground" vertCoord="23" />
+    <variable name="Specific_humidity_hybrid" vertCoord="2" />
+    <variable name="Specific_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="13" />
+    <variable name="Specific_humidity_sigma" vertCoord="14" />
+    <variable name="Specific_humidity_surface" />
+    <variable name="Storm_relative_helicity" vertCoord="24" />
+    <variable name="Storm_surface_runoff" />
+    <variable name="Stream_function" vertCoord="25" />
+    <variable name="Surface_lifted_index" vertCoord="26" />
+    <variable name="Surface_roughness" />
+    <variable name="Surface_wind_gust" />
+    <variable name="Temperature" vertCoord="7" />
+    <variable name="Temperature_altitude_above_msl" vertCoord="27" />
+    <variable name="Temperature_height_above_ground" vertCoord="17" />
+    <variable name="Temperature_hybrid" vertCoord="2" />
+    <variable name="Temperature_layer_between_two_pressure_difference_from_ground" vertCoord="13" />
+    <variable name="Temperature_sigma" vertCoord="28" />
+    <variable name="Temperature_surface" />
+    <variable name="Temperature_tropopause" />
+    <variable name="Total_cloud_cover" />
+    <variable name="Total_precipitation" />
+    <variable name="Turbulent_kinetic_energy" vertCoord="3" />
+    <variable name="Turbulent_kinetic_energy_hybrid" vertCoord="2" />
+    <variable name="Upward_long_wave_flux" />
+    <variable name="Upward_long_wave_flux_surface" />
+    <variable name="Upward_short_wave_flux" />
+    <variable name="Upward_short_wave_flux_surface" />
+    <variable name="Vegetation" />
+    <variable name="Vertical_speed_shear" />
+    <variable name="Vertical_speed_shear_tropopause" />
+    <variable name="Visibility" />
+    <variable name="Volumetric_soil_moisture" vertCoord="21" />
+    <variable name="Water_temperature" />
+    <variable name="Zonal_momentum_flux" />
+    <variable name="u-component_of_storm_motion" vertCoord="29" />
+    <variable name="u_wind" vertCoord="7" />
+    <variable name="u_wind_altitude_above_msl" vertCoord="27" />
+    <variable name="u_wind_height_above_ground" vertCoord="11" />
+    <variable name="u_wind_hybrid" vertCoord="30" />
+    <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vertCoord="13" />
+    <variable name="u_wind_maximum_wind" />
+    <variable name="u_wind_sigma" vertCoord="14" />
+    <variable name="u_wind_tropopause" />
+    <variable name="v-component_of_storm_motion" vertCoord="29" />
+    <variable name="v_wind" vertCoord="7" />
+    <variable name="v_wind_altitude_above_msl" vertCoord="27" />
+    <variable name="v_wind_height_above_ground" vertCoord="11" />
+    <variable name="v_wind_hybrid" vertCoord="30" />
+    <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vertCoord="13" />
+    <variable name="v_wind_maximum_wind" />
+    <variable name="v_wind_sigma" vertCoord="14" />
+    <variable name="v_wind_tropopause" />
+  </runSequence>
+</fmrcDefinition>
+

@@ -12,7 +12,7 @@ public class TestNcML {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
 
-    /* test reading XML
+    // test reading XML
     suite.addTest(new TestSuite(TestNcMLequals.class)); // ncml == referenced dataset
     suite.addTest(new TestSuite(TestNcMLRead.class)); // explicit;  metadata in xml
     suite.addTest(new TestSuite(TestNcMLRead.TestRead2.class)); // readMetadata //

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition>
+  <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="1" name="height_above_ground1" units="m">2.0</vertCoord>
+  <vertCoord id="0" name="pressure" units="Pa">25000.0 50000.0 70000.0 85000.0 100000.0</vertCoord>
+  <vertCoord id="6" name="pressure1" units="Pa">25000.0 50000.0 70000.0 85000.0</vertCoord>
+  <vertCoord id="7" name="pressure2" units="Pa">70000.0</vertCoord>
+  <vertCoord id="3" name="pressure3" units="Pa">50000.0 70000.0 85000.0</vertCoord>
+  <vertCoord id="2" name="pressure_difference_layer" units="Pa">0.0,3000.0 3000.0,6000.0 6000.0,9000.0 9000.0,12000.0 12000.0,15000.0 15000.0,18000.0</vertCoord>
+  <vertCoord id="4" name="pressure_layer" units="Pa">50000.0,100000.0</vertCoord>
+  <offsetHours id="0">90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0 186.0 192.0</offsetHours>
+  <offsetHours id="1">90.0</offsetHours>
+  <offsetHours id="2">84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0 186.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Geopotential_height" vertCoord="0" />
+    <variable name="MSLP__Eta_Reduction" />
+    <variable name="Maximum_temperature" vertCoord="1" />
+    <variable name="Minimum_temperature" vertCoord="1" />
+    <variable name="Pressure" />
+    <variable name="Pressure_reduced_to_MSL" />
+    <variable name="Relative_humidity" vertCoord="2" />
+    <variable name="Relative_humidity_height_above_ground" vertCoord="1" />
+    <variable name="Relative_humidity_pressure" vertCoord="3" />
+    <variable name="Surface_Lifted_Index" vertCoord="4" />
+    <variable name="Temperature" vertCoord="2" />
+    <variable name="Temperature_height_above_ground" vertCoord="1" />
+    <variable name="Temperature_pressure" vertCoord="3" />
+    <variable name="Total_cloud_cover" />
+    <variable name="U-component_of_wind" vertCoord="2" />
+    <variable name="U-component_of_wind_height_above_ground" vertCoord="5" />
+    <variable name="U-component_of_wind_pressure" vertCoord="6" />
+    <variable name="V-component_of_wind" vertCoord="2" />
+    <variable name="V-component_of_wind_height_above_ground" vertCoord="5" />
+    <variable name="V-component_of_wind_pressure" vertCoord="6" />
+    <variable name="Vertical_velocity_pressure" vertCoord="7" />
+  </runSequence>
+  <runSequence allUseSeq="1">
+    <variable name="Geopotential_height_surface" />
+  </runSequence>
+  <runSequence allUseSeq="2">
+    <variable name="Total_precipitation" />
+  </runSequence>
+</fmrcDefinition>
+

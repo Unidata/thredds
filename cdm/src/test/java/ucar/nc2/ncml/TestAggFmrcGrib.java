@@ -12,6 +12,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 
 public class TestAggFmrcGrib extends TestCase {
+  private boolean showValues = false;
 
   public TestAggFmrcGrib( String name) {
     super(name);
@@ -19,17 +20,20 @@ public class TestAggFmrcGrib extends TestCase {
 
   public void testSimple() throws Exception, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggFmrcGrib.xml";
+    System.out.println("TestAggForecastModel.open "+ filename);
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
-    System.out.println("file="+ncfile);
+    //System.out.println("file="+ncfile);
 
-    testDimensions(ncfile, 7);
+    String timeDimName = "time";
+
+    testDimensions(ncfile, 7, timeDimName);
     testCoordVar(ncfile, 257);
     testAggCoordVar(ncfile, 7, 122100, 12);
-    testTimeCoordVar(ncfile, 7, 29);
+    testTimeCoordVar(ncfile, 7, 29, timeDimName);
 
-//    testReadData(ncfile, 15);
+    System.out.println("TestAggForecastModel.testReadData ");    
+    testReadData(ncfile, 7);
  //   testReadSlice(ncfile);
 
     ncfile.close();
@@ -43,18 +47,16 @@ public class TestAggFmrcGrib extends TestCase {
     //System.out.println("file="+ncfile);
 
     int naggs = 4;
-    testDimensions(ncfile, naggs);
+    String timeDimName = "time1";
+    testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
     testAggCoordVar(ncfile, naggs, 122100, 12);
-    testTimeCoordVar(ncfile, naggs, 29);
-
-//    testReadData(ncfile, 15);
- //   testReadSlice(ncfile);
+    testTimeCoordVar(ncfile, naggs, 29, timeDimName);
 
     ncfile.close();
   }
 
-  private void testDimensions(NetcdfFile ncfile, int nagg) {
+  private void testDimensions(NetcdfFile ncfile, int nagg, String timeDimName) {
     Dimension latDim = ncfile.findDimension("x");
     assert null != latDim;
     assert latDim.getName().equals("x");
@@ -67,9 +69,9 @@ public class TestAggFmrcGrib extends TestCase {
     assert lonDim.getLength() == 257;
     assert !lonDim.isUnlimited();
 
-    Dimension timeDim = ncfile.findDimension("time");
+    Dimension timeDim = ncfile.findDimension(timeDimName);
     assert null != timeDim;
-    assert timeDim.getName().equals("time");
+    assert timeDim.getName().equals(timeDimName);
     assert timeDim.getLength() == 29;
 
     Dimension runDim = ncfile.findDimension("run");
@@ -146,10 +148,10 @@ public class TestAggFmrcGrib extends TestCase {
 
   }
 
-  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes) throws Exception {
-    Variable time = ncfile.findVariable("time");
+  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String timeDimName) throws Exception {
+    Variable time = ncfile.findVariable(timeDimName);
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getName().equals(timeDimName);
     assert time.getRank() == 2;
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;
@@ -171,7 +173,7 @@ public class TestAggFmrcGrib extends TestCase {
       while (dataI.hasNext()) {
         double val = dataI.getDoubleNext();
         Date date = du.makeDate(val);
-        System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
+        if (showValues) System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
       }
 
     } catch (IOException io) {
@@ -182,29 +184,29 @@ public class TestAggFmrcGrib extends TestCase {
   }
 
   private void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
-    Variable v = ncfile.findVariable("P_sfc");
+    Variable v = ncfile.findVariable("Pressure_surface");
     assert null != v;
-    assert v.getName().equals("P_sfc");
+    assert v.getName().equals("Pressure_surface");
     assert v.getRank() == 4;
     assert v.getShape()[0] == nagg;
-    assert v.getShape()[1] == 11;
-    assert v.getShape()[2] == 65;
-    assert v.getShape()[3] == 93;
+    assert v.getShape()[1] == 29;
+    assert v.getShape()[2] == 257;
+    assert v.getShape()[3] == 369;
     assert v.getDataType() == DataType.FLOAT;
 
     assert v.getCoordinateDimension() == null;
 
     assert v.getDimension(0) == ncfile.findDimension("run");
-    assert v.getDimension(1) == ncfile.findDimension("record");
+    assert v.getDimension(1) == ncfile.findDimension("time");
     assert v.getDimension(2) == ncfile.findDimension("y");
     assert v.getDimension(3) == ncfile.findDimension("x");
 
     Array data = v.read();
     assert data.getRank() == 4;
     assert data.getShape()[0] == nagg;
-    assert data.getShape()[1] == 11;
-    assert data.getShape()[2] == 65;
-    assert data.getShape()[3] == 93;
+    assert data.getShape()[1] == 29;
+    assert data.getShape()[2] == 257;
+    assert data.getShape()[3] == 369;
 
     double sum = MAMath.sumDoubleSkipMissingData(data, 0.0);
 

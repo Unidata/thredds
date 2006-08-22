@@ -1253,7 +1253,7 @@ public class NcMLReader {
 
   /**
    * Copy contents of "src" to "target".
-   * Dimensions and Variables are replaced with equivalent elements.
+   * Dimensions and Variables are replaced with equivalent elements, but unlimited dimensions are not allowed.
    * Attribute doesnt have to be replaced because its immutable, so its copied over.
    * @param src
    * @param target
@@ -1264,6 +1264,7 @@ public class NcMLReader {
   }
 
   static private void transferGroup( NetcdfFile ds, Group src, Group target, ReplaceVariableCheck replaceCheck) {
+    boolean unlimitedOK = false; // LOOK
 
     // group attributes
     Iterator iterAtt = src.getAttributes().iterator();
@@ -1278,7 +1279,7 @@ public class NcMLReader {
     while (iterDim.hasNext()) {
       Dimension d = (Dimension) iterDim.next();
       if (null == target.findDimensionLocal(d.getName())) {
-        Dimension newd = new Dimension(d.getName(), d.getLength(), d.isShared(), d.isUnlimited(), d.isVariableLength());
+        Dimension newd = new Dimension(d.getName(), d.getLength(), d.isShared(), unlimitedOK && d.isUnlimited(), d.isVariableLength());
         target.addDimension( newd);
       }
     }

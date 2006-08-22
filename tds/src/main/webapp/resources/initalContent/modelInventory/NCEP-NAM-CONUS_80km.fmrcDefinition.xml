@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition>
+  <vertCoord id="7" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="4" name="height_above_ground1" units="m">2.0</vertCoord>
+  <vertCoord id="2" name="isobaric" units="hPa">100.0 150.0 200.0 250.0 300.0 350.0 400.0 450.0 500.0 550.0 600.0 650.0 700.0 750.0 800.0 850.0 900.0 950.0 1000.0</vertCoord>
+  <vertCoord id="0" name="isobaric1" units="hPa">250.0 500.0 700.0 850.0 1000.0</vertCoord>
+  <vertCoord id="6" name="layer_between_two_heights_above_ground" units="m">0.0,3000.0</vertCoord>
+  <vertCoord id="5" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,30.0 30.0,60.0 60.0,90.0 90.0,120.0 120.0,150.0</vertCoord>
+  <vertCoord id="1" name="layer_between_two_pressure_difference_from_ground1" units="hPa">0.0,180.0</vertCoord>
+  <vertCoord id="3" name="layer_between_two_pressure_difference_from_ground2" units="hPa">0.0,30.0</vertCoord>
+  <offsetHours id="0">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0</offsetHours>
+  <offsetHours id="1">6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0</offsetHours>
+  <offsetHours id="2">0.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Absolute_vorticity" vertCoord="0" />
+    <variable name="Best_4-layer_lifted_index" vertCoord="1" />
+    <variable name="Convective_Avail_Pot_Energy" vertCoord="1" />
+    <variable name="Convective_Avail_Pot_Energy_surface" />
+    <variable name="Convective_inhibition" vertCoord="1" />
+    <variable name="Convective_inhibition_surface" />
+    <variable name="Geopotential_height" vertCoord="2" />
+    <variable name="Geopotential_height_zeroDegC_isotherm" />
+    <variable name="Mean_sea_level_pressure_ETA_model" />
+    <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="3" />
+    <variable name="Precipitable_water" />
+    <variable name="Pressure" />
+    <variable name="Pressure_cloud_tops" />
+    <variable name="Pressure_maximum_wind" />
+    <variable name="Pressure_reduced_to_MSL" />
+    <variable name="Pressure_surface" />
+    <variable name="Pressure_tropopause" />
+    <variable name="Pressure_vertical_velocity" vertCoord="2" />
+    <variable name="Relative_humidity" vertCoord="2" />
+    <variable name="Relative_humidity_height_above_ground" vertCoord="4" />
+    <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="5" />
+    <variable name="Relative_humidity_zeroDegC_isotherm" />
+    <variable name="Storm_relative_helicity" vertCoord="6" />
+    <variable name="Temperature" vertCoord="2" />
+    <variable name="Temperature_cloud_tops" />
+    <variable name="Temperature_height_above_ground" vertCoord="4" />
+    <variable name="Temperature_layer_between_two_pressure_difference_from_ground" vertCoord="5" />
+    <variable name="Temperature_tropopause" />
+    <variable name="u_wind" vertCoord="2" />
+    <variable name="u_wind_height_above_ground" vertCoord="7" />
+    <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vertCoord="5" />
+    <variable name="u_wind_maximum_wind" />
+    <variable name="u_wind_tropopause" />
+    <variable name="v_wind" vertCoord="2" />
+    <variable name="v_wind_height_above_ground" vertCoord="7" />
+    <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vertCoord="5" />
+    <variable name="v_wind_maximum_wind" />
+    <variable name="v_wind_tropopause" />
+  </runSequence>
+  <runSequence allUseSeq="1">
+    <variable name="Convective_precipitation" />
+    <variable name="Total_precipitation" />
+  </runSequence>
+  <runSequence allUseSeq="2">
+    <variable name="Geopotential_height_surface" />
+  </runSequence>
+</fmrcDefinition>
+

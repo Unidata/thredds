@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition>
+  <vertCoord id="1" name="height_above_ground" units="m">2.0</vertCoord>
+  <vertCoord id="2" name="height_above_ground1" units="m">10.0</vertCoord>
+  <vertCoord id="0" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,255.0</vertCoord>
+  <offsetHours id="1">0.0 1.0 2.0 3.0</offsetHours>
+  <offsetHours id="2">0.0 1.0 2.0 3.0 6.0 9.0 12.0</offsetHours>
+  <runSequence>
+    <run runHour="0.0" offsetHourSeq="2" />
+    <run runHour="1.0" offsetHourSeq="1" />
+    <run runHour="2.0" offsetHourSeq="1" />
+    <run runHour="3.0" offsetHourSeq="2" />
+    <run runHour="4.0" offsetHourSeq="1" />
+    <run runHour="5.0" offsetHourSeq="1" />
+    <run runHour="6.0" offsetHourSeq="2" />
+    <run runHour="7.0" offsetHourSeq="1" />
+    <run runHour="8.0" offsetHourSeq="1" />
+    <run runHour="9.0" offsetHourSeq="2" />
+    <run runHour="10.0" offsetHourSeq="1" />
+    <run runHour="11.0" offsetHourSeq="1" />
+    <run runHour="12.0" offsetHourSeq="2" />
+    <run runHour="13.0" offsetHourSeq="1" />
+    <run runHour="14.0" offsetHourSeq="1" />
+    <run runHour="15.0" offsetHourSeq="2" />
+    <run runHour="16.0" offsetHourSeq="1" />
+    <run runHour="17.0" offsetHourSeq="1" />
+    <run runHour="18.0" offsetHourSeq="2" />
+    <run runHour="19.0" offsetHourSeq="1" />
+    <run runHour="20.0" offsetHourSeq="1" />
+    <run runHour="21.0" offsetHourSeq="2" />
+    <run runHour="22.0" offsetHourSeq="1" />
+    <run runHour="23.0" offsetHourSeq="1" />
+    <run runHour="24.0" offsetHourSeq="2" />
+    <variable name="Accumulated_snow" />
+    <variable name="Best_lifted_index_to_500_hPa" />
+    <variable name="Categorical_freezing_rain" />
+    <variable name="Categorical_ice_pellets" />
+    <variable name="Categorical_rain" />
+    <variable name="Categorical_snow" />
+    <variable name="Convective_Avail_Pot_Energy" vertCoord="0" />
+    <variable name="Convective_Avail_Pot_Energy_surface" />
+    <variable name="Convective_inhibition" vertCoord="0" />
+    <variable name="Convective_inhibition_surface" />
+    <variable name="Convective_precipitation" />
+    <variable name="Dew_point_depression" vertCoord="1" />
+    <variable name="Dew_point_temperature" vertCoord="1" />
+    <variable name="Large_scale_precipitation" />
+    <variable name="Mean_sea_level_pressure_MAPS" />
+    <variable name="Potential_temperature" vertCoord="1" />
+    <variable name="Pressure" />
+    <variable name="Pressure_tendency" />
+    <variable name="Pseudo-adiabatic_pot_temperature" />
+    <variable name="Specific_humidity" vertCoord="1" />
+    <variable name="Storm_relative_helicity" />
+    <variable name="Surface_lifted_index" />
+    <variable name="Temperature" vertCoord="1" />
+    <variable name="Temperature_surface" />
+    <variable name="u_wind" vertCoord="2" />
+    <variable name="v_wind" vertCoord="2" />
+  </runSequence>
+</fmrcDefinition>
+

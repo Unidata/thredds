@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition dataset="NCEP-NAM-Alaska_45km-noaaport">
+  <vertCoord id="0" name="isobaric" units="hPa">100.0 150.0 200.0 250.0 300.0 350.0 400.0 450.0 500.0 525.0 550.0 575.0 600.0 625.0 650.0 675.0 700.0 725.0 750.0 775.0 800.0 825.0 850.0 875.0 900.0 925.0 950.0 975.0 1000.0</vertCoord>
+  <vertCoord id="1" name="isobaric1" units="hPa">200.0 300.0 500.0 700.0 850.0</vertCoord>
+  <vertCoord id="2" name="isobaric2" units="hPa">300.0 350.0 400.0 450.0 500.0 525.0 550.0 575.0 600.0 625.0 650.0 675.0 700.0 725.0 750.0 775.0 800.0 825.0 850.0 875.0 900.0 925.0 950.0 975.0</vertCoord>
+  <vertCoord id="3" name="layer_between_two_sigmas" units="sigma">33.0,100.0</vertCoord>
+  <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0</offsetHours>
+  <offsetHours id="1">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 33.0 39.0 45.0 51.0 54.0 57.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Geopotential_height" vertCoord="0" />
+    <variable name="Geopotential_height_highest_tropospheric_freezing" />
+    <variable name="Geopotential_height_zeroDegC_isotherm" />
+    <variable name="High_level_cloud_cover" />
+    <variable name="Low_level_cloud_cover" />
+    <variable name="Mid_level_cloud_cover" />
+    <variable name="Pressure" />
+    <variable name="Pressure_tropopause" />
+    <variable name="Pressure_vertical_velocity" vertCoord="1" />
+    <variable name="Relative_humidity" vertCoord="2" />
+    <variable name="Relative_humidity_layer_between_two_sigmas" vertCoord="3" />
+    <variable name="Relative_humidity_zeroDegC_isotherm" />
+    <variable name="Temperature" vertCoord="0" />
+    <variable name="Temperature_tropopause" />
+    <variable name="u_wind" vertCoord="0" />
+    <variable name="u_wind_maximum_wind" />
+    <variable name="u_wind_tropopause" />
+    <variable name="v_wind" vertCoord="0" />
+    <variable name="v_wind_maximum_wind" />
+    <variable name="v_wind_tropopause" />
+  </runSequence>
+  <runSequence allUseSeq="1">
+    <variable name="Mean_sea_level_pressure_ETA_model" />
+  </runSequence>
+</fmrcDefinition>
+

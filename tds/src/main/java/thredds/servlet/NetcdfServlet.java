@@ -115,10 +115,10 @@ public class NetcdfServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
-    log.debug("**NetcdfService req="+file.getPath());
+    log.debug("**NetcdfService req="+file.getPath()); 
 
     // for convenince, we open as an FMR, since it already has the XML we need for the form
-    ForecastModelRunInventory fmr = ForecastModelRunInventory.open( fmrCache, file.getPath(), ForecastModelRunInventory.OPEN_NORMAL);
+    ForecastModelRunInventory fmr = ForecastModelRunInventory.open( fmrCache, file.getPath(), ForecastModelRunInventory.OPEN_NORMAL, true);
     fmr.setName( req.getRequestURI());
 
     String wantXML = req.getParameter("wantXML");

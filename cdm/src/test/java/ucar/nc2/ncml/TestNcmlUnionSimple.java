@@ -67,7 +67,7 @@ public class TestNcmlUnionSimple extends TestCase {
     assert null != timeDim;
     assert timeDim.getName().equals("time");
     assert timeDim.getLength() == 456;
-    assert timeDim.isUnlimited();
+    assert !timeDim.isUnlimited();
   }
 
   public void testReadCoordvar() {
@@ -122,7 +122,7 @@ public class TestNcmlUnionSimple extends TestCase {
     assert v.getDataType() == DataType.SHORT : v.getDataType();
 
     assert v.getCoordinateDimension() == null;
-    assert v.isUnlimited();
+    assert !v.isUnlimited();
 
     assert v.getDimension(0).equals(ncfile.findDimension("time"));
     assert v.getDimension(1).equals(ncfile.findDimension("lat"));

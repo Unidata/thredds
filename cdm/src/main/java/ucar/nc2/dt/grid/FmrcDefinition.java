@@ -33,6 +33,7 @@ import java.util.*;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.conv._Coordinate;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Defines the expected inventory of a Forecast Model Run Collection.
@@ -854,6 +855,10 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
           grid.vtc = new VertTimeCoord( uv.vertCoordUnion);
       }
     }
+
+    // sort vert coords
+    Collections.sort(this.vertTimeCoords);
+
   }
 
   /** Add just the vertical coord info to the definition */
@@ -882,9 +887,62 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
   }
 
+  // replace ids
+  static void convertIds(String datasetName, String defName) throws IOException {
+    System.out.println(datasetName);
+    ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+
+    FmrcDefinition fmrDef = new FmrcDefinition();
+    fmrDef.readDefinitionXML(defName);
+
+    boolean changed = false;
+
+    // make hashmap
+    HashMap hash = new HashMap();
+    for (int i = 0; i < fmrDef.runSequences.size(); i++) {
+      RunSeq runSeq = (RunSeq) fmrDef.runSequences.get(i);
+      for (int j = 0; j < runSeq.vars.size(); j++) {
+        Grid gridDef =  (Grid) runSeq.vars.get(j);
+        String munged = StringUtil.replace(gridDef.name,'_',"");
+        hash.put(munged,gridDef);
+      }
+    }
+
+            // make sure each grid in fmrInv is also in fmrDef
+    List fmrInvTimeCoords = fmrInv.getTimeCoords();
+    for (int i = 0; i < fmrInvTimeCoords.size(); i++) {
+      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) fmrInvTimeCoords.get(i);
+      List fmrInvGrids = tc.getGrids();
+      for (int j = 0; j < fmrInvGrids.size(); j++) {
+        ForecastModelRunInventory.Grid invGrid = (ForecastModelRunInventory.Grid) fmrInvGrids.get(j);
+        FmrcDefinition.Grid defGrid = fmrDef.findGridByName( invGrid.name);
+        if (null == defGrid) {
+          String munged = StringUtil.replace(invGrid.name,"-","");
+          munged = StringUtil.replace(munged,"_","");
+          Grid gridDefnew = (Grid) hash.get(munged);
+          if (gridDefnew != null) {
+            System.out.println(" replace "+gridDefnew.name+" with "+invGrid.name);
+            gridDefnew.name = invGrid.name;
+            changed = false; // true;
+          } else {
+            System.out.println("*** cant find replacement for grid= "+invGrid.name+" in the definition");
+          }
+        }
+      }
+    }
+
+    if (changed) {
+      int pos = defName.lastIndexOf("/");
+      String newDef = defName.substring(0,pos) + "/new/" + defName.substring(pos);
+      FileOutputStream fout = new FileOutputStream( newDef);
+      fmrDef.writeDefinitionXML( fout);
+    }
+  }
+
+  static boolean showState = false;
   static void convert(String datasetName, String defName) throws IOException {
     System.out.println(datasetName);
-    ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW);
+    ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW, true);
 
     FmrcDefinition fmrDef = new FmrcDefinition();
     fmrDef.readDefinitionXML(defName);
@@ -899,11 +957,11 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       else {
        // boolean isLayer = null != axis.findAttribute(_Coordinate.ZisLayer);
         //if (isLayer) {
-          System.out.print(" "+vc.getName()+" contig= "+axis.isContiguous());
+          if (showState) System.out.print(" "+vc.getName()+" contig= "+axis.isContiguous());
           // see if theres any TimeCoord that use this
           //findGridsForVertCoord( fmrDef, vc);
           boolean ok = fmrDef.replaceVertCoord(vc);
-          System.out.println(" = "+ok);
+          if (showState) System.out.println(" = "+ok);
         //}
       }
     }
@@ -916,7 +974,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         Grid gridDef =  (Grid) runSeq.vars.get(j);
         ForecastModelRunInventory.Grid gridInv = fmrInv.findGrid( gridDef.name);
         if (gridInv == null) {
-          System.out.println("*** cant find grid= "+gridDef.name);
+          System.out.println("*** cant find def grid= "+gridDef.name+" in the inventory ");
           continue;
         }
         if (gridInv.vc != null) {
@@ -926,7 +984,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
             continue;
           }
           gridDef.vtc = new_vtc;
-          System.out.println(" ok= "+gridDef.name);
+          if (showState) System.out.println(" ok= "+gridDef.name);
         }
       }
     }
@@ -935,6 +993,40 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     String newDef = defName.substring(0,pos) + "/new/" + defName.substring(pos);
     FileOutputStream fout = new FileOutputStream( newDef);
     fmrDef.writeDefinitionXML( fout);
+
+            // make sure each grid in fmrInv is also in fmrDef
+    List fmrInvTimeCoords = fmrInv.getTimeCoords();
+    for (int i = 0; i < fmrInvTimeCoords.size(); i++) {
+      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) fmrInvTimeCoords.get(i);
+      List fmrInvGrids = tc.getGrids();
+      for (int j = 0; j < fmrInvGrids.size(); j++) {
+        ForecastModelRunInventory.Grid invGrid = (ForecastModelRunInventory.Grid) fmrInvGrids.get(j);
+        FmrcDefinition.Grid defGrid = fmrDef.findGridByName( invGrid.name);
+        if (null == defGrid)
+          System.out.println("*** cant find inv grid= "+invGrid.name+" in the definition");
+        else {
+          ForecastModelRunInventory.VertCoord inv_vc = invGrid.vc;
+
+          if ((inv_vc == null) && (defGrid.vtc == null)) continue; // ok
+          if ((inv_vc != null) && (defGrid.vtc == null)) {
+            System.out.println("*** mismatch "+invGrid.name+" VertCoord: inv= "+inv_vc.getSize()+", no def ");
+            continue;
+          }
+
+          if ((inv_vc == null) && (defGrid.vtc != null)) {
+            ForecastModelRunInventory.VertCoord def_vc = defGrid.vtc.vc;
+            System.out.println("*** mismatch "+invGrid.name+" VertCoord: def= "+def_vc.getSize()+", no inv ");
+            continue;
+          }
+
+          ForecastModelRunInventory.VertCoord def_vc = defGrid.vtc.vc;
+          if (inv_vc.getSize() != def_vc.getSize()) {
+            System.out.println("*** mismatch "+invGrid.name+" VertCoord size: inv= "+inv_vc.getSize()+", def = "+def_vc.getSize());
+          }
+        }
+      }
+
+    }
   }
 
   static void showVertCoords(String datasetName, String defName ) throws IOException {
@@ -950,7 +1042,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     } */
 
     System.out.println(datasetName);
-    ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW);
+    ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW, true);
     List vcList = fmrInv.getVertCoords();
     for (int i = 0; i < vcList.size(); i++) {
       ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) vcList.get(i);
@@ -984,46 +1076,84 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
   }
 
-  private static String[] defs = {
-    "R:/testdata/motherlode/grid/GFS_Alaska_191km_20060802_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_CONUS_80km_20060802_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_CONUS_191km_20060802_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_CONUS_95km_20060802_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_95km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Global_2p5deg_20060801_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Global_onedeg_20060802_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Hawaii_160km_20060730_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_N_Hemisphere_381km_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Puerto_Rico_191km_20060731_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
+  public static String[] fmrcDefinitionFiles = {
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-CONUS_95km.fmrcDefinition.xml", // */
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
+   "R:/testdata/motherlode/grid/inv/NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/NAM_Alaska_22km_20060731_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_45km_conduit_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_45km_noaaport_20060730_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_95km_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_20km_noaaport_20060731_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_20km_selectsurface_20060801_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_20km_surface_20060801_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_40km_conduit_20060801_0600.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_40km_noaaport_20060731_1800.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml", //*/
-    "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Polar_90km_20060730_0000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Polar_90km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-Polar_90km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_hybrid_20060802_2100.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_pressure_20060802_2000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_surface_20060802_1700.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/RUC_CONUS_40km_20060802_2000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
-    "R:/testdata/motherlode/grid/RUC_CONUS_80km_20060802_2000.grib1", "R:/testdata/motherlode/grid/inv/NCEP-RUC-CONUS_80km.fmrcDefinition.xml",  };
+    "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
+    "R:/testdata/motherlode/grid/inv/NCEP-RUC-CONUS_80km.fmrcDefinition.xml",
 
-   /*  "R:/testdata/motherlode/grid/DGEX_Alaska_12km_20060731_0000.grib2", "R:/testdata/motherlode/grid/inv/NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/DGEX_CONUS_12km_20060730_1800.grib2", "R:/testdata/motherlode/grid/inv/NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Global_0p5deg_20060726_0600.grib2", "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_11km_20060802_1200.grib2", "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_12km_20060801_1200.grib2", "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NDFD_CONUS_5km_20060731_1200.grib2", "R:/testdata/motherlode/grid/inv/NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" };  // */
+    "R:/testdata/motherlode/grid/inv/NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/inv/NCEP-NDFD-CONUS_5km.fmrcDefinition.xml",
+  };
+
+  private static String[] exampleFiles = {
+    "R:/testdata/motherlode/grid/GFS_Alaska_191km_20060802_1200.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_CONUS_80km_20060802_0600.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_CONUS_191km_20060802_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_CONUS_95km_20060802_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-CONUS_95km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Global_2p5deg_20060801_1200.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Global_onedeg_20060802_0600.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Hawaii_160km_20060730_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_N_Hemisphere_381km_20060801_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Puerto_Rico_191km_20060731_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
+
+    "R:/testdata/motherlode/grid/NAM_Alaska_22km_20060731_1200.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-Alaska_22km.fmrcDefinition.xml", // */
+    "R:/testdata/motherlode/grid/NAM_Alaska_45km_conduit_20060801_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Alaska_45km_noaaport_20060730_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Alaska_95km_20060801_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_20km_noaaport_20060731_0600.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_20km_selectsurface_20060801_0600.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_20km_surface_20060801_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_40km_conduit_20060801_0600.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_40km_noaaport_20060731_1800.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Polar_90km_20060730_0000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-Polar_90km.fmrcDefinition.xml",
+
+    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_hybrid_20060802_2100.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_pressure_20060802_2000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_surface_20060802_1700.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/RUC_CONUS_40km_20060802_2000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
+    "R:/testdata/motherlode/grid/RUC_CONUS_80km_20060802_2000.grib1", "R:/testdata/motherlode/grid2/corrected/NCEP-RUC-CONUS_80km.fmrcDefinition.xml",
+
+    "R:/testdata/motherlode/grid/DGEX_Alaska_12km_20060731_0000.grib2", "R:/testdata/motherlode/grid2/corrected/NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/DGEX_CONUS_12km_20060730_1800.grib2", "R:/testdata/motherlode/grid2/corrected/NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/GFS_Global_0p5deg_20060726_0600.grib2", "R:/testdata/motherlode/grid2/corrected/NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_Alaska_11km_20060802_1200.grib2", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NAM_CONUS_12km_20060801_1200.grib2", "R:/testdata/motherlode/grid2/corrected/NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
+    "R:/testdata/motherlode/grid/NDFD_CONUS_5km_20060731_1200.grib2", "R:/testdata/motherlode/grid2/corrected/NCEP-NDFD-CONUS_5km.fmrcDefinition.xml",  // */
+  };
 
   public static void main(String args[]) throws IOException {
 
-    for (int i = 0; i < defs.length; i+=2)
-      convert(defs[i], defs[i+1]);
+    for (int i = 0; i < exampleFiles.length; i+=2)
+      convertIds(exampleFiles[i], exampleFiles[i+1]);
 
     //for (int i = 0; i < defs.length; i+=2)
     //  showVertCoords(defs[i], defs[i+1]);

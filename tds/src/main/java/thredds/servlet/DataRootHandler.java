@@ -1160,7 +1160,7 @@ public class DataRootHandler {
 
     // Check that latest is allowed
     if (dscan.getProxyDatasetHandlers() == null) {
-      String resMsg = "No \"addProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
+      String resMsg = "No \"makeProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
       log.warn(resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);

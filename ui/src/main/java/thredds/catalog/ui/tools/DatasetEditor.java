@@ -802,7 +802,6 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
       setMode(variablesFld, 1);
       return;
     }
-
   }
 
   private InvDatasetImpl findLeafDataset(InvDatasetImpl ds) {
@@ -816,20 +815,25 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     List nestedList = ds.getDatasets();
     for (int i = 0; i < nestedList.size(); i++) {
       InvDatasetImpl nestedDS = (InvDatasetImpl) nestedList.get(i);
-      if (nestedDS.hasAccess() && !nestedDS.hasNestedDatasets())
-        return chooseLeafDataset(nestedList);
+
+      if (nestedDS.hasAccess() && !nestedDS.hasNestedDatasets()) {
+        InvDatasetImpl result = chooseLeafDataset(nestedList); // this assumes that they are uniform !!
+        return (result.hasAccess()) ? result : nestedDS;
+      }
 
       // depth first
       InvDatasetImpl leaf = getLeafDataset( nestedDS);
       if (leaf != null)
         return leaf;
     }
+
     return null;
   }
 
   private  InvDatasetImpl chooseLeafDataset(List nestedList) {
+    // try random one
     int size = nestedList.size();
-    return (InvDatasetImpl) nestedList.get(size/2); // take the middle one
+    return (InvDatasetImpl) nestedList.get(size/2);
   }
 
     ////////////////////////////////////////////////////////////////////

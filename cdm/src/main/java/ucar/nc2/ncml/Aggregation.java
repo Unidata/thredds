@@ -22,10 +22,7 @@ package ucar.nc2.ncml;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.NetcdfDatasetCache;
-import ucar.nc2.dataset.NetcdfDatasetFactory;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateFormatter;
@@ -94,8 +91,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   private Type type; // the aggregation type
   protected ArrayList nestedDatasets; // working set of Aggregation.Dataset
   private int totalCoords = 0;  // the aggregation dimension size
-  private NetcdfFile typical = null; // metadata and non-agg variables come from a "typical" nested file.
-  private Dataset typicalDataset = null; // metadata and non-agg variables come from a "typical" nested file.
+  //private NetcdfFile typical = null; // metadata and non-agg variables come from a "typical" nested file.
+  //private Dataset typicalDataset = null; // metadata and non-agg variables come from a "typical" nested file.
   protected Object spiObject;
 
   // explicit
@@ -114,7 +111,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = false, debugOpenFile = true, debugCacheDetail = false, debugSyncDetail = false;
+  protected boolean debug = false, debugOpenFile = true, debugCacheDetail = false, debugSyncDetail = false, debugProxy = true;
 
   /**
    * Create an Aggregation for the NetcdfDataset.
@@ -232,8 +229,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * @throws IOException
    */
   public void close() throws IOException {
-    if (null != typical)
-      typical.close();
+    //if (null != typical)
+    //  typical.close();
 
     for (int i = 0; i < unionDatasets.size(); i++) {
       NetcdfDataset ds = (NetcdfDataset) unionDatasets.get(i);
@@ -527,12 +524,12 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     nestedDatasets.addAll(newDatasets);
     buildCoords(null);
 
-    // chose a new typical dataset
+    /* chose a new typical dataset
     if (typical != null) {
       typical.close();
       typical = null;
       typicalDataset = null;
-    }
+    } */
     //ncd.empty();
 
     // rebuild the metadata
@@ -612,17 +609,15 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
    */
-  NetcdfFile getTypicalDataset() throws IOException {
-    if (typical != null)
-      return typical;
+  Dataset getTypicalDataset() throws IOException {
+    //if (typical != null)
+    //  return typical;
 
-    // pick the last one, to minimize possibility of it being deleted
     int n = nestedDatasets.size();
-    typicalDataset = (Dataset) nestedDatasets.get(n - 1);
-
-    // open instead of acquiring it
-    typical = typicalDataset.openFile(null);
-    return typical;
+    if (n == 0) return null;
+    // pick a random one, but not the last
+    int select = (n < 2) ? 0 : Math.abs(new Random().nextInt()) % (n-1);
+    return (Dataset) nestedDatasets.get(select);
   }
 
   /**
@@ -635,7 +630,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    */
   private void aggExistingDimension(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
     // open a "typical"  nested dataset and copy it to newds
-    NetcdfFile typical = getTypicalDataset();
+    Dataset typicalDataset = getTypicalDataset();
+    NetcdfFile typical =  typicalDataset.acquireFile(null);
     NcMLReader.transferDataset(typical, newds, isNew ? null : new MyReplaceVariableCheck());
 
     // create aggregation dimension
@@ -665,6 +661,39 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
+
+    newds.finish();
+    makeProxies(typicalDataset, newds);
+    typical.close();
+  }
+
+  protected void makeProxies(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
+
+    // all normal variables must use a proxy to lock the file
+    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
+    List allVars = newds.getVariables();
+    for (int i = 0; i < allVars.size(); i++) {
+      VariableDS vs = (VariableDS) allVars.get(i);
+      if (vs.hasProxyReader()) {
+        if (debugProxy) System.out.println(" debugProxy: hasProxyReader "+vs.getNameAndDimensions());
+        continue; // dont mess with agg variables
+      }
+
+      if (vs.isCaching()) {  // cache the small ones
+        if (!vs.hasCachedData()) {
+          vs.read();
+          if (debugProxy) System.out.println(" debugProxy: cached "+vs.getNameAndDimensions());
+        } else {
+          if (debugProxy) System.out.println(" debugProxy: aleady cached "+vs.getNameAndDimensions());
+        }
+
+      } else if (!vs.hasProxyReader()) { // put proxy on the rest
+        vs.setProxyReader(proxy);
+        if (debugProxy) System.out.println(" debugProxy: proxy on "+vs.getNameAndDimensions());
+      }
+    }
+
+
   }
 
   protected class MyReplaceVariableCheck implements ReplaceVariableCheck {
@@ -691,7 +720,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    */
   private void aggNewDimension(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
     // open a "typical"  nested dataset and copy it to newds
-    NetcdfFile typical = getTypicalDataset();
+    Dataset typicalDataset = getTypicalDataset();
+    NetcdfFile typical =  typicalDataset.acquireFile(null);
     NcMLReader.transferDataset(typical, newds, isNew ? null : new MyReplaceVariableCheck());
 
     // create aggregation dimension
@@ -740,6 +770,10 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
+
+    newds.finish();
+    makeProxies(typicalDataset, newds);
+    typical.close();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1287,10 +1321,10 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
-      if (typicalDataset == this) {
+      /* if (typicalDataset == this) {
         if (debugOpenFile) System.out.println(" acquire typical " + cacheName);
         return typical;
-      }
+      } */
 
       NetcdfFile ncfile;
       if (enhance)
@@ -1305,12 +1339,12 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
 
-    protected void releaseFile(NetcdfFile ncfile) throws IOException {
+   /* protected void releaseFile(NetcdfFile ncfile) throws IOException {
       if (typicalDataset != this)
         ncfile.close();
-    }
+    } */
 
-    // called only by the "typical" dataset
+    /* called only by the "typical" dataset
     private NetcdfFile openFile(CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile;
       if (enhance)
@@ -1323,7 +1357,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       if ((type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL))
         cacheCoordValues(ncfile);
       return ncfile;
-    }
+    } */
 
     private void cacheCoordValues(NetcdfFile ncfile) throws IOException {
       if (coordValue != null) return;
@@ -1348,7 +1382,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         Dimension d = ncd.getRootGroup().findDimension(dimName);
         if (d != null)
           ncoord = d.getLength();
-        releaseFile(ncd);
+        ncd.close();
       }
       return ncoord;
     }
@@ -1372,7 +1406,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         return v.read();
 
       } finally {
-        if (ncd != null) releaseFile(ncd);
+        if (ncd != null) ncd.close();
       }
     }
 
@@ -1395,7 +1429,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         return v.read(section);
 
       } finally {
-        releaseFile(ncd);
+        if (ncd != null) ncd.close();
       }
     }
 
@@ -1428,6 +1462,35 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
       public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
         return NetcdfDataset.openFile(location, buffer_size, cancelTask, spiObject);
+      }
+    }
+  }
+
+  private class DatasetProxyReader implements ProxyReader {
+    Dataset dataset;
+    DatasetProxyReader( Dataset dataset) {
+      this.dataset = dataset;
+    }
+
+    public Array read(Variable mainv, CancelTask cancelTask) throws IOException{
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = dataset.acquireFile( cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel()) return null;
+        return mainv.read();
+      } finally {
+        if (ncfile != null) ncfile.close();
+      }
+    }
+
+    public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = dataset.acquireFile( cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel()) return null;
+        return mainv.read(section);
+      } finally {
+        if (ncfile != null) ncfile.close();
       }
     }
   }

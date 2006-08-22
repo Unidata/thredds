@@ -92,9 +92,14 @@ public class ForecastModelRunInventory {
   private boolean debugMissing = false;
 
   private ForecastModelRunInventory() { }
-  private ForecastModelRunInventory(String ncfileLocation) throws IOException {
 
-    gds = ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation);
+  private ForecastModelRunInventory(String ncfileLocation) throws IOException {
+    this( ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation));
+  }
+
+  private ForecastModelRunInventory(ucar.nc2.dataset.grid.GridDataset gds) {
+
+    this.gds = gds;
     name = gds.getTitle();
 
     NetcdfFile ncfile = gds.getNetcdfFile();
@@ -513,6 +518,8 @@ public class ForecastModelRunInventory {
     public double[] getValues2() { return values2; }
     public void setValues2(double[] values) { this.values2 = values; }
 
+    public int getSize() { return values1.length; }
+
     public boolean equalsData(VertCoord other) {
       if (values1.length != other.values1.length)
         return false;
@@ -789,30 +796,36 @@ public class ForecastModelRunInventory {
    * @param cache use this cache (may be null)
    * @param ncfileLocation  location of the grid dataset.
    * @param mode one of OPEN_NORMAL, OPEN_FORCE_NEW, OPEN_XML_ONLY constants
+   * @param isFile if its a file: new File( ncfileLocation) makes sense, so we can check if its changed
    * @return ForecastModelRun
    * @throws IOException
    */
-  public static ForecastModelRunInventory open(ucar.nc2.util.DiskCache2 cache, String ncfileLocation, int mode) throws IOException {
+  public static ForecastModelRunInventory open(ucar.nc2.util.DiskCache2 cache, String ncfileLocation, int mode, boolean isFile) throws IOException {
     boolean force = (mode == OPEN_FORCE_NEW);
     boolean xml_only = (mode == OPEN_XML_ONLY);
 
     String summaryFileLocation = ncfileLocation + ".fmrInv.xml";
+    File summaryFile;
+    if (null != cache) {
+      summaryFile = cache.getCacheFile(summaryFileLocation);
+      summaryFileLocation = summaryFile.getPath();
+    } else {
+      summaryFile = new File( summaryFileLocation);
+    }
 
     if (!force) {
-      File summaryFile;
-      if (null != cache) {
-        summaryFile = cache.getCacheFile(summaryFileLocation);
-        summaryFileLocation = summaryFile.getPath();
-      } else {
-        summaryFile = new File( summaryFileLocation);
-      }
-
       if (summaryFile.exists()) {
-        File ncdFile = new File( ncfileLocation);
-        if (!ncdFile.exists())
-          throw new IllegalArgumentException("File must exist = "+ncfileLocation);
 
-        if (xml_only || (summaryFile.lastModified() >= ncdFile.lastModified())) {
+        if (isFile) { // see if its changed
+          File ncdFile = new File( ncfileLocation);
+          if (!ncdFile.exists())
+            throw new IllegalArgumentException("File must exist = "+ncfileLocation);
+
+          if (xml_only || (summaryFile.lastModified() >= ncdFile.lastModified())) {
+            return readXML(summaryFileLocation);
+          }
+        } else {  // just use it
+
           return readXML(summaryFileLocation);
         }
       }
@@ -824,7 +837,7 @@ public class ForecastModelRunInventory {
     if (debug) System.out.println(" read from dataset "+ncfileLocation+" write to XML "+summaryFileLocation);
     ForecastModelRunInventory fmr = new ForecastModelRunInventory(ncfileLocation);
     fmr.writeXML(summaryFileLocation);
-    // fmr.releaseDataset();    LOOK temporary
+    fmr.releaseDataset();
 
     if (showXML)
       thredds.util.IO.copyFile(summaryFileLocation, System.out);
@@ -840,6 +853,6 @@ public class ForecastModelRunInventory {
     String datasetName =  (args.length < 1) ? def : args[0];
     // ucar.nc2.util.DiskCache2 cache = new ucar.nc2.util.DiskCache2("C:/data/grib", false, -1, -1);
     // cache.setCachePathPolicy(DiskCache2.CACHEPATH_POLICY_NESTED_TRUNCATE, "RUC");
-    open(null, datasetName, OPEN_FORCE_NEW);
+    open(null, datasetName, OPEN_FORCE_NEW, true);
   }
 }

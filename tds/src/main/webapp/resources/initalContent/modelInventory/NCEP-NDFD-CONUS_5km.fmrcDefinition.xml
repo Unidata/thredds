@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition dataset="NCEP-NDFD-CONUS_5km">
+  <vertCoord id="1" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="0" name="height_above_ground1" units="m">2.0</vertCoord>
+  <offsetHours id="0">96.0 108.0 120.0 132.0 144.0 156.0 168.0 180.0</offsetHours>
+  <offsetHours id="1">90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0</offsetHours>
+  <offsetHours id="2">108.0 132.0 156.0 180.0</offsetHours>
+  <offsetHours id="3">96.0 120.0 144.0 168.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Categorical_Rain" />
+    <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" />
+  </runSequence>
+  <runSequence allUseSeq="1">
+    <variable name="Dew_point_temperature" vertCoord="0" />
+    <variable name="Total_cloud_cover" />
+    <variable name="Wind_direction_from_which_blowing" vertCoord="1" />
+    <variable name="Wind_speed" vertCoord="1" />
+  </runSequence>
+  <runSequence allUseSeq="2">
+    <variable name="Maximum_temperature" vertCoord="0" />
+  </runSequence>
+  <runSequence allUseSeq="3">
+    <variable name="Minimum_temperature" vertCoord="0" />
+  </runSequence>
+</fmrcDefinition>
+

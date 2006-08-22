@@ -24,7 +24,7 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib1/data/","pgbanl.fnl", 76, 15, 17, 14);
     doOne("grib1/data/","radar_national_rcm.grib", 1, 1, 3, 0);
     doOne("grib1/data/","radar_national.grib", 1, 1, 3, 0);
-    doOne("grib1/data/","thin.wmo", 240, 87, 120, 64);
+    doOne("grib1/data/","thin.wmo", 240, 88, 120, 64);
     doOne("grib1/data/","ukm.wmo", 96, 49, 67, 32);
     doOne("grib1/data/","AVN.wmo", 22, 9, 11, 7);
     doOne("grib1/data/","AVN-I.wmo", 20, 8, 10, 7); //
@@ -40,7 +40,7 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib2/data/","CLDGRIB2.2005040905", 5, 1, 3, 0);
     //doOne("grib2/data/","LMPEF_CLM_050518_1200.grb", 1, 1, 5, 1);
     doOne("grib2/data/","AVOR_000.grb", 1, 2, 4, 1);
-    doOne("grib2/data/","AVN.5deg.wmo", 116, 16, 17, 13);
+    doOne("grib2/data/","AVN.5deg.wmo", 117, 16, 17, 13);
 
     NetcdfFileCache.clearCache( true);
   }

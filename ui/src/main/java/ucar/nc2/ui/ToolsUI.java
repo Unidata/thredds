@@ -26,6 +26,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.dt.*;
+import ucar.nc2.dt.grid.FmrcDefinition;
 import ucar.nc2.dt.point.PointObsDatasetFactory;
 import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
 import ucar.nc2.dataset.*;
@@ -1293,15 +1294,39 @@ public class ToolsUI extends JPanel {
   }
 
   private class CoordSysPanel extends OpPanel {
-    //IndependentWindow detailWindow;
-    //TextHistoryPane detailTA;
     NetcdfDataset ds = null;
     CoordSysTable coordSysTable;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
 
     CoordSysPanel(PreferencesExt p) {
       super(p, "dataset:", true, false);
       coordSysTable = new CoordSysTable(prefs);
       add(coordSysTable, BorderLayout.CENTER);
+
+      // allow to set a defintion file for GRIB
+      AbstractAction defAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useDefinition = state.booleanValue();
+          String tooltip = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
+          defButt.setToolTipText(tooltip);
+          if (useDefinition) {
+            defWindow.show();
+          }
+        }
+      };
+      String tooltip2 = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
+      BAMutil.setActionProperties(defAction, "dd", tooltip2, true, 'D', -1);
+      defAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
+      defButt = BAMutil.addActionToContainer(buttPanel, defAction);
+
+      defComboBox = new JComboBox( FmrcDefinition.fmrcDefinitionFiles);
+      defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
+      defWindow.setLocationRelativeTo(defButt);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
@@ -1330,21 +1355,29 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(dsButton);
-
-      /* detailTA = new TextHistoryPane();
-      detailTA.setFont( new Font("Monospaced", Font.PLAIN, 12));
-      detailWindow = new IndependentWindow("Dataset Parsing Details", BAMutil.getImage("netcdfUI"), new JScrollPane(detailTA));
-      Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(200, 50, 500, 700));
-      detailWindow.setBounds( bounds); */
     }
 
     boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
+      Object spiObject = null;
+      if (useDefinition) {
+        String currentDef = (String) defComboBox.getSelectedItem();
+        if (currentDef != null) {
+          FmrcDefinition fmrc_def = new FmrcDefinition();
+          try {
+            fmrc_def.readDefinitionXML(currentDef);
+            spiObject = fmrc_def;
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        ds = NetcdfDataset.openDataset(command, true, null);
+        ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
         if (ds == null) {
           ta.setText("Failed to open <" + command + ">");
         } else {

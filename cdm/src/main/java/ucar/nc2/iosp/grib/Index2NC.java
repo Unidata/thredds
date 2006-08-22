@@ -297,7 +297,9 @@ public class Index2NC  {
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GribVariable pv = (GribVariable) plist.get(k);
-            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), k == 0));
+            //int nlevels = pv.getVertNlevels();
+            //boolean useDesc = (k == 0) && (nlevels > 1); // keep using the level name if theres only one level
+            ncfile.addVariable( hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
           }
         } // multipe vertical levels
 
@@ -529,10 +531,12 @@ public class Index2NC  {
   }
 
   private String findVariableName(Index.GribRecord gr, TableLookup lookup, FmrcCoordSys fmr) {
+    // first lookup with name & vert name
     String name = NetcdfFile.createValidNetcdfObjectName( makeVariableName(gr, lookup));
     if (fmr.hasVariable( name))
       return name;
 
+    // now try just the name
     String pname = NetcdfFile.createValidNetcdfObjectName( lookup.getParameter(gr).getDescription());
     if (fmr.hasVariable( pname))
       return pname;

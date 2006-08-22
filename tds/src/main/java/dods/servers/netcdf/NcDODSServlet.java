@@ -340,13 +340,13 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
     ServletUtil.showSession( req, System.out);  */
 
     // canonicalize the path
-    String spath = req.getServletPath();
+    /* String spath = req.getServletPath();
     if (spath.length() > 0) {
       if (spath.startsWith("/"))
         spath = spath.substring(1);
       if (!spath.endsWith("/"))
         spath = spath + "/";
-    }
+    } */
     String reqPath = preq.getDataSet(); // was spath + preq.getDataSet();
 
     NetcdfFile ncd = DatasetHandler.getNetcdfFile(reqPath);

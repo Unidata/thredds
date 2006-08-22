@@ -212,6 +212,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       ds.setID(id+"/"+FMRC);
       ThreddsMetadata tm = ds.getLocalMetadata();
       tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
+      ds.finish();
       datasets.add( ds);
 
       ds = new InvDatasetImpl(this, "Best Time Series");
@@ -219,23 +220,28 @@ public class InvDatasetFmrc extends InvCatalogRef {
       ds.setID(id+"/"+BEST);
       tm = ds.getLocalMetadata();
       tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
+      ds.finish();
       datasets.add( ds);
 
       // run datasets as catref
       ds = new InvCatalogRef(this, TITLE_RUNS, getCatalogHref(RUNS));
+      ds.finish();
       datasets.add( ds);
 
       // run datasets as catref
       ds = new InvCatalogRef(this, TITLE_OFFSET, getCatalogHref(OFFSET));
+      ds.finish();
       datasets.add( ds);
 
       // run datasets as catref
       ds = new InvCatalogRef(this, TITLE_FORECAST, getCatalogHref(FORECAST));
+      ds.finish();
       datasets.add( ds);
 
       madeDatasets = true;
     }
 
+    finish();
     return datasets;
   }
 

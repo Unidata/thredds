@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition dataset="NCEP-GFS-Alaska_191km">
+  <vertCoord id="6" name="height_above_ground" units="m">2.0</vertCoord>
+  <vertCoord id="1" name="isobaric" units="hPa">100.0 150.0 200.0 250.0 300.0 400.0 500.0 700.0 850.0 1000.0</vertCoord>
+  <vertCoord id="2" name="isobaric1" units="hPa">100.0 150.0 200.0 250.0 300.0 400.0 500.0 700.0 850.0</vertCoord>
+  <vertCoord id="0" name="isobaric2" units="hPa">250.0 500.0 700.0 850.0</vertCoord>
+  <vertCoord id="3" name="isobaric3" units="hPa">300.0 400.0 500.0 700.0 850.0</vertCoord>
+  <vertCoord id="4" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,30.0</vertCoord>
+  <vertCoord id="5" name="layer_between_two_sigmas" units="sigma">44.0,100.0</vertCoord>
+  <offsetHours id="0">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0</offsetHours>
+  <offsetHours id="1">6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Absolute_vorticity" vertCoord="0">
+      <vertTimeCoord restrict="500.0">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0  </vertTimeCoord >
+    </variable>
+    <variable name="Geopotential_height" vertCoord="1" />
+    <variable name="Precipitable_water" />
+    <variable name="Pressure" />
+    <variable name="Pressure_reduced_to_MSL" />
+    <variable name="Pressure_tropopause" />
+    <variable name="Relative_humidity" vertCoord="3" />
+    <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="4" />
+    <variable name="Relative_humidity_layer_between_two_sigmas" vertCoord="5" />
+    <variable name="Surface_lifted_index" />
+    <variable name="Temperature" vertCoord="2" />
+    <variable name="Temperature_height_above_ground" vertCoord="6" />
+    <variable name="Temperature_tropopause" />
+    <variable name="Vertical_speed_shear" />
+    <variable name="u_wind" vertCoord="1" />
+    <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vertCoord="4" />
+    <variable name="u_wind_tropopause" />
+    <variable name="v_wind" vertCoord="1" />
+    <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vertCoord="4" />
+    <variable name="v_wind_tropopause" />
+  </runSequence>
+  <runSequence allUseSeq="1">
+    <variable name="Pressure_vertical_velocity" vertCoord="2" />
+    <variable name="Total_precipitation" />
+  </runSequence>
+</fmrcDefinition>
+

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmrcDefinition>
+  <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
+  <vertCoord id="1" name="height_above_ground1" units="m">2.0</vertCoord>
+  <vertCoord id="3" name="layer_between_two_heights_above_ground" units="m">0.0,3000.0</vertCoord>
+  <vertCoord id="4" name="layer_between_two_isobaric" units="hPa">500.0,1000.0</vertCoord>
+  <vertCoord id="2" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,30.0</vertCoord>
+  <vertCoord id="0" name="layer_between_two_pressure_difference_from_ground1" units="hPa">0.0,180.0</vertCoord>
+  <offsetHours id="0">3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0</offsetHours>
+  <offsetHours id="1">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0</offsetHours>
+  <runSequence allUseSeq="0">
+    <variable name="Accumulated_snow" />
+    <variable name="Convective_precipitation" />
+    <variable name="Total_precipitation" />
+  </runSequence>
+  <runSequence allUseSeq="1">
+    <variable name="Best_4-layer_lifted_index" vertCoord="0" />
+    <variable name="Categorical_freezing_rain" />
+    <variable name="Categorical_ice_pellets" />
+    <variable name="Categorical_rain" />
+    <variable name="Categorical_snow" />
+    <variable name="Convective_Avail_Pot_Energy" />
+    <variable name="Convective_inhibition" />
+    <variable name="Mean_sea_level_pressure_ETA_model" />
+    <variable name="Precipitable_water" />
+    <variable name="Pressure" />
+    <variable name="Pressure_reduced_to_MSL" />
+    <variable name="Relative_humidity" vertCoord="1" />
+    <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="2" />
+    <variable name="Storm_relative_helicity" vertCoord="3" />
+    <variable name="Surface_lifted_index" vertCoord="4" />
+    <variable name="Temperature" vertCoord="1" />
+    <variable name="Temperature_layer_between_two_pressure_difference_from_ground" vertCoord="2" />
+    <variable name="Visibility" />
+    <variable name="u_wind" vertCoord="5" />
+    <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vertCoord="2" />
+    <variable name="v_wind" vertCoord="5" />
+    <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vertCoord="2" />
+  </runSequence>
+</fmrcDefinition>
+

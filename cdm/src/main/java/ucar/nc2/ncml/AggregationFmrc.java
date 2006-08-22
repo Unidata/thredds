@@ -84,7 +84,8 @@ public class AggregationFmrc extends Aggregation {
 
   private void makeDataset(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
     // open a "typical"  nested dataset and copy it to newds
-    NetcdfFile typical = getTypicalDataset();
+    Dataset typicalDataset = getTypicalDataset();
+    NetcdfFile typical =  typicalDataset.acquireFile(null);
     NcMLReader.transferDataset(typical, newds, isNew ? null : new MyReplaceVariableCheck());
 
     // some additional global attributes
@@ -173,11 +174,15 @@ public class AggregationFmrc extends Aggregation {
       if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
+
+    newds.finish();
+    makeProxies(typicalDataset, newds);
+    typical.close();
   }
 
   /**
    * Construct a new dataset "by hand" rather than through a copy constructor
-   */
+   *
   private void buildDataset(NetcdfDataset newds, CancelTask cancelTask) throws IOException {
 
     Group root = newds.getRootGroup();
@@ -289,7 +294,7 @@ public class AggregationFmrc extends Aggregation {
       }
     } */
 
-    if (isDate()) {
+    /* if (isDate()) {
       runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
     }
 
@@ -341,7 +346,7 @@ public class AggregationFmrc extends Aggregation {
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-  }
+  } */
 
   private void readTimeCoordinates( VariableDS vagg, CancelTask cancelTask) throws IOException {
     ArrayList dateList = new ArrayList();
@@ -364,7 +369,7 @@ public class AggregationFmrc extends Aggregation {
           units = v.getUnitsString();
 
       } finally {
-        dataset.releaseFile(ncfile);
+        if (ncfile != null) ncfile.close();
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
