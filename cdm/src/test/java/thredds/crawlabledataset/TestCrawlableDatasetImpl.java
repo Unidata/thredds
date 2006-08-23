@@ -50,7 +50,7 @@ public class TestCrawlableDatasetImpl extends TestCase
     System.out.println( "Test with root = \"" + rootPath + "\"" );
     setupTestCollection( rootPath);
     CrawlableDataset top = getInstance( rootPath);
-    showCrDsAndDescendents( top );
+    showCrDsAndDescendants( top );
 
     System.out.println( "Generate top catalog" );
     SimpleCatalogBuilder builder = new SimpleCatalogBuilder( "", top, "myservice", "OPENDAP", "/thredds/dodsC/");
@@ -98,7 +98,7 @@ public class TestCrawlableDatasetImpl extends TestCase
     System.out.println( catAsString );
   }
 
-  private void showCrDsAndDescendents( CrawlableDataset crDs)
+  private void showCrDsAndDescendants( CrawlableDataset crDs)
   {
     System.out.println( "path <" + crDs.getPath() + ">  name <" + crDs.getName() + ">");
     List childList;
@@ -113,7 +113,7 @@ public class TestCrawlableDatasetImpl extends TestCase
     }
     for ( Iterator it = childList.iterator(); it.hasNext(); )
     {
-      showCrDsAndDescendents( (CrawlableDataset) it.next() );
+      showCrDsAndDescendants( (CrawlableDataset) it.next() );
     }
   }
 
@@ -218,14 +218,24 @@ public class TestCrawlableDatasetImpl extends TestCase
       return name;
     }
 
-    public CrawlableDataset getParentDataset() throws IOException
+    public CrawlableDataset getParentDataset()
     {
       return parent;
+    }
+
+    public boolean exists()
+    {
+      return true;
     }
 
     public boolean isCollection()
     {
       return isCollection;
+    }
+
+    public CrawlableDataset getDescendant( String relativePath )
+    {
+      return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public List listDatasets() throws IOException

@@ -45,9 +45,9 @@ public class SimpleCatalogBuilder implements CatalogBuilder
     service = new InvService( serviceName, serviceTypeName, serviceURL, null, null );
   }
 
-  public CrawlableDataset requestCrawlableDataset( String path ) throws IOException
+  public CrawlableDataset requestCrawlableDataset( String path )
   {
-    return CatalogBuilderHelper.verifyDescendentDataset( collectionCrDs, path, null );
+    return CatalogBuilderHelper.verifyDescendantDataset( collectionCrDs, path, null );
   }
 
   public InvCatalogImpl generateCatalog( CrawlableDataset catalogCrDs ) throws IOException

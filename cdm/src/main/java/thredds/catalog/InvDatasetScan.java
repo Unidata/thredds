@@ -207,44 +207,52 @@ public class InvDatasetScan extends InvCatalogRef {
 
   public CatalogRefExpander getCatalogRefExpander() { return catalogRefExpander; }
 
-  private CatalogBuilder buildCatalogBuilder()
+  private CrawlableDataset getScanLocationCrDs()
   {
-    // Setup and create catalog builder.
-    CrawlableDataset collectionCrDs;
+    // Create the CrawlableDataset for the scan location (scanDir).
+    CrawlableDataset scanLocationCrDs;
     try
     {
-      collectionCrDs = CrawlableDatasetFactory.createCrawlableDataset( scanDir, crDsClassName, crDsConfigObj );
+      scanLocationCrDs = CrawlableDatasetFactory.createCrawlableDataset( scanDir, crDsClassName, crDsConfigObj );
     }
     catch ( IllegalAccessException e )
     {
-      log.error( "buildCatalogBuilder(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( NoSuchMethodException e )
     {
-      log.error( "buildCatalogBuilder(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( IOException e )
     {
-      log.error( "buildCatalogBuilder(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( InvocationTargetException e )
     {
-      log.error( "buildCatalogBuilder(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( InstantiationException e )
     {
-      log.error( "buildCatalogBuilder(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( ClassNotFoundException e )
     {
-      log.error( "buildCatalogBuilder(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
+
+    return scanLocationCrDs;
+  }
+
+  private CatalogBuilder buildCatalogBuilder()
+  {
+    // Setup and create catalog builder.
+    CrawlableDataset collectionCrDs = getScanLocationCrDs();
 
     InvService service = getServiceDefault();
     DatasetScanCatalogBuilder dsScanCatBuilder;
@@ -287,7 +295,19 @@ public class InvDatasetScan extends InvCatalogRef {
     return fullPath;
   }
 
+  /**
+   * Return the CrawlableDataset for the given path, null if this InvDatasetScan
+   * does not allow (filters out) the requested CrawlableDataset.
+   *
+   * <p>This method can handle requests for regular datasets and proxy datasets.
+   *
+   * @param path the path of the requested CrawlableDataset
+   * @return the CrawlableDataset for the given path or null if the path is not allowed by this InvDatasetScan.
+   * @throws IOException if an I/O error occurs while locating the children datasets.
+   * @throws IllegalArgumentException if the given path is not a descendant of (or the same as) this InvDatasetScan collection level.
+   */
   public CrawlableDataset requestCrawlableDataset( String path )
+          throws IOException
   {
     String crDsPath = translatePathToLocation( path );
     if ( crDsPath == null )
@@ -295,15 +315,7 @@ public class InvDatasetScan extends InvCatalogRef {
 
     CatalogBuilder catBuilder = buildCatalogBuilder();
     if ( catBuilder == null ) return null;
-    try
-    {
-      return catBuilder.requestCrawlableDataset( crDsPath);
-    }
-    catch ( IOException e )
-    {
-      log.debug( "requestCrawlableDataset(): IOException trying to create requested dataset: " + e.getMessage());
-      return null;
-    }
+    return catBuilder.requestCrawlableDataset( crDsPath );
   }
 
   /**
@@ -353,7 +365,7 @@ public class InvDatasetScan extends InvCatalogRef {
     }
     catch ( IOException e )
     {
-      log.error( "makeCatalogForDirectory(): failed to create CrawlableDataset for catalogLevel <" + dsDirPath + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "makeCatalogForDirectory(): I/O error getting catalog level <" + dsDirPath + ">: " + e.getMessage(), e );
       return null;
     }
     if ( catalogCrDs == null )
@@ -450,12 +462,17 @@ public class InvDatasetScan extends InvCatalogRef {
     }
     catch ( IOException e )
     {
-      log.error( "makeProxyDsResolverCatalog(): failed to create CrawlableDataset for catalogLevel <" + dsDirPath + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "makeProxyDsResolverCatalog(): failed to create CrawlableDataset for catalogLevel <" + dsDirPath + "> and class <" + crDsClassName + ">: " + e.getMessage(), e );
       return null;
     }
     if ( catalogCrDs == null )
     {
       log.warn( "makeProxyDsResolverCatalog(): requested catalog level <" + dsDirPath + "> not allowed (filtered out)." );
+      return null;
+    }
+    if ( ! catalogCrDs.isCollection())
+    {
+      log.warn( "makeProxyDsResolverCatalog(): requested catalog level <" + dsDirPath + "> not a collection." );
       return null;
     }
 
@@ -487,10 +504,6 @@ public class InvDatasetScan extends InvCatalogRef {
    * @param baseURI the base URL for the catalog, used to resolve relative URLs.
    *
    * @return the catalog for this path (uses version 1.1) or null if build unsuccessful.
-   *
-   * @param orgPath
-   * @param baseURI
-   * @return
    *
    * @deprecated  Instead use {@link #makeProxyDsResolverCatalog(String, URI) makeProxyDsResolver()} which provides more general proxy dataset handling.
    */

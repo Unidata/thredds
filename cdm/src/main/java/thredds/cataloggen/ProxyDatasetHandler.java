@@ -19,6 +19,8 @@ import java.util.List;
  * it is used to map (proxy) dataset requests to the underlying
  * CrawlableDataset.
  *
+ * NOTE: todo Would this be better named AliasDatasetHandler???
+ *
  * @author edavis
  * @since Nov 29, 2005 8:42:37 AM
  */
@@ -60,16 +62,11 @@ public interface ProxyDatasetHandler
   public boolean isProxyDatasetResolver();
 
   /**
-   * Given a list of InvCrawlablePair objects, determine which of those objects
-   * is being proxied by this ProxyDatasetHandler.
-   * Return the InvCrawlablePair from the given list that is the match for this
-   * proxy dataset handler. The
-   * given list contains of possible datasets
+   * Determine the InvCrawlablePair from the given dataset collection
+   * (java.util.List) being proxied by this ProxyDatasetHandler.
    *
-   * How do we obtain a list of possibleDatasets????
-   *
-   * @param possibleDatasets
-   * @return the InvCrawlablePair that corresponds to this proxy dataset
+   * @param possibleDatasets a list of InvCrawlablePair objects representing a dataset collection.
+   * @return the InvCrawlablePair being proxied by this proxy dataset
    */
   public InvCrawlablePair getActualDataset( List possibleDatasets );
   

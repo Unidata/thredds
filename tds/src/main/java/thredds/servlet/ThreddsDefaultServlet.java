@@ -63,7 +63,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private DiskCache2 aggCache;
 
-  public void init() throws ServletException {
+  public void init()
+          throws ServletException
+  {
     super.init();
 
     // get the URL context :  URLS must be context/catalog/...
@@ -137,6 +139,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
                       this.getUserCssPath(), this.getContextLogoPath(), this.getInstituteLogoPath() );
 
     cacheLog.info("Restarted");
+    // Checking for double init seeing in intellij debug
+    log.info( "init(): done initializing <context= " + contextPath + ">." );
   }
 
   public void destroy() {

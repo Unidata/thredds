@@ -5,11 +5,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * An implementation of CrawlableDataset where the dataset being represented
  * is a local file (java.io.File).
+ *
+ * <p>The constructor extends the allowed form of a CrawlableDataset path to
+ * allow file paths to be given in their native formats including Unix
+ * (/my/file), Windows (c:\my\file), and UNC file paths (\\myhost\my\file).
+ * However, the resulting CrawlableDataset path is normalized to conform to the
+ * allowed form of the CrawlableDataset path.
  *
  * <p>This is the default implementation of CrawlableDataset used by
  * CrawlableDatasetFactory if the class name handed to the
@@ -36,10 +41,30 @@ public class CrawlableDatasetFile implements CrawlableDataset
    *
    * @param path the path of the CrawlableDataset being constructed.
    * @param configObj the configuration object required by CrawlableDatasetFactory; it is ignored.
-   * @throws IOException if the file does not exist.
    */
-  CrawlableDatasetFile( String path, Object configObj ) throws IOException
+  CrawlableDatasetFile( String path, Object configObj )
   {
+    if ( path.startsWith( "file:" ) )
+    {
+      try
+      {
+        this.file = new File( new URI( path ) );
+      }
+      catch ( URISyntaxException e )
+      {
+        String tmpMsg = "Bad URI syntax for path <" + path + ">: " + e.getMessage();
+        log.debug( "CrawlableDatasetFile(): " + tmpMsg );
+        throw new IllegalArgumentException( tmpMsg );
+      }
+    }
+    else
+    {
+      file = new File( path );
+    }
+
+    this.path = this.normalizePath( path );
+    this.name = this.file.getName();
+
     if ( configObj != null )
     {
       log.warn( "CrawlableDatasetFile(): config object not null, it will be ignored <" + configObj.toString() + ">.");
@@ -47,51 +72,55 @@ public class CrawlableDatasetFile implements CrawlableDataset
     }
     else
       this.configObj = null;
+  }
 
-    if ( path.startsWith( "file:" ) )
-    {
-      try
-      {
-        this.path = path;
-        this.file = new File( new URI( path ) );
-        this.name = this.file.getName();
-      }
-      catch ( URISyntaxException e )
-      {
-        String tmpMsg = "Bad URI syntax for path <" + path + ">: " + e.getMessage();
-        log.debug( "CrawlableDatasetFile(): " + tmpMsg);
-        throw new IllegalArgumentException( tmpMsg);
-      }
-    }
-    else
-    {
-      // Determine name (i.e., last name in the path name sequence).
-      String tmpName = "";
-      if ( ! path.equals( "/"))
-      {
-        tmpName = path.endsWith( "/" ) ? path.substring( 0, path.length() - 1 ) : path;
-        int index = tmpName.lastIndexOf( "/" );
-        if ( index != -1 ) tmpName = tmpName.substring( index + 1 );
-      }
+  private CrawlableDatasetFile( CrawlableDatasetFile parent, String childPath )
+  {
+    String normalChildPath = this.normalizePath( childPath );
+    if ( normalChildPath.startsWith( "/"))
+      normalChildPath = normalChildPath.substring( 1);
+    this.path = parent.getPath() + "/" + normalChildPath;
+    this.file = new File( parent.getFile(), normalChildPath );
+    this.name = this.file.getName();
 
-      // Make sure file exists and file name is same as name determined above.
-      File tmpFile = new File( path );
-      if ( ! tmpFile.exists() )
-      {
-        String tmpMsg = "File <" + path + "> does not exist.";
-        log.debug( "CrawlableDatasetFile(): " + tmpMsg);
-        throw new IOException( tmpMsg);
-      }
-      if ( ! tmpFile.getName().equals( tmpName ) )
-      {
-        String tmpMsg = "File name <" + tmpFile.getName() + "> not as calculated <" + tmpName + "> from path <" + path + ">.";
-        log.debug( "CrawlableDatasetFile(): " + tmpMsg);
-        throw new IOException( tmpMsg );
-      }
-      this.path = path;
-      this.file = tmpFile;
-      this.name = this.file.getName();
-    }
+    this.configObj = null;
+  }
+
+  private CrawlableDatasetFile( File file )
+  {
+    this.file = file;
+    this.path = this.normalizePath( file.getPath() );
+    this.name = this.file.getName();
+    this.configObj = null;
+  }
+
+  /**
+   * Normalize the given path so that it can be used in the creation of a CrawlableDataset.
+   * This method can be used on absolute or relative paths.
+   * <p/>
+   * Normal uses slashes ("/") as path seperator, not backslashes ("\"), and does
+   * not use trailing slashes. This function allows users to specify Windows
+   * pathnames and UNC pathnames in there normal manner.
+   *
+   * @param path the path to be normalized.
+   * @return the normalized path.
+   * @throws NullPointerException if path is null.
+   *
+   * @see {@link CrawlableDatasetFactory.normalizePath(String) CrawlableDatasetFactory.normalizePath()}
+   */
+  private String normalizePath( String path )
+  {
+    // Replace any occurance of a backslash ("\") with a slash ("/").
+    // NOTE: Both String and Pattern escape backslash, so need four backslashes to find one.
+    // NOTE: No longer replace multiple backslashes with one slash, which allows for UNC pathnames (Windows LAN addresses).
+    //       Was path.replaceAll( "\\\\+", "/");
+    String newPath = path.replaceAll( "\\\\", "/" );
+
+    // Remove trailing slashes.
+    while ( newPath.endsWith( "/" ) && ! newPath.equals( "/" ) )
+      newPath = newPath.substring( 0, newPath.length() - 1 );
+
+    return newPath;
   }
 
   /**
@@ -119,9 +148,19 @@ public class CrawlableDatasetFile implements CrawlableDataset
     return( this.name);
   }
 
+  public boolean exists()
+  {
+    return file.exists();
+  }
+
   public boolean isCollection()
   {
     return( file.isDirectory());
+  }
+
+  public CrawlableDataset getDescendant( String relativePath)
+  {
+    return new CrawlableDatasetFile( this, relativePath );
   }
 
   public List listDatasets() throws IOException
@@ -137,7 +176,7 @@ public class CrawlableDatasetFile implements CrawlableDataset
     List list = new ArrayList();
     for ( int i = 0; i < allFiles.length; i++ )
     {
-      list.add( new CrawlableDatasetFile( allFiles[i].getPath(), null ) );
+      list.add( new CrawlableDatasetFile( this, allFiles[i].getName() ) );
     }
 
     return ( list );
@@ -159,12 +198,11 @@ public class CrawlableDatasetFile implements CrawlableDataset
     return ( retList );
   }
 
-  public CrawlableDataset getParentDataset() throws IOException
+  public CrawlableDataset getParentDataset()
   {
-    String parentPath = this.file.getParent();
-    if ( parentPath == null ) return null;
-    String normalizedPath = CrawlableDatasetFactory.normalizePath( parentPath );
-    return new CrawlableDatasetFile( normalizedPath, null );
+    File parentFile = this.file.getParentFile();
+    if ( parentFile == null ) return null;
+    return new CrawlableDatasetFile( parentFile );
   }
 
   public long length()
@@ -184,30 +222,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
     return( cal.getTime() );
   }
 
-//  public InvDataset correspondingInvDataset( ResultService service )
-//  {
-//    // Check that the accessPointHeader local file exists.
-//    File aphFile = new File( service.getAccessPointHeader() );
-//    if ( !aphFile.exists() ) throw new IllegalArgumentException( "The accessPointHeader file does not exist: service=<" + service.getName() + ">; path=<" + aphFile.getPath() + ">." );
-//
-//    // Check that this file starts with accessPointHeader.
-//    String filePath;
-//    String aphFilePath;
-//    try
-//    {
-//      filePath = file.getCanonicalFile().toURI().toString();
-//      aphFilePath = aphFile.getCanonicalFile().toURI().toString();
-//    }
-//    catch ( IOException e )
-//    {
-//      throw new IllegalStateException( "Problem" + e.getMessage());
-//    }
-//    if ( !filePath.startsWith( aphFilePath ) )
-//    {
-//      throw new IllegalStateException( "This <" + this.getPath() + "> must start with the accessPointHeader <" + aphFile.getPath() + ">." );
-//    }
-//
-//    String urlPath = this.isCollection() ? null : filePath.substring( aphFilePath.length() );
-//    return( new InvDatasetImpl( null, this.getName(),  null, service.getLabel(), urlPath) );
-//  }
+  public String toString()
+  {
+    return this.path;
+  }
 }

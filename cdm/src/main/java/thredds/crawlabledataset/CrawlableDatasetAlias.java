@@ -104,14 +104,24 @@ public class CrawlableDatasetAlias implements CrawlableDataset
     return ( this.name );
   }
 
-  public CrawlableDataset getParentDataset() throws IOException
+  public boolean exists()
   {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return true; // @todo ????
   }
 
   public boolean isCollection()
   {
     return true;
+  }
+
+  public CrawlableDataset getDescendant( String childPath )
+  {
+    return null; // @todo ????
+  }
+
+  public CrawlableDataset getParentDataset()
+  {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public List listDatasets() throws IOException

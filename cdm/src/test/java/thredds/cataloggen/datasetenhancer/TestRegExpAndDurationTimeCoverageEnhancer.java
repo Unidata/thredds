@@ -102,14 +102,24 @@ public class TestRegExpAndDurationTimeCoverageEnhancer extends TestCase
       return _name;
     }
 
-    public CrawlableDataset getParentDataset() throws IOException
+    public CrawlableDataset getParentDataset()
     {
       return null;
+    }
+
+    public boolean exists()
+    {
+      return true;
     }
 
     public boolean isCollection()
     {
       return false;
+    }
+
+    public CrawlableDataset getDescendant( String relativePath )
+    {
+      return null;
     }
 
     public List listDatasets() throws IOException

@@ -1,4 +1,3 @@
-// $Id: TestCrawlableDataset.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.crawlabledataset;
 
 import junit.framework.TestCase;
@@ -33,7 +32,12 @@ public class TestCrawlableDataset extends TestCase
   {
     String path = "";
 
-    checkCrDsFail( path );
+    CrawlableDataset crDs = checkCrDs( path, path);
+    if ( crDs.exists() )
+    {
+      assertTrue( "Unexpected exist()==true for CrDs(\"\").",
+                  false);
+    }
   }
 
   public void testRootPath()
@@ -41,7 +45,13 @@ public class TestCrawlableDataset extends TestCase
     String path = "/";
     String name = "";
 
-    checkCrDs( path, name );
+    CrawlableDataset crDs = checkCrDs( path, name );
+    if ( ! crDs.exists() )
+    {
+      assertTrue( "CrDs(\"/\") doesn't exist.",
+                  false );
+    }
+
   }
 
   public void testDotPath()
@@ -54,24 +64,37 @@ public class TestCrawlableDataset extends TestCase
     checkCrDsChildren( path, name, results );
   }
 
-  public void testDotDotPath()
+  public void testSrcMainJavaPath()
   {
-    String path = "..";
-    String name = "..";
+    String path = "src/main/java";
+    String name = "java";
     List results = new ArrayList();
+    results.add( "dods" );
     results.add( "thredds" );
-    results.add( "netcdf-java-2.2" );
+    results.add( "ucar" );
 
     checkCrDsChildren( path, name, results );
   }
 
-  public void testDotDotSlashDotDotPath()
+  public void testSrcMainJavaDotDotPath()
   {
-    String path = "../..";
+    String path = "src/main/java/..";
     String name = "..";
     List results = new ArrayList();
-    results.add( "devel" );
-    results.add( "idv" );
+    results.add( "java" );
+    results.add( "resources" );
+
+    checkCrDsChildren( path, name, results );
+  }
+
+  public void testSrcMainJavaDotDotSlashDotDotPath()
+  {
+    String path = "src/main/java/../..";
+    String name = "..";
+    List results = new ArrayList();
+    results.add( "main" );
+    results.add( "test" );
+    results.add( "timing" );
 
     checkCrDsChildren( path, name, results );
   }
@@ -99,25 +122,38 @@ public class TestCrawlableDataset extends TestCase
     return cd;
   }
 
-  private void checkCrDsChildren( String path, String name, List children )
+  private void checkCrDsChildren( String path, String name, List expectedChildrenNames )
   {
-    CrawlableDataset cd = checkCrDs( path, name );
+    CrawlableDataset crDs = checkCrDs( path, name );
+    if ( ! crDs.exists() )
+    {
+      assertTrue( "CrDs(\"" + path + "\" doesn't exist.",
+                  false);
+      return;
+    }
+
+    if ( ! crDs.isCollection() )
+    {
+      assertTrue( "CrDs(\"" + path + "\" is not a collection.",
+                  false );
+      return;
+    }
 
     // Test the list of datasets.
     List list = null;
     try
     {
-      list = cd.listDatasets();
+      list = crDs.listDatasets();
     }
     catch ( IOException e )
     {
-      assertTrue( "IOException getting children datasets <" + cd.getName() + ">: " + e.getMessage(),
+      assertTrue( "IOException getting children datasets <" + crDs.getName() + ">: " + e.getMessage(),
                   false );
       return;
     }
 
-    assertTrue( "Number of datasets <" + list.size() + "> not as expected < >=" + children.size() + ">.",
-                list.size() >= children.size() );
+    assertTrue( "Number of datasets <" + list.size() + "> not as expected <" + expectedChildrenNames.size() + ">.",
+                list.size() >= expectedChildrenNames.size() );
 
     List crDsNameList = new ArrayList();
     for ( Iterator it = list.iterator(); it.hasNext(); )
@@ -126,29 +162,12 @@ public class TestCrawlableDataset extends TestCase
       crDsNameList.add( curCd.getName() );
     }
 
-    for ( Iterator it = children.iterator(); it.hasNext(); )
+    for ( Iterator it = expectedChildrenNames.iterator(); it.hasNext(); )
     {
       String curName = (String) it.next();
-      assertTrue( "Result path <" + curName + "> not as expected <" + children + ">.",
+      assertTrue( "Result path <" + curName + "> not as expected <" + expectedChildrenNames + ">.",
                   crDsNameList.contains( curName ) );
     }
-  }
-
-  private void checkCrDsFail( String path )
-  {
-    // Create CrawlableDataset.
-    try
-    {
-      CrawlableDatasetFactory.createCrawlableDataset( path, null, null );
-    }
-    catch ( Exception e )
-    {
-      // An exception is expected since File("").exists() is false.
-      System.out.println( "Expected exception: " + e.getMessage() );
-      return;
-    }
-    assertTrue( "Unexpected success creating CrawlableDataset <" + path + ">.",
-                false );
   }
 
 //  public void testUncPaths()
@@ -178,35 +197,3 @@ public class TestCrawlableDataset extends TestCase
 //    System.out.println( "FileURI=" + furi.toString() + (new File( furi).isDirectory() ? " - isDir" : " - notDir" ));
 //  }
 }
-
-/*
- * $Log: TestCrawlableDataset.java,v $
- * Revision 1.1  2006/01/23 18:51:06  edavis
- * Move CatalogGen.main() to CatalogGenMain.main(). Stop using
- * CrawlableDatasetAlias for now. Get new thredds/build.xml working.
- *
- * Revision 1.4  2005/12/30 00:18:56  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.3  2005/12/16 23:19:39  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.2  2005/11/18 23:51:06  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.1  2005/11/15 18:40:51  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.2  2005/08/22 17:40:24  edavis
- * Another round on CrawlableDataset: make CrawlableDatasetAlias a subclass
- * of CrawlableDataset; start generating catalogs (still not using in
- * InvDatasetScan or CatalogGen, yet).
- *
- * Revision 1.1  2005/06/24 22:08:33  edavis
- * Second stab at the CrawlableDataset interface.
- *
- *
- */

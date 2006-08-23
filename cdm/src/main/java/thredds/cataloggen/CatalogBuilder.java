@@ -21,12 +21,15 @@ import org.jdom.Document;
 public interface CatalogBuilder
 {
   /**
-   * Return the CrawlableDataset for the given path, null if this CatalogBuilder does not allow the requested CrawlableDataset.
+   * Return the CrawlableDataset for the given path, null if this CatalogBuilder
+   * does not allow the requested CrawlableDataset.
+   *
+   * <p>This method can handle requests for regular datasets and proxy datasets.
    *
    * @param path the path of the requested CrawlableDataset
    * @return the CrawlableDataset for the given path or null if the path is not allowed by this CatalogBuilder.
-   * @throws IOException if an I/O error occurs trying to access the CrawlableDataset.
-   * @throws IllegalStateException if the given path is not a descendent of (or the same as) this CatalogBuilders collection level.
+   * @throws IOException if an I/O error occurs while locating the children datasets.
+   * @throws IllegalArgumentException if the given path is not a descendant of (or the same as) this CatalogBuilders collection level.
    */
   public CrawlableDataset requestCrawlableDataset( String path )
           throws IOException;
@@ -39,6 +42,19 @@ public interface CatalogBuilder
    * @throws IOException if problems accessing the dataset collection.
    */
   public InvCatalogImpl generateCatalog( CrawlableDataset catalogCrDs ) throws IOException;
+
+  /**
+   * Find the actual dataset represented by the given proxy dataset path. Use
+   * the appropriate ProxyDatasetHandler to determine which dataset is being
+   * represented.
+   *
+   * @param path the proxy dataset path for which a CrawlableDataset is desired.
+   * @return todo CrDs or InvCrawlablePair????
+   * @throws IOException              if an I/O error occurs while determining the actual dataset.
+   * @throws IllegalArgumentException if the given path has no corresponding proxy dataset handler or its parent dataset is not an allowed.
+   * @throws NullPointerException     if the given path is null.
+   */
+  //public CrawlableDataset findActualProxyDataset( String path ) throws IOException;
 
   /**
    * Generate the catalog for a resolver request of the given ProxyDatasetHandler.

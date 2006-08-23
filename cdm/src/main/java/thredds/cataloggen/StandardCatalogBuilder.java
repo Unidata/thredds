@@ -17,8 +17,8 @@ import org.jdom.Document;
  */
 public class StandardCatalogBuilder implements CatalogBuilder
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( StandardCatalogBuilder.class );
+  static private org.slf4j.Logger log =
+          org.slf4j.LoggerFactory.getLogger( StandardCatalogBuilder.class );
 
   private String collectionPath;
   private String collectionName;
@@ -66,33 +66,73 @@ public class StandardCatalogBuilder implements CatalogBuilder
     this.catalogRefExpander = catalogRefExpander;
   }
 
-  public CrawlableDataset requestCrawlableDataset( String path ) throws IOException
+  public CrawlableDataset requestCrawlableDataset( String path )
+          throws IOException
   {
-      return CatalogBuilderHelper.verifyDescendentDataset( collectionCrDs, path, this.filter );
+    // Return requested dataset if it is the collection level dataset
+    // or an allowed descendant.
+    CrawlableDataset crDs = CatalogBuilderHelper.verifyDescendantDataset( collectionCrDs, path, this.filter );
+    if ( crDs != null )
+      return crDs;
+
+    // Check if it is a proxy dataset request.
+    String dsName;
+    String parentPath;
+    int indexLastSlash = path.lastIndexOf( "/" );
+    if ( indexLastSlash != -1 )
+    {
+      dsName = path.substring( indexLastSlash + 1 );
+      parentPath = path.substring( 0, indexLastSlash );
+    }
+    else
+    {
+      dsName = path;
+      parentPath = "";
+    }
+
+    // Make sure parent is not filtered out and is a collection.
+    CrawlableDataset parentCrDs = CatalogBuilderHelper.verifyDescendantDataset( collectionCrDs, parentPath, this.filter );
+    if ( parentCrDs == null )
+    {
+      log.debug( "requestCrawlableDataset(): Parent dataset <" + parentPath + "> not allowed by filter." );
+      return null;
+    }
+    if ( ! parentCrDs.isCollection() )
+    {
+      log.debug( "requestCrawlableDataset(): Parent dataset <" + parentPath + "> is not a collection dataset." );
+      return null;
+    }
+
+    // Check if this is a request for a proxy dataset.
+    ProxyDatasetHandler pdh = (ProxyDatasetHandler) this.proxyDatasetHandlers.get( dsName );
+    if ( pdh == null )
+    {
+      log.debug( "requestCrawlableDataset(): Dataset name <" + dsName + "> has no corresponding proxy dataset handler." );
+      return null;
+    }
+    if ( pdh.isProxyDatasetResolver() )
+    {
+      log.debug( "requestCrawlableDataset(): Proxy dataset <" + dsName + "> is a resolver, not valid dataset request." );
+      return null;
+    }
+
+    // Get list of all atomic datasets in this collection.
+    CollectionLevelScanner scanner = this.setupAndScan( parentCrDs, null );
+    List atomicDsInfo = scanner.getAtomicDsInfo();
+
+    // Determine which of the atomic datasets is the actual dataset.
+    InvCrawlablePair dsInfo = pdh.getActualDataset( atomicDsInfo );
+
+    return dsInfo.getCrawlableDataset();
   }
 
-  public InvCatalogImpl generateCatalog( CrawlableDataset catalogCrDs ) throws IOException
+  public InvCatalogImpl generateCatalog( CrawlableDataset catalogCrDs )
+          throws IOException
   {
     // Setup scanner
-    CollectionLevelScanner scanner = new CollectionLevelScanner( collectionPath, collectionCrDs, catalogCrDs, null, filter, service );
-    scanner.setCollectionId( collectionId );
-    scanner.setCollectionName( collectionName );
-    scanner.setIdentifier( identifier );
-    scanner.setNamer( namer );
-    scanner.setDoAddDataSize( doAddDatasetSize );
-    scanner.setSorter( sorter );
-    scanner.setProxyDsHandlers( proxyDatasetHandlers );
-    if ( childEnhancerList != null )
-    {
-      for ( Iterator it = childEnhancerList.iterator(); it.hasNext(); )
-      {
-        scanner.addChildEnhancer( (DatasetEnhancer) it.next() );
-      }
-    }
-    scanner.setTopLevelMetadataContainer( this.topLevelMetadataContainer );
+    CollectionLevelScanner scanner = setupAndScan( catalogCrDs, null );
 
     // Use scanner to generate catalog.
-    scanner.scan();
     InvCatalogImpl catalog = scanner.generateCatalog();
 
     // Keep track of need for call to catalog.finish().
@@ -159,9 +199,19 @@ public class StandardCatalogBuilder implements CatalogBuilder
     if ( catalogCrDs == null || pdh == null ) throw new IllegalArgumentException( "Null parameters not allowed.");
     if ( ! proxyDatasetHandlers.containsValue( pdh)) throw new IllegalArgumentException( "Unknown ProxyDatasetHandler.");
     // Setup scanner
-    CollectionLevelScanner scanner = new CollectionLevelScanner( collectionPath, collectionCrDs, catalogCrDs, null, filter, service );
+    CollectionLevelScanner scanner = setupAndScan( catalogCrDs, null );
+
+    // Generate catalog.
+    return scanner.generateProxyDsResolverCatalog( pdh );
+  }
+
+  private CollectionLevelScanner setupAndScan( CrawlableDataset catalogCrDs, CrawlableDataset currentCrDs )
+          throws IOException
+  {
+    // Setup scanner.
+    CollectionLevelScanner scanner = new CollectionLevelScanner( collectionPath, collectionCrDs, catalogCrDs, currentCrDs, filter, service );
     scanner.setCollectionId( collectionId );
-    scanner.setCollectionName( collectionName );
+    scanner.setCollectionName( collectionName );//*****
     scanner.setIdentifier( identifier );
     scanner.setNamer( namer );
     scanner.setDoAddDataSize( doAddDatasetSize );
@@ -174,13 +224,12 @@ public class StandardCatalogBuilder implements CatalogBuilder
         scanner.addChildEnhancer( (DatasetEnhancer) it.next() );
       }
     }
-    scanner.setTopLevelMetadataContainer( this.topLevelMetadataContainer );
+    scanner.setTopLevelMetadataContainer( topLevelMetadataContainer );
 
-    // Use scanner to generate catalog.
+    // Scan the collection.
     scanner.scan();
-    InvCatalogImpl catalog = scanner.generateProxyDsResolverCatalog( pdh );
 
-    return catalog;
+    return scanner;
   }
 
   public Document generateCatalogAsDocument( CrawlableDataset catalogCrDs ) throws IOException

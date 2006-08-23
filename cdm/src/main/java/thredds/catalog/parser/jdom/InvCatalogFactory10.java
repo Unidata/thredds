@@ -422,7 +422,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // Read allProxies element (and addLatest element)
     Element addLatestElem = dsElem.getChild( "addLatest", defNS );
-    Element addProxiesElem = dsElem.getChild( "makeProxies", defNS );
+    Element addProxiesElem = dsElem.getChild( "addProxies", defNS );
     Map allProxyDsHandlers;
     if ( addLatestElem != null || addProxiesElem != null )
       allProxyDsHandlers = readDatasetScanAddProxies( addProxiesElem, addLatestElem, catalog );
@@ -651,7 +651,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           allProxyDsHandlers.put( pdh.getProxyDatasetName(), pdh );
     }
 
-    // Handle all "makeProxies" elements.
+    // Handle all "addProxies" elements.
     if ( addProxiesElem != null )
     {
       for ( Iterator it = addProxiesElem.getChildren().iterator(); it.hasNext(); )
@@ -1787,8 +1787,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       }
     }
 
-    // Write "makeProxies" element
-    addProxiesElem = new Element( "makeProxies", defNS );
+    // Write "addProxies" element
+    addProxiesElem = new Element( "addProxies", defNS );
     for ( Iterator it = proxyDsHandlers.keySet().iterator(); it.hasNext(); )
     {
       String curName = (String) it.next();

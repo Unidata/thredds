@@ -152,17 +152,18 @@ public class CollectionLevelScanner
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( CollectionLevelScanner.class );
 
-  private String collectionPath;
+  private final String collectionPath;
   private String collectionName;
   private String collectionId = null;
 
-  private CrawlableDataset collectionLevel;
-  private CrawlableDataset catalogLevel;
-  private CrawlableDataset currentLevel;
+  private final CrawlableDataset collectionLevel;
+  private final CrawlableDataset catalogLevel;
+  private final CrawlableDataset currentLevel;
 
-  private InvService service;
+  private final InvService service;
 
-  private CrawlableDatasetFilter filter;
+  private final CrawlableDatasetFilter filter;
+
   private CrawlableDatasetSorter sorter;
   private Map proxyDsHandlers;
 
@@ -446,16 +447,26 @@ public class CollectionLevelScanner
     this.childEnhancerList.add( childEnhancer );
   }
 
-  protected List getChildEnhancerList()
+  List getChildEnhancerList()
   {
     return Collections.unmodifiableList( childEnhancerList );
   }
 
+  /**
+   * Set the InvDatasetImpl that contains the metadata for the top level dataset.
+   *
+   * @param topLevelMetadataContainer
+   */
   public void setTopLevelMetadataContainer( InvDatasetImpl topLevelMetadataContainer )
   {
     this.topLevelMetadataContainer = topLevelMetadataContainer;
   }
 
+  /**
+   * Scan the collection and gather information on contained datasets.
+   *
+   * @throws IOException if an I/O error occurs while locating the contained datasets.
+   */
   public void scan() throws IOException
   {
     if ( state == 1 ) throw new IllegalStateException( "Scan already underway." );
@@ -469,7 +480,7 @@ public class CollectionLevelScanner
     genCatalog = createSkeletonCatalog( currentLevel );
     InvDatasetImpl topInvDs = (InvDatasetImpl) genCatalog.getDatasets().get( 0 );
 
-    // Get the dataset in this collection.
+    // Get the datasets in this collection.
     List crDsList = currentLevel.listDatasets( this.filter );
 
     // Sort the datasets in this collection.
@@ -539,7 +550,7 @@ public class CollectionLevelScanner
     return;
   }
 
-//  public List getAllDsInfo()
+//  List getAllDsInfo()
 //  {
 //    if ( state != 2 ) throw new IllegalStateException( "Scan has not been performed." );
 //    return Collections.unmodifiableList( allDsInfo );
@@ -552,24 +563,24 @@ public class CollectionLevelScanner
    *
    * @return a list of InvCrawlablePairs
    */
-  public List getCatRefInfo()
+  List getCatRefInfo()
   {
     if ( state != 2 ) throw new IllegalStateException( "Scan has not been performed." );
     return Collections.unmodifiableList( catRefInfo );
   }
 
-//  /**
-//   * Return a list of all the atomic dataset objects (InvDataset) and
-//   * their corresponding CrawlableDataset objects. Each item in the list is
-//   * an InvCrawlablePair.
-//   *
-//   * @return a list of InvCrawlablePairs
-//   */
-//  public List getAtomicDsInfo()
-//  {
-//    if ( state != 2 ) throw new IllegalStateException( "Scan has not been performed." );
-//    return Collections.unmodifiableList( atomicDsInfo );
-//  }
+  /**
+   * Return a list of all the atomic dataset objects (InvDataset) and
+   * their corresponding CrawlableDataset objects. Each item in the list is
+   * an InvCrawlablePair.
+   *
+   * @return a list of InvCrawlablePairs
+   */
+  List getAtomicDsInfo()
+  {
+    if ( state != 2 ) throw new IllegalStateException( "Scan has not been performed." );
+    return Collections.unmodifiableList( atomicDsInfo );
+  }
 
   public InvCatalogImpl generateCatalog() throws IOException
   {
@@ -616,36 +627,39 @@ public class CollectionLevelScanner
 
   private void addTopLevelMetadata( InvCatalog catalog, boolean isRegularCatalog )
   {
+    if ( this.topLevelMetadataContainer == null )
+      return;
+    if ( ! catalogLevel.getPath().equals( currentLevel.getPath() ) )
+      return;
+
     // Transfer all metadata from given metadata container to the top
     // InvDataset. This propagates any public metadata from the given
     // metadata container to all generated catalogs.
-    if ( this.topLevelMetadataContainer != null )
+    InvDatasetImpl topInvDs = (InvDatasetImpl) catalog.getDataset();
+
+    topInvDs.transferMetadata( this.topLevelMetadataContainer );
+
+    // LOOK experimental datasetScan may have its own access elements
+    for ( Iterator it = this.topLevelMetadataContainer.getAccess().iterator(); it.hasNext(); )
     {
-      InvDatasetImpl topInvDs = (InvDatasetImpl) catalog.getDataset();
-
-      topInvDs.transferMetadata( this.topLevelMetadataContainer );
-
-      // LOOK experimental datasetScan may have its own access elements
-      for ( Iterator it = this.topLevelMetadataContainer.getAccess().iterator(); it.hasNext(); )
-      {
-        InvAccess invAccess = (InvAccess) it.next();
-        topInvDs.addAccess( invAccess );
-        InvService s = invAccess.getService();
-        ( (InvCatalogImpl) catalog ).addService( s );
-      }
-
-      // If this is a collection level scan, set some special attributes
-      // that transferMetadata() doesn't transfer.
-      boolean isCollectionLevel = catalogLevel.getPath().equals( collectionLevel.getPath() );
-      if ( isCollectionLevel && isRegularCatalog )
-      {
-        topInvDs.setHarvest( this.topLevelMetadataContainer.isHarvest() );
-        topInvDs.setCollectionType( this.topLevelMetadataContainer.getCollectionType() );
-      }
-
-      // Finish catalog.
-      ( (InvCatalogImpl) catalog ).finish();
+      InvAccess invAccess = (InvAccess) it.next();
+      topInvDs.addAccess( invAccess );
+      InvService s = invAccess.getService();
+      ( (InvCatalogImpl) catalog ).addService( s );
     }
+
+    // If this is a collection level scan, set some special attributes
+    // that transferMetadata() doesn't transfer.
+    boolean isCollectionLevel = catalogLevel.getPath().equals( collectionLevel.getPath() );
+    if ( isCollectionLevel && isRegularCatalog )
+    {
+      topInvDs.setHarvest( this.topLevelMetadataContainer.isHarvest() );
+      topInvDs.setCollectionType( this.topLevelMetadataContainer.getCollectionType() );
+    }
+
+    // Finish catalog.
+    ( (InvCatalogImpl) catalog ).finish();
+
   }
 
   private InvCatalogImpl createSkeletonCatalog( CrawlableDataset topCrDs )

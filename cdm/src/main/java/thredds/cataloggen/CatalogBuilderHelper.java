@@ -6,10 +6,8 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.crawlabledataset.CrawlableDatasetFactory;
-import thredds.crawlabledataset.filter.RegExpMatchOnNameFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.jdom.Document;
 
@@ -24,16 +22,30 @@ class CatalogBuilderHelper
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( CatalogBuilderHelper.class );
 
-  static CrawlableDataset verifyDescendentDataset( CrawlableDataset ancestorCrDs,
-                                                          String path,
-                                                          CrawlableDatasetFilter filter )
-          throws IOException
+  /**
+   * Return the requested dataset if it is the ancestor dataset or an allowed
+   * descendant of the ancestor dataset, otherwise return null. The given
+   * filter determines whether a dataset is allowed or not.
+   *
+   * @param ancestorCrDs the dataset from which the requested dataset must be descended (or self).
+   * @param path the path of the requested dataset.
+   * @param filter the CrawlableDatasetFilter that determines which datasets are allowed.
+   * @return the CrawlableDataset that represents the given path or null.
+   *
+   * @throws NullPointerException if the given path or ancestor dataset are null.
+   * @throws IllegalArgumentException if the abstract dataset is not a descendant of the ancestor dataset.
+   */
+  static CrawlableDataset verifyDescendantDataset( CrawlableDataset ancestorCrDs,
+                                                   String path,
+                                                   CrawlableDatasetFilter filter )
   {
     String tmpPath = CrawlableDatasetFactory.normalizePath( path);
 
-    // Make sure requested path is descendent of collection level dataset.
+    // Make sure requested path is descendant of ancestor dataset.
+    if ( ! ancestorCrDs.isCollection() )
+      throw new IllegalArgumentException( "Ancestor dataset <" + ancestorCrDs.getPath() + "> not a collection." );
     if ( ! tmpPath.startsWith( ancestorCrDs.getPath() ) )
-      throw new IllegalStateException( "Dataset path <" + tmpPath + "> not descendent of given dataset <" + ancestorCrDs.getPath() + ">." );
+      throw new IllegalArgumentException( "Dataset path <" + tmpPath + "> not descendant of given dataset <" + ancestorCrDs.getPath() + ">." );
 
     // If path and ancestor are the same, return ancestor.
     if ( tmpPath.length() == ancestorCrDs.getPath().length() )
@@ -46,14 +58,12 @@ class CatalogBuilderHelper
     CrawlableDataset curCrDs = ancestorCrDs;
     for ( int i = 0; i < pathSegments.length; i++ )
     {
-      CrawlableDatasetFilter curFilter = new RegExpMatchOnNameFilter( pathSegments[i] );
-      List curCrDsList = curCrDs.listDatasets( curFilter );
-      if ( curCrDsList.size() != 1 )
-        return null;
-      curCrDs = (CrawlableDataset) curCrDsList.get( 0 );
+      curCrDs = curCrDs.getDescendant( pathSegments[i]);
       if ( filter != null )
         if ( ! filter.accept( curCrDs ) )
           return null;
+      if ( ! curCrDs.exists())
+        return null;
     }
     return curCrDs;
   }

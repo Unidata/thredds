@@ -25,11 +25,6 @@ import java.io.IOException;
  * path segments each seperated by a slash ("/"). The path may start with a
  * slash ("/") but may not end with a slash ("/").</p>
  *
- * <p> The CrawlableDatasetFile class stretches the definition of the
- * seperator character ("/") by allowing files to be given in their native
- * formats including Unix (/my/file), Windows (c:\my\file), and UNC file paths
- * (\\myhost\my\file).</p>
- *
  * <p>Implementation Notes:</p>
  * <ol>
  * <li> The thredds.crawlabledataset.CrawlableDatasetFactory requires each
@@ -67,10 +62,26 @@ public interface CrawlableDataset
   public String getName();
 
   /** Returns the parent CrawlableDataset or null if this dataset has no parent. */
-  public CrawlableDataset getParentDataset() throws IOException;
+  public CrawlableDataset getParentDataset();
+
+  /**
+   * Return true if the dataset represented by this CrawlableDataset actually
+   * exists, null if it does not or an I/O error occurs.
+   *
+   * @return true if the dataset represented by this CrawlableDataset actually exists.
+   */
+  public boolean exists();
 
   /** Return true if the dataset is a collection dataset. */
   public boolean isCollection();
+
+  /**
+   * A factory method for getting a descendant of this datasets.
+   *
+   * @param relativePath the path relative to this dataset of the requested dataset.
+   * @return the requested descendant of this dataset.
+   */
+  public CrawlableDataset getDescendant( String relativePath);
 
   /**
    * Returns the list of CrawlableDatasets contained in this collection dataset.
@@ -89,8 +100,7 @@ public interface CrawlableDataset
    * Returns the list of CrawlableDatasets contained in this collection dataset
    * that satisfy the given filter. The returned list will be empty if this
    * collection dataset does not contain any children datasets that satisfy the
-   * given filter. If this dataset is not a collection dataset, this
-   * method returns null.
+   * given filter.
    *
    * @param filter a CrawlableDataset filter (if null, accept all datasets).
    * @return Returns a list of the CrawlableDatasets contained in this collection dataset

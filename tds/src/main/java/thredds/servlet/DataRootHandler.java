@@ -37,11 +37,15 @@ import java.net.URISyntaxException;
 import java.io.*;
 
 /**
- * This manages the catalogs served by a TDS, as well as the "data roots" in TDS config catalogs.
- * Data roots are set with datasetRoot or datasetScan elements, and allow mapping between URLs and file paths.
- * This version uses the getPath()
- * <p/>
- * Uses the singleton design pattern.
+ * The DataRootHandler manages all the "data roots" for a given web application
+ * and provides mappings from URLs to catalog and data objects (e.g.,
+ * InvCatalog and CrawlableDataset).
+ *
+ * <p>The "data roots" are read in from one or more trees of config catalogs
+ * and are defined by the datasetScan and datasetRoot elements in the config
+ * catalogs.
+ *
+ * <p> Uses the singleton design pattern.
  *
  * @author caron
  */
@@ -632,9 +636,11 @@ public class DataRootHandler {
    *
    * @param path the request path.
    * @return the requested CrawlableDataset or null if the requested dataset is not allowed by the matching InvDatasetScan.
-   * @throws IllegalStateException if the request is not for a descendent of (or the same as) the matching DatasetRoot collection location.
+   * @throws IOException if an I/O error occurs while locating the requested dataset.
    */
-  public CrawlableDataset getCrawlableDataset(String path) {
+  public CrawlableDataset getCrawlableDataset(String path)
+          throws IOException
+  {
     if (path.length() > 0) {
       if (path.startsWith("/"))
         path = path.substring(1);
@@ -655,16 +661,25 @@ public class DataRootHandler {
    * Return the java.io.File represented by the CrawlableDataset to which the
    * given path maps. Null is returned if the dataset does not exist, the
    * matching InvDatasetScan or DataRoot filters out the requested
-   * CrawlableDataset, or the CrawlableDataset does not represent a File
-   * (i.e., it is not a CrawlableDatasetFile).
+   * CrawlableDataset, the CrawlableDataset does not represent a File
+   * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs whil
+   * locating the requested dataset.
    *
    * @param path the request path.
    * @return the requested java.io.File or null.
-   * @throws IllegalStateException if the request is not for a descendent of (or the same as) the matching DatasetRoot collection location.
+   * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
   public File getCrawlableDatasetAsFile( String path )
   {
-    CrawlableDataset crDs = getCrawlableDataset( path );
+    CrawlableDataset crDs = null;
+    try
+    {
+      crDs = getCrawlableDataset( path );
+    }
+    catch ( IOException e )
+    {
+      return null;
+    }
     if ( crDs == null ) return null;
     File retFile = null;
     if ( crDs instanceof CrawlableDatasetFile )
@@ -789,6 +804,8 @@ public class DataRootHandler {
    * @param req
    * @param res
    * @throws IOException
+   *
+   * @deprecated DO NOT USE
    */
   public void handleRequestForDataset( String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res )
           throws IOException
@@ -959,7 +976,7 @@ public class DataRootHandler {
    * @param baseURI the base URI for the catalog, used to resolve relative URLs.
    * @return the requested InvCatalog, or null if catalog does not exist or is not allowed.
    */
-  private InvCatalog getCatalog(String path, URI baseURI) {
+  public InvCatalog getCatalog(String path, URI baseURI) {
     if (path == null)
       return null;
 
@@ -1005,7 +1022,8 @@ public class DataRootHandler {
     return catalog;
   }
 
-  private InvCatalogImpl makeDynamicCatalog(String path, URI baseURI) {
+  private InvCatalogImpl makeDynamicCatalog(String path, URI baseURI)
+  {
     String workPath = path;
 
     // Make sure this is a dynamic catalog request.
@@ -1030,8 +1048,16 @@ public class DataRootHandler {
     }
 
     // Check that path is allowed, ie not filtered out
-    if (getCrawlableDataset(workPath) == null)
+    try
+    {
+      if (getCrawlableDataset(workPath) == null)
+        return null;
+    }
+    catch ( IOException e )
+    {
+      log.error( "makeDynamicCatalog(): I/O error on request <" + path + ">: " + e.getMessage(), e);
       return null;
+    }
 
     // at this point, its gotta be a DatasetScan, not a DatasetRoot
     if (match.dataRoot.scan == null) {
@@ -1160,7 +1186,7 @@ public class DataRootHandler {
 
     // Check that latest is allowed
     if (dscan.getProxyDatasetHandlers() == null) {
-      String resMsg = "No \"makeProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
+      String resMsg = "No \"addProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
       log.warn(resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);

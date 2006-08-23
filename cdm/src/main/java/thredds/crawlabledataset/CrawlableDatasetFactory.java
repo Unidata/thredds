@@ -49,15 +49,17 @@ public class CrawlableDatasetFactory
    * @throws InvocationTargetException if the constructor throws an exception.
    * @throws InstantiationException if the given CrawlableDataset implementation is an abstract class.
    *
+   * @throws NullPointerException if the given path is null.
    * @throws IllegalArgumentException if the given class name is not an implementation of CrawlableDataset.
    */
   public static CrawlableDataset createCrawlableDataset( String path, String className, Object configObj )
           throws IOException,
                  ClassNotFoundException, NoSuchMethodException,
                  IllegalAccessException, InvocationTargetException,
-                 InstantiationException, IllegalArgumentException
+                 InstantiationException, IllegalArgumentException, NullPointerException
+          // throws CrDsException, IllegalArgumentException
   {
-    String tmpPath = CrawlableDatasetFactory.normalizePath( path );
+    if ( path == null ) throw new NullPointerException( "Given path must not be null.");
     String tmpClassName = ( className == null
                             ? defaultClassName
                             : className );
@@ -77,7 +79,7 @@ public class CrawlableDatasetFactory
 
     // Instantiate the desired CrawlableDataset.
     Class [] argTypes = { String.class, Object.class };
-    Object [] args = { tmpPath, configObj };
+    Object [] args = { path, configObj };
     Constructor constructor = crDsClass.getDeclaredConstructor( argTypes );
 
     try

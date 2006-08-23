@@ -175,14 +175,24 @@ public class LatestCompleteProxyDsHandler implements ProxyDatasetHandler
       return name;
     }
 
-    public CrawlableDataset getParentDataset() throws IOException
+    public boolean exists()
     {
-      return parent;
+      return true; // @todo ????
     }
 
     public boolean isCollection()
     {
       return false;
+    }
+
+    public CrawlableDataset getDescendant( String childPath )
+    {
+      return null;
+    }
+
+    public CrawlableDataset getParentDataset()
+    {
+      return parent;
     }
 
     public List listDatasets()
