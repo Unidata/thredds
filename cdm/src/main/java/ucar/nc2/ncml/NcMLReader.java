@@ -311,8 +311,8 @@ public class NcMLReader {
 
     readNetcdf( ncmlLocation, newds, refds, netcdfElem, cancelTask);
 
-    if (enhance)
-      newds.enhance();
+    //if (enhance) // done in readNetcdf
+    //  newds.enhance();
 
     return newds;
   }
@@ -915,7 +915,7 @@ public class NcMLReader {
       if (fmrcDefinition != null)
         aggc.setInventoryDefinition(fmrcDefinition);
 
-    } else if (type.equals("forecastModelRun")) {
+    } else if (type.equals("forecastModelRun")) { // LOOK deprecated
       AggregationFmr aggf = new AggregationFmr(newds, dimName, type, recheck);
       agg = aggf;
 
@@ -997,122 +997,6 @@ public class NcMLReader {
       return readNcML(ncmlLocation, location, netcdfElem, cancelTask);
     }
   }
-
-  /* private class NetcdfDatasetReader implements NetcdfDatasetFactory {
-    public NetcdfFile open(String location, CancelTask cancelTask) throws IOException {
-      System.out.println(" NetcdfDatasetReader open nested dataset " + location);
-      return NetcdfDataset.openDataset( location, false, cancelTask);
-    }
-  } */
-
-
- /* private void aggExistingDimension( NetcdfDataset newds, Aggregation agg, CancelTask cancelTask) throws IOException {
-    // create aggregation dimension
-    Dimension aggDim = new Dimension( agg.getDimensionName(), agg.getTotalCoords(), true);
-    newds.removeDimension( null, agg.getDimensionName()); // remove previous declaration, if any
-    newds.addDimension( null, aggDim);
-    if (debugAgg) System.out.println(" add aggExisting dimension = "+aggDim);
-
-    // open a "typical"  nested dataset and copy it to newds
-    NetcdfFile typical = agg.getTypicalDataset();
-    transferDataset(typical, newds);
-
-    // now we can create the real aggExisting variables
-    // all variables with the named aggregation dimension
-    String dimName = agg.getDimensionName();
-    List vars = typical.getVariables();
-    for (int i=0; i<vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      if (v.getRank() < 1)
-        continue;
-      Dimension d = v.getDimension(0);
-      if (!dimName.equals(d.getName()))
-        continue;
-
-      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(),
-          v.getDimensionsString(), null, null);
-      vagg.setAggregation( agg);
-      transferVariableAttributes( v, vagg);
-
-      newds.removeVariable( null, v.getShortName());
-      newds.addVariable( null, vagg);
-    }
-  }
-
-  private void aggNewDimension( NetcdfDataset newds, Aggregation agg, CancelTask cancelTask) throws IOException {
-    // create aggregation dimension
-    String dimName = agg.getDimensionName();
-    Dimension aggDim = new Dimension( dimName, agg.getTotalCoords(), true);
-    newds.removeDimension( null, dimName); // remove previous declaration, if any
-    newds.addDimension( null, aggDim);
-    if (debugAgg) System.out.println(" add aggNew dimension = "+aggDim);
-
-    // create aggregation coordinate variable
-    DataType coordType = null;
-    Variable coordVar = newds.getRootGroup().findVariable(dimName);
-    if (coordVar == null) {
-      coordType = agg.getCoordinateType();
-      coordVar = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
-      newds.addVariable(null, coordVar);
-    } else {
-      coordType = coordVar.getDataType();
-      coordVar.setDimensions(dimName); // reset its dimension
-    }
-
-    if (agg.isDate()) {
-      coordVar.addAttribute( new ucar.nc2.Attribute(_Coordinate.AxisType", "Time"));
-    }
-
-    // if not already set, set its values
-    if (!coordVar.hasCachedData()) {
-      int[] shape = new int[] { agg.getTotalCoords() };
-      Array coordData = Array.factory(coordType.getPrimitiveClassType(), shape);
-      Index ima = coordData.getIndex();
-      List nestedDataset = agg.getNestedDatasets();
-      for (int i = 0; i < nestedDataset.size(); i++) {
-        Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-        if (coordType == DataType.STRING)
-          coordData.setObject(ima.set(i), nested.getCoordValueString());
-        else
-          coordData.setDouble(ima.set(i), nested.getCoordValue());
-      }
-      coordVar.setCachedData( coordData, true);
-    } else {
-      Array data = coordVar.read();
-      IndexIterator ii = data.getIndexIterator();
-      List nestedDataset = agg.getNestedDatasets();
-      for (int i = 0; i < nestedDataset.size(); i++) {
-        Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-        nested.setCoordValue( ii.getDoubleNext());
-      }
-    }
-
-    // open a "typical"  nested dataset and copy it to newds
-    NetcdfFile typical = agg.getTypicalDataset();
-    transferDataset(typical, newds);
-
-    // now we can create all the aggNew variables
-    // use only named variables
-    List vars = agg.getVariables();
-    for (int i=0; i<vars.size(); i++) {
-      String varname = (String) vars.get(i);
-      Variable v = newds.getRootGroup().findVariable(varname);
-      if (v == null) {
-        System.out.println("aggNewDimension cant find variable "+varname);
-        continue;
-      }
-
-      // construct new variable, replace old one
-      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(),
-          dimName +" "+ v.getDimensionsString(), null, null);
-      vagg.setAggregation( agg);
-      transferVariableAttributes( v, vagg);
-
-      newds.removeVariable( null, v.getShortName());
-      newds.addVariable( null, vagg);
-    }
-  } */
-
 
   /* protected Variable readCoordVariable( NetcdfDataset ds, Element varElem) {
     String name = varElem.getAttributeValue("name");

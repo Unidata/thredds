@@ -33,6 +33,7 @@ import ucar.nc2.util.DiskCache2;
 import ucar.unidata.io.FileCache;
 import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.ncml.AggregationFmrc;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import thredds.catalog.InvDatasetScan;
 
@@ -101,6 +102,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     aggCache = new DiskCache2(cache2, false, 60 * 24 * 10, 60 * 12);
     Aggregation.setPersistenceCache( aggCache);  // */
     aggCache.setLogger( cacheLog);
+
+    // some paths cant be set ptherwise
+    AggregationFmrc.setDefinitionDirectory( contentPath+"modelInventory/" );
 
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
     DataRootHandler.init(contentPath, contextPath);

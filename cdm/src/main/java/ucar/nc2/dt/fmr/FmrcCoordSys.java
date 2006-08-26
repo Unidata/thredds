@@ -30,7 +30,7 @@ public interface FmrcCoordSys {
 
   public boolean hasVariable( String searchName);
   public VertCoord findVertCoordForVariable( String searchName);
-  public TimeCoord findTimeCoordForVariable( String searchName);
+  public TimeCoord findTimeCoordForVariable( String searchName, java.util.Date runDate);
 
   public interface VertCoord {
     public String getName();

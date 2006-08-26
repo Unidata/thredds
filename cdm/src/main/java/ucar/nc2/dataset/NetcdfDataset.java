@@ -182,6 +182,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
     ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
     ds.finish(); // recalc the global lists
+    ds.isEnhanced = true;
   }
 
   /**
@@ -521,6 +522,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   }
 
+  /** Check if file has changed, and reread metadata if needed.
+   *  All previous object references (variables, dimensions, etc) may become invalid - you must re-obtain.
+   * @return true if file was changed.
+   * @throws IOException
+   */
   public boolean sync() throws IOException {
     if (agg != null)
       return agg.sync();

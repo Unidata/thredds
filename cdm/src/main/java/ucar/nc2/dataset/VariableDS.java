@@ -80,6 +80,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     }
   }
 
+  /* public void setDimensions(String dimString) {
+    super.setDimensions(dimString);
+    if (orgVar != null) orgVar.setDimensions(dimString);
+  } */
+
   // override to keep section a VariableDS
   public Variable section(List section) throws InvalidRangeException  {
     Variable vs = new VariableDS( this.group, this, isEnhanced);
@@ -205,8 +210,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   /** Set the proxy reader. */
   public void setProxyReader( ProxyReader agg) {this.proxyReader = agg; }
 
-  /** Does this have a proxy reader. */
-  public boolean hasProxyReader() { return this.proxyReader != null; }
+  /** Get the proxy reader, or null. */
+  public ProxyReader getProxyReader() { return this.proxyReader; }
 
   /** If this Variable has been "enhanced", ie processed for scale/offset/missing value */
   public boolean isEnhanced() { return isEnhanced; }

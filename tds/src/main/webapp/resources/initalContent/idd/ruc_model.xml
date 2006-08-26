@@ -29,7 +29,7 @@
         <duration>7 days</duration>
       </timeCoverage>
     </metadata>
-    <dataset name="CONUS_20km">
+    <dataset name="CONUS_20km (RUC2)">
       <metadata inherited="true">
         <documentation type="summary">NCEP Rapid Update Cycle 2 (RUC2). Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 6, 9, and 12 hour forecasts. Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.</documentation>
         <geospatialCoverage zpositive="down">
@@ -50,7 +50,8 @@
           </updown>
         </geospatialCoverage>
       </metadata>
-      <datasetScan name="surface" ID="NCEP/RUC/CONUS_20km/surface" path="model/NCEP/RUC2/CONUS_20km/surface" location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/">
+
+      <datasetFmrc name="surface" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/surface">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/surface/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP RUC2, surface parameters.</documentation>
@@ -83,17 +84,16 @@
             <variable name="v_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ height_above_ground1</variable>
           </variables>
         </metadata>
-        <filter>
-          <include regExp=".*\.grib1$" atomic="true" collection="false" />
-        </filter>
-        <addID />
-        <sort>
-          <lexigraphicByName increasing="false" />
-        </sort>
-        <addLatest />
-        <addDatasetSize />
-      </datasetScan>
-      <datasetScan name="pressure" ID="NCEP/RUC/CONUS_20km/pressure" path="model/NCEP/RUC2/CONUS_20km/pressure" location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/">
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml" recheckEvery="10 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/" suffix=".grib2" dateFormatMark="RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm" subdirs="true" />
+          </aggregation>
+        </netcdf>
+
+      </datasetFmrc>
+
+      <datasetFmrc name="pressure" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/pressure">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/pressure/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP RUC2, parameters on pressure levels.</documentation>
@@ -171,17 +171,15 @@
             <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
           </variables>
         </metadata>
-        <filter>
-          <include regExp=".*\.grib1$" atomic="true" collection="false" />
-        </filter>
-        <addID />
-        <sort>
-          <lexigraphicByName increasing="false" />
-        </sort>
-        <addLatest />
-        <addDatasetSize />
-      </datasetScan>
-      <datasetScan name="hybrid" ID="NCEP/RUC/CONUS_20km/hybrid" path="model/NCEP/RUC2/CONUS_20km/hybrid" location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/">
+
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml" recheckEvery="10 min">
+            <scan  location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/" suffix=".grib2" dateFormatMark="RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm" subdirs="true" />
+          </aggregation>
+        </netcdf>
+      </datasetFmrc>
+
+      <datasetFmrc name="hybrid" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/hybrid">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/hybrid/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP RUC2, parameters on hybrid levels.</documentation>
@@ -238,18 +236,26 @@
             <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
           </variables>
         </metadata>
-        <filter>
-          <include regExp=".*\.grib1$" atomic="true" collection="false" />
-        </filter>
-        <addID />
-        <sort>
-          <lexigraphicByName increasing="false" />
-        </sort>
-        <addLatest />
-        <addDatasetSize />
-      </datasetScan>
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+          <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml" recheckEvery="10 min">
+            <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/" suffix=".grib2" dateFormatMark="RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm" subdirs="true" />
+          </aggregation>
+        </netcdf>
+      </datasetFmrc>
     </dataset>
-    <datasetScan name="CONUS_40km" harvest="true" ID="NCEP/RUC/CONUS_40km" path="model/NCEP/RUC/CONUS_40km" location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_40km/">
+
+    <datasetFmrc name="CONUS_40km (RUC2)" harvest="true" collectionType="ForecastModelRuns" path="fmrc/NCEP/RUC2/CONUS_40km">
+      <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_40km/" xlink:title="Available Inventory" />
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-RUC2-CONUS_40km.fmrcDefinition.xml" recheckEvery="10 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/" suffix=".grib1" dateFormatMark="RUC2_CONUS_40km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
+
+    <datasetFmrc name="CONUS_40km (RUC)" harvest="true" collectionType="ForecastModelRuns" path="fmrc/NCEP/RUC/CONUS_40km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC/CONUS_40km/" xlink:title="Available Inventory" />
       <geospatialCoverage zpositive="down">
         <northsouth>
@@ -322,17 +328,16 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-    </datasetScan>
-    <datasetScan name="CONUS_80km" harvest="true" ID="NCEP/RUC/CONUS_80km" path="model/NCEP/RUC/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-RUC-CONUS_40km.fmrcDefinition.xml" recheckEvery="10 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_40km/" suffix=".grib1" dateFormatMark="RUC_CONUS_40km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
+
+    <datasetFmrc name="CONUS_80km (RUC)" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC/CONUS_80km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC/CONUS_80km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC). Model runs are made hourly, with analysis and 3 hour forecast; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 6, 9, and 12 hour forecasts. horizontal = 93 by 65 points, resolution 81.27 km LambertConformal projection</documentation>
@@ -364,7 +369,7 @@
           <variable name="Potential_temperature" vocabulary_name="Potential temperature" units="K" vocabulary_id="1,7,2,13">Potential temperature @ tropopause</variable>
           <variable name="Precipitation_rate" vocabulary_name="Precipitation rate" units="kg/m^2/s" vocabulary_id="1,7,2,59">Precipitation rate @ surface</variable>
           <variable name="Pressure" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ maximum_wind</variable>
-          <variable name="Pressure_surface" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ surface</variable>
+          <variable name="PresNvsure_surface" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ surface</variable>
           <variable name="Pressure_tropopause" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ tropopause</variable>
           <variable name="Pressure_vertical_velocity" vocabulary_name="Pressure vertical velocity" units="Pa/s" vocabulary_id="1,7,2,39">Pressure vertical velocity @ isobaric1</variable>
           <variable name="Pressure_zeroDegC_isotherm" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ zeroDegC_isotherm</variable>
@@ -388,16 +393,14 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-    </datasetScan>
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-RUC-CONUS_80km.fmrcDefinition.xml" recheckEvery="10 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/" suffix=".grib1" dateFormatMark="RUC_CONUS_80km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
   </dataset>
 </catalog>
 

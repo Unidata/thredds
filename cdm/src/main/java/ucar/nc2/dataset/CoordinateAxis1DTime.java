@@ -26,6 +26,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
+import ucar.nc2.Dimension;
 import ucar.ma2.*;
 
 import java.util.ArrayList;
@@ -85,16 +86,50 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     if ((su != null) && (su instanceof DateUnit)) {
       Array data = org.read();
+      int count = 0;
       IndexIterator ii = data.getIndexIterator();
       DateFormatter formatter = new DateFormatter();
       dateUnit = (DateUnit) su;
       for (int i = 0; i < ncoords; i++) {
         double val = ii.getDoubleNext();
+        if (Double.isNaN(val)) continue;
         Date d = dateUnit.makeDate( val);
         String name = formatter.toDateTimeString(d);
         named.add(new NamedAnything(name, "date/time"));
-        timeDates[i] = d;
+        timeDates[count++] = d;
       }
+
+      // if we encountered NaNs, shorten it up
+      if (count != ncoords) {
+        Dimension localDim = new Dimension( getName(), count, false);
+        setDimension(0, localDim);
+
+        // set the shortened values
+        Array shortData = Array.factory( data.getElementType(), new int[] {count});
+        Index ima = shortData.getIndex();
+        int count2 = 0;
+        ii = data.getIndexIterator();
+        for (int i = 0; i < ncoords; i++) {
+          double val = ii.getDoubleNext();
+          if (Double.isNaN(val)) continue;
+          shortData.setDouble(ima.set0(count2), val);
+          count2++;
+        }
+        // here we have to decouple from the original variable
+        orgVar = null;
+        isSlice = false;
+        isSection = false;
+        cache = new Cache();
+        setCachedData( shortData, true);
+
+        // shorten up the timeDate array
+        Date[] keep = timeDates;
+        timeDates = new Date[count];
+        for (int i = 0; i < timeDates.length; i++) {
+          timeDates[i] = keep[i];
+        }
+      }
+
       return;
     }
 

@@ -39,13 +39,17 @@ import thredds.datatype.DateRange;
  * <li> An optional VerticalTransform can provide a height or pressure coordinate that may be 1-4 dimensional.
  * </ul>
  * <p/>
- * We could insist on one dimensional X, Y, Z, T, and treat optional HorizontalTransform the same as VerticalTransform.
- * Its job would be to provide lat(x,y) and lon(x,y) arrays.
  *
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
+
 public interface GridCoordSystem {
+
+/* Notes
+ * We could insist on one dimensional X, Y, Z, T, and treat optional HorizontalTransform the same as VerticalTransform.
+ * Its job would be to provide lat(x,y) and lon(x,y) arrays.
+ */
 
   /**
    * The name of the Grid Coordinate System, consisting of the list of coordinate axes, seperated by blanks.
@@ -150,7 +154,7 @@ public interface GridCoordSystem {
   // horiz
 
   /**
-   * Does this uese lat/lon horizontal axes?
+   * Does this use lat/lon horizontal axes?
    * If not, then the horizontal axes are GeoX, GeoY, and there must be a Projection defined.
    * @return true if lat/lon horizontal axes
    */

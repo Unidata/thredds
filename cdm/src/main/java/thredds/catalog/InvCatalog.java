@@ -140,7 +140,8 @@ public abstract class InvCatalog {
       return want;
 
     // gotta deal with file ourself
-    if (baseURI.getScheme().equals("file")) {
+    String scheme = baseURI.getScheme();
+    if ((scheme != null) && scheme.equals("file")) { // LOOK at ucar.nc2.util.NetworkUtils.resolve
       String baseString = baseURI.toString();
       if ((uriString.length() > 0) && (uriString.charAt(0) == '#'))
         return new URI( baseString+uriString);

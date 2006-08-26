@@ -42,8 +42,8 @@ public class IO {
 
   /**
    * copy all bytes from in to out.
-   * @param in: InputStream
-   * @param out: OutputStream
+   * @param in InputStream
+   * @param out OutputStream
    * @throws IOException
    */
   static public void copy(InputStream in, OutputStream out) throws IOException {
@@ -57,8 +57,8 @@ public class IO {
 
   /**
    * copy all bytes from in to out.
-   * @param in: InputStream
-   * @param out: OutputStream
+   * @param in InputStream
+   * @param out OutputStream
    * @param bufferSize : internal buffer size.
    * @throws IOException
    */
@@ -73,9 +73,9 @@ public class IO {
 
   /**
    * copy n bytes from in to out.
-   * @param in: InputStream
-   * @param out: OutputStream
-   * @param n: number of bytes to copy
+   * @param in InputStream
+   * @param out OutputStream
+   * @param n number of bytes to copy
    * @throws IOException
    */
   static public void copy(InputStream in, OutputStream out, int n) throws IOException {
@@ -93,7 +93,7 @@ public class IO {
   /**
    * Read the contents from the inputStream and place into a String,
    * with any error messages  put in the return String.
-   * @param is : the inputStream to read from.
+   * @param is the inputStream to read from.
    * @return String holding the contents, or an error message.
    */
   static public String readContents( InputStream is) throws IOException {
@@ -105,7 +105,7 @@ public class IO {
   /**
    * Read the contents from the inputStream and place into a byte array,
    * with any error messages  put in the return String.
-   * @param is : the inputStream to read from.
+   * @param is the inputStream to read from.
    * @return  byte[] holding the contents, or an error message.
    */
   static public byte[] readContentsToByteArray( InputStream is) throws IOException {
@@ -129,8 +129,8 @@ public class IO {
 
    /**
     * copy one file to another.
-    * @param fileInName: copy from this file, which must exist.
-    * @param fileOutName: copy to this file, which is overrwritten if already exists.
+    * @param fileInName copy from this file, which must exist.
+    * @param fileOutName copy to this file, which is overrwritten if already exists.
     * @throws IOException
     */
   static public void copyFile(String fileInName, String fileOutName) throws IOException {
@@ -148,8 +148,8 @@ public class IO {
 
    /**
     * copy one file to another.
-    * @param fileIn: copy from this file, which must exist.
-    * @param fileOut: copy to this file, which is overrwritten if already exists.
+    * @param fileIn copy from this file, which must exist.
+    * @param fileOut copy to this file, which is overrwritten if already exists.
     * @throws IOException
     */
   static public void copyFile(File fileIn, File fileOut) throws IOException {
@@ -168,7 +168,7 @@ public class IO {
   /**
    * copy file to output stream
    * @param fileInName open this file
-   * @param out : copy here
+   * @param out  copy here
    * @throws IOException
    */
   static public void copyFile(String fileInName, OutputStream out) throws IOException {
@@ -178,8 +178,8 @@ public class IO {
   /**
    * copy file to output stream, specify internal buffer size
    * @param fileIn copy this file
-   * @param out : copy to this stream
-   * @param bufferSize : internal buffer size.
+   * @param out  copy to this stream
+   * @param bufferSize  internal buffer size.
    * @throws IOException
    */
   static public void copyFileB(File fileIn, OutputStream out, int bufferSize) throws IOException {
@@ -197,8 +197,8 @@ public class IO {
    * @param raf copy this file
    * @param offset start here (byte offset)
    * @param length number of bytes to copy
-   * @param out : copy to this stream
-   * @param buffer : use this buffer.
+   * @param out copy to this stream
+   * @param buffer use this buffer.
    * @throws IOException
    */
   static public long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out, byte[] buffer) throws IOException {
@@ -242,7 +242,7 @@ public class IO {
   /**
    * Read the file and place contents into a byte array,
    * with any error messages  put in the return String.
-   * @param filename : the file to read from.
+   * @param filename the file to read from.
    * @return  byte[] holding the contents, or an error message.
    */
   static public byte[] readFileToByteArray( String filename) throws IOException {
@@ -259,7 +259,7 @@ public class IO {
   /**
    * Read the contents from the named file and place into a String,
    * with any error messages  put in the return String.
-   * @param filename: the URL to read from.
+   * @param filename the URL to read from.
    * @return String holding the contents, or an error message.
    */
   static public String readFile( String filename) throws IOException {
@@ -326,8 +326,8 @@ public class IO {
   /**
    * copy contents of URL to output stream, specify internal buffer size
    * @param urlString copy the contents of this URL
-   * @param out : copy to this stream
-   * @param bufferSize : internal buffer size.
+   * @param out copy to this stream
+   * @param bufferSize internal buffer size.
    * @throws IOException
    */
   static public void copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
@@ -367,7 +367,7 @@ public class IO {
 
   /**
    * read the contents from the named URL, write to a file.
-   * @param urlString: the URL to read from.
+   * @param urlString the URL to read from.
    * @return status or error message.
    */
   static public String  readURLtoFile( String urlString, File file) {
@@ -400,7 +400,7 @@ public class IO {
 
   /**
    * Read the contents from the named URL and place into a String.
-   * @param urlString: the URL to read from.
+   * @param urlString the URL to read from.
    * @return String holding the contents.
    * @throws IOException if fails
    */
@@ -413,7 +413,7 @@ public class IO {
   /**
    * Read the contents from the named URL and place into a String,
    * with any error messages  put in the return String.
-   * @param urlString: the URL to read from.
+   * @param urlString the URL to read from.
    * @return String holding the contents, or an error message.
    */
   static public String readURLcontents( String urlString) {
@@ -426,7 +426,7 @@ public class IO {
 
   /**
    * use HTTP PUT to send the contents to the named URL.
-   * @param urlString : the URL to read from. must be http:
+   * @param urlString the URL to read from. must be http:
    * @param contents String holding the contents
    * @return a Result object; generally 0 <= code <=400 is ok
    */

@@ -34,6 +34,7 @@ import java.io.*;
 /**
  * Implement NcML Forecast Model Aggregation
  *
+ * @deprecated use AggregationFmrc
  * @author caron
  * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */

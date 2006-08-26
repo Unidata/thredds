@@ -485,7 +485,7 @@ public class Index2NC  {
         }
 
         // get the time coordinate for this variable
-        FmrcCoordSys.TimeCoord tc_def = fmr.findTimeCoordForVariable( searchName);
+        FmrcCoordSys.TimeCoord tc_def = fmr.findTimeCoordForVariable( searchName, lookup.getFirstBaseTime());
         String tc_name = tc_def.getName();
 
         // look to see if GribTimeCoord already made

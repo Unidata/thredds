@@ -47,7 +47,7 @@ public class TestAggFmrcGrib extends TestCase {
     //System.out.println("file="+ncfile);
 
     int naggs = 4;
-    String timeDimName = "time1";
+    String timeDimName = "time";
     testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
     testAggCoordVar(ncfile, naggs, 122100, 12);
@@ -156,7 +156,7 @@ public class TestAggFmrcGrib extends TestCase {
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;
     assert time.getShape()[1] == ntimes;
-    assert time.getDataType() == DataType.INT;
+    assert time.getDataType() == DataType.DOUBLE;
 
     String units = time.getUnitsString();
     DateUnit du = new DateUnit( units);
@@ -167,7 +167,7 @@ public class TestAggFmrcGrib extends TestCase {
       assert data.getSize() == nagg * ntimes;
       assert data.getShape()[0] == nagg;
       assert data.getShape()[1] == ntimes;
-      assert data.getElementType() == int.class;
+      assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {

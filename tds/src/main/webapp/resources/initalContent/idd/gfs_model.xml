@@ -31,7 +31,8 @@
         <duration>7 days</duration>
       </timeCoverage>
     </metadata>
-    <datasetScan name="Alaska 191km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Alaska_191km" path="model/NCEP/GFS/Alaska_191km" location="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/">
+
+    <datasetFmrc name="Alaska 191km" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/Alaska_191km" path="fmrc/NCEP/GFS/Alaska_191km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Alaska_191km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 203 (J) Grid. National - Alaska (polar stereographic). Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days. Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
@@ -78,18 +79,16 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Alaska_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="CONUS 80 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/CONUS_80km" path="model/NCEP/GFS/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-Alaska_191km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/" suffix=".grib1" dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+   </datasetFmrc>
+
+    <datasetFmrc name="CONUS 80 km" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/CONUS_80km" path="fmrc/NCEP/GFS/CONUS_80km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/CONUS_80km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 211 (Q) Grid. Regional - CONUS (Lambert Conformal). Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days. Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection. Vertical = 1000 to 100 hPa pressure levels (29 levels); surface, height above ground, pressure layers.</documentation>
@@ -145,18 +144,16 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="240 hours" />
-    </datasetScan>
-    <datasetScan name="CONUS 95 Km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/CONUS_95km" path="model/NCEP/GFS/CONUS_95km" location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-CONUS_80km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/" suffix=".grib1" dateFormatMark="GFS_CONUS_80km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
+
+    <datasetFmrc name="CONUS 95 Km" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/CONUS_95km" path="fmrc/NCEP/GFS/CONUS_95km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/CONUS_95km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 213 (H) Grid. National - CONUS - Double Resolution (polar stereographic). Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days. Horizontal = 129 by 85 points, resolution 95.25 km, Polar Stereographic projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
@@ -211,18 +208,15 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_CONUS_95km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="CONUS 191 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/CONUS_191km" path="model/NCEP/GFS/CONUS_191km" location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-CONUS_95km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/" suffix=".grib1" dateFormatMark="GFS_CONUS_95km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
+
+    <datasetFmrc name="CONUS 191 km" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/CONUS_191km" path="fmrc/NCEP/GFS/CONUS_191km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/CONUS_191km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 202 (I) Grid. National - CONUS (polar stereographic). Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days. Horizontal = 65 by 43 points, resolution 190.5 km, Polar Stereographic projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
@@ -267,18 +261,15 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_CONUS_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="Global 0.5 degree" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Global_0p5deg" path="model/NCEP/GFS/Global_0p5deg" location="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-CONUS_191km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/" suffix=".grib1" dateFormatMark="GFS_CONUS_191km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
+
+    <datasetFmrc name="Global 0.5 degree" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/Global_0p5deg" path="fmrc/NCEP/GFS/Global_0p5deg">
       <serviceName>all</serviceName>
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Global_0p5deg/?suffix=grib2" xlink:title="Available Inventory" />
       <metadata inherited="true">
@@ -421,18 +412,16 @@
           <variable name="Zonal_Flux_of_Gravity_Wave_Stress" vocabulary_name="Meteorological_products / Mass / Zonal_Flux_of_Gravity_Wave_Stress" units="N m-2" vocabulary_id="2,0,3,194">Zonal Flux of Gravity Wave Stress @ surface</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib2$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Global_0p5deg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="Global 1 degree" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Global_onedeg" path="model/NCEP/GFS/Global_onedeg" location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-Global_0p5deg.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/" suffix=".grib2" dateFormatMark="GFS_Global_0p5deg_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
+
+    <datasetFmrc name="Global 1 degree" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/Global_onedeg" path="fmrc/NCEP/GFS/Global_onedeg">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Global_onedeg/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 229 (F) Grid. Global Lat/Lon grid. Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 180 hours. Horizontal = 181 by 360 points, resolution 1 degree, Lat/Lon projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
@@ -574,18 +563,15 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Global_onedeg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="Global 2.5 degree" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Global_2p5deg" path="model/NCEP/GFS/Global_2p5deg" location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-Global_onedeg.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib1" dateFormatMark="GFS_Global_onedeg_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
+
+    <datasetFmrc name="Global 2.5 degree" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/Global_2p5deg" path="fmrc/NCEP/GFS/Global_2p5deg">
       <serviceName>all</serviceName>
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Global_2p5deg/" xlink:title="Available Inventory" />
       <metadata inherited="true">
@@ -728,18 +714,15 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Global_2p5deg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="Hawaii 160km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Hawaii_160km" path="model/NCEP/GFS/Hawaii_160km" location="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-Global_2p5deg.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib1" dateFormatMark="GFS_Global_2p5deg_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
+
+    <datasetFmrc name="Hawaii 160km" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/Hawaii_160km" path="fmrc/NCEP/GFS/Hawaii_160km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Hawaii_160km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 204 (K) Grid. National-Hawaii. Model runs are made at 0Z, with analysis and forecasts every 12 hours out 10 days. Horizontal= 93 by 68 points, resolution 160 km, Polar Stereographic projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
@@ -779,18 +762,15 @@
           <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ layer_between_two_pressure_difference_from_ground</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Hawaii_160km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="Northern Hemispheric 381km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/N_Hemisphere_381km" path="model/NCEP/GFS/N_Hemisphere_381km" location="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-Hawaii_160km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/" suffix=".grib1" dateFormatMark="GFS_Hawaii_160km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
+
+    <datasetFmrc name="Northern Hemispheric 381km" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/N_Hemisphere_381km" path="fmrc/NCEP/GFS/N_Hemisphere_381km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/N_Hemisphere_381km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemispheric (polar stereographic). Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days. Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
@@ -831,18 +811,15 @@
           <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_N_Hemisphere_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
-    <datasetScan name="Puerto Rico 191km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Puerto_Rico_191km" path="model/NCEP/GFS/Puerto_Rico_191km" location="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/" suffix=".grib1" dateFormatMark="GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
+    <datasetFmrc name="Puerto Rico 191km" collectionType="ForecastModelRuns" harvest="true" ID="fmrc/NCEP/GFS/Puerto_Rico_191km" path="fmrc/NCEP/GFS/Puerto_Rico_191km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Puerto_Rico_191km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
         <documentation type="summary">NCEP GFS Model : AWIPS 205 (L) Grid. National - Puerto Rico (polar stereographic). Model runs are made at 0Z, with analysis and forecasts every 12 hours out 10 days. Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic projection. Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.</documentation>
@@ -882,17 +859,13 @@
           <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ layer_between_two_pressure_difference_from_ground</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Puerto_Rico_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
-    </datasetScan>
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/" suffix=".grib1" dateFormatMark="GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
   </dataset>
 </catalog>
 

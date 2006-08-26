@@ -114,8 +114,8 @@ public abstract class AbstractGisFeature implements GisFeature {
      * displayProject. So:
      * displayProject.latLonToProj( dataProject.projToLatLon(gisFeature(x,y))) -> screen(x,y).
      *
-     * @param dataProject: data Projection to use.
-     * @param displayProject: display Projection to use.
+     * @param dataProject data Projection to use.
+     * @param displayProject display Projection to use.
      * @return shape corresponding to this feature
      */
     public Shape getProjectedShape(ProjectionImpl dataProject, ProjectionImpl displayProject) {
@@ -152,40 +152,3 @@ public abstract class AbstractGisFeature implements GisFeature {
     }
 
 } // AbstractGisFeature
-
-/* Change History:
-   $Log: AbstractGisFeature.java,v $
-   Revision 1.5  2005/06/11 19:03:56  caron
-   no message
-
-   Revision 1.4  2004/09/24 03:26:32  caron
-   merge nj22
-
-   Revision 1.3  2003/04/08 18:16:19  john
-   nc2 v2.1
-
-   Revision 1.2  2003/03/17 21:12:33  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:46  caron
-   import sources
-
-   Revision 1.12  2001/04/30 23:38:21  caron
-   debug
-
-   Revision 1.11  2000/10/03 21:08:53  caron
-   bug in getShape() when GisPart has 0 points
-
-   Revision 1.10  2000/08/18 04:15:23  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.9  2000/02/17 20:20:15  caron
-   trivial
-
-   Revision 1.8  2000/02/10 17:45:09  caron
-   add GisFeatureRenderer,GisFeatureAdapter
-
-*/

@@ -111,7 +111,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = false, debugOpenFile = true, debugCacheDetail = false, debugSyncDetail = false, debugProxy = true;
+  protected boolean debug = true, debugOpenFile = true, debugCacheDetail = true, debugSyncDetail = true, debugProxy = false;
 
   /**
    * Create an Aggregation for the NetcdfDataset.
@@ -415,21 +415,15 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     if ((diskCache2 != null) && (type == Type.JOIN_EXISTING))
       persistRead();
 
-    buildCoords(cancelTask);
-
-    if (getType() == Aggregation.Type.JOIN_NEW)
-      aggNewDimension(true, ncDataset, cancelTask);
-    else if (getType() == Aggregation.Type.JOIN_EXISTING)
-      aggExistingDimension(true, ncDataset, cancelTask);
-    else if (getType() == Aggregation.Type.FORECAST_MODEL)
-      aggExistingDimension(true, ncDataset, cancelTask);
+    //ucar.unidata.io.RandomAccessFile.setDebugAccess( true);
+    buildDataset(true, cancelTask);
+    //ucar.unidata.io.RandomAccessFile.setDebugAccess( false);
 
     this.lastChecked = System.currentTimeMillis();
     wasChanged = true;
   }
 
   protected void buildCoords(CancelTask cancelTask) throws IOException {
-
     if ((type == Type.FORECAST_MODEL) || (type == Type.FORECAST_MODEL_COLLECTION)) {
       for (int i = 0; i < nestedDatasets.size(); i++) {
         Dataset nested = (Dataset) nestedDatasets.get(i);
@@ -444,29 +438,15 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
   }
 
-  // not ready yet
   public boolean syncExtend() throws IOException {
-    if (scanList.size() == 0) return false;
-
-    // rescan
-    ArrayList newDatasets = new ArrayList();
-    scan(newDatasets, null);
-
-    // are there any new datasets?
-    Dataset lastOld = (Dataset) nestedDatasets.get(nestedDatasets.size() - 1);
-    int nextNew;
-    for (nextNew = 0; nextNew < newDatasets.size(); nextNew++) {
-      Dataset dataset = (Dataset) newDatasets.get(nextNew);
-      if (dataset.location.equals(lastOld.location)) break;
-    }
-    nextNew++;
-    if (nextNew >= newDatasets.size())
+    if (!isChanged())
       return false;
 
-    for (int i = nextNew; i < newDatasets.size(); i++) {
-      Dataset newDataset = (Dataset) newDatasets.get(i);
-      nestedDatasets.add(newDataset);
-      totalCoords += newDataset.setStartEnd(totalCoords, null);
+    // only the set of datasets may have changed
+    if (getType() == Aggregation.Type.FORECAST_MODEL_COLLECTION) {
+      //ucar.unidata.io.RandomAccessFile.setDebugAccess( true);
+      syncDataset(null);
+      //ucar.unidata.io.RandomAccessFile.setDebugAccess( false);
     }
 
     /* if (getType() == Aggregation.Type.JOIN_NEW)
@@ -477,8 +457,36 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     return true;
   }
 
-  // sync if the recheckEvery time has passed
+  protected void syncDataset(CancelTask cancelTask) throws IOException {
+  }
+
   public boolean sync() throws IOException {
+    if (!isChanged())
+      return false;
+
+    //ncd.empty(); LOOK not emptying !!
+
+    // LOOK: do we have to reread the NcML ?? This whole thing is fishy.
+    // rebuild the metadata
+    buildDataset(false, null);
+    ncDataset.finish();
+    if (ncDataset.isEnhanced()) { // force recreation of the  coordinate systems
+      ncDataset.setCoordSysWereAdded( false);
+      ncDataset.enhance();
+      ncDataset.finish();
+    }
+
+    return true;
+  }
+
+  // check if recheckEvery time has passed
+
+  /**
+   * Rescan if recheckEvery time has passed
+   * @return if theres new datasets, put new datasets into nestedDatasets
+   * @throws IOException
+   */
+  protected boolean isChanged() throws IOException {
     if (getType() == Aggregation.Type.UNION)
       return false;
 
@@ -494,8 +502,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
     // ok were gonna recheck
-    if (debug) System.out.println(" *Sync ");
     lastChecked = System.currentTimeMillis();
+    if (debug) System.out.println(" *Sync at "+lastChecked);
 
     // rescan
     ArrayList newDatasets = new ArrayList();
@@ -505,7 +513,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     boolean changed = false;
     for (int i = 0; i < newDatasets.size(); i++) {
       Dataset newDataset = (Dataset) newDatasets.get(i);
-      int index = nestedDatasets.indexOf(newDataset);
+      int index = nestedDatasets.indexOf(newDataset); // equal if location is equal
       if (index >= 0) {
         newDatasets.set(i, nestedDatasets.get(index));
         if (debugSyncDetail) System.out.println("  sync using old Dataset= "+newDataset.location);
@@ -515,34 +523,36 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
-    // see if anything is changed
+    if (!changed) { // check for deletions
+      for (int i = 0; i < nestedDatasets.size(); i++) {
+        Dataset oldDataset = (Dataset) nestedDatasets.get(i);
+        if ((newDatasets.indexOf(oldDataset) < 0) && (explicitDatasets.indexOf(oldDataset) < 0)) {
+          changed = true;
+          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= "+oldDataset.location);
+        }
+      }
+    }
+
     if (!changed) return false;
 
     // recreate the list of datasets
     nestedDatasets = new ArrayList();
     nestedDatasets.addAll(explicitDatasets);
     nestedDatasets.addAll(newDatasets);
-    buildCoords(null);
-
-    /* chose a new typical dataset
-    if (typical != null) {
-      typical.close();
-      typical = null;
-      typicalDataset = null;
-    } */
-    //ncd.empty();
-
-    // rebuild the metadata
-    if (getType() == Aggregation.Type.JOIN_NEW)
-      aggNewDimension(false, ncDataset, null);
-    else if (getType() == Aggregation.Type.JOIN_EXISTING)
-      aggExistingDimension(false, ncDataset, null);
-    else if (getType() == Aggregation.Type.FORECAST_MODEL)
-      aggExistingDimension(false, ncDataset, null);
-
-    ncDataset.finish();
 
     return true;
+  }
+
+  // LOOK isNew is fishy
+  protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
+    buildCoords(cancelTask);
+
+    if (getType() == Aggregation.Type.JOIN_NEW)
+      aggNewDimension(isNew, ncDataset, cancelTask);
+    else if (getType() == Aggregation.Type.JOIN_EXISTING)
+      aggExistingDimension(isNew, ncDataset, cancelTask);
+    else if (getType() == Aggregation.Type.FORECAST_MODEL)
+      aggExistingDimension(isNew, ncDataset, cancelTask);
   }
 
   /* private void resetAggDimensionLength() {
@@ -674,7 +684,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     List allVars = newds.getVariables();
     for (int i = 0; i < allVars.size(); i++) {
       VariableDS vs = (VariableDS) allVars.get(i);
-      if (vs.hasProxyReader()) {
+      if (vs.getProxyReader() != null) {
         if (debugProxy) System.out.println(" debugProxy: hasProxyReader "+vs.getNameAndDimensions());
         continue; // dont mess with agg variables
       }
@@ -684,18 +694,17 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
           vs.read();
           if (debugProxy) System.out.println(" debugProxy: cached "+vs.getNameAndDimensions());
         } else {
-          if (debugProxy) System.out.println(" debugProxy: aleady cached "+vs.getNameAndDimensions());
+          if (debugProxy) System.out.println(" debugProxy: already cached "+vs.getNameAndDimensions());
         }
 
-      } else if (!vs.hasProxyReader()) { // put proxy on the rest
+      } else if (null == vs.getProxyReader()) { // put proxy on the rest
         vs.setProxyReader(proxy);
         if (debugProxy) System.out.println(" debugProxy: proxy on "+vs.getNameAndDimensions());
       }
     }
-
-
   }
 
+  // LOOK: what is this all about? possible interaction with rest of ncml ??
   protected class MyReplaceVariableCheck implements ReplaceVariableCheck {
     public boolean replace(Variable v) {
       // needs to be replaced if its not an agg variable
@@ -997,6 +1006,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       String location = myf.file.getAbsolutePath();
       String coordValue = (type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
       myf.nested = makeDataset(location, location, null, coordValue, myf.enhance, null);
+      myf.nested.coordValueDate = myf.dateCoord;
       // if (myf.nested.checkOK(cancelTask))
       result.add(myf.nested);
 
@@ -1148,11 +1158,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     private boolean enhance;
     private NetcdfFileFactory reader;
     private String coordValue;  // if theres a coordValue on the netcdf element
-
-    //private double coordValueDouble; // if numeric valued coordinate
-    // private Date coordValueDate; // if date coordinate
-    //private String coordValueString; // if String valued
-    //private String coordValuesExisting; // cached coordinate values  (joinExisting)
+    private Date coordValueDate;  // if its a date
 
     private boolean isStringValued = false;
     private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
@@ -1273,6 +1279,11 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     /** Get the coordinate value(s) as a String for this Dataset */
     public String getCoordValueString() {
       return coordValue;
+    }
+
+    /** Get the coordinate value(s) as a Date for this Dataset; may be null */
+    public Date getCoordValueDate() {
+      return coordValueDate;
     }
 
     /**
@@ -1466,7 +1477,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
   }
 
-  private class DatasetProxyReader implements ProxyReader {
+  protected class DatasetProxyReader implements ProxyReader {
     Dataset dataset;
     DatasetProxyReader( Dataset dataset) {
       this.dataset = dataset;

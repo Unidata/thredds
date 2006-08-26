@@ -163,6 +163,42 @@
         </datasetScan>
       </dataset>
     </dataset>
+    <datasetScan name="Soundings Vertical Data" collectionType="TimeSeries" harvest="true" ID="NWS/Sounding/Vertical" path="station/soundings" location="/data/ldm/pub/native/profiler/bufr/profiler3/">
+      <metadata inherited="true">
+        <documentation type="summary">Vertical Soundings from a station</documentation>
+        <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information" />
+        <documentation>Vertical Soundings</documentation>
+        <keyword>soundings</keyword>
+        <keyword>vertical soundings</keyword>
+        <geospatialCoverage>
+          <northsouth>
+            <start>-90.0</start>
+            <size>180.0</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>0.0</start>
+            <size>360.0</size>
+            <units>degrees_east</units>
+          </eastwest>
+        </geospatialCoverage>
+        <timeCoverage>
+          <end>present</end>
+          <duration>7 days</duration>
+        </timeCoverage>
+        <variables vocabulary="CF-1" />
+      </metadata>
+      <filter>
+        <include wildcard="*.bufr" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage datasetNameMatchPattern="PROFILER_([0-9]{4})([0-9]{2})([0-9]{2})_0000.bufr$" startTimeSubstitutionPattern="$1-$2-$3T00:00:00" duration="1 day" />
+    </datasetScan>
   </dataset>
 </catalog>
 

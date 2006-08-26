@@ -26,7 +26,6 @@ import java.util.ListIterator;
 
 /** Helper class for event listeners.
  * @author John Caron
- * @version $Id:ListenerManager.java 63 2006-07-12 21:50:51Z edavis $
  */
 public class ListenerManager {
     private ArrayList listeners = new ArrayList();
@@ -63,7 +62,7 @@ public class ListenerManager {
     public boolean getEnabled( ) { return enabled; }
 
       /** Add a listener.
-       * @param l listener: must be of type "listener_class"
+       * @param l listener must be of type "listener_class"
        */
     public synchronized void addListener (Object l) {
         if (!listeners.contains(l)) {
@@ -85,7 +84,7 @@ public class ListenerManager {
 
       /** Send an event to all registered listeners. If an exception is thrown, remove
        * the Listener from the list
-       * @param event: the event to be sent: public void method_name( event_class event)
+       * @param event the event to be sent: public void method_name( event_class event)
        */
     public void sendEvent( java.util.EventObject event) {
       if (!hasListeners || !enabled)
@@ -119,7 +118,7 @@ public class ListenerManager {
     }
 
       /** Send an event to all registered listeners, except the named one.
-       * @param event: the event to be sent: public void method_name( event_class event)
+       * @param event the event to be sent: public void method_name( event_class event)
        */
     public void sendEventExcludeSource( java.util.EventObject event) {
       if (!hasListeners || !enabled)
@@ -154,19 +153,3 @@ public class ListenerManager {
     }
 
 }
-
-/* Change History:
-   $Log: ListenerManager.java,v $
-   Revision 1.3  2004/09/24 03:26:36  caron
-   merge nj22
-
-   Revision 1.2  2004/02/20 05:02:54  caron
-   release 1.3
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.1.1.1  2002/02/15 00:01:48  caron
-   import sources
-
-*/

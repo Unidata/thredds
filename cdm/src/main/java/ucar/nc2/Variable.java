@@ -1286,6 +1286,7 @@ public class Variable implements VariableIF {
     public Array data;
     public boolean isCaching = false;
     public boolean cachingSet = false;
+    public Cache() { }
   }
 
 }

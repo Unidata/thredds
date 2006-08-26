@@ -276,6 +276,11 @@ public class ForecastModelRunInventory {
 
     TimeCoord() { }
 
+    TimeCoord( int num, TimeCoord from) {
+      this.id = Integer.toString(num);
+      this.offset = from.offset;
+    }
+
     TimeCoord(Date runDate, CoordinateAxis1D axis) {
       this.axis = axis;
 
@@ -551,7 +556,7 @@ public class ForecastModelRunInventory {
     return Math.abs((d1-d2)/d1) < 1.0e-8;
   }
 
-   static double getOffsetInHours(Date origin, Date date) {
+   static public double getOffsetInHours(Date origin, Date date) {
       double secs = date.getTime() / 1000;
       double origin_secs = origin.getTime() / 1000;
       double diff = secs - origin_secs;

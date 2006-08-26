@@ -21,6 +21,7 @@
 package ucar.nc2.util;
 
 import java.net.URI;
+import java.io.File;
 
 /**
  * Networking utilities.
@@ -77,7 +78,14 @@ public class NetworkUtils {
     URI resolvedURI = baseURI.resolve(refURI);
     return resolvedURI.toASCIIString();
   }
-  
+
+  public static String resolveFile( String baseDir, String filepath) {
+    if (baseDir == null) return filepath;
+    File file = new File(filepath);
+    if (file.isAbsolute()) return filepath;
+    return baseDir + filepath;
+  }
+
   private static void test(String uriS) {
     System.out.println(uriS);
     //uriS = URLEncoder.encode(uriS, "UTF-8");

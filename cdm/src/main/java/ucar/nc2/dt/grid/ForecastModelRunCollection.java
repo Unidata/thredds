@@ -26,6 +26,7 @@ import ucar.nc2.dt.GridDataset;
 
 import java.util.Date;
 import java.util.List;
+import java.io.IOException;
 
 /**
  * Class Description.
@@ -95,5 +96,9 @@ public interface ForecastModelRunCollection {
    */
   public NetcdfDataset getFmrcDataset( );
 
-
+  /** Check if file has changed, and reread metadata if needed.
+   * @return true if file was changed.
+   * @throws java.io.IOException
+   */
+  public boolean sync() throws IOException;
 }

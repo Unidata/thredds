@@ -1310,7 +1310,7 @@ public class FmrcInventory {
 
      System.out.println("***makeFromCatalog "+urlFragment);
 
-     String catURL = "http://motherlode.ucar.edu:9080/thredds/catalog/model/"+urlFragment+"/catalog.xml";
+     String catURL = "http://motherlode.ucar.edu:8080/thredds/catalog/model/"+urlFragment+"/catalog.xml";
      String collectionName = StringUtil.replace(urlFragment, '/',"-");
 
      long startTime = System.currentTimeMillis();
@@ -1355,10 +1355,10 @@ public class FmrcInventory {
   private static String fmrcDefinitionPath;
 
   private static String[] catalogs  = {
-          "NCEP/GFS/Alaska_191km",
+          /* "NCEP/GFS/Alaska_191km",
           "NCEP/GFS/CONUS_80km",
           "NCEP/GFS/CONUS_191km",
-          "NCEP/GFS/CONUS_95km", // */
+          "NCEP/GFS/CONUS_95km",
           "NCEP/GFS/Global_2p5deg",
           "NCEP/GFS/Global_onedeg",
           "NCEP/GFS/Hawaii_160km",
@@ -1372,14 +1372,14 @@ public class FmrcInventory {
           "NCEP/NAM/CONUS_20km/noaaport",
           "NCEP/NAM/CONUS_20km/selectsurface",
           "NCEP/NAM/CONUS_20km/surface",
-          "NCEP/NAM/CONUS_40km/conduit",
+          /* "NCEP/NAM/CONUS_40km/conduit",
           "NCEP/NAM/CONUS_40km/noaaport",
           "NCEP/NAM/CONUS_80km",
-          "NCEP/NAM/Polar_90km",
+          "NCEP/NAM/Polar_90km", // */
 
           "NCEP/RUC2/CONUS_20km/hybrid",
           "NCEP/RUC2/CONUS_20km/pressure",
-          "NCEP/RUC2/CONUS_20km/surface",
+          /* "NCEP/RUC2/CONUS_20km/surface",
           "NCEP/RUC/CONUS_40km", //
           "NCEP/RUC/CONUS_80km",
 
@@ -1388,7 +1388,7 @@ public class FmrcInventory {
           "NCEP/GFS/Global_0p5deg",
           "NCEP/NAM/Alaska_11km",
           "NCEP/NAM/CONUS_12km",
-          "NCEP/NDFD/CONUS_5km",
+          "NCEP/NDFD/CONUS_5km", // */
   };
 
   public static void main(String args[]) throws Exception {

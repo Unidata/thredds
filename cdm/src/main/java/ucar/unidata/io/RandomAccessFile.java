@@ -73,17 +73,19 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
     // debug leaks - keep track of open files
 
-    /**
-     * _more_
-     *
-     * @param b _more_
-     */
+    /** Debugging, do not use. */
     static public void setDebugLeaks(boolean b) {
         debugLeaks = b;
     }
 
+    /** Debugging, do not use. */
+    static public void setDebugAccess(boolean b) {
+        debugAccess = b;
+    }
+
     /** _more_          */
     static protected boolean debugLeaks = false;
+    static protected boolean debugAccess = false;
 
     /** _more_          */
     static public List openFiles =
@@ -520,6 +522,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
         file.seek(pos);
         int n = file.read(b, offset, len);
+        if (debugAccess) System.out.println(" read_ "+location+" = "+len+" bytes at "+pos+"; got = "+n);
 
         if (extendMode && (n < len)) {
             //System.out.println(" read_ = "+len+" at "+pos+"; got = "+n);

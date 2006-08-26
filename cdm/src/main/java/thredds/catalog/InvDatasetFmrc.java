@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.ArrayList;
 import java.net.URISyntaxException;
+import java.net.URI;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
@@ -94,10 +95,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
     }
   }
 
-  private InvCatalogImpl makeCatalog() {
+  private InvCatalogImpl makeCatalog() throws URISyntaxException {
+
     if (catalog == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalog = new InvCatalogImpl( getName(), parent.getVersion(), getURI());
+      URI baseUri = new URI(getXlinkHref());
+      catalog = new InvCatalogImpl( getFullName(), parent.getVersion(), baseUri);
+
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -119,10 +123,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalog;
   }
 
-  private InvCatalogImpl makeCatalogRuns() throws URISyntaxException {
-    if (catalogRuns == null) {
+  private InvCatalogImpl makeCatalogRuns() throws URISyntaxException, IOException {
+    boolean changed =  madeFmrc && fmrc.sync();
+
+    if (changed || catalogRuns == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogRuns = new InvCatalogImpl( getName(), parent.getVersion(), parent.resolveUri(getCatalogHref(RUNS)));
+      catalogRuns = new InvCatalogImpl( getFullName(), parent.getVersion(), parent.resolveUri(getCatalogHref(RUNS)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -145,10 +151,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogRuns;
   }
 
-  private InvCatalogImpl makeCatalogOffsets() throws URISyntaxException {
-    if (catalogOffsets == null) {
+  private InvCatalogImpl makeCatalogOffsets() throws URISyntaxException, IOException {
+    boolean changed =  madeFmrc && fmrc.sync();
+
+    if (changed || catalogOffsets == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogOffsets = new InvCatalogImpl( getName(), parent.getVersion(), parent.resolveUri(getCatalogHref(OFFSET)));
+      catalogOffsets = new InvCatalogImpl( getFullName(), parent.getVersion(), parent.resolveUri(getCatalogHref(OFFSET)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -172,10 +180,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogOffsets;
   }
 
-  private InvCatalogImpl makeCatalogForecasts() throws URISyntaxException {
-    if (catalogForecasts == null) {
+  private InvCatalogImpl makeCatalogForecasts() throws URISyntaxException, IOException {
+    boolean changed =  madeFmrc && fmrc.sync();
+
+    if (changed || catalogForecasts == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogForecasts = new InvCatalogImpl( getName(), parent.getVersion(), parent.resolveUri(getCatalogHref(FORECAST)));
+      catalogForecasts = new InvCatalogImpl( getFullName(), parent.getVersion(), parent.resolveUri(getCatalogHref(FORECAST)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       // top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -199,7 +209,6 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   /** Get Datasets. This triggers a read of the referenced catalog the first time its called.
-   * If subclass CatalogRef, this would be deferred (!)
    */
   public java.util.List getDatasets() {
     if (!madeDatasets) {
@@ -250,6 +259,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   private synchronized void makeFmrc() {
+
     if (madeFmrc)
       return;
 
@@ -368,7 +378,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
     if (type.equals(RUNS)) {
       Date date = formatter.getISODate(name);
       NetcdfDataset ncd = fmrc.getRunTimeDataset(date);
-      ncd.setLocation( StringUtil.escape(path, ""));
+      if (null != ncd)
+        ncd.setLocation( StringUtil.escape(path, ""));
       return ncd;
     }
 

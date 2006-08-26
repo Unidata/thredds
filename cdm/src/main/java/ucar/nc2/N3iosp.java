@@ -33,9 +33,8 @@ import java.io.File;
  * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.
  *  AKA "file format version 1" files.
  *
- * @see N3raf concrete class
+ * @see ucar.nc2.N3raf concrete class
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {

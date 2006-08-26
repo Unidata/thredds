@@ -175,7 +175,7 @@ public class WcsDataset {
       System.out.println(" x_range="+x_range);
     }
 
-    GridDatatype subset = geogrid.makeSubset(t_range, z_range, y_range, x_range);
+    GridDatatype subset = geogrid.makeSubset(null, null, t_range, z_range, y_range, x_range);
     Array data = subset.readDataSlice(0, 0, -1, -1);
 
     if (req.getFormat() == GetCoverageRequest.Format.GeoTIFF || req.getFormat() == GetCoverageRequest.Format.GeoTIFFfloat) {

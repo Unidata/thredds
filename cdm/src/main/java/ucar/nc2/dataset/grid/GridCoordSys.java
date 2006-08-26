@@ -179,7 +179,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       sbuff.append(" check CS " + cs.getName()+": ");
     }
     if (isGridCoordSys(sbuff, cs)) {
-      GridCoordSys gcs = new GridCoordSys(cs, sbuff);
+      GridCoordSys gcs = new GridCoordSys(cs, sbuff);  // LOOK inefficient !!!
       if (gcs.isComplete(v)) {
         if (sbuff != null) sbuff.append(" OK\n");
         return gcs;
@@ -631,7 +631,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
-   * @deprecated, use findXYindexFromCoord
+   * @deprecated use findXYindexFromCoord
    */
   public int[] findXYCoordElement(double x_coord, double y_coord, int[] result) {
     return findXYindexFromCoord(x_coord, y_coord,  result);
@@ -755,25 +755,24 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       timeAxisForRun = new CoordinateAxis1DTime[nruns];
 
     if (timeAxisForRun[run_index] == null)
-      makeTimeAxisForRun(run_index);
+      timeAxisForRun[run_index] = makeTimeAxisForRun(run_index);
 
     return timeAxisForRun[run_index];
   }
 
   private CoordinateAxis1DTime[] timeAxisForRun;
-  private void makeTimeAxisForRun(int run_index) {
+  private CoordinateAxis1DTime makeTimeAxisForRun(int run_index) {
     VariableDS section = null;
     try {
       section = (VariableDS) tAxis.slice(0, run_index);
+      return new CoordinateAxis1DTime(section, null);
     } catch (InvalidRangeException e) {
       e.printStackTrace();
-    }
-
-    try {
-      timeAxisForRun[run_index] = new CoordinateAxis1DTime(section, null);
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    return null;
   }
 
   public DateUnit getDateUnit() throws Exception {

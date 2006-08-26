@@ -321,7 +321,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     public List getGrids() { return grids; }
 
     /** all GeoGrids point to this GeoCoordSysImpl.
-     * @deprecated, use getGeoCoordSystem() if possible.
+     * @deprecated use getGeoCoordSystem() if possible.
      */
     public GridCoordSys getGeoCoordSys() { return gcc; }
 

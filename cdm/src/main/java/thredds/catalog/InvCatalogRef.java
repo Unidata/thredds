@@ -43,8 +43,7 @@ import java.net.URI;
  *           (or) -> ds                 if UseProxy
  *
  * </pre>
- * @see InvDatasetImpl for API
- * @see thredds.catalog.ui.CatalogTreeView as example to read asynchronously
+ * @see InvDatasetImpl for API, thredds.catalog.ui.CatalogTreeView as example to read asynchronously
  *
  * @author john caron
  * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $

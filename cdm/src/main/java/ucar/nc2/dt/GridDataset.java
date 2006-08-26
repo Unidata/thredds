@@ -6,7 +6,6 @@ import java.util.*;
 /**
  * A dataset containing Grid objects.
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public interface GridDataset extends ucar.nc2.dt.TypedDataset {
@@ -18,8 +17,8 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
   public GridDatatype findGridDatatype( String name);
 
   /**
-   * Return GridDatatype objects grouped by GridCoordSys. All GridDatatype in a Gridset
-   *   have the same GridCoordSys.
+   * Return GridDatatype objects grouped by GridCoordSystem. All GridDatatype in a Gridset
+   *   have the same GridCoordSystem.
    * @return List of type GridDataset.Gridset
    */
   public List getGridSets();
@@ -29,10 +28,10 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
    * A set of GridDatatype objects with the same Coordinate System.
    */
   public interface Gridset {
-    /** Get list of GeoGrid objects */
+    /** Get list of GridDatatype objects */
     public List getGrids();
 
-    /** all GridDatatype point to this GeoCoordSysImpl */
+    /** all the GridDatatype in this set use this GridCoordSystem */
     public ucar.nc2.dt.GridCoordSystem getGeoCoordSystem();
   }
 

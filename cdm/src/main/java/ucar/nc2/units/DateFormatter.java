@@ -162,7 +162,7 @@ public class DateFormatter {
   }
 
   /** Return standard formatted GMT date and time String. Format = "yyyy-MM-dd HH:mm:ss'Z'"
-   *  @deprecated, use toDateTimeString
+   *  @deprecated use toDateTimeString
    */
    public String getStandardDateString2(Date date) {
      return toDateTimeString(date);
@@ -175,7 +175,7 @@ public class DateFormatter {
   }
 
   /** Return standard formatted GMT date and time String. Format = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-   *  @deprecated, use toDateTimeStringISO
+   *  @deprecated use toDateTimeStringISO
    */
    public String getStandardDateString(Date date) {
      return toDateTimeStringISO(date);

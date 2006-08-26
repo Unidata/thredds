@@ -31,7 +31,7 @@
       </timeCoverage>
       <variables vocabulary="GRIB-2" />
     </metadata>
-    <datasetScan name="NWS National Digital Forecast Database 5km CONUS" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NDFD/CONUS_5km" path="model/NCEP/NDFD/CONUS_5km" location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/">
+    <datasetFmrc name="NWS National Digital Forecast Database 5km CONUS" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NDFD/CONUS_5km">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NDFD/CONUS_5km/" xlink:title="Available Inventory" />
       <documentation type="summary">1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 90 to 180 hours.</documentation>
       <metadata inherited="true">
@@ -58,17 +58,14 @@
           <variable name="Wind_speed" vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1" vocabulary_id="2,0,2,1">Wind speed @ height_above_ground</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib2$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="96 hours" />
-    </datasetScan>
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan  location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/" suffix=".grib2" dateFormatMark="NDFD_CONUS_5km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
   </dataset>
 </catalog>
 

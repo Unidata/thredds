@@ -142,9 +142,7 @@ public class CoordinateAxis extends VariableDS {
     * @param units units of coordinates, preferably udunit compatible.
     * @param desc long name.
     */
-  public CoordinateAxis(NetcdfDataset ds, Group group, String shortName,
-      DataType dataType, String dims, String units, String desc) {
-
+  public CoordinateAxis(NetcdfDataset ds, Group group, String shortName, DataType dataType, String dims, String units, String desc) {
     super( ds, group, null, shortName, dataType, dims, units, desc);
   }
 

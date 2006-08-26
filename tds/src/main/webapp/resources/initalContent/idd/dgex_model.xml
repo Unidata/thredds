@@ -30,7 +30,8 @@
         <duration>7 days</duration>
       </timeCoverage>
     </metadata>
-    <datasetScan name="CONUS_12km" harvest="true" ID="NCEP/DGEX/CONUS_12km" path="model/NCEP/DGEX/CONUS_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/">
+
+    <datasetFmrc name="CONUS_12km" harvest="true" ID="fmrc/NCEP/DGEX/CONUS_12km" path="fmrc/NCEP/DGEX/CONUS_12km">
       <dataFormat>GRIB-2</dataFormat>
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/CONUS_12km/" xlink:title="Available Inventory" />
       <geospatialCoverage zpositive="down">
@@ -79,17 +80,16 @@
           <variable name="Vertical_velocity_pressure" vocabulary_name="Meteorological_products / Momentum / Vertical_velocity" units="Pa s-1" vocabulary_id="2,0,2,8">Vertical velocity pressure @ pressure3</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib2$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-    </datasetScan>
-    <datasetScan name="Alaska_12km" harvest="true" ID="NCEP/DGEX/Alaska_12km" path="model/NCEP/DGEX/Alaska_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/">
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2" dateFormatMark="DGEX_CONUS_12km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
+
+    <datasetFmrc name="Alaska_12km" harvest="true" ID="fmrc/NCEP/DGEX/Alaska_12km" path="fmrc/NCEP/DGEX/Alaska_12km">
       <dataFormat>GRIB-2</dataFormat>
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/Alaska_12km/" xlink:title="Available Inventory" />
       <metadata inherited="true">
@@ -138,16 +138,14 @@
           <variable name="Vertical_velocity_pressure" vocabulary_name="Meteorological_products / Momentum / Vertical_velocity" units="Pa s-1" vocabulary_id="2,0,2,8">Vertical velocity pressure @ pressure3</variable>
         </variables>
       </metadata>
-      <filter>
-        <include regExp=".*\.grib2$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-    </datasetScan>
+
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-DGEX-Alaska_12km.fmrcDefinition.xml" recheckEvery="30 min">
+          <scan  location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2" dateFormatMark="DGEX_Alaska_12km_#yyyyMMdd_HHmm" subdirs="true" />
+        </aggregation>
+      </netcdf>
+
+    </datasetFmrc>
   </dataset>
 </catalog>
 

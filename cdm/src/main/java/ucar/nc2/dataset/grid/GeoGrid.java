@@ -183,17 +183,30 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs.findAttributeIgnoreCase(name);
   }
 
+  /**
+   * Convenience function; lookup Attribute value by name. Must be String valued
+   * @param attName name of the attribute
+   * @param defaultValue if not found, use this as the default
+   * @return Attribute string value, or default if not found.
+   */
   public String findAttValueIgnoreCase( String attName, String defaultValue) {
     return dataset.getNetcdfDataset().findAttValueIgnoreCase((Variable) vs, attName, defaultValue);
   }
 
-  // implemetation of GridDatatype interface
+  // implementation of GridDatatype interface
 
   /** get the rank */
   public int getRank() { return vs.getRank(); }
 
   /** get the shape */
-  public int[] getShape() { return vs.getShape(); }
+  public int[] getShape() {
+    int[] shape = new int[mydims.size()];
+    for (int i = 0; i < mydims.size(); i++) {
+      Dimension d = (Dimension) mydims.get(i);
+      shape[i] = d.getLength();
+    }
+    return shape;
+  }
 
   /** get the data type */
   public DataType getDataType() { return vs.getDataType(); }
@@ -615,7 +628,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return new GeoGrid( dataset, v_section, gcs_section);
   }
 
-  public GridDatatype makeSubset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException  {
+  public GridDatatype makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException  {
     return subset(t_range, z_range, y_range, x_range);
   }
 

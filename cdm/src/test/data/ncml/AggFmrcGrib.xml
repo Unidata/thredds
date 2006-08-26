@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-  <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="R:/testdata/motherlode/grid/inv/new/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml">
-    <scan location="C:/data/grib/nam/c20s/" suffix=".grib1" enhance="true" dateFormatMark="NAM_CONUS_20km_surface_#yyyyMMdd_HHmm"/>
+  <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml">
+    <scan location="C:/data/grib/nam/c20s/" suffix=".grib1" dateFormatMark="NAM_CONUS_20km_surface_#yyyyMMdd_HHmm"/>
   </aggregation>
 </netcdf>
