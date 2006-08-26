@@ -24,6 +24,7 @@ package ucar.nc2.thredds;
 import thredds.catalog.DataType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.DataFormatType;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -62,29 +63,8 @@ public class MetadataExtractor {
 
       if (result.dtype == DataType.GRID) {
         System.out.println(" GRID=" + result.location);
-        ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
-        LatLonRect llbb = null;
-        CoordinateAxis1D vaxis = null;
-
         GridDataset gridDataset = result.gridDataset;
-        Iterator gridsets = gridDataset.getGridSets().iterator();
-        while (gridsets.hasNext()) {
-          GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
-          GridCoordSystem gsys = gridset.getGeoCoordSystem();
-          if (llbb == null)
-            llbb = gsys.getLatLonBoundingBox();
-
-          CoordinateAxis1D vaxis2 = gsys.getVerticalAxis();
-          if (vaxis == null)
-            vaxis = vaxis2;
-          else if ((vaxis2 != null) && (vaxis2.getSize() > vaxis.getSize()))
-            vaxis = vaxis2;
-        }
-
-        gc.setBoundingBox(llbb);
-        if (vaxis != null)
-          gc.setVertical(vaxis);
-        return gc;
+        return extractGeospatial( gridDataset);
 
       } else if ((result.dtype == DataType.STATION) || (result.dtype == DataType.POINT)) {
         PointObsDataset pobsDataset = result.pobsDataset;
@@ -107,6 +87,31 @@ public class MetadataExtractor {
     return null;
   }
 
+  static public ThreddsMetadata.GeospatialCoverage extractGeospatial(GridDataset gridDataset) {
+    ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
+    LatLonRect llbb = null;
+    CoordinateAxis1D vaxis = null;
+
+    Iterator gridsets = gridDataset.getGridSets().iterator();
+    while (gridsets.hasNext()) {
+      GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
+      GridCoordSystem gsys = gridset.getGeoCoordSystem();
+      if (llbb == null)
+        llbb = gsys.getLatLonBoundingBox();
+
+      CoordinateAxis1D vaxis2 = gsys.getVerticalAxis();
+      if (vaxis == null)
+        vaxis = vaxis2;
+      else if ((vaxis2 != null) && (vaxis2.getSize() > vaxis.getSize()))
+        vaxis = vaxis2;
+    }
+
+    gc.setBoundingBox(llbb);
+    if (vaxis != null)
+      gc.setVertical(vaxis);
+    return gc;
+  }
+
   /**
    * Extract a list of data variables (and their canonical names if possible) from the dataset.
    * @param threddsDataset open this dataset
@@ -126,54 +131,7 @@ public class MetadataExtractor {
       if (result.dtype == DataType.GRID) {
         // System.out.println(" extractVariables GRID=" + result.location);
         GridDataset gridDataset = result.gridDataset;
-
-        String fileFormat = threddsDataset.getDataFormatType().toString();
-        if ((fileFormat.equalsIgnoreCase("GRIB-1")) || (fileFormat.equalsIgnoreCase("GRIB-2"))) {
-          boolean isGrib1 = fileFormat.equals("GRIB-1");
-          ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat);
-          java.util.List grids = gridDataset.getGrids();
-          for (int i = 0; i < grids.size(); i++) {
-            GridDatatype grid = (GridDatatype) grids.get(i);
-            ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
-            v.setName( grid.getName());
-            v.setDescription( grid.getDescription());
-            v.setUnits( grid.getUnitsString());
-
-            //ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("GRIB_param_number");
-            //String paramNumber = (att != null) ? att.getNumericValue().toString() : null;
-            if (isGrib1) {
-              v.setVocabularyName( grid.findAttValueIgnoreCase("GRIB_param_name", "ERROR"));
-              v.setVocabularyId( grid.findAttributeIgnoreCase("GRIB_param_id"));
-            } else {
-              String paramDisc = grid.findAttValueIgnoreCase("GRIB_param_discipline", "");
-              String paramCategory = grid.findAttValueIgnoreCase("GRIB_param_category", "");
-              String paramName = grid.findAttValueIgnoreCase("GRIB_param_name", "");
-              v.setVocabularyName( paramDisc +" / " + paramCategory +" / " + paramName);
-              v.setVocabularyId( grid.findAttributeIgnoreCase("GRIB_param_id"));
-            }
-            vars.addVariable( v);
-          }
-          vars.sort();
-          return vars;
-
-        } else { // GRID but not GRIB
-          ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
-          java.util.List grids = gridDataset.getGrids();
-          for (int i = 0; i < grids.size(); i++) {
-            GridDatatype grid = (GridDatatype) grids.get(i);
-            ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
-            vars.addVariable( v);
-
-            v.setName( grid.getName());
-            v.setDescription( grid.getDescription());
-            v.setUnits( grid.getUnitsString());
-
-            ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("standard_name");
-            v.setVocabularyName( (att != null) ? att.getStringValue() : "N/A");
-          }
-          vars.sort();
-          return vars;
-        }
+        return extractVariables(threddsDataset, gridDataset);
 
       } else if ((result.dtype == DataType.STATION) || (result.dtype == DataType.POINT)) {
         PointObsDataset pobsDataset = result.pobsDataset;
@@ -205,5 +163,58 @@ public class MetadataExtractor {
 
     return null;
   }
+
+  static public ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset, GridDataset gridDataset) {
+
+    thredds.catalog.DataFormatType fileFormat = threddsDataset.getDataFormatType();
+    if (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2)) {
+      boolean isGrib1 = fileFormat.equals(DataFormatType.GRIB1);
+      ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
+      java.util.List grids = gridDataset.getGrids();
+      for (int i = 0; i < grids.size(); i++) {
+        GridDatatype grid = (GridDatatype) grids.get(i);
+        ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
+        v.setName(grid.getName());
+        v.setDescription(grid.getDescription());
+        v.setUnits(grid.getUnitsString());
+
+        //ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("GRIB_param_number");
+        //String paramNumber = (att != null) ? att.getNumericValue().toString() : null;
+        if (isGrib1) {
+          v.setVocabularyName(grid.findAttValueIgnoreCase("GRIB_param_name", "ERROR"));
+          v.setVocabularyId(grid.findAttributeIgnoreCase("GRIB_param_id"));
+        } else {
+          String paramDisc = grid.findAttValueIgnoreCase("GRIB_param_discipline", "");
+          String paramCategory = grid.findAttValueIgnoreCase("GRIB_param_category", "");
+          String paramName = grid.findAttValueIgnoreCase("GRIB_param_name", "");
+          v.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
+          v.setVocabularyId(grid.findAttributeIgnoreCase("GRIB_param_id"));
+        }
+        vars.addVariable(v);
+      }
+      vars.sort();
+      return vars;
+
+    } else { // GRID but not GRIB
+      ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
+      java.util.List grids = gridDataset.getGrids();
+      for (int i = 0; i < grids.size(); i++) {
+        GridDatatype grid = (GridDatatype) grids.get(i);
+        ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
+        vars.addVariable(v);
+
+        v.setName(grid.getName());
+        v.setDescription(grid.getDescription());
+        v.setUnits(grid.getUnitsString());
+
+        ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("standard_name");
+        v.setVocabularyName((att != null) ? att.getStringValue() : "N/A");
+      }
+      vars.sort();
+      return vars;
+    }
+
+  }
+
 
 }

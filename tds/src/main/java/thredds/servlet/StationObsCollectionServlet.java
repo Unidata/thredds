@@ -169,7 +169,7 @@ import org.jdom.transform.XSLTransformer;
     }
 
     static private InputStream getXSLT(String xslName) {
-      Class c = ForecastModelRunServlet.class;
+      Class c = FmrcInventoryServlet.class;
       return c.getResourceAsStream("/resources/xsl/" + xslName);
     }
 

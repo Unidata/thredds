@@ -109,17 +109,20 @@ public class NetcdfServlet extends AbstractServlet {
     if (pathInfo.endsWith(".nc"))
        pathInfo = pathInfo.substring(0,pathInfo.length()-3);
 
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( pathInfo);
+    GridDataset gds = DatasetHandler.openGridDataset( pathInfo);
+    ForecastModelRunInventory fmr = ForecastModelRunInventory.open(gds);
+
+    /* File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( pathInfo);
     if (file == null) {
       ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
-    log.debug("**NetcdfService req="+file.getPath()); 
+    log.debug("**NetcdfService req="+file.getPath());
 
     // for convenince, we open as an FMR, since it already has the XML we need for the form
     ForecastModelRunInventory fmr = ForecastModelRunInventory.open( fmrCache, file.getPath(), ForecastModelRunInventory.OPEN_NORMAL, true);
-    fmr.setName( req.getRequestURI());
+    fmr.setName( req.getRequestURI());  */
 
     String wantXML = req.getParameter("wantXML");
     String showForm = req.getParameter("showForm");
@@ -135,14 +138,12 @@ public class NetcdfServlet extends AbstractServlet {
     }
 
     // heres where we process the request for the netcdf subset
-    GridDataset gds = DatasetHandler.openGridDataset( pathInfo);
-
     String showRequest = req.getParameter("showRequest");
     if (showRequest != null) {
       OutputStream out = res.getOutputStream();
       PrintStream ps = new PrintStream( out);
 
-      ps.println("**NetcdfService req="+file.getPath());
+      ps.println("**NetcdfService req="+pathInfo);
       ps.println(ServletUtil.showRequestDetail( this, req ));
       ps.flush();
       return;
@@ -566,7 +567,7 @@ public class NetcdfServlet extends AbstractServlet {
   }
 
   static private InputStream getXSLT(String xslName) {
-    Class c = ForecastModelRunServlet.class;
+    Class c = FmrcInventoryServlet.class;
     return c.getResourceAsStream("/resources/xsl/" + xslName);
   }
 

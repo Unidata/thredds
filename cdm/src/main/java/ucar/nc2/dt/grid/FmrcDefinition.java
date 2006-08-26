@@ -107,16 +107,6 @@ import ucar.unidata.util.StringUtil;
 public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcDefinition.class);
 
-  //  utilities - move to fmrc ?
-  private Calendar cal = new GregorianCalendar(); // for date computations
-
-  double getHour( Date d) {
-    cal.setTime( d);
-    int hour = cal.get(Calendar.HOUR_OF_DAY);
-    double min = (double) cal.get(Calendar.MINUTE);
-    return hour + min/60;
-  }
-
   ///////////////////////////////////////////////////////////////////
 
   private ArrayList vertTimeCoords; // VertTimeCoord
@@ -133,76 +123,6 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   public String getSuffixFilter() { return suffixFilter; }
 
   public List getRunSequences() { return runSequences; }
-
-  /* public void report( ForecastModelRunCollection fmrc, PrintStream out, boolean showMissing) {
-    List runSequences = fmrc.getRunSequences();
-    for (int i = 0; i < runSequences.size(); i++) {
-      ForecastModelRunCollection.RunSeq have = (ForecastModelRunCollection.RunSeq) runSequences.get(i);
-
-      List vars = have.getVariables();
-      for (int j = 0; j < vars.size(); j++) {
-        ForecastModelRunCollection.UberGrid uv = (ForecastModelRunCollection.UberGrid) vars.get(j);
-        RunSeq want = findSeqForVariable( uv.getName());
-        if (want == null)
-          out.println("Cant find variable "+uv.getName());
-        else {
-          StringBuffer sbuff = new StringBuffer();
-          if (want.compare( have, sbuff, showMissing)) {
-            out.println("Checking variable= "+uv.getName());
-            out.println(sbuff);
-          }
-        }
-      }
-    }
-  }
-
-  boolean compareOffsets(double[] haveOffset, double[] wantOffset, StringBuffer sbuff, boolean showMissing) {
-    int countHave = 0;
-    int countWant = 0;
-    boolean errs = false;
-
-    while ((countHave < haveOffset.length) && (countWant < wantOffset.length)) {
-      if (wantOffset[countWant] == haveOffset[countHave]) {
-        countHave++;
-        countWant++;
-      } else if (wantOffset[countWant] < haveOffset[countHave]) {
-        if (showMissing) {
-          sbuff.append("  missing " + wantOffset[countWant] + "\n");
-          errs = true;
-        }
-        countWant++;
-      } else if (wantOffset[countWant] > haveOffset[countHave]) {
-        sbuff.append("  extra " + haveOffset[countWant] + "\n");
-        errs = true;
-        countHave++;
-      }
-    }
-
-    while (countHave < haveOffset.length) {
-      sbuff.append("  extra " + haveOffset[countWant] + "\n");
-      errs = true;
-      countHave++;
-    }
-
-    while (countWant < wantOffset.length) {
-      if (showMissing) {
-        sbuff.append("  missing " + wantOffset[countWant] + "\n");
-        errs = true;
-      }
-      countWant++;
-    }
-
-    return errs;
-  }  */
-
-  private ForecastModelRunInventory.TimeCoord findTimeCoord( String id) {
-    for (int i = 0; i < timeCoords.size(); i++) {
-      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
-      if (tc.getId().equals(id))
-        return tc;
-    }
-    return null;
-  }
 
   public boolean hasVariable(String searchName) {
     return findGridByName( searchName) != null;
@@ -222,6 +142,15 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         // we need to wrap it, giving it the name of the RunSeq
         return new ForecastModelRunInventory.TimeCoord( runSeq.num, from);
       }
+    }
+    return null;
+  }
+
+  private ForecastModelRunInventory.TimeCoord findTimeCoord( String id) {
+    for (int i = 0; i < timeCoords.size(); i++) {
+      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
+      if (tc.getId().equals(id))
+        return tc;
     }
     return null;
   }
@@ -869,6 +798,19 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       }
     }
   }
+
+    //  utilities - move to fmrc ?
+  private Calendar cal = new GregorianCalendar(); // for date computations
+
+  private double getHour( Date d) {
+    cal.setTime( d);
+    int hour = cal.get(Calendar.HOUR_OF_DAY);
+    double min = (double) cal.get(Calendar.MINUTE);
+    return hour + min/60;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  // ad-hoc manipulations of the definitions
 
   // replace ids
   static void convertIds(String datasetName, String defName) throws IOException {

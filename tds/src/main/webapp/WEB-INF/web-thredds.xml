@@ -134,7 +134,7 @@
 
   <servlet>
     <servlet-name>ForecastModelRunInventory</servlet-name>
-    <servlet-class>thredds.servlet.ForecastModelRunServlet</servlet-class>
+    <servlet-class>thredds.servlet.FmrcInventoryServlet</servlet-class>
     <load-on-startup>6</load-on-startup>
   </servlet>
 

@@ -96,6 +96,13 @@ public interface ForecastModelRunCollection {
    */
   public NetcdfDataset getFmrcDataset( );
 
+  /**
+   * Get the underlying GridDataset.
+   * @return the GridDataset containing that data.
+   */
+  public ucar.nc2.dt.GridDataset getGridDataset();
+
+
   /** Check if file has changed, and reread metadata if needed.
    * @return true if file was changed.
    * @throws java.io.IOException

@@ -506,7 +506,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * If the underlying file was acquired, it will be released, otherwise closed.
    */
   public synchronized void close() throws java.io.IOException {
-    if (isCached() == 2)
+    if (isCached() == 3)
+      return;
+    else if (isCached() == 2)
       NetcdfDatasetCache.release(this);
     else if (isCached() == 1) {
       if (agg != null) agg.persist();

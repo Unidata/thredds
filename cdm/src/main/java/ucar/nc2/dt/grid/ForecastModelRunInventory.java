@@ -97,7 +97,7 @@ public class ForecastModelRunInventory {
     this( ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation));
   }
 
-  private ForecastModelRunInventory(ucar.nc2.dataset.grid.GridDataset gds) {
+  private ForecastModelRunInventory(ucar.nc2.dt.GridDataset gds) {
 
     this.gds = gds;
     name = gds.getTitle();
@@ -208,6 +208,7 @@ public class ForecastModelRunInventory {
        ncd = (NetcdfDataset) ncfile;
        ncfile = ncd.getReferencedFile();
     }
+    if (ncfile == null) return;
     IOServiceProvider iosp = ncfile.getIosp();
     if (iosp == null) return;
     if (!(iosp instanceof GribServiceProvider)) return;
@@ -850,7 +851,12 @@ public class ForecastModelRunInventory {
     return fmr;
   }
 
-  private static boolean debug = false, showXML = false;
+  public static ForecastModelRunInventory open(ucar.nc2.dt.GridDataset gds) {
+    return new ForecastModelRunInventory(gds);
+  }
+
+
+  private static boolean debug = true, showXML = false;
   public static void main(String args[]) throws Exception {
     //String def = "C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1";
     // String def = "C:/data/radarMosaic/RADAR_10km_mosaic_20060807_2220.grib1";

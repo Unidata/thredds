@@ -43,10 +43,10 @@ import ucar.unidata.util.StringUtil;
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
-public class ForecastModelRunServlet extends AbstractServlet {
+public class FmrcInventoryServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
   private boolean debug = true;
-  private HashMap defNameHash = new HashMap();
+  private HashMap paramHash = new HashMap();  // key=path value=FmrcInventoryParams
 
   public void init() throws ServletException {
     super.init();
@@ -69,8 +69,6 @@ public class ForecastModelRunServlet extends AbstractServlet {
           throws ServletException, IOException {
 
     ServletUtil.logServerAccessSetup(req);
-    FmrcInventory fmr;
-    String varName;
 
     String path = req.getPathInfo();
     String query = req.getQueryString();
@@ -89,54 +87,49 @@ public class ForecastModelRunServlet extends AbstractServlet {
       return;
     }
 
+    String varName;
     DataRootHandler h = DataRootHandler.getInstance();
     DataRootHandler.DataRootMatch match = h.findDataRootMatch( req );
+    if ((match == null) || (match.dirLocation == null)) {
+      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+      return;
+    }
 
-    if (match != null) {
-      if (debug) System.out.println("match="+match.rootPath+" rem="+match.remaining+" dir="+match.dirLocation);
+    if (debug) System.out.println("match="+match.rootPath+" rem="+match.remaining+" location="+match.dirLocation);
+    varName = match.remaining;
 
-      varName = match.remaining;
-      //fmr = (ForecastModelRunCollection) fmrHash.get( match.dirLocation);
-      //if (fmr == null ) {
-        try {
-          String suffix = req.getParameter("suffix");
-          if (suffix == null) suffix = "grib1";
+    FmrcInventory fmr;
+    try {
+      String suffix = req.getParameter("suffix");
+      String name = req.getParameter("def");
+      FmrcInventoryParams params = new FmrcInventoryParams(name, suffix);
 
-          String name = req.getParameter("def");
-          if (name != null) {
-             defNameHash.put(match.dirLocation, name);
-          } else {
-            name = (String) defNameHash.get(match.dirLocation);
-            if (name == null) {
-              // LOOK major kludge
-              int pos = match.dirLocation.indexOf("grid/");
-              name = match.dirLocation.substring(pos+5);
-              name = StringUtil.replace(name, '/', "-");
-              if (name.startsWith("-")) name = name.substring(1);
-              if (name.endsWith("-")) name = name.substring(0, name.length()-1);
-            }
-          }
-
-          if (debug) System.out.println("  fmrcDefinitionPath="+contentPath+" name="+name+" dir="+match.dirLocation);
-          fmr = FmrcInventory.make(contentPath, name, fmrCache, match.dirLocation, suffix,
-                  ForecastModelRunInventory.OPEN_XML_ONLY);
-
-        } catch (Exception e) {
-          e.printStackTrace();
-          log.error("ForecastModelRunCollection.make", e);
-          ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, match.dirLocation);
+      if (name != null) {
+         paramHash.put( match.rootPath, params);
+      } else {
+        params = (FmrcInventoryParams) paramHash.get(match.rootPath);
+        if (params == null) {
+          ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+          res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
           return;
         }
-      //}
-
-      if (fmr == null) {
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
-        res.sendError(HttpServletResponse.SC_NOT_FOUND, match.dirLocation);
-        return;
       }
 
-    } else {
+      if (debug) System.out.println("  FmrcInventoryParams="+params+" for path="+match.rootPath);
+      fmr = FmrcInventory.make(contentPath, params.name, fmrCache, match.dirLocation, params.suffix,
+              ForecastModelRunInventory.OPEN_XML_ONLY);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      log.error("ForecastModelRunCollection.make", e);
+      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+      return;
+    }
+
+    if (fmr == null) {
+      log.warn("ForecastModelRunCollection.make");
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
@@ -160,6 +153,16 @@ public class ForecastModelRunServlet extends AbstractServlet {
     }
 
     showInventory( res, fmr, varName, query, false);
+  }
+
+  private class FmrcInventoryParams {
+    String name;
+    String suffix;
+    FmrcInventoryParams(String name, String suffix) {
+      this.name = name;
+      this.suffix = suffix;
+    }
+    public String toString() { return "name="+name +" suffix="+ suffix; }
   }
 
   private void showOffsetHour(HttpServletResponse res, FmrcInventory fmrc, String varName, String offsetHour) throws IOException {
@@ -285,7 +288,7 @@ public class ForecastModelRunServlet extends AbstractServlet {
   }
 
   static private InputStream getXSLT(String xslName) {
-    Class c = ForecastModelRunServlet.class;
+    Class c = FmrcInventoryServlet.class;
     return c.getResourceAsStream("/resources/xsl/" + xslName);
   }
 

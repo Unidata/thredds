@@ -48,6 +48,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
   ///////////////////////////
 
   private NetcdfDataset org_ncd;
+  private ucar.nc2.dt.GridDataset gds;
   private Date baseDate;
   private String runtimeDimName;
 
@@ -70,6 +71,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
   public FmrcImpl(NetcdfDataset ncd) throws IOException {
     init( ncd);
+    ncd.setCached(3); // dont allow a normal close
   }
 
   /** Check if file has changed, and reread metadata if needed.
@@ -83,6 +85,10 @@ public class FmrcImpl implements ForecastModelRunCollection {
     return changed;
   }
 
+  public ucar.nc2.dt.GridDataset getGridDataset() {
+    return gds;
+  }
+
   private void init(NetcdfDataset ncd) {
     this.org_ncd = ncd;
 
@@ -91,7 +97,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     runtimes = null;
 
     HashMap timeAxisHash = new HashMap(); // key = timeAxis, value = Gridset
-    ucar.nc2.dt.GridDataset gds = new ucar.nc2.dataset.grid.GridDataset( ncd);
+    gds = new ucar.nc2.dataset.grid.GridDataset( ncd);
     List grids = gds.getGrids();
     if (grids.size() == 0)
       throw new IllegalArgumentException("no grids");
@@ -430,7 +436,10 @@ public class FmrcImpl implements ForecastModelRunCollection {
     String newHistory = "Synthetic dataset from TDS fmrc ("+type+") aggregation, original data from "+org_ncd.getLocation();
     String history = (oldHistory != null) ? oldHistory + "; "+newHistory : newHistory;
     target.addAttribute( new Attribute("history", history));
-    target.remove( target.findAttribute(_Coordinate.ModelRunDate));
+
+    // need this attribute for fmrInventory
+    DateFormatter df = new DateFormatter();
+    target.addAttribute( new Attribute(_Coordinate.ModelRunDate, df.toDateTimeStringISO(baseDate)));
 
         // dimensions
     Iterator iterDim = src.getDimensions().iterator();
@@ -470,6 +479,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     }
 
     newds.finish();
+    // newds.setCached(3); // dont allow a normal close
     return newds;
   }
 

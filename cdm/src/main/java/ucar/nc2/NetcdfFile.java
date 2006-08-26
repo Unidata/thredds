@@ -456,7 +456,7 @@ public class NetcdfFile {
   protected String location, id, title, cacheName;
   protected Group rootGroup = new Group( this, null, "");
   protected boolean isClosed = false;
-  protected int isCached = 0;
+  protected int isCached = 0; // 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.

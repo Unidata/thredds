@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.net.URISyntaxException;
 import java.net.URI;
 
@@ -34,7 +35,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dt.grid.ForecastModelRunCollection;
 import ucar.nc2.dt.grid.FmrcImpl;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.thredds.MetadataExtractor;
 import ucar.unidata.util.StringUtil;
 
 /**
@@ -58,16 +61,18 @@ public class InvDatasetFmrc extends InvCatalogRef {
   //////////////////////////////////////////////
 
   private boolean madeDatasets = false, madeFmrc = false;
-  private String path;
+  private String path, location;
   private ForecastModelRunCollection fmrc;
   private InvCatalogImpl catalog, catalogRuns, catalogOffsets, catalogForecasts;
 
-  public InvDatasetFmrc(InvDatasetImpl parent, String name, String path) {
+  public InvDatasetFmrc(InvDatasetImpl parent, String name, String path, String location) {
     super(parent, name, "/thredds/catalog/"+path+"/catalog.xml");
     this.path = path;
+    this.location = location;
   }
 
   public String getPath() { return path; }
+  public String getLocation() { return location; }
 
   public boolean hasAccess() {
     return false;
@@ -105,6 +110,26 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
+
+      String id = getID();
+      if (id == null)
+        id = getPath();
+      top.setID(id);
+
+      makeFmrc();
+      ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+      ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables( this, fmrc.getGridDataset());
+      tmi.addVariables(vars);
+      ThreddsMetadata.GeospatialCoverage gc = MetadataExtractor.extractGeospatial(fmrc.getGridDataset());
+      tmi.setGeospatialCoverage(gc);
+
+      if (null != location) {
+        ThreddsMetadata tm = top.getLocalMetadata();
+        String href = "/thredds/modelInventory/"+getPath()+"?def=NCEP-NAM-CONUS_80km&suffix=.grib1";
+        InvDocumentation doc = new InvDocumentation( href, null, "Available Inventory", null, null);
+        tm.addDocumentation( doc);
+      }
+
       catalog.addDataset(top);
 
       // any referenced services need to be local
@@ -298,6 +323,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       datasets.add( nested);
     }
 
+    Collections.reverse( datasets);
     return datasets;
   }
 

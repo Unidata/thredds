@@ -25,6 +25,9 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.IOException;
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
@@ -38,7 +41,8 @@ public class ImageDatasetFactory {
   private StringBuffer log;
   public String getErrorMessages() { return log == null ? "" : log.toString(); }
   private File currentFile, currentDir = null;
-  private File[] currentDirFiles = null;
+  //private File[] currentDirFiles = null;
+  private java.util.List currentDirFileList;
   private int currentDirFileNo = 0;
 
   // grid stuff
@@ -157,9 +161,10 @@ public class ImageDatasetFactory {
     if (currentDir == null) {
       currentDirFileNo = 0;
       currentDir = currentFile.getParentFile();
-      currentDirFiles = currentDir.listFiles();
-      for (int i = 0; i < currentDirFiles.length; i++) {
-        File file = currentDirFiles[i];
+      currentDirFileList = Arrays.asList(currentDir.listFiles());
+      Collections.sort(currentDirFileList);
+      for (int i = 0; i < currentDirFileList.size(); i++) {
+        File file = (File) currentDirFileList.get(i);
         if (file.equals(currentFile))
           currentDirFileNo = i;
       }
@@ -167,15 +172,15 @@ public class ImageDatasetFactory {
 
     if (forward) {
       currentDirFileNo++;
-      if (currentDirFileNo >= currentDirFiles.length)
+      if (currentDirFileNo >= currentDirFileList.size())
         currentDirFileNo = 0;
     } else {
       currentDirFileNo--;
       if (currentDirFileNo < 0)
-        currentDirFileNo = currentDirFiles.length-1;
+        currentDirFileNo = currentDirFileList.size()-1;
     }
 
-    File nextFile = currentDirFiles[currentDirFileNo];
+    File nextFile = (File) currentDirFileList.get(currentDirFileNo);
     try {
       return javax.imageio.ImageIO.read(nextFile);
     } catch (IOException e) {

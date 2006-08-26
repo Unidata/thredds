@@ -304,6 +304,7 @@
       <xsd:complexContent>
         <xsd:extension base="DatasetType">
           <xsd:attribute name="path" type="xsd:string" use="required"/>
+          <xsd:attribute name="location" type="xsd:string"/>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>

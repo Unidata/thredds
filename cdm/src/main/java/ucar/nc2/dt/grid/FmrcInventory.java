@@ -64,7 +64,7 @@ public class FmrcInventory {
 
   private static SimpleDateFormat dateFormatShort = new java.text.SimpleDateFormat("MM-dd HH.mm");
   private static SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH.mm'Z'");
-  private static boolean debug = false;
+  private static boolean debug = true;
 
   static {
     dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT")); // same as UTC
@@ -112,9 +112,10 @@ public class FmrcInventory {
 
   /**
    * Open a collection of ForecastModelRun. An optional definition file may exist.
+   * Call addRun() to add the ForecastModelRuns.
    *
    * @param fmrcDefinitionDir put optional definition file in this directory
-   * @param name name for the collection
+   * @param name name for the collection, the definition file = name + ".fmrcDefinition.xml";
    * @throws IOException
    */
   FmrcInventory(String fmrcDefinitionDir, String name) throws IOException {
@@ -1227,7 +1228,7 @@ public class FmrcInventory {
   /**
    * Create a ForecastModelRun Collection from the files in a directory.
    * @param fmrcDefinitionPath put/look for fmrc definition files in this directory
-   * @param collectionName name of collection
+   * @param collectionName the definition file = collectionName + ".fmrcDefinition.xml";
    * @param fmr_cache cache fmr inventory files here
    * @param dirName  scan this directory
    * @param suffix filter on this suffix
@@ -1351,6 +1352,7 @@ public class FmrcInventory {
      FileOutputStream fos = new FileOutputStream( fmrCollection.getDefinitionPath());
      def.writeDefinitionXML( fos);
   }
+
   private static DiskCache2 cache;
   private static String fmrcDefinitionPath;
 
@@ -1392,7 +1394,7 @@ public class FmrcInventory {
   };
 
   public static void main(String args[]) throws Exception {
-    String work = "R:/testdata/motherlode/grid2/";
+    /* String work = "R:/testdata/motherlode/grid2/";
     fmrcDefinitionPath = work+"def/";
     cache = new DiskCache2(work+"inv/", false, -1, -1);
 
@@ -1402,7 +1404,12 @@ public class FmrcInventory {
     for (int i = 0; i < catalogs.length; i++) {
       String catalog = catalogs[i];
       makeDefinitionFromCatalog(catalog);
-    }
+    } */
+
+    String dir = "nam/conus80";
+    FmrcInventory fmrc = make("C:/temp", "NCEP-NAM-CONUS_80km", null, "C:/data/grib/"+dir, "grib1",
+            ForecastModelRunInventory.OPEN_FORCE_NEW);
+
   }
 
 }
