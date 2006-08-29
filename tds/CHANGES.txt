@@ -2,9 +2,15 @@ CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
-Changes in version 3.13
+Changes in version 3.14
  Features
   * WCS logs have length
+  * [*Experimental*] In datasetScan element, allow the addition of proxy
+    datasets that are not resolver services. This means that dynamic proxy
+    datasets don't have to redirect through a catalog.
+  * THREDDS Servlet Framework:
+    - Streamline the discovery of CrawlableDataset descendants by adding
+      exists() and getDescendant() methods.
  Bugs
 
 Changes in version 3.12
