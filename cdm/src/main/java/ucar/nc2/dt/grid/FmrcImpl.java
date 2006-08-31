@@ -26,6 +26,8 @@ import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
+import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.ncml.AggregationFmrc;
 import ucar.ma2.*;
 
 import java.util.*;
@@ -381,9 +383,9 @@ public class FmrcImpl implements ForecastModelRunCollection {
     if (!runtimes.contains(wantRuntime)) return null;
     NetcdfDataset ncd = createDataset( new RuntimeInvGetter(wantRuntime),RUN);
 
-    DateFormatter df = new DateFormatter();
+    /* DateFormatter df = new DateFormatter();
     ncd.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, df.toDateTimeStringISO(wantRuntime)));
-    ncd.finish();
+    ncd.finish(); */
 
     return ncd;
   }

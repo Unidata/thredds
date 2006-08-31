@@ -50,7 +50,9 @@ public abstract class PointObsDatatypeImpl implements PointObsDatatype, Comparab
   public double getObservationTime() { return obsTime; }
 
   public int compareTo(Object o) {
-    PointObsDatatypeImpl oo = (PointObsDatatypeImpl) o;
-    return (int) (obsTime - oo.obsTime);
+    PointObsDatatypeImpl other = (PointObsDatatypeImpl) o;
+    if (obsTime < other.obsTime) return -1;
+    if (obsTime > other.obsTime) return 1;
+    return 0;
   }
 }

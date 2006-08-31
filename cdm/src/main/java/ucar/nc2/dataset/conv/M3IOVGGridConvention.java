@@ -39,8 +39,9 @@ import ucar.unidata.geoloc.projection.*;
  * mean sea level.
  * @invariant ncfile != null implies isValidM3IOFile()
  *
- * @author caron ??
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
+ * @HISTORY: 2003/06/26
+ * @author plessel.todd@epa.gov, based on WRFConvention.java
+ * @author caron - convert to new CoordSysBuilder
  */
 public class M3IOVGGridConvention extends CoordSysBuilder {
 

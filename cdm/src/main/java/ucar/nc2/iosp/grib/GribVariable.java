@@ -38,7 +38,7 @@ import java.util.List;
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GribVariable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribVariable.class);
 
   private String name, desc, vname;
   private Index.GribRecord firstRecord;
@@ -193,7 +193,7 @@ public class GribVariable {
       int time = tcs.getIndex( p);
       // System.out.println("time="+time+" level="+level);
       if ((time < 0) || (level < 0)) {
-        System.out.println("NOT FOUND record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
+        log.warn("NOT FOUND record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
                 +"   "+getVertLevelName()+" (type="+p.levelType1 + ","+p.levelType2+")  value="+p.levelValue1 + ","+p.levelValue2+"\n");
 
         getVertIndex( p);
@@ -206,7 +206,7 @@ public class GribVariable {
       else {
         Index.GribRecord q = recordTracker[recno];
         if (!p.typeGenProcess.equals(q.typeGenProcess)) {
-          System.out.println("Duplicate record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
+          log.warn("Duplicate record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
                 +"   "+getVertLevelName()+" (type="+p.levelType1 + ","+p.levelType2+")  value="+p.levelValue1 + ","+p.levelValue2+"\n"
                 +"   already got (type="+q.levelType1 + ","+q.levelType2+")  value="+q.levelValue1 + ","+q.levelValue2+"\n"
                 +"   gen="+p.typeGenProcess+"   "+q.typeGenProcess);

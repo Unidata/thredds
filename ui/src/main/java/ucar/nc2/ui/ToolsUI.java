@@ -27,6 +27,7 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.grid.FmrcDefinition;
+import ucar.nc2.dt.grid.ForecastModelRunInventory;
 import ucar.nc2.dt.point.PointObsDatasetFactory;
 import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
 import ucar.nc2.dataset.*;
@@ -73,17 +74,18 @@ public class ToolsUI extends JPanel {
   private ucar.util.prefs.PreferencesExt mainPrefs;
 
   // UI
+  private FmrcPanel fmrcPanel;
+  private GeoGridPanel gridPanel;
+  private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
   private OpPanel coordSysPanel, ncmlPanel, geotiffPanel;
-  private ViewerPanel viewerPanel;
-  private ImagePanel imagePanel;
   private PointObsPanel pointObsPanel;
-  private TrajectoryTablePanel trajTablePanel;
-  private GeoGridPanel gridPanel;
   private RadialPanel radialPanel;
+  private ThreddsUI threddsUI;
+  private TrajectoryTablePanel trajTablePanel;
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
-  private ThreddsUI threddsUI;
+  private ViewerPanel viewerPanel;
 
   private JTabbedPane tabbedPane;
   private JFrame parentFrame;
@@ -126,6 +128,7 @@ public class ToolsUI extends JPanel {
     tabbedPane.addTab("NCDump", new JLabel("NCDump"));
     tabbedPane.addTab("CoordSys", new JLabel("CoordSys"));
     tabbedPane.addTab("Grids", new JLabel("Grids"));
+    tabbedPane.addTab("Fmrc", new JLabel("Fmrc"));
     tabbedPane.addTab("Radial", new JLabel("Radial"));
     tabbedPane.addTab("PointObs", new JLabel("PointObs"));
     tabbedPane.addTab("Trajectory", new JLabel("Trajectory"));
@@ -194,6 +197,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("Grids")) {
       gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
       c = gridPanel;
+
+    } else if (title.equals("Fmrc")) {
+      fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc"));
+      c = fmrcPanel;
 
     } else if (title.equals("Radial")) {
       radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
@@ -564,6 +571,7 @@ public class ToolsUI extends JPanel {
     if (ncmlPanel != null) ncmlPanel.save();
     if (imagePanel != null) imagePanel.save();
     if (gridPanel != null) gridPanel.save();
+    if (fmrcPanel != null) fmrcPanel.save();
     if (radialPanel != null) radialPanel.save();
     if (pointObsPanel != null) pointObsPanel.save();
     if (trajTablePanel != null) trajTablePanel.save();
@@ -1572,6 +1580,111 @@ public class ToolsUI extends JPanel {
       // prefs.putBeanObject(FRAME_SIZE, writeDataDialog.getBounds());
       // prefs.putBeanObject(FRAME_SIZE, saveNcmlDialog.getBounds());
       super.save();
+    }
+
+  }
+
+  private class FmrcPanel extends OpPanel {
+    private NetcdfDataset ds = null;
+
+    private boolean useDefinition = false;
+    private JComboBox defComboBox;
+    private IndependentWindow defWindow;
+    private AbstractButton defButt;
+
+    FmrcPanel(PreferencesExt p) {
+      super(p, "dataset:", true, false);
+
+      // allow to set a defintion file for GRIB
+      AbstractAction defAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useDefinition = state.booleanValue();
+          String tooltip = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
+          defButt.setToolTipText(tooltip);
+          if (useDefinition) {
+            defWindow.show();
+          }
+        }
+      };
+      String tooltip2 = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
+      BAMutil.setActionProperties(defAction, "dd", tooltip2, true, 'D', -1);
+      defAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
+      defButt = BAMutil.addActionToContainer(buttPanel, defAction);
+
+      defComboBox = new JComboBox( FmrcDefinition.fmrcDefinitionFiles);
+      defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
+      defWindow.setLocationRelativeTo(defButt);
+
+      AbstractAction transAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String currentFile = (String) cb.getSelectedItem();
+          File file = new File(currentFile + ".gbx");
+          if (file.exists()) {
+            file.delete();
+            JOptionPane.showMessageDialog(null, "Index deleted, reopen= " + currentFile);
+            process( currentFile);
+          }
+        }
+      };
+      BAMutil.setActionProperties(transAction, "netcdf", "Transformed NcML", false, 'T', -1);
+      BAMutil.addActionToContainer(buttPanel, transAction);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+      ucar.nc2.dt.GridDataset gds = null;
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+
+      try {
+
+        Object spiObject = null;
+        if (useDefinition) {
+          String currentDef = (String) defComboBox.getSelectedItem();
+          if (currentDef != null) {
+            FmrcDefinition fmrc_def = new FmrcDefinition();
+            fmrc_def.readDefinitionXML(currentDef);
+            spiObject = fmrc_def;
+            NetcdfDataset ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
+            gds = new ucar.nc2.dataset.grid.GridDataset(ds);
+          } else {
+            JOptionPane.showMessageDialog(null, "cant open Defintion file " + currentDef);
+            return false;
+          }
+
+        } else {
+          gds = ucar.nc2.dataset.grid.GridDataset.open(command);
+        }
+
+        if (gds == null) {
+          JOptionPane.showMessageDialog(null, "GridDataset.open cant open " + command);
+          return false;
+        }
+
+        ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(gds, null);
+        fmrInv.writeXML( bos);
+        ta.setText(bos.toString());
+        ta.gotoTop();
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "GridDataset.open cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+        err = true;
+      } finally {
+
+        if (gds != null) try {
+          gds.close();
+        } catch (IOException e) {
+        }
+      }
+
+      return !err;
     }
 
   }

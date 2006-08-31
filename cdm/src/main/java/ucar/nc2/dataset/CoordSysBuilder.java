@@ -118,6 +118,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("WRF", WRFConvention.class);
 
     registerConvention("M3IOVGGrid", M3IOVGGridConvention.class);
+    registerConvention("M3IO", M3IOConvention.class);
     registerConvention("IFPS", IFPSConvention.class);
     registerConvention("ARPS/ADAS", ADASConvention.class);
 

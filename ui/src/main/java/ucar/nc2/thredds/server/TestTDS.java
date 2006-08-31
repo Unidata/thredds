@@ -83,7 +83,7 @@ public class TestTDS implements Runnable {
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:8080/thredds";
+    String server = "http://motherlode.ucar.edu:9080/thredds";
 
     // HEY LOOK
     //ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);
@@ -98,7 +98,7 @@ public class TestTDS implements Runnable {
     main = new JPanel();
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestTDS modelsNc = new TestTDS("modelsNc", server+"/idv/rt-models.1.0.xml", CatalogCrawler.USE_RANDOM_DIRECT);
+    // TestTDS modelsNc = new TestTDS("modelsNc", server+"/idv/rt-models.1.0.xml", CatalogCrawler.USE_RANDOM_DIRECT);
 
     TestTDS dgex_model = new TestTDS("dgex_model", server+"/idd/dgex_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
     TestTDS gfs_model = new TestTDS("gfs_model", server+"/idd/gfs_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
@@ -122,7 +122,7 @@ public class TestTDS implements Runnable {
     new Thread( ruc_model).start();
     new Thread( ndfd_model).start(); // */
     
-    new Thread( modelsNc).start();
+    //new Thread( modelsNc).start();
 
   }
 

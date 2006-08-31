@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data" version="1.0.1">
-  <service name="latest" serviceType="Resolver" base="" />
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
-    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
   </service>
@@ -29,41 +27,19 @@
         <end>present</end>
         <duration>7 days</duration>
       </timeCoverage>
-      <variables vocabulary="GRIB-2" />
     </metadata>
-    <datasetFmrc name="NWS National Digital Forecast Database 5km CONUS" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NDFD/CONUS_5km">
-      <documentation xlink:href="/thredds/modelInventory/model/NCEP/NDFD/CONUS_5km/" xlink:title="Available Inventory" />
-      <documentation type="summary">1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 90 to 180 hours.</documentation>
+
+    <datasetFmrc name="NDFD-CONUS_5km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NDFD/CONUS_5km">
       <metadata inherited="true">
-        <geospatialCoverage>
-          <northsouth>
-            <start>20.16524</start>
-            <size>29.95542</size>
-            <units>degrees_north</units>
-          </northsouth>
-          <eastwest>
-            <start>-121.57306</start>
-            <size>60.72563</size>
-            <units>degrees_east</units>
-          </eastwest>
-        </geospatialCoverage>
-        <variables vocabulary="GRIB-2">
-          <variable name="Categorical_Rain" vocabulary_name="Meteorological_products / Moisture / Categorical_Rain" units="" vocabulary_id="2,0,1,192">Categorical Rain @ surface</variable>
-          <variable name="Dew_point_temperature" vocabulary_name="Meteorological_products / Temperature / Dew_point_temperature" units="K" vocabulary_id="2,0,0,6">Dew point temperature @ height_above_ground1</variable>
-          <variable name="Maximum_temperature" vocabulary_name="Meteorological_products / Temperature / Maximum_temperature" units="K" vocabulary_id="2,0,0,4">Maximum temperature @ height_above_ground1</variable>
-          <variable name="Minimum_temperature" vocabulary_name="Meteorological_products / Temperature / Minimum_temperature" units="K" vocabulary_id="2,0,0,5">Minimum temperature @ height_above_ground1</variable>
-          <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" vocabulary_name="Hydrological_products / Hydrology_probabilities / Probability_of_Precipipation" units="percent" vocabulary_id="2,1,1,2">Probablity of 1 tenth inch Precipipation POP @ surface</variable>
-          <variable name="Total_cloud_cover" vocabulary_name="Meteorological_products / Cloud / Total_cloud_cover" units="percent" vocabulary_id="2,0,6,1">Total cloud cover @ entire_atmosphere</variable>
-          <variable name="Wind_direction_from_which_blowing" vocabulary_name="Meteorological_products / Momentum / Wind_direction" units="deg true" vocabulary_id="2,0,2,0">Wind direction from which blowing @ height_above_ground</variable>
-          <variable name="Wind_speed" vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1" vocabulary_id="2,0,2,1">Wind speed @ height_above_ground</variable>
-        </variables>
+        <documentation type="summary">1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 90 to 180 hours.</documentation>
       </metadata>
 
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-        <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true" fmrcDefinition="NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" recheckEvery="30 min">
+        <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" recheckEvery="30 min">
           <scan  location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/" suffix=".grib2" dateFormatMark="NDFD_CONUS_5km_#yyyyMMdd_HHmm" subdirs="true" />
         </aggregation>
       </netcdf>
+      <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-NDFD-CONUS_5km.fmrcDefinition.xml" />
 
     </datasetFmrc>
   </dataset>

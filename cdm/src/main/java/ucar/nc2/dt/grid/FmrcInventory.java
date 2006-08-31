@@ -120,7 +120,11 @@ public class FmrcInventory {
    */
   FmrcInventory(String fmrcDefinitionDir, String name) throws IOException {
     this.fmrcDefinitionDir = fmrcDefinitionDir;
-    this.name = name;
+    int pos = name.indexOf(".fmrcDefinition.xml");
+    if (pos > 0)
+      this.name = name.substring(0,pos);
+    else
+      this.name = name;
 
     // see if theres a definition file
     FmrcDefinition fmrc = new FmrcDefinition();
@@ -594,25 +598,22 @@ public class FmrcInventory {
 
     public int compareTo(Object o) {
       LevelCoord other = (LevelCoord) o;
-      if (closeEnough(value1, other.value1) && closeEnough(value2, other.value2)) return 0;
-      return (int) (mid - other.mid);
+      //if (closeEnough(value1, other.value1) && closeEnough(value2, other.value2)) return 0;
+      if (mid < other.mid) return -1;
+      if (mid > other.mid) return 1;
+      return 0;
     }
 
     public boolean equals(Object oo) {
       if (this == oo) return true;
       if ( !(oo instanceof LevelCoord)) return false;
       LevelCoord other = (LevelCoord) oo;
-      return (closeEnough(value1, other.value1) && closeEnough(value2, other.value2));
+      return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
     }
 
     public int hashCode() {
       return (int) (value1 * 100000 + value2 * 100);
     }
-  }
-
-  private double TOL = 1.0e-8;
-  private boolean closeEnough( double v1, double v2) {
-    return Math.abs(v1 - v2) < TOL;
   }
 
   class RunExpected implements Comparable {
@@ -1228,7 +1229,7 @@ public class FmrcInventory {
   /**
    * Create a ForecastModelRun Collection from the files in a directory.
    * @param fmrcDefinitionPath put/look for fmrc definition files in this directory
-   * @param collectionName the definition file = collectionName + ".fmrcDefinition.xml";
+   * @param collectionName the definition file = "name.fmrcDefinition.xml";
    * @param fmr_cache cache fmr inventory files here
    * @param dirName  scan this directory
    * @param suffix filter on this suffix

@@ -399,6 +399,30 @@ public class IO {
   }
 
   /**
+   * read the contents from the named URL, write to a file.
+   * @param urlString the URL to read from.
+   * @return status or error message.
+   */
+  static public String readURLtoFileWithExceptions( String urlString, File file) throws IOException {
+    OutputStream out = new BufferedOutputStream( new FileOutputStream( file));
+
+    try {
+      copyUrlB(urlString, out, 20000);
+      return "ok";
+
+    } finally {
+
+      try {
+        out.close();
+      } catch (IOException e) {
+        return "** IOException closing file : <"+file+">\n"+e.getMessage()+"\n";
+      }
+    }
+
+  }
+
+
+  /**
    * Read the contents from the named URL and place into a String.
    * @param urlString the URL to read from.
    * @return String holding the contents.

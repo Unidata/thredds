@@ -407,7 +407,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       increment = getCoordValue(1) - getCoordValue(0);
       isRegular = true;
       for (int i=1; i< getSize(); i++)
-        if (!closeEnough(getCoordValue(i) - getCoordValue(i-1), increment)) {
+        if (!ucar.nc2.util.Misc.closeEnough(getCoordValue(i) - getCoordValue(i-1), increment)) {
           isRegular = false;
           // double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
           // System.out.println(i+" diff= "+diff);
@@ -417,10 +417,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     wasCalc = true;
   }
   private boolean wasCalc = false;
-
-  private boolean closeEnough( double d1, double d2) {
-    return Math.abs(d2-d1) < 1.0e-4;
-  }
 
   ///////////////////////////////////////////////////////////////////////////////
 
@@ -537,7 +533,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     // decide if they are contiguous
     boolean contig = true;
     for (int i = 0; i < n-1; i++) {
-      if (!closeEnough(value1[i+1], value2[i]))
+      if (!ucar.nc2.util.Misc.closeEnough(value1[i+1], value2[i]))
         contig = false;
     }
 

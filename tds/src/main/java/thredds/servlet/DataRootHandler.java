@@ -472,7 +472,6 @@ public class DataRootHandler {
     DataRoot(InvDatasetFmrc fmrc) {
       this.path = fmrc.getPath();
       this.fmrc = fmrc;
-      this.dirLocation = fmrc.getLocation();
     }
 
     DataRoot(InvDatasetScan scan) {

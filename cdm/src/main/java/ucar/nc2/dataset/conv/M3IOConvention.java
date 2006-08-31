@@ -37,7 +37,7 @@ import java.util.*;
  *
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
- * @see "http://www.emc.mcnc.org/products/ioapi/index.html"
+ * @see "http://www.baronams.com/products/ioapi/index.html"
  */
 
 public class M3IOConvention extends CoordSysBuilder {

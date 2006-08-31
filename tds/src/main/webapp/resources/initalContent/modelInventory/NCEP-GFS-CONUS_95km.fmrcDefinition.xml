@@ -7,7 +7,7 @@
   <vertCoord id="3" name="isobaric2" units="hPa">300.0 400.0 500.0 700.0 850.0 1000.0</vertCoord>
   <vertCoord id="1" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,180.0</vertCoord>
   <vertCoord id="4" name="layer_between_two_pressure_difference_from_ground1" units="hPa">0.0,30.0</vertCoord>
-  <vertCoord id="5" name="layer_between_two_sigmas" units="sigma">44.0,100.0</vertCoord>
+  <vertCoord id="5" name="layer_between_two_sigmas" units="sigma">.44,1.00</vertCoord>
   <offsetHours id="0">0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0</offsetHours>
   <offsetHours id="1">6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0</offsetHours>
   <runSequence allUseSeq="0">

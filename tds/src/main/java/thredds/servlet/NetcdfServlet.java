@@ -110,7 +110,7 @@ public class NetcdfServlet extends AbstractServlet {
        pathInfo = pathInfo.substring(0,pathInfo.length()-3);
 
     GridDataset gds = DatasetHandler.openGridDataset( pathInfo);
-    ForecastModelRunInventory fmr = ForecastModelRunInventory.open(gds);
+    ForecastModelRunInventory fmr = ForecastModelRunInventory.open(gds, null);
 
     /* File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( pathInfo);
     if (file == null) {
@@ -234,10 +234,10 @@ public class NetcdfServlet extends AbstractServlet {
           if (null == maxBB)
             hasBB = true;
           else {
-            hasBB = !closeEnough( north, maxBB.getUpperRightPoint().getLatitude()) ||
-                    !closeEnough( south, maxBB.getLowerLeftPoint().getLatitude()) ||
-                    !closeEnough( east, maxBB.getUpperRightPoint().getLongitude()) ||
-                    !closeEnough( west, maxBB.getLowerLeftPoint().getLongitude());
+            hasBB = !ucar.nc2.util.Misc.closeEnough( north, maxBB.getUpperRightPoint().getLatitude()) ||
+                    !ucar.nc2.util.Misc.closeEnough( south, maxBB.getLowerLeftPoint().getLatitude()) ||
+                    !ucar.nc2.util.Misc.closeEnough( east, maxBB.getUpperRightPoint().getLongitude()) ||
+                    !ucar.nc2.util.Misc.closeEnough( west, maxBB.getLowerLeftPoint().getLongitude());
           }
         } catch (NumberFormatException e) {
           err = true;
@@ -368,11 +368,6 @@ public class NetcdfServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       return;
     }
-  }
-
-  private boolean closeEnough( double d1, double d2) {
-    if (d1 < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
   }
 
   private void sendFile(HttpServletRequest req, HttpServletResponse res, GridDataset gds, List gridList,

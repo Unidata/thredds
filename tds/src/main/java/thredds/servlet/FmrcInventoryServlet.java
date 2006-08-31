@@ -37,6 +37,7 @@ import ucar.nc2.dt.grid.FmrcDefinition;
 import ucar.nc2.dt.grid.FmrcReport;
 import ucar.nc2.dt.grid.ForecastModelRunInventory;
 import ucar.unidata.util.StringUtil;
+import thredds.catalog.InvDatasetFmrc;
 
 /**
  * Servlet shows Forecast Model Run Collection Inventory.
@@ -90,34 +91,25 @@ public class FmrcInventoryServlet extends AbstractServlet {
     String varName;
     DataRootHandler h = DataRootHandler.getInstance();
     DataRootHandler.DataRootMatch match = h.findDataRootMatch( req );
-    if ((match == null) || (match.dirLocation == null)) {
+    if ((match == null) || (match.dataRoot.fmrc == null)) {
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
 
-    if (debug) System.out.println("match="+match.rootPath+" rem="+match.remaining+" location="+match.dirLocation);
-    varName = match.remaining;
+    InvDatasetFmrc.InventoryParams params = match.dataRoot.fmrc.getFmrcInventoryParams();
+    if (params == null) {
+      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+      return;
+    }
+
 
     FmrcInventory fmr;
     try {
-      String suffix = req.getParameter("suffix");
-      String name = req.getParameter("def");
-      FmrcInventoryParams params = new FmrcInventoryParams(name, suffix);
-
-      if (name != null) {
-         paramHash.put( match.rootPath, params);
-      } else {
-        params = (FmrcInventoryParams) paramHash.get(match.rootPath);
-        if (params == null) {
-          ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
-          res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-          return;
-        }
-      }
 
       if (debug) System.out.println("  FmrcInventoryParams="+params+" for path="+match.rootPath);
-      fmr = FmrcInventory.make(contentPath, params.name, fmrCache, match.dirLocation, params.suffix,
+      fmr = FmrcInventory.make(contentPath, params.def, fmrCache, params.location, params.suffix,
               ForecastModelRunInventory.OPEN_XML_ONLY);
 
     } catch (Exception e) {
@@ -141,6 +133,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
       return;
     }
 
+    varName = match.remaining;
     if (varName.startsWith("/"))
       varName = varName.substring(1);
     if (varName.endsWith("/"))
@@ -153,16 +146,6 @@ public class FmrcInventoryServlet extends AbstractServlet {
     }
 
     showInventory( res, fmr, varName, query, false);
-  }
-
-  private class FmrcInventoryParams {
-    String name;
-    String suffix;
-    FmrcInventoryParams(String name, String suffix) {
-      this.name = name;
-      this.suffix = suffix;
-    }
-    public String toString() { return "name="+name +" suffix="+ suffix; }
   }
 
   private void showOffsetHour(HttpServletResponse res, FmrcInventory fmrc, String varName, String offsetHour) throws IOException {
@@ -294,41 +277,41 @@ public class FmrcInventoryServlet extends AbstractServlet {
 
   private String[] getDatasetPaths() {
     String[] all = {
-      "/thredds/modelInventory/idd/model/NCEP/DGEX/CONUS_12km/",
-      "/thredds/modelInventory/idd/model/NCEP/DGEX/Alaska_12km/",
+      "/thredds/modelInventory/fmrc/NCEP/DGEX/CONUS_12km/",
+      "/thredds/modelInventory/fmrc/NCEP/DGEX/Alaska_12km/",
 
-      "/thredds/modelInventory/idd/model/NCEP/GFS/Alaska_191km/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/CONUS_80km/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/CONUS_95km/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/CONUS_191km/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/Global_0p5deg/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/Global_onedeg/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/Global_2p5deg/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/Hawaii_160km/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/N_Hemisphere_381km/",
-      "/thredds/modelInventory/idd/model/NCEP/GFS/Puerto_Rico_191km/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/Alaska_191km/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_80km/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_95km/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/CONUS_191km/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/Global_0p5deg/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/Global_onedeg/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/Global_2p5deg/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/Hawaii_160km/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/N_Hemisphere_381km/",
+      "/thredds/modelInventory/fmrc/NCEP/GFS/Puerto_Rico_191km/",
 
-      "/thredds/modelInventory/idd/model/NCEP/NAM/Alaska_11km/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/Alaska_22km/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/Alaska_45km/noaaport/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/Alaska_45km/conduit/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/Alaska_95km/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/CONUS_12km/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/CONUS_20km/surface/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/CONUS_20km/selectsurface/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/CONUS_20km/noaaport/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/CONUS_40km/noaaport/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/CONUS_40km/conduit/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/CONUS_80km/",
-      "/thredds/modelInventory/idd/model/NCEP/NAM/Polar_90km/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_11km/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_22km/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_45km/noaaport/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_45km/conduit/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/Alaska_95km/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_12km/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/surface/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/selectsurface/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_20km/noaaport/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_40km/noaaport/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_40km/conduit/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/CONUS_80km/",
+      "/thredds/modelInventory/fmrc/NCEP/NAM/Polar_90km/",
 
-      "/thredds/modelInventory/idd/model/NCEP/RUC2/CONUS_20km/surface/",
-      "/thredds/modelInventory/idd/model/NCEP/RUC2/CONUS_20km/pressure/",
-      "/thredds/modelInventory/idd/model/NCEP/RUC2/CONUS_20km/hybrid/",
-      "/thredds/modelInventory/idd/model/NCEP/RUC/CONUS_40km/",
-      "/thredds/modelInventory/idd/model/NCEP/RUC/CONUS_80km/",
+      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/surface/",
+      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/pressure/",
+      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_20km/hybrid/",
+      "/thredds/modelInventory/fmrc/NCEP/RUC2/CONUS_40km/",
+      "/thredds/modelInventory/fmrc/NCEP/RUC/CONUS_80km/",
 
-      "/thredds/modelInventory/idd/model/NCEP/NDFD/CONUS_5km/",
+      "/thredds/modelInventory/fmrc/NCEP/NDFD/CONUS_5km/",
     };
 
     return all;

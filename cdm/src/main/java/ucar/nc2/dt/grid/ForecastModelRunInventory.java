@@ -94,21 +94,27 @@ public class ForecastModelRunInventory {
   private ForecastModelRunInventory() { }
 
   private ForecastModelRunInventory(String ncfileLocation) throws IOException {
-    this( ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation));
+    this( ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation), null);
   }
 
-  private ForecastModelRunInventory(ucar.nc2.dt.GridDataset gds) {
+  private ForecastModelRunInventory(ucar.nc2.dt.GridDataset gds, Date runDate) {
 
     this.gds = gds;
     name = gds.getTitle();
 
     NetcdfFile ncfile = gds.getNetcdfFile();
-    runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
-    if (runTime == null)
-      throw new IllegalArgumentException("File must have "+_Coordinate.ModelRunDate+" attribute ");
-    runDate = DateUnit.getStandardOrISO(runTime);
-    if (runDate == null)
-      throw new IllegalArgumentException( _Coordinate.ModelRunDate+" must be ISO date string "+runTime);
+    if (runDate == null) {
+      runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
+      if (runTime == null)
+        throw new IllegalArgumentException("File must have "+_Coordinate.ModelRunDate+" attribute ");
+      this.runDate = DateUnit.getStandardOrISO(runTime);
+      if (this.runDate == null)
+        throw new IllegalArgumentException( _Coordinate.ModelRunDate+" must be ISO date string "+runTime);
+    } else {
+      this.runDate = runDate;
+      DateFormatter df = new DateFormatter();
+      this.runTime = df.toDateTimeStringISO(runDate);
+    }
     getIosp();
 
     // add each variable
@@ -314,7 +320,7 @@ public class ForecastModelRunInventory {
       if (offset.length != tother.offset.length)
         return false;
       for (int i = 0; i < offset.length ; i++) {
-        if (!closeEnough( offset[i], tother.offset[i]))
+        if (!ucar.nc2.util.Misc.closeEnough( offset[i], tother.offset[i]))
           return false;
       }
       return true;
@@ -476,7 +482,7 @@ public class ForecastModelRunInventory {
    *  Represents a vertical coordinate.
    *  Tracks a list of variables that all have the same list of valid times.
    */
-  public static class VertCoord implements FmrcCoordSys.VertCoord {
+  public static class VertCoord implements FmrcCoordSys.VertCoord, Comparable {
     CoordinateAxis1D axis; // is null when read from XML
     private String name, units;
     private String id; // unique id
@@ -531,7 +537,7 @@ public class ForecastModelRunInventory {
         return false;
 
       for (int i = 0; i < values1.length ; i++) {
-        if ( !closeEnough(values1[i], other.values1[i]))
+        if ( !ucar.nc2.util.Misc.closeEnough(values1[i], other.values1[i]))
           return false;
       }
 
@@ -544,17 +550,17 @@ public class ForecastModelRunInventory {
       if (values2.length != other.values2.length)
         return false;
       for (int i = 0; i < values2.length ; i++) {
-        if ( !closeEnough(values2[i], other.values2[i]))
+        if ( !ucar.nc2.util.Misc.closeEnough(values2[i], other.values2[i]))
           return false;
       }
 
       return true;
     }
-  }
 
-  static boolean closeEnough( double d1, double d2) {
-    if (d1 < 1.0e-8) return Math.abs(d1-d2) < 1.0e-8;
-    return Math.abs((d1-d2)/d1) < 1.0e-8;
+    public int compareTo(Object o) {
+      VertCoord other = (VertCoord) o;
+      return name.compareTo( other.name);
+    }
   }
 
    static public double getOffsetInHours(Date origin, Date date) {
@@ -605,6 +611,7 @@ public class ForecastModelRunInventory {
     rootElem.setAttribute("runTime", runTime);
 
         // list all the vertical coords
+    Collections.sort( vaxes);
     for (int i = 0; i < vaxes.size(); i++) {
       VertCoord vc = (VertCoord) vaxes.get(i);
 
@@ -642,6 +649,7 @@ public class ForecastModelRunInventory {
       }
       offsetElem.addContent(sbuff.toString());
 
+      Collections.sort( tc.vars);
       for (int j=0; j<tc.vars.size(); j++) {
         Grid grid = (Grid) tc.vars.get(j);
         Element varElem = new Element("variable");
@@ -851,8 +859,8 @@ public class ForecastModelRunInventory {
     return fmr;
   }
 
-  public static ForecastModelRunInventory open(ucar.nc2.dt.GridDataset gds) {
-    return new ForecastModelRunInventory(gds);
+  public static ForecastModelRunInventory open(ucar.nc2.dt.GridDataset gds, Date runDate) {
+    return new ForecastModelRunInventory(gds, runDate);
   }
 
 

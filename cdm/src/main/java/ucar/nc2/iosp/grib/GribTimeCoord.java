@@ -38,7 +38,7 @@ import java.util.*;
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GribTimeCoord {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribTimeCoord.class);
 
     // for parsing dates
   private DateFormatter formatter = new DateFormatter();

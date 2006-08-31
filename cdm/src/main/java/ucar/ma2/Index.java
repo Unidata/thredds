@@ -290,14 +290,16 @@ public class Index implements Cloneable {
       if ((dims[i] < 0) || (dims[i] >= rank))
         throw new IllegalArgumentException();
 
+    boolean isPermuted = false;
     Index newIndex = (Index) this.clone();
     for (int i=0; i<dims.length; i++) {
       newIndex.stride[i] = stride[dims[i]];
       newIndex.shape[i] = shape[dims[i]];
       if (name != null) newIndex.name[i] = name[dims[i]];
+      if (i != dims[i]) isPermuted = true;
     }
 
-    newIndex.fastIterator = false;
+    newIndex.fastIterator = !isPermuted; // useful optimization
     newIndex.precalc(); // any subclass-specific optimizations
     return newIndex;
   }

@@ -11,9 +11,9 @@
   <vertCoord id="12" name="layer_between_two_depths_below_surface" units="cm">0.0,10.0 10.0,40.0 40.0,100.0 100.0,200.0</vertCoord>
   <vertCoord id="2" name="layer_between_two_pressure_difference_from_ground" units="hPa">0.0,180.0</vertCoord>
   <vertCoord id="9" name="layer_between_two_pressure_difference_from_ground1" units="hPa">0.0,30.0</vertCoord>
-  <vertCoord id="10" name="layer_between_two_sigmas" units="sigma">44.0,72.0 33.0,100.0 44.0,100.0 72.0,94.0</vertCoord>
+  <vertCoord id="10" name="layer_between_two_sigmas" units="sigma">.44,.72 .33,1.00 .44,1.00 .72,.94</vertCoord>
   <vertCoord id="4" name="potential_vorticity_surface" units="10-6Km2/kgs">2000.0 34768.0</vertCoord>
-  <vertCoord id="8" name="sigma" units="sigma">9950.0</vertCoord>
+  <vertCoord id="8" name="sigma" units="sigma">.9950</vertCoord>
   <offsetHours id="3">192.0 204.0 216.0 228.0 240.0 252.0 264.0 276.0 288.0 300.0 312.0 324.0 336.0 348.0 360.0 372.0 384.0</offsetHours>
   <offsetHours id="4">22.0 23.0 24.0 25.0 26.0 27.0 28.0 29.0 30.0 31.0 32.0 192.0 204.0 216.0 228.0 240.0 252.0</offsetHours>
   <runSequence allUseSeq="3">

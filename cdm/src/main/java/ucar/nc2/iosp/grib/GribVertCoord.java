@@ -38,7 +38,7 @@ import java.util.*;
  * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 public class GribVertCoord implements Comparable {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVertCoord.class);
 
   private Index.GribRecord typicalRecord;
   private String levelName;
@@ -253,15 +253,17 @@ public class GribVertCoord implements Comparable {
 
     public int compareTo(Object o) {
       LevelCoord other = (LevelCoord) o;
-      if (closeEnough(value1, other.value1) && closeEnough(value2, other.value2)) return 0;
-      return (int) (mid - other.mid);
+      // if (closeEnough(value1, other.value1) && closeEnough(value2, other.value2)) return 0;
+      if (mid < other.mid) return -1;
+      if (mid > other.mid) return 1;
+      return 0;
     }
 
     public boolean equals(Object oo) {
       if (this == oo) return true;
       if ( !(oo instanceof LevelCoord)) return false;
       LevelCoord other = (LevelCoord) oo;
-      return (closeEnough(value1, other.value1) && closeEnough(value2, other.value2));
+      return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
     }
 
     public int hashCode() {
@@ -269,10 +271,7 @@ public class GribVertCoord implements Comparable {
     }
   }
 
-  private double TOL = 1.0e-8;
-  private boolean closeEnough( double v1, double v2) {
-    return Math.abs(v1 - v2) < TOL;
-  }
+
   private int coordIndex(Index.GribRecord record) {
     double val = record.levelValue1;
     double val2 = record.levelValue2;
@@ -283,8 +282,13 @@ public class GribVertCoord implements Comparable {
 
     for (int i = 0; i < levels.size(); i++) {
       LevelCoord lc = (LevelCoord) levels.get(i);
-      if (closeEnough(lc.value1, val) && closeEnough(lc.value2, val2))
-        return i;
+      if (usesBounds) {
+        if (ucar.nc2.util.Misc.closeEnough(lc.value1, val) && ucar.nc2.util.Misc.closeEnough(lc.value2, val2))
+          return i;
+      } else {
+        if (ucar.nc2.util.Misc.closeEnough(lc.value1, val))
+          return i;
+      }
     }
     return -1;
   }

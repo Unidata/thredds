@@ -303,13 +303,22 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="DatasetType">
+          <xsd:sequence>
+            <xsd:element ref="fmrcInventory" minOccurs="0"/>
+          </xsd:sequence>
           <xsd:attribute name="path" type="xsd:string" use="required"/>
-          <xsd:attribute name="location" type="xsd:string"/>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="fmrcInventory">
+    <xsd:complexType>
+      <xsd:attribute name="location" type="xsd:string" use="required"/>
+      <xsd:attribute name="suffix" type="xsd:string"/>
+      <xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- Documentation element -->

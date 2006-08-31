@@ -135,7 +135,7 @@ public class TestNcmlUnion extends TestCase {
     try {
       Array data = v.read();
       assert data.getRank() == 3;
-      assert data.getSize() == 24;
+      assert data.getSize() == 24 : data.getSize();
       assert data.getShape()[0] == 2;
       assert data.getShape()[1] == 3;
       assert data.getShape()[2] == 4;

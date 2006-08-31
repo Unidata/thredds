@@ -90,10 +90,10 @@ public class ParamParser {
         if (null == maxBB)
           hasBB = true;
         else {
-          hasBB = !closeEnough(north, maxBB.getUpperRightPoint().getLatitude()) ||
-                  !closeEnough(south, maxBB.getLowerLeftPoint().getLatitude()) ||
-                  !closeEnough(east, maxBB.getUpperRightPoint().getLongitude()) ||
-                  !closeEnough(west, maxBB.getLowerLeftPoint().getLongitude());
+          hasBB = !ucar.nc2.util.Misc.closeEnough(north, maxBB.getUpperRightPoint().getLatitude()) ||
+                  !ucar.nc2.util.Misc.closeEnough(south, maxBB.getLowerLeftPoint().getLatitude()) ||
+                  !ucar.nc2.util.Misc.closeEnough(east, maxBB.getUpperRightPoint().getLongitude()) ||
+                  !ucar.nc2.util.Misc.closeEnough(west, maxBB.getLowerLeftPoint().getLongitude());
         }
 
       } catch (NumberFormatException e) {
@@ -131,10 +131,10 @@ public class ParamParser {
           if (null == maxBB)
             hasBB = true;
           else {
-            hasBB = !closeEnough(north, maxBB.getUpperRightPoint().getLatitude()) ||
-                    !closeEnough(south, maxBB.getLowerLeftPoint().getLatitude()) ||
-                    !closeEnough(east, maxBB.getUpperRightPoint().getLongitude()) ||
-                    !closeEnough(west, maxBB.getLowerLeftPoint().getLongitude());
+            hasBB = !ucar.nc2.util.Misc.closeEnough(north, maxBB.getUpperRightPoint().getLatitude()) ||
+                    !ucar.nc2.util.Misc.closeEnough(south, maxBB.getLowerLeftPoint().getLatitude()) ||
+                    !ucar.nc2.util.Misc.closeEnough(east, maxBB.getUpperRightPoint().getLongitude()) ||
+                    !ucar.nc2.util.Misc.closeEnough(west, maxBB.getLowerLeftPoint().getLongitude());
           }
         } catch (NumberFormatException e) {
           addMessage("Must have valid (double) north, south, west, east parameters");
@@ -223,11 +223,6 @@ public class ParamParser {
         addMessage("Bad format for date_start and date_end parameters; must be valid ISO date strings");
     }
 
-  }
-
-  static private boolean closeEnough(double d1, double d2) {
-    if (d1 < 1.0e-5) return Math.abs(d1 - d2) < 1.0e-5;
-    return Math.abs((d1 - d2) / d1) < 1.0e-5;
   }
 
 }

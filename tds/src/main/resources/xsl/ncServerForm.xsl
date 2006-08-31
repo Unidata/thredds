@@ -33,9 +33,12 @@
         <hr/>
         <h1>NetCDF Grid Subset Server</h1>
         Select Grids,  optionally bounding box and time range. A NetCDF file using CF-1 Conventions is returned.
-        <h2>Dataset 
+        <h2>Dataset: 
           <xsl:value-of select="forecastModelRun/@name"/>
         </h2>
+        <h3>Base Time:
+          <xsl:value-of select="forecastModelRun/@runTime"/>
+        </h3>
         <hr/>
         
         <form method="GET" action="{forecastModelRun/attribute::name}.nc">

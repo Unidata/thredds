@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data / DGEX Model" version="1.0.1">
-  <service name="latest" serviceType="Resolver" base="" />
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
-    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
   </service>
@@ -32,10 +30,8 @@
       </timeCoverage>
     </metadata>
 
-    <datasetFmrc name="CONUS_12km" harvest="true" ID="fmrc/NCEP/DGEX/CONUS_12km" path="fmrc/NCEP/DGEX/CONUS_12km">
-      <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/CONUS_12km/" xlink:title="Available Inventory" />
+    <datasetFmrc name="NCEP-DGEX-CONUS_12km" harvest="true" path="fmrc/NCEP/DGEX/CONUS_12km" collectionType="ForecastModelRuns" >
       <metadata inherited="true">
-        <dataFormat>GRIB-2</dataFormat>
         <documentation type="summary">NCEP Model output Grid 185 (C) horizontal = 491 by 303 points, resolution 12 km, LambertConformal projection.
           Model runs are made at 6 and 18Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours</documentation>
       </metadata>
@@ -45,13 +41,11 @@
           <scan location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2" dateFormatMark="DGEX_CONUS_12km_#yyyyMMdd_HHmm" subdirs="true" />
         </aggregation>
       </netcdf>
-
+      <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml" />
     </datasetFmrc>
 
-    <datasetFmrc name="Alaska_12km" harvest="true" ID="fmrc/NCEP/DGEX/Alaska_12km" path="fmrc/NCEP/DGEX/Alaska_12km">
-      <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/Alaska_12km/" xlink:title="Available Inventory" />
+    <datasetFmrc name="NCEP-DGEX-Alaska_12km" harvest="true" path="fmrc/NCEP/DGEX/Alaska_12km" collectionType="ForecastModelRuns" >
       <metadata inherited="true">
-        <dataFormat>GRIB-2</dataFormat>
         <documentation type="summary">NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km,
           Polar Stereographic projection. Model runs are made at 0 and 12Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours</documentation>
       </metadata>
@@ -61,8 +55,9 @@
           <scan  location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2" dateFormatMark="DGEX_Alaska_12km_#yyyyMMdd_HHmm" subdirs="true" />
         </aggregation>
       </netcdf>
-
+      <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-Alaska_12km.fmrcDefinition.xml" />
     </datasetFmrc>
+    
   </dataset>
 </catalog>
 

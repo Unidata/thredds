@@ -500,8 +500,15 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
         System.out.println("   oldDim index = "+permuteIndex[i]);
     }
 
+    // check to see if we need to permute
+    boolean needPermute = false;
+    for (int i = 0; i < permuteIndex.length; i++) {
+      if (i != permuteIndex[i]) needPermute = true;
+    }
+
     // permute to the order rt,e,t,z,y,x
-    dataVolume = dataVolume.permute(permuteIndex);
+    if (needPermute)
+      dataVolume = dataVolume.permute(permuteIndex);
 
     // eliminate fixed dimensions, but not all dimensions of length 1.
     count = 0;

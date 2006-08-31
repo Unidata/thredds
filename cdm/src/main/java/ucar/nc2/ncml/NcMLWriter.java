@@ -471,7 +471,7 @@ public class NcMLWriter {
         for (int i=2; i < a.getSize(); i++) {
           double v1 = a.getDouble( ima.set(i));
           double v0 = a.getDouble( ima.set(i-1));
-          if (!closeEnough(v1-v0, incr))
+          if (!ucar.nc2.util.Misc.closeEnough(v1-v0, incr))
             isRegular = false;
         }
 
@@ -496,10 +496,6 @@ public class NcMLWriter {
     } // not string
 
     return elem;
-  }
-
-  private boolean closeEnough( double d1, double d2) {
-    return Math.abs(d2-d1) < 1.0e-7;
   }
 
   public static void main( String arg[]){

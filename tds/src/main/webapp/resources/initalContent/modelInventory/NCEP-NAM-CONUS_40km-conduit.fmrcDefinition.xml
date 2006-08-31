@@ -24,7 +24,7 @@
   <vertCoord id="15" name="layer_between_two_pressure_difference_from_ground4" units="hPa">0.0,30.0 60.0,90.0 120.0,150.0 150.0,180.0</vertCoord>
   <vertCoord id="3" name="layer_between_two_pressure_difference_from_ground5" units="hPa">0.0,255.0</vertCoord>
   <vertCoord id="1" name="layer_between_two_pressure_difference_from_ground6" units="hPa">0.0,180.0</vertCoord>
-  <vertCoord id="16" name="layer_between_two_sigmas" units="sigma">47.0,100.0</vertCoord>
+  <vertCoord id="16" name="layer_between_two_sigmas" units="sigma">.47,1.00</vertCoord>
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</offsetHours>
   <runSequence allUseSeq="0">
     <variable name="Absolute_vorticity" vertCoord="0" />

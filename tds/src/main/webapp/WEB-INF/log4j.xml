@@ -46,6 +46,16 @@
     </layout>
   </appender>
 
+  <!-- keep track of Cache messages in a seperatefile. runs once a day -->
+  <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${logdir}/models.log"/>
+    <param name="MaxFileSize" value="5MB"/>
+    <param name="MaxBackupIndex" value="5"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %-5p %c : %m%n"/>
+    </layout>
+  </appender>
+
   <logger name="cacheLogger">
     <level value="ALL"/>
     <appender-ref ref="cacheLog"/>
@@ -64,6 +74,11 @@
   <logger name="threddsAccessLogger">
     <level value="ALL"/>
     <appender-ref ref="threddsAccess"/>
+  </logger>
+
+  <logger name="ucar.nc2.iosp.grib">
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
   </logger>
 
   <logger name="ucar">

@@ -276,8 +276,16 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   protected InvDatasetImpl readDatasetFmrc( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
     String name = dsElem.getAttributeValue("name");
     String path = dsElem.getAttributeValue("path");
-    String location = dsElem.getAttributeValue("location");
-    InvDatasetFmrc dsFmrc = new InvDatasetFmrc( parent, name, path, location);
+    InvDatasetFmrc dsFmrc = new InvDatasetFmrc( parent, name, path);
+
+    Element fmrcElem = dsElem.getChild( "fmrcInventory", defNS );
+    if (fmrcElem != null) {
+      String location = fmrcElem.getAttributeValue("location");
+      String def = fmrcElem.getAttributeValue("fmrcDefinition");
+      String suffix = fmrcElem.getAttributeValue("suffix");
+      dsFmrc.setFmrcInventoryParams( location, def, suffix);
+    }
+
     readDatasetInfo( catalog, dsFmrc, dsElem, base);
     return dsFmrc;
   }

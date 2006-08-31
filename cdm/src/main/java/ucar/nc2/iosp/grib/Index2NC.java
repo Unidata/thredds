@@ -58,7 +58,7 @@ public class Index2NC  {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Index2NC.class);
 
   private HashMap hcsHash = new HashMap( 10); // GribHorizCoordSys
   private DateFormatter formatter = new DateFormatter();
@@ -449,14 +449,16 @@ public class Index2NC  {
 
       // loop over GribVariables in the HorizCoordSys
       // create the time and vertical coordinates
-      Iterator iter = hcs.varHash.values().iterator();
-      while (iter.hasNext()) {
-        GribVariable pv =  (GribVariable) iter.next();
+      Iterator iterKey = hcs.varHash.keySet().iterator();
+      while (iterKey.hasNext()) {
+        String key =  (String) iterKey.next();
+        GribVariable pv =  (GribVariable) hcs.varHash.get(key);
         Index.GribRecord record = pv.getFirstRecord();
 
         // we dont know the name for sure yet, so have to try several
-        String searchName = findVariableName(record, lookup, fmr);
-        if (searchName == null) {
+        String searchName = findVariableName(ncfile, record, lookup, fmr);
+        if (searchName == null) { // cant find - just remove
+          hcs.varHash.remove(key);
           continue;
         }
         pv.setVarName( searchName);
@@ -530,7 +532,7 @@ public class Index2NC  {
     if (debug) System.out.println("Index2NC.makeDefinedCoordSys for "+ncfile.getLocation());
   }
 
-  private String findVariableName(Index.GribRecord gr, TableLookup lookup, FmrcCoordSys fmr) {
+  private String findVariableName(NetcdfFile ncfile, Index.GribRecord gr, TableLookup lookup, FmrcCoordSys fmr) {
     // first lookup with name & vert name
     String name = NetcdfFile.createValidNetcdfObjectName( makeVariableName(gr, lookup));
     if (fmr.hasVariable( name))
@@ -542,7 +544,7 @@ public class Index2NC  {
       return pname;
 
     System.out.println("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname);
-    logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname);
+    logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname+" for file "+ncfile.getLocation());
 
     return null;
   }

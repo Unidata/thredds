@@ -35,9 +35,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dt.grid.ForecastModelRunCollection;
 import ucar.nc2.dt.grid.FmrcImpl;
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.thredds.MetadataExtractor;
+import ucar.nc2.Attribute;
 import ucar.unidata.util.StringUtil;
 
 /**
@@ -51,8 +51,11 @@ public class InvDatasetFmrc extends InvCatalogRef {
   static private final String FMRC = "fmrc.ncd";
   static private final String BEST = "best.ncd";
   static private final String RUNS = "runs";
+  static private final String RUN_NAME = "RUN_";
   static private final String FORECAST = "forecast";
+  static private final String FORECAST_NAME = "ConstantForecast_";
   static private final String OFFSET = "offset";
+  static private final String OFFSET_NAME = "Offset_";
 
   static private final String TITLE_RUNS = "Forecast Model Run";
   static private final String TITLE_OFFSET = "Constant Forecast Offset";
@@ -61,18 +64,33 @@ public class InvDatasetFmrc extends InvCatalogRef {
   //////////////////////////////////////////////
 
   private boolean madeDatasets = false, madeFmrc = false;
-  private String path, location;
+  private String path;
   private ForecastModelRunCollection fmrc;
   private InvCatalogImpl catalog, catalogRuns, catalogOffsets, catalogForecasts;
+  private InventoryParams params;
 
-  public InvDatasetFmrc(InvDatasetImpl parent, String name, String path, String location) {
+  public InvDatasetFmrc(InvDatasetImpl parent, String name, String path) {
     super(parent, name, "/thredds/catalog/"+path+"/catalog.xml");
     this.path = path;
-    this.location = location;
   }
 
   public String getPath() { return path; }
-  public String getLocation() { return location; }
+
+  public InventoryParams getFmrcInventoryParams() {
+    return params;
+  }
+
+  public void setFmrcInventoryParams(String location, String def, String suffix) {
+    this.params = new InventoryParams();
+    this.params.location = location;
+    this.params.def = def;
+    this.params.suffix = suffix;
+  }
+
+  public class InventoryParams {
+    public String location, def, suffix;
+    public String toString() { return "def="+def +" location="+ location+" suffix="+ suffix; }
+  }
 
   public boolean hasAccess() {
     return false;
@@ -123,10 +141,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
       ThreddsMetadata.GeospatialCoverage gc = MetadataExtractor.extractGeospatial(fmrc.getGridDataset());
       tmi.setGeospatialCoverage(gc);
 
-      if (null != location) {
+      if (null != params) {
         ThreddsMetadata tm = top.getLocalMetadata();
-        String href = "/thredds/modelInventory/"+getPath()+"?def=NCEP-NAM-CONUS_80km&suffix=.grib1";
-        InvDocumentation doc = new InvDocumentation( href, null, "Available Inventory", null, null);
+        InvDocumentation doc = new InvDocumentation();
+        String path = getPath();
+        if (!path.endsWith("/")) path = path + "/";
+        doc.setXlinkHref( "/thredds/modelInventory/"+path);
+        doc.setXlinkTitle( "Available Inventory");
         tm.addDocumentation( doc);
       }
 
@@ -242,16 +263,18 @@ public class InvDatasetFmrc extends InvCatalogRef {
         id = getPath();
 
       InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
-      ds.setUrlPath(path+"/"+FMRC);
-      ds.setID(id+"/"+FMRC);
+      String name = getName()+"_"+FMRC;
+      ds.setUrlPath(path+"/"+name);
+      ds.setID(id+"/"+name);
       ThreddsMetadata tm = ds.getLocalMetadata();
       tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
       ds.finish();
       datasets.add( ds);
 
       ds = new InvDatasetImpl(this, "Best Time Series");
-      ds.setUrlPath(path+"/"+BEST);
-      ds.setID(id+"/"+BEST);
+      name = getName()+"_"+BEST;
+      ds.setUrlPath(path+"/"+name);
+      ds.setID(id+"/"+name);
       tm = ds.getLocalMetadata();
       tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
       ds.finish();
@@ -314,8 +337,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
     for (int i = 0; i < runs.size(); i++) {
       Date runDate = (Date) runs.get(i);
       //String name = StringUtil.escape(formatter.toDateTimeStringISO( runDate), "");
-      String name = formatter.toDateTimeStringISO( runDate);
-      InvDatasetImpl nested = new InvDatasetImpl(this, "Run "+name);
+      String name = getName()+"_"+RUN_NAME+formatter.toDateTimeStringISO( runDate);
+      InvDatasetImpl nested = new InvDatasetImpl(this, name);
       nested.setUrlPath(path+"/"+RUNS+"/"+name);
       nested.setID(id+"/"+RUNS+"/"+name);
       ThreddsMetadata tm = nested.getLocalMetadata();
@@ -339,8 +362,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
      List offsets = fmrc.getForecastOffsets();
      for (int i = 0; i < offsets.size(); i++) {
        Double offset = (Double) offsets.get(i);
-       String name = offset+"hr";
-       InvDatasetImpl nested = new InvDatasetImpl(this, "Constant Offset "+name);
+       String name = getName()+"_"+OFFSET_NAME+offset+"hr";
+       InvDatasetImpl nested = new InvDatasetImpl(this, name);
        nested.setUrlPath(path+"/"+OFFSET+"/"+name);
        nested.setID(id+"/"+OFFSET+"/"+name);
        ThreddsMetadata tm = nested.getLocalMetadata();
@@ -364,8 +387,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
      List forecasts = fmrc.getForecastDates();
      for (int i = 0; i < forecasts.size(); i++) {
        Date forecastDate = (Date) forecasts.get(i);
-       String name = formatter.toDateTimeStringISO( forecastDate);
-       InvDatasetImpl nested = new InvDatasetImpl(this, "Constant Forecast "+name);
+       String name = getName()+"_"+FORECAST_NAME+formatter.toDateTimeStringISO( forecastDate);
+       InvDatasetImpl nested = new InvDatasetImpl(this, name);
        nested.setUrlPath(path+"/"+FORECAST+"/"+name);
        nested.setID(id+"/"+FORECAST+"/"+name);
        ThreddsMetadata tm = nested.getLocalMetadata();
@@ -380,41 +403,50 @@ public class InvDatasetFmrc extends InvCatalogRef {
   /////////////////////////////////////////////////////////////////////////
   public NetcdfDataset getDataset(String path) throws IOException {
     makeFmrc();
+    NetcdfDataset result = null;
+    String name = path;
 
-    if (path.equals(FMRC))
-      return fmrc.getFmrcDataset();
+    if (path.endsWith(FMRC))
+      result = fmrc.getFmrcDataset();
 
-    if (path.equals(BEST))
-      return fmrc.getBestTimeSeries();
+    else if (path.endsWith(BEST))
+      result = fmrc.getBestTimeSeries();
 
-    int pos = path.indexOf("/");
-    String type = path.substring(0, pos);
-    //String name = StringUtil.unescape(path.substring(pos+1));
-    String name = path.substring(pos+1);
+    else {
+      int pos = path.indexOf("/");
+      String type = path.substring(0, pos);
+      name = path.substring(pos+1);
 
-    if (type.equals(OFFSET)) {
-      pos = name.indexOf("hr");
-      if (pos>0) name = name.substring(0, pos);
-      double hour = Double.parseDouble(name);
-      return fmrc.getForecastOffsetDataset( hour);
+      if (type.equals(OFFSET)) {
+        int pos1 = name.indexOf(OFFSET_NAME);
+        int pos2 = name.indexOf("hr");
+        if ((pos1<0) || (pos2<0)) return null;
+        String id = name.substring(pos1+OFFSET_NAME.length(), pos2);
+        double hour = Double.parseDouble(id);
+        result = fmrc.getForecastOffsetDataset( hour);
+
+      } else if (type.equals(RUNS)) {
+        int pos1 = name.indexOf(RUN_NAME);
+        if (pos1<0) return null;
+        String id = name.substring(pos1+RUN_NAME.length());
+
+        DateFormatter formatter = new DateFormatter();
+        Date date = formatter.getISODate(id);
+        result = fmrc.getRunTimeDataset(date);
+
+      } else if (type.equals(FORECAST)) {
+        int pos1 = name.indexOf(FORECAST_NAME);
+        if (pos1<0) return null;
+        String id = name.substring(pos1+FORECAST_NAME.length());
+
+        DateFormatter formatter = new DateFormatter();
+        Date date = formatter.getISODate(id);
+        result = fmrc.getForecastTimeDataset(date);
+      }
     }
 
-    DateFormatter formatter = new DateFormatter(); // thread safety
-
-    if (type.equals(RUNS)) {
-      Date date = formatter.getISODate(name);
-      NetcdfDataset ncd = fmrc.getRunTimeDataset(date);
-      if (null != ncd)
-        ncd.setLocation( StringUtil.escape(path, ""));
-      return ncd;
-    }
-
-    if (type.equals(FORECAST)) {
-      Date date = formatter.getISODate(name);
-      return fmrc.getForecastTimeDataset(date);
-    }
-
-    return null;
+    if (null != result) result.setLocation( name);
+    return result;
   }
 
 }
