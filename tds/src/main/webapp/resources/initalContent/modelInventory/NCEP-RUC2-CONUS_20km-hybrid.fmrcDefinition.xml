@@ -5,6 +5,7 @@
   <vertCoord id="4" name="depth_below_surface2" units="m">6.249999860301614E-4 0.03999999910593033 1.1111111234640703E-5 3.9062499126885086E-5 0.0024999999441206455</vertCoord>
   <vertCoord id="6" name="depth_below_surface3" units="m">0.03999999910593033 0.009999999776482582</vertCoord>
   <vertCoord id="2" name="depth_below_surface4" units="m">0.03999999910593033</vertCoord>
+  <vertCoord id="8" name="depth_below_surface5" units="m">0.009999999776482582 0.03999999910593033</vertCoord>
   <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="3" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="1" name="pressure_difference" units="Pa">25500.0</vertCoord>
@@ -27,22 +28,28 @@
     <variable name="Humidity_mixing_ratio_surface" />
     <variable name="Ice_water_mixing_ratio" />
     <variable name="Latent_heat_net_flux" />
+    <variable name="Lightning" />
+    <variable name="MSLP_MAPS_System_Reduction" />
     <variable name="Net_long_wave_radiation_flux_surface" />
     <variable name="Net_short-wave_radiation_flux_surface" />
+    <variable name="Number_concentration_for_ice_particles" />
     <variable name="Plant_Canopy_Surface_Water" />
     <variable name="Potential_temperature" />
     <variable name="Precipitable_water" />
     <variable name="Precipitation_rate" />
     <variable name="Pressure_tropopause" />
     <variable name="Rain_mixing_ratio" />
+    <variable name="Rate_of_water_dropping_from_canopy_to_ground" />
     <variable name="Sensible_heat_net_flux" />
     <variable name="Snow_depth" />
     <variable name="Snow_mixing_ratio" />
+    <variable name="Snow_temperature" vertCoord="8" />
     <variable name="Soil_temperature" vertCoord="4" />
     <variable name="Soil_temperature_surface" />
     <variable name="Soil_type_as_in_Zobler" />
     <variable name="Storm_Surface_Runoff" />
     <variable name="Temperature" vertCoord="3" />
+    <variable name="Total_Icing_Potential_Diagnostic" />
     <variable name="Turbulent_kinetic_energy" />
     <variable name="U-component_of_wind" vertCoord="5" />
     <variable name="U-component_of_wind_hybrid" />

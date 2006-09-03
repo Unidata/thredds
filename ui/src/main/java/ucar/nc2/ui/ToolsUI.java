@@ -28,6 +28,7 @@ import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.grid.FmrcDefinition;
 import ucar.nc2.dt.grid.ForecastModelRunInventory;
+import ucar.nc2.dt.grid.FmrcInventory;
 import ucar.nc2.dt.point.PointObsDatasetFactory;
 import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
 import ucar.nc2.dataset.*;
@@ -1585,38 +1586,67 @@ public class ToolsUI extends JPanel {
   }
 
   private class FmrcPanel extends OpPanel {
-    private NetcdfDataset ds = null;
-
     private boolean useDefinition = false;
-    private JComboBox defComboBox;
-    private IndependentWindow defWindow;
+    private JComboBox defComboBox, catComboBox;
+    private IndependentWindow defWindow, catWindow;
     private AbstractButton defButt;
+    private JSpinner catSpinner;
 
     FmrcPanel(PreferencesExt p) {
       super(p, "dataset:", true, false);
 
-      // allow to set a defintion file for GRIB
-      AbstractAction defAction = new AbstractAction() {
+      // allow to set a definition file for GRIB
+      AbstractAction defineAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Boolean state = (Boolean) getValue(BAMutil.STATE);
           useDefinition = state.booleanValue();
           String tooltip = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
           defButt.setToolTipText(tooltip);
           if (useDefinition) {
+            if (null == defComboBox) {
+              defComboBox = new JComboBox( FmrcDefinition.fmrcDefinitionFiles);
+              defComboBox.setEditable( true);
+              defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
+              defWindow.setLocationRelativeTo(defButt);
+              defWindow.setLocation(0, 100);
+            }
             defWindow.show();
           }
         }
       };
       String tooltip2 = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
-      BAMutil.setActionProperties(defAction, "dd", tooltip2, true, 'D', -1);
-      defAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
-      defButt = BAMutil.addActionToContainer(buttPanel, defAction);
+      BAMutil.setActionProperties(defineAction, "dd", tooltip2, true, 'D', -1);
+      defineAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
+      defButt = BAMutil.addActionToContainer(buttPanel, defineAction);
 
-      defComboBox = new JComboBox( FmrcDefinition.fmrcDefinitionFiles);
-      defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
-      defWindow.setLocationRelativeTo(defButt);
+      // make definition from catalog
+      AbstractAction catAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          if (null == catComboBox) {
+            catComboBox = new JComboBox();
+            catComboBox.setEditable( true);
+            catSpinner = new JSpinner();
+            JPanel catPanel = new JPanel();
+            catPanel.add(catComboBox);
+            catPanel.add(catSpinner);
 
-      AbstractAction transAction = new AbstractAction() {
+            catComboBox.addActionListener( new ActionListener() {
+              public void actionPerformed(ActionEvent e) {
+                defineFromCatalog( (String) catComboBox.getSelectedItem(), catSpinner.getValue());
+              }
+            });
+            catWindow = new IndependentWindow("Catalogs", null, catPanel);
+            catWindow.setLocationRelativeTo(defButt);
+            catWindow.setLocation(100, 100);
+          }
+          catWindow.show();
+        }
+      };
+      BAMutil.setActionProperties(catAction, "catalog", "make definition from catalog", false, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, catAction);
+
+      // delete GRIB index
+      AbstractAction deleteAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           String currentFile = (String) cb.getSelectedItem();
           File file = new File(currentFile + ".gbx");
@@ -1627,9 +1657,21 @@ public class ToolsUI extends JPanel {
           }
         }
       };
-      BAMutil.setActionProperties(transAction, "netcdf", "Transformed NcML", false, 'T', -1);
-      BAMutil.addActionToContainer(buttPanel, transAction);
+      BAMutil.setActionProperties(deleteAction, "Delete", "Delete Grib Index", false, 'T', -1);
+      BAMutil.addActionToContainer(buttPanel, deleteAction);
     }
+
+    /* private void makeCatalogPanel() {
+      PrefPanel catPP = new PrefPanel("cat", null);
+      int row = 0;
+      catPP.addTextComboField( DSCAN_ADDSIZE, "Add File Size", false, 0, row++);
+
+      catPP.finish(false);
+
+      catWindow = new IndependentWindow( "Catalog options", BAMutil.getImage( "thredds"), catPP);
+      catWindow.setBounds(new Rectangle(150, 50, 700, 300));
+    } */
+
 
     boolean process(Object o) {
       String command = (String) o;
@@ -1685,6 +1727,27 @@ public class ToolsUI extends JPanel {
       }
 
       return !err;
+    }
+
+    private void defineFromCatalog(String catalogURLString, Object value) {
+      int n = ((Integer) value).intValue();
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        FmrcInventory fmrCollection = FmrcInventory.makeFromCatalog( catalogURLString, catalogURLString, n);
+        System.out.println("write definition to "+fmrCollection.getDefinitionPath());
+        FmrcDefinition def = new FmrcDefinition();
+        def.makeFromCollectionInventory( fmrCollection);
+
+        def.writeDefinitionXML( bos);
+        ta.setText(bos.toString());
+        ta.gotoTop();
+
+      } catch (Exception ioe) {
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+      }
     }
 
   }
@@ -1804,7 +1867,7 @@ public class ToolsUI extends JPanel {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
         err = true;
 
-      } catch (IOException ioe) {
+      } catch (Throwable ioe) {
         ioe.printStackTrace();
         ioe.printStackTrace(new PrintStream(bos));
         ta.setText(bos.toString());

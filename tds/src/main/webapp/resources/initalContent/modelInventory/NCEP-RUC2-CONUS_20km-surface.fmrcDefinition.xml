@@ -25,6 +25,7 @@
     <variable name="Convective_inhibition_surface" />
     <variable name="Dew_point_depression_or_deficit" vertCoord="1" />
     <variable name="Dew_point_temperature" vertCoord="1" />
+    <variable name="MSLP_MAPS_System_Reduction" />    
     <variable name="Potential_temperature" vertCoord="1" />
     <variable name="Pressure" />
     <variable name="Pressure_tendency" />

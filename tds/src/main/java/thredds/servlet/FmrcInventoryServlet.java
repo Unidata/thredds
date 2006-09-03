@@ -75,19 +75,6 @@ public class FmrcInventoryServlet extends AbstractServlet {
     String query = req.getQueryString();
     if (debug) System.out.println("path="+path+" query="+query);
 
-    String report = req.getParameter("report");
-    if (report != null) {
-      try {
-        report( res, report.equals("missing"));
-      } catch (Exception e) {
-        e.printStackTrace();
-        log.error("report", e);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      }
-      return;
-    }
-
     String varName;
     DataRootHandler h = DataRootHandler.getInstance();
     DataRootHandler.DataRootMatch match = h.findDataRootMatch( req );
@@ -103,7 +90,6 @@ public class FmrcInventoryServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
       return;
     }
-
 
     FmrcInventory fmr;
     try {
@@ -133,6 +119,19 @@ public class FmrcInventoryServlet extends AbstractServlet {
       return;
     }
 
+    String report = req.getParameter("report");
+    if (report != null) {
+      try {
+        report( fmr, res, report.equals("missing"));
+      } catch (Exception e) {
+        e.printStackTrace();
+        log.error("report", e);
+        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
+      return;
+    }
+
     varName = match.remaining;
     if (varName.startsWith("/"))
       varName = varName.substring(1);
@@ -158,7 +157,19 @@ public class FmrcInventoryServlet extends AbstractServlet {
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, contents.length());
   }
 
-  private void report(HttpServletResponse res, boolean showMissing) throws Exception {
+  private void report(FmrcInventory fmrc, HttpServletResponse res, boolean showMissing) throws Exception {
+    res.setContentType("text/plain; charset=iso-8859-1");
+    OutputStream out = res.getOutputStream();
+    PrintStream ps = new PrintStream( out);
+
+    FmrcReport report = new FmrcReport();
+    report.report( fmrc, ps, showMissing);
+    ps.flush();
+
+    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+  }
+
+  private void reportAll(HttpServletResponse res, boolean showMissing) throws Exception {
     res.setContentType("text/plain; charset=iso-8859-1");
     OutputStream out = res.getOutputStream();
     PrintStream ps = new PrintStream( out);

@@ -22,6 +22,7 @@
 package ucar.nc2.dt.grid;
 
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.Misc;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -185,7 +186,7 @@ public class FmrcReport {
       } else if (Double.isNaN(test[countTest])) {
         countTest++;
 
-      } else if (standard[countStandard] == test[countTest]) {
+      } else if ( Misc.closeEnough(standard[countStandard], test[countTest])) {
         countTest++;
         countStandard++;
 

@@ -24,6 +24,7 @@ package thredds.catalog;
 import org.jdom.Element;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.List;
 import java.util.Date;
 import java.util.ArrayList;
@@ -61,6 +62,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
   static private final String TITLE_OFFSET = "Constant Forecast Offset";
   static private final String TITLE_FORECAST = "Constant Forecast Date";
 
+  static private final String SCAN = "files";
+
+
   //////////////////////////////////////////////
 
   private boolean madeDatasets = false, madeFmrc = false;
@@ -68,6 +72,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   private ForecastModelRunCollection fmrc;
   private InvCatalogImpl catalog, catalogRuns, catalogOffsets, catalogForecasts;
   private InventoryParams params;
+  private InvDatasetScan scan;
 
   public InvDatasetFmrc(InvDatasetImpl parent, String name, String path) {
     super(parent, name, "/thredds/catalog/"+path+"/catalog.xml");
@@ -79,6 +84,15 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public InventoryParams getFmrcInventoryParams() {
     return params;
   }
+
+  public File getFile(String remaining) {
+    if( null == params) return null;
+    int pos = remaining.indexOf(SCAN);
+    String filename =  params.location + remaining.substring(pos+SCAN.length()+1);
+    return new File( filename);
+  }
+
+
 
   public void setFmrcInventoryParams(String location, String def, String suffix) {
     this.params = new InventoryParams();
@@ -100,16 +114,18 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return true;
   }
 
-  public InvCatalogImpl makeCatalog(String match) {
+  public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI ) {
     try {
       if ((match == null) || (match.length() == 0))
-        return makeCatalog();
+        return makeCatalog(baseURI);
       else if (match.equals(RUNS))
-        return makeCatalogRuns();
+        return makeCatalogRuns(baseURI);
       else if (match.equals(OFFSET))
-        return makeCatalogOffsets();
+        return makeCatalogOffsets(baseURI);
       else if (match.equals(FORECAST))
-        return makeCatalogForecasts();
+        return makeCatalogForecasts(baseURI);
+      else if (match.equals(SCAN))
+        return makeCatalogScan(orgPath, baseURI);
       else
         return null;
     } catch (Exception e) {
@@ -118,7 +134,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     }
   }
 
-  private InvCatalogImpl makeCatalog() throws URISyntaxException {
+  private InvCatalogImpl makeCatalog(URI baseURI) throws URISyntaxException {
 
     if (catalog == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
@@ -154,10 +170,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
       catalog.addDataset(top);
 
       // any referenced services need to be local
-      ArrayList services = new ArrayList( getServicesLocal());
-      InvService service = getServiceDefault();
-      if ((service != null) && !services.contains(service))
-        catalog.addService(service);
+      List serviceLocal = getServicesLocal();
+      List serviceAll = parent.getServices();
+      for (int i = 0; i < serviceAll.size(); i++) {
+        InvService service = (InvService) serviceAll.get(i);
+        if (!serviceLocal.contains(service))
+          catalog.addService(service);
+      }
 
       List datasets = getDatasets();
       for (int i = 0; i < datasets.size(); i++) {
@@ -169,12 +188,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalog;
   }
 
-  private InvCatalogImpl makeCatalogRuns() throws URISyntaxException, IOException {
+  private InvCatalogImpl makeCatalogRuns(URI baseURI) throws URISyntaxException, IOException {
     boolean changed =  madeFmrc && fmrc.sync();
 
     if (changed || catalogRuns == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogRuns = new InvCatalogImpl( getFullName(), parent.getVersion(), parent.resolveUri(getCatalogHref(RUNS)));
+      catalogRuns = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(RUNS)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -197,12 +216,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogRuns;
   }
 
-  private InvCatalogImpl makeCatalogOffsets() throws URISyntaxException, IOException {
+  private InvCatalogImpl makeCatalogOffsets(URI baseURI) throws URISyntaxException, IOException {
     boolean changed =  madeFmrc && fmrc.sync();
 
     if (changed || catalogOffsets == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogOffsets = new InvCatalogImpl( getFullName(), parent.getVersion(), parent.resolveUri(getCatalogHref(OFFSET)));
+      catalogOffsets = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(OFFSET)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -226,12 +245,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogOffsets;
   }
 
-  private InvCatalogImpl makeCatalogForecasts() throws URISyntaxException, IOException {
+  private InvCatalogImpl makeCatalogForecasts(URI baseURI) throws URISyntaxException, IOException {
     boolean changed =  madeFmrc && fmrc.sync();
 
     if (changed || catalogForecasts == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogForecasts = new InvCatalogImpl( getFullName(), parent.getVersion(), parent.resolveUri(getCatalogHref(FORECAST)));
+      catalogForecasts = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(FORECAST)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       // top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -252,6 +271,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
       catalogForecasts.finish();
     }
     return catalogForecasts;
+  }
+
+  private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) throws URISyntaxException, IOException {
+    if (null == scan)
+      getDatasets();
+
+    return scan.makeCatalogForDirectory( orgPath, baseURI);
   }
 
   /** Get Datasets. This triggers a read of the referenced catalog the first time its called.
@@ -294,6 +320,14 @@ public class InvDatasetFmrc extends InvCatalogRef {
       ds = new InvCatalogRef(this, TITLE_FORECAST, getCatalogHref(FORECAST));
       ds.finish();
       datasets.add( ds);
+
+      if (params != null) {
+        scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
+                params.location, ".*"+params.suffix, true, "true", false, null, null, null );
+        scan.getLocalMetadataInheritable().setServiceName("fileServices");
+        scan.finish();
+        datasets.add( scan);
+      }
 
       madeDatasets = true;
     }
@@ -402,9 +436,18 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
   /////////////////////////////////////////////////////////////////////////
   public NetcdfDataset getDataset(String path) throws IOException {
+    int pos = path.indexOf("/");
+    String type = path.substring(0, pos);
+    name = path.substring(pos+1);
+
+    if (type.equals(SCAN) && (params != null)) {
+      String filename = params.location + name;
+      return NetcdfDataset.acquireDataset( filename, null);
+    }
+
     makeFmrc();
     NetcdfDataset result = null;
-    String name = path;
+    String location = path;
 
     if (path.endsWith(FMRC))
       result = fmrc.getFmrcDataset();
@@ -413,9 +456,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       result = fmrc.getBestTimeSeries();
 
     else {
-      int pos = path.indexOf("/");
-      String type = path.substring(0, pos);
-      name = path.substring(pos+1);
+      location = name;
 
       if (type.equals(OFFSET)) {
         int pos1 = name.indexOf(OFFSET_NAME);
@@ -445,7 +486,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       }
     }
 
-    if (null != result) result.setLocation( name);
+    if (null != result) result.setLocation( location);
     return result;
   }
 

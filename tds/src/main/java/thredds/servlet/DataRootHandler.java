@@ -472,6 +472,10 @@ public class DataRootHandler {
     DataRoot(InvDatasetFmrc fmrc) {
       this.path = fmrc.getPath();
       this.fmrc = fmrc;
+
+      InvDatasetFmrc.InventoryParams params = fmrc.getFmrcInventoryParams();
+      if (null != params)
+        dirLocation = params.location;
     }
 
     DataRoot(InvDatasetScan scan) {
@@ -486,9 +490,14 @@ public class DataRootHandler {
       this.dirLocation = dirLocation;
       this.scan = null;
 
+      makeProxy();
+    }
+
+    void makeProxy() {
       this.datasetRootProxy = new InvDatasetScan( null, "", this.path, this.dirLocation,
                                                   null, null, null, null, null, false, null, null, null, null );
     }
+
 
     // used by PathMatcher
     public String toString() {
@@ -651,8 +660,12 @@ public class DataRootHandler {
       return null;
     if ( reqDataRoot.scan != null)
       return reqDataRoot.scan.requestCrawlableDataset( path );
-    if ( reqDataRoot.dirLocation != null )
+
+    if ( reqDataRoot.dirLocation != null ) {
+      if (reqDataRoot.datasetRootProxy == null)
+        reqDataRoot.makeProxy();
       return reqDataRoot.datasetRootProxy.requestCrawlableDataset( path );
+    }
 
     return null;
   }
@@ -669,8 +682,20 @@ public class DataRootHandler {
    * @return the requested java.io.File or null.
    * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
-  public File getCrawlableDatasetAsFile( String path )
-  {
+  public File getCrawlableDatasetAsFile( String path ) {
+    if (path.length() > 0) {
+      if (path.startsWith("/"))
+        path = path.substring(1);
+    }
+
+    // hack in the fmrc for fileServer
+    DataRootMatch match = findDataRootMatch(path);
+    if (match == null)
+      return null;
+    if (match.dataRoot.fmrc != null) {
+      return match.dataRoot.fmrc.getFile(match.remaining); 
+    }
+
     CrawlableDataset crDs = null;
     try
     {
@@ -1044,7 +1069,7 @@ public class DataRootHandler {
 
     // look for the fmrc
     if (match.dataRoot.fmrc != null) {
-      return match.dataRoot.fmrc.makeCatalog( match.remaining);
+      return match.dataRoot.fmrc.makeCatalog( match.remaining, path, baseURI);
     }
 
     // Check that path is allowed, ie not filtered out
@@ -1350,12 +1375,13 @@ public class DataRootHandler {
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
             e.pw.print(" <b>" + ds.path+"</b>");
+            String url = servletContextPath + "/dataDir/" + ds.path+"/";
             if (ds.fmrc == null) {
               String type = (ds.scan == null) ? "root":"scan";
-              String url = servletContextPath + "/dataDir/" + ds.path+"/";
               e.pw.println(" for "+type+" directory= <a href='" +url+"'>"+ds.dirLocation+"</a> ");
             } else {
-              String url = servletContextPath + "/"+ ds.path;
+              if (ds.dirLocation == null)
+                url = servletContextPath + "/"+ ds.path;
               e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.fmrc.getXlinkHref()+"</a>");
             }
           }

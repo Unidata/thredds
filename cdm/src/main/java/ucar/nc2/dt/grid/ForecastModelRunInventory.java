@@ -104,9 +104,12 @@ public class ForecastModelRunInventory {
 
     NetcdfFile ncfile = gds.getNetcdfFile();
     if (runDate == null) {
-      runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
+      runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelBaseDate, null);
       if (runTime == null)
-        throw new IllegalArgumentException("File must have "+_Coordinate.ModelRunDate+" attribute ");
+        runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
+      if (runTime == null)
+        throw new IllegalArgumentException("File must have "+_Coordinate.ModelBaseDate+" or "+
+                _Coordinate.ModelRunDate +" attribute ");
       this.runDate = DateUnit.getStandardOrISO(runTime);
       if (this.runDate == null)
         throw new IllegalArgumentException( _Coordinate.ModelRunDate+" must be ISO date string "+runTime);

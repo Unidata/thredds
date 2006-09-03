@@ -383,9 +383,9 @@ public class FmrcImpl implements ForecastModelRunCollection {
     if (!runtimes.contains(wantRuntime)) return null;
     NetcdfDataset ncd = createDataset( new RuntimeInvGetter(wantRuntime),RUN);
 
-    /* DateFormatter df = new DateFormatter();
+    DateFormatter df = new DateFormatter();
     ncd.addAttribute(null, new Attribute(_Coordinate.ModelRunDate, df.toDateTimeStringISO(wantRuntime)));
-    ncd.finish(); */
+    ncd.finish();
 
     return ncd;
   }
@@ -441,7 +441,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
     // need this attribute for fmrInventory
     DateFormatter df = new DateFormatter();
-    target.addAttribute( new Attribute(_Coordinate.ModelRunDate, df.toDateTimeStringISO(baseDate)));
+    target.addAttribute( new Attribute(_Coordinate.ModelBaseDate, df.toDateTimeStringISO(baseDate)));
 
         // dimensions
     Iterator iterDim = src.getDimensions().iterator();
@@ -534,7 +534,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       ArrayObject.D1 runData = new ArrayObject.D1( String.class, n);
       for (int i = 0; i < n; i++) {
         Inventory inv = (Inventory) invList.get(i);
-        runData.set(i, formatter.toDateTimeStringISO(useRun ? inv.runTime : inv.forecastTime));
+        runData.set(i, formatter.toDateTimeStringISO(useRun ? inv.forecastTime : inv.runTime));
       }
       data = runData;
       desc = "model run dates for coordinate = "+dimName;

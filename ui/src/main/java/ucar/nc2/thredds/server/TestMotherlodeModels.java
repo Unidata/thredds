@@ -71,8 +71,8 @@ public class TestMotherlodeModels implements Runnable {
 
     // TestTDS modelsNc = new TestTDS("modelsNc", server+"/idv/rt-models.1.0.xml", CatalogCrawler.USE_RANDOM_DIRECT);
 
-    TestMotherlodeModels dgex_model = new TestMotherlodeModels("dgex_model", server+"/idd/dgex_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestMotherlodeModels gfs_model = new TestMotherlodeModels("gfs_model", server+"/idd/gfs_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
+    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+"/idd/models.xml", CatalogCrawler.USE_RANDOM_DIRECT);
+    /* TestMotherlodeModels gfs_model = new TestMotherlodeModels("gfs_model", server+"/idd/gfs_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
     TestMotherlodeModels nam_model = new TestMotherlodeModels("nam_model", server+"/idd/nam_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
     TestMotherlodeModels ruc_model = new TestMotherlodeModels("ruc_model", server+"/idd/ruc_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
     TestMotherlodeModels ndfd_model = new TestMotherlodeModels("ndfd_model", server+"/idd/ndfd_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);  // */
@@ -87,8 +87,8 @@ public class TestMotherlodeModels implements Runnable {
 
     //new Thread( radar2).start();
     //new Thread( radar3).start();
-    dgex_model.run();
-    gfs_model.run();
+    all_models.run();
+    /* gfs_model.run();
     nam_model.run();
     ruc_model.run();
     ndfd_model.run();

@@ -1305,48 +1305,12 @@ public class FmrcInventory {
 
   /**
     * Create a ForecastModelRun Collection from the datasets in a catalog.
-    * @param urlFragment  scan this catalog
+    * @param catURL  scan this catalog
     * @throws Exception
     */
-   public static void makeDefinitionFromCatalog(String urlFragment) throws Exception {
+   public static void writeDefinitionFromCatalog(String catURL, String collectionName, int maxDatasets) throws Exception {
 
-     System.out.println("***makeFromCatalog "+urlFragment);
-
-     String catURL = "http://motherlode.ucar.edu:8080/thredds/catalog/model/"+urlFragment+"/catalog.xml";
-     String collectionName = StringUtil.replace(urlFragment, '/',"-");
-
-     long startTime = System.currentTimeMillis();
-     final FmrcInventory fmrCollection = new FmrcInventory(fmrcDefinitionPath, collectionName);
-
-     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new CatalogCrawler.Listener() {
-       public void getDataset(InvDataset dd) {
-         InvAccess access = dd.getAccess(ServiceType.OPENDAP);
-         if (access == null) {
-           System.out.println(" no access");
-           return;
-         }
-         System.out.println(" access "+access.getStandardUrlName());
-         ForecastModelRunInventory fmr = null;
-         try {
-           fmr = ForecastModelRunInventory.open(cache, access.getStandardUrlName(), ForecastModelRunInventory.OPEN_NORMAL, false);
-         } catch (IOException e) {
-           e.printStackTrace();
-           return;
-         }
-         if (null != fmr)
-           fmrCollection.addRun(fmr);
-       }
-     });
-
-     crawler.crawl(catURL, null, System.out);
-
-
-     fmrCollection.finish();
-     if (debugTiming) {
-       long took = System.currentTimeMillis() - startTime;
-       System.out.println("that took = "+took+" msecs");
-     }
-
+     FmrcInventory fmrCollection = makeFromCatalog( catURL, collectionName, maxDatasets);
      System.out.println("write definition to "+fmrCollection.getDefinitionPath());
      FmrcDefinition def = new FmrcDefinition();
      def.makeFromCollectionInventory( fmrCollection);
@@ -1354,8 +1318,63 @@ public class FmrcInventory {
      def.writeDefinitionXML( fos);
   }
 
-  private static DiskCache2 cache;
-  private static String fmrcDefinitionPath;
+  /**
+    * Create a ForecastModelRun Collection from the datasets in a catalog.
+    * @param catURL  scan this catalog
+    * @throws Exception
+    */
+   public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets) throws Exception {
+
+     System.out.println("***makeFromCatalog "+catURL);
+     long startTime = System.currentTimeMillis();
+     FmrcInventory fmrCollection = new FmrcInventory(fmrcDefinitionPath, collectionName);
+
+     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new MyListener(fmrCollection, maxDatasets));
+     crawler.crawl(catURL, null, System.out);
+     fmrCollection.finish();
+
+     if (debugTiming) {
+       long took = System.currentTimeMillis() - startTime;
+       System.out.println("that took = "+took+" msecs");
+     }
+     return fmrCollection;
+  }
+
+  private static class MyListener implements CatalogCrawler.Listener {
+    FmrcInventory fmrCollection;
+    int maxDatasets;
+    int count;
+
+    MyListener(FmrcInventory fmrCollection, int maxDatasets) {
+      this.fmrCollection = fmrCollection;
+      this.maxDatasets = maxDatasets;
+      this.count = 0;
+    }
+
+    public void getDataset(InvDataset dd) {
+      if ((count > maxDatasets) && (maxDatasets > 0)) return;
+      count++;
+
+      InvAccess access = dd.getAccess(ServiceType.OPENDAP);
+      if (access == null) {
+        System.out.println(" no access");
+        return;
+      }
+      System.out.println(" access " + access.getStandardUrlName());
+      ForecastModelRunInventory fmr = null;
+      try {
+        fmr = ForecastModelRunInventory.open(cache, access.getStandardUrlName(), ForecastModelRunInventory.OPEN_NORMAL, false);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return;
+      }
+      if (null != fmr)
+        fmrCollection.addRun(fmr);
+    }
+  }
+
+  private static DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 5 * 24 * 3600, 3600);
+  private static String fmrcDefinitionPath = cache.getRootDirectory()+"/defs/";
 
   private static String[] catalogs  = {
           /* "NCEP/GFS/Alaska_191km",
@@ -1403,8 +1422,9 @@ public class FmrcInventory {
     file.mkdirs();
 
     for (int i = 0; i < catalogs.length; i++) {
-      String catalog = catalogs[i];
-      makeDefinitionFromCatalog(catalog);
+      String urlFragment = catalogs[i];
+      String catURL = "http://motherlode.ucar.edu:8080/thredds/catalog/model/"+urlFragment+"/catalog.xml";
+      makeDefinitionFromCatalog(catURL);
     } */
 
     String dir = "nam/conus80";

@@ -345,7 +345,9 @@ public class InvCatalogImpl extends InvCatalog {
   /** Set the catalog base URI.
    * Its used to resolve reletive URLS. 
    */
-  public void setBaseURI(URI baseURI) { this.baseURI = baseURI; }
+  public void setBaseURI(URI baseURI) {
+    this.baseURI = baseURI;
+  }
 
   /** Get the catalog base URI. */
   public URI getBaseURI() { return baseURI; }

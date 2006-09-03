@@ -82,7 +82,7 @@
     <variable name="Pressure_surface" />
     <variable name="Pressure_tropopause" />
     <variable name="Pressure_vertical_velocity" vertCoord="1">
-      <vertCoord restrict="850.0 700.0 500.0 300.0">2.0 6.0</vertCoord>
+      <vertTimeCoord restrict="850.0 700.0 500.0 300.0">2.0 6.0</vertTimeCoord>
     </variable>
     <variable name="Pressure_zeroDegC_isotherm" />
     <variable name="Relative_humidity_height_above_ground" vertCoord="3" />
@@ -193,7 +193,7 @@
     <run runHour="23.0" offsetHourSeq="1" />
     <run runHour="24.0" offsetHourSeq="8" />
     <variable name="Geopotential_height" vertCoord="0">
-      <vertCoord restrict="350.0 450">8.0</vertCoord>
+      <vertTimeCoord restrict="350.0 450">8.0</vertTimeCoord>
     </variable>
   </runSequence>
   <runSequence>
@@ -223,19 +223,19 @@
     <run runHour="23.0" offsetHourSeq="1" />
     <run runHour="24.0" offsetHourSeq="9" />
     <variable name="Relative_humidity" vertCoord="2">
-      <vertCoord restrict="1000.0 950.0 900.0 850.0 800.0 750.0 700.0 650.0 600.0 550.0 500.0 450.0 400.0 300.0">4.0 5.0 6.0 9.0 12.0</vertCoord>
-      <vertCoord restrict="450.0">7.0 8.0</vertCoord>
+      <vertTimeCoord restrict="1000.0 950.0 900.0 850.0 800.0 750.0 700.0 650.0 600.0 550.0 500.0 450.0 400.0 300.0">4.0 5.0 6.0 9.0 12.0</vertTimeCoord>
+      <vertTimeCoord restrict="450.0">7.0 8.0</vertTimeCoord>
     </variable>
     <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="4" />
     <variable name="Temperature" vertCoord="0">
-      <vertCoord restrict="350.0 450.0">7.0 8.0</vertCoord>
+      <vertTimeCoord restrict="350.0 450.0">7.0 8.0</vertTimeCoord>
     </variable>
     <variable name="u_wind" vertCoord="0">
-      <vertCoord restrict="350.0 450.0">7.0 8.0</vertCoord>
+      <vertTimeCoord restrict="350.0 450.0">7.0 8.0</vertTimeCoord>
     </variable>
     <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vertCoord="4" />
     <variable name="v_wind" vertCoord="0">
-      <vertCoord restrict="350.0 450.0">7.0 8.0</vertCoord>
+      <vertTimeCoord restrict="350.0 450.0">7.0 8.0</vertTimeCoord>
     </variable>
     <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vertCoord="4" />
   </runSequence>

@@ -33,6 +33,7 @@ public interface _Coordinate {
   static public final String AxisType = "_CoordinateAxisType";
   static public final String AxisTypes = "_CoordinateAxisTypes";
   static public final String Convention = "_Coordinates";
+  static public final String ModelBaseDate = "_CoordinateModelBaseDate"; // experimental
   static public final String ModelRunDate = "_CoordinateModelRunDate"; // experimental
   static public final String Systems = "_CoordinateSystems";
   static public final String Transforms = "_CoordinateTransforms";

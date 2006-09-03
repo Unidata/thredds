@@ -23,7 +23,7 @@
     <variable name="Pressure_reduced_to_MSL" />
     <variable name="Pressure_tropopause" />
     <variable name="Pressure_vertical_velocity" vertCoord="2">
-      <vertCoord restrict="1000.0 850.0 700.0 500.0 300.0 200.0">84.0</vertCoord>
+      <vertTimeCoord restrict="1200.0 300.0 500.0 700.0 850.0 1000.0">84.0</vertTimeCoord>
     </variable>
     <variable name="Relative_humidity" vertCoord="3" />
     <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vertCoord="4" />

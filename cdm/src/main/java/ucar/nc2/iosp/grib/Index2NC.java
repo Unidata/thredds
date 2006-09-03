@@ -441,6 +441,7 @@ public class Index2NC  {
   private void makeDefinedCoordSys(NetcdfFile ncfile, TableLookup lookup, FmrcCoordSys fmr) throws IOException {
     ArrayList timeCoords = new ArrayList();
     ArrayList vertCoords = new ArrayList();
+    ArrayList removeVariables = new ArrayList();
 
     // loop over HorizCoordSys
     Iterator iterHcs = hcsHash.values().iterator();
@@ -458,7 +459,7 @@ public class Index2NC  {
         // we dont know the name for sure yet, so have to try several
         String searchName = findVariableName(ncfile, record, lookup, fmr);
         if (searchName == null) { // cant find - just remove
-          hcs.varHash.remove(key);
+          removeVariables.add(key); // cant remove (concurrentModException) so save for later
           continue;
         }
         pv.setVarName( searchName);
@@ -503,6 +504,12 @@ public class Index2NC  {
           timeCoords.add( useTimeCoord);
         }
         pv.setTimeCoord( useTimeCoord);
+      }
+
+      // any need to be removed?
+      for (int i = 0; i < removeVariables.size(); i++) {
+        String key = (String) removeVariables.get(i);
+        hcs.varHash.remove(key);
       }
 
       // add x, y dimensions

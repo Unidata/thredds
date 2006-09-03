@@ -76,7 +76,7 @@
       </datasetFmrc>
     </dataset>
 
-    <datasetFmrc name="NCEP-RUC2-CONUS_40km" harvest="true" collectionType="ForecastModelRuns" path="fmrc/NCEP/RUC/CONUS_40km">
+    <datasetFmrc name="NCEP-RUC2-CONUS_40km" harvest="true" collectionType="ForecastModelRuns" path="fmrc/NCEP/RUC2/CONUS_40km">
       <metadata inherited="true">
         <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
           Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts.

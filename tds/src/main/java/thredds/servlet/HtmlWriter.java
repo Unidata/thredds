@@ -460,7 +460,7 @@ public class HtmlWriter
       sb.append( "<td align=\"left\">" );
       for ( int j = 0; j <= level; j++ )
       {
-        sb.append( "&nbsp;&nbsp;" );
+        sb.append( "&nbsp;&nbsp;&nbsp;&nbsp;" );
       }
       sb.append( "\r\n" );
 

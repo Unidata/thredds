@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data" version="1.0.1">
+
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
   </service>
+
   <dataset name="North American Model">
     <metadata inherited="true">
       <serviceName>all</serviceName>
@@ -81,7 +83,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1" dateFormatMark="NAM_Alaska_45km_noaaport_#yyyyMMdd_HHmm" subdirs="true" />
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km_noaaport.fmrcDefinition.xml" />
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-NAM-Alaska_45km-conduit" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Alaska_45km/conduit">

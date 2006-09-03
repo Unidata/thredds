@@ -184,7 +184,7 @@ public class InvService {
   }
 
 
-   /** Add Dataset Root (1.0) */
+   /** Add Dataset Root (1.0), key = path,  value = location. */
   public void addDatasetRoot( InvProperty root) { roots.add( root);}
 
   /**

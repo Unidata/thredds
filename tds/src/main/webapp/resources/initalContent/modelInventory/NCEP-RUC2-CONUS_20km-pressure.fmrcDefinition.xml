@@ -42,6 +42,7 @@
     <variable name="Geopotential_height_surface" />
     <variable name="Geopotential_height_zeroDegC_isotherm" />
     <variable name="Moisture_Availability" />
+    <variable name="MSLP_MAPS_System_Reduction" />        
     <variable name="Planetary_Boundary_Layer_Height" />
     <variable name="Potential_temperature" vertCoord="3" />
     <variable name="Potential_temperature_tropopause" />
