@@ -481,6 +481,7 @@ public class HtmlWriter
           log.error(href, e);
         }
 
+        sb.append( "<img src='/thredds/folder.gif' width='20' height='22\'> &nbsp;");
         sb.append( "<a href=\"" );
         sb.append( StringUtil.quoteHtmlContent( href ) );
         sb.append( "\"><tt>" );

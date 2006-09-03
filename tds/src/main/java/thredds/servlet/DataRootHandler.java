@@ -693,7 +693,7 @@ public class DataRootHandler {
     if (match == null)
       return null;
     if (match.dataRoot.fmrc != null) {
-      return match.dataRoot.fmrc.getFile(match.remaining); 
+      return match.dataRoot.fmrc.getFile(match.remaining);
     }
 
     CrawlableDataset crDs = null;
@@ -1380,9 +1380,12 @@ public class DataRootHandler {
               String type = (ds.scan == null) ? "root":"scan";
               e.pw.println(" for "+type+" directory= <a href='" +url+"'>"+ds.dirLocation+"</a> ");
             } else {
-              if (ds.dirLocation == null)
+              if (ds.dirLocation == null) {
                 url = servletContextPath + "/"+ ds.path;
-              e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.fmrc.getXlinkHref()+"</a>");
+                e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.fmrc.getXlinkHref()+"</a>");
+              } else {
+                e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.dirLocation+"</a>");
+              }
             }
           }
         }

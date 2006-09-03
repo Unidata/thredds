@@ -558,10 +558,10 @@
 
     </dataset>
 
-    <dataset name="GFS Extended (GFSx) Model">
+    <dataset name="Downscaled GFS with Eta Extension (DGEX)">
       <metadata inherited="true">
         <documentation type="summary">
-          NCEP DGEX Model is a high resolution (12 km), long-range (84-192 hour forecasts) version of the NAM Model.
+          The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model 78 hour forecast and GFS boundary conditions.
         </documentation>
       </metadata>
 

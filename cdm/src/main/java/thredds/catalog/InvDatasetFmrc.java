@@ -88,11 +88,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public File getFile(String remaining) {
     if( null == params) return null;
     int pos = remaining.indexOf(SCAN);
-    String filename =  params.location + remaining.substring(pos+SCAN.length()+1);
+    String filename =  (pos > -1) ? params.location + remaining.substring(pos+SCAN.length()+1) :  params.location + remaining;
     return new File( filename);
   }
-
-
 
   public void setFmrcInventoryParams(String location, String def, String suffix) {
     this.params = new InventoryParams();
@@ -323,7 +321,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
       if (params != null) {
         scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
-                params.location, ".*"+params.suffix, true, "true", false, null, null, null );
+                params.location, ".*"+params.suffix, true, "false", false, null, null, null );
         scan.getLocalMetadataInheritable().setServiceName("fileServices");
         scan.finish();
         datasets.add( scan);
@@ -437,9 +435,10 @@ public class InvDatasetFmrc extends InvCatalogRef {
   /////////////////////////////////////////////////////////////////////////
   public NetcdfDataset getDataset(String path) throws IOException {
     int pos = path.indexOf("/");
-    String type = path.substring(0, pos);
-    name = path.substring(pos+1);
+    String type = (pos > -1) ? path.substring(0, pos) : path;
+    String name = (pos > -1) ? path.substring(pos+1) : null;
 
+    // check SCAN type before we have to do makeFmrc()
     if (type.equals(SCAN) && (params != null)) {
       String filename = params.location + name;
       return NetcdfDataset.acquireDataset( filename, null);
