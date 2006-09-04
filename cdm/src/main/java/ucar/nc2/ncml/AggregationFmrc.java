@@ -87,7 +87,7 @@ public class AggregationFmrc extends Aggregation {
 
     // some additional global attributes
     Group root = ncDataset.getRootGroup();
-    root.addAttribute(new Attribute("Conventions", _Coordinate.Convention));
+    root.addAttribute(new Attribute("Conventions", "CF-1.0, "+_Coordinate.Convention));
     root.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
 
     // create aggregation dimension
@@ -101,6 +101,7 @@ public class AggregationFmrc extends Aggregation {
     DataType  coordType = getCoordinateType();
     VariableDS  runtimeCoordVar = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
     runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
+    runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
     ncDataset.addVariable(null, runtimeCoordVar);
     if (debug) System.out.println("FmrcAggregation: added runtimeCoordVar " + runtimeCoordVar.getName());
@@ -160,6 +161,7 @@ public class AggregationFmrc extends Aggregation {
 
         newV.addAttribute(new Attribute("units", units));
         newV.addAttribute(new Attribute("long_name", desc));
+        newV.addAttribute(new Attribute("standard_name", "time"));
         newV.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
         // compute the coordinates
@@ -188,6 +190,7 @@ public class AggregationFmrc extends Aggregation {
 
       // we need to explicitly list the coordinate axes, because time coord is now 2D
       vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getGridCoordSystem().getName()));
+      vagg.addAttribute(new Attribute("coordinates", dimName + " " + grid.getGridCoordSystem().getName())); // CF
 
       ncDataset.removeVariable(null, v.getShortName());
       ncDataset.addVariable(null, vagg);

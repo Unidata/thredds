@@ -95,8 +95,19 @@ public class FmrcInventoryServlet extends AbstractServlet {
     try {
 
       if (debug) System.out.println("  FmrcInventoryParams="+params+" for path="+match.rootPath);
-      fmr = FmrcInventory.make(contentPath, params.def, fmrCache, params.location, params.suffix,
-              ForecastModelRunInventory.OPEN_XML_ONLY);
+      String fmrcDefinitionPath = contentPath;
+      String collectionName = params.def;
+      File file = new File(params.def);
+      if (file.isAbsolute()) {
+        int pos = params.def.lastIndexOf("/");
+        if (pos > 0) {
+          fmrcDefinitionPath = params.def.substring(0,pos+1);
+          collectionName = params.def.substring(pos+1);
+        }
+      }
+
+      fmr = FmrcInventory.make(fmrcDefinitionPath, collectionName, fmrCache, params.location, params.suffix,
+              ForecastModelRunInventory.OPEN_NORMAL); // LOOK!!
 
     } catch (Exception e) {
       e.printStackTrace();

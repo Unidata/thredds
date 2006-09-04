@@ -25,16 +25,21 @@ import thredds.catalog.DataType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.DataFormatType;
+import thredds.datatype.DateRange;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Date;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
@@ -44,6 +49,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class MetadataExtractor {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MetadataExtractor.class);
 
   /**
    * Extract the lat/lon/alt bounding boxes from the dataset.
@@ -214,6 +220,40 @@ public class MetadataExtractor {
       return vars;
     }
 
+  }
+
+  static public DateRange extractDateRange(GridDataset gridDataset) {
+    DateRange maxDateRange = null;
+
+    Iterator gridsets = gridDataset.getGridSets().iterator();
+    while (gridsets.hasNext()) {
+      GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
+      GridCoordSystem gsys = gridset.getGeoCoordSystem();
+      DateRange dateRange;
+
+      CoordinateAxis1DTime time1D = gsys.getTimeAxis1D();
+      if (time1D != null) {
+        dateRange = time1D.getDateRange();
+      } else {
+        CoordinateAxis time = gsys.getTimeAxis();
+        try {
+          DateUnit du = new DateUnit( time.getUnitsString());
+          Date minDate = du.makeDate(time.getMinValue());
+          Date maxDate = du.makeDate(time.getMaxValue());
+          dateRange = new DateRange( minDate, maxDate);
+        } catch (Exception e) {
+          logger.warn("Illegal Date Unit "+time.getUnitsString());
+          continue;
+        }
+      }
+
+      if (maxDateRange == null)
+        maxDateRange = dateRange;
+      else
+        maxDateRange.extend( dateRange);
+    }
+
+    return maxDateRange;
   }
 
 

@@ -36,8 +36,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dt.grid.ForecastModelRunCollection;
 import ucar.nc2.dt.grid.FmrcImpl;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.thredds.MetadataExtractor;
+import thredds.datatype.DateRange;
 
 /**
  * InvDatasetFmrc deals with datasetFmrc elementss.
@@ -136,7 +138,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     if (catalog == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       URI baseUri = new URI(getXlinkHref());
-      catalog = new InvCatalogImpl( getFullName(), parent.getVersion(), baseUri);
+      InvCatalogImpl mainCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), baseUri);
 
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
@@ -148,11 +150,24 @@ public class InvDatasetFmrc extends InvCatalogRef {
       top.setID(id);
 
       makeFmrc();
+
+      // add Variables, GeospatialCoverage, TimeCoverage
       ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-      ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables( this, fmrc.getGridDataset());
-      tmi.addVariables(vars);
-      ThreddsMetadata.GeospatialCoverage gc = MetadataExtractor.extractGeospatial(fmrc.getGridDataset());
-      tmi.setGeospatialCoverage(gc);
+      if (tmi.getVariables().size() == 0) {
+        ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables( this, fmrc.getGridDataset());
+        if (vars != null)
+          tmi.addVariables(vars);
+      }
+      if (tmi.getGeospatialCoverage() == null) {
+        ThreddsMetadata.GeospatialCoverage gc = MetadataExtractor.extractGeospatial(fmrc.getGridDataset());
+        if (gc != null)
+          tmi.setGeospatialCoverage(gc);
+      }
+      if (tmi.getTimeCoverage() == null) {
+        DateRange dateRange = MetadataExtractor.extractDateRange(fmrc.getGridDataset());
+        if (dateRange != null)
+          tmi.setTimeCoverage(dateRange);
+      }
 
       if (null != params) {
         ThreddsMetadata tm = top.getLocalMetadata();
@@ -164,7 +179,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
         tm.addDocumentation( doc);
       }
 
-      catalog.addDataset(top);
+      mainCatalog.addDataset(top);
 
       // any referenced services need to be local
       List serviceLocal = getServicesLocal();
@@ -172,7 +187,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       for (int i = 0; i < serviceAll.size(); i++) {
         InvService service = (InvService) serviceAll.get(i);
         if (!serviceLocal.contains(service))
-          catalog.addService(service);
+          mainCatalog.addService(service);
       }
       findDODSService(serviceAll); // LOOK kludgey
 
@@ -181,7 +196,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
         InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
         top.addDataset(ds);
       }
-      catalog.finish();
+      mainCatalog.finish();
+      this.catalog = mainCatalog;
     }
     return catalog;
   }
@@ -203,25 +219,26 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     if (changed || catalogRuns == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogRuns = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(RUNS)));
+      InvCatalogImpl runCatalog  = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(RUNS)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
       top.setName(TITLE_RUNS);
-      catalogRuns.addDataset(top);
+      runCatalog.addDataset(top);
 
       // any referenced services need to be local
       ArrayList services = new ArrayList( getServicesLocal());
       InvService service = getServiceDefault();
       if ((service != null) && !services.contains(service))
-        catalogRuns.addService(service);
+        runCatalog.addService(service);
 
       List datasets = makeRunDatasets();
       for (int i = 0; i < datasets.size(); i++) {
         InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
         top.addDataset(ds);
       }
-      catalogRuns.finish();
+      runCatalog.finish();
+      this.catalogRuns = runCatalog;
     }
     return catalogRuns;
   }
@@ -231,26 +248,27 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     if (changed || catalogOffsets == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogOffsets = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(OFFSET)));
+      InvCatalogImpl offCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(OFFSET)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
 
       top.setName(TITLE_OFFSET);
-      catalogOffsets.addDataset(top);
+      offCatalog.addDataset(top);
 
       // any referenced services need to be local
       ArrayList services = new ArrayList( getServicesLocal());
       InvService service = getServiceDefault();
       if ((service != null) && !services.contains(service))
-        catalogOffsets.addService(service);
+        offCatalog.addService(service);
 
       List datasets = makeOffsetDatasets();
       for (int i = 0; i < datasets.size(); i++) {
         InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
         top.addDataset(ds);
       }
-      catalogOffsets.finish();
+      offCatalog.finish();
+      this.catalogOffsets = offCatalog;
     }
     return catalogOffsets;
   }
@@ -260,25 +278,26 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     if (changed || catalogForecasts == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      catalogForecasts = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(FORECAST)));
+      InvCatalogImpl foreCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(FORECAST)));
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       // top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
       top.setName(TITLE_FORECAST);
-      catalogForecasts.addDataset(top);
+      foreCatalog.addDataset(top);
 
       // any referenced services need to be local
       ArrayList services = new ArrayList( getServicesLocal());
       InvService service = getServiceDefault();
       if ((service != null) && !services.contains(service))
-        catalogForecasts.addService(service);
+        foreCatalog.addService(service);
 
       List datasets = makeForecastDatasets();
       for (int i = 0; i < datasets.size(); i++) {
         InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
         top.addDataset(ds);
       }
-      catalogForecasts.finish();
+      foreCatalog.finish();
+      this.catalogForecasts = foreCatalog;
     }
     return catalogForecasts;
   }
@@ -294,6 +313,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
    */
   public java.util.List getDatasets() {
     if (!madeDatasets) {
+      ArrayList datasets = new ArrayList();
       String id = getID();
       if (id == null)
         id = getPath();
@@ -335,11 +355,15 @@ public class InvDatasetFmrc extends InvCatalogRef {
       if (params != null) {
         scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
                 params.location, ".*"+params.suffix, true, "false", false, null, null, null );
-        scan.getLocalMetadataInheritable().setServiceName("fileServices");
+        ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
+        tmi.setServiceName("fileServices");
+        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
+
         scan.finish();
         datasets.add( scan);
       }
 
+      this.datasets = datasets;
       madeDatasets = true;
     }
 

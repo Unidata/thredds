@@ -1,6 +1,8 @@
 package ucar.nc2.thredds.server;
 
 import ucar.nc2.ui.StopButton;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.thredds.ThreddsDataFactory;
 
 import java.io.*;
 import java.awt.event.WindowAdapter;
@@ -9,21 +11,31 @@ import java.awt.*;
 
 import thredds.catalog.crawl.CatalogExtractor;
 import thredds.catalog.crawl.CatalogCrawler;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvCatalogFactory;
+import thredds.catalog.ThreddsMetadata;
 
 import javax.swing.*;
 
-public class TestMotherlodeModels implements Runnable {
+public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private String catUrl;
   private int type;
+  private boolean skipDatasetScan;
 
-  private CatalogExtractor ce;
+  private InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
+  private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
+
   private StopButton stopButton;
   private JLabel label;
   private PrintStream out;
+  private int countDatasets, countNoAccess, countNoOpen;
 
-  TestMotherlodeModels(String name, String catURL, int type) throws IOException {
+
+  TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
     this.type = type;
+    this.skipDatasetScan = skipDatasetScan;
 
     JPanel p = new JPanel();
     p.setBorder( BorderFactory.createLineBorder(Color.black ));
@@ -35,21 +47,49 @@ public class TestMotherlodeModels implements Runnable {
     p.add(stopButton);
     main.add( p);
 
-    ce = new CatalogExtractor( false);
-
     FileOutputStream fout = new FileOutputStream(name+".txt");
     out = System.out; // new PrintStream( new BufferedOutputStream( fout));
+
   }
 
+  public void extract() throws IOException {
 
-  public void run() {
-    try {
-      ce.extract(out, catUrl, type, false, stopButton);
-    } catch (IOException e) {
-      e.printStackTrace();
-      label.setText("Error");
+    out.println("***read " + catUrl);
+
+    InvCatalogImpl cat = catFactory.readXML(catUrl);
+    StringBuffer buff = new StringBuffer();
+    boolean isValid = cat.check(buff, false);
+    if (!isValid) {
+      System.out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);
+      out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);
+      return;
     }
-    System.out.println("Exit for "+catUrl);
+    out.println("catalog <" + cat.getName() + "> is valid");
+    out.println(" validation output=\n" + buff);
+
+    countDatasets = 0;
+    countNoAccess = 0;
+    countNoOpen = 0;
+    int countCatRefs = 0;
+    CatalogCrawler crawler = new CatalogCrawler(type, skipDatasetScan, this);
+    long start = System.currentTimeMillis();
+    try {
+      countCatRefs = crawler.crawl(cat, stopButton, out);
+    } finally {
+      int took = (int) (System.currentTimeMillis() - start) / 1000;
+
+      out.println("***Done " + catUrl + " took = " + took + " secs\n" +
+              "   datasets=" + countDatasets + " no access=" + countNoAccess + " open failed=" + countNoOpen + " total catalogs=" + countCatRefs);
+
+    }
+  }
+
+  public void getDataset(InvDataset ds) {
+    countDatasets++;
+
+    out.println("  "+ds.getName());
+    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+    assert gc != null;
   }
 
   public static JPanel main;
@@ -69,36 +109,14 @@ public class TestMotherlodeModels implements Runnable {
     main = new JPanel();
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    // TestTDS modelsNc = new TestTDS("modelsNc", server+"/idv/rt-models.1.0.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-
-    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+"/idd/models.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    /* TestMotherlodeModels gfs_model = new TestMotherlodeModels("gfs_model", server+"/idd/gfs_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestMotherlodeModels nam_model = new TestMotherlodeModels("nam_model", server+"/idd/nam_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestMotherlodeModels ruc_model = new TestMotherlodeModels("ruc_model", server+"/idd/ruc_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestMotherlodeModels ndfd_model = new TestMotherlodeModels("ndfd_model", server+"/idd/ndfd_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);  // */
-
-    //TestTDS radar2 = new TestTDS("radar2", "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level2/catalog.xml", CatalogCrawler.USE_RANDOM);
-    //TestTDS radar3 = new TestTDS("radar3", "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level3/catalog.xml", CatalogCrawler.USE_RANDOM);
+    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+"/idd/models.xml", CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();
     frame.setLocation(40, 300);
     frame.setVisible(true);
 
-    //new Thread( radar2).start();
-    //new Thread( radar3).start();
-    all_models.run();
-    /* gfs_model.run();
-    nam_model.run();
-    ruc_model.run();
-    ndfd_model.run();
-    /* new Thread( gfs_model).start();
-    new Thread( nam_model).start();
-    new Thread( ruc_model).start();
-    new Thread( ndfd_model).start(); // */
-
-    //new Thread( modelsNc).start();
-
+    all_models.extract();
   }
 
 }
