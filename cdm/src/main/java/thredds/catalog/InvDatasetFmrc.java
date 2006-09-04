@@ -38,8 +38,6 @@ import ucar.nc2.dt.grid.ForecastModelRunCollection;
 import ucar.nc2.dt.grid.FmrcImpl;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.thredds.MetadataExtractor;
-import ucar.nc2.Attribute;
-import ucar.unidata.util.StringUtil;
 
 /**
  * InvDatasetFmrc deals with datasetFmrc elementss.
@@ -73,6 +71,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   private InvCatalogImpl catalog, catalogRuns, catalogOffsets, catalogForecasts;
   private InventoryParams params;
   private InvDatasetScan scan;
+  private String dodsService;
 
   public InvDatasetFmrc(InvDatasetImpl parent, String name, String path) {
     super(parent, name, "/thredds/catalog/"+path+"/catalog.xml");
@@ -115,13 +114,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI ) {
     try {
       if ((match == null) || (match.length() == 0))
-        return makeCatalog(baseURI);
+        return makeCatalog();
       else if (match.equals(RUNS))
-        return makeCatalogRuns(baseURI);
+        return makeCatalogRuns();
       else if (match.equals(OFFSET))
-        return makeCatalogOffsets(baseURI);
+        return makeCatalogOffsets();
       else if (match.equals(FORECAST))
-        return makeCatalogForecasts(baseURI);
+        return makeCatalogForecasts();
       else if (match.equals(SCAN))
         return makeCatalogScan(orgPath, baseURI);
       else
@@ -132,7 +131,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     }
   }
 
-  private InvCatalogImpl makeCatalog(URI baseURI) throws URISyntaxException {
+  private InvCatalogImpl makeCatalog() throws URISyntaxException {
 
     if (catalog == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
@@ -175,6 +174,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
         if (!serviceLocal.contains(service))
           catalog.addService(service);
       }
+      findDODSService(serviceAll); // LOOK kludgey
 
       List datasets = getDatasets();
       for (int i = 0; i < datasets.size(); i++) {
@@ -186,7 +186,19 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalog;
   }
 
-  private InvCatalogImpl makeCatalogRuns(URI baseURI) throws URISyntaxException, IOException {
+  private void findDODSService(List services) {
+    for (int i = 0; i < services.size(); i++) {
+      InvService service = (InvService) services.get(i);
+      if ((dodsService == null) && (service.getServiceType() == ServiceType.OPENDAP)) {
+        dodsService = service.getName();
+        return;
+      }
+      if (service.getServiceType() == ServiceType.COMPOUND)
+        findDODSService(service.getServices());
+    }
+  }
+
+  private InvCatalogImpl makeCatalogRuns() throws URISyntaxException, IOException {
     boolean changed =  madeFmrc && fmrc.sync();
 
     if (changed || catalogRuns == null) {
@@ -214,7 +226,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogRuns;
   }
 
-  private InvCatalogImpl makeCatalogOffsets(URI baseURI) throws URISyntaxException, IOException {
+  private InvCatalogImpl makeCatalogOffsets() throws URISyntaxException, IOException {
     boolean changed =  madeFmrc && fmrc.sync();
 
     if (changed || catalogOffsets == null) {
@@ -243,7 +255,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogOffsets;
   }
 
-  private InvCatalogImpl makeCatalogForecasts(URI baseURI) throws URISyntaxException, IOException {
+  private InvCatalogImpl makeCatalogForecasts() throws URISyntaxException, IOException {
     boolean changed =  madeFmrc && fmrc.sync();
 
     if (changed || catalogForecasts == null) {
@@ -271,7 +283,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogForecasts;
   }
 
-  private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) throws URISyntaxException, IOException {
+  private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) {
     if (null == scan)
       getDatasets();
 
@@ -292,6 +304,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       ds.setID(id+"/"+name);
       ThreddsMetadata tm = ds.getLocalMetadata();
       tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
+      ds.getLocalMetadataInheritable().setServiceName(dodsService);
       ds.finish();
       datasets.add( ds);
 
@@ -436,7 +449,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public NetcdfDataset getDataset(String path) throws IOException {
     int pos = path.indexOf("/");
     String type = (pos > -1) ? path.substring(0, pos) : path;
-    String name = (pos > -1) ? path.substring(pos+1) : null;
+    String name = (pos > -1) ? path.substring(pos+1) : "";
 
     // check SCAN type before we have to do makeFmrc()
     if (type.equals(SCAN) && (params != null)) {

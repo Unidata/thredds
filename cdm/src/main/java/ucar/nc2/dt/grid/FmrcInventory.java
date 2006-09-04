@@ -2,7 +2,6 @@ package ucar.nc2.dt.grid;
 
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.DiskCache2;
-import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.io.*;
@@ -1361,7 +1360,7 @@ public class FmrcInventory {
         return;
       }
       System.out.println(" access " + access.getStandardUrlName());
-      ForecastModelRunInventory fmr = null;
+      ForecastModelRunInventory fmr;
       try {
         fmr = ForecastModelRunInventory.open(cache, access.getStandardUrlName(), ForecastModelRunInventory.OPEN_NORMAL, false);
       } catch (IOException e) {
