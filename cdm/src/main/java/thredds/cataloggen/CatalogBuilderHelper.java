@@ -62,9 +62,10 @@ class CatalogBuilderHelper
       if ( filter != null )
         if ( ! filter.accept( curCrDs ) )
           return null;
-      if ( ! curCrDs.exists())
-        return null;
     }
+    // Only check complete path for existence since speed of check depends on implementation.
+    if ( ! curCrDs.exists() )
+      return null;
     return curCrDs;
   }
 
