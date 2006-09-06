@@ -73,14 +73,14 @@ public class DodsURLExtractor {
     BufferedReader buffIn = new BufferedReader(new InputStreamReader(in));
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
 
-
-    while ( buffIn.ready()) {
-      String line = buffIn.readLine();
+    String line = buffIn.readLine();
+    while ( line != null ) {
       String lline = line.toLowerCase();
-      if (0 <= lline.indexOf("<meta "))  // skip meta tags
+      if ( 0 <= lline.indexOf( "<meta " ) )  // skip meta tags
         continue;
       //System.out.println("--"+line);
-      bos.write( line.getBytes());
+      bos.write( line.getBytes() );
+      line = buffIn.readLine();
     }
     buffIn.close();
 
