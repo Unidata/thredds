@@ -467,6 +467,7 @@ public class DataRootHandler {
     InvDatasetFmrc fmrc; // the InvDatasetFmrc that created this (may be null)
 
     // Use this to access CrawlableDataset in dirLocation.
+    // I.e., used by datasets that reference a <datasetRoot>
     InvDatasetScan datasetRootProxy;
 
     DataRoot(InvDatasetFmrc fmrc) {
@@ -661,6 +662,9 @@ public class DataRootHandler {
     if ( reqDataRoot.scan != null)
       return reqDataRoot.scan.requestCrawlableDataset( path );
 
+    if ( reqDataRoot.fmrc != null )
+      return null;
+
     if ( reqDataRoot.dirLocation != null ) {
       if (reqDataRoot.datasetRootProxy == null)
         reqDataRoot.makeProxy();
@@ -730,17 +734,30 @@ public class DataRootHandler {
 
   private ProxyDatasetHandler getMatchingProxyDataset( String path )
   {
-    DataRoot reqDataRoot = matchPath2( path );
-    if ( reqDataRoot == null || reqDataRoot.scan == null )
-      return null;
+    InvDatasetScan scan = this.getMatchingScan( path);
 
     int index = path.lastIndexOf( "/" );
     String proxyName = path.substring( index + 1 );
 
-    Map pdhMap = reqDataRoot.scan.getProxyDatasetHandlers();
+    Map pdhMap = scan.getProxyDatasetHandlers();
     if ( pdhMap == null ) return null;
 
     return (ProxyDatasetHandler) pdhMap.get( proxyName );
+  }
+
+  private InvDatasetScan getMatchingScan( String path )
+  {
+    DataRoot reqDataRoot = matchPath2( path );
+    if ( reqDataRoot == null )
+      return null;
+
+    InvDatasetScan scan = null;
+    if ( reqDataRoot.scan != null )
+      scan = reqDataRoot.scan;
+    else if ( reqDataRoot.fmrc != null )  // TODO refactor UGLY FMRC HACK
+      scan = reqDataRoot.fmrc.getRawFileScan();
+
+    return scan;
   }
 
   public InvCatalog getProxyDatasetResolverCatalog( String path, URI baseURI )
@@ -748,11 +765,11 @@ public class DataRootHandler {
     if ( ! isProxyDatasetResolver( path ) )
       throw new IllegalArgumentException( "Not a proxy dataset resolver path <" + path + ">." );
 
-    DataRoot reqDataRoot = matchPath2( path );
+    InvDatasetScan scan = this.getMatchingScan( path );
 
     // Call the matching InvDatasetScan to make the proxy dataset resolver catalog.
     //noinspection UnnecessaryLocalVariable
-    InvCatalogImpl cat = reqDataRoot.scan.makeProxyDsResolverCatalog( path, baseURI );
+    InvCatalogImpl cat = scan.makeProxyDsResolverCatalog( path, baseURI );
 
     return cat;
   }
@@ -1271,8 +1288,8 @@ public class DataRootHandler {
       return null;
     }
 
-    // @todo Should we do this for datasetRoot as well? Would need to bubble up all the way to InvCatalogFactory10.
     InvDatasetScan dscan = dataRoot.scan;
+    if ( dscan == null ) dscan = dataRoot.datasetRootProxy;
     if (dscan == null) return null;
     return dscan.getNcmlElement();
   }

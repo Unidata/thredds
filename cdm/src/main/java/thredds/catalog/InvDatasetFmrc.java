@@ -81,6 +81,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   public String getPath() { return path; }
+  public InvDatasetScan getRawFileScan()
+  {
+    if ( ! madeDatasets )
+      getDatasets();
+    return scan;
+  }
 
   public InventoryParams getFmrcInventoryParams() {
     return params;
@@ -89,8 +95,11 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public File getFile(String remaining) {
     if( null == params) return null;
     int pos = remaining.indexOf(SCAN);
-    String filename =  (pos > -1) ? params.location + remaining.substring(pos+SCAN.length()+1) :  params.location + remaining;
-    return new File( filename);
+    StringBuffer fname = new StringBuffer( params.location);
+    if ( ! params.location.endsWith( "/"))
+      fname.append( "/");
+    fname.append( ( pos > -1 ) ? remaining.substring( pos + SCAN.length() + 1 ) : remaining);
+    return new File( fname.toString() );
   }
 
   public void setFmrcInventoryParams(String location, String def, String suffix) {
@@ -303,7 +312,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) {
-    if (null == scan)
+    if ( ! madeDatasets)
       getDatasets();
 
     return scan.makeCatalogForDirectory( orgPath, baseURI);
@@ -354,7 +363,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
       if (params != null) {
         scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
-                params.location, ".*"+params.suffix, true, "false", false, null, null, null );
+                params.location, ".*"+params.suffix, true, "true", false, null, null, null );
         ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
         tmi.setServiceName("fileServices");
         tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
@@ -477,7 +486,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     // check SCAN type before we have to do makeFmrc()
     if (type.equals(SCAN) && (params != null)) {
-      String filename = params.location + name;
+      String filename = new StringBuffer( params.location )
+              .append( params.location.endsWith( "/" ) ? "" : "/" )
+              .append( name ).toString();
       return NetcdfDataset.acquireDataset( filename, null);
     }
 
