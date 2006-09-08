@@ -1735,7 +1735,6 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         FmrcInventory fmrCollection = FmrcInventory.makeFromCatalog( catalogURLString, catalogURLString, n);
-        System.out.println("write definition to "+fmrCollection.getDefinitionPath());
         FmrcDefinition def = new FmrcDefinition();
         def.makeFromCollectionInventory( fmrCollection);
 

@@ -22,7 +22,7 @@
 package ucar.nc2.dt.fmr;
 
 /**
- * Class Description.
+ * A minimal interface, with no other dependencies, to pass into the Grib IOSP.
  *
  * @author caron
  */

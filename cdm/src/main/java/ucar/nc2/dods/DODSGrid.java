@@ -22,6 +22,7 @@ package ucar.nc2.dods;
 
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.StringUtil;
 import dods.dap.*;
 
@@ -68,7 +69,7 @@ public class DODSGrid extends DODSVariable {
       addAttribute(new Attribute("_unsigned", "true"));
     }
 
-    DODSAttribute att = new DODSAttribute("_coordinateSystem", sbuff.toString());
+    DODSAttribute att = new DODSAttribute(_Coordinate.Axes, sbuff.toString());
     this.addAttribute( att);
   }
 

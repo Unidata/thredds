@@ -563,6 +563,8 @@
         <documentation type="summary">
           The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model 78 hour forecast and GFS boundary conditions.
         </documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/etintro.htm" xlink:title="COMET MetEd (Meteorology Education and Training) documentation" />
+        <documentation xlink:href="http://www.nws.noaa.gov/ost/ifps_sst/DGEX_combined.pdf" xlink:title="NCEP presentation (ppt)" />
       </metadata>
 
       <datasetFmrc name="NCEP-DGEX-CONUS_12km" harvest="true" path="fmrc/NCEP/DGEX/CONUS_12km" collectionType="ForecastModelRuns" >

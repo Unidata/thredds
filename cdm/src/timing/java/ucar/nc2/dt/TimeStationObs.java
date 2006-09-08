@@ -28,7 +28,7 @@ import java.io.IOException;
 /**
  * From Eric Russell
  */
-public class StationObs {
+public class TimeStationObs {
 
   public static void main(String args[]) {
     long start = System.currentTimeMillis();

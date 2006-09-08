@@ -59,7 +59,7 @@ import java.util.*;
  */
 public class NetcdfFileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileCache.class);
-  //static private org.apache.commons.logging.Log log = LogFactory.getLog( NetcdfFileCache.class);
+  // LOOK: May switch to CopyOnWriteArrayList when we get to 1.5
   static private ArrayList cache; // CacheElement
   static private final Object lock = new Object(); // for synchronizing
   static private int maxElements, minElements;
@@ -81,7 +81,9 @@ public class NetcdfFileCache {
   static public void init( int minElementsInMemory, int maxElementsInMemory, long period) {
     minElements = minElementsInMemory;
     maxElements = maxElementsInMemory;
-    cache = new ArrayList(2*maxElements-minElements);
+    synchronized (lock) {
+      cache = new ArrayList(2*maxElements-minElements);
+    }
     disabled = false;
 
     // in case its called more than once
@@ -101,8 +103,10 @@ public class NetcdfFileCache {
     disabled = true;
     if (timer != null) timer.cancel();
     timer = null;
-    if ((cache != null) && cache.size() > 0)
-      clearCache( true);
+    synchronized (lock) {
+      if ((cache != null) && cache.size() > 0)
+        clearCache( true);
+    }
   }
 
   /** You must call exit() to shut down the background timer in order to get a clean process shutdown. */
@@ -110,8 +114,10 @@ public class NetcdfFileCache {
     disabled = true;
     if (timer != null) timer.cancel();
     timer = null;
-    if ((cache != null) && cache.size() > 0)
-      clearCache( true);
+    synchronized (lock) {
+      if ((cache != null) && cache.size() > 0)
+        clearCache( true);
+    }
   }
 
   /**
@@ -242,14 +248,15 @@ public class NetcdfFileCache {
    * Normally this is done in a background thread, you dont need to call.
    */
   static private void cleanup() {
-    int size = cache.size();
-    if (size <= minElements) return;
-
-    int count = 0;
-    int need2delete = size - minElements;
     ArrayList deleteList = new ArrayList();
+    int size, need2delete;
+    int count = 0;
 
     synchronized (lock) {
+      size = cache.size();
+      if (size <= minElements) return;
+      need2delete = size - minElements;
+
       Collections.sort( cache); //sort so oldest are on top
       Iterator iter = cache.iterator();
       while (iter.hasNext()) {

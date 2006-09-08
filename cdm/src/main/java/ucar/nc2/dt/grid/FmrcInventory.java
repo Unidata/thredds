@@ -63,7 +63,7 @@ public class FmrcInventory {
 
   private static SimpleDateFormat dateFormatShort = new java.text.SimpleDateFormat("MM-dd HH.mm");
   private static SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH.mm'Z'");
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   static {
     dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT")); // same as UTC
@@ -1363,12 +1363,15 @@ public class FmrcInventory {
       ForecastModelRunInventory fmr;
       try {
         fmr = ForecastModelRunInventory.open(cache, access.getStandardUrlName(), ForecastModelRunInventory.OPEN_NORMAL, false);
+        if (null != fmr) {
+          fmrCollection.addRun(fmr);
+          fmr.releaseDataset();
+        }
       } catch (IOException e) {
         e.printStackTrace();
         return;
       }
-      if (null != fmr)
-        fmrCollection.addRun(fmr);
+
     }
   }
 

@@ -6,6 +6,7 @@ import java.util.*;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.*;
 import ucar.unidata.util.StringUtil;
 
@@ -185,7 +186,7 @@ public class TestTDScompareWithFiles extends TestCase {
     List atts = dods.getAttributes();
     for (int i = 0; i < atts.size(); i++) {
       Attribute dodsAtt =  (Attribute) atts.get(i);
-      if (dodsAtt.getName().startsWith("_coordinateSystem")) continue; // ok
+      if (dodsAtt.getName().startsWith(_Coordinate.Axes)) continue; // ok
 
       Attribute orgAtt =  dods.findAttribute( dodsAtt.getName());
       assert orgAtt != null;

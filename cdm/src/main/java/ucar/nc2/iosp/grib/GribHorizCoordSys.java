@@ -34,6 +34,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Collections;
 
 /**
  * A horizontal coordinate system created from a Grib2GridDefinitionSection.
@@ -238,11 +239,34 @@ public class GribHorizCoordSys {
       v.addAttribute(att);
     }
 
-    v.addAttribute(new Attribute("GRIB_earth_shape", shape_name));
-    v.addAttribute(new Attribute("GRIB_earth_shape_code", new Integer(gdsIndex.grid_shape_code)));
+    v.addAttribute(new Attribute("earth_shape", shape_name));
+    //v.addAttribute(new Attribute("GRIB_earth_shape_code", new Integer(gdsIndex.grid_shape_code)));
     if (gdsIndex.grid_shape_code == 1) {
-      v.addAttribute(new Attribute("GRIB_spherical_earth_radius_meters", new Double(gdsIndex.radius_spherical_earth)));
+      v.addAttribute(new Attribute("spherical_earth_radius_meters", new Double(gdsIndex.radius_spherical_earth)));
     }
+
+    // add all the gds parameters
+    java.util.Set keys = gdsIndex.params.keySet();
+    ArrayList keyList = new ArrayList( keys);
+    Collections.sort( keyList);
+    for (int i = 0; i < keyList.size(); i++) {
+      String key = (String) keyList.get(i);
+      String name = NetcdfFile.createValidNetcdfObjectName("GRIB_param_"+key);
+
+      String vals = (String) gdsIndex.params.get(key);
+      try {
+        int vali = Integer.parseInt(vals);
+        v.addAttribute(new Attribute(name, new Integer(vali)));
+      } catch (Exception e) {
+        try {
+          double vald = Double.parseDouble(vals);
+          v.addAttribute(new Attribute(name, new Double(vald)));
+        } catch (Exception e2) {
+          v.addAttribute(new Attribute(name, vals));
+        }
+      }
+    }
+
     ncfile.addVariable(g, v);
   }
 

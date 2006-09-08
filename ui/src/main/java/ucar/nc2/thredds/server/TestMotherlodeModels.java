@@ -1,15 +1,14 @@
 package ucar.nc2.thredds.server;
 
 import ucar.nc2.ui.StopButton;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.*;
 
-import thredds.catalog.crawl.CatalogExtractor;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
@@ -30,7 +29,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private JLabel label;
   private PrintStream out;
   private int countDatasets, countNoAccess, countNoOpen;
-
+  private boolean verbose = false;
 
   TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
@@ -47,14 +46,14 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     p.add(stopButton);
     main.add( p);
 
-    FileOutputStream fout = new FileOutputStream(name+".txt");
+    //FileOutputStream fout = new FileOutputStream(name+".txt");
     out = System.out; // new PrintStream( new BufferedOutputStream( fout));
 
   }
 
   public void extract() throws IOException {
 
-    out.println("***read " + catUrl);
+    out.println("Read " + catUrl);
 
     InvCatalogImpl cat = catFactory.readXML(catUrl);
     StringBuffer buff = new StringBuffer();
@@ -74,7 +73,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     CatalogCrawler crawler = new CatalogCrawler(type, skipDatasetScan, this);
     long start = System.currentTimeMillis();
     try {
-      countCatRefs = crawler.crawl(cat, stopButton, out);
+      countCatRefs = crawler.crawl(cat, stopButton, verbose ? out : null);
     } finally {
       int took = (int) (System.currentTimeMillis() - start) / 1000;
 
@@ -87,14 +86,37 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public void getDataset(InvDataset ds) {
     countDatasets++;
 
-    out.println("  "+ds.getName());
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-    assert gc != null;
+    //assert gc != null;
+
+    NetcdfDataset ncd = null;
+    try {
+      StringBuffer log = new StringBuffer();
+      ncd = tdataFactory.openDataset( ds,  false, null, log);
+
+      if (ncd == null)
+        out.println("**** failed= "+ds.getName()+" err="+log);
+      else if (verbose)
+        out.println("   "+ds.getName()+" ok");
+
+    } catch (IOException e) {
+      out.println("**** failed= "+ds.getName()+" err= "+e.getMessage());
+    } finally {
+      if (ncd != null) try {
+        ncd.close();
+      } catch (IOException e) {
+      }
+    }
+
   }
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
     String server = "http://motherlode.ucar.edu:9080/thredds";
+    //String server = "http://lead1.unidata.ucar.edu:8080/thredds";
+    String catalog = "/idd/models.xml";
+
+    //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
     // HEY LOOK
     //ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);
@@ -109,7 +131,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+"/idd/models.xml", CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();

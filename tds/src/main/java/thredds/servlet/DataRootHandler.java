@@ -50,7 +50,7 @@ import java.io.*;
  * @author caron
  */
 public class DataRootHandler {
-  // @todo Decide if need to Guard/synchronize singleton. Probably not since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
+  // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   static private DataRootHandler singleton = null;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
 
@@ -90,18 +90,18 @@ public class DataRootHandler {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private final InvCatalogFactory factory;
+  //private final InvCatalogFactory factory;
   private final String contentPath;
   private final String servletContextPath;
 
   // @GuardedBy("this")
-  private StringBuffer catalogErrorLog = new StringBuffer(); // used during initialization
+  //private StringBuffer catalogErrorLog = new StringBuffer(); // used during initialization
   // @GuardedBy("this")
   private ArrayList catalogRootList = new ArrayList(); // List of root catalog filenames (String)
   // @GuardedBy("this")
   private HashMap staticCatalogHash = new HashMap(); // Hash of static catalogs, key = path
-  // @GuardedBy("this")
-  private PathMatcher pathMatcher = new PathMatcher(); // Keeps a Collection of DataRoot objects
+  //  PathMatcher is "effectively immutable"; use volatile for visibilty
+  private volatile PathMatcher pathMatcher = new PathMatcher(); // Keeps a Collection of DataRoot objects
 
   /**
    * Constructor.
@@ -111,7 +111,6 @@ public class DataRootHandler {
   private DataRootHandler(String contentPath, String servletContextPath) {
     this.contentPath = contentPath;
     this.servletContextPath = servletContextPath;
-    this.factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
   }
 
   /**
@@ -121,45 +120,33 @@ public class DataRootHandler {
    *
    * @throws IOException
    */
-  public void reinit() throws IOException {
-    int size;
-    synchronized ( this )
-    {
-      staticCatalogHash = new HashMap();
-      pathMatcher = new PathMatcher();
-      //catalogStaticList = new ArrayList();
-      catalogErrorLog = new StringBuffer();
+  public synchronized void reinit() throws IOException {
+    staticCatalogHash = new HashMap();
+    pathMatcher = new PathMatcher();
+    //catalogStaticList = new ArrayList();
+    //catalogErrorLog = new StringBuffer();
 
-      size = catalogRootList.size();
-    }
-
+    int size = catalogRootList.size();
     for (int i = 0; i < size; i++) {
       String path;
-      synchronized ( this )
-      {
-        path = (String) catalogRootList.get(i);
-      }
+      path = (String) catalogRootList.get(i);
       // May be too expensive to synchronize over.
       initCatalog(path, true );
     }
-    writeCatalogErrorLog();
+    //writeCatalogErrorLog();
   }
 
-  private void writeCatalogErrorLog() {
+  /* private void writeCatalogErrorLog() {
     try {
-      File fileOut = new File(contentPath + "logs/catalogErrorLog.txt");
+      File fileOut = new File(contentPath + "logs/catalogError.log");
       FileOutputStream fos = new FileOutputStream(fileOut);
-      String contents;
-      synchronized ( this )
-      {
-        contents = catalogErrorLog.toString();
-      }
+      String contents = catalogErrorLog.toString();
       thredds.util.IO.writeContents(contents, fos);
       fos.close();
     } catch (IOException ioe) {
       log.error("DataRootHandler.writeCatalogErrorLog error ", ioe);
     }
-  }
+  } */
 
   /**
    * Read the named catalog and extract the data roots from it.
@@ -168,17 +155,15 @@ public class DataRootHandler {
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @throws IOException
    */
-  public void initCatalog(String path) throws IOException {
-    synchronized( this )
-    {
-      if ( ! catalogRootList.contains( path) ) catalogRootList.add(path);
-    }
+  public synchronized void initCatalog(String path) throws IOException {
+    if ( ! catalogRootList.contains( path) )
+      catalogRootList.add(path);
     initCatalog(path, true );
-    writeCatalogErrorLog();
+    //writeCatalogErrorLog();
   }
 
   /**
-   * Does the actual work.
+   * Does the actual work. Only called by synchronized methods.
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @param recurse  if true, look for catRefs in this catalog
    * @throws IOException
@@ -187,15 +172,13 @@ public class DataRootHandler {
     String catalogFullPath = contentPath + path;
 
     // make sure we dont already have it
-    synchronized ( this )
-    {
       if ( staticCatalogHash.containsKey(path)) {
         log.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop");
         return;
       }
-    }
 
-    InvCatalogImpl cat = readCatalog( path, catalogFullPath );
+    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
+    InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
     if ( cat == null )
     {
       log.warn( "initCatalog(): failed to read catalog <" + catalogFullPath + ">." );
@@ -223,63 +206,53 @@ public class DataRootHandler {
     findSpecialDatasets( cat.getDatasets() );
 
     // add catalog to hash tables
-    synchronized ( this )
-    {
-      staticCatalogHash.put(path, cat);
-    }
+    staticCatalogHash.put(path, cat);
     if (log.isDebugEnabled()) log.debug("  add static catalog=" + path);
 
     if (recurse)
       check4Catrefs(dirPath, cat.getDatasets());
   }
 
-  private InvCatalogImpl readCatalog( String path, String catalogFullPath )
-  {
+  private InvCatalogImpl readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {
     URI uri;
-    try
-    {
-      uri = new URI( "file:" + StringUtil.escape( catalogFullPath, "/:-_." ) ); // LOOK needed ?
+    try {
+      uri = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
-    catch ( URISyntaxException e )
-    {
-      log.error( "readCatalog(): URISyntaxException=" + e.getMessage() );
+    catch (URISyntaxException e) {
+      log.error("readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
     // read the catalog
-    log.debug( "readCatalog(): full path=" + catalogFullPath + "; path=" + path );
+    log.debug("readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     InvCatalogImpl cat = null;
     FileInputStream ios = null;
-    try
-    {
-      ios = new FileInputStream( catalogFullPath );
-      cat = factory.readXML( ios, uri );
-      synchronized ( this )
-      {
-        catalogErrorLog.append( "\nCatalog " ).append( catalogFullPath ).append( "\n" );
-        if ( !cat.check( catalogErrorLog ) )
-        {
-          log.error( "readCatalog(): invalid catalog=" + catalogFullPath + "; " + catalogErrorLog.toString() );
+    try {
+      ios = new FileInputStream(catalogFullPath);
+      cat = factory.readXML(ios, uri);
+
+      synchronized (this) {
+        log.info("\nCatalog "+catalogFullPath);
+        StringBuffer sbuff = new StringBuffer();
+        if (!cat.check(sbuff)) {
+          log.error("readCatalog(): invalid catalog=" + catalogFullPath + "; " + sbuff.toString());
           return null;
         }
+        log.info(sbuff.toString());
       }
+
     }
-    catch ( IOException ioe )
-    {
-      log.error( "readCatalog(): IOException on catalog=" + catalogFullPath + " " + ioe.getMessage() );
+    catch (IOException ioe) {
+      log.error("readCatalog(): IOException on catalog=" + catalogFullPath + " " + ioe.getMessage());
       return null;
     }
-    finally
-    {
-      if ( ios != null )
-      {
-        try
-        {
+    finally {
+      if (ios != null) {
+        try {
           ios.close();
         }
-        catch ( IOException e )
-        {
-          log.error( "readCatalog(): error closing" + catalogFullPath );
+        catch (IOException e) {
+          log.error("readCatalog(): error closing" + catalogFullPath);
         }
       }
     }
@@ -288,7 +261,8 @@ public class DataRootHandler {
   }
 
   /**
-   * Look for datasetScans and NcML elements recursively in a list of InvDatasetImpl, but dont follow catRefs
+   * Look for datasetScans and NcML elements recursively in a list of InvDatasetImpl, but dont follow catRefs.
+   * Only called by synchronized methods.
    * @param dsList the list of InvDatasetImpl
    */
   private void findSpecialDatasets( List dsList) {
@@ -316,7 +290,7 @@ public class DataRootHandler {
           DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
       }
 
-      if (!(invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetFmrc)) {
+      if (!(invDataset instanceof InvCatalogRef)) {
         // recurse
         findSpecialDatasets( invDataset.getDatasets());
       }
@@ -324,7 +298,8 @@ public class DataRootHandler {
 
   }
 
-  private synchronized boolean addRoot(InvDatasetScan dscan) {
+  // Only called by synchronized methods
+  private boolean addRoot(InvDatasetScan dscan) {
     // check for duplicates
     String path = dscan.getPath();
 
@@ -335,9 +310,12 @@ public class DataRootHandler {
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      if (!droot.dirLocation.equals( dscan.getScanDir()))
-        log.warn(" already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-            " wanted to map to=<" + dscan.getScanDir() + ">");
+      if (!droot.dirLocation.equals( dscan.getScanDir())) {
+        String message = " already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+            " wanted to map to=<" + dscan.getScanDir() + "> in catalog "+dscan.getParentCatalog().getUriString();
+        log.warn(message);
+      }
+
       return false;
     }
 
@@ -354,7 +332,8 @@ public class DataRootHandler {
     return true;
   }
 
-  private synchronized boolean addRoot(InvDatasetFmrc fmrc) {
+  // Only called by synchronized methods
+  private boolean addRoot(InvDatasetFmrc fmrc) {
     // check for duplicates
     String path = fmrc.getPath();
 
@@ -411,7 +390,8 @@ public class DataRootHandler {
     }
   } */
 
-  private synchronized boolean addRoot(String path, String dirLocation) {
+  // Only called by synchronized methods
+  private boolean addRoot(String path, String dirLocation) {
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
@@ -431,8 +411,8 @@ public class DataRootHandler {
     return true;
   }
 
-  private void check4Catrefs(String dirPath, List datasets)
-          throws IOException
+  // Only called by synchronized methods
+  private void check4Catrefs(String dirPath, List datasets)  throws IOException
   {
     Iterator iter = datasets.iterator();
     while (iter.hasNext()) {
@@ -525,7 +505,7 @@ public class DataRootHandler {
    * @param fullpath
    * @return best DataRoot or null if no match.
    */
-  private synchronized DataRoot matchPath2(String fullpath) {
+  private DataRoot matchPath2(String fullpath) {
     if ((fullpath.length() > 0) && (fullpath.charAt(0) == '/'))
       fullpath = fullpath.substring(1);
 
@@ -735,6 +715,7 @@ public class DataRootHandler {
   private ProxyDatasetHandler getMatchingProxyDataset( String path )
   {
     InvDatasetScan scan = this.getMatchingScan( path);
+    if (null == scan) return null;
 
     int index = path.lastIndexOf( "/" );
     String proxyName = path.substring( index + 1 );
@@ -1028,29 +1009,29 @@ public class DataRootHandler {
 
     // Check for static catalog.
     InvCatalogImpl catalog;
-    synchronized ( this )
-    {
+    synchronized (this) {
       catalog = (InvCatalogImpl) staticCatalogHash.get(workPath);
-      if (catalog != null)
-      {
-        // Check if the cached catalog is stale.
-        DateType expiresDateType = catalog.getExpires();
-        if ( expiresDateType != null )
-        {
-          if ( expiresDateType.getDate().getTime() < System.currentTimeMillis() )
-          {
-            // If stale, re-read catalog from disk.
-            String catalogFullPath = contentPath + workPath;
-            InvCatalogImpl reReadCat = readCatalog( workPath, catalogFullPath );
-            if ( reReadCat != null )
-            {
-              staticCatalogHash.put( workPath, reReadCat);
-              catalog = reReadCat;
+    }
+
+    if (catalog != null) {
+      // Check if the cached catalog is stale.
+      DateType expiresDateType = catalog.getExpires();
+      if (expiresDateType != null) {
+        if (expiresDateType.getDate().getTime() < System.currentTimeMillis()) {
+          // If stale, re-read catalog from disk.
+          String catalogFullPath = contentPath + workPath;
+          InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
+          InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
+
+          if (reReadCat != null) {
+            synchronized (this) {
+              staticCatalogHash.put(workPath, reReadCat);
             }
+            catalog = reReadCat;
           }
         }
-        catalog.setBaseURI( baseURI );
       }
+      catalog.setBaseURI(baseURI); // LOOK why do we need to set baseURI, possible thread safety problem
     }
 
     // Check for dynamic catalog.
@@ -1058,8 +1039,8 @@ public class DataRootHandler {
       catalog = makeDynamicCatalog(workPath, baseURI);
 
     // Check for proxy dataset resolver catalog.
-    if ( catalog == null && this.isProxyDatasetResolver( workPath ) )
-      catalog = (InvCatalogImpl) this.getProxyDatasetResolverCatalog( workPath, baseURI );
+    if (catalog == null && this.isProxyDatasetResolver(workPath))
+      catalog = (InvCatalogImpl) this.getProxyDatasetResolverCatalog(workPath, baseURI);
 
     return catalog;
   }
@@ -1356,15 +1337,25 @@ public class DataRootHandler {
     DebugHandler debugHandler = new DebugHandler("catalogs");
     DebugHandler.Action act;
 
-    act = new DebugHandler.Action("showError", "Show catalog error logs") {
+    /* act = new DebugHandler.Action("showError", "Show catalog error logs") {
      public void doAction(DebugHandler.Event e) {
        synchronized ( DataRootHandler.this )
        {
+         try {
+          File fileOut = new File(contentPath + "logs/catalogError.log");
+          FileOutputStream fos = new FileOutputStream(fileOut);
+          //String contents = catalogErrorLog.toString();
+          thredds.util.IO.writeContents(contents, fos);
+          fos.close();
+        } catch (IOException ioe) {
+          log.error("DataRootHandler.writeCatalogErrorLog error ", ioe);
+        }
+
          e.pw.println( StringUtil.quoteHtmlContent( "\n"+catalogErrorLog.toString()));
        }
      }
    };
-   debugHandler.addAction( act);
+   debugHandler.addAction( act);  */
 
     act = new DebugHandler.Action("showStatic", "Show static catalogs") {
      public void doAction(DebugHandler.Event e) {
@@ -1423,7 +1414,6 @@ public class DataRootHandler {
       }
     };
     debugHandler.addAction( act);
-
   }
 
 }

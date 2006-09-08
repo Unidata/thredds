@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 public class TestReadandCount extends TestCase {
   private String outDir = "test/data/dataset/out/";
-  private static boolean show = false, showCount = false;
+  private static boolean show = false, showCount = true;
 
   public TestReadandCount( String name) {
     super(name);

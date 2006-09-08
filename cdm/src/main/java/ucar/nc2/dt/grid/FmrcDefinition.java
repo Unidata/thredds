@@ -236,7 +236,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         Run match = (Run) runs.get(matchIndex);
         Run next = (Run) runs.get(matchIndex+1);
         double incr = next.runHour - match.runHour;
-        if (incr < 0)
+        if (incr <= 0)
           break;
         runHour += incr;
         runs.add( new Run(next.tc, runHour));

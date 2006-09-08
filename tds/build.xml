@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="3.13"/>
-  <property name="release.version.minor" value="${release.version}.06"/>
+  <property name="release.version.minor" value="${release.version}.08"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -20,7 +20,7 @@
   <property name="uni.www.dir" value="Z:"/>
 
   <!-- TOMCAT_HOME directory, override in build.properties file. -->
-  <property name="tomcat_root" value="C:/Program Files/Apache Group/jakarta-tomcat-5.0.28"/>
+  <property name="tomcat_root" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat-5.5"/>
 
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
@@ -492,6 +492,13 @@
     <antcall target="deploy">
       <param name="server_url" value="http://motherlode.ucar.edu:8080"/>
       <param name="tomcat.password" value="${motherlode.password}"/>
+    </antcall>
+  </target>
+
+  <target name="deploy-lead1" description="Deploy web application to lead1 server">
+    <antcall target="deploy">
+      <param name="server_url" value="http://lead1.unidata.ucar.edu:8080"/>
+      <param name="tomcat.password" value="${lead1.password}"/>
     </antcall>
   </target>
 

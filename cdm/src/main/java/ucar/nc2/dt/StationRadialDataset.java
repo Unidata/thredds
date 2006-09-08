@@ -5,7 +5,7 @@ package ucar.nc2.dt;
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
-public interface StationRadialDataset extends TypedDataset, StationCollection {
+public interface StationRadialDataset extends RadialDatasetSweep, StationCollection {
 
 
 }

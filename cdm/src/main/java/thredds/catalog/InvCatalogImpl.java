@@ -494,6 +494,13 @@ public class InvCatalogImpl extends InvCatalog {
     fac.writeXML( this, os);
   }
 
+  /**
+   * Write the catalog as an XML document to the specified stream.
+   *
+   * @param os write to this OutputStream
+   * @param raw if true, write original (server) version, else write client version
+   * @throws java.io.IOException on an error.
+   */
   public void writeXML(java.io.OutputStream os, boolean raw) throws java.io.IOException {
     InvCatalogConvertIF fac = getCatalogConverter();
     fac.writeXML( this, os, raw);

@@ -35,4 +35,9 @@ public class Misc {
     return diff < TOL;
   }
 
+  public static boolean closeEnough( float v1, float v2) {
+    double diff = (v2 < TOL) ? Math.abs(v1-v2) : Math.abs(v1/v2-1);
+    return diff < TOL;
+  }
+
 }

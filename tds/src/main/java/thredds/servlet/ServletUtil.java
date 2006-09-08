@@ -1200,12 +1200,15 @@ public class ServletUtil {
     pw.println("\nThread Group = "+g.getName()+" activeCount= "+nthreads);
     Thread[] tarray = new Thread[nthreads];
     int n = g.enumerate(tarray, false);
+
     for (int i = 0; i < n; i++) {
       Thread thread = tarray[i];
       ClassLoader loader = thread.getContextClassLoader();
       String loaderName = (loader == null) ? "Default" : loader.getClass().getName();
-      Thread.State state = thread.getState(); // LOOK JDK 1.5
-      pw.print("   "+thread.getId() +" "+thread.getName() +" "+state +" "+loaderName);
+      //Thread.State state = thread.getState(); // LOOK JDK 1.5
+      String state = "unknown";
+      String id = "";  // thread.getId() LOOK JDK 1.5
+      pw.print("   "+id +" "+thread.getName() +" "+state +" "+loaderName);
       if (thread == current)
         pw.println(" **** CURRENT ***");
       else

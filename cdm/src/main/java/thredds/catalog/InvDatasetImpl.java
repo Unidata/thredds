@@ -397,6 +397,9 @@ public class InvDatasetImpl extends InvDataset {
     this.tmi = from.getLocalMetadataInheritable();
     this.accessLocal = new ArrayList( from.getAccessLocal());
     this.servicesLocal = new ArrayList( from.getServicesLocal());
+    
+    this.harvest = from.harvest;
+    this.collectionType = from.collectionType;
   }
 
   ////////////////////////////////////////////////////////

@@ -867,7 +867,7 @@ public class ForecastModelRunInventory {
   }
 
 
-  private static boolean debug = true, showXML = false;
+  private static boolean debug = false, showXML = false;
   public static void main(String args[]) throws Exception {
     //String def = "C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1";
     // String def = "C:/data/radarMosaic/RADAR_10km_mosaic_20060807_2220.grib1";

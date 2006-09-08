@@ -56,8 +56,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   protected String getContextLogoPath() { return "thredds.jpg"; }
   protected String getInstituteLogoPath() { return "unidataLogo.gif"; }
 
-
-  protected DataRootHandler catHandler;
+  protected DataRootHandler catHandler;  // singleton
 
     // cache scouring
   private Timer timer;

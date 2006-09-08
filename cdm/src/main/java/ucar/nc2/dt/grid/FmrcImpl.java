@@ -650,7 +650,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
           varData = orgVar.read( section);
 
         } catch (InvalidRangeException e) {
-          throw new IllegalStateException(e.getMessage(), e);
+          throw new IllegalStateException(e.getMessage());
         }
 
         Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
@@ -693,7 +693,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
           varData = orgVar.read( allSection);
 
         } catch (InvalidRangeException e) {
-          throw new IllegalStateException(e.getMessage(), e);
+          throw new IllegalStateException(e.getMessage());
         }
 
         Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());

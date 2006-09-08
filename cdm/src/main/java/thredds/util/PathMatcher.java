@@ -26,10 +26,12 @@ import java.util.*;
  * A Collection of (String key, Object) which is sorted on key.
  * match( String path) returns the Object whose key is the longest that matches path.
  * Match means that path.startsWith( key).
+ *
+ * Matching is thread-safe, as long as put() is no longer being called.
  */
 public class PathMatcher {
 
-  private TreeMap treeMap;
+  private final TreeMap treeMap;
 
   public PathMatcher() {
     treeMap = new TreeMap( new PathComparator());
@@ -106,24 +108,3 @@ public class PathMatcher {
   }
 
 }
-
-/* Change History:
-   $Log: PathMatcher.java,v $
-   Revision 1.4  2006/06/06 16:17:08  caron
-   *** empty log message ***
-
-   Revision 1.3  2006/05/08 02:47:19  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.2  2006/04/20 22:13:15  caron
-   improve DL record extraction
-   CatalogCrawler improvements
-
-   Revision 1.1  2005/11/03 19:30:20  caron
-   no message
-
-*/

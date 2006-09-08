@@ -46,7 +46,14 @@
     </layout>
   </appender>
 
-  <!-- keep track of Cache messages in a seperatefile. runs once a day -->
+  <appender name="catalogErrors" class="org.apache.log4j.FileAppender">
+    <param name="File" value="${logdir}/catalogErrors.log"/>
+    <param name="Append" value="false"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%m%n"/>
+    </layout>
+  </appender>
+
   <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${logdir}/models.log"/>
     <param name="MaxFileSize" value="5MB"/>
@@ -69,6 +76,11 @@
   <logger name="thredds">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
+  </logger>
+
+  <logger name="thredds.servlet.DataRootHandler">
+    <level value="INFO"/>
+    <appender-ref ref="catalogErrors"/>
   </logger>
 
   <logger name="threddsAccessLogger">

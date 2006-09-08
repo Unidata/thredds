@@ -22,7 +22,10 @@ Changes in version 2.2.17
     CoordinateAxis1D add isLayer(), check for _Coordinate.ZisLayer attribute.
   * VariableDS uses ProxyReader interface, rather than Aggregation directly.
   * AxisType.Ensemble, AxisType.RunTime
-  * GeoGrid : getLevels(), getTimes() returns List, not ArrayList
+  * GeoGridCoordSys.getTimeCoordinate() implements ucar.nc2.dt.GridCoordSystem:
+    getTimeAxis() returns CoordinateAxis instead of CoordinateAxis1D. 
+    add getTimeAxis1D(), getTimeAxisForRun.
+  * GeoGrid : getLevels(), getTimes() returns List, not ArrayListl; implements ucar.nc2.dt.GridDaatatype
   * CoordinateSystem: remove get/setDataType(), make setImplicit() protected.
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used

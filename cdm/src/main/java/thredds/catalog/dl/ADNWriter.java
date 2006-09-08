@@ -177,13 +177,15 @@ public class ADNWriter {
       list = ds.getPublishers();
       for (int i=0; i<list.size(); i++) {
         ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(i);
-        contributors.addContent( writeSource(p, "Publisher"));
+        if(emailOK(p))
+          contributors.addContent( writeSource(p, "Publisher"));
       }
 
       list = ds.getCreators();
       for (int i=0; i<list.size(); i++) {
         ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(i);
-        contributors.addContent( writeSource(p, "Author"));
+        if(emailOK(p))
+          contributors.addContent( writeSource(p, "Author"));
       }
     }
 
@@ -311,6 +313,13 @@ public class ADNWriter {
     if (null != dateRange)
       rootElem.addContent( writeTemporalCoverage(dateRange));
   }
+
+  // check its an acceptable form of email
+  protected boolean emailOK(ThreddsMetadata.Source p) {
+    String email = p.getEmail();
+    return email.indexOf('@') >= 0; // should really do a regexp
+  }
+
 
   protected Element writeSource(ThreddsMetadata.Source p, String role) {
     Element contributor = new Element("contributor", defNS);

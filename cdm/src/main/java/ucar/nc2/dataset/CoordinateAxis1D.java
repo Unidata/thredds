@@ -161,7 +161,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValues() on non-numeric");
     if (!wasRead) doRead();
-    return midpoint;
+    return (double[]) midpoint.clone();
   }
 
   /** Get the coordinate edges as a double array; only use this if isContiguous() is true.
@@ -172,7 +172,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdges() on non-numeric");
     if (!wasRead) doRead();
-    return edge;
+    return (double[]) edge.clone();
   }
 
   /** Get the coordinate bound1 as a double array.
@@ -184,7 +184,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
     if (!wasRead) doRead();
-    return bound1;
+    return (double[]) bound1.clone();
   }
 
   /** Get the coordinate bound1 as a double array.
@@ -196,7 +196,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
     if (!wasRead) doRead();
-    return bound2;
+    return (double[]) bound2.clone();
   }
 
 

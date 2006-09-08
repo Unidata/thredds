@@ -46,8 +46,8 @@ import thredds.catalog.InvDatasetFmrc;
  */
 public class FmrcInventoryServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
-  private boolean debug = true;
-  private HashMap paramHash = new HashMap();  // key=path value=FmrcInventoryParams
+  private boolean debug = false;
+  // private HashMap paramHash = new HashMap();  // key=path value=FmrcInventoryParams
 
   public void init() throws ServletException {
     super.init();
@@ -58,10 +58,10 @@ public class FmrcInventoryServlet extends AbstractServlet {
     //fmrCache.setCachePathPolicy( DiskCache2.CACHEPATH_POLICY_NESTED_TRUNCATE, "grid/");
   }
 
-  public void destroy() {
+  /* public void destroy() {
     if (fmrCache != null)
       fmrCache.exit();
-  }
+  } */
 
   protected String getPath() { return "modelInventory/"; }
   protected void makeDebugActions() { }
@@ -106,8 +106,10 @@ public class FmrcInventoryServlet extends AbstractServlet {
         }
       }
 
-      fmr = FmrcInventory.make(fmrcDefinitionPath, collectionName, fmrCache, params.location, params.suffix,
-              ForecastModelRunInventory.OPEN_NORMAL); // LOOK!!
+      String fmrInvOpenType = ServletParams.getInitParameter("FmrInventoryOpenType", "");
+      int mode = fmrInvOpenType.equalsIgnoreCase("XML_ONLY") ? ForecastModelRunInventory.OPEN_XML_ONLY : ForecastModelRunInventory.OPEN_NORMAL;
+
+      fmr = FmrcInventory.make(fmrcDefinitionPath, collectionName, fmrCache, params.location, params.suffix, mode);
 
     } catch (Exception e) {
       e.printStackTrace();
