@@ -22,7 +22,7 @@
 package thredds.servlet;
 
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.dt.grid.ForecastModelRunInventory;
+import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.nc2.dt.point.MetarCollection;
 
 import javax.servlet.ServletException;

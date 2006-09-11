@@ -36,7 +36,7 @@ import ucar.nc2.FileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.dt.grid.ForecastModelRunInventory;
+import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;

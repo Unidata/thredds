@@ -1,4 +1,4 @@
-package ucar.nc2.dt.grid;
+package ucar.nc2.dt.fmrc;
 
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.DiskCache2;

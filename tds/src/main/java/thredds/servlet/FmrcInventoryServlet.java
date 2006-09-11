@@ -30,12 +30,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.HashMap;
 
-import ucar.nc2.dt.grid.FmrcInventory;
-import ucar.nc2.dt.grid.FmrcDefinition;
-import ucar.nc2.dt.grid.FmrcReport;
-import ucar.nc2.dt.grid.ForecastModelRunInventory;
+import ucar.nc2.dt.fmrc.FmrcInventory;
+import ucar.nc2.dt.fmrc.FmrcDefinition;
+import ucar.nc2.dt.fmrc.FmrcReport;
+import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.unidata.util.StringUtil;
 import thredds.catalog.InvDatasetFmrc;
 

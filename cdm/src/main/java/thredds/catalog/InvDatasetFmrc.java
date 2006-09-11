@@ -34,9 +34,8 @@ import java.net.URI;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.dt.grid.ForecastModelRunCollection;
-import ucar.nc2.dt.grid.FmrcImpl;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.fmrc.ForecastModelRunCollection;
+import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.thredds.MetadataExtractor;
 import thredds.datatype.DateRange;
@@ -529,7 +528,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
         DateFormatter formatter = new DateFormatter();
         Date date = formatter.getISODate(id);
-        result = fmrc.getForecastTimeDataset(date);
+        if (date == null)
+         logger.warn("Cant parse date "+id);
+       else {
+          result = fmrc.getForecastTimeDataset(date);
+          if (result == null)
+            logger.warn("Dont have forecast date "+id);
+        }
       }
     }
 

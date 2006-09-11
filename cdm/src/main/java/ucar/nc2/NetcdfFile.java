@@ -1028,6 +1028,10 @@ public class NetcdfFile {
     for (int i=0; i<g.variables.size(); i++) {
       Variable v = (Variable) g.variables.get(i);
       v.calcIsCoordinateVariable();
+      /* if (v.getName().equals("Time") && !v.isCoordinateAxis) {
+        System.out.println("hah ");
+        v.calcIsCoordinateVariable();
+      } */
     }
 
     for (int i=0; i<g.attributes.size(); i++) {

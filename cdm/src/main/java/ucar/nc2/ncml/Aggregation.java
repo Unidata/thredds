@@ -111,7 +111,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false;
+  protected boolean debug = true, debugOpenFile = true, debugCacheDetail = true, debugSyncDetail = true, debugProxy = false;
 
   /**
    * Create an Aggregation for the NetcdfDataset.
@@ -338,7 +338,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     if (!cacheFile.exists())
       return;
 
-    if (debug) System.out.println(" *Read cache " + cacheName);
+    if (debug) System.out.println(" *Read cache " + cacheFile.getPath());
 
     Element aggElem;
     try {
@@ -1176,7 +1176,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
      */
     protected Dataset(String cacheName, String location, String ncoordS, String coordValueS, boolean enhance, NetcdfFileFactory reader) {
       this.cacheName = cacheName;
-      this.location = StringUtil.substitute(location, "\\", "/");
+      this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
       this.coordValue = coordValueS;
       this.enhance = enhance;
       this.reader = (reader != null) ? reader : new PolymorphicReader();
@@ -1192,7 +1192,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
 
       if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
-        if (coordValue == null) {
+        if (coordValueS == null) {
           int pos = this.location.lastIndexOf("/");
           this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
           this.isStringValued = true;
@@ -1203,6 +1203,12 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
             this.isStringValued = true;
           }
         }
+      }
+
+      // allow coordValue attribute on JOIN_EXISTING, may be multiple values seperated by blanks or commas
+      if ((type == Type.JOIN_EXISTING) && (coordValueS != null)) {
+        StringTokenizer stoker = new StringTokenizer(coordValueS, " ,");
+        this.ncoord = stoker.countTokens();
       }
 
       /*  this.coordValueS = coordValueS;

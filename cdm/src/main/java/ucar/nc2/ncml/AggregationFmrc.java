@@ -26,16 +26,14 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.fmr.FmrcCoordSys;
-import ucar.nc2.dt.grid.FmrcDefinition;
-import ucar.nc2.dt.grid.ForecastModelRunInventory;
+import ucar.nc2.dt.fmrc.FmrcDefinition;
+import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 
 import java.util.*;
 import java.io.*;
-import java.text.ParseException;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation

@@ -93,7 +93,7 @@
     <appender-ref ref="modelLog"/>
   </logger>
 
-  <logger name="ucar.nc2.dt.grid">
+  <logger name="ucar.nc2.dt.fmrc">
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>
   </logger>

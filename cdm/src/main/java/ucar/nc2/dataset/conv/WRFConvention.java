@@ -127,11 +127,13 @@ public class WRFConvention extends CoordSysBuilder {
     ds.addCoordinateAxis( makeZCoordAxis( ds, "z_stag", ds.findDimension("bottom_top_stag")));
 
     // time coordinate variations
-    CoordinateAxis taxis = makeTimeCoordAxis( ds, "time", ds.findDimension("Time"));
-    if (taxis == null)
-      taxis = makeTimeCoordAxis( ds, "time", ds.findDimension("Times"));
-    if (taxis != null)
-      ds.addCoordinateAxis( taxis);
+    if (ds.findVariable("Time") == null) { // Can skip this if its already there, eg from NcML
+      CoordinateAxis taxis = makeTimeCoordAxis( ds, "time", ds.findDimension("Time"));
+      if (taxis == null)
+        taxis = makeTimeCoordAxis( ds, "time", ds.findDimension("Times"));
+      if (taxis != null)
+        ds.addCoordinateAxis( taxis);
+    }
 
     ds.addCoordinateAxis( makeSoilDepthCoordAxis( ds, "ZS"));
 
@@ -255,19 +257,20 @@ public class WRFConvention extends CoordSysBuilder {
 
   private CoordinateAxis makeZCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.SHORT, dim.getName(),"", "eta values");
+
+    String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
+
+    CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.SHORT, dim.getName(),"", "eta values from variable "+fromWhere);
     v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals( dim.getName()) )
       v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
-    //use eta values from file variables: ZNU, ZNW
-    //But they are a function of time though the values are the same in the sample file
-    //NOTE: Use first time sample assuming all are the same!
-    //ADD: Is this a safe assumption???
-    Variable etaVar;
-    if (axisName.endsWith("stag")) etaVar = ds.findVariable("ZNW");
-    else etaVar = ds.findVariable("ZNU");
+    // create eta values from file variables: ZNU, ZNW
+    // But they are a function of time though the values are the same in the sample file
+    // NOTE: Use first time sample assuming all are the same!
+    Variable etaVar = ds.findVariable(fromWhere);
     if (etaVar == null) return makeFakeCoordAxis(ds, axisName, dim);
+
     int n = etaVar.getShape()[1];//number of eta levels
     int[] origin = new int[] {0,0};
     int[] shape = new int[] {1,n};
