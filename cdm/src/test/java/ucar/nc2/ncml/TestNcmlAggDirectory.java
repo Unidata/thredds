@@ -7,7 +7,7 @@ import java.util.List;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.ma2.*;
 
 public class TestNcmlAggDirectory extends TestCase {

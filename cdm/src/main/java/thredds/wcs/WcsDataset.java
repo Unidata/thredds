@@ -26,7 +26,7 @@ import ucar.nc2.util.DiskCache;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dataset.grid.GeoGrid;
+import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.Array;
@@ -218,7 +218,7 @@ public class WcsDataset {
 
   static public void main(String[] args) throws IOException {
     String name = "C:/data/grib2/ndfd.wmo";
-    GridDataset gd = ucar.nc2.dataset.grid.GridDataset.open(name);
+    GridDataset gd = ucar.nc2.dt.grid.GridDataset.open(name);
     WcsDataset wcs = new WcsDataset(gd, "ndfd.wmo", false);
     System.out.println(wcs.getCapabilities());
     System.out.println(wcs.describeCoverage());

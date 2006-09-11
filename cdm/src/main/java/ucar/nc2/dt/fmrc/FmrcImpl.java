@@ -97,7 +97,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     runtimes = null;
 
     HashMap timeAxisHash = new HashMap(); // key = timeAxis, value = Gridset
-    gds = new ucar.nc2.dataset.grid.GridDataset( ncd);
+    gds = new ucar.nc2.dt.grid.GridDataset( ncd);
     List grids = gds.getGrids();
     if (grids.size() == 0)
       throw new IllegalArgumentException("no grids");

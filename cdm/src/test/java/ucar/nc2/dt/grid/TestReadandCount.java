@@ -1,13 +1,14 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.AxisType;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.TestAll;
 
 import java.util.List;
-import java.util.Collection;
 import java.util.Iterator;
 
 /** Count geogrid objects - sanity check when anything changes. */
@@ -99,7 +100,7 @@ public class TestReadandCount extends TestCase {
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
     System.out.println("test read GridDataset = " + dir + filename);
-    GridDataset gridDs = GridDataset.open(dir + filename);
+    ucar.nc2.dt.grid.GridDataset gridDs = GridDataset.open(dir + filename);
 
     int countGrids = gridDs.getGrids().size();
     int countCoordAxes = gridDs.getNetcdfDataset().getCoordinateAxes().size();

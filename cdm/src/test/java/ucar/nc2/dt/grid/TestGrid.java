@@ -1,6 +1,7 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.*;
+import ucar.nc2.dt.grid.TestGeoGrid;
 
 /**
  * TestSuite that runs all the sample tests

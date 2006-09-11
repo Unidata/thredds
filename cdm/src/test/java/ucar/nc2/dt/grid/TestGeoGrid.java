@@ -1,10 +1,12 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridCoordSys;
 
 import java.io.*;
 
@@ -18,7 +20,7 @@ public class TestGeoGrid extends TestCase {
   }
 
   public void testSubset() throws Exception {
-    GridDataset dataset = GridDataset.open(TestGrid.topDir+"rankTest.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestGrid.topDir+"rankTest.nc");
 
     GeoGrid grid = dataset.findGridByName("full4");
     assert null != grid;

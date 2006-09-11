@@ -1,8 +1,9 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dt.grid.*;
 import ucar.nc2.NCdump;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.unidata.geoloc.LatLonRect;
@@ -21,7 +22,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testRegular() throws Exception {
-    GridDataset dataset = GridDataset.open("R:/metapps/test/data/grids/03061219_ruc.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open("R:/metapps/test/data/grids/03061219_ruc.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;

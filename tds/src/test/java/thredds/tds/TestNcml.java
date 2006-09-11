@@ -5,7 +5,6 @@ import junit.framework.*;
 import thredds.catalog.*;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NCdump;

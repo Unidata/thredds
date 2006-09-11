@@ -122,7 +122,7 @@ public class TestHTTP extends TestCase {
     List locs = makeList();
     for (Iterator iter = locs.iterator(); iter.hasNext(); ) {
       String loc = (String) iter.next();
-      ucar.nc2.dataset.grid.GridDataset.open( loc);
+      ucar.nc2.dt.grid.GridDataset.open( loc);
     }
 
     totalBytes /= 1000;

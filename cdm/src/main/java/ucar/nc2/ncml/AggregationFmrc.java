@@ -172,7 +172,7 @@ public class AggregationFmrc extends Aggregation {
 
     // promote all grid variables
     HashSet timeAxes = new HashSet();
-    GridDataset gds = new ucar.nc2.dataset.grid.GridDataset((NetcdfDataset) typical);
+    GridDataset gds = new ucar.nc2.dt.grid.GridDataset((NetcdfDataset) typical);
     List grids = gds.getGrids();
     for (int i = 0; i < grids.size(); i++) {
       GridDatatype grid = (GridDatatype) grids.get(i);

@@ -55,7 +55,7 @@ import java.util.*;
  * Further CoordinateSystems specialization is done by "data type specific" clasess such as
  * ucar.nc2.dataset.grid.GridCoordSys.
  *
- * @see ucar.nc2.dataset.grid.GridCoordSys
+ * @see ucar.nc2.dt.grid.GridCoordSys
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */

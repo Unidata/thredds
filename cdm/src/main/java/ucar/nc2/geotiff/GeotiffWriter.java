@@ -101,7 +101,7 @@ public class GeotiffWriter {
 
   public void writeGrid(String fileName, String gridName, int time, int level, boolean greyScale, LatLonRect pt) throws IOException {
     double scaler;
-    GridDataset dataset = ucar.nc2.dataset.grid.GridDataset.open(fileName);
+    GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
     GridDatatype grid = dataset.findGridDatatype( gridName);
     GridCoordSystem gcs = grid.getGridCoordSystem();
 

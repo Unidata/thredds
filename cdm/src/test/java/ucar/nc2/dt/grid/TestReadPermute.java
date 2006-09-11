@@ -1,8 +1,9 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dt.grid.TestGrid;
 import ucar.nc2.dataset.*;
 
 import java.io.*;
@@ -19,8 +20,7 @@ public class TestReadPermute extends TestCase {
   public void testReadPermute() {
     try {
 
-      GridDataset dataset = GridDataset.open( TestGrid.topDir+"permuteTest.nc");
-
+      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestGrid.topDir+"permuteTest.nc");
 
       doRead4(dataset, "tzyx");
       doRead4(dataset, "tzxy");

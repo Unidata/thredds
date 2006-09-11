@@ -22,21 +22,17 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.Dimension;
 import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
-import ucar.nc2.dataset.grid.*;
+import ucar.nc2.dt.grid.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-import ucar.ma2.Array;
 import thredds.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.List;
 import java.io.IOException;

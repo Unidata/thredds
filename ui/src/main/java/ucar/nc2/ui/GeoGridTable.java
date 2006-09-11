@@ -26,7 +26,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
+import ucar.nc2.dt.grid.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.17"/>
-  <property name="release.version.minor" value="${release.version}.11"/>
+  <property name="release.version.minor" value="${release.version}.12"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>
@@ -327,10 +327,9 @@
       <package name="ucar.nc2"/>
       <package name="ucar.nc2.dataset"/>
       <!--package name="ucar.nc2.dataset.conv"/ -->
-      <package name="ucar.nc2.dataset.grid"/>
       <!-- package name="ucar.nc2.geotiff"/ -->
       <package name="ucar.nc2.dt"/>
-      <!-- package name="ucar.nc2.dt.grid"/ -->
+      <package name="ucar.nc2.dt.grid"/>
       <!-- package name="ucar.nc2.dt.image"/ -->
       <!-- package name="ucar.nc2.dt.radial"/-->
       <!-- package name="ucar.nc2.dt.point"/-->

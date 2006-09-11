@@ -22,12 +22,8 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.Dimension;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.dt.radial.RadialCoordSys;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
@@ -35,10 +31,7 @@ import thredds.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;

@@ -2,13 +2,11 @@ package ucar.nc2.thredds.server;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.Variable;
 import ucar.nc2.NCdump;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.ma2.Array;
 

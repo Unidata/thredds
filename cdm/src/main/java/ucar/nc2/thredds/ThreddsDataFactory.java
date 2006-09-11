@@ -23,7 +23,7 @@ package ucar.nc2.thredds;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 
-import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.dt.point.PointObsDatasetFactory;
 

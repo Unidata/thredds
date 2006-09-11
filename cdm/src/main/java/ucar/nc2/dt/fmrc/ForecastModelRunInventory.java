@@ -94,7 +94,7 @@ public class ForecastModelRunInventory {
   private ForecastModelRunInventory() { }
 
   private ForecastModelRunInventory(String ncfileLocation) throws IOException {
-    this( ucar.nc2.dataset.grid.GridDataset.open( ncfileLocation), null);
+    this( ucar.nc2.dt.grid.GridDataset.open( ncfileLocation), null);
   }
 
   private ForecastModelRunInventory(ucar.nc2.dt.GridDataset gds, Date runDate) {

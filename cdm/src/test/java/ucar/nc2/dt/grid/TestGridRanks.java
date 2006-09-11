@@ -1,4 +1,4 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.ma2.*;
@@ -7,30 +7,31 @@ import ucar.nc2.dataset.*;
 
 import java.io.*;
 
-/** Test grids with a problem in their dimension. */
+/** Test grids with 1 dimensional z and/or t dimension */
 
-public class TestGridRank2 extends TestCase {
+public class TestGridRanks extends TestCase {
   private boolean show = false;
 
-  public TestGridRank2( String name) {
+  public TestGridRanks( String name) {
     super(name);
   }
 
   public void testWrite() throws Exception {
     NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestGrid.topDir+"rankTest2.nc");
+    ncfile.setName(TestGrid.topDir+"rankTest.nc");
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
     Dimension yDim = ncfile.addDimension("y", 5);
     Dimension zDim = ncfile.addDimension("z", 4);
     Dimension tDim = ncfile.addDimension("time", 2);
-    Dimension windDim = ncfile.addDimension("wind", 3); // no axis
-    Dimension xtraDim = ncfile.addDimension("extra", 2); // has axis
 
-    // define axes
+    Dimension z1Dim = ncfile.addDimension("z1", 1);
+    Dimension t1Dim = ncfile.addDimension("time1", 1);
+
+    // define Variables
     ncfile.addVariable("time", double.class, new Dimension[] { tDim } );
-    ncfile.addVariableAttribute("time", "units", "barf since 1-1-1 00:00"); // bad units
+    ncfile.addVariableAttribute("time", "units", "secs since 1-1-1 00:00");
 
     ncfile.addVariable("z", double.class, new Dimension[] { zDim } );
     ncfile.addVariableAttribute("z", "units", "meters");
@@ -42,14 +43,23 @@ public class TestGridRank2 extends TestCase {
     ncfile.addVariable("x", double.class, new Dimension[] { xDim } );
     ncfile.addVariableAttribute("x", "units", "degrees_east");
 
-    ncfile.addVariable("extra", double.class, new Dimension[] { xtraDim } );
-    ncfile.addVariableAttribute("extra", "units", "kg");
+    ncfile.addVariable("time1", double.class, new Dimension[] { t1Dim } );
+    ncfile.addVariableAttribute("time1", "units", "secs since 1-1-1 00:00");
 
-    // define data variables
-    ncfile.addVariable("badTime", double.class, new Dimension[] { tDim, zDim, yDim, xDim });
-    ncfile.addVariable("wind", double.class, new Dimension[] { windDim, zDim, xDim, yDim });
-    ncfile.addVariable("hasExtra", double.class, new Dimension[] { xtraDim, zDim, xDim, yDim });
+    ncfile.addVariable("z1", double.class, new Dimension[] { z1Dim } );
+    ncfile.addVariableAttribute("z1", "units", "meters");
+    ncfile.addVariableAttribute("z1", "positive", "up");
 
+    // 4 d
+    ncfile.addVariable("full4", double.class, new Dimension[] { tDim, zDim, yDim, xDim });
+    ncfile.addVariable("withZ1", double.class, new Dimension[] { tDim, z1Dim, xDim, yDim });
+    ncfile.addVariable("withT1", double.class, new Dimension[] { t1Dim, zDim, xDim, yDim });
+    ncfile.addVariable("withT1Z1", double.class, new Dimension[] { t1Dim, z1Dim, xDim, yDim });
+
+    // 3 d
+    ncfile.addVariable("full3", double.class, new Dimension[] { zDim, yDim, xDim });
+    ncfile.addVariable("Z1noT", double.class, new Dimension[] { z1Dim, xDim, yDim });
+    ncfile.addVariable("T1noZ", double.class, new Dimension[] { t1Dim, xDim, yDim });
 
     // add global attributes
     ncfile.addGlobalAttribute("Convention", "COARDS");
@@ -66,6 +76,15 @@ public class TestGridRank2 extends TestCase {
     int[] origin = new int[1];
     ncfile.write("time", origin, A);
 
+    // write time1 data
+    len = t1Dim.getLength();
+    A = new ArrayDouble.D1(len);
+    ima = A.getIndex();
+    for (int i=0; i<len; i++)
+      A.setDouble(ima.set(i), (double) (i*3600));
+    origin = new int[1];
+    ncfile.write("time1", origin, A);
+
     // write z data
     len = zDim.getLength();
     A = new ArrayDouble.D1(len);
@@ -74,19 +93,13 @@ public class TestGridRank2 extends TestCase {
       A.setDouble(ima.set(i), (double) (i*10));
     ncfile.write("z", origin, A);
 
-
-    // write extra data
-    len = xtraDim.getLength();
+    // write z1 data
+    len = z1Dim.getLength();
     A = new ArrayDouble.D1(len);
     ima = A.getIndex();
     for (int i=0; i<len; i++)
       A.setDouble(ima.set(i), (double) (i*10));
-    try {
-      ncfile.write("extra", origin, A);
-    } catch (IOException e) {
-      System.err.println("ERROR writing z1");
-      assert(false);
-    }
+    ncfile.write("z1", origin, A);
 
     // write y data
     len = yDim.getLength();
@@ -96,7 +109,6 @@ public class TestGridRank2 extends TestCase {
       A.setDouble(ima.set(i), (double) (i*3));
     ncfile.write("y", origin, A);
 
-
     // write x data
     len = xDim.getLength();
     A = new ArrayDouble.D1(len);
@@ -105,11 +117,15 @@ public class TestGridRank2 extends TestCase {
       A.setDouble(ima.set(i), (double) (i*5));
     ncfile.write("x", origin, A);
 
-
     // write tzyx data
-    doWrite4(ncfile, "badTime");
-    doWrite4(ncfile, "wind");
-    doWrite4(ncfile, "hasExtra");
+    doWrite4(ncfile, "full4");
+    doWrite4(ncfile, "withZ1");
+    doWrite4(ncfile, "withT1");
+    doWrite4(ncfile, "withT1Z1");
+
+    doWrite3(ncfile, "full3");
+    doWrite3(ncfile, "Z1noT");
+    doWrite3(ncfile, "T1noZ");
 
     if (show) System.out.println( "ncfile = "+ ncfile);
 
@@ -164,27 +180,20 @@ public class TestGridRank2 extends TestCase {
     for (int n=0; n<rank; n++) {
       Dimension dim = v.getDimension(n);
       String dimName = dim.getName();
+      if (dimName.equals("time")) w[n]  = 1000;
       if (dimName.equals("z")) w[n]  = 100;
-      else if (dimName.equals("y")) w[n]  = 10;
-      else if (dimName.equals("x")) w[n]  = 1;
-      else w[n]  = 1000;
+      if (dimName.equals("y")) w[n]  = 10;
+      if (dimName.equals("x")) w[n]  = 1;
     }
 
     return w;
   }
 
   //////////////////////////////////////////////
-  public void testRead() {
-    try {
+  public void testRead() throws Exception {
+      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestGrid.topDir+"rankTest.nc");
 
-      GridDataset ds = GridDataset.open( TestGrid.topDir+"rankTest2.nc");
-      //System.out.println("dataset= "+ds.getInfo());
-      GeoGrid gg = ds.findGridByName("badTime");
-      assert (ds.findGridByName("badTime") == null);
-      assert (ds.findGridByName("wind") == null);
-      assert (ds.findGridByName("hasExtra") == null);
-
-      /* doRead4(dataset, "full4");
+      doRead4(dataset, "full4");
       doRead4(dataset, "withZ1");
       doRead4(dataset, "withT1");
       doRead4(dataset, "withT1Z1");
@@ -203,13 +212,10 @@ public class TestGridRank2 extends TestCase {
 
             // read 3D volume data without time
       doRead3XY(dataset, "full3");
-      doRead3XY(dataset, "Z1noT"); */
+      doRead3XY(dataset, "Z1noT");
 
       // all done
-      ds.close();
-    } catch (IOException e) {
-      assert false : e.getMessage();
-    }
+      dataset.close();
 
     System.out.println( "*****************Test Read done");
   }

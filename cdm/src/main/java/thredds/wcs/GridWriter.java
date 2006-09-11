@@ -194,7 +194,7 @@ public class GridWriter {
     String datasetIn = (arg.length > 0) ? arg[0] : "C:/Program Files/Apache Group/jakarta-tomcat-5.0.28/content/thredds/wcs/testdata/eta.nc"; // "dods://dods.coas.oregonstate.edu:8080/dods/dts/ingrid";
     String filenameOut = (arg.length > 1) ? arg[1] : "C:/temp/thredds/testGridWriter.nc";
 
-    GridDataset gridDs  = ucar.nc2.dataset.grid.GridDataset.open(datasetIn);
+    GridDataset gridDs  = ucar.nc2.dt.grid.GridDataset.open(datasetIn);
     GridDatatype grid = gridDs.findGridDatatype("T");
     NetcdfFile ncfileOut = GridWriter.writeToFile( grid, filenameOut, 0);
 

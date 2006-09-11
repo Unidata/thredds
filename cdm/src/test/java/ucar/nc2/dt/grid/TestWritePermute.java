@@ -1,8 +1,9 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dt.grid.TestGrid;
 
 import java.io.*;
 

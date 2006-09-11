@@ -5,7 +5,6 @@ import ucar.nc2.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.*;
 
@@ -24,7 +23,7 @@ public class TestNcmlAggSynGrid extends TestCase {
 
     public void setUp() throws IOException {
       if (gds != null) return;
-      gds = ucar.nc2.dataset.grid.GridDataset.open(filename);
+      gds = ucar.nc2.dt.grid.GridDataset.open(filename);
     }
 
     public void tearDown() throws IOException {

@@ -24,7 +24,7 @@ import thredds.catalog.*;
 import thredds.ui.*;
 import thredds.viewer.ui.Renderer;
 
-import ucar.nc2.dataset.grid.*;
+import ucar.nc2.dt.grid.*;
 import ucar.nc2.dataset.*;
 
 import thredds.viewer.ui.geoloc.NavigatedPanel;

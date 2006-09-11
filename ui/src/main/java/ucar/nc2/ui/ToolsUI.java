@@ -1689,14 +1689,14 @@ public class ToolsUI extends JPanel {
             fmrc_def.readDefinitionXML(currentDef);
             spiObject = fmrc_def;
             NetcdfDataset ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
-            gds = new ucar.nc2.dataset.grid.GridDataset(ds);
+            gds = new ucar.nc2.dt.grid.GridDataset(ds);
           } else {
             JOptionPane.showMessageDialog(null, "cant open Defintion file " + currentDef);
             return false;
           }
 
         } else {
-          gds = ucar.nc2.dataset.grid.GridDataset.open(command);
+          gds = ucar.nc2.dt.grid.GridDataset.open(command);
         }
 
         if (gds == null) {
@@ -1769,7 +1769,7 @@ public class ToolsUI extends JPanel {
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            ucar.nc2.dataset.grid.GridDataset gridDataset = dsTable.getGridDataset();
+            ucar.nc2.dt.grid.GridDataset gridDataset = dsTable.getGridDataset();
             if (gridUI == null) makeGridUI();
             gridUI.setDataset(gridDataset);
             viewerWindow.show();
@@ -1795,7 +1795,7 @@ public class ToolsUI extends JPanel {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          ucar.nc2.dataset.grid.GridDataset gridDataset = dsTable.getGridDataset();
+          ucar.nc2.dt.grid.GridDataset gridDataset = dsTable.getGridDataset();
           if ((gridDataset != null) && (gridDataset.getParseInfo() != null)) {
             detailTA.setText(gridDataset.getParseInfo().toString());
             detailTA.gotoTop();
@@ -1809,7 +1809,7 @@ public class ToolsUI extends JPanel {
       wcsButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            ucar.nc2.dataset.grid.GridDataset gridDataset = dsTable.getGridDataset();
+            ucar.nc2.dt.grid.GridDataset gridDataset = dsTable.getGridDataset();
             thredds.wcs.WcsDataset wcs = new thredds.wcs.WcsDataset(gridDataset, "", false);
             String gc;
             try {
@@ -2289,9 +2289,9 @@ public class ToolsUI extends JPanel {
     boolean process(Object o) {
       String filename = (String) o;
 
-      ucar.nc2.dataset.grid.GridDataset gridDs = null;
+      ucar.nc2.dt.grid.GridDataset gridDs = null;
       try {
-        gridDs = ucar.nc2.dataset.grid.GridDataset.open(filename);
+        gridDs = ucar.nc2.dt.grid.GridDataset.open(filename);
         java.util.List grids = gridDs.getGrids();
         if (grids.size() == 0) {
           System.out.println("No grids found.");

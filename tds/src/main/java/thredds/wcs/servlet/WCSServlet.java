@@ -45,7 +45,7 @@ public class WCSServlet extends AbstractServlet {
     String datasetPath = isRemote ? datasetURL : req.getPathInfo();
 
     // convert to a GridDataset
-    GridDataset gd = isRemote ? ucar.nc2.dataset.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset( datasetPath);
+    GridDataset gd = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset( datasetPath);
 
     // convert to a WcsDataset
     WcsDataset ds = new WcsDataset(gd, datasetPath, isRemote);

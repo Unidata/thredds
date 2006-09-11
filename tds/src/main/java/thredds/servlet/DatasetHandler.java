@@ -3,7 +3,6 @@ package thredds.servlet;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileFactory;
 import ucar.nc2.NetcdfFileCache;
@@ -102,7 +101,7 @@ public class DatasetHandler {
     }
 
     // convert to a GridDataset
-    return new ucar.nc2.dataset.grid.GridDataset( ncd);
+    return new ucar.nc2.dt.grid.GridDataset( ncd);
   }
 
   /**

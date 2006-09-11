@@ -32,7 +32,7 @@ public class TestAll {
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());  // */
 
-    suite.addTest( ucar.nc2.dataset.grid.TestGrid.suite()); //
+    suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());
 
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //

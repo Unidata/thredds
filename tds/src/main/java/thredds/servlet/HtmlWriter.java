@@ -8,7 +8,7 @@ import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 
 import javax.servlet.http.HttpServletResponse;

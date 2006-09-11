@@ -19,11 +19,12 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.TestCase;
 
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dt.grid.*;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -49,7 +50,7 @@ public class TestVerticalTransforms extends TestCase {
   }
 
   private void testDataset( String location) throws IOException, InvalidRangeException {
-    GridDataset dataset = GridDataset.open(location);
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(location);
     assert dataset != null;
 
     testGrid( dataset.findGridByName("U"));

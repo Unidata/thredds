@@ -21,7 +21,7 @@
 
 package ucar.nc2.dataset;
 
-import ucar.nc2.dataset.grid.GridCoordSys;
+import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.TimeUnit;

@@ -21,8 +21,8 @@
 
 package ucar.nc2.dt;
 
-import ucar.nc2.dataset.grid.GeoGrid;
-import ucar.nc2.dataset.grid.GridDataset;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.ma2.Array;
 
 import java.io.IOException;

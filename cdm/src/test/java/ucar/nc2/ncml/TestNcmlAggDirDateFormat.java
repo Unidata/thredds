@@ -21,7 +21,7 @@ public class TestNcmlAggDirDateFormat extends TestCase {
   public void testNcmlGrid() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "aggDateFormat.xml";
 
-    GridDataset gds = ucar.nc2.dataset.grid.GridDataset.open( filename);
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( filename);
     System.out.println(" TestNcmlAggDirDateFormat.openGrid "+ filename);
 
     NetcdfFile ncfile = gds.getNetcdfFile();

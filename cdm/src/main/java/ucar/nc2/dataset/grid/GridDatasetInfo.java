@@ -1,4 +1,4 @@
-// $Id: GridDatasetInfo.java 48 2006-07-12 16:15:40Z caron $
+// $Id: GridDatasetInfo.java,v 1.3 2006/06/06 16:07:12 caron Exp $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -38,11 +38,7 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 
 /**
- * A helper class for GridDataset to obtain information.
- * Creates a "gridDatasetInfo" XML document, used by the TDS "Common Data Model Coordinate System Validation".
- *
- * @author caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
+ *  @deprecated (use ucar.nc2.dt.grid)
  */
 public class GridDatasetInfo {
   private GridDataset gds;

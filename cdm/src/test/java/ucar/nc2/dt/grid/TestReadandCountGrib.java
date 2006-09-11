@@ -1,8 +1,9 @@
-package ucar.nc2.dataset.grid;
+package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFileCache;
+import ucar.nc2.dt.grid.TestReadandCount;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
