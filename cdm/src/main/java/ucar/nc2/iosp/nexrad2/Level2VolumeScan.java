@@ -32,6 +32,7 @@ import java.io.*;
 import java.util.*;
 
 import ucar.unidata.io.bzip2.CBZip2InputStream;
+import ucar.unidata.io.bzip2.BZip2ReadException;
 //import org.apache.tools.bzip2.CBZip2InputStream;
 
 
@@ -433,15 +434,16 @@ public class Level2VolumeScan {
    * @throws IOException
    */
   private RandomAccessFile uncompress( RandomAccessFile raf2, String ufilename, boolean debug) throws IOException {
-    RandomAccessFile dout2 = new RandomAccessFile(ufilename, "rw");
     raf2.seek(0);
     byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
     raf2.read(header);
+    RandomAccessFile dout2 = new RandomAccessFile(ufilename, "rw");
     dout2.write(header);
 
     boolean eof = false;
     int numCompBytes;
     byte[] ubuff = new byte[40000];
+    byte[] obuff = new byte[40000];
     try {
       CBZip2InputStream cbzip2 = new CBZip2InputStream();
       while (!eof) {
@@ -479,10 +481,24 @@ public class Level2VolumeScan {
         cbzip2.setStream(bis);
         int total = 0;
         int nread;
+        /*
         while ((nread = cbzip2.read(ubuff)) != -1) {
           dout2.write(ubuff, 0, nread);
           total += nread;
         }
+        */
+        try {
+           while ((nread = cbzip2.read(ubuff)) != -1) {
+              if (total+nread > obuff.length) {
+                  byte[] temp = obuff;
+                  obuff = new byte[temp.length*2];
+                  System.arraycopy(temp, 0, obuff, 0, temp.length);
+              }
+              System.arraycopy(ubuff, 0, obuff, total, nread);
+              total += nread;
+           }
+           if (obuff.length >= 0) dout2.write(obuff, 0, total);
+        } catch (BZip2ReadException ioe) {}
         float nrecords = (float) (total/2432.0);
         if (debug)
           log.debug("  unpacked "+total+" num bytes "+nrecords+" records; ouput ends at " + dout2.getFilePointer());
