@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.13
  Features
+  * add folder icons
   * Forecast Model Run Collections : InvDatasetFmrc.
   * WCS logs have length
   * [*Experimental*] In datasetScan element, allow the addition of proxy
@@ -13,6 +14,7 @@ Changes in version 3.13
     - Streamline the discovery of CrawlableDataset descendants by adding
       exists() and getDescendant() methods.
  Bugs
+  * IDV.jnlp grid:opendap:URL
 
 Changes in version 3.12
  Features

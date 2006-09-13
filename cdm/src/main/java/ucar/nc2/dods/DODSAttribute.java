@@ -42,8 +42,8 @@ public class DODSAttribute extends ucar.nc2.Attribute {
   //private dods.dap.Attribute att;
 
   /** constructor: adapter around dods.dap.Attribute */
-  public DODSAttribute( String name, dods.dap.Attribute att) {
-    super( NetcdfFile.createValidNetcdfObjectName( StringUtil.unescape( name)));
+  public DODSAttribute( String dodsName, dods.dap.Attribute att) {
+    super( DODSNetcdfFile.makeNetcdfName( dodsName));
 
     DataType ncType = DODSNetcdfFile.convertToNCType( att.getType());
 
@@ -90,8 +90,8 @@ public class DODSAttribute extends ucar.nc2.Attribute {
     setValues( data);
   }
 
-  protected DODSAttribute( String name, String val) {
-    super( StringUtil.unescape( name), val);
+  protected DODSAttribute( String dodsName, String val) {
+    super( DODSNetcdfFile.makeNetcdfName( dodsName), val);
   }
 
   static private String[] escapeAttributeStrings = {"\\", "\"" };

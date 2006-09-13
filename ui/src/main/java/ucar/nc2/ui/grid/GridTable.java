@@ -113,7 +113,7 @@ public class GridTable {
 
     Row( GridDatatype gg) {
       this.gg = gg;
-      dims = "("+gg.getGridCoordSystem().getName()+")";
+      dims = "("+gg.getCoordinateSystem().getName()+")";
     }
 
     public Object getUserObject() { return gg; }

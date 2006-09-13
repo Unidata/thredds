@@ -390,7 +390,7 @@ public class NetcdfServlet extends AbstractServlet {
       varNameList.add( gridName);
 
       GridDatatype grid = gds.findGridDatatype(gridName);
-      GridCoordSystem gcsOrg = grid.getGridCoordSystem();
+      GridCoordSystem gcsOrg = grid.getCoordinateSystem();
 
       Range timeRange = null;
       if (hasTime) {
@@ -407,7 +407,7 @@ public class NetcdfServlet extends AbstractServlet {
       Variable gridV = (Variable) grid.getVariable();
       varList.add( gridV);
 
-      GridCoordSystem gcs = grid.getGridCoordSystem();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
       List axes = gcs.getCoordinateAxes();
       for (int j = 0; j < axes.size(); j++) {
         Variable axis = (Variable) axes.get(j);

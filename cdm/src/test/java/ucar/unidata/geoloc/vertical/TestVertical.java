@@ -25,7 +25,7 @@ public class TestVertical extends TestCase {
     GridDatatype grid = gds.findGridDatatype("temp");
     assert grid != null;
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalCT();
@@ -52,7 +52,7 @@ public class TestVertical extends TestCase {
     GridDatatype grid = gds.findGridDatatype("temp");
     assert grid != null;
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalCT();
@@ -79,7 +79,7 @@ public class TestVertical extends TestCase {
     GridDatatype grid = gds.findGridDatatype("Temperature");
     assert grid != null;
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalCT();
@@ -106,7 +106,7 @@ public class TestVertical extends TestCase {
     GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalCT();
@@ -133,7 +133,7 @@ public class TestVertical extends TestCase {
     GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
 
     VerticalCT vct = gcs.getVerticalCT();
@@ -165,7 +165,7 @@ public class TestVertical extends TestCase {
 
     grid = grid.makeSubset(null,null,null,1,2,4);
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
 
     VerticalTransform vt = gcs.getVerticalTransform();

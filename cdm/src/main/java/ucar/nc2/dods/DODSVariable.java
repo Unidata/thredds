@@ -44,22 +44,17 @@ public class DODSVariable extends ucar.nc2.Variable {
   protected String dodsShortName;
 
   // used by subclasses and the other constructors
-  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName) {
-    super(dodsfile, parentGroup, parentStructure, StringUtil.unescape( shortName));
+  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName) {
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
-    this.dodsShortName = shortName;
+    this.dodsShortName = dodsShortName;
   }
 
-    /* copy constructor, display name change
-  DODSVariable( DODSVariable from) {
-    super( from.getName(), from);
-  } */
-
     // use when a dods variable is a scalar
-  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName, dods.dap.BaseType dodsScalar) {
-    super(dodsfile, parentGroup, parentStructure, StringUtil.unescape( shortName));
+  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, dods.dap.BaseType dodsScalar) {
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
-    this.dodsShortName = shortName;
+    this.dodsShortName = dodsShortName;
 
     setDataType( DODSNetcdfFile.convertToNCType( dodsScalar));
     if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
@@ -83,12 +78,12 @@ public class DODSVariable extends ucar.nc2.Variable {
   }
 
    // use when a dods variable is an Array, rank > 0
-  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName, DArray dodsArray,
+  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DArray dodsArray,
                 dods.dap.BaseType elemType ) {
 
-    super(dodsfile, parentGroup, parentStructure, StringUtil.unescape( shortName));
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
-    this.dodsShortName = shortName;
+    this.dodsShortName = dodsShortName;
 
     setDataType( DODSNetcdfFile.convertToNCType( elemType));
     if (DODSNetcdfFile.isUnsigned( elemType)) {

@@ -35,6 +35,7 @@ import java.util.List;
  * @author caron
  */
 public interface GridDatatype {
+
   /** Get the name of the Grid */
   public String getName();
 
@@ -106,12 +107,12 @@ public interface GridDatatype {
   /** get the x Dimension index in the geogrid (canonical order) */
   public int getXDimensionIndex();
   /** get the ensemble Dimension index in the geogrid (canonical order), or -1 if none */
-  public int getEDimensionIndex();
+  public int getEnsembleDimensionIndex();
   /** get the runtime Dimension index in the geogrid (canonical order), or -1 if none */
   public int getRunTimeDimensionIndex();
 
   /** get the Grid's Coordinate System. */
-  public GridCoordSystem getGridCoordSystem();
+  public GridCoordSystem getCoordinateSystem();
 
   /** get the Projection, if it exists. */
   public ProjectionImpl getProjection();

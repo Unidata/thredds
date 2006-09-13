@@ -63,10 +63,10 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
   static private final String SCAN = "files";
 
-
   //////////////////////////////////////////////
 
-  private boolean madeDatasets = false, madeFmrc = false;
+  private volatile boolean madeDatasets = false, madeFmrc = false;
+
   private String path;
   private ForecastModelRunCollection fmrc;
   private InvCatalogImpl catalog, catalogRuns, catalogOffsets, catalogForecasts;
@@ -124,13 +124,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI ) {
     try {
       if ((match == null) || (match.length() == 0))
-        return makeCatalog();
+        return makeCatalog(baseURI);
       else if (match.equals(RUNS))
-        return makeCatalogRuns();
+        return makeCatalogRuns(baseURI);
       else if (match.equals(OFFSET))
-        return makeCatalogOffsets();
+        return makeCatalogOffsets(baseURI);
       else if (match.equals(FORECAST))
-        return makeCatalogForecasts();
+        return makeCatalogForecasts(baseURI);
       else if (match.equals(SCAN))
         return makeCatalogScan(orgPath, baseURI);
       else
@@ -141,12 +141,90 @@ public class InvDatasetFmrc extends InvCatalogRef {
     }
   }
 
-  private InvCatalogImpl makeCatalog() throws URISyntaxException {
+  public java.util.List getDatasets() {
+    if (!madeDatasets) {
+      ArrayList datasets = new ArrayList();
+      String id = getID();
+      if (id == null)
+        id = getPath();
 
-    if (catalog == null) {
+      InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
+      String name = getName()+"_"+FMRC;
+      ds.setUrlPath(path+"/"+name);
+      ds.setID(id+"/"+name);
+      ThreddsMetadata tm = ds.getLocalMetadata();
+      tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
+      ds.getLocalMetadataInheritable().setServiceName(dodsService);
+      ds.finish();
+      datasets.add( ds);
+
+      ds = new InvDatasetImpl(this, "Best Time Series");
+      name = getName()+"_"+BEST;
+      ds.setUrlPath(path+"/"+name);
+      ds.setID(id+"/"+name);
+      tm = ds.getLocalMetadata();
+      tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
+      ds.finish();
+      datasets.add( ds);
+
+      // run datasets as catref
+      ds = new InvCatalogRef(this, TITLE_RUNS, getCatalogHref(RUNS));
+      ds.finish();
+      datasets.add( ds);
+
+      // run datasets as catref
+      ds = new InvCatalogRef(this, TITLE_OFFSET, getCatalogHref(OFFSET));
+      ds.finish();
+      datasets.add( ds);
+
+      // run datasets as catref
+      ds = new InvCatalogRef(this, TITLE_FORECAST, getCatalogHref(FORECAST));
+      ds.finish();
+      datasets.add( ds);
+
+      if (params != null) {
+        scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
+                params.location, ".*"+params.suffix, true, "true", false, null, null, null );
+        ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
+        tmi.setServiceName("fileServices");
+        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
+
+        scan.finish();
+        datasets.add( scan);
+      }
+
+      this.datasets = datasets;
+      madeDatasets = true;
+    }
+
+    finish();
+    return datasets;
+  }
+
+  private String getCatalogHref( String what) {
+    return "/thredds/catalog/"+path+"/"+what+"/catalog.xml";
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+
+  private synchronized boolean checkIfChanged() throws IOException {
+    boolean changed =  madeFmrc && fmrc.sync();
+    if (changed) {
+      catalog = null;
+      catalogRuns = null;
+      catalogOffsets = null;
+      catalogForecasts = null;
+    }
+    return changed;
+  }
+
+  private InvCatalogImpl makeCatalog(URI baseURI) throws IOException, URISyntaxException {
+    boolean changed = checkIfChanged();
+
+    if (changed || (catalog == null)) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      URI baseUri = new URI(getXlinkHref());
-      InvCatalogImpl mainCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), baseUri);
+      URI myURI = baseURI.resolve( getXlinkHref());
+      InvCatalogImpl mainCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
 
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
@@ -222,12 +300,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
     }
   }
 
-  private InvCatalogImpl makeCatalogRuns() throws URISyntaxException, IOException {
-    boolean changed =  madeFmrc && fmrc.sync();
+  private InvCatalogImpl makeCatalogRuns(URI baseURI) throws IOException {
+    boolean changed = checkIfChanged();
 
     if (changed || catalogRuns == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      InvCatalogImpl runCatalog  = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(RUNS)));
+      URI myURI = baseURI.resolve( getCatalogHref(RUNS));
+      InvCatalogImpl runCatalog  = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -248,15 +327,17 @@ public class InvDatasetFmrc extends InvCatalogRef {
       runCatalog.finish();
       this.catalogRuns = runCatalog;
     }
+
     return catalogRuns;
   }
 
-  private InvCatalogImpl makeCatalogOffsets() throws URISyntaxException, IOException {
-    boolean changed =  madeFmrc && fmrc.sync();
+  private InvCatalogImpl makeCatalogOffsets(URI baseURI) throws IOException {
+    boolean changed = checkIfChanged();
 
     if (changed || catalogOffsets == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      InvCatalogImpl offCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(OFFSET)));
+      URI myURI = baseURI.resolve( getCatalogHref(OFFSET));
+      InvCatalogImpl offCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       //top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -281,12 +362,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogOffsets;
   }
 
-  private InvCatalogImpl makeCatalogForecasts() throws URISyntaxException, IOException {
-    boolean changed =  madeFmrc && fmrc.sync();
+  private InvCatalogImpl makeCatalogForecasts(URI baseURI) throws IOException {
+    boolean changed = checkIfChanged();
 
     if (changed || catalogForecasts == null) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      InvCatalogImpl foreCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), new URI(getCatalogHref(FORECAST)));
+      URI myURI = baseURI.resolve( getCatalogHref(FORECAST));
+      InvCatalogImpl foreCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
       // top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
@@ -311,76 +393,10 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   private InvCatalogImpl makeCatalogScan(String orgPath, URI baseURI) {
-    if ( ! madeDatasets)
+    if ( !madeDatasets)
       getDatasets();
 
     return scan.makeCatalogForDirectory( orgPath, baseURI);
-  }
-
-  /** Get Datasets. This triggers a read of the referenced catalog the first time its called.
-   */
-  public java.util.List getDatasets() {
-    if (!madeDatasets) {
-      ArrayList datasets = new ArrayList();
-      String id = getID();
-      if (id == null)
-        id = getPath();
-
-      InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
-      String name = getName()+"_"+FMRC;
-      ds.setUrlPath(path+"/"+name);
-      ds.setID(id+"/"+name);
-      ThreddsMetadata tm = ds.getLocalMetadata();
-      tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
-      ds.getLocalMetadataInheritable().setServiceName(dodsService);
-      ds.finish();
-      datasets.add( ds);
-
-      ds = new InvDatasetImpl(this, "Best Time Series");
-      name = getName()+"_"+BEST;
-      ds.setUrlPath(path+"/"+name);
-      ds.setID(id+"/"+name);
-      tm = ds.getLocalMetadata();
-      tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
-      ds.finish();
-      datasets.add( ds);
-
-      // run datasets as catref
-      ds = new InvCatalogRef(this, TITLE_RUNS, getCatalogHref(RUNS));
-      ds.finish();
-      datasets.add( ds);
-
-      // run datasets as catref
-      ds = new InvCatalogRef(this, TITLE_OFFSET, getCatalogHref(OFFSET));
-      ds.finish();
-      datasets.add( ds);
-
-      // run datasets as catref
-      ds = new InvCatalogRef(this, TITLE_FORECAST, getCatalogHref(FORECAST));
-      ds.finish();
-      datasets.add( ds);
-
-      if (params != null) {
-        scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
-                params.location, ".*"+params.suffix, true, "true", false, null, null, null );
-        ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
-        tmi.setServiceName("fileServices");
-        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
-
-        scan.finish();
-        datasets.add( scan);
-      }
-
-      this.datasets = datasets;
-      madeDatasets = true;
-    }
-
-    finish();
-    return datasets;
-  }
-
-  private String getCatalogHref( String what) {
-    return "/thredds/catalog/"+path+"/"+what+"/catalog.xml";
   }
 
   private synchronized void makeFmrc() {

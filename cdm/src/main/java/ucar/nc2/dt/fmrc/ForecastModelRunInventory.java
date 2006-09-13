@@ -124,7 +124,7 @@ public class ForecastModelRunInventory {
     List vars = gds.getGrids();
     for (int i = 0; i < vars.size(); i++) {
       GridDatatype gg = (GridDatatype) vars.get(i);
-      GridCoordSystem gcs = gg.getGridCoordSystem();
+      GridCoordSystem gcs = gg.getCoordinateSystem();
       Grid grid = new Grid(gg.getName());
       addMissing((Variable) gg.getVariable(), gcs, grid);
 

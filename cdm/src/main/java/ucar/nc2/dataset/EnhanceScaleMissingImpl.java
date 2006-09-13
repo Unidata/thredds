@@ -253,7 +253,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         // scale_factor and add_offset) and this is wider than the external data, then it
         // will be interpreted as being in the units of the internal (unpacked) data.
         // Otherwise it is in the units of the external (unpacked) data.
-        if ( !((rank(validType) == rank(scaleType)) && (rank(scaleType) > rank(orgType))) ) {
+        if ( !((rank(validType) == rank(scaleType)) && (rank(scaleType) >= rank(orgType))) ) {
           if (hasValidRange || hasValidMin)
             valid_min = scale * valid_min + offset;
           if (hasValidRange || hasValidMax)
@@ -262,8 +262,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         }
       }
 
-      useNaNs = useNaNs && ((convertedDataType == DataType.DOUBLE) ||
-                          (convertedDataType == DataType.FLOAT));
+      useNaNs = useNaNs && ((convertedDataType == DataType.DOUBLE) || (convertedDataType == DataType.FLOAT));
     }
     if (debug) System.out.println("useNaNs = "+useNaNs);
   }

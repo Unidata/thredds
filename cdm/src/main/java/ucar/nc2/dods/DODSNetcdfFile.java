@@ -555,17 +555,17 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
 
     dods.dap.BaseType dodsBT = dodsV.bt;
-    String name = dodsBT.getName();
-    if (debugConstruct) System.out.print("DODSNetcdf makeVariable try to init <"+name+"> :");
+    String dodsShortName = dodsBT.getName();
+    if (debugConstruct) System.out.print("DODSNetcdf makeVariable try to init <"+dodsShortName+"> :");
 
     // Strings
     if (dodsBT instanceof DString) {
       if (dodsV.darray == null) {
-        if (debugConstruct) System.out.println("  assigned to DString: name = "+name);
-        return new DODSVariable( this, parentGroup, parentStructure, name, dodsBT);
+        if (debugConstruct) System.out.println("  assigned to DString: name = "+dodsShortName);
+        return new DODSVariable( this, parentGroup, parentStructure, dodsShortName, dodsBT);
       } else {
-        if (debugConstruct) System.out.println("  assigned to Array of Strings: name = "+name);
-        return new DODSVariable( this, parentGroup, parentStructure, name, dodsV.darray, dodsBT);
+        if (debugConstruct) System.out.println("  assigned to Array of Strings: name = "+dodsShortName);
+        return new DODSVariable( this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT);
       }
 
     // primitives
@@ -574,23 +574,23 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
                (dodsBT instanceof DInt16) || (dodsBT instanceof DInt32) ||
                (dodsBT instanceof DUInt16) || (dodsBT instanceof DUInt32)) {
       if (dodsV.darray == null) {
-        if (debugConstruct) System.out.println("  assigned to scalar "+dodsBT.getTypeName()+": name = "+name);
-        return new DODSVariable( this, parentGroup, parentStructure, name, dodsBT);
+        if (debugConstruct) System.out.println("  assigned to scalar "+dodsBT.getTypeName()+": name = "+dodsShortName);
+        return new DODSVariable( this, parentGroup, parentStructure, dodsShortName, dodsBT);
       } else {
-        if (debugConstruct) System.out.println("  assigned to array of type "+dodsBT.getClass().getName()+": name = "+name);
-        return new DODSVariable( this, parentGroup, parentStructure, name, dodsV.darray, dodsBT);
+        if (debugConstruct) System.out.println("  assigned to array of type "+dodsBT.getClass().getName()+": name = "+dodsShortName);
+        return new DODSVariable( this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT);
       }
     }
 
     if (dodsBT instanceof DGrid) {
       if (dodsV.darray == null) {
-        if (debugConstruct) System.out.println(" assigned to DGrid <"+name+">");
+        if (debugConstruct) System.out.println(" assigned to DGrid <"+dodsShortName+">");
 
         //  common case is that the map vectors already exist as top level variables
         // this is how the netccdf servers do it
         for (int i = 1; i < dodsV.children.size(); i++) {
           DodsV map = (DodsV) dodsV.children.get(i);
-          String shortName = map.bt.getName();
+          String shortName = DODSNetcdfFile.makeNetcdfName( map.bt.getName());
           Variable mapV = parentGroup.findVariable( shortName);
           if (mapV == null) {        // if not, add it LOOK need to compare values
             mapV = addVariable(parentGroup, parentStructure, map);
@@ -598,19 +598,19 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           }
         }
 
-        return new DODSGrid( this, parentGroup, parentStructure, name, dodsV);
+        return new DODSGrid( this, parentGroup, parentStructure, dodsShortName, dodsV);
 
       } else {
-        if (debugConstruct) System.out.println(" ERROR! array of DGrid <"+name+">");
+        if (debugConstruct) System.out.println(" ERROR! array of DGrid <"+dodsShortName+">");
         return null;
       }
 
     } else if (dodsBT instanceof DSequence) {
       if (dodsV.darray == null) {
-        if (debugConstruct) System.out.println(" assigned to DSequence <"+name+">");
-        return new DODSStructure( this, parentGroup, parentStructure, name, dodsV);
+        if (debugConstruct) System.out.println(" assigned to DSequence <"+dodsShortName+">");
+        return new DODSStructure( this, parentGroup, parentStructure, dodsShortName, dodsV);
       } else {
-        if (debugConstruct) System.out.println(" ERROR! array of DSequence <"+name+">");
+        if (debugConstruct) System.out.println(" ERROR! array of DSequence <"+dodsShortName+">");
         return null;
       }
 
@@ -618,8 +618,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       DStructure dstruct = (DStructure) dodsBT;
       if (dodsV.darray == null) {
         if (useGroups && (parentStructure == null) && isGroup(dstruct)) { // turn into a group
-          if (debugConstruct) System.out.println(" assigned to Group <"+name+">");
-          Group g = new Group(this, parentGroup, name);
+          if (debugConstruct) System.out.println(" assigned to Group <"+dodsShortName+">");
+          Group g = new Group(this, parentGroup, DODSNetcdfFile.makeNetcdfName( dodsShortName));
           addAttributes( g, dodsV);
           parentGroup.addGroup( g);
 
@@ -629,16 +629,16 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           }
           return null;
         } else {
-          if (debugConstruct) System.out.println(" assigned to DStructure <"+name+">");
-          return new DODSStructure( this, parentGroup, parentStructure, name, dodsV);
+          if (debugConstruct) System.out.println(" assigned to DStructure <"+dodsShortName+">");
+          return new DODSStructure( this, parentGroup, parentStructure, dodsShortName, dodsV);
         }
       } else {
-        if (debugConstruct) System.out.println(" assigned to Array of DStructure <"+name+"> ");
-        return new DODSStructure( this, parentGroup, parentStructure, name, dodsV.darray, dodsV);
+        if (debugConstruct) System.out.println(" assigned to Array of DStructure <"+dodsShortName+"> ");
+        return new DODSStructure( this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsV);
       }
 
     } else {
-      logger.warn("DODSNetcdf "+location+" didnt process basetype <"+dodsBT.getTypeName()+"> variable = "+name);
+      logger.warn("DODSNetcdf "+location+" didnt process basetype <"+dodsBT.getTypeName()+"> variable = "+dodsShortName);
       return null;
     }
 
@@ -918,6 +918,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return dodsV.bt.getName();
   }
 
+  static String makeNetcdfName( String name) {
+    return NetcdfFile.createValidNetcdfObjectName( StringUtil.unescape( name));
+  }
+
   /** Get the DODS data class corresponding to the Netcdf data type.
    *  This is the inverse of convertToNCType().
    *  @param dataType Netcdf data type.
@@ -1028,7 +1032,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    */
   DataDDS readDataDDSfromServer(String CE) throws IOException, dods.dap.parser.ParseException,
        dods.dap.DODSException  {
-    if (debugServerCall) System.out.println("DODSNetcdfFile.readFromServer = <"+CE+">");
+    if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <"+CE+">");
 
     long start = 0;
     if (debugTime) start = System.currentTimeMillis();
@@ -1038,7 +1042,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     DataDDS data =  dodsConnection.getData(CE, null);
 
     if (debugTime)
-      System.out.println("DODSNetcdfFile.readFromServer took = "+(System.currentTimeMillis()-start)/1000.0);
+      System.out.println("DODSNetcdfFile.readDataDDSfromServer took = "+(System.currentTimeMillis()-start)/1000.0);
 
     if (debugDataResult) {
       System.out.println(" dataDDS return:");

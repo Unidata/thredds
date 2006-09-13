@@ -59,7 +59,7 @@ public class GeotiffWriter {
    * @throws IOException
    */
   public void writeGrid(GridDataset dataset, GridDatatype grid, Array data, boolean greyScale) throws IOException {
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
 
     if (!gcs.isRegularSpatial())
       throw new IllegalArgumentException("Must have 1D x and y axes for "+ grid.getName());
@@ -103,7 +103,7 @@ public class GeotiffWriter {
     double scaler;
     GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
     GridDatatype grid = dataset.findGridDatatype( gridName);
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
 
     if (grid == null)
       throw new IllegalArgumentException("No grid named "+ gridName+" in fileName");
@@ -263,7 +263,7 @@ public class GeotiffWriter {
    */
   public void writeGrid(GridDatatype grid, Array data, boolean greyScale, double xStart, double yStart, double xInc, double yInc, int imageNumber) throws IOException {
     int nextStart = 0;
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
 
     // get rid of this when all projections are implemented
     if (!gcs.isLatLon() && !(gcs.getProjection() instanceof LambertConformal)

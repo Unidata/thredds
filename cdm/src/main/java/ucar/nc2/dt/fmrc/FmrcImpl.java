@@ -81,7 +81,8 @@ public class FmrcImpl implements ForecastModelRunCollection {
    */
   public boolean sync() throws IOException {
     boolean changed = org_ncd.syncExtend();
-    if (changed) init( org_ncd);
+    if (changed)
+      init( org_ncd);
     return changed;
   }
 
@@ -105,7 +106,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     // collect the grids into Gridsets, based on what time axis they use
     for (int i = 0; i < grids.size(); i++) {
       ucar.nc2.dt.GridDatatype grid = (ucar.nc2.dt.GridDatatype) grids.get(i);
-      ucar.nc2.dt.GridCoordSystem gcs = grid.getGridCoordSystem();
+      ucar.nc2.dt.GridCoordSystem gcs = grid.getCoordinateSystem();
       CoordinateAxis timeAxis = gcs.getTimeAxis();
       if (timeAxis != null) {
         Gridset gset = (Gridset) timeAxisHash.get( timeAxis); // group by timeAxis

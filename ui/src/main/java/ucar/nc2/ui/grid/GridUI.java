@@ -289,7 +289,7 @@ public class GridUI extends JPanel {
       fieldChooser.setSelectedByIndex(0);
     fieldChooser.setToolTipText( field.getDescription());
 
-    GridCoordSystem gcs = field.getGridCoordSystem();
+    GridCoordSystem gcs = field.getCoordinateSystem();
 
       // levels
     CoordinateAxis1D axis = gcs.getVerticalAxis();

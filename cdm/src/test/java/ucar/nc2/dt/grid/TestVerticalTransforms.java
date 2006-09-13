@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.grid.*;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -63,7 +64,7 @@ public class TestVerticalTransforms extends TestCase {
 
   private void testGrid( GeoGrid grid) throws IOException, InvalidRangeException {
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 

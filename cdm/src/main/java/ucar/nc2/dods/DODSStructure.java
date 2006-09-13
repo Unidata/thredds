@@ -40,43 +40,14 @@ public class DODSStructure extends ucar.nc2.Structure {
   protected DODSNetcdfFile dodsfile; // so we dont have to cast everywhere
   protected String dodsShortName;
 
-  //protected DODSStructure( DODSNetcdfFile dodsfile, Structure parentStructure, String shortName) { // for subclasses
-    //super(dodsfile, null, parentStructure, shortName);
-  //}
-
-  /* copy constructor
-  protected DODSStructure( String shortName, DODSStructure from) { // for subclasses
-    super(from.dodsfile, from.name);
-    this.shortName = shortName;
-    this.containers = from.containers;
-    this.attributes = from.attributes;
-
-    for (int i=0; i<from.variables.size(); i++) {
-      DODSVariable fromv = (DODSVariable) from.variables.get(i);
-      variables.add( new DODSVariable( fromv.getNameForDisplay(), fromv));
-    }
-
-    for (int i=0; i<from.structures.size(); i++) {
-      DODSStructure froms = (DODSStructure) from.structures.get(i);
-      if (froms instanceof DODSGrid)
-        structures.add( new DODSGrid( froms.getNameShort(), (DODSGrid) froms));
-      else if (froms instanceof DODSStructureArray)
-        structures.add( new DODSStructureArray( froms.getNameShort(), (DODSStructureArray) froms));
-      else if (froms instanceof DODSSequence)
-        structures.add( new DODSSequence( froms.getNameShort(), (DODSSequence) froms));
-      else
-        structures.add( new DODSStructure( froms.getNameShort(), froms));
-    }
-  } */
-
   // constructor called from DODSNetcdfFile.makeVariable() for scalar Structure or Sequence
-  DODSStructure( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName,
+  DODSStructure( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName,
          DodsV dodsV) throws IOException {
 
-    super(dodsfile, parentGroup, parentStructure, StringUtil.unescape( shortName));
+    super(dodsfile, parentGroup, parentStructure,  DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
     this.ds = (DConstructor) dodsV.bt;
-    this.dodsShortName = shortName;
+    this.dodsShortName = dodsShortName;
 
     if (ds instanceof DSequence) {
       this.dimensions.add( Dimension.UNKNOWN);

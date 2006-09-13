@@ -194,7 +194,7 @@ public class GeoGridTable extends JPanel {
       setDescription( geogrid.getDescription());
       setUnits( geogrid.getUnitsString());
 
-      setCoordSystem( geogrid.getGridCoordSystem().getName());
+      setCoordSystem( geogrid.getCoordinateSystem().getName());
 
             // collect dimensions
       StringBuffer buff = new StringBuffer();
@@ -213,7 +213,7 @@ public class GeoGridTable extends JPanel {
       d= geogrid.getZDimension();
       if (d != null) setZ( d.getName());
 
-      GridCoordSystem gcs = geogrid.getGridCoordSystem();
+      GridCoordSystem gcs = geogrid.getCoordinateSystem();
 
       d= geogrid.getTimeDimension();
       if (d != null)

@@ -21,6 +21,8 @@
 
 package thredds.catalog;
 
+import java.net.URI;
+
 /**
  * Public interface to an access element, defining how to access a specific web resource.
  *
@@ -62,13 +64,19 @@ abstract public class InvAccess {
    *  @return URL string, or null if error.
    */
   public String getStandardUrlName() {
-    InvCatalog cat = dataset.getParentCatalog();
-    if (cat == null)
-      return wrap(getUnresolvedUrlName());
+    URI uri = getStandardUri();
+    if (uri == null) return null;
+    return wrap( uri.toString());
+  }
 
+  public URI getStandardUri() {
     try {
-      java.net.URI uri = cat.resolveUri(getUnresolvedUrlName());
-      return wrap( uri.toString());
+      InvCatalog cat = dataset.getParentCatalog();
+      if (cat == null)
+        return new URI(getUnresolvedUrlName());
+
+      return cat.resolveUri(getUnresolvedUrlName());
+
     } catch (java.net.URISyntaxException e) {
       System.err.println("Error parsing URL= "+getUnresolvedUrlName());
       return null;

@@ -377,7 +377,7 @@ public class Variable implements VariableIF {
         throw new InvalidRangeException("Bad range ending value at index "+ii+" == "+r.last());
     }
 
-    newVar.orgVar = (orgVar != null) ? orgVar : this;
+    newVar.orgVar = this; // LOOK NOT SURE was (orgVar != null) ? orgVar : this;
     newVar.isSection = true;
 
     newVar.sectionRanges = makeSectionRanges( this, section);
@@ -501,7 +501,7 @@ public class Variable implements VariableIF {
     }
     newVar.sliceRanges = newSlices;
 
-    newVar.orgVar = (orgVar != null) ? orgVar : this;
+    newVar.orgVar = this; // LOOK (orgVar != null) ? orgVar : this;
     newVar.isSlice = true;
   }
 

@@ -210,7 +210,7 @@ public interface GridCoordSystem {
   // time
 
   /**
-   * If there is a time coordinate, get the
+   * If there is a time coordinate, get the time covered.
    * @return DateRange or null if no time coordinate
    */
   public thredds.datatype.DateRange getDateRange();

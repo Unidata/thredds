@@ -53,9 +53,8 @@ import java.util.*;
  *  A CoordinateSystem that has a Height, Pressure, or GeoZ axis will have <i>hasVerticalAxis()</i> true.
  * <p>
  * Further CoordinateSystems specialization is done by "data type specific" clasess such as
- * ucar.nc2.dataset.grid.GridCoordSys.
+ * ucar.nc2.dt.grid.GridCoordSys.
  *
- * @see ucar.nc2.dt.grid.GridCoordSys
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */

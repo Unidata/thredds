@@ -37,7 +37,7 @@ public class TestDodsServer extends TestCase {
 
     GridDatatype grid = dataResult.gridDataset.findGridDatatype("Z_sfc");
     assert grid != null;
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
     assert null == gcs.getVerticalAxis();
 

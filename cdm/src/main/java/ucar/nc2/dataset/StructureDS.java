@@ -122,9 +122,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return proxy.getDescription();
   }
 
-  public ucar.nc2.Variable getOriginalVariable() {
+ /* public ucar.nc2.Variable getOriginalVariable() {
     return proxy.getOriginalVariable();
-  }
+  } */
 
   public java.lang.String getUnitsString() {
     return proxy.getUnitsString();

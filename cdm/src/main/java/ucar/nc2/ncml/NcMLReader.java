@@ -712,10 +712,9 @@ public class NcMLReader {
           }
         }
       }
-
     }
 
-     // now that we have attributes finalized, redo the enhance
+     // now that we have attributes finalized, redo the enhance LOOK unneeded ??
     if (enhance && (v instanceof VariableDS))
       ((VariableDS) v).enhance();
 
@@ -898,12 +897,6 @@ public class NcMLReader {
     String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
     String fmrcDefinition = aggElem.getAttributeValue("fmrcDefinition");
 
-    String forecastDate = aggElem.getAttributeValue("forecastDate");
-    String forecastDateVariable = aggElem.getAttributeValue("forecastDateVariable");
-    String forecastOffset = aggElem.getAttributeValue("forecastOffset");
-    String forecastTimeOffset = aggElem.getAttributeValue("forecastTimeOffset");
-    String referenceDateVariable = aggElem.getAttributeValue("referenceDateVariable");
-
     Aggregation agg;
     if (type.equals("forecastModelRunCollection")) {
       AggregationFmrc aggc = new AggregationFmrc(newds, dimName, type, recheck);
@@ -918,6 +911,12 @@ public class NcMLReader {
     } else if (type.equals("forecastModelRun")) { // LOOK deprecated
       AggregationFmr aggf = new AggregationFmr(newds, dimName, type, recheck);
       agg = aggf;
+
+      String forecastDate = aggElem.getAttributeValue("forecastDate");
+      String forecastDateVariable = aggElem.getAttributeValue("forecastDateVariable");
+      String forecastOffset = aggElem.getAttributeValue("forecastOffset");
+      String forecastTimeOffset = aggElem.getAttributeValue("forecastTimeOffset");
+      String referenceDateVariable = aggElem.getAttributeValue("referenceDateVariable");
 
       if (forecastDate != null)
         aggf.setForecastDate(forecastDate, forecastDateVariable);
@@ -973,6 +972,24 @@ public class NcMLReader {
      String subdirs = scanElem.getAttributeValue("subdirs");
 
      agg.addDirectoryScan( dirLocation, suffix, dateFormatMark, enhance, subdirs);
+
+     if ((cancelTask != null) && cancelTask.isCancel())
+       return null;
+     if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = "+dirLocation);
+   }
+
+    // nested scan2 elements
+   java.util.List scan2List = aggElem.getChildren("scan2", ncNS);
+   for (int j=0; j< scan2List.size(); j++) {
+     Element scanElem = (Element) scan2List.get(j);
+     String dirLocation = scanElem.getAttributeValue("location");
+     String suffix = scanElem.getAttributeValue("suffix");
+     String runDate = scanElem.getAttributeValue("runDate");
+     String forecastDate = scanElem.getAttributeValue("forecastDate");
+     String enhance = scanElem.getAttributeValue("enhance");
+     String subdirs = scanElem.getAttributeValue("subdirs");
+
+     agg.addDirectoryScan2( dirLocation, suffix, runDate, forecastDate);
 
      if ((cancelTask != null) && cancelTask.isCancel())
        return null;

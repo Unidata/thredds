@@ -37,7 +37,7 @@
   <property name="release.schema.dir" value="${uni.www.dir}/content/schema"/>
   <property name="release.javadoc.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
   <property name="release.javadocAll.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
-  <property name="webstart_dir" location="${uni.www.dir}/content/software/netcdf-java/v2.2/webstart"/>
+  <property name="webstart_dir" location="${uni.www.dir}/content/software/netcdf-java/v2.2/webstart-dev"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="dods.jar" value="dods-1.1.7c.jar"/ -->
@@ -566,6 +566,26 @@
       <fileset file="${resources.dir}/resources/thredds/schemas/InvCatalog.1.0.2.xsd" />
     </copy>
   </target>
+
+    <!-- netcdfUI webstart release -->
+	<target name="releaseWebstart" description="make webstart release; do dist or release first">
+    <signjar alias="idv" jar="${build.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${gnu-regexp.jar}" keystore="${keystore}" signedjar="${webstart_dir}/gnu-regexp.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}" signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}" signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${jpeg2000.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jpeg2000.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${httpclient.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${http-codec.jar}" keystore="${keystore}" signedjar="${webstart_dir}/codec.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${http-logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}" signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${prefs.jar}" keystore="${keystore}" signedjar="${webstart_dir}/prefs.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}" signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}" signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${xercesImpl.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${xml-apis.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xml-apis.jar" storepass="${keystore.password}"/>
+	</target>
 
   <target name="temp">
     <checksum>

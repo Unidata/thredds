@@ -170,7 +170,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   /** get the x Dimension index in the geogrid (canonical order) */
   public int getXDimensionIndex() { return xDimNewIndex; }
   /** get the ensemble Dimension index in the geogrid (canonical order) */
-  public int getEDimensionIndex() { return eDimNewIndex; }
+  public int getEnsembleDimensionIndex() { return eDimNewIndex; }
   /** get the runtime Dimension index in the geogrid (canonical order) */
   public int getRunTimeDimensionIndex() { return rtDimNewIndex; }
 
@@ -218,8 +218,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   /** get the name of the geoGrid.*/
   public String getName() { return vs.getName(); }
   /** get the GridCoordSys for this GeoGrid. */
-  public GridCoordSys getCoordinateSystem() { return gcs; }
-  public GridCoordSystem getGridCoordSystem() { return gcs; }
+  //public GridCoordSys getCoordinateSystem() { return gcs; }
+  public GridCoordSystem getCoordinateSystem() { return gcs; }
 
   /** get the Projection. */
   public ProjectionImpl  getProjection() { return gcs.getProjection(); }
@@ -253,7 +253,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   /**
    * Convert (in place) all values in the given array that are considered
-   * as "missing" to Float.NaN, according to vs.isMissing(val).
+   * as "missing" to Float.NaN, according to isMissingData(val).
    *
    * @param values input array
    * @return input array, with missing values converted to NaNs.

@@ -7,6 +7,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridCoordSys;
+import ucar.nc2.dt.GridCoordSystem;
 
 import java.io.*;
 
@@ -24,14 +25,14 @@ public class TestGeoGrid extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("full4");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
     doRead4(grid);
 
     GeoGrid grid_section = grid.subset(null, new Range(0,3,2), null, null);
-    GridCoordSys gcs_section = grid_section.getCoordinateSystem();
+    GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
     CoordinateAxis zaxis = gcs_section.getVerticalAxis();
     assert zaxis.getSize() == 2;
 

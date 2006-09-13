@@ -124,7 +124,7 @@ public class WcsDataset {
   public String checkCoverageParameters( GetCoverageRequest req) throws IOException {
     String vname = req.getCoverage();
     GridDatatype geogrid = gridDataset.findGridDatatype(vname);
-    GridCoordSystem gcs = geogrid.getGridCoordSystem();
+    GridCoordSystem gcs = geogrid.getCoordinateSystem();
     CoordinateAxis1D vaxis = gcs.getVerticalAxis();
 
     int z = 0, t = 0;
@@ -146,7 +146,7 @@ public class WcsDataset {
   public String getCoverage( GetCoverageRequest req) throws IOException, InvalidRangeException {
     String vname = req.getCoverage();
     GridDatatype geogrid = gridDataset.findGridDatatype(vname);
-    GridCoordSystem gcs = geogrid.getGridCoordSystem();
+    GridCoordSystem gcs = geogrid.getCoordinateSystem();
     Range t_range = null, z_range = null;
     Range y_range = null, x_range = null;
 

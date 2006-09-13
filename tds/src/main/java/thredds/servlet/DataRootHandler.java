@@ -1031,7 +1031,9 @@ public class DataRootHandler {
           }
         }
       }
-      catalog.setBaseURI(baseURI); // LOOK why do we need to set baseURI, possible thread safety problem
+      // this is the first time we actually know an absolute, external path for the catalog, so we set it here
+      // LOOK however, this causes a possible thread safety problem
+      catalog.setBaseURI(baseURI);
     }
 
     // Check for dynamic catalog.

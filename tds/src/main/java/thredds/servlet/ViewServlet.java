@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvAccess;
@@ -103,7 +105,7 @@ public class ViewServlet extends AbstractServlet {
     try {
       res.setContentType("application/x-java-jnlp-file");
       ServletUtil.returnString(sbuff.toString(), res);
-      //System.out.println(" jnlp="+sbuff.toString());
+      // System.out.println(" jnlp="+sbuff.toString());
 
     } catch (Throwable t) {
       log.error(" jnlp="+sbuff.toString(), t);
@@ -112,7 +114,7 @@ public class ViewServlet extends AbstractServlet {
     }
   }
 
-  static public void showViewers( StringBuffer sbuff, InvDatasetImpl dataset) {
+  static public void showViewers( StringBuffer sbuff, InvDatasetImpl dataset, HttpServletRequest req) {
     int count = 0;
     for (int i = 0; i < viewerList.size(); i++) {
       Viewer viewer = (Viewer) viewerList.get(i);
@@ -125,7 +127,7 @@ public class ViewServlet extends AbstractServlet {
       Viewer viewer = (Viewer) viewerList.get(i);
       if (viewer.isViewable( dataset)) {
         sbuff.append("  <li> ");
-        sbuff.append( viewer.getViewerLinkHtml( dataset));
+        sbuff.append( viewer.getViewerLinkHtml( dataset, req));
         sbuff.append("\n");
       }
     }
@@ -155,7 +157,7 @@ public class ViewServlet extends AbstractServlet {
       return ((id != null) && ds.hasAccess());
     }
 
-    public String  getViewerLinkHtml( InvDatasetImpl ds) {
+    public String  getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
       // LOOK use getContextName instead of hardcodeing thredds
       return "<a href='/thredds/view/nj22UI.jnlp?" + ds.getSubsetUrl()+"'>NetCDF-Java Tools (webstart)</a>";
     }
@@ -174,12 +176,23 @@ public class ViewServlet extends AbstractServlet {
       return true;
     }
 
-    public String getViewerLinkHtml( InvDatasetImpl ds) {
+    public String getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
       InvAccess access = ds.getAccess(ServiceType.DODS);
       if (access == null) access = ds.getAccess(ServiceType.OPENDAP);
 
+      URI dataURI = access.getStandardUri();
+      if (!dataURI.isAbsolute()) {
+        try {
+          URI base = new URI( req.getRequestURL().toString());
+          dataURI = base.resolve( dataURI);
+          // System.out.println("Resolve URL with "+req.getRequestURL()+" got= "+dataURI.toString());
+        } catch (URISyntaxException e) {
+          log.error("Resolve URL with "+req.getRequestURL(),e);
+        }
+      }
+
       // LOOK use getContextName instead of hardcodeing thredds
-      return "<a href='/thredds/view/idv.jnlp?url="+access.getStandardUrlName()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+      return "<a href='/thredds/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
     }
 
   }

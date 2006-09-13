@@ -84,7 +84,7 @@ public class TestNcmlAggDirDateFormat extends TestCase {
     assert g.getShape()[2] == 1536;
     assert g.getDataType() == DataType.BYTE;
 
-    GridCoordSystem gsys = g.getGridCoordSystem();
+    GridCoordSystem gsys = g.getCoordinateSystem();
     assert gsys.getXHorizAxis() != null;
     assert gsys.getYHorizAxis() != null;
     assert gsys.getTimeAxis() != null;

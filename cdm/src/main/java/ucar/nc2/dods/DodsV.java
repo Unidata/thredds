@@ -69,7 +69,7 @@ import ucar.nc2.Structure;
 
 class DodsV implements Comparable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsV.class);
-  static private boolean debugAttributes = false;
+  static private boolean debugAttributes = true;
 
   /**
    * Parse the DDS, creating a tree of DodsV objects. The root node is only a container, ie it has no BaseType.
@@ -338,23 +338,7 @@ class DodsV implements Comparable {
   }
 
   String getNetcdfShortName() {
-    String shortName = getName();
-    /* if (bt instanceof DGrid) {
-      DodsV array = (DodsV) children.get(0);
-      if (!shortName.equals(array.bt.getName())) {
-        shortName = shortName + "-" + array.bt.getName();
-      }
-    } */
-    return shortName;
-  }
-
-  String getDodsShortName() {
-    String shortName = getName();
-    /* if (bt instanceof DGrid) {
-      DodsV array = (DodsV) children.get(0);
-      shortName = shortName + "." + array.bt.getName();
-    } */
-    return shortName;
+    return DODSNetcdfFile.makeNetcdfName( getName());
   }
 
   // assign depth first sequence number
@@ -429,6 +413,8 @@ class DodsV implements Comparable {
       dodsV.addAttribute( ncatt);
       if (debugAttributes) System.out.println(" addAttribute "+ncatt.getName()+" to "+dodsV.getFullName());
 
+    } else if (att.getName() == null) {
+      logger.info("DODS attribute name is null, alias= "+att.getAliasedTo());
     } else {
       DodsV child = dodsV.findDodsV(att.getName(), false);
       if (child != null) {
@@ -451,6 +437,10 @@ class DodsV implements Comparable {
     for (int i = 0; i < children.size(); i++) {
       DodsV dodsV = (DodsV) children.get(i);
       if (useDone && dodsV.isDone) continue; // LOOK useDone ??
+      if ((name == null) || (dodsV == null) || (dodsV.bt == null)) {
+        logger.warn("Corrupted structure");
+        continue;
+      }
       if (name.equals(dodsV.bt.getName()))
         return dodsV;
     }
@@ -469,7 +459,7 @@ class DodsV implements Comparable {
   DodsV findByDodsShortName(String dodsname) {
     for (int i = 0; i < children.size(); i++) {
       DodsV child = (DodsV) children.get(i);
-      if (dodsname.equals(child.getDodsShortName()))
+      if (dodsname.equals(child.getName()))
         return child;
     }
 

@@ -18,7 +18,9 @@ Changes in version 2.2.17
     GridCoordSystem allows time to depend on runtime.
   * Variable.slice()
  API changes
-  * new Grid processing moved to ucar.nc2.dt.grid, old one (deprecated) stays in ucar.nc2.dataset.grid 
+  * VariableEnhanced interface: remove getOriginalVariable(), now package private on VaribleDS.
+  * new Grid processing moved to ucar.nc2.dt.grid, old one (deprecated) stays in ucar.nc2.dataset.grid. Some tweaks on the
+    new grid interface, since we no longer have to be strictly backwards compatible.
   * CoordinateAxis1D now looks for bounds (using CF-1 bounds attribute convention) check if contiguous.
     CoordinateAxis1D add isLayer(), check for _Coordinate.ZisLayer attribute.
   * VariableDS uses ProxyReader interface, rather than Aggregation directly.
@@ -26,11 +28,15 @@ Changes in version 2.2.17
   * GeoGridCoordSys.getTimeCoordinate() implements ucar.nc2.dt.GridCoordSystem:
     getTimeAxis() returns CoordinateAxis instead of CoordinateAxis1D. 
     add getTimeAxis1D(), getTimeAxisForRun.
-  * GeoGrid : getLevels(), getTimes() returns List, not ArrayListl; implements ucar.nc2.dt.GridDaatatype
+  * GeoGrid : getLevels(), getTimes() returns List, not ArrayList; implements ucar.nc2.dt.GridDaatatype
   * CoordinateSystem: remove get/setDataType(), make setImplicit() protected.
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
+  * DODS: distinguish netcdf name from dods name (again!), problem is escape chars. Still work to do in data reading (ConvertD2N)
+  * when creating a section, always use this, not orgVar, so scale/offset is in the read chain.
+  * scale/offset enhance: valid_range must be wider (>=) than packed data to interpret as unpacked units. Also,
+    bug with getOriginalVariable(), preventing correct scaling
   * VariableDS: grid subsetting and aggregation not working together.
   * if projection CoordinateTransform missing units, look for units on GeoX axis. (CF compliance)
   * ucar.ma2.Range.contains() off-by-one

@@ -157,7 +157,7 @@ public class XMLwriter {
     addElement(briefElem, "name",grid.getName());
     addElement(briefElem, "label",grid.getDescription());
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     if (!gcs.isRegularSpatial()) {
       System.out.println("**Coordinate System not regular for "+grid.getName());
       return null;
@@ -207,7 +207,7 @@ public class XMLwriter {
   }
 
   private Element makeCoverageDescription(GridDatatype grid) {
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
 
     Element offeringElem = makeCoverageOfferingBrief(grid);
     offeringElem.setName("CoverageOffering");
@@ -226,7 +226,7 @@ public class XMLwriter {
 
     domainElem.addContent( makeSpatialDomain( grid));
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
     java.util.Date[] dates = taxis.getTimeDates();
     int n = dates.length;
@@ -255,7 +255,7 @@ public class XMLwriter {
     addElement(RangeElem, "name", "RangeSetName");
     addElement(RangeElem, "label", "RangeSetLabel");
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1D zaxis = gcs.getVerticalAxis();
     if (zaxis != null) {
       Element axisElem = addElement(RangeElem, "axisDescription", null);
@@ -336,7 +336,7 @@ public class XMLwriter {
 
   private Element makeSpatialDomain(GridDatatype grid) {
     Element spatialElem = new Element("spatialDomain", wcsNS);
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
 
     Element envElem = new Element("Envelope", gmlNS);
     addLonLatEnvelope(envElem, gcs);

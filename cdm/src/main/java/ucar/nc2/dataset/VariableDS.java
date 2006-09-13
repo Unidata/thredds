@@ -123,8 +123,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return proxy.getDescription();
   }
 
-  public ucar.nc2.Variable getOriginalVariable() {
-    return proxy.getOriginalVariable();
+  ucar.nc2.Variable getOriginalVariable() {
+    return orgVar; // proxy.getOriginalVariable();
   }
 
   /**

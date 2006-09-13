@@ -198,7 +198,7 @@ public class CatalogServicesServlet extends HttpServlet {
       // html or xml ?
       if ( isHtmlReq )
       {
-        showDataset( catURI.toString(), (InvDatasetImpl) dataset, res ); // show dataset as HTML
+        showDataset( catURI.toString(), (InvDatasetImpl) dataset, req, res ); // show dataset as HTML
       }
       else
       {
@@ -298,7 +298,7 @@ public class CatalogServicesServlet extends HttpServlet {
     ServletUtil.logServerAccess(status, sb.length());
   }
 
-  static private void showDataset(String catURL, InvDatasetImpl dataset, HttpServletResponse res) throws IOException {
+  static private void showDataset(String catURL, InvDatasetImpl dataset, HttpServletRequest req, HttpServletResponse res) throws IOException {
     res.setContentType("text/html");
     StringBuffer sb = new StringBuffer(10000);
 
@@ -316,7 +316,7 @@ public class CatalogServicesServlet extends HttpServlet {
     InvDatasetImpl.writeHtmlDescription( sb, dataset, false, true, false, false);
 
     // optional access through Viewers
-    ViewServlet.showViewers( sb, dataset);
+    ViewServlet.showViewers( sb, dataset, req);
 
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");

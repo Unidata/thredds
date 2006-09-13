@@ -2,6 +2,8 @@ package thredds.servlet;
 
 import thredds.catalog.InvDatasetImpl;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface Viewer {
 
   /**
@@ -28,6 +30,6 @@ public interface Viewer {
    * @param ds the dataset to view
    * @return HTML fragment string
    */
-   public String getViewerLinkHtml( InvDatasetImpl ds);
+   public String getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req);
 
 }

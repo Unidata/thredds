@@ -376,7 +376,7 @@ public class GridController {
         if ((runtime != -1) && (runtime != currentRunTime)) {
           currentRunTime = runtime;
           if (hasDependentTimeAxis) {
-            GridCoordSystem gcs = currentField.getGridCoordSystem();
+            GridCoordSystem gcs = currentField.getCoordinateSystem();
             CoordinateAxis1DTime taxis = gcs.getTimeAxisForRun(runtime);
             timeNames = taxis.getNames();
             ui.timeChooser.setCollection(timeNames.iterator());
@@ -681,12 +681,12 @@ public class GridController {
     currentField = gg;
 
     // set levels
-    GridCoordSystem gcs = gg.getGridCoordSystem();
+    GridCoordSystem gcs = gg.getCoordinateSystem();
     CoordinateAxis1D vaxis = gcs.getVerticalAxis();
     levelNames = (vaxis == null) ? new ArrayList() : vaxis.getNames();
     if ((levelNames == null) || (currentLevel >= levelNames.size()))
       currentLevel = 0;
-    vertPanel.setCoordSys(currentField.getGridCoordSystem(), currentLevel);
+    vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
 
     // set times
     if (gcs.hasTimeAxis()) {

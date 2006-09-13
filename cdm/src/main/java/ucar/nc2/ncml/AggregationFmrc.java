@@ -187,15 +187,15 @@ public class AggregationFmrc extends Aggregation {
       NcMLReader.transferVariableAttributes(v, vagg);
 
       // we need to explicitly list the coordinate axes, because time coord is now 2D
-      vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getGridCoordSystem().getName()));
-      vagg.addAttribute(new Attribute("coordinates", dimName + " " + grid.getGridCoordSystem().getName())); // CF
+      vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getCoordinateSystem().getName()));
+      vagg.addAttribute(new Attribute("coordinates", dimName + " " + grid.getCoordinateSystem().getName())); // CF
 
       ncDataset.removeVariable(null, v.getShortName());
       ncDataset.addVariable(null, vagg);
       if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());
 
       // track the time axes
-      GridCoordSystem gcc = grid.getGridCoordSystem();
+      GridCoordSystem gcc = grid.getCoordinateSystem();
       CoordinateAxis1D timeAxis = gcc.getTimeAxis1D();
       if (null != timeAxis)
         timeAxes.add(timeAxis);
@@ -441,25 +441,4 @@ public class AggregationFmrc extends Aggregation {
     return coordValues;
   }
 
-  /* private void addVariable(Group root, Variable v, String what) {
-    if (null == v) return;
-    if (null == root.findVariable(v.getShortName())) {
-      root.addVariable(v); // reparent
-      v.setDimensions(v.getDimensionsString()); // rediscover dimensions
-      if (debug) System.out.println("FmrcAggregation: added " + what + " " + v.getName());
-    }
-  }
-
-  // neet to change the time Axis to 2D.
-  private void setTimeCoordinates(VariableDS timeVar) {
-    int[] shape = timeVar.getShape();
-    Array coordData = Array.factory(String.class, shape);
-
-    Index ima = coordData.getIndex();
-    List nestedDataset = getNestedDatasets();
-    for (int i = 0; i < nestedDataset.size(); i++) {
-      Aggregation.Dataset nested = (Aggregation.Dataset) nestedDataset.get(i);
-      coordData.setObject(ima.set(i), nested.getCoordValueString());
-    }
-  }   */
 }

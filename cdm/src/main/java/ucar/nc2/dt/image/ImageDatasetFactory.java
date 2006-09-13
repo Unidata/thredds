@@ -53,7 +53,7 @@ public class ImageDatasetFactory {
   public BufferedImage openDataset( GridDatatype grid) throws java.io.IOException {
     this.grid = grid;
     this.time = 0;
-    GridCoordSystem gcsys = grid.getGridCoordSystem();
+    GridCoordSystem gcsys = grid.getCoordinateSystem();
     if (gcsys.getTimeAxis() != null)
       ntimes = (int) gcsys.getTimeAxis().getSize();
     Array data = grid.readDataSlice( this.time, 0, -1, -1);

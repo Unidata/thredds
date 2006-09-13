@@ -203,7 +203,7 @@ public class GridRenderer {
       return -1;
 
      // find the grid index
-    GridCoordSystem geocs = orgGrid.getGridCoordSystem();
+    GridCoordSystem geocs = orgGrid.getCoordinateSystem();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     return (zaxis == null) ? -1 : zaxis.findCoordElement( pos);
   }
@@ -224,7 +224,7 @@ public class GridRenderer {
     }
 
      // find the grid index
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis xaxis = geocs.getXHorizAxis();
      if (xaxis == null || !(xaxis instanceof CoordinateAxis1D))
       return -1;
@@ -247,7 +247,7 @@ public class GridRenderer {
     }
 
      // find the grid indexes
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     valueIndex = geocs.findXYindexFromCoord( loc.getX(), loc.getY(), valueIndex);
     int wantx = valueIndex[0];
     int wanty = valueIndex[1];
@@ -272,7 +272,7 @@ public class GridRenderer {
     if ((stridedGrid == null) || (dataV == null))
       return "";
 
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     /* CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     double x = (xaxis == null) ? 0.0 : xaxis.getCoordValue(lastSlice);
     double y = loc.getX();
@@ -301,7 +301,7 @@ public class GridRenderer {
       return "";
 
      // find the grid indexes
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     if (zaxis == null)
       return "";
@@ -323,7 +323,7 @@ public class GridRenderer {
   }
 
   private String makeXYZvalueStr(double value, int wantx, int wanty, int wantz) {
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     //CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     //CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
     //CoordinateAxis1D zaxis = geocs.getVerticalAxis();
@@ -405,7 +405,7 @@ public class GridRenderer {
   private Array makeHSlice( GridDatatype useG, int level, int time, int ensemble, int runtime) {
 
     // make sure x, y exists
-    GridCoordSystem gcs = useG.getGridCoordSystem();
+    GridCoordSystem gcs = useG.getCoordinateSystem();
     CoordinateAxis xaxis = gcs.getXHorizAxis();
     CoordinateAxis yaxis = gcs.getYHorizAxis();
     if ((xaxis == null) || (yaxis == null))    // doesnt exist
@@ -453,7 +453,7 @@ public class GridRenderer {
 
   private Array makeVSlice( GridDatatype g, int vSlice, int time, int ensemble, int runtime) {
     // make sure we have x, z
-    GridCoordSystem gcs = g.getGridCoordSystem();
+    GridCoordSystem gcs = g.getCoordinateSystem();
     CoordinateAxis xaxis = gcs.getXHorizAxis();
     CoordinateAxis zaxis = gcs.getVerticalAxis();
      if ((xaxis == null) || (zaxis == null))    // doesnt exist
@@ -545,7 +545,7 @@ public class GridRenderer {
     if (Debug.isSet("GridRenderer/vert"))
       System.out.println("GridRenderer/vert: redraw grid");
 
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
     if ((yaxis == null) || (zaxis == null))
@@ -644,7 +644,7 @@ public class GridRenderer {
     if (showPts)
       System.out.println("GridRenderer/XORline: drawXORline:"+at);
 
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
     int nx = (int) xaxis.getSize();
@@ -686,7 +686,7 @@ public class GridRenderer {
     int count = 0;
 
       // setup loop through the data
-    GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
     CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
     int nx = (int) xaxis.getSize();
@@ -1005,7 +1005,7 @@ public class GridRenderer {
 
   private void drawContours(java.awt.Graphics2D g, Array hslice, AffineTransform dFromN) {
         // make ContourGrid object
-      GridCoordSystem geocs = stridedGrid.getGridCoordSystem();
+      GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
       CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
       CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
       double [] xedges = xaxis.getCoordValues();

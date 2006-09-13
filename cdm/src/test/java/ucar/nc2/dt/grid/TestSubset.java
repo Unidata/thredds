@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.grid.*;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.NCdump;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.unidata.geoloc.LatLonRect;
@@ -26,7 +27,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
@@ -35,7 +36,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
 
-    GridCoordSys gcs_section = grid_section.getCoordinateSystem();
+    GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
     CoordinateAxis zaxis2 = gcs_section.getVerticalAxis();
     assert zaxis2.getSize() == 7;
     assert zaxis2.getUnitsString().equals("hectopascals");
@@ -56,7 +57,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("Temperature");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
@@ -76,7 +77,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
@@ -95,7 +96,7 @@ public class TestSubset extends TestCase {
     assert data.getShape()[2] == 20 : data.getShape()[2];
     assert data.getShape()[3] == 25 : data.getShape()[3];
 
-    GridCoordSys gcs_section = grid_section.getCoordinateSystem();
+    GridCoordSystem gcs_section = grid_section.getCoordinateSystem();
     CoordinateAxis zaxis2 = gcs_section.getVerticalAxis();
     assert zaxis2.getSize() == 9 : zaxis2.getSize();
 
@@ -120,7 +121,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("Temperature");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
@@ -144,7 +145,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("PT");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
@@ -172,7 +173,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("salt");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
@@ -229,7 +230,7 @@ public class TestSubset extends TestCase {
 
     GeoGrid grid = dataset.findGridByName("Relative_humidity");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 
@@ -265,7 +266,7 @@ public class TestSubset extends TestCase {
     // GridDataset dataset = GridDataset.open("R:/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
     GeoGrid grid = dataset.findGridByName("Relative_humidity");
     assert null != grid;
-    GridCoordSys gcs = grid.getCoordinateSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
     assert grid.getRank() == 4;
 

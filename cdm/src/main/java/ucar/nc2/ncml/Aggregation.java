@@ -91,8 +91,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   private Type type; // the aggregation type
   protected ArrayList nestedDatasets; // working set of Aggregation.Dataset
   private int totalCoords = 0;  // the aggregation dimension size
-  //private NetcdfFile typical = null; // metadata and non-agg variables come from a "typical" nested file.
-  //private Dataset typicalDataset = null; // metadata and non-agg variables come from a "typical" nested file.
   protected Object spiObject;
 
   // explicit
@@ -100,18 +98,16 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   private ArrayList unionDatasets = new ArrayList(); // NetcdfDataset objects
   protected ArrayList explicitDatasets = new ArrayList(); // explicitly created Dataset objects from netcdf elements
 
-  // joinExisting and JoinNew special handling
-  //protected VariableDS joinAggCoord;
-
   // scan
-  protected ArrayList scanList = new ArrayList(); // current set of Directory
+  protected ArrayList scanList = new ArrayList(); // current set of Directory for scan elements
+  protected ArrayList scan2List = new ArrayList(); // current set of Directory for scan2 elements
   private TimeUnit recheck; // how often to rechecck
   protected long lastChecked; // last time checked
   protected boolean wasChanged = true; // something changed since last aggCache file was written
   private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = true, debugOpenFile = true, debugCacheDetail = true, debugSyncDetail = true, debugProxy = false;
+  protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false;
 
   /**
    * Create an Aggregation for the NetcdfDataset.
@@ -173,6 +169,12 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     scanList.add(d);
     if (dateFormatMark != null)
       isDate = true;
+  }
+
+  public void addDirectoryScan2(String dirName, String suffix, String runDate, String forecastDate) throws IOException {
+    Directory d = new Directory(dirName, suffix, runDate, forecastDate);
+    scan2List.add(d);
+    isDate = true;
   }
 
   /**
@@ -410,6 +412,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     if (scanList.size() > 0)
       scan(nestedDatasets, cancelTask);
+    else if (scan2List.size() > 0)
+      scan(nestedDatasets, cancelTask); // LOOK
 
     // check persistence info
     if ((diskCache2 != null) && (type == Type.JOIN_EXISTING))
@@ -1111,6 +1115,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    */
   private class Directory {
     String dirName, suffix, dateFormatMark;
+    String runDate, forecastDate;
     boolean enhance = false;
     boolean subdirs = true;
 
@@ -1124,6 +1129,13 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         subdirs = false;
       if (type == Type.FORECAST_MODEL_COLLECTION)
         enhance = true;
+    }
+
+    Directory(String dirName, String suffix, String runDate, String forecastDate) {
+      this.dirName = dirName;
+      this.suffix = suffix;
+      this.runDate = runDate;
+      this.forecastDate = forecastDate;
     }
   }
 

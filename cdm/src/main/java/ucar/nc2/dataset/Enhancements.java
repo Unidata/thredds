@@ -58,6 +58,6 @@ public interface Enhancements {
   public void removeCoordinateSystem( CoordinateSystem cs);
 
   /** Get the original variable */
-  public Variable getOriginalVariable();
+  // public Variable getOriginalVariable();
 
 }

@@ -39,13 +39,12 @@ import java.io.IOException;
  */
 
 public class DODSGrid extends DODSVariable {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSGrid.class);
 
-  DODSGrid( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName,
-            DodsV dodsV) throws IOException {
-    super(dodsfile, parentGroup, parentStructure, StringUtil.unescape( shortName));
+  DODSGrid( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DodsV dodsV) throws IOException {
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
 
-    this.shortName = dodsV.getNetcdfShortName();
-    this.dodsShortName = dodsV.getDodsShortName();
+    this.dodsShortName = dodsShortName;
 
     DodsV array = (DodsV) dodsV.children.get(0);
     /* if (!shortName.equals(array.bt.getName())) {
@@ -54,16 +53,22 @@ public class DODSGrid extends DODSVariable {
     // so we just map the netcdf grid variable to the dods grid.array
     this.dodsShortName = shortName + "." + array.bt.getName(); */
 
-    ArrayList maps = new ArrayList();
-    StringBuffer sbuff = new  StringBuffer();
+    ArrayList dims = new ArrayList();
+    StringBuffer sbuff = new StringBuffer();
     for (int i = 1; i < dodsV.children.size(); i++) {
       DodsV map = (DodsV) dodsV.children.get(i);
-      maps.add(map);
-      sbuff.append( map.bt.getName()+" ");
+      String name = NetcdfFile.createValidNetcdfObjectName( StringUtil.unescape( map.bt.getName()));
+      Dimension dim = parentGroup.findDimension(name);
+      if (dim == null)
+        logger.warn("DODSGrid cant find dimension = <"+name+">");
+      else  {
+        dims.add( dim);
+        sbuff.append(name+" ");
+      }
     }
 
     // the common case is that the map vectors already exist as a top level variables
-    setDimensions( sbuff.toString());
+    setDimensions( dims);
     setDataType( DODSNetcdfFile.convertToNCType(array.bt));
     if (DODSNetcdfFile.isUnsigned( array.bt)) {
       addAttribute(new Attribute("_unsigned", "true"));

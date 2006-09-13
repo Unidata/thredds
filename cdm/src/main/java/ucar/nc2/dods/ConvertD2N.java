@@ -229,10 +229,10 @@ public class ConvertD2N {
   }
 
   private ArrayStructure makeArrayStructure(DodsV dataV) {
-    StructureMembers members = new StructureMembers(dataV.getName());
+    StructureMembers members = new StructureMembers( dataV.getNetcdfShortName());
     for (int i = 0; i < dataV.children.size(); i++) {
       DodsV dodsV = (DodsV) dataV.children.get(i);
-      StructureMembers.Member m = new StructureMembers.Member(dodsV.getName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      StructureMembers.Member m = new StructureMembers.Member(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
       members.addMember(m);
 
       Array data;
@@ -257,7 +257,7 @@ public class ConvertD2N {
     StructureMembers members = new StructureMembers(dataV.getName());
     for (int i = 0; i < dataV.children.size(); i++) {
       DodsV dodsV = (DodsV) dataV.children.get(i);
-      StructureMembers.Member m = new StructureMembers.Member(dodsV.getName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      StructureMembers.Member m = new StructureMembers.Member(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
       members.addMember(m);
     }
 
@@ -336,10 +336,13 @@ public class ConvertD2N {
 
       // track down the corresponding DODS member
       String name = member.getName();
-      BaseType bt = ds.getVariable( name);
+      String dodsName = name; // LOOK should be: findDodsName (name);
+      if (dodsName == null) {
+        throw new DODSException("Cant find dodsName for member variable "+name);
+      }
 
-      // recursively fill up this data array
-      iconvertData( bt, ii);
+      BaseType bt = ds.getVariable( dodsName);
+      iconvertData( bt, ii); // recursively fill up this data array
     }
   }
 

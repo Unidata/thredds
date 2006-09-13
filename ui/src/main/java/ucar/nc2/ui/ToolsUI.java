@@ -1447,7 +1447,8 @@ public class ToolsUI extends JPanel {
 
       AbstractAction saveAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          String location = ds.getLocation();
+          String location = (ds == null) ? ncmlLocation : ds.getLocation();
+          if (location == null) location = "test";
           int pos = location.lastIndexOf(".");
           if (pos > 0)
             location = location.substring(0,pos);

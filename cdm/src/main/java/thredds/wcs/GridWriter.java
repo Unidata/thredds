@@ -65,7 +65,7 @@ public class GridWriter {
 
     ncfile.addGlobalAttribute("Conventions", _Coordinate.Convention);
 
-    GridCoordSystem gcs = grid.getGridCoordSystem();
+    GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
     ncfile.addGlobalAttribute("time", taxis.getCoordName(timeIdx));
 

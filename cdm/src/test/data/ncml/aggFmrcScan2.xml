@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <aggregation dimName="run" type="forecastModelRunCollection">
+
+    <scan2 location="/data/ldm/NAM_CONUS_80km/" suffix=".grib1" 
+           runDate="Run_#yyyyMMdd_HHmm/"
+           type="joinExisting" forecastDate="/Hour_F#HH"/>
+
+  </aggregation>
+
+</netcdf>
