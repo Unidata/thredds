@@ -72,6 +72,7 @@ public class Grib2Netcdf {
       try {
          RandomAccessFile raf = null;
          raf = new RandomAccessFile( args[0], "r" );
+         raf.order( RandomAccessFile.BIG_ENDIAN ); 
          int version = GribChecker.getEdition( raf );
          IOServiceProvider iosp = null;
          if( version == 1 ) {
