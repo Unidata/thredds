@@ -245,7 +245,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     if (hasCachedData())
       result = super._read();
     else if (proxyReader != null)
-     result = proxyReader.read( (orgVar != null) ? orgVar : this, null);
+      result = proxyReader.read( (orgVar != null) ? orgVar : this, null);
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
@@ -257,6 +257,12 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       result = smProxy.convertScaleOffset( result);
     else if (smProxy.hasMissing() && smProxy.getUseNaNs())
       result = smProxy.convertMissing( result);
+
+    if (isCaching()) {
+      cache.data = result;
+      if (debugCaching) System.out.println("cacheDS "+getName());
+      return cache.data.copy(); // dont let users get their nasty hands on cached data
+    }
 
     return result;
   }

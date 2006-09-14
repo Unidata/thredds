@@ -1053,6 +1053,7 @@ public class ThreddsMetadata {
     public String getVocabularyName() { return vocabulary_name; }
     public void setVocabularyName(String vocabulary_name) { this.vocabulary_name = vocabulary_name; }
 
+    // need unique id, cant count on name, eg because of variant GRIB tables
     public String getVocabularyId() { return id; }
     public void setVocabularyId(String id) { this.id = id; }
     

@@ -401,10 +401,12 @@ public class Range {
   }
 
   /** Range elements with same first, last, stride are equal. */
-   public boolean equals(Object o) {
-     if (this == o) return true;
-     if (!(o instanceof Range)) return false;
-     return o.hashCode() == this.hashCode();
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Range)) return false;
+    Range or =(Range) o;
+
+    return (or.first == first) && (or.n == n) && (or.stride == stride);
   }
 
   /** Override Object.hashCode() to implement equals. */

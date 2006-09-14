@@ -69,7 +69,7 @@ import ucar.nc2.Structure;
 
 class DodsV implements Comparable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsV.class);
-  static private boolean debugAttributes = true;
+  static private boolean debugAttributes = false;
 
   /**
    * Parse the DDS, creating a tree of DodsV objects. The root node is only a container, ie it has no BaseType.

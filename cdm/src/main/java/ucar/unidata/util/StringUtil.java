@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id: StringUtil.java 64 2006-07-12 22:30:50Z edavis $
+// $Id: StringUtil.java,v 1.37 2006/09/11 20:50:57 jeffmc Exp $
 
 
 package ucar.unidata.util;
@@ -39,7 +39,7 @@ import java.util.regex.*;
 /**
  * String utilities
  * @author John Caron
- * @version $Id: StringUtil.java 64 2006-07-12 22:30:50Z edavis $
+ * @version $Id: StringUtil.java,v 1.37 2006/09/11 20:50:57 jeffmc Exp $
  */
 
 public class StringUtil {
@@ -1956,6 +1956,71 @@ public class StringUtil {
     }
 
 
+
+
+    /**
+     * Parse the lat/lon/alt coordinate string
+     *
+     * @param coords comma and space separated coord string
+     *
+     * @return coords
+     */
+    public static double[][] parseCoordinates(String coords) {
+        coords = StringUtil.replace(coords, "\n", " ");
+        while (true) {
+            String newCoords = StringUtil.replace(coords, " ,", ",");
+            if (newCoords.equals(coords)) {
+                break;
+            }
+            coords = newCoords;
+        }
+        while (true) {
+            String newCoords = StringUtil.replace(coords, ", ", ",");
+            if (newCoords.equals(coords)) {
+                break;
+            }
+            coords = newCoords;
+        }
+
+
+        List       tokens = StringUtil.split(coords, " ", true, true);
+        double[][] result = null;
+        for (int pointIdx = 0; pointIdx < tokens.size(); pointIdx++) {
+            String tok     = (String) tokens.get(pointIdx);
+            List   numbers = StringUtil.split(tok, ",");
+            if ((numbers.size() != 2) && (numbers.size() != 3)) {
+                //Maybe its just comma separated
+                if(numbers.size()>3 &&
+                   tokens.size()==1 &&
+                   ((int)numbers.size()/3)*3 == numbers.size()) {
+                    result = new double[3][numbers.size()/3];
+                    int cnt = 0;
+                    for(int i=0;i<numbers.size();i+=3) {
+                        result[0][cnt] = new Double(
+                                                    numbers.get(i).toString()).doubleValue();
+                        result[1][cnt] = new Double(
+                                                    numbers.get(i+1).toString()).doubleValue();
+                        result[2][cnt] = new Double(
+                                                    numbers.get(i+2).toString()).doubleValue();
+                        cnt++;
+                    }
+                    return result;
+                }
+                throw new IllegalStateException(
+                    "Bad number of coordinate values:" + numbers);
+            }
+            if (result == null) {
+                result = new double[numbers.size()][tokens.size()];
+            }
+            for (int coordIdx = 0;
+                    (coordIdx < numbers.size()) && (coordIdx < 3);
+                    coordIdx++) {
+                result[coordIdx][pointIdx] = new Double(
+                    numbers.get(coordIdx).toString()).doubleValue();
+            }
+        }
+        return result;
+    }
 
 
 

@@ -88,7 +88,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   protected NetcdfDataset ncDataset; // the aggregation belongs to this dataset
   protected String dimName; // the aggregation dimension name
-  private Type type; // the aggregation type
+  protected Type type; // the aggregation type
   protected ArrayList nestedDatasets; // working set of Aggregation.Dataset
   private int totalCoords = 0;  // the aggregation dimension size
   protected Object spiObject;
@@ -823,7 +823,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     return allData;
   }
 
-  private Array readAggCoord(Variable aggCoord, CancelTask cancelTask) throws IOException {
+  protected Array readAggCoord(Variable aggCoord, CancelTask cancelTask) throws IOException {
     DataType dtype = aggCoord.getDataType();
     Array allData = Array.factory(dtype, aggCoord.getShape());
     IndexIterator result = allData.getIndexIterator();
@@ -904,7 +904,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     return sectionData;
   }
 
-  private Array readAggCoord(Variable aggCoord, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+  protected Array readAggCoord(Variable aggCoord, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
     DataType dtype = aggCoord.getDataType();
     Array allData = Array.factory(dtype, Range.getShape(section));
     IndexIterator result = allData.getIndexIterator();
@@ -1166,7 +1166,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    */
   public class Dataset {
     private String cacheName, location;
-    private int ncoord; // n coordinates in outer dimension for this dataset; joinExisting
+    private int ncoord; // number of coordinates in outer dimension for this dataset; joinExisting
+    //private int nfmrc_coord; // number of coordinates in time dimension, used by FMRC
     private boolean enhance;
     private NetcdfFileFactory reader;
     private String coordValue;  // if theres a coordValue on the netcdf element
@@ -1338,6 +1339,12 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       return new Range(start, stop - 1, totalRange.stride()); // Range has last inclusive
     }
 
+    protected boolean isNeeded(Range totalRange) {
+       int wantStart = totalRange.first();
+       int wantStop = totalRange.last() + 1; // Range has last inclusive, we use last exclusive
+       return isNeeded(wantStart, wantStop);
+    }
+
     // wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd
     // find out if this overlaps this nested Dataset indices
     private boolean isNeeded(int wantStart, int wantStop) {
@@ -1405,8 +1412,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     public int getNcoords(CancelTask cancelTask) throws IOException {
       if (ncoord <= 0) {
         NetcdfFile ncd = acquireFile(cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return 0;
+        if ((cancelTask != null) && cancelTask.isCancel()) return 0;
 
         Dimension d = ncd.getRootGroup().findDimension(dimName);
         if (d != null)
@@ -1416,6 +1422,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       return ncoord;
     }
 
+    //public int getNumberFmrcTimeCoords()  { return nfmrc_coord; }
+    //protected void setNumberFmrcTimeCoords(int nfmrc_coord)  { this.nfmrc_coord = nfmrc_coord; }
 
     private int setStartEnd(int aggStart, CancelTask cancelTask) throws IOException {
       this.aggStart = aggStart;
@@ -1439,7 +1447,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
-    private Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    protected Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);
@@ -1455,6 +1463,17 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         }
 
         Variable v = modifyVariable(ncd, mainv.getName());
+
+        // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
+        // so we need to read only what is there
+        Range fullRange = (Range) v.getRanges().get(0);
+        Range want = (Range) section.get(0);
+        if (fullRange.last() < want.last()) {
+          Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
+          section = new ArrayList( section); // make a copy
+          section.set(0, limitRange);
+        }
+
         return v.read(section);
 
       } finally {
