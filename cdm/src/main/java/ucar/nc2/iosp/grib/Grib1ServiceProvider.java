@@ -3,7 +3,6 @@ package ucar.nc2.iosp.grib;
 import ucar.grib.*;
 import ucar.grib.grib1.*;
 
-import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -88,6 +87,7 @@ public class Grib1ServiceProvider extends GribServiceProvider {
 
   protected float[] _readData( long dataOffset1, long dataOffset2, int decimalScale, boolean bmsExists ) throws IOException {
     try {
+      //System.out.println("dataOffset1="+ dataOffset1 +" scale ="+ decimalScale +" bmsE ="+ bmsExists );
       return dataReader.getData( dataOffset1, decimalScale, bmsExists );
     } catch (NotSupportedException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
