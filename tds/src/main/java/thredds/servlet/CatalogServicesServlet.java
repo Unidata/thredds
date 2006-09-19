@@ -203,10 +203,15 @@ public class CatalogServicesServlet extends HttpServlet {
       else
       {
         catalog.subset( dataset ); // subset the catalog
-        OutputStream os = res.getOutputStream();
+
+        // Return catalog as XML response.
+        InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
+        String result = catFactory.writeXML( catalog );
+        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, result.length() );
+
+        res.setContentLength( result.length() );
         res.setContentType( "text/xml" );
-        catalog.writeXML( os );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+        res.getOutputStream().write( result.getBytes() );
       }
 
       return;

@@ -106,16 +106,32 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return new InvAccessImpl( dataset, urlPath, serviceName, null, dataFormat, readDataSize( accessElem));
   }
 
-  protected InvCatalogImpl readCatalog( Element catalogElem, URI baseURI) {
+  protected InvCatalogImpl readCatalog( Element catalogElem, URI docBaseURI ) {
     String name = catalogElem.getAttributeValue("name");
+    String catSpecifiedBaseURL = catalogElem.getAttributeValue("base");
     String expires = catalogElem.getAttributeValue("expires");
     String version = catalogElem.getAttributeValue("version");
-    InvCatalogImpl catalog = new InvCatalogImpl( name, version, makeDateType(expires, null, null), baseURI);
+
+    URI baseURI = docBaseURI;
+    if ( catSpecifiedBaseURL != null )
+    {
+      try
+      {
+        baseURI = new URI( catSpecifiedBaseURL );
+      }
+      catch ( URISyntaxException e )
+      {
+        logger.debug( "readCatalog(): bad catalog specified base URI <" + catSpecifiedBaseURL + ">: " + e.getMessage(), e);
+        baseURI = docBaseURI;
+      }
+    }
+
+    InvCatalogImpl catalog = new InvCatalogImpl( name, version, makeDateType(expires, null, null), baseURI );
 
     // read top-level services
     java.util.List sList = catalogElem.getChildren("service", defNS);
     for (int j=0; j< sList.size(); j++) {
-      InvService s = readService((Element) sList.get(j), baseURI);
+      InvService s = readService((Element) sList.get(j), baseURI );
       catalog.addService(s);
     }
 
@@ -131,13 +147,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     for (int j=0; j< allChildren.size(); j++) {
       Element e = (Element) allChildren.get(j);
       if (e.getName().equals("dataset")) {
-        catalog.addDataset( readDataset( catalog, null, e, baseURI));
+        catalog.addDataset( readDataset( catalog, null, e, baseURI ));
       } else if (e.getName().equals("datasetFmrc")) {
-        catalog.addDataset( readDatasetFmrc( catalog, null, e, baseURI));
+        catalog.addDataset( readDatasetFmrc( catalog, null, e, baseURI ));
       } else if (e.getName().equals("datasetScan")) {
-        catalog.addDataset( readDatasetScan( catalog, null, e, baseURI));
+        catalog.addDataset( readDatasetScan( catalog, null, e, baseURI ));
       } else if (e.getName().equals("catalogRef")) {
-        catalog.addDataset( readCatalogRef( catalog, null, e, baseURI));
+        catalog.addDataset( readCatalogRef( catalog, null, e, baseURI ));
       }
     }
 
