@@ -540,7 +540,8 @@
         <xsd:restriction base="xsd:token">
           <xsd:enumeration value="CF-1.0"/>
           <xsd:enumeration value="DIF"/>
-          <xsd:enumeration value="GRIB"/>
+          <xsd:enumeration value="GRIB-1"/>
+          <xsd:enumeration value="GRIB-2"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:union>
