@@ -118,10 +118,18 @@ public class AggregationFmrc extends Aggregation {
     }
 
     // work with a GridDataset
-    GridDataset gds = new ucar.nc2.dt.grid.GridDataset((NetcdfDataset) typical);
+    NetcdfDataset typicalDS;
+    if (typical instanceof NetcdfDataset)
+      typicalDS = (NetcdfDataset) typical;
+    else
+      typicalDS = new NetcdfDataset( typical);
+    if (!typicalDS.isEnhanced())
+      typicalDS.enhance();
 
-    // handle the 2D time coordinates and dimensions, for the case that we have a fmrcDefinition
-    // there may be time coordinates that dont show up in the typical dataset
+    GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
+
+    // handle the 2D time coordinates and dimensions
+    // for the case that we have a fmrcDefinition, there may be time coordinates that dont show up in the typical dataset
     if (fmrcDefinition != null) {
 
       List runSeq = fmrcDefinition.getRunSequences();
@@ -179,8 +187,11 @@ public class AggregationFmrc extends Aggregation {
       ncDataset.finish();
 
     } else {
-      // LOOK how do we set the length of the time dimension(s), is its ragged?
+      // for the case that we dont have a fmrcDefinition
+
+      // LOOK how do we set the length of the time dimension(s), if its ragged?
       // Here we are just using the typical dataset !!!
+      // For now, we dont handle ragged time coordinates.
 
       // find time axes
       HashSet timeAxes = new HashSet();

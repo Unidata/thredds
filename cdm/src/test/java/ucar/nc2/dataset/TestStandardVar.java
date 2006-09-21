@@ -328,7 +328,7 @@ public class TestStandardVar extends TestCase {
         float want = 2* (i*10+j) + 77;
         if( val != want)
           System.out.println(i+" "+j+" "+val+" "+ want);
-        assert( val == want);
+        assert( val == want) : val+" != "+ want;
       }
     }
 

@@ -317,6 +317,7 @@
       <xsd:attribute name="location" type="xsd:string" use="required"/>
       <xsd:attribute name="suffix" type="xsd:string"/>
       <xsd:attribute name="fmrcDefinition" type="xsd:string" use="required"/>
+      <xsd:attribute name="olderThan" type="xsd:string" />
     </xsd:complexType>
   </xsd:element>
 

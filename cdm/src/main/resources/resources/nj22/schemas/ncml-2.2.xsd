@@ -153,9 +153,11 @@
           <xsd:complexType>
             <xsd:attribute name="location" type="xsd:string" use="required"/>
             <xsd:attribute name="suffix" type="xsd:string" />
-            <xsd:attribute name="dateFormatMark" type="xsd:string" />
-            <xsd:attribute name="enhance" type="xsd:boolean"/>
             <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
+            <xsd:attribute name="olderThan" type="xsd:string" />
+
+            <xsd:attribute name="dateFormatMark" type="xsd:string" />
+            <xsd:attribute name="enhance" type="xsd:boolean" />
           </xsd:complexType>
         </xsd:element>
 
@@ -163,10 +165,12 @@
           <xsd:complexType>
             <xsd:attribute name="location" type="xsd:string" use="required"/>
             <xsd:attribute name="suffix" type="xsd:string" />
-            <xsd:attribute name="runDate" type="xsd:string" />
-            <xsd:attribute name="forecastDate" type="xsd:string" />
             <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
-            <xsd:attribute name="type" type="AggregationType" use="required"/>
+            <xsd:attribute name="olderThan" type="xsd:string" />
+
+            <xsd:attribute name="runDateMatcher" type="xsd:string" use="required"/>
+            <xsd:attribute name="forecastDateMatcher" type="xsd:string" />
+            <xsd:attribute name="forecastOffsetMatcher" type="xsd:string" />
           </xsd:complexType>
         </xsd:element>
 
@@ -174,10 +178,13 @@
 
       <xsd:attribute name="type" type="AggregationType" use="required"/>
       <xsd:attribute name="dimName" type="xsd:token" />
-      <xsd:attribute name="fmrcDefinition" type="xsd:string" />
-      <xsd:attribute name="recheckEvery" type="xsd:string" />
-      <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
 
+      <!-- fmrc only  -->
+      <xsd:attribute name="fmrcDefinition" type="xsd:string" />
+      <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
+      <xsd:attribute name="recheckEvery" type="xsd:string" />
+
+      <!-- deprecated  -->
       <xsd:attribute name="forecastDate" type="xsd:string" />
       <xsd:attribute name="forecastDateVariable" type="xsd:string" />
       <xsd:attribute name="forecastOffset" type="xsd:string" />
@@ -190,6 +197,7 @@
   <xsd:simpleType name="AggregationType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="forecastModelRunCollection"/>
+      <xsd:enumeration value="forecastModelRunHourlyCollection"/>
       <xsd:enumeration value="forecastModelRun"/>
       <xsd:enumeration value="joinExisting"/>
       <xsd:enumeration value="joinNew"/>

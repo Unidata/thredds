@@ -99,7 +99,7 @@ public class NCdump {
 
     NetcdfFile nc = null;
     try {
-      nc = NetcdfFileCache.acquire(filename, ct);
+      nc = NetcdfFile.open(filename, ct);
 
       // the rest of the command
       int pos = command.indexOf(filename);
@@ -112,7 +112,7 @@ public class NCdump {
       return false;
 
     } finally {
-      NetcdfFileCache.release(nc);
+      if (nc != null) nc.close();
     }
 
   }

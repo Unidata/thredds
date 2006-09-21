@@ -22,10 +22,12 @@ package thredds.catalog;
 import thredds.cataloggen.*;
 import thredds.cataloggen.datasetenhancer.RegExpAndDurationTimeCoverageEnhancer;
 import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
+import thredds.cataloggen.inserter.LatestCompleteProxyDsHandler;
 import thredds.crawlabledataset.*;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 import thredds.crawlabledataset.filter.RegExpMatchOnNameSelector;
 import thredds.crawlabledataset.filter.MultiSelectorFilter;
+import thredds.crawlabledataset.filter.LastModifiedLimitSelector;
 
 import java.net.URI;
 import java.io.IOException;
@@ -98,6 +100,31 @@ public class InvDatasetScan extends InvCatalogRef {
                          boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
                          String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration ) {
 
+    this( catalog,  parent,  name,  path,  scanDir,  filter, addDatasetSize, addLatest, sortOrderIncreasing,
+                         datasetNameMatchPattern, startTimeSubstitutionPattern, duration, 0);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param catalog containing catalog
+   * @param parent parent dataset
+   * @param name dataset name
+   * @param path url path
+   * @param scanDir scan this directory
+   * @param filter RegExp match on name
+   * @param addDatasetSize add a size element
+   * @param addLatest add a latest element
+   * @param sortOrderIncreasing sort
+   * @param datasetNameMatchPattern dataset naming
+   * @param startTimeSubstitutionPattern time range using the file name
+   * @param duration  time range using the file name
+   * @param lastModifiedLimit only use datasets whose lastModified() time is at least this many msecs in the past. Ignore if <= 0
+   */
+  public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanDir, String filter,
+                         boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
+                         String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration, long lastModifiedLimit ) {
+
     super(parent, name, makeHref(path));
     log.debug(  "InvDatasetScan(): parent="+ parent + ", name="+ name +" , path="+ path +" , scanDir="+ scanDir +" , filter="+ filter +" , addLatest="+ addLatest +" , sortOrderIncreasing="+ sortOrderIncreasing +" , datasetNameMatchPattern="+ datasetNameMatchPattern +" , startTimeSubstitutionPattern= "+ startTimeSubstitutionPattern +", duration="+duration);
 
@@ -106,14 +133,20 @@ public class InvDatasetScan extends InvCatalogRef {
     this.crDsClassName = null;
     this.crDsConfigObj = null;
 
+    ArrayList filters = new ArrayList();
+    if (lastModifiedLimit > 0) {
+      filters.add( new LastModifiedLimitSelector(lastModifiedLimit, false, true, false));
+    }
+
     if ( filter != null )
     {
       // Include atomic datasets that match the given filter string.
-      RegExpMatchOnNameSelector filterSelector = new RegExpMatchOnNameSelector( filter, true, true, false );
-      this.filter = new MultiSelectorFilter( Collections.singletonList( filterSelector ) );
+      filters.add( new RegExpMatchOnNameSelector( filter, true, true, false ));
     }
-    else
-    {
+
+    if (filters.size() > 0) {
+      this.filter = new MultiSelectorFilter( filters );
+    } else {
       this.filter = null;
     }
 

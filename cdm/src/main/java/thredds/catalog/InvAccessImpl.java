@@ -62,6 +62,8 @@ public class InvAccessImpl extends InvAccess {
    * @param serviceName : name of an existing service, or null.
    * @param typeName : ServiceType name or null. If specified, this creates an anonymous
    *   Service (one that is only used by this access element).
+   * @param dataFormatName  optional
+   * @param dataSize optional
    */
   public InvAccessImpl( InvDataset dataset, String urlPath, String serviceName, String typeName,
                         String dataFormatName, double dataSize) {

@@ -1,6 +1,8 @@
 // $Id:DateFromString.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.util;
 
+import ucar.nc2.units.DateFormatter;
+
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -43,23 +45,68 @@ public class DateFromString
   }
 
   /**
-   * Parse the given date string (between the demarcation characters)
-   * using the given date format string (as described in
-   * java.text.SimpleDateFormat) and return a Date.
+   * Parse the given date string, starting at a position given by the offset of the demark character in the dateFormatString.
+   * The rest of the dateFormatString is the date format string (as described in java.text.SimpleDateFormat).
+   * <pre> Example:
+   *   dateString =        wrfout_d01_2006-07-06_080000.nc
+   *   dateFormatString = wrfout_d01_#yyyy-MM-dd_HHmm
+   * </pre>
+   * This simple counts over "wrfout_d01_" number of chars in dateString, then applies the remaining dateFormatString.
    *
    * @param dateString the String to be parsed
    * @param dateFormatString the date format String
    * @return the Date that was parsed.
    */
-  public static Date getDateUsingDemarkatedDateFormat( String dateString, String dateFormatString, char demark )
+  public static Date getDateUsingDemarkatedCount( String dateString, String dateFormatString, char demark )
   {
-    // the first char of the dateFormatString is the demarcation
+    // the position of the demark char is where to start parsing the dateString
     int pos1 = dateFormatString.indexOf( demark);
-    //int pos2 = dateString.indexOf( pos1, demark);
 
+    // the rest of the dateFormatString is the SimpleDateFOrmat
     dateFormatString = dateFormatString.substring( pos1+1);
 
     return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, pos1 );
+  }
+
+  /**
+   * Parse the given date string (between the demarcation characters)
+   * using the given date format string (as described in
+   * java.text.SimpleDateFormat) and return a Date.
+   * <pre>
+   * Example:
+   *  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
+   *  dateFormatString =                    #wrfout_d01_#yyyy-MM-dd_HHmm
+   *  would extract the date 2006-07-06T08:00
+   *
+   *  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
+   *  dateFormatString =          yyyyMM-ddHH#/wrfout_d01_#
+   *  would extract the date 2006-07-06T11:00
+   * </pre>
+   *
+   * @param dateString the String to be parsed
+   * @param dateFormatString the date format String
+   * @return the Date that was parsed.
+   */
+  public static Date getDateUsingDemarkatedMatch( String dateString, String dateFormatString, char demark )
+  {
+    // extract the match string
+    int pos1 = dateFormatString.indexOf( demark);
+    int pos2 = dateFormatString.indexOf( demark, pos1+1);
+    if ((pos1 < 0) || (pos2 < 0)) return null;
+    String match = dateFormatString.substring(pos1+1, pos2);
+
+    int pos3 = dateString.indexOf(match);
+    if (pos3 < 0) return null;
+
+    if (pos1 > 0) {
+      dateFormatString = dateFormatString.substring(0, pos1);
+      dateString = dateString.substring(pos3-dateFormatString.length(), pos3);
+    }  else {
+      dateFormatString = dateFormatString.substring(pos2+1);
+      dateString = dateString.substring(pos3+match.length());
+    }
+
+    return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, 0 );
   }
 
   /**
@@ -76,7 +123,7 @@ public class DateFromString
   }
 
   /**
-   * Parse the given date string (starting at the given startIndex)using the
+   * Parse the given date string (starting at the given startIndex)  using the
    * given date format string (as described in java.text.SimpleDateFormat) and
    * return a Date.
    *
@@ -153,18 +200,29 @@ public class DateFromString
 
     return getDateUsingCompleteDateFormat( dateStringFormatted.toString(), dateFormatString );
   }
+
+  public static void main(String args[]) {
+   /*  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
+   *  dateFormatString =                    #wrfout_d01_#yyyy-MM-dd_HHmm
+   *  would extract the date 2006-07-06T08:00
+   *
+   *  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
+   *  dateFormatString =          yyyyMM-ddHH#/wrfout_d01_#
+   *  would extract the date 2006-07-06T11:00
+   * </pre>
+   *
+   * @param dateString the String to be parsed
+   * @param dateFormatString the date format String
+   * @return the Date that was parsed.
+   */
+
+    DateFormatter formatter  = new DateFormatter();
+    Date result = getDateUsingDemarkatedMatch( "/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc", "#wrfout_d01_#yyyy-MM-dd_HHmm", '#' );
+    System.out.println(" 2006-07-06_080000 -> "+formatter.toDateTimeStringISO( result));
+
+    result = getDateUsingDemarkatedMatch( "/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc", "yyyyMMddHH#/wrfout_d01_#", '#' );
+    System.out.println(" 2006070611 -> "+formatter.toDateTimeStringISO( result));
+
+  }
+
 }
-/*
- * $Log: DateFromString.java,v $
- * Revision 1.3  2005/12/15 00:52:55  caron
- * *** empty log message ***
- *
- * Revision 1.2  2005/12/02 00:21:36  caron
- * NcML Aggregation
- * WCS subset bug
- *
- * Revision 1.1  2005/11/30 21:01:47  edavis
- * Add thredds.util.DateFromString to provide convenience methods for getting
- * dates from strings.
- *
- */

@@ -99,9 +99,9 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected ArrayList explicitDatasets = new ArrayList(); // explicitly created Dataset objects from netcdf elements
 
   // scan
-  protected ArrayList scanList = new ArrayList(); // current set of Directory for scan elements
-  protected ArrayList scan2List = new ArrayList(); // current set of Directory for scan2 elements
-  private TimeUnit recheck; // how often to rechecck
+  protected ArrayList scanList = new ArrayList(); // current set of DirectoryScan for scan elements
+  protected ArrayList scan2List = new ArrayList(); // current set of DirectoryScan for scan2 elements
+  private TimeUnit recheck; // how often to recheck
   protected long lastChecked; // last time checked
   protected boolean wasChanged = true; // something changed since last aggCache file was written
   private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
@@ -111,12 +111,12 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Create an Aggregation for the NetcdfDataset.
-   * The folloeing addXXXX methods are called, then finish(), before the object is ready for use.
+   * The following addXXXX methods are called, then finish(), before the object is ready for use.
    *
    * @param ncd      Aggregation belongs to this NetcdfDataset
    * @param dimName  the aggregation dimension name
    * @param typeName the Aggegation.Type name
-   * @param recheckS how often to check if files have changes (secs)
+   * @param recheckS how often to check if files have changes
    */
   public Aggregation(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
     this.ncDataset = ncd;
@@ -158,21 +158,22 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   /**
    * Add a scan elemnt
    *
-   * @param dirName
-   * @param suffix
-   * @param dateFormatMark
-   * @param enhance
+   * @param dirName scan this directory
+   * @param suffix  filter on this suffix (may be null)
+   * @param dateFormatMark create dates from the filename (may be null)
+   * @param enhance should files bne enhanced?
+   * @param olderThan files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    * @throws IOException
    */
-  public void addDirectoryScan(String dirName, String suffix, String dateFormatMark, String enhance, String subdirs) throws IOException {
-    Directory d = new Directory(dirName, suffix, dateFormatMark, enhance, subdirs);
+  public void addDirectoryScan(String dirName, String suffix, String dateFormatMark, String enhance, String subdirs, String olderThan) throws IOException {
+    DirectoryScan d = new DirectoryScan(dirName, suffix, dateFormatMark, enhance, subdirs, olderThan);
     scanList.add(d);
     if (dateFormatMark != null)
       isDate = true;
   }
 
-  public void addDirectoryScan2(String dirName, String suffix, String runDate, String forecastDate) throws IOException {
-    Directory d = new Directory(dirName, suffix, runDate, forecastDate);
+  public void addDirectoryScan2(String dirName, String suffix, String subdirs, String olderThan, String runMatcher, String forecastMatcher, String offsetMatcher) throws IOException {
+    DirectoryScan d = new DirectoryScan(dirName, suffix, subdirs, olderThan, runMatcher, forecastMatcher, offsetMatcher);
     scan2List.add(d);
     isDate = true;
   }
@@ -413,7 +414,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     if (scanList.size() > 0)
       scan(nestedDatasets, cancelTask);
     else if (scan2List.size() > 0)
-      scan(nestedDatasets, cancelTask); // LOOK
+      scan2(nestedDatasets, cancelTask); // LOOK
 
     // check persistence info
     if ((diskCache2 != null) && (type == Type.JOIN_EXISTING))
@@ -1001,21 +1002,93 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * @throws IOException
    */
   protected void scan(List result, CancelTask cancelTask) throws IOException {
-    List fileList = getFileList(cancelTask);
-    if ((cancelTask != null) && cancelTask.isCancel())
-      return;
 
+    // Directories are scanned recursively, by calling File.listFiles().
+    ArrayList fileList = new ArrayList();
+    for (int i = 0; i < scanList.size(); i++) {
+      DirectoryScan dir = (DirectoryScan) scanList.get(i);
+      dir.scanDirectory( fileList, cancelTask);
+
+      if ((cancelTask != null) && cancelTask.isCancel())
+        return;
+    }
+
+    // extract date if possible, before sorting
+    for (int i = 0; i < fileList.size(); i++) {
+      MyFile myf = (MyFile) fileList.get(i);
+
+      // optionally parse for date
+      if (null != myf.dir.dateFormatMark) {
+        String filename = myf.file.getName();
+        myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, myf.dir.dateFormatMark, '#');
+        myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
+        if (debug) System.out.println("  adding " + myf.file.getAbsolutePath() + " date= " + myf.dateCoordS);
+      } else {
+        if (debug) System.out.println("  adding " + myf.file.getAbsolutePath());
+      }
+    }
+
+    // Sort by date if it exists, else filename.
+    Collections.sort(fileList, new Comparator() {
+      public int compare(Object o1, Object o2) {
+        MyFile mf1 = (MyFile) o1;
+        MyFile mf2 = (MyFile) o2;
+        if (isDate)
+          return mf1.dateCoord.compareTo(mf2.dateCoord);
+        else
+          return mf1.file.getName().compareTo(mf2.file.getName());
+      }
+    });
+
+    // now add the ordered list of Datasets to the result List
     for (int i = 0; i < fileList.size(); i++) {
       MyFile myf = (MyFile) fileList.get(i);
       String location = myf.file.getAbsolutePath();
       String coordValue = (type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
-      myf.nested = makeDataset(location, location, null, coordValue, myf.enhance, null);
-      myf.nested.coordValueDate = myf.dateCoord;
-      // if (myf.nested.checkOK(cancelTask))
-      result.add(myf.nested);
+      Dataset ds = makeDataset(location, location, null, coordValue, myf.dir.enhance, null);
+      ds.coordValueDate = myf.dateCoord;
+      result.add( ds);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return;
+    }
+  }
+
+  protected void scan2(List result, CancelTask cancelTask) throws IOException {
+
+    // scan the directories
+    ArrayList fileList = new ArrayList();
+    for (int i = 0; i < scan2List.size(); i++) {
+      DirectoryScan dir = (DirectoryScan) scan2List.get(i);
+      dir.scanDirectory( fileList, cancelTask);
+
+      if ((cancelTask != null) && cancelTask.isCancel())
+        return;
+    }
+
+    for (int i = 0; i < fileList.size(); i++) {
+      MyFile myf = (MyFile) fileList.get(i);
+
+      // parse for rundate
+      String filename = StringUtil.replace( myf.file.getAbsolutePath(), '\\', "/");
+      myf.runDate = DateFromString.getDateUsingDemarkatedMatch(filename, myf.dir.runMatcher, '#');
+      if (null == myf.runDate) {
+        logger.error("Cant extract rundate from =" + filename+" using format "+myf.dir.runMatcher);
+        continue;
+      }
+
+      // parse for forecast date
+      myf.dateCoord = DateFromString.getDateUsingDemarkatedMatch(filename, myf.dir.forecastMatcher, '#');
+      myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
+      if (null == myf.dateCoord) {
+        logger.error("Cant extract forecast date from =" + filename+" using format "+myf.dir.forecastMatcher);
+        continue;
+      }
+
+      String location = myf.file.getAbsolutePath();
+      Dataset ds = makeDataset(location, location, null, myf.dateCoordS, myf.dir.enhance, null);
+      result.add(ds);
+      if (debug) System.out.println("  adding " + myf.file.getAbsolutePath() + " date= " + myf.dateCoordS);
     }
   }
 
@@ -1034,127 +1107,105 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     return new Dataset(cacheName, location, ncoordS, coordValueS, enhance, reader);
   }
 
-  /**
-   * Do all the directory scans that were specified.
-   * Directories are scanned recursively, by calling File.listFiles().
-   * Sort by date if it exists, else filename.
-   *
-   * @param cancelTask optional canel
-   * @return sorted list of MyFile objects.
-   */
-  private List getFileList(CancelTask cancelTask) {
-    ArrayList fileList = new ArrayList();
-    for (int i = 0; i < scanList.size(); i++) {
-      Directory d = (Directory) scanList.get(i);
-      crawlDirectory(d.dirName, d.suffix, d.dateFormatMark, d.enhance, d.subdirs, fileList, cancelTask);
-
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
-    }
-
-    Collections.sort(fileList, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        MyFile mf1 = (MyFile) o1;
-        MyFile mf2 = (MyFile) o2;
-        if (isDate)
-          return mf1.dateCoord.compareTo(mf2.dateCoord);
-        else
-          return mf1.file.getName().compareTo(mf2.file.getName());
-      }
-    });
-
-    return fileList;
-  }
-
-  /**
-   * Recursively crawl directories, add matching MyFile files to result List
-   *
-   * @param dirName        crawl this directory
-   * @param suffix         filter with this file suffix
-   * @param dateFormatMark extract date from filename
-   * @param enhance        open in enhanced mode?
-   * @param result         add MyFile objects to this list
-   * @param cancelTask     user can cancel
-   */
-  private void crawlDirectory(String dirName, String suffix, String dateFormatMark, boolean enhance, boolean subdirs, List result, CancelTask cancelTask) {
-    File allDir = new File(dirName);
-    File[] allFiles = allDir.listFiles();
-    if (debug) System.out.println(" NcML Aggregation crawlDirectory");
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      String location = f.getAbsolutePath();
-
-      if (f.isDirectory() && subdirs)
-        crawlDirectory(location, suffix, dateFormatMark, enhance, subdirs, result, cancelTask);
-      else if (location.endsWith(suffix)) { // filter
-
-        // optionally parse for date
-        Date dateCoord = null;
-        String dateCoordS = null;
-        if (null != dateFormatMark) {
-          String filename = f.getName();
-          dateCoord = DateFromString.getDateUsingDemarkatedDateFormat(filename, dateFormatMark, '#');
-          dateCoordS = formatter.toDateTimeStringISO(dateCoord);
-          if (debug) System.out.println("  adding " + location + " date= " + dateCoordS);
-        } else {
-          if (debug) System.out.println("  adding " + location);
-        }
-
-        result.add(new MyFile(f, dateCoord, dateCoordS, enhance));
-      }
-
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return;
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Encapsolate a "scan" element: a directory that we want to scan.
+   * Encapsolate a "scan" or "scan2" element: a directory that we want to scan.
    */
-  private class Directory {
+  private class DirectoryScan {
     String dirName, suffix, dateFormatMark;
-    String runDate, forecastDate;
+    long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
+    String runMatcher, forecastMatcher, offsetMatcher; // scan2
     boolean enhance = false;
-    boolean subdirs = true;
+    boolean wantSubdirs = true;
 
-    Directory(String dirName, String suffix, String dateFormatMark, String enhanceS, String subdirsS) {
+    DirectoryScan(String dirName, String suffix, String dateFormatMark, String enhanceS, String subdirsS, String olderS) {
       this.dirName = dirName;
       this.suffix = suffix;
       this.dateFormatMark = dateFormatMark;
       if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
         enhance = true;
       if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
-        subdirs = false;
+        wantSubdirs = false;
       if (type == Type.FORECAST_MODEL_COLLECTION)
         enhance = true;
+
+      if (olderS != null) {
+        try {
+          TimeUnit tu = new TimeUnit(olderS);
+          this.olderThan_msecs = (long) (1000 * tu.getValueInSeconds());
+        } catch (Exception e) {
+          logger.error("Invalid time unit for olderThan = {}", olderS);
+        }
+      }
     }
 
-    Directory(String dirName, String suffix, String runDate, String forecastDate) {
-      this.dirName = dirName;
-      this.suffix = suffix;
-      this.runDate = runDate;
-      this.forecastDate = forecastDate;
+    DirectoryScan(String dirName, String suffix, String subdirsS, String olderS, String runMatcher, String forecastMatcher, String offsetMatcher) {
+      this( dirName, suffix, null, "true", subdirsS, olderS);
+
+      this.runMatcher = runMatcher;
+      this.forecastMatcher = forecastMatcher;
+      this.offsetMatcher = offsetMatcher;
     }
+
+    /**
+     * Recursively crawl directories, add matching MyFile files to result List
+     * @param result         add MyFile objects to this list
+     * @param cancelTask     user can cancel
+     */
+    private void scanDirectory(List result, CancelTask cancelTask) {
+      scanDirectory( dirName, new Date().getTime(), result, cancelTask);
+    }
+
+    private void scanDirectory(String dirName, long now, List result, CancelTask cancelTask) {
+      File allDir = new File( dirName);
+      File[] allFiles = allDir.listFiles();
+      for (int i = 0; i < allFiles.length; i++) {
+        File f = allFiles[i];
+        String location = f.getAbsolutePath();
+
+        if (f.isDirectory()) {
+          if (wantSubdirs) scanDirectory(location, now, result, cancelTask);
+
+        } else {
+          // suffix filter
+          if ((suffix != null) && !location.endsWith(suffix))
+            continue;
+
+          // older than filter
+          if (olderThan_msecs > 0) {
+            long lastModified = f.lastModified();
+            if (now - lastModified < olderThan_msecs)
+              continue;
+          }
+
+          // add to result
+          result.add(new MyFile(this, f));
+        }
+
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return;
+      }
+    }
+
   }
 
   /**
    * Encapsolate a file that was scanned.
-   * Created in crawlDirectory()
+   * Created in scanDirectory()
    */
   private class MyFile {
+    DirectoryScan dir;
     File file;
+
     Date dateCoord; // will have both or neither
     String dateCoordS;
-    boolean enhance;
-    Dataset nested;
 
-    MyFile(File file, Date dateCoord, String dateCoordS, boolean enhance) {
+    Date runDate; // fmrcHourly only
+
+    MyFile(DirectoryScan dir, File file) {
+      this.dir = dir;
       this.file = file;
-      this.dateCoord = dateCoord;
-      this.dateCoordS = dateCoordS;
-      this.enhance = enhance;
     }
   }
 
@@ -1177,7 +1228,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
 
     /**
-     * Dataset constructor for joinNew or joinExisting.
+     * Dataset constructor for joinNew or joinExisting, or fmrc.
      * Actually opening the dataset is deferred.
      *
      * @param cacheName   a unique name to use for caching
@@ -1224,76 +1275,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         this.ncoord = stoker.countTokens();
       }
 
-      /*  this.coordValueS = coordValueS;
-
-      if (coordValueS == null) {
-        int pos = this.location.lastIndexOf("/");
-        this.coordValueS = (pos < 0) ? this.location : this.location.substring(pos + 1);
-        this.isStringValued = true;
-      } else {
-        // LOOK see if its an ISO date ??
-        try {
-          this.coordValue = Double.parseDouble(coordValueS);
-        } catch (NumberFormatException e) {
-          // logger.error("bad coordValue attribute ("+ coordValueS +") on dataset "+location);
-          this.isStringValued = true;
-        }
-      }
-
-    } else if (ncoordS != null) {
-      try {
-        this.ncoord = Integer.parseInt(ncoordS);
-      } catch (NumberFormatException e) {
-        logger.error("bad ncoord attribute on dataset " + location);
-      }
     }
 
-    if (type == Type.JOIN_EXISTING) {
-      this.coordValuesExisting = coordValueS;
-    }  */
-
-
-    }
-
-    /* Set the coordinate value for this Dataset
-    public void setCoordValue(double coordValue) {
-      this.coordValue = coordValue;
-      this.isStringValued = false;
-    }
-
-    /** Get the coordinate value for this Dataset
-    public double getCoordValue() {
-      return coordValue;
-    }
-
-    /** Set the coordinate value(s) as a String for this Dataset
-    public void setCoordValueString(String coordValueS) {
-      this.coordValueS = coordValueS;
-      this.isStringValued = true;
-    }
-
-    /**
-     * Set the coordinate value from a string. May be:
-     * <ol>
-     * <li> ISO Date format
-     * <li> udunit date format
-     * <li> double
-     * <li> else leave as a String
-     * </ol>
-     * @param s
-     *
-    public void setCoordValue(String s) {
-     Date d = DateUnit.getStandardOrISO( String text)
-     if (d != null)
-
-             // LOOK see if its an ISO date ??
-         try {
-           this.coordValue = Double.parseDouble(coordValueS);
-         } catch (NumberFormatException e) {
-           // logger.error("bad coordValue attribute ("+ coordValueS +") on dataset "+location);
-           this.isStringValued = true;
-         }
-  }
 
     /** Get the coordinate value(s) as a String for this Dataset */
     public String getCoordValueString() {
@@ -1310,6 +1293,30 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
      */
     public String getLocation() {
       return location;
+    }
+
+
+    /**
+     * Get number of coordinates in this Dataset.
+     * If not already set, open the file and get it from the aggregation dimension.
+     */
+    public int getNcoords(CancelTask cancelTask) throws IOException {
+      if (ncoord <= 0) {
+        NetcdfFile ncd = acquireFile(cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel()) return 0;
+
+        Dimension d = ncd.getRootGroup().findDimension(dimName);
+        if (d != null)
+          ncoord = d.getLength();
+        ncd.close();
+      }
+      return ncoord;
+    }
+
+    private int setStartEnd(int aggStart, CancelTask cancelTask) throws IOException {
+      this.aggStart = aggStart;
+      this.aggEnd = aggStart + getNcoords(cancelTask);
+      return ncoord;
     }
 
     /**
@@ -1357,11 +1364,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
-      /* if (typicalDataset == this) {
-        if (debugOpenFile) System.out.println(" acquire typical " + cacheName);
-        return typical;
-      } */
-
       NetcdfFile ncfile;
       if (enhance)
         ncfile = NetcdfDatasetCache.acquire(cacheName, -1, cancelTask, spiObject, (NetcdfDatasetFactory) reader);
@@ -1374,27 +1376,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       return ncfile;
     }
 
-
-   /* protected void releaseFile(NetcdfFile ncfile) throws IOException {
-      if (typicalDataset != this)
-        ncfile.close();
-    } */
-
-    /* called only by the "typical" dataset
-    private NetcdfFile openFile(CancelTask cancelTask) throws IOException {
-      NetcdfFile ncfile;
-      if (enhance)
-        ncfile = NetcdfDataset.openDataset(location, true, -1, cancelTask, spiObject);
-      else
-        ncfile = NetcdfDataset.openFile(location, -1, cancelTask, spiObject);
-
-      if (debugOpenFile) System.out.println(" open " + location);
-
-      if ((type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL))
-        cacheCoordValues(ncfile);
-      return ncfile;
-    } */
-
     private void cacheCoordValues(NetcdfFile ncfile) throws IOException {
       if (coordValue != null) return;
 
@@ -1403,32 +1384,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         Array data = coordVar.read();
         coordValue = data.toString();
       }
-    }
-
-    /**
-     * Get number of coordinates in this Dataset.
-     * If not already set, open the file and get it from the aggregation dimension.
-     */
-    public int getNcoords(CancelTask cancelTask) throws IOException {
-      if (ncoord <= 0) {
-        NetcdfFile ncd = acquireFile(cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel()) return 0;
-
-        Dimension d = ncd.getRootGroup().findDimension(dimName);
-        if (d != null)
-          ncoord = d.getLength();
-        ncd.close();
-      }
-      return ncoord;
-    }
-
-    //public int getNumberFmrcTimeCoords()  { return nfmrc_coord; }
-    //protected void setNumberFmrcTimeCoords(int nfmrc_coord)  { this.nfmrc_coord = nfmrc_coord; }
-
-    private int setStartEnd(int aggStart, CancelTask cancelTask) throws IOException {
-      this.aggStart = aggStart;
-      this.aggEnd = aggStart + getNcoords(cancelTask);
-      return ncoord;
     }
 
     protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {

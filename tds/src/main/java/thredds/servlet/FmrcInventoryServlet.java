@@ -72,6 +72,8 @@ public class FmrcInventoryServlet extends AbstractServlet {
 
     String path = req.getPathInfo();
     String query = req.getQueryString();
+
+    debug = Debug.isSet("FmrcInventoryServlet");
     if (debug) System.out.println("path="+path+" query="+query);
 
     String varName;
@@ -107,6 +109,8 @@ public class FmrcInventoryServlet extends AbstractServlet {
 
       String fmrInvOpenType = ServletParams.getInitParameter("FmrInventoryOpenType", "");
       int mode = fmrInvOpenType.equalsIgnoreCase("XML_ONLY") ? ForecastModelRunInventory.OPEN_XML_ONLY : ForecastModelRunInventory.OPEN_NORMAL;
+      if (debug) System.out.println("  FmrcInventory.make path="+fmrcDefinitionPath+" name= "+collectionName+" location= "+params.location
+        +" suffix= "+params.suffix+" mode= "+mode);
 
       fmr = FmrcInventory.make(fmrcDefinitionPath, collectionName, fmrCache, params.location, params.suffix, mode);
 
@@ -156,7 +160,9 @@ public class FmrcInventoryServlet extends AbstractServlet {
       return;
     }
 
-    showInventory( res, fmr, varName, query, false);
+    boolean wantXML = req.getParameter("wantXML") != null;
+
+    showInventory( res, fmr, varName, query, wantXML);
   }
 
   private void showOffsetHour(HttpServletResponse res, FmrcInventory fmrc, String varName, String offsetHour) throws IOException {

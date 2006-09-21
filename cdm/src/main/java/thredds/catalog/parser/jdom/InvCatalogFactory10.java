@@ -299,7 +299,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       String location = fmrcElem.getAttributeValue("location");
       String def = fmrcElem.getAttributeValue("fmrcDefinition");
       String suffix = fmrcElem.getAttributeValue("suffix");
-      dsFmrc.setFmrcInventoryParams( location, def, suffix);
+      String olderThan = fmrcElem.getAttributeValue("olderThan");
+      dsFmrc.setFmrcInventoryParams( location, def, suffix, olderThan);
     }
 
     readDatasetInfo( catalog, dsFmrc, dsElem, base);

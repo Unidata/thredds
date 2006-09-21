@@ -258,11 +258,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     else if (smProxy.hasMissing() && smProxy.getUseNaNs())
       result = smProxy.convertMissing( result);
 
-    if (isCaching()) {
+    /* if (isCaching()) {
       cache.data = result;
       if (debugCaching) System.out.println("cacheDS "+getName());
       return cache.data.copy(); // dont let users get their nasty hands on cached data
-    }
+    } */
 
     return result;
   }

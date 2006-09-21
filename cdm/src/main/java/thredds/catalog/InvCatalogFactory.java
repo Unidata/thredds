@@ -369,17 +369,31 @@ public class InvCatalogFactory {
   }
 
   /**
-   * Write the catalog as an XML document to the specified stream.
-   *
-   * @param catalog write this catalog
-   * @param os write to this OutputStream
-   * @throws IOException on an error.
-   */
-  public void writeXML(InvCatalogImpl catalog, OutputStream os) throws IOException {
-    InvCatalogConvertIF fac = catalog.getCatalogConverter();
-    if (fac == null) fac = defaultConverter;
-    fac.writeXML( catalog, os);
-  }
+    * Write the catalog as an XML document to the specified stream.
+    *
+    * @param catalog write this catalog
+    * @param os write to this OutputStream
+    * @throws IOException on an error.
+    */
+   public void writeXML(InvCatalogImpl catalog, OutputStream os) throws IOException {
+     InvCatalogConvertIF fac = catalog.getCatalogConverter();
+     if (fac == null) fac = defaultConverter;
+     fac.writeXML( catalog, os);
+   }
+
+  /**
+    * Write the catalog as an XML document to the specified stream.
+    *
+    * @param catalog write this catalog
+    * @param os write to this OutputStream
+    * @throws IOException on an error.
+    */
+   public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException {
+     InvCatalogConvertIF fac = catalog.getCatalogConverter();
+     if (fac == null) fac = defaultConverter;
+     fac.writeXML( catalog, os, raw);
+   }
+
   /**
    * Write the catalog as an XML document to the specified filename.
    *

@@ -37,6 +37,7 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dt.fmrc.ForecastModelRunCollection;
 import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.TimeUnit;
 import ucar.nc2.thredds.MetadataExtractor;
 import thredds.datatype.DateRange;
 
@@ -101,16 +102,27 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return new File( fname.toString() );
   }
 
-  public void setFmrcInventoryParams(String location, String def, String suffix) {
+  // bit of a kludge to get info into the InvDatasetFmrc
+  public void setFmrcInventoryParams(String location, String def, String suffix, String olderThanS) {
     this.params = new InventoryParams();
     this.params.location = location;
     this.params.def = def;
     this.params.suffix = suffix;
+
+    if (olderThanS != null) {
+      try {
+        TimeUnit tu = new TimeUnit(olderThanS);
+        this.params.lastModifiedLimit  = (long) (1000 * tu.getValueInSeconds());
+      } catch (Exception e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+    }
   }
 
   public class InventoryParams {
     public String location, def, suffix;
-    public String toString() { return "def="+def +" location="+ location+" suffix="+ suffix; }
+    public long lastModifiedLimit = 0;
+    public String toString() { return "def="+def +" location="+ location+" suffix="+ suffix+" lastModifiedLimit="+lastModifiedLimit; }
   }
 
   public boolean hasAccess() {
@@ -183,11 +195,19 @@ public class InvDatasetFmrc extends InvCatalogRef {
       datasets.add( ds);
 
       if (params != null) {
+        /* public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanDir,
+                         String filter,
+                         boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
+                         String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration,
+                         long lastModifiedMsecs ) */
+
         scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
-                params.location, ".*"+params.suffix, true, "true", false, null, null, null );
+                params.location, ".*"+params.suffix, true, "true", false, null, null, null, params.lastModifiedLimit );
+
         ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
         tmi.setServiceName("fileServices");
         tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
+        // LOOK, we'd like to screen files by lastModified date.
 
         scan.finish();
         datasets.add( scan);

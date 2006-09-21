@@ -90,8 +90,10 @@ public class FmrcImpl implements ForecastModelRunCollection {
     return gds;
   }
 
-  private void init(NetcdfDataset ncd) {
+  private void init(NetcdfDataset ncd) throws IOException {
     this.org_ncd = ncd;
+    if (!ncd.isEnhanced())
+      ncd.enhance();
 
     gridHash = new HashMap();  // key = grid name, value = Gridset
     coordSet = new HashSet();  // time coord names

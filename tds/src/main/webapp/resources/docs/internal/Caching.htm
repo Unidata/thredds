@@ -102,7 +102,12 @@
   <pre>    // allow 100 - 200 open files, cleanup every 2 minutes<br>    FileCache.init(100, 200, 2 * 60, 2 * 60);</pre>
 </div>
 <hr width="100%">
-<p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a> </span></i></p>
+<h2 align="left">Catalog Caching</h2>
+<p align="left">On startup, TDS reads in all static catalogs (which can be thought of as configuration files) and caches them. If the catalog has an &quot;expires&quot; attribute, it will reread them upon expiration. You can force re-reading by putting an old expires date on them. You can also force rereading the catalogs through a &quot;reinit&quot; command, if you have https enabled and are authorized.</p>
+<p>Dynamic catalogs are generated dynamically. We are considering caching them for some amount of time, but i dont think we've implemented yet.<br>
+</p>
+<hr>
+<p align="left"><i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a> </span></i></p>
 <p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../../thredds.jpg" height="79" width="95"><br>
 </p>
 </body>
