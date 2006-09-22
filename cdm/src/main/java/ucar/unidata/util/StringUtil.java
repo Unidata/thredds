@@ -337,6 +337,22 @@ public class StringUtil {
     }
 
     /**
+     * Count number of chars that match in two strings, starting from front.
+     * @param s1 compare this string
+     * @param s2 compare this string
+     * @return number of matching chars, starting from first char
+     */
+    static public int match(String s1, String s2) {
+      int i = 0;
+      while (i < s1.length() && i < s2.length()) {
+        if (s1.charAt(i) != s2.charAt(i))
+          break;
+        i++;
+      }
+      return i;
+    }
+
+    /**
      * Replace any char "out" in sb with "in".
      * @param sb StringBuffer to replace
      * @param out repalce this character
