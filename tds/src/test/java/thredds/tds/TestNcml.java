@@ -21,7 +21,7 @@ public class TestNcml extends TestCase {
     super(name);
   }
 
-  public void testAddRecords() throws IOException {
+  public void testNcMLinDatasetScan() throws IOException {
     InvCatalogImpl cat = TestTDSAll.open(null);
 
     InvDataset parent = cat.findDatasetByID("testAddRecords");
@@ -44,8 +44,28 @@ public class TestNcml extends TestCase {
     Variable v = ncd.findVariable("record");
     assert v != null;
 
+    assert ncd.findAttValueIgnoreCase(null,  "name2", "").equals("value2");
+
     ncd.close();
   }
+
+  // simple NcML wrapping
+  public void testNcmlModify() throws IOException {
+    InvCatalogImpl cat = TestTDSAll.open(null);
+
+    InvDataset ds = cat.findDatasetByID("NcML-modify");
+    assert (ds != null) : "cant find dataset 'NcML-modify'";
+
+    ThreddsDataFactory fac = new ThreddsDataFactory();
+    StringBuffer log = new StringBuffer();
+
+    NetcdfDataset ncd = fac.openDataset( ds, false, null, log);
+    assert ncd != null : log.toString();
+
+    Variable v = ncd.findVariable("Temperature");
+    assert v != null;
+  }
+
 
   // ncml should not be sent to the client
   public void testDatasetNcml() throws IOException {

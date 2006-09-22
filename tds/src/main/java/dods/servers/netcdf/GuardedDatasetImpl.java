@@ -41,19 +41,8 @@ public class GuardedDatasetImpl implements GuardedDataset  {
   private NcDAS das;
 
   public GuardedDatasetImpl( String reqPath, String location) throws IOException {
-    this( reqPath, location, null);
-  }
-
-  public GuardedDatasetImpl( String reqPath, String location, org.jdom.Element netcdfElem) throws IOException {
-    this.org_file = NetcdfDataset.acquireFile(location, null);
-    NetcdfFile ncfile = org_file;
-
-    if (netcdfElem != null) {
-      NetcdfDataset ncd = (org_file instanceof NetcdfDataset) ? (NetcdfDataset) org_file : new NetcdfDataset( org_file, false);
-      new NcMLReader().readNetcdf( reqPath, ncd, ncd, netcdfElem, null);
-      ncfile = ncd;
-    }
-
+    NetcdfFile ncfile = NetcdfDataset.acquireFile(location, null);
+    this.org_file = ncfile;
     this.dds = new NcDDS( reqPath, ncfile);
     this.das = new NcDAS( ncfile);
   }

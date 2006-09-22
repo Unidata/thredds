@@ -6,6 +6,7 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileFactory;
 import ucar.nc2.NetcdfFileCache;
+import ucar.nc2.util.CancelTask;
 
 import java.io.*;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Iterator;
 
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetFmrc;
+import org.jdom.Element;
 
 
 /**
@@ -22,7 +24,7 @@ import thredds.catalog.InvDatasetFmrc;
  */
 public class DatasetHandler {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetHandler.class);
-  static HashMap ncmlDatasetHash = new HashMap();
+  static HashMap ncmlDatasetHash = new HashMap(); // Map<path, InvDatasetImpl>, for Dataset only (not DatasetScan)
 
   static public void reinit() {
     ncmlDatasetHash = new HashMap();
@@ -54,7 +56,8 @@ public class DatasetHandler {
     InvDatasetImpl ds = (InvDatasetImpl) ncmlDatasetHash.get(reqPath);
     if (ds != null) {
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= "+ds);
-      return getNcmlDataset( ds);
+      String cacheName = ds.getUniqueID();
+      return NetcdfFileCache.acquire(cacheName, -1, null, null, new NcmlFileFactory(ds));
     }
 
     // look for an fmrc dataset
@@ -114,44 +117,23 @@ public class DatasetHandler {
     ncmlDatasetHash.put( path, ds);
   }
 
-  static private NetcdfFile getNcmlDataset( InvDatasetImpl ds) throws IOException {
-    String cacheName = ds.getUniqueID();
-    return NetcdfFileCache.acquire(cacheName, -1, null, null, new NcmlFileFactory(ds));
-  }
-
-  static private NetcdfFile getFmrcDataset( InvDatasetImpl ds) throws IOException {
-    String cacheName = ds.getUniqueID();
-    return NetcdfFileCache.acquire(cacheName, -1, null, null, new NcmlFileFactory(ds));
-  }
-
+  // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
+  // This makes the NcML dataset the target of the server.
   static private class NcmlFileFactory implements NetcdfFileFactory {
     private InvDatasetImpl ds;
     NcmlFileFactory( InvDatasetImpl ds) { this.ds = ds; }
 
     public NetcdfFile open(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-      /* File ncmlFile = DiskCache.getCacheFile(cacheName);
-
-      if (ncmlFile.exists()) {
-        log.debug("ncmlFile.exists() file= "+ncmlFile.getPath()+" lastModified= "+new Date(ncmlFile.lastModified()));
-        return NetcdfDataset.openDataset( ncmlFile.getPath());
-      }  */
-
-      // otherwise, open and write it out
-      NetcdfDataset ncd = new NetcdfDataset();
-      ncd.setCacheName(cacheName);
       org.jdom.Element netcdfElem = ds.getNcmlElement();
 
+      /*
+      NetcdfDataset ncd = new NetcdfDataset();
+      ncd.setCacheName(cacheName);
+
       // transfer the ncml into the dataset
-      new NcMLReader().readNetcdf( null, ncd, ncd, netcdfElem, null);
+      new NcMLReader().readNetcdf( null, ncd, ncd, netcdfElem, null);  */
 
-      /* cache the full NcML - this has to read the datasets, so may be slow
-      OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlFile));
-      ncd.writeNcML(out, null);
-      out.close();
-
-      System.out.println("new ncmlFile file= "+ncmlFile.getPath()+" lastModified= "+new Date(ncmlFile.lastModified())); */
-
-      return ncd;
+      return NcMLReader.readNcML(netcdfElem, cancelTask);
     }
   }
 

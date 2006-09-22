@@ -8,7 +8,7 @@ import ucar.nc2.dods.DODSNetcdfFile;
 /**
  * TestSuite that runs all the sample tests for testing the TDS.
  *
- * This assumes that you are running the TDS on localhost, with the standard test catalog.
+ * This assumes that you are running the TDS on localhost, with the standard test catalog (catalog_unitTest.xml).
  *
  * Test data is typically put into /upc/share/testdata/tds
  *

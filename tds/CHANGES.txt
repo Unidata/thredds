@@ -14,6 +14,8 @@ Changes in version 3.13
     - Streamline the discovery of CrawlableDataset descendants by adding
       exists() and getDescendant() methods.
  Bugs
+  * locating DataRoot failed in some cases with multiple roots starting with same name
+  * embedded NcML on dataset wasnt working
   * IDV.jnlp grid:opendap:URL
 
 Changes in version 3.12

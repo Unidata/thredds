@@ -218,11 +218,11 @@ public class NcMLReader {
     return ncd;
   }
 
-    /**
-      * Read NcML doc from an InputStream, and construct a NetcdfDataset.
-      * @param netcdfElem the NcML as a JDOM element
-      * @param cancelTask allow user to cancel the task; may be null
-      */
+  /**
+    * Read NcML a JDOM Element, and construct a NetcdfDataset.
+    * @param netcdfElem the NcML as a JDOM element
+    * @param cancelTask allow user to cancel the task; may be null
+    */
    static public NetcdfDataset readNcML(Element netcdfElem, CancelTask cancelTask) throws IOException, java.net.MalformedURLException {
 
      // the ncml probably refers to another dataset, but doesnt have to

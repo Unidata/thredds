@@ -283,7 +283,6 @@ public class DataRootHandler {
       } else if (invDataset instanceof InvDatasetFmrc) {
           InvDatasetFmrc fmrc = (InvDatasetFmrc) invDataset;
           addRoot(fmrc);
-          //DatasetHandler.putFmrcDataset(fmrc.getPath(), fmrc);
 
         // not a DatasetScan or InvDatasetFmrc
       } else if (invDataset.getNcmlElement() != null) {
@@ -1064,6 +1063,7 @@ public class DataRootHandler {
     DataRootMatch match = findDataRootMatch(workPath);
     if (match == null) {
       log.warn("makeDynamicCatalog(): No DataRoot for =" + workPath + " request path= " + path); // LOOK why should there be a messaage ?
+      match = findDataRootMatch(workPath); // debug
       return null;
     }
 

@@ -21,7 +21,13 @@ public class TestNetcdfSubsetService extends TestCase {
     thredds.util.IO.readURLtoFile(TestTDSAll.topCatalog+url, fileSave);
     System.out.println("Copied "+TestTDSAll.topCatalog+url+" to "+fileSave.getPath());
 
-    NetcdfFile ncd = NetcdfDataset.openFile(fileSave.getPath(), null);
+    NetcdfFile ncd = null;
+    try {
+      ncd = NetcdfDataset.openFile(fileSave.getPath(), null);
+    } catch (Throwable t) {
+      thredds.util.IO.copyFile(fileSave.getPath(), System.out);
+      return;
+    }
     assert ncd != null;
 
     assert ncd.findVariable("K_index") != null;

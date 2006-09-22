@@ -20,6 +20,8 @@
  */
 package thredds.util;
 
+import ucar.unidata.util.StringUtil;
+
 import java.util.*;
 
 /**
@@ -72,14 +74,28 @@ public class PathMatcher {
     if (tail.isEmpty()) return null;
     String after = (String) tail.firstKey();
     //System.out.println("  "+path+"; after="+afterPath);
-    if (path.startsWith( after))
+    if (path.startsWith( after)) // common case
       return treeMap.get( after);
+
+    // have to check more, until no common starting chars
+    Iterator iter = tail.keySet().iterator();
+    while (iter.hasNext()) {
+      String key =  (String) iter.next();
+      if (path.startsWith( key))
+        return treeMap.get( key);
+      // terminate when theres no match at all.
+      if (StringUtil.match(path, key) == 0)
+        break;
+    }
+
     return null;
   }
 
   private class PathComparator implements Comparator {
     public int compare(Object o1, Object o2) {
-      return -1 * o1.toString().compareTo( o2.toString());
+      int compare = -1 * o1.toString().compareTo( o2.toString()); // reverse sort
+      if (debug) System.out.println(" compare "+o1+" to "+o2+" = "+compare);
+      return compare;
     }
   }
 
@@ -88,6 +104,7 @@ public class PathMatcher {
     System.out.println(s+" == "+match(s));
   }
 
+  static private boolean debug = false;
   static public void main( String[] args) {
     PathMatcher m = new PathMatcher();
     m.put("/thredds/dods/test/longer", null);
@@ -97,6 +114,9 @@ public class PathMatcher {
     m.put("/actionable", null);
     m.put("myworld", null);
     m.put("mynot", null);
+    m.put("ncmodels", null);
+    m.put("ncmodels/bzipped", null);
+
 
     m.doit("nope");
     m.doit("/thredds/dods/test");
@@ -105,6 +125,10 @@ public class PathMatcher {
     m.doit("myworldly");
     m.doit("/my");
     m.doit("mysnot");
+
+    debug = true;
+    m.doit("ncmodels/canonical");
+
   }
 
 }
