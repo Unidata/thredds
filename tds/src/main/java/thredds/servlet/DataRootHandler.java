@@ -126,6 +126,7 @@ public class DataRootHandler {
     //catalogStaticList = new ArrayList();
     //catalogErrorLog = new StringBuffer();
 
+    log.info("\n**************************************\n**************************************\nCatalog reinit ");
     int size = catalogRootList.size();
     for (int i = 0; i < size; i++) {
       String path;
@@ -156,6 +157,7 @@ public class DataRootHandler {
    * @throws IOException
    */
   public synchronized void initCatalog(String path) throws IOException {
+    log.info("\n**************************************\nCatalog init "+path);
     if ( ! catalogRootList.contains( path) )
       catalogRootList.add(path);
     initCatalog(path, true );
@@ -173,7 +175,7 @@ public class DataRootHandler {
 
     // make sure we dont already have it
       if ( staticCatalogHash.containsKey(path)) {
-        log.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop");
+        log.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop (skip)");
         return;
       }
 
@@ -209,8 +211,9 @@ public class DataRootHandler {
     staticCatalogHash.put(path, cat);
     if (log.isDebugEnabled()) log.debug("  add static catalog=" + path);
 
-    if (recurse)
+    if (recurse) {
       check4Catrefs(dirPath, cat.getDatasets());
+    }
   }
 
   private InvCatalogImpl readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {

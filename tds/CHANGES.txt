@@ -17,6 +17,8 @@ Changes in version 3.13
   * locating DataRoot failed in some cases with multiple roots starting with same name
   * embedded NcML on dataset wasnt working
   * IDV.jnlp grid:opendap:URL
+ Libraries
+  * grib-5.0.01
 
 Changes in version 3.12
  Features
