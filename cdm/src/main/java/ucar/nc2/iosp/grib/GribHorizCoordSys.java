@@ -75,6 +75,13 @@ public class GribHorizCoordSys {
     isLatLon = lookup.isLatLon(gdsIndex);
     grid_name = StringUtil.replace(grid_name, ' ', "_");
     id = (g == null) ? grid_name : g.getName();
+
+    if (isLatLon && (lookup.getProjectionType(gdsIndex) == TableLookup.GaussianLatLon)) {
+        // hack-a-whack
+      gdsIndex.dy = 2 * gdsIndex.La1 / gdsIndex.ny;
+      gdsIndex.nx = 800;
+      gdsIndex.dx = 360.0/gdsIndex.nx;
+    }
   }
 
   String getID() {
@@ -127,6 +134,7 @@ public class GribHorizCoordSys {
       addCoordAxis(ncfile, "lat", gdsIndex.ny, gdsIndex.La1, dy, "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
       addCoordAxis(ncfile, "lon", gdsIndex.nx, gdsIndex.Lo1, gdsIndex.dx, "degrees_east", "longitude coordinate", "longitude", AxisType.Lon);
       add2DCoordSystem(ncfile, "latLonCoordSys", "time lat lon");
+
     } else {
       computeProjection(ncfile);
       double[] yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDy(), "km",
