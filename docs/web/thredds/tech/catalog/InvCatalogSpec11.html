@@ -7,7 +7,7 @@
   <meta name="Author" content="John Caron"><title>Catalog Spec 1.0.1</title></head>
 <body>
 <div class="head"> 
-  <h1> <img src="../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification Version 1.0.1</h1>
+  <h1> <img src="../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.1</h1>
   <address>
   last update: April 11, 2005<br>
   Comments to <a href="mailto:caron@unidata.ucar.edu">John Caron</a> or <a href="mailto:thredds@unidata.ucar.edu">THREDDS 
@@ -55,14 +55,7 @@ further descriptive information can be placed. </p>
     <li><a href="#variables">variables</a></li>
   </ul>
   <li> 
-    <div class="head"><a href="#Enumerations">Enumerations</a></div></li><li><a href="#Server-side_Elements">Server-side Elements</a></li>
-  <ul>
-    <li><a href="#datasetScan">datasetScan</a></li>
-    <li><a href="#datasetRoot_Element_">datasetRoot</a><br>
-    </li>
-  </ul>
-
-  <li><a href="#constructingURLs">Constructing URLs</a> </li>
+    <div class="head"><a href="#Enumerations">Enumerations</a></div></li><li><a href="#constructingURLs">Constructing URLs</a> </li>
   <li><a href="#datasetClassification">Dataset Classification</a></li>
   <li><a href="#webResources">Datasets as Web Resources</a></li>
   <li><a href="#index">Index</a></li>
@@ -750,60 +743,7 @@ dataset. Additional information can be encoded in service properties.</p>
 <p>These are the known vocabularies for standard variable names, used in the <a href="#variables">variables</a> element. <strong>CF</strong> refers to the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html">Climate and Forecast Conventions</a> metadata conventions for netCDF; they have a list of <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/standard_name.html">standard variable names</a>. <strong>DIF</strong> is <a href="http://gcmd.gsfc.nasa.gov/User/difguide/difman.html">Directory Interchange Format</a> from NASA's Global Change Master Directory, which has a controlled variable <a href="http://gcmd.gsfc.nasa.gov/User/difguide/parameters.html">classification scheme</a>. The World Meteorological Organization's <a href="http://dss.ucar.edu/docs/formats/grib/gribdoc/">GRIB (version 1)</a> data file format defines a set of standard parameters.</p>
 
 <p>You can also use another vocabulary name; send it to us and we will add it to this list.<br>
-</p>
-<hr size="2" width="100%">
-<h2><a name="Server-side_Elements"></a>Server-side Elements</h2>
-
-
-<h3><em>datasetScan</em><a name="datasetScan" id="datasetScan"></a> Element</h3>
-
-
-<pre>&lt;xsd:element name="datasetScan" substitutionGroup="dataset"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="DatasetType"&gt;<br>        &lt;xsd:sequence&gt;<br>          &lt;xsd:element ref="filter" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addID" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="namer" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="sort" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addLatest" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addProxies" minOccurs="0" /&gt;<br>          &lt;xsd:element name="addDatasetSize" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addTimeCoverage" minOccurs="0" /&gt;<br>        &lt;/xsd:sequence&gt;<br><br><br>        &lt;xsd:attribute name="path" type="xsd:string" use="required"/&gt;<br>        &lt;xsd:attribute name="location" type="xsd:string"/&gt;<br>        &lt;xsd:attribute name="dirLocation" type="xsd:string"/&gt; &lt;!-- deprecated : use location attribute --&gt;<br>        &lt;xsd:attribute name="filter" type="xsd:string"/&gt; &lt;!-- deprecated : use filter element --&gt;<br>        &lt;xsd:attribute name="addDatasetSize" type="xsd:boolean"/&gt; &lt;!-- deprecated : use enhance/addDatasetSize element --&gt;<br>        &lt;xsd:attribute name="addLatest" type="xsd:boolean"/&gt; &lt;!-- deprecated : use addLatest element --&gt;<br>        &lt;xsd:attribute name="addId" type="xsd:boolean"/&gt; &lt;!-- deprecated : use addID element --&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
-
-
-<p>A <i>datasetScan</i> element generates a nested THREDDS catalog by
-scanning the named directory. This is typically used on a data server,
-but can also be used on a client as long as the directory is local to
-the client. The directory to be scanned is specified by the <em>scanDir</em> attribute. The optional <em>filter</em> attribute specifies a regular expression; only filenames that match will be used. </p>
-
-
-<p>A datasetScan element is in the dataset substitutionGroup, so it can
-be used wherever a dataset element can be used. It is an extension of a
-DatasetType, so any of dataset's nested elements and attributes can be
-used in it. This allows you to add enhanced metadata to a datasetScan.
-However you should not add nested datasets, as these will be ignored. </p>
-
-<p>Example: 
-</p>
-
-<pre>  &lt;datasetScan name="GRIB2 Data" path="grib2" scanDir="C:/data/grib2/" filter=".*\.wmo$"&gt;<br> 	  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>  &lt;/datasetScan &gt;<br><br></pre>
-<h3>filter Element<br>
-</h3>
-<pre>&lt;xsd:element name="filter"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:choice&gt;<br>      &lt;xsd:sequence minOccurs="0" maxOccurs="unbounded"&gt;<br>        &lt;xsd:element name="include" type="FilterSelectorType" minOccurs="0"/&gt;<br>        &lt;xsd:element name="exclude" type="FilterSelectorType" minOccurs="0"/&gt;<br>      &lt;/xsd:sequence&gt;<br>      &lt;xsd:element name="crawlableDatasetFilterImpl" minOccurs="0" type="UserImplType"/&gt;<br>    &lt;/xsd:choice&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
-<p>The filter element<br>
-</p>
-<h3><br>
-</h3>
-<pre>  &lt;xsd:complexType name="FilterSelectorType"&gt;<br>    &lt;xsd:attribute name="regExp" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="wildcard" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="atomic" type="xsd:boolean"/&gt;<br>    &lt;xsd:attribute name="collection" type="xsd:boolean"/&gt;<br>  &lt;/xsd:complexType&gt;<br></pre>
-<p>The<br>
-<br>
-</p>
-<h3>addID element<br>
-</h3>
-<pre>&lt;xsd:element name="addID"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element name="crawlableDatasetLabelerImpl" minOccurs="0" type="UserImplType"/&gt;<br>    &lt;/xsd:sequence&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br>&lt;xsd:element name="namer"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:choice maxOccurs="unbounded"&gt;<br>      &lt;xsd:element name="regExpOnName" type="NamerSelectorType"/&gt;<br>      &lt;xsd:element name="regExpOnPath" type="NamerSelectorType"/&gt;<br>      &lt;!--xsd:element name="crawlableDatasetLabelerImpl" type="UserImplType"/--&gt;<br>    &lt;/xsd:choice&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br>  &lt;xsd:complexType name="NamerSelectorType"&gt;<br>    &lt;xsd:attribute name="regExp" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="replaceString" type="xsd:string"/&gt;<br>  &lt;/xsd:complexType&gt;<br><br>  &lt;xsd:element name="sort"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:choice&gt;<br>        &lt;xsd:element name="lexigraphicByName"&gt;<br>          &lt;xsd:complexType&gt;<br>            &lt;xsd:attribute name="increasing" type="xsd:boolean"/&gt;<br>          &lt;/xsd:complexType&gt;<br>        &lt;/xsd:element&gt;<br>        &lt;xsd:element name="crawlableDatasetSorterImpl" minOccurs="0" type="UserImplType"/&gt;<br>      &lt;/xsd:choice&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br><br>  &lt;xsd:element name="addLatest"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:sequence&gt;<br>        &lt;xsd:element name="simpleLatest" minOccurs="0"&gt;<br>          &lt;xsd:complexType&gt;<br>            &lt;xsd:attribute name="name" type="xsd:string"/&gt;<br>            &lt;xsd:attribute name="top" type="xsd:boolean"/&gt;<br>            &lt;xsd:attribute name="serviceName" type="xsd:string"/&gt;<br>          &lt;/xsd:complexType&gt;<br>        &lt;/xsd:element&gt;<br>        &lt;!--xsd:element name="datasetInserterImpl" minOccurs="0" type="UserImplType"/--&gt;<br>      &lt;/xsd:sequence&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br>  &lt;!-- Allow addition of proxy datasets (e.g., latest). --&gt;<br>  &lt;xsd:element name="addProxies"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:sequence&gt;<br>        &lt;xsd:element name="simpleLatest" minOccurs="0"&gt;<br>          &lt;xsd:complexType&gt;<br>            &lt;xsd:attribute name="name" type="xsd:string"/&gt;<br>            &lt;xsd:attribute name="top" type="xsd:boolean"/&gt;<br>            &lt;xsd:attribute name="serviceName" type="xsd:string"/&gt;<br>          &lt;/xsd:complexType&gt;<br>        &lt;/xsd:element&gt;<br>        &lt;xsd:element name="latestComplete" minOccurs="0"&gt;<br>          &lt;xsd:complexType&gt;<br>            &lt;xsd:attribute name="name" type="xsd:string"/&gt;<br>            &lt;xsd:attribute name="top" type="xsd:boolean"/&gt;<br>            &lt;xsd:attribute name="serviceName" type="xsd:string"/&gt;<br>            &lt;xsd:attribute name="lastModifiedLimit" type="xsd:float"/&gt;<br>          &lt;/xsd:complexType&gt;<br>        &lt;/xsd:element&gt;<br>      &lt;/xsd:sequence&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br><br>  &lt;xsd:element name="addTimeCoverage"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name="datasetNameMatchPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="startTimeSubstitutionPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="duration" type="xsd:string"/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br></pre>
-<p>The addTimeCoverage element<br>
-</p>
-<h3><a name="datasetRoot_Element_"></a>datasetRoot Element<br>
-</h3>
-<pre>  &lt;xsd:element name="datasetRoot"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name="path" type="xsd:string" use="required"/&gt;<br>      &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br></pre>
-<p>The datasetRoot element associates a url path with a directory location.<br>
-</p>
-<br>
-<p><br>
-</p>
-
-
-<hr style="width: 100%; height: 2px;">
+</p><hr style="width: 100%; height: 2px;">
 <h3>Constructing URLs<a name="constructingURLs"></a></h3>
 
 <p>The standard way to construct a dataset URL is to concatenate the service base 
@@ -943,7 +883,7 @@ However you should not add nested datasets, as these will be ignored. </p>
   <li><a href="#dataType">dataTypes</a> enumeration, used by <a href="#dataType">dataType</a> 
     attribute of dataset element, specifies the kind of data in the dataset. </li>
   <li><a href="#dataset">dataset</a> element; represents a coherent set of data. </li>
-  <li><a href="#datasetScan">datasetScan</a> element; creates a nested catalog by scanning directories </li>
+  
   <li><a href="#date">date</a> element, used in <a href="#threddsMetadataGroup">threddsMetadataGroup.</a></li>
   <li><a href="#dateType">dateType</a> is an attribute or element specifying a date.</li>
   <li><a href="#dateTypeFormatted">dateTypeFormatted</a> is an element specifying a date, with optional formatting and type attributes. </li>

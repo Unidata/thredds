@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+  
+  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.1</title></head>
+<body>
+<div class="head"> 
+  <h1> <img src="../THREDDSlogo.jpg" height="54" width="67"> Server-side InvCatalog Specification, Version 1.0.1</h1>
+  <address>
+  last update: 26 September 2006<br>
+  Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS 
+  mailgroup</a> 
+  </address>
+  <hr>
+  <p>The
+THREDDS Data Server (TDS) uses specialized catalogs as configuration
+documents. Several elements have been added to the InvCatalog schema to
+allow for this server-side usage. </p>
+  <p>This document specifies the semantics and XML representation of the server-side specializations allowed in THREDDS catalog. </p>
+  <h3>Contents:</h3>
+</div>
+
+<ol><li><a href="#Server-side_Elements">Server-side Elements</a></li>
+  <ul>
+    <li><a href="#datasetScan">datasetScan</a></li>
+    <li><a href="#datasetRoot_Element_">datasetRoot</a><br>
+    </li>
+  </ul><li><a href="#index">Index</a></li>
+  <li><a href="#changes">Change History</a> </li>
+</ol>
+
+<div class="head">
+  <h3>Related resources:</h3>
+</div>
+
+<ul>
+<li><a href="http://motherlode.ucar.edu:8080/thredds/docs/datasetScan/">TDS &lt;datasetScan&gt; documentation</a><br>
+</li><li>InvCatalog XML Schema:</li>
+  <ul>
+    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a><br>
+    </li>
+    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version
+    1.0</a></li>
+  </ul></ul>
+
+<p><strong>Change History:</strong></p>
+
+<ul>
+
+
+  <li>All server-side elements first added in version 1.0.1</li></ul>
+
+<hr><h2><a name="Server-side_Elements"></a>Server-side Elements</h2>
+
+
+<h3><a name="datasetScan_Element"></a><em>datasetScan</em> Element</h3>
+
+
+<pre>&lt;xsd:element name="datasetScan" substitutionGroup="dataset"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="DatasetType"&gt;<br>        &lt;xsd:sequence&gt;<br>          &lt;xsd:element ref="filter" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addID" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="namer" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="sort" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addLatest" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addProxies" minOccurs="0" /&gt;<br>          &lt;xsd:element name="addDatasetSize" minOccurs="0" /&gt;<br>          &lt;xsd:element ref="addTimeCoverage" minOccurs="0" /&gt;<br>        &lt;/xsd:sequence&gt;<br><br><br>        &lt;xsd:attribute name="path" type="xsd:string" use="required"/&gt;<br>        &lt;xsd:attribute name="location" type="xsd:string"/&gt;<br>        &lt;xsd:attribute name="dirLocation" type="xsd:string"/&gt; &lt;!-- deprecated : use location attribute --&gt;<br>        &lt;xsd:attribute name="filter" type="xsd:string"/&gt; &lt;!-- deprecated : use filter element --&gt;<br>        &lt;xsd:attribute name="addDatasetSize" type="xsd:boolean"/&gt; &lt;!-- deprecated : use enhance/addDatasetSize element --&gt;<br>        &lt;xsd:attribute name="addLatest" type="xsd:boolean"/&gt; &lt;!-- deprecated : use addLatest element --&gt;<br>        &lt;xsd:attribute name="addId" type="xsd:boolean"/&gt; &lt;!-- deprecated : use addID element --&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
+
+
+<p>A <i>datasetScan</i> element allows for the generation of nested THREDDS catalogs by scanning the dataset collection location named in the <i>location</i> attribute. The <i>path</i> attribute is used to map dataset and catalog requests to a given datasetScan.<br>
+</p>
+<p>The <i>filter</i> element can be used to include only the desired datasets. All the nested elements (<a href="#filter_Element_">filter</a>, <a href="#addID_Element_">addID</a>, <a href="#namer_Element">namer</a>, <a href="#sort_Element">sort</a>, <a href="#addLatest_Element">addLatest</a>, <a href="#addProxies_Element">addProxies</a>, addDatasetSize, and <a href="#addTimeCoverage_Element">addTimeCoverage</a>) are optional.<br>
+</p>
+<p>A datasetScan element is in the dataset substitutionGroup, so it can
+be used wherever a dataset element can be used. It is an extension of a
+DatasetType, so any of dataset's nested elements and attributes can be
+used in it. This allows you to add enhanced metadata to a datasetScan.
+However you should not add nested datasets, as these will be ignored. </p>
+
+<p>Example: 
+</p>
+
+<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" &gt;<br>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>  &lt;filter&gt;<br>    &lt;include wildcard="*.wmo" /&gt;<br>  &lt;/filter&gt;<br>&lt;/datasetScan &gt;<br></pre>
+<p>For this example, the catalog request
+"http://&lt;server&gt;/thredds/catalog/grib2/some/dir/catalog.xml"
+would return a catalog listing all the datasets from the
+c:/data/grib2/some/dir/ directory that ended with ".wmo".<br>
+</p>
+
+<h3><a name="filter_Element_"></a>filter Element<br>
+</h3>
+<pre>&lt;xsd:element name="filter"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:choice&gt;<br>      &lt;xsd:sequence minOccurs="0" maxOccurs="unbounded"&gt;<br>        &lt;xsd:element name="include" type="FilterSelectorType" minOccurs="0"/&gt;<br>        &lt;xsd:element name="exclude" type="FilterSelectorType" minOccurs="0"/&gt;<br>      &lt;/xsd:sequence&gt;<br>    &lt;/xsd:choice&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br><br>&lt;xsd:complexType name="FilterSelectorType"&gt;<br>    &lt;xsd:attribute name="regExp" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="wildcard" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="atomic" type="xsd:boolean"/&gt;<br>    &lt;xsd:attribute name="collection" type="xsd:boolean"/&gt;<br>  &lt;/xsd:complexType&gt;<br></pre>
+<p>The <i>filter</i> element allows users to include and exclude datasets as desired. Each <i>include</i> or <i>exclude</i>
+element may specify either a wildcard pattern or a regular expression
+pattern with which a dataset name is matched. They can also specify
+whether they apply to atomic and/or collection datasets (the default is
+to apply to atomic datasets only).<br>
+</p>
+<p>More information is available in the <a href="http://motherlode.ucar.edu:8080/thredds/docs/datasetScan/">TDS datasetsScan documentation</a>.<br>
+ </p>
+<h3><a name="addID_Element_"></a>addID Element<br>
+</h3>
+<pre>&lt;xsd:element name="addID" /&gt;<br></pre>
+<p>The <i>addID</i> element specifies that a datasetScan should add an <i>ID</i> attribute to each <i>dataset</i> element included in a resulting catalog.<br>
+</p>
+<p>The TDS adds ID attributes by default even if no addID element is
+given in the datasetScan. The IDs are constructed from the datasetScan
+ID (if it exists) or the datasetScan path plus the relative path for
+the generated dataset, e.g., in the datasetScan example above, the
+dataset "c:/data/grib2/test1.grib2" would have an ID value of
+"grib2/test1.grib2".<br>
+</p>
+<h3><a name="namer_Element"></a>namer Element<br>
+</h3>
+<pre>&lt;xsd:element name="namer"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:choice maxOccurs="unbounded"&gt;<br>      &lt;xsd:element name="regExpOnName" type="NamerSelectorType"/&gt;<br>      &lt;xsd:element name="regExpOnPath" type="NamerSelectorType"/&gt;<br>    &lt;/xsd:choice&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+<pre>&lt;xsd:complexType name="NamerSelectorType"&gt;<br>  &lt;xsd:attribute name="regExp" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="replaceString" type="xsd:string"/&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
+<p>The <i>namer</i> element<br>
+</p>
+<h3><a name="sort_Element"></a>sort Element<br>
+</h3>
+<pre>&lt;xsd:element name="sort"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:choice&gt;<br>      &lt;xsd:element name="lexigraphicByName"&gt;<br>        &lt;xsd:complexType&gt;<br>          &lt;xsd:attribute name="increasing" type="xsd:boolean"/&gt;<br>        &lt;/xsd:complexType&gt;<br>      &lt;/xsd:element&gt;<br>      &lt;!--xsd:element name="crawlableDatasetSorterImpl" minOccurs="0" type="UserImplType"/--&gt;<br>    &lt;/xsd:choice&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+<p>The <i>sort</i> element<br>
+</p>
+<h3><a name="addLatest_Element"></a>addLatest Element<br>
+</h3>
+<pre>&lt;xsd:element name="addLatest"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element name="simpleLatest" minOccurs="0"&gt;<br>        &lt;xsd:complexType&gt;<br>          &lt;xsd:attribute name="name" type="xsd:string"/&gt;<br>          &lt;xsd:attribute name="top" type="xsd:boolean"/&gt;<br>          &lt;xsd:attribute name="serviceName" type="xsd:string"/&gt;<br>        &lt;/xsd:complexType&gt;<br>      &lt;/xsd:element&gt;<br>      &lt;!--xsd:element name="datasetInserterImpl" minOccurs="0" type="UserImplType"/--&gt;<br>    &lt;/xsd:sequence&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+<p>The <i>addLatest</i> element<br>
+</p>
+<h3><a name="addProxies_Element"></a>addProxies Element<br>
+</h3>
+<pre>&lt;xsd:element name="addProxies"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element name="simpleLatest" minOccurs="0"&gt;<br>        &lt;xsd:complexType&gt;<br>          &lt;xsd:attribute name="name" type="xsd:string"/&gt;<br>          &lt;xsd:attribute name="top" type="xsd:boolean"/&gt;<br>          &lt;xsd:attribute name="serviceName" type="xsd:string"/&gt;<br>        &lt;/xsd:complexType&gt;<br>      &lt;/xsd:element&gt;<br>      &lt;xsd:element name="latestComplete" minOccurs="0"&gt;<br>        &lt;xsd:complexType&gt;<br>          &lt;xsd:attribute name="name" type="xsd:string"/&gt;<br>          &lt;xsd:attribute name="top" type="xsd:boolean"/&gt;<br>          &lt;xsd:attribute name="serviceName" type="xsd:string"/&gt;<br>          &lt;xsd:attribute name="lastModifiedLimit" type="xsd:float"/&gt;<br>        &lt;/xsd:complexType&gt;<br>      &lt;/xsd:element&gt;<br>    &lt;/xsd:sequence&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;<br></pre>
+<p>The <i>addProxies</i> element<br>
+</p>
+<h3><a name="addTimeCoverage_Element"></a>addTimeCoverage Element<br>
+</h3>
+<pre>  &lt;xsd:element name="addTimeCoverage"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name="datasetNameMatchPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="startTimeSubstitutionPattern" type="xsd:string"/&gt;<br>      &lt;xsd:attribute name="duration" type="xsd:string"/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br></pre>
+
+<p>The <i>addTimeCoverage</i> element<br>
+</p>
+<h3><a name="datasetRoot_Element_"></a>datasetRoot Element<br>
+</h3>
+<pre>  &lt;xsd:element name="datasetRoot"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name="path" type="xsd:string" use="required"/&gt;<br>      &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br></pre>
+<p>The <i>datasetRoot</i> element, similar to the <i>datasetScan</i>
+element, maps request URLs to dataset collection locations. The
+difference is that a datasetRoot does not perform any scans or generate
+any catalogs. It simply allows users to specify individual datasets
+from the datasetRoot location.<br>
+</p>
+<p>Example:<br>
+</p>
+<p><br>
+</p>
+
+<br>
+<p><br>
+</p>
+
+
+<hr style="width: 100%; height: 2px;"><pre><br></pre>
+
+<hr>
+<h2>Index<a name="index"></a> </h2>
+
+<ul>
+
+  <li><a href="#addID_Element_">addID</a>: an element<br>
+</li><li><a href="#addLatest_Element">addLatest</a>: an element</li>
+  <li><a href="#addProxies_Element">addProxies</a>: an element<br>
+  </li>
+  <li><a href="#addTimeCoverage_Element">addTimeCoverage</a>: an element<br>
+  </li>
+  <li><a href="#datasetScan_Element">datasetScan</a>: an element which creates nested catalogs by scanning directories.</li>
+  <li><a href="#datasetRoot_Element_">datasetRoot</a>: an element which <br>
+  </li>
+  <li><a href="#filter_Element_">filter</a>: an element</li>
+  <li><a href="#namer_Element">namer</a>: an element<br>
+  </li>
+  <li><a href="#sort_Element">sort</a>: an element</li>
+</ul>
+
+<hr>
+</body></html>
