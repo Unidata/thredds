@@ -9,15 +9,15 @@
 <div class="head"> 
   <h1> <img src="../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.1</h1>
   <address>
-  last update: April 11, 2005<br>
-  Comments to <a href="mailto:caron@unidata.ucar.edu">John Caron</a> or <a href="mailto:thredds@unidata.ucar.edu">THREDDS 
+  last update: 3 October 2006<br>
+  Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS 
   mailgroup</a> 
   </address>
   <hr>
   <p>A
 THREDDS catalog is a way to describe an inventory of available
 datasets. These catalogs provide a simple hierarchical structure for
-organizing a collection of datasets, a means of accessing each dataset,
+organizing a collection of datasets, an access method for each dataset,
 a human understandable name for each dataset, and a structure on which
 further descriptive information can be placed. </p>
   <p>This document specifies the semantics of a THREDDS catalog, as well as its 
@@ -92,7 +92,7 @@ further descriptive information can be placed. </p>
 
 
   <li>catalogRef extends dataset</li>
-  <li>add datasetScan and datasetRoot elements.</li><li>make dataset, catalogRef and datasetScan into a substitution group.</li>
+  <li>add datasetScan and datasetRoot elements (see the <a href="InvCatalogSpec.v1.0.1.server.html">Server-side InvCatalog document</a>).</li><li>make dataset, catalogRef and datasetScan into a substitution group.</li>
 
 </ul>
 
@@ -107,35 +107,39 @@ further descriptive information can be placed. </p>
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
   or more <em><a href="#service">service</a></em> elements followed by zero
   or more <em><a href="#property">property</a></em>  elements followed by one or
-  more <em><a href="#dataset">dataset</a></em>  elements (actually  any element in the dataset substitution group: dataset, catalogRef or datasetScan). The optional catalog <em>name</em> will be displayed to a user. The <em>expires</em><a name="expires"></a>
+  more <em><a href="#dataset">dataset</a></em>  elements (actually  any element in the dataset substitution group: dataset or catalogRef). The optional catalog <em>name</em> will be displayed to a user. The <em>expires</em><a name="expires"></a>
   element tells clients until when this catalog is accurate, so they can cache
-  the catalog information. The optional version should be set to "1.0.1" if used. </p>
+  the catalog information. The value of the <i>version</i> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The <i>version</i> attribute is optional and to indicate conformance with this specification should be set to "1.0.1".<br>
+</p>
+<p>The <i><a name="catalogBase"></a>base</i> attribute allows catalog authors to explicitly specify a catalogs base URI.
+A catalog's base URI is used to resolve relative URIs in the catalog.
+If a base attribute is not given, the catalog's base URI is the URI of
+the catalog.(This is similar to the  <a href="http://www.w3.org/TR/xmlbase/">XML Base</a> <i>xml:base</i> attribute which we may transition to at some future time.)<br>
+ </p>
 
-<p>Example of simplest useful catalog. Note you need at least one service element. </p>
 
-<pre> &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" &gt;<br>   &lt;service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" /&gt;<br>   &lt;dataset name="SAGE III Ozone Loss" serviceName="aggServer" urlPath="sage.nc"/&gt;<br> &lt;/catalog&gt;</pre>
+<p>Example of simplest useful catalog. Note that to provide access to a dataset you need at least one service element. </p>
+
+<pre> &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" &gt;<br>   &lt;service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" /&gt;<br>   &lt;dataset name="SAGE III Ozone Loss" urlPath="sage.nc"&gt;<br>     &lt;serviceName&gt;aggServer&lt;/serviceName&gt;<br>   &lt;/dataset&gt;<br> &lt;/catalog&gt;</pre>
 
 <h3><em>service</em><a name="service"></a> element</h3>
 
-<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="serviceTypes" use="required" /&gt;<br>  &lt;xsd:attribute name="desc" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br> &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- see <a href="InvCatalogSpec.v1.0.1.server.html">Server-side InvCat doc</a> --&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="serviceTypes" use="required" /&gt;<br>  &lt;xsd:attribute name="desc" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br> &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 
-<p>A <i>service</i> element represents a data service. It must have a <i>name</i>
-  unique for all service elements within the catalog (note that catalogs referenced
-  by a <i><a href="#catalogRef">catalogRef</a> </i>contain their own namespaces).
-  It must have a <i>base</i> attribute and may have an optional <i>suffix</i>
-  attribute which are used to construct the dataset URL (see <a href="#constructingURLs">constructing
-  URLS</a>). The base<a name="base"></a> may be an absolute URL or relative to the catalog URL. It
-  must have a <i>serviceType</i> attribute whose value is one of the <em><a href="#serviceTypes">serviceTypes</a>
-  </em>values. The optional <em>desc</em> attribute allows you to give a human-readable description of the service. </p>
-
-<p>Each <i>access</i> element must refer to a <i>service</i> element. Since typically
-  there will be only a few <i>service</i> elements in a catalog but many <i>dataset
-  or access </i>elements, a <i>service</i> element factors out the common properties
-  of the data service for efficient representation within the catalog. </p>
-
+<p>A <i>service</i> element represents a data access service and allows basic data access information to be factored out of <i>dataset</i> and <i>access</i> elements.</p>The <i>name</i>
+attribute is required and its value must be unique for all service
+elements within the catalog. These unique names are used in the
+definition of a <a href="#Dataset_Access_Methods">dataset access method</a> to refer to a specific service element. The mandatory <i>base</i> attribute and the optional <i>suffix</i>
+  attribute are both used in the construction of the dataset URL (see <a href="#constructingURLs">constructing
+  URLS</a>). The <i>base</i><a name="base"></a> may be an absolute URL or it may be relative to the catalog's base URL. The <i>service</i> element
+  must have a <i>serviceType</i> attribute whose value is one of the <em><a href="#serviceTypes">serviceType</a>
+  </em>values. The optional <em>desc</em> attribute allows you to give a human-readable description of the service.<br>
 <p>A <i>service</i> element may contain 0 or more <i><a href="#property">property</a>
   </i>elements
-</p>
+to allow for the encoding of additional information. One possible use
+is to encode additional information necessary for clients to be able to
+access datasets through this service.Though the intent is that the  <i>serviceType</i> (and possibly the <i>dataFormat</i> attribute for bulk transport methods)
+should be sufficient to allow clients to access datasets.</p>
 <p>Only <i>service</i> element with <i><a name="compoundService"></a>serviceType="Compound"</i>
   may have nested service elements. Use Compound services when you systematically
   offer more than one way to access a dataset (e.g.<em>DODS</em> and <em>FTP</em>),
@@ -143,10 +147,7 @@ further descriptive information can be placed. </p>
   Nested <i>service</i> elements may also be used directly by <i>dataset</i> or
   <i>access</i> elements, and so must have unique names.
 </p>
-<p>For the case that a catalog is written to describe the datasets from a particular
-  data service, a useful idiom is to name the data service "this". However,
-  there is no special semantics to a service called "this".
-</p>
+
 <p>Example:
 </p>
 <pre> &lt;service name="mcidasServer" serviceType="ADDE" base="http://motherlode.ucar.edu:8080/adde/" /&gt;<br></pre>
@@ -161,33 +162,41 @@ URLS</a> for how the resolved URL is created):
 
 <p>A <i>dataset</i> element represents a named, logical set of data at a level
   of granularity appropriate for presentation to a user. A dataset is <b><i><a href="#directDataset">direct</a>
-  </i></b> if it contains at least one access path, otherwise it is just a container
+  </i></b> if it contains at least one <a href="#Dataset_Access_Methods">dataset access method</a>, otherwise it is just a container
   for nested datasets, called a <em><strong><a href="#collection">collection</a></strong></em>
   dataset. The name of the dataset element should be a human readable name that
   will be displayed to users. Multiple access methods specify different services
   for accessing the same dataset.</p>
 
+<p>A dataset must have a <em>name</em> attribute, and may have other attributes. If an <i>ID</i>
+attribute is given, its value must be unique within the catalog. We
+highly recommend that all datasets be given a unique ID. This allows
+for a number of capabilities including XPath ID reference. <a name="globally_unique_id"></a>A dataset may have a naming  <i>authority</i><a name="authority"></a> specified
+  within itself or in a parent dataset. (The <i>authority</i> attribute has been deprecated. Instead you should use the <i>authority</i> element which can be contained in a <i>dataset</i> or <i>metadata</i> element.) If a dataset has an <i>ID</i> and
+  an <i>authority</i> attribute, then the combination of the two should be globally
+  unique for all time. If the same dataset is specified in multiple catalogs,
+  then the combination of its <i>authority</i> and <i>ID</i> should be identical if possible.</p>
+
 <p>A <em>dataset</em> element contains any number of elements from the <a href="#threddsMetadataGroup">threddsMetadataGroup</a>
   in any order. These are followed by 0 or more <em><a href="#access">access</a></em>
   elements, followed by 0 or more nested <i>dataset </i>elements
 (actually you can use any element in the dataset substitution group:
-dataset, catalogRef or datasetScan). The data represented by a nested
+dataset or catalogRef). The data represented by a nested
 dataset element should be a subset, a specialization or in some other
 sense "contained" within the data represented by its parent dataset
 element. The use of <em>service</em>
   elements nested inside a dataset is deprecated; you should declare service elements
   at the top level of the catalog.</p>
-
-<p>A dataset must have a <em>name</em> attribute, and may have other attributes.
-  We strongly recommend that each dataset be given a unique <em>ID</em>. The <em><a href="#collectionTypes">collectionType</a></em>
-  attribute is used to indicate a <a href="#coherentDataset">coherent collection</a>
-  dataset, which has only one level of nested datasets. The <em><a href="#dataType">dataType</a></em>
-  attribute is very useful to clients to know how to present the data to the user.
-  If the <em>harvest</em><a name="harvest"></a> attribute is true, then this dataset
+<p>The <em><a href="#collectionTypes">collectionType</a></em>
+  attribute is used to indicate that the dataset is a <a href="#coherentDataset">coherent collection</a>
+and the type of the collections coherence. A datasets data type is very
+useful to clients so they know how to present the data to the user.
+(The <i>dataType</i><em> </em>attribute has been deprecated in favor of the <a href="#dataType_descrip"><i>dataType</i></a> element which can be contained in a <i>dataset</i> or <i>metadata</i> element. This allows the data type to be inherited.) If the <em>harvest</em><a name="harvest"></a> attribute is true, then this dataset
   is available to be placed into digital libraries or other discovery services.
   Note that the harvest attribute should be carefully placed to get the right
   level of granularity for digital library entries, and is typically placed on
   <a href="#collection">collection</a> datasets.</p>
+
 
 <p>If you want the same dataset to appear in multiple places in the same catalog,
   use an <em>alias</em><a name="alias"></a> attribute. Define it in one place
@@ -195,40 +204,25 @@ element. The use of <em>service</em>
   dataset with an alias to it, whose value is the <em>ID</em> of the defined dataset.
   ( Note it may not refer to a dataset in another catalog referred to by a <i>catalogRef</i>
   element.) In this case, any other properties of the dataset are ignored, and
-  the dataset to which the alias refers is used in its place. </p>
-
-<p>A dataset may have a <i>naming authority</i><a name="authority"></a> specified
-  within itself or in a parent dataset<i>. </i>If a dataset has an <i>ID</i> and
-  a <i>authority</i> attribute, then the combination of the two should be globally
-  unique for all time. If the same dataset is specified in multiple catalogs,
-  then its <i>authority</i> - <i>ID</i> should be identical if possible. </p>
-
-<p>The <em>serviceName</em> and <em>urlPath</em> attributes on the <em>dataset</em>
-  element are used for the common case that a dataset has a single access. The
-  <em>serviceName</em> refers to the unique name of a service element. The <em>urlPath</em>
-  is appended to the service's base to get the dataset URL. (see <a href="#constructingURLs">constructing
-  URLs</a>). Logically the use of these two attributes creates an access element
-  for this dataset. When you have more than one way to access a dataset, either
+  the dataset to which the alias refers is used in its place. </p>The <i>dataset</i> element's <i>serviceName</i> attribute has been deprecated in favor of the <i>serviceName</i> element which can be contained in a <i>dataset</i> or <i>metadata</i> element. (The <i>access</i> element's <i>serviceName</i> attribute is still in use.) The urlPath attribute, in combination with the applicable serviceName, is used to specify <a href="#Dataset_Access_Methods">data access methods</a>. When you have more than one way to access a dataset, either
   explicitly define them using more than one nested <a href="#access"><em>access</em></a>
-  elements, or use a <a href="#compoundService">compound service</a>. </p>
+  elements, or use a <a href="#compoundService">compound service</a>. 
 
 <p>Examples:</p>
 
-<pre>&lt;dataset name="DC8 flight 1999-11-19" serviceName="agg" urlPath="SOLVE_DC8_19991119.nc"/&gt;<br><br>&lt;dataset ID="SOLVE_DC8_19991119" name="DC8 flight 1999-11-19, 1 min merge"&gt;<br>  &lt;metadata xlink:href="http://dataportal.ucar.edu/metadata/tracep_dc8_1min_05"/&gt;<br>  &lt;access serviceName="disk" urlPath="SOLVE_DC8_19991119.nc"/&gt;<br>&lt;/dataset&gt;<br></pre>
+<pre>&lt;dataset name="DC8 flight 1999-11-19" urlPath="SOLVE_DC8_19991119.nc"&gt;<br>  &lt;serviceName&gt;agg&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br><br>&lt;dataset ID="SOLVE_DC8_19991119" name="DC8 flight 1999-11-19, 1 min merge"&gt;<br>  &lt;metadata xlink:href="http://dataportal.ucar.edu/metadata/tracep_dc8_1min_05"/&gt;<br>  &lt;access serviceName="disk" urlPath="SOLVE_DC8_19991119.nc"/&gt;<br>&lt;/dataset&gt;<br></pre>
 
 <p> An example using an alias; in this case the dataset referred to logically
   replaces the alias dataset.</p>
 
-<pre>&lt;dataset name="Station Data"&gt; <br>  &lt;dataset name="Metar data" urlPath="cgi-bin/MetarServer.pl?format=qc" dataType="Station" /&gt;<br>  &lt;dataset name="Level 3 Radar data" urlPath="cgi-bin/RadarServer.pl?format=qc" <br>	     dataType="Station"/&gt;<br>  &lt;dataset name="Alias to SOLVE dataset" alias="SOLVE_DC8_19991119"/&gt;<br>&lt;/dataset&gt;<br><br></pre>
+<pre>&lt;dataset name="Station Data"&gt; <br>  &lt;dataset name="Metar data" urlPath="cgi-bin/MetarServer.pl?format=qc" /&gt;<br>  &lt;dataset name="Level 3 Radar data" urlPath="cgi-bin/RadarServer.pl?format=qc" /&gt; <br>  &lt;dataset name="Alias to SOLVE dataset" alias="SOLVE_DC8_19991119"/&gt;<br>&lt;/dataset&gt;<br><br></pre>
 
 <h3><a name="access" id="access"></a><em>access</em> element</h3>
 
 <pre>&lt;xsd:element name="access"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="dataSize" minOccurs="0"/&gt;<br>    &lt;/xsd:sequence&gt;<br>    &lt;xsd:attribute name="urlPath" type="xsd:token" use="required"/&gt;<br>    &lt;xsd:attribute name="serviceName" type="xsd:string"/&gt;<br>    &lt;xsd:attribute name="dataFormat" type="dataFormatTypes"/&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element &gt;</pre>
 
 <p>An <i>access</i> element specifies how a dataset can be accessed through a
-  data <a href="#service"><em>service</em></a>. It may contain an optional <a href="#dataSize"><em>dataSize</em></a>
-  element to specify how large the dataset would be if it were to be copied to
-  the client. It always refers to the dataset that it is immediately contained
+  data <a href="#service"><em>service</em></a>. It always refers to the dataset that it is immediately contained
   within.</p>
 
 <p> The <em>serviceName</em><a name="serviceName"></a> refers to the unique name
@@ -237,19 +231,45 @@ element. The use of <em>service</em>
   The <em><a href="#dataFormatType">dataFormat</a></em> is important when the
   <a href="#serviceTypes"><em>serviceType</em></a> is a bulk transport like <em>FTP</em>
   or <em>HTTP</em>, as it specifies the format of the transferred file. It is
-  not needed for client/server protocols like DODS or ADDE.
+  not needed for client/server protocols like DODS or ADDE.<br>
 </p>
+<p>An <i>access</i> element may contain an optional <a href="InvCatalogSpec11.html#dataSize"><em>dataSize</em></a>
+  element to specify how large the dataset would be if it were to be copied to
+  the client.
+</p>
+
 <p>Example:
 </p>
-<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;</pre>
-
+<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;<br></pre>
+<h3><a name="Dataset_Access_Methods"></a>Dataset Access Methods</h3>
+<p>A dataset access method can be specified in several ways. Each specification references a <i>service</i> element and provides a <i>urlPath</i> attribute from which a dataset access URL is formed (see <a href="#constructingURLs">constructing URLs</a>).<br>
+</p>
+<p>1) A dataset element has a urlPath attribute and inherits a
+serviceName element from a parent/ancestor dataset. This is probably
+the most common case as many catalogs will contain datasets that all
+refer to one service. Example:<br>
+</p>
+<pre>&lt;dataset name="collection of data"&gt;<br>  &lt;metadata inherited="true"&gt;<br>    &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>  &lt;/metadata&gt;<br>  &lt;dataset name="my dataset" urlPath="myData.nc" /&gt;<br>  &lt;dataset name="our dataset" urlPath="ourData.nc" /&gt;<br>  &lt;dataset name="their dataset" urlPath="theirData.nc" /&gt;<br>  ...<br>&lt;/dataset&gt;<br></pre>
+<p>2) A dataset element has a urlPath attribute and directly contains a serviceName element.<br>
+</p>
+<pre>&lt;dataset name="my dataset" urlPath="myData.nc"&gt;<br>  &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>3) A dataset element contains an access method. Example:<br>
+</p>
+<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>There are several ways for a dataset to have more than one access method:<br>
+</p>
+<p>4) An access method can reference a <a href="#compoundService">compound service</a>.<br>
+</p>
+<p>5) A dataset can contain multiple access elements. Example:<br>
+</p>
+<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>  &lt;access serviceName="ftpservice" urlPath="mine/myData.nc"<br>&lt;/dataset&gt;<br></pre>
 <h3><em>catalogRef</em><a name="catalogRef"></a> element</h3>
 
 <pre>&lt;xsd:element name="catalogRef" substitutionGroup="dataset"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="DatasetType"&gt;<br>        &lt;xsd:attributeGroup ref="XLink"/&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 
 <p>A <i>catalogRef</i> element refers to another THREDDS catalog that logically is a nested<i> dataset</i>
   inside this parent catalog. This is used to separately maintain catalogs and to break
-  up large catalogs. The referenced catalog should not be read until the user
+  up large catalogs. THREDDS clients should not read the referenced catalog until the user
   explicitly requests it, so that very large dataset collections can be represented
   with <i>catalogRef</i> elements without large delays in presenting them to the
   user. The referenced catalog is not textually substituted into the containing
@@ -257,7 +277,7 @@ element. The use of <em>service</em>
   a valid THREDDS catalog, but it does not have to match versions with the containing
   catalog. </p>
 
-<p>The XLink attributeGroup allows you to add Xlink attributes, a generalization of HTTP hrefs. The value of <i>xlink:href</i> is the URL of the referenced catalog. It may
+<p>The <a href="#XLink">XLink attributeGroup</a> allows you to add Xlink attributes, a generalization of HTTP hrefs. The value of <i>xlink:href</i> is the URL of the referenced catalog. It may
   be absolute or relative to the parent catalog URL. The value of <i>xlink:title</i>
   is displayed as the name of the dataset that the user can click on to follow
   the XLink.
@@ -276,8 +296,9 @@ be ignored. </p>
 
 <p>These are attributes from the <a href="http://www.w3.org/TR/xlink/">XLink specification</a>
   that are used to point to another web resource. The <em>xlink:href</em> attribute
-  is used for the URL of the resource itself. The <em>xlink:title</em>
-attribute is what should be displayed to the user. These are the only
+  is used for the URL of the resource itself. The <em>xlink:title</em>attribute
+is a human-readable description of the linked resource. THREDDS clients
+can display the title to the user as appropriate. These are the only
 two attributes currently used in the THREDDS software.You can also add
 the <em>xlink:type </em>or<em> xlink:show </em>attributes<em>. </em></p>
 
@@ -295,41 +316,46 @@ the <em>xlink:type </em>or<em> xlink:show </em>attributes<em>. </em></p>
 
 <pre>&lt;xsd:group name="threddsMetadataGroup"&gt;<br>  &lt;xsd:choice minOccurs="0" maxOccurs="unbounded"&gt; <br>    &lt;xsd:element name="documentation" type="documentationType"/&gt;<br>    &lt;xsd:element ref="metadata"  /&gt;<br>    &lt;xsd:element ref="property"  /&gt;<br><br>    &lt;xsd:element ref="contributor"/&gt;<br>    &lt;xsd:element name="creator" type="sourceType"/&gt;<br>    &lt;xsd:element name="date" type="dateTypeFormatted"/&gt;<br>    &lt;xsd:element name="keyword" type="controlledVocabulary" /&gt;<br>    &lt;xsd:element name="project" type="controlledVocabulary" /&gt;<br>    &lt;xsd:element name="publisher" type="sourceType"/&gt;<br><br>    &lt;xsd:element ref="geospatialCoverage"/&gt;<br>    &lt;xsd:element name="timeCoverage" type="timeCoverageType"/&gt;<br>    &lt;xsd:element ref="variables"/&gt;<br>    <br>    &lt;xsd:element name="dataType" type="dataTypes"/&gt;<br>    &lt;xsd:element name="dataFormat" type="dataFormatTypes"/&gt;<br>    &lt;xsd:element name="serviceName" type="xsd:string" /&gt;            <br>    &lt;xsd:element name="authority" type="xsd:string" /&gt;            <br>    &lt;xsd:element ref="dataSize"/&gt;<br>  &lt;/xsd:choice&gt;<br>&lt;/xsd:group&gt;</pre>
 
-<p>The elements in the <em>threddsMetadataGroup</em> may be used either as nested
-  elements of both <a href="#dataset">dataset</a> or a <a href="#metadata">metadata</a>
+<p>The elements in the <em>threddsMetadataGroup</em> may be used as nested
+  elements of both <i><a href="#dataset">dataset</a></i> and <i><a href="#metadata">metadata</a></i>
 elements. There may be any number of them in any order, but more than
 one geospatialCoverage, timeCoverage, dataType, dataFormat,
 serviceName, or authority elements will be ignored.</p>
 
 <p>A <i><a name="documentation"></a><a href="#documentationType">documentation</a></i> element contains (or points
-  to) <em>human-readable</em> content that should be displayed to an end-user
-  when making selections from the catalog. A <em><a name="metadata"></a><a href="#metadataElement">metadata</a></em>
+  to) <em>human-readable</em> content. Documentation content may be displayed to users by THREDDS clients as appropriate for the situation. A <em><a name="metadata"></a><a href="#metadataElement">metadata</a></em>
   element is a container for <em>machine-readable</em> information structured
   in XML. A <em><a href="#property">property</a></em> element is an arbitrary
   name/value pair.</p>
 
 <p>The next group of elements are used primarily for use in Digital Libraries.
-   A <a name="contributor"></a><a href="#contributorType"><em>contributor</em></a> element is typically a person's name with an optional <em>role</em> attribute, documenting some person's contribution to the dataset. A <em><a name="creator"></a>creator</em> element (aka <em>originator</em>) indicates who created the dataset. A <em>date</em><a name="date"></a> element is used to document various dates associated with the dataset, using one of the <a href="#dateTypeEnum">date type enumerations</a>. A <em>keyword</em><a name="keyword"></a> element is used for library searches,
+   A <a name="contributor"></a><a href="#contributorType"><em>contributor</em></a> element is typically a person's name with an optional <em>role</em> attribute, documenting some person's contribution to the dataset. A <em><a name="creator"></a>creator</em> element <em></em>indicates who created the dataset. A <em>date</em><a name="date"></a> element is used to document various dates associated with the dataset, using one of the <a href="#dateTypeEnum">date type enumerations</a>. A <em>keyword</em><a name="keyword"></a> element is used for library searches,
   while a <em>project<a name="project"></a></em> element specifies what scientific
   project the dataset belongs to. Both have type <a href="#controlledVocabulary">controlledVocabulary</a>,
   which allows an optional vocabulary attribute to specify if you are using words
   from a restricted list, for example DIF. A <em><a name="publisher"></a>publisher</em> element indicates who is responsible
-  for serving the dataset. Both a contibutor and publisher elemnt use the <a href="#sourceType">sourceType</a> definition.</p>
-
-<p>If your intention is to enable THREDDS to write entries into a Digital Library, you need to be aware of <a href="DL.html">how elements are mapped to Digital Libraries</a>. For example, you will probably need to add  documentation elements, for example one with type <em>summary<a name="summary"></a>, </em>which  will be the description of the dataset in the DL entry. Another docuementation element you may need has type <em>rights<a name="rights"></a></em> which specifies what restrictions there are on the dataset usage.</p>
-
-<p>The next group of elements are used in search services. The <em><a name="geospatialCoverage"></a><a href="#geospatialCoverageType">geospatialCoverage</a></em>
+  for serving the dataset. Both a contibutor and publisher element use the <a href="#sourceType">sourceType</a> definition.</p><p>The next group of elements are used in search services. The <em><a name="geospatialCoverage"></a><a href="#geospatialCoverageType">geospatialCoverage</a></em>
   element specifies a lat/lon bounding box for the data. The <em><a name="timeCoverage"></a><a href="#timeCoverageType">timeCoverage</a></em>
   element specifies the range of dates that the dataset covers. The <em><a name="variables"></a><a href="#variablesType">variables</a></em>
   element specifies the names of variables contained in the datasets, and ways
-  to map the names to standard vocabularies.</p>
+  to map the names to standard vocabularies.<br>
+</p>
+<p>The <a name="dataType_descrip"></a><i>dataType</i> element is used
+to indicate the high-level semantic type of the dataset (e.g., grid,
+point, trajectory) and can be used by clients to decide how to display
+the data. The values come from the <a href="#dataType_types_">data type enumeration</a> which are intended to map to the scientific data types from the&nbsp;<a href="http://www.unidata.ucar.edu/software/netcdf/CDM/">Common Data Model (CDM)</a>. The <i><a name="dataFormat"></a>dataFormat</i>
+element indicates the format of the data and is mainly used so clients
+can determine how to read data that is accessed using a bulk access
+method. The data format values come from the <a href="#dataFormatType">data format enumeration</a>. The <i><a name="serviceName_descrip"></a>serviceName</i> element is a reference to a <i>service</i> element; its content must match the <i>name</i> of a <i>service</i> element in the catalog. The service referenced by a dataset is used in the <a href="#constructingURLs">construction of access method URLs</a> for that dataset. (This element and the <i>serviceName</i> attribute of an <i>access</i> element are both used in the same way.) The <i>authority</i> element is used to further refine dataset IDs with the goal of allowing for <a href="#globally_unique_id">globally unique IDs</a>. The <i>dataSize</i> element can be used to specify how large the dataset would be if it were to be copied to a client.</p>
 
-<p>The last group of elements are an alternative way to specify the <em><a href="#dataType">dataType</a></em>,
-  <em><a href="#documentation">dataFormat</a></em>, <em><a href="#serviceName">serviceName</a></em>,
-  <a href="#authority"> <em>authority</em></a>, and <a href="#dataSize"><em>dataSize</em></a>
-  of a dataset. Also, by specifying these within a metadata element with inherit
-  attribute set to "true", you can specify these values in a collection
-  dataset and have them apply to all nested datasets.</p>
+
+
+
+<p>Including any of these elements in a metadata element with its <i>inherit</i>
+  attribute set to "true" means that they apply to the containing dataset and any nested datasets.<br>
+</p>
+<p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="DL.html">how elements are mapped to Digital Libraries</a>. For example, you will probably want to add a <i>documentation</i> element with type <em>summary<a name="summary"></a></em> as its content will be the description of the dataset in the DL entry. Another documentation element you may need has type <em>rights<a name="rights"></a></em> which specifies what restrictions there are on the dataset usage.</p>
+
 
 <p>Examples:</p>
 
@@ -344,7 +370,7 @@ serviceName, or authority elements will be ignored.</p>
 <p>The <i>documentation </i>element may contain arbitrary
 plain text content, or XHTML.We call this kind of content "human
 readable" information. It has an optional <a href="#docTypeEnum">documentation type</a> attribute,
-such as funding, history, etc. </p>
+such as summary, funding, history, etc. </p>
 <p>The <i>documentation </i>element may also contain an <a href="http://www.w3.org/TR/xlink/">XLink</a>
   to an HTML or plain text web page. This allows you to point to external web
   references, and also allows you to factor out common documentation which can be
@@ -373,7 +399,8 @@ such as funding, history, etc. </p>
 </p>
 <p>The <i>inherited </i>attribute indicates whether the metadata is inherited
   by nested datasets. If true, the metadata element becomes logically part of
-  each nested dataset.
+  each nested dataset. (The metadata always applies to the containing dataset whether <i>inherited</i> is true or not.)<br>
+
 </p>
 <p> The <i>metadataType</i> attribute may have any value, but the "well known" values are listed in the <a href="#metadataType">metadataType</a> enumeration. To use metadata elements from the <a href="#threddsMetadataGroup">threddsMetadataGroup</a>,
 do not include the metadatatype attribute (or set it to "THREDDS"). To
@@ -414,7 +441,7 @@ declaration (see example).
 
 <p>Property elements are arbitrary name/value pairs to associate with a <a href="#catalog">catalog</a>,
   <a href="#dataset">dataset</a> or <a href="#service">service</a> element. Properties
-  on datasets are added as global attributes to the THREDDS datamodel objects.
+  on datasets are added as global attributes to the THREDDS data model objects.
   More specialized semantics will be defined in the future.</p>
 
 <p>Example: </p>
@@ -474,9 +501,7 @@ declaration (see example).
 
 <pre>&lt;xsd:complexType name="timeCoverageType"&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:choice minOccurs="2" maxOccurs="3" &gt;<br>      &lt;xsd:element name="start" type="dateTypeFormatted"/&gt;<br>      &lt;xsd:element name="end" type="dateTypeFormatted"/&gt;<br>      &lt;xsd:element name="duration" type="duration"/&gt;<br>    &lt;/xsd:choice&gt;<br>    &lt;xsd:element name="resolution" type="duration" minOccurs="0"/&gt;<br>  &lt;/xsd:sequence&gt;<br>&lt;/xsd:complexType&gt;<br></pre>
 
-<p>A timeCoverage element specifies a date range, either using a start/end
-  <a href="#dateType">date</a> elements a start date / <a href="#durationType">duration</a> elements, or an end date / duration
-  elements. The optional resolution element should be used to indicate the data resolution for time series data. </p>
+<p>A timeCoverage element specifies a date range. The date range can be specified in three ways: 1) by giving both a <i>start</i> and an <i>end</i> <a href="#dateType">date type</a> element; 2) by specifying a <i>start</i> element and a <a href="#durationType"><i>duration</i></a> element; or 3) by specifying an <i>end</i> element and a <i>duration</i> element. The optional resolution element should be used to indicate the data resolution for time series data. </p>
 
 <p>Example: </p>
 
@@ -542,7 +567,13 @@ declaration (see example).
     time duration string. </li>
 </ol>
 
+<p>NOTE: Our THREDDS software has not implemented any parsing of the
+xsd:duration type. So, unless you know your catalog will be read mainly
+by other THREDDS software, you might want to restrict duration values
+to udunits time duration strings.<br>
+</p>
 <p>Example: </p>
+
 
 <pre>&lt;duration&gt;P5Y2M10DT15H&lt;/duration&gt;<br>&lt;duration&gt;5 days&lt;/duration&gt;<br></pre>
 
@@ -641,7 +672,7 @@ declaration (see example).
 
 <pre>&lt;dataFormat&gt;NcML&lt;/dataFormat&gt;<br>&lt;dataFormat&gt;image/gif&lt;/dataFormat&gt;<br>&lt;dataFormat&gt;image/jpeg&lt;/dataFormat&gt;<br>&lt;dataFormat&gt;image/png&lt;/dataFormat&gt;<br>&lt;dataFormat&gt;video/mpeg&lt;/dataFormat&gt;<br>&lt;dataFormat&gt;video/quicktime&lt;/dataFormat&gt;</pre>
 
-<h3>dataType types <a name="dataType" id="dataType"></a> </h3>
+<h3><a name="dataType_types_"></a>dataType types <a name="dataType" id="dataType"></a> </h3>
 
 <pre>&lt;xsd:simpleType name="dataTypes"&gt;<br>  &lt;xsd:union memberTypes="xsd:token"&gt;<br>    &lt;xsd:simpleType&gt;<br>      &lt;xsd:restriction base="xsd:token"&gt;<br>        &lt;xsd:enumeration value="Grid"/&gt;<br>        &lt;xsd:enumeration value="Image"/&gt;<br>        &lt;xsd:enumeration value="Point"/&gt;<br>        &lt;xsd:enumeration value="Radial"/&gt;<br>        &lt;xsd:enumeration value="Station"/&gt;<br>        &lt;xsd:enumeration value="Swath"/&gt;<br>        &lt;xsd:enumeration value="Trajectory"/&gt;<br>      &lt;/xsd:restriction&gt;<br>    &lt;/xsd:simpleType&gt;<br>  &lt;/xsd:union&gt;<br>&lt;/xsd:simpleType&gt;<br></pre>
 
@@ -700,8 +731,8 @@ is intended to be sufficient for a client to access and read the
 dataset. Additional information can be encoded in service properties.</p>
 
 <p>The <strong>OpenDAP</strong> and <strong>ADDE</strong> service types correspond
-  to the <a href="http://www.unidata.ucar.edu/packages/dods/">OpenDAP</a> and
-  <a href="http://www.ssec.wisc.edu/mug/learn_guide/2002/adde.html">ADDE</a> data
+  to the <a href="http://www.opendap.org">OpenDAP</a> and
+  <a href="http://www.ssec.wisc.edu/mcidas/doc/learn_guide/current/adde.html">ADDE</a> data
   access protocols. These are client/server protocols that specify both the access
   (or transport) protocol and the data model, so no seperate dataFormat attribute
   is needed. DODS is a synonym for <strong>OpenDAP</strong>; <strong>OpenDAP-G</strong> corresponds to  OpenDAP over GridFTP.</p>
@@ -746,21 +777,25 @@ dataset. Additional information can be encoded in service properties.</p>
 </p><hr style="width: 100%; height: 2px;">
 <h3>Constructing URLs<a name="constructingURLs"></a></h3>
 
-<p>The standard way to construct a dataset URL is to concatenate the service base 
-  with the access urlPath. If the service also has a sufffix, that is appended:</p>
+<p>A dataset URL is constructed by concatenating the service base URL 
+  with the access urlPath. If the service has a suffix attribute, that is then appended:</p>
 
 <pre>   URL = service.base + access.urlPath + service.suffix<br></pre>
 
-<p>A common mistake is to forget the trailing slash at the end of the service 
-  base URL.</p>
 
+
+<p>Note: These operations are straight string concatenations, a slash
+("/") is not automatically added. If a slash is needed between the base
+and urlPath, remember to include a trailing slash on the value of the
+service@base attribute.</p>
 <p>Clients have access to each of these elements and may make use of the URL in 
   protocol-specific ways. For example the OpenDAP (DODS) protocol appends <em>dds, 
   das, dods</em> etc to make the actual calls to the OpenDAP server. </p>
 
+
 <p> When a service base is a <a href="http://www.webreference.com/html/tutorial2/3.html">relative 
-  URL</a>, it is resolved against the catalog URL. For example if the catalog 
-  URL is <em>http://motherlode.ucar.edu:8080/thredds/dodsC/catalog.xml</em>, and 
+  URL</a>, it is resolved against the catalog base URL. For example if the catalog 
+  base URL is <em>http://motherlode.ucar.edu:8080/thredds/dodsC/catalog.xml</em>, and 
   a service base is <em>airtemp/</em>, then the resolved base is <em>http://motherlode.ucar.edu:8080/thredds/dodsC/airtemp/</em>. 
   Note that if the service base is <em>/airtemp/</em>, the resolved URL is <em>http://motherlode.ucar.edu:8080/airtemp/</em>. 
   The <strong>java.net.URI</strong> class in JDK 1.4+ will resolve relative URLs. 
@@ -789,8 +824,7 @@ dataset. Additional information can be encoded in service properties.</p>
       arbitrarily-deep nested datasets, and there are no constraints on how the 
       datasets are related.</li>
     <li>A<strong><em> <a name="coherentDataset" id="coherentDataset"></a>coherent 
-      collection dataset </em></strong> has only one level of nested datasets. 
-      The nested datasets must be direct and coherently related. A coherent dataset 
+      collection dataset </em></strong>contains nested datasets which must be direct and coherently related. A coherent dataset 
       should have a <em>collectionType</em> attribute that describes the relationship 
       of its nested datasets. Possible types are <em>TimeSeries</em>, <em>Stations</em>, 
       etc. (OpenDAP calls this a collection of <em>inventory level</em> datasets).</li>
@@ -814,7 +848,7 @@ dataset. Additional information can be encoded in service properties.</p>
       collection dataset. It is typically used to implement a <em><strong>virtual 
       </strong></em>dataset like "latest model run" or "latest 
       measurement" on a real time dataset, where the actual URL must be generated 
-      right when the user requests it.</li>
+      when the user requests it.</li>
     <li> A <em><strong>DQC<a name="dqcDataset"></a> dataset</strong></em> is a 
       collection of query datasets. It has service type <em>QueryCapability</em>, 
       and its URL points to an XML document called a <a href="../dqc/DqcSpec.html">Dataset 
@@ -868,8 +902,10 @@ dataset. Additional information can be encoded in service properties.</p>
   <li><a href="#alias">alias</a> : an attribute of dataset; allows you to put the dataset in multiple places in the catalog heirarchy.</li>
   <li><a href="#access">access</a> element; defines a specific service and URL to access a dataset.</li>
   <li><a href="#authority">authority</a> : an element of a dataset; can also be specified as an attribute; used for unique IDs.</li>
-  <li><a href="#base">base</a> : base URL is an attribute of a <a href="#service">service</a> element ; dataset URLs can be reletive to it . </li>
-  <li><a href="#catalog">catalog</a> element; root XML element.</li>
+  <li><a href="#base">service@base</a> : base URL is an attribute of a <a href="#service">service</a> element ; dataset URLs can be reletive to it . </li>
+  <li><a href="#catalog">catalog</a> element; root XML element.</li><li><a href="#catalogBase">catalog@base</a>: an attribute for defining the base URI for the catalog.<br>
+  </li>
+
   <li><a href="#catalogRef">catalogRef</a> element; refers to a nested THREDDS catalog.</li>
   <li><a href="#collectionTypes">collectionTypes</a> enumeration, used by <a href="#collection">collection</a> 
     attribute of dataset.</li>
@@ -911,7 +947,7 @@ dataset. Additional information can be encoded in service properties.</p>
   <li><a href="#variables">variables</a> element, used in <a href="#threddsMetadataGroup">threddsMetadataGroup,</a> specifies the variables (aka <em>fields</em> or <em>parameters</em>) available in the dataset. </li>
   <li><a href="#variableMap">variableMap</a> element is used in <a href="#variables">variables</a> to link to an external document specifying the variable names. </li>
   <li><a href="#variableNameVocabulary">variableNameVocabulary</a> is an enumeration of known vocabularies for standard variable names, used in the <a href="#variables">variables</a> element.</li>
-  <li><a href="#Xlink">Xlink</a> group of attributes; defines a link to another  document. </li>
+  <li><a href="#XLink">XLink</a> group of attributes; defines a link to another  document. </li>
   <li><a href="#zpositive">zpositive</a> is an attribute of <a href="#geospatialCoverageType">geospatialCoverage</a> element, indicating if the units of z goes up or down as z increases. </li>
 </ul>
 
