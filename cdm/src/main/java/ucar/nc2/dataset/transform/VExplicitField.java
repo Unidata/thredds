@@ -42,9 +42,15 @@ public class VExplicitField extends AbstractCoordTransBuilder {
     return TransformType.Vertical;
   }
 
+  //   public VerticalCT (String name, String authority, VerticalCT.Type type, CoordTransBuilderIF builder) {
+
+
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
     VerticalCT ct = new VerticalCT (ctv.getName(), getTransformName(), VerticalCT.Type.Existing3DField, this);
-    ct.addParameter(new Parameter(VTfromExistingData.existingDataField, ctv.getName()));
+    String fieldName = ds.findAttValueIgnoreCase(ctv, VTfromExistingData.existingDataField, null);
+    if (null == fieldName)
+      throw new IllegalArgumentException("ExplicitField Vertical Transform must have attribute "+VTfromExistingData.existingDataField);
+    ct.addParameter(new Parameter(VTfromExistingData.existingDataField, fieldName));
     return ct;
   }
 

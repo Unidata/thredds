@@ -41,13 +41,13 @@ public class CoordTransBuilder {
   static private boolean userMode = false;
 
   // search in the order added
-  static { // wont get loaded unless explicitly called
+  static {
     registerTransform("albers_conical_equal_area", AlbersEqualArea.class);
     registerTransform("lambert_azimuthal_equal_area", LambertAzimuthal.class);
     registerTransform("lambert_conformal_conic", LambertConformalConic.class);
     registerTransform("mercator", Mercator.class);
     registerTransform("orthographic", Orthographic.class);
-    registerTransform("polar_stereographic", Stereographic.class);  // LOOK
+    registerTransform("polar_stereographic", PolarStereographic.class);
     registerTransform("stereographic", Stereographic.class);
     registerTransform("transverse_mercator", TransverseMercator.class);
     registerTransform("UTM", UTM.class);

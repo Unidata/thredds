@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id: StringUtil.java,v 1.37 2006/09/11 20:50:57 jeffmc Exp $
+// $Id: StringUtil.java,v 1.41 2006/10/04 22:21:31 dmurray Exp $
 
 
 package ucar.unidata.util;
@@ -26,8 +26,6 @@ package ucar.unidata.util;
 
 import java.text.ParsePosition;
 
-
-import java.text.SimpleDateFormat;
 
 import java.text.SimpleDateFormat;
 
@@ -39,13 +37,22 @@ import java.util.regex.*;
 /**
  * String utilities
  * @author John Caron
- * @version $Id: StringUtil.java,v 1.37 2006/09/11 20:50:57 jeffmc Exp $
+ * @version $Id: StringUtil.java,v 1.41 2006/10/04 22:21:31 dmurray Exp $
  */
 
 public class StringUtil {
 
     /** debug flag */
     public static boolean debug = false;
+
+    /** Ordinal names for images */
+    public static final String[] ordinalNames = {
+        "Latest", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh",
+        "Eight", "Ninth", "Tenth"
+    };
+
+
+
 
     /**
      * Collapse continuous whitespace into one single " ".
@@ -362,7 +369,7 @@ public class StringUtil {
         for (int i = 0; i < sb.length(); i++) {
             if (sb.charAt(i) == out) {
                 sb.replace(i, i + 1, in);
-                i += in.length()-1;
+                i += in.length() - 1;
             }
         }
     }
@@ -1686,6 +1693,29 @@ public class StringUtil {
 
 
     /**
+     * Find the pattern in a string
+     *
+     * @param source  String to search
+     * @param patternString  pattern
+     *
+     * @return the String that matches
+     */
+    public static String findPattern(String source, String patternString) {
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(source);
+        boolean ok      = matcher.find();
+        if ( !ok) {
+            return null;
+        }
+        if (matcher.groupCount() > 0) {
+            return matcher.group(0);
+        }
+        return null;
+    }
+
+
+
+    /**
      * Not working yet but this is supposed to parse an iso8601 date format
      *
      * @param time date
@@ -2006,18 +2036,17 @@ public class StringUtil {
             List   numbers = StringUtil.split(tok, ",");
             if ((numbers.size() != 2) && (numbers.size() != 3)) {
                 //Maybe its just comma separated
-                if(numbers.size()>3 &&
-                   tokens.size()==1 &&
-                   ((int)numbers.size()/3)*3 == numbers.size()) {
-                    result = new double[3][numbers.size()/3];
+                if ((numbers.size() > 3) && (tokens.size() == 1)
+                        && ((int) numbers.size() / 3) * 3 == numbers.size()) {
+                    result = new double[3][numbers.size() / 3];
                     int cnt = 0;
-                    for(int i=0;i<numbers.size();i+=3) {
+                    for (int i = 0; i < numbers.size(); i += 3) {
                         result[0][cnt] = new Double(
-                                                    numbers.get(i).toString()).doubleValue();
-                        result[1][cnt] = new Double(
-                                                    numbers.get(i+1).toString()).doubleValue();
-                        result[2][cnt] = new Double(
-                                                    numbers.get(i+2).toString()).doubleValue();
+                            numbers.get(i).toString()).doubleValue();
+                        result[1][cnt] = new Double(numbers.get(i
+                                + 1).toString()).doubleValue();
+                        result[2][cnt] = new Double(numbers.get(i
+                                + 2).toString()).doubleValue();
                         cnt++;
                     }
                     return result;

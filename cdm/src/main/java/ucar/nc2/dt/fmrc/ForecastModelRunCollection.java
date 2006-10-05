@@ -28,7 +28,7 @@ import java.util.List;
 import java.io.IOException;
 
 /**
- * Class Description.
+ * Forecast Model Run Collection (.
  *
  * @author caron
  * @version $Revision$ $Date$

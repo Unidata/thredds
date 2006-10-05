@@ -33,6 +33,8 @@ Changes in version 2.2.17
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
+  * ucar.nc2.dataset.transform.VExplicitField had wrong value for existingDataField parameter.
+  * parse polar_stereographic projection according to CF
   * StringUtil.replace() bug
   * DODS: distinguish netcdf name from dods name (again!), problem is escape chars. Still work to do in data reading (ConvertD2N)
   * when creating a section, always use this, not orgVar, so scale/offset is in the read chain.
