@@ -76,7 +76,9 @@ public class AnnotateServlet extends AbstractServlet {
      PrintWriter pw = new PrintWriter(res.getOutputStream());
 
         res.setContentType("text/html");
-        pw.println("<html>");
+        pw.println( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" );
+        pw.println( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" );
+        pw.println( "<html>\n" );
         pw.println("<head>");
         pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
         pw.println("</head>");

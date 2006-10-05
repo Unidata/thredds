@@ -289,7 +289,8 @@ public class DqcServletRedirect extends HttpServlet
 
     String title = "The Resource";
     String htmlResp = new StringBuffer()
-            .append( "<html><head><title>" )
+            .append( getHtmlDoctypeAndOpenTag() )
+            .append( "<head><title>" )
             .append( title )
             .append( "</title></head><body>" )
             .append( "<h1>" ).append( title ).append( "</h1>" )
@@ -348,7 +349,8 @@ public class DqcServletRedirect extends HttpServlet
             .append( "</p>" )
             .toString();
     String htmlResp = new StringBuffer()
-            .append( "<html><head><title>" )
+            .append( getHtmlDoctypeAndOpenTag() )
+            .append( "<head><title>" )
             .append( title )
             .append( "</title></head><body>" )
             .append( "<h1>" ).append( title ).append( "</h1>" )
@@ -403,7 +405,8 @@ public class DqcServletRedirect extends HttpServlet
             .append( "</p>" )
             .toString();
     String htmlResp = new StringBuffer()
-            .append( "<html><head><title>" )
+            .append( getHtmlDoctypeAndOpenTag() )
+            .append( "<head><title>" )
             .append( title )
             .append( "</title></head><body>" )
             .append( "<h1>" ).append( title ).append( "</h1>" )
@@ -446,7 +449,8 @@ public class DqcServletRedirect extends HttpServlet
             .append( "</ul>" )
             .toString();
     String htmlResp = new StringBuffer()
-            .append( "<html><head><title>" )
+            .append( getHtmlDoctypeAndOpenTag() )
+            .append( "<head><title>" )
             .append( title )
             .append( "</title></head><body>" )
             .append( "<h1>" ).append( title ).append( "</h1>" )
@@ -479,6 +483,26 @@ public class DqcServletRedirect extends HttpServlet
                           : targetContextPath + targetServletPath );
     return reqURLBuffer.toString();
   }
+
+  private String getHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
+            .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
+            .append( "<html>\n" )
+            .toString();
+  }
+
+  private String getXHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" )
+            .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" )
+            .append( "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">" )
+            .toString();
+  }
+
 }
 /*
 * $Log: DqcServletRedirect.java,v $

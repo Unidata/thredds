@@ -376,17 +376,19 @@ public class DqcServlet extends AbstractServlet
     // @todo Add links to other things, e.g., docs and THREDDS server top-level
     StringBuffer buf = new StringBuffer();
 
-    buf.append( "<html>" + "\n");
-    buf.append( "<head><title>DQC Servlet - Available Datasets</title></head>" + "\n");
+    buf.append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
+       .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
+       .append( "<html>\n" );
+    buf.append( "<head><title>DQC Servlet - Available Datasets</title></head>\n");
     buf.append( "<body>" + "\n");
-    buf.append( "<h1>DQC Servlet - Available Datasets</h1>" + "\n");
+    buf.append( "<h1>DQC Servlet - Available Datasets</h1>\n");
 
-    buf.append( "<table border=\"1\">" + "\n");
-    buf.append( "<tr>" + "\n");
-    buf.append( "<th> Name</th>" + "\n");
-    buf.append( "<th> Description</th>" + "\n");
-    buf.append( "<th> DQC Document</th>" + "\n");
-    buf.append( "</tr>" + "\n");
+    buf.append( "<table border=\"1\">\n");
+    buf.append( "<tr>\n");
+    buf.append( "<th> Name</th>\n");
+    buf.append( "<th> Description</th>\n");
+    buf.append( "<th> DQC Document</th>\n");
+    buf.append( "</tr>\n");
 
     Iterator iter = null;
     DqcServletConfigItem curItem = null;
@@ -395,12 +397,11 @@ public class DqcServlet extends AbstractServlet
     {
       curItem = (DqcServletConfigItem) iter.next();
 
-      buf.append( "<tr>\n");
-      buf.append( "<td>" + curItem.getName() + "</td>\n");
-      buf.append( "<td>" + curItem.getDescription() + "</td>\n");
-      buf.append( "<td><a href=\"" + contextServletPath + "/" + curItem.getName() + ".xml\">"
-                  + curItem.getName() + "</a></td>\n");
-      buf.append( "<tr>\n");
+      buf.append( "<tr>\n")
+         .append( "  <td>" ).append( curItem.getName() ).append( "</td>\n" )
+         .append( "  <td>" ).append( curItem.getDescription() ).append( "</td>\n" )
+         .append( "  <td><a href=\"" ).append( contextServletPath ).append( "/" ).append( curItem.getName() ).append( ".xml\">" ).append( curItem.getName() ).append( "</a></td>\n" )
+         .append( "<tr>\n");
     }
 
     buf.append( "<table>\n");

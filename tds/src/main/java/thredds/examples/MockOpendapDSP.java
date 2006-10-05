@@ -81,7 +81,8 @@ public class MockOpendapDSP implements DataServiceProvider
         res.setContentType( "text/html" );
         StringBuffer responseString = new StringBuffer();
         responseString
-                .append( "<html><head><title>Test Response to Data Request</title></head><body>\n" )
+                .append( getHtmlDoctypeAndOpenTag() )
+                .append( "<head><title>Test Response to Data Request</title></head><body>\n" )
                 .append( "<h1>Test Response to Data Request</h1>\n" )
                 .append( "<ul>\n" )
                 .append( "<li>Dataset requested: " ).append( path )
@@ -147,7 +148,8 @@ public class MockOpendapDSP implements DataServiceProvider
     else
     {
       responseString
-              .append( "<html><head><title>Not an OPeNDAP Request</title></head><body>\n" )
+              .append( getHtmlDoctypeAndOpenTag() )
+              .append( "<head><title>Not an OPeNDAP Request</title></head><body>\n" )
               .append( "<h1>Not an OPeNDAP Request</h1>\n" )
               .append( "<p>Expected URL to end in \".dds\", \".das\", \".dods\", \".html\",etc.\n" )
               .append( "</p>\n" )
@@ -162,6 +164,25 @@ public class MockOpendapDSP implements DataServiceProvider
 
       return;
     }
+  }
+
+  private String getHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
+            .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
+            .append( "<html>\n" )
+            .toString();
+  }
+
+  private String getXHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" )
+            .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" )
+            .append( "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">" )
+            .toString();
   }
 
   private class MyDsReq implements DatasetRequest

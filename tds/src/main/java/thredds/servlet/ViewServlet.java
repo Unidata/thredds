@@ -128,7 +128,7 @@ public class ViewServlet extends AbstractServlet {
       if (viewer.isViewable( dataset)) {
         sbuff.append("  <li> ");
         sbuff.append( viewer.getViewerLinkHtml( dataset, req));
-        sbuff.append("\n");
+        sbuff.append("</li>\n");
       }
     }
     sbuff.append("</ul>\r\n");

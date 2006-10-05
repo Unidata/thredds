@@ -667,7 +667,27 @@ public class CatGenServlet extends AbstractServlet
     }
 
   }
-    /**
+
+  public String getHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
+            .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
+            .append( "<html>\n" )
+            .toString();
+  }
+
+  public String getXHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" )
+            .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" )
+            .append( "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">" )
+            .toString();
+  }
+
+  /**
      * HTML response when request path equals "/".
      *
      * @param req - the incoming servlet request
@@ -677,7 +697,7 @@ public class CatGenServlet extends AbstractServlet
       log.debug( "htmlRootRequest(): start" );
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet</h1>\n" );
@@ -704,7 +724,7 @@ public class CatGenServlet extends AbstractServlet
       log.debug( "getHtmlReturnMessage(): start (" + message + ")" );
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet</h1>\n" );
@@ -733,7 +753,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retVal = new StringBuffer();
 
-      retVal.append( "<html>\n" );
+      retVal.append( getHtmlDoctypeAndOpenTag() );
       retVal.append( "<head><title>Catalog Generator Servlet Config</title></head>\n" );
       retVal.append( "<body>\n" );
       retVal.append( "<h1>Catalog Generator Servlet Config</h1>\n" );
@@ -789,7 +809,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer( );
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Edit Task</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Edit Task</h1>\n" );
@@ -812,7 +832,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer( );
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Add Task</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Add Task</h1>\n" );
@@ -835,7 +855,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer( );
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Delete Task</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Delete Task</h1>\n" );
@@ -881,7 +901,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Edit Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Edit Results</h1>\n" );
@@ -917,7 +937,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Edit Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Edit Results</h1>\n" );
@@ -955,7 +975,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Edit Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Edit Results</h1>\n" );
@@ -989,7 +1009,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Add Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Add Results</h1>\n" );
@@ -1023,7 +1043,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Add Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Add Results</h1>\n" );
@@ -1060,7 +1080,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Add Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Add Results</h1>\n" );
@@ -1091,7 +1111,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Delete Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Delete Results</h1>\n" );
@@ -1123,7 +1143,7 @@ public class CatGenServlet extends AbstractServlet
 
       StringBuffer retValue = new StringBuffer();
 
-      retValue.append( "<html>\n" );
+      retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Delete Results</title></head>\n" );
       retValue.append( "<body>\n" );
       retValue.append( "<h1>Catalog Generator Servlet - Task Delete Results</h1>\n" );

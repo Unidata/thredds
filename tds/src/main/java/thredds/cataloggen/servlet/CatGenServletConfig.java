@@ -344,7 +344,10 @@ class CatGenServletConfig
     StringBuffer tmpString = new StringBuffer();
     log.debug( "toHtml(): start.");
 
-    tmpString.append( "<html>");
+    tmpString.append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
+             .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
+             .append( "<html>\n" );
+
     tmpString.append( "<head><title>Catalog Generator Servlet Config</title></head>");
     tmpString.append( "<body>");
     tmpString.append( "<h1>Catalog Generator Servlet Config</h1>");

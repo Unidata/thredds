@@ -523,7 +523,8 @@ public class ServletUtil {
             .append( "</p>" )
             .toString();
     String htmlResp = new StringBuffer()
-            .append( "<html><head><title>" )
+            .append( HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag())
+            .append( "<head><title>" )
             .append( title )
             .append( "</title></head><body>" )
             .append( "<h1>" ).append( title ).append( "</h1>" )
@@ -1083,7 +1084,8 @@ public class ServletUtil {
       count = new Integer(count.intValue() + 1);
     session.setAttribute("snoop.count", count);
 
-    out.println("<HTML><HEAD><TITLE>SessionSnoop</TITLE></HEAD>");
+    out.println( HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
+    out.println("<HEAD><TITLE>SessionSnoop</TITLE></HEAD>");
     out.println("<BODY><H1>Session Snoop</H1>");
 
     // Display the hit count for this page

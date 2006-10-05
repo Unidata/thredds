@@ -242,7 +242,7 @@ public class CatalogServicesServlet extends HttpServlet {
     res.setContentType("text/html");
     StringBuffer sb = new StringBuffer(10000);
 
-    sb.append("<html>\r\n");
+    sb.append( HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag() );
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
@@ -272,7 +272,7 @@ public class CatalogServicesServlet extends HttpServlet {
     res.setContentType("text/html");
     StringBuffer sb = new StringBuffer(10000);
 
-    sb.append("<html>\r\n");
+    sb.append( HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag() );
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
@@ -307,7 +307,7 @@ public class CatalogServicesServlet extends HttpServlet {
     res.setContentType("text/html");
     StringBuffer sb = new StringBuffer(10000);
 
-    sb.append("<html>\r\n");
+    sb.append(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");

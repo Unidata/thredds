@@ -196,7 +196,9 @@ public class CatalogSearcher extends JPanel {
   private String makePage(String qs, Hits hits) throws IOException {
     StringBuffer buff = new StringBuffer(20000);
 
-    buff.append("<html>");
+    buff.append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
+        .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
+        .append( "<html>\n" );
     buff.append("<head>");
     buff.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
     buff.append("</head>");

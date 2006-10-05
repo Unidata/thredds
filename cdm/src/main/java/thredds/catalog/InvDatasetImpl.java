@@ -896,43 +896,45 @@ public class InvDatasetImpl extends InvDataset {
     if (ds == null) return;
 
     if (complete) {
-      buff.append("<html>");
+      buff.append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
+          .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
+          .append( "<html>\n" );
       buff.append("<head>");
       buff.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
       buff.append("</head>");
       buff.append("<body>\n");
     }
 
-    buff.append("<h2>Dataset: " + ds.getFullName() + "</h2>\n<ul>\n");
+    buff.append( "<h2>Dataset: " ).append( ds.getFullName() ).append( "</h2>\n<ul>\n" );
     if ((ds.getDataFormatType() != null) && (ds.getDataFormatType() != DataFormatType.NONE))
-      buff.append(" <li><em>Data format: </em>" + StringUtil.quoteHtmlContent( ds.getDataFormatType().toString()) + "\n");
+      buff.append( " <li><em>Data format: </em>" ).append( StringUtil.quoteHtmlContent( ds.getDataFormatType().toString() ) ).append( "</li>\n" );
 
     if ((ds.getDataSize() != 0.0) && !Double.isNaN( ds.getDataSize()))
-      buff.append(" <li><em>Data size: </em>" + Format.formatByteSize(ds.getDataSize()) + "\n");
+      buff.append( " <li><em>Data size: </em>" ).append( Format.formatByteSize( ds.getDataSize() ) ).append( "</li>\n" );
 
     if ((ds.getDataType() != null) && (ds.getDataType() != DataType.NONE))
-      buff.append(" <li><em>Data type: </em>" + StringUtil.quoteHtmlContent( ds.getDataType().toString()) + "\n");
+      buff.append( " <li><em>Data type: </em>" ).append( StringUtil.quoteHtmlContent( ds.getDataType().toString() ) ).append( "</li>\n" );
 
     if ((ds.getCollectionType() != null) && (ds.getCollectionType() != CollectionType.NONE))
-      buff.append(" <li><em>Collection type: </em>" + StringUtil.quoteHtmlContent( ds.getCollectionType().toString()) + "\n");
+      buff.append( " <li><em>Collection type: </em>" ).append( StringUtil.quoteHtmlContent( ds.getCollectionType().toString() ) ).append( "</li>\n" );
 
     if (ds.isHarvest())
-      buff.append(" <li><em>Harvest: </em>" + ds.isHarvest() + "\n");
+      buff.append( " <li><em>Harvest: </em>" ).append( ds.isHarvest() ).append( "</li>\n" );
 
     if (ds.getAuthority() != null)
-      buff.append(" <li><em>Naming Authority: </em>" + StringUtil.quoteHtmlContent( ds.getAuthority()) + "\n");
+      buff.append( " <li><em>Naming Authority: </em>" ).append( StringUtil.quoteHtmlContent( ds.getAuthority() ) ).append( "</li>\n" );
 
     if (ds.getID() != null)
-      buff.append(" <li><em>ID: </em>" + StringUtil.quoteHtmlContent( ds.getID()) + "\n");
+      buff.append( " <li><em>ID: </em>" ).append( StringUtil.quoteHtmlContent( ds.getID() ) ).append( "</li>\n" );
 
     if (ds.getResourceControl() != null)
-      buff.append(" <li><em>ResourceControl: </em>" + StringUtil.quoteHtmlContent( ds.getResourceControl()) + "\n");
+      buff.append( " <li><em>ResourceControl: </em>" ).append( StringUtil.quoteHtmlContent( ds.getResourceControl() ) ).append( "</li>\n" );
 
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
       String href = resolve(ds, catref.getXlinkHref());
       if (catrefEvents) href = "catref:" + href;
-      buff.append(" <li><em>CatalogRef: </em>" + makeHref(href, null) + "\n");
+      buff.append( " <li><em>CatalogRef: </em>" ).append( makeHref( href, null ) ).append( "</li>\n" );
     }
 
     buff.append("</ul>\n");
@@ -945,10 +947,10 @@ public class InvDatasetImpl extends InvDataset {
         String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil.quoteHtmlContent( doc.getType()) + ":</strong> ";
         String inline = doc.getInlineContent();
         if ((inline != null) && (inline.length() > 0))
-          buff.append(" <li>" + type + StringUtil.quoteHtmlContent( inline) + "\n");
+          buff.append( " <li>" ).append( type ).append( StringUtil.quoteHtmlContent( inline ) ).append( "</li>\n" );
         if (doc.hasXlink()) {
           // buff.append(" <li>" + type + makeHrefResolve(ds, uri.toString(), doc.getXlinkTitle()) + "</a>\n");
-          buff.append(" <li>" + type + makeHref(doc.getXlinkHref(), doc.getXlinkTitle()) + "</a>\n");
+          buff.append( " <li>" ).append( type ).append( makeHref( doc.getXlinkHref(), doc.getXlinkTitle() ) ).append( "</li>\n" );
         }
       }
       buff.append("</ul>");
@@ -971,8 +973,8 @@ public class InvDatasetImpl extends InvDataset {
           else if (stype == ServiceType.NetcdfServer)
             urlString = urlString + "?showForm";
         }
-        buff.append(" <li> <b>" + StringUtil.quoteHtmlContent( s.getServiceType().toString()));
-        buff.append(":</b> " + makeHref(urlString, a.getStandardUrlName()) + "\n");
+        buff.append( " <li> <b>" ).append( StringUtil.quoteHtmlContent( s.getServiceType().toString() ) );
+        buff.append( ":</b> " ).append( makeHref( urlString, a.getStandardUrlName() ) ).append( "</li>\n" );
       }
       buff.append("</ol>\n");
     }
@@ -983,7 +985,7 @@ public class InvDatasetImpl extends InvDataset {
       for (int i = 0; i < list.size(); i++) {
         ThreddsMetadata.Contributor t = (ThreddsMetadata.Contributor) list.get(i);
         String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil.quoteHtmlContent( t.getRole()) + ")</strong> ";
-        buff.append(" <li>" + StringUtil.quoteHtmlContent( t.getName()) + role + "\n");
+        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( t.getName() ) ).append( role ).append( "</li>\n" );
       }
       buff.append("</ul>");
     }
@@ -994,7 +996,7 @@ public class InvDatasetImpl extends InvDataset {
       for (int i = 0; i < list.size(); i++) {
         ThreddsMetadata.Vocab t = (ThreddsMetadata.Vocab) list.get(i);
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent( t.getVocabulary()) + ")</strong> ";
-        buff.append(" <li>" + StringUtil.quoteHtmlContent( t.getText()) + vocab + "\n");
+        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( t.getText() ) ).append( vocab ).append( "</li>\n" );
       }
       buff.append("</ul>");
     }
@@ -1005,7 +1007,7 @@ public class InvDatasetImpl extends InvDataset {
       for (int i = 0; i < list.size(); i++) {
         DateType d = (DateType) list.get(i);
         String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent( d.getType()) + ")</strong> ";
-        buff.append(" <li>" + StringUtil.quoteHtmlContent( d.getText()) + type + "\n");
+        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( d.getText() ) ).append( type ).append( "</li>\n" );
       }
       buff.append("</ul>");
     }
@@ -1016,7 +1018,7 @@ public class InvDatasetImpl extends InvDataset {
       for (int i = 0; i < list.size(); i++) {
         ThreddsMetadata.Vocab t = (ThreddsMetadata.Vocab) list.get(i);
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent( t.getVocabulary()) + ")</strong> ";
-        buff.append(" <li>" + StringUtil.quoteHtmlContent( t.getText()) + vocab + "\n");
+        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( t.getText() ) ).append( vocab ).append( "</li>\n" );
       }
       buff.append("</ul>");
     }
@@ -1026,12 +1028,12 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("<h3>Creators:</h3>\n<ul>\n");
       for (int i = 0; i < list.size(); i++) {
         ThreddsMetadata.Source t = (ThreddsMetadata.Source) list.get(i);
-        buff.append(" <li><strong>" + StringUtil.quoteHtmlContent( t.getName()) + "</strong><ul>\n");
-        buff.append(" <li><em>email: </em>" + StringUtil.quoteHtmlContent( t.getEmail()) + "\n");
+        buff.append( " <li><strong>" ).append( StringUtil.quoteHtmlContent( t.getName() ) ).append( "</strong><ul>\n" );
+        buff.append( " <li><em>email: </em>" ).append( StringUtil.quoteHtmlContent( t.getEmail() ) ).append( "</li>\n" );
         if (t.getUrl() != null) {
-          buff.append(" <li> <em>" + makeHrefResolve(ds, t.getUrl(), null) + "</em>\n");
+          buff.append( " <li> <em>" ).append( makeHrefResolve( ds, t.getUrl(), null ) ).append( "</em></li>\n" );
         }
-        buff.append(" </ul>\n");
+        buff.append(" </ul></li>\n");
       }
       buff.append("</ul>");
     }
@@ -1059,7 +1061,7 @@ public class InvDatasetImpl extends InvDataset {
 
         if (t.getVocabUri() != null) {
           URI uri = t.getVocabUri();
-          buff.append(" <li>" + makeHrefResolve(ds, uri.toString(), t.getVocabulary()) + "</a>");
+          buff.append(" <li>" + makeHrefResolve(ds, uri.toString(), t.getVocabulary()) + "</li>");
         } else {
           buff.append(" <li>" + StringUtil.quoteHtmlContent( t.getVocabulary()));
         }
@@ -1077,7 +1079,6 @@ public class InvDatasetImpl extends InvDataset {
           }
           buff.append(" </ul>\n");
         }
-        buff.append("</ul>");
       }
       buff.append("</ul>");
     }
@@ -1088,11 +1089,11 @@ public class InvDatasetImpl extends InvDataset {
       if (gc.isGlobal())
         buff.append(" <li><em> Global </em></ul>\n");
       else {
-        buff.append(" <li><em> Longitude: </em> " + rangeString(gc.getEastWestRange()) + "\n");
-        buff.append(" <li><em> Latitude: </em> " + rangeString(gc.getNorthSouthRange()) + "\n");
+        buff.append(" <li><em> Longitude: </em> " + rangeString(gc.getEastWestRange()) + "</li>\n");
+        buff.append(" <li><em> Latitude: </em> " + rangeString(gc.getNorthSouthRange()) + "</li>\n");
         if (gc.getUpDownRange() != null)
           buff.append(" <li><em> Altitude: </em> " + rangeString(gc.getUpDownRange()) +
-              " (positive is <strong>" + StringUtil.quoteHtmlContent( gc.getZPositive()) + ")</strong>\n");
+              " (positive is <strong>" + StringUtil.quoteHtmlContent( gc.getZPositive()) + ")</strong></li>\n");
 
         java.util.List nlist = gc.getNames();
         if ((nlist != null) && (nlist.size() > 0)) {

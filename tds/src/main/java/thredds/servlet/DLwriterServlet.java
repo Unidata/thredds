@@ -128,7 +128,7 @@ public class DLwriterServlet extends AbstractServlet {
 
   private void showValidationMesssage(String catURL, String mess, java.io.PrintWriter pw) {
 
-    pw.println("<html>");
+    pw.println(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
     pw.println("<head>");
     pw.println("<title> Catalog Validation</title>");
     pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html\">");

@@ -23,7 +23,7 @@ public class DebugHandler {
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintStream pw = new PrintStream(bos);
-    pw.println("<html>");
+    pw.println( HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
     pw.println("<head>");
     pw.println("<title> THREDDS Debug</title>");
     pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html\">");

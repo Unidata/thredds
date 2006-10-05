@@ -34,8 +34,10 @@ public class HtmlWriter
   private String contextName;
   private String contextVersion;
   private String userCssPath; // relative to context path
-  private String contextLogoPath;    // relative to context path
-  private String instituteLogoPath;    // relative to context path
+  private String contextLogoPath;   // relative to context path
+  private String contextLogoAlt;    // Alternate text for logo
+  private String instituteLogoPath; // relative to context path
+  private String instituteLogoAlt;  // Alternate text for logo
   private String docsPath;    // relative to context path
 
   private ucar.nc2.units.DateFormatter formatter = new ucar.nc2.units.DateFormatter();
@@ -88,7 +90,9 @@ public class HtmlWriter
     this.docsPath = docsPath;
     this.userCssPath = userCssPath;
     this.contextLogoPath = contextLogoPath;
+    this.contextLogoAlt = "";
     this.instituteLogoPath = instituteLogoPath;
+    this.instituteLogoAlt = "";
   }
 
   public String getContextPath() { return contextPath; }
@@ -99,13 +103,31 @@ public class HtmlWriter
   //public String getInstituteLogoPath() { return instituteLogoPath; }
   public String getDocsPath() { return docsPath; }
 
+  public String getHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n")
+            .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
+            .append( "<html>\n")
+            .toString();
+  }
+  public String getXHtmlDoctypeAndOpenTag()
+  {
+    return new StringBuffer()
+            // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n")
+            .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n")
+            .append( "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">")
+            .toString();
+  }
+
 //  public static final String UNIDATA_CSS
   public String getUserCSS()
   {
     return new StringBuffer()
             .append( "<link rel='stylesheet' href='")
             .append( this.contextPath)
-            .append( "/").append( userCssPath).append("' type='text/css' />\"").toString();
+            .append( "/").append( userCssPath).append("' type='text/css' >").toString();
   }
 
 
@@ -115,7 +137,7 @@ public class HtmlWriter
     return new StringBuffer()
             .append( "<table width=\"100%\">\n")
             .append( "    <tr>\n" )
-            .append( "        <td width=\"95\" height=\"95\" align=\"left\"><img src=\"").append( contextPath).append("/").append( instituteLogoPath ).append("\" width=\"95\" height=\"93\"> </td>\n")
+            .append( "        <td width=\"95\" height=\"95\" align=\"left\"><img src=\"").append( contextPath).append("/").append( instituteLogoPath ).append("\" alt=\"").append( instituteLogoAlt).append("\" width=\"95\" height=\"93\"> </td>\n")
             .append( "        <td width=\"701\" align=\"left\" valign=\"top\">\n")
             .append( "            <table width=\"303\">\n" )
             .append( "                <tr>\n" )
@@ -200,13 +222,13 @@ public class HtmlWriter
     StringBuffer sb = new StringBuffer();
 
     // Render the page header
-    sb.append( "<html>\r\n" );
+    sb.append( getHtmlDoctypeAndOpenTag() ); // "<html>\n" );
     sb.append( "<head>\r\n" );
     sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">" );
     sb.append( "<title>" );
     sb.append( "Directory listing for " ).append( path );
     sb.append( "</title>\r\n" );
-    sb.append( "<STYLE><!--" );
+    sb.append( "<STYLE type='text/css'><!--" );
     sb.append( this.getTomcatCSS() );
     sb.append( "--></STYLE>\r\n" );
     sb.append( "</head>\r\n" );
@@ -376,13 +398,13 @@ public class HtmlWriter
     String catname = StringUtil.quoteHtmlContent( cat.getUriString() );
 
     // Render the page header
-    sb.append( "<html>\r\n" );
+    sb.append( getHtmlDoctypeAndOpenTag() ); // "<html>\n" );
     sb.append( "<head>\r\n" );
     sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">" );
     sb.append( "<title>" );
     sb.append( "Catalog " ).append( catname );
     sb.append( "</title>\r\n" );
-    sb.append( "<STYLE><!--" );
+    sb.append( "<STYLE type='text/css'><!--" );
     sb.append( this.getTomcatCSS() );
     sb.append( "--></STYLE> " );
     sb.append( "</head>\r\n" );
@@ -481,7 +503,7 @@ public class HtmlWriter
           log.error(href, e);
         }
 
-        sb.append( "<img src='/thredds/folder.gif' width='20' height='22\'> &nbsp;");
+        sb.append( "<img src='/thredds/folder.gif' alt='folder' width='20' height='22'> &nbsp;");
         sb.append( "<a href=\"" );
         sb.append( StringUtil.quoteHtmlContent( href ) );
         sb.append( "\"><tt>" );
@@ -615,13 +637,13 @@ public class HtmlWriter
     String name = StringUtil.quoteHtmlContent( ds.getLocation() );
 
     // Render the page header
-    sb.append( "<html>\r\n" );
+    sb.append( getHtmlDoctypeAndOpenTag() ); // "<html>\n" );
     sb.append( "<head>\r\n" );
     sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">" );
     sb.append( "<title>" );
     sb.append( "Common Data Model" );
     sb.append( "</title>\r\n" );
-    sb.append( "<STYLE><!--" );
+    sb.append( "<STYLE type='text/css'><!--" );
     sb.append( this.getTomcatCSS() );
     sb.append( "--></STYLE> " );
     sb.append( "</head>\r\n" );

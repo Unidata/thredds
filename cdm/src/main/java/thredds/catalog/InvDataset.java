@@ -178,7 +178,7 @@ public abstract class InvDataset {
   /** Return the query fragment referencing this dataset, ie "catalog=catalog.xml&dataset=datasetID" */
   public String getSubsetUrl() {
     if (getID() == null) return null;
-    return "catalog="+getParentCatalog().baseURI.toString()+"&dataset="+getID();
+    return "catalog="+getParentCatalog().baseURI.toString()+"&amp;dataset="+getID();
   }
 
   /** If this dataset has nested datasets.
