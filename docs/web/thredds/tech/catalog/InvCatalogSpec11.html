@@ -55,7 +55,9 @@ further descriptive information can be placed. </p>
     <li><a href="#variables">variables</a></li>
   </ul>
   <li> 
-    <div class="head"><a href="#Enumerations">Enumerations</a></div></li><li><a href="#constructingURLs">Constructing URLs</a> </li>
+    <div class="head"><a href="#Enumerations">Enumerations</a></div></li><li><a href="#Dataset_Access_Methods">Dataset Access Methods</a><br>
+  </li>
+<li><a href="#constructingURLs">Constructing URLs</a> </li>
   <li><a href="#datasetClassification">Dataset Classification</a></li>
   <li><a href="#webResources">Datasets as Web Resources</a></li>
   <li><a href="#index">Index</a></li>
@@ -102,7 +104,7 @@ further descriptive information can be placed. </p>
 
 <h3><em>catalog</em><a name="catalog"></a> element</h3>
 
-<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="base" type="xsd:anyURI" /&gt;<br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.1" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;<br></pre>
+<pre>&lt;xsd:element name="catalog"&gt;  <br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;<br>      &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/&gt;<br>      &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>      &lt;xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" /&gt;<br>    &lt;/xsd:sequence&gt;<br><br>    &lt;xsd:attribute name="base" type="xsd:anyURI" /&gt; &lt;!-- deprecated: not working, don't use --&gt;<br>    &lt;xsd:attribute name="name" type="xsd:string" /&gt;<br>    &lt;xsd:attribute name="expires" type="dateType"/&gt; <br>    &lt;xsd:attribute name="version" type="xsd:token" default="1.0.1" /&gt; <br>  &lt;/xsd:complexType&gt; <br>&lt;/xsd:element&gt;<br></pre>
 
 <p>The <em>catalog</em> element is the top-level element. It may contain zero
   or more <em><a href="#service">service</a></em> elements followed by zero
@@ -111,10 +113,7 @@ further descriptive information can be placed. </p>
   element tells clients until when this catalog is accurate, so they can cache
   the catalog information. The value of the <i>version</i> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The <i>version</i> attribute is optional and to indicate conformance with this specification should be set to "1.0.1".<br>
 </p>
-<p>The <i><a name="catalogBase"></a>base</i> attribute allows catalog authors to explicitly specify a catalogs base URI.
-A catalog's base URI is used to resolve relative URIs in the catalog.
-If a base attribute is not given, the catalog's base URI is the URI of
-the catalog.(This is similar to the  <a href="http://www.w3.org/TR/xmlbase/">XML Base</a> <i>xml:base</i> attribute which we may transition to at some future time.)<br>
+<p>The <i><a name="catalogBase"></a>base</i> attribute is deprecated, its use is not supported in any known THREDDS code. Do not use as it will generally be ignored.<br>
  </p>
 
 
@@ -240,30 +239,7 @@ useful to clients so they know how to present the data to the user.
 
 <p>Example:
 </p>
-<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;<br></pre>
-<h3><a name="Dataset_Access_Methods"></a>Dataset Access Methods</h3>
-<p>A dataset access method can be specified in several ways. Each specification references a <i>service</i> element and provides a <i>urlPath</i> attribute from which a dataset access URL is formed (see <a href="#constructingURLs">constructing URLs</a>).<br>
-</p>
-<p>1) A dataset element has a urlPath attribute and inherits a
-serviceName element from a parent/ancestor dataset. This is probably
-the most common case as many catalogs will contain datasets that all
-refer to one service. Example:<br>
-</p>
-<pre>&lt;dataset name="collection of data"&gt;<br>  &lt;metadata inherited="true"&gt;<br>    &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>  &lt;/metadata&gt;<br>  &lt;dataset name="my dataset" urlPath="myData.nc" /&gt;<br>  &lt;dataset name="our dataset" urlPath="ourData.nc" /&gt;<br>  &lt;dataset name="their dataset" urlPath="theirData.nc" /&gt;<br>  ...<br>&lt;/dataset&gt;<br></pre>
-<p>2) A dataset element has a urlPath attribute and directly contains a serviceName element.<br>
-</p>
-<pre>&lt;dataset name="my dataset" urlPath="myData.nc"&gt;<br>  &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
-<p>3) A dataset element contains an access method. Example:<br>
-</p>
-<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>&lt;/dataset&gt;<br></pre>
-<p>There are several ways for a dataset to have more than one access method:<br>
-</p>
-<p>4) An access method can reference a <a href="#compoundService">compound service</a>.<br>
-</p>
-<p>5) A dataset can contain multiple access elements. Example:<br>
-</p>
-<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>  &lt;access serviceName="ftpservice" urlPath="mine/myData.nc"<br>&lt;/dataset&gt;<br></pre>
-<h3><em>catalogRef</em><a name="catalogRef"></a> element</h3>
+<pre>&lt;access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" /&gt;<br></pre><h3><em>catalogRef</em><a name="catalogRef"></a> element</h3>
 
 <pre>&lt;xsd:element name="catalogRef" substitutionGroup="dataset"&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:complexContent&gt;<br>      &lt;xsd:extension base="DatasetType"&gt;<br>        &lt;xsd:attributeGroup ref="XLink"/&gt;<br>      &lt;/xsd:extension&gt;<br>    &lt;/xsd:complexContent&gt;<br>  &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 
@@ -775,7 +751,42 @@ dataset. Additional information can be encoded in service properties.</p>
 
 <p>You can also use another vocabulary name; send it to us and we will add it to this list.<br>
 </p><hr style="width: 100%; height: 2px;">
-<h3>Constructing URLs<a name="constructingURLs"></a></h3>
+<h3><a name="Dataset_Access_Methods"></a>Dataset Access Methods</h3>
+
+<p>A dataset access method can be specified in several ways. Each specification references a <i>service</i> element and provides a <i>urlPath</i> attribute from which a dataset access URL is formed (see <a href="InvCatalogSpec11.html#constructingURLs">constructing URLs</a>).<br>
+</p>
+
+<p>1) A dataset element has a urlPath attribute and inherits a
+serviceName element from a parent/ancestor dataset. This is probably
+the most common case as many catalogs will contain datasets that all
+refer to one service. Example:<br>
+</p>
+
+<pre>&lt;dataset name="collection of data"&gt;<br>  &lt;metadata inherited="true"&gt;<br>    &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>  &lt;/metadata&gt;<br>  &lt;dataset name="my dataset" urlPath="myData.nc" /&gt;<br>  &lt;dataset name="our dataset" urlPath="ourData.nc" /&gt;<br>  &lt;dataset name="their dataset" urlPath="theirData.nc" /&gt;<br>  ...<br>&lt;/dataset&gt;<br></pre>
+
+<p>2) A dataset element has a urlPath attribute and directly contains a serviceName element.<br>
+</p>
+
+<pre>&lt;dataset name="my dataset" urlPath="myData.nc"&gt;<br>  &lt;serviceName&gt;myservice&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
+
+<p>3) A dataset element contains an access method. Example:<br>
+</p>
+
+<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>&lt;/dataset&gt;<br></pre>
+
+<p>There are several ways for a dataset to have more than one access method:<br>
+</p>
+
+<p>4) An access method can reference a <a href="InvCatalogSpec11.html#compoundService">compound service</a>.<br>
+</p>
+
+<p>5) A dataset can contain multiple access elements. Example:<br>
+</p>
+
+<pre>&lt;dataset name="my dataset"&gt;<br>  &lt;access serviceName="myservice" urlPath="myData.nc" /&gt;<br>  &lt;access serviceName="ftpservice" urlPath="mine/myData.nc"<br>&lt;/dataset&gt;<br></pre>
+
+<h3><em></em></h3>
+<hr size="2" width="100%"><h3><em></em>Constructing URLs<a name="constructingURLs"></a></h3>
 
 <p>A dataset URL is constructed by concatenating the service base URL 
   with the access urlPath. If the service has a suffix attribute, that is then appended:</p>
@@ -903,8 +914,7 @@ service@base attribute.</p>
   <li><a href="#access">access</a> element; defines a specific service and URL to access a dataset.</li>
   <li><a href="#authority">authority</a> : an element of a dataset; can also be specified as an attribute; used for unique IDs.</li>
   <li><a href="#base">service@base</a> : base URL is an attribute of a <a href="#service">service</a> element ; dataset URLs can be reletive to it . </li>
-  <li><a href="#catalog">catalog</a> element; root XML element.</li><li><a href="#catalogBase">catalog@base</a>: an attribute for defining the base URI for the catalog.<br>
-  </li>
+  <li><a href="#catalog">catalog</a> element; root XML element.</li>
 
   <li><a href="#catalogRef">catalogRef</a> element; refers to a nested THREDDS catalog.</li>
   <li><a href="#collectionTypes">collectionTypes</a> enumeration, used by <a href="#collection">collection</a> 
