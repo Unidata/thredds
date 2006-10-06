@@ -1,0 +1,83 @@
+THREDDS Data Server (TDS) Administration for system administrators and data providers
+
+First Day
+
+1. TDS Overview (60) 8:30 - 9:30
+
+ What can it do?
+   HTTP fileServer
+   OPeNDAP 
+   WCS   
+   Catalog Services
+   CDM Validation
+   Netcdf Grid subsetting 
+
+ What files can I serve?
+ 
+ What clients can I use?
+  Browser
+  ToolsUI
+  IDV
+
+2. Getting Started (45) 9:30 - 10:14
+   Tomcat Installation (Robb)
+   TDS Installation
+   Troubleshooting
+
+3. Writing and maintaining catalogs (90) 10:30 - 11:45
+  - Catalog basics (John/Ethan)
+  - DatasetScan (Ethan)
+  - Cataloggen (Ethan)
+
+Lunch break 12-1
+
+4. TDS Management (60) 1:00 - 2:00
+  - Tomcat Management - Directory layout
+  - Security
+  - TDS Management - Directory layout
+  - Remote Management
+ 
+5. TDS and NcML (60) 2:00 - 3:00
+  - Dataset Modification
+  - Dataset Aggregation 
+
+6. Enhanced Catalogs (60) 3:00 - 4:00
+  - Metadata standards (Ethan)
+  - Metadata Extraction (Ethan)
+  - Digital Library Harvesting
+  - ToolsUI Configurator (?)
+  
+7. Questions/Discussion 4:00 - 5:00
+
+---------------------
+
+Second Day 
+
+8. Advanced Tomcat management (60) 8:30-9:30
+   * web.xml
+   * Logging
+   * Performance
+
+9. Advanced TDS management (90) 9:30 - 11
+   * Logging
+   * Debugging
+   * params.xml
+   * Data Roots
+   * extra.catalogs
+   * caching
+   
+10. Serving Datasets - Examples I (60) 11 - 12
+   Case Studies/IDV (Jeff W) (30)
+   LEAD (Tom) (30)
+
+Lunch break
+
+11. Serving Datasets - Examples II (60) 1-2
+   ??
+
+12. Serving IDD data with TDS (Robb) (60) 2-3
+
+13. THREDDS Servlet Framework (advanced programmers) (60) 3-4
+  CrawlableDataset (Ethan)
+
+

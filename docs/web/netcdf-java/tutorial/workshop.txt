@@ -1,0 +1,38 @@
+NetCDF Java Workshop for intermediate/advanced Java programmers
+
+Intermediate topics:
+
+ 1. Overview of the Common Data Model and API (45) 8:30-9:15
+
+ 2. Working with CDM files (60) 9:15 - 10:15
+    * using ToolsUI GUI
+    * NetcdfFile: reading CDM files: local, HTTP, OPeNDAP, THREDDS
+    * NetcdfDataset: enhanced files, coordinate systems
+    * NetcdfFileWriteable: Writing NetCDF Files
+
+ 3. Datatype API (45) 10:15 - 11:00
+    * GeoGrid
+    * Point/Station/Trajectory/Profile (Ethan)
+    * Radial (Yuan)
+
+ 4. NcML (60) 11:00 - 12:00
+    * Modifying existing files
+    * Aggregation
+	* Forecast Model Aggregation
+
+Lunch break 12-1
+
+Advanced topics:
+
+ 5. Building from source (30) 1-1:30
+    * download from Subversion (web) and build with ant
+
+ 6. Writing an I/O Service Provider ( 120) 1:30-3:30
+    * Reading other file formats into the CDM
+
+ 7. Other pluggable features (90) 3:30 - 5
+    * GRIB/BUFR tables (Robb)
+    * Writing a Coordinate System Builder: recognizing Coordinate Systems.
+    * Writing a Coordinate Transform implementation: projections and vertical transforms
+    * Writing a Datatype implementation: Point/Station/Trajectory, Radar files, etc.
+

@@ -73,6 +73,7 @@
   <p>The THREDDS Data Server is implemented in 100% Java, and is contained in a single war file, which allows very easy installation into the open-source <a href="http://jakarta.apache.org/tomcat/">Tomcat</a>  web server. Configuration is made as simple and as automatic as possible, and we have made the server as secure as possible.</p>
   <ul>
     <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.12/thredds.war">Download</a> the latest stable version (3.12). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.12/CHANGES.txt">Change Log</a>. </li>
+    <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.13/thredds.war">Download</a> the latest development version (3.13). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.13/CHANGES.txt">Change Log</a>. </li>
     <li><a href="http://motherlode.ucar.edu:8080/thredds/docs/">THREDDS Data Server documentation</a></li>
     <li>The TDS uses the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java library</a> </li>
   </ul>
@@ -123,17 +124,8 @@
   access. They can also be dynamically generated and serve as a front end
   to large data portals. Because they are XML rather than HTML, they are
   much easier to read by application programs. </p>
-
-  <p>The <a href="catalog/InvCatalogSpec.html">Catalog 1.0 specification</a>
-is an annotated XML Schema that explains the details of THREDDS Catalogs.
-</p>
-<p>
-The current stable version is 1.0.1 which is defined by the
-<a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">
- InvCatalog 1.0.1 schema</a>.
-  Changes between 1.0 and 1.0.1 are described in the
-<a href="catalog/Changes.1.0.1.html">Catalog 1.0.1 changes file.</a>
-</p>
+  <p>The <a href="catalog/InvCatalogSpec11.html">Catalog 1.0.1 specification</a> is an annotated XML Schema that explains the details of THREDDS Catalogs. <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Online  catalog 1.0.1 schema</a> . </p>
+  <p>The latest version is 1.0.1 is used by the THREDDS Data Server and is described in <a href="catalog/Changes.1.0.1.html">Catalog 1.0.1 changes.</a></p>
   <h3><a name="QC"></a>Dataset Query Capabilities (DQC) XML</h3>
   <p>This is an experimental XML document format that  describes the possible ways  
     an end-user can choose dataset subsets. These choices are formed into a query 

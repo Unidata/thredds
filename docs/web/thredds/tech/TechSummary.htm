@@ -109,27 +109,34 @@
   a powerful tool for third<sup></sup> party metadata augmentation, which is in 
   addition to the ability to add metadata into the Inventory Catalogs.</p>
 <hr>
-<h3><a name="20060811"></a>Status update 08/11/2006</h3>
+<h3><a name="20060815" id="20060815"></a>Status update 08/15/2006</h3>
 <ol>
   <li> <strong>THREDDS Data Server (TDS)</strong>: We are at stable release 3.12. 
     <ol><li><strong>NetcdfServer</strong>: subset NCEP GRIB models and return NetCDF/CF files. (<a href="http://motherlode.ucar.edu:8080/thredds/ncServer/model/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_20060809_0600.grib2?showForm">Example</a>) : This is being tested/used by CUAHSI and others. </li>
       <li>A major rewrite (<strong>CrawlableDataset</strong>) allows parts of the TDS code to be used in the new OPeNDAP Server 4 to generate THREDDS catalogs as an integral part of OPeNDAP servers. </li>
-      <li>Improvements on <strong>InvDatasetScan</strong>:</li>
+      <li><strong>OAI</strong> harvesting added, both DIF and ADN records improved. Motherlode records exported to GCMD, DLESE. </li>
+      <li>Improvements on <strong>InvDatasetScan</strong>:
+        <ol>
+          <li> Generates last modified dates in catalogs which allows HTML view to display the date.</li>
+          <li>&quot;Latest" dataset now determined by file name and last modified time to give incoming files time to finish arriving. </li>
+        </ol>
+      </li>
       <li>Continue to test and improve <strong>TDS/NcML Aggregation</strong> along with partners such as <a href="http://oceanwatch.pfeg.noaa.gov:8081/thredds/catalog.html">Pacific Fisheries Environmental Laboratory </a> (Roy Mendelson) </li>
       <li><strong>WCS Server</strong> was successfully used in the <a href="http://www.ogcnetwork.net/galeon">GALEON</a> experiment for &quot;WCS gateways to netCDF datasets&quot;. </li>
       <li>HTML catalog view now correctly sets the <strong>Last Modified</strong> field in dataset listings.</li>
   </ol>
   </li>
   <li><strong>Common Data Model</strong>:
-      <ol>
-        <li><strong>BUFR</strong> files are being decoded into the CDM, ongoing work to improve and add tables. </li>
-        <li> New <strong>Radar Datatype</strong> interface and implementations for DORADE, NEXRAD 2 and 3 integrated  into IDV release 2.0.</li>
-        <li>Users can now plug in their own coordinate transforms (<strong>CoordTransBuilder</strong>). </li>
+We are at stable release 2.2.16
+    <ol>
+      <li><strong>BUFR</strong> files are being decoded into the CDM, ongoing work to improve and add tables. </li>
+      <li> New <strong>Radar Datatype</strong> interface and implementations for DORADE, NEXRAD 2 and NEXRAD 3 integrated  into IDV release 2.0.</li>
+      <li>Users can now plug in their own coordinate transforms (<strong>CoordTransBuilder</strong>). </li>
       </ol>
   </li>
   <li><strong>Ongoing work</strong>:
       <ol>
-        <li>New kind of NcML Aggregation: <strong>Forecast Model Run Collection</strong>, for gridded data. GeoGrid will be extended to handle 2 time dimesnions, and possibly also an ensemble dimension. </li>
+        <li>New kind of NcML Aggregation: <strong>Forecast Model Run Collection</strong>, for gridded data. GeoGrid will be extended to handle 2 time dimensions, and possibly also an ensemble dimension. </li>
         <li><strong>GRIB</strong> files:
           <ol>
             <li>handle ensemble and GRIB2 error variables</li>
