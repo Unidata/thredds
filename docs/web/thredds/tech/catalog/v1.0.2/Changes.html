@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Catalog 1.0.1 Changes</title>
+
+  <link rel="stylesheet" href="/thredds/upc.css" type="text/css"></head>
+
+<body>
+<h1 align="left"><img alt="Unidata" src="../unidataLogo.png" align="middle" height="83" width="92"> Changes to Catalog version 1.0 </h1>
+<address>
+last update: Jan 10, 2006
+</address>
+<div class="head"></div>
+<hr>
+<h2>Changes for version 1.0.1</h2>
+<ul>
+  <li>The version attribute is "1.0.1" . </li>
+  <li>The schema can be found <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">here</a>.
+However, you should tell your parser to resolve to a local copy of it,
+both for performance and to decouple with Unidata's web server. </li>
+</ul>
+<h3>Catalog base attribute</h3>
+<p>The optional attribute <strong>base</strong> can be added to the
+catalog element to define a base URL. All relative URLs in the document
+are interpreted against base URL. This follows the<a href="http://www.w3.org/TR/xmlbase/"> XML Base specification</a>, which in turn references the <a href="http://www.ietf.org/rfc/rfc2396.txt">specification of URIs</a><strong>.</strong></p>
+<h3>DatasetType type </h3>
+<p>The <strong>dataset</strong> definition is now made in the <strong>DatasetType</strong> type, and <strong>catalogRef</strong> and <strong>datasetScan</strong> extend from it and are in the same substitution group. This means that you can use a <strong>catalogRef</strong> and <strong>datasetScan</strong> wherever a <strong>dataset</strong> is allowed. This simplifies the schema slightly. There are a few important effects of this:</p>
+<ol>
+  <li><strong>catalogRef</strong> now <em><strong>is-a</strong></em> dataset, and can have any and all metadata that a <strong>dataset</strong> can have.</li>
+  <li> <strong>catalogRef</strong> must have a <strong>name</strong> attribute, since that is required on a <strong>dataset</strong>. The <strong>name</strong> is ignored, in favor of the <strong>xlink:title</strong> attribute. This is the only (slightly) <font color="#ff0000">backward incompatible</font> change, and only affects validation. </li>
+</ol>
+<h3>metadata element </h3>
+<ol>
+  <li>process other namespaces with "lax" attribute, meaning validate if a schema can be found </li>
+</ol>
+<h3>timeCoverageType type </h3>
+<ol>
+  <li>some technical corrections to simplify the schema, no semantic changes. </li>
+</ol>
+<h3>variables element </h3>
+<ol>
+  <li><strong>vocabulary</strong> attribute is now optional on a <strong>variables</strong> element</li>
+  <li><strong>vocabulary_name</strong> attribute is now optional on a <strong>variable</strong> element</li>
+  <li>the <strong>variable</strong> element is now <em>mixed content</em>, meaning you can add text content, which is interpreted as a description of the variable. </li>
+</ol>
+<h3>Enumeration changes </h3>
+<p>All enumeration values should be tested case-insensitive. </p>
+<ol>
+  <li><strong>collectionTypes:</strong> add <em>ForecastModelRuns</em></li>
+  <li><strong>dataTypes: </strong>add <em>Point, Radial </em></li>
+  <li><strong>dataFormatTypes</strong>: add <em>NEXRAD2</em>, <em>NIDS</em>, <em>GINI</em> </li>
+  <li><strong>dateEnumTypes:</strong> add <em>metadataCreated</em> </li>
+</ol>
+<hr>
+<h2>Thredds Data Server </h2>
+<p>There are a number of changes and additions that are used only on the server. </p>
+<h3>dataset</h3>
+<ol>
+  <li>A <strong>dataset</strong> element can have a <strong>resourceControl</strong> attribute, that indicates that only users with permission for that resource can have access to the dataset. </li>
+  <li>A <strong>datasetScan</strong> is a kind of <strong>dataset</strong> which contain other datasets which are found dynamically, e.g. by scanning directories. A datasetScan element looks like a <strong>catalogRef</strong> element on the client. </li>
+</ol>
+<h3>datasetRoot</h3>
+<ol>
+  <li>A <strong>datasetRoot</strong> element associates a URL path with a file directory on the server. </li>
+  <li>A <strong>service</strong> element can have  nested <strong>datasetRoot</strong> elements.</li>
+</ol>
+<p>For tutorials on using these elements in the THREDDS Data Server see: </p>
+<ul>
+  <li><a href="http://motherlode.ucar.edu:8080/thredds/docs/datasetScan/index.html">Automatic Catalog Generation using &lt;datasetScan&gt;</a></li>
+  <li><a href="http://motherlode.ucar.edu:8080/thredds/docs/Configuration.html">TDS Configuration Reference</a></li>
+</ul>
+<hr>
+<h2>Other requests</h2>
+<ul>
+  <li>Allow a variable element to map to more than one vocabulary (Luca)</li>
+  <li>Add<em> last update time</em> of the catalog, for caching. Could use HTTP headers. (Benno, LEAD). </li>
+  <li><em>Extended inheritance</em> across catalog references (Michael Burek) </li>
+</ul>
+<div class="head"></div>
+<hr width="100%">
+<p> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support@unidata.ucar.edu">THREDDS support</a> (put "THREDDS" in subject line) </span></i></p>
+<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img alt="THREDDS" src="../THREDDSlogo.jpg" height="54" width="67"></p>
+</body></html>
