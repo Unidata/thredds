@@ -586,9 +586,8 @@ to udunits time duration strings.<br>
   to an online resource describing the standard vocabulary. The possible format(s)
   of this online resource is yet to be determined.</p>
 
-<p> Each <em>variable</em> element contains the name of the variable in the dataset,
-  and its name in the standard vocabulary, as well as an optional <em>units</em>
-  attribute. A <em>variableMap</em><a name="variableMap"></a> element contains an <em>XLink</em> to <em>variable</em>
+<p> Each <em>variable</em> element must have a <i>name</i> attribute which contains the name of variable in the dataset. The optional <i>vocabulary_name</i> attribute contains the variables name from a standard vocabulary (optionally specified by the <i>variables</i> element). The optional <em>units</em>
+  attribute contains the units of the variable in the dataset. The content of the <i>variable</i> element can contain text describing the variable. A <em>variableMap</em><a name="variableMap"></a> element contains an <em>XLink</em> to <em>variable</em>
   elements, so that you can factor these out and refer to them from multiple places.</p>
 
 <p>The main purpose of the <em>variables</em> element is to describe a dataset
@@ -599,7 +598,7 @@ to udunits time duration strings.<br>
 
 <p>Examples: </p>
 
-<pre>&lt;variables vocabulary="CF-1.0"&gt;<br>  &lt;variable name="wv" vocabulary_name="Wind Speed" units="m/s"/&gt;<br>  &lt;variable name="wdir" vocabulary_name="Wind Direction" units= "degrees"/&gt;<br>  &lt;variable name="o3c" vocabulary_name="Ozone Concentration" units="g/g"/&gt;<br>&lt;/variables&gt;<br><br>&lt;variables vocabulary="GRIB-NCEP" xlink:href="http://www.unidata.ucar.edu//GRIB-NCEPtable2.xml"&gt;<br>  &lt;variableMap xlink:href="../standardQ/Eta.xml" /&gt;<br>&lt;/variables&gt;<br></pre>
+<pre>&lt;variables vocabulary="CF-1.0"&gt;<br>  &lt;variable name="wv" vocabulary_name="Wind Speed" units="m/s"&gt;Wind Speed @ surface&lt;/variable&gt;<br>  &lt;variable name="wdir" vocabulary_name="Wind Direction" units= "degrees"&gt;Wind Direction @ surface&lt;/variable&gt;<br>  &lt;variable name="o3c" vocabulary_name="Ozone Concentration" units="g/g"&gt;Ozone Concentration @ surface&lt;/variable&gt;<br>&lt;/variables&gt;<br><br>&lt;variables vocabulary="GRIB-NCEP" xlink:href="http://www.unidata.ucar.edu//GRIB-NCEPtable2.xml"&gt;<br>  &lt;variableMap xlink:href="../standardQ/Eta.xml" /&gt;<br>&lt;/variables&gt;<br></pre>
 
 <p> A <em>varibleMap</em> should point to an XML document with a top-level <em>variables</em>
   element with the THREDDS namespace declared:</p>
