@@ -153,6 +153,7 @@
           <xsd:complexType>
             <xsd:attribute name="location" type="xsd:string" use="required"/>
             <xsd:attribute name="suffix" type="xsd:string" />
+            <xsd:attribute name="regExp" type="xsd:string" />
             <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
             <xsd:attribute name="olderThan" type="xsd:string" />
 
@@ -161,14 +162,15 @@
           </xsd:complexType>
         </xsd:element>
 
-        <xsd:element name="scan2" minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="scanFmrc" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:attribute name="location" type="xsd:string" use="required"/>
             <xsd:attribute name="suffix" type="xsd:string" />
+            <xsd:attribute name="regExp" type="xsd:string" />
             <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
             <xsd:attribute name="olderThan" type="xsd:string" />
 
-            <xsd:attribute name="runDateMatcher" type="xsd:string" use="required"/>
+            <xsd:attribute name="runDateMatcher" type="xsd:string" />
             <xsd:attribute name="forecastDateMatcher" type="xsd:string" />
             <xsd:attribute name="forecastOffsetMatcher" type="xsd:string" />
           </xsd:complexType>
@@ -198,7 +200,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="forecastModelRunCollection"/>
       <xsd:enumeration value="forecastModelRunHourlyCollection"/>
-      <xsd:enumeration value="forecastModelRun"/>
+      <xsd:enumeration value="forecastModelRun"/>  <!-- deprecated  -->
       <xsd:enumeration value="joinExisting"/>
       <xsd:enumeration value="joinNew"/>
       <xsd:enumeration value="union"/>

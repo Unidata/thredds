@@ -183,12 +183,14 @@ public class NcMLWriter {
       aggElem.addContent(e);
     }
 
-    List unionList = agg.getUnionDatasets();
-    for (int i = 0; i < unionList.size(); i++) {
-      NetcdfDataset ds = (NetcdfDataset) unionList.get(i);
-      Element e = new Element("netcdf", ncNS);
-      e.setAttribute("location", ds.getLocation());
-      aggElem.addContent(e);
+    if (agg.getType() == Aggregation.Type.UNION) {
+      List unionList = ((AggregationUnion)agg).getUnionDatasets();
+      for (int i = 0; i < unionList.size(); i++) {
+        NetcdfDataset ds = (NetcdfDataset) unionList.get(i);
+        Element e = new Element("netcdf", ncNS);
+        e.setAttribute("location", ds.getLocation());
+        aggElem.addContent(e);
+      }
     }
 
 

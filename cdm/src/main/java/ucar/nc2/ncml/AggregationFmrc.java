@@ -26,7 +26,6 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.nc2.dataset.*;
@@ -38,6 +37,7 @@ import java.io.*;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation
+ *  with files that are complete runs (have all forecat times in the same file)
  *
  * @author caron
  */
@@ -51,8 +51,12 @@ public class AggregationFmrc extends Aggregation {
   private boolean debug = false;
   private boolean timeUnitsChange = false;
 
-  public AggregationFmrc(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
-    super(ncd, dimName, typeName, recheckS);
+  public AggregationFmrc(NetcdfDataset ncd, String dimName, String recheckS) {
+    super(ncd, dimName, Type.FORECAST_MODEL_COLLECTION, recheckS);
+  }
+
+  protected AggregationFmrc(NetcdfDataset ncd, String dimName, Aggregation.Type type, String recheckS) {
+    super(ncd, dimName, type, recheckS);
   }
 
   public void setTimeUnitsChange( boolean timeUnitsChange) {
@@ -97,7 +101,7 @@ public class AggregationFmrc extends Aggregation {
     ncDataset.addDimension(null, aggDim);
 
     // create runtime aggregation coordinate variable
-    DataType  coordType = getCoordinateType();
+    DataType  coordType = DataType.STRING; // LOOK getCoordinateType();
     VariableDS  runtimeCoordVar = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
     runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
@@ -188,48 +192,7 @@ public class AggregationFmrc extends Aggregation {
 
     } else {
       // for the case that we dont have a fmrcDefinition
-
-      // LOOK how do we set the length of the time dimension(s), if its ragged?
-      // Here we are just using the typical dataset !!!
-      // For now, we dont handle ragged time coordinates.
-
-      // find time axes
-      HashSet timeAxes = new HashSet();
-      List grids = gds.getGrids();
-      for (int i = 0; i < grids.size(); i++) {
-        GridDatatype grid = (GridDatatype) grids.get(i);
-        GridCoordSystem gcc = grid.getCoordinateSystem();
-        CoordinateAxis1D timeAxis = gcc.getTimeAxis1D();
-        if (null != timeAxis)
-          timeAxes.add(timeAxis);
-      }
-
-     // promote the time coordinate(s) to 2D, read in values if we have to
-      Iterator iter = timeAxes.iterator();
-      while( iter.hasNext()) {
-        CoordinateAxis1DTime v = (CoordinateAxis1DTime) iter.next();
-
-        // construct new variable, replace old one
-        String dims = dimName + " " + v.getDimensionsString();
-        VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-        NcMLReader.transferVariableAttributes(v, vagg);
-        Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
-        if (att != null) vagg.remove(att);
-
-        ncDataset.removeVariable(null, v.getShortName());
-        ncDataset.addVariable(null, vagg);
-
-        if (!timeUnitsChange)
-          // Case 1: assume the units are all the same, so its just another agg variable
-          vagg.setProxyReader(this);
-        else {
-          // Case 2: assume the time units differ for each nested file
-          readTimeCoordinates( vagg, cancelTask);
-        }
-
-        if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
-        if (cancelTask != null && cancelTask.isCancel()) return;
-      }
+      makeTimeCoordinate(gds, cancelTask);
     }
 
     // promote all grid variables
@@ -260,6 +223,51 @@ public class AggregationFmrc extends Aggregation {
     ncDataset.enhance();
 
     typical.close();
+  }
+
+  // for the case that we dont have a fmrcDefinition
+  protected void makeTimeCoordinate(GridDataset gds, CancelTask cancelTask) throws IOException {
+    // LOOK how do we set the length of the time dimension(s), if its ragged?
+    // Here we are just using the typical dataset !!!
+    // For now, we dont handle ragged time coordinates.
+
+    // find time axes
+    HashSet timeAxes = new HashSet();
+    List grids = gds.getGrids();
+    for (int i = 0; i < grids.size(); i++) {
+      GridDatatype grid = (GridDatatype) grids.get(i);
+      GridCoordSystem gcc = grid.getCoordinateSystem();
+      CoordinateAxis1D timeAxis = gcc.getTimeAxis1D();
+      if (null != timeAxis)
+        timeAxes.add(timeAxis);
+    }
+
+    // promote the time coordinate(s) to 2D, read in values if we have to
+    Iterator iter = timeAxes.iterator();
+    while (iter.hasNext()) {
+      CoordinateAxis1DTime v = (CoordinateAxis1DTime) iter.next();
+
+      // construct new variable, replace old one
+      String dims = dimName + " " + v.getDimensionsString();
+      VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
+      NcMLReader.transferVariableAttributes(v, vagg);
+      Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
+      if (att != null) vagg.remove(att);
+
+      ncDataset.removeVariable(null, v.getShortName());
+      ncDataset.addVariable(null, vagg);
+
+      if (!timeUnitsChange)
+        // Case 1: assume the units are all the same, so its just another agg variable
+        vagg.setProxyReader(this);
+      else {
+        // Case 2: assume the time units differ for each nested file
+        readTimeCoordinates(vagg, cancelTask);
+      }
+
+      if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
   }
 
     // problem is that we may actualy have a ragged array - in the time dimension only
@@ -451,7 +459,7 @@ public class AggregationFmrc extends Aggregation {
     String units = null;
 
     for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset dataset = null;
+      Dataset dataset;
       NetcdfDataset ncfile = null;
       try {
         dataset = (Dataset) nestedDatasets.get(i);

@@ -79,7 +79,7 @@ public class DateFromString
    *  would extract the date 2006-07-06T08:00
    *
    *  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
-   *  dateFormatString =          yyyyMM-ddHH#/wrfout_d01_#
+   *  dateFormatString =          yyyyMMddHH#/wrfout_d01_#
    *  would extract the date 2006-07-06T11:00
    * </pre>
    *
@@ -107,6 +107,30 @@ public class DateFromString
     }
 
     return getDateUsingCompleteDateFormatWithOffset( dateString, dateFormatString, 0 );
+  }
+
+  public static Double getHourUsingDemarkatedMatch( String hourString, String formatString, char demark )
+  {
+    // extract the match string
+    int pos1 = formatString.indexOf( demark);
+    int pos2 = formatString.indexOf( demark, pos1+1);
+    if ((pos1 < 0) || (pos2 < 0)) return null;
+    String match = formatString.substring(pos1+1, pos2);
+
+    // where does it live in the hour string ?
+    int pos3 = hourString.indexOf(match);
+    if (pos3 < 0) return null;
+
+    // for now, just match the number of chars
+    if (pos1 > 0) {
+      hourString = hourString.substring(pos3-pos1, pos3);
+    }  else {
+      int len = formatString.length() - pos2 - 1;
+      int start = pos3 + match.length();
+      hourString = hourString.substring(start, start+len);
+    }
+
+    return Double.valueOf( hourString);
   }
 
   /**

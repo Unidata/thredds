@@ -47,7 +47,12 @@ public class AggregationFmr extends Aggregation {
   private int aggForecastOffset;
 
   public AggregationFmr(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
-    super( ncd, dimName, typeName, recheckS);
+    super( ncd, dimName, Type.FORECAST_MODEL, recheckS);
+  }
+
+  protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
+    buildCoords(cancelTask);
+    // aggExistingDimension(isNew, ncDataset, cancelTask);  LOOK
   }
 
   public void setForecastDate(String forecastDateS, String forecastDateVariable) {

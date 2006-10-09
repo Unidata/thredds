@@ -23,7 +23,6 @@ package ucar.nc2.ncml;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
@@ -32,12 +31,8 @@ import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.io.*;
-import java.nio.channels.FileChannel;
-import java.nio.channels.OverlappingFileLockException;
-import java.nio.channels.FileLock;
 
 import thredds.util.DateFromString;
-import org.jdom.Element;
 
 /**
  * Implement NcML Aggregation.
@@ -76,7 +71,7 @@ import org.jdom.Element;
  * @author caron
  * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */
-public class Aggregation implements ucar.nc2.dataset.ProxyReader {
+public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   static protected DiskCache2 diskCache2 = null;
 
@@ -95,33 +90,32 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   // explicit
   private ArrayList vars = new ArrayList(); // variable names (String)
-  private ArrayList unionDatasets = new ArrayList(); // NetcdfDataset objects
   protected ArrayList explicitDatasets = new ArrayList(); // explicitly created Dataset objects from netcdf elements
 
   // scan
   protected ArrayList scanList = new ArrayList(); // current set of DirectoryScan for scan elements
-  protected ArrayList scan2List = new ArrayList(); // current set of DirectoryScan for scan2 elements
-  private TimeUnit recheck; // how often to recheck
+  protected TimeUnit recheck; // how often to recheck
   protected long lastChecked; // last time checked
   protected boolean wasChanged = true; // something changed since last aggCache file was written
-  private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
+  protected boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false;
+  protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false,
+    debugScan = true;
 
   /**
-   * Create an Aggregation for the NetcdfDataset.
+   * Create an Aggregation for the given NetcdfDataset.
    * The following addXXXX methods are called, then finish(), before the object is ready for use.
    *
    * @param ncd      Aggregation belongs to this NetcdfDataset
    * @param dimName  the aggregation dimension name
-   * @param typeName the Aggegation.Type name
+   * @param type the Aggregation.Type
    * @param recheckS how often to check if files have changes
    */
-  public Aggregation(NetcdfDataset ncd, String dimName, String typeName, String recheckS) {
+  protected Aggregation(NetcdfDataset ncd, String dimName, Type type, String recheckS) {
     this.ncDataset = ncd;
     this.dimName = dimName;
-    this.type = Type.getType(typeName);
+    this.type = type;
 
     if (recheckS != null) {
       try {
@@ -133,7 +127,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   }
 
   /**
-   * Add a nested dataset (other than a union), specified by an explicit netcdf ekement
+   * Add a nested dataset (other than a union), specified by an explicit netcdf element.
+   * enhance is handled by the reader, so its always false here.
    *
    * @param cacheName   a unique name to use for caching
    * @param location    attribute "location" on the netcdf element
@@ -142,17 +137,14 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * @param reader      factory for reading this netcdf dataset
    * @param cancelTask  user may cancel, may be null
    */
-  public void addDataset(String cacheName, String location, String ncoordS, String coordValueS, NetcdfFileFactory reader, CancelTask cancelTask) {
+  public void addExplicitDataset(String cacheName, String location, String ncoordS, String coordValueS, NetcdfFileFactory reader, CancelTask cancelTask) {
     // boolean enhance = (enhanceS != null) && enhanceS.equalsIgnoreCase("true");
     Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, false, reader);
     explicitDatasets.add(nested);
   }
 
-  /**
-   * Add a nested union dataset, which has been opened externally
-   */
-  public void addDatasetUnion(NetcdfDataset ds) {
-    unionDatasets.add(ds);
+  public void addDataset(Dataset nested) {
+    explicitDatasets.add(nested);
   }
 
   /**
@@ -160,27 +152,21 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    *
    * @param dirName scan this directory
    * @param suffix  filter on this suffix (may be null)
+   * @param regexpPatternString  include if full name matches this regular expression (may be null)
    * @param dateFormatMark create dates from the filename (may be null)
    * @param enhance should files bne enhanced?
    * @param olderThan files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    * @throws IOException
    */
-  public void addDirectoryScan(String dirName, String suffix, String dateFormatMark, String enhance, String subdirs, String olderThan) throws IOException {
-    DirectoryScan d = new DirectoryScan(dirName, suffix, dateFormatMark, enhance, subdirs, olderThan);
+  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhance, String subdirs, String olderThan) throws IOException {
+    DirectoryScan d = new DirectoryScan(dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
     scanList.add(d);
     if (dateFormatMark != null)
       isDate = true;
   }
 
-  public void addDirectoryScan2(String dirName, String suffix, String subdirs, String olderThan, String runMatcher, String forecastMatcher, String offsetMatcher) throws IOException {
-    DirectoryScan d = new DirectoryScan(dirName, suffix, subdirs, olderThan, runMatcher, forecastMatcher, offsetMatcher);
-    scan2List.add(d);
-    isDate = true;
-  }
-
   /**
-   * Add a variableAgg element
-   *
+   * Add a name from a variableAgg element
    * @param varName
    */
   public void addVariable(String varName) {
@@ -197,10 +183,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   public List getNestedDatasets() {
     return nestedDatasets;
-  }
-
-  public List getUnionDatasets() {
-    return unionDatasets;
   }
 
   public Type getType() {
@@ -232,156 +214,22 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * @throws IOException
    */
   public void close() throws IOException {
-    //if (null != typical)
-    //  typical.close();
-
-    for (int i = 0; i < unionDatasets.size(); i++) {
-      NetcdfDataset ds = (NetcdfDataset) unionDatasets.get(i);
-      ds.close();
-    }
-
     persist();
+
+    for (int i = 0; i < nestedDatasets.size(); i++) {
+      Dataset ds = (Dataset) nestedDatasets.get(i);
+      ds.close(); 
+    }
   }
 
   /**
-   * Persist info (nccords, coorValues) from joinExisting, since that can be expensive to recreate.
+   * Overriden in AggregationExisting
    * @throws IOException
    */
-  public void persist() throws IOException {
-    // optionally persist info from joinExisting scans, since that can be expensive to recreate
-    if ((diskCache2 != null) && (type == Type.JOIN_EXISTING))
-      persistWrite();
-  }
+  public void persist() throws IOException { }
 
-  // name to use in the DiskCache2 for the persistent XML info.
-  // Document root is aggregation
-  // has the name getCacheName()
-  private String getCacheName() {
-    String cacheName = ncDataset.getLocation();
-    if (cacheName == null) cacheName = ncDataset.getCacheName();
-    return cacheName;
-  }
-
-  // write info to a persistent XML file, to save time next time
-  // only for joinExisting
-  private void persistWrite() throws IOException {
-    FileChannel channel = null;
-    try {
-      String cacheName = getCacheName();
-      if (cacheName == null) return;
-
-      File cacheFile = diskCache2.getCacheFile(cacheName);
-      boolean exists = cacheFile.exists();
-      if (!exists) {
-        File dir = cacheFile.getParentFile();
-        dir.mkdirs();
-      }
-
-      // only write out if something changed after the cache file was last written
-      if (!wasChanged)
-        return;
-
-      // Get a file channel for the file
-      FileOutputStream fos = new FileOutputStream(cacheFile);
-      channel = fos.getChannel();
-
-      // Try acquiring the lock without blocking. This method returns
-      // null or throws an exception if the file is already locked.
-      FileLock lock;
-      try {
-        lock = channel.tryLock();
-      } catch (OverlappingFileLockException e) {
-        // File is already locked in this thread or virtual machine
-        return; // give up
-      }
-      if (lock == null) return;
-
-      PrintStream out = new PrintStream(fos);
-      out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
-      out.print("<aggregation xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' ");
-      out.print("type='" + type + "' ");
-      if (dimName != null)
-        out.print("dimName='" + dimName + "' ");
-      if (recheck != null)
-        out.print("recheckEvery='" + recheck + "' ");
-      out.print(">\n");
-
-      for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset dataset = (Dataset) nestedDatasets.get(i);
-        out.print("  <netcdf location='" + dataset.getLocation() + "' ");
-        out.print("ncoords='" + dataset.getNcoords(null) + "' ");
-
-        if (dataset.coordValue != null)
-          out.print("coordValue='" + dataset.coordValue + "' ");
-
-        out.print("/>\n");
-      }
-
-      out.print("</aggregation>\n");
-      out.close(); // this also closes the  channel and releases the lock
-
-      cacheFile.setLastModified(lastChecked);
-      wasChanged = false;
-
-      if (debug)
-        System.out.println("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(lastChecked));
-
-    } finally {
-      if (channel != null)
-        channel.close();
-    }
-  }
-
-  // read info from the persistent XML file, if it exists
-  private void persistRead() {
-    String cacheName = getCacheName();
-    if (cacheName == null) return;
-
-    File cacheFile = diskCache2.getCacheFile(cacheName);
-    if (!cacheFile.exists())
-      return;
-
-    if (debug) System.out.println(" *Read cache " + cacheFile.getPath());
-
-    Element aggElem;
-    try {
-      aggElem = NcMLReader.readAggregation(cacheFile.getPath());
-    } catch (IOException e) {
-      return;
-    }
-
-    List ncList = aggElem.getChildren("netcdf", NcMLReader.ncNS);
-    for (int j = 0; j < ncList.size(); j++) {
-      Element netcdfElemNested = (Element) ncList.get(j);
-      String location = netcdfElemNested.getAttributeValue("location");
-      Dataset ds = findDataset(location);
-      if ((null != ds) && (ds.ncoord == 0)) {
-        if (debugCacheDetail) System.out.println("  use cache for " + location);
-        String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
-        try {
-          ds.ncoord = Integer.parseInt(ncoordsS);
-        } catch (NumberFormatException e) {
-        } // ignore
-
-        String coordValue = netcdfElemNested.getAttributeValue("coordValue");
-        if (coordValue != null) {
-          ds.coordValue = coordValue;
-        }
-
-      }
-    }
-
-  }
-
-  // find a dataset in the nestedDatasets by location
-  private Dataset findDataset(String location) {
-    for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset ds = (Dataset) nestedDatasets.get(i);
-      if (location.equals(ds.getLocation()))
-        return ds;
-    }
-    return null;
-  }
+  // read info from the persistent XML file, if it exists; overridden in AggregationExisting
+  protected void persistRead() { }
 
   /**
    * Is the named variable an "aggregation variable" ?
@@ -413,8 +261,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     if (scanList.size() > 0)
       scan(nestedDatasets, cancelTask);
-    else if (scan2List.size() > 0)
-      scan2(nestedDatasets, cancelTask); // LOOK
+    scanFmrc( cancelTask); // LOOK
 
     // check persistence info
     if ((diskCache2 != null) && (type == Type.JOIN_EXISTING))
@@ -427,6 +274,10 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     this.lastChecked = System.currentTimeMillis();
     wasChanged = true;
   }
+
+
+  // LOOK isNew may be fishy
+  protected abstract void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException;
 
   protected void buildCoords(CancelTask cancelTask) throws IOException {
     if ((type == Type.FORECAST_MODEL) || (type == Type.FORECAST_MODEL_COLLECTION)) {
@@ -442,6 +293,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       totalCoords += nested.setStartEnd(totalCoords, cancelTask);
     }
   }
+
+  //////////////////////////////////////////////////////////////
 
   public boolean syncExtend() throws IOException {
     if (!isChanged())
@@ -548,18 +401,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     return true;
   }
 
-  // LOOK isNew is fishy
-  protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
-    buildCoords(cancelTask);
-
-    if (getType() == Aggregation.Type.JOIN_NEW)
-      aggNewDimension(isNew, ncDataset, cancelTask);
-    else if (getType() == Aggregation.Type.JOIN_EXISTING)
-      aggExistingDimension(isNew, ncDataset, cancelTask);
-    else if (getType() == Aggregation.Type.FORECAST_MODEL)
-      aggExistingDimension(isNew, ncDataset, cancelTask);
-  }
-
   /* private void resetAggDimensionLength() {
     // reset the aggregation dimension
     Dimension aggDim = ncd.getRootGroup().findDimension(getDimensionName());
@@ -621,10 +462,13 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
   } */
 
+  /////////////////////////////////////////////////////////////////////////
+
+
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
    */
-  Dataset getTypicalDataset() throws IOException {
+  protected Dataset getTypicalDataset() throws IOException {
     //if (typical != null)
     //  return typical;
 
@@ -633,53 +477,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     // pick a random one, but not the last
     int select = (n < 2) ? 0 : Math.abs(new Random().nextInt()) % (n-1);
     return (Dataset) nestedDatasets.get(select);
-  }
-
-  /**
-   * Populate the dataset for a "JoinExisting" type.
-   *
-   * @param isNew
-   * @param newds
-   * @param cancelTask
-   * @throws IOException
-   */
-  private void aggExistingDimension(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
-    // open a "typical"  nested dataset and copy it to newds
-    Dataset typicalDataset = getTypicalDataset();
-    NetcdfFile typical =  typicalDataset.acquireFile(null);
-    NcMLReader.transferDataset(typical, newds, isNew ? null : new MyReplaceVariableCheck());
-
-    // create aggregation dimension
-    String dimName = getDimensionName();
-    Dimension aggDim = new Dimension(dimName, getTotalCoords(), true);
-    newds.removeDimension(null, dimName); // remove previous declaration, if any
-    newds.addDimension(null, aggDim);
-
-    // now we can create the real aggExisting variables
-    // all variables with the named aggregation dimension
-    List vars = typical.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      if (v.getRank() < 1)
-        continue;
-      Dimension d = v.getDimension(0);
-      if (!dimName.equals(d.getName()))
-        continue;
-
-      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(),
-              v.getDimensionsString(), null, null);
-      vagg.setProxyReader(this);
-      NcMLReader.transferVariableAttributes(v, vagg);
-
-      newds.removeVariable(null, v.getShortName());
-      newds.addVariable(null, vagg);
-
-      if (cancelTask != null && cancelTask.isCancel()) return;
-    }
-
-    newds.finish();
-    makeProxies(typicalDataset, newds);
-    typical.close();
   }
 
   protected void makeProxies(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
@@ -722,72 +519,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         return !getDimensionName().equals(d.getName());
       }
     }
-  }
-
-  /**
-   * Populate the dataset for a "JoinNew" type.
-   *
-   * @param isNew
-   * @param newds
-   * @param cancelTask
-   * @throws IOException
-   */
-  private void aggNewDimension(boolean isNew, NetcdfDataset newds, CancelTask cancelTask) throws IOException {
-    // open a "typical"  nested dataset and copy it to newds
-    Dataset typicalDataset = getTypicalDataset();
-    NetcdfFile typical =  typicalDataset.acquireFile(null);
-    NcMLReader.transferDataset(typical, newds, isNew ? null : new MyReplaceVariableCheck());
-
-    // create aggregation dimension
-    String dimName = getDimensionName();
-    Dimension aggDim = new Dimension(dimName, getTotalCoords(), true);
-    newds.removeDimension(null, dimName); // remove previous declaration, if any
-    newds.addDimension(null, aggDim);
-
-    // create aggregation coordinate variable
-    DataType coordType;
-    VariableDS joinAggCoord = (VariableDS) newds.getRootGroup().findVariable(dimName);
-    if (joinAggCoord == null) {
-      coordType = getCoordinateType();
-      joinAggCoord = new VariableDS(newds, null, null, dimName, coordType, dimName, null, null);
-      newds.addVariable(null, joinAggCoord);
-    } else {
-      coordType = joinAggCoord.getDataType();
-      joinAggCoord.setDimensions(dimName); // reset its dimension
-      if (!isNew) joinAggCoord.setCachedData(null, false); // get rid of any cached data, since its now wrong
-    }
-    joinAggCoord.setProxyReader(this);
-
-    if (isDate()) {
-      joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
-    }
-
-    // now we can create all the aggNew variables
-    // use only named variables
-    List vars = getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      String varname = (String) vars.get(i);
-      Variable v = newds.getRootGroup().findVariable(varname);
-      if (v == null) {
-        logger.error(ncDataset.getLocation() + " aggNewDimension cant find variable " + varname);
-        continue;
-      }
-
-      // construct new variable, replace old one
-      VariableDS vagg = new VariableDS(newds, null, null, v.getShortName(), v.getDataType(),
-              dimName + " " + v.getDimensionsString(), null, null);
-      vagg.setProxyReader(this);
-      NcMLReader.transferVariableAttributes(v, vagg);
-
-      newds.removeVariable(null, v.getShortName());
-      newds.addVariable(null, vagg);
-
-      if (cancelTask != null && cancelTask.isCancel()) return;
-    }
-
-    newds.finish();
-    makeProxies(typicalDataset, newds);
-    typical.close();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1022,9 +753,9 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         String filename = myf.file.getName();
         myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, myf.dir.dateFormatMark, '#');
         myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
-        if (debug) System.out.println("  adding " + myf.file.getAbsolutePath() + " date= " + myf.dateCoordS);
+        if (debugScan) System.out.println("  adding " + myf.file.getAbsolutePath() + " date= " + myf.dateCoordS);
       } else {
-        if (debug) System.out.println("  adding " + myf.file.getAbsolutePath());
+        if (debugScan) System.out.println("  adding " + myf.file.getAbsolutePath());
       }
     }
 
@@ -1054,43 +785,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
   }
 
-  protected void scan2(List result, CancelTask cancelTask) throws IOException {
-
-    // scan the directories
-    ArrayList fileList = new ArrayList();
-    for (int i = 0; i < scan2List.size(); i++) {
-      DirectoryScan dir = (DirectoryScan) scan2List.get(i);
-      dir.scanDirectory( fileList, cancelTask);
-
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return;
-    }
-
-    for (int i = 0; i < fileList.size(); i++) {
-      MyFile myf = (MyFile) fileList.get(i);
-
-      // parse for rundate
-      String filename = StringUtil.replace( myf.file.getAbsolutePath(), '\\', "/");
-      myf.runDate = DateFromString.getDateUsingDemarkatedMatch(filename, myf.dir.runMatcher, '#');
-      if (null == myf.runDate) {
-        logger.error("Cant extract rundate from =" + filename+" using format "+myf.dir.runMatcher);
-        continue;
-      }
-
-      // parse for forecast date
-      myf.dateCoord = DateFromString.getDateUsingDemarkatedMatch(filename, myf.dir.forecastMatcher, '#');
-      myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
-      if (null == myf.dateCoord) {
-        logger.error("Cant extract forecast date from =" + filename+" using format "+myf.dir.forecastMatcher);
-        continue;
-      }
-
-      String location = myf.file.getAbsolutePath();
-      Dataset ds = makeDataset(location, location, null, myf.dateCoordS, myf.dir.enhance, null);
-      result.add(ds);
-      if (debug) System.out.println("  adding " + myf.file.getAbsolutePath() + " date= " + myf.dateCoordS);
-    }
-  }
+  /// override in FmrcHourly
+  protected void scanFmrc(CancelTask cancelTask) throws IOException { }
 
   /**
    * Dataset factory, so subclasses can override
@@ -1112,16 +808,23 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
   /**
    * Encapsolate a "scan" or "scan2" element: a directory that we want to scan.
    */
-  private class DirectoryScan {
-    String dirName, suffix, dateFormatMark;
-    long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
+  protected class DirectoryScan {
+    String dirName, dateFormatMark;
     String runMatcher, forecastMatcher, offsetMatcher; // scan2
     boolean enhance = false;
     boolean wantSubdirs = true;
 
-    DirectoryScan(String dirName, String suffix, String dateFormatMark, String enhanceS, String subdirsS, String olderS) {
+    // filters
+    String suffix;
+    java.util.regex.Pattern regexpPattern = null;
+    long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
+
+    DirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirsS, String olderS) {
       this.dirName = dirName;
       this.suffix = suffix;
+      if (null != regexpPatternString)
+        this.regexpPattern = java.util.regex.Pattern.compile( regexpPatternString );
+
       this.dateFormatMark = dateFormatMark;
       if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
         enhance = true;
@@ -1140,8 +843,9 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
-    DirectoryScan(String dirName, String suffix, String subdirsS, String olderS, String runMatcher, String forecastMatcher, String offsetMatcher) {
-      this( dirName, suffix, null, "true", subdirsS, olderS);
+    DirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS,
+            String runMatcher, String forecastMatcher, String offsetMatcher) {
+      this( dirName, suffix, regexpPatternString, null, "true", subdirsS, olderS);
 
       this.runMatcher = runMatcher;
       this.forecastMatcher = forecastMatcher;
@@ -1153,11 +857,11 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
      * @param result         add MyFile objects to this list
      * @param cancelTask     user can cancel
      */
-    private void scanDirectory(List result, CancelTask cancelTask) {
+    protected void scanDirectory(List result, CancelTask cancelTask) {
       scanDirectory( dirName, new Date().getTime(), result, cancelTask);
     }
 
-    private void scanDirectory(String dirName, long now, List result, CancelTask cancelTask) {
+    protected void scanDirectory(String dirName, long now, List result, CancelTask cancelTask) {
       File allDir = new File( dirName);
       File[] allFiles = allDir.listFiles();
       for (int i = 0; i < allFiles.length; i++) {
@@ -1167,12 +871,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         if (f.isDirectory()) {
           if (wantSubdirs) scanDirectory(location, now, result, cancelTask);
 
-        } else {
-          // suffix filter
-          if ((suffix != null) && !location.endsWith(suffix))
-            continue;
-
-          // older than filter
+        } else if (accept(location)) {
+          // dont allow recently modified
           if (olderThan_msecs > 0) {
             long lastModified = f.lastModified();
             if (now - lastModified < olderThan_msecs)
@@ -1188,13 +888,22 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
+    protected boolean accept( String location ) {
+      if (null != regexpPattern) {
+        java.util.regex.Matcher matcher = regexpPattern.matcher( location );
+        return matcher.matches();
+      }
+
+      return (suffix == null) || location.endsWith(suffix);
+    }
+
   }
 
   /**
    * Encapsolate a file that was scanned.
    * Created in scanDirectory()
    */
-  private class MyFile {
+  protected class MyFile {
     DirectoryScan dir;
     File file;
 
@@ -1202,6 +911,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     String dateCoordS;
 
     Date runDate; // fmrcHourly only
+    Double offset;
 
     MyFile(DirectoryScan dir, File file) {
       this.dir = dir;
@@ -1216,31 +926,41 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * public for NcMLWriter
    */
   public class Dataset {
-    private String cacheName, location;
-    private int ncoord; // number of coordinates in outer dimension for this dataset; joinExisting
-    //private int nfmrc_coord; // number of coordinates in time dimension, used by FMRC
-    private boolean enhance;
-    private NetcdfFileFactory reader;
-    private String coordValue;  // if theres a coordValue on the netcdf element
-    private Date coordValueDate;  // if its a date
-
-    private boolean isStringValued = false;
+    private String location; // location attribute on the netcdf element
     private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
 
+    // deferred opening
+    private String cacheName;
+    private NetcdfFileFactory reader;
+    private boolean enhance;
+
+    protected int ncoord; // number of coordinates in outer dimension for this dataset; joinExisting
+    protected String coordValue;  // if theres a coordValue on the netcdf element
+    protected Date coordValueDate;  // if its a date
+    private boolean isStringValued = false;
+
     /**
-     * Dataset constructor for joinNew or joinExisting, or fmrc.
-     * Actually opening the dataset is deferred.
+     * For subclasses.
+     */
+    protected Dataset(String location) {
+      this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
+    }
+
+    /**
+     * Dataset constructor.
+     * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
+     * Used with explicit netcdf elements, and scanned files.
      *
      * @param cacheName   a unique name to use for caching
      * @param location    attribute "location" on the netcdf element
      * @param ncoordS     attribute "ncoords" on the netcdf element
      * @param coordValueS attribute "coordValue" on the netcdf element
      * @param enhance     open dataset in enhance mode
-     * @param reader      factory for reading this netcdf dataset
+     * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected Dataset(String cacheName, String location, String ncoordS, String coordValueS, boolean enhance, NetcdfFileFactory reader) {
+      this(location);
       this.cacheName = cacheName;
-      this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
       this.coordValue = coordValueS;
       this.enhance = enhance;
       this.reader = (reader != null) ? reader : new PolymorphicReader();
@@ -1274,16 +994,14 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         StringTokenizer stoker = new StringTokenizer(coordValueS, " ,");
         this.ncoord = stoker.countTokens();
       }
-
     }
-
 
     /** Get the coordinate value(s) as a String for this Dataset */
     public String getCoordValueString() {
       return coordValue;
     }
 
-    /** Get the coordinate value(s) as a Date for this Dataset; may be null */
+    /** Get the coordinate value as a Date for this Dataset; may be null */
     public Date getCoordValueDate() {
       return coordValueDate;
     }
@@ -1294,7 +1012,6 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     public String getLocation() {
       return location;
     }
-
 
     /**
      * Get number of coordinates in this Dataset.
@@ -1313,6 +1030,13 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
       return ncoord;
     }
 
+    /**
+     * Set the starting and ending index into the aggregation dimension
+     * @param aggStart starting index
+     * @param cancelTask allow to bail out
+     * @return number of coordinates in this dataset
+     * @throws IOException
+     */
     private int setStartEnd(int aggStart, CancelTask cancelTask) throws IOException {
       this.aggStart = aggStart;
       this.aggEnd = aggStart + getNcoords(cancelTask);
@@ -1375,6 +1099,8 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
         cacheCoordValues(ncfile);
       return ncfile;
     }
+
+    protected void close() throws IOException { }
 
     private void cacheCoordValues(NetcdfFile ncfile) throws IOException {
       if (coordValue != null) return;
@@ -1459,7 +1185,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     class PolymorphicReader implements NetcdfFileFactory, NetcdfDatasetFactory {
 
-      public NetcdfDataset openDataset(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException {
+      public NetcdfDataset openDataset(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException {
         return NetcdfDataset.openDataset(location, true, buffer_size, cancelTask, spiObject);
       }
 
@@ -1507,6 +1233,7 @@ public class Aggregation implements ucar.nc2.dataset.ProxyReader {
     public final static Type UNION = new Type("union");
     public final static Type FORECAST_MODEL = new Type("forecastModelRun");
     public final static Type FORECAST_MODEL_COLLECTION = new Type("forecastModelRunCollection");
+    public final static Type FORECAST_MODEL_HOURLY = new Type("forecastModelRunHourlyCollection");
 
     private String name;
 

@@ -36,8 +36,7 @@ import java.util.Enumeration;
 import javax.swing.*;
 
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.methods.*;
 
@@ -185,11 +184,6 @@ public class URLDumpPane extends TextHistoryPane {
     //Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
     HttpClient httpclient = new HttpClient();
 
-    /* httpclient.getState().setCredentials(
-        new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, "Thredds Configuration"),
-        new UsernamePasswordCredentials("caron", "caro$")
-    ); */
-
     httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
 
     HttpMethodBase m = null;
@@ -205,9 +199,6 @@ public class URLDumpPane extends TextHistoryPane {
       m = p;
     }
 
-    //m.setDoAuthentication( true );
-    m.addRequestHeader("Authorization","Basic Y2Fyb246Y2FybyQ=");
-
     appendLine("HttpClient "+m.getName()+" "+urlString);
     appendLine("   do Authentication= "+m.getDoAuthentication());
     appendLine("   follow Redirects= "+m.getFollowRedirects());
@@ -218,10 +209,15 @@ public class URLDumpPane extends TextHistoryPane {
     appendLine("   timeout (msecs)= "+p.getSoTimeout());
     appendLine("   virtual host= "+p.getVirtualHost());
 
+    printHeaders("Request Headers = ", m.getRequestHeaders());
+    appendLine(" ");
+
     try {
       httpclient.executeMethod(m);
-      printHeaders("Request Headers = ", m.getRequestHeaders());
+
+      printHeaders("Request Headers2 = ", m.getRequestHeaders());
       appendLine(" ");
+
       appendLine("Status = "+m.getStatusCode()+" "+m.getStatusText());
       appendLine("Status Line = "+m.getStatusLine());
       printHeaders("Response Headers = ", m.getResponseHeaders());

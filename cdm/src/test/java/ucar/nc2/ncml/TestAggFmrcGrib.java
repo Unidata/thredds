@@ -26,14 +26,15 @@ public class TestAggFmrcGrib extends TestCase {
     //System.out.println("file="+ncfile);
 
     String timeDimName = "time";
+    int naggs = 10;
 
-    testDimensions(ncfile, 7, timeDimName);
+    testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
-    testAggCoordVar(ncfile, 7, 122100, 12);
-    testTimeCoordVar(ncfile, 7, 29, timeDimName);
+    testAggCoordVar(ncfile, naggs, 122100, 12);
+    testTimeCoordVar(ncfile, naggs, 29, timeDimName);
 
     System.out.println("TestAggForecastModel.testReadData ");    
-    testReadData(ncfile, 7);
+    testReadData(ncfile, naggs);
  //   testReadSlice(ncfile);
 
     ncfile.close();

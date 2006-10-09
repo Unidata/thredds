@@ -12,6 +12,7 @@ public class TestResolve1 extends TestCase {
     super(name);
   }
 
+  String base="http://www.unidata.ucar.edu/";
   String urlString = "TestResolvURI.1.0.xml";
   public void testResolve() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
@@ -29,13 +30,14 @@ public class TestResolve1 extends TestCase {
     System.out.println("ACD service= "+s);
 
     assert getAccessURL(cat, "nest11").equals("http://www.acd.ucar.edu/dods/testServer/flux/CO2.nc");
-    assert getAccessURL(cat, "nest12").equals(TestCatalogAll.makeFilepath()+"netcdf/data/flux/NO2.nc");
+    assert getAccessURL(cat, "nest12").equals(base+"netcdf/data/flux/NO2.nc") :
+      getAccessURL(cat, "nest12")+" != "+TestCatalogAll.makeFilepath()+"netcdf/data/flux/NO2.nc";
 
     assert getMetadataURL(cat, "nest1", MetadataType.NETCDF).equals("any.xml");
     assert getMetadataURL(cat, "nest1", MetadataType.ADN).equals("http://you/corrupt.xml");
 
     assert getDocURL( cat, "nest1", "absolute").equals("http://www.unidata.ucar.edu/");
-    assert getDocURL( cat, "nest1", "relative").equals(TestCatalogAll.makeFilepath("any.xml")) : getDocURL( cat, "nest1", "relative");
+    assert getDocURL( cat, "nest1", "relative").equals(base+"any.xml");
 
     assert getCatref( cat.getDatasets(), "ETA data").equals("http://www.unidata.ucar.edu/projects/thredds/xml/InvCatalog5.part2.xml");
     assert getCatref( cat.getDatasets(), "BETA data").equals("/xml/InvCatalog5.part2.xml");

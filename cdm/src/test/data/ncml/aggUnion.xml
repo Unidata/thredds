@@ -4,7 +4,7 @@
   <attribute name="title" type="string" value="Example Data"/>
 
   <aggregation type="union">
-    <netcdf location="file:src/test/data/ncml/nc/example.nc">
+    <netcdf location="file:src/test/data/ncml/nc/example2.nc">
       <explicit/>
 
       <dimension name="time" length="2" isUnlimited="true"/>

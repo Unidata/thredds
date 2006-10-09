@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
-  <aggregation dimName="run" type="forecastModelRunCollection">
+  <aggregation dimName="run" type="forecastModelRunHourlyCollection" timeUnitsChange="true" >
 
-    <scan2 location="/data/ldm/NAM_CONUS_80km/" suffix=".grib1" 
-           runDate="Run_#yyyyMMdd_HHmm/"
-           type="joinExisting" forecastDate="/Hour_F#HH"/>
+    <scanFmrc location="C:/data/grib/rtmodels/" regExp=".*_nmm\.GrbF[0-9]{5}$"
+           runDateMatcher="yyMMddHH#_nmm.GrbF#"
+           forecastOffsetMatcher="#_nmm.GrbF#HHH"/>
 
   </aggregation>
 

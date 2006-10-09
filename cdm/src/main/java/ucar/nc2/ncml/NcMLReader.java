@@ -895,9 +895,18 @@ public class NcMLReader {
     String type = aggElem.getAttributeValue("type");
     String recheck = aggElem.getAttributeValue("recheckEvery");
 
-    Aggregation agg;
-    if (type.equals("forecastModelRunCollection")) {
-      AggregationFmrc aggc = new AggregationFmrc(newds, dimName, type, recheck);
+    Aggregation agg = null;
+    if (type.equals("joinExisting")) {
+      agg = new AggregationExisting(newds, dimName, recheck);
+
+    } else if (type.equals("joinNew")) {
+      agg = new AggregationNew(newds, dimName, recheck);
+
+    } else if (type.equals("union")) {
+      agg = new AggregationUnion(newds, dimName, recheck);
+
+    } else if (type.equals("forecastModelRunCollection")) {
+      AggregationFmrc aggc = new AggregationFmrc(newds, dimName, recheck);
       agg = aggc;
 
       String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
@@ -909,7 +918,7 @@ public class NcMLReader {
         aggc.setInventoryDefinition(fmrcDefinition);
 
     } else if (type.equals("forecastModelRunHourlyCollection")) {
-      AggregationFmrcHourly aggh = new AggregationFmrcHourly(newds, dimName, type, recheck);
+      AggregationFmrcHourly aggh = new AggregationFmrcHourly(newds, dimName, recheck);
       agg = aggh;
 
       String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
@@ -921,18 +930,19 @@ public class NcMLReader {
         aggh.setInventoryDefinition(fmrcDefinition);
 
       // nested scan2 elements
-      java.util.List scan2List = aggElem.getChildren("scan2", ncNS);
+      java.util.List scan2List = aggElem.getChildren("scanFmrc", ncNS);
       for (int j = 0; j < scan2List.size(); j++) {
         Element scanElem = (Element) scan2List.get(j);
         String dirLocation = scanElem.getAttributeValue("location");
         String suffix = scanElem.getAttributeValue("suffix");
+        String regexpPatternString = scanElem.getAttributeValue("regExp");
         String runMatcher = scanElem.getAttributeValue("runDateMatcher");
         String forecastMatcher = scanElem.getAttributeValue("forecastDateMatcher");
         String offsetMatcher = scanElem.getAttributeValue("forecastOffsetMatcher");
         String subdirs = scanElem.getAttributeValue("subdirs");
         String olderS = scanElem.getAttributeValue("olderThan");
 
-        agg.addDirectoryScan2(dirLocation, suffix, subdirs, runMatcher, forecastMatcher, offsetMatcher, olderS);
+        aggh.addDirectoryScanFmrc(dirLocation, suffix, regexpPatternString, subdirs, olderS, runMatcher, forecastMatcher, offsetMatcher);
 
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
@@ -956,8 +966,6 @@ public class NcMLReader {
       else if (forecastTimeOffset != null)
         aggf.setForecastTimeOffset(forecastTimeOffset, forecastDateVariable, referenceDateVariable);
 
-    } else {
-      agg = new Aggregation(newds, dimName, type, recheck);
     }
 
         // look for variable names
@@ -978,14 +986,14 @@ public class NcMLReader {
 
       if (agg.getType() == Aggregation.Type.UNION) {
         NetcdfDataset unionDs = readNcML( ncmlLocation, location, netcdfElemNested, cancelTask);
-        agg.addDatasetUnion( unionDs);
+        ((AggregationUnion)agg).addDatasetUnion( unionDs);
         transferDataset(unionDs, newds, null);
       } else {
         String ncoords = netcdfElemNested.getAttributeValue("ncoords");
         String coordValueS = netcdfElemNested.getAttributeValue("coordValue");
         NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
         String cacheName = ncmlLocation + "#" + Integer.toString( netcdfElemNested.hashCode());
-        agg.addDataset( cacheName, location, ncoords, coordValueS, reader, cancelTask);
+        agg.addExplicitDataset( cacheName, location, ncoords, coordValueS, reader, cancelTask);
       }
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -998,12 +1006,13 @@ public class NcMLReader {
      Element scanElem = (Element) dirList.get(j);
      String dirLocation = scanElem.getAttributeValue("location");
      String suffix = scanElem.getAttributeValue("suffix");
+     String regexpPatternString = scanElem.getAttributeValue("regExp");
      String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
      String enhance = scanElem.getAttributeValue("enhance");
      String subdirs = scanElem.getAttributeValue("subdirs");
      String olderS = scanElem.getAttributeValue("olderThan");
 
-     agg.addDirectoryScan( dirLocation, suffix, dateFormatMark, enhance, subdirs, olderS);
+     agg.addDirectoryScan( dirLocation, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderS);
 
      if ((cancelTask != null) && cancelTask.isCancel())
        return null;
