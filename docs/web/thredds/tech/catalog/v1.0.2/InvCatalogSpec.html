@@ -4,12 +4,13 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
   
-  <meta name="Author" content="John Caron"><title>Catalog Spec 1.0.1</title></head>
+  <meta name="Author" content="John Caron"><title>Catalog Spec 1.0.2</title></head>
 <body>
 <div class="head"> 
-  <h1> <img src="../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.1</h1>
+  <h1> <img alt="THREDDS" src="../../THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.2 - DRAFT<br>
+</h1>
   <address>
-  last update: 3 October 2006<br>
+  last update: 10 October 2006<br>
   Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS 
   mailgroup</a> 
   </address>
@@ -73,8 +74,10 @@ further descriptive information can be placed. </p>
   <li><a href="Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
   <li>InvCatalog XML Schema:</li>
   <ul>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a><br>
+    <li>Version 1.0.2<br>
+</li><li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a><br>
     </li>
+
     <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version
     1.0</a></li>
   </ul>
@@ -88,14 +91,15 @@ further descriptive information can be placed. </p>
   </li>
 </ul>
 
-<p><strong>Changes from version 1.0:</strong></p>
+<p><strong>Changes from version 1.0.1:</strong></p>
 
 <ul>
 
 
-  <li>catalogRef extends dataset</li>
-  <li>add datasetScan and datasetRoot elements (see the <a href="InvCatalogSpec.v1.0.1.server.html">Server-side InvCatalog document</a>).</li><li>make dataset, catalogRef and datasetScan into a substitution group.</li>
-
+  <li>Change default value of catalog@version to "1.0.2".</li><li>Add vocabulary_id attribute to variable element.<br>
+  </li>
+  <li>Update variableNameVocabulary enumeration: remove "GRIB" and add "GRIB-1" and "GRIB-2".<br>
+  </li>
 </ul>
 
 <hr>
