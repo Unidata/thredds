@@ -90,7 +90,7 @@ public class FlatEarth extends ProjectionImpl {
         origin    = new LatLonPointImpl(lat0, lon0);
         precalculate();
 
-        addParameter(ATTR_NAME, "flatEarth");
+        addParameter(ATTR_NAME, "flat_earth");
         addParameter("latitude_of_projection_origin",  lat0);
         addParameter("longitude_of_projection_origin", lon0);
         addParameter("rotationAngle", rotAngle);
@@ -114,10 +114,11 @@ public class FlatEarth extends ProjectionImpl {
         origin    = new LatLonPointImpl(lat0, lon0);
         precalculate();
 
-        addParameter(ATTR_NAME, "flatEarth");
+        addParameter(ATTR_NAME, "flat_earth");
         addParameter("latitude_of_projection_origin",  lat0);
         addParameter("longitude_of_projection_origin", lon0);
         addParameter("rotationAngle", rotAngle);
+        addParameter("units", "km");
     }
     // move this to ucar.unit or ucar.unidata.util
 
