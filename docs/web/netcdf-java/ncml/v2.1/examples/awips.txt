@@ -1,0 +1,216 @@
+netcdf C:\data\conventions\awips\19981109_1200.nc {
+ dimensions:
+   record = UNLIMITED;   // (9 currently)
+   n_valtimes = 9;
+   data_variables = 17;
+   charsPerLevel = 10;
+   namelen = 132;
+   x = 93;
+   y = 65;
+   nav = 1;
+   levels_1 = 1;
+   levels_2 = 2;
+   levels_4 = 4;
+   levels_5 = 5;
+   levels_9 = 9;
+   levels_16 = 16;
+   levels_19 = 19;
+   levels_34 = 34;
+   levels_40 = 40;
+ variables:
+   float gh(record, levels_34, y, x);
+    :long_name = "Geopotential height";
+    :units = "geopotential meters";
+    :valid_range = 0.0, 10000.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 19; // int
+    :levels = "MB 1000-100 by 50  K 280-350 by 5";
+   char ghLevels(levels_34, charsPerLevel);
+   char ghInventory(n_valtimes, levels_34);
+   float rh(record, levels_40, y, x);
+    :long_name = "Relative Humidity";
+    :units = "percent";
+    :valid_range = 0.0, 100.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 20; // int
+    :levels = "FHAG 2  MB 1000-100 by 50  BL 0>30 30>60 60>90 90>120 120>150  K 280-350 by 5";
+   char rhLevels(levels_40, charsPerLevel);
+   char rhInventory(n_valtimes, levels_40);
+   float t(record, levels_40, y, x);
+    :long_name = "Temperature";
+    :units = "degrees K";
+    :valid_range = 0.0, 400.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 20; // int
+    :levels = "FHAG 2  MB 1000-100 by 50  BL 0>30 30>60 60>90 90>120 120>150  K 280-350 by 5";
+   char tLevels(levels_40, charsPerLevel);
+   char tInventory(n_valtimes, levels_40);
+   float uw(record, levels_40, y, x);
+    :long_name = "u wind component";
+    :units = "meters/second";
+    :valid_range = -300.0, 300.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 20; // int
+    :levels = "FHAG 10 MB 1000-100 by 50  BL 0>30 30>60 60>90 90>120 120>150  K 280-350 by 5";
+   char uwLevels(levels_40, charsPerLevel);
+   char uwInventory(n_valtimes, levels_40);
+   float vw(record, levels_40, y, x);
+    :long_name = "v wind component";
+    :units = "meters/second";
+    :valid_range = -300.0, 300.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 20; // int
+    :levels = "FHAG 10 MB 1000-100 by 50  BL 0>30 30>60 60>90 90>120 120>150  K 280-350 by 5";
+   char vwLevels(levels_40, charsPerLevel);
+   char vwInventory(n_valtimes, levels_40);
+   float av(record, levels_5, y, x);
+    :long_name = "absolute vorticity";
+    :units = "/second";
+    :valid_range = -300.0, 300.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 4; // int
+    :levels = "MB 1000 850 700 500 250";
+   char avLevels(levels_5, charsPerLevel);
+   char avInventory(n_valtimes, levels_5);
+   float pvv(record, levels_19, y, x);
+    :long_name = "Pressure vertical velocity";
+    :units = "Pa/s";
+    :valid_range = -10.0, 10.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 19; // int
+    :levels = "MB 1000-100 by 50";
+   char pvvLevels(levels_19, charsPerLevel);
+   char pvvInventory(n_valtimes, levels_19);
+   float p(record, levels_16, y, x);
+    :long_name = "pressure";
+    :units = "pascals";
+    :valid_range = 0.0, 150000.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 1; // int
+    :levels = "SFC  K 280-350 by 5";
+   char pLevels(levels_16, charsPerLevel);
+   char pInventory(n_valtimes, levels_16);
+   float heli(record, levels_1, y, x);
+    :long_name = "helicity";
+    :units = "meters/second squared";
+    :valid_range = -300.0, 300.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "FHAG 0>30";
+   char heliLevels(levels_1, charsPerLevel);
+   char heliInventory(n_valtimes, levels_1);
+   float cape(record, levels_2, y, x);
+    :long_name = "Convective Available Potential Energy";
+    :units = "J/kg";
+    :valid_range = 0.0, 400.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "SFC BL 0>180";
+   char capeLevels(levels_2, charsPerLevel);
+   char capeInventory(n_valtimes, levels_2);
+   float cin(record, levels_2, y, x);
+    :long_name = "Convective Inhibition";
+    :units = "J/kg";
+    :valid_range = 0.0, 400.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "SFC BL 0>180";
+   char cinLevels(levels_2, charsPerLevel);
+   char cinInventory(n_valtimes, levels_2);
+   float bli(record, levels_1, y, x);
+    :long_name = "Best lifted index";
+    :units = "degrees K";
+    :valid_range = 0.0, 400.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "BL 0>180";
+   char bliLevels(levels_1, charsPerLevel);
+   char bliInventory(n_valtimes, levels_1);
+   float pli(record, levels_1, y, x);
+    :long_name = "Parcel lifted index";
+    :units = "degrees K";
+    :valid_range = 0.0, 400.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "BL 0>30";
+   char pliLevels(levels_1, charsPerLevel);
+   char pliInventory(n_valtimes, levels_1);
+   float pw(record, levels_1, y, x);
+    :long_name = "precipitable water";
+    :units = "kg/m**2";
+    :valid_range = -300.0, 300.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "EA";
+   char pwLevels(levels_1, charsPerLevel);
+   char pwInventory(n_valtimes, levels_1);
+   float emsp(record, levels_1, y, x);
+    :long_name = "ETA Mean Sea Level Pressure";
+    :units = "Pascals";
+    :valid_range = 80000.0, 150000.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "MSL";
+   char emspLevels(levels_1, charsPerLevel);
+   char emspInventory(n_valtimes, levels_1);
+   float cp(record, levels_1, y, x);
+    :long_name = "convective precipitation";
+    :units = "millimeters";
+    :valid_range = 0.0, 1000.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "SFC";
+   char cpLevels(levels_1, charsPerLevel);
+   char cpInventory(n_valtimes, levels_1);
+   float tp(record, levels_1, y, x);
+    :long_name = "total precipitation";
+    :units = "millimeters";
+    :valid_range = 0.0, 1000.0; // float
+    :_FillValue = -99999.0; // float
+    :_n3D = 0; // int
+    :levels = "SFC";
+   char tpLevels(levels_1, charsPerLevel);
+   char tpInventory(n_valtimes, levels_1);
+   int valtimeMINUSreftime(n_valtimes);
+    :units = "seconds";
+   double valtime(record);
+    :long_name = "valid time";
+    :units = "seconds since (1970-1-1 00:00:00.0)";
+   double reftime(record);
+    :long_name = "reference time";
+    :units = "seconds since (1970-1-1 00:00:00.0)";
+   char origin(namelen);
+   char model(namelen);
+   float staticTopo(y, x);
+    :units = "meters";
+    :long_name = "Topography";
+    :_FillValue = -99999.0; // float
+   float staticCoriolis(y, x);
+    :units = "/second";
+    :long_name = "Coriolis parameter";
+    :_FillValue = -99999.0; // float
+   float staticSpacing(y, x);
+    :units = "meters";
+    :long_name = "Grid spacing";
+    :_FillValue = -99999.0; // float
+ // Global Attributes:
+    :cdlDate = "19970811";
+    :depictorName = "grid211";
+    :projIndex = 3; // int
+    :projName = "LAMBERT_CONFORMAL";
+    :centralLat = 25.0; // float
+    :centralLon = -95.0; // float
+    :rotation = 25.0; // float
+    :xMin = -0.255644; // float
+    :xMax = 0.19664702; // float
+    :yMax = -0.562235; // float
+    :yMin = -0.876877; // float
+    :lat00 = 12.19004; // float
+    :lon00 = -133.45898; // float
+    :latNxNy = 57.28995; // float
+    :lonNxNy = -49.384914; // float
+    :dxKm = 78.04174; // float
+    :dyKm = 78.04293; // float
+    :latDxDy = 40.606064; // float
+    :lonDxDy = -100.55477; // float
+}

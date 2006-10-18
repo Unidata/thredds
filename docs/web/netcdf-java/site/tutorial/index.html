@@ -7,33 +7,45 @@
 </head>
 
 <body>
-NetCDF Java Workshop (1 day) <br>
-for intermediate/advanced Java programmers
-<p>users need to be able to run ToolsUI.<br>
-  we want some sample files.</p>
-<p>Intermediate topics:</p>
-<p> 1. Overview of the Common Data Model and API (45)</p>
-<p> 2. Working with CDM files (60)<br>
-  * using ToolsUI<br>
-  * NetcdfFile: reading CDM files: local, HTTP, OPeNDAP, THREDDS<br>
-  * NetcdfDataset: enhanced files, coordinate systems<br>
-  * NetcdfFileWriteable: Writing NetCDF Files</p>
-<p> 3. Datatype API (45)<br>
-  * GeoGrid<br>
-  * Point/Station/Trajectory/Profile (Ethan)<br>
-  * Radial (Yuan)</p>
-<p> 4. NcML (60)<br>
-  Modifying existing files<br>
-  Aggregation</p>
-<p>Lunch break</p>
-<p>Advanced topics:</p>
-<p> 5. Writing an I/O Service Provider ( 120)<br>
-  Reading other file formats into the CDM, ie make them look like NetCDF files.</p>
-<p> 6. Other pluggable features (90)<br>
-  - GRIB/BUFR tables (Robb)<br>
-  - Writing a Coordinate System Builder: adding Coordinate Systems.<br>
-  - Writing a Coordinate Transform implementation: projections and vertical transforms<br>
-  - Writing a Datatype implementation: Point/Station/Trajectory, Radar files, etc.<br>
-</p>
+<h1>NetCDF Java Tutorial
+</h1>
+<h3> 1. Overview of the Common Data Model and API </h3>
+<h3> 2. Working with CDM files</h3>
+<ul>
+  <li> using ToolsUI GUI</li>
+  <li> NetcdfFile: reading CDM files: local, HTTP, OPeNDAP, THREDDS</li>
+  <li>NetcdfDataset: enhanced files, coordinate systems</li>
+  <li>NetcdfFileWriteable: Writing NetCDF Files</li>
+</ul>
+<h3> 3. Datatype API</h3>
+<ul>
+  <li>GeoGrid</li>
+  <li>Forecast Model Run Collections </li>
+  <li>Point/Station/Trajectory/Profile</li>
+  <li>Radial</li>
+</ul>
+<h3> 4. NcML</h3>
+<ul>
+  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Tutorial.html">Modifying existing files</a></li>
+  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html">Aggregation</a></li>
+  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">Forecast Model Aggregation</a></li>
+</ul>
+<h3> 5. Building from source</h3>
+<ul>
+  <li>Download from Subversion (web) and build with ant</li>
+</ul>
+<h3>6. Other pluggable features</h3>
+<ul>
+  <li> GRIB/BUFR tables</li>
+  <li><a href="CoordSysBuilder.html">Writing a Coordinate System Builder</a>: recognizing Coordinate Systems.</li>
+  <li>Writing a Coordinate Transform implementation: projections and vertical transforms</li>
+  <li>Writing a Datatype implementation: Point/Station/Trajectory, Radar files, etc.</li>
+</ul>
+<h3> 7. Writing an I/O Service Provider</h3>
+<ul>
+  <li>Overview</li>
+  <li>Reading other file formats into the CDM</li>
+</ul>
+<p>&nbsp; </p>
 </body>
 </html>

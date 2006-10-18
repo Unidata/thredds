@@ -1,0 +1,330 @@
+<html>
+<head>
+<title>Netcdf dataset</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1>NetCDF Dataset</h1>
+<p><i>John Caron</i></p>
+<p><i>last changed: Aug 22, 2003</i></p>
+<hr>
+<h2>Introduction</h2>
+<p>A <b><i>netCDF dataset</i></b> is a generalization of a NetCDF file. Its purpose 
+  is to allow:</p>
+<ol>
+  <li>Metadata to be added, deleted, changed and in general redefined.</li>
+  <li>Variables to be renamed, added, deleted and restructured.</li>
+  <li>Information from multiple NetCDF files to be combined.</li>
+  <li>Transparent access from clients, ie it provides the usual NetCDF API.</li>
+</ol>
+<p>A netCDF dataset is defined by an XML document called the netCDF Dataset Definition. 
+  This uses the <i><a href="http://www.unidata.ucar.edu/schemas/netcdfDataset.xsd">netcdfDataset.xsd</a></i> 
+  schema which is an extension of the base <a href="http://www.unidata.ucar.edu/schemas/netcdf.xsd"> 
+  <i>netcdf.xsd</i></a> schema.</p>
+<p>Currently, a netCDF dataset is accessed through the <i>ucar.nc2.dataset</i> 
+  package of the Java netCDF library (version 2.1). The abstractions and XML syntax 
+  defined here are language independent, and in the future a C library implementation 
+  could be created to provide equivalent functionality. </p>
+<p>Also see: </p>
+<ul>
+  <li> <a href="NcML2.1.html">NetCDF Markup Language (NcML)</a></li>
+  <li><a href="NetcdfCS.html">NetCDF Coordinate Systems</a></li>
+  <li><a href="NetcdfAggregation.html">Aggregating netCDF files with netCDF Datasets</a>.</li>
+</ul>
+<h2>Definitions</h2>
+<p><b>NetCDF File:</b> A physical netCDF file. This can be accessed as a file, 
+  through HTTP, or through the OpenDAP (aka DODS) protocol</p>
+<p><b>NetCDF Dataset:</b> A generalization of a NetCDF file, defined by an XML 
+  document called the <b>NetCDF Dataset Definition</b>.</p>
+<p><b>NetCDF Dataset Definition. </b>The Dataset Definition completely specifies 
+  the NetCDF Dataset, overiding all metadata in the NetCDF file itself. The only 
+  reason to access the file is if a variable's values are not declared. The URL 
+  of the NetCDF Dataset is the NetCDF Dataset Definition XML document.</p>
+<p><b>NetCDF Dataset Metadata:</b> All the attributes, dimensions, and variables, 
+  and optionally some variable data, of a NetCDF Dataset. Equivailent to the <i>netCDF 
+  header</i>, which is the output of the &quot;ncdump -h&quot; command, except 
+  that it may also include variable data (like what is often in a CDL file). It 
+  is all of the information specified in the NetCDF Dataset Definition.</p>
+<p><b>NetCDF Dataset Data: </b>The NetCDF dataset variable data.</p>
+<p><b>NetCDF Schema Specification: </b>An XML language for specifying the metadata 
+  in a NetCDF file. See <a href="http://www.unidata.ucar.edu/schemas/netcdfDataset.xsd">http://www.unidata.ucar.edu/schemas/netcdfDataset.xsd</a></p>
+<h2>Examples</h2>
+<h3><b>1. Completely specify the NetCDF Dataset Metadata:</b></h3>
+<p>In this example, all of the metadata is specified in the XML, and the underlying 
+  file is used only for data access. If there are any other attributes, variables 
+  or dimensions in the file, they are ignored.</p>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;nc:netcdf xmlns:nc=&quot;http://www.ucar.edu/schemas/netcdf&quot;
+  xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+  xsi:schemaLocation=&quot;http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset2.xsd&quot; 	
+  uri=&quot;file:///E:/dev/NCdataset/example.nc&quot;&gt;
+  
+  &lt;nc:dimension name=&quot;time&quot; length=&quot;2&quot; isUnlimited=&quot;true&quot;/&gt;
+  &lt;nc:dimension name=&quot;lat&quot; length=&quot;3&quot;/&gt;
+  &lt;nc:dimension name=&quot;lon&quot; length=&quot;4&quot;/&gt;
+
+  &lt;nc:variable name=&quot;rh&quot; type=&quot;int&quot; shape=&quot;time lat lon&quot;&gt;
+    &lt;nc:attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;relative humidity&quot;/&gt;
+    &lt;nc:attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;percent&quot;/&gt;
+  &lt;/nc:variable&gt;
+	
+  &lt;nc:variable name=&quot;T&quot; type=&quot;double&quot; shape=&quot;time lat lon&quot;&gt;
+    &lt;nc:attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;surface temperature&quot;/&gt;
+    &lt;nc:attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;degC&quot;/&gt;
+  &lt;/nc:variable&gt;
+
+  &lt;nc:variable name=&quot;lat&quot; type=&quot;float&quot; shape=&quot;lat&quot;&gt;
+    &lt;nc:values separator=&quot;&quot;&gt;41.0 40.0 39.0&lt;/nc:values&gt;
+    &lt;nc:attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;degrees_north&quot;/&gt;
+  &lt;/nc:variable&gt;
+  
+  &lt;nc:variable name=&quot;lon&quot; type=&quot;float&quot; shape=&quot;lon&quot;&gt;
+    &lt;nc:values separator=&quot;&quot;&gt;-109.0 -107.0 -105.0 -103.0&lt;/nc:values&gt;
+    &lt;nc:attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;degrees_east&quot;/&gt;
+  &lt;/nc:variable&gt;
+  
+  &lt;nc:variable name=&quot;time&quot; type=&quot;int&quot; shape=&quot;time&quot;&gt;
+    &lt;nc:values separator=&quot;&quot;&gt;6 18&lt;/nc:values&gt;
+    &lt;nc:attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;hours&quot;/&gt;
+  &lt;/nc:variable&gt;
+  
+  &lt;nc:attribute name=&quot;title&quot; type=&quot;string&quot; value=&quot;Example Data&quot;/&gt;
+  &lt;nc:attribute name=&quot;testByte&quot; type=&quot;byte&quot; value=&quot;1 2 3 4&quot;/&gt;
+  &lt;nc:attribute name=&quot;testShort&quot; type=&quot;short&quot; value=&quot;1 2 3 4&quot;/&gt;
+  &lt;nc:attribute name=&quot;testInt&quot; type=&quot;int&quot; value=&quot;1 2 3 4&quot;/&gt;
+  &lt;nc:attribute name=&quot;testFloat&quot; type=&quot;float&quot; value=&quot;1 2 3 4&quot;/&gt;
+  &lt;nc:attribute name=&quot;testDouble&quot; type=&quot;double&quot; value=&quot;1 2 3 4&quot;/&gt;
+&lt;/nc:netcdf&gt;</pre>
+  
+<p>Data for the <b>lat</b>, <b>lon</b> and <b>time</b> coordinate variables comes 
+  from the XML document, while the data for the <b>rh</b> and <b>T</b> variables 
+  will be obtained from the netCDF file at URL <i>file:///E:/dev/NCdataset/example.nc. 
+  </i>Note that in the CDL that follows, the netCDF name is the name of the XML 
+  dataset definition, not the underlying netCDF file specified in the <i>uri</i> 
+  attribute. This creates the following NetCDF Dataset, in CDL notation:</p>
+<pre>netcdf file:///E:/dev/NCdataset/xml/testRead.xml {<br>
+ dimensions:<br>  time = UNLIMITED;   // (2 currently)   // (has coord.var)<br>  lat = 3;   // (has coord.var)<br>  lon = 4;   // (has coord.var)<br>
+ variables:<br>  int rh(time, lat, lon);<br>   :long_name = &quot;relative humidity&quot;;<br>   :units = &quot;percent&quot;;<br>  double T(time, lat, lon);<br>   :long_name = &quot;surface temperature&quot;;<br>   :units = &quot;degC&quot;;<br>  float lat(lat);<br>   :units = &quot;degrees_north&quot;;<br>  float lon(lon);<br>   :units = &quot;degrees_east&quot;;<br>  int time(time);<br>   :units = &quot;hours&quot;;<p> // Global Attributes:<br>  :title = &quot;Example Data&quot;;<br>  :testByte = 1, 2, 3, 4; // byte<br>  :testShort = 1, 2, 3, 4; // short<br>  :testInt = 1, 2, 3, 4; // int<br>  :testFloat = 1.0, 2.0, 3.0, 4.0; // float<br>  :testDouble = 1.0, 2.0, 3.0, 4.0; // double</p><p> data:<br>  lat = 41.0, 40.0, 39.0;<br>  lon = -109.0, -107.0, -105.0, -103.0;<br>  time = 6, 18;
+}</pre>
+<h3><b>2. Use the metadata in the existing file:</b> </h3>
+<p>In this example, all of the metadata is read in from the underlying file. </p>
+<pre>
+&lt;netcdf xmlns=&quot;http://www.ucar.edu/schemas/netcdf&quot; 
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+	xsi:schemaLocation=&quot;http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset2.xsd&quot;
+	uri=&quot;file:///E:/dev/NCdataset/example.nc&quot;&gt;
+
+  &lt;readMetadata/&gt;
+&lt;/netcdf&gt;
+</pre>
+<p>Here, the <i>&lt;readMetadata/&gt;</i> element causes all of the metadata from 
+  the netCDF file to be read in. This creates the following NetCDF Dataset: </p>
+<pre>
+netcdf file:///E:/dev/NCdataset/xml/useExisting.xml {
+  dimensions:
+    time = UNLIMITED;   // (2 currently)   // (has coord.var)
+	lat = 3;   // (has coord.var)
+	lon = 4;   // (has coord.var)
+  variables:
+    int rh(time, lat, lon);
+	  :long_name = &quot;relative humidity&quot;;
+	  :units = &quot;percent&quot;;
+	double T(time, lat, lon);
+	  :long_name = &quot;surface temperature&quot;;
+	  :units = &quot;degC&quot;;
+	float lat(lat);
+	  :units = &quot;degrees_north&quot;;
+	float lon(lon);
+	  :units = &quot;degrees_east&quot;;
+	int time(time);
+	  :units = &quot;hours&quot;;
+	
+  // Global Attributes:
+    :title = &quot;Example Data&quot;;
+}</pre>
+(Note that the namespace declaration in the above netcdf element <i>xmlns=&quot;http://www.ucar.edu/schemas/netcdf&quot;</i> 
+makes the netcdf namespace the default namespace, so we do not need to qualify 
+the element names with the <b>nc:</b> prefix.) 
+<h3><b>3. Read in metadata from existing NetCDF file and override:</b> </h3>
+<p>Here we read in all of the metadata from the underlying file, and modify it 
+  through elements in the XML:</p>
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;nc:netcdf xmlns:nc=&quot;http://www.ucar.edu/schemas/netcdf&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset2.xsd&quot; 
+    uri=&quot;file:///E:/dev/NCdataset/example.nc&quot;&gt;
+
+  &lt;nc:attribute name=&quot;Conventions&quot; type=&quot;string&quot; value=&quot;added&quot;/&gt;
+  &lt;nc:attribute name=&quot;title&quot; type=&quot;string&quot; value=&quot;replaced&quot;/&gt;
+  
+  &lt;nc:dimension name=&quot;lat&quot; length=&quot;3&quot;/&gt;
+  &lt;nc:variable name=&quot;deltaLat&quot; type=&quot;double&quot; shape=&quot;lat&quot;&gt;
+    &lt;nc:values&gt;.1 .1 .01&lt;/nc:values&gt;
+  &lt;/nc:variable&gt;
+
+  &lt;nc:readMetadata&gt;
+    &lt;nc:rename type=&quot;variable&quot; rename=&quot;Temperature&quot; nameInFile=&quot;T&quot;/&gt;
+    &lt;nc:readVariable name=&quot;rh&quot; rename=&quot;ReletiveHumidity&quot;&gt;
+      &lt;nc:attribute name=&quot;long_name2&quot; type=&quot;string&quot; value=&quot;relatively humid&quot;/&gt;
+      &lt;nc:attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;percent (%)&quot;/&gt;
+      &lt;nc:removeAttribute name=&quot;long_name&quot;/&gt;
+      &lt;nc:renameAttribute rename=&quot;checkedBy&quot; nameInFile=&quot;QA&quot; /&gt;
+    &lt;/nc:readVariable &gt;
+  &lt;/nc:readMetadata&gt;
+&lt;/nc:netcdf&gt;
+</pre>
+<p>The <i>&lt;nc:readMetadata&gt;</i> element again reads all of the metadata 
+  from the named file, but any elements that are already decalred in the XML override 
+  it. The global attribute &quot;Conventions&quot; is added, and the global attribute 
+  &quot;title&quot; replaces the attribute from the existing file. (Its not obvious 
+  what is added and what is modified unless you know what's in the underlying 
+  file.)</p>
+A new variable &quot;deltaLat&quot; is added, and since it refers to the lat dimension 
+in its shape attribute, that dimension must be declared here. Since there is no 
+corresponding variable in the netCDF file, its values must be specified here also. 
+<p>Inside the <i>&lt;nc:readMetadata&gt;</i> element are elements which modify 
+  or refer to metadata read in by the<i>&lt;nc:readMetadata&gt;</i>. The variable 
+  &quot;T&quot; is renamed to &quot;Temperature&quot;. The <i>nc:readVariable 
+  </i>element declares that the variable &quot;rh&quot; will be read in, and modifies 
+  its attributes. It also renames the variable to &quot;ReletiveHumidity&quot;. 
+  The variable attribute &quot;long_name2&quot; is added, &quot;units&quot; is 
+  replaced, &quot;long_name&quot; is removed, and &quot;QA&quot; is renamed to 
+  &quot;checkedBy&quot;.</p>
+<p>This creates the following NetCDF Dataset. </p>
+<pre>netcdf file:///E:/dev/NCdataset/xml/replace.xml {
+  dimensions:
+    time = UNLIMITED;   // (2 currently)   // (has coord.var)
+    lat = 3;   // (has coord.var)
+    lon = 4;   // (has coord.var)
+
+  variables:
+    double deltaLat(lat);
+    int ReletiveHumidity(time, lat, lon);
+      :checkedBy = &quot;number 92&quot;;
+      :long_name2 = &quot;relatively humid&quot;;
+      :units = &quot;percent (%)&quot;;
+    double Temperature(time, lat, lon);
+      :long_name = &quot;surface temperature&quot;;
+      :units = &quot;degC&quot;;
+    float lat(lat);
+      :units = &quot;degrees_north&quot;;
+    float lon(lon);
+      :units = &quot;degrees_east&quot;;
+    int time(time);
+      :units = &quot;hours&quot;;
+	  
+  // Global Attributes:
+  :Conventions = &quot;added&quot;;
+  :title = &quot;replaced&quot;;
+
+  data:
+    deltaLat = 0.1, 0.1, 0.01;
+}
+</pre>
+<h3><b>4. Completely specify the NetCDF Dataset Metadata, rename variables.</b></h3>
+<p>Here, all of the metadata is specified in the XML, and the data for &quot;ReletiveHumidity&quot; 
+  variable will be taken from the variable named &quot;rh&quot; in the file. This 
+  is done by adding the &quot;nameInFile&quot; attribute to the variable element.</p>
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;netcdf xmlns=&quot;http://www.ucar.edu/schemas/netcdf&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset2.xsd&quot; 	
+    uri=&quot;file:///E:/dev/NCdataset/example.nc&quot;&gt;
+
+  &lt;dimension name=&quot;time&quot; length=&quot;2&quot; isUnlimited=&quot;true&quot;/&gt;
+  &lt;dimension name=&quot;lat&quot; length=&quot;3&quot;/&gt;
+  &lt;dimension name=&quot;lon&quot; length=&quot;4&quot;/&gt;
+  
+  &lt;variable name=&quot;ReletiveHumidity&quot; type=&quot;int&quot; shape=&quot;time lat lon&quot; nameInFile=&quot;rh&quot;&gt;
+    &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;relative humidity&quot;/&gt;
+    &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;percent&quot;/&gt;
+  &lt;/variable&gt;
+&lt;netcdf&gt;
+</pre>
+<h3><br>
+  5. Subset a variable's data</h3>
+<p>In this <a href="examples/dataset/subsetAwips.xml">example xml</a>, we use 
+  <em> <strong>logicalView</strong></em> elements to define new variables (<em>T-FHAG, 
+  T-MandatoryLevels, </em>and<em> T-BoundaryLayers</em>) whose data are subsets 
+  of an existing variable (named <em><strong>t</strong></em> in the file). We 
+  do this because the original file has 3 vertical coordinates munged together 
+  in the levels_25 dimension, and we want to break that into 3 seperate variables.</p>
+<p>The locicalView element currrently has only one attribute <em><strong>section 
+  </strong></em>whose value defines the data section, according to these rules:</p>
+<ul>
+  <li>to select all of a dimension, use as asterisk (*)</li>
+  <li>to select one slice, just use the value of the index</li>
+  <li>to select a range, use start:end, eg 1:19</li>
+</ul>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;netcdf xmlns=&quot;http://www.ucar.edu/schemas/netcdf&quot; <br>	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;<br>	xsi:schemaLocation=&quot;http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset2.xsd&quot;<br>	uri=&quot;file:///C:/data/conventions/awips/awipsTestFilename.nc&quot;&gt;</pre>
+<pre> &lt;dimension name=&quot;record&quot; length=&quot;11&quot; isUnlimited=&quot;true&quot;/&gt;
+ &lt;dimension name=&quot;x&quot; length=&quot;93&quot;/&gt;
+ &lt;dimension name=&quot;y&quot; length=&quot;65&quot;/&gt;
+ &lt;dimension name=&quot;levels_25&quot; length=&quot;25&quot;/&gt;
+ &lt;dimension name=&quot;FHAG&quot; length=&quot;1&quot;/&gt;
+ &lt;dimension name=&quot;MandatoryLevels&quot; length=&quot;19&quot;/&gt;
+ &lt;dimension name=&quot;BoundaryLayers&quot; length=&quot;5&quot;/&gt;
+ 
+ &lt;variable name=&quot;T-FHAG&quot; shape=&quot;record FHAG y x&quot; type=&quot;float&quot;    nameInFile=&quot;t&quot;&gt;
+   &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;Temperature    at fixed height above ground&quot;/&gt;
+   &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;K&quot;/&gt;
+   &lt;attribute name=&quot;valid_range&quot; type=&quot;float&quot; value=&quot;180.0    330.0&quot;/&gt;
+   &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot;/&gt;
+   &lt;logicalView section=&quot;*,0,*,*&quot; /&gt;
+ &lt;/variable&gt;
+   
+ &lt;variable name=&quot;T-MandatoryLevels&quot; shape=&quot;record MandatoryLevels    y x&quot; type=&quot;float&quot; nameInFile=&quot;t&quot;&gt;
+   &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;Temperature    on Mandatory Levels&quot;/&gt;
+   &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;K&quot;/&gt;
+   &lt;attribute name=&quot;valid_range&quot; type=&quot;float&quot; value=&quot;180.0    330.0&quot;/&gt;
+   &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot;/&gt;
+   &lt;logicalView section=&quot;*,1:19,*,*&quot; /&gt;
+ &lt;/variable&gt;
+   
+ &lt;variable name=&quot;T-BoundaryLayers&quot; shape=&quot;record BoundaryLayers    y x&quot; type=&quot;float&quot; nameInFile=&quot;t&quot;&gt;
+   &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;Temperature    on BoundaryLayers&quot;/&gt;
+   &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;K&quot;/&gt;
+   &lt;attribute name=&quot;valid_range&quot; type=&quot;float&quot; value=&quot;180.0    330.0&quot;/&gt;
+   &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot;/&gt;
+   &lt;logicalView section=&quot;*,20:24,*,*&quot; /&gt;
+ &lt;/variable&gt;
+   
+ &lt;variable name=&quot;t&quot; shape=&quot;record levels_25 y x&quot; type=&quot;float&quot;&gt;
+   &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;Temperature&quot;/&gt;
+   &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;K&quot;/&gt;
+   &lt;attribute name=&quot;valid_range&quot; type=&quot;float&quot; value=&quot;180.0    330.0&quot;/&gt;
+   &lt;attribute name=&quot;_FillValue&quot; type=&quot;float&quot; value=&quot;-99999.0&quot;/&gt;
+ &lt;/variable&gt;
+   
+ &lt;variable name=&quot;FHAG&quot; type=&quot;float&quot; shape=&quot;FHAG&quot;&gt;
+   &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;fixed height above ground&quot;/&gt;
+   &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;m&quot;/&gt;
+   &lt;attribute name=&quot;positive&quot; type=&quot;string&quot; value=&quot;up&quot;/&gt;
+   &lt;values&gt;2.0&lt;/values&gt; 
+ &lt;/variable&gt;
+   
+ &lt;variable name='MandatoryLevels' type=&quot;int&quot; shape=&quot;MandatoryLevels&quot;&gt;
+   &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;hPa&quot;    /&gt;
+   &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;Pressure    Levels&quot; /&gt;
+   &lt;values&gt;1000 950 900 850 800 750 700 650 600 550 500 450 400 350 300 250    200 150 100&lt;/values&gt; 
+ &lt;/variable&gt;
+   
+ &lt;variable name=&quot;BoundaryLayers&quot; shape=&quot;BoundaryLayers&quot;    type=&quot;double&quot;&gt;
+   &lt;attribute name=&quot;units&quot; type=&quot;string&quot; value=&quot;hPa&quot;    /&gt;
+   &lt;attribute name=&quot;long_name&quot; type=&quot;string&quot; value=&quot;BoundaryLayer    hectoPascals above ground&quot; /&gt;
+   &lt;values start=&quot;0.0&quot; increment=&quot;30.0&quot; npts=&quot;5&quot;    /&gt;
+  &lt;/variable &gt;
+   
+&lt;/netcdf&gt;
+ </pre>
+<p>NB: This example is taken from the infamous AWIPS formatted netCDF files, and 
+  is a good example of using the logicalView element. If you have to work with 
+  AWIPS files, the dataset convention parsing code will do all the hard work, 
+  so you do not need to use NcML to break up the variables yourself. </p>
+<h2>Aggregated datasets using nested netcdf elements</h2>
+<p>See this <a href="NetcdfAggregation.html">doc</a>.</p>
+</body>
+</html>

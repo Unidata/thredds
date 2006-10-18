@@ -1,0 +1,60 @@
+netcdf C:\data\conventions\coards\air.2001.nc {
+ dimensions:
+   lon = 144;   // (has coord.var)
+   lat = 73;   // (has coord.var)
+   level = 17;   // (has coord.var)
+   time = UNLIMITED;   // (13 currently)   // (has coord.var)
+ variables:
+   float level(level);
+    :units = "millibar";
+    :actual_range = 1000.0, 10.0; // float
+    :long_name = "Level";
+    :positive = "down";
+    :GRIB_id = 100; // short
+    :GRIB_name = "hPa";
+   float lat(lat);
+    :units = "degrees_north";
+    :actual_range = 90.0, -90.0; // float
+    :long_name = "Latitude";
+   float lon(lon);
+    :units = "degrees_east";
+    :long_name = "Longitude";
+    :actual_range = 0.0, 357.5; // float
+   double time(time);
+    :units = "hours since 1-1-1 00:00:0.0";
+    :long_name = "Time";
+    :actual_range = 1.7531688E7, 1.7531976E7; // double
+    :delta_t = "0000-00-01 00:00:00";
+    :avg_period = "0000-00-01 00:00:00";
+   short air(time, level, lat, lon);
+    :long_name = "mean Daily Air temperature";
+    :valid_range = 150.0, 350.0; // float
+    :actual_range = 183.4, 315.35; // float
+    :units = "degK";
+    :add_offset = 477.66; // float
+    :scale_factor = 0.01; // float
+    :missing_value = 32766; // short
+    :precision = 2; // short
+    :least_significant_digit = 1; // short
+    :GRIB_id = 11; // short
+    :GRIB_name = "TMP";
+    :var_desc = "Air temperature
+A";
+    :dataset = "NCEP Reanalysis Daily Averages
+AJ";
+    :level_desc = "Multiple levels
+F";
+    :statistic = "Mean
+M";
+    :parent_stat = "Individual Obs
+I";
+ // Global Attributes:
+    :Conventions = "COARDS";
+    :title = "mean daily NMC reanalysis (2001)";
+    :base_date = 2001, 1, 1; // short
+    :history = "created 00/12/18 by Hoop (netCDF2.3)";
+    :description = "Data is from NMC initialized reanalysis
+(4x/day).  It consists of most variables interpolated to
+pressure surfaces from model (sigma) surfaces.";
+    :platform = "Model";
+}

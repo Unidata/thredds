@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.ucar.edu/schemas/netcdf" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdfDataset2.xsd"
+	uri="file:///C:/data/conventions/awips/awipsTestFilename.nc">
+
+	<dimension name="record" length="11" isUnlimited="true"/>
+	<dimension name="x" length="93"/>
+	<dimension name="y" length="65"/>
+	<dimension name="levels_25" length="25"/>
+	<dimension name="FHAG" length="1"/>
+	<dimension name="MandatoryLevels" length="19"/>
+	<dimension name="BoundaryLayers" length="5"/>
+     <dimension name='charsPerLevel' length='10' />
+
+	<attribute name="Conventions" type="string" value="GDV"/>
+
+	<variable name="T-FHAG" shape="record FHAG y x" type="float" nameInFile="t">
+		<attribute name="long_name" type="string" value="Temperature at fixed height above ground"/>
+		<attribute name="units" type="string" value="K"/>
+		<attribute name="valid_range" type="float" value="180.0 330.0"/>
+		<attribute name="_FillValue" type="float" value="-99999.0"/>
+	     <logicalView section="*,0,*,*" />
+	</variable>
+	
+	<variable name="T-MandatoryLevels" shape="record MandatoryLevels y x" type="float" nameInFile="t">
+		<attribute name="long_name" type="string" value="Temperature on Mandatory Levels"/>
+		<attribute name="units" type="string" value="K"/>
+		<attribute name="valid_range" type="float" value="180.0 330.0"/>
+		<attribute name="_FillValue" type="float" value="-99999.0"/>
+	     <logicalView section="*,1:19,*,*" />
+	</variable>
+	
+	<variable name="T-BoundaryLayers" shape="record BoundaryLayers y x" type="float" nameInFile="t">
+		<attribute name="long_name" type="string" value="Temperature on BoundaryLayers"/>
+		<attribute name="units" type="string" value="K"/>
+		<attribute name="valid_range" type="float" value="180.0 330.0"/>
+		<attribute name="_FillValue" type="float" value="-99999.0"/>
+	     <logicalView section="*,20:24,*,*" />
+	</variable>
+	
+	<variable name="t" shape="record levels_25 y x" type="float">
+		<attribute name="long_name" type="string" value="Temperature"/>
+		<attribute name="units" type="string" value="K"/>
+		<attribute name="valid_range" type="float" value="180.0 330.0"/>
+		<attribute name="_FillValue" type="float" value="-99999.0"/>
+	</variable>
+	
+	<variable name='tLevels' type='string' shape='levels_25 charsPerLevel' />
+
+    <variable name="FHAG" type="float" shape="FHAG">
+		<attribute name="long_name" type="string" value="fixed height above ground"/>
+		<attribute name="units" type="string" value="m"/>
+		<attribute name="positive" type="string" value="up"/>
+	     <values>2.0</values>    
+    </variable>
+    
+    <variable name='MandatoryLevels' type="int" shape="MandatoryLevels">
+        <attribute name="units" type="string" value="hPa" />
+        <attribute name="long_name" type="string" value="Pressure Levels" />
+	    <values>1000 950 900 850 800 750 700 650 600 550 500 450 400 350 300 250 200 150 100</values>    
+    </variable>
+    
+    <variable name="BoundaryLayers" shape="BoundaryLayers" type="double">
+        <attribute name="units" type="string" value="hPa" />
+        <attribute name="long_name" type="string" value="BoundaryLayer hectoPascals above ground" />
+        <values start="0.0" increment="30.0" npts="5" />
+    </variable >
+    
+    <variable name='mandatoryLevelNames' type='string' shape='MandatoryLevels charsPerLevel' nameInFile="tLevels">
+	     <logicalView section="1:19,*" />    
+    </variable>
+    
+    <variable name="record" shape="record" type="double" >
+        <attribute name="long_name" type="string" value="synthesized time coordinate from reftime, valtimeMINUSreftime" />
+        <attribute name="units" type="string" value="seconds since  1970-1-1 00:00:00.0 " />
+        <values start="1.0515312E9" increment="21600.0" npts="11" />
+  </variable >
+  
+  <variable name="x" shape="x" type="double"  >
+      <attribute name="units" type="string" value="degrees_east" />
+      <values start="0.0" increment="1.0" npts="93" />
+  </variable >
+  
+  <variable name="y" shape="y" type="double" >
+      <attribute name="units" type="string" value="degrees_north" />
+       <values start="0.0" increment="1.0" npts="65" />
+   </variable >
+	
+</netcdf>

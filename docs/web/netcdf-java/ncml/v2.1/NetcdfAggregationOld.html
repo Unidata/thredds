@@ -1,0 +1,248 @@
+<html>
+<head>
+<title>Aggregating netCDF files with netCDF Datasets</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1>Aggregating netCDF files with netCDF Datasets</h1>
+<p><i>John Caron</i></p>
+<p><i>last changed: Aug 15, 2003</i></p>
+<hr>
+<h2>Introduction</h2>
+<p><a href="NetcdfDataset.html">Netcdf Datasets</a> allow multiple netCDF files 
+  to be logically grouped together. This is done with nested netcdf elements in 
+  the NetCDF Dataset Definition XML document. </p>
+<h3>Example: Union of netCDF files</h3>
+<p>The following constructs a dataset by creating the union of two netCDF files:</p>
+<pre>&lt;ncd:netcdf xmlns=&quot;http://www.ucar.edu/schemas/netcdf&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://www.ucar.edu/schemas/netcdf http://www.ucar.edu/schemas/netcdfDataset.xsd&quot;&gt;
+
+  &lt;dimension name=&quot;lat&quot; length=&quot;64&quot; /&gt; 
+  &lt;dimension name=&quot;lon&quot; length=&quot;128&quot; /&gt;   
+  &lt;dimension name=&quot;time&quot; length=&quot;12&quot; /&gt; 
+
+  &lt;netcdf uri=&quot;http://host/path/rh.nc&quot;&gt;     
+    &lt;variable name=&quot;rh&quot; type=&quot;float&quot; shape=&quot;time lat lon&quot;/&gt;   
+  &lt;/netcdf&gt; 
+   
+  &lt;netcdf uri=&quot;http://host/path/temp.nc&quot;&gt;     
+    &lt;variable name=&quot;Temperature&quot; type=&quot;float&quot; shape=&quot;time lat lon&quot;/&gt;   
+  &lt;/netcdf&gt; 
+
+&lt;/netcdf&gt; </pre>
+<p>The resulting dataset looks like:</p>
+<pre>
+netcdf file:///E:/dev/NCdataset/xml/TestUnion.xml {
+ dimensions:
+  time = 12;   
+  lat = 64;   
+  lon = 128; 
+  
+
+ variables:  
+  float rh(time, lat, lon);  
+  float Temperature(time, lat, lon);
+ }</pre>
+<p>The <b>rh</b> variable will be read from <i>http://host/path/rh.nc</i>, while 
+  the <b>Temperature</b> variable will be read from <i>http://host/path/temp.nc. 
+  </i>(Since these are specified with an <i>http:</i> URL, they will be read as 
+  remote files.) Note that there is no <i>uri</i> attribute in the outer netcdf 
+  element.</p>
+<h3>Netcdf containers</h3>
+<p>Any elements that are declared in the outer netcdf element are also part of 
+  the inner netcdf, so the first inner dataset from the above example actually 
+  looks like:</p>
+<pre> &lt;netcdf uri=&quot;http://host/path/rh.nc&quot;&gt;
+   &lt;dimension name=&quot;lat&quot; length=&quot;64&quot; /&gt; 
+   &lt;dimension name=&quot;lon&quot; length=&quot;128&quot; /&gt;   
+   &lt;dimension name=&quot;time&quot; length=&quot;12&quot; /&gt;      
+   &lt;variable name=&quot;rh&quot; type=&quot;float&quot; shape=&quot;time lat lon&quot;/&gt;   
+ &lt;/netcdf&gt; </pre>
+<p>or in CDL:</p>
+<pre>
+netcdf  {
+ dimensions:
+  time = 12;   
+  lat = 64;   
+  lon = 128;   
+
+
+ variables:<br>  float rh(time, lat, lon);<br>} </pre>
+<p>You can think of the elements that are declared in the outer netcdf element 
+  as the common elements of the inner netcdf elements. At the same time the outer 
+  netcdf contains all of the elements of its nested netcdf elements. Therefore, 
+  <i> <b>the contents of a netcdf element are the union of its own elements, the 
+  elements of its ancestor netcdf elements (if any), and the contents of its children 
+  netcdf elements (if any). </b></i>Netcdf elements are really containers for 
+  the other elements (dimension, attribute, or variable), so we will use the phrase 
+  <i>netcdf container</i> in the context of nested netcdf elements.</p>
+<p>When an element with the same name and type (dimension, attribute, or variable) 
+  appears in multiple places, one of them overrides the others within a particular 
+  netcdf container. The rules are: </p>
+<ol>
+  <ol>
+    <li>An element that is directly contained in the netcdf element overrides 
+      one that is in a parent or child.</li>
+    <li>An element that is contained in a parent netcdf object overrides one that 
+      is in a child.</li>
+    <li>When two element appear at the same child level, the first one to appear 
+      is used in the parent. </li>
+  </ol>
+</ol>
+<h3>Variable Aggregation on existing dimension</h3>
+<p>The following constructs a dataset by aggregating a variable in two other datasets, 
+  along an existing dimension:</p>
+<pre>&lt;nc:netcdf&gt;<br>  &lt;nc:dimension name=&quot;lat&quot; length=&quot;64&quot; /&gt; <br>  &lt;nc:dimension name=&quot;lon&quot; length=&quot;128&quot; /&gt;
+  &lt;nc:dimension name=&quot;time&quot; length=&quot;59&quot;/&gt; 
+<br>  &lt;ncd:variable name=&quot;T&quot; type=&quot;float&quot; shape=&quot;time lat lon&quot;/&gt;
+ 
+  &lt;nc:netcdf uri=&quot;file://test/temperature/jan.nc&quot;&gt;
+    &lt;nc:dimension name=&quot;time&quot; length=&quot;31&quot; /&gt;
+  &lt;/nc:netcdf&gt;
+
+  &lt;nc:netcdf uri=&quot;file://test/temperature/feb.nc&quot;&gt;
+    &lt;nc:dimension name=&quot;time&quot; length=&quot;28&quot; /&gt;
+  &lt;/nc:netcdf&gt;
+<br>&lt;/nc:netcdf&gt;</pre>
+<p>Aggregation is done by <i>declaring the aggregation dimension</i> (in this 
+  case, <b>time</b>) <i>in both the inner and outer netcdf containers with a different 
+  length</i>. The lengths of the inner dimensions must add up to the length of 
+  the outer dimension. Any variable that uses that dimension is an <i>aggregation 
+  variable</i>. The dimension must be the outermost (slowest varying) dimension. 
+</p>
+<p>In this example, the variable <b>T</b> is an aggregation variable, and the 
+  first 31 elements of the <b>time</b> dimension are taken from the file <i>jan.nc</i> 
+  and the next 28 are taken from <i>feb.nc</i>. A client reading this dataset 
+  will not know any of this, and will just access it through the usual netCDF 
+  API. The dataset CDL will look like this to the client:</p>
+<pre>netcdf file:///E:/dev/NCdataset/xml/aggType3.xml {<br> dimensions:<br>  lat = 64;<br>  lon = 128;<br>  time = 59;
+ variables:
+  float T(time, lat, lon);
+}</pre>
+<p>The first nested dataset looks like (with the declared time dimension overriding 
+  the outer declaration):</p>
+<pre>  &lt;nc:netcdf uri=&quot;file://test/temperature/jan.nc&quot;&gt;
+    &lt;nc:dimension name=&quot;lat&quot; length=&quot;64&quot; /&gt; <br>    &lt;nc:dimension name=&quot;lon&quot; length=&quot;128&quot; /&gt;
+    &lt;nc:dimension name=&quot;time&quot; length=&quot;31&quot;/&gt; <br>    &lt;ncd:variable name=&quot;T&quot; type=&quot;float&quot; shape=&quot;time lat lon&quot;/&gt;
+  &lt;/nc:netcdf&gt;
+</pre>
+<p> the actual file (/test/temperature/jan.nc) must contain these CDL elements: 
+</p>
+<pre>
+netcdf {<br> dimensions:<br>  lat = 64;<br>  lon = 128;<br>  time = 31;
+ variables:
+  float T(time, lat, lon);
+}
+</pre>
+<p>The second nested dataset (/test/temperature/feb.nc) must contain these CDL 
+  elements:<br>
+</p>
+<pre>netcdf {<br> dimensions:<br>  lat = 64;<br>  lon = 128;<br>  time = 28;
+ variables:
+  float T(time, lat, lon);
+}</pre>
+<h3>Variable Aggregation on a synthetic dimension</h3>
+<p>The previous example created aggregated dataset variables along their existing 
+  outer dimension. Another common case is to aggregate variables by creating a 
+  new outer dimension. Each existing variable becomes one &quot;slice&quot; of 
+  the compound variable (a <i>slice</i> holds the index of one dimension constant, 
+  e.g. <b>humidity(3, *, *, *)</b>). The following joins variables from three 
+  separate files into a single variable, and assigns coordinate values to the 
+  synthesized dimension:</p>
+<pre>&lt;netcdf&gt;<br> &lt;dimension name=&quot;lat&quot; length=&quot;64&quot;/&gt;<br> &lt;dimension name=&quot;lon&quot; length=&quot;128&quot;/&gt;
+ &lt;dimension name=&quot;time&quot; length=&quot;0&quot; isUnlimited=&quot;true&quot;/&gt;
+ &lt;dimension name=&quot;time_len&quot; length=&quot;20&quot;/&gt;
+<br> &lt;variable name=&quot;time&quot; type=&quot;string&quot; shape=&quot;time time_len&quot;/&gt;<br> &lt;variable name=&quot;T&quot; type=&quot;double&quot; shape=&quot;time lat lon&quot;/&gt;<br><br> &lt;netcdf uri=&quot;file:///E:/dev/NCdataset/data/time1.nc&quot;&gt;
+   &lt;dimensionValue name=&quot;time&quot; value=&quot;2000-7-16 6:00&quot;/&gt;
+ &lt;/netcdf&gt;<br><br> &lt;netcdf uri=&quot;file:///E:/dev/NCdataset/data/time2.nc&quot;&gt;<br>   &lt;dimensionValue name=&quot;time&quot; value=&quot;2000-8-16 6:00&quot;/&gt;
+ &lt;/netcdf&gt;<br>
+ &lt;netcdf uri=&quot;file:///E:/dev/NCdataset/data/time3.nc&quot;&gt;<br>   &lt;dimensionValue name=&quot;time&quot; value=&quot;2000-9-16 6:00&quot;/&gt;
+ &lt;/netcdf&gt;<br>
+&lt;/netcdf&gt;</pre>
+<p>For this kind of aggregation, you must declare the synthetic dimension in the 
+  outer dataset with <i>isUnlimited=&quot;true&quot;, </i>and you must have a 
+  <i>&lt;dimensionValue&gt; </i>element in each nested dataset that you want included 
+  in the aggregation.</p>
+<p>The outer level dataset has this CDL:</p>
+<pre>
+netcdf file:///E:/dev/NCdataset/xml/aggType1.xml {<br> dimensions:<br>  lat = 64;<br>  lon = 128;<br>  time = 3;   // (has coord.var)<br>  time_len = 20;
+<p>
+ variables:<br>  float T(time, lat, lon);<br>  char time(time, time_len);
+
+data:
+  time = &quot;2000-7-16 6:00&quot;, &quot;2000-8-16 6:00&quot;, &quot;2000-9-16 6:00&quot;;
+}</pre>
+The &lt;dimensionValue/&gt; element declares that the named dimension should be 
+removed from any elements inside of the container, so the first nested dataset 
+which has the following specification: 
+<pre>&lt;netcdf uri=&quot;file:///E:/dev/NCdataset/data/time1.nc&quot;&gt;
+  &lt;dimension name=&quot;lat&quot; length=&quot;64&quot;/&gt;
+  &lt;dimension name=&quot;lon&quot; length=&quot;128&quot;/&gt;
+  &lt;dimension name=&quot;time&quot; length=&quot;1&quot;/&gt; 
+  &lt;dimension name=&quot;time_len&quot; length=&quot;20&quot;/&gt; 
+
+  &lt;variable name=&quot;time&quot; type=&quot;string&quot; shape=&quot;time time_len&quot;&gt;
+  &lt;variable name=&quot;T&quot; type=&quot;double&quot; shape=&quot;time lat lon&quot;/&gt; 
+
+  &lt;dimensionValue name=&quot;time&quot; value=&quot;2000-7-16 6:00&quot;/&gt;
+&lt;/netcdf&gt;</pre>
+<p>is equivalent to::</p>
+<pre>&lt;netcdf uri=&quot;file:///E:/dev/NCdataset/data/time1.nc&quot;&gt;<br> &lt;dimension name=&quot;lat&quot; length=&quot;64&quot;/&gt;<br> &lt;dimension name=&quot;lon&quot; length=&quot;128&quot;/&gt;<br>
+ &lt;variable name=&quot;T&quot; type=&quot;double&quot; shape=&quot;lat lon&quot;/&gt;
+&lt;/netcdf&gt;
+</pre>
+<p>and the variable <b>T(lat, lon)</b> is formally mapped to <b>T(1, lat, lon)</b> 
+  for the aggregation.<br>
+</p>
+<h4>Example: double nested netcdf datasets</h4>
+<p>This defines the union of two variables which share the time coordinate, and 
+  each of which consists of a time series aggregation along an existing dimension. 
+</p>
+<pre>&lt;netcdf&gt;
+
+  &lt;dimension name=&quot;lat&quot; length=&quot;64&quot; /&gt;
+  &lt;dimension name=&quot;lon&quot; length=&quot;128&quot; /&gt;
+  &lt;dimension name=&quot;time&quot; length=&quot;59&quot;/&gt; 
+  
+  &lt;netcdf&gt;
+    &lt;variable name=&quot;Temperature&quot; type=&quot;double&quot; shape=&quot;time lat lon&quot;/&gt;
+    &lt;variable name=&quot;time&quot; type=&quot;int&quot; shape=&quot;time&quot;/&gt;
+
+    &lt;netcdf uri=&quot;file:///data/T/jan.nc&quot;&gt;
+      &lt;dimension name=&quot;time&quot; length=&quot;31&quot; /&gt;
+    &lt;/netcdf&gt;
+
+    &lt;netcdf uri=&quot;file:///data/T/feb.nc&quot;&gt;
+      &lt;dimension name=&quot;time&quot; length=&quot;28&quot; /&gt;
+    &lt;/netcdf&gt;
+    
+  &lt;/netcdf&gt;
+  
+  &lt;netcdf&gt;
+    &lt;variable name=&quot;Pressure&quot; type=&quot;double&quot; shape=&quot;time lat lon&quot;/&gt;
+
+    &lt;netcdf uri=&quot;file:///data/P/jan.nc&quot;&gt;
+      &lt;dimension name=&quot;time&quot; length=&quot;31&quot; /&gt;
+ 	&lt;/netcdf&gt;
+	
+    &lt;netcdf uri=&quot;file:///data/P/feb.nc&quot;&gt;
+      &lt;dimension name=&quot;time&quot; length=&quot;28&quot; /&gt;
+	&lt;/netcdf&gt;
+
+  &lt;/netcdf&gt;
+
+&lt;/nc:netcdf&gt;
+</pre>
+<p>This creates the following Dataset in CDL:</p>
+<pre>netcdf file:///E:/dev/NCdataset/xml/doubleNested.xml {<br> dimensions:<br>  lat = 64;<br>  lon = 128;<br>  time = 59;   // (has coord.var)
+ variables:<br>  char time(time, time_len);<br>  float Pressure(time, lat, lon);<br>  float Temperature(time, lat, lon);
+}
+</pre>
+<p>(Note: cant declare time in top level, because there is no backing netcdf. 
+  is this a problem?)</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

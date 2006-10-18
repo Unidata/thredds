@@ -16,8 +16,8 @@
 <p><em>last updated: Jan 14, 2006 </em></p>
 <h2>Overview</h2>
 <p>In order to use a dataset at the scientific datatype layer, the dataset's coordinate systems must first be identified. This is done by an implementation of <strong>ucar.nc2.dataset.CoordSysBuilderIF</strong> whose job is to examine the contents of the dataset and create coordinate system objects that follow this object model: </p>
-<p><img src="CoordSys.png" width="610" height="304"></p>
-<p>For more details, see the <a href="CSObjectModel.html">Coordinate System Object Model</a>.</p>
+<p><img src="../images/CoordSys.png" width="610" height="341"></p>
+<p>For more details, see the <a href="../reference/CSObjectModel.html">Coordinate System Object Model</a>.</p>
 <p>A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define <strong><em>and document </em></strong>a new Convention in collaboration with others with similar needs. If you do so, read <a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">Writing NetCDF Files: Best Practices</a>,  look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">NetCDF Conventions page</a>. </p>
 <p>The steps to using your CoordSysBuilderIF class in the Netcdf-Java library: </p>
 <ol>

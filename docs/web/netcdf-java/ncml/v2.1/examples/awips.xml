@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nc:netcdf xmlns:nc="http://www.ucar.edu/schemas/netcdf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdf-cs.xsd" uri="C:\data\conventions\awips\awips.nc">
+  <nc:dimension name="record" length="5" isUnlimited="true" />
+  <nc:dimension name="n_valtimes" length="5" />
+  <nc:dimension name="data_variables" length="12" />
+  <nc:dimension name="charsPerLevel" length="10" />
+  <nc:dimension name="namelen" length="132" />
+  <nc:dimension name="x" length="75" />
+  <nc:dimension name="y" length="56" />
+  <nc:dimension name="nav" length="1" />
+  <nc:dimension name="levels_1" length="1" />
+  <nc:dimension name="levels_19" length="19" />
+  <nc:dimension name="levels_35" length="35" />
+  <nc:dimension name="levels_38" length="38" />
+  <nc:dimension name="levels_39" length="39" />
+  <nc:dimension name="levels_40" length="40" />
+  <nc:dimension name="PressureLevels" length="19" />
+  <nc:dimension name="PotTempLevels" length="15" />
+  <nc:dimension name="BoundaryLayers" length="3" />
+  <nc:attribute name="cdlDate" type="string" value="19970801" />
+  <nc:attribute name="depictorName" type="string" value="rucClip" />
+  <nc:attribute name="projIndex" type="int" value="3" />
+  <nc:attribute name="projName" type="string" value="LAMBERT_CONFORMAL" />
+  <nc:attribute name="centralLat" type="float" value="25.0" />
+  <nc:attribute name="centralLon" type="float" value="-95.0" />
+  <nc:attribute name="rotation" type="float" value="25.0" />
+  <nc:attribute name="xMin" type="float" value="-0.1917333" />
+  <nc:attribute name="xMax" type="float" value="0.17206597" />
+  <nc:attribute name="yMax" type="float" value="-0.58681643" />
+  <nc:attribute name="yMin" type="float" value="-0.8572119" />
+  <nc:attribute name="lat00" type="float" value="17.30918" />
+  <nc:attribute name="lon00" type="float" value="-124.83278" />
+  <nc:attribute name="latNxNy" type="float" value="55.310024" />
+  <nc:attribute name="lonNxNy" type="float" value="-56.33115" />
+  <nc:attribute name="dxKm" type="float" value="78.15345" />
+  <nc:attribute name="dyKm" type="float" value="78.15463" />
+  <nc:attribute name="latDxDy" type="float" value="40.331345" />
+  <nc:attribute name="lonDxDy" type="float" value="-96.84637" />
+  <nc:coordinateAxis name="BoundaryLayers" shape="BoundaryLayers" type="double" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:attribute name="long_name" type="string" value="BoundaryLayer hectoPascals above ground" />
+    <nc:values>0.0 60.0 150.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="PotTempLevels" shape="PotTempLevels" type="double" units="K" axisType="GeoZ">
+    <nc:attribute name="units" type="string" value="K" />
+    <nc:attribute name="long_name" type="string" value="PotTempLevels" />
+    <nc:values start="280.0" increment="5.0" npts="15" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="PressureLevels" shape="PressureLevels" type="double" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:attribute name="long_name" type="string" value="PressureLevels" />
+    <nc:values start="1000.0" increment="-50.0" npts="19" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="timeCoord" shape="record" type="double" units="seconds since  1970-1-1 00:00:00.0 " axisType="Time">
+    <nc:attribute name="long_name" type="string" value="synthesized time coordinate from reftime, valtimeMINUSreftime" />
+    <nc:attribute name="units" type="string" value="seconds since  1970-1-1 00:00:00.0 " />
+    <nc:values start="9.969209968386869E36" increment="0.0" npts="5" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="x" shape="x" type="double" units="km" axisType="GeoX">
+    <nc:attribute name="units" type="string" value="km" />
+    <nc:values start="-3169.569206748727" increment="78.15345001220703" npts="75" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="y" shape="y" type="double" units="km" axisType="GeoY">
+    <nc:attribute name="units" type="string" value="km" />
+    <nc:values start="-507.6034081073376" increment="78.15463256835938" npts="56" />
+  </nc:coordinateAxis>
+  <nc:variable name="cp" shape="record levels_1 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="convective precipitation" />
+    <nc:attribute name="units" type="string" value="Kg/M**2" />
+    <nc:attribute name="valid_range" type="float" value="0.0 1000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="0" />
+    <nc:attribute name="levels" type="string" value="SFC" />
+  </nc:variable>
+  <nc:variable name="cpInventory" shape="n_valtimes levels_1" type="string" />
+  <nc:variable name="cpLevels" shape="levels_1 charsPerLevel" type="string" />
+  <nc:variable name="gh" shape="record levels_35 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="Geopotential height" />
+    <nc:attribute name="units" type="string" value="geopotential meters" />
+    <nc:attribute name="valid_range" type="float" value="0.0 10000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="19" />
+    <nc:attribute name="levels" type="string" value="MB 1000-100 by 50  K 280-350 by 5  FRZ" />
+  </nc:variable>
+  <nc:variable name="ghInventory" shape="n_valtimes levels_35" type="string" />
+  <nc:variable name="ghLevels" shape="levels_35 charsPerLevel" type="string" />
+  <nc:variable name="lgsp" shape="record levels_1 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="large scale precipitation" />
+    <nc:attribute name="units" type="string" value="Kg / m**2" />
+    <nc:attribute name="valid_range" type="float" value="0.0 1000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="0" />
+    <nc:attribute name="levels" type="string" value="SFC" />
+  </nc:variable>
+  <nc:variable name="lgspInventory" shape="n_valtimes levels_1" type="string" />
+  <nc:variable name="lgspLevels" shape="levels_1 charsPerLevel" type="string" />
+  <nc:variable name="mmsp" shape="record levels_1 y x" type="float">
+    <nc:attribute name="enumField" type="string" value="MSLP" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="80000.0 110000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="0" />
+    <nc:attribute name="levels" type="string" value="MSL" />
+  </nc:variable>
+  <nc:variable name="mmspInventory" shape="n_valtimes levels_1" type="string" />
+  <nc:variable name="mmspLevels" shape="levels_1 charsPerLevel" type="string" />
+  <nc:variable name="model" shape="namelen" type="string" />
+  <nc:variable name="origin" shape="namelen" type="string" />
+  <nc:variable name="p" shape="record levels_19 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="pressure" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="0.0 150000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="1" />
+    <nc:attribute name="levels" type="string" value="SFC   K 280-350 by 5  FRZ MAWX TROP" />
+  </nc:variable>
+  <nc:variable name="pInventory" shape="n_valtimes levels_19" type="string" />
+  <nc:variable name="pLevels" shape="levels_19 charsPerLevel" type="string" />
+  <nc:variable name="pot" shape="record levels_1 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="potential temperature at tropopause" />
+    <nc:attribute name="units" type="string" value="degrees kelvin" />
+    <nc:attribute name="valid_range" type="float" value="200.0 500.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="0" />
+    <nc:attribute name="levels" type="string" value="TROP" />
+  </nc:variable>
+  <nc:variable name="potInventory" shape="n_valtimes levels_1" type="string" />
+  <nc:variable name="potLevels" shape="levels_1 charsPerLevel" type="string" />
+  <nc:variable name="pr" shape="record levels_1 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="precipitation rate" />
+    <nc:attribute name="units" type="string" value="Kg / m**2 / s" />
+    <nc:attribute name="valid_range" type="float" value="0.0 0.1" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="0" />
+    <nc:attribute name="levels" type="string" value="SFC" />
+  </nc:variable>
+  <nc:variable name="prInventory" shape="n_valtimes levels_1" type="string" />
+  <nc:variable name="prLevels" shape="levels_1 charsPerLevel" type="string" />
+  <nc:variable name="reftime" shape="record" type="double">
+    <nc:attribute name="long_name" type="string" value="reference time" />
+    <nc:attribute name="units" type="string" value="seconds since (1970-1-1 00:00:00.0)" />
+  </nc:variable>
+  <nc:variable name="rh" shape="record levels_39 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="Relative Humidity" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="valid_range" type="float" value="0.0 100.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="20" />
+    <nc:attribute name="levels" type="string" value="FHAG 2    MB 1000-100 by 50   BL 0&gt;30 60&gt;90 150&gt;180   K 280-350 by 5 FRZ" />
+  </nc:variable>
+  <nc:variable name="rhInventory" shape="n_valtimes levels_39" type="string" />
+  <nc:variable name="rhLevels" shape="levels_39 charsPerLevel" type="string" />
+  <nc:variable name="t" shape="record levels_38 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="Temperature" />
+    <nc:attribute name="units" type="string" value="degrees K" />
+    <nc:attribute name="valid_range" type="float" value="0.0 400.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="20" />
+    <nc:attribute name="levels" type="string" value="FHAG 2   MB 1000-100 by 50    BL 0&gt;30 60&gt;90 150&gt;180    K 280-350 by 5" />
+  </nc:variable>
+  <nc:variable name="tInventory" shape="n_valtimes levels_38" type="string" />
+  <nc:variable name="tLevels" shape="levels_38 charsPerLevel" type="string" />
+  <nc:variable name="tp" shape="record levels_1 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="total precipitation" />
+    <nc:attribute name="units" type="string" value="Kg/M**2" />
+    <nc:attribute name="valid_range" type="float" value="0.0 1000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="0" />
+    <nc:attribute name="levels" type="string" value="SFC" />
+  </nc:variable>
+  <nc:variable name="tpInventory" shape="n_valtimes levels_1" type="string" />
+  <nc:variable name="tpLevels" shape="levels_1 charsPerLevel" type="string" />
+  <nc:variable name="uw" shape="record levels_40 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="u wind component" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="20" />
+    <nc:attribute name="levels" type="string" value="FHAG 10 MB 1000-100 by 50  BL 0&gt;30 60&gt;90 150&gt;180  K 280-350 by 5  MAXW TROP" />
+  </nc:variable>
+  <nc:variable name="uwInventory" shape="n_valtimes levels_40" type="string" />
+  <nc:variable name="uwLevels" shape="levels_40 charsPerLevel" type="string" />
+  <nc:variable name="valtime" shape="record" type="double">
+    <nc:attribute name="long_name" type="string" value="valid time" />
+    <nc:attribute name="units" type="string" value="seconds since (1970-1-1 00:00:00.0)" />
+  </nc:variable>
+  <nc:variable name="valtimeMINUSreftime" shape="n_valtimes" type="int">
+    <nc:attribute name="units" type="string" value="seconds" />
+  </nc:variable>
+  <nc:variable name="vw" shape="record levels_40 y x" type="float">
+    <nc:attribute name="long_name" type="string" value="v wind component" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+    <nc:attribute name="_n3D" type="int" value="20" />
+    <nc:attribute name="levels" type="string" value="FHAG 10 MB 1000-100 by 50  BL 0&gt;30 60&gt;90 150&gt;180  K 280-350 by 5  MAXW TROP" />
+  </nc:variable>
+  <nc:variable name="vwInventory" shape="n_valtimes levels_40" type="string" />
+  <nc:variable name="vwLevels" shape="levels_40 charsPerLevel" type="string" />
+  <nc:variable name="staticCoriolis" shape="y x" type="float" coordinateSystems="x-y">
+    <nc:attribute name="units" type="string" value="/second" />
+    <nc:attribute name="long_name" type="string" value="Coriolis parameter" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="staticSpacing" shape="y x" type="float" coordinateSystems="x-y">
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:attribute name="long_name" type="string" value="Grid spacing" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="staticTopo" shape="y x" type="float" coordinateSystems="x-y">
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:attribute name="long_name" type="string" value="Topography" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="cp-SFC" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="convective precipitation-SFC" />
+    <nc:attribute name="units" type="string" value="Kg/M**2" />
+    <nc:attribute name="valid_range" type="float" value="0.0 1000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="gh-FRZ" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="Geopotential height-FRZ" />
+    <nc:attribute name="units" type="string" value="geopotential meters" />
+    <nc:attribute name="valid_range" type="float" value="0.0 10000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="lgsp-SFC" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="large scale precipitation-SFC" />
+    <nc:attribute name="units" type="string" value="Kg / m**2" />
+    <nc:attribute name="valid_range" type="float" value="0.0 1000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="mmsp-MSL" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="mmsp-MSL" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="80000.0 110000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="p-FRZ" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="pressure-FRZ" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="0.0 150000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="p-MAXW" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="pressure-MAXW" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="0.0 150000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="p-SFC" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="pressure-SFC" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="0.0 150000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="p-TROP" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="pressure-TROP" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="0.0 150000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="pot-TROP" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="potential temperature at tropopause-TROP" />
+    <nc:attribute name="units" type="string" value="degrees kelvin" />
+    <nc:attribute name="valid_range" type="float" value="200.0 500.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="pr-SFC" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="precipitation rate-SFC" />
+    <nc:attribute name="units" type="string" value="Kg / m**2 / s" />
+    <nc:attribute name="valid_range" type="float" value="0.0 0.1" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="rh-FHAG" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="Relative Humidity-FHAG" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="valid_range" type="float" value="0.0 100.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="rh-FRZ" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="Relative Humidity-FRZ" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="valid_range" type="float" value="0.0 100.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="t-FHAG" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="Temperature-FHAG" />
+    <nc:attribute name="units" type="string" value="degrees K" />
+    <nc:attribute name="valid_range" type="float" value="0.0 400.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="tp-SFC" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="total precipitation-SFC" />
+    <nc:attribute name="units" type="string" value="Kg/M**2" />
+    <nc:attribute name="valid_range" type="float" value="0.0 1000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="uw-FHAG" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="u wind component-FHAG" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="uw-MAXW" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="u wind component-MAXW" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="uw-TROP" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="u wind component-TROP" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="vw-FHAG" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="v wind component-FHAG" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="vw-MAXW" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="v wind component-MAXW" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="vw-TROP" shape="record y x" type="float" coordinateSystems="x-y-timeCoord">
+    <nc:attribute name="long_name" type="string" value="v wind component-TROP" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="rh-BoundaryLayers" shape="record BoundaryLayers y x" type="float" coordinateSystems="x-y-timeCoord-BoundaryLayers">
+    <nc:attribute name="long_name" type="string" value="Relative Humidity-BoundaryLayers" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="valid_range" type="float" value="0.0 100.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="t-BoundaryLayers" shape="record BoundaryLayers y x" type="float" coordinateSystems="x-y-timeCoord-BoundaryLayers">
+    <nc:attribute name="long_name" type="string" value="Temperature-BoundaryLayers" />
+    <nc:attribute name="units" type="string" value="degrees K" />
+    <nc:attribute name="valid_range" type="float" value="0.0 400.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="uw-BoundaryLayers" shape="record BoundaryLayers y x" type="float" coordinateSystems="x-y-timeCoord-BoundaryLayers">
+    <nc:attribute name="long_name" type="string" value="u wind component-BoundaryLayers" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="vw-BoundaryLayers" shape="record BoundaryLayers y x" type="float" coordinateSystems="x-y-timeCoord-BoundaryLayers">
+    <nc:attribute name="long_name" type="string" value="v wind component-BoundaryLayers" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="gh-PotTempLevels" shape="record PotTempLevels y x" type="float" coordinateSystems="x-y-timeCoord-PotTempLevels">
+    <nc:attribute name="long_name" type="string" value="Geopotential height-PotTempLevels" />
+    <nc:attribute name="units" type="string" value="geopotential meters" />
+    <nc:attribute name="valid_range" type="float" value="0.0 10000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="p-PotTempLevels" shape="record PotTempLevels y x" type="float" coordinateSystems="x-y-timeCoord-PotTempLevels">
+    <nc:attribute name="long_name" type="string" value="pressure-PotTempLevels" />
+    <nc:attribute name="units" type="string" value="Pascals" />
+    <nc:attribute name="valid_range" type="float" value="0.0 150000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="rh-PotTempLevels" shape="record PotTempLevels y x" type="float" coordinateSystems="x-y-timeCoord-PotTempLevels">
+    <nc:attribute name="long_name" type="string" value="Relative Humidity-PotTempLevels" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="valid_range" type="float" value="0.0 100.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="t-PotTempLevels" shape="record PotTempLevels y x" type="float" coordinateSystems="x-y-timeCoord-PotTempLevels">
+    <nc:attribute name="long_name" type="string" value="Temperature-PotTempLevels" />
+    <nc:attribute name="units" type="string" value="degrees K" />
+    <nc:attribute name="valid_range" type="float" value="0.0 400.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="uw-PotTempLevels" shape="record PotTempLevels y x" type="float" coordinateSystems="x-y-timeCoord-PotTempLevels">
+    <nc:attribute name="long_name" type="string" value="u wind component-PotTempLevels" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="vw-PotTempLevels" shape="record PotTempLevels y x" type="float" coordinateSystems="x-y-timeCoord-PotTempLevels">
+    <nc:attribute name="long_name" type="string" value="v wind component-PotTempLevels" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="gh-PressureLevels" shape="record PressureLevels y x" type="float" coordinateSystems="x-y-timeCoord-PressureLevels">
+    <nc:attribute name="long_name" type="string" value="Geopotential height-PressureLevels" />
+    <nc:attribute name="units" type="string" value="geopotential meters" />
+    <nc:attribute name="valid_range" type="float" value="0.0 10000.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="rh-PressureLevels" shape="record PressureLevels y x" type="float" coordinateSystems="x-y-timeCoord-PressureLevels">
+    <nc:attribute name="long_name" type="string" value="Relative Humidity-PressureLevels" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="valid_range" type="float" value="0.0 100.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="t-PressureLevels" shape="record PressureLevels y x" type="float" coordinateSystems="x-y-timeCoord-PressureLevels">
+    <nc:attribute name="long_name" type="string" value="Temperature-PressureLevels" />
+    <nc:attribute name="units" type="string" value="degrees K" />
+    <nc:attribute name="valid_range" type="float" value="0.0 400.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="uw-PressureLevels" shape="record PressureLevels y x" type="float" coordinateSystems="x-y-timeCoord-PressureLevels">
+    <nc:attribute name="long_name" type="string" value="u wind component-PressureLevels" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:variable name="vw-PressureLevels" shape="record PressureLevels y x" type="float" coordinateSystems="x-y-timeCoord-PressureLevels">
+    <nc:attribute name="long_name" type="string" value="v wind component-PressureLevels" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="valid_range" type="float" value="-300.0 300.0" />
+    <nc:attribute name="_FillValue" type="float" value="-99999.0" />
+  </nc:variable>
+  <nc:coordinateSystem name="x-y">
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="LAMBERT_CONFORMAL" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-timeCoord-PressureLevels">
+    <nc:coordinateAxisRef ref="timeCoord" />
+    <nc:coordinateAxisRef ref="PressureLevels" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="LAMBERT_CONFORMAL" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-timeCoord-PotTempLevels">
+    <nc:coordinateAxisRef ref="timeCoord" />
+    <nc:coordinateAxisRef ref="PotTempLevels" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="LAMBERT_CONFORMAL" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-timeCoord">
+    <nc:coordinateAxisRef ref="timeCoord" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="LAMBERT_CONFORMAL" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-timeCoord-BoundaryLayers">
+    <nc:coordinateAxisRef ref="timeCoord" />
+    <nc:coordinateAxisRef ref="BoundaryLayers" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="LAMBERT_CONFORMAL" />
+  </nc:coordinateSystem>
+  <nc:coordinateTransform name="LAMBERT_CONFORMAL" authority="FGDC" transformType="Projection">
+    <nc:parameter name="Projection_Name" type="string" value="Lambert_Conformal_Conic" />
+    <nc:parameter name="Standard_Parallel_1" type="double" value="25.0" />
+    <nc:parameter name="Standard_Parallel_2" type="double" value="25.0" />
+    <nc:parameter name="Longitude_of_Central_Meridian" type="double" value="-95.0" />
+    <nc:parameter name="Latitude_of_Projection_Origin" type="double" value="25.0" />
+  </nc:coordinateTransform>
+</nc:netcdf>

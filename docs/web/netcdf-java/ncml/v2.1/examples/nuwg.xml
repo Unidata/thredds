@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nc:netcdf xmlns:nc="http://www.ucar.edu/schemas/netcdf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ucar.edu/schemas/netcdf http://www.unidata.ucar.edu/schemas/netcdf-cs.xsd" uri="C:\data\conventions\nuwg\2000012500_eta.nc">
+  <nc:dimension name="record" length="9" isUnlimited="true" />
+  <nc:dimension name="level" length="19" />
+  <nc:dimension name="level_c" length="5" />
+  <nc:dimension name="fhg" length="2" />
+  <nc:dimension name="lpdg" length="5" />
+  <nc:dimension name="lpdg_bndry" length="1" />
+  <nc:dimension name="lpdg_bndry30" length="1" />
+  <nc:dimension name="ls_sfc" length="1" />
+  <nc:dimension name="lfhg" length="1" />
+  <nc:dimension name="x" length="93" />
+  <nc:dimension name="y" length="65" />
+  <nc:dimension name="datetime_len" length="21" />
+  <nc:dimension name="nmodels" length="2" />
+  <nc:dimension name="accum" length="2" />
+  <nc:dimension name="nav" length="1" />
+  <nc:dimension name="nav_len" length="100" />
+  <nc:attribute name="record" type="string" value="reftime, valtime" />
+  <nc:attribute name="lpdg" type="string" value="lpdg_bot, lpdg_top" />
+  <nc:attribute name="lpdg_bndry" type="string" value="lpdg_bndry_bot, lpdg_bndry_top" />
+  <nc:attribute name="lpdg_bndry30" type="string" value="lpdg_bndry30_bot, lpdg_bndry30_top" />
+  <nc:attribute name="ls_sfc" type="string" value="ls_sfc_bot, ls_sfc_top" />
+  <nc:attribute name="lfhg" type="string" value="lfhg_bot, lfhg_top" />
+  <nc:attribute name="history" type="string" value="created by gribtonc from HDS broadcast" />
+  <nc:attribute name="title" type="string" value="NCEP Global Product Set" />
+  <nc:attribute name="Conventions" type="string" value="NUWG" />
+  <nc:attribute name="version" type="double" value="0.0" />
+  <nc:coordinateAxis name="fhg" shape="fhg" type="float" units="meters" axisType="Height" positive="up">
+    <nc:attribute name="long_name" type="string" value="fixed height above ground" />
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:values>2.0 10.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="level" shape="level" type="float" units="hectopascals" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="level" />
+    <nc:attribute name="units" type="string" value="hectopascals" />
+    <nc:values start="1000.0" increment="-50.0" npts="19" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="level_c" shape="level_c" type="float" units="hectopascals" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="level subset" />
+    <nc:attribute name="units" type="string" value="hectopascals" />
+    <nc:values>1000.0 850.0 700.0 500.0 250.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lfhg_bot" shape="lfhg" type="float" units="meters" axisType="GeoZ" positive="up">
+    <nc:attribute name="long_name" type="string" value="bottom level of layer between 2 fixed heights above ground" />
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:values>0.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lfhg_top" shape="lfhg" type="float" units="meters" axisType="GeoZ" positive="up">
+    <nc:attribute name="long_name" type="string" value="top level of layer between 2 fixed heights above ground" />
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:values>3000.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lpdg_bndry30_bot" shape="lpdg_bndry30" type="float" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="bottom level of boundary layer between 2 pressure levels" />
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:values>0.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lpdg_bndry30_top" shape="lpdg_bndry30" type="float" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="top level of boundary layer between 2 pressure levels" />
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:values>30.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lpdg_bndry_bot" shape="lpdg_bndry" type="float" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="bottom level of boundary layer between 2 pressure levels" />
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:values>0.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lpdg_bndry_top" shape="lpdg_bndry" type="float" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="top level of boundary layer between 2 pressure levels" />
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:values>180.0</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lpdg_bot" shape="lpdg" type="float" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="bottom level of layer between 2 presure levels" />
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:values start="0.0" increment="30.0" npts="5" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="lpdg_top" shape="lpdg" type="float" units="hPa" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="top level of layer between 2 presure levels" />
+    <nc:attribute name="units" type="string" value="hPa" />
+    <nc:values start="30.0" increment="30.0" npts="5" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="ls_sfc_bot" shape="ls_sfc" type="float" units="" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="bottom level of surface layer between 2 sigma levels" />
+    <nc:attribute name="units" type="string" value="" />
+    <nc:values>0.9900000095367432</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="ls_sfc_top" shape="ls_sfc" type="float" units="" axisType="GeoZ" positive="down">
+    <nc:attribute name="long_name" type="string" value="top level of surface layer between 2 sigma levels" />
+    <nc:attribute name="units" type="string" value="" />
+    <nc:values>0.9700000286102295</nc:values>
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="valtime" shape="record" type="double" units="hours since 1992-1-1" axisType="Time">
+    <nc:attribute name="long_name" type="string" value="valid time" />
+    <nc:attribute name="units" type="string" value="hours since 1992-1-1" />
+    <nc:values start="70704.0" increment="6.0" npts="9" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="x" shape="x" type="double" units="km" axisType="GeoX">
+    <nc:values start="-4226.087735119195" increment="81.27099999999973" npts="93" />
+  </nc:coordinateAxis>
+  <nc:coordinateAxis name="y" shape="y" type="double" units="km" axisType="GeoY">
+    <nc:values start="-832.6945281315529" increment="81.27099999999996" npts="65" />
+  </nc:coordinateAxis>
+  <nc:variable name="Dx" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="x-direction grid length" />
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:values>81271.0</nc:values>
+  </nc:variable>
+  <nc:variable name="Dy" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="y-direction grid length" />
+    <nc:attribute name="units" type="string" value="meters" />
+    <nc:values>81271.0</nc:values>
+  </nc:variable>
+  <nc:variable name="earth_shape" shape="nav nav_len" type="string">
+    <nc:attribute name="long_name" type="string" value="assumed earth shape" />
+    <nc:values>"oblate spheroid (IAU 1965)"</nc:values>
+  </nc:variable>
+  <nc:variable name="grid_center" shape="nav" type="int">
+    <nc:attribute name="long_name" type="string" value="GRIB-1 originating center ID" />
+    <nc:values>7.0</nc:values>
+  </nc:variable>
+  <nc:variable name="grid_name" shape="nav nav_len" type="string">
+    <nc:attribute name="long_name" type="string" value="grid name" />
+    <nc:values>"AWIPS grid 211: Regional CONUS"</nc:values>
+  </nc:variable>
+  <nc:variable name="grid_number" shape="nav" type="int">
+    <nc:attribute name="long_name" type="string" value="GRIB-1 catalogued grid number" />
+    <nc:values>211.0</nc:values>
+  </nc:variable>
+  <nc:variable name="grid_type" shape="nav nav_len" type="string">
+    <nc:attribute name="long_name" type="string" value="GRIB-1 grid type" />
+    <nc:values>"Lambert conformal"</nc:values>
+  </nc:variable>
+  <nc:variable name="grid_type_code" shape="nav" type="int">
+    <nc:attribute name="long_name" type="string" value="GRIB-1 GDS data representation type" />
+    <nc:values>3.0</nc:values>
+  </nc:variable>
+  <nc:variable name="La1" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="latitude of first grid point" />
+    <nc:attribute name="units" type="string" value="degrees_north" />
+    <nc:values>12.1899995803833</nc:values>
+  </nc:variable>
+  <nc:variable name="Latin1" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="first intersecting latitude" />
+    <nc:attribute name="units" type="string" value="degrees_north" />
+    <nc:values>25.0</nc:values>
+  </nc:variable>
+  <nc:variable name="Latin2" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="second intersecting latitude" />
+    <nc:attribute name="units" type="string" value="degrees_north" />
+    <nc:values>25.0</nc:values>
+  </nc:variable>
+  <nc:variable name="Lo1" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="longitude of first grid point" />
+    <nc:attribute name="units" type="string" value="degrees_east" />
+    <nc:values>-133.45899963378906</nc:values>
+  </nc:variable>
+  <nc:variable name="Lov" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="orientation of the grid" />
+    <nc:attribute name="units" type="string" value="degrees_east" />
+    <nc:values>-95.0</nc:values>
+  </nc:variable>
+  <nc:variable name="model_id" shape="nmodels" type="int">
+    <nc:attribute name="long_name" type="string" value="generating process ID number" />
+  </nc:variable>
+  <nc:variable name="nav_model" shape="nav nav_len" type="string">
+    <nc:attribute name="long_name" type="string" value="navigation model name" />
+    <nc:values>"GRIB1"</nc:values>
+  </nc:variable>
+  <nc:variable name="Nx" shape="nav" type="int">
+    <nc:attribute name="long_name" type="string" value="number of points along x-axis" />
+    <nc:values>93.0</nc:values>
+  </nc:variable>
+  <nc:variable name="Ny" shape="nav" type="int">
+    <nc:attribute name="long_name" type="string" value="number of points along y-axis" />
+    <nc:values>65.0</nc:values>
+  </nc:variable>
+  <nc:variable name="ProjFlag" shape="nav" type="byte">
+    <nc:attribute name="long_name" type="string" value="projection center flag" />
+    <nc:values>0.0</nc:values>
+  </nc:variable>
+  <nc:variable name="reftime" shape="record" type="double">
+    <nc:attribute name="long_name" type="string" value="reference time" />
+    <nc:attribute name="units" type="string" value="hours since 1992-1-1" />
+  </nc:variable>
+  <nc:variable name="ResCompFlag" shape="nav" type="byte">
+    <nc:attribute name="long_name" type="string" value="resolution and component flags" />
+    <nc:values>8.0</nc:values>
+  </nc:variable>
+  <nc:variable name="SpLat" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="latitude of the southern pole" />
+    <nc:attribute name="units" type="string" value="degrees_north" />
+    <nc:values>0.0</nc:values>
+  </nc:variable>
+  <nc:variable name="SpLon" shape="nav" type="float">
+    <nc:attribute name="long_name" type="string" value="longitude of the southern pole" />
+    <nc:attribute name="units" type="string" value="degrees_east" />
+    <nc:values>0.0</nc:values>
+  </nc:variable>
+  <nc:variable name="valtime_offset" shape="record" type="float">
+    <nc:attribute name="long_name" type="string" value="hours from reference time" />
+    <nc:attribute name="units" type="string" value="hours" />
+  </nc:variable>
+  <nc:variable name="x_dim" shape="nav nav_len" type="string">
+    <nc:attribute name="long_name" type="string" value="x dimension name" />
+    <nc:values>"x"</nc:values>
+  </nc:variable>
+  <nc:variable name="y_dim" shape="nav nav_len" type="string">
+    <nc:attribute name="long_name" type="string" value="y dimension name" />
+    <nc:values>"y"</nc:values>
+  </nc:variable>
+  <nc:variable name="RH_fhg" shape="record fhg y x" type="float" coordinateSystems="fhg-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="relative humidity at fixed height above ground" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="T_fhg" shape="record fhg y x" type="float" coordinateSystems="fhg-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="temperature at fixed height above ground" />
+    <nc:attribute name="units" type="string" value="degK" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="u_fhg" shape="record fhg y x" type="float" coordinateSystems="fhg-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="u-component of wind at fixed height above ground" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="v_fhg" shape="record fhg y x" type="float" coordinateSystems="fhg-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="v-component of wind at fixed height above ground" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="omega" shape="record level y x" type="float" coordinateSystems="level-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="pressure vertical velocity" />
+    <nc:attribute name="units" type="string" value="Pa/s" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="RH" shape="record level y x" type="float" coordinateSystems="level-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="relative humidity" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="T" shape="record level y x" type="float" coordinateSystems="level-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="temperature" />
+    <nc:attribute name="units" type="string" value="degK" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="u" shape="record level y x" type="float" coordinateSystems="level-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="u-component of wind" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="v" shape="record level y x" type="float" coordinateSystems="level-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="v-component of wind" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="Z" shape="record level y x" type="float" coordinateSystems="level-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="geopotential height" />
+    <nc:attribute name="units" type="string" value="gp m" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="absvor" shape="record level_c y x" type="float" coordinateSystems="level_c-x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="absolute vorticity" />
+    <nc:attribute name="units" type="string" value="1/s" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="datetime" shape="record datetime_len" type="string" coordinateSystems="valtime">
+    <nc:attribute name="long_name" type="string" value="reference date and time" />
+  </nc:variable>
+  <nc:variable name="PRECIP_accum_times" shape="record accum" type="float" coordinateSystems="valtime">
+    <nc:attribute name="long_name" type="string" value="precipitation accumulation interval" />
+    <nc:attribute name="units" type="string" value="hours" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+  </nc:variable>
+  <nc:variable name="precip_cn_accum_times" shape="record accum" type="float" coordinateSystems="valtime">
+    <nc:attribute name="long_name" type="string" value="convective precipitation accumulation interval" />
+    <nc:attribute name="units" type="string" value="hours" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+  </nc:variable>
+  <nc:variable name="Z_sfc" shape="y x" type="float" coordinateSystems="x-y">
+    <nc:attribute name="long_name" type="string" value="terrain" />
+    <nc:attribute name="units" type="string" value="gp m" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="cape_sfc" shape="record y x" type="float" coordinateSystems="x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="surface convective available potential energy" />
+    <nc:attribute name="units" type="string" value="J/kg" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="cin_sfc" shape="record y x" type="float" coordinateSystems="x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="surface convective inhibition" />
+    <nc:attribute name="units" type="string" value="J/kg" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="P_sfc" shape="record y x" type="float" coordinateSystems="x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="pressure at surface" />
+    <nc:attribute name="units" type="string" value="Pa" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="pr_water_atm" shape="record y x" type="float" coordinateSystems="x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="precipitable water" />
+    <nc:attribute name="units" type="string" value="kg/m2" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="PRECIP" shape="record y x" type="float" coordinateSystems="x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="total precipitation over accumulation interval" />
+    <nc:attribute name="units" type="string" value="kg/m2" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="precip_cn" shape="record y x" type="float" coordinateSystems="x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="convective precipitation over accumulation interval" />
+    <nc:attribute name="units" type="string" value="kg/m2" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="Psl_et" shape="record y x" type="float" coordinateSystems="x-y-valtime">
+    <nc:attribute name="long_name" type="string" value="mean sea level pressure (ETA model reduction)" />
+    <nc:attribute name="units" type="string" value="Pa" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="helc_lfhg" shape="record lfhg y x" type="float" coordinateSystems="x-y-valtime-lfhg_bot x-y-valtime-lfhg_top">
+    <nc:attribute name="long_name" type="string" value="helicity" />
+    <nc:attribute name="units" type="string" value="meters2/seconds2" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="pli_lpdg" shape="record lpdg_bndry30 y x" type="float" coordinateSystems="x-y-valtime-lpdg_bndry30_bot x-y-valtime-lpdg_bndry30_top">
+    <nc:attribute name="long_name" type="string" value="parcel lifted index(to 500 hPa)" />
+    <nc:attribute name="units" type="string" value="degK" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="cape_lpdg" shape="record lpdg_bndry y x" type="float" coordinateSystems="x-y-valtime-lpdg_bndry_bot x-y-valtime-lpdg_bndry_top">
+    <nc:attribute name="long_name" type="string" value="boundary convective available potential energy" />
+    <nc:attribute name="units" type="string" value="J/kg" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="cin_lpdg" shape="record lpdg_bndry y x" type="float" coordinateSystems="x-y-valtime-lpdg_bndry_bot x-y-valtime-lpdg_bndry_top">
+    <nc:attribute name="long_name" type="string" value="boundary convective inhibition" />
+    <nc:attribute name="units" type="string" value="J/kg" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="LI4_lpdg" shape="record lpdg_bndry y x" type="float" coordinateSystems="x-y-valtime-lpdg_bndry_bot x-y-valtime-lpdg_bndry_top">
+    <nc:attribute name="long_name" type="string" value="best (4 layer) lifted index" />
+    <nc:attribute name="units" type="string" value="degK" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="RH_lpdg" shape="record lpdg y x" type="float" coordinateSystems="x-y-valtime-lpdg_bot x-y-valtime-lpdg_top">
+    <nc:attribute name="long_name" type="string" value="relative humidity in boundary layer" />
+    <nc:attribute name="units" type="string" value="percent" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="T_lpdg" shape="record lpdg y x" type="float" coordinateSystems="x-y-valtime-lpdg_bot x-y-valtime-lpdg_top">
+    <nc:attribute name="long_name" type="string" value="temperature in boundary layer" />
+    <nc:attribute name="units" type="string" value="degK" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="u_lpdg" shape="record lpdg y x" type="float" coordinateSystems="x-y-valtime-lpdg_bot x-y-valtime-lpdg_top">
+    <nc:attribute name="long_name" type="string" value="u-component of wind in boundary layer" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:variable name="v_lpdg" shape="record lpdg y x" type="float" coordinateSystems="x-y-valtime-lpdg_bot x-y-valtime-lpdg_top">
+    <nc:attribute name="long_name" type="string" value="v-component of wind in boundary layer" />
+    <nc:attribute name="units" type="string" value="meters/second" />
+    <nc:attribute name="_FillValue" type="float" value="-9999.0" />
+    <nc:attribute name="navigation" type="string" value="nav" />
+  </nc:variable>
+  <nc:coordinateSystem name="valtime">
+    <nc:coordinateAxisRef ref="valtime" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lpdg_bndry_bot">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lpdg_bndry_bot" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lpdg_bndry_top">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lpdg_bndry_top" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lpdg_bndry30_bot">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lpdg_bndry30_bot" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lpdg_bndry30_top">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lpdg_bndry30_top" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="level-x-y-valtime">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="level" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y">
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="level_c-x-y-valtime">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="level_c" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="fhg-x-y-valtime">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="fhg" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lfhg_bot">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lfhg_bot" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lfhg_top">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lfhg_top" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lpdg_bot">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lpdg_bot" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateSystem name="x-y-valtime-lpdg_top">
+    <nc:coordinateAxisRef ref="valtime" />
+    <nc:coordinateAxisRef ref="lpdg_top" />
+    <nc:coordinateAxisRef ref="y" />
+    <nc:coordinateAxisRef ref="x" />
+    <nc:coordinateTransformRef ref="AWIPS grid 211: Regional CONUS" />
+  </nc:coordinateSystem>
+  <nc:coordinateTransform name="AWIPS grid 211: Regional CONUS" authority="FGDC" transformType="Projection">
+    <nc:parameter name="Projection_Name" type="string" value="Lambert_Conformal_Conic" />
+    <nc:parameter name="Standard_Parallel_1" type="double" value="25.0" />
+    <nc:parameter name="Standard_Parallel_2" type="double" value="25.0" />
+    <nc:parameter name="Longitude_of_Central_Meridian" type="double" value="-95.0" />
+    <nc:parameter name="Latitude_of_Projection_Origin" type="double" value="25.0" />
+  </nc:coordinateTransform>
+</nc:netcdf>

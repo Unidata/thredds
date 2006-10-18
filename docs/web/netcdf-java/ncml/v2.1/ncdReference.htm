@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h3>Formal Rules</h3>
+<p>1. The Metadata XML document completely specifies the NetCDF Dataset Metadata, 
+  overiding all metadata in the Netcdf file itself. The only reason to access 
+  the file is if a variable's values are not declared.</p>
+<p>2. NetCDF Metadata objects are netcdf, attribute, dimension, and variable. 
+  Each has a corresponding XML element.</p>
+<p>3. A netcdf object corresponds to a Netcdf Dataset. netcdf objects are containers 
+  for other objects, including other netcdf objects. The Netcdf Dataset Metadata 
+  are specified by the set of objects that are in scope for the netcdf object. 
+</p>
+<p>4. An object is in scope if it is contained in the netcdf object, contained 
+  in a parent netcdf object, or contained in a child netcdf object. </p>
+<p>5. When more than one object with the same name and type are in scope in the 
+  same netcdf object, the rules are:</p>
+<ol>
+  <ol>
+    <li>An object that is directly contained in the netcdf object overrides one 
+      that is in a parent or child.</li>
+    <li>An object that is contained in a parent netcdf object overrides one that 
+      is in a child.</li>
+    <li>When two objects appear at the same child level, the first one to appear 
+      is used in the parent. </li>
+  </ol>
+</ol>
+<pre>netcdf1
+  A1
+
+  netcdf2
+
+  B2
+  netcdf3
+  B3
+
+    netcdf4
+	A4, C4 
+</pre>
+<p>So, the objects in each nectdf object are:</p>
+<pre>netcdf1: A1, B2, C4
+netcdf2: A1, B2
+netcdf3: A1, B3, C4
+netcdf4: A4, B3, C4
+</pre>
+<p>There are special rules for when the objects are variables: </p>
+<p>6. A variable object must either 1) declare all of its values, or 2) declare 
+  no values and a variable that matches it in name, type and shape exists in the 
+  netCDF file referenced by the uri of the containing netcdf object, or 3) is 
+  an Aggregation Variable. In the first case the declared values override the 
+  values in the netcdf file, if any. In the second case the data values of the 
+  netcdf Dataset are taken from the netcdf file.</p>
+<p>7. An Aggregation Variable is constructed by concatenating variables of the 
+  same name in the nested netcdf elements. </p>
+<p>If a variable with the same name appears in more than one child element, that 
+  variable is an aggregation variable. The parent variable consists of the concatenation 
+  of the child variables. All child variables must be of the same type and their 
+  inner dimensions must match. </p>
+<p>&nbsp;</p>
+<p>you must declare aggregation variables at the paretn level.</p>
+</body>
+</html>
