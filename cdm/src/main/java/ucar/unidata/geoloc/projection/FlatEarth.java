@@ -235,8 +235,8 @@ public class FlatEarth extends ProjectionImpl {
 
         fromLat = Math.toRadians(fromLat);
 
-        dy = Earth.getRadius() * Math.toRadians(fromLat - lat0);
-        dx = Earth.getRadius() * Math.cos(fromLat) * Math.toRadians(fromLon - lon0);
+        dy = Earth.getRadius() * (fromLat - lat0);
+        dx = Earth.getRadius() * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
 
 
         toX = cosRot * dx - sinRot * dy;
@@ -270,14 +270,14 @@ public class FlatEarth extends ProjectionImpl {
 	    xp = cosRot * x + sinRot * y;
 	    yp = -sinRot * x + cosRot * y;
 
-        toLat =  lat0 + Math.toDegrees(yp/Earth.getRadius());
+        toLat =  Math.toDegrees(lat0) + Math.toDegrees(yp/Earth.getRadius());
         //double lat2;
         //lat2 = lat0 + Math.toDegrees(yp/Earth.getRadius());
         cosl = Math.cos( Math.toRadians(toLat) );
         if (Math.abs( cosl) < TOLERANCE)
-	        toLon = lon0;
+	        toLon = Math.toDegrees(lon0);
 	    else
-	        toLon = lon0 + Math.toDegrees(xp/cosl/Earth.getRadius());
+	        toLon = Math.toDegrees(lon0) + Math.toDegrees(xp/cosl/Earth.getRadius());
 
         toLon = LatLonPointImpl.lonNormal(toLon);
 
@@ -317,8 +317,8 @@ public class FlatEarth extends ProjectionImpl {
             double fromLon = fromLonA[i];
 
             fromLat = Math.toRadians(fromLat);
-            double dy = Earth.getRadius() * Math.toRadians(fromLat - lat0);
-            double dx = Earth.getRadius() * Math.cos(fromLat) * Math.toRadians(fromLon - lon0);
+            double dy = Earth.getRadius() * (fromLat - lat0);
+            double dx = Earth.getRadius() * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
 
 
             toX = cosRot * dx - sinRot * dy;
@@ -370,17 +370,14 @@ public class FlatEarth extends ProjectionImpl {
             double xp = cosRot * fromX + sinRot * fromY;
             double yp = -sinRot * fromX + cosRot * fromY;
 
-            toLat =  lat0 + Math.toDegrees(yp);
 
+            toLat =  Math.toDegrees(lat0) + Math.toDegrees(yp/Earth.getRadius());
             double cosl = Math.cos( Math.toRadians(toLat) );
 
             if (Math.abs( cosl) < TOLERANCE)
-	            toLon = lon0;
+	            toLon = Math.toDegrees(lon0);
 	        else
-	            toLon = lon0 + Math.toDegrees(xp/cosl/Earth.getRadius());
-
-            toLat = Math.toDegrees(toLat);
-            toLon = Math.toDegrees(toLon);
+                toLon = Math.toDegrees(lon0) + Math.toDegrees(xp/cosl/Earth.getRadius());
 
             toLon     = LatLonPointImpl.lonNormal(toLon);
 
@@ -419,8 +416,8 @@ public class FlatEarth extends ProjectionImpl {
             double fromLon = fromLonA[i];
 
             fromLat = Math.toRadians(fromLat);
-            double dy = Earth.getRadius() * Math.toRadians(fromLat - lat0);
-            double dx = Earth.getRadius() * Math.cos(fromLat) * Math.toRadians(fromLon - lon0);
+            double dy = Earth.getRadius() * (fromLat - lat0);
+            double dx = Earth.getRadius() * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
 
             toX = cosRot * dx - sinRot * dy;
             toY = sinRot * dx + cosRot * dy;
@@ -459,19 +456,16 @@ public class FlatEarth extends ProjectionImpl {
             double xp = cosRot * fromX + sinRot * fromY;
             double yp = -sinRot * fromX + cosRot * fromY;
 
-            toLat =  lat0 + Math.toDegrees(yp);
-
+            //toLat =  lat0 + Math.toDegrees(yp);
+            toLat =  Math.toDegrees(lat0) + Math.toDegrees(yp/Earth.getRadius());
             double cosl = Math.cos( Math.toRadians(toLat) );
 
             if (Math.abs( cosl) < TOLERANCE)
-	            toLon = lon0;
+	            toLon = Math.toDegrees(lon0);
 	        else
-	            toLon = lon0 + Math.toDegrees(xp/cosl/Earth.getRadius());
+                toLon = Math.toDegrees(lon0) + Math.toDegrees(xp/cosl/Earth.getRadius());
 
-            toLat = Math.toDegrees(toLat);
-            toLon = Math.toDegrees(toLon);
-
-            toLon     = LatLonPointImpl.lonNormal(toLon);
+            toLon  = LatLonPointImpl.lonNormal(toLon);
 
             toLatA[i] =  toLat;
             toLonA[i] =  toLon;
