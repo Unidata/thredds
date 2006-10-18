@@ -3,10 +3,9 @@
 
   <aggregation dimName="run" type="forecastModelRunSingleCollection" timeUnitsChange="true" >
 
-    <scanFmrc location="C:/data/grib/rtmodels/" regExp=".*_nmm\.GrbF[0-9]{5}$"
-           runDateMatcher="yyMMddHH#_nmm.GrbF#"
-           forecastOffsetMatcher="#_nmm.GrbF#HHH"/>
+    <scanFmrc location="C:/data/nomads/gfs-hi" suffix=".grb"
+           runDateMatcher="#gfs_3_#yyyyMMdd_HH"
+           forecastOffsetMatcher="HHH#.grb#"/>
 
   </aggregation>
-
 </netcdf>

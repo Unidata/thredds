@@ -19,44 +19,31 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.ncml;
+package ucar.nc2.dataset;
 
 import junit.framework.TestCase;
+import ucar.nc2.TestAll;
 
 import java.io.IOException;
-import java.io.File;
-import java.util.Date;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateUnit;
+/**
+ * Class Description.
+ *
+ * @author caron
+ * @version $Revision$ $Date$
+ */
+public class TestConventions  extends TestCase {
 
-public class TestAggFmrcScan2 extends TestCase {
-
-  public TestAggFmrcScan2( String name) {
+  public TestConventions( String name) {
     super(name);
   }
 
-  public void testOpen() throws Exception, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggFmrcScan2.xml";
-
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
-    System.out.println("file="+ncfile);
-
-    ncfile.close();
+  public void testWRF() throws IOException {
+     testWRF(TestAll.testdataDir + "grid/netcdf/wrf/wrf2.nc");
   }
 
-  public void testOpenNomads() throws Exception, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggFmrcNomads.xml";
-
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
-    System.out.println("file="+ncfile);
-
-    ncfile.close();
+  private void testWRF(String location) throws IOException {
+    NetcdfDataset ds =  NetcdfDataset.openDataset(location);
+    
   }
-
-
 }

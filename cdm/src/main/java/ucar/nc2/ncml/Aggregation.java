@@ -218,7 +218,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     for (int i = 0; i < nestedDatasets.size(); i++) {
       Dataset ds = (Dataset) nestedDatasets.get(i);
-      ds.close(); 
+      ds.close();
     }
   }
 
@@ -261,7 +261,6 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     if (scanList.size() > 0)
       scan(nestedDatasets, cancelTask);
-    scanFmrc( cancelTask); // LOOK
 
     // check persistence info
     if ((diskCache2 != null) && (type == Type.JOIN_EXISTING))
@@ -785,9 +784,6 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
   }
 
-  /// override in FmrcHourly
-  protected void scanFmrc(CancelTask cancelTask) throws IOException { }
-
   /**
    * Dataset factory, so subclasses can override
    *
@@ -1233,7 +1229,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     public final static Type UNION = new Type("union");
     public final static Type FORECAST_MODEL = new Type("forecastModelRun");
     public final static Type FORECAST_MODEL_COLLECTION = new Type("forecastModelRunCollection");
-    public final static Type FORECAST_MODEL_HOURLY = new Type("forecastModelRunHourlyCollection");
+    public final static Type FORECAST_MODEL_SINGLE = new Type("forecastModelRunSingleCollection");
 
     private String name;
 

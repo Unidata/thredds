@@ -62,15 +62,12 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"nuwg/", "eta.nc", 28,9,11,8);
     doOne(griddir+"nuwg/", "ocean.nc", 5, 1, 3, 0);
     doOne(griddir+"nuwg/", "ruc.nc", 31,5, 6, 3);
-    doOne(griddir+"nuwg/", "CMC-HGT.nc", 1, 1, 3, 0);
+    doOne(griddir+"nuwg/", "CMC-HGT.nc", 1, 1, 3, 0); // */
 
-    doOne(griddir+"wrf/","wrf.nc", 33, 6, 7, 2);  // missing soil layers
-    doOne(griddir+"wrf/","wrf_masscore.nc", 63, 7, 7, 2); // missing soil layers
-    doOne(griddir+"wrf/","wrfbdy_d01.nc", -1, -1, -1, -1); // extra boundary dimension (=5)
-    doOne(griddir+"wrf/","wrfinput_d01.nc", 80, 11, 8, 3); // missing soil layers
-    doOne(griddir+"wrf/","wrfout_01_000000_0003.nc", 33, 6, 7, 2);
-    doOne(griddir+"wrf/","wrf2.nc", 62, 9, 8, 3);
     doOne(griddir+"wrf/","wrfout_v2_Lambert.nc", 57, 11, 8, 3);
+    doOne(griddir+"wrf/","wrf2-2005-02-01_12.nc", 60, 11, 8, 3);
+    doOne(griddir+"wrf/","wrfout_d01_2006-03-08_21-00-00", 70, 11, 8, 3);
+    doOne(griddir+"wrf/","wrfrst_d01_2002-07-02_12_00_00.nc", 162, 11, 8, 3);
 
     doOne(griddir+"awips/","19981109_1200.nc", 36, 13, 14, 11);
     doOne(griddir+"awips/","awips.nc", 38, 12, 13, 10); //

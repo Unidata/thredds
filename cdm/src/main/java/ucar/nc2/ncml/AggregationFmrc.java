@@ -81,12 +81,24 @@ public class AggregationFmrc extends Aggregation {
   }
 
   protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
-    buildCoords(cancelTask);
-
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
-    NetcdfFile typical =  typicalDataset.acquireFile(null);
-    NcMLReader.transferDataset(typical, ncDataset, null); // isNew ? null : new MyReplaceVariableCheck());
+    NetcdfFile typical =  typicalDataset.acquireFile( cancelTask);
+    NetcdfDataset typicalDS = (typical instanceof NetcdfDataset) ? (NetcdfDataset) typical : new NetcdfDataset( typical);
+    if (!typicalDS.isEnhanced())
+      typicalDS.enhance();
+
+    // work with a GridDataset
+    GridDataset typicalGds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
+
+    // finish the work
+    buildDataset( typicalDataset, typicalGds, cancelTask);
+  }
+
+  // split out so FmrcSingle call call seperayely
+  protected void buildDataset(Dataset typicalDataset, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
+    buildCoords(cancelTask);
+    NcMLReader.transferDataset( typicalGds.getNetcdfFile(), ncDataset, null);
 
     // some additional global attributes
     Group root = ncDataset.getRootGroup();
@@ -120,17 +132,6 @@ public class AggregationFmrc extends Aggregation {
     } else {
       runtimeCoordVar.setProxyReader( this);
     }
-
-    // work with a GridDataset
-    NetcdfDataset typicalDS;
-    if (typical instanceof NetcdfDataset)
-      typicalDS = (NetcdfDataset) typical;
-    else
-      typicalDS = new NetcdfDataset( typical);
-    if (!typicalDS.isEnhanced())
-      typicalDS.enhance();
-
-    GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
 
     // handle the 2D time coordinates and dimensions
     // for the case that we have a fmrcDefinition, there may be time coordinates that dont show up in the typical dataset
@@ -192,11 +193,11 @@ public class AggregationFmrc extends Aggregation {
 
     } else {
       // for the case that we dont have a fmrcDefinition
-      makeTimeCoordinate(gds, cancelTask);
+      makeTimeCoordinate(typicalGds, cancelTask);
     }
 
     // promote all grid variables
-    List grids = gds.getGrids();
+    List grids = typicalGds.getGrids();
     for (int i = 0; i < grids.size(); i++) {
       GridDatatype grid = (GridDatatype) grids.get(i);
       Variable v = (Variable) grid.getVariable();
@@ -222,7 +223,7 @@ public class AggregationFmrc extends Aggregation {
     makeProxies(typicalDataset, ncDataset);
     ncDataset.enhance();
 
-    typical.close();
+    typicalGds.close();
   }
 
   // for the case that we dont have a fmrcDefinition

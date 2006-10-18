@@ -1,0 +1,86 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="John Caron">
+   <title>NetCDF Tools UI  WebStart</title>
+</head>
+<body bgcolor="#FFFFFF">
+<center>
+  <h1> NetCDF Tools UI </h1>
+</center>
+<p> 
+<hr WIDTH="100%">
+<h2>Install and run via WebStart</h2>
+<ol>
+  <li>If you dont already have it installed, <b><font size=+1><a href="http://java.sun.com/j2se/1.4/">install 
+    Java 1.4 </a></font></b>This will also install WebStart&nbsp;and the Java 
+    Plug-In.</li>
+  <li><b><font size=+1><img src="nc.gif" width="64" height="64" align="absmiddle"></font></b> 
+    <b><font size=+1><a href="netCDFtools-2.2.jnlp">Launch netcdfTools with WebStart</a><a href="netCDFtools.jnlp"> 
+    </a></font></b>.</li>
+  <br>
+  &nbsp; 
+  <li> When first starting, you will see a window that says:</li>
+  <blockquote> 
+    <blockquote> 
+      <p>This application is requesting unrestricted access to your machine.Do 
+        you want to install and run: <b>NetCDF Tools UI</b> <br>
+        Signed and distributed by: <b>www.unidata.ucar.edu</b></p>
+    </blockquote>
+  </blockquote>
+  <p>Indicate "yes" by pressing the "Start" button.</p>
+</ol>
+<h2><br>
+  Possible Webstart problems:</h2>
+<h3>General Problem Diagnosis:</h3>
+<ol>
+  <li>Start up <strong>javaws.exe</strong>, the webstart application manager. This usually lives in a subdirectory of the jre directory, eg <em><strong>/home/j2sdk/jre/javaws/javaws.exe</strong></em>. Windows users often have a desktop icon for it. You may be able to find it using &quot;<em><strong>which javaws</strong></em>&quot; from the command line. Note the path, it tells you which java runtime you are using. If its pre 1.4.2, you will want to upgrade. </li>
+  <li>Once its running, from the top menu, choose <strong>File &gt; Preferences.</strong></li>
+  <li>Go to the <strong>Advanced</strong> tab and make sure <strong>Show Java Console</strong> is checked. This will cause a webstart console window to open, whenever a webstart application starts, showing error messages etc. When something goes wrong, look in that window.</li>
+  <li>Go to the <strong>Java</strong> tab and check which runtime version is being used. The ToolsUI application requires 1.4.2 or above. Make sure there is a 1.4.2 runtime that is enabled. If not, you can search for one with the <strong>Find</strong> button. If you cant find one, then you need to install one, then come back here and make sure it gets enabled.</li>
+</ol>
+<h3>Specific Problems: </h3>
+<ul>
+  <li> <b>Problem</b>: After clicking on "Launch," you get a message from Netscape 
+    asking if you want to save the file "netcdfTools.jnlp". 
+    <ul>
+      <li><b>Diagnosis</b>:&nbsp; After installing WebStart, you must exit Netscape 
+        and start up again. If that doesn't work, log out and back on. <br>
+        &nbsp; </li>
+    </ul>
+  </li>
+  <li> <b>Problem</b>: Upon launching, you get the error message:</li>
+</ul>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>An error 
+occurred while launching/running the application.</i> <br>
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Category: Launch File Error</i> <br>
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Unsupported JNLP version in launch file: 1.0. Only version 0.2 is supported with 
+this version</i> 
+<ul>
+  <ul>
+    <li><b>Diagnosis</b>: you have an old version of WebStart. Download the current 
+      version. <br>
+      &nbsp; </li>
+  </ul>
+  <li><b>Problem</b>:&nbsp; Right after starting, the application is not responding 
+    <ul>
+      <li><b>Diagnosis</b>: There is a dialog box that has been covered by the 
+        application, that is waiting for you to dismiss it.&nbsp; You have to 
+        find the dialog box and dismiss it before the app will be responsive. 
+        To uncover it, try iconifying and deiconifying other applications, until 
+        the dialog box pops to the top. </li>
+    </ul>
+  </li>
+</ul>
+  
+<hr WIDTH="100%" noshade>
+<address>
+This document is maintained by <a href="rrr.jpg">John Caron</a> and was last updated 
+on Apr 19, 2006 
+</address>
+</body>
+</html>

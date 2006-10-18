@@ -199,7 +199,7 @@
   <xsd:simpleType name="AggregationType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="forecastModelRunCollection"/>
-      <xsd:enumeration value="forecastModelRunHourlyCollection"/>
+      <xsd:enumeration value="forecastModelRunSingleCollection"/>
       <xsd:enumeration value="forecastModelRun"/>  <!-- deprecated  -->
       <xsd:enumeration value="joinExisting"/>
       <xsd:enumeration value="joinNew"/>

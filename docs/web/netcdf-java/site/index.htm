@@ -1,0 +1,140 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="John Caron">
+   <title>NetCDF Java Library (Version 2)</title>
+<style type="text/css">
+<!--
+body {
+	background-image: url();
+}
+-->
+</style></head>
+<body nosave>
+<h1>
+<img src="netcdfBig.gif" width="100" height="55"> NetCDF Java Library (Version 2)</h1>
+
+<p><br>
+  The NetCDF-Java Library (version 2) is a Java interface to <a href="http://www.unidata.ucar.edu/software/netcdf/index.html">NetCDF 
+  files</a>.&nbsp; It is built on the MultiArray (version 2) package, which is 
+  a stand-alone Java package for multidimensional arrays of primitive types. 
+<p>The library is freely available and the source code is released under the GNU 
+  <a href="http://www.gnu.org/copyleft/lesser.html">Lesser General Public License</a> 
+  (LGPL).
+<p>The preferred place to ask questions, discuss problems and features and get 
+  support is in the NetCDF-Java 
+  email list, which you can subscribe to from <a href="http://www.unidata.ucar.edu/mailsubscribeform.php?list_name=netcdf-java&list_label=NetCDF-Java">this 
+  page</a>. Also you might want to <a href="http://www.unidata.ucar.edu/mailsearchform.php?archive=netcdf-java&archivename=NetCDF%20Java%20Support">search</a> 
+or <a href="http://www.unidata.ucar.edu/content/support/help/MailArchives/netcdf-java/maillist.html">browse</a> previous netCDF-Java support questions. 
+<hr>
+<h2><a name="v22"></a>Version 2.2 <b> (alpha)</b></h2>
+<p><strong>Version 2.2 requires Java 1.4 or above. The latest version of Java 1.5 is recommended. </strong></p>
+<p><strong>Why do we  designate this alpha? </strong>The stability and code quality is moderately good. However, until we implement  the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/">NetCDF-4</a> reader, we are not sure if the API might need some (probably minor) changes. We anticipate a stable NetCDF-4 format by fall of 2006.</p>
+<p>The NetCDF-Java 2.2 (aka <strong>nj22</strong>) library  implements a <a href="http://www.unidata.ucar.edu/software/netcdf/CDM/index.html">Common Data Model </a>(CDM),  a generalization of the NetCDF, OpenDAP and HDF5 data models. The nj22  library is also a prototype for the <a href="http://www.unidata.ucar.edu/content/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language  API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The nj22  library is a 100% Java framework for  <em>reading</em>  netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3 file format. The nj22  library also implements  <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add  metadata to CDM datasets, as well as to create virtual datasets through aggregation.</p>
+<p>Try out the library through the ToolsUI application: <a href="v2.2/webstart/index.html">launch from webstart</a>.</p>
+<h3><strong>Current stable version is 2.2.16</strong></h3>
+<ul>
+  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/ncCore-2.2.16.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/ncCore-2.2.16.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/netcdf-2.2.16.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/netcdf-2.2.16.jar.MD5">MD5</a>) implements the full CDM model. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/netcdfUI-2.2.16.jar">netcdfUI library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/netcdfUI-2.2.16.jar.MD5">MD5</a>) includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/netcdfAll-2.2.16.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/netcdfAll-2.2.16.zip.MD5">MD5</a>) includes the netcdfUI library plus all other jar files you might need. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/toolsUI-2.2.16.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/toolsUI-2.2.16.jar.MD5">MD5</a>) is a nice fat jar containing everything in a single jar. You can run the netCDF ToolsUI application directly from it. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/nc2.2.jar">nc2.2.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/nc2.2.jar.MD5">MD5</a>), which you can use in the IDV. </li>
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/ncSrc-2.2.16.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/ncSrc-2.2.16.zip.MD5">MD5</a>) (unzip and follow the <a href="v2.2.16/README">README</a>)</li>
+  <li>See <a href="v2.2.16/CHANGES">CHANGES</a> for version changes.</li>
+</ul>
+<ul>
+  <li> <a href="v2.2.16/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
+  <li><a href="v2.2.16/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change. </li>
+  <li> User's documentation (incomplete):<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.16/NetcdfJavaUserManual-2.2.doc"> Word doc</a></li>
+</ul>
+<h3><strong>Current development/unstable version is 2.2.17</strong></h3>
+<ul>
+  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/ncCore-2.2.17.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/ncCore-2.2.17.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/netcdf-2.2.17.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/netcdf-2.2.17.jar.MD5">MD5</a>) implements the full CDM model. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/netcdfUI-2.2.17.jar">netcdfUI library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/netcdfUI-2.2.17.jar.MD5">MD5</a>) includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/netcdfAll-2.2.17.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/netcdfAll-2.2.17.zip.MD5">MD5</a>) includes the netcdfUI library plus all other jar files you might need. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/toolsUI-2.2.17.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/toolsUI-2.2.17.jar.MD5">MD5</a>) is a nice fat jar containing everything in a single jar. You can run the netCDF ToolsUI application directly from it. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/nc2.2.jar">nc2.2.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/nc2.2.jar.MD5">MD5</a>), which you can use in the IDV. </li>
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/ncSrc-2.2.17.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.17/ncSrc-2.2.17.zip.MD5">MD5</a>) (unzip and follow the <a href="v2.2.17/README">README</a>)</li>
+  <li>See <a href="v2.2.17/CHANGES">CHANGES</a> for version changes.</li>
+  <li>Try out the library through the ToolsUI <a href="v2.2/webstart-dev/index.html">webstart development version</a>. </li>
+</ul>
+<ul>
+  <li> <a href="v2.2.17/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
+  <li><a href="v2.2.17/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change. </li>
+</ul>
+<h3>File types</h3>
+<p>Nj22 can read the following file types and remote access protocols:</p>
+<ul>
+  <li><a href="http://www.unidata.ucar.edu/content/software/netcdf/index.html">NetCDF-3</a></li>
+  <li><a href="http://hdf.ncsa.uiuc.edu/HDF5/">HDF5</a> (most) </li>
+  <li><a href="http://opendap.org/">OPeNDAP</a> client/server protocol</li>
+  <li>GRIB <a href="http://dss.ucar.edu/docs/formats/grib/gribdoc/">version 1</a> and <a href="http://www.wmo.ch/web/www/DPS/Global-Producers/Doc6-2-2.pdf">version 2</a> (ongoing work on tables) </li>
+  <li><a href="http://dss.ucar.edu/docs/formats/bufr/">BUFR</a> (limited - ongoing work) </li>
+  <li><a href="http://weather.unisys.com/wxp/Appendices/Formats/GINI.html">GINI</a> (GOES Ingest and NOAAPORT Interface ) image format</li>
+  <li><a href="http://dmsp.ngdc.noaa.gov/">DMSP</a> (Defense Meteorological Satellite Program)</li>
+  <li><a href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html">NEXRAD</a> Radar <a href="http://www.ncdc.noaa.gov/oa/radar/leveliidoc.html">level 2</a> and <a href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html">level 3.</a></li>
+  <li>ATD's <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DataAnalysis/DataAnalysis.html#DORADE">DORADE</a> radar file <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DoradeFormat/DoradeFormat.html">format</a> </li>
+  <li><a href="http://www.ssec.wisc.edu/mcidas/">ADDE</a> client/server protocol (limited) </li>
+</ul>
+<h3><strong>Features not yet available</strong>:</h3>
+<ul>
+  <li>the scientific data types interfaces are still experimental, do not rely on the APIs yet. </li>
+  <li>writing to netCDF-3 works, but new features in the CDM, eg groups, structures, the long data type are not available yet. </li>
+  <li>reading and writing netCDF-4 format not done yet; writing the full CDM to netCDF will require NetCDF-4 file format.</li>
+</ul>
+<h3>Coordinate Systems<a name="CoordSys"></a></h3>
+<p>Working notes and proposals on <strong><em>coordinate system</em></strong> layer of the CDM</p>
+<ul>
+  <li><a href="CoordSysBuilder.html">Writing your own Java class to identify Coordinate Systems</a></li>
+  <li>Coordinate Systems: <a href="CoordinateAttributes3.html">_Coordinates Conventions (revision 3) </a>.</li>
+  <li><a href="CoordinateSystemsNeeded.htm">Why we need Coordinate Systems</a> </li>
+</ul>
+<h3>Data Types </h3>
+<p>Working notes and proposals on <em><strong>scientific data type</strong></em> layer of the CDM</p>
+<ul>
+  <li><a href="formats/UnidataObsConvention.html">Unidata Observation Dataset Conventions</a></li>
+  <li><a href="formats/StationDataFormat.html">Station Observation Data Format</a></li>
+  <li><a href="formats/RadarDataFormat.html">Radar Data Format</a> </li>
+  <li> <a href="http://www.unidata.ucar.edu/staff/caron/xml/geogrid.html">Geogrids</a> (outdated) </li>
+</ul>
+<h3><strong>Related Documents:</strong></h3>
+<ul>
+  <li>NetCDF-Java  2.2 / NetCDF-4 <a href="http://www.unidata.ucar.edu/software/netcdf/CDM/index.html">Common Data Model</a></li>
+  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a>: Version 2.2 <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/AnnotatedSchema.html">annotated schema</a> </li>
+  <li><a href="formats/DataDiscoveryAttConvention.html">NetCDF Attribute Convention for Dataset Discovery</a></li>
+  <li><a href="formats/RecordsInNetcdf3.html">Using Records in NetCDF-3 files</a> </li>
+  <li><a href="SystemAttributes.htm">Other System attributes </a></li>
+</ul>
+<h3>Software libraries used: </h3>
+<ul>
+  <li> Apache Commons <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient</a> for  HTTP access, which also use <a href="http://jakarta.apache.org/commons/logging/">commons-logging</a> and <a href="http://jakarta.apache.org/commons/codec/">commons-codec</a>. </li>
+  <li>Java-OPeNDAP library <a href="http://opendap.org/download/java-dap.html">JDAP 1.1.7</a> for reading OPeNDAP, which requires <a href="http://www.cacas.org/java/gnu/regexp/">gnu-regexp</a>. </li>
+  <li><a href="http://www.jdom.org/">JDOM</a>  for parsing XML.</li>
+  <li><a href="http://www.jgoodies.com/">JGoodies</a> for UI stuff </li>
+  <li><a href="http://www.jpeg.org/jpeg2000/">JPEG2000</a> library for decoding GRIB2 files.</li>
+  <li><a href="http://logging.apache.org/log4j/docs/index.html">Log4J</a> and its companion <a href="http://www.slf4j.org/">Simple Logging Facade for Java</a> (SLF4J) for logging </li>
+  <li><a href="http://www.ssec.wisc.edu/%7Ebillh/visad.html">VisAD</a> for reading ADDE</li>
+  <li><a href="http://xerces.apache.org/xerces2-j/">Xerces</a> for parsing XML </li>
+</ul>
+<hr>
+<h3>Miscellaneous Resources</h3>
+<ul>
+  <li><a href="nj22matlab.m">Example</a> importing Netcdf-Java 2.2 library into MATLAB </li>
+  <li><i>Geographic Map of <a href="NetcdfUsers.htm">Netcdf Users</a></i></li>
+  <li><i>New Netcdf <a href="ring2.jpg">logo</a> , <a href="rrr.jpg">rrr</a> </i></li>
+  <li>Conference paper on the multidimensional array design:&nbsp; John Caron, <a href="http://www.unidata.ucar.edu/staff/caron/ma2/JavaGrande2000.htm">Unidata&rsquo;s Design for Multidimensional Arrays in Java</a>, <i>ACM Java Grande 2000 Conference, June 2000</i></li>
+  <li><a href="http://www.unidata.ucar.edu/staff/caron/xml/NetcdfCompare.htm">Comparision of 3 NetCDF DTDs</a></li>
+</ul>
+<p>
+<hr WIDTH="100%">
+<address>
+This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
+and was last updated on Aug 02, 2006 
+</address>
+
+</body>
+</html>

@@ -35,7 +35,10 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * WRF netcdf output files. 
+ * WRF netcdf output files.
+ *
+ * Note: Apparently WRF netcdf files before version 2 didnt output the projection origin, so
+ *  we cant properly georeference them.
  *
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
@@ -55,7 +58,7 @@ public class WRFConvention extends CoordSysBuilder {
            (null != ncfile.findDimension("south_north"));
   }
 
-  private double originX = 0.0, originY = 0.0;
+  private double centerX = 0.0, centerY = 0.0;
   private ProjectionCT projCT = null;
 
   /** create a NetcdfDataset out of this NetcdfFile, adding coordinates etc. */
@@ -84,6 +87,11 @@ public class WRFConvention extends CoordSysBuilder {
     double standardLon = findAttributeDouble( ds, "STAND_LON");
     double moadLat = findAttributeDouble( ds, "MOAD_CEN_LAT");
 
+    if (Double.isNaN(standardLon) || Double.isNaN(moadLat)) {
+      userAdvice.append("WARN: no explicit projection origin, projection may be wrong");
+      parseInfo.append("WARN: no explicit projection origin, projection may be wrong ");
+    }
+
     double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
     double lat0 = (Double.isNaN(moadLat)) ? centralLat : moadLat;
 
@@ -107,15 +115,19 @@ public class WRFConvention extends CoordSysBuilder {
         break;
     }
 
-    if (standardLon != centralLon) {
-      LatLonPointImpl lpt0 = new LatLonPointImpl( lat0,  lon0);
-      LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon);
+    if (!Double.isNaN(standardLon) && !Double.isNaN(moadLat) && (proj != null) && (standardLon != centralLon)) {
+      LatLonPointImpl lpt0 = new LatLonPointImpl( moadLat,  standardLon);
+      LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
       ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
       ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
-      //System.out.println("ppt0="+ppt0+" lpt0= "+lpt0);
-      //System.out.println("ppt1="+ppt1+" lpt1= "+lpt1);
-      originX = ppt1.getX() - ppt0.getX();
-      originY = ppt1.getY() - ppt0.getY();
+      if (debug) {
+        System.out.println("ppt0="+ppt0+" lpt0= "+lpt0);
+        System.out.println("ppt1="+ppt1+" lpt1= "+lpt1);
+        System.out.println("originX="+(ppt1.getX() - ppt0.getX()));
+        System.out.println("originY="+(ppt1.getY() - ppt0.getY()));
+      }
+      centerX = ppt1.getX() - ppt0.getX();
+      centerY = ppt1.getY() - ppt0.getY();
     }
 
     // make axes
@@ -128,9 +140,9 @@ public class WRFConvention extends CoordSysBuilder {
 
     // time coordinate variations
     if (ds.findVariable("Time") == null) { // Can skip this if its already there, eg from NcML
-      CoordinateAxis taxis = makeTimeCoordAxis( ds, "time", ds.findDimension("Time"));
+      CoordinateAxis taxis = makeTimeCoordAxis( ds, "Time", ds.findDimension("Time"));
       if (taxis == null)
-        taxis = makeTimeCoordAxis( ds, "time", ds.findDimension("Times"));
+        taxis = makeTimeCoordAxis( ds, "Time", ds.findDimension("Times"));
       if (taxis != null)
         ds.addCoordinateAxis( taxis);
     }
@@ -224,9 +236,9 @@ public class WRFConvention extends CoordSysBuilder {
 
   private CoordinateAxis makeXCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
-    double dx = findAttributeDouble( ds, "DX") / 1000.0;
+    double dx = findAttributeDouble( ds, "DX") / 1000.0; // km ya just gotta know
     int nx = dim.getLength();
-    double startx = originX -dx * nx / 2; // - dx/2; // ya just gotta know
+    double startx = centerX - dx * (nx-1) / 2; // ya just gotta know
     //System.out.println(" originX= "+originX+" startx= "+startx);
 
     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoX coordinate from DX attribute");
@@ -243,7 +255,7 @@ public class WRFConvention extends CoordSysBuilder {
     if (dim == null) return null;
     double dy = findAttributeDouble( ds, "DY") / 1000.0;
     int ny = dim.getLength();
-    double starty = originY - dy * ny / 2; // - dy/2; // ya just gotta know
+    double starty = centerY - dy * (ny-1) / 2; // - dy/2; // ya just gotta know
     //System.out.println(" originY= "+originY+" starty= "+starty);
 
     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoY coordinate from DY attribute");

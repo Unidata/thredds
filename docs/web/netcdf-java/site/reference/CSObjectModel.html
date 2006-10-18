@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Coordinate System Object Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1>Coordinate System Object Model</h1>
+<p><em>last update: Mar 30, 2004</em></p>
+<p>To understand the Coordinate System Object Model, we first review the basic 
+  NetCDF Object Model. This diagram reflects the names in the NetCDF-Java library, 
+  but is applicable to any NetCDF file, or language library:</p>
+<p align="center"><strong>Fig 1. Basic NetCDF Object Model</strong></p>
+<p><img src="presentations/ObjectModel-1.png" width="715" height="635"></p>
+<p>&nbsp;</p>
+<p>So, a <strong>netCDF</strong> <strong><em>Dataset</em></strong> (aka <strong>netCDF 
+  file</strong>) is a collection of <strong>Variables</strong>, <strong>Dimensions</strong>, 
+  and global <strong>Attributes, </strong>which can be discovered when the dataset 
+  is opened. An <strong><em>Attribute</em></strong> is a key/value pair. A <strong><em>Dimension</em></strong> 
+  is a named array length. A <em><strong>Variable</strong></em> is a container 
+  for variable Attributes, and for the data itself, which is obtained by calling 
+  the read() method. The data is a multidimensional array of primitives, of a 
+  type listed in <em><strong>DataType1</strong></em>. The shape of the data is 
+  specified through an array of references to Dimension objects, which are always 
+  global in scope.</p>
+<p>Coordinate Systems are additional semantics built on top of the basic Netcdf 
+  Object Model:</p>
+<p align="center"><strong>Fig 2. Coordinate System Object Model</strong></p>
+<p><img src="presentations/CoordSystems.png" width="785" height="395"> 
+</p>
+<p>So, a Variable can have zero or more Coordinate Systems. A <em><strong>Coordinate 
+  System</strong></em> consists of a list of one or more CoordinateAxis, and zero 
+  or more CoordinateTransforms. A <em><strong>Coordinate Axis</strong></em> is 
+  a subtype of Variable, and is optionally is classified according to the types 
+  in AxisType. A CoordinateTransform abstractly represents a transformation between 
+  CoordinateSystems.</p>
+<p>A CoordinateAxis can only be part of a Variable's CoordinateSystem if the CoordinateAxis' 
+  set of Dimensions is a subset of the Variable's set of Dimensions. This ensures 
+  that every data point in the Variable has a corresponding coordinate value for 
+  each of the CoordinateAxis in the CoordinateSystem. </p>
+<p>Formally, a Variable is thought of as a sampled function whose domain is an 
+  index range; each CoordinateAxis is a scalar valued function on the same range; 
+  each CoordinateSystem is therefore a vector-valued function on the same range 
+  consisting of its CoordinateAxis functions. To take it one step further, when 
+  the CoordinateSystem function is invertible, the Variable can be thought of 
+  as a sampled function whose domain is the range of the Coordinate System, that 
+  is on <strong>Rn</strong> (the product space of real numbers). To be invertible, 
+  each CoordinateAxis should be invertible. For a 1-dimensional CoordinateAxis 
+  this simply means the coordinate values are strictly monotonic. For a 2 dimensional 
+  CoordinateAxis, it means that the lines connecting adjacent coordinates do not 
+  cross each other. For &gt; 2 dimensional CoordinateAxis, it means that the surfaces 
+  connecting the adjacent coordinates do not intersect each other. </p>
+<p>The <em><strong>AxisType</strong></em> enumerations are specific to the case 
+  of georeferencing coordinate systems. <em>Latitude</em> and <em>Longitude</em> 
+  identify standard horizontal coordinates. <em>Height</em> and <em>Pressure</em> 
+  identify the vertical coordinate.<em> GeoX</em> and <em>GeoY</em> are used in 
+  transfomations (eg projections) to <em>Latitude</em>, <em>Longitude</em>. <em>GeoZ</em> 
+  is used in vertical transformations to vertical <em>Height</em> or <em>Pressure</em>. 
+  Often much more detailed information is required (geoid reference, projection 
+  parameters, etc), so these enumerations are quite minimal. </p>
+<h3>Current Status</h3>
+<p>NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis 
+  with a <em><strong>coordinate variable</strong></em>, which is a Variable with 
+  the same name as its single dimension. This is a natural and elegant way to 
+  specify a 1-dimensional CoordinateAxis, since there is an automatic association 
+  of the Coordinate Variable with any Varaible that uses its dimension. Unfortunately 
+  there are not similarly elegant ways to specify a multidimensional CoordinateAxis, 
+  and so various attribute conventions have sprung up, that typically list the 
+  CoordinateAxis variables, eg:</p>
+<pre>  float lat(y,x);
+  float lon(y,x);
+  float temperature(y,x);
+    temperature:coordinates=&quot;lat lon&quot;;
+</pre>
+<p>Note that in this example, there is no CoordinateSystem object, so the same 
+  list has to be added to each Variable, and any CoordinateTransform specifications 
+  also have to be added to each Variable. However, the common case is that all 
+  the Variables in a NetCDF file use the same Coordinate System, so it would be 
+  nice to factor that out.</p>
+<p>Even if we continue to use attribute conventions (rather than new file format 
+  structures) to specify coordinate systems, it would be useful to propagate a 
+  standard coordinate system model and a standard API (like Variable.getCoordinateSystem(), 
+  Variable.setCoordinateSystem()) for reading and writing them. We probably don't 
+  need to try to enforce monotonicity (perhaps just give warnings when possible).</p>
+<p>The AxisType enumerations are essential to getting georeferencing coordinate 
+  systems unambiguously identified. If units are also supplied for each CoordinateAxis, 
+  this information alone is often sufficient for georeferencing the data, at least 
+  in a &quot;quick look&quot; situation where precision is not essential.</p>
+<p> CoordinateTransforms tend to be complex and discipline-specific. The NetCDF-Java 
+  library and NcML take the strategy of providing a generic framework for describing 
+  needed parameters and their values, but leaving the actual semantics and transformations 
+  to add-on packages.</p>
+</body>
+</html>

@@ -74,10 +74,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
   private InventoryParams params;
   private InvDatasetScan scan;
   private String dodsService;
+  private boolean runsOnly;
 
-  public InvDatasetFmrc(InvDatasetImpl parent, String name, String path) {
+  public InvDatasetFmrc(InvDatasetImpl parent, String name, String path, boolean runsOnly) {
     super(parent, name, "/thredds/catalog/"+path+"/catalog.xml");
     this.path = path;
+    this.runsOnly = runsOnly;
   }
 
   public String getPath() { return path; }
@@ -156,61 +158,69 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public java.util.List getDatasets() {
     if (!madeDatasets) {
       ArrayList datasets = new ArrayList();
-      String id = getID();
-      if (id == null)
-        id = getPath();
 
-      InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
-      String name = getName()+"_"+FMRC;
-      ds.setUrlPath(path+"/"+name);
-      ds.setID(id+"/"+name);
-      ThreddsMetadata tm = ds.getLocalMetadata();
-      tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
-      ds.getLocalMetadataInheritable().setServiceName(dodsService);
-      ds.finish();
-      datasets.add( ds);
+      if (runsOnly) {
+        InvDatasetImpl ds = new InvCatalogRef(this, TITLE_RUNS, getCatalogHref(RUNS));
+        ds.finish();
+        datasets.add( ds);
 
-      ds = new InvDatasetImpl(this, "Best Time Series");
-      name = getName()+"_"+BEST;
-      ds.setUrlPath(path+"/"+name);
-      ds.setID(id+"/"+name);
-      tm = ds.getLocalMetadata();
-      tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
-      ds.finish();
-      datasets.add( ds);
+      } else {
+        String id = getID();
+        if (id == null)
+          id = getPath();
 
-      // run datasets as catref
-      ds = new InvCatalogRef(this, TITLE_RUNS, getCatalogHref(RUNS));
-      ds.finish();
-      datasets.add( ds);
+        InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
+        String name = getName()+"_"+FMRC;
+        ds.setUrlPath(path+"/"+name);
+        ds.setID(id+"/"+name);
+        ThreddsMetadata tm = ds.getLocalMetadata();
+        tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
+        ds.getLocalMetadataInheritable().setServiceName(dodsService);
+        ds.finish();
+        datasets.add( ds);
 
-      // run datasets as catref
-      ds = new InvCatalogRef(this, TITLE_OFFSET, getCatalogHref(OFFSET));
-      ds.finish();
-      datasets.add( ds);
+        ds = new InvDatasetImpl(this, "Best Time Series");
+        name = getName()+"_"+BEST;
+        ds.setUrlPath(path+"/"+name);
+        ds.setID(id+"/"+name);
+        tm = ds.getLocalMetadata();
+        tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
+        ds.finish();
+        datasets.add( ds);
 
-      // run datasets as catref
-      ds = new InvCatalogRef(this, TITLE_FORECAST, getCatalogHref(FORECAST));
-      ds.finish();
-      datasets.add( ds);
+        // run datasets as catref
+        ds = new InvCatalogRef(this, TITLE_RUNS, getCatalogHref(RUNS));
+        ds.finish();
+        datasets.add( ds);
 
-      if (params != null) {
-        /* public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanDir,
-                         String filter,
-                         boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
-                         String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration,
-                         long lastModifiedMsecs ) */
+        // run datasets as catref
+        ds = new InvCatalogRef(this, TITLE_OFFSET, getCatalogHref(OFFSET));
+        ds.finish();
+        datasets.add( ds);
 
-        scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
-                params.location, ".*"+params.suffix, true, "true", false, null, null, null, params.lastModifiedLimit );
+        // run datasets as catref
+        ds = new InvCatalogRef(this, TITLE_FORECAST, getCatalogHref(FORECAST));
+        ds.finish();
+        datasets.add( ds);
 
-        ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
-        tmi.setServiceName("fileServices");
-        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
-        // LOOK, we'd like to screen files by lastModified date.
+        if (params != null) {
+          /* public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanDir,
+                           String filter,
+                           boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
+                           String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration,
+                           long lastModifiedMsecs ) */
 
-        scan.finish();
-        datasets.add( scan);
+          scan = new InvDatasetScan( (InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path+"/"+SCAN,
+                  params.location, ".*"+params.suffix, true, "true", false, null, null, null, params.lastModifiedLimit );
+
+          ThreddsMetadata tmi = scan.getLocalMetadataInheritable();
+          tmi.setServiceName("fileServices");
+          tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
+          // LOOK, we'd like to screen files by lastModified date.
+
+          scan.finish();
+          datasets.add( scan);
+        }
       }
 
       this.datasets = datasets;

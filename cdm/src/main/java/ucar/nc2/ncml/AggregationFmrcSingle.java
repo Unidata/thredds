@@ -22,10 +22,8 @@
 package ucar.nc2.ncml;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDataset;
@@ -35,7 +33,6 @@ import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.unidata.util.StringUtil;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
-import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.util.*;
@@ -48,20 +45,20 @@ import thredds.util.DateFromString;
  *
  * @author caron
  */
-public class AggregationFmrcHourly extends AggregationFmrc {
-  private String timeDimName = "time";
+public class AggregationFmrcSingle extends AggregationFmrc {
   private ArrayList scanFmrcList = new ArrayList(); // current set of DirectoryScan for scanFmrc elements
   private Calendar cal = new GregorianCalendar(); // for date computations
 
   private HashMap runHash = new HashMap(); // Hash<Date, List>
   private ArrayList runs; // List<Date>
 
+  private CoordinateAxis1D timeAxis = null;
   private int max_times = 0;
-  private Dataset typical = null;
+  private Dataset typicalDataset = null;
   private boolean debug = true;
 
-  public AggregationFmrcHourly(NetcdfDataset ncd, String dimName, String recheckS) {
-    super(ncd, dimName, Type.FORECAST_MODEL_HOURLY, recheckS);
+  public AggregationFmrcSingle(NetcdfDataset ncd, String dimName, String recheckS) {
+    super(ncd, dimName, Type.FORECAST_MODEL_SINGLE, recheckS);
   }
 
   public void addDirectoryScanFmrc(String dirName, String suffix, String regexpPatternString, String subdirs, String olderThan,
@@ -71,7 +68,13 @@ public class AggregationFmrcHourly extends AggregationFmrc {
     isDate = true;
   }
 
-  protected void scanFmrc(CancelTask cancelTask) throws IOException {
+  protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
+    GridDataset typicalGds = scanFmrc(cancelTask);
+    if (typicalGds == null) return;
+    buildDataset( typicalDataset, typicalGds, cancelTask);
+  }
+
+  protected GridDataset scanFmrc(CancelTask cancelTask) throws IOException {
     // scan the directories
     ArrayList fileList = new ArrayList();
     for (int i = 0; i < scanFmrcList.size(); i++) {
@@ -79,7 +82,7 @@ public class AggregationFmrcHourly extends AggregationFmrc {
       dir.scanDirectory( fileList, cancelTask);
 
       if ((cancelTask != null) && cancelTask.isCancel())
-        return;
+        return null;
     }
 
     // find the runtime, forecast time coordinates, put in list
@@ -118,7 +121,7 @@ public class AggregationFmrcHourly extends AggregationFmrc {
       }
 
       // create the dataset wrapping this file, each is 1 forecast time coordinate of the nested aggregation
-      Dataset ds = makeDataset(location, location, null, myf.dateCoordS, false, null);
+      Dataset ds = makeDataset(location, location, null, myf.dateCoordS, true, null);
       ds.coordValueDate = myf.dateCoord;
       ds.ncoord = 1;
 
@@ -128,12 +131,32 @@ public class AggregationFmrcHourly extends AggregationFmrc {
         runDatasets = new ArrayList();
         runHash.put( myf.runDate, runDatasets);
       }
-      if (debugScan) System.out.println("  adding " + myf.file.getAbsolutePath() + " forecast date= " + myf.dateCoordS
+      if (debugScan) System.out.println("  adding " + myf.file.getAbsolutePath() + " forecast date= " + myf.dateCoordS +"("+myf.dateCoord+")"
               + " run date= " + formatter.toDateTimeStringISO(myf.runDate));
       runDatasets.add( ds);
-      if (typical == null)
-        typical = ds;
+      if (typicalDataset == null)
+        typicalDataset = ds;
     }
+
+    // open a "typical" dataset and make a GridDataset
+    NetcdfFile typicalFile =  typicalDataset.acquireFile( cancelTask);
+    NetcdfDataset typicalDS = (typicalFile instanceof NetcdfDataset) ? (NetcdfDataset) typicalFile : new NetcdfDataset( typicalFile);
+    if (!typicalDS.isEnhanced())
+      typicalDS.enhance();
+    GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
+
+    // find the one time axis
+    List grids = gds.getGrids();
+    for (int i = 0; i < grids.size(); i++) {
+      GridDatatype grid = (GridDatatype) grids.get(i);
+      GridCoordSystem gcc = grid.getCoordinateSystem();
+      timeAxis = gcc.getTimeAxis1D();
+      if (null != timeAxis)
+        break;
+    }
+
+    if (timeAxis == null)
+      throw new IllegalStateException("No time variable");
 
     // loop over the runs; each becomes a nested dataset
     runs = new ArrayList( runHash.keySet());
@@ -158,7 +181,7 @@ public class AggregationFmrcHourly extends AggregationFmrc {
       // create the dataset wrapping this run, each is 1 runtime coordinate of the outer aggregation
       NetcdfDataset ncd = new NetcdfDataset();
       ncd.setLocation("Run"+runDateS);
-      AggregationExisting agg = new AggregationExisting(ncd, timeDimName, null); // LOOK: dim name, existing vs new ??
+      AggregationExisting agg = new AggregationExisting(ncd, timeAxis.getName(), null); // LOOK: dim name, existing vs new ??
       for (int i = 0; i < runDatasets.size(); i++) {
         Dataset dataset = (Dataset) runDatasets.get(i);
         agg.addDataset( dataset);
@@ -170,6 +193,7 @@ public class AggregationFmrcHourly extends AggregationFmrc {
       nestedDatasets.add( new OpenDataset(ncd, runDate, runDateS));
     }
 
+    return gds;
   }
 
   private Date addHour( Date d, double hour) {
@@ -182,27 +206,13 @@ public class AggregationFmrcHourly extends AggregationFmrc {
     return cal.getTime();
   }
 
+  // used in buildDataset
    protected Dataset getTypicalDataset() throws IOException {
-     return typical;
+     return typicalDataset;
   }
 
   // for the case that we dont have a fmrcDefinition
   protected void makeTimeCoordinate(GridDataset gds, CancelTask cancelTask) throws IOException {
-    // find the one time axis
-    CoordinateAxis1D timeAxis = null;
-    List grids = gds.getGrids();
-    for (int i = 0; i < grids.size(); i++) {
-      GridDatatype grid = (GridDatatype) grids.get(i);
-      GridCoordSystem gcc = grid.getCoordinateSystem();
-      timeAxis = gcc.getTimeAxis1D();
-      if (null != timeAxis)
-        break;
-    }
-
-    if (timeAxis == null)
-      throw new IllegalStateException("No time variable");
-
-    // reset the inner time dimension
     String innerDimName = timeAxis.getName();
     Dimension innerDim = new Dimension(innerDimName, max_times, true);
     ncDataset.removeDimension(null, innerDimName); // remove previous declaration, if any
@@ -229,10 +239,12 @@ public class AggregationFmrcHourly extends AggregationFmrc {
     // construct new variable, replace old one, set values
     String dims = dimName + " " + innerDimName;
     String units = "hours since "+ formatter.toDateTimeStringISO(baseDate);
-    VariableDS vagg = new VariableDS(ncDataset, null, null, innerDimName, timeAxis.getDataType(), dims, units, null);
+    String desc = "calculated forecast date from AggregationFmrcSingle processing";
+    VariableDS vagg = new VariableDS(ncDataset, null, null, innerDimName, timeAxis.getDataType(), dims, units, desc);
     vagg.setCachedData(timeCoordVals, false);
     NcMLReader.transferVariableAttributes(timeAxis, vagg);
     vagg.addAttribute(new Attribute("units", units));
+    vagg.addAttribute(new Attribute("long_name", desc));
 
     ncDataset.removeVariable(null, vagg.getName());
     ncDataset.addVariable(null, vagg);

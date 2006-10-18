@@ -917,8 +917,8 @@ public class NcMLReader {
       if (fmrcDefinition != null)
         aggc.setInventoryDefinition(fmrcDefinition);
 
-    } else if (type.equals("forecastModelRunHourlyCollection")) {
-      AggregationFmrcHourly aggh = new AggregationFmrcHourly(newds, dimName, recheck);
+    } else if (type.equals("forecastModelRunSingleCollection")) {
+      AggregationFmrcSingle aggh = new AggregationFmrcSingle(newds, dimName, recheck);
       agg = aggh;
 
       String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
