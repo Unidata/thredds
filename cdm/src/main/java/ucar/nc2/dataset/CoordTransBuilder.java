@@ -26,6 +26,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.dataset.transform.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 
@@ -58,7 +59,7 @@ public class CoordTransBuilder {
     registerTransform("ocean_sigma_coordinate", VOceanSigma.class);
     registerTransform("explicit_field", VExplicitField.class);
     registerTransform("existing3DField", VExplicitField.class); // deprecate
-
+    registerTransform("flat_earth", FlatEarth.class);
     // further calls to registerTransform are by the user
     userMode = true;
   }
