@@ -4,6 +4,7 @@
   <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/../tds/target/classes" />
     <exclude-output />
+    <exploded url="file://$MODULE_DIR$/../tds/exploded" />
     <exclude-exploded />
     <output-test url="file://$MODULE_DIR$/../tds/target/test/classes" />
     <content url="file://$MODULE_DIR$/../tds">
@@ -44,11 +45,12 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Tomcat" level="application_server_libraries" />
+    <orderEntry type="library" name="Tomcat 5.5" level="application_server_libraries" />
+    <orderEntry type="module" module-name="grib" />
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
-    <setting name="EXPLODED_URL" value="file://" />
+    <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../tds/exploded" />
     <setting name="EXPLODED_ENABLED" value="false" />
     <setting name="JAR_URL" value="file://$MODULE_DIR$/../tds/target/thredds.war" />
     <setting name="JAR_ENABLED" value="true" />
@@ -61,6 +63,30 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/classes" />
     </containerElement>
+    <containerElement type="module" name="grib">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/classes" />
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/jpeg2000.jar" />
+      <url>jar://$MODULE_DIR$/../../grib/lib/jpeg2000.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/classes" />
+      <url>file://$MODULE_DIR$/../../grib/resources</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/classes" />
+      <url>file://$MODULE_DIR$/../cdm/src/main/resources</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/commons-codec-1.3.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/commons-codec-1.3.jar!/</url>
+    </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.1.jar" />
@@ -70,6 +96,11 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.0.jar" />
       <url>jar://$MODULE_DIR$/../lib/external/commons-httpclient-3.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.0.4.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/commons-logging-1.0.4.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -88,18 +119,8 @@
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/jpeg2000.jar" />
-      <url>jar://$MODULE_DIR$/../lib/external/jpeg2000.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/nlog4j-1.2.21.jar" />
       <url>jar://$MODULE_DIR$/../lib/external/nlog4j-1.2.21.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/slf4j-jdk14.jar" />
-      <url>jar://$MODULE_DIR$/../lib/external/slf4j-jdk14.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -118,11 +139,6 @@
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/grib.jar" />
-      <url>jar://$MODULE_DIR$/../lib/release/grib.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/prefsAll.jar!/</url>
     </containerElement>
@@ -138,9 +154,14 @@
       <option name="NAME" value="unknown.xml" />
       <option name="DESCRIPTION" value="Additional Resource" />
     </deploymentDescriptor>
+    <deploymentDescriptor name="" url="file://$MODULE_DIR$/../tds/src/main/webapp/META-INF/context-thredds.xml" optional="false">
+      <option name="DEFAULT_DIR" value="WEB-INF" />
+      <option name="NAME" value="" />
+      <option name="DESCRIPTION" value="" />
+    </deploymentDescriptor>
     <webroots>
       <root url="file://$MODULE_DIR$/../tds/src/main/webapp/resources" relative="/" />
-      <root url="file://$MODULE_DIR$/../tds/src/main/resources/xsl" relative="/WEB-INF/xsl" />
+      <root url="file://$MODULE_DIR$/../tds/src/main/resources/xsl" relative="/WEB-INF/classes/resources/xsl" />
     </webroots>
   </component>
   <component name="WeblogicWebModuleProperties">
