@@ -28,6 +28,7 @@ import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
 
@@ -1262,8 +1263,8 @@ class Nidsheader{
         dims.add( iDim);
         ncfile.addDimension( null, iDim);
         ncfile.addDimension( null, jDim);
-        ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
-
+        //ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type",  "Grid"));
         //Variable dist = new Variable(ncfile, null, null, "distance");
         //dist.setDataType(DataType.INT);
         //dist.setDimensions(dims);
@@ -1322,7 +1323,8 @@ class Nidsheader{
         yaxis.setCachedData( dataA, false);
         ncfile.addVariable(null, yaxis);
 
-        ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
+        ProjectionImpl projection = new FlatEarth(latitude, longitude);
+        //ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
         // coordinate transform variable
         Variable ct = new Variable( ncfile, null, null, projection.getClassName());
         ct.setDataType( DataType.CHAR);
@@ -1602,7 +1604,7 @@ class Nidsheader{
       lon_min = longitude + t1 * Math.cos(latitude);
       lon_max = longitude - t1 * Math.cos(latitude);
     } else if (prod_type == Comp_Reflect) {
-      radial               = 0;
+      radial               = 3;
       prod_elevation  = -1;
       summary = "NCR is a raster image of composite reflectivity at range 124 nm";
       cmemo = "Composite Reflect " + cmode[pinfo.opmode];
@@ -1613,7 +1615,7 @@ class Nidsheader{
 
     } else if (prod_type == Layer_Reflect_Avg ||
              prod_type == Layer_Reflect_Max)   {
-      radial               = 0;
+      radial               = 3;
       prod_elevation  = pinfo.p5;
       prod_top        = pinfo.p6;
       summary = "NCR is a raster image of composite reflectivity at range 124 nm";
@@ -1624,7 +1626,7 @@ class Nidsheader{
       cunit = "dbZ" ;
       cname = "LayerCompReflect";
     } else if (prod_type == Echo_Tops) {
-      radial               = 0;
+      radial               = 3;
       prod_elevation  = -1;
       summary = "NET is a raster image of echo tops at range 124 nm";
       cmemo = "Echo Tops [K FT] " + cmode[pinfo.opmode];
@@ -1676,7 +1678,7 @@ class Nidsheader{
       cunit = "IN" ;
       cname = "PrecipArray";
     } else if (prod_type == Vert_Liquid) {
-      radial               = 0;
+      radial               = 3;
       prod_elevation  = -1;
       summary = "NVL is a raster image of verticalintegrated liguid at range 124 nm";
       cmemo = "Vert Int Lq H2O [mm] " + cmode[pinfo.opmode] ;
