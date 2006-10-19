@@ -56,7 +56,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter {
             throw new IOException("Dataset is not a radial data\n");
         }
     } catch (Throwable e) {
-      System.err.println("*********** Dataset is not a radial data "+e);
+      System.err.println("CDM radial dataset failed to open this dataset "+e );
     }
     setEarthLocation();
     setTimeUnits();
