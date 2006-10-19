@@ -16,7 +16,6 @@ Break (15 min)
     * GeoGrid
     * Point/Station/Trajectory/Profile (Ethan)
     * Radial (Yuan)
-	* Forecast Model Run Collections
 
  4. NcML (60) 11:00 - 12:00
     * Modifying existing files
