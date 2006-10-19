@@ -61,7 +61,9 @@
 /*
  * There has been further modification of this class by Unidata to
  * support setting the inputstream. This saves many extra memory
- * allocations when doing lots of uncompressions.
+ * allocations when doing lots of uncompressions.  The read method
+ * may throw a BZip2ReadException instead of an IOException because
+ * the superclass catches and discards IOExceptions.
  */
 
 package ucar.unidata.io.bzip2;
@@ -149,6 +151,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   public CBZip2InputStream() {
   }
 
+
   public CBZip2InputStream(InputStream zStream) {
     setStream(zStream);
   }
@@ -161,7 +164,6 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     }
     setStream(zStream);
   }
-
   /**
    * Added 5-30-2006 to allow for resetting of the input used
    * by this object. This saves in memory allocation costs
@@ -196,6 +198,11 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
 
 
+  /**
+   * Reads the stream.
+   * @throws BZip2ReadException if there is a problem.  InputStream does
+   *         not throw an IOException, so we throw a RuntimeException.
+   */
   public int read() {
     if (streamEnd) {
       return -1;
@@ -258,8 +265,9 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     if (magic1 != 0x31 || magic2 != 0x41 || magic3 != 0x59
             || magic4 != 0x26 || magic5 != 0x53 || magic6 != 0x59) {
+      badBlockHeader();
       streamEnd = true;
-      doError("badBlockHeader");
+      return;
     }
 
     storedBlockCRC = bsGetInt32();
@@ -281,7 +289,8 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     computedBlockCRC = mCrc.getFinalCRC();
     /* A bad CRC is considered a fatal error. */
     if (storedBlockCRC != computedBlockCRC) {
-      doError("storedBlockCRC != computedBlockCRC");
+      // crcError();
+      cadvise("CRC error: storedBlockCRC != computedBlockCRC");
     }
 
     computedCombinedCRC = (computedCombinedCRC << 1)
@@ -292,27 +301,24 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
   private void complete() {
     storedCombinedCRC = bsGetInt32();
     if (storedCombinedCRC != computedCombinedCRC) {
-      doError("storedCombinedCRC != computedCombinedCRC");
+      // crcError();
+      cadvise("CRC error: storedCombinedCRC != computedCombinedCRC");
     }
 
     bsFinishedWithStream();
     streamEnd = true;
   }
 
-  /* private void blockOverrun() {
-    cadvise();
+  private void blockOverrun() {
+    cadvise("Block Overrun");
   }
 
   private void badBlockHeader() {
-    cadvise();
+    cadvise("Bad Block Header");
   }
 
   private void crcError() {
-    storedCombinedCRC != computedCombinedCRC
-  } */
-
-  private void doError(String what) {
-    throw new RuntimeException(what);
+    cadvise();
   }
 
   private void bsFinishedWithStream() {
@@ -342,10 +348,10 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
       try {
         thech = (char) bsStream.read();
       } catch (IOException e) {
-        doError("compressedStreamEOF");
+        compressedStreamEOF();
       }
       if (thech == -1) {
-        doError("compressedStreamEOF");
+        compressedStreamEOF();
       }
       zzi = thech;
       bsBuff = (bsBuff << 8) | (zzi & 0xff);
@@ -564,10 +570,10 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
               try {
                 thech = (char) bsStream.read();
               } catch (IOException e) {
-                doError("compressedStreamEOF");
+                compressedStreamEOF();
               }
               if (thech == -1) {
-                doError("compressedStreamEOF");
+                compressedStreamEOF();
               }
               zzi = thech;
               bsBuff = (bsBuff << 8) | (zzi & 0xff);
@@ -619,10 +625,10 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
                     try {
                       thech = (char) bsStream.read();
                     } catch (IOException e) {
-                      doError("compressedStreamEOF");
+                      compressedStreamEOF();
                     }
                     if (thech == -1) {
-                      doError("compressedStreamEOF");
+                      compressedStreamEOF();
                     }
                     zzi = thech;
                     bsBuff = (bsBuff << 8) | (zzi & 0xff);
@@ -649,14 +655,14 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         }
 
         if (last >= limitLast) {
-          doError("blockOverrun");
+          blockOverrun();
         }
         continue;
       } else {
         char tmp;
         last++;
         if (last >= limitLast) {
-          doError("blockOverrun");
+          blockOverrun();
         }
 
         tmp = yy[nextSym - 1];
@@ -702,7 +708,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
                   try {
                     thech = (char) bsStream.read();
                   } catch (IOException e) {
-                    doError("compressedStreamEOF");
+                    compressedStreamEOF();
                   }
                   zzi = thech;
                   bsBuff = (bsBuff << 8) | (zzi & 0xff);
@@ -906,14 +912,18 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
     }
   }
 
-  /* private void cadvise() {
+  private void cadvise() {
     System.out.println("CRC Error");
-    throw new RuntimeException();
+    //throw new CCoruptionError();
+  }
+
+  private void cadvise(String msg) {
+    throw new BZip2ReadException(msg);
   }
 
   private void compressedStreamEOF() {
-    cadvise();
-  } */
+    cadvise("Compressed Stream EOF");
+  }
 
 
   private void makeMaps() {
