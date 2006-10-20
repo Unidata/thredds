@@ -2,6 +2,7 @@ package ucar.nc2.iosp.nexrad2;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -133,4 +134,69 @@ public class TestNexrad2 extends TestCase {
     NetcdfFile ncfile = NetcdfDataset.openFile( filename, null);
     testCoordSystem( ncfile);
   }
+
+  public void testBzipProblem() throws IOException, InvalidRangeException {
+    // file where there was an error unzipping the file
+    String filename = TestAll.testdataDir + "radar/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials";
+    NetcdfDataset ncd = NetcdfDataset.openDataset( filename);
+
+    VariableDS azi = (VariableDS) ncd.findVariable("azimuthR");
+    assert azi != null;
+    VariableDS elev = (VariableDS) ncd.findVariable("elevationR");
+    assert elev != null;
+    VariableDS time = (VariableDS) ncd.findVariable("timeR");
+    assert time != null;
+    VariableDS r = (VariableDS) ncd.findVariable("Reflectivity");
+    assert r != null;
+    checkMissingValues(elev, azi, time, r);
+
+    azi = (VariableDS) ncd.findVariable("azimuthV");
+    assert azi != null;
+    elev = (VariableDS) ncd.findVariable("elevationV");
+    assert elev != null;
+    time = (VariableDS) ncd.findVariable("timeV");
+    assert time != null;
+    r = (VariableDS) ncd.findVariable("RadialVelocity");
+    assert r != null;
+    checkMissingValues(elev, azi, time, r);
+
+    r = (VariableDS) ncd.findVariable("SpectrumWidth");
+    assert r != null;
+    checkMissingValues(elev, azi, time, r);
+  }
+
+  private void checkMissingValues(VariableDS elev, VariableDS azi, VariableDS time, VariableDS q) throws IOException, InvalidRangeException {
+    Array elevData = elev.read();
+    IndexIterator elevII = elevData.getIndexIterator();
+    Array aziData = azi.read();
+    IndexIterator aziII = aziData.getIndexIterator();
+    Array timeData = time.read();
+    IndexIterator timeII = timeData.getIndexIterator();
+    while (elevII.hasNext()) {
+      float elevValue = elevII.getFloatNext();
+      float aziValue = aziII.getFloatNext();
+      assert azi.isMissing(aziValue) == elev.isMissing(elevValue);
+
+      // LOOK missing data broken for non-float coordinate axes
+      //int timeValue = timeII.getIntNext();
+      //assert azi.isMissing(aziValue) == time.isMissing(timeValue) : " azi= "+aziValue +" time= "+timeValue;
+    }
+
+    int[] shape = q.getShape();
+    int rank = q.getRank();
+    int[] origin = new int[rank];
+    shape[rank-1] = 1;
+    Array qData = q.read(origin, shape);
+    assert qData.getSize() == aziData.getSize();
+
+    IndexIterator qII = qData.getIndexIterator();
+    aziII = aziData.getIndexIterator();
+    while (qII.hasNext()) {
+      float qValue = qII.getFloatNext();
+      float aziValue = aziII.getFloatNext();
+      if (azi.isMissing(aziValue))
+        assert q.isMissing(qValue);
+    }
+  }
+
 }

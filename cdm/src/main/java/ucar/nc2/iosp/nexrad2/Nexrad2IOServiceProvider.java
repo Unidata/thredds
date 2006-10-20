@@ -204,7 +204,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
 
     timeVar.addAttribute( new Attribute("long_name", "time since base date"));
     timeVar.addAttribute( new Attribute("units", units));
-    timeVar.addAttribute( new Attribute("missing_value", new Float(MISSING_INT)));
+    timeVar.addAttribute( new Attribute("missing_value", new Integer(MISSING_INT)));
     timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     // add elevation coordinate variable
@@ -262,7 +262,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     ngateVar.addAttribute( new Attribute("long_name", "number of valid gates in this scan"));
     ncfile.addVariable(null, ngateVar);
 
-    makeCoordinateData( datatype, timeVar, elevVar, aziVar, nradialsVar, ngateVar, groups);
+    makeCoordinateDataWithMissing( datatype, timeVar, elevVar, aziVar, nradialsVar, ngateVar, groups);
 
     // back to the data variable
     String coordinates = timeCoordName+" "+elevCoordName +" "+ aziCoordName+" "+gateCoordName;
@@ -334,6 +334,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
     Array ngatesData = Array.factory( ngatesVar.getDataType().getPrimitiveClassType(), ngatesVar.getShape());
     IndexIterator ngatesIter = ngatesData.getIndexIterator();
 
+
     int last_msecs = Integer.MIN_VALUE;
     int nscans = groups.size();
     int maxRadials = volScan.getMaxRadials();
@@ -358,6 +359,69 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
         timeDataIter.setIntNext( MISSING_INT);
         elevDataIter.setFloatNext( MISSING_FLOAT);
         aziDataIter.setFloatNext( MISSING_FLOAT);
+      }
+
+      nradialsIter.setIntNext( nradials);
+      ngatesIter.setIntNext( first.getGateCount( datatype));
+    }
+
+    time.setCachedData( timeData, false);
+    elev.setCachedData( elevData, false);
+    azi.setCachedData( aziData, false);
+    nradialsVar.setCachedData( nradialsData, false);
+    ngatesVar.setCachedData( ngatesData, false);
+  }
+
+  private void makeCoordinateDataWithMissing(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
+                                  Variable ngatesVar, List groups) {
+
+    Array timeData = Array.factory( time.getDataType().getPrimitiveClassType(), time.getShape());
+    Index timeIndex = timeData.getIndex();
+
+    Array elevData = Array.factory( elev.getDataType().getPrimitiveClassType(), elev.getShape());
+    Index elevIndex = elevData.getIndex();
+
+    Array aziData = Array.factory( azi.getDataType().getPrimitiveClassType(), azi.getShape());
+    Index aziIndex = aziData.getIndex();
+
+    Array nradialsData = Array.factory( nradialsVar.getDataType().getPrimitiveClassType(), nradialsVar.getShape());
+    IndexIterator nradialsIter = nradialsData.getIndexIterator();
+
+    Array ngatesData = Array.factory( ngatesVar.getDataType().getPrimitiveClassType(), ngatesVar.getShape());
+    IndexIterator ngatesIter = ngatesData.getIndexIterator();
+
+    // first fill with missing data
+    IndexIterator ii = timeData.getIndexIterator();
+    while (ii.hasNext())
+      ii.setIntNext(MISSING_INT);
+
+    ii = elevData.getIndexIterator();
+    while (ii.hasNext())
+      ii.setFloatNext(MISSING_FLOAT);
+
+    ii = aziData.getIndexIterator();
+    while (ii.hasNext())
+      ii.setFloatNext(MISSING_FLOAT);
+
+    // now set the  coordinate variables from the Level2Record radial
+    int last_msecs = Integer.MIN_VALUE;
+    int nscans = groups.size();
+    for (int scan = 0; scan < nscans; scan++) {
+      List scanGroup = (List) groups.get(scan);
+      int nradials = scanGroup.size();
+
+      Level2Record first = null;
+      for (int j = 0; j < nradials; j++) {
+        Level2Record r =  (Level2Record) scanGroup.get(j);
+        if (first == null) first = r;
+
+        int radial = r.radial_num-1;
+        timeData.setInt( timeIndex.set(scan, radial), r.data_msecs);
+        elevData.setFloat( elevIndex.set(scan, radial), r.getElevation());
+        aziData.setFloat( aziIndex.set(scan, radial), r.getAzimuth());
+
+        if (r.data_msecs < last_msecs) logger.warn("makeCoordinateData time out of order "+r.data_msecs);
+        last_msecs = r.data_msecs;
       }
 
       nradialsIter.setIntNext( nradials);
