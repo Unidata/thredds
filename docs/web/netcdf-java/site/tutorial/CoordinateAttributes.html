@@ -22,10 +22,24 @@
     </blockquote>
   </blockquote>
 </blockquote>
-<p align="left">For full explanation see: <a href="CSObjectModel.html">Coordinate System Object Model</a>. </p>
+<h3>See also :</h3>
+<ul>
+  <li>  <a href="../reference/CSObjectModel.html">Coordinate System Object Model</a>. </li>
+  <li>_Coordinate Attribute <a href="../reference/CoordinateAttributes.html">Reference</a></li>
+</ul>
+<h3>Contents:</h3>
+<ol>
+  <li><a href="#Example1">Example 1</a>: Simple Coordinate Variables</li>
+  <li><a href="#Example2">Example 2</a>: Coordinate System Variable</li>
+  <li><a href="#Example3">Example 3</a>: Multiple Coordinate Systems </li>
+  <li><a href="#Example4">Example 4</a>: Adding Coordinate Transforms </li>
+  <li><a href="#Example5">Example 5</a>: Reusing Variables for Coordinate System and/or Coordinate Transform Variables </li>
+  <li><a href="#Implicit">Implicit</a> Coordinate Systems</li>
+  <li><a href="#CoordinateTransformVariables">Coordinate Transform Variables</a></li>
+</ol>
 <hr>
-<h2><strong>  Examples<a name="Examples"></a></strong></h2>
-<h3><strong>Example 1: Simple Coordinate Variables </strong>
+<h2><strong>  Examples</strong></h2>
+<h3><strong>Example 1<a name="Example1"></a>: Simple Coordinate Variables </strong>
 </h3>
 <pre> dimensions:<br>   lon = 144;<br>   lat = 73;<br>   level = 17;<br>   time = UNLIMITED;   // (13 currently)
 <br> variables:<br>   float earth(time, level, lat, lon);<br>     earth:units = &quot;K&quot;;<br>     earth:long_name = &quot;mean Daily Soil temperature&quot;;<br>     <strong>earth:_CoordinateAxes=&quot;time level lat lon&quot;;</strong>
@@ -43,7 +57,7 @@
 </ol>
 <p><strong>Rule</strong>: A CoordinateSystem is uniquely determined by its list of CoordinateAxes. </p>
 <p><strong>Rule</strong>: A CoordinateSystem may be implicitly defined by a data Variable's <strong>_CoordinateAxes</strong> attribute. </p>
-<h3><strong>Example 2:  Coordinate System Variable</strong> </h3>
+<h3><strong>Example 2<a name="Example2"></a>:  Coordinate System Variable</strong> </h3>
 <pre> dimensions:<br>   lon = 144;<br>   lat = 73;<br>   level = 17;<br>   time = UNLIMITED;   // (13 currently)
 <br> variables:<br>   float earth(time, level, lat, lon);<br>     earth:units = &quot;K&quot;;<br>     earth:long_name = &quot;mean Daily Soil temperature&quot;;<br>     <strong>earth:_CoordinateSystems=&quot;LatLonCoordinateSystem&quot;;</strong>
 
@@ -57,7 +71,7 @@
    char LatLonCoordinateSystem;<br>     LatLonCoordinateSystem:_CoordinateAxes = &quot;time level lat lon&quot;;</strong></pre>
 <p>In this case we create a <em><strong>Coordinate System Variable</strong></em>, a dummy variable whose  purpose is to define a CoordinateSystem. The data Variables now point to it with a <strong>_CoordinateSystem</strong> attribute. </p>
 <p><strong>Rule</strong>: A CoordinateSystem may be explicitly defined by a Coordinate System Variable, which always has a <strong>_CoordinateAxes</strong> attribute. </p>
-<h3>Example 3: Multiple Coordinate Systems</h3>
+<h3>Example 3<a name="Example3"></a>: Multiple Coordinate Systems</h3>
 <pre>
 dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surface = 4;<br><br> variables:
   float Soil_temperature(time, depth_below_surface, y, x);
@@ -81,7 +95,7 @@ dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surf
 <p><strong>Rule</strong>: To indicate multiple Coordinate Systems for a single data variable, you must use Coordinate System Variables and list them from the data Variable's <strong>_CoordinateSystems </strong>attribute<strong>.</strong></p>
 <p><strong>Rule</strong>: Use AxisType <strong>GeoX </strong>and<strong> GeoY </strong> for projection coordinate axes. </p>
 <p><strong>Rule</strong>: Use the <strong>_CoordinateZisPositive</strong> attribute on vertical Coordinate Axes to indicate in whether increasing values of the coordinate go up or down.</p>
-<h3>Example 4: Adding Coordinate Transforms </h3>
+<h3>Example 4<a name="Example4"></a>: Adding Coordinate Transforms </h3>
 <pre>
 dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surface = 4;<br><br> variables:
   float Soil_temperature(time, depth_below_surface, y, x);
@@ -99,7 +113,7 @@ dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surf
 <strong>     LambertConformalProjection:transform_name = &quot;lambert_conformal_conic&quot;;<br>     LambertConformalProjection:standard_parallel = 25.0;<br>     LambertConformalProjection:longitude_of_central_meridian = 265.0;<br>     LambertConformalProjection:latitude_of_projection_origin = 25.0;</strong></pre>
 <p>To create a CoordinateTransform, we  define  a <em><strong>Coordinate Transform Variable</strong></em> (here called <strong>LambertConformalProjection</strong>), which is a dummy variable  similar to a Coordinate System Variable (here called <strong>ProjectionCoordinateSystem</strong>). The attributes on the Coordinate Transform Variable are the parameters of the transform. The Coordinate System Variable  points to it with a <strong>_CoordinateTransforms</strong> attribute. You can have multiple CoordinateTransforms for a CoordinateSystem. </p>
 <p><strong>Rule</strong>: A CoordinateTransform must be explicitly defined by a Coordinate Transform Variable. It is identified by having the <strong>_CoordinateTransformType</strong> attribute, or by being pointed to by a Coordinate System Variable's <strong>_CoordinateTransforms</strong> attribute.</p>
-<h3>Example 5: Reusing Variables for Coordinate System and/or Coordinate Transform Variables </h3>
+<h3>Example 5<a name="Example5"></a>: Reusing Variables for Coordinate System and/or Coordinate Transform Variables </h3>
 <pre>
 dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surface = 4;<br><br> variables:
   float Soil_temperature(time, depth_below_surface, y, x);
@@ -158,9 +172,49 @@ dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surf
 <strong>     VerticalCoordinateSystem:_CoordinateAxes = &quot;hybrid&quot;;</strong>
 </pre>
 <p>will apply to any CoordinateSystem that has the Coordinate <strong></strong> Axis named &quot;hybrid&quot;..</p>
+<hr>
+<h2>Coordinate Transform Variables<a name="CoordinateTransformVariables"></a></h2>
+<p>A Coordinate Transform Variable is a container for information about a transformation function from a Coordinate System to a Reference Coordinate System. At a minimum it must have a <strong>transform_name</strong> attribute. (alias <strong>grid_mapping_name</strong> or <strong>standard_name</strong> for CF compatability).</p>
+<pre><strong> char Lambert_Conformal_Projection;<br>   Lambert_Conformal_Projection:transform_name = &quot;lambert_conformal_conic&quot;;<br>   Lambert_Conformal_Projection:standard_parallel = 25.0;<br>   Lambert_Conformal_Projection:longitude_of_central_meridian = 265.0;<br>   Lambert_Conformal_Projection:latitude_of_projection_origin = 25.0;</strong></pre>
+<p>When a <strong>Coordinate System</strong> has only one <strong> Coordinate Transform, </strong>the information on the transform may be added directly to the Coordinate System Variable. The Variable acts as both a Coordinate System and a Coordinate Transform. Example: </p>
+<pre><strong> char ProjectionCoordinateSystem;
+   ProjectionCoordinateSystem:_CoordinateAxes = &quot;time depth_below_surface y x&quot;;
+   ProjectionCoordinateSystem:transform_name = &quot;lambert_conformal_conic&quot;;<br>   ProjectionCoordinateSystem:standard_parallel = 25.0;<br>   ProjectionCoordinateSystem:longitude_of_central_meridian = 265.0;<br>   ProjectionCoordinateSystem:latitude_of_projection_origin = 25.0;</strong></pre>
+<p>You can use a CF grid mapping or dimensionless vertical coordinate as a transform:</p>
+<pre><strong> char ProjectionCoordinateSystem;
+   ProjectionCoordinateSystem:_CoordinateAxes = &quot;time depth_below_surface y x&quot;;
+   ProjectionCoordinateSystem:_CoordinateTransforms = &quot;<span class="CDL"><strong>Lambert_Conformal</strong></span> lev&quot;;</strong></pre>
+<pre class="CDL"><strong> int Lambert_Conformal;
+   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
+   Lambert_Conformal:standard_parallel = 25.0;
+   Lambert_Conformal:longitude_of_central_meridian = 265.0;
+   Lambert_Conformal:latitude_of_projection_origin = 25.0;</strong></pre>
+<pre class="CDL"><strong> float lev(lev) ;
+   lev:long_name = "sigma at layer midpoints" ;
+   lev:positive = "down" ;
+   lev:standard_name = "atmosphere_sigma_coordinate" ;
+   lev:formula_terms = "sigma: lev ps: PS ptop: PTOP" ;</strong></pre>
+<p class="CDL">Generally the set of valid transforms are not specified by this <strong>_Coordinates</strong> Convention. The <a href="StandardCoordinateTransforms.html">transforms that the nj22 library recognizes</a> come from the CF grid mappings and vertical transforms, so these are recommended, when possible, for the actual transform content. </p>
+<p class="CDL">It is often convenient to define the Coordinate Transform Variable and have it point to the Coordinate Systems that use it. For this purpose, you can use the <strong>_CoordinateSystems</strong> attribute on a Coordinate Transform Variable. You also need to add the <strong>_CoordinateTransformType</strong> attribute to make sure it is interpreted as a Coordinate Transform variable instead of a data variable. </p>
+<pre class="CDL"><strong> int Lambert_Conformal;
+   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
+   Lambert_Conformal:standard_parallel = 25.0;
+   Lambert_Conformal:longitude_of_central_meridian = 265.0;
+   Lambert_Conformal:latitude_of_projection_origin = 25.0;
+<strong><strong>   Lambert_Conformal:_CoordinateTransformType = &quot;Projection&quot;;
+</strong></strong></strong><strong><strong>   Lambert_Conformal:_CoordinateSystems = &quot;ProjectionCoordinateSystem&quot;;</strong></strong></pre>
+<p class="CDL">For dealing with implicitly defined Coordinate Systems, you can use the <strong>_CoordinateAxes</strong> attribute:</p>
+<pre class="CDL"><strong> int Lambert_Conformal;
+   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
+   Lambert_Conformal:standard_parallel = 25.0;
+   Lambert_Conformal:longitude_of_central_meridian = 265.0;
+   Lambert_Conformal:latitude_of_projection_origin = 25.0;
+<strong><strong><strong><strong>   Lambert_Conformal:_CoordinateTransformType = &quot;Projection&quot;;
+</strong></strong></strong><strong><strong></strong></strong>   Lambert_Conformal:_CoordinateAxes = &quot;y x&quot;;</strong></strong></pre>
+<p class="CDL">This means to apply it to any Coordinate System that includes the x and y Coordinate Axes.</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 18, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 20, 2006
 </address>
 <p>&nbsp;</p>
 </body>

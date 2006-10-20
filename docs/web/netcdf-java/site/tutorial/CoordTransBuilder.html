@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>CoordSysBuilder</title>
+<title>Untitled Document</title>
 <style type="text/css">
 <!--
 .style1 {font-style: italic}
@@ -17,18 +17,18 @@
 <p>In order to use a dataset at the scientific datatype layer, the dataset's coordinate systems must first be identified. This is done by an implementation of <strong>ucar.nc2.dataset.CoordSysBuilderIF</strong> whose job is to examine the contents of the dataset and create coordinate system objects that follow this object model: </p>
 <p><img src="../images/CoordSys.png" width="610" height="341"></p>
 <p>For more details, see the <a href="../reference/CSObjectModel.html">Coordinate System Object Model</a>.</p>
-<p>A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define <strong><em>and document </em></strong>a new Convention in collaboration with others with similar needs. If you do so, read <a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">Writing NetCDF Files: Best Practices</a>,  look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">NetCDF Conventions page</a>. </p>
+<p>A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define <strong><em>and document </em></strong>a new Convention in collaboration with others with similar needs. If you do so, read <a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">Writing NetCDF Files: Best Practices</a>, look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">NetCDF Conventions page</a>. </p>
 <p>The steps to using your CoordSysBuilderIF class in the Netcdf-Java library: </p>
 <ol>
-  <li>Write a class that implements <strong>ucar.nc2.dataset.CoordSysBuilderIF, </strong>such as by  subclassing <strong>ucar.nc2.dataset.CoordSysBuilder.</strong></li>
+  <li>Write a class that implements <strong>ucar.nc2.dataset.CoordTransBuilderIF, </strong>such as by subclassing <strong>ucar.nc2.dataset.transform.AbstractCoordTransBuilder.</strong></li>
   <li>Add the class to your classpath.</li>
-  <li>From your application, call <strong>ucar.nc2.dataset.CoordSysBuilder.registerConvention( String conventionName, Class c). </strong>This is called &quot;plugging in&quot; your code at runtime. </li>
-  <li>When you open the dataset in <em>enhanced mode</em>,  eg by calling</li>
+  <li>From your application, call <strong>ucar.nc2.dataset.CoordTransBuilder.registerTransform( String transformName, Class c). </strong>This is called &quot;plugging in&quot; your code at runtime. </li>
+  <li>When you open the dataset in <em>enhanced mode</em>, eg by calling</li>
 </ol>
 <pre>       NetcdfDataset.openDataset(String location, boolean enhance, ucar.nc2.util.CancelTask cancelTask);
 </pre>
 <blockquote>
-  <p>an instance of your class will be called to add coordinate system objects to the  NetcdfDataset.</p>
+  <p>an instance of your class will be called to add coordinate system objects to the NetcdfDataset.</p>
 </blockquote>
 <p>The Coordinate System objects are then available through the classes in the <strong> ucar.nc2.dataset</strong> package, for example:</p>
 <pre><strong>ucar.nc2.dataset</strong>.<strong>VariableDS</strong>:
@@ -60,7 +60,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
   public void <strong>buildCoordinateSystems</strong>( NetcdfDataset ncDataset);
   public void <strong>addUserAdvice</strong>( String advice);
 }</pre>
-<p>You can override the <strong>buildCoordinateSystems() </strong>method and completely build the coordinate system objects yourself. However, its usually easier to take advantage of the code in the <strong>CoordSysBuilder</strong> superclass, which translates  standard  <em><strong>_Coordinate attributes</strong></em> into  coordinate system objects. The job of the subclass may then reduce to adding these _Coordinate attributes to the file in the <strong>augmentDataset</strong>() method. The subclass may also need to create and add new Coordinate Variables to the file, and/or to create Coordinate Transforms. Examples of existing <strong>CoordSysBuilder</strong> subclasses are in the <strong>ucar.nc2.dataset.conv</strong> package.</p>
+<p>You can override the <strong>buildCoordinateSystems() </strong>method and completely build the coordinate system objects yourself. However, its usually easier to take advantage of the code in the <strong>CoordSysBuilder</strong> superclass, which translates standard <em><strong>_Coordinate attributes</strong></em> into coordinate system objects. The job of the subclass may then reduce to adding these _Coordinate attributes to the file in the <strong>augmentDataset</strong>() method. The subclass may also need to create and add new Coordinate Variables to the file, and/or to create Coordinate Transforms. Examples of existing <strong>CoordSysBuilder</strong> subclasses are in the <strong>ucar.nc2.dataset.conv</strong> package.</p>
 <p>The <strong>ucar.nc2.dataset.CoordSysBuilder</strong> class uses the &quot; <span class="style1"><strong>_Coordinate</strong> <strong>attributes</strong></span>&quot; (&quot;underscore Coordinate attributes&quot;, described fully <a href="../reference/CoordinateAttributes.html">here</a>) to create Coordinate System objects. An attribute that starts with an underscore is a &quot;system attribute&quot;, which usually implies some special processing or behavior within the NetCDF library (both C and Java). </p>
 <p>If you are subclassing ucar.nc2.dataset.CoordSysBuilder, you can ignore the <strong>setConventionUsed</strong> and <strong>addUserAdvice</strong> methods and let the superclass hanlde them. If not, you can just implement dummy methods. </p>
 <p>The ToolsUI application has a <em><strong>CoordSys</strong></em> tab that is designed to help with the process of building coordinate systems. Open up your dataset in that tab, and 3 tables are presented: The data variables, the cooordinate systems, and the coordinate axes. The <em><strong>Info</strong></em> button (top right) will show various information from the <strong>CoordSysBuilder</strong> class that was used for the dataset.</p>
@@ -68,8 +68,8 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 <p>If your datasets use the global attribute <em><strong>Convention</strong></em>, then you only need to pass in the value of that attribute into <strong>CoordSysBuilder.registerConvention</strong>(<strong>String conventionName, Class c), </strong>and you do not need to implement the isMine() method. </p>
 <p>Otherwise, your class must implement a static method <em><strong>isMine() </strong></em>that returns true when it is given a dataset that it knows how to handle. For example: </p>
 <pre>  public static boolean <strong>isMine</strong>( NetcdfFile ncfile) {<br>    String s =  ncfile.findAttValueIgnoreCase(null, &quot;sensor_name&quot;, &quot;none&quot;);<br>    return s.equalsIgnoreCase(&quot;CRAFT/NEXRAD&quot;);<br>  }</pre>
-<p>looks to see if the global attribute <strong><em>sensor_name</em></strong> has the value <strong><em>CRAFT/NEXRAD</em></strong>. <strong>Its  important that the isMine() method be efficient</strong>, ideally using only the dataset metadata (attributes, variable names, etc) rather than having to do any data reading. </p>
-<h3>Adding  Attributes to the Dataset </h3>
+<p>looks to see if the global attribute <strong><em>sensor_name</em></strong> has the value <strong><em>CRAFT/NEXRAD</em></strong>. <strong>Its important that the isMine() method be efficient</strong>, ideally using only the dataset metadata (attributes, variable names, etc) rather than having to do any data reading. </p>
+<h3>Adding Attributes to the Dataset </h3>
 <p>For the simple case where you only need to add attributes to the file, you might do it as in this example:</p>
 <pre>  protected void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {<br>    this.conventionName = &quot;ATDRadar&quot;;
 <br>    Variable time = ds.findVariable(&quot;time&quot;);
@@ -78,7 +78,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
     // etc
   }
 </pre>
-<p>  You may find it easier to do the same thing using an <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a> file, for example:</p>
+<p> You may find it easier to do the same thing using an <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a> file, for example:</p>
 <pre>
   protected void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {<br>    this.conventionName = &quot;ATDRadar&quot;;<br>    <strong>NcMLReader.wrapNcML( ncDataset, &quot;file:/MyResource/ATDRadar.ncml&quot;, cancelTask);</strong><br>  }
 </pre>
@@ -103,7 +103,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
   &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
  &lt;/variable&gt;</pre>
 <pre>&lt;/netcdf&gt;</pre>
-<p>The NcML adds the appropriate <strong>_CoordinateAxisType</strong> attribute  to existing Coordinate Axes. Because the data variables all use  coordinate variables, implicit Coordinate System objects are created and assigned. There is no need for Coordinate Transforms because all the coordinates are reference coordinates (lat, lon, height). <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">Here</a> is complete info on NcML. </p>
+<p>The NcML adds the appropriate <strong>_CoordinateAxisType</strong> attribute to existing Coordinate Axes. Because the data variables all use coordinate variables, implicit Coordinate System objects are created and assigned. There is no need for Coordinate Transforms because all the coordinates are reference coordinates (lat, lon, height). <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">Here</a> is complete info on NcML. </p>
 <p>If all you need to do is wrap the dataset in NcML, and the dataset already has a <strong>Convention</strong> attribute in it (before it is wrapped), then you can simply register the NcML directly, without having to write any code. For this, you use:</p>
 <pre><strong> CoordSysBuilder.registerNcML( String conventionName, String ncmlLocation);</strong></pre>
 <h3>Adding Coordinate Axes to the Dataset </h3>
@@ -140,11 +140,12 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 <strong>(10)</strong>ds.finish();
  }</pre>
 <ol>
-  <li>Its  convenient to wrap the dataset in NcML, even when you also have to do some programming. For one thing, you can change the NcML file without recompiling.</p>
+  <li>Its convenient to wrap the dataset in NcML, even when you also have to do some programming. For one thing, you can change the NcML file without recompiling.
+      <p></p>
   </li>
-  <li> The <strong>time</strong> coordinate is created in the NcML file, and we will set its values here, based on other data  in the file</li>
+  <li> The <strong>time</strong> coordinate is created in the NcML file, and we will set its values here, based on other data in the file</li>
   <li>Set <strong>time</strong> coordinate units are set to be the same as the units on the <strong>base_time</strong> variable.</li>
-  <li>Read in the (scalar)  <strong>base_time</strong>.</li>
+  <li>Read in the (scalar) <strong>base_time</strong>.</li>
   <li>Read in the <strong>time_offset</strong> array.</li>
   <li>Add the <strong>baseValue</strong> to each value of the <strong>time_offset</strong>.</li>
   <li>For potentially long running calculations, you should check to see if the user has cancelled, and return ASAP. </li>
@@ -153,7 +154,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
   <li>When adding new variables to a dataset, you must call finish() when all done. </li>
 </ol>
 <h3>Identifying Coordinate Axis Types</h3>
-<p>Another simple case to handle is when you are using Coordinate Variables for all  data variables. Coordinate Variables are 1D variables with the same name as their dimension, which encode the coordinate values for that dimension. In that case, you only need to identify the Coordinate Axes types, which you do by overriding thye <strong>getAxisType()</strong> method. This will pass in all variables that have been identified as coordinate axes, and your job is to return theier AxisType, if they have one: </p>
+<p>Another simple case to handle is when you are using Coordinate Variables for all data variables. Coordinate Variables are 1D variables with the same name as their dimension, which encode the coordinate values for that dimension. In that case, you only need to identify the Coordinate Axes types, which you do by overriding thye <strong>getAxisType()</strong> method. This will pass in all variables that have been identified as coordinate axes, and your job is to return theier AxisType, if they have one: </p>
 <pre>protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {</pre>
 <pre> String unit = v.getUnitsString();
  if (unit == null)
@@ -191,9 +192,9 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 <pre> return null;
 }</pre>
 <h3>Creating Coordinate Transformations</h3>
-<p>A more complex task is to create Coordinate Transforms, which map a Coordinate System to a reference Coordinate System, such as lat/lon. A Coordinate Transform is typically represented by a <em><strong>Coordinate Transform Variable</strong></em>, which may be a dummy variable (ie have no data in it),  and whose attributes document the meaning and specify any needed parameters for it. For this general case, you create an object of type <strong>CoordinateTransform</strong>. The Netcdf-Java library does not further process these. There are  special cases of Coordinate Transforms that the Netcdf-Java library does process, and are needed to use other layers such as GeoGrids:</p>
-<p>The <em><strong>Projection Transformations</strong></em> are implemented by subclasses of <strong>CoordinateTransform</strong> called <strong>ProjectionCT</strong>. A ProjectionCT has an instance of a <strong>ucar.unidata.geoloc.Projection</strong>, which maps the GeoX and GeoY coordinates to latitude and longitude. This then allows data that is not on a latitude, longitude Coordinate System to be georeferenced, and is necessary in creating a GeoGrid. Look in the <strong>ucar.unidata.geoloc.proj </strong>package to see which projections have been implemented. These are mostly taken from  the CF-1 Conventions (Appendix F). </p>
-<p>The <em><strong>Vertical Transformations</strong></em> are implemented by subclasses of <strong>CoordinateTransform</strong> called <strong>VerticalCT</strong>. A <strong>VerticalCT</strong> has an instance of a <strong>ucar.unidata.geoloc.vertical.VerticalTransform</strong>, which maps the GeoZ coordinate to height or pressure.  This is not necessary in creating a GeoGrid, but is needed for programs like the IDV to correctly display your data. Look in the <strong>ucar.unidata.geoloc.vertical </strong>package to see which vertical transforms have been implemented, these are taken from the CF-1 Conventions (Appendix D). </p>
+<p>A more complex task is to create Coordinate Transforms, which map a Coordinate System to a reference Coordinate System, such as lat/lon. A Coordinate Transform is typically represented by a <em><strong>Coordinate Transform Variable</strong></em>, which may be a dummy variable (ie have no data in it), and whose attributes document the meaning and specify any needed parameters for it. For this general case, you create an object of type <strong>CoordinateTransform</strong>. The Netcdf-Java library does not further process these. There are special cases of Coordinate Transforms that the Netcdf-Java library does process, and are needed to use other layers such as GeoGrids:</p>
+<p>The <em><strong>Projection Transformations</strong></em> are implemented by subclasses of <strong>CoordinateTransform</strong> called <strong>ProjectionCT</strong>. A ProjectionCT has an instance of a <strong>ucar.unidata.geoloc.Projection</strong>, which maps the GeoX and GeoY coordinates to latitude and longitude. This then allows data that is not on a latitude, longitude Coordinate System to be georeferenced, and is necessary in creating a GeoGrid. Look in the <strong>ucar.unidata.geoloc.proj </strong>package to see which projections have been implemented. These are mostly taken from the CF-1 Conventions (Appendix F). </p>
+<p>The <em><strong>Vertical Transformations</strong></em> are implemented by subclasses of <strong>CoordinateTransform</strong> called <strong>VerticalCT</strong>. A <strong>VerticalCT</strong> has an instance of a <strong>ucar.unidata.geoloc.vertical.VerticalTransform</strong>, which maps the GeoZ coordinate to height or pressure. This is not necessary in creating a GeoGrid, but is needed for programs like the IDV to correctly display your data. Look in the <strong>ucar.unidata.geoloc.vertical </strong>package to see which vertical transforms have been implemented, these are taken from the CF-1 Conventions (Appendix D). </p>
 <p>You can create the Coordinate Transform objects yourself, by overriding the <strong>makeCoordinateTransforms</strong>() and <strong>assignCoordinateTransforms</strong>() methods in CoordSysBuilder. The recommended way to do this, however, is to use a <em><strong>Coordinate Transform Variable, </strong></em>and represent the parameters of the standard projections and vertical transformations in a standard way defined by the CF Conventions. Here is an example of one way to do that: </p>
 <pre>public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {<br>   this.conventionName = &quot;ARPS/ADAS&quot;;</pre>
 <pre><strong>(1)</strong>String projName = ds.findAttValueIgnoreCase(null, &quot;grid_mapping_name&quot;, null);
@@ -224,22 +225,22 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 </pre>
 <ol>
   <li>The projection values are stored as global attributes, for example the name of the projection is stored as the value of the global <strong>grid_mapping_name</strong> attribute. </li>
-  <li>A  <strong>ucar.unidata.geoloc.projection.LambertConformal</strong> object is created.</li>
+  <li>A <strong>ucar.unidata.geoloc.projection.LambertConformal</strong> object is created.</li>
   <li>A <strong>ProjectionCT</strong> object is created.</li>
-  <li>A  Coordinate Transform Variable is created, using a utility method in the <strong>CoordSysBuilder</strong> class.</li>
+  <li>A Coordinate Transform Variable is created, using a utility method in the <strong>CoordSysBuilder</strong> class.</li>
   <li>The <strong>_CoordinateAxisTypes</strong> attribute indicates that the transform is to be used for all Coordinate Systems that have a <strong>GeoX</strong> and <strong>GeoY</strong> coordinate axis.</li>
-  <li>The  Coordinate Transform Variable is added to the dataset.</li>
+  <li>The Coordinate Transform Variable is added to the dataset.</li>
   <li>An example of putting error messasges into the parseInfo StringBuffer. </li>
   <li>When adding new variables to a dataset, you must call finish() when all done. </li>
 </ol>
-<h3>Example  for 3D explicit field: </h3>
+<h3>Example for 3D explicit field: </h3>
 <pre>   char VerticalTransform;<br><strong>(1)</strong> :_CoordinateTransformType = &quot;vertical&quot;;<br><strong>(2)</strong> :_CoordinateAxes = &quot;z&quot;;
 <strong>(3)</strong> :transform_type = &quot;explicit_field&quot;;<br><strong>(4)</strong> :existingDataField = &quot;geopotential_height&quot;;</pre>
 <ol>
   <li>Identifies this as a vertical transform</li>
   <li> Applies it to any Coordinate System that uses the z axis.</li>
   <li>The transform is explicity specified by a field in the file</li>
-  <li>The name of the  field, geopotential_height, which must have an x,y,z and optionally a time dimension. </li>
+  <li>The name of the field, geopotential_height, which must have an x,y,z and optionally a time dimension. </li>
 </ol>
 <hr>
 <h2>CoordSysBuilder Reference</h2>

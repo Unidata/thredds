@@ -56,13 +56,13 @@ netcdf example {
 } </pre>
 <p>Our motivation is to efficiently access all of the data in the record variables for some record, i.e. use a single read to fetch the ith record. This would be useful if your common data access pattern is &quot;structure-oriented&quot;, eg if you iterate over time, and read all the data for all Variables for each time step before moving on to the next time step. If the common access pattern is to read all the data for one Variable over all times, then it will be more efficient to store the Variable data contiguously, i.e. make them non-record variables. Access times  for these two patterns can  differ by an order of magnitude or more for large files. </p>
 <p>Another reason to use record variables is to take advantage of the ability to  append an unlimited number of records. This can allow you to write out realtime data as it arrives, without knowing how many records you will need. </p>
-<p>Note that in all these examples, you can use the record dimension or not. If writing both ways is possible, then you should determine (or guess) the common read access patterns to decide wether to use the record dimension or not. </p>
+<p>Note that in all these examples, you can use the record dimension or not. If writing both ways is possible, then you should determine (or guess) the common read access patterns to decide whether to use the record dimension or not. </p>
 <p>With the NetCDF-Java 2.2 library, 
 if your data has an unlimited dimension you 
 can
-create the record structure by calling <strong>NetcdfFile.addRecordStructure()</strong> or <strong>NetcdfDataset.addRecordStructure()</strong>. This will add a Structure variable named &quot;record&quot; to the file;  then you can use <strong>Structure.readStructure()</strong> to efficiently read all the data in the record Structure at once. </p>
+create the record structure by calling <strong>NetcdfFile.addRecordStructure()</strong> or <strong>NetcdfDataset.addRecordStructure()</strong>. This will add a Structure variable named &quot;record&quot; to the file;  then you can use <strong>Structure.readStructure()</strong> to efficiently read all the  data in each record with one call. </p>
 <h2>Using  Records for Point <a name="Point" id="Point"></a> Data </h2>
-<p>In this case  we store measurements taken at various &quot;point&quot; locations, where the locations differ for each measurement, and are not connected to each other. For this simple case, we might have: </p>
+<p>For Point data,   we store measurements taken at various &quot;point&quot; locations, where the locations differ for each measurement, and are not connected to each other. For this simple case, we might have: </p>
 <pre>
 netcdf pointData {
  dimensions:

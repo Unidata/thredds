@@ -5,7 +5,6 @@ Intermediate topics:
  1. Overview of the Common Data Model and API (45) 8:30-9:15
 
  2. Working with CDM files (45) 9:15 - 10:00
-    * using ToolsUI GUI
     * NetcdfFile: reading CDM files: local, HTTP, OPeNDAP, THREDDS
     * NetcdfDataset: enhanced files, coordinate systems
     * NetcdfFileWriteable: Writing NetCDF Files
