@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Untitled Document</title>
+<title>NetcdfDataset Tutorial</title>
 </head>
 
 <body>
@@ -47,7 +47,39 @@
   <li>It processes <span class="MsoNormal"> missing values and scale/offset attributes, modifying <strong>Variable</strong> data types if necessary</span></li>
   <li>It calls the appropriate Coordinate System Builder class to identify the coordinate systems and populate the Coordinate objects. </li>
 </ul>
-<h3>The Coordinate Objects</h3>
-<p>&nbsp;</p>
+<h3>Packed data variables and missing values </h3>
+<p>When you open a NetcdfDataset in <em><strong>enhanced mode</strong></em> (the default), any Variables that have the attributes <strong>scale_factor</strong> and/or <strong>add_offset </strong>are considered to be <em><strong>packed data Variables</strong></em>, whose data should be converted with the formula:</p>
+<blockquote>
+  <pre><b>unpacked_data_value = packed_data_value * scale_factor + add_offset</b> </pre>
+</blockquote>
+<p>usually the packed data type is byte or short, and the unpacked type is float or double, so the data type of the packed data Variable is promoted to float or double.</p>
+<p>Missing data is indicated by the <strong>valid_min</strong>, <strong>valid_max</strong>, <strong>valid_range</strong>, <strong>missing_value</strong> or <strong>_FillValue</strong> attributes. When a Variable has any of these attributes, the <strong>VariableDS.hasMissing()</strong> method returns true. You can test for missing values with the <strong>VariableDS.isMissing( value) </strong>method. </p>
+<p>To open a NetcdfDataset in enhanced mode, toggle the enhance button <img src="enhanceButton.jpg" width="31" height="32"> on the ToolsUI Viewer tab to ON. </p>
+<h3> Coordinate Systems </h3>
+<p>NetcdfDataset will try to identify the Coordinate Systems in the dataset by calling a CoordSystemBuilder class that knows how to interpret the Conventions for that dataset. The information is placed in Coordinate objects that follow this abstract model (see the javadoc for the specifics): </p>
+<p>:<img src="../images/CoordSys.png" width="610" height="341"></p>
+<p>To write your Coordinate System Builder, see <a href="CoordSysBuilder.html">here</a>. Currently we have CoordSysBuilders for the following Conventions:</p>
+<ul>
+  <li>ADAS</li>
+  <li>ATDRadar</li>
+  <li>AWIPS</li>
+  <li>AWIPS satellite</li>
+  <li> CF-1.0</li>
+  <li>COARDS</li>
+  <li>CSM (outdated - use CF) </li>
+  <li>EpicInsitu</li>
+  <li>GDV (default)</li>
+  <li>GIEF</li>
+  <li>IFPS</li>
+  <li>M3IO</li>
+  <li>MADIS</li>
+  <li>NUWG</li>
+  <li>WRF</li>
+  <li>_Coordinate </li>
+</ul>
+<p>When an IOSP reads in a non-netCDF file, it should choose a Convention to use to encode the Coordinate Systems. </p>
+<h3>Using ToolsUI </h3>
+<p>You can use ToolsUI <strong>CoordSys</strong> Tab to view the Coordinate Systems that have been constructued. This consists of 3 tables that show the data variables, the coordinate systems, and the coordinate axes. </p>
+<p><img src="TUIcoordSys.jpg" width="1046" height="587"></p>
 </body>
 </html>

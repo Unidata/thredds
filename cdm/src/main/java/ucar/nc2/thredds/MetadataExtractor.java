@@ -98,7 +98,7 @@ public class MetadataExtractor {
     LatLonRect llbb = null;
     CoordinateAxis1D vaxis = null;
 
-    Iterator gridsets = gridDataset.getGridSets().iterator();
+    Iterator gridsets = gridDataset.getGridsets().iterator();
     while (gridsets.hasNext()) {
       GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
       GridCoordSystem gsys = gridset.getGeoCoordSystem();
@@ -225,7 +225,7 @@ public class MetadataExtractor {
   static public DateRange extractDateRange(GridDataset gridDataset) {
     DateRange maxDateRange = null;
 
-    Iterator gridsets = gridDataset.getGridSets().iterator();
+    Iterator gridsets = gridDataset.getGridsets().iterator();
     while (gridsets.hasNext()) {
       GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
       GridCoordSystem gsys = gridset.getGeoCoordSystem();

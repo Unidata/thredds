@@ -148,7 +148,7 @@ public class GeoGridTable extends JPanel {
     if (csTable != null) {
       ArrayList csList = new ArrayList();
       ArrayList axisList = new ArrayList();
-      Iterator iter  = gridDataset.getGridSets().iterator();
+      Iterator iter  = gridDataset.getGridsets().iterator();
       while (iter.hasNext()) {
         GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
         csList.add (new GeoCoordinateSystemBean( gset));

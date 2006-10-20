@@ -768,7 +768,7 @@ public class XMLwriter {
     boolean rectified = true;
 
 
-    Iterator iter = dataset.getGridSets().iterator();
+    Iterator iter = dataset.getGridsets().iterator();
     while (iter.hasNext()) {
       GridDataset.Gridset gridset = (GridDataset.Gridset) iter.next();
 

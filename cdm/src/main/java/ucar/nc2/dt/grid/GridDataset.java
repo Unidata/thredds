@@ -135,7 +135,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
 
   private void makeRanges() {
 
-    java.util.Iterator iter = getGridSets().iterator();
+    java.util.Iterator iter = getGridsets().iterator();
     while (iter.hasNext()) {
       GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
       GridCoordSystem gcs = gset.getGeoCoordSystem();
@@ -242,7 +242,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
    *   have the same GridCoordSystem.
    * @return List of type ucar.nc2.dt.GridDataset.Gridset
    */
-  public List getGridSets(){ return new ArrayList( gridsetHash.values()); }
+  public List getGridsets(){ return new ArrayList( gridsetHash.values()); }
 
   /** find the named GeoGrid. */
   public GeoGrid findGridByName( String name) {

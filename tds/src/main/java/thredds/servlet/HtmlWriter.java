@@ -683,7 +683,7 @@ public class HtmlWriter
     GridDataset gds = new GridDataset( ds );
 
     // look for projections
-    //List gridsets = gds.getGridSets();
+    //List gridsets = gds.getGridsets();
 
     sb.append( "<tr>\r\n" );
     sb.append( "<td align=\"left\"><font size=\"+1\"><strong>" );

@@ -177,7 +177,7 @@ public class TestIDVdatasets {
       DateRange dateRange = null;
       long nx = 0, ny = 0;
 
-      java.util.Iterator iter = gridDs.getGridSets().iterator();
+      java.util.Iterator iter = gridDs.getGridsets().iterator();
       while (iter.hasNext()) {
         GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
         GridCoordSystem gcs = gset.getGeoCoordSystem();

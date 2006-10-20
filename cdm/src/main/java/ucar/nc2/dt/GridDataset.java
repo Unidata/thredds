@@ -21,7 +21,7 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
    *   have the same GridCoordSystem.
    * @return List of type GridDataset.Gridset
    */
-  public List getGridSets();
+  public List getGridsets();
 
 
   /**

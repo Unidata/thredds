@@ -113,7 +113,7 @@ public class TestReadandCount extends TestCase {
         countVertCooordAxes++;
     }
 
-    Iterator iter = gridDs.getGridSets().iterator();
+    Iterator iter = gridDs.getGridsets().iterator();
     while (iter.hasNext()) {
       GridDataset.Gridset gridset = (GridDataset.Gridset) iter.next();
       GridCoordSys gcs = gridset.getGeoCoordSys();
