@@ -34,6 +34,7 @@ Changes in version 2.2.17
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
+  * Cleanup Vertical Transforms (use variable name, not numbers in parameters), review  
   * Nexrad2 IOSP: recover from bad bzip, deal with missing data in the coordinates
   * WRF netcdf output: projection info missing when version < 2, may be wrong, give warning in userInfo. 
   * ucar.nc2.dataset.transform.VExplicitField had wrong value for existingDataField parameter.

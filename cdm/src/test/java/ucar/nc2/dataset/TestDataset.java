@@ -19,6 +19,7 @@ public class TestDataset {
     suite.addTest(new TestSuite(TestDatasetWrap.class));
 
     suite.addTest(new TestSuite(TestCoordinates.class));
+    suite.addTest(new TestSuite(TestTransforms.class));
 
     return suite;
   }

@@ -11,8 +11,8 @@ import java.io.IOException;
 public interface CoordSysBuilderIF {
   
   /**
-   * This will be called first. 
-   * @param convName the name of the Convention used to locate this CoordSysBuilderIF.
+   * Pass in the name of the Convention used to locate this CoordSysBuilderIF.
+   * @param convName the name of the Convention
    */
   public void setConventionUsed( String convName);
 

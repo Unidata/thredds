@@ -118,7 +118,7 @@ public class CSMConvention extends COARDSConvention {
       if (!addParameter2(rs, HybridSigmaPressure.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.A, ds, ctv, "A_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.B, ds, ctv, "B_var", false)) return null;
-      if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", true)) return null;
+      if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", false)) return null;
       parseInfo.append("CSMConvention made SigmaPressureCT " + ctv.getName() + "\n");
       return rs;
     }
@@ -143,7 +143,7 @@ public class CSMConvention extends COARDSConvention {
 
       if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.SIGMA, ds, ctv, "B_var", false)) return null;
-      if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", true)) return null;
+      if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", false)) return null;
       parseInfo.append("CSMConvention made SigmaCT " + ctv.getName() + "\n");
       return rs;
     }

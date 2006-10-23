@@ -210,6 +210,9 @@ public abstract class ProjectionImpl
      */
     public abstract boolean equals(Object proj);
 
+    /** Ovveride to make hashCode consistent with equals */
+    // public abstract int hashCode();
+
     /**
      * Get the name of this specific projection (also see getClassName)
      * @return name of the projection

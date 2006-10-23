@@ -31,9 +31,8 @@ import java.util.StringTokenizer;
 
 /**
  * Create a ocean_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
- *  *
+ *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class VOceanSigma extends AbstractCoordTransBuilder {
   private String s = "", eta = "", depth = "";
@@ -47,11 +46,11 @@ public class VOceanSigma extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula = getFormula(ds, ctv);
-    if (null == formula) return null;
+    String formula_terms = getFormula(ds, ctv);
+    if (null == formula_terms) return null;
 
     // parse the formula string
-    StringTokenizer stoke = new StringTokenizer(formula);
+    StringTokenizer stoke = new StringTokenizer(formula_terms);
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken();
       if (toke.equalsIgnoreCase("sigma:"))
@@ -62,12 +61,14 @@ public class VOceanSigma extends AbstractCoordTransBuilder {
         depth = stoke.nextToken();
     }
 
-    CoordinateTransform rs = new VerticalCT("oceanSigma-" + ctv.getName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
-    rs.addParameter((new Parameter("height formula", "height(x,y,z) = eta(x,y) + sigma(k)*(depth(x,y) + eta(x,y))")));
+    CoordinateTransform rs = new VerticalCT("OceanSigma_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
+    rs.addParameter(new Parameter("standard_name", getTransformName()));
+    rs.addParameter(new Parameter("formula_terms", formula_terms));
+    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y) + sigma(k)*(depth(x,y) + eta(x,y))")));
 
-    if (!addParameter(rs, OceanSigma.ETA, ds, eta, false)) return null;
-    if (!addParameter(rs, OceanSigma.SIGMA, ds, s, false)) return null;
-    if (!addParameter(rs, OceanSigma.DEPTH, ds, depth, false)) return null;
+    if (!addParameter(rs, OceanSigma.ETA, ds, eta)) return null;
+    if (!addParameter(rs, OceanSigma.SIGMA, ds, s)) return null;
+    if (!addParameter(rs, OceanSigma.DEPTH, ds, depth)) return null;
 
     return rs;
   }

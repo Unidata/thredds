@@ -9,8 +9,76 @@
 <body>
 <h1>Standard Coordinate Transforms </h1>
 <hr WIDTH="100%">
+<p>A Transform is defined by creating a Coordinate Transform Variable (see <a href="../tutorial/CoordinateAttributes.html#Example4">Example</a> and <a href="CoordinateAttributes.html">Reference</a>). A variable is a Coordinate Transform Variable if one (or both) of these is true: </p>
+<ol>
+  <li>It has a <strong>_CoordinateTransformType</strong> or <strong>_CoordinateAxisTypes</strong> attribute.</li>
+  <li>It is listed in a <strong>_CoordinateTransforms</strong> attribute from any variable in the file. </li>
+</ol>
+<p>Any Variable can be Coordinate Transform Variable, as it is just a container for attributes, i.e. does not use the data values of the Variable. It is common to use a vertical coordinate to be a Coordinate Transform Variable, and a <em>dummy variable</em> (with no useful data in it) is also common. The example here are done with dummy variables.</p>
+<p>The CF CoordSysBuilder will add the <strong>_CoordinateTransformType</strong> attribute upon recognizing  a standard_name, so adding that is optional if you are using CF Conventions. CF also requires that you use the vertical coordinate as the Coordinate Transform Variable, so that the transform will be added to any Coordinate System that uses that vertical coordinate. The CF CoordSysBuilder will thus add the <strong>_CoordinateAxes = &quot;vertCoordName&quot;</strong> attribute to indicate this. </p>
+<p>The attributes of the Coordinate Transform Variable become the parameters of the transform. The following are the currently implemented transforms, and the attributes required for each. These follow the  <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html">CF-1.0 Conventions</a> Appendix D (Vertical Transforms) and  Appendix F (Projections). See that document for details on the meanings of the formula terms. </p>
+<h2>Standard Projections</h2>
+<h3>lambert_conformal_conic</h3>
+<p>These are examples of using a dummy Coordinate Transform Variable. If you are using CF Conventions, you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
+<pre>   int Lambert_Conformal;<br>     :<strong>grid_mapping_name</strong> = &quot;lambert_conformal_conic&quot;;<br>     :<strong>standard_parallel</strong> = 33.0, 45.0; <br>     :<strong>longitude_of_central_meridian</strong> = -97.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; 
+     :<strong>false_easting</strong> = 0.0;
+     :<strong>false_northing</strong> = 0.0;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;<br>     :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;; 
+
+</pre>
+<h3>mercator</h3>
+<pre>
+  char Mercator_Projection_Grid;<br>     :<strong>grid_mapping_name</strong> = &quot;mercator&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = 110.0; // double<br>     :<strong>latitude_of_projection_origin</strong> = -25.0; // double<br>     :<strong>standard_parallel</strong> = 0.02; // double<br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;
+     :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;</pre>
+<p>This is not (yet) a standard CF projection. </p>
+<h3>  polar_stereographic</h3>
+<pre>   int Polar_Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;polar_stereographic&quot;;<br>     :<strong>straight_vertical_longitude_from_pole</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;<br>     :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;
+</pre>
+<h3>stereographic</h3>
+<pre>   char Stereographic;<br>     :<strong>Projection_Name</strong> = &quot;stereographic&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -32.0; // double<br>     :<strong>latitude_of_projection_origin</strong> = 90.0; // double<br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; // double<br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;
+     :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;
+
+</pre>
+<p>The Stereographic and Polar_Stereographic are actually the same projection. <strong>False_easting</strong> and <strong>False_northing</strong> parameters are  not yet implemented. <br>
+</p>
+<h2>Standard Vertical Transforms</h2>
+<p>These are examples of placing the Coordinate Transform parameters on the corresponding vertical coordinate (required by CF). If you are using CF Conventions, you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
+<h3>atmosphere_hybrid_sigma_pressure_coordinate</h3>
+<pre>
+  double lev(lev=26);<br>     :long_name = &quot;hybrid level at midpoints (1000*(A+B))&quot;;
+     :units = &quot;&quot;;<br>     :positive = &quot;down&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down;
+
+     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_sigma_pressure_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;a: hyam b: hybm p0: P0 ps: PS&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
+
+</pre>
+<h3>atmosphere_sigma_coordinate</h3>
+<pre>   float level(level=2);<br>     :units = &quot;&quot;;<br>     :long_name = &quot;sigma at layer midpoints&quot;;<br>     :positive = &quot;down&quot;;
+     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down&quot;;
+<br>     :<strong>standard_name</strong> = &quot;atmosphere_sigma_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;sigma: level ps: PS ptop: PTOP&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;level&quot;;<br>
+</pre>
+<h3>ocean_s_coordinate</h3>
+<pre>
+  double s_rho(s_rho=20);<br>     :long_name = &quot;S-coordinate at RHO-points&quot;;<br>     :units = &quot;&quot;;
+     :positive = &quot;up&quot;;
+     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;; 
+<br>     :<strong>standard_name</strong> = &quot;ocean_s_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;s_rho&quot;;
+
+</pre>
+<h3>ocean_sigma_coordinate</h3>
+<pre>
+   float zpos(zpos=22);<br>     :long_name = &quot;Sigma Layer&quot;;<br>     :units = &quot;&quot;;<br>     :positive = &quot;up&quot;;
+     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;;
+<br>     :<strong>standard_name</strong> = &quot;ocean_sigma_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;sigma: zpos eta: elev depth: depth&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;zpos&quot;;
+
+</pre>
+<h3>explicit_field</h3>
+<pre>
+  char ExplicitField;
+    :<strong>standard_name</strong> = &quot;explicit_field&quot;;
+    :<strong>existingDataField</strong> = &quot;ght_hybr&quot;;<br>    :<strong>_CoordinateTransformType</strong> = &quot;vertical&quot;;<br>    :<strong>_CoordinateAxes</strong> = &quot;hybr&quot;;</pre>
+<p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
+<hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 18, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 23, 2006
 </address>
 <p>&nbsp;</p>
 </body>

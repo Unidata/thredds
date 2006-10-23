@@ -29,9 +29,8 @@ import ucar.unidata.util.Parameter;
 
 /**
  * Create a Vertical Transform from an "explicit_field", where the vertical coordinate is explciitly specified as a variable.
- *  *
+ *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class VExplicitField extends AbstractCoordTransBuilder {
   public String getTransformName() {
@@ -50,6 +49,7 @@ public class VExplicitField extends AbstractCoordTransBuilder {
     String fieldName = ds.findAttValueIgnoreCase(ctv, VTfromExistingData.existingDataField, null);
     if (null == fieldName)
       throw new IllegalArgumentException("ExplicitField Vertical Transform must have attribute "+VTfromExistingData.existingDataField);
+    ct.addParameter(new Parameter("standard_name", getTransformName()));
     ct.addParameter(new Parameter(VTfromExistingData.existingDataField, fieldName));
     return ct;
   }

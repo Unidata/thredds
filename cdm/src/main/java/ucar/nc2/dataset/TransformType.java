@@ -34,7 +34,6 @@ public class TransformType {
 
   public final static TransformType Projection = new TransformType("Projection");
   public final static TransformType Vertical = new TransformType("Vertical");
-  public final static TransformType Radial = new TransformType("Radial");
 
     private String _TransformType;
     private TransformType(String s) {

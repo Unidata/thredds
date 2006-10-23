@@ -33,7 +33,6 @@ import java.util.StringTokenizer;
  * Create a atmosphere_hybrid_sigma_pressure_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
  *  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class VAtmHybridSigmaPressure extends AbstractCoordTransBuilder {
   private String a = "", b = "", ps = "", p0 = "";
@@ -47,11 +46,11 @@ public class VAtmHybridSigmaPressure extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula = getFormula(ds, ctv);
-    if (null == formula) return null;
+    String formula_terms = getFormula(ds, ctv);
+    if (null == formula_terms) return null;
 
     // parse the formula string
-    StringTokenizer stoke = new StringTokenizer(formula);
+    StringTokenizer stoke = new StringTokenizer(formula_terms);
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken();
       if (toke.equalsIgnoreCase("a:"))
@@ -64,13 +63,15 @@ public class VAtmHybridSigmaPressure extends AbstractCoordTransBuilder {
         p0 = stoke.nextToken();
     }
 
-    CoordinateTransform rs = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
-    rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
+    CoordinateTransform rs = new VerticalCT("AtmHybridSigmaPressure_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
+    rs.addParameter(new Parameter("standard_name", getTransformName()));
+    rs.addParameter(new Parameter("formula_terms", formula_terms));
 
-    if (!addParameter(rs, HybridSigmaPressure.PS, ds, ps, false)) return null;
-    if (!addParameter(rs, HybridSigmaPressure.A, ds, a, false)) return null;
-    if (!addParameter(rs, HybridSigmaPressure.B, ds, b, false)) return null;
-    if (!addParameter(rs, HybridSigmaPressure.P0, ds, p0, true)) return null;
+    rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
+    if (!addParameter(rs, HybridSigmaPressure.PS, ds, ps)) return null;
+    if (!addParameter(rs, HybridSigmaPressure.A, ds, a)) return null;
+    if (!addParameter(rs, HybridSigmaPressure.B, ds, b)) return null;
+    if (!addParameter(rs, HybridSigmaPressure.P0, ds, p0)) return null;
     return rs;
   }
 

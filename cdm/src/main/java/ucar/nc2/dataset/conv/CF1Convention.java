@@ -69,12 +69,12 @@ public class CF1Convention extends CSMConvention {
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
 
-      // look for vertical transforms
+      // look for special standard_names
       String sname = ds.findAttValueIgnoreCase(v, "standard_name", null);
       if (sname != null) {
         sname = sname.trim();
 
-        if (sname.equalsIgnoreCase("atmosphere_ln_pressure_coordinate")) {
+        if (sname.equalsIgnoreCase("atmosphere_ln_pressure_coordinate")) { // LOOK why isnt this with other Transforms?
           makeAtmLnCoordinate( ds, v);
           continue;
         }
@@ -92,7 +92,7 @@ public class CF1Convention extends CSMConvention {
         for (int j = 0; j < vertical_coords.length; j++)
           if (sname.equalsIgnoreCase(vertical_coords[j])) {
             v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
-            // v.addAttribute( new Attribute(_Coordinate.Axes", v.getName())); LOOK: may also be time dependent
+            v.addAttribute( new Attribute(_Coordinate.Axes, v.getName())); // LOOK: may also be time dependent
           }
       }
 
@@ -212,7 +212,7 @@ public class CF1Convention extends CSMConvention {
 
   /**
    * Assign CoordinateTransform objects to Coordinate Systems.
-   */
+   *
   protected void assignCoordinateTransforms(NetcdfDataset ncDataset) {
     super.assignCoordinateTransforms(ncDataset);
 
@@ -234,7 +234,7 @@ public class CF1Convention extends CSMConvention {
         }
       }
     }
-  }
+  }   */
 
   // run through all the variables in the formula, and get their domain (list of dimensions)
   private List getFormulaDomain(NetcdfDataset ds, Variable v) {

@@ -51,10 +51,21 @@ public interface CoordTransBuilderIF {
    */
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
 
-
+  /**
+   * Get the Transform name. Typically this is matched on by an attribute in the dataset.
+   * @return name of the transform.
+   */
   public String getTransformName();
+
+  /**
+   * Get the Transform Type : Vertical or Projection
+   * @return type of trrasnform
+   */
   public TransformType getTransformType();
 
+  /***
+   * Pass in a StringBuffer where error messages can be appended.
+   * @param parseInfo
+   */
   public void setErrorBuffer( StringBuffer parseInfo);
-
 }

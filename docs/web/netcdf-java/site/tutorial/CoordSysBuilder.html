@@ -190,56 +190,72 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
  }</pre>
 <pre> return null;
 }</pre>
-<h3>Creating Coordinate Transformations</h3>
-<p>A more complex task is to create Coordinate Transforms, which map a Coordinate System to a reference Coordinate System, such as lat/lon. A Coordinate Transform is typically represented by a <em><strong>Coordinate Transform Variable</strong></em>, which may be a dummy variable (ie have no data in it),  and whose attributes document the meaning and specify any needed parameters for it. For this general case, you create an object of type <strong>CoordinateTransform</strong>. The Netcdf-Java library does not further process these. There are  special cases of Coordinate Transforms that the Netcdf-Java library does process, and are needed to use other layers such as GeoGrids:</p>
-<p>The <em><strong>Projection Transformations</strong></em> are implemented by subclasses of <strong>CoordinateTransform</strong> called <strong>ProjectionCT</strong>. A ProjectionCT has an instance of a <strong>ucar.unidata.geoloc.Projection</strong>, which maps the GeoX and GeoY coordinates to latitude and longitude. This then allows data that is not on a latitude, longitude Coordinate System to be georeferenced, and is necessary in creating a GeoGrid. Look in the <strong>ucar.unidata.geoloc.proj </strong>package to see which projections have been implemented. These are mostly taken from  the CF-1 Conventions (Appendix F). </p>
-<p>The <em><strong>Vertical Transformations</strong></em> are implemented by subclasses of <strong>CoordinateTransform</strong> called <strong>VerticalCT</strong>. A <strong>VerticalCT</strong> has an instance of a <strong>ucar.unidata.geoloc.vertical.VerticalTransform</strong>, which maps the GeoZ coordinate to height or pressure.  This is not necessary in creating a GeoGrid, but is needed for programs like the IDV to correctly display your data. Look in the <strong>ucar.unidata.geoloc.vertical </strong>package to see which vertical transforms have been implemented, these are taken from the CF-1 Conventions (Appendix D). </p>
-<p>You can create the Coordinate Transform objects yourself, by overriding the <strong>makeCoordinateTransforms</strong>() and <strong>assignCoordinateTransforms</strong>() methods in CoordSysBuilder. The recommended way to do this, however, is to use a <em><strong>Coordinate Transform Variable, </strong></em>and represent the parameters of the standard projections and vertical transformations in a standard way defined by the CF Conventions. Here is an example of one way to do that: </p>
-<pre>public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {<br>   this.conventionName = &quot;ARPS/ADAS&quot;;</pre>
-<pre><strong>(1)</strong>String projName = ds.findAttValueIgnoreCase(null, &quot;grid_mapping_name&quot;, null);
-   double lat_origin = findAttributeDouble( ds, &quot;latitude_of_projection_origin&quot;);
-   double lon_origin = findAttributeDouble( ds, &quot;longitude_of_central_meridian&quot;);
-   double false_easting = findAttributeDouble( ds, &quot;false_easting&quot;);
-   double false_northing = findAttributeDouble( ds, &quot;false_northing&quot;);</pre>
-<pre>   Attribute att2 = ds.findGlobalAttributeIgnoreCase(&quot;standard_parallel&quot;);
-   double lat1 = att2.getNumericValue().doubleValue();
-   double lat2 = (att2.getLength() &gt; 1) ? att2.getNumericValue(1).doubleValue() : lat1;
+<h3><a name="CoordTrans"></a>Creating Coordinate Transformations</h3>
+<p>A more complex task is to create Coordinate Transforms, which map your coordinates to reference coordinates, such as lat/lon. A Coordinate Transform is typically represented by a <em><strong>Coordinate Transform Variable</strong></em>, which may be a dummy variable (ie has no data in it),  and whose attributes document the meaning and specify any needed parameters for it. You can create arbitrary transforms by  creating <strong>ucar.nc2.dataset.</strong><strong>CoordinateTransform</strong> objects, which your code will have access to when it opens a NetcdfDataset. </p>
+<p>However, for your Transform to be used by the Netcdf Java library and standard applications built on top of it, the<strong> CoordinateTransform</strong> must have a reference to a <strong>ucar.unidata.geoloc.Projection</strong> or a <strong>ucar.unidata.geoloc.vertical.VerticalTransform</strong> object which knows how to do the actual mathematical transformation. The Netcdf-Java library has a number of these, mostly following the CF-1.0 specification (Appendix F for projections, Appendix D for vertical transforms). You can also <a href="CoordTransBuilder.html">write your own implementation</a> and add them at run time. </p>
+<p>For this lesson, we will concentrate on what your CoordSysBuilder  needs to do to use an existing standard or user written Projection or VerticalTransform class. </p>
+<p>You can create the Coordinate Transform objects yourself, by overriding the <strong>makeCoordinateTransforms</strong>() and <strong>assignCoordinateTransforms</strong>() methods in CoordSysBuilder. Much easier is to  use the existing machinery and create a <em><strong>Coordinate Transform Variable </strong></em>which represents the parameters of the transform in a  way recognized by a <strong>CoordTransBuilder </strong>class.</p>
+<p>Here is an example of one way to do that: </p>
+<pre> public void <strong>augmentDataset</strong>( NetcdfDataset ds, CancelTask cancelTask) throws IOException {<br>
+   // read global parameters
+<strong>1) </strong>double lat_origin = findAttributeDouble( ds, &quot;LAT0&quot;);
+   double lon_origin = findAttributeDouble( ds, &quot;LON0&quot;);
+   double scale = findAttributeDouble( ds, &quot;SCALE&quot;);
+   if (Double.isNaN(scale)) scale = 1.0; 
 
-   Variable coord_var = ds.findVariable(&quot;x_stag&quot;);<br>   String units = ds.findAttValueIgnoreCase(coord_var, &quot;units&quot;, null);
-
-   if (projName.equalsIgnoreCase(&quot;lambert_conformal_conic&quot;)) {
-<strong>(2)</strong>  ProjectionImpl proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing, units);
-<strong>(3)</strong>  ProjectionCT projCT = new ProjectionCT(&quot;Projection&quot;, &quot;FGDC&quot;, proj);
-
-<strong>(4)</strong>  VariableDS v = makeCoordinateTransformVariable(ds, projCT);
-<strong>(5)</strong>  v.addAttribute( new Attribute(&quot;_CoordinateAxisTypes&quot;, &quot;GeoX GeoY&quot;));
-<strong>(6)</strong>  ds.addVariable(null, v);
-
-   } else {
-<strong>(7)</strong>  parseInfo.append(&quot;ERROR: unknown projection type = &quot;+projName);
-   }
-
-<strong>(8)</strong>ds.finish();
+<strong>2)</strong> VariableDS v = new <strong>VariableDS</strong>( ds, null, null, &quot;ProjectionPS&quot;, DataType.CHAR, &quot;&quot;, null, null);
+   v.addAttribute( new Attribute(&quot;grid_mapping_name&quot;, &quot;polar_stereographic&quot;));
+   v.addAttribute( new Attribute(&quot;straight_vertical_longitude_from_pole&quot;, lon_origin));
+   v.addAttribute( new Attribute(&quot;latitude_of_projection_origin&quot;, lat_origin));
+   v.addAttribute( new Attribute(&quot;scale_factor_at_projection_origin&quot;, scale)); 
+   
+<strong>3) </strong>v.addAttribute( new Attribute(_Coordinate.TransformType, TransformType.Projection.toString());
+<strong>4) </strong>v.addAttribute( new Attribute(_Coordinate.AxisTypes, &quot;GeoX GeoY&quot;);
+</pre>
+<pre> // fake data
+<strong>5)</strong> Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {}, new char[] {' '});
+   v.setCachedData(data, true);</pre>
+<pre><strong>6) </strong>ds.addVariable(v);
+   ds.finish();
 }
 </pre>
 <ol>
-  <li>The projection values are stored as global attributes, for example the name of the projection is stored as the value of the global <strong>grid_mapping_name</strong> attribute. </li>
-  <li>A  <strong>ucar.unidata.geoloc.projection.LambertConformal</strong> object is created.</li>
-  <li>A <strong>ProjectionCT</strong> object is created.</li>
-  <li>A  Coordinate Transform Variable is created, using a utility method in the <strong>CoordSysBuilder</strong> class.</li>
-  <li>The <strong>_CoordinateAxisTypes</strong> attribute indicates that the transform is to be used for all Coordinate Systems that have a <strong>GeoX</strong> and <strong>GeoY</strong> coordinate axis.</li>
-  <li>The  Coordinate Transform Variable is added to the dataset.</li>
-  <li>An example of putting error messasges into the parseInfo StringBuffer. </li>
-  <li>When adding new variables to a dataset, you must call finish() when all done. </li>
-</ol>
-<h3>Example  for 3D explicit field: </h3>
-<pre>   char VerticalTransform;<br><strong>(1)</strong> :_CoordinateTransformType = &quot;vertical&quot;;<br><strong>(2)</strong> :_CoordinateAxes = &quot;z&quot;;
-<strong>(3)</strong> :transform_type = &quot;explicit_field&quot;;<br><strong>(4)</strong> :existingDataField = &quot;geopotential_height&quot;;</pre>
+  <li>Read the projection values that happen to be stored as non-standard global attributes in your dataset.</li>
+  <li>A Coordinate Transform Variable is created, and the parameters are renamed according to the CF-1.0 </li>
+  <li>The <strong>_CoordinateTransformType</strong> identifies this variable unambiguously as a Coordinate Transform Variable.</li>
+  <li>The <strong>_CoordinateAxisTypes</strong> attribute indicates that the transform is to be used for all Coordinate Systems that have a <strong>GeoX</strong> and <strong>GeoY</strong> coordinate axis. To be CF compliant, you would have to identify all data variables and add the attribute <strong>grid_mapping="ProjectionPS" </strong>to each. </li>
+  <li>Fake data is added, in case someone accidently tries to read it. </li>
+  <li>The Coordinate Transform Variable is added to the dataset. When adding new variables to a dataset, you must call finish() when all done.</li>
+  </ol>
+<p>  This creates a <em><strong>Coordinate Transform Variable</strong></em> in your dataset that looks like this: </p>
+<pre>
+ char Projection;<br>   :grid_mapping_name = &quot;polar_stereographic&quot;;<br>   :straight_vertical_longitude_from_pole = &quot;-150.0&quot;;<br>   :latitude_of_projection_origin = &quot;90.0&quot;;<br>   :scale_factor_at_projection_origin = &quot;0.996&quot;;<br>   :_CoordinateTransformType = &quot;Projection&quot;;<br>   :_CoordinateAxisTypes = &quot;GeoX GeoY&quot;;
+</pre>
+<p>A similar way to do this, which creates the same result,  creates <strong>ProjectionImpl</strong> and <strong>ProjectionCT</strong> objects, and calls the <strong>makeCoordinateTransformVariable</strong> utility method in CoordSysBuilder to handle the details:</p>
+<pre> public void <strong>augmentDataset</strong>( NetcdfDataset ds, CancelTask cancelTask) throws IOException {<br>
+   // read global parameters
+<strong>1) </strong>double lat_origin = findAttributeDouble( ds, &quot;LAT0&quot;);
+   double lon_origin = findAttributeDouble( ds, &quot;LON0&quot;);
+   double scale = findAttributeDouble( ds, &quot;SCALE&quot;);
+   if (Double.isNaN(scale)) scale = 1.0; 
+
+<strong>2) </strong>ProjectionImpl proj = new <strong>ucar.unidata.geoloc.projection.Stereographic</strong>( lat_origin, lon_origin, scale);
+<strong>3) </strong>ProjectionCT projCT = new <strong>ProjectionCT</strong>(&quot;ProjectionPS&quot;, &quot;FGDC&quot;, proj);
+
+<strong>4) </strong>VariableDS v = <strong>makeCoordinateTransformVariable</strong>(ds, projCT);
+<strong>5) </strong>v.addAttribute( new Attribute(_Coordinate.AxisTypes, &quot;GeoX GeoY&quot;));
+</pre>
+<pre><strong>6) </strong>ds.addVariable(v);
+   ds.finish();
+}
+</pre>
 <ol>
-  <li>Identifies this as a vertical transform</li>
-  <li> Applies it to any Coordinate System that uses the z axis.</li>
-  <li>The transform is explicity specified by a field in the file</li>
-  <li>The name of the  field, geopotential_height, which must have an x,y,z and optionally a time dimension. </li>
+  <li>Read the projection values that happen to be stored as non-standard global attributes in your dataset.</li>
+  <li>A <strong>ProjectionImpl</strong> is created out of those parameters.</li>
+  <li>A <strong>ProjectionCT</strong> wraps the <strong>ProjectionImpl</strong></li>
+  <li>The<strong> makeCoordinateTransformVariable </strong>method handles the details of creating the Coordinate Transform Variable. The ProjectionImpl knows what the standard names of its parameters are. </li>
+  <li>The <strong>_CoordinateAxisTypes</strong> attribute indicates that the transform is to be used for all Coordinate Systems that have a <strong>GeoX</strong> and <strong>GeoY</strong> coordinate axis. </li>
+  <li>The Coordinate Transform Variable is added to the dataset. </li>
 </ol>
 <hr>
 <h2>CoordSysBuilder Reference</h2>
@@ -288,7 +304,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 <p>To work at this level, you will need to study the source code of <strong>CoordSysBuilder</strong>, and existing subclasses in the <strong>ucar.nc2.dataset.conv</strong> package. As a subclass, you will have access to the list of VarProcess objects, which wrap each variable in the Dataset, and keep track of various information about them. </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 20, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 21, 2006
 </address>
 <p>&nbsp;</p>
 </body>

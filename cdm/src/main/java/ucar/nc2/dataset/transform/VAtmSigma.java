@@ -33,7 +33,6 @@ import java.util.StringTokenizer;
  * Create a atmosphere_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
  *  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class VAtmSigma extends AbstractCoordTransBuilder {
   private String sigma="", ps="", ptop="";
@@ -47,11 +46,11 @@ public class VAtmSigma extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula = getFormula(ds, ctv);
-    if (null == formula) return null;
+    String formula_terms = getFormula(ds, ctv);
+    if (null == formula_terms) return null;
 
     // parse the formula string
-    StringTokenizer stoke = new StringTokenizer(formula);
+    StringTokenizer stoke = new StringTokenizer(formula_terms);
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken();
       if (toke.equalsIgnoreCase("sigma:"))
@@ -62,12 +61,15 @@ public class VAtmSigma extends AbstractCoordTransBuilder {
         ptop = stoke.nextToken();
     }
 
-    CoordinateTransform rs = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.Sigma, this);
+    CoordinateTransform rs = new VerticalCT("AtmSigma_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.Sigma, this);
+    rs.addParameter(new Parameter("standard_name", getTransformName()));
+    rs.addParameter(new Parameter("formula_terms", formula_terms));
+
     rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
 
-    if (!addParameter( rs, AtmosSigma.PS, ds, ps, false)) return null;
-    if (!addParameter( rs, AtmosSigma.SIGMA, ds, sigma, false)) return null;
-    if (!addParameter( rs, AtmosSigma.PTOP, ds, ptop, true)) return null;
+    if (!addParameter( rs, AtmosSigma.PS, ds, ps)) return null;
+    if (!addParameter( rs, AtmosSigma.SIGMA, ds, sigma)) return null;
+    if (!addParameter( rs, AtmosSigma.PTOP, ds, ptop)) return null;
 
     return rs;
   }

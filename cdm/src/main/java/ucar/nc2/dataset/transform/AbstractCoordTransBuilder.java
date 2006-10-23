@@ -99,7 +99,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
    * @param readData  if true, read data and use a  s parameter value
    * @return true if success, false is failed
    */
-  protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varName, boolean readData) {
+  protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varName) {
     Variable dataVar;
     if (null == (dataVar = ds.findVariable(varName))) {
       if (null != errBuffer)
@@ -107,7 +107,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
       return false;
     }
 
-    if (readData) {
+    /* if (readData) {
       Array data;
       try {
         data = dataVar.read();
@@ -119,7 +119,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
       double[] vals = (double []) data.get1DJavaArray(double.class);
       rs.addParameter(new Parameter(paramName, vals));
 
-    } else
+    } else */
       rs.addParameter(new Parameter(paramName, varName));
 
     return true;

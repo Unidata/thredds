@@ -86,19 +86,3 @@ public class VTfromExistingData extends VerticalTransformImpl {
         return ddata;
     }
 }
-
-/* Change History:
-   $Log: VTfromExistingData.java,v $
-   Revision 1.4  2006/02/16 23:02:40  caron
-   *** empty log message ***
-
-   Revision 1.3  2006/02/07 13:28:53  caron
-   VerticalTransform subsetting
-
-   Revision 1.2  2005/08/11 22:42:13  dmurray
-   jindent (I'll leave the javadoc to those who forgot to)
-
-   Revision 1.1  2005/03/11 23:02:15  caron
-   *** empty log message ***
-
-*/

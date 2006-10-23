@@ -31,9 +31,8 @@ import java.util.StringTokenizer;
 
 /**
  * Create a ocean_s_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
- *  *
+ *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class VOceanS extends AbstractCoordTransBuilder {
   private String s = "", eta = "", depth = "", a = "", b = "", depth_c = "";
@@ -47,11 +46,11 @@ public class VOceanS extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    String formula = getFormula(ds, ctv);
-    if (null == formula) return null;
+    String formula_terms = getFormula(ds, ctv);
+    if (null == formula_terms) return null;
 
     // :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
-    StringTokenizer stoke = new StringTokenizer(formula);
+    StringTokenizer stoke = new StringTokenizer(formula_terms);
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken();
       if (toke.equalsIgnoreCase("s:"))
@@ -68,17 +67,19 @@ public class VOceanS extends AbstractCoordTransBuilder {
         depth_c = stoke.nextToken();
     }
 
-    CoordinateTransform rs = new VerticalCT("oceanS-" + ctv.getName(), getTransformName(), VerticalCT.Type.OceanS, this);
-    rs.addParameter((new Parameter("height formula", "height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)")));
-    rs.addParameter((new Parameter("C formula", "C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)")));
+    CoordinateTransform rs = new VerticalCT("OceanS_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.OceanS, this);
+    rs.addParameter(new Parameter("standard_name", getTransformName()));
+    rs.addParameter(new Parameter("formula_terms", formula_terms));
+    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)")));
+    rs.addParameter((new Parameter("C_formula", "C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)")));
 
-    if (!addParameter(rs, OceanS.ETA, ds, eta, false)) return null;
-    if (!addParameter(rs, OceanS.S, ds, s, false)) return null;
-    if (!addParameter(rs, OceanS.DEPTH, ds, depth, false)) return null;
+    if (!addParameter(rs, OceanS.ETA, ds, eta)) return null;
+    if (!addParameter(rs, OceanS.S, ds, s)) return null;
+    if (!addParameter(rs, OceanS.DEPTH, ds, depth)) return null;
 
-    if (!addParameter(rs, OceanS.DEPTH_C, ds, depth_c, true)) return null;
-    if (!addParameter(rs, OceanS.A, ds, a, true)) return null;
-    if (!addParameter(rs, OceanS.B, ds, b, true)) return null;
+    if (!addParameter(rs, OceanS.DEPTH_C, ds, depth_c)) return null;
+    if (!addParameter(rs, OceanS.A, ds, a)) return null;
+    if (!addParameter(rs, OceanS.B, ds, b)) return null;
 
     return rs;
   }
