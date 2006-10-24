@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h1><strong>Forecast Model Run Collection</strong> Aggregation (DRAFT) </h1>
+<h1><strong>Forecast Model Run Collection</strong> Aggregation</h1>
 <p>See also: <a href="AnnotatedSchema.html">Annotated NcML Schema</a> </p>
 <h2>1. Definitions </h2>
 <p>A <em><strong>forecast model </strong></em>is a scientific model that predicts the time evolution of a system starting from some initial state. Its output is a time series for each of its variables, which may be state variables or derived variables. The model is often run periodically, so one may have a collection of different runs. The collection of data output for a particular model run is called a <em><strong>forecast model run</strong></em>, which may be output in a single file or in several files. The model is run periodically, and so one may have a <em><strong>collection of forecast model runs</strong></em><em><strong>,</strong></em> which we assume can be uniquely identified by the start of the model run, called the model<em><strong> run time</strong></em>, also called the <em><strong>analysis time </strong></em>or<em><strong> generating time</strong></em>.</p>
@@ -155,9 +155,32 @@
 <p>The <strong>getForecastTimeDataset</strong>() method will return a <strong><em>constant forecast date dataset </em></strong> representing one of the <em>horizontal</em> columns in Figure 1. The <strong>getForecastDates() </strong>method returns a list of the valid forecast times. This kind of dataset has successively shorter forecasts of the same endpoint. The final timestep  is  a nowcast (where T=0 for the run).&nbsp;&nbsp; </p>
 <p>The <strong>getForecastOffsetDataset</strong>() method will return a <strong><em>constant forecast offset dataset </em></strong> representing one of the <em>diagonals</em>  in Figure 1. The <strong>getForecastOffsets() </strong>method returns a list of the valid forecast offsets, normally  in units of hours. For example, in Figure 1, you might compare the nowcast dataset (offset = 0, purple diagonal) from the 3 day forecast dataset (dark blue diagonal), to track how well the model does in its 3 day forecasts.</p>
 <p>Finally, the <strong>getBestTimeSeries</strong>() method creates the &quot;best&quot; time series over the collection. In Figure 1 it will include the nowcasts (purple diagonal) as well as the latest model forecasts (rightmost column). </p>
+<h2>5. Using FMRC with the TDS <strong>datasetFmrc</strong> element </h2>
+<p>A <strong>forecastModelRunCollection</strong> aggregation can be directly embedded into a Thredds Data Server (TDS) catalog, in conjuction with a special TDS element called a <strong>datasetFmrc</strong>. This creates a set of special datasets that is served by the TDS server, each dataset corresponding to the 1D time  views of the <em>ucar.nc2.dt.fmrc.ForecastModelRunCollection</em> dataset described in section 4 above.</p>
+<p>Example:</p>
+<pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
+         xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; 
+         name=&quot;THREDDS Data Server&quot; version=&quot;1.0.1&quot;&gt;
+
+<strong>1)</strong>&lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
+
+<strong>2)</strong>&lt;<strong>datasetFmrc</strong> name=&quot;NCEP-RUC-CONUS_80km&quot; path=&quot;<strong>fmrc/NCEP/RUC/CONUS_80km</strong>&quot; &gt;<br><strong>3)</strong>  &lt;metadata inherited=&quot;true&quot;&gt;<br>      &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;<br>      &lt;documentation type=&quot;summary&quot;&gt;NCEP Model output Rapid Update Cycle (RUC). &lt;/documentation<br>    &lt;/metadata&gt;<br>    &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; enhance=&quot;true&quot;&gt;<br><strong>4)</strong>    &lt;aggregation dimName=&quot;<strong>run</strong>&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot; recheckEvery=&quot;<strong>10 min</strong>&quot;&gt;<br><strong>5)</strong>      &lt;scan location=&quot;<strong>/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/</strong>&quot; suffix=&quot;<strong>.grib1</strong>&quot; subdirs=&quot;true&quot; 
+<strong>6)</strong>            dateFormatMark=&quot;RUC_CONUS_80km_#yyyyMMdd_HHmm&quot; olderThan=&quot;5 min&quot; /&gt;<br>      &lt;/aggregation&gt;<br>    &lt;/netcdf&gt;<br>  &lt;/datasetFmrc&gt;
+&lt;/catalog&gt;</pre>
+<ol>
+  <li>An OPENDAP service is defined called <strong><em>ncdods</em></strong>. </li>
+  <li>A THREDDS <strong>datasetFmrc</strong> is defined, whose contained datasets will all have a path starting with <strong>fmrc/NCEP/RUC/CONUS_80km</strong>. </li>
+  <li>All the metadata contained here will be inherited by the contained datasets.</li>
+  <li>A forecastModelRunCollection aggregation is defined, with runTime dimension <em><strong>run</strong></em>. New files will be looked for 10 minutes.</li>
+  <li>All the files in the directory <em><strong>/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/</strong><strong> </strong></em>and its subdirectories that end with <em><strong>.grib1</strong></em> will be scanned to create the aggregation.</li>
+  <li>The runTime dates will be created from the filenames my matching on the dateFormatMark. Only files whose last modified date is older than 5 minuntes will be used.</li>
+</ol>
+<p>The contained datasets include the resulting 2D time dimension dataset, as well as the 1D time  views of the <em>ucar.nc2.dt.fmrc.ForecastModelRunCollection</em> dataset described in section 4 above, as seen in the resulting TDS html page for that dataset: </p>
+<p><img src="fmrcWeb.jpg" width="804" height="392"></p>
+<p>&nbsp; </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 18, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 23, 2006
 </address>
 </body>
 </html>
