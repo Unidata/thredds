@@ -1,16 +1,98 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Untitled Document</title>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <title>Untitled Document</title>
 </head>
-
 <body>
 <h1>Tutorial: The Radial Scientific Datatype</h1>
 <h3>The Radial Datatype</h3>
-<p><em><strong>Radial Datatype</strong></em> uses polar coordinates (elevation, azimuth, distance) to describe the location of its points in space. </p>
-<p>A <em><strong>Radial DatasetSweep </strong></em>has a collection of <em><strong>Radial Variables. </strong></em>The data in each Variable is organized into <em><strong>sweeps</strong></em>. A sweep is a connected set of <em><strong>radials</strong></em>. All the radials in a sweep are assumed to have the same number of gates and the same <em><strong>beam width</strong></em> and <em><strong>nyquist frequency</strong></em>. A <em><strong>radial</strong></em> is a set of data sampled along a straight line at constant intervals called the<strong> gate size</strong>. The radial's geometry is described by an <em><strong>elevation</strong></em> and <em><strong>azimuth angles</strong></em> reletive to some origin. </p>
-<p><img src="../images/Radial.png" width="303" height="399"></p>
+<p><em><strong>Radial Datatype</strong></em> uses polar coordinates
+(elevation, azimuth, distance) to describe the location of its points
+in space, and it is referred as <em><strong>Radial Coordinate System</strong></em>.
+A <em><strong>Radial Coordinate System</strong></em> has a <strong>Elevation</strong>,
+<strong>Azimuth</strong>, and <strong>Distance</strong> coordinate
+axis. It may also has a <strong>Time</strong> coordinate axis.
+Generally, in our level II and level III radar products, there is a
+time variable at radial (elevation, azimuth), or sweep (elevation)
+level, so it is considered as a variable, rather than coordinate axis. </p>
+<p>A <em><strong>RadialDatasetSweep </strong></em>has a collection of
+<em><strong>Radial Variables. </strong></em>The data in each Variable
+is organized into <em><strong>sweeps</strong></em>. A sweep is a
+connected set of <em><strong>radials</strong></em>. All the radials in
+a sweep are assumed to have the same number of gates and the same <em><strong>beam
+width</strong></em> and <em><strong>nyquist frequency</strong></em>. A
+<em><strong>radial</strong></em> is a set of data sampled along a
+straight line at constant intervals called the<strong> gate size</strong>.
+The radial's geometry is described by an <em><strong>elevation</strong></em>
+and <em><strong>azimuth angles</strong></em> relative to some origin. </p>
+<p>A <em><strong>RadialDatasetSweep</strong></em> is a <em>NetcdfDataset</em>
+whose <em>Radials</em> have been identified and grouped into <em><strong>Sweeps</strong></em>
+based on Radial Coordinate Systems. Here is the UML for the <em>RadialDatasetSweep</em>
+interface classes, found in the <strong>ucar.nc2.dt</strong> package: </p>
+<p><img src="../images/Radial.png" height="399" width="303"></p>
+<h3>&nbsp;</h3>
+<h3>Opening and using a RadialDatasetSweep</h3>
+<p class="MsoNormal"><span style=""><span style=""><span style=""> <strong>ucar.nc2.dt.RadialDatasetSweep
+</strong>is an interface, we use the concrete class from the package </span></span></span><span
+ style=""><span style=""><span style=""><o:p><span style=""><span
+ style=""><span style=""><strong>ucar.nc2.dt.radial</strong> to open a
+Radial Dataset:</span></span></span></o:p></span></span></span></p>
+<pre class="MsoNormal"><span style=""><span class="CODE"><span style="">&nbsp; </span>RadialDatasetSweepFactory datasetFactory  = <strong>new ucar.nc2.dt.radial.RadialDatasetSweepFactory()</strong>;<o:p></o:p></span></span><span
+ style=""><span style=""><span style=""><o:p></o:p></span></span></span><span
+ style=""><span style=""><span style=""><span
+ style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span></pre>
+<pre class="MsoNormal"><span style=""><span class="CODE"><span style="">&nbsp; </span>RadialDatasetSweep rds = <strong>datasetFactory.open( fileIn, null);</strong><o:p></o:p></span></span><span
+ style=""><span style=""><span style=""><o:p></o:p></span></span></span><span
+ style=""><span style=""><span style=""><span
+ style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span></pre>
+<p class="MsoNormal"><span style=""><span style=""><span style="">A <b>RadialDatasetSweepFactory</b>
+wraps three RadialDatasetSweep classes: <strong>ucar.nc2.dt.radial.Nids2Dataset</strong>,
+<strong>ucar.nc2.dt.radial.LevelII2Dataset</strong>, and <strong>ucar.nc2.dt.radial.Dorade2Dataset</strong>.
+It opens a radial dataset with an appropriate class, and can be
+extended to cover more radial products.</span></span></span><span
+ style=""><span style=""><span style=""><o:p></o:p></span></span></span></p>
+<p class="MsoNormal"><span style=""><span style=""><span style="">If
+the radar is stationary, <i>isStationary() </i>returns true, and <i>getCommonOrigin()
+</i> returns the earth location of radar. If the radar product has more
+than one sweep, <i>isVolume() </i> will return 1. The <i>getDataVariables</i>
+returns the list of variables, for each variable, <i>getNumSweeps()</i>,
+<i>getSweep(int sweepNum)</i>, and <i>readAllData()</i> is used to
+handle the data variable at the sweep level, inside each sweep, <i>getRadialNumber()</i>,
+</span></span></span><span style=""><span style=""><span style=""><i>getGateNumber()</i>,
+</span></span></span><span style=""><span style=""><span style=""><i>getElevation(int
+radial)</i>, <i>getTime(int radial)</i>, and<i> readData(int radial)</i>
+returns all information associated with the radial object. </span></span></span><span
+ style=""><span style=""><span style=""><span
+ style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span><span
+ style=""><span style=""><span style=""><span class="CODE"><span
+ style="font-size: 8pt;"><o:p></o:p></span></span></span></span></span><span
+ style=""><span style=""><span style=""><o:p></o:p></span></span></span></p>
+<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p></o:p></span></span></span></p>
+<h3 class="MsoNormal">Using ToolsUI to look at Radial Dataset</h3>
+<p class="MsoNormal">You can use ToolsUI <strong>Radial</strong> Tab
+to view Radial Datasets. This consists of 2 tables that show the Radial
+DataTypes, and information of 9 radial sweeps associated with the
+radial variable Reflectivity. </p>
+<img alt="toolUI view" src="tooluiRadial.png"
+ style="width: 1033px; height: 522px;">
+<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><br>
+Use the IDVto display the Radial Dataset of a level II product, showing
+3D sweep of elevation angle 0.5 degree:<br>
+<br>
+</o:p></span></span></span></p>
+<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><img
+ alt="3DSweep" src="IDV3DSweep.png" style="width: 912px; height: 614px;"><br>
+</o:p></span></span></span></p>
+<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><br>
+and volume image of Reflectivity which is composed of 9 elevation
+sweeps:<br>
+<br>
+</o:p></span></span></span></p>
+<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><img
+ alt="IDV volume" src="IDVVolume.png"
+ style="width: 912px; height: 614px;"><br>
+</o:p></span></span></span></p>
 </body>
 </html>
