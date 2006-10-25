@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Digital Libraries</title>
+</head>
+
+<body>
+
+<h1><img src="../THREDDSlogo.jpg" width="67" height="54">Digital Library Harvesting Tutorial </h1>
+<hr>
+<h2>OAI Harvesting </h2>
+<ul>
+  <li>Install the DLESE OAI Provider. We will provide a special version, already configured for use with the TDS.
+    <ul>
+      <li>modify 
+      <strong>/webapps/oai/oai_requests/ListMetadataFormats.jsp</strong></li>
+      <li>changed <strong>updateFrequency</strong> in web.xml to 1440 (1 day). 0 = off. </li>
+    </ul>
+  </li>
+  <li>The OAI URL will be  <a href="/oai/provider">http://servername:port/oai/provider</a></li>
+</ul>
+<h2>Catalog Harvesting</h2>
+<ul>
+  <li> <a href="/thredds/DLwriter?type=DIF">http://servername:port/thredds/DLwriter?type=(ADN|DIF)&amp;[catalog=<em>catalog.xml</em>]</a></li>
+  <li>Default catalog is /thredds/idd/models.xml</li>
+</ul>
+<h2>Related Documents</h2>
+<ul>
+  <li> <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/DL.html">Exporting THREDDS Datasets to Digital Libraries</a></li>
+</ul>
+<hr WIDTH="100%">
+<address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 24, 2006
+</address>
+<p>&nbsp;
+</p>
+</body>
+</html>

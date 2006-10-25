@@ -2,9 +2,9 @@ THREDDS Data Server (TDS) Administration for system administrators and data prov
 
 First Day
 
-1. TDS Overview (45) 8:30 - 9:15
+1. TDS Overview (30) 8:30 - 9:00
 
- What can it do?
+What can it do?
    HTTP fileServer
    OPeNDAP 
    WCS   
@@ -18,75 +18,79 @@ First Day
   Browser
   ToolsUI
   IDV
+ 
+2. Participant introductions (30) 9:00 - 9:30
 
-2. Getting Started (45) 9:15 - 10:00
-   Tomcat Installation (Robb)
-   TDS Installation
-   Troubleshooting
-   
-(break 15 min)
+3. Installation (30) 9:30 - 10:00 (Robb)
+  JDK installation
+  Tomcat Installation
+  TDS Installation
+  (break 15 min)
 
-3. Writing and maintaining catalogs (75) 10:30 - 11:45
-  - Catalog basics (John/Ethan)
-  - DatasetScan (Ethan)
-  - Cataloggen (Ethan)
+4. Writing and maintaining catalogs (90) 10:15 - 11:45
+ - Catalog Primer / XML / ToolsUI
+ - TDS Catalogs
+ - DatasetScan (Ethan)
+ - Cataloggen (Ethan)
 
 Lunch break 11:45-1
 
-4. TDS Management (60) 1:00 - 2:00
-  - Tomcat Management - Directory layout
-  - Security
-  - TDS Management - Directory layout
-  - Remote Management
+5. TDS and NcML (60) 1:00 - 2:00
+ - Dataset Modification/Dataset Aggregation
+ - FMRC Aggregation  
  
-5. TDS and NcML (60) 2:00 - 3:00
-  - Dataset Modification/Dataset Aggregation
-  - FMRC Aggregation 
-  
+6. Enhanced Catalogs (60) 2:00 - 3:00
+ - Metadata standards (Ethan)
+ - Metadata Extraction (Ethan)
+ - ToolsUI Configurator (?)
+ - Digital Library Harvesting
+ 
 (break 15 min)
-
-6. Enhanced Catalogs (60) 3:15 - 4:15
-  - Metadata standards (Ethan)
-  - Metadata Extraction (Ethan)
-  - Digital Library Harvesting
-  - ToolsUI Configurator (?)
-  
-7. Questions/Discussion 4:15 - 5:00
+ 
+7. TDS Management I (60) 3:15 - 4:15
+ - Directory layout
+ - Tomcat Management: server.xml, users.xml, management tools
+ - robots.txt, favicon.ico
+ 
+Questions/Discussion 4:15 - 5:00
 
 ---------------------
 
-Second Day 
+Second Day
 
-8. Advanced Tomcat management (60) 8:30-9:30
-   * web.xml
-   * Logging
-   * Performance
+8. TDS Security (90) 8:30 - 10:00
+ - Tomcat Security
+ - Remote Management
+ - Restricting Access by IP address
+ 
+(break 15 min)
 
-9. Advanced TDS management (90) 9:30 - 11
-   * Logging
-   * Debugging
-   
- (break 15 min)
-   
-   * params.xml
-   * Data Roots
-   * extra.catalogs
-   * caching
-   
-10. Serving Datasets - Examples I (60) 11 - 12
-   Case Studies/IDV (Jeff W) (30)
-   LEAD (Tom) (30)
+9. Advanced TDS management (90) 10:15 - 11:30
+  * Logging
+  * Debugging
+  * Performance   * params.xml
+  * Data Roots
+  * extra.catalogs
+  * caching
+  Lunch break 11:30-1
+  10. Serving Datasets - Examples I (30) 1:00-1:30 (Jeff W)
+  Case Studies/IDV (30)
 
-Lunch break
+11. Serving Datasets - Examples II (30) 1:30-2:00  (Tom B)
+  LEAD (30)
 
-11. Serving Datasets - Examples II (60) 1-2
-   ??
-
-12. Serving IDD data with TDS (Robb) (60) 2-3
+12. Serving IDD data with TDS (60) 2:00-3:00 (Robb)
+  Configuring the IDD
+  Writing catalogs that match
+  motherlode example
+  preindexing GRIB files
 
 (break 15 min)
 
-13. THREDDS Servlet Framework (advanced programmers) (60) 3-4
-  CrawlableDataset (Ethan)
+13. Advanced, miscellaneous features (60) 3-4
+ - fmrc definitions
+ - caching
+ - opendap sessions?
 
-
+14. THREDDS Servlet Framework (60) 4-5 (Ethan)
+ CrawlableDataset 

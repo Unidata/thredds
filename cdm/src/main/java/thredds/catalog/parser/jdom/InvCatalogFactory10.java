@@ -142,6 +142,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       catalog.addProperty(s);
     }
 
+    // read top-level dataroots
+    java.util.List rootList = catalogElem.getChildren("datasetRoot", defNS);
+    for (int j=0; j< rootList.size(); j++) {
+      InvProperty root = readDatasetRoot((Element) rootList.get(j));
+      catalog.addDatasetRoot( root);
+    }
+
      // look for top-level dataset and catalogRefs elements (keep them in order)
     java.util.List allChildren = catalogElem.getChildren();
     for (int j=0; j< allChildren.size(); j++) {
@@ -1495,6 +1502,15 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     while ( iter.hasNext()) {
       InvService service = (InvService) iter.next();
       rootElem.addContent( writeService( service));
+    }
+
+    // dataset roots
+    if (raw) {
+      iter = cat.getDatasetRoots().iterator();
+      while ( iter.hasNext()) {
+        InvProperty p = (InvProperty) iter.next();
+        rootElem.addContent( writeDatasetRoot( p));
+      }
     }
 
     // properties

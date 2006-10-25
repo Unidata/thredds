@@ -42,6 +42,7 @@ import javax.swing.event.EventListenerList;
 public class InvCatalogImpl extends InvCatalog {
   private String createFrom;
   private String dtdID; // keep track of how read, so can write XML
+  private ArrayList roots = new ArrayList(); // InvProperty  
 
   // validation
   private StringBuffer log = new StringBuffer();
@@ -482,6 +483,15 @@ public class InvCatalogImpl extends InvCatalog {
   public void setCatalogConverterToVersion1( ) {
     setCatalogConverter( factory.getCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10));
   }
+
+ /** Get dataset roots.
+   *  @return List of InvProperty. May be empty, may not be null.
+   */
+  public java.util.List getDatasetRoots() { return roots; }
+
+
+   /** Add Dataset Root, key = path,  value = location. */
+  public void addDatasetRoot( InvProperty root) { roots.add( root);}
 
   /**
    * Write the catalog as an XML document to the specified stream.

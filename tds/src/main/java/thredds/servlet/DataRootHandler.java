@@ -188,11 +188,17 @@ public class DataRootHandler {
     }
 
     // look for datasetRoots
+    Iterator roots = cat.getDatasetRoots().iterator();
+    while ( roots.hasNext() ) {
+      InvProperty p = (InvProperty) roots.next();
+      addRoot( p.getName(), p.getValue() );
+    }
+
     Iterator services = cat.getServices().iterator();
     while ( services.hasNext() )
     {
       InvService s = (InvService) services.next();
-      Iterator roots = s.getDatasetRoots().iterator();
+      roots = s.getDatasetRoots().iterator();
       while ( roots.hasNext() )
       {
         InvProperty p = (InvProperty) roots.next();

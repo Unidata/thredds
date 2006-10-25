@@ -19,6 +19,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="dataset" minOccurs="1" maxOccurs="unbounded" />
       </xsd:sequence>
@@ -80,7 +81,7 @@
       <xsd:sequence>
         <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/>  <!-- deprecated -->
      </xsd:sequence>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
       <xsd:attribute name="base" type="xsd:string" use="required"/>
