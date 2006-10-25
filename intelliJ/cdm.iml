@@ -8,8 +8,6 @@
     <content url="file://$MODULE_DIR$/../cdm">
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../cdm/src/timing/java" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -39,6 +37,15 @@
         <JAVADOC>
           <root url="http://www.jdom.org/docs/apidocs/" />
         </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/jpeg2000.jar!/" />
+        </CLASSES>
+        <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
@@ -142,7 +149,15 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="grib" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/release/grib-4.0.02.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>
