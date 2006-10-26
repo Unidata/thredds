@@ -68,7 +68,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
     /** @return the ith sweep */
     public Sweep getSweep(int sweepNum);
 
-    /** @return  data, of length getNumSweep() by getNumGates() by getNumRadials() */
+    /** @return  data, of length getNumSweep()  by getNumRadials() by getNumGates()*/
     public float[] readAllData() throws java.io.IOException;
   }
 
@@ -101,7 +101,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
      * @return gate size in meters,  for all radials */
     public float getGateSize();
 
-    /** @return all the sweep data, of length getNumGates() by getNumRadials() */
+    /** @return all the sweep data, of length getNumRadials() by getNumGates()*/
     public float[] readData() throws java.io.IOException;
 
     /** @return the actual data, of length getNumGates() */
