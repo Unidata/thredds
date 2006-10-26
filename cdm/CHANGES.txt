@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.17
  Features
+  * ucar.nc2.dt.TypedDatasetFactory : new framework for plugging in TypedDataset implementations
   * ForecastModelRunSingleCollection: fmrc files have single hour in them
   * ForecastModelRunCollection, (fmrc) Aggregation.
   * ForecastModelInventory: keep vertical coordinates of length 1; write layer coordinate with low,high syntax.
@@ -19,7 +20,7 @@ Changes in version 2.2.17
     GridCoordSystem allows time to depend on runtime.
   * Variable.slice()
  API changes
-  * VariableEnhanced interface: remove getOriginalVariable(), now package private on VaribleDS.
+  * VariableEnhanced interface: remove getOriginalVariable(), now package private on VariableDS.
   * new Grid processing moved to ucar.nc2.dt.grid, old one (deprecated) stays in ucar.nc2.dataset.grid. Some tweaks on the
     new grid interface, since we no longer have to be strictly backwards compatible.
   * CoordinateAxis1D now looks for bounds (using CF-1 bounds attribute convention) check if contiguous.
@@ -34,6 +35,7 @@ Changes in version 2.2.17
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
+  * UnidataPointObsDataset: fix various bugs, let altitude field be optional
   * Cleanup Vertical Transforms (use variable name, not numbers in parameters), review  
   * Nexrad2 IOSP: recover from bad bzip, deal with missing data in the coordinates
   * WRF netcdf output: projection info missing when version < 2, may be wrong, give warning in userInfo. 
@@ -49,6 +51,7 @@ Changes in version 2.2.17
   * ucar.ma2.Range.contains() off-by-one
   * NcML aggregation caching wasnt working correctly. 
  ToolsUI
+  * seperate out PointObs and StationObsViewer
   * CoordSysTable axis has context menu to show coordinate values
   * Grid Viewer will show ensemble, runtime coordinates if they exist.
   * Radial Tab now works with RadialDatasetSweep interface

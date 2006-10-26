@@ -23,6 +23,7 @@ package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 
@@ -37,11 +38,20 @@ import java.util.*;
  * @version $Id: UnidataStationObsDataset2.java 51 2006-07-12 17:13:13Z caron $
  */
 
-public class UnidataStationObsDataset2 extends StationObsDatasetImpl {
+public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
 
   static public boolean isValidFile(NetcdfFile ds) {
     return ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("Unidata Station Format v1.0");
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new UnidataStationObsDataset2( ncd);
+  }
+  public UnidataStationObsDataset2() {}
+
 
   private Structure recordVar;
   private RecordDatasetHelper recordHelper;

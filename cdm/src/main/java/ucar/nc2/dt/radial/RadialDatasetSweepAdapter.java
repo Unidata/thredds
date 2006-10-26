@@ -39,6 +39,8 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
 
+  public RadialDatasetSweepAdapter() {}
+  
   public RadialDatasetSweepAdapter( NetcdfDataset ds) {
     super(ds);
 

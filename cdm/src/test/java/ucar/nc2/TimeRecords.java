@@ -23,67 +23,66 @@ package ucar.nc2;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 import ucar.nc2.dt.*;
-import ucar.nc2.dt.point.PointObsDatasetFactory;
-import ucar.nc2.dt.trajectory.TrajectoryObsDatasetFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Iterator;
+
+import thredds.catalog.DataType;
 
 /**
  * @author john
  */
 public class TimeRecords {
 
-  static void doOne( String filename, boolean isTrajectory) throws IOException {
-    System.out.println("\nTime "+filename);
-    NetcdfFile ncfile = NetcdfFile.open( filename);
+  static void doOne(String filename, boolean isTrajectory) throws IOException {
+    System.out.println("\nTime " + filename);
+    NetcdfFile ncfile = NetcdfFile.open(filename);
     ncfile.addRecordStructure();
-    readColumns( ncfile);
-    readRows( ncfile);
+    readColumns(ncfile);
+    readRows(ncfile);
     if (isTrajectory)
-      readTrajectoryIterator( filename);
+      readTrajectoryIterator(filename);
     else
-      readStationIterator( filename);
+      readStationIterator(filename);
   }
 
-   static private void readColumns(NetcdfFile ncfile) throws IOException {
-     long start = System.currentTimeMillis();
-     List varList = ncfile.getVariables();
-     for (int i = 0; i < varList.size(); i++) {
-       Variable variable = (Variable) varList.get(i);
-       Array data = variable.read();
-     }
-     double took = (System.currentTimeMillis() - start)*.001;
-     System.out.println("   nvars = "+varList.size());
-     System.out.println(" readCols took="+took+" secs");
-   }
+  static private void readColumns(NetcdfFile ncfile) throws IOException {
+    long start = System.currentTimeMillis();
+    List varList = ncfile.getVariables();
+    for (int i = 0; i < varList.size(); i++) {
+      Variable variable = (Variable) varList.get(i);
+      Array data = variable.read();
+    }
+    double took = (System.currentTimeMillis() - start) * .001;
+    System.out.println("   nvars = " + varList.size());
+    System.out.println(" readCols took=" + took + " secs");
+  }
 
-   static private void readRows(NetcdfFile ncfile) throws IOException {
-     boolean first = true;
-     long start = System.currentTimeMillis();
-     Structure record = (Structure) ncfile.findVariable("record");
-     if (record == null) {
-       Dimension d = ncfile.findDimension("Time");
-       record = new StructurePseudo( ncfile, null, "precord", d);
-       System.out.println("   use psuedo record");
-     }
-     Structure.Iterator iter = record.getStructureIterator();
-     while (iter.hasNext()) {
-       StructureData sd = iter.next();
-       if (first) {
-         System.out.println("   record size = "+sd.getStructureMembers().getStructureSize() +" "+
-            "   nvars = "+sd.getStructureMembers().getMembers().size());
-       }
-       first = false;
+  static private void readRows(NetcdfFile ncfile) throws IOException {
+    boolean first = true;
+    long start = System.currentTimeMillis();
+    Structure record = (Structure) ncfile.findVariable("record");
+    if (record == null) {
+      Dimension d = ncfile.findDimension("Time");
+      record = new StructurePseudo(ncfile, null, "precord", d);
+      System.out.println("   use psuedo record");
+    }
+    Structure.Iterator iter = record.getStructureIterator();
+    while (iter.hasNext()) {
+      StructureData sd = iter.next();
+      if (first) {
+        System.out.println("   record size = " + sd.getStructureMembers().getStructureSize() + " " +
+                "   nvars = " + sd.getStructureMembers().getMembers().size());
+      }
+      first = false;
 
-     }
-     double took = (System.currentTimeMillis() - start)*.001;
-     System.out.println(" readRows took="+took+" secs");
-   }
+    }
+    double took = (System.currentTimeMillis() - start) * .001;
+    System.out.println(" readRows took=" + took + " secs");
+  }
 
   static private void readTrajectoryIterator(String netcdfFileURI) throws IOException {
-    TrajectoryObsDataset tob = TrajectoryObsDatasetFactory.open( netcdfFileURI);
+    TrajectoryObsDataset tob = (TrajectoryObsDataset) TypedDatasetFactory.open(DataType.TRAJECTORY, netcdfFileURI, null, new StringBuffer());
     List trajList = tob.getTrajectories();
     for (int i = 0; i < trajList.size(); i++) {
 
@@ -95,28 +94,28 @@ public class TimeRecords {
         PointObsDatatype pobs = (PointObsDatatype) iter.nextData();
         count += pobs.getObservationTime();
       }
-      double took = (System.currentTimeMillis() - start)*.001;
-      System.out.println(" readIterator took="+took+" secs "+count);
+      double took = (System.currentTimeMillis() - start) * .001;
+      System.out.println(" readIterator took=" + took + " secs " + count);
     }
   }
 
   static private void readStationIterator(String netcdfFileURI) throws IOException {
-    PointObsDataset tob = PointObsDatasetFactory.open( netcdfFileURI);
+    PointObsDataset tob = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, netcdfFileURI, null, new StringBuffer());
 
-      double count = 0;
-      long start = System.currentTimeMillis();
-      DataIterator iter = tob.getDataIterator(0);
-      while (iter.hasNext()) {
-        PointObsDatatype pobs = (PointObsDatatype) iter.nextData();
-        StructureData sdata = pobs.getData();
-        count += pobs.getObservationTime();
-      }
-      double took = (System.currentTimeMillis() - start)*.001;
-      System.out.println(" readIterator took="+took+" secs "+count);
+    double count = 0;
+    long start = System.currentTimeMillis();
+    DataIterator iter = tob.getDataIterator(0);
+    while (iter.hasNext()) {
+      PointObsDatatype pobs = (PointObsDatatype) iter.nextData();
+      StructureData sdata = pobs.getData();
+      count += pobs.getObservationTime();
+    }
+    double took = (System.currentTimeMillis() - start) * .001;
+    System.out.println(" readIterator took=" + took + " secs " + count);
 
-   }
+  }
 
-  static public void main( String[] args) throws IOException {
+  static public void main(String[] args) throws IOException {
     doOne("C:/data/trajectory/135_ordrd.nc", true);
     doOne("C:/data/trajectory/135_raw.nc", true);
     doOne("R:/testdata/station/ldm/20050520_metar.nc", false);

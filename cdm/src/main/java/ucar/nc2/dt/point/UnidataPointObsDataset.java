@@ -24,11 +24,10 @@ package ucar.nc2.dt.point;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
-import ucar.nc2.Dimension;
-import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.DatatypeIterator;
-import ucar.nc2.dt.EarthLocation;
 import ucar.nc2.dt.DataIterator;
+import ucar.nc2.dt.TypedDatasetFactoryIF;
+import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
@@ -45,7 +44,7 @@ import java.io.IOException;
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-public class UnidataPointObsDataset extends PointObsDatasetImpl {
+public class UnidataPointObsDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
 
   static public boolean isValidFile(NetcdfFile ds) {
     if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.POINT.toString()) &&
@@ -65,11 +64,18 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl {
     return false;
   }
 
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new UnidataPointObsDataset( ncd);
+  }
+  public UnidataPointObsDataset() {}
+
+
   private Variable latVar, lonVar, altVar, timeVar, timeNominalVar;
   // private Structure recordVar;
   private RecordDatasetHelper recordHelper;
   private ArrayList allData;
-  private boolean debugRead = false;
 
   public UnidataPointObsDataset(NetcdfDataset ds) throws IOException {
     super(ds);
@@ -77,23 +83,22 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl {
     // coordinate variables
     latVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Lat);
     lonVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Lon);
-    altVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Height);
     timeVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Time);
 
     if (latVar == null)
       throw new IllegalStateException("Missing latitude variable");
     if (lonVar == null)
       throw new IllegalStateException("Missing longitude coordinate variable");
-    if (altVar == null)
-      throw new IllegalStateException("Missing altitude coordinate variable");
     if  (timeVar == null)
       throw new IllegalStateException("Missing time coordinate variable");
 
+    altVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Height);
     timeNominalVar = UnidataObsDatasetHelper.findVariable( ds, "record.time_nominal");
+    String recDimName = ds.findAttValueIgnoreCase(null, "observationDimension", null);
 
     // fire up the record helper
     recordHelper = new RecordDatasetHelper(ds, timeVar.getName(), timeNominalVar == null ? null : timeNominalVar.getName(),
-        dataVariables, parseInfo);
+        dataVariables, recDimName, parseInfo);
     recordHelper.setLocationInfo(latVar.getName(), lonVar.getName(), altVar == null ? null : altVar.getName());
     recordHelper.setShortNames(latVar.getShortName(), lonVar.getShortName(), altVar == null ? null : altVar.getShortName(), 
             timeVar.getShortName(), timeNominalVar == null ? null : timeNominalVar.getShortName());
@@ -136,8 +141,7 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl {
   }
 
   public int getDataCount() {
-    Dimension unlimitedDim = ncfile.getUnlimitedDimension();
-    return unlimitedDim.getLength();
+    return (int) recordHelper.getRecordVar().getSize();
   }
 
   public List getData(LatLonRect boundingBox, CancelTask cancel) throws IOException {

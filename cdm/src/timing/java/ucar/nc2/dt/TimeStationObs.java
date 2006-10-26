@@ -21,8 +21,6 @@
 
 package ucar.nc2.dt;
 
-import ucar.nc2.dt.point.PointObsDatasetFactory;
-
 import java.io.IOException;
 
 /**
@@ -36,7 +34,9 @@ public class TimeStationObs {
     try {
       //String url = "http://localhost:8080/thredds/dodsC/metarCollection/Surface_METAR_20060629_0000.nc";
       String url = "dods://motherlode.ucar.edu:8080/thredds/dodsC/station/metar/Surface_METAR_20060629_0000.nc";
-      PointObsDataset dataset = PointObsDatasetFactory.open(url);
+      //PointObsDataset dataset = PointObsDatasetFactory.open(url);
+      PointObsDataset dataset = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, url, null, new StringBuffer());
+
       System.out.println("running test on " + dataset.getLocationURI());
       DataIterator iter = dataset.getDataIterator(0);
       int count = 0;

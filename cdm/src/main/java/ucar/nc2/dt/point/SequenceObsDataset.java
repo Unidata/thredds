@@ -26,14 +26,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.Dimension;
 import ucar.nc2.dods.*;
-import ucar.nc2.dt.Station;
-import ucar.nc2.dt.DatatypeIterator;
-import ucar.nc2.dt.DataIterator;
+import ucar.nc2.dt.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.StructureData;
 
@@ -47,7 +43,7 @@ import java.io.IOException;
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
-public class SequenceObsDataset extends StationObsDatasetImpl {
+public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF  {
 
   static public boolean isValidFile(NetcdfFile ds) {
     if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()) &&
@@ -67,6 +63,14 @@ public class SequenceObsDataset extends StationObsDatasetImpl {
     return false;
   }
 
+  /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new SequenceObsDataset( ncd, task);
+  }
+  public SequenceObsDataset() {}
+
   private Variable latVar, lonVar, altVar, timeVar, timeNominalVar;
   private Variable stationIdVar, stationDescVar, numStationsVar;
   private Structure sequenceVar;
@@ -74,7 +78,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl {
   private boolean debugRead = false;
   private boolean fatal = false;
 
-  public SequenceObsDataset(NetcdfDataset ds, CancelTask cancel) throws IOException {
+  public SequenceObsDataset(NetcdfDataset ds, CancelTask task) throws IOException {
     super(ds);
 
     // identify key variables

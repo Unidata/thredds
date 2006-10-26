@@ -9,7 +9,7 @@
 <body>
 <h1>Unidata  Observation Dataset Conventions</h1>
 <p><em>John Caron, Ethan Davis, Robb Kambic</em></p>
-<p><em>last updated Apr 04, 2005</em></p>
+<p><em>last updated Oct 25, 2006</em></p>
 <p>This document describes a <a href="http://www.unidata.ucar.edu/content/software/netcdf/conventions.html">Convention for NetCDF (version 3) files</a> for writing Point, Trajectory, and Station observation data. It  uses the <a href="DataDiscoveryAttConvention.html">NetCDF Attribute Convention for Dataset Discovery.</a> Files that follow this conventions can be read by the NetCDF-Java library and the <a href="http://www.unidata.ucar.edu/software/idv/">IDV</a> into    the Point, Trajectory, and Station data types of the <a href="http://www.unidata.ucar.edu/software/netcdf/CDM/index.html">Common Data Model</a>.</p>
 <p>Also see: </p>
 <ul>
@@ -67,7 +67,7 @@
 <p>to name the observation dimension. If there is no such attribute, then the record (unlimited) dimension will be the observation dimension. </p>
 <p>An observation is a collection of measurement values at a single time and location. All Variables with the observation dimension.as their outer dimension constitute the  the observation measurement.  The number of observations in the file will then be the length of the observation dimension. <em>(When using multidimensional structures, its more complicated, see examples below) </em></p>
 <h3>Identifying the Coordinate Variables </h3>
-<p>Each observation must have a latitude, longitude, altitude, and time coordinate value associated with it. There are four ways to do this:</p>
+<p>Each observation must have a latitude, longitude,  and time coordinate value associated with it. An altitiude variable is optional. There are four ways to do this:</p>
 <h4>1. <strong>_Coordinate attributes</strong>:</h4>
 <ol>
   <li>The latitude variable must have an attribute named <strong>_CoordinateAxisType</strong> with value equal to &quot;Lat&quot;.</li>
@@ -159,6 +159,12 @@
 <p>The observations must be associated with their corresponding station using linked lists, contiguous lists, or multidimensional structures. </p>
 <p><a href="metar.cdl.txt">Example Station CDL</a>. </p>
 <hr>
+<h2>Changes: </h2>
+<ul>
+  <li>Oct 25, 2006: Altitude Variable is optional </li>
+</ul>
+<hr>
+<p>&nbsp;</p>
 <p><em>comments to <a href="mailto:caron@unidata.ucar.edu">John Caron</a>  </em></p>
 </body>
 </html>

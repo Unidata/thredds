@@ -10,6 +10,7 @@ import ucar.nc2.dt.TrajectoryObsDataset;
  *
  * @author edavis
  * @since Feb 9, 2005T12:08:44 PM
+ * @deprecated use ucar.nc2.dt.TypedDatasetFactory
  */
 public class TrajectoryObsDatasetFactory
 {
@@ -22,15 +23,15 @@ public class TrajectoryObsDatasetFactory
           throws java.io.IOException
   {
     NetcdfDataset ds = NetcdfDatasetCache.acquire( netcdfFileURI, cancelTask);
-    if ( RafTrajectoryObsDataset.isMine( ds) )
+    if ( RafTrajectoryObsDataset.isValidFile( ds) )
       return new RafTrajectoryObsDataset( ds);
-    else if ( SimpleTrajectoryObsDataset.isMine( ds))
+    else if ( SimpleTrajectoryObsDataset.isValidFile( ds))
       return new SimpleTrajectoryObsDataset( ds);
-    else if ( Float10TrajectoryObsDataset.isMine( ds))
+    else if ( Float10TrajectoryObsDataset.isValidFile( ds))
       return new Float10TrajectoryObsDataset( ds);
-    else if ( ZebraClassTrajectoryObsDataset.isMine( ds ) )
+    else if ( ZebraClassTrajectoryObsDataset.isValidFile( ds ) )
       return new ZebraClassTrajectoryObsDataset( ds );
-    else if ( ARMTrajectoryObsDataset.isMine( ds ) )
+    else if ( ARMTrajectoryObsDataset.isValidFile( ds ) )
       return new ARMTrajectoryObsDataset( ds );
     else
       return null;

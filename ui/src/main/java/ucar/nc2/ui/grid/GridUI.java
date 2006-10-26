@@ -245,7 +245,6 @@ public class GridUI extends JPanel {
        }
      }
    });
-
   }
 
   void setMapRenderer( thredds.viewer.ui.Renderer mapRenderer) {

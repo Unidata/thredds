@@ -66,8 +66,8 @@ public class TestGribAgg implements CatalogCrawler.Listener {
         out.println("***CAN'T OPEN "+dd.getName());
         return;
       }
-      process( result.gridDataset.getNetcdfFile());
-      fileList.add( result.gridDataset);
+      process( result.tds.getNetcdfFile());
+      fileList.add( result.tds);
 
     } catch (IOException e) {
       e.printStackTrace();

@@ -5,6 +5,8 @@ import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dt.TypedDataset;
+import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -23,7 +25,7 @@ import java.util.*;
  * @author edavis
  * @since 2005-02-07T17:26:14-0700
  */
-class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset
+public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  implements TypedDatasetFactoryIF
 {
   private String timeDimName;
   private String timeVarName;
@@ -31,7 +33,7 @@ class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset
   private String lonVarName;
   private String elevVarName;
 
-  static public boolean isMine( NetcdfDataset ds)
+  static public boolean isValidFile( NetcdfDataset ds)
   {
     Attribute conventionsAtt = ds.findGlobalAttributeIgnoreCase( "Conventions");
     if ( conventionsAtt == null) return( false);
@@ -54,6 +56,14 @@ class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset
     
     return( false );
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new RafTrajectoryObsDataset( ncd);
+  }
+  public RafTrajectoryObsDataset() {}
 
   public RafTrajectoryObsDataset( NetcdfFile ncf) throws IOException
   {

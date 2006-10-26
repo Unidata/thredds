@@ -9,6 +9,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
 import ucar.ma2.Array;
 
 import java.io.IOException;
@@ -33,9 +34,10 @@ public class TestDodsServer extends TestCase {
 
     assert dataResult != null;
     assert !dataResult.fatalError;
-    assert dataResult.gridDataset != null;
+    assert dataResult.tds != null;
 
-    GridDatatype grid = dataResult.gridDataset.findGridDatatype("Z_sfc");
+    GridDataset gds = (GridDataset) dataResult.tds;
+    GridDatatype grid = gds.findGridDatatype("Z_sfc");
     assert grid != null;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert gcs != null;
@@ -46,7 +48,7 @@ public class TestDodsServer extends TestCase {
     assert time.getSize() == 1;
     assert 102840.0 == time.readScalarDouble();
 
-    dataResult.close();
+    dataResult.tds.close();
   }
 
 

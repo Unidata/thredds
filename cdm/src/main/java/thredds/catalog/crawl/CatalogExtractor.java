@@ -209,20 +209,20 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     boolean ok = true;
 
     long start = System.currentTimeMillis();
-    ThreddsDataFactory.Result tdata = null;
+    ThreddsDataFactory.Result result = null;
     try {
-      tdata = tdataFactory.openDatatype(ds, null);
+      result = tdataFactory.openDatatype(ds, null);
       int took = (int) (System.currentTimeMillis() - start);
       if (verbose)
-        System.out.println("  **Open " + tdata.dtype + " " + tdata.location + " (" + ds.getName() + ") " + took + " msecs");
-      out.println("  **Open " + tdata.dtype + " " + tdata.location + " (" + ds.getName() + ") " + took + " msecs");
+        System.out.println("  **Open " + result.dataType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
+      out.println("  **Open " + result.dataType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
 
-      if (tdata == null)
+      if (result == null)
         ok = false;
-      else if (tdata.location == null)
+      else if (result.location == null)
         ok = false;
-      else if (tdata.dtype == DataType.GRID)
-        extractGridDataset(out, tdata.gridDataset);
+      else if (result.dataType == DataType.GRID)
+        extractGridDataset(out, (GridDataset) result.tds);
 
     } catch (Throwable e) {
       out.println("   **FAILED " + ds.getName());
@@ -232,9 +232,9 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
     } finally {
 
-      if (tdata != null) try {
-        tdata.close();
-        out.println("   Close " + tdata.dtype + " " + tdata.location);
+      if ((result != null) && (result.tds != null))  try {
+        result.tds.close();
+        out.println("   Close " + result.dataType + " " + result.location);
       } catch (IOException e) {
         e.printStackTrace();
       }

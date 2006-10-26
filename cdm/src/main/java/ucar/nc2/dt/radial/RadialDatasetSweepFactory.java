@@ -10,6 +10,8 @@ import ucar.nc2.dataset.conv._Coordinate;
  *
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
+ * @deprecated use ucar.nc2.dt.TypedDatasetFactory
+
  */
 public class RadialDatasetSweepFactory {
 

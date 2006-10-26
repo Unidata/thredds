@@ -38,7 +38,7 @@ import java.util.*;
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-public class UnidataStationObsDataset extends StationObsDatasetImpl {
+public class UnidataStationObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
 
   static public boolean isValidFile(NetcdfFile ds) {
     if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()) &&
@@ -57,6 +57,13 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
 
     return false;
   }
+
+    // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new UnidataStationObsDataset( ncd);
+  }
+  public UnidataStationObsDataset() {}
 
   private Variable latVar, lonVar, altVar, timeVar, timeNominalVar;
   private Variable lastVar, prevVar, firstVar, nextVar, numChildrenVar;

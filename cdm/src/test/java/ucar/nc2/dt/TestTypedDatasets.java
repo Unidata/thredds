@@ -17,7 +17,7 @@ public class TestTypedDatasets {
 
     suite.addTest( ucar.nc2.dt.trajectory.TestTrajectoryObsDataset.suite());
 
-    // suite.addTestSuite( ucar.nc2.dt.radial.TestRadialDataset.class);
+    suite.addTestSuite( ucar.nc2.dt.radial.TestRadialDataset.class);
 
     return suite;
   }

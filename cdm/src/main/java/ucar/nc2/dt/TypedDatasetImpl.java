@@ -45,8 +45,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   protected StringBuffer parseInfo = new StringBuffer();
 
   /** No-arg constuctor */
-  public TypedDatasetImpl() {
-  }
+  public TypedDatasetImpl() {}
 
   /** Constructor when theres no NetcdfFile underneath.
    *

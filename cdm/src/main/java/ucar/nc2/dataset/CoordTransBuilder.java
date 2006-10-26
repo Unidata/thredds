@@ -65,10 +65,8 @@ public class CoordTransBuilder {
 
    /**
     * Register a class that implements a Coordinate Transform.
-    * @param transformName name of transform.
-    *   This name will be used to look in the "Conventions" global attribute.
-    *   Otherwise, you must implement the isMine() static method.
-    * @param c implementation of CoordSysBuilderIF that parses those kinds of netcdf files.
+    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
+    * @param c class that implements CoordTransBuilderIF.
     */
   static public void registerTransform( String transformName, Class c) {
     if (!(CoordTransBuilderIF.class.isAssignableFrom( c)))
@@ -90,6 +88,16 @@ public class CoordTransBuilder {
       transformList.add( new Transform( transformName, c));
 
   }
+
+   /**
+    * Register a class that implements a Coordinate Transform.
+    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
+    * @param className name of class that implements CoordTransBuilderIF.
+    */
+   static public void registerTransform( String transformName, String className) throws ClassNotFoundException {
+     Class c = Class.forName( className);
+     registerTransform( transformName, c);
+   }
 
   static private class Transform {
     String transName;

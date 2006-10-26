@@ -1186,11 +1186,13 @@ public class RandomAccessFile implements DataInput, DataOutput {
      * successively reads bytes from the file until it reaches the end of
      * a line of text.
      * <p>
+     *
      * A line of text is terminated by a carriage-return character
      * (<code>'&#92;r'</code>), a newline character (<code>'&#92;n'</code>), a
      * carriage-return character immediately followed by a newline
      * character, or the end of the input stream. The line-terminating
      * character(s), if any, are included as part of the string returned.
+     *
      * <p>
      * This method blocks until a newline character is read, a carriage
      * return and the byte following it are read (to see if it is a

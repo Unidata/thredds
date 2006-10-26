@@ -3,6 +3,7 @@ package ucar.nc2.dt.trajectory;
 
 import junit.framework.TestCase;
 import ucar.nc2.dt.TrajectoryObsDataset;
+import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -40,7 +41,8 @@ public class TestFloat10TrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      me = TrajectoryObsDatasetFactory.open( location);
+      StringBuffer errlog = new StringBuffer();
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {

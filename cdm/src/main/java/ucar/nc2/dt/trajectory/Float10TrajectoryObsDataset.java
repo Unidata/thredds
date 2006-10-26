@@ -2,13 +2,10 @@
 package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.ma2.*;
 
 import java.util.*;
 import java.io.IOException;
@@ -71,7 +68,7 @@ netcdf U:/testdata/trajectory/buoy/testfloat10.nc {
  * @author edavis
  * @since Feb 22, 2005T5:37:14 PM
  */
-class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset
+public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset implements TypedDatasetFactoryIF
 {
   private static String trajDimNameDefault = "DRIFTER100_110";
   private static String trajVarNameDefault = "DRIFTER100_110";
@@ -90,7 +87,7 @@ class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset
   private String elevVarName;
 
 
-  static public boolean isMine(NetcdfDataset ds)
+  static public boolean isValidFile(NetcdfDataset ds)
   {
     // Check that has a time dimension and a trajectory dimension.
     List list = ds.getRootGroup().getDimensions();
@@ -166,6 +163,14 @@ class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset
 
     return( true);
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new Float10TrajectoryObsDataset( ncd);
+  }
+  public Float10TrajectoryObsDataset() {}
 
   public Float10TrajectoryObsDataset( NetcdfFile ncd ) throws IOException
   {

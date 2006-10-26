@@ -114,10 +114,10 @@ public class TestSubset extends TestCase {
     String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/model/NCEP/DGEX/CONUS_12km/catalog.xml";
     String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
     ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype(cat+dsid, null);
-    assert result.dtype == DataType.GRID;
-    assert result.gridDataset != null;
+    assert result.dataType == DataType.GRID;
+    assert result.tds != null;
 
-    GridDataset dataset = (GridDataset) result.gridDataset;
+    GridDataset dataset = (GridDataset) result.tds;
 
     GeoGrid grid = dataset.findGridByName("Temperature");
     assert null != grid;
@@ -140,8 +140,8 @@ public class TestSubset extends TestCase {
   public void utestDODS2() throws Exception {
     String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
     ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype(threddsURL, null);
-    assert result.gridDataset != null;
-    GridDataset dataset = (GridDataset) result.gridDataset;
+    assert result.tds != null;
+    GridDataset dataset = (GridDataset) result.tds;
 
     GeoGrid grid = dataset.findGridByName("PT");
     assert null != grid;

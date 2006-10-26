@@ -119,23 +119,21 @@ public class TestIDVdatasets {
           InvAccess access = tdata.accessUsed;
           String st = (access == null) ? " UNKNOWN" : access.getService().getServiceType().toString();
 
-          if (tdata.dtype == DataType.GRID) {
+          if (tdata.dataType == DataType.GRID) {
             out.println(" *Opened " + countDone + " GRID " + tdata.location + " " + st + " (" + took + " msecs)");
-            if (extract) extractGrid(out, tdata.gridDataset);
-          } else {
+            if (extract) extractGrid(out, (GridDataset) tdata.tds);
+          } else if (tdata.dataType == DataType.POINT) {
             out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
-            try {
-              if (tdata != null) tdata.close();
-              if (tdata.pobsDataset != null) tdata.pobsDataset.close();
-            } catch (IOException ioe) {
-              ioe.printStackTrace();
-            }
+          } else if (tdata.dataType == DataType.STATION) {
+            out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
           }
 
         } finally {
-          try {
-            if (tdata != null) tdata.close();
-          } catch (IOException ioe) { }
+            try {
+              if ((tdata != null) &&(tdata.tds != null)) tdata.tds.close();
+            } catch (IOException ioe) {
+              ioe.printStackTrace();
+            }
         }
 
         countDone++;

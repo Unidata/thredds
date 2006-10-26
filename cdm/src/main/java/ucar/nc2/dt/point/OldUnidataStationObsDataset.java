@@ -27,10 +27,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.ncml.NcMLReader;
 
-import ucar.nc2.dt.Station;
-import ucar.nc2.dt.StationImpl;
-import ucar.nc2.dt.DatatypeIterator;
-import ucar.nc2.dt.DataIterator;
+import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.StructureData;
 
@@ -51,7 +48,7 @@ import java.util.*;
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
-public class OldUnidataStationObsDataset extends StationObsDatasetImpl {
+public class OldUnidataStationObsDataset extends StationObsDatasetImpl  implements TypedDatasetFactoryIF {
 
   static public boolean isValidFile(NetcdfFile ds) {
     String kind = ds.findAttValueIgnoreCase(null, "title", null);
@@ -62,6 +59,14 @@ public class OldUnidataStationObsDataset extends StationObsDatasetImpl {
 
     return false;
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new OldUnidataStationObsDataset( ncd);
+  }
+  public OldUnidataStationObsDataset() {}
 
   private NetcdfDataset dataset;
   private RecordDatasetHelper recordHelper;
@@ -76,7 +81,7 @@ public class OldUnidataStationObsDataset extends StationObsDatasetImpl {
 
     String kind = ds.findAttValueIgnoreCase(null, "title", null);
     if ("METAR definition".equals(kind)) {
-      Variable v = ds.findVariable("record.station");
+      Variable v = ds.findVariable("station");
       if (v != null)
         ncmlURL = CoordSysBuilder.resourcesDir+"metar2ncMetar.ncml";
       else  // older form

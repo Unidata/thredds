@@ -62,6 +62,7 @@ abstract class MultiTrajectoryObsDataset
   protected int trajectoryNumPoint;
   protected HashMap trajectoryVarsMap;
 
+  public MultiTrajectoryObsDataset() {}
   public MultiTrajectoryObsDataset( NetcdfFile ncfile)
   {
     super( ncfile);

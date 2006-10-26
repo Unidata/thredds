@@ -25,7 +25,7 @@ public class TestStationDataset extends TestCase {
 
 
   public void testUnidataStationObsDataset() throws IOException {
-    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm/20050804_metar.nc", null, null));
+    testAllMethods( topDir+"ldm/20050804_metar.nc");
   }
 
   public void testMetarDataset() throws IOException {
@@ -33,7 +33,7 @@ public class TestStationDataset extends TestCase {
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
     ThreddsDataFactory.Result result = fac.openDatatype( "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/latest.xml", null);
-    PointObsDataset sod = result.pobsDataset;
+    StationObsDataset sod = (StationObsDataset) result.tds;
     long took = System.currentTimeMillis() - start;
     System.out.println(" open took = "+took+" msec");
     start = System.currentTimeMillis();
@@ -54,17 +54,17 @@ public class TestStationDataset extends TestCase {
   }
 
   public void testNdbcStationObsDataset() throws IOException {
-    testAllMethods( PointObsDatasetFactory.open( topDir+"ndbc/41001h1976.nc", null, null));
+    testAllMethods( topDir+"ndbc/41001h1976.nc");
   }
 
   public void testMadisStationObsDataset() throws IOException {
-    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/metar.20040604_1600.nc", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/sao.20040604_2100.nc", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/mesonet1.20050502_2300", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/coop.20040824_0900.gz", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/hydro.20040824_0400.gz", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/maritime.20040824_1000.gz", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"madis/radiometer.20040824_1000.gz", null, null));
+    testAllMethods( topDir+"madis/metar.20040604_1600.nc");
+    testAllMethods( topDir+"madis/sao.20040604_2100.nc");
+    testAllMethods( topDir+"madis/mesonet1.20050502_2300");
+    testAllMethods( topDir+"madis/coop.20040824_0900.gz");
+    testAllMethods( topDir+"madis/hydro.20040824_0400.gz");
+    testAllMethods( topDir+"madis/maritime.20040824_1000.gz");
+    testAllMethods( topDir+"madis/radiometer.20040824_1000.gz");
   }
 
   public void utestMadisAll() throws IOException {
@@ -84,7 +84,7 @@ public class TestStationDataset extends TestCase {
       else {
         System.out.println("\ndoOneFromEach="+file.getPath());
         try {
-          PointObsDataset pobs = PointObsDatasetFactory.open( file.getPath(), null, null);
+          PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, file.getPath(), null, new StringBuffer());
           //if (null != pobs) testAllMethods(pobs);
         } catch (Exception e) {
           e.printStackTrace();
@@ -96,18 +96,20 @@ public class TestStationDataset extends TestCase {
 
 
   public void utestUnidataStationObsDataset2() throws IOException {
-    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm/20050626_metar.nc", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm/20050727_metar.nc", null, null));
+    testAllMethods( topDir+"ldm/20050626_metar.nc");
+    testAllMethods( topDir+"ldm/20050727_metar.nc");
   }
 
   public void testOldUnidataStationObsDataset() throws IOException {
-    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm-old/04061912_buoy.nc", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm-old/2004061915_metar.nc", null, null));
-    testAllMethods( PointObsDatasetFactory.open( topDir+"ldm-old/04061900_syn.nc", null, null));
+    testAllMethods( topDir+"ldm-old/04061912_buoy.nc");
+    testAllMethods( topDir+"ldm-old/2004061915_metar.nc");
+    testAllMethods( topDir+"ldm-old/04061900_syn.nc");
   }
 
-  private void testAllMethods(PointObsDataset pod) throws IOException {
-    StationObsDataset sod = (StationObsDataset) pod;
+  private void testAllMethods(String location) throws IOException {
+    StringBuffer sbuff = new StringBuffer();
+    StationObsDataset sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, sbuff);
+    assert sod != null : sbuff.toString();
 
     System.out.println("-----------");
     System.out.println(sod.getDetailInfo());
@@ -183,7 +185,7 @@ public class TestStationDataset extends TestCase {
     }
     assert iterCount == stationDataCount : " iterCount= "+iterCount+" stationDataCount= "+stationDataCount;
 
-    pod.close();
+    sod.close();
   }
 
   private int testData( DateUnit timeUnit, Iterator dataIter) throws java.io.IOException {

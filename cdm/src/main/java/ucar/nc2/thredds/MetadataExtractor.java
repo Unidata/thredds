@@ -34,16 +34,13 @@ import java.util.Date;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dt.PointObsDataset;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
- * Extract THREDDS metadata from the undelying CDM dataset.
+ * Extract THREDDS metadata from the underlying CDM dataset.
  *
  * @author caron
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
@@ -67,14 +64,22 @@ public class MetadataExtractor {
         return null;
       }
 
-      if (result.dtype == DataType.GRID) {
+      if (result.dataType == DataType.GRID) {
         System.out.println(" GRID=" + result.location);
-        GridDataset gridDataset = result.gridDataset;
+        GridDataset gridDataset = (GridDataset) result.tds;
         return extractGeospatial( gridDataset);
 
-      } else if ((result.dtype == DataType.STATION) || (result.dtype == DataType.POINT)) {
-        PointObsDataset pobsDataset = result.pobsDataset;
+      } else if (result.dataType == DataType.POINT) {
+        PointObsDataset pobsDataset = (PointObsDataset) result.tds;
         LatLonRect llbb = pobsDataset.getBoundingBox();
+        if (null != llbb) {
+          ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
+          gc.setBoundingBox(llbb);
+          return gc;
+        }
+      } else if (result.dataType == DataType.STATION) {
+        StationObsDataset sobsDataset = (StationObsDataset) result.tds;
+        LatLonRect llbb = sobsDataset.getBoundingBox();
         if (null != llbb) {
           ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
           gc.setBoundingBox(llbb);
@@ -84,8 +89,8 @@ public class MetadataExtractor {
 
     } finally {
       try {
-        if (result != null)
-          result.close();
+        if ((result != null) && (result.tds != null))
+          result.tds.close();
       } catch (IOException ioe) {
       }
     }
@@ -134,13 +139,13 @@ public class MetadataExtractor {
         return null;
       }
 
-      if (result.dtype == DataType.GRID) {
+      if (result.dataType == DataType.GRID) {
         // System.out.println(" extractVariables GRID=" + result.location);
-        GridDataset gridDataset = result.gridDataset;
+        GridDataset gridDataset = (GridDataset) result.tds;
         return extractVariables(threddsDataset, gridDataset);
 
-      } else if ((result.dtype == DataType.STATION) || (result.dtype == DataType.POINT)) {
-        PointObsDataset pobsDataset = result.pobsDataset;
+      } else if ((result.dataType == DataType.STATION) || (result.dataType == DataType.POINT)) {
+        PointObsDataset pobsDataset = (PointObsDataset) result.tds;
         ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
         java.util.List varList = pobsDataset.getDataVariables();
         for (int i = 0; i < varList.size(); i++) {
@@ -161,8 +166,8 @@ public class MetadataExtractor {
 
     } finally {
       try {
-        if (result != null)
-          result.close();
+        if ((result != null) && (result.tds != null))
+          result.tds.close();
       } catch (IOException ioe) {
       }
     }

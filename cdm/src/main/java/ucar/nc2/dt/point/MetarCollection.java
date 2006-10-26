@@ -20,9 +20,7 @@
  */
 package ucar.nc2.dt.point;
 
-import ucar.nc2.dt.Station;
-import ucar.nc2.dt.StationObsDataset;
-import ucar.nc2.dt.StationObsDatatype;
+import ucar.nc2.dt.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.StringUtil;
@@ -89,7 +87,9 @@ public class MetarCollection {
   private StationObsDataset acquireStationDataset( String location) throws IOException {
     StringBuffer log = new StringBuffer();
     try {
-      StationObsDataset sod = (StationObsDataset) PointObsDatasetFactory.open( location, log);
+      // StationObsDataset sod = (StationObsDataset) PointObsDatasetFactory.open( location, log);
+      StationObsDataset sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, log);
+
       System.out.println("open "+location);
       return sod;
     } catch (IOException e) {

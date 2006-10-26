@@ -34,6 +34,7 @@ import java.util.List;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset;
 import ucar.ma2.Array;
 
 /**
@@ -92,9 +93,10 @@ public class TimeTDSfixed {
           if (out != null) out.println(" --ERROR " + tdata.errLog);
           return;
         }
-        if (out != null) out.println(" *Opened TYPE " + tdata.dtype + " " + tdata.location);
-        if (tdata.dtype == DataType.GRID) {
-          List grids = tdata.gridDataset.getGrids();
+        if (out != null) out.println(" *Opened TYPE " + tdata.dataType + " " + tdata.location);
+        if (tdata.dataType == DataType.GRID) {
+          GridDataset gds = (GridDataset) tdata.tds;
+          List grids = gds.getGrids();
           if (grids.size() > 0) {
             GridDatatype grid = (GridDatatype) grids.get(0);
             Array data = grid.readDataSlice(0, -1, -1, -1);
@@ -112,7 +114,7 @@ public class TimeTDSfixed {
 
     } finally {
       try {
-        if (tdata != null) tdata.close();
+        if ((tdata != null) && (tdata.tds != null)) tdata.tds.close();
       } catch (IOException ioe) {
       }
     }

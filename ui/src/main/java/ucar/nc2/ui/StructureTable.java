@@ -334,6 +334,7 @@ public class StructureTable extends JPanel {
 
   }
 
+  ////////////////////////////////////////////////////////////////////////
   // handles Structures and Sequences.
   private class StructureModel extends StructureTableModel {
     private Structure struct;
@@ -403,6 +404,7 @@ public class StructureTable extends JPanel {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////
   private class StructureDataModel extends StructureTableModel {
     private List structureData;
 
@@ -430,6 +432,7 @@ public class StructureTable extends JPanel {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////
   private class TrajectoryModel extends StructureTableModel {
     private TrajectoryObsDatatype traj;
 
@@ -473,6 +476,7 @@ public class StructureTable extends JPanel {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////
   private class PointObsDataModel extends StructureTableModel {
     private List obsData;
 
@@ -659,7 +663,10 @@ public class StructureTable extends JPanel {
         java.awt.Point p = e.getPoint();
         int index = columnModel.getColumnIndexAtX(p.x);
         int realIndex = columnModel.getColumn(index).getModelIndex();
-        return tm.getColumnDesc(realIndex);
+        if (realIndex >= 0)
+          return tm.getColumnDesc(realIndex);
+        else
+          return null;
       }
     }
 

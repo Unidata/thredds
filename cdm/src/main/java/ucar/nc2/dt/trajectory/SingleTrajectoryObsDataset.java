@@ -58,6 +58,8 @@ abstract class SingleTrajectoryObsDataset
 
   protected TrajectoryObsDatatype trajectory;
 
+  public SingleTrajectoryObsDataset() {}
+  
   public SingleTrajectoryObsDataset( NetcdfFile ncfile)
   {
     super( ncfile);

@@ -176,7 +176,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     * @param conventionName name of Convention.
     *   This name will be used to look in the "Conventions" global attribute.
     *   Otherwise, you must implement the isMine() static method.
-    * @param className name of subclass of CoordSysBuilder that parses those kinds of netcdf files.
+    * @param className name of class that implements CoordSysBuilderIF.
     */
    static public void registerConvention( String conventionName, String className) throws ClassNotFoundException {
      Class c = Class.forName( className);

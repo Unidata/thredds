@@ -52,6 +52,7 @@ public class RecordDatasetHelper {
 
   protected HashMap stnHash;
   protected Structure recordVar;
+  protected Dimension obsDim;
 
   protected LatLonRect boundingBox;
   protected double minDate, maxDate;
@@ -100,17 +101,23 @@ public class RecordDatasetHelper {
     if (this.ncfile.hasUnlimitedDimension()) {
       this.ncfile.addRecordStructure();
       this.recordVar = (Structure) this.ncfile.getRootGroup().findVariable("record");
+      this.obsDim = ncfile.getUnlimitedDimension();
 
     } else {
-      if (recDimName == null) throw new IllegalArgumentException("File <" + this.ncfile.getLocation() + "> has no unlimited dimension, psuedo record dimension required.");
-      this.recordVar = new StructurePseudo(this.ncfile, null, "record", this.ncfile.getRootGroup().findDimension(recDimName));
+      if (recDimName == null)
+        throw new IllegalArgumentException("File <" + this.ncfile.getLocation() +
+                "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
+      this.obsDim = this.ncfile.getRootGroup().findDimension(recDimName);
+      this.recordVar = new StructurePseudo(this.ncfile, null, "record", obsDim);
     }
 
     // create member variables
     List recordMembers = ncfile.getVariables();
     for (int i = 0; i < recordMembers.size(); i++) {
       Variable v = (Variable) recordMembers.get(i);
-      if (v.isUnlimited() && (v != recordVar))
+      if (v == recordVar) continue;
+      if (v.isScalar()) continue;
+      if (v.getDimension(0) == this.obsDim)
         typedDataVariables.add( v);
     }
 

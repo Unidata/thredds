@@ -22,7 +22,7 @@ import java.util.Date;
 /** Test radial datasets in the JUnit framework. */
 
 public class TestRadialDataset extends TestCase {
-  private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
+  // private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
   private String topDir = ucar.nc2.TestAll.testdataDir+ "radar/";
   private boolean show = false, showTime = false, doQuick = true;
 
@@ -39,12 +39,12 @@ public class TestRadialDataset extends TestCase {
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);
     DiskCache.setCachePolicy( true);
     DiskCache.setRootDirectory( "C:/TEMP/cache/");
-    doDirectory("V:/gempak/nexrad/craft/KCCX", false);
+    doDirectory("V:/gempak/nexrad/craft/KCCX", false, 10);
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = "+took+" msec");
   }
 
-  private void doDirectory(String dirName, boolean alwaysUncompress) throws IOException {
+  private int doDirectory(String dirName, boolean alwaysUncompress, int max) throws IOException {
 
     File dir = new File(dirName);
     File[] files = dir.listFiles();
@@ -57,22 +57,28 @@ public class TestRadialDataset extends TestCase {
       }
     }
 
+    int count = 0;
     for (int i = 0; i < files.length; i++) {
       File file = files[i];
       String path = file.getPath();
       if (path.endsWith(".uncompress")) continue;
 
       if (file.isDirectory())
-        doDirectory(path, alwaysUncompress);
+        count += doDirectory(path, alwaysUncompress, max);
       else {
         testAllMethods( path );
+        count++;
       }
 
+      if (count > max) break;
     }
+
+    return count;
   }
 
   private void testAllMethods(String location) throws IOException {
-    RadialDatasetSweep rds = datasetFactory.open( location, null);
+    //RadialDatasetSweep rds = datasetFactory.open( location, null);
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( thredds.catalog.DataType.RADIAL, location, null, new StringBuffer());
 
     System.out.println(location+"-----------");
     if (show) System.out.println(rds.getDetailInfo());

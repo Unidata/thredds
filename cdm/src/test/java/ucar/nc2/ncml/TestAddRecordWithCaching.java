@@ -27,15 +27,8 @@ import java.io.IOException;
 import java.util.Date;
 
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
-import ucar.nc2.dt.PointObsDataset;
-import ucar.nc2.dt.point.PointObsDatasetFactory;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.DiskCache2;
 
 /** Test TestNcml - AggExisting  in the JUnit framework. */
 

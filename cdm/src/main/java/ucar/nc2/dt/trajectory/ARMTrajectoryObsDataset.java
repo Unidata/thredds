@@ -4,6 +4,8 @@ package ucar.nc2.dt.trajectory;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.dt.TypedDataset;
+import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -25,7 +27,7 @@ import java.util.List;
  * @author edavis
  * @since Feb 22, 2005T5:37:14 PM
  */
-class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset
+public class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset implements TypedDatasetFactoryIF
 {
   private static String timeDimName = "time";
   private static String timeVarName = "time_offset";
@@ -35,7 +37,7 @@ class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset
 
   private static String trajId = "trajectory data";
 
-  public static boolean isMine( NetcdfDataset ncd )
+  public static boolean isValidFile( NetcdfDataset ncd )
   {
     return ( buildConfig( ncd) != null );
   }
@@ -140,6 +142,14 @@ class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset
 
     return trajConfig;
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new ARMTrajectoryObsDataset( ncd);
+  }
+  public ARMTrajectoryObsDataset() {}
 
   public ARMTrajectoryObsDataset( NetcdfDataset ncd ) throws IOException
   {

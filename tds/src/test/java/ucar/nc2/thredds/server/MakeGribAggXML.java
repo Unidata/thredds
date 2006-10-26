@@ -73,8 +73,8 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
         out.println("***CAN'T OPEN "+dd.getName());
         return;
       }
-      process( result.gridDataset.getNetcdfFile());
-      result.gridDataset.close();
+      process( result.tds.getNetcdfFile());
+      result.tds.close();
 
     } catch (IOException e) {
       e.printStackTrace();

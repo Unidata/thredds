@@ -45,7 +45,7 @@ import java.io.IOException;
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
-public class DapperDataset extends PointObsDatasetImpl {
+public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
   static private final String ID = "_id";
 
   static public boolean isValidFile(NetcdfFile ds) {
@@ -90,6 +90,14 @@ public class DapperDataset extends PointObsDatasetImpl {
     String name = v.getParentStructure().getName();
     return(Structure) ds.findVariable(name);
   }
+
+  /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new DapperDataset( ncd);
+  }
+  public DapperDataset() {}
 
   /////////////////////////////////////////////////
   protected DODSNetcdfFile dodsFile;

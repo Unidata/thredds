@@ -21,6 +21,7 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 import ucar.ma2.StructureData;
@@ -46,23 +47,29 @@ import java.io.IOException;
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
-public class OldUnidataPointObsDataset extends PointObsDatasetImpl {
+public class OldUnidataPointObsDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
   static private String latName = "lat";
   static private String lonName = "lon";
   static private String altName = "Depth";
   static private String timeName = "timeObs";
 
   static public boolean isValidFile(NetcdfFile ds) {
-    Structure recordVar = (Structure) ds.findVariable("record");
-    if (null == recordVar) return false;
-
-    if (recordVar.findVariable(latName) == null) return false;
-    if (recordVar.findVariable(lonName) == null) return false;
-    if (recordVar.findVariable(altName) == null) return false;
-    if (recordVar.findVariable(timeName) == null) return false;
+    if (!ds.hasUnlimitedDimension()) return false;
+    if (ds.findVariable(latName) == null) return false;
+    if (ds.findVariable(lonName) == null) return false;
+    if (ds.findVariable(altName) == null) return false;
+    if (ds.findVariable(timeName) == null) return false;
 
     return true;
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new OldUnidataPointObsDataset( ncd);
+  }
+  public OldUnidataPointObsDataset() {}
 
   private RecordDatasetHelper recordHelper;
   private ArrayList records;

@@ -6,12 +6,9 @@ import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
-import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.nc2.dt.PointObsDatatype;
-import ucar.nc2.dt.DataIterator;
+import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.Range;
 import ucar.ma2.Array;
@@ -54,7 +51,8 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      me = TrajectoryObsDatasetFactory.open( location);
+      StringBuffer errlog = new StringBuffer();
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -111,7 +109,8 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      me = TrajectoryObsDatasetFactory.open( location );
+      StringBuffer errlog = new StringBuffer();
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -165,7 +164,8 @@ public class TestRafTrajectoryObsDataset extends TestCase
     location = testFilePath + "/" + test_Raf_1_3_NoRecvar_FileName;
     try
     {
-      me = TrajectoryObsDatasetFactory.open( location );
+      StringBuffer errlog = new StringBuffer();
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -195,7 +195,8 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      me = TrajectoryObsDatasetFactory.open( location );
+      StringBuffer errlog = new StringBuffer();
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -246,7 +247,8 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      me = TrajectoryObsDatasetFactory.open( location );
+      StringBuffer errlog = new StringBuffer();
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {

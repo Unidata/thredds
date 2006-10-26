@@ -8,6 +8,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
+import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.ma2.Array;
 
 import java.io.IOException;
@@ -119,7 +120,9 @@ public class TestRealTimeUpdate extends TestCase
     TrajectoryObsDataset trajDs;
     try
     {
-      trajDs = TrajectoryObsDatasetFactory.open( testDataFileOut );
+      //trajDs = TrajectoryObsDatasetFactory.open( testDataFileOut );
+      StringBuffer errlog = new StringBuffer();
+      trajDs = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, testDataFileOut, null, errlog);
     }
     catch ( IOException e )
     {

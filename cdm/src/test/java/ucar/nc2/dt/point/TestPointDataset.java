@@ -3,7 +3,6 @@ package ucar.nc2.dt.point;
 import junit.framework.*;
 
 import ucar.ma2.*;
-import ucar.nc2.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
@@ -23,17 +22,20 @@ public class TestPointDataset extends TestCase {
   }
 
   public void testNetcdfDataset() throws IOException {
-    testPointMethods( PointObsDatasetFactory.open( topDir+"Compilation_eq.nc", null, null));
-    testPointMethods( PointObsDatasetFactory.open( topDir+"Earthquake_Mag4_Up_eq.nc", null, null));
-    testPointMethods( PointObsDatasetFactory.open( topDir+"mags_compilation_eq.nc", null, null));
+    testPointMethods( topDir+"Compilation_eq.nc");
+    testPointMethods( topDir+"Earthquake_Mag4_Up_eq.nc");
+    testPointMethods( topDir+"mags_compilation_eq.nc");
   }
 
   public void utestDapperDataset() throws IOException {
-    String url = "http://dapper.pmel.noaa.gov/dapper/epic/puget_prof_ctd.cdp";
-    testPointMethods( PointObsDatasetFactory.open( url, null, null));
+    testPointMethods( "http://dapper.pmel.noaa.gov/dapper/epic/puget_prof_ctd.cdp");
   }
 
-  private void testPointMethods(PointObsDataset pod) throws IOException {
+  private void testPointMethods(String location) throws IOException {
+    StringBuffer sbuff = new StringBuffer();
+    PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, location, null, sbuff);
+    assert pod != null : sbuff.toString();
+
     System.out.println("-----------");
     System.out.println(pod.getDetailInfo());
 

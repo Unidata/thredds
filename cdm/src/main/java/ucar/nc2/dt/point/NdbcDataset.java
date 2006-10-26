@@ -23,6 +23,7 @@ package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 
@@ -43,7 +44,7 @@ import java.util.*;
  */
 
 //  LOOK when from a dods server, record structure not there. Havent dealt with that yet.
-public class NdbcDataset extends StationObsDatasetImpl {
+public class NdbcDataset extends StationObsDatasetImpl  implements TypedDatasetFactoryIF {
   private ArrayInt.D1 dates;
   private RecordDatasetHelper recordHelper;
   private StationImpl station;
@@ -59,11 +60,18 @@ public class NdbcDataset extends StationObsDatasetImpl {
     if (ds.findVariable("lon") == null) return false;
 
     // DODS wont have record !!
-    Variable v = ds.findVariable("record");
-    if ((v == null) || !(v instanceof Structure)) return false;
+    if (!ds.hasUnlimitedDimension()) return false;
 
     return true;
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new NdbcDataset( ncd);
+  }
+  public NdbcDataset() {}
 
   public NdbcDataset(NetcdfFile ds) throws IOException {
     super(ds);

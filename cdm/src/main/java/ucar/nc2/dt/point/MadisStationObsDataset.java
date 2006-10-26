@@ -23,6 +23,7 @@ package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 
@@ -45,7 +46,7 @@ import java.util.*;
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
-public class MadisStationObsDataset extends StationObsDatasetImpl {
+public class MadisStationObsDataset extends StationObsDatasetImpl  implements TypedDatasetFactoryIF {
   private Structure recordVar;
   private RecordDatasetHelper recordHelper;
   private String obsTimeVName, nomTimeVName, stnIdVName, stnDescVName, altVName;
@@ -69,6 +70,14 @@ public class MadisStationObsDataset extends StationObsDatasetImpl {
 
     return true;
   }
+
+    /////////////////////////////////////////////////
+  // TypedDatasetFactoryIF
+  public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    return new MadisStationObsDataset( ncd);
+  }
+  public MadisStationObsDataset() {}
 
   public MadisStationObsDataset(NetcdfFile ds) throws IOException {
     super(ds);
