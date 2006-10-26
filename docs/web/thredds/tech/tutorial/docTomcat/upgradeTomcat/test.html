@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>Testng your TDS installation</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<a href="tomcat.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Steps done as user tomcat" title="Previous: Steps done as user tomcat"></a> <img src="../images/NextArrowDisabled.gif" border="0"   alt="" title=""> <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>  <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>   <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>      <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">Upgrading Tomcat installation for TDS</a>  </span>
+<br>
+<img src="../images/blueline.gif">
+<p>
+<div class="pagetitle">5.2 Testng your TDS installation</div>
+
+
+<p>
+
+At this point there should be a TDS installation. 
+
+<pre>
+- In the ${tomcat_runtime}/logs directory
+% less catalina.out
+The following line should appear if started ok.
+	INFO: Starting service Catalina
+
+Now one should see messages about the TDS server starting up. There
+might be some error messages, but these are usually the result of some
+start up processes not being synchronized. At this point, ignore them.
+
+The tomcat check is to see if a browser can find tomcat
+	http://localhost:8080 
+	should see:
+		If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!
+
+The TDS check is to point your brower at:
+	http://localhost:8080/thredds/catalog.html 
+
+You should see the Thredds catalog. 
+
+<!--
+This initializes the 
+content directories with defaults (after this step, you can edit these 
+without worrying about them being overwritten).
+// -->
+
+</pre>
+
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<img src="../images/blueline.gif">
+<br>
+<a href="tomcat.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Steps done as user tomcat" title="Previous: Steps done as user tomcat"></a> <img src="../images/NextArrowDisabled.gif" border="0"   alt="" title=""> <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>   <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>     <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>     <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">Upgrading Tomcat installation for TDS</a>  </span>
+<p>
+
+</body>
+</html>
+

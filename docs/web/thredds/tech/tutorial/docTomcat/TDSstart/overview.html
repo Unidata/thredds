@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>Overview</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: THREDDS Data Server(TDS) installation" title="Previous: THREDDS Data Server(TDS) installation"></a> <a href="tds.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Installing the TDS" title="Next: Installing the TDS"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>  <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>   <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>      <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">THREDDS Data Server(TDS) installation</a>  </span>
+<br>
+<img src="../images/blueline.gif">
+<p>
+<div class="pagetitle">2.0 Overview</div>
+
+
+<p>
+
+The THREDDS (Thematic Realtime Environmental Distributed Data Services) project
+is developing middleware to bridge the gap between data providers and data 
+users. The goal is to simplify the discovery and use of scientific data and to 
+allow scientific publications and educational materials to reference scientific 
+data. 
+
+<h2>Tomcat Directory Layout</h2>
+<p>
+The Tomcat version is apache-tomcat plus the version number, so the sample is 
+this tutorial is ${tomcat_version} = apache-tomcat-5.5.17.
+
+<p>
+
+The Thredds software is kept under ${tomcat_home}/${tomcat_version}/webapps/thredds. This area is 
+overwritten whenever a new thredds.war file is installed.
+
+<p>
+Any files that you will modify or add are kept under ${tomcat_home}/${tomcat_version}/content/thredds. 
+<p>
+Its a really good idea not to put any files containing passwords here, or 
+anything with security issues. Typically you will only be adding and modifying 
+catalogs.
+
+<p>
+The subdirectories of ${tomcat_home}/${tomcat_version}/content/thredds are used by specific 
+servlets, for example, files in ${tomcat_home}/${tomcat_version}/content/thredds/cataloggen are 
+used by the Catalog Generator servlet, etc.
+
+<p>
+These directories are populated with default values the first time the Thredds 
+applications are run, so its important to start up the Thredds servlet 
+immediately after installing, before you change or add new files that might 
+get overwritten. The presence of an empty file called 
+${tomcat_home}/${tomcat_version}/content/thredds/.INIT indicates whether the default files have 
+been copied - its important not to delete this file.
+
+ 
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<img src="../images/blueline.gif">
+<br>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: THREDDS Data Server(TDS) installation" title="Previous: THREDDS Data Server(TDS) installation"></a> <a href="tds.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Installing the TDS" title="Next: Installing the TDS"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>   <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>     <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>     <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">THREDDS Data Server(TDS) installation</a>  </span>
+<p>
+
+</body>
+</html>
+

@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>Steps done as user tomcat</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<a href="root.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Steps done as root" title="Previous: Steps done as root"></a> <a href="test.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Testing your installation" title="Next: Testing your installation"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>  <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>   <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>      <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">First time Tomcat installation</a>  </span>
+<br>
+<img src="../images/blueline.gif">
+<p>
+<div class="pagetitle">1.2 Steps done as user tomcat</div>
+
+
+<p>
+<pre>
+
+- Go to where you want to install the apache-tomcat distribution
+% cd ~tomcat
+
+- Get tomcat5 distribution ie apache-tomcat-5.5.17.tar.gz from: 
+	<a href="http://tomcat.apache.org">Apache Tomcat</a>
+
+- Unpack distribution  
+% tar xzvf apache-tomcat-5.5.17.tar.gz
+
+<!--
+- Make link from distribution directory to runtime
+% ln -s apache-tomcat-5.5.17 runtime
+//-->
+
+- Distribution directories should look like:
+% ls apache-tomcat-5.5.17
+logs/           NOTICE          server/
+conf/           RUNNING.txt     RELEASE-NOTES
+bin/            work/           common/
+webapps/        LICENSE         shared/
+
+- Go to bin directory and save the original Tomcat scripts in dist
+% cd apache-tomcat-5.5.17/bin
+% mkdir dist
+% cp *sh dist
+
+
+- Tomcat is managed by the above scripts, but the scripts need to be configured
+to make the environment consistent and to give greater control over the 
+variables.  At this time, there are only three variables that need to be
+configured: CATALINA_HOME, JAVA_HOME, and JAVA_OPTS. These variables need to be
+inserted into all the scripts: startup.sh shutdown.sh ...
+
+% edit *.sh
+
+- enter the following environment variables into all the commands. 
+#   CATALINA_HOME   Points at your ${tomcat-home} directory.
+#   JAVA_HOME       Must point at your Java Development Kit installation.
+#   JAVA_OPTS       Java runtime options used when the "start",
+#
+
+This is a sample how the scripts should look like using the sample settings. 
+#!/bin/sh
+# -----------------------------------------------------------------------------
+# Start Script for the CATALINA Server
+#
+# $Id: startup.sh 385888 2006-03-14 21:04:40Z keith $
+# -----------------------------------------------------------------------------
+
+CATALINA_HOME="/opt/tomcat/apache-tomcat-5.5.17"
+export CATALINA_HOME
+JAVA_HOME="/opt/jdk1.5.0_07"
+export JAVA_HOME
+JAVA_OPTS"-Xmx2048m -Xms512m -server"
+export JAVA_OPTS
+
+...
+...
+</pre>
+<p>
+
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<img src="../images/blueline.gif">
+<br>
+<a href="root.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Steps done as root" title="Previous: Steps done as root"></a> <a href="test.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Testing your installation" title="Next: Testing your installation"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>   <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>     <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>     <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">First time Tomcat installation</a>  </span>
+<p>
+
+</body>
+</html>
+

@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>Overview</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: First time THREDDS Data Server installation" title="Previous: First time THREDDS Data Server installation"></a> <a href="tds.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Steps done as user tomcat" title="Next: Steps done as user tomcat"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>  <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>   <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>      <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">First time THREDDS Data Server installation</a>  </span>
+<br>
+<img src="../images/blueline.gif">
+<p>
+<div class="pagetitle">2.0 Overview</div>
+
+
+
+<pre>
+
+Tomcat Directory Layout
+
+The Thredds software is kept under ${tomcat_home}/webapps/thredds. This area is 
+overwritten whenever a new thredds.war file is installed.
+
+Any files that you will modify or add are kept under ${tomcat_home}/content/thredds. 
+Its a really good idea not to put any files containing passwords here, or 
+anything with security issues. Typically you will only be adding and modifying 
+catalogs.
+
+The subdirectories of ${tomcat_home}/content/thredds are used by specific 
+servlets, for example, files in ${tomcat_home}/content/thredds/cataloggen are 
+used by the Catalog Generator servlet, etc.
+
+These directories are populated with default values the first time the Thredds 
+applications are run, so its important to start up the Thredds servlet 
+immediately after installing, before you change or add new files that might 
+get overwritten. The presence of an empty file called 
+${tomcat_home}/content/thredds/.INIT indicates whether the default files have 
+been copied - its important not to delete this file.
+
+ 
+
+The TDS install is really simple, copy a WAR file to the webapps directory. 
+
+</pre>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<img src="../images/blueline.gif">
+<br>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: First time THREDDS Data Server installation" title="Previous: First time THREDDS Data Server installation"></a> <a href="tds.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Steps done as user tomcat" title="Next: Steps done as user tomcat"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>   <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>     <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>     <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">First time THREDDS Data Server installation</a>  </span>
+<p>
+
+</body>
+</html>
+

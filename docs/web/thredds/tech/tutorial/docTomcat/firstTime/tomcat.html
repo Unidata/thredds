@@ -1,0 +1,67 @@
+<html>
+<head>
+<title>Steps done as user tomcat</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<a href="root.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Steps done as root" title="Previous: Steps done as root"></a> <a href="test.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Testng your installation" title="Next: Testng your installation"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>  <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>   <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>      <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">First time Tomcat installation</a>  </span>
+<br>
+<img src="../images/blueline.gif">
+<p>
+<div class="pagetitle">1.2 Steps done as user tomcat</div>
+
+
+
+<pre>
+
+- go to installation point
+	 cd /opt
+
+- unpack distribution  
+	tar xzvf apache-tomcat-5.5.17.tar.gz
+
+- go to bin directory and save original *sh in dist
+	cd tomcat/bin
+	mkdir dist
+	cp *sh dist
+
+- configure the environment variables for user tomcat. By entering all the
+variables into tomcat scripts, it removes the possibility for errors and it
+gives greater control over the variables. A common procedure of creating the
+variables then adding them to beginning of the scripts before the body of the
+scripts. The Unix base system all use the scripts that end with *.sh 
+
+- edit *.sh
+
+- enter the following environment variable into all the commands. 
+#   CATALINA_HOME   May point at your Catalina "build" directory.
+#   JAVA_HOME       Must point at your Java Development Kit installation.
+#   JAVA_OPTS       (Optional) Java runtime options used when the "start",
+#
+
+These are some sample settings. 
+#
+CATALINA_HOME="/opt/tomcat"
+export CATALINA_HOME
+JAVA_HOME="/opt/jdk1.5.0_07"
+export JAVA_HOME
+JAVA_OPTS"-Xmx2048m -Xms512m -server"
+export JAVA_OPTS
+
+
+</pre>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<img src="../images/blueline.gif">
+<br>
+<a href="root.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Steps done as root" title="Previous: Steps done as root"></a> <a href="test.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Testng your installation" title="Next: Testng your installation"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>   <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>     <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>     <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Tomcat & THREDDS Data Server installation and configuration</a>  > <a href="index.html">First time Tomcat installation</a>  </span>
+<p>
+
+</body>
+</html>
+
