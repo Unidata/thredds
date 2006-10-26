@@ -1,0 +1,164 @@
+<html>
+<head>
+<title>Adding new GRIB1 tables</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<a href="overview.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Overview" title="Previous: Overview"></a> <a href="grib2tables.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Adding new parameters to GRIB 2 table" title="Next: Adding new parameters to GRIB 2 table"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>  <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>   <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>      <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Java GRIB library documentation</a>  > <a href="index.html">Adding/Updating External Parameter Tables</a>  </span>
+<br>
+<img src="../images/blueline.gif">
+<p>
+<div class="pagetitle">1.1 Adding new GRIB1 tables</div>
+
+
+<p>
+There are three methods of adding new tables for GRIB 1 files.
+<p>
+<li>Use the GribPDSParamTable.addParameterUserLookup routine to add tables
+<li>Recompile distribution with new tables 
+<li>Modify the distribution grib&lt;version&gt;.jar file 
+
+<p>
+All three methods require that a new parameter table be made using the NCEP
+format that is similar to the following table. Let's call our new table
+gwctab_2.tab.
+<pre>
+
+-1:57:-1:2
+0:var0:undefined
+1:PRES:Pressure [Pa]
+2:PRMSL:Pressure reduced to MSL [Pa]
+3:PTEND:Pressure tendency [Pa/s]
+4:PVORT:Pot. vorticity [km^2/kg/s]
+5:ICAHT:ICAO Standard Atmosphere Reference Height [m]
+6:GP:Geopotential [m^2/s^2]
+...
+</pre>
+
+<p>
+The first line in the sample table above:
+<pre>
+-1:57:-1:2
+</pre>
+<p>
+The syntax is: it always starts with -1, the second number is the center number, the third number
+is the subcenter number or -1, and the forth number is the version number of the
+table. Many centers have different versions of the table depending on the
+dataset to be decoded so it's not unusual to have duplicate lines with the just the last number different. 
+
+<p>
+The rest of the lines in the file follows this format:
+<pre>
+0:var0:undefined
+1:PRES:Pressure [Pa]
+...
+</pre>
+<p>
+The first field is the parameter number,
+the second is the short parameter name, the third is a long parameter name, 
+and the
+forth that is inside the square brackets if it exist is the parameter units that need to be Udunits compatible.
+The maximum number of parameters is 255 and not all numbers need to be present.
+The number 255 is designated for a missing parameter.
+
+<h2>First method: Using the GribPDSParamTable library routine</h2>
+This method requires one to create another table with the new 
+tables names called grib1lookuptable.lst Then the table is read into the 
+library using the addParameterUserLookup routine. 
+
+<p>
+The format of grib1lookuptable.lst is:
+<pre>
+&lt;center&gt;:&lt;subcenter&gt;:&lt;version&gt;:  &lt;table location&gt;
+</pre>
+
+<p>
+so our sample above would look like:
+
+<pre>
+57:     1:      2:      gwctab_2.tab
+
+</pre>
+
+<p>
+gwctab_2.tab can be a relative or absolute path. If the table name doesn't 
+contain a path, it needs to be on the CLASSPATH and located at:
+resources/grib/tables/
+<pre>
+
+For our sample above, resources/grib/tables/gwctab_2.tab
+ 
+</pre>
+<p>
+The calling routine would look like this in your code.
+<pre>
+
+GribPDSParamTable.addParameterUserLookup( "/&lt;absolutePath&gt;/grib1lookuptable.lst")
+</pre>
+<p>
+This library does not read in the actual parameter table until it is requested
+and it will overwrite a previous defined table with the same center, sub-center,
+version number fields.
+
+<h2>Second method: Recompiling the library</h2>
+Since the distribution comes with the source files and a <strong>ant</strong>
+build.xml file, the distribution can be recompile easily.
+
+<pre>
+% cd "where the distribution was unpacked"
+% cd resources/resources/grib/tables 
+% edit tablelookup.lst adding your new table entry using above format
+copy your new table to this directory
+% cd ../../../..
+% ant
+
+</pre>
+<p>
+The new jar file in now located in the build directory.
+At this point your new table can be access in the library without using any 
+special calls.
+
+<h2>Third method: Modifying the grib&lt;version&gt;.jar file</h2>
+This method is similar to the second method but instead of recompiling the
+source code the jar file is modified using the jar file command. 
+It involves replacing the file tablelookup.lst in the jar file and adding
+the new table to the jar file. This method would solve the problem where the
+distrbution is not available or it has a different version of the grib.jar.
+
+<pre>
+
+% cd "location of grib&lt;version&gt;.jar"
+The following directory structure is needed
+% mkdir resources/grib/tables 
+Extract  tablelookup.lst file
+% jar xvf grib&lt;version&gt;.jar  resources/grib/tables/tablelookup.lst
+% cd resources/grib/tables 
+% edit tablelookup.lst adding your new table entry using above format
+copy your new table to this directory
+% cd ../../../..
+% jar uvf grib&lt;version&gt;.jar resources/grib/tables/tablelookup.lst 
+% jar uvf grib&lt;version&gt;.jar resources/grib/tables/gwctab_2.tab 
+Check your jar file to see if the new table has been added.
+% jar tvf grib&lt;version&gt;.jar 
+
+</pre>
+<p>
+At this point your new table can be access in the library without using any 
+special calls.
+
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<img src="../images/blueline.gif">
+<br>
+<a href="overview.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Overview" title="Previous: Overview"></a> <a href="grib2tables.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Adding new parameters to GRIB 2 table" title="Next: Adding new parameters to GRIB 2 table"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>   <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>     <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>     <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Java GRIB library documentation</a>  > <a href="index.html">Adding/Updating External Parameter Tables</a>  </span>
+<p>
+
+</body>
+</html>
+

@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>Overview</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Adding/Updating External Parameter Tables" title="Previous: Adding/Updating External Parameter Tables"></a> <a href="grib1tables.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Adding new GRIB1 tables" title="Next: Adding new GRIB1 tables"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>  <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>   <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>      <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Java GRIB library documentation</a>  > <a href="index.html">Adding/Updating External Parameter Tables</a>  </span>
+<br>
+<img src="../images/blueline.gif">
+<p>
+<div class="pagetitle">1.0 Overview</div>
+
+
+<p>
+
+The Java GRIB Library can read GRIdded Binary (GRIB) files in both GRIB-1 and 
+GRIB-2 formats. Decoding GRIB files requires a set of lookup tables for 
+parameters, issuing centers, etc.  The Java GRIB Library comes pre-configured 
+to support commonly used tables, but regional models and modeling centers may 
+use tables that are not in the distribution. If the parameter tables are 
+available, there are routines in the libraries for one to read in the tables or 
+other options available to update the GRIB jar file. One word of caution, the 
+parameter tables have rigid formats that will be detailed in the next sections.
+This format was developed at NWS and it was adopted for the GRIB-1 tables but
+GRIB-2 only has one table that is in XML format.
+
+<p>
+
+If one obtains a new parameter table, Unidata would appreciate if the table and
+the dataset information was sent to support so this information could be
+shared with other members of the community. 
+
+
+<!--
+If your dataset requires a new
+table, retrieve the new table from the data provider in ascii format if possible
+and create a bug for Unidata. In the report include the table and a sample 
+dataset. If it's impossible to include the dataset, try to make it available on the web.  The turn around time for a new Java GRIB Library distribution will 
+probably be a less than a week. If one needs the option to read in a new table,
+ there are procedures in the library to do so but the tables must follow a 
+rigid format for correct decoding. If you follow this route, it would be 
+helpful to relay this information to Unidata so others can share this
+information. 
+<p>
+You can add in specialized tables for both GRIB-1 and GRIB-2 using
+the steps below.  Documentation on the format of the files can be
+found <a href="http://www.unidata.ucar.edu/software/decoders/javadoc/Parameters.txt">here</a>.
+//-->
+
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<img src="../images/blueline.gif">
+<br>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Adding/Updating External Parameter Tables" title="Previous: Adding/Updating External Parameter Tables"></a> <a href="grib1tables.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Adding new GRIB1 tables" title="Next: Adding new GRIB1 tables"></a>  <a href="../toc.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a> <a href="../mainindex.html"><img src="../images/Index.gif" border="0"   alt="Index" title="Index"></a>   <a href="../glossary.html"><img src="../images/Glossary.gif" border="0"   alt="Glossary" title="Glossary"></a>     <a href="../imageindex.html"><img src="../images/Images.gif" border="0"   alt="Images" title="Images"></a>     <a href="../frames.html" target="_top"><img src="../images/Frames.gif" border="0"   alt="Frames" title="Frames"></a> 
+<span class="breadcrumb"><a href="../index.html">Java GRIB library documentation</a>  > <a href="index.html">Adding/Updating External Parameter Tables</a>  </span>
+<p>
+
+</body>
+</html>
+
