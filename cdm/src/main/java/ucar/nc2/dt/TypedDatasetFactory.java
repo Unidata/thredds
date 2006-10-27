@@ -137,12 +137,6 @@ public class TypedDatasetFactory {
    */
   static public TypedDataset open( thredds.catalog.DataType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
 
-    // we have to handle GRID seperately, since we will always get a GridDataset, but it may not have any grids in it
-    // if explicitly requested, give em a GridDataset even if no Grids
-    if (datatype == DataType.GRID) {
-      return new ucar.nc2.dt.grid.GridDataset( ncd);
-    }
-
     // look for a Factory that claims this dataset
     Class useClass = null;
     for (int i = 0; i < transformList.size(); i++) {
@@ -158,9 +152,13 @@ public class TypedDatasetFactory {
     // Factory not found
     if (null == useClass) {
 
+      // if explicitly requested, give em a GridDataset even if no Grids
+      if (datatype == DataType.GRID) {
+        return new ucar.nc2.dt.grid.GridDataset( ncd);
+      }
+
       if (null == datatype) {
-        // if no datatype was requested, give em a GridDataset only if some Grids are found. This is still tricky, since
-        // things can look like grids that arent
+        // if no datatype was requested, give em a GridDataset only if some Grids are found.
         ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset( ncd);
         if (gds.getGrids().size() > 0)
           return gds;

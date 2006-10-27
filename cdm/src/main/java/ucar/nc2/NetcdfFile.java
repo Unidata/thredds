@@ -108,11 +108,6 @@ public class NetcdfFile {
     } catch (Throwable e) {
       log.warn("Cant load class: "+e);
     }
-    try {
-      registerIOProvider( "ucar.nc2.iosp.misc.UspLightning");
-    } catch (Throwable e) {
-      log.warn("Cant load class: "+e);
-    }
   }
 
     /**

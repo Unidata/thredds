@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.17
  Features
+  * ucar.nc2.util.RuntimeConfigParser: read XML config file with runtime classes to be loaded.
   * ucar.nc2.dt.TypedDatasetFactory : new framework for plugging in TypedDataset implementations
   * ForecastModelRunSingleCollection: fmrc files have single hour in them
   * ForecastModelRunCollection, (fmrc) Aggregation.
@@ -51,6 +52,7 @@ Changes in version 2.2.17
   * ucar.ma2.Range.contains() off-by-one
   * NcML aggregation caching wasnt working correctly. 
  ToolsUI
+  * look for -runtimeConfig <filename> on command line
   * seperate out PointObs and StationObsViewer
   * CoordSysTable axis has context menu to show coordinate values
   * Grid Viewer will show ensemble, runtime coordinates if they exist.

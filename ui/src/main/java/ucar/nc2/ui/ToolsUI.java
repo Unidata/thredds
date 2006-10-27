@@ -2688,9 +2688,9 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    SocketMessage sm;
-
+    //////////////////////////////////////////////////////////////////////////
     // handle multiple versions of ToolsUI, along with passing a dataset name
+    SocketMessage sm;
     if (args.length > 0) {
       // munge arguments into a single string
       StringBuffer sbuff = new StringBuffer();
@@ -2727,6 +2727,27 @@ public class ToolsUI extends JPanel {
         }
       });
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // look for run line arguments
+
+    if (args.length > 0) {
+      for (int i = 0; i < args.length; i++) {
+        if (args[i].equalsIgnoreCase("-runtimeConfig") && (i < args.length-1)) {
+          String runtimeConfig = args[i+1];
+          i++;
+          try {
+            StringBuffer errlog = new StringBuffer();
+            FileInputStream fis = new FileInputStream( runtimeConfig);
+            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);
+            System.out.println( errlog);
+          } catch (IOException ioe) {
+            System.out.println( "Error reading "+runtimeConfig+"="+ioe.getMessage());
+          }
+        }
+      }
+    }
+
 
     // prefs storage
     try {

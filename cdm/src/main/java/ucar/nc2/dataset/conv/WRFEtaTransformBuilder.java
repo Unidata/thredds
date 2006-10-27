@@ -36,6 +36,7 @@ import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
   private CoordinateSystem cs;
 
+  public WRFEtaTransformBuilder() {} 
   WRFEtaTransformBuilder(CoordinateSystem cs) {
     this.cs = cs;
   }
