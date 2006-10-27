@@ -2,21 +2,12 @@
 <html><head>
   
   
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <title>Tutorial: Point, Station, Trajectory, Profile Datatypes</title>
-
-  
-
-</head>
-
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Tutorial: Point, Station, Trajectory, Profile Datatypes</title></head>
 <body>
-<h1>Tutorial: Observation Scientific Datatypes</h1>
-
-An <b>observation</b> is a  collection of measurements at one time and location.<br>
-
-<br>
-
-Several types of observation collections are described in the Common Data Model Scientific Datatype layer. A <b>Point Observation dataset</b> contains observations which are not necessarily
+<h1>Tutorial: Point, Station, Trajectory Observation Datatypes</h1>An <b>observation</b>
+is a collection of measurements at one time and location. Several types
+of observation collections are described in the Common Data Model's
+Scientific Datatype layer. A <b>Point Observation dataset</b> contains observations which are not necessarily
 related in space or time. A <b>Station Observation dataset</b> contains time series of
 observations at named locations called <b>stations</b>. A <b> trajectory </b>
 is a collection of observations which are connected along a one
@@ -29,36 +20,52 @@ trajectories.<br>
 
 
 
-<h2>Opening and using a *ObsDataset</h2>
-<h2>Point Obs Dataset</h2>
-<h2>Station Obs Dataset</h2>
-<h2>Trajectory Obs Dataset<br>
+<h2>Opening a Point, Station, or Trajectory Dataset</h2>The correct way to open a PointObsDataset is to use the
+TypedDatasetFactory class. This allows third parties to plug-in
+alternative imlpementations of PointObsDataset, StationObsDataset, or TrajectoryObsDataset at runtime. (Note: The TypedDatasetFactory superceeds the PointObsDatasetFactory and TrajectoryObsDatasetFactory.)<br>
+<br>
+Here is some example code for opening a point dataset:
+<br>
+
+<br>
+<pre>&nbsp; StringBuffer errlog = new StringBuffer();
+</pre>
+<pre>&nbsp; ucar.nc2.dt.<b>PointObsDataset</b> ds = (ucar.nc2.dt.<b>PointObsDataset</b>)<br>  ucar.nc2.dt.TypedDatasetFactory.open( thredds.catalog.DataType.<b>POINT</b>,<br>                                       &nbsp;location, cancelTask, errlog);
+</pre>
+<pre>&nbsp; if (null == ds) <br>&nbsp;&nbsp;  throw Exception("Cant open <b>PointObsDataset</b> at location= "+location+"; error message= "+errlog);<br></pre>
+<p>If the data type is not known ahead of time, call TypedDatasetFactory.open() with <code>null</code> as the first argument.<br>
+</p>
+<h2>Example Station Dataset<br>
 </h2>
-
-
+In ToolsUI:<br>
+<ul>
+  <li>In "THREDDS" tab, open motherlode catalog (http://motherlode.ucar.edu:8080/thredds/catalog.xml)</li>
+  <li>Open "Station Data"</li>
+  <li>Open "Metar Station Data"</li>
+  <li>Select one of the "*.nc" datasets</li>
+</ul>
 <br>
-
-<img alt="Point Observation Data" src="pointObs.png" height="800" width="624"><br>
-
+<img alt="Station Chooser" src="toolsuiStnChooser.png" height="750" width="1095"><br>
+<ul>
+  <li>Click on the OPeNDAP Access link</li>
+</ul>
+<img alt="Station Map" src="toolsuiStnMap.png" height="630" width="1077"><br>
 <br>
+<p>Or, in a browser:</p>
 
-<img alt="Station Observations" src="stationObs1.jpg" height="525" width="775"><br>
-
+<ul>
+<li>Go to motherlode server: <a href="http://motherlode.ucar.edu:8080/thredds/catalog.html">http://motherlode.ucar.edu:8080/thredds/catalog.html</a></li><li>Click on "<a href="http://motherlode.ucar.edu:8080/thredds/idd/obsData.html">Station Data</a>"</li><li>Click on "<a href="http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.html">Metar Station Data</a>"<br>
+  </li><li>Click on one of the "*.nc" METAR datasets<br>
+  </li><li>Scroll to bottom of page and click on "NetCDF-Java Tools (webstart)"</li>
+</ul>
+<h2>Example Trajectory Dataset<br>
+</h2>
+Copy /upc/share/testdata/trajectory/aircraft/uw_kingair_* to mlode:/opt/tomcat9/content/thredds/testData/trajectory/<br>
 <br>
+&nbsp;In ToolsUI (or IDV?):<br>
 
-<img alt="Time Series at Station" src="stationObs2.png" height="381" width="375"><br>
-
-<img alt="Trajectory Observations" src="trajObs.png" height="813" width="651"><br>
-
-
-
-
-
-
-
-
-
-
-
+<ul>
+<li>In "THREDDS" tab, open motherlode catalog (http://motherlode.ucar.edu:9080/thredds/testData/catalog.xml)</li><li>Open "Station Data"</li><li>Open "Metar Station Data"</li><li>Select on of the "*.nc" datasets</li><li>Click on the OPeNDAP Access link</li>
+</ul>
 <br>
 </body></html>
