@@ -2220,7 +2220,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        sobsDataset = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, location, null, log);
+        sobsDataset = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, log);
         if (sobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location+": "+log);
           return false;

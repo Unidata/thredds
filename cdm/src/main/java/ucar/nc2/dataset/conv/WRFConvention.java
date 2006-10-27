@@ -81,33 +81,34 @@ public class WRFConvention extends CoordSysBuilder {
     int projType = att.getNumericValue().intValue();
     double lat1 = findAttributeDouble( ds, "TRUELAT1");
     double lat2 = findAttributeDouble( ds, "TRUELAT2");
-    double centralLat = findAttributeDouble( ds, "CEN_LAT");
-    double centralLon = findAttributeDouble( ds, "CEN_LON");
+    double lat0 = findAttributeDouble( ds, "CEN_LAT");
+    double lon0 = findAttributeDouble( ds, "CEN_LON");
 
-    double standardLon = findAttributeDouble( ds, "STAND_LON");
+    /* double standardLon = findAttributeDouble( ds, "STAND_LON");
     double moadLat = findAttributeDouble( ds, "MOAD_CEN_LAT");
 
-    if (Double.isNaN(standardLon) || Double.isNaN(moadLat)) {
+    if (Double.isNaN(centralLat) || Double.isNaN(centralLon)) {
       userAdvice.append("WARN: no explicit projection origin, projection may be wrong");
       parseInfo.append("WARN: no explicit projection origin, projection may be wrong ");
     }
 
-    double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
-    double lat0 = (Double.isNaN(moadLat)) ? centralLat : moadLat;
+    double lon0 = (Double.isNaN(centralLat)) ? standardLon : centralLon;
+    double lat0 = (Double.isNaN(centralLon)) ? moadLat : centralLat;  */
 
     ProjectionImpl proj = null;
     switch (projType) {
       case 1:
+      case 203:
         proj = new LambertConformal(lat0, lon0, lat1, lat2);
         projCT = new ProjectionCT("Lambert", "FGDC", proj);
         // System.out.println(" using LC "+proj.paramsToString());
         break;
       case 2:
-        proj = new Stereographic(centralLat, centralLon, 1.0);
+        proj = new Stereographic(lat0, lon0, 1.0);
         projCT = new ProjectionCT("Stereographic", "FGDC", proj);
         break;
       case 3:
-        proj = new TransverseMercator(centralLat, centralLon, 1.0);
+        proj = new TransverseMercator(lat0, lon0, 1.0);
         projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
         break;
       default:
@@ -115,7 +116,7 @@ public class WRFConvention extends CoordSysBuilder {
         break;
     }
 
-    if (!Double.isNaN(standardLon) && !Double.isNaN(moadLat) && (proj != null) && (standardLon != centralLon)) {
+    /* if (!Double.isNaN(standardLon) && !Double.isNaN(moadLat) && (proj != null) && (standardLon != centralLon)) {
       LatLonPointImpl lpt0 = new LatLonPointImpl( moadLat,  standardLon);
       LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
       ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
@@ -128,7 +129,7 @@ public class WRFConvention extends CoordSysBuilder {
       }
       centerX = ppt1.getX() - ppt0.getX();
       centerY = ppt1.getY() - ppt0.getY();
-    }
+    } */
 
     // make axes
     ds.addCoordinateAxis( makeXCoordAxis( ds, "x", ds.findDimension("west_east")));

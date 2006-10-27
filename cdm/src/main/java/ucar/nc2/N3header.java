@@ -293,7 +293,7 @@ class N3header {
       if (debugPos) out.println("***att "+i+" pos= "+raf.getFilePointer());
       String name= readString();
       int type = raf.readInt();
-      Attribute att = new Attribute( name);
+      Attribute att = new Attribute( name, false); // no validateion !!
       atts.add( att);
 
       if (type == 2) {

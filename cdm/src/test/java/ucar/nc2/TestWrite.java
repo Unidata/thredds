@@ -31,11 +31,7 @@ public class TestWrite extends TestCase {
     ncfile.addVariable("temperature", DataType.DOUBLE, dims);
     ncfile.addVariableAttribute("temperature", "units", "K");
 
-    int[] attValue = new int[3];
-    attValue[0] = 1;
-    attValue[1] = 2;
-    attValue[2] = 3;
-    Array data = Array.factory( int.class, new int [] {3}, attValue);
+    Array data = Array.factory( int.class, new int [] {3}, new int[] {1,2,3});
     ncfile.addVariableAttribute("temperature", "scale", data);
     ncfile.addVariableAttribute("temperature", "versionD", new Double(1.2));
     ncfile.addVariableAttribute("temperature", "versionF", new Float(1.2));
@@ -165,7 +161,6 @@ public class TestWrite extends TestCase {
     // write String array
     try {
       ArrayChar ac2 = new ArrayChar.D2(names.getLength(), svar_len.getLength());
-      ima = ac2.getIndex();
       ac2.setString( 0, "0 pairs of ladies stockings!");
       ac2.setString( 1, "1 pair of ladies stockings!");
       ac2.setString( 2, "2 pairs of ladies stockings!");

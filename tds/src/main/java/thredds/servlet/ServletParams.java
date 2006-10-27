@@ -33,11 +33,7 @@ import org.jdom.JDOMException;
 import org.jdom.Element;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Jun 2, 2006
- * Time: 1:10:14 PM
- * To change this template use File | Settings | File Templates.
+ * Read and process the params.xml file
  */
 public class ServletParams {
   private static HashMap paramHash = new HashMap();
@@ -47,36 +43,42 @@ public class ServletParams {
     _context = context;
 
     File file = new File(filename);
+    if (!file.exists()) return;
+
     org.jdom.Document doc;
-
-    if (file.exists()) {
-      try {
-        InputStream is = new FileInputStream(filename);
-        SAXBuilder builder = new SAXBuilder();
-        doc = builder.build(is);
-      } catch (IOException e) {
-        log.error("ServletParams: incorrectly formed xml file " + filename, e);
-        return;
-      } catch (JDOMException e) {
-        log.error("ServletParams: incorrectly formed xml file " + filename, e);
-        return;
-      }
-
-      Element rootElem = doc.getRootElement();
-      List paramList = rootElem.getChildren("context-param");
-      for (int j = 0; j < paramList.size(); j++) {
-        Element paramElem = (Element) paramList.get(j);
-        String name = paramElem.getChildText("param-name");
-        String value = paramElem.getChildText("param-value");
-        if ((name == null) || (value == null)) {
-          log.error("ServletParams: incorrectly formed context-param " + name + " " + value);
-          continue;
-        }
-        paramHash.put(name, value);
-        System.out.println("param= "+ name + " " + value);
-      }
+    try {
+      InputStream is = new FileInputStream(filename);
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(is);
+    } catch (IOException e) {
+      log.error("ServletParams: incorrectly formed xml file " + filename, e);
+      return;
+    } catch (JDOMException e) {
+      log.error("ServletParams: incorrectly formed xml file " + filename, e);
+      return;
     }
 
+    Element rootElem = doc.getRootElement();
+    List paramList = rootElem.getChildren("context-param");
+    for (int j = 0; j < paramList.size(); j++) {
+      Element paramElem = (Element) paramList.get(j);
+      String name = paramElem.getChildText("param-name");
+      String value = paramElem.getChildText("param-value");
+      if ((name == null) || (value == null)) {
+        log.error("ServletParams: incorrectly formed context-param " + name + " " + value);
+        continue;
+      }
+      paramHash.put(name, value);
+      System.out.println("param= "+ name + " " + value);
+    }
+
+    Element elem = rootElem.getChild("runtimeConfig");
+    if (elem != null) {
+      StringBuffer errlog = new StringBuffer();
+      ucar.nc2.util.RuntimeConfigParser.read( elem, errlog);
+      if (errlog.length() > 0)
+        log.warn(errlog.toString());
+    }
   }
 
 

@@ -195,8 +195,13 @@ public class Attribute {
 
   /** Constructor. Must also set value */
   public Attribute( String name) {
+    this( name, true);
+  }
+
+  /** Constructor. Must also set value */
+  public Attribute( String name, boolean validate) {
     this.name = name;
-    validate(name);
+    if (validate) validate(name);
   }
 
   private void validate( String name) {
