@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>Overview</title>
+
+</head>
+
+<body>
+<p>
+
+Apache Tomcat is the servlet container that is used in the official Reference 
+Implementation for the Java Servlet and JavaServer Pages technologies. The Java 
+Servlet and JavaServer Pages specifications are developed by Sun under the Java 
+Community Process. The THREDDS Data Server runs inside this environment and it
+depends on Tomcat to provide the necessary data interactions and security
+measures. To make this environment secure, a user tomcat needs to be created 
+with limited permissions. 
+
+<p>
+Also, if Tomcat is going to be accessible from a public network then a firewall
+should be installed in the initial setup. There is another separate section on
+installing other security measures for remote management that we recommend too.
+
+<p>
+To create a secure environment, there is a set of steps that need to be done 
+as root and a set of steps for user tomcat. It is important that tomcat doesn't 
+get more permissions then is necessary, so the steps should be followed closely
+because it is easy to expand the permissions.
+
+</body>
+</html>

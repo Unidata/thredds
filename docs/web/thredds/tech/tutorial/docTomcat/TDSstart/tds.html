@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>Installing the TDS</title>
+
+</head>
+
+<body>
+<p>
+
+<pre>
+
+- Needs to be done as user tomcat 
+
+- In this tutorial:
+${tomcat_home} = /opt/tomcat
+${tomcat_version} = apache-tomcat-5.5.17
+
+- Go to webapps directory
+% cd ${tomcat_home}/${tomcat_version}/webapps
+ie /opt/tomcat/apache-tomcat-5.5.17/webapps
+
+- download latest <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html#TDS">thredds.war</a>
+
+- manual intall:
+	- stop tomcat
+	% ${tomcat_home}/${tomcat_version}/bin/shutdown.sh
+	- remove old TDS installation if there is one
+	% cd ${tomcat_home}/${tomcat_version}/webapps
+	% rm -r thredds
+	- remove tomcat logs
+	% rm ${tomcat_home}/${tomcat_version}/logs/*
+	- start tomcat
+	% ${tomcat_home}/${tomcat_version}/bin/startup.sh
+
+- alternatively one can use the Tomcat Manager once the tomcat users have been 
+  configured. This will be discussed it the Remote Management section
+
+</pre>
+ 
+</body>
+</html>

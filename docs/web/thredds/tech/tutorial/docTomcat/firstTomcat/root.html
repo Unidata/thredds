@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>Steps done as root</title>
+
+</head>
+
+<body>
+<p>
+The following steps can be skipped if one wants to do a trial install of the 
+Tomcat/TDS installation. But be warned, if these steps are not done and the
+TDS server is opened to the whole internet there is the possibility that a 
+security break-in can occur. Actually, it is better to present these steps to
+your system administrator so they are implemented in a manner that is consistent
+with your network environment. Some of the configurations are complex and it's 
+easy to make a mistake, so the administrator's route is  recommended.
+<p>
+<h2> Create unprivileged user tomcat</h2>
+<p>
+
+By default, Tomcat runs on port 8080 and therefore does not require root to run.
+Its important not to run as root. Create a special user, e.g. named "tomcat", 
+which owns everything under ${tomcat_home}, and change to that user to run 
+Tomcat. This special user will need read/write access to ${tomcat_home} and 
+its subdirectories, and read access to your data directories. Don't give the 
+tomcat user any rights in any other directories. If your operating system 
+allows it (e.g. Unix, Linux), you might also not allow the tomcat user to log 
+in directly. You would log in as yourself, then switch to being the 
+tomcat user using the sudo command. One should create a tomcat group and then
+use the 
+<a href="http://linux.about.com/od/commands/l/blcmdl8_adduser.htm">adduser</a>
+ command to make the user tomcat.
+<pre>
+
+% group -c tomcat
+% adduser tomcat -u 49 -d /opt/tomcat -g tomcat -p &lt;passwd&gt;
+% mkdir /opt/tomcat
+% chown tomcat:tomcat /opt/tomcat
+
+</pre>
+<h2> Use a Firewall</h2>
+<p>
+
+Unless you are on a private network, you need a firewall. A firewall restricts 
+who is allowed to access network ports. Make the default setting to disallow 
+all accesses, then enable just the ones that are needed.
+
+<p>
+    <li> Port 8080 should have unrestricted access.
+<p>
+    <li> If you are allowing remote management, you must also open up port 8443. (recommended)
+<p>
+    <li> Tomcat also uses port 8005 to enable shutdown. However, shutdown can only
+      be run from the same machine as Tomcat is running. As long as 
+      untrusted users aren't running on your server machine, you shouldn't 
+      have to worry about this port being open. However, you might want to 
+      restrict public access to it so hackers aren't tempted.
+<p>
+    <li> If you are also using Tomcat in conjunction with another web server like 
+      Apache to handle servlet/JSP requests, you need to allow that server 
+      access to port 8009, but typically that can be restricted to accesses on 
+      the same machine or at least on your subnet. If you are running Tomcat 
+      only standalone (e.g. only running the THREDDS data server) then disable 
+      port 8009 in ${tomcat_home}/conf/server.xml file.
+<p>
+<pre>
+Firewall file: /etc/sysconfig/iptables
+
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+:EXTERNAL - [0:0]
+:INSTRUCTOR - [0:0]
+:WORKSHOP - [0:0]
+#
+# Route INPUT to appropriate bins
+#
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p icmp --icmp-type any -j ACCEPT
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -s 128.117.47.150/32 -j ACCEPT
+-A INPUT -s 128.117.47.169/32 -j INSTRUCTOR
+-A INPUT -s 128.117.140.0/24 -j INSTRUCTOR
+-A INPUT -s 128.117.156.0/24 -j INSTRUCTOR
+-A INPUT -s 128.117.47.0/24 -j WORKSHOP
+-A INPUT -j EXTERNAL
+#
+# Handle instructor connections
+#
+-A INSTRUCTOR -m state --state NEW -p tcp --dport 22 -j ACCEPT
+-A INSTRUCTOR -m state --state NEW -p tcp --dport 5900 -j ACCEPT
+-A INSTRUCTOR -j WORKSHOP
+#
+# Handle workshop connections
+#
+-A WORKSHOP -m state --state NEW -p tcp --dport 388 -j ACCEPT
+-A WORKSHOP -m state --state NEW -p tcp --dport 8080 -j ACCEPT
+-A WORKSHOP -m state --state NEW -p tcp --dport 8443 -j ACCEPT
+-A WORKSHOP -j EXTERNAL
+#
+# Handle external connections
+#
+-A EXTERNAL -j REJECT
+#
+# Mark outgoing packets for keeping state
+#
+-A OUTPUT -d 127.0.0.1 -j ACCEPT
+-A OUTPUT -m state --state NEW -p tcp -j ACCEPT
+-A OUTPUT -m state --state NEW -p udp -j ACCEPT
+COMMIT
+</pre>
+<h2> Resources</h2>
+<p>
+
+<a href="http://www.physics.umd.edu/pnce/user-docs/Linux/firewall.html">Linux Firewall Tips</a>
+<p>
+<a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">HOWTO Firewall</a>
+<p>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Steps done as user tomcat</title>
+
+</head>
+
+<body>
+<p>
+<pre>
+
+- Go to where you want to install the apache-tomcat distribution
+% cd ~tomcat
+
+- Get tomcat5 distribution ie apache-tomcat-5.5.17.tar.gz from: 
+	<a href="http://tomcat.apache.org">Apache Tomcat</a>
+
+- Unpack distribution  
+% tar xzvf apache-tomcat-5.5.17.tar.gz
+
+<!--
+- Make link from distribution directory to runtime
+% ln -s apache-tomcat-5.5.17 runtime
+//-->
+
+- Distribution directories should look like:
+% ls apache-tomcat-5.5.17
+logs/           NOTICE          server/
+conf/           RUNNING.txt     RELEASE-NOTES
+bin/            work/           common/
+webapps/        LICENSE         shared/
+
+- Go to bin directory and save the original Tomcat scripts in dist
+% cd apache-tomcat-5.5.17/bin
+% mkdir dist
+% cp *sh dist
+
+
+- Tomcat is managed by the above scripts, but the scripts need to be configured
+to make the environment consistent and to give greater control over the 
+variables.  At this time, there are only three variables that need to be
+configured: CATALINA_HOME, JAVA_HOME, and JAVA_OPTS. These variables need to be
+inserted into all the scripts: startup.sh shutdown.sh ...
+
+% edit *.sh
+
+- enter the following environment variables into all the commands. 
+#   CATALINA_HOME   Points at your ${tomcat-home} directory.
+#   JAVA_HOME       Must point at your Java Development Kit installation.
+#   JAVA_OPTS       Java runtime options used when the "start",
+#
+
+This is a sample how the scripts should look like using the sample settings. 
+#!/bin/sh
+# -----------------------------------------------------------------------------
+# Start Script for the CATALINA Server
+#
+# $Id: startup.sh 385888 2006-03-14 21:04:40Z keith $
+# -----------------------------------------------------------------------------
+
+CATALINA_HOME="/opt/tomcat/apache-tomcat-5.5.17"
+export CATALINA_HOME
+JAVA_HOME="/opt/jdk1.5.0_07"
+export JAVA_HOME
+JAVA_OPTS"-Xmx2048m -Xms512m -server"
+export JAVA_OPTS
+
+...
+...
+</pre>
+<p>
+
+</body>
+</html>

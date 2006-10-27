@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>Testing your installation</title>
+
+</head>
+
+<body>
+<p>
+
+At this point there should be a basic tomcat installation. To test it, start
+it, check the logs, use a browser, and then stop it.
+
+<pre>
+
+- To start tomcat
+% cd /opt/tomcat/apache-tomcat-5.5.17/bin 
+% ./startup.sh
+
+- To check the logs
+% cd /opt/tomcat/apache-tomcat-5.5.17/logs 
+% less catalina.out
+	The following line should appear if started ok.
+		INFO: Starting service Catalina
+
+  Another check is to see if a browser can find tomcat
+	http://localhost:8080 
+	should see:
+		If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!
+
+- To shut tomcat down
+% cd /opt/tomcat/apache-tomcat-5.5.17/bin 
+% ./shutdown.sh
+
+- Remove the logs files, they have a tendency to get large.
+% cd /opt/tomcat/apache-tomcat-5.5.17/logs 
+% rm *
+
+Your installation is now ready to install the THREDDS Data Server (TDS) that
+will be discussed in it's own section.
+	
+</pre>
+
+<p>
+</body>
+</html>
