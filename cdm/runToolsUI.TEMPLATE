@@ -1,0 +1,5 @@
+CP="@CLASSPATH@"
+
+echo "java -Xmx512m -classpath $CP ucar.nc2.ui.ToolsUI"
+
+java -Xmx512m -classpath $CP ucar.nc2.ui.ToolsUI
