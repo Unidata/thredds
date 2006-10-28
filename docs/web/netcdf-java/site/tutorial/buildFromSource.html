@@ -6,13 +6,16 @@
 <p>The netCDF-java source code is available from the Subversion server at:<br>
 </p>
 <ul>
-  <li>[Available for Workshop] svn://zero/</li>
+  <li>[Available for Workshop] svn://zero/thredds/trunk/</li>
   <li>[Not yet available] <a href="http://www.unidata.ucar.edu/svn/thredds/trunk/">http://www.unidata.ucar.edu/svn/thredds/trunk/</a></li>
 </ul>
 <p>This is the main trunk of the THREDDS project code repository which
 contains the netCDF-java, ToolsUI, and THREDDS Data Server code.<br>
 </p>
 <h3>Check out code</h3>
+<p>To check out all the code from the trunk of the THREDDS subversion repositoryproject code, run the following command:<br>
+</p>
+
 <ul>
   <li><code>svn co svn://zero/thredds/trunk /your/working/directory</code><br>
   </li>
@@ -20,7 +23,7 @@ contains the netCDF-java, ToolsUI, and THREDDS Data Server code.<br>
 <h3>Workshop Update<br>
 </h3>
 <p>Working directories have already been checked out on the workshop
-machines at "/home/workshop/TDS/code/thredds". To update that code:<br>
+machines at "/home/workshop/TDS/code/thredds". To update that code, run these two commands:<br>
 </p>
 <ul>
   <li><code>cd /home/workshop/TDS/code/thredds</code></li>
@@ -32,14 +35,21 @@ machines at "/home/workshop/TDS/code/thredds". To update that code:<br>
 <ul>
   <li><code>compile</code> - compiles the netCDF-Java/CDM code<br>
   </li>
-  <li><code>compileUI</code> - compiles the netCDF-Java/CDM and ToolsUI code<br>
+  
+
+  <li><code>makeJar</code>
+- builds the minimal netCDF library, ncCore-*.jar, which reads netCDF-3
+files; and the full netCDF library, netcdf-*.jar, which implements the
+full CDM.</li><li><code>compileUI</code> - compiles the netCDF-Java/CDM and ToolsUI code</li>
+  <li><code>makeJarUI</code> - builds the netCDF ToolsUI library, netcdfUI-*.jar, which includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.<br>
   </li>
 
-  <li><code>makeJar</code> - builds the ncCore-*.jar and netcdf-*.jar files<br>
-  </li>
 
 </ul>
 <h2>Build</h2>
+<p>To build the code needed to run the ToolsUI, run these two commands:<br>
+</p>
+
 <ul>
   <li><code>cd cdm</code></li>
   <li><code>ant compileUI</code><br>
@@ -47,11 +57,17 @@ machines at "/home/workshop/TDS/code/thredds". To update that code:<br>
 </ul>
 
 <h2>Run ToolsUI</h2>
+<p>To run the netCDF ToolsUI application, run the following script:<br>
+</p>
+
 <ul>
-  <li>Need to get script setup here ...<br>
-<code></code></li><li><code>java -Xmx512m -classpath target/classes;../lib/external/*.jar ucar.nc2.ui.ToolsUI</code><br>
+  <li><code>target/runToolsUI</code></li></ul>which runs the following command (with the classpath expanded):<br>
+<ul>
+  <li><code>java -Xmx512m -classpath &lt;classpath&gt; ucar.nc2.ui.ToolsUI</code><br>
   </li>
 
+
 </ul>
+
 <br>
 </body></html>
