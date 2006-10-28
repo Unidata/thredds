@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Writing a Datatype Implementation</title><meta content="Ethan Davis" name="author"></head><body>
+<h1>Tutorial: Writing a Datatype Implementation</h1>
+<h2>Overview<br>
+</h2>
+<p>To use a dataset at the scientific datatype layer, the datatype must be determined. This is done by an implementation of a <b>ucar.nc2.dt.TypedDataset</b>.<br>
+</p>
+<br>
+<p><img src="../images/PointObs.png" height="337" width="715"><br>
+</p>
+<p>The TypedDataset contains a number methods to provide access to basic dataset discovery metadata:<br>
+</p>
+<pre>  public String getTitle();<br>  public String getDescription();<br>  public String getLocationURI();<br>  public Date getStartDate();<br>  public Date getEndDate();<br>  public ucar.unidata.geoloc.LatLonRect getBoundingBox();<br></pre>
+<p>It also provides access to underlying netCDF objects:<br>
+</p>
+<pre>  /** Return underlying NetcdfFile, or null if none. */<br>  public ucar.nc2.NetcdfFile getNetcdfFile();<br><br> &nbsp;public List getGlobalAttributes();<br>  public ucar.nc2.Attribute findGlobalAttributeIgnoreCase( String name );<br>  public List getDataVariables();<br>  public VariableSimpleIF getDataVariable( String shortName);<br></pre>
+<p>As well as some housekeeping methods:<br>
+</p>
+<pre>  /** Close all resources associated with this dataset. */<br>  public void close() throws java.io.IOException;<br><br>  /** Show debug / underlying implementation details */<br>  public String getDetailInfo();<br></pre>
+<p>Various specializations are available and provide query and access capabilities specific to the Datatype. For instance, <b>PointObsDataset</b>, <b>StationObsDataset</b>, <b>TrajectoryObsDataset</b>, <b>GridDataset</b> and <b>RadialDatasetSweep</b>. (all part of the <b>ucar.nc2.dt</b> package) are all subclasses of <b>TypedDataset</b>.<br>
+</p>
+<p>In general, a seperate <b>TypedDataset</b> class must be written for each convention for encoding a dataset of a given type. This obviously is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their datasets. Also, we are working on developing a new <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">convention for observation data</a> that would be appropriate for point, station, and trajectory datasets. Radar data convention (???).<br>
+</p>
+<p>A number of existing "conventions" are supported in each of the
+subtypes mentioned (point, station, trajectory, grid, and radial). <br>
+</p>
+<h2>Details on TrajectoryObsDataset</h2>
+<p>The <b>TrajectoryObsDataset</b> interface provides access to a
+collection of trajectories. Each trajectory in the collection is then
+accessed through an instance of the <b>TrajectoryObsDatatype</b> interface. As with TypedDataset, some basic dataset discovery metadata is available for each trajectory:<br>
+</p>
+<pre>  public String getId();<br>  public String getDescription();<br>  public Date getStartDate();<br>  public Date getEndDate();<br> &nbsp;public ucar.unidata.geoloc.LatLonRect getBoundingBox();<br></pre>
+<p>as is the size of the trajectory and a description of the variables available:<br>
+</p>
+<pre>  public int getNumberPoints();<br><br>  public List getDataVariables();<br>  public VariableSimpleIF getDataVariable( String name );<br></pre>
+<p>A number of ways to access the data are also provided. This includes access to each individual point in the trajectory:<br>
+</p>
+<pre>  public PointObsDatatype getPointObsData(int point) throws IOException;<br></pre>
+<p>a method for iterating through each point in the trajectory:<br>
+</p>
+<pre>  public DataIterator getDataIterator( int bufferSize ) throws IOException;<br></pre>
+<p>and several methods for accessing a range of data points from a trajectory:<br>
+</p>
+<pre>  public ucar.ma2.Range getFullRange();<br>  public ucar.ma2.Range getPointRange( int point) throws InvalidRangeException;<br>  public ucar.ma2.Range getRange( int start, int end, int stride) throws InvalidRangeException;<br><br>  public ucar.ma2.Array getTime( ucar.ma2.Range range) throws IOException, InvalidRangeException;<br>  public ucar.ma2.Array getLatitude( ucar.ma2.Range range) throws IOException, InvalidRangeException;<br>  public ucar.ma2.Array getLongitude( ucar.ma2.Range range) throws IOException, InvalidRangeException;<br>  public ucar.ma2.Array getElevation( ucar.ma2.Range range) throws IOException, InvalidRangeException;<br>  public ucar.ma2.Array getData( ucar.ma2.Range range, String parameterName) throws IOException, InvalidRangeException;<br></pre>
+<h3>Implementation Issues</h3>
+<ol>
+  <li><b>Identifying conventions</b>: Currently there is not a broadly recognized convention for trajectory
+data. This means that various conventions are in use, some well defined
+and others not. Thus, determining the convention a particular dataset
+follows is not a trivial matter.</li>
+  <li><b>Determining time, latitude, longitude, elevation coordinates</b>: How time and location is encoded in a particular dataset depends on the
+convention followed by that dataset. Which variables are the time and
+location coordinates is not always well defined in a given convention.
+Many of the current implementations use various heuristics to determine
+the coordinates.</li>
+  <li><b>Implementing the various data access methods</b>: The ease
+with which the various data access methods can be implemented depends
+on the structure of the dataset. Access patterns vary greatly between
+point by point access and access over a range. (??? For instance, a
+netCDF file with time as the unlimited dimension will ... ???)<br>
+  </li>
+</ol>
+<p><br>
+</p>
+<p><br>
+<br>
+</p>
+</body></html>

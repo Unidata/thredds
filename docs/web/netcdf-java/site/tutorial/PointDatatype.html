@@ -2,7 +2,7 @@
 <html><head>
   
   
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Tutorial: Point, Station, Trajectory, Profile Datatypes</title></head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Tutorial: Point, Station, Trajectory Datatypes</title></head>
 <body>
 <h1>Tutorial: Point, Station, Trajectory Observation Datatypes</h1>An <b>observation</b>
 is a collection of measurements at one time and location. Several types
@@ -20,18 +20,19 @@ trajectories.<br>
 
 
 
-<h2>Opening a Point, Station, or Trajectory Dataset</h2>The correct way to open a PointObsDataset is to use the
+<h2>Opening a Point, Station, or Trajectory Dataset</h2>The correct way
+to open a PointObsDataset is to use the
 TypedDatasetFactory class. This allows third parties to plug-in
-alternative imlpementations of PointObsDataset, StationObsDataset, or TrajectoryObsDataset at runtime. (Note: The TypedDatasetFactory superceeds the PointObsDatasetFactory and TrajectoryObsDatasetFactory.)<br>
+alternative imlpementations of PointObsDataset, StationObsDataset, or
+TrajectoryObsDataset at runtime. (Note: The TypedDatasetFactory
+superceeds the PointObsDatasetFactory and TrajectoryObsDatasetFactory.)<br>
 <br>
 Here is some example code for opening a point dataset:
 <br>
 
 <br>
-<pre>&nbsp; StringBuffer errlog = new StringBuffer();
-</pre>
-<pre>&nbsp; ucar.nc2.dt.<b>PointObsDataset</b> ds = (ucar.nc2.dt.<b>PointObsDataset</b>)<br>  ucar.nc2.dt.TypedDatasetFactory.open( thredds.catalog.DataType.<b>POINT</b>,<br>                                       &nbsp;location, cancelTask, errlog);
-</pre>
+<pre>&nbsp; StringBuffer errlog = new StringBuffer();<br></pre>
+<pre>&nbsp; ucar.nc2.dt.<b>PointObsDataset</b> ds = (ucar.nc2.dt.<b>PointObsDataset</b>)<br>  ucar.nc2.dt.TypedDatasetFactory.open( thredds.catalog.DataType.<b>POINT</b>,<br>                                       &nbsp;location, cancelTask, errlog);<br></pre>
 <pre>&nbsp; if (null == ds) <br>&nbsp;&nbsp;  throw Exception("Cant open <b>PointObsDataset</b> at location= "+location+"; error message= "+errlog);<br></pre>
 <p>If the data type is not known ahead of time, call TypedDatasetFactory.open() with <code>null</code> as the first argument.<br>
 </p>
@@ -39,7 +40,7 @@ Here is some example code for opening a point dataset:
 </h2>
 In ToolsUI:<br>
 <ul>
-  <li>In "THREDDS" tab, open motherlode catalog (http://motherlode.ucar.edu:8080/thredds/catalog.xml)</li>
+  <li>In the "THREDDS" tab, open motherlode catalog (http://motherlode.ucar.edu:8080/thredds/catalog.xml)</li>
   <li>Open "Station Data"</li>
   <li>Open "Metar Station Data"</li>
   <li>Select one of the "*.nc" datasets</li>
@@ -60,12 +61,19 @@ In ToolsUI:<br>
 </ul>
 <h2>Example Trajectory Dataset<br>
 </h2>
-Copy /upc/share/testdata/trajectory/aircraft/uw_kingair_* to mlode:/opt/tomcat9/content/thredds/testData/trajectory/<br>
-<br>
-&nbsp;In ToolsUI (or IDV?):<br>
+<p>
+&nbsp;In ToolsUI (or IDV?):</p>
+
 
 <ul>
-<li>In "THREDDS" tab, open motherlode catalog (http://motherlode.ucar.edu:9080/thredds/testData/catalog.xml)</li><li>Open "Station Data"</li><li>Open "Metar Station Data"</li><li>Select on of the "*.nc" datasets</li><li>Click on the OPeNDAP Access link</li>
-</ul>
+<li>In the "Trajectory" tab, click on the folder icon to the right of the dataset URL window.</li><li>Navigate to /data/nj22/trajectory/ and select a "*.nc" dataset.<br>
+  </li>
+<li>Select the trajectory item from the list (there will probably be only one item in the list).</li><li>[Optional] Select the world map icon and select a better map background.<br>
+  </li>
+  <li>Zoom in to data<br>
+  </li>
+</ul><img alt="Trajectory Map" src="toolsuiTrajMap.png" height="765" width="960"><br>
+<br>
+
 <br>
 </body></html>

@@ -1,24 +1,57 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>NetCDF-Java: Building From Source</title><meta content="Ethan Davis" name="author"></head><body>
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>NetCDF-Java: Building From Source</title><meta content="Ethan Davis" name="author"></head>
+<body>
 <h1>Tutorial: Building From Source</h1>
 <h2>Subversion</h2>
-<p>[Available for Workshop] svn://zero/thredds/trunk/<br>
-[Not yet available] http://www.unidata.ucar.edu/svn/thredds/trunk/<br>
+<p>The netCDF-java source code is available from the Subversion server at:<br>
 </p>
-<pre>svn co svn://zero/thredds/trunk/<br></pre>
-<h2>Source Zip File</h2>
-<p>The source zip file is available from the netCDF-Java web page (<a href="http://www.unidata.ucar.edu/software/netcdf-java/">http://www.unidata.ucar.edu/software/netcdf-java/</a>). Download the current "ncSrc-*.zip" file and unzip.&nbsp;<br>
- </p>
-<h2>Ant Targets</h2>
 <ul>
-  <li><code>compile</code> - compile ...<br>
-  </li>
-  <li><code>compileUI</code></li>
-  <li><code>makeJar</code></li>
+  <li>[Available for Workshop] svn://zero/</li>
+  <li>[Not yet available] <a href="http://www.unidata.ucar.edu/svn/thredds/trunk/">http://www.unidata.ucar.edu/svn/thredds/trunk/</a></li>
 </ul>
-<h2>Building</h2>
-<pre>ant compileUI<br></pre>
-<hr size="2" width="100%">
-<h2>Building Against Jar Files<br>
-</h2>
+<p>This is the main trunk of the THREDDS project code repository which
+contains the netCDF-java, ToolsUI, and THREDDS Data Server code.<br>
+</p>
+<h3>Check out code</h3>
+<ul>
+  <li><code>svn co svn://zero/thredds/trunk /your/working/directory</code><br>
+  </li>
+</ul>
+<h3>Workshop Update<br>
+</h3>
+<p>Working directories have already been checked out on the workshop
+machines at "/home/workshop/TDS/code/thredds". To update that code:<br>
+</p>
+<ul>
+  <li><code>cd /home/workshop/TDS/code/thredds</code></li>
+  <li><code>svn update</code><br>
+  </li>
+</ul>
+
+<h2>Main Ant Targets</h2>
+<ul>
+  <li><code>compile</code> - compiles the netCDF-Java/CDM code<br>
+  </li>
+  <li><code>compileUI</code> - compiles the netCDF-Java/CDM and ToolsUI code<br>
+  </li>
+
+  <li><code>makeJar</code> - builds the ncCore-*.jar and netcdf-*.jar files<br>
+  </li>
+
+</ul>
+<h2>Build</h2>
+<ul>
+  <li><code>cd cdm</code></li>
+  <li><code>ant compileUI</code><br>
+  </li>
+</ul>
+
+<h2>Run ToolsUI</h2>
+<ul>
+  <li>Need to get script setup here ...<br>
+<code></code></li><li><code>java -Xmx512m -classpath target/classes;../lib/external/*.jar ucar.nc2.ui.ToolsUI</code><br>
+  </li>
+
+</ul>
+<br>
 </body></html>
