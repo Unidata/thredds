@@ -35,8 +35,8 @@ index.html
 >title: Writing and maintaining catalogs
 >>CatalogPrimer.html
 >>TDSConfiguration.html
->>title:DatasetScan
->>title:CatalogGen
+>>DatasetScan.html
+>>CatalogGen.html
 
 >title:Using NcML in TDS
 >>NcML.htm

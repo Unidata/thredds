@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>TDS Configuration - datasetScan</title>
-  <meta content="Ethan Davis" name="author">
-</head><body>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>TDS Configuration - datasetScan</title>
+  
+  <meta content="Ethan Davis" name="author"></head>
+<body>
 <h1>TDS Config - datasetScan</h1>
 
 <p>The <b>datasetScan</b> element specifies the data locations that the
@@ -161,17 +161,14 @@ with "2003", "2004", or "2005":</p>
 
 
 
-<p>Adding a filter to the above example:
+<p>Returning to the first example on this page, adding a filter:
 </p>
 
 
 
 
-<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" &gt;<br>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>  &lt;filter&gt;<br>    &lt;include wildcard="*.wmo" /&gt;<br>  &lt;/filter&gt;<br>&lt;/datasetScan &gt;<br></pre>
+<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" &gt;<br>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>  &lt;filter&gt;<br>    &lt;include wildcard="*.wmo" /&gt;<br>  &lt;/filter&gt;<br>&lt;/datasetScan &gt;<br></pre>results in:<br>
 
-
-
-results in:<br>
 
 
 <pre>&lt;catalog ...&gt;<br>  &lt;service name="myserv" ... /&gt;<br>  &lt;dataset name="GRIB2 Data"&gt;<br>    &lt;metadata inherited="true"&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br>    &lt;dataset name="data1.wmo" urlPath="data1.wmo" /&gt;<br>    &lt;dataset name="data2.wmo" urlPath="data2.wmo" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
@@ -190,9 +187,9 @@ erroneous catalog entries. </p>
 <p>All generated datasets are given an ID. The IDs are simply the path
 of the dataset appended to the datasetScan path value or, if one
 exists, the ID of the datasetScan element. For the example above, the file
-"c:/my/data/test1.nc" would result in a dataset with the ID
-"myData/test1.nc". By adding an ID of "my/data" to the datasetScan
-element, the resulting ID would change to "my/data/test1.nc".</p>
+"c:/data/grib2/data1.wmo" would result in a dataset with the ID
+"grib2/data1.wmo". By adding an ID of "my/data/model" to the datasetScan
+element, the resulting ID would change to "my/data/model/data1.wmo".</p>
 
 
 
@@ -326,7 +323,7 @@ look like this:</p>
 
 
 
-<pre>  <strong>&lt;service name="latest" type="Resolver" base="" /&gt;</strong><br>  &lt;datasetScan name="My Data" path="myData" location="c:/my/data/" serviceName="myserver" &gt;<br>    <strong>&lt;addProxies&gt;<br>      &lt;simpleLatest /&gt;<br>      &lt;latestComplete name="latestComplete.xml" top="true" serviceName="latest" lastModifiedLimit="60" /&gt;<br>    &lt;/addProxies&gt;<br></strong>  &lt;/datasetScan&gt;</pre>
+<pre>  <strong>&lt;service name="latest" type="Resolver" base="" /&gt;</strong><br>  &lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver" &gt;<br>    <strong>&lt;addProxies&gt;<br>      &lt;simpleLatest /&gt;<br>      &lt;latestComplete name="latestComplete.xml" top="true" serviceName="latest" lastModifiedLimit="60" /&gt;<br>    &lt;/addProxies&gt;<br></strong>  &lt;/datasetScan&gt;</pre>
 
 
 <p>The <strong>latestComplete</strong> element includes a <strong>name</strong> attribute which provides the name of the proxy dataset, the <strong>serviceName</strong> attribute that references the service used by the proxy dataset, the <strong>top</strong>
@@ -345,7 +342,7 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
-<pre>  &lt;dataset name="My Data" ID="testdata"&gt;<br><strong>    &lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</strong><br><strong>    &lt;dataset name="latest.xml" serviceName="latest" urlPath="latest.xml" /&gt;</strong><strong></strong><br>    &lt;dataset name="200610130730.nc" urlPath="200610130730.nc" /&gt;<br>  <strong>&nbsp; </strong>&lt;dataset name="200406190916.nc" urlPath="200406190916.nc" /&gt;<strong><br></strong>  &lt;/dataset&gt;<br></pre>
+<pre>  &lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br><strong>    &lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</strong><br><strong>    &lt;dataset name="latest.xml" serviceName="latest" urlPath="latest.xml" /&gt;</strong><strong></strong><br>    &lt;dataset name="200610130730.nc" urlPath="200610130730.nc" /&gt;<br>  <strong>&nbsp; </strong>&lt;dataset name="200406190916.nc" urlPath="200406190916.nc" /&gt;<strong><br></strong>  &lt;/dataset&gt;<br></pre>
 
 
 <p>More details are available in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.1.0.1.server.html#addProxies_Element">Server-side InvCatalog specification</a> document.</p>
@@ -363,7 +360,7 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
-<pre>&lt;datasetScan name="My Data" path="myData" location="c:/my/data/" serviceName="myserver"&gt;<br>&nbsp; &lt;addDatasetSize /&gt;<br>&lt;/datasetScan&gt;</pre>
+<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt;<br>&nbsp; &lt;addDatasetSize /&gt;<br>&lt;/datasetScan&gt;</pre>
 
 
 
@@ -375,7 +372,7 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
-<pre>&lt;dataset name="My Data" ID="testdata"&gt;<br>  &lt;dataset name="test1.nc" urlPath="test1.nc"&gt;<br>    <strong>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;dataset name="test2.nc" urlPath="test2.nc"&gt;<br><strong>    &lt;dataSize units="Mbytes"&gt;4.961&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;catalogRef xlink:href="subdir/catalog.xml" xlink:title="subdir" /&gt;<br>&lt;/dataset&gt;</pre>
+<pre>&lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br>  &lt;dataset name="data1.wmo" urlPath="data1.wmo"&gt;<br>    <strong>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;dataset name="data2.wmo" urlPath="data2.wmo"&gt;<br><strong>    &lt;dataSize units="Mbytes"&gt;4.961&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;catalogRef xlink:href="subdir/catalog.xml" xlink:title="subdir" /&gt;<br>&lt;/dataset&gt;</pre>
 
 
 
@@ -421,7 +418,7 @@ determine the time coverage: </p>
 
 
 
-<pre>&lt;datasetScan name="My Data" path="myData" location="c:/my/data/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_gfs_211.nc$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
+<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_</strong><strong>([0-9]{2})</strong><strong>([0-9]{2}).wmo$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
 
 
 
