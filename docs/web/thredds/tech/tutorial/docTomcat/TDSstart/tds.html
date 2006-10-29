@@ -33,7 +33,24 @@ ie /opt/tomcat/apache-tomcat-5.5.17/webapps
 	% ${tomcat_home}/${tomcat_version}/bin/startup.sh
 
 - alternatively one can use the Tomcat Manager once the tomcat users have been 
-  configured. This will be discussed it the Remote Management section
+  configured. Here's the default tomcat-users.xml:
+
+&lt;!--
+  NOTE:  By default, no user is included in the "manager" role required
+  to operate the "/manager" web application.  If you wish to use this app,
+  you must define such a user - the username and password are arbitrary.
+--&gt;
+&lt;tomcat-users&gt;
+  &lt;user name="tomcat" password="tomcat" roles="tomcat" /&gt;
+  &lt;user name="role1"  password="tomcat" roles="role1"  /&gt;
+  &lt;user name="both"   password="tomcat" roles="tomcat,role1" /&gt;
+&lt;/tomcat-users&gt;
+
+Using a browser, go to:
+
+http:/localhost:8080
+
+click on management, tomcat passwd tomcat
 
 </pre>
  

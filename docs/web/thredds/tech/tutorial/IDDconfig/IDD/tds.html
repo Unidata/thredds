@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>Configurating the TDS catalogs</title>
+
+</head>
+
+<body>
+<p>
+At this point the datasets are in the correct location and they are being
+managed correctly. The final part is to configure the TDS to access the 
+datasets.
+When tomcat is started for the first time with the TDS installed, it creates a
+content directory that is peer to the bin, logs, conf, webapps, ... directories
+and it is populated with the default TDS configuration. 
+
+<h2>Configure the IDD/TDS catalogs</h2>
+
+<p>
+The configuration is simple, change the default catalog to the IDD catalog that
+is included in the TDS distribution. 
+
+<pre>
+ 
+Change to the top catalog location
+% cd ${tomcat_home}/${tomcat_version}/content/thredds
+Save the default catalog (catalog.xml)
+% mv catalog.xml catalog.dist
+Get the IDD/TDS catalog from the distribution
+% cp idd/catalog.xml .
+
+</pre>
+
+<p>
+As user tomcat, stop and start tomcat.
+
+<pre>
+
+% cd ${tomcat_home}/${tomcat_version}/bin/shutdown.sh
+% cd ${tomcat_home}/${tomcat_version}/bin/startup.sh
+
+</pre>
+<p>
+At this point the IDD/TDS is configured to access the IDD datasets.
+ 
+</body>
+</html>

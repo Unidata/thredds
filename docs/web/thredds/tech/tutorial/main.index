@@ -1,8 +1,9 @@
 index.html
-!TUIthreddsTab.jpg
-!fileIcon.jpg
-!THREDDSlogo.jpg
-!modelAggs.jpg
+-TUIthreddsTab.jpg
+-fileIcon.jpg
+-THREDDSlogo.jpg
+-modelAggs.jpg
+-.htaccess
 
 >title: TDS Overview
 
@@ -27,8 +28,8 @@ index.html
 
 >docTomcat/upgrade/index.html
 >>docTomcat/upgrade/overview.html
->>docTomcat/upgrade/root.html
->>docTomcat/upgrade/tomcat.html
+>>docTomcat/upgrade/tomcatTDS.html
+>>docTomcat/upgrade/tds.html
 >>docTomcat/upgrade/test.html
 
 >title: Writing and maintaining catalogs
@@ -71,6 +72,21 @@ index.html
 >>title:LEAD
 
 >title:Serving IDD data with TDS
+
+-IDDconfig/IDD/pqact.thredds
+-IDDconfig/IDD/pqact.threddsradar
+-IDDconfig/IDD/pqact.threddsconduit
+-IDDconfig/IDD/manageFilesDirs.pl
+-IDDconfig/IDD/manageFilesDirs.conf
+-IDDconfig/IDD/GribIndexer.pl
+-IDDconfig/IDD/GribIndexer.conf
+
+>>IDDconfig/IDD/overview.html
+>>IDDconfig/IDD/dataset.html
+>>IDDconfig/IDD/manage.html
+>>IDDconfig/IDD/tds.html
+>>IDDconfig/IDD/test.html
+
 
 >title:Miscellaneous features and tips
 
