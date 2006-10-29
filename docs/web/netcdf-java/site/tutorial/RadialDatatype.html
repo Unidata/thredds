@@ -39,15 +39,17 @@ interface classes, found in the <strong>ucar.nc2.dt</strong> package: </p>
  style=""><span style=""><span style=""><o:p><span style=""><span
  style=""><span style=""><strong>ucar.nc2.dt.radial</strong> to open a
 Radial Dataset:</span></span></span></o:p></span></span></span></p>
-<pre class="MsoNormal"><span style=""><span class="CODE"><span style="">&nbsp; </span>RadialDatasetSweepFactory datasetFactory  = <strong>new ucar.nc2.dt.radial.RadialDatasetSweepFactory()</strong>;<o:p></o:p></span></span><span
+<pre class="MsoNormal"><span style=""><span class="CODE"><span style="">&nbsp; </span><strong></strong></span></span><span
+ style=""><span class="CODE"><span style=""></span>RadialDatasetSweep</span></span><span
+ style=""><span class="CODE"><strong> </strong></span></span><span
+ style=""><span class="CODE">rds</span></span><span style=""><span
+ class="CODE"><strong> = </strong></span></span><span style=""><span
+ class="CODE"><span style=""></span>(RadialDatasetSweep)</span></span><span
+ style=""><span class="CODE"><strong> TypedDatasetFactory.open(thredds.catalog.DataType.RADIAL, fileIn, null, new StringBuffer())</strong><o:p></o:p></span></span><span
  style=""><span style=""><span style=""><o:p></o:p></span></span></span><span
  style=""><span style=""><span style=""><span
  style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span></pre>
-<pre class="MsoNormal"><span style=""><span class="CODE"><span style="">&nbsp; </span>RadialDatasetSweep rds = <strong>datasetFactory.open( fileIn, null);</strong><o:p></o:p></span></span><span
- style=""><span style=""><span style=""><o:p></o:p></span></span></span><span
- style=""><span style=""><span style=""><span
- style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span></pre>
-<p class="MsoNormal"><span style=""><span style=""><span style="">A <b>RadialDatasetSweepFactory</b>
+<p class="MsoNormal"><span style=""><span style=""><span style="">A <b>TypedDatasetFactory</b>
 wraps three RadialDatasetSweep classes: <strong>ucar.nc2.dt.radial.Nids2Dataset</strong>,
 <strong>ucar.nc2.dt.radial.LevelII2Dataset</strong>, and <strong>ucar.nc2.dt.radial.Dorade2Dataset</strong>.
 It opens a radial dataset with an appropriate class, and can be
@@ -63,8 +65,52 @@ handle the data variable at the sweep level, inside each sweep, <i>getRadialNumb
 </span></span></span><span style=""><span style=""><span style=""><i>getGateNumber()</i>,
 </span></span></span><span style=""><span style=""><span style=""><i>getElevation(int
 radial)</i>, <i>getTime(int radial)</i>, and<i> readData(int radial)</i>
-returns all information associated with the radial object. </span></span></span><span
- style=""><span style=""><span style=""><span
+returns all information associated with the radial object. <br>
+</span></span></span></p>
+<h3>Example of Retrieving data from a RadialDataset</h3>
+<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* radar information */<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; String
+stationID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = rds.getRadarID();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+String stationName&nbsp;&nbsp;&nbsp; = rds.getRadarName();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+boolean isVolume&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = rds.isVolume();</p>
+<p class="MsoNormal">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; /* radial variable */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+RadialDatasetSweep.RadialVariable varRef =
+(RadialDatasetSweep.RadialVariable) rds.getDataVariable("Reflectivity");<br>
+</p>
+<p class="MsoNormal">&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; List&nbsp; rvars = rds.getDataVariables();<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Iterator iter
+= rvars.iterator();</p>
+<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* information at sweep level */<br>
+&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; Sweep sw =
+varRef.getSweep(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; float me
+= sw.getMeanElevation();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; int nrays
+= sw.getRadialNumber();</p>
+<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* data variable at radial level */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for (int j
+= 0; j &lt; nrays; j++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+float azi = sw.getAzimuth(j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+int ngates = sw.getGateNumber(); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+float ele = sw.getElevation(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+float [] d = sw.readData(i);<br>
+</p>
+<p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}<br>
+&nbsp;&nbsp; <br>
+<span style=""><span style=""><span style=""><span
  style="font-size: 9pt; font-family: &quot;Courier New&quot;;"><o:p></o:p></span></span></span></span><span
  style=""><span style=""><span style=""><span class="CODE"><span
  style="font-size: 8pt;"><o:p></o:p></span></span></span></span></span><span
@@ -77,9 +123,12 @@ DataTypes, and information of 9 radial sweeps associated with the
 radial variable Reflectivity. </p>
 <img alt="toolUI view" src="tooluiRadial.png"
  style="width: 1033px; height: 522px;">
-<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><br>
-Use the IDVto display the Radial Dataset of a level II product, showing
-3D sweep of elevation angle 0.5 degree:<br>
+<p class="MsoNormal">You can also use ToolsUI NCDump Tab to view the
+netCDF structure of a Radial Dataset.<br>
+</p>
+<p class="MsoNormal"><span style=""><span style=""><span style=""><o:p>Use
+the IDVto display the Radial Dataset of a level II product, showing 3D
+sweep of elevation angle 0.5 degree:<br>
 <br>
 </o:p></span></span></span></p>
 <p class="MsoNormal"><span style=""><span style=""><span style=""><o:p><img
