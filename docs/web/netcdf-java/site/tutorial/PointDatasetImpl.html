@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Writing a Datatype Implementation</title><meta content="Ethan Davis" name="author"></head><body>
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Writing a Datatype Implementation</title><meta content="Ethan Davis" name="author"></head>
+<body>
 <h1>Tutorial: Writing a Datatype Implementation</h1>
 <h2>Overview<br>
 </h2>
@@ -8,18 +9,25 @@
 <br>
 <p><img src="../images/PointObs.png" height="337" width="715"><br>
 </p>
-<p>The TypedDataset contains a number methods to provide access to basic dataset discovery metadata:<br>
+<p>The TypedDataset contains a number of methods to access basic dataset discovery metadata:<br>
 </p>
 <pre>  public String getTitle();<br>  public String getDescription();<br>  public String getLocationURI();<br>  public Date getStartDate();<br>  public Date getEndDate();<br>  public ucar.unidata.geoloc.LatLonRect getBoundingBox();<br></pre>
+<p>and others to access data variable information [VariableSimpleIF
+exposes size, shape, and type but does not provide data access methods]:<br>
+</p>
+<pre>  public List getDataVariables();<br>  public VariableSimpleIF getDataVariable( String shortName);<br></pre>
+
 <p>It also provides access to underlying netCDF objects:<br>
 </p>
-<pre>  /** Return underlying NetcdfFile, or null if none. */<br>  public ucar.nc2.NetcdfFile getNetcdfFile();<br><br> &nbsp;public List getGlobalAttributes();<br>  public ucar.nc2.Attribute findGlobalAttributeIgnoreCase( String name );<br>  public List getDataVariables();<br>  public VariableSimpleIF getDataVariable( String shortName);<br></pre>
+<pre>  /** Return underlying NetcdfFile, or null if none. */<br>  public ucar.nc2.NetcdfFile getNetcdfFile();<br><br> &nbsp;public List getGlobalAttributes();<br>  public ucar.nc2.Attribute findGlobalAttributeIgnoreCase( String name );<br><br></pre>
 <p>As well as some housekeeping methods:<br>
 </p>
 <pre>  /** Close all resources associated with this dataset. */<br>  public void close() throws java.io.IOException;<br><br>  /** Show debug / underlying implementation details */<br>  public String getDetailInfo();<br></pre>
 <p>Various specializations are available and provide query and access capabilities specific to the Datatype. For instance, <b>PointObsDataset</b>, <b>StationObsDataset</b>, <b>TrajectoryObsDataset</b>, <b>GridDataset</b> and <b>RadialDatasetSweep</b>. (all part of the <b>ucar.nc2.dt</b> package) are all subclasses of <b>TypedDataset</b>.<br>
 </p>
-<p>In general, a seperate <b>TypedDataset</b> class must be written for each convention for encoding a dataset of a given type. This obviously is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their datasets. Also, we are working on developing a new <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">convention for observation data</a> that would be appropriate for point, station, and trajectory datasets. Radar data convention (???).<br>
+<p>In general, a seperate <b>TypedDataset</b> class must be written for
+each convention for encoding a dataset of a given type. This obviously
+is burdensome, and data providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their datasets. Also, we are working on developing a new <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">convention for observation data</a> that would be appropriate for point, station, and trajectory datasets. Radar data convention (???).<br>
 </p>
 <p>A number of existing "conventions" are supported in each of the
 subtypes mentioned (point, station, trajectory, grid, and radial). <br>
