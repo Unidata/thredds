@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en"><html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Author" content="John Caron">
+   <title>THREDDS Security</title>
+   <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />  
+
+</head>
+
+<body>
+
+<h1><img src="../THREDDSlogo.jpg" width="67" height="54">Performance</h1>
+<div class="head">
+  <address></address>
+
+  <hr>
+<h2>Java Virtual Machine </h2>
+</div>
+
+<ul>
+  <li>You should give the JVM as much memory as possible.</li>
+  <li>You should run with the 
+Java HotSpot Server VM. </li>
+</ul>
+<p>To do so,  set the Java runtime parameters with the environmental variable JAVA_OPTS. For example, add the following to <strong>${tomcat_home}/bin/startup.sh</strong> : </p>
+<blockquote>
+  <pre>JAVA_OPTS="-server -Xmx1024m -Xms256m"
+export JAVA_OPTS</pre>
+</blockquote>
+<p>starts Tomcat with the Server JVM, and gives it 256 Mbytes of memory to start with, and allows a maximum of 1024 Mbytes. These are suggested numbers, use more if you can. You will need to restart Tomcat for this to take effect.</p>
+<h2>Tomcat</h2>
+<h3>Version</h3>
+<p>We recommend the latest stable version of Tomcat 5.5, which supposedly has better stability and performance than Tomcat 5.0. </p>
+<h3>Automatic Startup </h3>
+<p>In a production environment, Tomcat should be automatically restarted when the machine starts. How to do this depends on what OS you are running. This <a href="http://wiki.apache.org/jakarta-tomcat/HowTo">FAQ</a> has a bit of info. </p>
+<h3>Resources</h3>
+<ul>
+  <li><a href="http://jakarta.apache.org/tomcat/faq/performance.html">Tomcat Performance FAQ </a></li>
+  <li>  <a href="http://jakarta.apache.org/tomcat/articles/performance.pdf">Tomcat Performance</a> paper by Peter Lin </li>
+</ul>
+<h2>Thredds Data Server </h2>
+<h3>File Handles and Caching </h3>
+<p>The TDS caches file handles to minimize OS overhead. Currently this is hardwired to allow   400 - 600 open files for OPeNDAP and WCS, and 20 - 40 for HTTP file serving. This means that your OS must allow at least that many file handles per process, else you can get a &quot;out of file handles&quot; message, and the server may freeze up. </p>
+<p>These numbers limit performance, but not functionality. For example, the number of files in an aggregation is not limited by these file handle limits. </p>
+<p>We will make these limits user-settable in a future version of the TDS. </p>
+<h3>OPeNDAP Memory Use</h3>
+<p>The OPeNDAP-Java layer of the server currently has to read the entire data request into memory before sending it to the client (we hope to get a streaming I/O solution working eventually). Generally clients only request subsets of large files, but if you need to support large data requests, make sure that the <em><strong>-Xmx</strong></em> parameter above is set accordingly. </p>
+<hr WIDTH="100%">
+<address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 28, 2006
+</address>
+<h3>&nbsp;</h3>
+</body></html>

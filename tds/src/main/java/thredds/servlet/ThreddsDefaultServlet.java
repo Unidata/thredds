@@ -63,19 +63,17 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private DiskCache2 aggCache;
 
-  public void init()
-          throws ServletException
-  {
+  public void init() throws ServletException  {
     super.init();
 
     // get the URL context :  URLS must be context/catalog/...
-    // cannot be overridded in ServletParams
+    // cannot be overridded in ThreddsConfig
     String contextPath = ServletUtil.getContextPath( this);
     InvDatasetScan.setContext( contextPath);
     InvDatasetScan.setCatalogServletName( "/catalog" );
 
     // persistent user-defined params
-    ServletParams.init(this.getServletContext(), contentPath+"/params.xml", log);
+    ThreddsConfig.init(this.getServletContext(), contentPath+"/threddsConfig.xml", log);
 
     // turn off Grib extend indexing; indexes are automatically done every 10 minutes externally
     ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false);
@@ -85,7 +83,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     // cache initialization
     // set the cache directory
-    String cache = ServletParams.getInitParameter("CachePath", contentPath + "cache/");
+    String cache = ThreddsConfig.getInitParameter("CachePath", contentPath + "cache/");
     DiskCache.setRootDirectory(cache);
     DiskCache.setCachePolicy(false); // allow to write into data directory if possible
 
@@ -97,7 +95,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     FileCache.init(50, 70, 2 * 60);  // allow 20 - 40 open datasets, cleanup every 10 minutes
 
     // for efficiency, persist aggregations. every 12 hours, delete stuff older than 10 days
-    String cache2 = ServletParams.getInitParameter("CacheAged", contentPath + "cacheAged/");
+    String cache2 = ThreddsConfig.getInitParameter("CacheAged", contentPath + "cacheAged/");
     aggCache = new DiskCache2(cache2, false, 60 * 24 * 10, 60 * 12);
     Aggregation.setPersistenceCache( aggCache);  // */
     aggCache.setLogger( cacheLog);
@@ -109,8 +107,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     DataRootHandler.init(contentPath, contextPath);
     catHandler = DataRootHandler.getInstance();
 
-    List catList = getExtraCatalogs();
-    catList.add(0, "catalog.xml"); // always first
+    ArrayList catList = new ArrayList();
+    catList.add("catalog.xml"); // always first
+    getExtraCatalogs(catList);
     for (int i = 0; i < catList.size(); i++) {
       String catFilename = (String) catList.get(i);
       try {
@@ -154,28 +153,36 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     aggCache.exit();
   }
 
-  private List getExtraCatalogs() {
-    ArrayList extraList = new ArrayList();
-    try {
-      FileInputStream fin = new FileInputStream(contentPath + "extraCatalogs.txt");
-      BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
-      while (true) {
-        String line = reader.readLine();
-        if (line == null) break;
-        line = line.trim();
-        if (line.length() == 0) continue;
-        if ( line.startsWith( "#") ) continue; // Skip comment lines.
-        extraList.add( line);
-      }
-      fin.close();
+  private void getExtraCatalogs(List extraList) {
 
-    } catch (FileNotFoundException e) {
-      // its ok
-    } catch (IOException e) {
-      log.error("Error on getExtraCatalogs ",e);
+    // if there are some roots in ThreddsConfig, then dont read extraCatalogs.txt
+    ThreddsConfig.getCatalogRoots(extraList);
+    if (extraList.size() > 0)
+      return;
+
+    // see if extraCatalogs.txt exists
+    File file = new File(contentPath + "extraCatalogs.txt");
+    if (file.exists()) {
+
+      try {
+        FileInputStream fin = new FileInputStream(file);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
+        while (true) {
+          String line = reader.readLine();
+          if (line == null) break;
+          line = line.trim();
+          if (line.length() == 0) continue;
+          if ( line.startsWith( "#") ) continue; // Skip comment lines.
+          extraList.add( line);
+        }
+        fin.close();
+
+      } catch (IOException e) {
+        log.error("Error on getExtraCatalogs ",e);
+      }
     }
 
-    return extraList;
+    return;
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)

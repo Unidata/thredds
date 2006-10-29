@@ -312,16 +312,16 @@ public class DataRootHandler {
     String path = dscan.getPath();
 
     if (path == null) {
-      log.error(dscan.getFullName()+" missing a path attribute.");
+      log.error("**Error: "+dscan.getFullName()+" missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
       if (!droot.dirLocation.equals( dscan.getScanDir())) {
-        String message = " already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+        String message = "**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
             " wanted to map to=<" + dscan.getScanDir() + "> in catalog "+dscan.getParentCatalog().getUriString();
-        log.warn(message);
+        log.error(message);
       }
 
       return false;
@@ -331,6 +331,12 @@ public class DataRootHandler {
     // rearrange scanDir if it starts with content
     if (dscan.getScanDir().startsWith("content/"))
       dscan.setScanDir(contentPath + dscan.getScanDir().substring(8));
+
+    File file = new File(dscan.getScanDir());
+    if (!file.exists()) {
+      log.error("**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist");
+      return false;
+    }
 
     // add it
     droot = new DataRoot(dscan);
@@ -352,13 +358,22 @@ public class DataRootHandler {
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-        log.warn(" already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+        log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
             " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
       return false;
     }
 
     // add it
     droot = new DataRoot(fmrc);
+
+    if (droot.dirLocation != null) {
+      File file = new File(droot.dirLocation);
+      if (!file.exists()) {
+        log.error("**Error: DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist");
+        return false;
+      }
+    }
+
     pathMatcher.put(path, droot);
 
     log.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
@@ -403,13 +418,19 @@ public class DataRootHandler {
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      log.error(" already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">");
+      log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">");
       return false;
     }
 
     // rearrange dirLocation if it starts with content
     if (dirLocation.startsWith("content/"))
       dirLocation = contentPath + dirLocation.substring(8);
+
+    File file = new File(dirLocation);
+    if (!file.exists()) {
+      log.error("**Error: Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
+      return false;
+    }
 
     // add it
     droot = new DataRoot(path, dirLocation);

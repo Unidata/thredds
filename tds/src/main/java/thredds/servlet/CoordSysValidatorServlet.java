@@ -57,7 +57,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   public void init() throws ServletException {
     super.init();
 
-    String cache = ServletParams.getInitParameter("CdmValidatorCachePath", contentPath);
+    String cache = ThreddsConfig.getInitParameter("CdmValidatorCachePath", contentPath);
 
     cacheDir = new File(cache);
     cacheDir.mkdirs();

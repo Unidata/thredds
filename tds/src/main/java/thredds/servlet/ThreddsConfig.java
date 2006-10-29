@@ -1,4 +1,4 @@
-// $Id: ServletParams.java 51 2006-07-12 17:13:13Z caron $
+// $Id: ThreddsConfig.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,19 +27,21 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.util.List;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.JDOMException;
 import org.jdom.Element;
 
 /**
- * Read and process the params.xml file
+ * Read and process the threddsConfig.xml file
  */
-public class ServletParams {
+public class ThreddsConfig {
   private static HashMap paramHash = new HashMap();
   private static javax.servlet.ServletContext _context;
+  private static ArrayList catalogRoots = new ArrayList();
 
-  static public void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
+  static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
     _context = context;
 
     File file = new File(filename);
@@ -51,13 +53,14 @@ public class ServletParams {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);
     } catch (IOException e) {
-      log.error("ServletParams: incorrectly formed xml file " + filename, e);
+      log.error("ThreddsConfig: incorrectly formed xml file " + filename, e);
       return;
     } catch (JDOMException e) {
-      log.error("ServletParams: incorrectly formed xml file " + filename, e);
+      log.error("ThreddsConfig: incorrectly formed xml file " + filename, e);
       return;
     }
 
+    // context-param : may override the ones in web.xml
     Element rootElem = doc.getRootElement();
     List paramList = rootElem.getChildren("context-param");
     for (int j = 0; j < paramList.size(); j++) {
@@ -65,13 +68,14 @@ public class ServletParams {
       String name = paramElem.getChildText("param-name");
       String value = paramElem.getChildText("param-value");
       if ((name == null) || (value == null)) {
-        log.error("ServletParams: incorrectly formed context-param " + name + " " + value);
+        log.error("ThreddsConfig: incorrectly formed context-param " + name + " " + value);
         continue;
       }
       paramHash.put(name, value);
-      System.out.println("param= "+ name + " " + value);
+      //System.out.println("param= "+ name + " " + value);
     }
 
+    // nj22 runtime loading
     Element elem = rootElem.getChild("runtimeConfig");
     if (elem != null) {
       StringBuffer errlog = new StringBuffer();
@@ -79,8 +83,19 @@ public class ServletParams {
       if (errlog.length() > 0)
         log.warn(errlog.toString());
     }
+
+    List rootList = rootElem.getChildren("catalogRoot");
+    for (int j = 0; j < rootList.size(); j++) {
+      Element paramElem = (Element) rootList.get(j);
+      String location = paramElem.getChildText("location");
+      if (null != location)
+        catalogRoots.add(location);
+    }
   }
 
+  static void getCatalogRoots(List extraList) {
+    extraList.addAll( catalogRoots);
+  }
 
   static public String getInitParameter(String name, String defaultValue) {
     if (null != paramHash.get(name))

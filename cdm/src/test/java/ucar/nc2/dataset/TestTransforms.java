@@ -380,6 +380,42 @@ public class TestTransforms extends TestCase {
     ncd.close();
   }
 
+  public void testPS3() throws IOException, InvalidRangeException {
+    String filename = "R:/testdata/grid/netcdf/cf/Base_month.nc";
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
+
+    VariableDS v = (VariableDS) ncd.findVariable("D2_SO4");
+    assert v != null;
+
+    List cList = v.getCoordinateSystems();
+    assert cList != null;
+    assert cList.size() == 1;
+    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
+
+    List pList = new ArrayList();
+    List tList = csys.getCoordinateTransforms();
+    assert tList != null;
+    for (int i = 0; i < tList.size(); i++) {
+      CoordinateTransform ct = (CoordinateTransform) tList.get(i);
+      if (ct.getTransformType() == TransformType.Projection)
+        pList.add( ct);
+    }
+    assert pList.size() == 1;
+    CoordinateTransform ct = (CoordinateTransform) pList.get(0);
+    assert ct.getTransformType() == TransformType.Projection;
+    assert ct instanceof ProjectionCT;
+
+    ProjectionCT vct = (ProjectionCT) ct;
+    Projection proj = vct.getProjection();
+    assert proj != null;
+    assert proj instanceof Stereographic;
+
+    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
+    System.out.println(" dump of equivilent ctv = \n"+ctv);
+
+    ncd.close();
+  }
+
   public void testMercator() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/Mercator.grib1";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);

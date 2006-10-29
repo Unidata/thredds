@@ -3,21 +3,6 @@ THREDDS Data Server (TDS) Administration for system administrators and data prov
 First Day
 
 1. TDS Overview (30) 8:30 - 9:00
-
-What can it do?
-   HTTP fileServer
-   OPeNDAP 
-   WCS   
-   Catalog Services
-   CDM Validation
-   Netcdf Grid subsetting 
-
- What files can I serve?
- 
- What clients can I use?
-  Browser
-  ToolsUI
-  IDV
  
 2. Participant introductions (30) 9:00 - 9:30
 

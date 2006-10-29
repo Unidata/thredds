@@ -685,12 +685,19 @@ public class GridRenderer {
   private void drawGridHoriz(java.awt.Graphics2D g, Array data) {
     int count = 0;
 
-      // setup loop through the data
     GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
-    int nx = (int) xaxis.getSize();
-    int ny = (int) yaxis.getSize();
+    CoordinateAxis xaxis = geocs.getXHorizAxis();
+    CoordinateAxis yaxis = geocs.getYHorizAxis();
+
+    if ((xaxis instanceof CoordinateAxis1D) && (yaxis instanceof CoordinateAxis1D)) {
+      drawGridHoriz1D(g, data, (CoordinateAxis1D) xaxis, (CoordinateAxis1D) yaxis);
+      return;
+    }
+      // setup loop through the data
+    CoordinateAxis1D xaxis1D = (CoordinateAxis1D) xaxis;
+    CoordinateAxis1D yaxis1D = (CoordinateAxis1D) yaxis;
+    int nx = (int) xaxis1D.getSize();
+    int ny = (int) yaxis1D.getSize();
     int[] dataShape = dataH.getShape();
 
       /* how big is one pixel ?
@@ -719,19 +726,19 @@ public class GridRenderer {
     if (debugMiss) System.out.println("mode = "+modeColor+" sameProj= "+sameProjection);
 
     if (sameProjection) {
-      count += drawRect( g, modeColor, xaxis.getCoordEdge(0), yaxis.getCoordEdge(0),
-        xaxis.getCoordEdge(nx), yaxis.getCoordEdge(ny), drawProjection.isLatLon());
+      count += drawRect( g, modeColor, xaxis1D.getCoordEdge(0), yaxis1D.getCoordEdge(0),
+        xaxis1D.getCoordEdge(nx), yaxis1D.getCoordEdge(ny), drawProjection.isLatLon());
 
     } else  if (useModeForProjections)
-      drawPathShape( g, modeColor, xaxis, yaxis);
+      drawPathShape( g, modeColor, xaxis1D, yaxis1D);
 
     debugPts = Debug.isSet("GridRenderer/showPts");
 
     // draw individual rects with run length
     Index imaH = dataH.getIndex();
     for (int y=0; y<ny; y++) {
-      double ybeg = yaxis.getCoordEdge(y);
-      double yend = yaxis.getCoordEdge(y+1);
+      double ybeg = yaxis1D.getCoordEdge(y);
+      double yend = yaxis1D.getCoordEdge(y+1);
       int thisColor = 0, lastColor = 0;
       int run = 0;
       int xbeg = 0;
@@ -747,10 +754,10 @@ public class GridRenderer {
         else {
           if (sameProjection) {
             if (lastColor != modeColor) // dont have to draw these
-              count += drawRect( g, lastColor, xaxis.getCoordEdge(xbeg), ybeg, xaxis.getCoordEdge(x), yend, drawProjection.isLatLon());
+              count += drawRect( g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(x), yend, drawProjection.isLatLon());
           } else  {
             //if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
-              count += drawPathRun( g, lastColor, ybeg, yend, xaxis, xbeg, x);
+              count += drawPathRun( g, lastColor, ybeg, yend, xaxis1D, xbeg, x);
           }
           xbeg = x;
         }
@@ -760,10 +767,10 @@ public class GridRenderer {
       // get the ones at the end
       if (sameProjection) {
         if (lastColor != modeColor)
-          count += drawRect( g, lastColor, xaxis.getCoordEdge(xbeg), ybeg, xaxis.getCoordEdge(nx), yend, drawProjection.isLatLon());
+          count += drawRect( g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(nx), yend, drawProjection.isLatLon());
       } else {
         //if (!useModeForProjections || (lastColor != modeColor))
-          count += drawPathRun( g, lastColor, ybeg, yend, xaxis, xbeg, nx-1);
+          count += drawPathRun( g, lastColor, ybeg, yend, xaxis1D, xbeg, nx-1);
       }
 
       if (debugPts) break;
@@ -799,6 +806,90 @@ public class GridRenderer {
       }
     } // end not run length  */
 
+  }
+
+  private void drawGridHoriz1D(java.awt.Graphics2D g, Array data, CoordinateAxis1D xaxis1D, CoordinateAxis1D yaxis1D) {
+    int count = 0;
+
+    int nx = (int) xaxis1D.getSize();
+    int ny = (int) yaxis1D.getSize();
+
+      /* how big is one pixel ?
+  if (debug) System.out.println("affine transform = "+g.getTransform());
+  if (debug) System.out.println("           scaleY= "+g.getTransform().getScaleY());
+  onePixel = Math.abs(1.5/g.getTransform().getScaleY());   // a little nudge more than 1 pixel
+  onePixel = 0;  */
+
+    //// drawing optimizations
+    sameProjection = drawProjection.equals( dataProjection);
+    if (drawProjection.isLatLon()) {
+      projectll = (LatLonProjection) drawProjection;
+      double centerLon = projectll.getCenterLon();
+      if (Debug.isSet("projection/LatLonShift")) System.out.println("projection/LatLonShift: gridDraw = "+ centerLon);
+    }
+
+      // find the most common color and fill the entire area with it
+    int modeColor = cs.getHistMax();
+    cs.resetHist();
+    IndexIterator iiter = data.getIndexIterator();
+    while (iiter.hasNext()) {
+      double val = iiter.getDoubleNext();
+      cs.getIndexFromValue(val);                // accum in histogram
+    }
+    modeColor = cs.getHistMax();
+    if (debugMiss) System.out.println("mode = "+modeColor+" sameProj= "+sameProjection);
+
+    if (sameProjection) {
+      count += drawRect( g, modeColor, xaxis1D.getCoordEdge(0), yaxis1D.getCoordEdge(0),
+        xaxis1D.getCoordEdge(nx), yaxis1D.getCoordEdge(ny), drawProjection.isLatLon());
+
+    } else  if (useModeForProjections)
+      drawPathShape( g, modeColor, xaxis1D, yaxis1D);
+
+    debugPts = Debug.isSet("GridRenderer/showPts");
+
+    // draw individual rects with run length
+    Index imaH = dataH.getIndex();
+    for (int y=0; y<ny; y++) {
+      double ybeg = yaxis1D.getCoordEdge(y);
+      double yend = yaxis1D.getCoordEdge(y+1);
+      int thisColor = 0, lastColor = 0;
+      int run = 0;
+      int xbeg = 0;
+
+      debugPts = debugPts && (y == 0);
+
+      for (int x=0; x < nx; x++) {
+        double val = data.getDouble( imaH.set(y, x));
+        thisColor = cs.getIndexFromValue(val);
+
+        if ((run == 0) || (lastColor == thisColor))  // same color - keep running
+          run++;
+        else {
+          if (sameProjection) {
+            if (lastColor != modeColor) // dont have to draw these
+              count += drawRect( g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(x), yend, drawProjection.isLatLon());
+          } else  {
+            //if (!useModeForProjections || (lastColor != modeColor)) // dont have to draw mode
+              count += drawPathRun( g, lastColor, ybeg, yend, xaxis1D, xbeg, x);
+          }
+          xbeg = x;
+        }
+        lastColor = thisColor;
+      }
+
+      // get the ones at the end
+      if (sameProjection) {
+        if (lastColor != modeColor)
+          count += drawRect( g, lastColor, xaxis1D.getCoordEdge(xbeg), ybeg, xaxis1D.getCoordEdge(nx), yend, drawProjection.isLatLon());
+      } else {
+        //if (!useModeForProjections || (lastColor != modeColor))
+          count += drawPathRun( g, lastColor, ybeg, yend, xaxis1D, xbeg, nx-1);
+      }
+
+      if (debugPts) break;
+    }
+    if (debugHorizDraw) System.out.println("debugHorizDraw = "+count);
   }
 
 

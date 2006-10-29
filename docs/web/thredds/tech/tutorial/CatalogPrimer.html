@@ -23,7 +23,7 @@
  height="54"> THREDDS  Catalog Primer </h1>
   <hr title="Separator for header">
   <p>THREDDS Servers in general, and the TDS in particular, communicate to clients by sending them a <em><strong>THREDDS Catalog</strong></em> (aka <em>Inventory Dataset Catalog</em>) that describes what datasets the server has, and how they can be accessed. A catalog is an <a href="http://www.w3.org/TR/REC-xml/">XML</a> document that follows the THREDDS Catalog schema. </p>
-  <p>This primer will describe the  <em><strong>client view of the catalog</strong></em>. You will also need to add other information to the catalog, which is used only by the server and not normally seen by the client, which is covered in following lessons. </p>
+  <p>This primer will describe the  <em><strong>client view of the catalog</strong></em>. You will also need to add other information to the catalog, which is used only by the server and not normally seen by the client, which is covered in subsequent lessons. </p>
   <h2>Introduction</h2>
 </div>
 <p>Here's an example of a  simple catalog:</p>
@@ -102,7 +102,7 @@
   <strong>authority</strong> and the <strong>ID</strong> attribute should form 
   a globally unique identifier for a dataset. In the TDS, it is especially important to add ID attributes to your datasets. </p>
 <pre>&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; <strong>collectionType=&quot;TimeSeries&quot;</strong>&gt;
-  &lt;dataset name=&quot;January Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/jan.nc&quot; <strong>authority=&quot;unidata.ucar.edu&quot; ID=&quot;sage-20938483&quot;</strong>&gt;
+  &lt;dataset name=&quot;January Averages&quot; serviceName=&quot;dodsServer&quot; urlPath=&quot;sage/avg/jan.nc&quot; <strong>authority=&quot;unidata.ucar.edu&quot; ID=&quot;sage-20938483&quot;</strong>&gt;
 	 <strong>&lt;dataType&gt;Trajectory&lt;/dataType&gt;
 	 &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;</strong>
   &lt;/dataset&gt;
@@ -111,8 +111,8 @@
   right level of granularity to be exported to search systems like Digital Libraries. 
   Elements such as <strong>summary</strong>, <strong>rights</strong>, <strong>publisher 
   </strong>are needed in order to create valid entries for these services. For 
-  more details, see <a href="DL.html">Exporting THREDDS Datasets to Digital Libraries.</a> Also see the 
-  <a href="InvCatalogSpec.html">Catalog Specification</a> as a complete reference.</p>
+  more details, see <a href="../catalog/DL.html">Exporting THREDDS Datasets to Digital Libraries.</a> Also see the 
+  <a href="../catalog/InvCatalogSpec11.html">Catalog Specification</a> as a complete reference.</p>
 <pre>&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; <strong>harvest=&quot;true&quot;</strong>&gt;
   &lt;<strong>contributor</strong> role=&quot;data manager&quot;&gt;John Smith&lt;/contributor&gt;<br>  &lt;<strong>keyword</strong>&gt;Atmospheric Chemistry&lt;/keyword&gt;<br>  &lt;<strong>publisher</strong>&gt;<br>    &lt;name vocabulary=&quot;DIF&quot;&gt;Community Data Portal, National Center for Atmospheric Research, University Corporation for Atmospheric Research&lt;/long_name&gt;
     &lt;contact url=&quot;http://dataportal.ucar.edu&quot; email=&quot;cdp@ucar.edu&quot;/&gt;<br>  &lt;/<strong>publisher</strong>&gt;<br>&lt;/dataset&gt;</pre>
@@ -121,10 +121,10 @@
   element to factor out common information.:</p>
 <pre>  &lt;<strong>dataset</strong> name=&quot;SAGE III Ozone Loss Experiment&quot; &gt;
 
-1) <strong>&lt;metadata inherit=&quot;true&quot;&gt;
+1) <strong>&lt;metadata inherited=&quot;true&quot;&gt;
 </strong>2)  &lt;serviceName&gt;dodsServer&lt;/serviceName&gt;
 2)  &lt;dataType&gt;Trajectory&lt;/dataType&gt;
-2)  &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;
+2)  &lt;dataFormat&gt;NetCDF&lt;/dataFormat&gt;
 2)  &lt;authority&gt;unidata.ucar.edu&lt;/authority&gt;
 <strong>   &lt;/metadata&gt;</strong>
 
@@ -135,10 +135,10 @@
   &lt;/<strong>dataset</strong>&gt;
 </pre>
 <ol>
-  <li> The <em>metadata</em> element with<em> inherit=true </em>implies that all 
+  <li> The <em>metadata</em> element with<strong><em> inherited=true </em></strong>implies that all 
     the information inside the metadata element applies to the current dataset 
     and all nested datasets.</li>
-  <li>The <em>serviceName, dataType, dataFormatType </em> and <em>authority</em> 
+  <li>The <em>serviceName, dataType, dataFormat</em> and <em>authority</em> 
     are declared as elements.</li>
   <li>These datasets now use the <em>serviceName, dataType, dataFormatType </em> 
     and <em>authority</em> values declared in the parent dataset.</li>
@@ -183,7 +183,7 @@
   <li> This line tells your XML validation tool where to find the THREDDS XML schema document. 
     Just copy it exactly as you see it here.</li>
 </ol>
-<p>The THREDDS validation service, as well as the <a href="../ClientLibraries.html">catalog 
+<p>The THREDDS validation service, as well as the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">NetCDF-Java 
   library</a>, knows where the schemas are located, so you only need to add these 
   2 lines if you want to do your own validation.</p>
 <p>You will want to study the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html">annotated schema</a>, and the <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">schema document </a>itself.</p>
@@ -201,12 +201,12 @@
 </ol>
 <hr WIDTH="100%">
 <h2>Using ToolsUI to look at your catalogs</h2>
-<p>The NetCDF Tools User Interface (aka ToolsUI) can read and display THREDDS catalogs. You can start it from the command line, or <a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev/netCDFtools-2.2.jnlp">launch it from webstart</a>. Use the THREDDS Tab, and click on the <img src="fileIcon.jpg" width="31" height="29"> button to navigate to your local catalog file. The catalog will be displayed in a tree widget on the left, and the selected dataset will be shown on the right, for example: </p>
+<p>The NetCDF Tools User Interface (aka ToolsUI) can read and display THREDDS catalogs. You can start it from the command line, or <a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev/netCDFtools-2.2.jnlp">launch it from webstart</a>. Use the THREDDS Tab, and click on the <img src="fileIcon.jpg" width="31" height="29"> button to navigate to your local catalog file. You can download this <a href="exampleCatalog.xml">example catalog</a> to try out. The catalog will be displayed in a tree widget on the left, and the selected dataset will be shown on the right, for example: </p>
 <p><img src="TUIthreddsTab.jpg" width="987" height="503"> </p>
 <p>Once you get your catalog working in a TDS, you can enter the TDS URL directly, and view the datasets with the <strong>Open</strong> buttons. </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 24, 2006
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 28, 2006
 </address>
 </body>
 </html>

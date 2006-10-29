@@ -1,7 +1,6 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>TDS Catalog Configuration</title>
-  <link rel="stylesheet" href="/thredds/upc.css" type="text/css">
 </head>
 <body>
 
@@ -45,7 +44,7 @@ only on the server, which  is removed when the TDS sends the catalog to the clie
     <li>The directory pointed to by <strong>location</strong> should be absolute</li>
     <li>The locations may be used in multiple data roots</li>
   </ol>
-  <p>For example, u sing the above data roots, the following matches would be made:</p>
+  <p>For example, using the above data roots, the following matches would be made:</p>
   <table width="611" border="1">
     <tr>
       <th width="238" scope="col">urlPath</th>
@@ -104,13 +103,13 @@ example: </p>
 <pre><strong>  /data/ncep/aug/mydata.nc</strong></pre>
 <h2>TDS Top Catalogs</h2>
 <p>When TDS starts up, it will read the <em>top-level catalog</em> at <strong>${tomcat_home}/content/thredds/catalog.xml, </strong>and recursively read all catalogs that are linked to it through a relative <em>CatalogRef</em> element (i.e. a catalog that lives somewhere under <strong>${tomcat_home}/content/thredds/</strong>), and determine the dataset roots and other information. </p>
-<p>If you want to serve other catalogs that are not linked to the top-level catalog, then list them in <strong>${tomcat_home}/content/thredds/extraCatalogs.txt</strong>. </p>
-<p>An example <strong>extraCatalogs.txt</strong>:</p>
+<p>If you want to serve other catalogs that are not linked to the top-level catalog, then list them in <strong>${tomcat_home}/content/thredds/threddsConfig.xml,</strong> for example: </p>
 <blockquote>
-  <pre>topcatalog.xml<br>idv/rt-models.1.0.xml<br>idv/rt-models.xml
-# generated every 30 minutes<br>cataloggen/catalogs/idv-rt-models.InvCat1.0.xml<br>cataloggen/catalogs/idv-rt-models.xml<br>cataloggen/catalogs/uniModelsInvCat1.0en.xml</pre>
+  <pre>&lt;catalogRoot location=&quot;topcatalog.xml&quot; /&gt;
+&lt;catalogRoot location=&quot;idv/rt-models.1.0.xml&quot; /&gt;
+&lt;catalogRoot location=&quot;cataloggen/catalogs/idv-rt-models.InvCat1.0.xml&quot; /&gt;</pre>
 </blockquote>
-<p>Note that all catalog filenames must be relative to the <strong>${tomcat_home}/content/thredds/ </strong>directory. Any line starting with a pound sign ("#") is considered a comment.</p>
+<p>Note that all catalog filenames must be relative to the <strong>${tomcat_home}/content/thredds/ </strong>directory. This feature is new in the 3.14 release.</p>
 <div class="head"></div>
 <h2>Summary
 </h2>
@@ -139,7 +138,7 @@ example: </p>
 <blockquote>
   <pre><strong>http://hostname:8080/thredds/fileServer/model/ncep/run0023/mydata.nc
 &lt;-----server-------&gt;&lt;webapp&gt;&lt;-servlet-&gt;&lt;data-root&gt;&lt;--filename------&gt;</strong></pre>
-  </blockquote>
+</blockquote>
 <p>would have these 5 parts:</p>
 <ol>
   <li><strong>http://hostname:8080</strong> is the server's hostname and port. By using reletive URLs as shown here, you never have to specify this explicitly in your catalogs. This means you can change hosts or ports without having to rewrite your catalogs. </li>
@@ -148,10 +147,12 @@ example: </p>
   <li><strong>/model/ncep</strong> is the <em>path</em>, associated with the directory location <strong>C:/data/ncep/</strong></li>
   <li> <strong>/run0023/mydata.nc</strong> is the reletive filename, and so is mapped to <strong>C:/data/ncep</strong>/<strong>run0023/mydata.nc</strong>.</li>
 </ol>
-<h3>&nbsp;</h3>
-<h2> Links</h2>
+<h2>Links</h2>
 <ul>
-  <li>The catalog <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">schema</a>, version 1.0.2</li>
+  <li>An <a href="exampleTDScatalog.xml">example TDS catalog</a></li>
+  <li>The annotated Catalog <a href="../catalog/InvCatalogSpec11.html">Specification</a>, Version 1.0.1</li>
+  <li>TDS catalog element <a href="../catalog/InvCatalogSpec.v1.0.1.server.html">Specification</a>, Version 1.0.1</li>
+  <li>The catalog <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">schema</a> itself version 1.0.2</li>
 </ul>
 <hr WIDTH="100%">
 <address>
@@ -160,4 +161,8 @@ example: </p>
 <p>&nbsp;
 </p>
 </body>
+<<<<<<< .mine
 </html>
+=======
+</html>
+>>>>>>> .r339

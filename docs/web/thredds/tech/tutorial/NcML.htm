@@ -18,8 +18,8 @@
   <p>This embedded NcML is only useful in the TDS server catalogs, it is not meaningful to a THREDDS client, and so is not included in the client catalogs. </p>
   <h2>Modify an existing dataset </h2>
   <p>You can use  use NcML to modify an existing NetCDF dataset (see the <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML docs</a> for all your options):</p>
-  <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
-         xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; 
+  <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+         xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
          name=&quot;THREDDS-IDD OPeNDAP Data Server&quot; version=&quot;1.0.1&quot;&gt;
 
 (1)&lt;service name=&quot;all&quot; <strong>serviceType=&quot;Compound&quot;</strong> base=&quot;&quot;&gt;     <br>     &lt;service name=&quot;ncdods&quot; serviceType=&quot;<strong>OPENDAP</strong>&quot; <strong>base</strong>=&quot;/thredds/dodsC/&quot;/&gt;<br>     &lt;service name=&quot;WCSServer&quot; serviceType=&quot;<strong>WCS</strong>&quot; <strong>base</strong>=&quot;/thredds/wcs/&quot; /&gt;<br>   &lt;/service&gt;
@@ -46,11 +46,10 @@
     <li>Two attributes of <strong>rh</strong> are defined, <strong>long_name</strong> and <strong>units</strong>. If these already exist, they are replaced.</li>
     <li>The attribute of <strong>rh</strong> called <strong>description</strong> is removed.</li>
   </ol>
-  <p>&nbsp;</p>
   <h2>Using NcML aggregation</h2>
   <p>Here is an example that defines a dataset using NcML aggregation. </p>
-  <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
-         xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; 
+  <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+         xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
          name=&quot;THREDDS-IDD OPeNDAP Data Server&quot; version=&quot;1.0.1&quot;&gt;
 
 (1)&lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
@@ -76,7 +75,6 @@
     <li>The variable named <em><strong>IR</strong></em> will be aggregated.</li>
     <li>All the files in the directory <em><strong>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </strong></em>that end with <em><strong>.gini</strong></em> will be scanned to create the aggregation.</li>
   </ol>
-  <p></p>
   <h2>Modify all datasets in a DatasetScan </h2>
   <p>If an NcML element is added to a <a href="http://motherlode.ucar.edu:8080/thredds/docs/datasetScan/index.html">DatasetScan</a>, it will modify all of the datasets contained within the DatasetScan: </p>
   <pre>(1)&lt;<strong>datasetScan</strong> name=&quot;Ocean Satellite Data&quot; ID=&quot;<strong>ocean/sat</strong>&quot; path=&quot;<strong>ocean/sat</strong>&quot; dirLocation=&quot;R:/tds/netcdf/&quot; filter=&quot;.*\.nc$&quot;&gt;<br>(2)  &lt;metadata <strong>inherited</strong>=&quot;true&quot;&gt;<br>       &lt;serviceName&gt;<strong>ncdods</strong>&lt;/serviceName&gt;<br>       &lt;dataType&gt;<strong>Grid</strong>&lt;/dataType&gt;<br>     &lt;/metadata&gt;<br>(3)  &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; <strong>enhance</strong>=&quot;true&quot; /&gt;<br>(4)  &lt;<strong>addID</strong> /&gt;
@@ -87,7 +85,6 @@
     <li>All contained datasets are <em>wrapped</em> by this ncml element. In this case, they are <em>enhanced</em> by calling NetcdfDataset.enhance(), which identifies coordinate systems, deals with packed values, etc. Note that there is no <strong>location</strong> attribute, which is implicitly supplied by the  datasets found by the datasetScan.</li>
     <li>This element causes <strong>ID</strong> attributes to be added to each of the datasets contained in the DatasetScan. </li>
   </ol>
-  <p>&nbsp;</p>
   <h2>Cautions</h2>
   <h3>scan vs datasetScan </h3>
   <p>The <strong>scan</strong> element in the NcML aggregation is similar in purpose to the <strong>datasetScan</strong> element, but be careful not to confuse the two. The <strong>datasetScan</strong> element is more powerful, and has more options for filtering etc. Its job is to create nested <strong>dataset</strong> elements inside the datasetScan, and so has various options to  add information to those nested datasets. It has a generalized framework (CrawlableDataset) for crawling other things besides file directories. The <strong>scan</strong> element's job is to easily specify what files go into an NcML aggregation, and those individual files are hidden inside the aggregation dataset. It can only scan file directories. In the future, some of the capabilities of <strong>datasetScan</strong> will migrate into NcML <strong>scan</strong>. </p>

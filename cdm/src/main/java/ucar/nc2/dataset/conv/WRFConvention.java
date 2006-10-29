@@ -81,63 +81,95 @@ public class WRFConvention extends CoordSysBuilder {
     int projType = att.getNumericValue().intValue();
     double lat1 = findAttributeDouble( ds, "TRUELAT1");
     double lat2 = findAttributeDouble( ds, "TRUELAT2");
-    double lat0 = findAttributeDouble( ds, "CEN_LAT");
-    double lon0 = findAttributeDouble( ds, "CEN_LON");
+    double centralLat = findAttributeDouble( ds, "CEN_LAT");
+    double centralLon = findAttributeDouble( ds, "CEN_LON");
 
-    /* double standardLon = findAttributeDouble( ds, "STAND_LON");
+    double standardLon = findAttributeDouble( ds, "STAND_LON");
     double moadLat = findAttributeDouble( ds, "MOAD_CEN_LAT");
 
-    if (Double.isNaN(centralLat) || Double.isNaN(centralLon)) {
+    if (Double.isNaN(standardLon) || Double.isNaN(moadLat)) {
       userAdvice.append("WARN: no explicit projection origin, projection may be wrong");
       parseInfo.append("WARN: no explicit projection origin, projection may be wrong ");
     }
 
-    double lon0 = (Double.isNaN(centralLat)) ? standardLon : centralLon;
-    double lat0 = (Double.isNaN(centralLon)) ? moadLat : centralLat;  */
+    double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
+    double lat0 = (Double.isNaN(moadLat)) ? centralLat : moadLat;
 
-    ProjectionImpl proj = null;
-    switch (projType) {
-      case 1:
-      case 203:
-        proj = new LambertConformal(lat0, lon0, lat1, lat2);
-        projCT = new ProjectionCT("Lambert", "FGDC", proj);
-        // System.out.println(" using LC "+proj.paramsToString());
-        break;
-      case 2:
-        proj = new Stereographic(lat0, lon0, 1.0);
-        projCT = new ProjectionCT("Stereographic", "FGDC", proj);
-        break;
-      case 3:
-        proj = new TransverseMercator(lat0, lon0, 1.0);
-        projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
-        break;
-      default:
-        parseInfo.append("ERROR: unknown projection type = "+projType);
-        break;
-    }
+    if (projType == 203) {
 
-    /* if (!Double.isNaN(standardLon) && !Double.isNaN(moadLat) && (proj != null) && (standardLon != centralLon)) {
-      LatLonPointImpl lpt0 = new LatLonPointImpl( moadLat,  standardLon);
-      LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
-      ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
-      ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
-      if (debug) {
-        System.out.println("ppt0="+ppt0+" lpt0= "+lpt0);
-        System.out.println("ppt1="+ppt1+" lpt1= "+lpt1);
-        System.out.println("originX="+(ppt1.getX() - ppt0.getX()));
-        System.out.println("originY="+(ppt1.getY() - ppt0.getY()));
+      /* centerX = centralLon;
+      centerY = centralLat;
+      ds.addCoordinateAxis( makeLonCoordAxis( ds, "longitude", ds.findDimension("west_east")));
+      ds.addCoordinateAxis( makeLatCoordAxis( ds, "latitude", ds.findDimension("south_north")));  */
+
+      Variable glat = ds.findVariable("GLAT");
+      glat.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      glat.setDimensions("south_north west_east");
+
+      Variable glon = ds.findVariable("GLON");
+      glon.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      glon.setDimensions("south_north west_east");
+
+      VariableDS v = new VariableDS( ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
+      v.addAttribute( new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
+      Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {}, new char[] {' '});
+      v.setCachedData(data, true);
+      ds.addVariable( null, v);
+
+      Variable dataVar = ds.findVariable("LANDMASK");
+      dataVar.addAttribute( new Attribute(_Coordinate.Systems, "LatLonCoordSys"));
+
+    }  else {
+
+      ProjectionImpl proj = null;
+      switch (projType) {
+        case 1:
+          proj = new LambertConformal(lat0, lon0, lat1, lat2);
+          projCT = new ProjectionCT("Lambert", "FGDC", proj);
+          // System.out.println(" using LC "+proj.paramsToString());
+          break;
+        case 2:
+          proj = new Stereographic(centralLat, centralLon, 1.0);
+          projCT = new ProjectionCT("Stereographic", "FGDC", proj);
+          break;
+        case 3:
+          proj = new TransverseMercator(centralLat, centralLon, 1.0);
+          projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
+          break;
+        default:
+          parseInfo.append("ERROR: unknown projection type = "+projType);
+          break;
       }
-      centerX = ppt1.getX() - ppt0.getX();
-      centerY = ppt1.getY() - ppt0.getY();
-    } */
 
-    // make axes
-    ds.addCoordinateAxis( makeXCoordAxis( ds, "x", ds.findDimension("west_east")));
-    ds.addCoordinateAxis( makeXCoordAxis( ds, "x_stag", ds.findDimension("west_east_stag")));
-    ds.addCoordinateAxis( makeYCoordAxis( ds, "y", ds.findDimension("south_north")));
-    ds.addCoordinateAxis( makeYCoordAxis( ds, "y_stag", ds.findDimension("south_north_stag")));
-    ds.addCoordinateAxis( makeZCoordAxis( ds, "z", ds.findDimension("bottom_top")));
-    ds.addCoordinateAxis( makeZCoordAxis( ds, "z_stag", ds.findDimension("bottom_top_stag")));
+      if (!Double.isNaN(standardLon) && !Double.isNaN(moadLat) && (proj != null) && (standardLon != centralLon)) {
+        LatLonPointImpl lpt0 = new LatLonPointImpl( moadLat,  standardLon);
+        LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
+        ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
+        ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
+        if (debug) {
+          System.out.println("ppt0="+ppt0+" lpt0= "+lpt0);
+          System.out.println("ppt1="+ppt1+" lpt1= "+lpt1);
+          System.out.println("originX="+(ppt1.getX() - ppt0.getX()));
+          System.out.println("originY="+(ppt1.getY() - ppt0.getY()));
+        }
+        centerX = ppt1.getX() - ppt0.getX();
+        centerY = ppt1.getY() - ppt0.getY();
+      }
+
+      // make axes
+      ds.addCoordinateAxis( makeXCoordAxis( ds, "x", ds.findDimension("west_east")));
+      ds.addCoordinateAxis( makeXCoordAxis( ds, "x_stag", ds.findDimension("west_east_stag")));
+      ds.addCoordinateAxis( makeYCoordAxis( ds, "y", ds.findDimension("south_north")));
+      ds.addCoordinateAxis( makeYCoordAxis( ds, "y_stag", ds.findDimension("south_north_stag")));
+      ds.addCoordinateAxis( makeZCoordAxis( ds, "z", ds.findDimension("bottom_top")));
+      ds.addCoordinateAxis( makeZCoordAxis( ds, "z_stag", ds.findDimension("bottom_top_stag")));
+
+      if (projCT != null) {
+        VariableDS v = makeCoordinateTransformVariable(ds, projCT);
+        v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+        ds.addVariable(null, v);
+      }
+    }
 
     // time coordinate variations
     if (ds.findVariable("Time") == null) { // Can skip this if its already there, eg from NcML
@@ -149,17 +181,6 @@ public class WRFConvention extends CoordSysBuilder {
     }
 
     ds.addCoordinateAxis( makeSoilDepthCoordAxis( ds, "ZS"));
-
-    if (projCT != null) {
-        VariableDS v = makeCoordinateTransformVariable(ds, projCT);
-        v.addAttribute( new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
-        ds.addVariable(null, v);
-    }
-
-    // make vertical coord transform variable
-    //VariableDS ctv = makeVerticalCoordTransformVariable();
-    //if (ctv != null)
-     // ds.addVariable( null, ctv);
 
     ds.finish();
   }
@@ -233,9 +254,40 @@ public class WRFConvention extends CoordSysBuilder {
   	return "down"; //eta coords decrease upward
   }
 
+
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  private CoordinateAxis makeXCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+  private CoordinateAxis makeLonCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+     if (dim == null) return null;
+     double dx = 4 * findAttributeDouble( ds, "DX");
+     int nx = dim.getLength();
+     double startx = centerX - dx * (nx-1) / 2;
+
+     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_east", "synthesized longitude coordinate");
+     ds.setValues( v, nx, startx, dx);
+     v.addAttribute( new Attribute(_Coordinate.AxisType, "Lon"));
+     if (!axisName.equals( dim.getName()) )
+       v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+
+     return v;
+   }
+
+  private CoordinateAxis makeLatCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+     if (dim == null) return null;
+     double dy = findAttributeDouble( ds, "DY");
+     int ny = dim.getLength();
+     double starty = centerY - dy * (ny-1) / 2;
+
+     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_north", "synthesized latitude coordinate");
+     ds.setValues( v, ny, starty, dy);
+     v.addAttribute( new Attribute(_Coordinate.AxisType, "Lat"));
+     if (!axisName.equals( dim.getName()) )
+       v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+
+     return v;
+   }
+
+   private CoordinateAxis makeXCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
     double dx = findAttributeDouble( ds, "DX") / 1000.0; // km ya just gotta know
     int nx = dim.getLength();
@@ -514,5 +566,45 @@ public class WRFConvention extends CoordSysBuilder {
     }
 
   } */
+
+  public static void main(String args[]) throws IOException, InvalidRangeException {
+    NetcdfDataset ncd = NetcdfDataset.openDataset("R:/testdata/wrf/WRFOU~C@");
+
+    Variable glat = ncd.findVariable("GLAT");
+    Array glatData = glat.read();
+    IndexIterator ii = glatData.getIndexIterator();
+    while (ii.hasNext()) {
+      ii.setDoubleCurrent( Math.toDegrees(ii.getDoubleNext()));
+    }
+    NCdump.printArray(glatData, "GLAT",System.out, null);
+
+    Variable glon = ncd.findVariable("GLON");
+    Array glonData = glon.read();
+    ii = glonData.getIndexIterator();
+    while (ii.hasNext()) {
+      ii.setDoubleCurrent( Math.toDegrees(ii.getDoubleNext()));
+    }
+    NCdump.printArray(glonData, "GLON",System.out, null);
+
+
+    Index index = glatData.getIndex();
+    Index index2 = glatData.getIndex();
+
+    int[] shape = glatData.getShape();
+    ArrayDouble.D2 diff = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, shape);
+
+    int ny = shape[0];
+    int nx = shape[1];
+    for (int y=0;y<ny-1;y++)
+      for (int x=0;x<nx;x++) {
+        double val = glatData.getDouble( index.set(y+1,x)) - glatData.getDouble( index2.set(y,x));
+        diff.set(y,x, Math.toDegrees(val));
+      }
+
+    NCdump.printArray(diff, "diff",System.out, null);
+    ncd.close();
+
+  }
+
 
 }

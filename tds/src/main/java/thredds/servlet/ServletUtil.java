@@ -227,7 +227,7 @@ public class ServletUtil {
   public static String getContextPath( HttpServlet servlet ) {
     if ( contextPath == null ) {
       ServletContext servletContext = servlet.getServletContext();
-      String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ServletParams file
+      String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
       if ( tmpContextPath == null ) tmpContextPath = "thredds";
       contextPath = "/"+tmpContextPath;
     }

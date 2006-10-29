@@ -74,7 +74,7 @@ public class NetcdfServlet extends AbstractServlet {
   public void init() throws ServletException {
     super.init();
 
-    String cache = ServletParams.getInitParameter("NetcdfServletCachePath", contentPath + "/cache");
+    String cache = ThreddsConfig.getInitParameter("NetcdfServletCachePath", contentPath + "/cache");
 
     // cache the fmr inventory xml: keep for 1 day, scour once a day */
     fmrCache = new DiskCache2(cache, false, 60 * 24, 60 * 24);
