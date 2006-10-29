@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Metadata Standards</title><meta content="Ethan Davis" name="author"></head><body>
+<h1>Metadata Standards</h1>
+<p>There are a number of existing metadata standards available for describing datasets. These include:<br>
+</p>
+<ul>
+  <li>Dublin Core - general library discovery metadata standard<br>
+  </li>
+  <li>FGDC/DIF - standard for geophisical data<br>
+  </li>
+  <li>ISO 19??? - standard for geophysical data (FGDC is merging/synchronizing with this ISO standard)<br>
+  </li>
+  <li>ADN - Digital library standard with education specific fields.</li>
+</ul>
+<h2>Including Existing Metadata Records in THREDDS catalogs.<br>
+</h2>
+<p>Any metadata records can be included in or referenced from a THREDDS catalog from a <b>metadata</b> element.<br>
+</p>
+<p>Metadata can be included directly in a metadata element. The only
+requirement is that the XML be in a non-THREDDS namespace. For example:<br>
+</p>
+<pre>&lt;metadata&gt;<br>&lt;/metadata&gt;<br></pre>
+<p>Referencing a metadata record is done with XLink attributes:<br>
+</p>
+<pre>&lt;metadata xlink:title="" xlink:href="" /&gt;<br></pre>
+<br>
+<br>
+</body></html>

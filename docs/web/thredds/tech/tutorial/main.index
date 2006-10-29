@@ -42,11 +42,11 @@ index.html
 >>NcML.htm
 >>FmrcAggregation.html
 
->title:Enhanced Catalogs
->>title:Metadata standards
+>title:Enhanced Catalogs for Data Discovery
 >>EnhancedCatalogs.html
->>title:Metadata Extractions
 >>DigitalLibraries.html
+>>MetadataExtraction.html
+>>MetadataStandards.html
 >>title:ToolsUI Configurator (?)
 
 >title:TDS Management I
@@ -90,5 +90,5 @@ index.html
 
 >title:Miscellaneous features and tips
 
->title:THREDDS Servlet Framework (advanced programmers)
->>title:CrawlableDataset
+>ThreddsServletFramework.html
+>>CrawlableDataset.html
