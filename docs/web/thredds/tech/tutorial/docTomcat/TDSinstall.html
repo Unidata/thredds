@@ -1,0 +1,76 @@
+<html>
+<head>
+<title>TDS Installation</title>
+
+</head>
+
+<body>
+<p>
+
+<pre>
+
+- Needs to be done as user tomcat 
+
+- In this tutorial:
+${tomcat_home} = /opt/tomcat
+${tomcat_version} = apache-tomcat-5.5.17
+
+- Go to webapps directory
+% cd ${tomcat_home}/${tomcat_version}/webapps
+ie /opt/tomcat/apache-tomcat-5.5.17/webapps
+
+- download latest <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html#TDS">thredds.war</a>
+
+- manual intall:
+	- stop tomcat
+	% ${tomcat_home}/${tomcat_version}/bin/shutdown.sh
+	- remove old TDS installation if there is one
+	% cd ${tomcat_home}/${tomcat_version}/webapps
+	% rm -r thredds
+	- remove tomcat logs
+	% rm ${tomcat_home}/${tomcat_version}/logs/*
+	- start tomcat
+	% ${tomcat_home}/${tomcat_version}/bin/startup.sh
+
+- alternatively one can use the Tomcat Manager once the tomcat users have been 
+  configured. This will be discussed it the Remote Management section
+
+</pre>
+ 
+<h2>Testing your TDS installation</h2>
+
+<p>
+
+At this point there should be a TDS installation. 
+
+<pre>
+
+- In the ${tomcat_home}/${tomcat_version}/logs directory
+% less catalina.out
+The following line should appear if started ok.
+	INFO: Starting service Catalina
+
+</pre>
+<p>
+Now one should see messages about the TDS server starting up. There
+might be some error messages, but these are usually the result of some
+start up processes not being synchronized. At this point, ignore them.
+
+<pre>
+
+The tomcat check is to see if a browser can find tomcat
+http://localhost:8080 
+	should see:
+	If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!
+
+The TDS check is to point your brower at:
+	http://localhost:8080/thredds/catalog.html 
+
+</pre>
+<p>
+You should see the Thredds default catalog. This initializes the 
+content directories with defaults (after this step, you can edit these 
+without worrying about them being overwritten).
+ 
+</body>
+</html>
