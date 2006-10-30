@@ -1,36 +1,18 @@
 index.html
+
+-.htaccess
+
 -TUIthreddsTab.jpg
 -fileIcon.jpg
 -THREDDSlogo.jpg
 -modelAggs.jpg
--.htaccess
+
+-GettingStarted.html
+
 
 >link:TDSOverview.ppt:TDS Overview (ppt)
 
->docTomcat/firstTomcat/index.html
->>docTomcat/firstTomcat/overview.html
->>docTomcat/firstTomcat/root.html
->>docTomcat/firstTomcat/tomcat.html
->>docTomcat/firstTomcat/test.html
-
->docTomcat/TDSstart/index.html
->>docTomcat/TDSstart/overview.html
->>docTomcat/TDSstart/tds.html
->>docTomcat/TDSstart/test.html
-
->docTomcat/security/index.html
->>docTomcat/security/overview.html
->>docTomcat/security/security.html
-
->docTomcat/remote/index.html
->>docTomcat/remote/overview.html
->>docTomcat/remote/remote.html
-
->docTomcat/upgrade/index.html
->>docTomcat/upgrade/overview.html
->>docTomcat/upgrade/tomcatTDS.html
->>docTomcat/upgrade/tds.html
->>docTomcat/upgrade/test.html
+>link:GettingStarted.html:Quick Start
 
 >title: Writing and maintaining catalogs
 >>CatalogPrimer.html
@@ -40,32 +22,31 @@ index.html
 
 >title:Using NcML in TDS
 >>NcML.htm
->>FmrcAggregation.html
+>>link:/content/software/netcdf/ncml/v2.2/FmrcAggregation.html:Forecast Model Aggregation
 
 >title:Enhanced Catalogs for Data Discovery
->>EnhancedCatalogs.html
->>DigitalLibraries.html
->>MetadataExtraction.html
 >>MetadataStandards.html
+>>EnhancedCatalogs.html
+>>MetadataExtraction.html
+>>DigitalLibraries.html
 >>title:ToolsUI Configurator (?)
 
->title:TDS Management I
->>title:Directory layout
->>title:Tomcat Management: server.xml, users.xml, management tools
->>title:Misc. robots.txt, favicon.ico
+>docTomcat/index.html
+>>docTomcat/tomcatInstall.html
+>>docTomcat/TDSinstall.html
+>>docTomcat/TDSlayout.html
+>>title:Tomcat admin and manager tools
+>>docTomcat/upgrade.html
 
 >title:TDS Security
 >>TomcatSecurity.html
 >>RemoteManagement.html
 
 >title:Advanced TDS management
->>title:Logging
->>title:Debugging
->>title:Performance
->>title:params.xml
->>title:Data Roots
->>title:Extra.catalogs
->>title:Caching
+>>title:Debug Actions
+>>title:Logs
+>>TroubleShooting.html
+>>Performance.html
 
 >title:. Serving Datasets - Examples
 >>title:Case Studies/IDV
@@ -87,8 +68,11 @@ index.html
 >>IDDconfig/IDD/tds.html
 >>IDDconfig/IDD/test.html
 
-
 >title:Miscellaneous features and tips
+>>title:fmrc definitions
+>>title:caching
+>>title:opendap sessions?
 
->ThreddsServletFramework.html
+>title:THREDDS Servlet Framework (advanced programmers)
 >>CrawlableDataset.html
+
