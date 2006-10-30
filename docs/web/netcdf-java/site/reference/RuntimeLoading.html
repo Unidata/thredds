@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>Runtime Loading </h1>
+<p>These are the various classes that can be plugged in at runtime: </p>
+<h3>Register an IOServiceProvider:</h3>
+<pre><strong>  ucar.nc2.NetcdfFile.registerIOProvider</strong>( String className);
+</pre>
+<p>The registered class must implement <strong><strong>ucar.nc2.IOServiceProvider. </strong></strong>When a <strong>NetcdfFile</strong>  is opened, we loop through the <strong><strong>IOServiceProvider</strong></strong> classes and call</p>
+<pre>  <strong><strong>boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)</strong></strong></pre>
+<p>on each, until one returns true. This method must be fast and accurate. </p>
+<h3>Register a CoordSysBuilder:</h3>
+<pre><strong>  ucar.nc2.dataset.CoordSysBuilder.registerConvention</strong>( String conventionName, String className);
+</pre>
+<p>The registered class must implement <strong>ucar.nc2.dataset.CoordSysBuilderIF. </strong>The NetcdfDataset is checked if it has a <strong>Convention</strong> attribute, and if so, it is matched by <em>conventionName</em><strong>. </strong>If not, loop through the <strong>CoordSysBuilderIF</strong> classes and call </p>
+<pre><strong>  boolean isMine(NetcdfFile ncfile)</strong> </pre>
+<p>on each, until one returns true. If none are found, use the default <strong>_Coordinate</strong> Convention.</p>
+<h3>Register a CoordTransBuilder:</h3>
+<pre><strong>  ucar.nc2.dataset.CoordTransBuilder.registerTransform</strong>( String transformName, String className);</pre>
+<p> The registered class must implement <strong></strong><strong><strong>ucar.nc2.dataset.CoordTransBuilderIF</strong></strong>. The Coordinate Transform Variable must have the transform name as one of its parameters. </p>
+<h3>Register a TypedDatasetFactory:</h3>
+<pre><strong>  ucar.nc2.dt.TypedDatasetFactory.registerFactory</strong>( DataType datatype, String className);</pre>
+<p> The registered class must implement <strong><strong>ucar.nc2.dt.</strong>TypedDatasetFactoryIF:</strong></p>
+<pre>
+  public boolean <strong>isMine</strong>( NetcdfDataset ncd);
+  public TypedDataset <strong>open</strong>( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer log);
+
+</pre>
+<h2>Runtime Configuration </h2>
+<pre> &lt;runtimeConfig&gt;
+<strong>1)</strong> &lt;<strong>ioServiceProvider</strong>  class="edu.univ.ny.stuff.FooFiles"/&gt;
+ 
+<strong>2)</strong> &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;
+ 
+<strong>3)</strong> &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type=&quot;vertical&quot; class="my.stuff.atmosSigmaLog"/&gt;
+ 
+4) &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt; 
+ &lt;/runtimeConfig&gt;</pre>
+<ol>
+  <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
+  <li> Loads a <strong>CoordSysBuilderIF</strong> with the given class name, which looks for the given <strong>Convention</strong> attribute value. </li>
+  <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type must be <em>vertical</em> or <em>projection</em>. </li>
+  <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>. </li>
+</ol>
+<p>From your application, pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser:</p>
+<pre>  // read from file
+  StringBuffer errlog = new StringBuffer();
+  FileInputStream fis = new FileInputStream( filename);   
+  <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( fis, errlog);
+  System.out.println( errlog);
+
+  // read from resource
+  ClassLoader cl = this.getClassLoader();<br>  InputStream is = cl.getResourceAsStream(&quot;resources/nj22/configFile.xml&quot;);
+  <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( is, errlog);
+
+  // extract JDOM element from a larger XML document:
+  Document doc;<br>  SAXBuilder saxBuilder = new SAXBuilder();<br>  try {<br>    doc = saxBuilder.build(filename);<br>  } catch (JDOMException e) {<br>    throw new IOException(e.getMessage());<br>  }
+  Element root = doc.getRootElement();<br>  Element elem<strong> = </strong>root.getChild(&quot;<strong>runtimeConfig</strong>&quot;);
+  if (elem != null)
+    <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( elem, errlog);<br>
+</pre>
+<hr>
+<h2>Opening a TypedDataset</h2>
+<p>To open a TypedDataset, call <strong>ucar.nc2.dt.TypedDatasetFactory.open</strong>:</p>
+<pre>  static public TypedDataset <strong>open</strong>( DataType datatype, NetcdfDataset ncd, CancelTask task, StringBuffer errlog);
+  static public TypedDataset <strong>open</strong>( DataType datatype, String location, CancelTask task, StringBuffer errlog);</pre>
+<p>  The following are deprecated: <strong>PointObsDatasetFactory, RadialDatasetSweepFactory, TrajectoryObsDatasetFactory</strong></p>
+<h3><br>
+</h3>
+
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 26, 2006
+</address>
+</body>
+</html>

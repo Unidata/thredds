@@ -6,10 +6,7 @@ First Day
  
 2. Participant introductions (30) 9:00 - 9:30
 
-3. Installation (30) 9:30 - 10:00 (Robb)
-  JDK installation
-  Tomcat Installation
-  TDS Installation
+3. Quick Start (30) 9:30 - 10:00
   
  (break 15 min)
 
@@ -34,9 +31,11 @@ Lunch break 11:45-1
 (break 15 min)
  
 7. TDS Management I (60) 3:15 - 4:15
+ - Tomcat Installation (Robb)
+ - TDS Installation (Robb)
  - Directory layout
- - Tomcat Management: server.xml, users.xml, management tools
- - robots.txt, favicon.ico
+ - Tomcat admin and manager tools (Ethan)
+ - Upgrading (Robb)
  
 Questions/Discussion 4:15 - 5:00
 
@@ -47,17 +46,17 @@ Second Day
 8. TDS Security (90) 8:30 - 10:00
  - Tomcat Security
  - Remote Management
- - Restricting Access by IP address
+ - Restricting access by IP address
+ - Restricting access to admin and manager
  
 (break 15 min)
 
 9. Advanced TDS management (90) 10:15 - 11:30
-  * Logging
-  * Debugging
-  * Performance   * params.xml
-  * Data Roots
-  * extra.catalogs
-  * caching
+  * Debug Actions: Data Roots, catalogErrors.log, etc
+  * Logs
+  * Troubleshooting
+  * Performance
+  * threddsConfig.xml
   
 Lunch break 11:30-1
 

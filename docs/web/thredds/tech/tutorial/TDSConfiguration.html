@@ -28,7 +28,7 @@ only on the server, which  is removed when the TDS sends the catalog to the clie
     <p>A <strong><em>datasetScan</em></strong> element is a kind of dataset that automatically scans a local directory and generates datasets for some or all files in it. It contains the same attributes as a datasetRoot element, and implicitly creates a data root, for example </p>
     <pre> &lt;service name="myserver" serviceType="OpenDAP" base="<strong>/thredds/dodsC</strong>" /&gt;<strong>
  &lt;datasetScan </strong>name="My Data"<strong> </strong>path<strong>="myData" </strong>location<strong>="c:/my/data/" </strong>serviceName<strong>="</strong>myserver<strong>" /&gt;</strong></pre>
-    <p>The TDS will scan <strong>c:/my/data/</strong> and generate a dataset for each file. These generated datasets will have a URL starting with <strong>/thredds/dodsC/myData/</strong> and get mapped to <strong>c:/my/data/</strong>. A <em>datasetScan</em> element is turned into a <em>catalogRef</em> element in the client-side catalog. See <a href="datasetScan/index.html">here</a> for more details and options on datasetScan elements. </p>
+    <p>The TDS will scan <strong>c:/my/data/</strong> and generate a dataset for each file. These generated datasets will have a URL starting with <strong>/thredds/dodsC/myData/</strong> and get mapped to <strong>c:/my/data/</strong>. A <em>datasetScan</em> element is turned into a <em>catalogRef</em> element in the client-side catalog. See <a href="DatasetScan.html">here</a> for more details and options on datasetScan elements. </p>
   </div>
   <h2>Managing Data Roots</h2>
   <p>You can have as many datasetRoot and datasetScan elements as you want, for example </p>

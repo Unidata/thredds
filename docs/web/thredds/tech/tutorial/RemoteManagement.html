@@ -1,7 +1,6 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Remote Management</title>
-  <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />  
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Remote Management</title>  
 </head>
 <body>
 
@@ -25,7 +24,7 @@
 <br>  &lt;user username="admin" password="adminpassword" roles="admin, manager"/&gt;<br>  &lt;user username="yername" password="yerpassword" roles="tdsConfig"/&gt;<br>&lt;/tomcat-users&gt;</pre>
 </blockquote>
 <p>The <em><strong>manager</strong></em> and <em><strong>admin</strong></em> roles are used within Tomcat itself to allow the use of the manager and administrator web interface. The <em><strong>tdsConfig</strong></em> role is used to configure the TDS. These roles must be specified exactly as shown. Note that all 3 of these roles are independent - you can add any, all or none of them. The easiest way to enable or disable remote administration is to change this file and restart Tomcat.</p>
-<p>The list of users, their names and passwords, are whatever you want them to be. Note that after you get this set up, you can manage users remotely through the administrator interface. Note also that before you go into production mode, you should change to using digest passwords by following the instructions <a href="Security.html#Digest">here</a>. </p>
+<p>The list of users, their names and passwords, are whatever you want them to be. Note that after you get this set up, you can manage users remotely through the administrator interface. Note also that before you go into production mode, you should change to using digest passwords by following the instructions <a href="TomcatSecurity.html#Digest">here</a>. </p>
 <p>Note that any changes wont take effect until you restart Tomcat. </p>
 <p><strong>Higher Security: </strong>You can also use an LDAP server or a Database to store users and roles, which may give you higher levels of security. Use of this feature is beyond the scope of this documentation, however.</p>
 <h2>Enable Secure Sockets Layer (SSL)</h2>
@@ -75,13 +74,13 @@
 <p>You also need to make sure that your firewall is allowing those ports through. </p>
 <h2>TDS Remote Debugging</h2>
 <p>Once SSL is enabled, you can remotely debug and configure the TDS.</p>
-<p>Debugging information is available at <strong><a href="/thredds/debug">http://hostname:8080/thredds/debug</a>. </strong>Some features of particular interest are:</p>
+<p>Debugging information is available at <strong><a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>. </strong>Some features of particular interest are:</p>
 <ol>
   <li><strong>Show Log</strong>s allows you to look at the TDS access logs, to see who is using your server.</li>
   <li><strong>Reinitialize</strong> will reread in the TDS catalogs and reinitialize itself, without having to restart the server. Use this whenever you make changes to the TDS catalogs.</li>
   <li><strong>Show Catalog Errors</strong> shows you any errors when reading the TDS catalogs. Check this after you run Reinitialize.</li>
 </ol>
-<p>TDS catalogs can be modified remotely through HTTPS GET and PUT commands that work on the &quot;raw&quot;catalog.xml using a special URL. For example, the main catalog will have the URL <strong><a href="/thredds/content/catalog.xml">http://hostname:8080/thredds/content/catalog.xml</a>. </strong>The NetCDF ToolsUI is currently under development to make this convenient to do. </p>
+<p>TDS catalogs can be modified remotely through HTTPS GET and PUT commands that work on the &quot;raw&quot;catalog.xml using a special URL. For example, the main catalog will have the URL <strong><a href="http://localhost:8080/thredds/content/catalog.xml">http://localhost:8080/thredds/content/catalog.xml</a>. </strong>The NetCDF ToolsUI is currently under development to make this convenient to do. </p>
 <h2><a name="tomcat"></a>Tomcat Remote Management</h2>
 <p>The best way to secure the  Tomcat manager and administration webapps is to restrict what IP addresses can access them. To do so:</p>
 <ol>
@@ -128,7 +127,7 @@
   <li><strong>Connection refused when trying to access a restricted page</strong>. The SSL socket is not enabled in the server.xml file, or you didn't install a certificate in the keystore. </li>
   <li><strong>What's in the keystore? </strong>
     <ul>
-      <li>Look at the <a href="/manager/status">Tomcat Server Status</a> page and check  the JVM Version.</li>
+      <li>Look at the <a href="http://localhost:8080/manager/status">Tomcat Server Status</a> page and check  the JVM Version.</li>
       <li> From command line, make sure that this matches the results of <strong>'java -version'. </strong>If not, then your Tomcat server is starting up with a different JVM. </li>
       <li>From command line, <strong>'keytool -list' </strong>will show you what's in the default keystore. Standard is to have password <em>changeit</em>. You need an entry named <em>tomcat</em>. </li>
     </ul>

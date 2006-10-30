@@ -3,9 +3,8 @@
         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
         xmlns:xlink="http://www.w3.org/1999/xlink">
 
-  <service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/">
-    <datasetRoot path="test" location="content/testdata/"/>
-  </service>
+  <service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" />
+  <datasetRoot path="test" location="content/testdata/"/>
 
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS"
            urlPath="test/testData.nc"/>
