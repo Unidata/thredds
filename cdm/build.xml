@@ -513,10 +513,10 @@
   </target>
 
   <property name="jarResourcesOptional" value="resourcesOptional-${release.version}.jar"/>
-   <target name="makeResourcesOptional" description="make resourcesOptional.jar">
+  <target name="makeResourcesOptional" description="make resourcesOptional.jar">
 
      <jar jarfile="${build.dir}/${jarResourcesOptional}" index="true" duplicate="preserve">
-       <zipfileset dir="${resources.dir}/optional" prefix="resources"/>
+       <zipfileset dir="${resources.dir}/optional" prefix="optional"/>
 
        <manifest>
          <attribute name="Built-By" value="${user.name}"/>

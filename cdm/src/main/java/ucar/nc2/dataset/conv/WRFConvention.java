@@ -105,10 +105,14 @@ public class WRFConvention extends CoordSysBuilder {
       Variable glat = ds.findVariable("GLAT");
       glat.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
       glat.setDimensions("south_north west_east");
+      glat.setCachedData(convertToDegrees(glat), false);
+      glat.addAttribute( new Attribute("units", "degrees_north"));
 
       Variable glon = ds.findVariable("GLON");
       glon.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       glon.setDimensions("south_north west_east");
+      glon.setCachedData(convertToDegrees(glon), false);
+      glon.addAttribute( new Attribute("units", "degrees_east"));
 
       VariableDS v = new VariableDS( ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
       v.addAttribute( new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
@@ -183,6 +187,21 @@ public class WRFConvention extends CoordSysBuilder {
     ds.addCoordinateAxis( makeSoilDepthCoordAxis( ds, "ZS"));
 
     ds.finish();
+  }
+
+  private Array convertToDegrees(Variable v) {
+    Array data;
+    try {
+      data = v.read();
+      data = data.reduce();
+    } catch (IOException ioe) {
+      throw new RuntimeException("data read failed on "+v.getName()+"="+ioe.getMessage());
+    }
+    IndexIterator ii = data.getIndexIterator();
+    while (ii.hasNext()) {
+      ii.setDoubleCurrent( Math.toDegrees(ii.getDoubleNext()));
+    }
+    return data;
   }
 
   // pretty much WRF specific

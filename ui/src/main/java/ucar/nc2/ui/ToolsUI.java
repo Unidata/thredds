@@ -1485,7 +1485,7 @@ public class ToolsUI extends JPanel {
           doTransform(ta.getText());
         }
       };
-      BAMutil.setActionProperties(transAction, "netcdf", "Transformed NcML", false, 'T', -1);
+      BAMutil.setActionProperties(transAction, "Import", "read textArea through NcMLReader\n write NcML back out via resulting dataset", false, 'T', -1);
       BAMutil.addActionToContainer(buttPanel, transAction);
     }
 
@@ -1556,6 +1556,8 @@ public class ToolsUI extends JPanel {
       }
     }
 
+    // read text from textArea through NcMLReader
+    // then write it back out via resulting dataset
     void doTransform(String text) {
       try {
         ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());

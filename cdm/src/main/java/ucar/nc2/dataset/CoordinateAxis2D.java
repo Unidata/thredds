@@ -59,19 +59,21 @@ public class CoordinateAxis2D extends CoordinateAxis {
    *  @return coordinate value.
    */
   public double getCoordValue(int i, int j) {
-    if (data == null) doRead();
-    dataIndex.set0(i);
-    dataIndex.set1(j);
-    return data.getDouble( dataIndex);
+    if (midpoint == null) doRead();
+    return midpoint.get( i, j);
   }
 
-  private double[] ddata = null;
-  private Array data = null;
-  private Index dataIndex = null;
+  private ArrayDouble.D2 midpoint = null;
   private void doRead() {
+    Array data = null;
     try { data = read(); }
     catch (IOException ioe) { } // ??
-    dataIndex = data.getIndex();
+
+    data = data.reduce();
+    if (data.getRank() != 2)
+      throw new IllegalArgumentException("must be 2D");
+
+    midpoint = (ArrayDouble.D2) Array.factory(double.class, data.getShape(), data.get1DJavaArray( double.class) );
   }
 
   /** Get the coordinate values as a 1D double array.
@@ -81,16 +83,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   public double[] getCoordValues() {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis2D.getCoordValues() on non-numeric");
-    if (ddata == null) {
-      if (data == null) doRead();
-      ddata = new double[(int)getSize()];
-      IndexIterator iter = data.getIndexIterator();
-      int count = 0;
-      while (iter.hasNext()) {
-        ddata[count++] = iter.getDoubleNext();
-      }
-    }
-    return ddata;
+    return (double[]) midpoint.get1DJavaArray( double.class);
   }
 
     /**
@@ -109,7 +102,81 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return vs;
   }
 
-  /** Given a coordinate position, find what grid element contains it.
+  public ArrayDouble.D2 getMidpoints() {
+    if (midpoint == null) doRead();
+    return midpoint;
+  }
+
+  static public ArrayDouble.D2 makeXEdgesRotated(ArrayDouble.D2 midx) {
+    int[] shape = midx.getShape();
+    int ny = shape[0];
+    int nx = shape[1];
+    ArrayDouble.D2 edgex = new ArrayDouble.D2(ny+2, nx+1);
+
+    // compute the interior rows
+    for (int y=0; y<ny; y++) {
+      for (int x=1; x<nx; x++) {
+        double xval = (midx.get(y,x-1) + midx.get(y,x))/2;
+        edgex.set(y+1, x, xval);
+      }
+      edgex.set(y+1, 0, midx.get(y,0) - (edgex.get(y+1,1) - midx.get(y,0)));
+      edgex.set(y+1, nx,  midx.get(y, nx-1) - (edgex.get(y+1,nx-1) - midx.get(y,nx-1)));
+    }
+
+    // compute the first row
+      for (int x=0; x<nx; x++) {
+        edgex.set(0, x, midx.get(0,x));
+      }
+
+    // compute the last row
+      for (int x=0; x<nx-1; x++) {
+        edgex.set(ny+1, x, midx.get(ny-1,x));
+      }
+
+    return edgex;
+
+  }
+
+  static public ArrayDouble.D2  makeYEdgesRotated(ArrayDouble.D2 midy) {
+    int[] shape = midy.getShape();
+    int ny = shape[0];
+    int nx = shape[1];
+    ArrayDouble.D2 edgey = new ArrayDouble.D2(ny+2, nx+1);
+
+    // compute the interior rows
+    for (int y=0; y<ny; y++) {
+      for (int x=1; x<nx; x++) {
+        double yval = (midy.get(y,x-1) + midy.get(y,x))/2;
+        edgey.set(y+1, x, yval);
+      }
+      edgey.set(y+1, 0, midy.get(y,0) - (edgey.get(y+1,1) - midy.get(y,0)));
+      edgey.set(y+1, nx,  midy.get(y, nx-1) - (edgey.get(y+1,nx-1) - midy.get(y,nx-1)));
+    }
+
+    // compute the first row
+      for (int x=0; x<nx; x++) {
+         double pt0 = midy.get(0,x);
+         double pt = edgey.get(2,x);
+
+        double diff = pt0-pt;
+        edgey.set(0, x, pt0 + diff);
+      }
+
+    // compute the last row
+      for (int x=0; x<nx-1; x++) {
+        double pt0 = midy.get(ny-1,x);
+        double pt = edgey.get(ny-1,x);
+
+        double diff = pt0-pt;
+        edgey.set(ny+1, x, pt0 + diff);
+      }
+
+    return edgey;
+  }
+
+
+
+  /* Given a coordinate position, find what grid element contains it.
     This means that
     <pre>
     edge[i] <= pos < edge[i+1] (if values are ascending)
