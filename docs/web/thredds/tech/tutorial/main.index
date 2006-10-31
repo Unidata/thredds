@@ -19,16 +19,16 @@ index.html
 >>TDSConfiguration.html
 >>DatasetScan.html
 >>CatalogGen.html
+-catGenServlet.png
 
 >title:Using NcML in TDS
 >>NcML.htm
 >>link:/content/software/netcdf/ncml/v2.2/FmrcAggregation.html:Forecast Model Aggregation
 
->title:Enhanced Catalogs for Data Discovery
->>MetadataStandards.html
->>EnhancedCatalogs.html
->>MetadataExtraction.html
+>EnhancedCatalogs.html
 >>DigitalLibraries.html
+>>MetadataExtraction.html
+>>MetadataStandards.html
 >>title:ToolsUI Configurator (?)
 
 >docTomcat/index.html
@@ -73,6 +73,5 @@ index.html
 >>title:caching
 >>title:opendap sessions?
 
->title:THREDDS Servlet Framework (advanced programmers)
+>ThreddsServletFramework.html
 >>CrawlableDataset.html
-
