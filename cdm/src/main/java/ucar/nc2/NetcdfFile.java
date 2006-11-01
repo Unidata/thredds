@@ -1037,7 +1037,7 @@ public class NetcdfFile {
     for (int i=0; i<g.attributes.size(); i++) {
       Attribute oldAtt = (Attribute) g.attributes.get(i);
       String newName = makeFullNameWithString( g, oldAtt.getName());
-      newName = createValidNetcdfObjectName( newName);
+      // newName = createValidNetcdfObjectName( newName);    // LOOK why are we doing this ???
       //System.out.println("  add att="+newName);
       gattributes.add( new Attribute( newName, oldAtt));
     }
@@ -1116,13 +1116,14 @@ public class NetcdfFile {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
 
     try {
-      String filename = "R:/testdata/radar/netcdf/CHILL/ncswp_CHILL_20010708_223052.000_v398_s1_0.504999_PPI_bytes.nc";
+      String filename = "C:/data/test/20060904.1335.n18.nc";
       //String filename = "C:/dev/grib/data/ndfd.wmo";
       //String filename = "c:/data/radar/level2/6500KHGX20000610_000110.raw";
       NetcdfFile ncfile = NetcdfFile.open(filename);
+      Attribute att = ncfile.findGlobalAttribute("pass_date\\units");
 
       System.out.println();
-      System.out.println( ncfile.toString());
+      System.out.println( att);
       
       //System.out.println( file.toStringV3());
       //file.writeNcML( System.out);

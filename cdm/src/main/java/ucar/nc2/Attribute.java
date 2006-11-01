@@ -213,7 +213,7 @@ public class Attribute {
   /** Copy constructor */
   public Attribute( String name, Attribute from) {
     this.name = name;
-    validate(name);
+    //validate(name);
     this.dataType = from.dataType;
     this.nelems = from.nelems;
     this.values = from.values;
@@ -225,7 +225,7 @@ public class Attribute {
    */
   public Attribute( String name, String val) {
     this.name = name;
-    validate(name);
+    //validate(name);
     setStringValue( val);
   }
 
@@ -251,7 +251,7 @@ public class Attribute {
    */
   public Attribute( String name, Array values) {
     this.name = name;
-    validate(name);
+    //validate(name);
     setValues( values);
   }
 
@@ -260,7 +260,7 @@ public class Attribute {
    */
   public void setName( String name) {
     this.name = name;
-    validate(name);
+    //validate(name);
   }
 
   /**
