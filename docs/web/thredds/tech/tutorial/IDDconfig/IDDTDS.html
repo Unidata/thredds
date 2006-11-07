@@ -1,0 +1,159 @@
+<html>
+<head>
+<title>Configuring the TDS for the IDD</title>
+
+</head>
+
+<body>
+<p>
+
+Unidata has build a community oriented Data stream to deliver data over the 
+internet called the Internet Data Distribution system (IDD). picture
+The IDD contains many different types of data from data providers that include 
+NWS, NCEP, FSL, CMC, etc The data ranges from model data to varies types of 
+text reports, radar images, satellite images, etc. Unidata maintains a web
+page of the different types of 
+<a href="http://www.unidata.ucar.edu/data">data</a> on the IDD. 
+<p>
+One of the driving forces of the TDS development has been to be able to 
+distribute all the data on the IDD data stream. Currently we distribute
+about 80% of the data and there is software development planned for the rest.
+
+<p>
+Click <a href="http://motherlode.ucar.edu:8080/thredds/catalog.html">here</a>to see Unidata's IDD/TDS server
+
+<h2>IDD catalog configuration</h2>
+<p>
+The TDS distribution comes with the IDD catalogs that can be installed so one
+can mimic the Unidata IDD/TDS server. Of course one has to configure the server
+to access the IDD catalogs and the data infrastructure has to be in place
+for the catalogs to work correctly. 
+
+<p>
+The configuration is simple, change the default TDS catalog to the IDD 
+<a href="catalog.xml">catalog</a> that is included in the TDS distribution. 
+<p>
+Another interesting catalog, <a href="ndfd_model.xml">ndfd_model.xml</a>.
+
+
+<pre>
+ 
+Change to top catalog location
+% cd ${tomcat_home}/${tomcat_version}/content/thredds
+Save the default catalog (catalog.xml)
+% mv catalog.xml catalog.dist
+Get the IDD/TDS catalog from the distribution
+% cp idd/catalog.xml .
+
+</pre>
+
+<p>
+As user tomcat, stop and start tomcat.
+
+<pre>
+
+% cd ${tomcat_home}/${tomcat_version}/bin/shutdown.sh
+% cd ${tomcat_home}/${tomcat_version}/bin/startup.sh
+
+</pre>
+
+<h2>Dataset directories infrastructures</h2>
+<p>
+When we were inspecting the ndfd_model.xml catalog above, I pointed out the 
+location element in the catalog. This is where the data resides on the disk
+and more important this is where the catalog expects the data.
+The bottom line, if one wants to use the IDD catalogs without making any 
+changes, then the IDD datasets infrastructure must be in place. But, there is
+an easy solution to creating the infrastructure, use the 
+<a href="http://www.unidata.ucar.edu/software/ldm"> LDM </a> software to create
+it. 
+<p>
+Since the LDM is used to deliver the data for the IDD, the LDM can be
+configured to create the data directories for the TDS catalogs. To configure the
+LDM , TDS pqact files need to be installed in the LDM. The TDS pqact files 
+have been developed by the THREDDS to create the correct directory structure 
+and the correct dataset names.  These pqact TDS files are:
+<pre>
+
+pqact.thredds   // create directories for model, text type products, plus others
+pqact.threddsradar // create directories for level II and III radar data
+pqact.threddsconduit // create directories for high resolution model data
+
+</pre> 
+
+Add the following 3 lines to the etc/ldmd.conf file around the other exec lines:
+<pre>
+
+exec    "pqact -f ANY-CONDUIT-NNEXRAD-CRAFT etc/pqact.thredds"
+exec    "pqact -f NNEXRAD|CRAFT etc/pqact.threddsradar"
+exec    "pqact -f CONDUIT|SPARE etc/pqact.threddsconduit"
+
+</pre>
+To download the latest pqact files, click on the name with the right mouse 
+button:
+
+<pre>
+
+
+<a href="pqact.thredds">pqact.thredds</a>
+<a href="pqact.threddsradar">pqact.threddsradar</a>
+<a href="pqact.threddsconduit">pqact.threddsconduit</a>
+
+
+</pre> 
+ 
+Once the ldmd.conf has been configured, the LDM needs to be stopped and started
+for the new pqact file to take affect.
+
+<pre>
+
+stop and start needs to be done as user ldm
+% ldmadmin stop
+% ldmadmin start
+
+</pre>
+
+<h2>Managing the datasets</h2>
+<p>
+
+Since the IDD works with near real-time datasets, the datasets are dynamic. The
+datasets are arriving all the time, usually at the rate of 1-5 per second. It
+doesn't take much to figure out that the LDM data partition would fill up in a 
+matter of days if the files were not deleted in a timely manner. 
+
+<h3>Removing datasets</h3>
+<p>
+The IDD/TDS has developed a script that runs once a day to remove the oldest 
+files, keeping a certain number of files in the directory. The script is 
+called 
+<a href="manageFilesDirs.pl">manageFilesDirs.pl</a>, that has a configuration file called
+<a href="manageFilesDirs.conf">manageFilesDirs.conf</a>.  Both files have 
+documentation in the header explaining the usage of the files. 
+The manageFilesDirs.pl
+is usually located in the ~ldm/util directory and it's run out of a crontab
+in an off peak hour. It takes about 1-2 hours to scan a large directory
+structure. The manageFilesDirs.conf file usually resides in the ~ldm/etc
+directory. Using the manageFilesDirs script one can regulate the number of files
+to retain and to keep the the LDM data directory at consant usage level without
+worry.
+
+<h3>Pre indexing GRIB files</h3>
+<p>
+ 
+Since the IDD/TDS distributes GRIB files there is also another script that is used
+to index the files for the TDS. Indexing the files before they are requested
+greatly speeds up the access time for the files therefore it's highly
+recommended. To pre-index the files, the <a href="GribIndexer.pl">GribIndexer.pl</a>
+is used with the configuration <a href="GribIndexer.conf">GribIndexer.conf</a> file. 
+There is a couple configurations in the GribIndexer.pl script that are needed
+to access some of the TDS routines needed to index the files. The location of
+Java 1.5, Tomcat home, and what version of Tomcat configurations. The 
+GribIndexer.conf has information on how to configure in the header of the file.
+The GribIndexer.pl script should be run every 10 minutes from crontab
+to keep the indexing up to date. Besides indexing the GRIB files, an
+inventory file is also created. This file extracts the metadata from the GRIB
+file. It's recommended to install GribIndexer to improve performance of the
+TDS.
+ 
+</body>
+</html>
