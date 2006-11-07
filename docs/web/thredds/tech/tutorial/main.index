@@ -9,13 +9,21 @@ index.html
 
 -TDSOverview.ppt
 
-
 >link:TDSOverview.ppt:TDS Overview (ppt)
+
+>title:Participant introductions
 
 >title:Quick Start
 >>GettingStarted.html
 >>DirectoryLayout.html
 >>title:Tomcat manager tools
+
+>title:Tomcat Management / Security
+>>TomcatSecurity.html
+
+>title:TDS Remote Management
+>>RemoteManagement.html
+>>title:Restricting access by IP address (manager.xml)
 
 >title: Writing and maintaining catalogs
 >>CatalogPrimer.html
@@ -24,26 +32,26 @@ index.html
 >>CatalogGen.html
 -catGenServlet.png
 
->title:Using NcML in TDS
->>NcML.htm
->>FmrcAggregation.html
-
 >title:Enhanced Catalogs
->>MetadataStandards.html
 >>EnhancedCatalogs.html
 >>MetadataExtraction.html
 >>DigitalLibraries.html
->>title:ToolsUI Configurator (?)
+>>MetadataStandards.html
 
->title:TDS Security
->>TomcatSecurity.html
->>RemoteManagement.html
+>title:TDS and NcML
+>>NcML.htm
+
+>title:TDS and NcML II
+>>FmrcAggregation.html
+>>title:GRIB definition files
 
 >title:Advanced TDS management
->>title:Debug Actions
+>>title:Debug Actions Data Roots, catalogErrors.log, etc
 >>title:Logs
->>TroubleShooting.html
 >>Performance.html
+>>title:threddsConfig.xml
+>>title:caching
+>>title:restrict TDS access by IP (server.xml)
 
 >title:. Serving Datasets - Examples
 >>title:Case Studies/IDV
@@ -63,10 +71,9 @@ index.html
 
 >>IDDconfig/IDDTDS.html
 
->title:Miscellaneous features and tips
->>title:fmrc definitions
->>title:caching
->>title:opendap sessions?
+>title:Troubleshooting
+>>TroubleShooting.html
 
->CrDs.html
->TSF.html
+>title: THREDDS Servlet Framework
+>>CrDs.html
+>>TSF.html
