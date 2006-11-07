@@ -41,7 +41,10 @@ machines at "/home/workshop/TDS/code/thredds". To update that code, run these tw
 - builds the minimal netCDF library, ncCore-*.jar, which reads netCDF-3
 files; and the full netCDF library, netcdf-*.jar, which implements the
 full CDM.</li><li><code>compileUI</code> - compiles the netCDF-Java/CDM and ToolsUI code</li>
-  <li><code>makeJarUI</code> - builds the netCDF ToolsUI library, netcdfUI-*.jar, which includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.<br>
+  <li><code>makeJarUI</code>
+- builds the netCDF ToolsUI library, netcdfUI-*.jar, which includes the
+netCDF library plus the user interface classes for the netCDF ToolsUI
+application.<br>
   </li>
 
 
@@ -51,7 +54,9 @@ full CDM.</li><li><code>compileUI</code> - compiles the netCDF-Java/CDM and Tool
 </p>
 
 <ul>
-  <li><code>cd cdm</code></li>
+  <li><code>cd cdm</code></li><li><code>ant clean<br>
+    </code></li>
+
   <li><code>ant compileUI</code><br>
   </li>
 </ul>
@@ -63,11 +68,15 @@ full CDM.</li><li><code>compileUI</code> - compiles the netCDF-Java/CDM and Tool
 <ul>
   <li><code>target/runToolsUI</code></li></ul>which runs the following command (with the classpath expanded):<br>
 <ul>
-  <li><code>java -Xmx512m -classpath &lt;classpath&gt; ucar.nc2.ui.ToolsUI</code><br>
-  </li>
+  <li><code>java -Xmx512m -classpath &lt;classpath&gt; ucar.nc2.ui.ToolsUI</code></li>
 
 
 </ul>
-
-<br>
+<h2>Subversion Organization</h2>
+<ul>
+  <li><code>svn://zero/thredds/trunk/</code> - Development code</li>
+  <li><code>svn://zero/thredds/tag/</code> - Stable release versions</li>
+  <li><code>svn://zero/thredds/branch/</code> - Stable release bug fix branches (and other branches someday)<br>
+  </li>
+</ul>
 </body></html>
