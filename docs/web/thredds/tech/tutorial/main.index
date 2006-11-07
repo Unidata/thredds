@@ -7,12 +7,15 @@ index.html
 -THREDDSlogo.jpg
 -modelAggs.jpg
 
--GettingStarted.html
+-TDSOverview.ppt
 
 
 >link:TDSOverview.ppt:TDS Overview (ppt)
 
->link:GettingStarted.html:Quick Start
+>title:Quick Start
+>>GettingStarted.html
+>>DirectoryLayout.html
+>>title:Tomcat manager tools
 
 >title: Writing and maintaining catalogs
 >>CatalogPrimer.html
@@ -23,20 +26,14 @@ index.html
 
 >title:Using NcML in TDS
 >>NcML.htm
->>link:/content/software/netcdf/ncml/v2.2/FmrcAggregation.html:Forecast Model Aggregation
+>>FmrcAggregation.html
 
->EnhancedCatalogs.html
->>DigitalLibraries.html
->>MetadataExtraction.html
+>title:Enhanced Catalogs
 >>MetadataStandards.html
+>>EnhancedCatalogs.html
+>>MetadataExtraction.html
+>>DigitalLibraries.html
 >>title:ToolsUI Configurator (?)
-
->docTomcat/index.html
->>docTomcat/tomcatInstall.html
->>docTomcat/TDSinstall.html
->>docTomcat/TDSlayout.html
->>title:Tomcat admin and manager tools
->>docTomcat/upgrade.html
 
 >title:TDS Security
 >>TomcatSecurity.html
@@ -52,7 +49,7 @@ index.html
 >>title:Case Studies/IDV
 >>title:LEAD
 
->title:Serving IDD data with TDS
+>title:Serving Internet Data Distribution (IDD) data with TDS
 
 -IDDconfig/IDD/pqact.thredds
 -IDDconfig/IDD/pqact.threddsradar
