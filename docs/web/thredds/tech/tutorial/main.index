@@ -51,19 +51,17 @@ index.html
 
 >title:Serving Internet Data Distribution (IDD) data with TDS
 
--IDDconfig/IDD/pqact.thredds
--IDDconfig/IDD/pqact.threddsradar
--IDDconfig/IDD/pqact.threddsconduit
--IDDconfig/IDD/manageFilesDirs.pl
--IDDconfig/IDD/manageFilesDirs.conf
--IDDconfig/IDD/GribIndexer.pl
--IDDconfig/IDD/GribIndexer.conf
+-IDDconfig/ndfd_model.xml
+-IDDconfig/catalog.xml
+-IDDconfig/pqact.thredds
+-IDDconfig/pqact.threddsradar
+-IDDconfig/pqact.threddsconduit
+-IDDconfig/manageFilesDirs.pl
+-IDDconfig/manageFilesDirs.conf
+-IDDconfig/GribIndexer.pl
+-IDDconfig/GribIndexer.conf
 
->>IDDconfig/IDD/overview.html
->>IDDconfig/IDD/dataset.html
->>IDDconfig/IDD/manage.html
->>IDDconfig/IDD/tds.html
->>IDDconfig/IDD/test.html
+>>IDDconfig/IDDTDS.html
 
 >title:Miscellaneous features and tips
 >>title:fmrc definitions
