@@ -1,7 +1,5 @@
 NetCDF Java Workshop for intermediate/advanced Java programmers
 
-Intermediate topics:
-
  1. Overview of the Common Data Model and API (45) 8:30-9:15
 
  2. Working with CDM files (45) 9:15 - 10:00
@@ -11,31 +9,37 @@ Intermediate topics:
 	
 Break (15 min)
 
- 3. Datatype API (45) 10:15 - 11:00
-    * GeoGrid
-    * Point/Station/Trajectory/Profile (Ethan)
-    * Radial (Yuan)
+ 3. Building from source (30) 10:15-10:45 (Ethan)
+    * download from Subversion (web) and build with ant/IntelliJ
 
- 4. NcML (60) 11:00 - 12:00
+ 4. NcML (60) 10:45 - 11:45
     * Modifying existing files
     * Aggregation
-	* Forecast Model Aggregation
 
-Lunch break 12-1
+Lunch break 11:45 - 1:00
 
-Advanced topics:
-
- 5. Building from source (30) 1-1:30
-    * download from Subversion (web) and build with ant/IntelliJ (Ethan)
-	
- 6. Modifying the library (75) 1:30 - 2:45
-    * GRIB/BUFR tables (Robb)
-    * Writing a Coordinate System Builder: recognizing Coordinate Systems.
-    * Writing a Coordinate Transform implementation: projections and vertical transforms
-    * Writing a Datatype implementation: Point/Station/Trajectory, Radar files, etc. (Ethan)
+ 5. Writing an I/O Service Provider ( 120) 1:00-3:00
+    * Overview
+	* DMSP Example
 	
 Break (15 min)
 
- 7. Writing an I/O Service Provider ( 120) 3:00-5:00
-    * Reading other file formats into the CDM
+ 6. Coordinate Systems (30) 3:15-3:45
+    * Writing a Coordinate System Builder: recognizing Coordinate Systems.
+    * Writing a Coordinate Transform implementation: projections and vertical transforms
+	
+ 7. Datatype API (45) 3:45 - 4:30
+    * GeoGrid
+    * Radial (Yuan)
+    * Point/Station/Trajectory/Profile (Ethan)
+	* Writing a Datatype implementation: Point/Station/Trajectory, Radar files, etc. (Ethan)
+
+ 8. Runtime Looading (30) 4:30-5:00
+    * GRIB/BUFR tables (Robb)
+	* Summary
+ 
+	
+
+
+
 
