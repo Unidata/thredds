@@ -353,8 +353,8 @@
   <!-- name/value pair -->
   <xsd:element name="property">
     <xsd:complexType>
-      <xsd:attribute name="name" type="xsd:string"/>
-      <xsd:attribute name="value" type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="value" type="xsd:string" use="required" />
     </xsd:complexType>
   </xsd:element>
  
