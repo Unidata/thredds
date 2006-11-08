@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>IOSP Example - DMSP</title><meta content="Ethan Davis" name="author"></head><body>
+<h1>IOSP Example - DMSP</h1>
+<p>The ucar.nc2.iosp.dmsp.DSMPiosp class provides access to DMSP
+satellite data in the NOAA/NGDC DMSP archive format. Currently only
+data from the OLS instrument is supported, in particular only NOAA/NGDC
+DMSP OIS (OLS Integrated Smooth) data files. The OIS data is visible
+and thermal imagery at 2.7km resolution.<br>
+</p>
+<p>Look at structure of the example dataset in ToolsUI:<br>
+</p>
+<ul>
+  <li>Start ToolsUI (<a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev/">webstart</a>)<br>
+  </li>
+  <li>In Viewer, open "/data/nj22/dmsp/F14200307192230.n.OIS"</li>
+  <li>Select "infraredImagery" variable, then right-click, then select "Ncdump Data".</li>
+  <li>Click on "Image".</li>
+</ul>
+<p>Look at the example dataset as a grid:<br>
+</p>
+<ul>
+  <li>In ToolsUI, open the "Grid" tab</li>
+  <li>Open the example dataset</li>
+  <li>View Grid<br>
+  </li>
+</ul>
+<p>The DMSP satellites are polar orbiting satellites crossing the
+equator, depending on the satellite, at either dawn/dusk or
+noon/midnight.</p>
+<p>More information is available at http://dmsp.ngdc.noaa.gov/.<br>
+</p>
+<br>
+<ul>
+  <li>simple structure of data</li>
+  <li>cache some data</li>
+  <li>calculate and cache lat and lon</li>
+  <li>read all data for any requested variable and subset</li>
+  <li>Data type:</li>
+  <ul>
+    <li>individual dataset:</li>
+    <ul>
+      <li>swath</li>
+      <li>image</li>
+      <li>grid<br>
+      </li>
+    </ul>
+    <li>collection of datasets:</li>
+    <ul>
+      <li>collection of swath data</li>
+      <li>polar orbiting satellite swathcollection<br>
+      </li>
+    </ul>
+  </ul>
+</ul>
+<br>
+</body></html>
