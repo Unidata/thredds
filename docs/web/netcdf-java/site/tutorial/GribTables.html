@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>Adding in new GRIB tables</title>
+</head>
+
+<body>
+
+<p>
+
+The Java GRIB Library can read Gridded Binary (GRIB) files in both GRIB-1 and GRIB-2 formats.
+Decoding GRIB files requires a set of lookup tables for parameters,
+issuing centers, etc.  The Java GRIB Library comes pre-configured to support commonly
+used tables, but regional models and modeling centers may use tables
+that are not in the distribution.
+<p>
+You can add in specialized tables for both GRIB-1 and GRIB-2 using
+the steps below.  Documentation on the format of the files can be
+found <a href="http://www.unidata.ucar.edu/software/decoders/javadoc/Parameters.txt">here</a>.
+
+
+To add in new GRIB 1 tables, you will need to create a file
+listing the special tables and the special table files 
+themselves.
+
+<p>
+
+To add in a new parameter file, the Java GRIB Library would need to have access 
+to a file called <b>grib1lookuptable.lst</b> which would list the 
+parameter table (e.g.: gwctab_2.tab) and the parameter table
+itself. 
+<p>
+The format of grib1lookuptable.lst is:
+<pre>
+&lt;center&gt;:&lt;subcenter&gt;:&lt;version&gt;:  &lt;table location&gt;
+</pre>
+
+so it would look like:
+
+<pre>
+57:     1:      2:      gwctab_2.tab
+</pre>
+
+gwctab_2.tab can be a relative or absolute path.  The tables 
+are in NCEP format:
+<pre>
+-1:57:-1:2
+0:var0:undefined
+1:PRES:Pressure [Pa]
+2:PRMSL:Pressure reduced to MSL [Pa]
+3:PTEND:Pressure tendency [Pa s-1]
+4:PVORT:Pot. vorticity [km^2/kg/s]
+5:ICAHT:ICAO Standard Atmosphere Reference Height [m]
+6:GP:Geopotential [m^2/s^2]
+...
+</pre>
+
+(You can read more information about the format of this file and
+the parameter table 
+<a href="http://www.unidata.ucar.edu/software/decoders/javadoc/Parameters.txt">
+here</a>)
+<p>
+
+Once you've created this file, you would access it by putting
+the grib1lookuptable.lst in your &lt;home&gt;/.THREDDS
+directory and put the corresponding table files where they
+are pointed to in the file.  This can be a relative path or
+a web server.  Alternatively, you could place the grib1lookuptable.lst
+and associated parameter tables on a local web server and use the
+IDV's sitepath parameter (startup option or
+user preference) to point to the location where the files are.
+
+<a name="grib2"></a><div class="pagesubtitle">7.4.3.1 GRIB-2 tables</div> 
+
+To add in new GRIB 2 parameter, you would create a file
+named <b>grib2lookuptable.lst</b> which lists the parameters.
+
+<p>
+The format of grib2lookuptable.lst is:
+<pre>
+&lt;Discipline&gt;  &lt;Category&gt;  &lt;Parm #&gt;  &lt;Name&gt;  &lt;Units&gt;  &lt;Desc&gt;
+</pre>
+
+Parameters are listed by row, fields are separated by tabs,
+so it would look like:
+
+<pre>
+#Dis    Cat     Parm #  Name            Units   Desc
+0       0       0       Temperature     K       Temperature
+</pre>
+
+(This is a sample table, the lines starting with # are not include in table.)
+
+(You can read more information about the format of this file and
+the parameter table 
+<a href="http://www.unidata.ucar.edu/software/decoders/javadoc/Parameters.txt">
+here</a>)
+<p>
+
+Once you've created this file, you would access it by putting
+the grib2lookuptable.lst in your <home>/.metapps/DefaultIdv
+directory.  Alternatively, you could place the grib2lookuptable.lst
+on a local web server and use the IDV's sitepath parameter 
+(startup option or user preference) to point to the location 
+of the file.
+
+
+<p>
+
+
+</body>
+</html>
+
