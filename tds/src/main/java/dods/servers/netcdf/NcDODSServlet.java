@@ -167,7 +167,7 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
    */
 
   private void makeDebugActions() {
-    DebugHandler debugHandler = new DebugHandler("ncdodsServer");
+    DebugHandler debugHandler = DebugHandler.get("ncdodsServer");
     DebugHandler.Action act;
 
     act = new DebugHandler.Action("showStatus", "Show ncdods status") {

@@ -71,7 +71,6 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
   public FmrcImpl(NetcdfDataset ncd) throws IOException {
     init( ncd);
-    ncd.setCached(3); // dont allow a normal close
   }
 
   /** Check if file has changed, and reread metadata if needed.
@@ -90,10 +89,16 @@ public class FmrcImpl implements ForecastModelRunCollection {
     return gds;
   }
 
+    // close and release all resources
+  public void close() throws IOException {
+    gds.close();
+  }
+
   private void init(NetcdfDataset ncd) throws IOException {
     this.org_ncd = ncd;
     if (!ncd.isEnhanced())
       ncd.enhance();
+    // ncd.setCached(3); // dont allow a normal close LOOK why ?? who is managing ??
 
     gridHash = new HashMap();  // key = grid name, value = Gridset
     coordSet = new HashSet();  // time coord names

@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Viewers</title>
+</head>
+
+<body>
+<h1><img src="THREDDSlogo.jpg" width="67" height="54">Viewers</h1>
+<div class="head">
+  <address>
+  </address>
+  <hr>
+  <div class="head"></div>
+</div>
+<p>The TDS lists the set of known viewers for a direct dataset the bottom of its HTML web page. You can get your own viewer listed by creating a Java class that tells the TDS what datasets are viewable, and what HTML fragment to include. </p>
+<h2>Create a Viewer implementation class </h2>
+<p>Your class must implement the  <strong>thredds.servlet.Viewer</strong> interface: </p>
+<pre>public interface <strong>Viewer</strong> {
+<strong>1)</strong> public boolean <strong>isViewable</strong>( thredds.catalog.InvDatasetImpl dataset);
+<strong>2)</strong> public String <strong>getViewerLinkHtml</strong>( InvDatasetImpl ds, HttpServletRequest req);
+}</pre>
+<ol>
+  <li>  Your class is passed a <strong>thredds.catalog.InvDatasetImpl</strong> object, and it  returns true if it is viewable by your viewer.</li>
+  <li>Your class is passed a viewable <strong>thredds.catalog.InvDatasetImpl</strong>, and it must return a well-formed HTML string that has an <em><strong>href</strong></em> link in it.</li>
+</ol>
+<p><strong>Example</strong>:</p>
+<pre>package my.package;
+include thredds.catalog.*;
+
+
+public class IDV implements Viewer {</pre>
+<pre> public boolean <strong>isViewable</strong>( InvDatasetImpl ds) {
+   InvAccess access = ds.getAccess(ServiceType.DODS);
+   if (access == null) access = ds.getAccess(ServiceType.OPENDAP);
+<strong>1)</strong> if (access == null) return false;
+
+<strong>2)</strong> return (ds.getDataType() == DataType.GRID);
+ }</pre>
+<pre> public String <strong>getViewerLinkHtml</strong>( InvDatasetImpl ds, HttpServletRequest req) {
+   InvAccess access = ds.getAccess(ServiceType.DODS);
+<strong>3)</strong> if (access == null) access = ds.getAccess(ServiceType.OPENDAP);</pre>
+<pre><strong>4)</strong> URI dataURI = access.getStandardUri();
+   try {
+     URI base = new URI( req.getRequestURL().toString());
+<strong>5)</strong>   dataURI = base.resolve( dataURI);
+   } catch (URISyntaxException e) {
+     log.error(&quot;Resolve URL with &quot;+req.getRequestURL(),e);
+   }
+</pre>
+<pre><strong>6)</strong> return &quot;&lt;a href='<strong>/thredds/view/idv.jnlp</strong>?url=&quot;+dataURI.toString()+&quot;'&gt;Integrated Data Viewer (IDV) (webstart)&lt;/a&gt;&quot;;
+ }
+</pre>
+<ol>
+  <li>Requires there to be  OPeNDAP access for the dataset. </li>
+  <li>Requires the dataset to be of <strong>DataType.GRID</strong>. </li>
+  <li>Get the OPeNDAP access object for the dataset.</li>
+  <li>Get the access URI.</li>
+  <li>Resolves the access URI against the request, which turns it into an absolute URI</li>
+  <li> Forms the HTML string to be placed on the dataset's TDS web page. Note that is has an href embedded in it, which will be displayed in this example as:
+  </pre>
+  </pre>
+  <blockquote>
+    <p><a href="http://motherlode.ucar.edu:8080/thredds/view/idv.jnlp?url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NDFD/CONUS_5km/NDFD_CONUS_5km_20061106_1200.grib2">Integrated Data Viewer (IDV) (webstart)</a></p>
+    </blockquote>
+  </li>
+</ol>
+<h2>Creating the Viewer Link </h2>
+<h3>Referencing an external URL</h3>
+<p>If the viewer you want to reference is not part of the TDS, just make the href  absolute, eg:</p>
+<pre> &lt;a href='http://my.server/viewer?<strong>url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/data.grib2</strong>'&gt;My Server&lt;/a&gt;</pre>
+<p>In this example, the server would see the OPeNDAP data access URL and remotely read it.</p>
+<h3>Returning a JNLP file </h3>
+<p>The IDV example returns a JNLP file, which allows the IDV client program to be automatically started through <a href="http://java.sun.com/products/javawebstart/">Java Webstart</a>. If you have a webstart-enabled viewer, you can also get the TDS to return  your own JNLP file. To do so:</p>
+<ol>
+  <li>The returned URL should start with <strong>/thredds/view</strong>/</li>
+  <li>The remaining part of the URL (before the ?) is the name of a <em><strong>JNLP template file</strong></em> in the <strong>${tomcat_home}/content/thredds/views/</strong> directory.</li>
+  <li>The JNLP template file is processed in the following way:
+    <ol>
+      <li>Each parameter in the URL is read as a <em>name=value</em> pair (in the example, there is one parameter, whose name is <strong>url</strong> and value is <strong>http://motherlode.ucar.edu:8080/thredds/dodsC/model/data.grib2).</strong></li>
+      <li>The  JNLP template file is searched for strings of the form <em><strong>{name}</strong></em>, and the corresponding value is substituted into it (in the example, all strings of the form <strong>{url}</strong> would be replaced by <strong>http://motherlode.ucar.edu:8080/thredds/dodsC/model/data.grib2).</strong></li>
+    </ol>
+  </li>
+  <li>Once the JNLP template file is processed, it is sent as the response to the user clicking on your  link. If they have webstart installed, the application named in the JNLP file is downloaded (if necessary) and started up. </li>
+</ol>
+<p><strong>Example</strong>:</p>
+<p>This is an approximately what is used in the IDV JNLP file. Note that the {url} string on the boldface line is replaced by the actual data access URL. This will create a command line argument  <strong>-data type:opendap.grid:http://motherlode.ucar.edu:8080/thredds/dodsC/model/data.grib2 </strong>and pass it to the IDV application. </p>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;<br>&lt;!-- JNLP File for Integrated Data Viewer --&gt;<br>&lt;jnlp spec=&quot;1.0+&quot; codebase=&quot;http://www.unidata.ucar.edu/software/idv/webstart/&quot;&gt;<br>  &lt;information&gt;<br>    &lt;title&gt;Integrated Data Viewer&lt;/title&gt;<br>    &lt;vendor&gt;Unidata&lt;/vendor&gt;<br>    &lt;homepage href=&quot;http://www.unidata.ucar.edu/software/idv/index.html&quot;/&gt;<br>    &lt;description&gt;Integrated Data Viewer(IDV)&lt;/description&gt;<br>    &lt;description kind=&quot;short&quot;&gt;A tool for geoscientific analysis and visualization.<br>    &lt;/description&gt;<br>    &lt;icon href=&quot;IDV/idv.gif&quot;/&gt;<br>    &lt;offline-allowed/&gt;<br>  &lt;/information&gt;</pre>
+<pre>  &lt;security&gt;
+   &lt;all-permissions/&gt;
+  &lt;/security&gt;</pre>
+<pre>  &lt;resources&gt;
+   &lt;j2se version=&quot;1.4+&quot; max-heap-size=&quot;512m&quot;/&gt;
+   &lt;jar href=&quot;IDV/idv.jar&quot;/&gt;
+   &lt;extension name=&quot;IDV Base&quot; href=&quot;IDV/idvbase.jnlp&quot;/&gt;
+  &lt;/resources&gt;
+  &lt;application-desc main-class=&quot;ucar.unidata.idv.DefaultIdv&quot;&gt;
+   &lt;argument&gt;-data&lt;/argument&gt;
+   <strong>&lt;argument&gt;type:opendap.grid:{url}&lt;/argument&gt;</strong>
+  &lt;/application-desc&gt;</pre>
+<pre>&lt;/jnlp&gt;</pre>
+<h2>  Loading your class at runtime</h2>
+<p>To load your class at runtime, place it in Tomcat's classpath. The standard way to do this is to put it in a jar file, and place the jar file into the <strong>${tomcat_home}/shared</strong> directory. Then tell the TDS to load it by adding a line to the <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> file, for example:</p>
+<pre>  &lt;viewer&gt;my.package.MyViewer&lt;/viewer&gt;</pre>
+<hr width="100%">
+<strong><br>
+</strong>
+<address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 06, 2006
+</address>
+<p>&nbsp;</p>
+</body>
+</html>

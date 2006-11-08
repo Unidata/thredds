@@ -37,11 +37,11 @@ import java.util.Date;
 import java.text.ParseException;
 
 /**
- * UspLightning
+ * UspLightning1
  *
  * @author caron
  */
-public class UspLightning implements IOServiceProvider {
+public class UspLightning1 implements IOServiceProvider {
 
 /*  USPLN data format:
 
@@ -126,7 +126,7 @@ these are long-range detections.
     int n;
 
     try {
-      n = read(raf);
+      n = readAllData(raf);
     } catch (ParseException e) {
       e.printStackTrace();
       throw new IOException("bad data");
@@ -204,7 +204,7 @@ these are long-range detections.
   }
 
   // 2006-10-23T17:59:39,18.415434,-93.480526,-26.8,1
-  int read(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {
+  int readAllData(RandomAccessFile raf) throws IOException, NumberFormatException, ParseException {
     ArrayList records = new ArrayList();
 
     java.text.SimpleDateFormat isoDateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -313,7 +313,7 @@ these are long-range detections.
   }
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException {
-    NetcdfFile.registerIOProvider(UspLightning.class);
+    NetcdfFile.registerIOProvider(UspLightning1.class);
     NetcdfFile ncfile = NetcdfFile.open("R:/testdata/lightning/uspln/uspln_20061023.18");
     System.out.println("ncfile = \n"+ncfile);
   }

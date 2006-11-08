@@ -32,10 +32,10 @@
 <h3 class="MsoNormal">Using <span class="MsoBodyTextIndent"><span style=""><span style=""><span style=""><b><i>NetcdfDataset.openDataset</i></b> </span></span></span></span>to open an enhanced <span style=""><span style=""><span style=""><span style=""><span style=""><a>NetcdfDataset</a></span></span></span></span></span> </h3>
 <p><span class="MsoNormal">When you want  the Netcdf-Java library to deal with missing values and scale/offset unpacking, and to identify Coordinate Systems, you should use the <strong>NetcdfDataset.openDataset</strong></span> factory call, for example: </p>
 <pre class="MsoNormal">  String filename = &quot;http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20061019_0000.grib1&quot;;
-  NetcdfFile ncfile = null;<br>  <strong>try</strong> {<br>    ncfile = <strong>NetcdfDataset.openDataset</strong>(filename);<br>    process( ncfile);<br>  } <strong>catch</strong> (IOException ioe) {<br>    log(&quot;trying to open &quot; + filename, ioe);
+  NetcdfDataset ncd = null;<br>  <strong>try</strong> {<br>    ncd = <strong>NetcdfDataset.openDataset</strong>(filename);<br>    process( ncd);<br>  } <strong>catch</strong> (IOException ioe) {<br>    log(&quot;trying to open &quot; + filename, ioe);
   } <strong>finally</strong> { 
-    if (null != ncfile) try {
-      <strong>ncfile.close</strong>();
+    if (null != ncd) try {
+      <strong>ncd.close</strong>();
     } catch (IOException ioe) {
       log(&quot;trying to close &quot; + filename, ioe);
     }
@@ -45,7 +45,7 @@
 <ul>
   <li>Calls <span class="MsoBodyTextIndent"><span style=""><strong>NetcdfDataset.openFile</strong>, and wraps the returned <span class="MsoNormal"><strong>NetcdfFile</strong></span> in a <span class="MsoNormal"><strong>NetcdfDataset</strong> if necessary.</span></span></span></li>
   <li>It processes <span class="MsoNormal"> missing values and scale/offset attributes, modifying <strong>Variable</strong> data types if necessary</span></li>
-  <li>It calls the appropriate Coordinate System Builder class to identify the coordinate systems and populate the Coordinate objects. </li>
+  <li>It calls the appropriate <em>Coordinate System Builder</em> class to identify the coordinate systems and populate the Coordinate objects. </li>
 </ul>
 <h3>Packed data variables and missing values </h3>
 <p>When you open a NetcdfDataset in <em><strong>enhanced mode</strong></em> (the default), any Variables that have the attributes <strong>scale_factor</strong> and/or <strong>add_offset </strong>are considered to be <em><strong>packed data Variables</strong></em>, whose data should be converted with the formula:</p>
@@ -75,7 +75,7 @@
   <li>MADIS</li>
   <li>NUWG</li>
   <li>WRF</li>
-  <li>_Coordinate </li>
+  <li><a href="../reference/CoordinateAttributes.html">_Coordinate</a> </li>
 </ul>
 <p>When an IOSP reads in a non-netCDF file, it should choose a Convention to use to encode the Coordinate Systems. </p>
 <h3>Using ToolsUI </h3>

@@ -107,17 +107,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     DataRootHandler.init(contentPath, contextPath);
     catHandler = DataRootHandler.getInstance();
 
-    ArrayList catList = new ArrayList();
-    catList.add("catalog.xml"); // always first
-    getExtraCatalogs(catList);
-    for (int i = 0; i < catList.size(); i++) {
-      String catFilename = (String) catList.get(i);
-      try {
-        catHandler.initCatalog(catFilename);
-      } catch (Throwable e) {
-        log.error( "Error initializing catalog "+catFilename+"; "+e.getMessage(), e);
-      }
-    }
+    initCatalogs();
 
     catHandler.makeDebugActions();
     DatasetHandler.makeDebugActions();
@@ -145,6 +135,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     log.info( "init(): done initializing <context= " + contextPath + ">." );
   }
 
+
   public void destroy() {
     timer.cancel();
     NetcdfFileCache.exit();
@@ -153,8 +144,21 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     aggCache.exit();
   }
 
-  private void getExtraCatalogs(List extraList) {
+  void initCatalogs() {
+    ArrayList catList = new ArrayList();
+    catList.add("catalog.xml"); // always first
+    getExtraCatalogs(catList);
+    for (int i = 0; i < catList.size(); i++) {
+      String catFilename = (String) catList.get(i);
+      try {
+        catHandler.initCatalog(catFilename);
+      } catch (Throwable e) {
+        log.error( "Error initializing catalog "+catFilename+"; "+e.getMessage(), e);
+      }
+    }
+  }
 
+  private void getExtraCatalogs(List extraList) {
     // if there are some roots in ThreddsConfig, then dont read extraCatalogs.txt
     ThreddsConfig.getCatalogRoots(extraList);
     if (extraList.size() > 0)
@@ -182,9 +186,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       }
     }
 
-    return;
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////
   public void doGet(HttpServletRequest req, HttpServletResponse res)
                              throws ServletException, IOException {
 
@@ -461,7 +465,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   // debugging
 
   protected void makeCacheActions() {
-    DebugHandler debugHandler = new DebugHandler("Caches");
+    DebugHandler debugHandler = DebugHandler.get("Caches");
     DebugHandler.Action act;
 
     act = new DebugHandler.Action("showCaches", "Show All Caches") {
@@ -525,7 +529,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   }
 
   protected void makeDebugActions() {
-    DebugHandler debugHandler = new DebugHandler("General");
+    DebugHandler debugHandler = DebugHandler.get("General");
     DebugHandler.Action act;
 
     act = new DebugHandler.Action("showVersion", "Show Build Version") {
@@ -652,6 +656,23 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     debugHandler.addAction(act);
 
     makeCacheActions();
+
+    debugHandler = DebugHandler.get("catalogs");
+     act = new DebugHandler.Action("reinit", "Reinitialize") {
+      public void doAction(DebugHandler.Event e) {
+        try {
+          DatasetHandler.reinit();
+          catHandler.reinit();
+          ThreddsConfig.readConfig(log);
+          initCatalogs();
+          e.pw.println( "reinit ok");
+        } catch (IOException e1) {
+          e.pw.println( "Error on reinit "+e1.getMessage());
+          log.error( "Error on reinit "+e1.getMessage());
+        }
+      }
+    };
+    debugHandler.addAction( act);
   }
 
   void showFlags(HttpServletRequest req, PrintStream pw) {

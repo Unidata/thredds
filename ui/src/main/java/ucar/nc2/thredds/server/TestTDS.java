@@ -73,7 +73,7 @@ public class TestTDS implements Runnable {
 
   public void run() {
     try {
-      ce.extractLoop(out, catUrl, type, false, stopButton);
+      ce.extract(out, catUrl, type, false, stopButton);
     } catch (IOException e) {
       e.printStackTrace();
       label.setText("Error");
@@ -98,13 +98,13 @@ public class TestTDS implements Runnable {
     main = new JPanel();
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    // TestTDS modelsNc = new TestTDS("modelsNc", server+"/idv/rt-models.1.0.xml", CatalogCrawler.USE_RANDOM_DIRECT);
+    TestTDS models = new TestTDS("models", server+"/idd/models.xml", CatalogCrawler.USE_RANDOM_DIRECT);
 
-    TestTDS dgex_model = new TestTDS("dgex_model", server+"/idd/dgex_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
+    /* TestTDS dgex_model = new TestTDS("dgex_model", server+"/idd/dgex_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
     TestTDS gfs_model = new TestTDS("gfs_model", server+"/idd/gfs_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
     TestTDS nam_model = new TestTDS("nam_model", server+"/idd/nam_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
     TestTDS ruc_model = new TestTDS("ruc_model", server+"/idd/ruc_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestTDS ndfd_model = new TestTDS("ndfd_model", server+"/idd/ndfd_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);  // */
+    TestTDS ndfd_model = new TestTDS("ndfd_model", server+"/idd/ndfd_model.xml", CatalogCrawler.USE_RANDOM_DIRECT); */ // */
 
     //TestTDS radar2 = new TestTDS("radar2", "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level2/catalog.xml", CatalogCrawler.USE_RANDOM);
     //TestTDS radar3 = new TestTDS("radar3", "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level3/catalog.xml", CatalogCrawler.USE_RANDOM);
@@ -114,14 +114,14 @@ public class TestTDS implements Runnable {
     frame.setLocation(40, 300);
     frame.setVisible(true);
 
-    //new Thread( radar2).start();
-    //new Thread( radar3).start();
+    /*
     new Thread( dgex_model).start();
     new Thread( gfs_model).start();
     new Thread( nam_model).start();
     new Thread( ruc_model).start();
     new Thread( ndfd_model).start(); // */
-    
+    new Thread( models).start(); //
+
     //new Thread( modelsNc).start();
 
   }

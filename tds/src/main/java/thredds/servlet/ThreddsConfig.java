@@ -37,26 +37,37 @@ import org.jdom.Element;
  * Read and process the threddsConfig.xml file
  */
 public class ThreddsConfig {
-  private static HashMap paramHash = new HashMap();
   private static javax.servlet.ServletContext _context;
-  private static ArrayList catalogRoots = new ArrayList();
+  private static String _filename;
+
+  private static HashMap paramHash;
+  private static ArrayList catalogRoots;
 
   static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
     _context = context;
+    _filename = filename;
 
-    File file = new File(filename);
+    readConfig( log);
+  }
+
+  static void readConfig(org.slf4j.Logger log) {
+    paramHash = new HashMap();
+    catalogRoots = new ArrayList();
+
+    File file = new File(_filename);
     if (!file.exists()) return;
+    log.debug("ThreddsConfig: reading xml file = " + _filename);
 
     org.jdom.Document doc;
     try {
-      InputStream is = new FileInputStream(filename);
+      InputStream is = new FileInputStream(_filename);
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);
     } catch (IOException e) {
-      log.error("ThreddsConfig: incorrectly formed xml file " + filename, e);
+      log.error("ThreddsConfig: incorrectly formed xml file " + _filename, e);
       return;
     } catch (JDOMException e) {
-      log.error("ThreddsConfig: incorrectly formed xml file " + filename, e);
+      log.error("ThreddsConfig: incorrectly formed xml file " + _filename, e);
       return;
     }
 
@@ -75,6 +86,24 @@ public class ThreddsConfig {
       //System.out.println("param= "+ name + " " + value);
     }
 
+    List rootList = rootElem.getChildren("catalogRoot");
+    for (int j = 0; j < rootList.size(); j++) {
+      Element catrootElem = (Element) rootList.get(j);
+      String location = catrootElem.getText().trim();
+      if (location.length() > 0) {
+        catalogRoots.add(location);
+        log.debug("ThreddsConfig: adding catalogRoot = " + location);
+      }
+    }
+
+    // nj22 runtime loading
+    List viewerList = rootElem.getChildren("viewer");
+    for (int j = 0; j < viewerList.size(); j++) {
+      Element elem = (Element) viewerList.get(j);
+      String className = elem.getText().trim();
+      ViewServlet.registerViewer(className);
+    }
+
     // nj22 runtime loading
     Element elem = rootElem.getChild("runtimeConfig");
     if (elem != null) {
@@ -84,14 +113,8 @@ public class ThreddsConfig {
         log.warn(errlog.toString());
     }
 
-    List rootList = rootElem.getChildren("catalogRoot");
-    for (int j = 0; j < rootList.size(); j++) {
-      Element paramElem = (Element) rootList.get(j);
-      String location = paramElem.getChildText("location");
-      if (null != location)
-        catalogRoots.add(location);
-    }
   }
+
 
   static void getCatalogRoots(List extraList) {
     extraList.addAll( catalogRoots);

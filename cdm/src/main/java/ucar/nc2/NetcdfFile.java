@@ -35,6 +35,16 @@ import java.io.*;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
+ * <p> Be sure to close the file when done, best practive is to enclose in a try/finally block:
+ * <pre>
+    NetcdfFile ncfile = null;
+    try {
+        ncfile = NetcdfFile.open(fileName);
+        ...
+    } finally {
+        ncfile.close();
+    }
+  </pre>
  *
  * <h3>Naming</h3>
  * Each object has a name (aka "full name") that is unique within the entire netcdf file, and
@@ -456,7 +466,7 @@ public class NetcdfFile {
   protected String location, id, title, cacheName;
   protected Group rootGroup = new Group( this, null, "");
   protected boolean isClosed = false;
-  protected int isCached = 0; // 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
+  protected int cacheState = 0; // 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
@@ -471,25 +481,30 @@ public class NetcdfFile {
    * If the underlying file was acquired, it will be released, otherwise closed.
    */
   public synchronized void close() throws java.io.IOException {
-    if (isCached() == 1) {
+    if (getCacheState() == 1) {
       NetcdfFileCache.release(this);
     } else {
-      if ((null != spi) && !isClosed) spi.close();
-      isClosed = true;
+      try {
+        if ((null != spi) && !isClosed) spi.close();
+      } finally {
+        isClosed = true;
+      }
     }
   }
 
-  /** Is this is NetcdfFileCache ? */
-  public int isCached() { return isCached; }
+  /** Get the cache state.
+   * @return 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
+   */
+  public int getCacheState() { return cacheState; }
 
-   /** Used by NetcdfFileCache. Do not use. */
- public void setCached(int isCached) { this.isCached = isCached; }
+   /** Used by NetcdfFileCache. */
+  protected void setCacheState(int cacheState) { this.cacheState = cacheState; }
 
- /** Get the name in NetcdfFileCache */
- public String getCacheName() { return cacheName; }
+  /** Get the name used in the cache, if any */
+  public String getCacheName() { return cacheName; }
   
    /** Used by NetcdfFileCache. Do not use. */
- public void setCacheName(String cacheName) { this.cacheName = cacheName; }
+  protected void setCacheName(String cacheName) { this.cacheName = cacheName; }
 
    /** Get the dataset location. This is a URL, or a file pathname. */
   public String getLocation() { return location; }
@@ -1110,6 +1125,16 @@ public class NetcdfFile {
 
   /** Experimental - do not use */
   public IOServiceProvider getIosp() { return spi; }
+
+  // "safety net" use of finalize cf Bloch p 22
+  // this will not be called if the file is in the cache, since it wont get GC'd
+  protected void finalize() throws Throwable {
+    try {
+      if (!isClosed) close();
+    } finally {
+      super.finalize();
+    }
+  }
 
   /** debug */
   public static void main( String[] arg) throws Exception {

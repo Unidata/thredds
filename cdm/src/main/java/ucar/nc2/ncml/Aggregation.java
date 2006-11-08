@@ -101,7 +101,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   protected DateFormatter formatter = new DateFormatter();
   protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false,
-    debugScan = true;
+    debugScan = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -466,15 +466,13 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
+   * @throws FileNotFoundException is there are no datasets
    */
   protected Dataset getTypicalDataset() throws IOException {
-    //if (typical != null)
-    //  return typical;
-
     int n = nestedDatasets.size();
-    if (n == 0) return null;
-    // pick a random one, but not the last
-    int select = (n < 2) ? 0 : Math.abs(new Random().nextInt()) % (n-1);
+    if (n == 0)
+      throw new FileNotFoundException("No datasets in this aggregation");
+    int select = (n < 2) ? 0 : new Random().nextInt(n);
     return (Dataset) nestedDatasets.get(select);
   }
 

@@ -168,6 +168,10 @@ public class GribTimeCoord {
     return times.indexOf( validTime);
   }
 
+  Date getValidTime(Index.GribRecord record) {
+    return getValidTime(record, lookup);
+  }
+
   int getNTimes() {
     return times.size();
   }

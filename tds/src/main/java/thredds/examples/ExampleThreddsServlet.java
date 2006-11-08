@@ -181,7 +181,7 @@ public class ExampleThreddsServlet extends HttpServlet
 
   protected void makeDebugActions()
   {
-    DebugHandler debugHandler = new DebugHandler( "General" );
+    DebugHandler debugHandler = DebugHandler.get( "General" );
     DebugHandler.Action act;
 
     act = new DebugHandler.Action( "showVersion", "Show Build Version" )

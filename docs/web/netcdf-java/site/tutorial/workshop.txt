@@ -20,7 +20,7 @@ Lunch break 11:45 - 1:00
 
  5. Writing an I/O Service Provider ( 120) 1:00-3:00
     * Overview
-	* DMSP Example
+	* Lightning Example
 	
 Break (15 min)
 

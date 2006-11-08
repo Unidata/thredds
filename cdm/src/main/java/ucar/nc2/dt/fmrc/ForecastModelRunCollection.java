@@ -106,4 +106,7 @@ public interface ForecastModelRunCollection {
    * @throws java.io.IOException
    */
   public boolean sync() throws IOException;
+
+  // close and release all resources
+  public void close() throws IOException;
 }

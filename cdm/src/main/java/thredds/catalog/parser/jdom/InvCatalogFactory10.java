@@ -1688,7 +1688,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       dsElem.setAttribute( "href", ds.getXlinkHref(), xlinkNS );
       dsElem.setAttribute( "title", ds.getName(), xlinkNS );
       dsElem.setAttribute( "name", "" );
-      dsElem.addContent( writeProperty( new InvProperty( "DatasetScan", ds.getScanDir() ) ) ); /// LOOK experimental
+      dsElem.addContent( writeProperty( new InvProperty( "DatasetScan", "true" ) ) ); 
     }
 
     return dsElem;

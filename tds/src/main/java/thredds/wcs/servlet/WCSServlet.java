@@ -203,7 +203,7 @@ public class WCSServlet extends AbstractServlet {
     ps.println("</ServiceExceptionReport>");
 
     ps.flush();
-    log.error("makeServiceException", t);
+    log.info("makeServiceException", t);
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1); // LOOK, actual return is 200 = OK !
   }
 

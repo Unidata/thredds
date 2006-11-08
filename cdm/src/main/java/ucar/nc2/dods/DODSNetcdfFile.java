@@ -258,7 +258,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   public synchronized void close() throws java.io.IOException {
-    if (isCached() == 1) {
+    if (getCacheState() == 1) {
       NetcdfFileCache.release(this);
     } else {
       // if (!isClosed) dodsConnection.closeSession();

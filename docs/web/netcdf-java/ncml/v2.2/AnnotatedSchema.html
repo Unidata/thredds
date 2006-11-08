@@ -60,7 +60,7 @@ files.</p>
   <LI><FONT color=#0000ff>The <I><strong>netcdf</strong></I> element may contain any number 
   (including 0) of elements <I><strong>group, variable</strong></I>, <I><strong>dimension</strong></I>, <I>or<strong> attribute</strong></I>  that can appear in any order.</FONT> <font color="#0000FF">If you use readMetadata, you can remove specific elements with the <em><strong>remove</strong></em> element. </font> 
   <LI><font color="#990000">An aggregation element is used logically join multiple netcdf datasets into a single dataset.</font>
-  <LI><FONT color=#0000ff>The optional <I><strong>location</strong></I> attribute provides a reference to another netCDF dataset, called the <em><strong>referenced dataset</strong></em>. It contains the variable data that is not explicitly specified in the NcML document itself. If the location is missing and the data is not defined in <strong>values</strong> elements, then an empty file is written similar to the way CDL files are written by ncgen. </FONT>  
+  <LI><FONT color=#0000ff>The optional <I><strong>location</strong></I> attribute provides a reference to another netCDF dataset, called the <em><strong>referenced dataset</strong></em>. The location can be an absolute URL (eg <strong>http://server/myfile</strong>, or <strong>file:/usr/local/data/mine.nc</strong>) or a URL reletive to the NcML location (eg <strong>subdir/mydata.nc</strong>). The referenced dataset contains the variable data that is not explicitly specified in the NcML document itself. If the location is missing and the data is not defined in <strong>values</strong> elements, then an empty file is written similar to the way CDL files are written by ncgen. </FONT>  
   <LI><FONT color=#0000ff>The optional <I><strong>id</strong></I> attribute is meant to provide a 
   way to uniquely identify (relative to the application context) the NetCDF dataset.  It is important to understand that the <I>id</I> attribute refers to 
   the NetCDF dataset defined by the XML instance document, NOT the </FONT><font color="#0000FF">referenced dataset </font><FONT color=#0000ff>if there is  one. </FONT>
@@ -438,7 +438,7 @@ forecastOffsetMatcher:                     HHH#.grb#</font></pre>
 </blockquote>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 18, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 08, 2006
 </address>
 <p>&nbsp;</p>
 </BODY>

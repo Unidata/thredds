@@ -99,7 +99,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   public void extractLoop(PrintStream out, String catUrl, int type, boolean skipDatasetScan, CancelTask task) throws IOException {
     while (true) {
       extract(out, catUrl, type, skipDatasetScan, task);
-      if ((task != null) && task.isCancel()) break;
+      if ((task != null) && task.isCancel())
+        break;
     }
   }
 

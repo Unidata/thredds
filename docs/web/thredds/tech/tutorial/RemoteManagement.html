@@ -48,7 +48,7 @@
       <pre>Enter key password for &lt;tomcat&gt;</pre>
       <pre>(RETURN if same as keystore password):</pre>
     </blockquote>
-    <p>Be sure to  specify a password value of "changeit" and the web address of your Tomcat server for &quot;first and last name&quot;. The other values fill out as appropriate. This creates a <em>self-signed certificate</em> and puts it into the JDK's default keystore. Note the <strong>validity</strong> option on the command line, which is the number of days the certificate is valid. See <a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/windows/keytool.html">keytool documentation</a> for full description of managing keystores. </p>
+    <p>Be sure to  specify a password value of "changeit" (for both the keystore and the key password) and the web address of your Tomcat server for &quot;first and last name&quot;. The other values fill out as appropriate. This creates a <em>self-signed certificate</em> and puts it into the JDK's default keystore. Note the <strong>validity</strong> option on the command line, which is the number of days the certificate is valid. See <a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/windows/keytool.html">keytool documentation</a> for full description of managing keystores. </p>
   <li>
     <p>Edit <strong>${tomcat_home}/conf/server.xml</strong>, find the following section and uncomment it so it looks like: </p>
     <pre>    &lt;!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 --&gt;<br>    &lt;Connector port=&quot;8443&quot; <br>               maxThreads=&quot;150&quot; minSpareThreads=&quot;25&quot; maxSpareThreads=&quot;75&quot;<br>               enableLookups=&quot;false&quot; disableUploadTimeout=&quot;true&quot;<br>               acceptCount=&quot;100&quot; debug=&quot;0&quot; scheme=&quot;https&quot; secure=&quot;true&quot;<br>               clientAuth=&quot;false&quot; sslProtocol=&quot;TLS&quot; /&gt;</pre>
@@ -58,7 +58,7 @@
   <p> Note that if you choose to use a different port than 8443, you must also change the <strong>redirectPort=&quot;8443&quot;</strong> attribute on the regular (8080) Connector element in server.xml. </p>
 </blockquote>
 <h3>Using a separate keystore </h3>
-<p>You might prefer to keep your Tomcat keystore separate from the default JDK keystore, or to use a different password. Then modify the above as:</p>
+<p>You might prefer to keep your Tomcat keystore separate from the default JDK keystore, or to use a different password. If you do change the password, use the same one for  both the keystore and the key password. Then modify the above as:</p>
 <pre><strong>		</strong>${java_home}/bin/keytool -genkey -alias tomcat -keyalg RSA<strong> -<strong>keystore <strong>-validity 365</strong> &quot;/data/path/mykeystore&quot; </strong></strong></pre>
 <pre>    &lt;Connector port=&quot;8443&quot; <br>               maxThreads=&quot;150&quot; minSpareThreads=&quot;25&quot; maxSpareThreads=&quot;75&quot;<br>               enableLookups=&quot;false&quot; disableUploadTimeout=&quot;true&quot;<br>               acceptCount=&quot;100&quot; debug=&quot;0&quot; scheme=&quot;https&quot; secure=&quot;true&quot;<br>               clientAuth=&quot;false&quot; sslProtocol=&quot;TLS&quot;
                <strong>keystoreFile=&quot;/data/path/mykeystore&quot; keystorePass=&quot;mypassword&quot;</strong> /&gt;</pre>

@@ -46,6 +46,7 @@
     </layout>
   </appender>
 
+  <!-- catalogErrors.log is recreated each time Tomcat is started -->
   <appender name="catalogErrors" class="org.apache.log4j.FileAppender">
     <param name="File" value="${logdir}/catalogErrors.log"/>
     <param name="Append" value="false"/>
@@ -54,6 +55,16 @@
     </layout>
   </appender>
 
+  <!-- cataloggen.log is recreated each time Tomcat is started -->
+  <appender name="catalogGen" class="org.apache.log4j.FileAppender">
+    <param name="File" value="${logdir}/cataloggen.log"/>
+    <param name="Append" value="false"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+    </layout>
+  </appender>
+
+  <!-- special log for FMRC -->
   <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${logdir}/models.log"/>
     <param name="MaxFileSize" value="5MB"/>
@@ -63,11 +74,38 @@
     </layout>
   </appender>
 
-  <logger name="cacheLogger">
+  <!-- special loggers -->
+  <logger name="cacheLogger" additivity="false">
     <level value="ALL"/>
     <appender-ref ref="cacheLog"/>
   </logger>
 
+  <logger name="threddsAccessLogger">
+    <level value="ALL"/>
+    <appender-ref ref="threddsAccess"/>
+  </logger>
+
+  <logger name="thredds.cataloggen.config" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="catalogGen"/>
+  </logger>
+
+  <logger name="thredds.servlet.DataRootHandler" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="catalogErrors"/>
+  </logger>
+
+  <logger name="ucar.nc2.iosp.grib" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
+  </logger>
+
+  <logger name="ucar.nc2.dt.fmrc" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
+  </logger>
+
+  <!-- All normal logging messages go to threddsServlet.log -->
   <logger name="dods">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
@@ -78,26 +116,6 @@
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="thredds.servlet.DataRootHandler">
-    <level value="INFO"/>
-    <appender-ref ref="catalogErrors"/>
-  </logger>
-
-  <logger name="threddsAccessLogger">
-    <level value="ALL"/>
-    <appender-ref ref="threddsAccess"/>
-  </logger>
-
-  <logger name="ucar.nc2.iosp.grib">
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
-  </logger>
-
-  <logger name="ucar.nc2.dt.fmrc">
-    <level value="INFO"/>
-    <appender-ref ref="modelLog"/>
-  </logger>
-
   <logger name="ucar">
     <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
@@ -105,7 +123,6 @@
 
   <!-- Initialize a few loggers to make the servlet debug web interface more convenient. -->
   <logger name="thredds.catalog"/>
-  <logger name="thredds.cataloggen"/>
   <logger name="thredds.dqc"/>
   <logger name="thredds.servlet"/>
 

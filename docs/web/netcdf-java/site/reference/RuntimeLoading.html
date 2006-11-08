@@ -34,13 +34,15 @@
 </pre>
 <h2>Runtime Configuration </h2>
 <pre> &lt;runtimeConfig&gt;
+
 <strong>1)</strong> &lt;<strong>ioServiceProvider</strong>  class="edu.univ.ny.stuff.FooFiles"/&gt;
  
 <strong>2)</strong> &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;
  
 <strong>3)</strong> &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type=&quot;vertical&quot; class="my.stuff.atmosSigmaLog"/&gt;
  
-4) &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt; 
+4) &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;
+ 
  &lt;/runtimeConfig&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>

@@ -100,6 +100,8 @@ public class DataRootHandler {
   private ArrayList catalogRootList = new ArrayList(); // List of root catalog filenames (String)
   // @GuardedBy("this")
   private HashMap staticCatalogHash = new HashMap(); // Hash of static catalogs, key = path
+  // @GuardedBy("this")
+  private HashSet idHash = new HashSet(); // Hash of ids, to look for duplicates
   //  PathMatcher is "effectively immutable"; use volatile for visibilty
   private volatile PathMatcher pathMatcher = new PathMatcher(); // Keeps a Collection of DataRoot objects
 
@@ -123,31 +125,19 @@ public class DataRootHandler {
   public synchronized void reinit() throws IOException {
     staticCatalogHash = new HashMap();
     pathMatcher = new PathMatcher();
-    //catalogStaticList = new ArrayList();
-    //catalogErrorLog = new StringBuffer();
+    catalogRootList = new ArrayList();
+    idHash = new HashSet();
 
     log.info("\n**************************************\n**************************************\nCatalog reinit ");
-    int size = catalogRootList.size();
+    /* int size = catalogRootList.size();
     for (int i = 0; i < size; i++) {
       String path;
       path = (String) catalogRootList.get(i);
       // May be too expensive to synchronize over.
       initCatalog(path, true );
     }
-    //writeCatalogErrorLog();
+    //writeCatalogErrorLog(); */
   }
-
-  /* private void writeCatalogErrorLog() {
-    try {
-      File fileOut = new File(contentPath + "logs/catalogError.log");
-      FileOutputStream fos = new FileOutputStream(fileOut);
-      String contents = catalogErrorLog.toString();
-      thredds.util.IO.writeContents(contents, fos);
-      fos.close();
-    } catch (IOException ioe) {
-      log.error("DataRootHandler.writeCatalogErrorLog error ", ioe);
-    }
-  } */
 
   /**
    * Read the named catalog and extract the data roots from it.
@@ -193,14 +183,11 @@ public class DataRootHandler {
       InvProperty p = (InvProperty) roots.next();
       addRoot( p.getName(), p.getValue() );
     }
-
     Iterator services = cat.getServices().iterator();
-    while ( services.hasNext() )
-    {
+    while ( services.hasNext() ) {
       InvService s = (InvService) services.next();
       roots = s.getDatasetRoots().iterator();
-      while ( roots.hasNext() )
-      {
+      while ( roots.hasNext() ) {
         InvProperty p = (InvProperty) roots.next();
         addRoot( p.getName(), p.getValue() );
       }
@@ -251,8 +238,8 @@ public class DataRootHandler {
       }
 
     }
-    catch (IOException ioe) {
-      log.error("readCatalog(): IOException on catalog=" + catalogFullPath + " " + ioe.getMessage());
+    catch (Throwable ioe) {
+      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + ioe.getMessage());
       return null;
     }
     finally {
@@ -278,6 +265,16 @@ public class DataRootHandler {
     Iterator iter = dsList.iterator();
     while (iter.hasNext()) {
       InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
+
+      // look for duplicate ids
+      String id = invDataset.getUniqueID();
+      if (id != null) {
+        if (idHash.contains(id)) {
+          log.warn("Duplicate id on  " + invDataset.getFullName() + " id= "+id);
+        } else {
+          idHash.add(id);
+        }
+      }
 
       if (invDataset instanceof InvDatasetScan) {
         InvDatasetScan ds = (InvDatasetScan) invDataset;
@@ -320,7 +317,7 @@ public class DataRootHandler {
     if (droot != null) {
       if (!droot.dirLocation.equals( dscan.getScanDir())) {
         String message = "**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-            " wanted to map to=<" + dscan.getScanDir() + "> in catalog "+dscan.getParentCatalog().getUriString();
+            " wanted to map to fmrc=<" + dscan.getScanDir() + "> in catalog "+dscan.getParentCatalog().getUriString();
         log.error(message);
       }
 
@@ -418,7 +415,9 @@ public class DataRootHandler {
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">");
+      log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">"+
+              " wanted to map to <" + dirLocation + ">");
+
       return false;
     }
 
@@ -1366,7 +1365,7 @@ public class DataRootHandler {
    */
 
   public void makeDebugActions() {
-    DebugHandler debugHandler = new DebugHandler("catalogs");
+    DebugHandler debugHandler = DebugHandler.get("catalogs");
     DebugHandler.Action act;
 
     /* act = new DebugHandler.Action("showError", "Show catalog error logs") {
@@ -1433,7 +1432,8 @@ public class DataRootHandler {
     };
     debugHandler.addAction( act);
 
-    act = new DebugHandler.Action("reinit", "Reinitialize") {
+    /* moved to ThreddsDefaultServlet
+      act = new DebugHandler.Action("reinit", "Reinitialize") {
       public void doAction(DebugHandler.Event e) {
         try {
           DatasetHandler.reinit();
@@ -1445,7 +1445,7 @@ public class DataRootHandler {
         }
       }
     };
-    debugHandler.addAction( act);
+    debugHandler.addAction( act); */
   }
 
 }

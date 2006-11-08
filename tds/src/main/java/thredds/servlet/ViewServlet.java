@@ -53,6 +53,35 @@ public class ViewServlet extends AbstractServlet {
     registerViewer( new Nj22ToolsUI());
   }
 
+ static public void registerViewer( String className) {
+   Class vClass;
+   try {
+     vClass = ViewServlet.class.getClassLoader().loadClass(className);
+   } catch (ClassNotFoundException e) {
+     log.error("Attempt to load Viewer class "+className+" not found");
+     return;
+   }
+
+   if (!(Viewer.class.isAssignableFrom( vClass))) {
+     log.error("Attempt to load class "+className+" does not implement"+Viewer.class.getName());
+     return;
+   }
+
+   // create instance of the class
+   Object instance;
+   try {
+     instance = vClass.newInstance();
+   } catch (InstantiationException e) {
+     log.error("Attempt to load Viewer class "+className+" cannot instantiate, probably need default Constructor.");
+     return;
+   } catch (IllegalAccessException e) {
+     log.error("Attempt to load Viewer class "+className+" is not accessible.");
+     return;
+   }
+
+    registerViewer( (Viewer) instance);
+  }
+
   static public void registerViewer(Viewer v) {
     viewerList.add( v);
   }
@@ -161,7 +190,6 @@ public class ViewServlet extends AbstractServlet {
       // LOOK use getContextName instead of hardcodeing thredds
       return "<a href='/thredds/view/nj22UI.jnlp?" + ds.getSubsetUrl()+"'>NetCDF-Java Tools (webstart)</a>";
     }
-
   }
 
   private static class IDV implements Viewer {

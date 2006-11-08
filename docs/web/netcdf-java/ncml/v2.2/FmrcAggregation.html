@@ -12,7 +12,6 @@
 <h2>1. Definitions </h2>
 <p>A <em><strong>forecast model </strong></em>is a scientific model that predicts the time evolution of a system starting from some initial state. Its output is a time series for each of its variables, which may be state variables or derived variables. The model is often run periodically, so one may have a collection of different runs. The collection of data output for a particular model run is called a <em><strong>forecast model run</strong></em>, which may be output in a single file or in several files. The model is run periodically, and so one may have a <em><strong>collection of forecast model runs</strong></em><em><strong>,</strong></em> which we assume can be uniquely identified by the start of the model run, called the model<em><strong> run time</strong></em>, also called the <em><strong>analysis time </strong></em>or<em><strong> generating time</strong></em>.</p>
 <p>The time series for a <em>forecast model run</em> is the list of <em><strong>forecast times, </strong></em>also know as the <em><strong>valid times</strong></em>. (For our purposes, the <em>forecast times</em> are just whatever the time series is, ignoring whether its a forecast or a nowcast, etc.). The difference between the run time and the forecast time is the <em><strong>forecast offset</strong></em>, sometimes called the <em><strong>forecast hour</strong></em>. </p>
-<p>&nbsp;</p>
 <h2>2.<strong> Grid  datasets with two time dimensions </strong></h2>
 <p>The <strong>ucar.nc2.dt.GridDatatype</strong> is the CDM <em>scientfic datatype</em> for grids. It has been generalized to allow two time dimensions, called the <em><strong>runtime</strong></em> and <em><strong>time</strong></em> dimensions, in order to represent collections of forecast model runs. Such a dataset can be created by writing a single file, or by using NcML aggregation to create a virtual dataset out of multiple files. </p>
 <p>Both the <em><strong>runtime</strong></em> and <em><strong>time</strong></em> coordinates may have type <strong>String</strong> or <strong>char</strong> and hold ISO 8601 dates, or have a <em><strong>udunit</strong></em> date unit string in its units attribute. For example:</p>
@@ -46,7 +45,7 @@
 <h3>Case 1: All data for each forecast model run is in a single file</h3>
 <p>This case is similar to a <a href="Aggregation.html#joinExisting">JoinExisting</a> aggregation, in that a new, outer dimension is created, and each file becomes one slice of the new dataset. </p>
 <pre>   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>(1)&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; <strong>enhance=&quot;true&quot;</strong> &gt;<br>(2) &lt;aggregation dimName=&quot;<strong>runtime</strong>&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot;&gt;
-(3)  &lt;netcdf <strong>location</strong>=&quot;/data/ldm/NAM_CONUS_80km/Run_20060910_0000.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T00:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;<br>     &lt;netcdf <strong>location</strong>=&quot;/data/ldm/NAM_CONUS_80km/Run_20060910_0600.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T06:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;<br>     &lt;netcdf <strong>location</strong>=&quot;/data/ldm/NAM_CONUS_80km/Run_20060910_1200.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T12:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;
+(3)  &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T00:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;<br>     &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0600.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T06:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;<br>     &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_1200.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T12:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;
     &lt;/aggregation<br>   &lt;/netcdf&gt;</pre>
 <ol>
   <li>The netcdf element always has <strong>enhance=&quot;true&quot;</strong>, which adds the coordinate systems needed for a GridDataset. </li>
@@ -73,7 +72,7 @@
 
 (2) &lt;netcdf coordValue=&quot;<strong>2006-09-10T00:00:00Z</strong>&quot;&gt;
 (3)  &lt;aggregation dimName=&quot;Time&quot; type=&quot;<strong>joinExisting</strong>&quot;&gt;
-(4)   &lt;netcdf <strong>location</strong>=&quot;/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F00.grib1&quot; <strong>coordValue</strong>=&quot;0&quot;/&gt;<br>      &lt;netcdf location=&quot;/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F03.grib1&quot; coordValue=&quot;3&quot;/&gt;<br>      &lt;netcdf location=&quot;/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F06.grib1&quot; coordValue=&quot;6&quot;/&gt;
+(4)   &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F00.grib1&quot; <strong>coordValue</strong>=&quot;0&quot;/&gt;<br>      &lt;netcdf location=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F03.grib1&quot; coordValue=&quot;3&quot;/&gt;<br>      &lt;netcdf location=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000/Hour_F06.grib1&quot; coordValue=&quot;6&quot;/&gt;
      &lt;/aggregation&gt;
     &lt;/netcdf&gt;</pre>
 <pre>(5) &lt;netcdf coordValue=&quot;<strong>2006-09-10T06:00:00Z</strong>&quot;&gt;
@@ -180,7 +179,7 @@
 <p>&nbsp; </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 23, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 08, 2006
 </address>
 </body>
 </html>

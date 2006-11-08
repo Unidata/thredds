@@ -45,8 +45,11 @@ public class NetworkUtils {
    * This augments URI.resolve(), by also dealing with base file: URIs.
    * If baseURL is not a file: scheme, then URI.resolve is called.
    * Otherwise the last "/" is found in the base, and the ref is appended to it.
+   * <p> For file: baseURLS: only reletive URLS not starting with / are supported. This is
+   * apparently different from the behavior of URI.resolve(), so may be trouble,
+   * but it allows NcML absolute location to be specified without the file: prefix.
    *
-   * eg : <pre>
+   * Example : <pre>
    * base:     file://my/guide/collections/designfaq.ncml
    * ref:      sub/my.nc
    * resolved: file://my/guide/collections/sub/my.nc
@@ -55,7 +58,7 @@ public class NetworkUtils {
    * @param relativeUrl reletive URL, as a String
    * @return the resolved URL as a String
    */
-  public static String resolve( String baseUrl, String relativeUrl) {
+  public static String resolve(String baseUrl, String relativeUrl) {
     if ((baseUrl == null) || (relativeUrl == null))
       return relativeUrl;
 
@@ -66,10 +69,15 @@ public class NetworkUtils {
     // deal with a file URL
     if (baseUrl.startsWith("file:")) {
       if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '#'))
-        return baseUrl+relativeUrl;
+        return baseUrl + relativeUrl;
+
+    if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '/'))
+      return relativeUrl;
+
+
       int pos = baseUrl.lastIndexOf('/');
       if (pos > 0) {
-        return baseUrl.substring(0,pos+1) + relativeUrl;
+        return baseUrl.substring(0, pos + 1) + relativeUrl;
       }
     }
 
@@ -99,7 +107,7 @@ public class NetworkUtils {
     System.out.println();
   }
 
-  public static void main(String args[]) {
+  public static void main2(String args[]) {
     test("file:test/dir");
     test("file:/test/dir");
     test("file://test/dir");
@@ -108,5 +116,25 @@ public class NetworkUtils {
     test("file:C:/Program Files (x86)/Apache Software Foundation/Tomcat 5.0/content/thredds/cache");
     test("file:C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 5.0\\content\\thredds\\cache");
   }
+
+  private static void testResolve(String base, String rel, String result) {
+    System.out.println("\nbase= "+base);
+    System.out.println("rel= "+rel);
+    System.out.println("resolve= "+resolve(base,rel));
+    if (result != null)
+      assert resolve(base,rel).equals(result);
+  }
+  public static void main(String args[]) {
+    testResolve( "http://test/me/", "wanna", "http://test/me/wanna");
+    testResolve( "http://test/me/", "/wanna", "http://test/wanna");
+    testResolve( "file:/test/me/", "wanna", "file:/test/me/wanna");
+    testResolve( "file:/test/me/", "/wanna", "/wanna");  // LOOK doesnt work for URI.resolve() directly.
+
+    testResolve( "file://test/me/", "http:/wanna", "http:/wanna");
+    testResolve( "file://test/me/", "file:/wanna", "file:/wanna");
+    testResolve( "file://test/me/", "C:/wanna", "C:/wanna");
+    testResolve( "http://test/me/", "file:wanna", "file:wanna");
+  }
+
 
 }

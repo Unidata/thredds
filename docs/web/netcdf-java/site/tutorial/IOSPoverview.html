@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>Writing an IOSP : Overview</h1>
+<p>To write an IOSP, you must implement the <strong>ucar.nc2.IOServiceProvider</strong> interface.</p>
+<pre>public interface <strong>ucar.nc2.IOServiceProvider</strong> {</pre>
+<pre>  // Check if this is a valid file for this IOServiceProvider.
+  public boolean <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile raf) throws IOException;</pre>
+<pre>  // Open existing file, and populate ncfile with it.
+  public void <strong>open</strong>(ucar.unidata.io.RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;</pre>
+<pre>  // Read data from a top level Variable and return a memory resident Array.
+  public ucar.ma2.Array <strong>readData</strong>(ucar.nc2.Variable v2, List section) throws java.io.IOException, ucar.ma2.InvalidRangeException;</pre>
+<pre>  // Read data from a Variable that is nested in one or more Structures. 
+  // If there are no Structures in the file, this will never be called. 
+  public ucar.ma2.Array <strong>readNestedData</strong>(ucar.nc2.Variable v2, java.util.List section) throws IOException, ucar.ma2.InvalidRangeException;</pre>
+<pre>  // Close the file.
+  public void <strong>close</strong>() throws IOException;</pre>
+<pre>  // Extend the file if needed in a way that is compatible with the current metadata.
+  public boolean <strong>syncExtend</strong>() throws IOException;</pre>
+<pre>  // Check if file has changed, and reread metadata if needed.
+  public boolean <strong>sync</strong>() throws IOException;</pre>
+<pre>  // A way to communicate arbitrary information to an iosp.
+  public void <strong>setSpecial</strong>( Object special);</pre>
+<pre>  // print Debug info for this object.
+  public String <strong>toStringDebug</strong>(Object o);</pre>
+<pre>  // Show debug / underlying implementation details 
+  public String <strong>getDetailInfo</strong>();</pre>
+<pre>}</pre>
+<ol>
+  <li>You must examine the file that is passed to you, and quickly and accurately determine if it is can be opened by this IOSP.</li>
+  <li>You will then be called again with the same file, and an empty NetcdfFile object, which you will fill. If you need to do a lot of I/O, you should periodically check<strong> cancelTask.isCancel()</strong>, and if its true, return immediately. This allows users to bail out of opening a file. </li>
+  <li>Data will be read from Variable through this call. The section list is a list of <strong>ucar.ma2.Range</strong> which define the requested data subset.</li>
+  <li>If you use Structures, data for Variables that are members of Structures are read through this method.</li>
+  <li>Release all resources, for example, by calling <strong>RandomAccessFile.close</strong>().</li>
+  <li>If the file may change since it was opened, you may optionally implement this routine. The changes must not affect any of the structural metadata. For example, in the NetCDF-3 IOSP, we check to see if the record dimension has grown.</li>
+  <li> If the file may change since it was opened, you may optionally implement this routine. The structural metadata is allowed to change. For example, in the GRIB IOSP, we check to see if new Grib records were added, and we may add or modify existing coordinate variables if they have.</li>
+  <li> This allows applications to pass an arbitrary object to the IOSP, through the <strong>NetcdfFile.open( location,  buffer_size,  cancelTask,  spiObject) </strong>method. As a rule, you should not count on getting any such special information. </li>
+  <li>A little-used debugging aide, return null or an empty String. </li>
+  <li>Here you can pass any information that is useful to debugging. It can be viewed through the ToolsUI. </li>
+</ol>
+</body>
+</html>

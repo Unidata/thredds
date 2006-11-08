@@ -61,7 +61,33 @@ public class WRFConvention extends CoordSysBuilder {
   private double centerX = 0.0, centerY = 0.0;
   private ProjectionCT projCT = null;
 
-  /** create a NetcdfDataset out of this NetcdfFile, adding coordinates etc. */
+  /* ARW Users Guide p 3-19
+  <pre>
+7. MAP_PROJ_NAME: Character string specifying type of map projection. Valid entries are:
+  "polar" -> Polar stereographic
+  "lambert" -> Lambert conformal (secant and tangent)
+  "mercator" -> Mercator
+
+8. MOAD_KNOWN_LAT/MOAD_KNOWN_LON (= CEN_LAT, CEN_LON):
+  Real latitude and longitude of the center point in the grid.
+
+9. MOAD_STAND_LATS (= TRUE_LAT1/2):
+  2 real values for the "true" latitudes (where grid spacing is exact).
+  Must be between -90 and 90, and the values selected depend on projection:
+  Polar-stereographic: First value must be the latitude at which the grid
+spacing is true. Most users will set this equal to their center latitude.
+Second value must be +/-90. for NH/SH grids.
+  Lambert Conformal: Both values should have the same sign as the center
+latitude. For a tangential lambert conformal, set both to the same value
+(often equal to the center latitude). For a secant Lambert Conformal, they
+may be set to different values.
+  Mercator: The first value should be set to the latitude you wish your grid
+  spacing to be true (often your center latitude). Second value is not used.
+
+10. MOAD_STAND_LONS (=STAND_LON): This is one entry specifying the longitude in degrees East (-
+180->180) that is parallel to the y-axis of your grid, (sometimes referred to as the
+orientation of the grid). This should be set equal to the center longitude in most cases.
+*/
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
     this.conventionName = "WRF";
 
@@ -79,21 +105,6 @@ public class WRFConvention extends CoordSysBuilder {
         // make projection transform
     Attribute att = ds.findGlobalAttribute("MAP_PROJ");
     int projType = att.getNumericValue().intValue();
-    double lat1 = findAttributeDouble( ds, "TRUELAT1");
-    double lat2 = findAttributeDouble( ds, "TRUELAT2");
-    double centralLat = findAttributeDouble( ds, "CEN_LAT");
-    double centralLon = findAttributeDouble( ds, "CEN_LON");
-
-    double standardLon = findAttributeDouble( ds, "STAND_LON");
-    double moadLat = findAttributeDouble( ds, "MOAD_CEN_LAT");
-
-    if (Double.isNaN(standardLon) || Double.isNaN(moadLat)) {
-      userAdvice.append("WARN: no explicit projection origin, projection may be wrong");
-      parseInfo.append("WARN: no explicit projection origin, projection may be wrong ");
-    }
-
-    double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
-    double lat0 = (Double.isNaN(moadLat)) ? centralLat : moadLat;
 
     if (projType == 203) {
 
@@ -125,10 +136,27 @@ public class WRFConvention extends CoordSysBuilder {
 
     }  else {
 
+
+      double lat1 = findAttributeDouble( ds, "TRUELAT1");
+      double lat2 = findAttributeDouble( ds, "TRUELAT2");
+      double centralLat = findAttributeDouble( ds, "CEN_LAT");  // center of grid
+      double centralLon = findAttributeDouble( ds, "CEN_LON");  // center of grid
+
+      double standardLon = findAttributeDouble( ds, "STAND_LON"); // true longitude
+      double standardLat = findAttributeDouble( ds, "MOAD_CEN_LAT");
+
+      /* if (Double.isNaN(standardLon) || Double.isNaN(standardLat)) {
+        userAdvice.append("WARN: no explicit projection origin, projection may be wrong");
+        parseInfo.append("WARN: no explicit projection origin, projection may be wrong ");
+      }
+
+      double lon0 = (Double.isNaN(standardLat)) ? centralLon : standardLat;
+      double lat0 = (Double.isNaN(centerLat)) ? centralLat : centerLat; */
+
       ProjectionImpl proj = null;
       switch (projType) {
         case 1:
-          proj = new LambertConformal(lat0, lon0, lat1, lat2);
+          proj = new LambertConformal(standardLat, standardLon, lat1, lat2);
           projCT = new ProjectionCT("Lambert", "FGDC", proj);
           // System.out.println(" using LC "+proj.paramsToString());
           break;
@@ -145,20 +173,15 @@ public class WRFConvention extends CoordSysBuilder {
           break;
       }
 
-      if (!Double.isNaN(standardLon) && !Double.isNaN(moadLat) && (proj != null) && (standardLon != centralLon)) {
-        LatLonPointImpl lpt0 = new LatLonPointImpl( moadLat,  standardLon);
-        LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
-        ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
-        ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
-        if (debug) {
-          System.out.println("ppt0="+ppt0+" lpt0= "+lpt0);
-          System.out.println("ppt1="+ppt1+" lpt1= "+lpt1);
-          System.out.println("originX="+(ppt1.getX() - ppt0.getX()));
-          System.out.println("originY="+(ppt1.getY() - ppt0.getY()));
-        }
-        centerX = ppt1.getX() - ppt0.getX();
-        centerY = ppt1.getY() - ppt0.getY();
+      LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
+      ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
+      centerX = ppt1.getX();
+      centerY = ppt1.getY();
+      if (debug) {
+        System.out.println("centerX="+centerX);
+        System.out.println("centerY="+centerY);
       }
+
 
       // make axes
       ds.addCoordinateAxis( makeXCoordAxis( ds, "x", ds.findDimension("west_east")));
@@ -587,7 +610,7 @@ public class WRFConvention extends CoordSysBuilder {
   } */
 
   public static void main(String args[]) throws IOException, InvalidRangeException {
-    NetcdfDataset ncd = NetcdfDataset.openDataset("R:/testdata/wrf/WRFOU~C@");
+    NetcdfFile ncd = NetcdfDataset.openFile("R:/testdata/wrf/WRFOU~C@", null);
 
     Variable glat = ncd.findVariable("GLAT");
     Array glatData = glat.read();
@@ -609,18 +632,25 @@ public class WRFConvention extends CoordSysBuilder {
     Index index = glatData.getIndex();
     Index index2 = glatData.getIndex();
 
-    int[] shape = glatData.getShape();
-    ArrayDouble.D2 diff = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, shape);
+    int[] vshape = glatData.getShape();
+    int ny = vshape[1];
+    int nx = vshape[2];
 
-    int ny = shape[0];
-    int nx = shape[1];
-    for (int y=0;y<ny-1;y++)
-      for (int x=0;x<nx;x++) {
-        double val = glatData.getDouble( index.set(y+1,x)) - glatData.getDouble( index2.set(y,x));
-        diff.set(y,x, Math.toDegrees(val));
+    ArrayDouble.D1 diff_y = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {ny});
+    ArrayDouble.D1 diff_x = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {nx});
+
+    for (int y=0;y<ny-1;y++) {
+      double val = glatData.getDouble( index.set(0,y,0)) - glatData.getDouble( index2.set(0,y+1,0));
+      diff_y.set(y, val);
+    }
+
+      for (int x=0;x<nx-1;x++) {
+        double val = glatData.getDouble( index.set(0,0,x)) - glatData.getDouble( index2.set(0,0,x+1));
+        diff_x.set( x, val);
       }
 
-    NCdump.printArray(diff, "diff",System.out, null);
+    NCdump.printArray(diff_y, "diff_y",System.out, null);
+    NCdump.printArray(diff_x, "diff_x",System.out, null);
     ncd.close();
 
   }

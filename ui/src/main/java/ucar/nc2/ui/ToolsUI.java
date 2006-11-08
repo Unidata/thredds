@@ -1700,11 +1700,12 @@ public class ToolsUI extends JPanel {
           if (currentDef != null) {
             FmrcDefinition fmrc_def = new FmrcDefinition();
             fmrc_def.readDefinitionXML(currentDef);
+            System.out.println( "Read Definition file = " + currentDef);
             spiObject = fmrc_def;
             NetcdfDataset ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
             gds = new ucar.nc2.dt.grid.GridDataset(ds);
           } else {
-            JOptionPane.showMessageDialog(null, "cant open Defintion file " + currentDef);
+            JOptionPane.showMessageDialog(null, "cant open Definition file " + currentDef);
             return false;
           }
 

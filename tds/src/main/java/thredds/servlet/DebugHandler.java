@@ -14,7 +14,7 @@ public class DebugHandler {
       DebugHandler dh = (DebugHandler) dhList.get(i);
       if (name.equals( dh.name)) return dh;
     }
-    return null;
+    return new DebugHandler(name);
   }
 
   static public void doDebug(HttpServlet thisServlet,  HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -114,7 +114,7 @@ public class DebugHandler {
   private LinkedHashMap actions = new LinkedHashMap();
   private String name;
 
-  public DebugHandler( String name) {
+  private DebugHandler( String name) {
     this.name = name;
     dhList.add( this);
   }

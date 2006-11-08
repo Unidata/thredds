@@ -323,11 +323,6 @@ public class GridRenderer {
   }
 
   private String makeXYZvalueStr(double value, int wantx, int wanty, int wantz) {
-    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
-    //CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
-    //CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
-    //CoordinateAxis1D zaxis = geocs.getVerticalAxis();
-
     if (stridedGrid.isMissingData(value)) {
       //if (debugMiss) System.out.println("debug miss = "+value+" "+cs.getIndexFromValue(value));
       return "missing data";
@@ -336,10 +331,18 @@ public class GridRenderer {
     sbuff.setLength(0);
     sbuff.append(Format.d(value, 6));
     sbuff.append(" "+ stridedGrid.getUnitsString());
-    // sbuff.append(" ("+value+")");
+
+    GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
+    if (!(geocs.getXHorizAxis() instanceof CoordinateAxis1D) || !(geocs.getXHorizAxis() instanceof CoordinateAxis1D))
+      return sbuff.toString();
+
+    CoordinateAxis1D xaxis = (CoordinateAxis1D) geocs.getXHorizAxis();
+    CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
+    CoordinateAxis1D zaxis = geocs.getVerticalAxis();
+
     sbuff.append(" @ ");
 
-/*    if ((wantx >= 0) && (wanty >= 0)) {
+    if ((wantx >= 0) && (wanty >= 0)) {
       LatLonPointImpl lpt;
       if (dataProjection.isLatLon())
         lpt = new LatLonPointImpl( yaxis.getCoordValue(wanty), xaxis.getCoordValue(wantx));
@@ -350,7 +353,7 @@ public class GridRenderer {
       if (Debug.isSet("pick/showDataProjectionCoords")) {
         sbuff.append("("+Format.d(xaxis.getCoordValue(wantx), 3));
         sbuff.append(" "+Format.d(yaxis.getCoordValue(wanty), 3));
-        sbuff.append(" "+xaxis.getUnitString()+")");
+        sbuff.append(" "+xaxis.getUnitsString()+")");
       }
       if (Debug.isSet("pick/showDisplayProjectionCoords")) {
         ProjectionPoint pt = drawProjection.latLonToProj( lpt);
@@ -358,7 +361,6 @@ public class GridRenderer {
         sbuff.append(" "+Format.d(pt.getY(), 3)+")");
       }
       if (Debug.isSet("pick/showGridIndexes")) {
-        ProjectionPoint pt = drawProjection.latLonToProj( lpt);
         sbuff.append("("+wantx+","+wanty+")");
       }
     } else if (wantx >= 0) {
@@ -366,21 +368,21 @@ public class GridRenderer {
         sbuff.append(LatLonPointImpl.latToString(xaxis.getCoordValue(wantx), 3));
       else {
         sbuff.append(" "+Format.d(xaxis.getCoordValue(wantx), 3));
-        sbuff.append(" "+xaxis.getUnitString());
+        sbuff.append(" "+xaxis.getUnitsString());
       }
     } else if (wanty >= 0) {
       if (dataProjection.isLatLon())
         sbuff.append(LatLonPointImpl.latToString(yaxis.getCoordValue(wanty), 3));
       else {
         sbuff.append(" "+Format.d(yaxis.getCoordValue(wanty), 3));
-        sbuff.append(" "+yaxis.getUnitString());
+        sbuff.append(" "+yaxis.getUnitsString());
       }
     }
 
     if (wantz >= 0) {
       sbuff.append(" "+Format.d(zaxis.getCoordValue(wantz), 3));
-      sbuff.append(" "+zaxis.getUnitString());
-    } */
+      sbuff.append(" "+zaxis.getUnitsString());
+    }
 
     return sbuff.toString();
   }
@@ -698,6 +700,9 @@ public class GridRenderer {
     if (data.getRank() != 2)
       throw new IllegalArgumentException("must be 2D");
 
+    if (!(xaxis instanceof CoordinateAxis2D) || !(yaxis instanceof CoordinateAxis2D))
+      throw new IllegalArgumentException("must be CoordinateAxis2D");
+    
     // 2D case
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;

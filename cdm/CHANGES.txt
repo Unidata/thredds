@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.17
  Features
+  * default log4j.xml in resources directory
   * Netcdf3iosp: dont validate Attribute names.probably have same problem with variable and dimensions??
   * ucar.nc2.util.RuntimeConfigParser: read XML config file with runtime classes to be loaded.
   * ucar.nc2.dt.TypedDatasetFactory : new framework for plugging in TypedDataset implementations
@@ -37,6 +38,9 @@ Changes in version 2.2.17
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
+  * cleanup ucar.nc2.util.NetworkUtils.resolve() for file: baseURLS. only reletive URLS not starting with / are supported. This is
+    apparently different from the behavior of URI.resolve(), so may be trouble, but it allows NcML absolute location to be specified without
+    the file: prefix.
   * UnidataPointObsDataset: fix various bugs, let altitude field be optional
   * Cleanup Vertical Transforms (use variable name, not numbers in parameters), review  
   * Nexrad2 IOSP: recover from bad bzip, deal with missing data in the coordinates

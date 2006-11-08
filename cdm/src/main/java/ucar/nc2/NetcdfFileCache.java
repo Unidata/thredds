@@ -217,7 +217,7 @@ public class NetcdfFileCache {
     if (ncfile == null) return;
 
     if (disabled) { // should not happen
-      ncfile.setCached( 0); // prevent infinite loops
+      ncfile.setCacheState( 0); // prevent infinite loops
       ncfile.close();
       return;
     }
@@ -273,11 +273,11 @@ public class NetcdfFileCache {
     long start = System.currentTimeMillis();
     for (int i = 0; i < deleteList.size(); i++) {
       CacheElement elem =  (CacheElement) deleteList.get(i);
-      if (elem.ncfile.isCached() != 1)
+      if (elem.ncfile.getCacheState() != 1)
         log.warn("NetcdfFileCache file cache flag not set "+elem.cacheName);
 
       try {
-        elem.ncfile.setCached(0);
+        elem.ncfile.setCacheState(0);
         elem.ncfile.close();
         elem.ncfile = null; // help the gc
       } catch (IOException e) {
@@ -333,12 +333,12 @@ public class NetcdfFileCache {
       CacheElement elem =  (CacheElement) iter.next();
       if (elem.isLocked)
         log.warn("NetcdfFileCache close locked file= "+elem);
-      if (elem.ncfile.isCached() != 1)
+      if (elem.ncfile.getCacheState() != 1)
         log.warn("NetcdfFileCache file cache flag not set= "+elem);
       //System.out.println("NetcdfFileCache close file= "+elem);
 
       try {
-        elem.ncfile.setCached(0);
+        elem.ncfile.setCacheState(0);
         elem.ncfile.close();
         elem.ncfile = null; // help the gc
       } catch (IOException e) {
@@ -362,7 +362,7 @@ public class NetcdfFileCache {
     CacheElement(NetcdfFile ncfile, String cacheName) {
       this.cacheName = cacheName;
       this.ncfile = ncfile;
-      ncfile.setCached( 1);
+      ncfile.setCacheState( 1);
       ncfile.setCacheName( cacheName);
       if (log.isDebugEnabled()) log.debug("NetcdfFileCache add to cache "+cacheName);
     }

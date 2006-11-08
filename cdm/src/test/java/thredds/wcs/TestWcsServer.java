@@ -21,7 +21,7 @@ public class TestWcsServer extends TestCase {
   }
 
   public void testPfeg() throws IOException {
-    String dataset = "http://localhost:8080/thredds/wcs/satellite/AT/ssta/1day?";
+    String dataset = "http://localhost:8080/thredds/wcs/satellite/AT/ssta/1day";
     //String url = "http://oceanwatch.pfeg.noaa.gov:8081/thredds/wcs/satellite/AG/ssta/14day?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&coverage=AGssta&Vertical=.0&time=2006-01-09T23:59:59Z&bbox=220,20,250,50";
     //String dataset = "http://oceanwatch.pfeg.noaa.gov:8081/thredds/wcs/satellite/AG/ssta/14day?";
     //String contents = thredds.util.IO.readURLcontentsWithException( dataset+"?request=GetCapabilities&version=1.0.0&service=WCS");
@@ -33,15 +33,24 @@ public class TestWcsServer extends TestCase {
   }
 
   public void testFmrc() throws IOException {
-    String dataset = "http://motherlode.ucar.edu:9080/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/best.ncd?";
+    String dataset = "http://motherlode.ucar.edu:9080/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/best.ncd";
     showGetCapabilities(dataset);
     showDescribeCoverage(dataset, "Precipitable_water");
     showGetCoverage(dataset, "Precipitable_water", "2006-08-11T18:00:00Z",null,"220,20,250,50");
   }
 
+  public void testBbox() throws IOException {
+    String dataset = "http://motherlode.ucar.edu:9080/thredds/wcs/galeon/testdata/RUC.nc";
+    showGetCapabilities(dataset);
+    String fld = "Geopotential_height";
+    showDescribeCoverage(dataset, fld);
+    showGetCoverage(dataset, fld, null, null,"-125.9237889957627,67.498658,-50.43356200423729,132.87735","GeoTIFF");
+    showRead(dataset+"?REQUEST=GetCoverage&VERSION=1.0.0&SERVICE=WCS&COVERAGE=Geopotential_height&CRS=EPSG:4326&RESPONSE_CRS=EPSG:4326&BBOX=-125.9237889957627,67.498658,-50.43356200423729,132.87735&WIDTH=545&HEIGHT=472&FORMAT=GeoTIFF");
+  }
+
   public void eTestForEthan() throws IOException
   {
-    showGetCapabilities( ncdcWcsDataset + "?" );
+    showGetCapabilities( ncdcWcsDataset );
     showGetCapabilities( server2 + "?dataset=" + ncdcOpendapDataset + "&" );
     //showDescribeCoverage( ncdsWcsDataset , "ssta" );
     //showGetCoverage( ncdsWcsDataset , "ssta",
@@ -79,15 +88,21 @@ public class TestWcsServer extends TestCase {
   }
 
   private void showGetCapabilities(String url) throws IOException {
-    showRead(url+"request=GetCapabilities&version=1.0.0&service=WCS");
+    showRead(url+"?request=GetCapabilities&version=1.0.0&service=WCS");
   }
 
   private void showDescribeCoverage(String url, String grid) throws IOException {
-    showRead(url+"request=DescribeCoverage&version=1.0.0&service=WCS&coverage="+grid);
+    showRead(url+"?request=DescribeCoverage&version=1.0.0&service=WCS&coverage="+grid);
   }
 
   private void showGetCoverage(String url, String grid, String time, String vert, String bb) throws IOException {
-    String getURL = url+"request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&coverage="+grid;
+    showGetCoverage(url, grid, time, vert, bb, "NetCDF");
+  }
+
+  private void showGetCoverage(String url, String grid, String time, String vert, String bb, String format) throws IOException {
+    String getURL = url+"?request=GetCoverage&version=1.0.0&service=WCS&coverage="+grid;
+    boolean isNetcdf = format.equalsIgnoreCase("netcdf");
+    getURL = getURL + "&format="+format;
     if (time != null)
       getURL = getURL + "&time="+time;
     if (vert != null)
@@ -96,12 +111,23 @@ public class TestWcsServer extends TestCase {
       getURL = getURL + "&bbox="+bb;
 
     System.out.println("req= "+getURL);
-    File file = new File("C:/TEMP/"+grid+".nc");
-    thredds.util.IO.readURLtoFile(getURL, file);
+    String filename = "C:/TEMP/"+grid;
+    if (isNetcdf)
+      filename = filename + ".nc";
+    else
+      filename = filename + ".tiff";
+
+    File file = new File(filename);
+    String result = thredds.util.IO.readURLtoFile(getURL, file);
+
+    System.out.println("****************\n");
+    System.out.println("result= "+result);
     System.out.println(" copied contents to "+file.getPath());
 
-    NetcdfFile ncfile = NetcdfFile.open(file.getPath());
-    assert ncfile != null;
+    if (isNetcdf) {
+      NetcdfFile ncfile = NetcdfFile.open(file.getPath());
+      assert ncfile != null;
+    }
     //showRead( getURL);
   }
 
@@ -113,7 +139,10 @@ public class TestWcsServer extends TestCase {
     System.out.println("req= "+req);
 
     File file = new File("C:/TEMP/martin.tiff");
-    thredds.util.IO.readURLtoFile(req, file);
+    System.out.println("****************\n");
+    String result = thredds.util.IO.readURLtoFile(req, file);
+    System.out.println("result= "+result);
+
     System.out.println(" copied contents to "+file.getPath());
   }
 

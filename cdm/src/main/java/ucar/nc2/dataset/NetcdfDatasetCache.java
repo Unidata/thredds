@@ -228,11 +228,11 @@ public class NetcdfDatasetCache {
    * @param ncd release this file.
    * @throws IOException if file not in cache.
    */
-  static public void release(NetcdfFile ncd) throws IOException {
+  static public void release(NetcdfDataset ncd) throws IOException {
     if (ncd == null) return;
 
     if (disabled) {  // // should not happen
-      ncd.setCached( 0); // prevent infinite loops
+      ncd.setCacheState( 0); // prevent infinite loops
       ncd.close();
       return;
     }
@@ -287,11 +287,11 @@ public class NetcdfDatasetCache {
     long start = System.currentTimeMillis();
     for (int i = 0; i < deleteList.size(); i++) {
       CacheElement elem =  (CacheElement) deleteList.get(i);
-      if (elem.ncd.isCached() != 2)
+      if (elem.ncd.getCacheState() != 2)
         logger.warn("NetcdfDatasetCache file cache flag not set "+elem.cacheName);
 
       try {
-        elem.ncd.setCached(0);
+        elem.ncd.setCacheState(0);
         elem.ncd.close();
         elem.ncd = null; // help the gc
       } catch (IOException e) {
@@ -348,12 +348,12 @@ public class NetcdfDatasetCache {
       CacheElement elem =  (CacheElement) iter.next();
       if (elem.isLocked)
         logger.warn("NetcdfDatasetCache close locked file= "+elem);
-      if (elem.ncd.isCached() != 2)
+      if (elem.ncd.getCacheState() != 2)
         logger.warn("NetcdfDatasetCache file cache flag not set= "+elem);
       //System.out.println("NetcdfDatasetCache close file= "+elem);
 
       try {
-        elem.ncd.setCached(0);
+        elem.ncd.setCacheState(0);
         elem.ncd.close();
         elem.ncd = null; // help the gc
       } catch (IOException e) {
@@ -381,7 +381,7 @@ public class NetcdfDatasetCache {
       this.cacheName = cacheName;
       this.ncd = ncd;
       this.factory = factory;
-      ncd.setCached( 2);
+      ncd.setCacheState( 2);
       ncd.setCacheName( cacheName);
       if (logger.isDebugEnabled()) logger.debug("NetcdfDatasetCache add to cache "+cacheName);
     }

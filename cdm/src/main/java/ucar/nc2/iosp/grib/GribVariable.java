@@ -192,11 +192,19 @@ public class GribVariable {
       }
       int time = tcs.getIndex( p);
       // System.out.println("time="+time+" level="+level);
-      if ((time < 0) || (level < 0)) {
+      if (level < 0) {
         log.warn("NOT FOUND record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
                 +"   "+getVertLevelName()+" (type="+p.levelType1 + ","+p.levelType2+")  value="+p.levelValue1 + ","+p.levelValue2+"\n");
 
-        getVertIndex( p);
+        getVertIndex( p); // allow breakpoint
+        continue;
+      }
+
+      if (time < 0) {
+        log.warn("NOT FOUND record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
+                +" forecastTime= "+p.forecastTime+ " date= "+tcs.getValidTime(p)+"\n");
+
+        tcs.getIndex( p); // allow breakpoint
         continue;
       }
 

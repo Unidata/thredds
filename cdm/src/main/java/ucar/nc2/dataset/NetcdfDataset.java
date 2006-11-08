@@ -42,6 +42,17 @@ import java.util.*;
  * scale and offset, and explicit support for Coordinate Systems.
  * A NetcdfDataset either wraps a NetcdfFile, or is defined by an NcML document.
  *
+ * <p> Be sure to close the dataset when done, best practice is to enclose in a try/finally block:
+  <pre>
+    NetcdfDataset ncd = null;
+    try {
+        ncd = NetcdfDataset.openDataset(fileName);
+        ...
+    } finally {
+        ncd.close();
+    }
+  </pre>
+ *
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see ucar.nc2.NetcdfFile
@@ -501,16 +512,22 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return null;
   }
 
+     /** Used by NetcdfDatasetCache. */
+  protected void setCacheState(int cacheState) { super.setCacheState( cacheState); }
+
+   /** Used by NetcdfDatasetCache.  */
+  protected void setCacheName(String cacheName) { super.setCacheName( cacheName); }
+
   /**
    * Close all resources (files, sockets, etc) associated with this dataset.
    * If the underlying file was acquired, it will be released, otherwise closed.
    */
   public synchronized void close() throws java.io.IOException {
-    if (isCached() == 3)
+    if (getCacheState() == 3)
       return;
-    else if (isCached() == 2)
+    else if (getCacheState() == 2)
       NetcdfDatasetCache.release(this);
-    else if (isCached() == 1) {
+    else if (getCacheState() == 1) {
       if (agg != null) agg.persist();
       NetcdfFileCache.release(this);
     } else {

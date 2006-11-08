@@ -150,7 +150,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       else
         return null;
     } catch (Exception e) {
-      logger.error("makeCatalog", e);
+      logger.error("Error making catalog", e);
       return null;
     }
   }
@@ -429,24 +429,19 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return scan.makeCatalogForDirectory( orgPath, baseURI);
   }
 
-  private synchronized void makeFmrc() {
+  private synchronized void makeFmrc() throws IOException {
+    // LOOK: when is fmrc closed? what about caching
 
     if (madeFmrc)
       return;
 
     Element ncml = getNcmlElement();
-    try {
-      NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);
-      fmrc = new FmrcImpl( ncd);
-    } catch (IOException e) {
-      e.printStackTrace();
-      return;
-    }
-
+    NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);
+    fmrc = new FmrcImpl( ncd);
     madeFmrc = true;
   }
 
-  private List makeRunDatasets() {
+  private List makeRunDatasets() throws IOException {
     makeFmrc();
 
     ArrayList datasets = new ArrayList();
@@ -473,7 +468,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return datasets;
   }
 
-  private List makeOffsetDatasets() {
+  private List makeOffsetDatasets() throws IOException {
     makeFmrc();
 
     ArrayList datasets = new ArrayList();
@@ -497,7 +492,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return datasets;
   }
 
-  private List makeForecastDatasets() {
+  private List makeForecastDatasets() throws IOException {
     makeFmrc();
 
     ArrayList datasets = new ArrayList();
