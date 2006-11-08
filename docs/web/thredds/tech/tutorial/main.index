@@ -20,6 +20,7 @@ index.html
 
 >title:Tomcat Management / Security
 >>TomcatSecurity.html
+>>keystore.html
 
 >title:TDS Remote Management
 >>RemoteManagement.html
@@ -59,6 +60,7 @@ index.html
 
 >title:Serving Internet Data Distribution (IDD) data with TDS
 
+-IDDconfig/realtime_idd.gif
 -IDDconfig/ndfd_model.xml
 -IDDconfig/catalog.xml
 -IDDconfig/pqact.thredds

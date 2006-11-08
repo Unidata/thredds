@@ -27,7 +27,7 @@
 <p>The list of users, their names and passwords, are whatever you want them to be. Note that after you get this set up, you can manage users remotely through the administrator interface. Note also that before you go into production mode, you should change to using digest passwords by following the instructions <a href="TomcatSecurity.html#Digest">here</a>. </p>
 <p>Note that any changes wont take effect until you restart Tomcat. </p>
 <p><strong>Higher Security: </strong>You can also use an LDAP server or a Database to store users and roles, which may give you higher levels of security. Use of this feature is beyond the scope of this documentation, however.</p>
-<h2>Enable Secure Sockets Layer (SSL)</h2>
+<h2><a name="keystore">Enable Secure Sockets Layer (SSL)</h2>
 <p>We  ensure that no one can intercept and read sensitive information to and from the server (through doing what's called <em>network sniffing</em>) by encrypting the information using SSL. To enable this, do the following: </p>
 <ol>
   <li>Create a certificate keystore by executing the following command:
