@@ -173,13 +173,15 @@ orientation of the grid). This should be set equal to the center longitude in mo
           break;
       }
 
-      LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
-      ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
-      centerX = ppt1.getX();
-      centerY = ppt1.getY();
-      if (debug) {
-        System.out.println("centerX="+centerX);
-        System.out.println("centerY="+centerY);
+      if (proj != null) {
+        LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
+        ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
+        centerX = ppt1.getX();
+        centerY = ppt1.getY();
+        if (debug) {
+          System.out.println("centerX="+centerX);
+          System.out.println("centerY="+centerY);
+        }
       }
 
 
