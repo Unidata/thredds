@@ -207,14 +207,89 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     }
 
 
-    //////////////////////////////////////////////////////////////////////
+   //////////////////////////////////////////////////////////////////////
+   // Checking all azi to make sure there is no missing data at sweep
+   // level, since the coordinate is 1D at this level, this checking also
+   // remove those missing radials within a sweep.
+
     private class LevelII2Sweep implements RadialDatasetSweep.Sweep {
       double meanElevation = Double.NaN;
       double meanAzimuth = Double.NaN;
       int sweepno;
+      Array sweepData;
+      Array aziData;
+      Array eleData;
 
       LevelII2Sweep(int sweepno) {
         this.sweepno = sweepno;
+        Array sweepTmp = null;
+        Array aziTmp = null;
+        Array eleTmp = null;
+
+        int[] shape = ve.getShape();
+        int[] origin = new int[ ve.getRank()];
+        shape[0] = 1;
+        origin[0] = sweepno;
+
+        //first reading  sweep data into array
+        try {
+            Array a = radialCoordsys.getAzimuthAxisDataCached();
+            Array b = radialCoordsys.getElevationAxisDataCached();
+            int [] aziOrigin = new int[2];
+            aziOrigin[0] = sweepno;
+            int [] aziShape = {1, shape[1]};
+            aziTmp =  a.section(aziOrigin, aziShape);
+            eleTmp =  b.section(aziOrigin, aziShape);
+            sweepTmp = ve.read(origin, shape).reduce();
+        } catch (ucar.ma2.InvalidRangeException e) {
+            e.printStackTrace();
+        } catch (java.io.IOException e ) {
+            e.printStackTrace();
+        }
+
+
+        Index ima = aziTmp.getIndex();
+        Index imb = sweepTmp.getIndex();
+        int nRadials = 0;
+        // now checking the number of radial which azi is not NaN
+        for (int azi = 0; azi < nrays; azi++) {
+            float f = aziTmp.getFloat(ima.set(azi)) ;
+            if(!Float.isNaN(f)) {
+                nRadials++;
+            }
+        }
+
+        // copying the data into aziData and sweepData
+        if(nRadials == nrays ) {
+            sweepData = sweepTmp;
+            aziData = aziTmp;
+            eleData = eleTmp;
+        } else {
+            aziData = new ArrayFloat.D1( nRadials);
+            eleData = new ArrayFloat.D1( nRadials);
+            sweepData = new ArrayFloat.D2( nRadials, ngates);
+            Index imd = sweepData.getIndex();
+            Index imc = aziData.getIndex();
+            int radial = 0;
+            for (int azi = 0; azi < nrays; azi++) {
+                //System.out.println("*** radar radial number is: \n" + azi);
+                float f = aziTmp.getFloat(ima.set(azi));
+                float e = eleTmp.getFloat(ima.set(azi));
+                if(!Float.isNaN(f)) {
+                    aziData.setFloat(imc.set(radial), f);
+                    eleData.setFloat(imc.set(radial), e);
+                    for (int gate = 0; gate < ngates; gate++) {
+                        float f1 = sweepTmp.getFloat(imb.set(azi,gate));
+                        try {
+                            sweepData.setFloat(imd.set(radial,gate), f1);
+                        } catch (java.lang.NullPointerException m) {
+                                m.printStackTrace();
+                        }
+                    }
+                    radial++;
+                }
+            }
+        }
 
       }
 
@@ -222,19 +297,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       //int[] origin ;
       /* read 2d sweep data nradials * ngates */
       public float[] readData() throws java.io.IOException {
-        Array sweepData;
-
-        int[] shape = ve.getShape();
-        int[] origin = new int[ ve.getRank()];
-        shape[0] = 1;
-        origin[0] = sweepno;
-
-        try {
-          sweepData = ve.read(origin, shape);
-        } catch (ucar.ma2.InvalidRangeException e) {
-          throw new IOException(e.getMessage());
-        }
-        return (float []) sweepData.get1DJavaArray(Float.TYPE);
+            return (float []) sweepData.get1DJavaArray(Float.TYPE);
       }
 
       //              private Object MUTEX =new Object();
@@ -243,16 +306,14 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         Array rayData;
         //synchronized(MUTEX) {
         //    if(shape ==null) {
-        int [] shape = ve.getShape();
-        int [] origin = new int[ ve.getRank()];
+        int [] shape = sweepData.getShape();
+        int [] origin = new int[2];
         //     }
         shape[0] = 1;
-        origin[0] = sweepno;
-        shape[1] = 1;
-        origin[1] = ray;
+        origin[0] = ray;
 
         try {
-          rayData = ve.read(origin, shape);
+          rayData = sweepData.section(origin, shape);
         } catch (ucar.ma2.InvalidRangeException e) {
           throw new IOException(e.getMessage());
         }
@@ -261,26 +322,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getMeanElevation() {
-        //if (Double.isNaN(meanElevation)) {
-        Array data;
-        Array dataa = null;
-        int[] shap;
-        int[] orig;
-        try {
-          data = radialCoordsys.getElevationAxisDataCached();
-          shap = data.getShape();
-          shap[0] = 1;
-          orig = new int[ data.getRank()];
-          orig[0] = sweepno;
-          dataa = data.section(orig, shap);
-        } catch (IOException e) {
-          e.printStackTrace();
-        } catch (ucar.ma2.InvalidRangeException r) {
-          r.printStackTrace();
-        }
-
-        meanElevation = meanDouble(dataa);
-
+       // if (getType() != null) {
+        meanElevation = MAMath.sumDouble(eleData) / eleData.getSize();
+        //} else meanElevation = 0.0;
         return (float) meanElevation;
       }
 
@@ -305,7 +349,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public int getRadialNumber() {
-        return nrays;
+        return (int)aziData.getSize();
       }
 
       public RadialDatasetSweep.Type getType() {
@@ -324,23 +368,17 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         return endDate;
       }
 
-      public int getNumRadials() {
-        return nrays;
-      }
+     // public int getNumRadials() {
+       // return nrays;
+     // }
 
-      public int getNumGates() {
-        return ngates;
-      }
+     // public int getNumGates() {
+     //   return ngates;
+     // }
 
       public float getMeanAzimuth() {
         if (getType() != null) {
-          try {
-            Array data = radialCoordsys.getAzimuthAxisDataCached();
-            meanAzimuth = MAMath.sumDouble(data) / data.getSize();
-          } catch (IOException e) {
-            e.printStackTrace();
-            meanAzimuth = 0.0;
-          }
+            meanAzimuth = MAMath.sumDouble(aziData) / aziData.getSize();
         } else meanAzimuth = 0.0;
 
         return (float) meanAzimuth;
@@ -351,15 +389,14 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getElevation(int ray) throws IOException {
-        Array data = radialCoordsys.getElevationAxisDataCached();
-        Index index = data.getIndex();
-        return data.getFloat(index.set(sweepno, ray));
+        Index index = eleData.getIndex();
+        return eleData.getFloat(index.set(ray));
       }
 
       public float getAzimuth(int ray) throws IOException {
-        Array data = radialCoordsys.getAzimuthAxisDataCached();
-        Index index = data.getIndex();
-        return data.getFloat(index.set(sweepno, ray));
+        //System.out.println("*** radial number is: \n" + ray);
+        Index index = aziData.getIndex();
+        return aziData.getFloat(index.set(ray));
       }
 
       public float getRadialDistance(int gate) throws IOException {
