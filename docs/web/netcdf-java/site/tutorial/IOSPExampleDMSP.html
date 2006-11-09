@@ -1,16 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>IOSP Example - DMSP</title><meta content="Ethan Davis" name="author"></head>
 <body>
-<h1>IOSP Example - DMSP</h1>
+<h1>Writing an IOSP: Example - DMSP</h1>
 <p>The ucar.nc2.iosp.dmsp.DSMPiosp class provides access to DMSP
 satellite data in the NOAA/NGDC DMSP archive format. Currently only
 data from the OLS instrument is supported, in particular only NOAA/NGDC
-DMSP OIS (OLS Integrated Smooth) data files. The OIS data is visible
-and thermal imagery at 2.7km resolution.<br>
+DMSP OIS (OLS Integrated Smooth) data files. The OIS data contains both visible
+and infrared imagery at 2.7km resolution.<br>
 </p>
 <p>The DMSP satellites are polar orbiting satellites crossing the
 equator, depending on the satellite, at either dawn/dusk or
-noon/midnight.</p>
+noon/midnight. The OLS instrument is a scanning imager.<br>
+</p>
 
 More information is available at http://dmsp.ngdc.noaa.gov/.<br>
 <h2>Sample DMSP OIS Dataset<br>
@@ -36,67 +37,126 @@ More information is available at http://dmsp.ngdc.noaa.gov/.<br>
 </ul>
 <h2>Data Structure<br>
 </h2>
-<p>One or more text header records followed by one data record per
-scan. Each data record contains satellite ephemeris, calibration, and
-quality control data followed by visible and infrared scan data. <br>
+<p>The data files contain one or more text header records followed by a
+number of binary data records. The header record contains metadata
+describing the dataset including the size of the records and the number
+of data records (<a href="IospDmsp.sampleHeader.txt">sample header record</a>). Each data record contains the information for a single scan of the OLS instrument which includes:<br>
 </p>
-<ul>
-  <li>Text header record (metadata)</li>
-  <li>data records (one per scan)</li>
-  <ul>
-    <li>Time: year, day of year, seconds of day</li>
-    <li>Satellite ephemeris: latitude, longitude, altitude, heading</li>
-    <li>Sun and moon elevation, azimuth, phase<br>
-    </li>
-    <li>Gain and calibration</li>
-    <li>Quality control</li>
-    <li>Visible scan data</li>
-    <li>Infrared scan data<br>
-    </li>
-  </ul>
-</ul>
+<ol>
+  <li>The nominal time of the scan: year, day of year, and seconds of day.</li>
+  <li>Satellite ephemeris for the scan: latitude, longitude, altitude, heading.</li>
+  <li>Solar and lunar elevation, azimuth, phase.</li>
+  <li>Gain and calibration</li>
+  <li>Quality control</li>
+  <li>Visible scan data</li>
+  <li>Infrared scan data<br>
+  </li>
+</ol>
+<h2>Decide How to Represent Data in netCDF Data Model</h2>
+<p>For our initial implementation, we decide not to use structures.<br>
+</p>
+<p>The visible and infrared data can be contained in two dimensional arrays:<br>
+</p>
+<pre> dimensions:<br>   numScans = 691;<br>   numSamplesPerScan = 1465;<br> variables:<br>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>   byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br></pre>
+<p>The time and satellite ephemeris data:<br>
+</p>
+<pre>   int year(numScans=691);<br>   int dayOfYear(numScans=691);<br>   double secondsOfDay(numScans=691);<br><br>   float satEphemLatitude(numScans=691);<br>   float satEphemLongitude(numScans=691);<br>   float satEphemAltitude(numScans=691);<br>   float satEphemHeading(numScans=691);<br></pre>
+<p>The variables above are not enough for existing coordinate axes
+conventions. So, we will calculate a more standard time coordinate as
+well as latitude and longitude for every pixel in the imagery:<br>
+</p>
+<pre>   float time(numScans=691);<br>   float latitude(numScans=691, numSamplesPerScan=1465);<br>   float longitude(numScans=691, numSamplesPerScan=1465);<br></pre>
+<p>The remaining data from the dataset maps into the netCDF data model easily (<a href="IospDmsp.sample.cdl">resulting CDL</a>).<br>
+</p>
 <h2>IOSP Details</h2>
+
 <p>The DMSP IOSP code is located in thredds/cdm/src/main/java/ucar/nc2/iosp/dmsp/DMSPiosp.java.<br>
 </p>
-<ul>
-  <li>On dataset open:</li>
-  <ul>
-    <li>Read header information and create dimensions and global attributes.</li>
-    <li>Create variables and variable attributes.</li>
-    <li>Make sure global and variable attributes needed for convention(s) are in place.</li>
-  </ul>
-  <li>On variable read:</li>
-  <ul>
-    <li>A time coordinate variable is calculated.</li>
-    <li>The latitude and longitude for each pixel is calculated from the per scan satellite ephemeris data.</li>
-    <li>Time, satellite ephemeris, and latitude/longitude data is cached.</li>
-    <li>Read all data for requested variable, subsetting (if requested) is done using ucar.ma2.Array subsetting.</li>
-  </ul>
-</ul>
-<p>There are a number of trade-offs made here.<br>
+<h3> public boolean isValidFile(RandomAccessFile raf) throws IOException;</h3>
+<p>We identify that this is a DMSP OIS data file by reading some of the
+header record. A number of header items are checked including the "data
+set ID" information which contains a description of the dataset:<br>
+</p>
+<pre>data set ID: DMSP F14 OLS LS &amp; TS<br></pre>
+<h3> public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;</h3>
+<p>As with the lightning example, in this method we create the
+dimensions, attributes, and variables and add them to the empty
+NetcdfFile object. All of the information needed to construct these
+objects is contained in the header record.<br>
+</p>
+<p>It is important at this point to make sure that any needed conventions are followed in the attribute definitions:<br>
+</p>
+<pre><b>(1)</b>   curVariable.addAttribute( new Attribute( "<b>long_name</b>", curVarInfo.getLongName()));<br><b>   </b>   curVariable.addAttribute( new Attribute( "<b>units</b>", curVarInfo.getUnits()));<br><br><b>(2)</b>   if ( curVariable.getName().equals( "<b>latitude</b>"))<br>      {<br>        curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));<br><b>   </b>     curVariable.addAttribute( new Attribute( <b>_Coordinate.AxisType</b>, AxisType.Lat.toString()));<br>      }<br><b>(3)</b>   else if ( curVariable.getName().equals( "<b>longitude</b>"))<br>      {<br>        curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the geometry of the satellite scans and an ellipsoidal earth (a=6378.14km and e=0.0818191830)."));<br><b>   </b>     curVariable.addAttribute( new Attribute( <b>_Coordinate.AxisType</b>, AxisType.Lon.toString()));<br>      }<br><b>(4)</b>   else if ( curVariable.getName().equals( "<b>time</b>"))<br>      {<br>        curVariable.addAttribute( new Attribute( "calculatedVariable", "Using the satellite epoch for each scan."));<br>        this.startDateString = this.header.getStartDateAtt().getStringValue();<br>        try<br>        {<br>          this.startDate = DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateFromDateTimeString( this.startDateString);<br>        }<br>        catch ( ParseException e )<br>        {<br>          throw new IOException( "Invalid DMSP file: \"startDate\" attribute value &lt;" + this.startDateString +<br>                                 "&gt; not parseable with format string &lt;" + DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString() + "&gt;.");<br>        }<br><b>   </b>     curVariable.addAttribute( new Attribute( "<b>units</b>", "seconds since " + this.startDateString));<br><b>   </b>     curVariable.addAttribute( new Attribute( <b>_Coordinate.AxisType</b>, AxisType.Time.toString()));<br>      }<br><b>(5)  </b> else if ( curVariable.getName().equals( "<b>infraredImagery</b>"))<br>      {<br><b>    </b>    curVariable.addAttribute( new Attribute( <b>_Coordinate.Axes</b>, "latitude longitude"));<br>        curVariable.addAttribute( new Attribute( "<b>_unsigned</b>", "true"));<br>        curVariable.addAttribute( new Attribute( "<b>scale_factor</b>", new Float((310.0-190.0)/(256.0-1.0))));<br>        curVariable.addAttribute( new Attribute( "<b>add_offset</b>", new Float( 190.0)));<br>        curVariable.addAttribute( new Attribute( "description",<br>                                                 "Infrared pixel values correspond to a temperature range of 190 to 310 " +<br>                                                 "Kelvins in 256 equally spaced steps. Onboard calibration is performed " +<br>                                                 "during each scan. -- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));<br>      }<br><b>(6) </b>  else if ( curVariable.getName().equals( "<b>visibleImagery</b>"))<br>      {<br><b>    </b>    curVariable.addAttribute( new Attribute( <b>_Coordinate.Axes</b>, "latitude longitude"));<br>        curVariable.addAttribute( new Attribute( "<b>_unsigned</b>", "true"));<br>        curVariable.addAttribute( new Attribute( "description",<br>                                                 "Visible pixels are relative values ranging from 0 to 63 rather than " +<br>                                                 "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +<br>                                                 "to maintain constant cloud reference values under varying conditions of " +<br>                                                 "solar and lunar illumination. Telescope pixel values are replaced by " +<br>                                                 "Photo Multiplier Tube (PMT) values at night. " +<br>                                                 "-- From http://dmsp.ngdc.noaa.gov/html/sensors/doc_ols.html"));<br>      }<br></pre>
+<ol>
+  <li>Define "long_name" and "units" attributes for each variable.<br>
+  </li>
+  <li>For the "latitude" variable, define the "_CoordinateAxisType" attribute.</li>
+  <li>For the "longitude" variable, define the "_CoordinateAxisType" attribute.</li>
+  <li>For the "time" variable, define the "units" and "_CoordinateAxisType" attributes.</li>
+  <li>For the "infraredImagery" variable, define the "_CoordinateAxes" attribute<br>
+  </li>
+</ol>
+<p>Here we are following the basic attribute conventions from the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/">netCDF Users Guide</a> with the "long_name", "units", "scale_offset", and "add_offset" attributes. We are also following the more recent <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html">Coordinate attribute convention</a>
+which describes attributes for describing more general coordinate
+systems than supported by coordinate variables as defined in the netCDF
+Users Guide.<br>
+</p>
+<h3>public Array readData( Variable v2, List section ) throws IOException, InvalidRangeException;<br>
+</h3>
+<p>The readData() method is were we implement reading the data from disk.<br>
+</p>
+<ol>
+  <li>For all the data read from the dataset, we use offset information
+to calculate the location in the RAF for each data point of the
+requested variable.</li>
+  <li>To simplify the implementation, we are <b>reading all data for each
+requested variable</b>, subsetting (if requested) is done using
+ucar.ma2.Array subsetting.</li>
+  <li>We <b>calculate the time, latitude, and longitude</b> from the existing time and satellite ephemeris data. The calculation of the data is <b>postponed until the first request</b> for these variables.</li>
+  <li>The <b>time, latitude, and longitude data is cached</b> since its calculation is expensive.</li>
+</ol>
+<p>
+</p>
+
+<ul></ul>
+<p>Reading all the variable data for any size request means that this
+will not scale well for larger datasets. A future implementation may
+move to reading subsets of the data.<br>
 </p>
 <ul></ul>
-<h2>Data Type<br>
-</h2>
-<ul>
+<h2>Data Type</h2>
+<h3>Grid<br>
+</h3>
+<p>The current implementation represents the image data as a grid with
+2-D latitude and longitude coordinate variables by setting the
+"_CoordinateAxes" attribute for the visible and infrared variables to
+"latitude longitude":<br>
+</p>
+<pre>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>     :_CoordinateAxes = "latitude longitude";<br>  &nbsp;byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br>     :_CoordinateAxes = "latitude longitude";<br></pre>
+<p>This representation hides the time dependence of the data but allows
+current applications that read grids to understand this dataset.<br>
+</p>
+<h3>Swath</h3>
+<p>We are still trying to understand swath data. However, our current
+thinking is that the time and location dependence of the data we see
+here is a key aspect. This could be represented with the addition of
+"time" to the "_CoordinateAxes" attributes:<br>
+</p>
+<pre>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>     :_CoordinateAxes = "latitude longitude time";<br>  &nbsp;byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br>     :_CoordinateAxes = "latitude longitude time";<br></pre>
 
-  <li>Data type:</li>
-  <ul>
-    <li>individual dataset:</li>
-    <ul>
-      <li>swath</li>
-      <li>image</li>
-      <li>grid<br>
-      </li>
-    </ul>
-    <li>collection of datasets:</li>
-    <ul>
-      <li>collection of swath data</li>
-      <li>polar orbiting satellite swathcollection<br>
-      </li>
-    </ul>
-  </ul>
-</ul>
-
-<br>
+<p>For those of us used to thinking in terms of standard netCDF
+coordinate variables, this can seem misleading since the number of
+dimensions is different than the number of coordinate axes. However, if
+we remember that a coordinate system really just means that every data point in the Variable has a corresponding coordinate value for 
+  each of the CoordinateAxis.<br>
+</p>
+<p>The problem with this representation is that we don't know of any
+applications that understand what this means. Besides which, we're not
+sure how an application would take advantage of understanding this
+representation.<br>
+</p>
+<h3>Image</h3>
+<p>Not sure what this data type might mean. Perhaps an edge case of
+grid having something to do with how cell/pixel extent is handled?<br>
+</p>
 </body></html>
