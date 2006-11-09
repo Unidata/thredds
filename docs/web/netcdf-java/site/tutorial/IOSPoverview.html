@@ -44,5 +44,50 @@
   <li>A little-used debugging aide, return null or an empty String. </li>
   <li>Here you can pass any information that is useful to debugging. It can be viewed through the ToolsUI. </li>
 </ol>
+<p>&nbsp;</p>
+<h2>Design goals for IOSP implementations</h2>
+<ul>
+  <li>
+    <h3>Allow access to the dataset through the netCDF/CDM API</h3>
+  </li>
+  <li>
+    <h3>Allow user access to every interesting bit of information in the dataset </h3>
+  </li>
+  <li>
+    <h3>Hide details related to file format (eg links)</h3>
+  </li>
+  <li>
+    <h3>Try to mimic data access efficiency of netCDF-3</h3>
+  </li>
+  <li>
+    <h3>Create good <em>use</em> <em>metadata</em>: accurate coordinate systems, enable classification by scientific data type</h3>
+  </li>
+  <li>
+    <h3>Create good <em>discovery metadata</em> in the global attributes: title, creator, version, date created, etc. </h3>
+  </li>
+  <li>
+    <h3>Follow standards and good practices </h3>
+  </li>
+</ul>
+<p>&nbsp;</p>
+<h2>Design issues for IOSP implementors</h2>
+<ul>
+  <li>
+    <h3>What are the netCDF objects to expose? Should I use netCDF-3 or full netCDF4/CDM data model? Attributes vs Variables? </h3>
+  </li>
+  <li>
+    <h3>How do I make   data access efficient? What are the common use cases? </h3>
+  </li>
+  <li>
+    <h3>How much work should I do in the open() method? Can/should I defer some processing?</h3>
+  </li>
+  <li>
+    <h3>Should I cache data arrays? Can I provide efficient strided access?</h3>
+  </li>
+  <li>
+    <h3>What to do if dataset is not self contained : external tables, hardcoding? </h3>
+  </li>
+</ul>
+<p>&nbsp; </p>
 </body>
 </html>

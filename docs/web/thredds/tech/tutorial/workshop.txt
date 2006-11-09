@@ -8,7 +8,7 @@ First Day
 
 3. Quick Start (30) 9:30 - 10:00
    - directory layout
-   - Tomcat Manager 
+   - enable Tomcat Manager 
   
  (break 15 min)
  
@@ -42,8 +42,9 @@ Lunch break 11:45-1
 
 Second Day
 
-9. TDS and NcML II (90) 8:30 - 10:00
+9. Forecast Model Runs (90) 8:30 - 10:00
  - FMRC Aggregation
+ - ForecastModelRun Inventory Display (modev)
  - FMRC definition files (GRIB)
  
 (break 15 min)

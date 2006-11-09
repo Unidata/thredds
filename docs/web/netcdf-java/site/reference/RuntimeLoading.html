@@ -29,8 +29,16 @@
 <p> The registered class must implement <strong><strong>ucar.nc2.dt.</strong>TypedDatasetFactoryIF:</strong></p>
 <pre>
   public boolean <strong>isMine</strong>( NetcdfDataset ncd);
-  public TypedDataset <strong>open</strong>( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer log);</pre>
+  public TypedDataset <strong>open</strong>( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer log);
 
+</pre>
+
+<h3>Register a GRIB1 or GRIB2 Table:</h3>
+<pre wrap=""> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup</strong>( String filename);
+  <strong>ucar.grib.grib2.ParameterTable.addParametersUser</strong>( String filename);</pre>
+<p wrap="">  The 
+    table must follow the GRIB1 and GRIB2 <a href="http://www.unidata.ucar.edu/software/decoders/javadoc/Parameters.txt">table formats</a>, respectively.<br>
+</p>
 <h2>Runtime Configuration </h2>
 <pre> &lt;runtimeConfig&gt;
 
@@ -40,14 +48,19 @@
  
 <strong>3)</strong> &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type=&quot;vertical&quot; class="my.stuff.atmosSigmaLog"/&gt;
  
-4) &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;
- 
- &lt;/runtimeConfig&gt;</pre>
+<strong>4)</strong> &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;
+
+<strong>5)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;
+
+<strong>6)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters&quot; /&gt;</pre>
+<pre>&lt;/runtimeConfig&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
   <li> Loads a <strong>CoordSysBuilderIF</strong> with the given class name, which looks for the given <strong>Convention</strong> attribute value. </li>
   <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type must be <em>vertical</em> or <em>projection</em>. </li>
-  <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>. </li>
+  <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>.</li>
+  <li>Load a GRIB-1 parameter table</li>
+  <li>Load a GRIB-2 parameter table. </li>
 </ol>
 <p>From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
 <pre>  // read from file

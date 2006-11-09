@@ -29,16 +29,24 @@ Java HotSpot Server VM, by using the <strong>-server</strong> oprion. </li>
 export JAVA_OPTS</pre>
 </blockquote>
 <p>starts Tomcat with the Server JVM, and gives it 256 Mbytes of memory to start with, and allows a maximum of 1024 Mbytes. These are suggested numbers, use more if you can. You will need to restart Tomcat for this to take effect.</p>
+<p>&nbsp;</p>
 <h2>Tomcat</h2>
 <h3>Version</h3>
 <p>We recommend the latest stable version of Tomcat 5.5, which supposedly has better stability and performance than Tomcat 5.0. Tomcat 5.5 requires JDK 1.5 or above. </p>
 <h3>Automatic Startup </h3>
 <p>In a production environment, Tomcat should be automatically restarted when the machine starts. How to do this depends on what OS you are running. This <a href="http://wiki.apache.org/jakarta-tomcat/HowTo">FAQ</a> has a bit of info. </p>
+<h3>Miscellaneous</h3>
+<p>Once <strong>thredds.war</strong> is expanded, manually copy everything in <strong>${tomcat_home}/webapps/thredds/initialContent/root/ </strong>to <strong>${tomcat_home}/webapps/ROOT/ .</strong></p>
+<ol>
+  <li>This sets up a <strong>robots.txt</strong> file to keep crawlers from wasting bandwidth.</li>
+  <li> The <strong>favicon.ico</strong> file is mostly a convenience to keep browsers from constantly asking for it (substitute your own icon if you like!). </li>
+</ol>
 <h3>Resources</h3>
 <ul>
   <li><a href="http://jakarta.apache.org/tomcat/faq/performance.html">Tomcat Performance FAQ </a></li>
   <li>  <a href="http://jakarta.apache.org/tomcat/articles/performance.pdf">Tomcat Performance</a> paper by Peter Lin </li>
 </ul>
+<p>&nbsp;</p>
 <h2>Thredds Data Server </h2>
 <h3>File Handles and Caching </h3>
 <p>The TDS caches file handles to minimize OS overhead. Currently this is hardwired to allow   400 - 600 open files for OPeNDAP and WCS, and 20 - 40 for HTTP file serving. This means that your OS must allow at least that many file handles per process, else you can get a &quot;out of file handles&quot; message, and the server may freeze up. </p>
