@@ -68,9 +68,23 @@ point by point access and access over a range. (??? For instance, a
 netCDF file with time as the unlimited dimension will ... ???)<br>
   </li>
 </ol>
-<p><br>
+<h3>Implementation Details</h3>
+<p>We have two abstract classes that do the majority of the current
+trajectory implementations, especially for the data access methods.
+These classes are: <code>ucar.nc2.dt.trajectory.SingleTrajectoryObsDataset</code> and <code>ucar.nc2.dt.trajectory.MultiTrajectoryObsDataset</code>. They both extend <code>ucar.nc2.dt.TypedDatasetImpl</code> and implement <code>ucar.nc2.dt.TrajectoryObsDataset</code>.<br>
 </p>
-<p><br>
+<p>The main jobs the concrete subclasses perform is to check if the
+dataset follows an appropriate convention and then use that convention
+to determine (or calculate) the coordinate variables. For instance, the
+<code>ucar.nc2.dt.trajectory.RafTrajectoryObsDataset</code> checks for the "Convention" attribute for appropriate values:<br>
+</p>
+<pre>    Attribute conventionsAtt = ncf.findGlobalAttributeIgnoreCase( "Conventions" );<br>    if ( ! conventionsAtt.getStringValue().equals( "NCAR-RAF/nimbus" ) )<br>      throw new IllegalArgumentException( "File &lt;" + ncf.getId() + "&gt; not a \"NCAR-RAF/nimbus\" convention file." );<br></pre>
+<p>And then determines which variables are the time, latitude, longitude, and elevation coordinate variables:<br>
+</p>
+<pre>    Attribute versionAtt = ncf.findGlobalAttributeIgnoreCase( "Version" );<br>    if ( versionAtt.getStringValue().equals( "1.2"))<br>    {<br>      timeDimName = "Time";<br>      timeVarName = "time_offset";<br><br>      latVarName = "LAT";<br>      lonVarName = "LON";<br>      elevVarName = "ALT";<br>      ...<br>    }<br><br></pre>
+<pre><br><br></pre>
+<p>
 <br>
 </p>
+
 </body></html>
