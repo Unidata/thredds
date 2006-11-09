@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>IOSP Example - DMSP</title><meta content="Ethan Davis" name="author"></head><body>
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>IOSP Example - DMSP</title><meta content="Ethan Davis" name="author"></head>
+<body>
 <h1>IOSP Example - DMSP</h1>
 <p>The ucar.nc2.iosp.dmsp.DSMPiosp class provides access to DMSP
 satellite data in the NOAA/NGDC DMSP archive format. Currently only
@@ -7,6 +8,16 @@ data from the OLS instrument is supported, in particular only NOAA/NGDC
 DMSP OIS (OLS Integrated Smooth) data files. The OIS data is visible
 and thermal imagery at 2.7km resolution.<br>
 </p>
+<p>The DMSP satellites are polar orbiting satellites crossing the
+equator, depending on the satellite, at either dawn/dusk or
+noon/midnight.</p>
+
+More information is available at http://dmsp.ngdc.noaa.gov/.<br>
+<h2>Sample DMSP OIS Dataset<br>
+</h2>
+<p>
+</p>
+
 <p>Look at structure of the example dataset in ToolsUI:<br>
 </p>
 <ul>
@@ -21,20 +32,54 @@ and thermal imagery at 2.7km resolution.<br>
 <ul>
   <li>In ToolsUI, open the "Grid" tab</li>
   <li>Open the example dataset</li>
-  <li>View Grid<br>
-  </li>
+  <li>View Grid</li>
 </ul>
-<p>The DMSP satellites are polar orbiting satellites crossing the
-equator, depending on the satellite, at either dawn/dusk or
-noon/midnight.</p>
-<p>More information is available at http://dmsp.ngdc.noaa.gov/.<br>
+<h2>Data Structure<br>
+</h2>
+<p>One or more text header records followed by one data record per
+scan. Each data record contains satellite ephemeris, calibration, and
+quality control data followed by visible and infrared scan data. <br>
 </p>
-<br>
 <ul>
-  <li>simple structure of data</li>
-  <li>cache some data</li>
-  <li>calculate and cache lat and lon</li>
-  <li>read all data for any requested variable and subset</li>
+  <li>Text header record (metadata)</li>
+  <li>data records (one per scan)</li>
+  <ul>
+    <li>Time: year, day of year, seconds of day</li>
+    <li>Satellite ephemeris: latitude, longitude, altitude, heading</li>
+    <li>Sun and moon elevation, azimuth, phase<br>
+    </li>
+    <li>Gain and calibration</li>
+    <li>Quality control</li>
+    <li>Visible scan data</li>
+    <li>Infrared scan data<br>
+    </li>
+  </ul>
+</ul>
+<h2>IOSP Details</h2>
+<p>The DMSP IOSP code is located in thredds/cdm/src/main/java/ucar/nc2/iosp/dmsp/DMSPiosp.java.<br>
+</p>
+<ul>
+  <li>On dataset open:</li>
+  <ul>
+    <li>Read header information and create dimensions and global attributes.</li>
+    <li>Create variables and variable attributes.</li>
+    <li>Make sure global and variable attributes needed for convention(s) are in place.</li>
+  </ul>
+  <li>On variable read:</li>
+  <ul>
+    <li>A time coordinate variable is calculated.</li>
+    <li>The latitude and longitude for each pixel is calculated from the per scan satellite ephemeris data.</li>
+    <li>Time, satellite ephemeris, and latitude/longitude data is cached.</li>
+    <li>Read all data for requested variable, subsetting (if requested) is done using ucar.ma2.Array subsetting.</li>
+  </ul>
+</ul>
+<p>There are a number of trade-offs made here.<br>
+</p>
+<ul></ul>
+<h2>Data Type<br>
+</h2>
+<ul>
+
   <li>Data type:</li>
   <ul>
     <li>individual dataset:</li>
@@ -52,5 +97,6 @@ noon/midnight.</p>
     </ul>
   </ul>
 </ul>
+
 <br>
 </body></html>
