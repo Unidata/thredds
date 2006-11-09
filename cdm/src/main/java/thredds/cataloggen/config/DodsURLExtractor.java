@@ -50,7 +50,7 @@ public class DodsURLExtractor {
   }
 
   /** Extract text content from the given URL and return in String */
-  String getTextContent(String url) throws IOException {
+  public String getTextContent(String url) throws IOException {
     if (debug) System.out.println(" URL.getTextContent="+url);
 
     baseURL = new URL(url);
