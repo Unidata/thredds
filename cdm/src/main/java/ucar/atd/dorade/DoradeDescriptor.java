@@ -344,7 +344,6 @@ abstract class DoradeDescriptor {
 
     /**
      * Get the default verbose state for new <code>DoradeDescriptor</code>-s.
-     * @param verbose the default verbose state
      */
     public static boolean getDefaultVerboseState() {
         return defaultVerboseState;
