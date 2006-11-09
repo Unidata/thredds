@@ -80,7 +80,7 @@ boolean isVolume&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = rds.isVolume();</p>
 &nbsp;&nbsp;&nbsp; /* radial variable */<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 RadialDatasetSweep.RadialVariable varRef =
-(RadialDatasetSweep.RadialVariable) rds.getDataVariable("Reflectivity");<br>
+rds.getDataVariable("Reflectivity");<br>
 </p>
 <p class="MsoNormal">&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp; List&nbsp; rvars = rds.getDataVariables();<br>
@@ -88,8 +88,8 @@ RadialDatasetSweep.RadialVariable varRef =
 = rvars.iterator();</p>
 <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 /* information at sweep level */<br>
-&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; Sweep sw =
-varRef.getSweep(i);<br>
+&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; RadialDatasetSweep.Sweep
+sw = varRef.getSweep(i);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; float me
 = sw.getMeanElevation();<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; int nrays
