@@ -24,10 +24,9 @@ themselves.
 
 <p>
 
-To add in a new parameter file, the Java GRIB Library would need to have access 
-to a file called <b>grib1lookuptable.lst</b> which would list the 
-parameter table (e.g.: gwctab_2.tab) and the parameter table
-itself. 
+The Java GRIB Library has to have access a file called <b>grib1lookuptable.lst</b> 
+to add in a new parameter table. The <b>grib1lookuptable.lst</b> contains a list 
+of parameter tables (e.g.: gwctab_2.tab) . 
 <p>
 The format of grib1lookuptable.lst is:
 <pre>
@@ -61,13 +60,8 @@ here</a>)
 <p>
 
 Once you've created this file, you would access it by putting
-the grib1lookuptable.lst in your &lt;home&gt;/.THREDDS
-directory and put the corresponding table files where they
-are pointed to in the file.  This can be a relative path or
-a web server.  Alternatively, you could place the grib1lookuptable.lst
-and associated parameter tables on a local web server and use the
-IDV's sitepath parameter (startup option or
-user preference) to point to the location where the files are.
+the grib1lookuptable.lst in your runtime configuration file for the ToolUI or the
+TDS programs.
 
 <a name="grib2"></a><div class="pagesubtitle">7.4.3.1 GRIB-2 tables</div> 
 
@@ -97,11 +91,7 @@ here</a>)
 <p>
 
 Once you've created this file, you would access it by putting
-the grib2lookuptable.lst in your <home>/.metapps/DefaultIdv
-directory.  Alternatively, you could place the grib2lookuptable.lst
-on a local web server and use the IDV's sitepath parameter 
-(startup option or user preference) to point to the location 
-of the file.
+the grib2lookuptable.lst in your command line configuration file.
 
 
 <p>
