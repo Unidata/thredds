@@ -129,7 +129,7 @@ public class TypedDatasetFactory {
   /**
    * Open a dataset as a TypedDataset.
    *
-   * @param datatype, may be null, which means search all factories
+   * @param datatype open this kind of Typed Dataset; may be null, which means search all factories
    * @param ncd  the NetcdfDataset to wrap in a TypedDataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null

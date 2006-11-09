@@ -86,14 +86,14 @@ public class EasyX509TrustManager implements X509TrustManager {
   }
 
   /**
-   * @see com.sun.net.ssl.X509TrustManager#isClientTrusted(X509Certificate[])
+   * see com.sun.net.ssl.X509TrustManager#isClientTrusted(X509Certificate[])
    */
   public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
     this.standardTrustManager.checkClientTrusted(certificates, authType);
   }
 
   /**
-   * @see com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
+   * see com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
    */
   public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
     if ((certificates != null) && logger.isDebugEnabled()) {
@@ -118,7 +118,7 @@ public class EasyX509TrustManager implements X509TrustManager {
   }
 
   /**
-   * @see com.sun.net.ssl.X509TrustManager#getAcceptedIssuers()
+   * see com.sun.net.ssl.X509TrustManager#getAcceptedIssuers()
    */
   public X509Certificate[] getAcceptedIssuers() {
     return this.standardTrustManager.getAcceptedIssuers();

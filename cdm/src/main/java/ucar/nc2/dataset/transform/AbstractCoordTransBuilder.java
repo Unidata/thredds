@@ -96,7 +96,6 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
    * @param paramName the parameter name
    * @param ds        dataset
    * @param varName   variable name
-   * @param readData  if true, read data and use a  s parameter value
    * @return true if success, false is failed
    */
   protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varName) {

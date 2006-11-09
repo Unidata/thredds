@@ -277,7 +277,6 @@ public class IO {
    * Write contents to a file
    * @param contents String holding the contents
    * @param file  write to this file (overwrite if exists)
-   * @param contents String holding the contents
    */
   static public void writeToFile( String contents, File file) throws IOException {
     OutputStream out = null;

@@ -66,7 +66,7 @@ public class ImageDatasetFactory {
    *   http: use javax.imageio.ImageIO.read()
    *   file: javax.imageio.ImageIO.read()
    * @param location
-   * @return
+   * @return a BufferedImage
    * @throws java.io.IOException
    */
   public BufferedImage open( String location) throws java.io.IOException {
