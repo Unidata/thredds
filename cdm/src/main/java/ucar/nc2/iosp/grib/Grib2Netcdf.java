@@ -42,8 +42,7 @@ public class Grib2Netcdf {
    /***********************************************************************
     * Grib2Netcdf<br>
     *
-    * @param  args input Filename of gribfile to read
-    * @param  args output Netcdf file name
+    * @param  args input gribfile to read,  output Netcdf file 
     *
     *************************************************************************/
    public static void main(String args[]) throws IOException {
