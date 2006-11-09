@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Untitled Document</title>
+<title>Runtime Loading</title>
 </head>
 
 <body>
@@ -29,9 +29,8 @@
 <p> The registered class must implement <strong><strong>ucar.nc2.dt.</strong>TypedDatasetFactoryIF:</strong></p>
 <pre>
   public boolean <strong>isMine</strong>( NetcdfDataset ncd);
-  public TypedDataset <strong>open</strong>( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer log);
+  public TypedDataset <strong>open</strong>( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer log);</pre>
 
-</pre>
 <h2>Runtime Configuration </h2>
 <pre> &lt;runtimeConfig&gt;
 
@@ -50,7 +49,7 @@
   <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type must be <em>vertical</em> or <em>projection</em>. </li>
   <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>. </li>
 </ol>
-<p>From your application, pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser:</p>
+<p>From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
 <pre>  // read from file
   StringBuffer errlog = new StringBuffer();
   FileInputStream fis = new FileInputStream( filename);   
@@ -65,20 +64,20 @@
   Document doc;<br>  SAXBuilder saxBuilder = new SAXBuilder();<br>  try {<br>    doc = saxBuilder.build(filename);<br>  } catch (JDOMException e) {<br>    throw new IOException(e.getMessage());<br>  }
   Element root = doc.getRootElement();<br>  Element elem<strong> = </strong>root.getChild(&quot;<strong>runtimeConfig</strong>&quot;);
   if (elem != null)
-    <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( elem, errlog);<br>
+    <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( elem, errlog);
 </pre>
+<p>For example, the ToolsUI application allows you to specify this file on the command line with the -<strong>runtimeConfig</strong> parameter:</p>
+<pre>   public void main(String[] args) {
+<br>      for (int i = 0; i &lt; args.length; i++) {<br>        if (args[i].equalsIgnoreCase(&quot;-<strong>runtimeConfig</strong>&quot;) &amp;&amp; (i &lt; args.length-1)) {<br>          String runtimeConfig = args[i+1];<br>          i++;<br>          try {<br>            StringBuffer errlog = new StringBuffer();<br><strong>            FileInputStream fis = new FileInputStream( runtimeConfig);<br>            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);</strong><br>            System.out.println( errlog);<br>          } catch (IOException ioe) {<br>            System.out.println( &quot;Error reading &quot;+runtimeConfig+&quot;=&quot;+ioe.getMessage());<br>          }<br>        }<br>      }<br>    ...</pre>
 <hr>
 <h2>Opening a TypedDataset</h2>
 <p>To open a TypedDataset, call <strong>ucar.nc2.dt.TypedDatasetFactory.open</strong>:</p>
 <pre>  static public TypedDataset <strong>open</strong>( DataType datatype, NetcdfDataset ncd, CancelTask task, StringBuffer errlog);
   static public TypedDataset <strong>open</strong>( DataType datatype, String location, CancelTask task, StringBuffer errlog);</pre>
 <p>  The following are deprecated: <strong>PointObsDatasetFactory, RadialDatasetSweepFactory, TrajectoryObsDatasetFactory</strong></p>
-<h3><br>
-</h3>
-
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 26, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 09, 2006
 </address>
 </body>
 </html>

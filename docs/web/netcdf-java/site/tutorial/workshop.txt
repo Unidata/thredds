@@ -21,6 +21,7 @@ Lunch break 11:45 - 1:00
  5. Writing an I/O Service Provider ( 120) 1:00-3:00
     * Overview
 	* Lightning Example
+	* DMSP implementation experience (Ethan)
 	
 Break (15 min)
 
@@ -34,7 +35,7 @@ Break (15 min)
     * Point/Station/Trajectory/Profile (Ethan)
 	* Writing a Datatype implementation: Point/Station/Trajectory, Radar files, etc. (Ethan)
 
- 8. Runtime Looading (30) 4:30-5:00
+ 8. Runtime Loading (30) 4:30-5:00
     * GRIB/BUFR tables (Robb)
 	* Summary
  
