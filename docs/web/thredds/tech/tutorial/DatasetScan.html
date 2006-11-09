@@ -21,7 +21,7 @@ which URLs will point to the data in those directories.<br>
 
 
 
-<pre>&lt;catalog name="my data collection" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<b>datasetScan</b> name="GRIB2 Data" <b>path</b>="grib2" <b>location</b>="C:/data/grib2/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>  &lt;/<b>datasetScan</b> &gt;<br>&lt;/catalog&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<b>datasetScan</b> name="NCEP Data" <b>path</b>="ncep" <b>location</b>="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/<b>datasetScan</b> &gt;<br>&lt;/catalog&gt;</pre>
 
 
 
@@ -45,27 +45,32 @@ which URLs will point to the data in those directories.<br>
 
 
 
-<pre>&lt;catalog name="my data collection" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<strong></strong><br>  &lt;<b>catalogRef</b> xlink:href="grib2/catalog.xml" xlink:title="GRIB2 Data" name="" /&gt;<br>&lt;/catalog&gt; </pre>
+<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<strong></strong><br>  &lt;<b>catalogRef</b> xlink:href="/thredds/catalog/ncep/catalog.xml" xlink:title="NCEP Data" name="" /&gt;<br>&lt;/catalog&gt; </pre>
 
 
 
 
-<p>The catalog will be generated dynamically on the server when requested, by scanning the server's directory <strong>c:/data/grib2/</strong>. For example, if the directory looked like:</p>
+<p>The catalog will be generated dynamically on the server when requested, by scanning the server's directory <strong>/data/ldm/pub/native/grid/NCEP/</strong>. For example, if the directory looked like:</p>
 
 
 
 
-<pre><strong>c:/data/grib2/data1.wmo<br>c:/data/grib2/data2.wmo<br></strong><strong>c:/data/grib2/readme.txt</strong><br><strong>c:/data/grib2/subdir/</strong></pre>
+
+<pre><strong>/data/ldm/pub/native/grid/NCEP/<br>  GFS/<br>    CONUS_191km/<br>      GFS_CONUS_191km_20061107_0000.grib1<br></strong><strong>      GFS_CONUS_191km_20061107_0000.grib1.gbx<br></strong><strong>     &nbsp;GFS_CONUS_191km_20061107_0600.grib1<br></strong><strong>      GFS_CONUS_191km_20061107_1200.grib1<br></strong><strong>    CONUS_80km/<br>      ...<br>    ...<br>  NAM/<br>    ...<br>  NDFD/<br>    ...</strong><strong></strong><strong><br></strong></pre>
 
 
 
 
-<p>The resulting catalog might look like: </p>
+<p>The result of a request for "<b>/thredds/catalog/ncep/catalog.xml</b>" might look like: </p>
 
 
 
 
-<pre>&lt;catalog ...&gt;<br>  &lt;service name="myserver" ... /&gt;<br>  &lt;dataset name="GRIB2 Data"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;myserv&lt;/serviceName&gt;<br>      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>   &nbsp;&lt;/metadata&gt;<br>    &lt;dataset name="data1.wmo" urlPath="data1.wmo" /&gt;<br>    &lt;dataset name="data2.wmo" urlPath="data2.wmo" /&gt;<br>    &lt;dataset name="readme.txt" urlPath="readme.txt" /&gt;<br>    &lt;catalogRef xlink:title="subdir" xlink:href="subdir" name="" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
+<pre>&lt;catalog ...&gt;<br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;dataset name="NCEP Data"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>   &nbsp;&lt;/metadata&gt;<br>    &lt;catalogRef xlink:title="GFS" xlink:href="GFS/catalog.xml" name="" /&gt;<br>    &lt;catalogRef xlink:title="NAM" xlink:href="NAM/catalog.xml" name="" /&gt;<br>    &lt;catalogRef xlink:title="NDFD" xlink:href="NDFD/catalog.xml" name="" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
+<p>and for a "<b>/thredds/catalog/</b><b>ncep/GFS/CONUS_191km/catalog.xml</b>" request:<br>
+</p>
+<pre>&lt;catalog ...&gt;<br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;dataset name="ncep/GFS/CONUS_191km"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>   &nbsp;&lt;/metadata&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1.gbx"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1.gbx" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0600.grib1" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_1200.grib1" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
+
 
 
 
@@ -77,8 +82,10 @@ which URLs will point to the data in those directories.<br>
 
 <ol>
 
-<li>Files are turned into datasets, subdirectories are turned into nested catalogRef elements.</li><li>All the URLs are relative. If the original catalog URL is <strong>http://server:8080/thredds/catalog.xml </strong>then the first catalogRef URL is<strong> http://server:8080/thredds/catalog/grib2/catalog.xml,</strong> and its contained files are<strong> http://server:8080/thredds/dodsC/grib2/data1.wmo. </strong>The nested catalogRef is<strong> http://server:8080/thredds/catalog/grib2/subdir/catalog.xml. </strong>You don't have to worry about these URLs, as they are all generated for you. </li><li>Each datasetScan element must reference a service element (whether directly, as above, or inherited).</li>
-</ol>
+<li>Files are turned into datasets, subdirectories are turned into nested catalogRef elements.</li><li>All the catalog URLs are relative. If the original catalog URL is <strong>http://server:8080/thredds/catalog.xml </strong>then the first catalogRef xlink:href value of "/thredds/catalog/ncep/catalog.xml" resolves to<strong> http://server:8080/thredds/catalog/ncep/catalog.xml</strong>. From that catalog, the catalogRef xlink:href value of "GFS/catalog.xml" resolves to <b>http://server:8080/thredds/catalog/ncep/GFS/catalog.xml</b>.</li><li>The dataset access URLs are built from the service base attribute and the dataset urlPath attribute (see the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html#constructingURLs">THREDDS URL construction</a> documentation). So the dataset URLs from the above catalog would be <strong>http://server:8080/thredds/dodsC/ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1</strong>.<strong> </strong>You don't have to worry about these URLs, as they are all generated for you. </li>
+<li>Each datasetScan element must reference a service element (whether directly, as above, or inherited).</li>
+</ol>[Workshop: <a href="#sample1">Sample config catalog 1</a>.]<br>
+
 
 
 <h2>Inherited Metadata </h2>
@@ -94,7 +101,7 @@ an inherited metadata element contained in the datasetScan element: </p>
 
 
 
-<pre>&lt;catalog name="my data collection" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<strong>datasetScan</strong> name="GRIB2 Data" path="grib2" location="c:/data/grib2/"&gt;<strong><br><br>    &lt;metadata inherited="true"&gt;<br></strong>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>      &lt;authority&gt;unidata.ucar.edu:&lt;/authority&gt;<br>      &lt;dataType&gt;Grid&lt;/dataType&gt;<strong><br>    &lt;/metadata&gt;<br><br></strong>  &lt;/<strong>datasetScan</strong>&gt;<br>&lt;/catalog&gt; </pre>
+<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<strong>datasetScan</strong> name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/"&gt;<strong><br><br>    &lt;metadata inherited="true"&gt;<br></strong>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>      &lt;authority&gt;unidata.ucar.edu:&lt;/authority&gt;<br>      &lt;dataType&gt;Grid&lt;/dataType&gt;<strong><br>    &lt;/metadata&gt;<br><br></strong>  &lt;/<strong>datasetScan</strong>&gt;<br>&lt;/catalog&gt; </pre>
 
 
 
@@ -110,12 +117,12 @@ directories are included in the generated catalog(s). Adding a <strong>filter</s
 element to your datasetScan element allows you to include (and/or exclude)
 the files and directories as you desire. For instance, the following
 filter and selector elements will only
-include files that end in ".nc" and exclude the file called "junk.nc". </p>
+include files that end in ".grib1" and exclude any file that ends with "*_0000.grib1". </p>
 
 
 
 
-<pre>&lt;filter&gt;<br>  &lt;include wildcard=<strong>"*.nc"</strong>/&gt;<br>  &lt;exclude wildcard=<strong>"junk.nc"</strong>/&gt;<br>&lt;/filter&gt;</pre>
+<pre>&lt;filter&gt;<br>  &lt;include wildcard=<strong>"*.grib1"</strong>/&gt;<br>  &lt;exclude wildcard=<strong>"*_0000.grib1"</strong>/&gt;<br>&lt;/filter&gt;</pre>
 
 
 
@@ -125,58 +132,20 @@ If the wildcard pattern (or the regular expression) matches the dataset name, th
 excluded as specified. By default, includes and excludes apply only to
 regular files (atomic datasets). You can specify that they apply to
 directories (collection datasets) as well by using the <em><strong>atomic</strong></em> and <em><strong>collection</strong></em> attributes. For instance, the additional
-selectors in this filter element means that all directories that end with
-"S" except for those that are named "CVS":</p>
+selector in this filter element means that only directories that don't start with
+"CONUS" will be cataloged:</p>
 
 
 
 
-<pre>&lt;filter&gt;<br>  &lt;include wildcard="*.nc"/&gt;<br>  &lt;exclude wildcard="junk.nc"/&gt;<br>  <strong>&lt;include wildcard="*S" atomic="false" collection="true"/&gt;<br>  &lt;exclude wildcard="CVS" atomic="false" collection="true"/&gt;</strong><br>&lt;/filter&gt;</pre>
-
-
-
-
-
-<p>The following filter element excludes all files or directories that
-contain the string "junk" but includes all other files and directories:</p>
-
-
-
-
-<pre>&lt;filter&gt;<br>  &lt;exclude <strong>wildcard="*junk*" atomic="true" collection="true"</strong>/&gt;<br>&lt;/filter&gt;</pre>
-
-
-
-
-
-<p>If more complicated matches are desired, you can use regular
-expressions. For example, this filter includes all files that start
-with "2003", "2004", or "2005":</p>
-
-
-
-
-<pre>&lt;filter&gt;<br>  &lt;include <strong>regExp="200[3-5].*"</strong> /&gt;<br>&lt;/filter&gt;</pre>
-
-
-
-
-<p>Returning to the first example on this page, adding a filter:
-</p>
-
-
-
-
-<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="C:/data/grib2/" &gt;<br>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br>  &lt;filter&gt;<br>    &lt;include wildcard="*.wmo" /&gt;<br>  &lt;/filter&gt;<br>&lt;/datasetScan &gt;<br></pre>results in:<br>
-
-
-
-<pre>&lt;catalog ...&gt;<br>  &lt;service name="myserv" ... /&gt;<br>  &lt;dataset name="GRIB2 Data"&gt;<br>    &lt;metadata inherited="true"&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br>    &lt;dataset name="data1.wmo" urlPath="data1.wmo" /&gt;<br>    &lt;dataset name="data2.wmo" urlPath="data2.wmo" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
-<p>Note that the <b>subdir </b>catalogRef is no longer included.<br>
-</p>
-<p>Its a good idea to always include a filter element, so that if stray
+<pre>&lt;filter&gt;<br>  &lt;include wildcard="*.grib1"/&gt;<br>  &lt;exclude wildcard="*_0000.grib1"/&gt;<strong><br>  &lt;exclude wildcard="CONUS*" atomic="false" collection="true"/&gt;</strong><br>&lt;/filter&gt;</pre><p>Its a good idea to always include a filter element, so that if stray
 files accidentally get into your data directories, they wont generate
-erroneous catalog entries. </p>
+erroneous catalog entries. A good choice for this datasetScan would be something like:<br>
+</p>
+<pre>&lt;filter&gt;<br>  &lt;include wildcard="*.grib1"/&gt;<br>  &lt;include wildcard="*.grib2"/&gt;<br>  &lt;exclude wildcard="*.gbx"/&gt;<br>&lt;/filter&gt;<br></pre>
+<p>[Workshop: <a href="#sample2">Sample config catalog 2</a>.]</p>
+<pre><strong></strong></pre>
+
 
 
 <h2><a name="Generating_IDs"></a>Generating IDs</h2>
@@ -187,9 +156,9 @@ erroneous catalog entries. </p>
 <p>All generated datasets are given an ID. The IDs are simply the path
 of the dataset appended to the datasetScan path value or, if one
 exists, the ID of the datasetScan element. For the example above, the file
-"c:/data/grib2/data1.wmo" would result in a dataset with the ID
-"grib2/data1.wmo". By adding an ID of "my/data/model" to the datasetScan
-element, the resulting ID would change to "my/data/model/data1.wmo".</p>
+"c:/data/grib2/data1.grib1" would result in a dataset with the ID
+"grib2/data1.grib1". By adding an ID of "my/data/model" to the datasetScan
+element, the resulting ID would change to "my/data/model/data1.grib1".</p>
 
 
 
@@ -345,7 +314,7 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 <pre>  &lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br><strong>    &lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</strong><br><strong>    &lt;dataset name="latest.xml" serviceName="latest" urlPath="latest.xml" /&gt;</strong><strong></strong><br>    &lt;dataset name="200610130730.nc" urlPath="200610130730.nc" /&gt;<br>  <strong>&nbsp; </strong>&lt;dataset name="200406190916.nc" urlPath="200406190916.nc" /&gt;<strong><br></strong>  &lt;/dataset&gt;<br></pre>
 
 
-<p>More details are available in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.1.0.1.server.html#addProxies_Element">Server-side InvCatalog specification</a> document.</p>
+<p>More details are available in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.v1.0.1.server.html#addProxies_Element">Server-side InvCatalog specification</a> document.</p>
 
 
 <h2><a name="Adding_Dataset_Size_Information"></a>Adding Dataset Size Information</h2>
@@ -372,7 +341,9 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
-<pre>&lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br>  &lt;dataset name="data1.wmo" urlPath="data1.wmo"&gt;<br>    <strong>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;dataset name="data2.wmo" urlPath="data2.wmo"&gt;<br><strong>    &lt;dataSize units="Mbytes"&gt;4.961&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;catalogRef xlink:href="subdir/catalog.xml" xlink:title="subdir" /&gt;<br>&lt;/dataset&gt;</pre>
+<pre>&lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br>  &lt;dataset name="data1.grib1" urlPath="data1.grib1"&gt;<br>    <strong>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;dataset name="data2.grib1" urlPath="data2.grib1"&gt;<br><strong>    &lt;dataSize units="Mbytes"&gt;4.961&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;catalogRef xlink:href="subdir/catalog.xml" xlink:title="subdir" /&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>[Workshop: <a href="#sample3">Sample config catalog 3</a>.]</p>
+
 
 
 
@@ -418,7 +389,7 @@ determine the time coverage: </p>
 
 
 
-<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_</strong><strong>([0-9]{2})</strong><strong>([0-9]{2}).wmo$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
+<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_</strong><strong>([0-9]{2})</strong><strong>([0-9]{2}).grib1$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
 
 
 
@@ -434,6 +405,19 @@ determine the time coverage: </p>
 
 
 
-<p>Future versions will allow more complex determinations of the timeCoverage element.</p>
+<p>Future versions will allow more complex determinations of the timeCoverage element.<br>
+</p>
+<hr size="2" width="100%">
+<h2>Sample Config Files</h2>
+<p><a name="sample1"></a>Basic catalog:<br>
+</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
+<p><a name="sample2"></a>Catalog with filtering added:<br>
+</p>
 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;<br></pre>
+<p><a name="sample3"></a>Catalog with dataset size added:<br>
+</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>    &lt;sort&gt;<br>      &lt;lexigraphicByName increasing="false" /&gt;<br>    &lt;/sort&gt;<br>    &lt;addDatasetSize/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
+<p></p>
 </body></html>
