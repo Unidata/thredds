@@ -257,7 +257,11 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
    /**
      * Read nested data
      *
-     * @param  name, member name, data buffer, and variable info, and section
+     * @param  name Variable name,
+    *  @param  m Structure mumber name,
+    *  @param  bos data buffer,
+    *  @param   vinfo variable info,
+    *  @param   section variable section
      * @return the array  of member variable data
   */
    public Array readNestedGraphicSymbolData( String name, StructureMembers.Member m, ByteBuffer bos, Nidsheader.Vinfo vinfo,
@@ -278,8 +282,9 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
    }
   /**
      * Read data
-     *
-     * @param  name, data buffer, and variable info
+    *  @param  name Variable name
+    *  @param  bos data buffer,
+    *  @param   vinfo variable info,
      * @return the arraystructure of graphic symbol data
   */
   public ArrayStructure readGraphicSymbolData( String name, ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
@@ -350,7 +355,11 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
   /**
      * Read nested data
      *
-     * @param  name, member name, data buffer, and variable info, and section
+    *  @param  name Variable name,
+    *  @param  memberName mumber name,
+    *  @param  bos data buffer,
+    *  @param  vinfo variable info,
+    *  @param  section variable section
      * @return the array  of member variable data
   */
   public Array readNestedLinkedVectorData( String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
@@ -373,9 +382,10 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
   }
    /**
      * Read data
-     *
-     * @param  name, data buffer, and variable info
-     * @return the arraystructure of linked vector data
+    *  @param  name Variable name,
+    *  @param  bos data buffer,
+    *  @param   vinfo variable info,
+    *  @return the arraystructure of linked vector data
   */
   public ArrayStructure readLinkedVectorData( String name, ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
       int[] pos = vinfo.pos;
@@ -444,8 +454,11 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
   }
    /**
      * Read nested data
-     *
-     * @param  name, member name, data buffer, and variable info, and section
+    *  @param  name Variable name,
+    *  @param  memberName Structure mumber name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
+    *  @param   section variable section
      * @return the array  of member variable data
   */
    public Array readNestedCircleStructData( String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
@@ -469,7 +482,9 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
   /**
      * Read data
      *
-     * @param  name, data buffer, and variable info
+     *  @param  name Variable name,
+     *  @param  bos Data buffer,
+     *  @param   vinfo variable info,
      * @return the arraystructure of circle struct data
   */
   public ArrayStructure readCircleStructData( String name, ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
@@ -496,8 +511,9 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
 
    /**
      * Read data
-     *
-     * @param   bos, and variable info
+
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
      * @return the array of tab data
   */
    public Object readTabAlphaNumData( ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
@@ -534,7 +550,8 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
     /**
      * Read data
      *
-     * @param  bos, and variable info
+     * @param  bos Data buffer
+     * @param  vinfo variable info
      * @return the data object of scan data
   */
     // all the work is here, so can be called recursively
@@ -690,8 +707,11 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
      }
     /**
      * Read nested data
-     *
-     * @param  name, member name, data buffer, and variable info, and section
+    *  @param  name Variable name,
+    *  @param  memberName Structure mumber name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
+    *  @param   section variable section
      * @return the array  of member variable data
    */
     public Array readNestedWindBarbData( String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
@@ -717,8 +737,9 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
 
     /**
      * Read data
-     *
-     * @param  name, data buffer, variable info, and section
+    *  @param  name Variable name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
      * @return the arraystructure of wind barb data
   */
    public ArrayStructure readWindBarbData( String name, ByteBuffer bos, Nidsheader.Vinfo vinfo, List sList ) throws IOException, InvalidRangeException  {
@@ -758,8 +779,11 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
     }
     /**
      * Read nested data
-     *
-     * @param  name, member name, data buffer, and variable info, and section
+    *  @param  name Variable name,
+    *  @param  memberName Structure mumber name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
+    *  @param   section variable section
      * @return the array  of member variable data
    */
     public Array readNestedVectorArrowData( String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
@@ -783,8 +807,9 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
     }
     /**
      * Read data
-     *
-     * @param  name, data buffer, and variable info
+    *  @param  name Variable name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
      * @return the arraystructure of vector arrow data
   */
     public ArrayStructure readVectorArrowData( String name, ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
@@ -884,8 +909,11 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
 
     /**
      * Read nested data
-     *
-     * @param  name, member name, data buffer, and variable info, and section
+    *  @param  name Variable name,
+    *  @param  memberName Structure mumber name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
+    *  @param   section variable section
      * @return the array  of member variable data
    */
     public Array readNestedTextStringData( String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
@@ -916,10 +944,12 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
       }
        return ay.sectionNoReduce(section);
     }
+
     /**
      * Read data
-     *
-     * @param  name, data buffer, and variable info
+    *  @param  name Variable name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info
      * @return the arraystructure of text string data
   */
     public ArrayStructure readTextStringData( String name, ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
@@ -1046,8 +1076,11 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
 
     /**
      * Read nested data
-     *
-     * @param  name, member name, data buffer, and variable info, and section
+    *  @param  name Variable name,
+    *  @param  memberName Structure mumber name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
+    *  @param   section variable section
      * @return the array  of member variable data
    */
     public Array readNestedDataUnlinkVector(String name, String memberName, ByteBuffer bos, Nidsheader.Vinfo vinfo,
@@ -1071,7 +1104,9 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
     /**
      * Read data
      *
-     * @param  name, data buffer, and variable info
+    *  @param  name Variable name,
+    *  @param  bos Data buffer,
+    *  @param   vinfo variable info,
      * @return the arraystructure of unlinked vector data
    */
     public ArrayStructure readUnlinkedVectorData( String name, ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
@@ -1138,6 +1173,8 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
       return asma;
 
     }
+
+
     // all the work is here, so can be called recursively
     public Object readOneArrayData( ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName ) throws IOException, InvalidRangeException  {
       int doff = 0;
@@ -1206,6 +1243,7 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
      * Read data
      *
      * @param  bos is data buffer
+     * @param  vinfo is variable info
      * @return the data object
   */
     public Object readOneArrayData1( ByteBuffer bos, Nidsheader.Vinfo vinfo ) throws IOException, InvalidRangeException  {
@@ -1409,7 +1447,8 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
    /**
      * Read compressed data
      *
-     * @param  hoff header offset and data offset
+     * @param  hoff header offset
+     * @param  doff data offset
      * @return the array  of data
   */
    public byte[] readCompData(long hoff, long doff ) throws IOException {
@@ -1540,7 +1579,8 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
    /**
      * Read uncompressed data
      *
-     * @param  hoff header offset and data offset
+     * @param  hoff header offset
+    *  @param  doff data offset
      * @return the array  of data
   */
    public byte[] readUCompData(long hoff, long doff ) throws IOException {
