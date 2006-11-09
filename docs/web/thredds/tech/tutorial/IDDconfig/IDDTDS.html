@@ -7,34 +7,33 @@
 <body>
 <p>
 
-Unidata has build a community oriented Data stream to deliver data over the 
-internet called the Internet Data Distribution system (IDD). 
+Unidata has build a community-oriented Data stream to deliver data over the 
+internet that is called the Internet Data Distribution system (IDD). 
 <a href="realtime_idd.gif"> Current IDD system </a>
 The IDD contains many different types of data from data providers that include 
 NWS, NCEP, FSL, CMC, etc The data ranges from model data to varies types of 
-text reports, radar images, satellite images, etc. Unidata maintains a web
-page of the different types of 
-<a href="http://www.unidata.ucar.edu/data">data</a> on the IDD. 
+text reports, radar images, satellite images, etc. 
+<a href="http://www.unidata.ucar.edu/data">Here</a> is a list of the different data types available on the IDD. 
 <p>
 One of the driving forces of the TDS development has been to be able to 
-distribute all the data on the IDD data stream. Currently we distribute
-about 80% of the data and there is software development planned for the rest.
+distribute all the data on the IDD data stream. THREDDS distributes
+about 80% of the data at this time.
 
 <p>
 Click <a href="http://motherlode.ucar.edu:8080/thredds/catalog.html">here</a>to see Unidata's IDD/TDS server
+<p>
+This <a href="ndfd_model.xml">catalog</a> is the one that created the NDFD web 
+page in the Unidata's IDD/TDS server.
 
 <h2>IDD catalog configuration</h2>
 <p>
-The TDS distribution comes with the IDD catalogs that can be installed so one
-can mimic the Unidata IDD/TDS server. Of course one has to configure the server
-to access the IDD catalogs and the data infrastructure has to be in place
-for the catalogs to work correctly. 
+The TDS distribution includes the IDD catalogs that can be installed so one
+can mimic the Unidata IDD/TDS server. First, the TDS must be configured so the server can access the IDD catalogs. Then the data infrastructure has to be in place for the catalogs to work correctly.
 
 <p>
-The configuration is simple, change the default TDS catalog to the IDD 
+The configuration is to change the default TDS catalog to the IDD 
 <a href="catalog.xml">catalog</a> that is included in the TDS distribution. 
 <p>
-Another interesting catalog, <a href="ndfd_model.xml">ndfd_model.xml</a>.
 
 
 <pre>
@@ -62,18 +61,20 @@ As user tomcat, stop and start tomcat.
 <p>
 When we were inspecting the ndfd_model.xml catalog above, I pointed out the 
 location element in the catalog. This is where the data resides on the disk
-and more important this is where the catalog expects the data.
-The bottom line, if one wants to use the IDD catalogs without making any 
-changes, then the IDD datasets infrastructure must be in place. But, there is
-an easy solution to creating the infrastructure, use the 
-<a href="http://www.unidata.ucar.edu/software/ldm"> LDM </a> software to create
-it. 
+and is where the catalog expects to find the data.
+To use the IDD catalogs without making any changes, the IDD datasets infrastructure
+must be in place. For a simple solution, use the 
+<a href="http://www.unidata.ucar.edu/software/ldm"> LDM </a>  software to create
+the infrastructure.
+
 <p>
 Since the LDM is used to deliver the data for the IDD, the LDM can be
-configured to create the data directories for the TDS catalogs. To configure the
-LDM , TDS pqact files need to be installed in the LDM. The TDS pqact files 
-have been developed by the THREDDS to create the correct directory structure 
-and the correct dataset names.  These pqact TDS files are:
+configured to create the data directories for the TDS catalogs. To
+configure the LDM , TDS pqact files need to be installed in the LDM. The
+TDS pqact files have been developed by THREDDS developers to create the
+correct directory structure and the correct dataset names. These pqact
+TDS files are:
+
 <pre>
 
 pqact.thredds   // create directories for model, text type products, plus others
@@ -90,8 +91,7 @@ exec    "pqact -f NNEXRAD|CRAFT etc/pqact.threddsradar"
 exec    "pqact -f CONDUIT|SPARE etc/pqact.threddsconduit"
 
 </pre>
-To download the latest pqact files, click on the name with the right mouse 
-button:
+Click on the name with the right mouse button to download the latest pqact files.
 
 <pre>
 
@@ -103,8 +103,8 @@ button:
 
 </pre> 
  
-Once the ldmd.conf has been configured, the LDM needs to be stopped and started
-for the new pqact file to take affect.
+Once the ldmd.conf has been configured, restart the LDM so the new pqact
+file to take affect.
 
 <pre>
 
@@ -116,11 +116,11 @@ stop and start needs to be done as user ldm
 
 <h2>Managing the datasets</h2>
 <p>
+Since the IDD works with near real-time datasets, they are dynamic. The
+datasets arrive constantly, usually at the rate of 1-5 per second. If the
+files were not deleted in a timely manner, the LDM data partition would
+fill up in a matter of days .
 
-Since the IDD works with near real-time datasets, the datasets are dynamic. The
-datasets are arriving all the time, usually at the rate of 1-5 per second. It
-doesn't take much to figure out that the LDM data partition would fill up in a 
-matter of days if the files were not deleted in a timely manner. 
 
 <h3>Removing datasets</h3>
 <p>
@@ -128,7 +128,7 @@ The IDD/TDS has developed a script that runs once a day to remove the oldest
 files, keeping a certain number of files in the directory. The script is 
 called 
 <a href="manageFilesDirs.pl">manageFilesDirs.pl</a>, that has a configuration file called
-<a href="manageFilesDirs.conf">manageFilesDirs.conf</a>.  Both files have 
+<a href="manageFilesDirs.conf">manageFilesDirs.conf</a>.  Both files contain 
 documentation in the header explaining the usage of the files. 
 The manageFilesDirs.pl
 is usually located in the ~ldm/util directory and it's run out of a crontab
@@ -142,14 +142,16 @@ worry.
 <p>
  
 Since the IDD/TDS distributes GRIB files there is also another script that is used
-to index the files for the TDS. Indexing the files before they are requested
-greatly speeds up the access time for the files therefore it's highly
-recommended. To pre-index the files, the <a href="GribIndexer.pl">GribIndexer.pl</a>
+to index the files for the TDS. To speed up the access time for the files,index
+the files before they are requested.
+To pre-index the files, the <a href="GribIndexer.pl">GribIndexer.pl</a>
 is used with the configuration <a href="GribIndexer.conf">GribIndexer.conf</a> file. 
-There is a couple configurations in the GribIndexer.pl script that are needed
-to access some of the TDS routines needed to index the files. The location of
-Java 1.5, Tomcat home, and what version of Tomcat configurations. The 
-GribIndexer.conf has information on how to configure in the header of the file.
+A couple configurations found in the GribIndexer.pl script are needed before it
+can be used.
+The configuration need are the location of
+Java 1.5, Tomcat home, and what version of Tomcat. 
+Both files contain
+documentation in the header explaining the usage of the files.
 The GribIndexer.pl script should be run every 10 minutes from crontab
 to keep the indexing up to date. Besides indexing the GRIB files, an
 inventory file is also created. This file extracts the metadata from the GRIB
