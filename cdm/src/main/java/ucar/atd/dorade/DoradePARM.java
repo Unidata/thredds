@@ -218,7 +218,7 @@ public class DoradePARM extends DoradeDescriptor {
 
     /**
      * Get the unpacked data values for a selected parameter.
-     * @param paramName the name of the desired parameter
+     * @param rdat the name of the desired parameter
      * @return the unpacked data values for all cells, using BAD_VALUE
      * for bad data cells
      * @throws DescriptorException
@@ -230,7 +230,7 @@ public class DoradePARM extends DoradeDescriptor {
 
     /**
      * Get the unpacked data values for a selected parameter.
-     * @param paramName the name of the desired parameter
+     * @param rdat the name of the desired parameter
      * @param workingArray If non-null and the same length as needed then use this.
      * @return the unpacked data values for all cells, using BAD_VALUE
      * for bad data cells
