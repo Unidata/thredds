@@ -15,17 +15,16 @@ First Day
 4. Tomcat Management / Security (45) 10:15 - 11:00 (Robb)
    - Installation for production systems (tomcat user, firewall)
    - digest passwords
-   - Keystore certificates (SSL) (use seperate keystore, not JDK default)
+   - Keystore certificates (SSL)
   
 5. TDS Remote Management (45) 11:00-11:45
-   - Remote Management (web.xml, server.xml, tdsConfig role)
-   - Restricting access by IP address (manager.xml)
+   - Debug Page: Data Roots, catalogErrors.log, etc
 
 Lunch break 11:45-1
 
 6. Writing and maintaining catalogs (90) 1:00 - 2:30
  - Catalog Primer / XML / ToolsUI
- - TDS Catalogs
+ - TDS Configuration Catalogs
  - DatasetScan (Ethan)
  - Cataloggen (Ethan)
  
@@ -45,17 +44,19 @@ Second Day
 
 9. TDS and NcML II (90) 8:30 - 10:00
  - FMRC Aggregation
- - GRIB definition files
+ - FMRC definition files (GRIB)
  
 (break 15 min)
 
 10. Advanced TDS management (90) 10:15 - 11:45
-  * Debug Actions: Data Roots, catalogErrors.log, etc
-  * Logs
-  * Performance
-  * threddsConfig.xml
-  * caching
-  * restrict TDS access by IP (server.xml)
+  - Logs
+  - Performance
+  - threddsConfig.xml
+  - caching
+  - web.xml, server.xml
+    - restrict TDS access by IP (server.xml)
+    - Restricting access to manager by IP address (manager.xml)
+  - Viewers
   
 Lunch break 11:45-1
 
@@ -68,8 +69,8 @@ Lunch break 11:45-1
   motherlode example
   preindexing GRIB files
 
-13. Troubleshooting (75) 2:15 - 3:30
-  * Troubleshooting
+13. Miscellaneous tips (75) 2:15 - 3:30
+  - Troubleshooting
   
 (break 15 min)
 

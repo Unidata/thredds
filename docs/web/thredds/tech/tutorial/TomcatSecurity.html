@@ -3,26 +3,25 @@
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="GENERATOR" content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
    <meta name="Author" content="John Caron">
-   <title>THREDDS Security</title>  
+   <title>Tomcat Security</title>  
 
 </head>
 
 <body>
 
-<h1><img src="THREDDSlogo.jpg" width="67" height="54">Tomcat Security Tutorial</h1>
+<h1><img src="THREDDSlogo.jpg" width="67" height="54">Tomcat Security</h1>
 <div class="head">
   <address>
   </address>
 
 <hr></div>
 
-<h2>Tomcat</h2>
 <p>We believe Tomcat to be secure enough for typical scientific uses. There are no known security exploits or weaknesses. However, the  Internet is a wild place, and we are not security experts so <em>caveat emptor</em>. These are  best practices for running Tomcat. </p>
-<h3>Run as Unprivileged User </h3>
+<h2>Run as Unprivileged User </h2>
 <p>By default, Tomcat runs on port 8080 and therefore does not require root to run. Its important not to run as root. Create a special user, e.g. named &quot;tomcat&quot;, which owns everything under <strong>${tomcat_home}</strong>, and change to that user to run Tomcat. This special user will need read/write access to <strong>${tomcat_home}</strong> and its subdirectories, and read access to your data directories. <em>Don't give the tomcat user any rights in any other directories</em>. If your operating system allows it (e.g. Unix, Linux), you might also not allow the tomcat user to log in, requiring instead that you log in as yourself, then switch to being the tomcat user. </p>
-<h3> Restrict access to critical files</h3>
+<h2> Restrict access to critical files</h2>
 <p>Make sure that everything under <strong>${tomcat_home}/conf/</strong> can be read  only by the tomcat user. Typically you would also give write access to the tomcat user. </p>
-<h3>Use a Firewall</h3>
+<h2>Use a Firewall</h2>
 <p>Unless you are on a private network, you need a firewall. A firewall restricts who is allowed to access network ports. Make the default setting to disallow all accesses, then enable just the ones that are needed. </p>
 <ul>
   <li>Port <strong>8080</strong>  should have unrestricted access. </li>
@@ -30,7 +29,7 @@
   <li>Tomcat also uses port <strong>8005</strong> to enable shutdown. However, shutdown can only be run from the same machine as Tomcat is running from. As long as untrusted users aren't running on your server machine, you shouldn't have to worry about this port being open. However, you might want to restrict public access to it so hackers aren't tempted. </li>
   <li>If you are also using Tomcat in conjunction with another web server like Apache to handle servlet/JSP requests, you need to allow that server access to port <strong>8009</strong>, but typically that can be restricted to accesses on the same machine or at least on your subnet. If you are running Tomcat only standalone (e.g. only running the THREDDS data server) then disable port 8009 in  <strong>${tomcat_home}/conf/server.xml file.</strong></li>
 </ul>
-<h3><strong>Default Tomcat Applications</strong></h3>
+<h2><strong>Remove Default Tomcat Applications</strong></h2>
 <p>Tomcat ships with several default web applications, found in the <strong>${tomcat_home}/webapps</strong> directory. These defaults depend on the version of Tomcat and which installer you use. </p>
 <ul>
   <li>The <strong>ROOT</strong> application contains the server's main page. Any file that you add under <strong>${tomcat_home}/webapps/ROOT</strong> will be served.</li>
@@ -38,7 +37,7 @@
   <li>The <strong>servlets-examples</strong> and <strong>jsp-examples</strong> should probably be removed from a production server, to minimize security exposure. You can do this from the manager application or by deleting those directories from <strong>${tomcat_home}/webapps</strong>.</li>
   <li>The <strong>tomcat-docs, balancer </strong> and <strong>webdav</strong> applications are probably harmless, but can also be removed if you want. </li>
 </ul>
-<h3>Store Passwords as Digest<a name="Digest"></a></h3>
+<h2>Store Passwords as Digest<a name="Digest"></a></h2>
 <p>The file <strong>${tomcat_home}/conf/tomcat-users.xml </strong> stores user names and passwords. By default the passwords are in clear text, e.g.: </p>
 <pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br>&lt;tomcat-users&gt;<br>  &lt;role rolename=&quot;config&quot;/&gt;<br>  &lt;role rolename=&quot;manager&quot;/&gt;<br>  &lt;role rolename=&quot;admin&quot;/&gt;<br>  &lt;user username=&quot;sysadmin&quot; password=&quot;yrPassword&quot; roles=&quot;manager,admin&quot;/&gt;
   &lt;user username=&quot;cataloger&quot; password=&quot;myPassword&quot; roles=&quot;config&quot;/&gt;<br>&lt;/tomcat-users&gt;</pre>
@@ -55,8 +54,49 @@
   &lt;Realm className=&quot;org.apache.catalina.realm.MemoryRealm&quot; digest=&quot;SHA&quot; /&gt;
   ...
 &lt;/Host&gt;</pre>
-<h3><br>
-Java Security Manager</h3>
+<h2>Restrict Access to Tomcat  Manager Applications </h2>
+<p>The best way to secure the Tomcat manager and administration webapps is to restrict what IP addresses can access them. To do so:</p>
+<ol>
+  <li>Edit <strong>${tomcat_home}/conf/Catalina/localhost/admin.xml</strong> and uncomment the boldface line:
+      <pre>&lt;Context path=&quot;/admin&quot; docBase=&quot;${catalina.home}/server/webapps/admin&quot;<br>        debug=&quot;0&quot; privileged=&quot;true&quot;&gt;</pre>
+      <pre> &lt;!-- Uncomment this Valve to limit access to the Admin app to localhost
+   for obvious security reasons. Allow may be a comma-separated list of
+   hosts (or even regular expressions). --&gt;
+<strong> &lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; allow=&quot;127.0.0.1&quot;/&gt;</strong></pre>
+      <pre> &lt;Logger className=&quot;org.apache.catalina.logger.FileLogger&quot;
+   prefix=&quot;localhost_admin_log.&quot; suffix=&quot;.txt&quot;
+   timestamp=&quot;true&quot;/&gt;</pre>
+      <pre>&lt;/Context&gt;
+       </pre>
+  </li>
+  <li>Edit <strong>${tomcat_home}/conf/Catalina/localhost/manager.xml</strong> and add the following boldface line: </li>
+</ol>
+<blockquote>
+  <pre>&lt;Context path=&quot;/manager&quot; docBase=&quot;${catalina.home}/server/webapps/manager&quot;<br>        debug=&quot;0&quot; privileged=&quot;true&quot;&gt;
+
+  <strong>&lt;Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="127.0.0.1"/&gt;</strong></pre>
+  <pre>  &lt;!-- Link to the user database we will get roles from --&gt;
+  &lt;ResourceLink name=&quot;users&quot; global=&quot;UserDatabase&quot; type=&quot;org.apache.catalina.UserDatabase&quot;/&gt;</pre>
+  <pre>&lt;/Context&gt;
+    </pre>
+</blockquote>
+<p>The above uses the allow value <strong>"127.0.0.1"</strong> which will restrict access to &quot;localhost&quot;, that is, the machine that the Tomcat server is running on. You may change the <em><strong>allow</strong></em> value to an IP address, a list of IP address or a subnet, eg:</p>
+<ul>
+  <li>
+    <p><strong>allow="128.117.140.62"</strong></p>
+  </li>
+  <li>
+    <p><strong>allow="128.117.140.62, 128.117.140.63, 128.117.140.99"</strong></p>
+  </li>
+  <li> <strong>allow="128.117.140.*"</strong></li>
+</ul>
+<p>You can also use the <em><strong>RemoteHostValve</strong></em> to filter by host name, eg: </p>
+<blockquote>
+  <pre><strong>&lt;Valve className="org.apache.catalina.valves.RemoteHostValve" allow="(*.).ucar.edu"/&gt;
+   </strong></pre>
+</blockquote>
+<h2><br>
+Java Security Manager</h2>
 <p>An additional level of security can be provided by running Tomcat with the Java Security Manager turned on. This can provide fine-grained security policies, at the cost of complexity in understanding what rights are needed to do any useful work, and how to grant them. This is needed if you allow untrusted servlets or JSPs to execute on your machine. If you are running just the THREDDS Data Server, you probably don't need to deal with this. </p>
 <h3>Resources</h3>
 <ul>
@@ -67,7 +107,7 @@ Java Security Manager</h3>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 24, 2006
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 09, 2006
 </address>
 <p>&nbsp;</p>
 </body></html>

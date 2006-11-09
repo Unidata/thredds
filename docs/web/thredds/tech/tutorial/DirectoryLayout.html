@@ -28,8 +28,8 @@ conf/
     <strong>tomcat-users.xml</strong>   create users and passwords
 
 conf/Catalina/localhost/
-    admin.xml			 tomcat admin application configuration
-    manager.xml		 tomcat manager application configuration
+    admin.xml			 tomcat admin application configuration (if installed)
+    <strong>manager.xml</strong>		 tomcat manager application configuration
 
 logs/
     <strong>catalina.out</strong>	  standard out gets written here
@@ -37,12 +37,13 @@ logs/
 server/			  tomcat server 
 
 shared/             libraries used by any webapp
+  <strong>yours.jar</strong>		  your loadable classes
 
 temp/               for use by applications
 
 webapps/            web applications are installed here
-    thredds/        thredds.war gets expanded here; rewritten when TDS is updated
-    ROOT/			  root webapp
+    <strong>thredds</strong>/        thredds.war gets expanded here; rewritten when TDS is updated
+    <strong>ROOT</strong>/			  root webapp
 
 work/			      work/temp directory
 </pre>
@@ -71,7 +72,7 @@ content/thredds/
 </div>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 29, 2006
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 09, 2006
 </address>
 <p>&nbsp;</p>
 </body>
