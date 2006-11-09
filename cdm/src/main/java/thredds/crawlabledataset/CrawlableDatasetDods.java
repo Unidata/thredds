@@ -44,7 +44,7 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 	}
 
 	protected CrawlableDatasetDods(String path, Object configObj)
-			throws IOException {
+	{
 
 		if (urlExtractor == null)
 			urlExtractor = new DodsURLExtractor();
@@ -106,7 +106,7 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 		} else {
 			String tmpMsg = "Invalid url <" + path + ">.";
 			log.debug("CrawlableDatasetDods(): " + tmpMsg);
-			throw new IOException(tmpMsg);
+			throw new IllegalArgumentException(tmpMsg);
 		}
 	}
 
@@ -125,11 +125,16 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 	public boolean isCollection() {
 		return isCollection(path);
 	}
-	
-	// how do we determine if a url is a collection?
-	// we can't count on a trailing backslash, as this was removed by CrawlableDatasetFactory
-	// for now, assume collection unless a known file extension is encountered
-	private static String [] knownFileExtensions = {".hdf", ".xml", ".nc", ".bz2", ".cdp", ".jpg"};
+
+  public CrawlableDataset getDescendant( String relativePath )
+  {
+    return null;
+  }
+
+  // how do we determine if a url is a collection?
+  // we can't count on a trailing backslash, as this was removed by CrawlableDatasetFactory
+  // for now, assume collection unless a known file extension is encountered
+  private static String [] knownFileExtensions = {".hdf", ".xml", ".nc", ".bz2", ".cdp", ".jpg"};
 	
 	private static boolean isCollection(String path)
 	{
@@ -307,7 +312,7 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 		return (retList);
 	}
 
-	public CrawlableDataset getParentDataset() throws IOException {
+	public CrawlableDataset getParentDataset() {
 		if (!path.equals("/")) {
 			String parentPath = path.endsWith("/") ? path.substring(0, path
 					.length() - 1) : path;
@@ -321,21 +326,27 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 			return null;
 	}
 
-	public long length() {
-		if (this.isCollection())
-			return (0);
-		try {
-			if (pathUrlConnection == null)
-			{
-				URL u = new URL(path);
-				pathUrlConnection = u.openConnection();
-			}
-			return pathUrlConnection.getContentLength();
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
-		}
-		return (-1);
-	}
+  public boolean exists()
+  {
+    // ToDo Need to do something better here (erd 2006-11-09).
+    return true;
+  }
+
+  public long length() {
+    if (this.isCollection())
+      return (0);
+    try {
+      if (pathUrlConnection == null)
+      {
+        URL u = new URL(path);
+        pathUrlConnection = u.openConnection();
+      }
+      return pathUrlConnection.getContentLength();
+    } catch (MalformedURLException e) {
+    } catch (IOException e) {
+    }
+    return (-1);
+  }
 
 	public Date lastModified() {
 		try {
