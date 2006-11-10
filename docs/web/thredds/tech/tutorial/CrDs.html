@@ -3,8 +3,7 @@
 <body>
 <h1>CrawlableDataset and Catalog Generation<br>
 </h1>
-<p><br>
-</p>
+
 <h2>thredds.crawlabledataset.CrawlableDataset</h2>
 <p>The CrawlableDataset interface was designed to be an abstract
 representation of a hierarchical collection of datasets. The goal was
@@ -34,10 +33,19 @@ Other possible implementations include:<br>
 catalogs. The main implementation generates catalogs based on the
 datasetScan configuration<br>
 </p>
+<h2>The Goal</h2>
+<p>The goal for the CrawlableDataset and CatalogBuilder family of
+interfaces (see diagram below) is to allow users to change how catalogs
+are built, beyond what is currently available in the datasetScan
+configuration files.<br>
+</p>
 <h2>More Detail<br>
 
 </h2>
 
-<a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/cataloggen/devel/architecture.html">CrawlableDataset and CatalogBuilder Architecture</a>
+
+<a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/cataloggen/devel/architecture.html">CrawlableDataset and CatalogBuilder Architecture</a><br>
+<img alt="CrawlableDataset Class Diagram" src="CrDsClassDiagram.png" height="825" width="1279"><br>
+
 
 </body></html>
