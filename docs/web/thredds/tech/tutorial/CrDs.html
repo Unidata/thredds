@@ -1,11 +1,43 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>CrawlableDataset</title><meta content="Ethan Davis" name="author"></head>
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>CrawlableDataset and Catalog Generation</title><meta content="Ethan Davis" name="author"></head>
 <body>
-<h1>CrawlableDataset</h1>
-<p><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/cataloggen/devel/architecture.html">CrawlableDataset and CatalogBuilder Framework</a><br>
-</p>
+<h1>CrawlableDataset and Catalog Generation<br>
+</h1>
 <p><br>
 </p>
-<br>
+<h2>thredds.crawlabledataset.CrawlableDataset</h2>
+<p>The CrawlableDataset interface was designed to be an abstract
+representation of a hierarchical collection of datasets. The goal was
+to allow various data storage systems to be mapped into the
+CrawlableDataset model and from there used to generate THREDDS catalogs
+and provide access to datasets so they can be served by the TDS. <br>
+</p>
+<pre>public interface CrawlableDataset {<br>  public String getPath();<br>  public String getName();<br><br>  public boolean exists();<br><br>  public CrawlableDataset getParentDataset();<br><br>  public boolean isCollection();<br>  public CrawlableDataset getDescendant( String relativePath);<br>  public List listDatasets() throws IOException;<br>  public List listDatasets( CrawlableDatasetFilter filter ) throws IOException;<br><br>  public long length();<br>  public Date lastModified();<br>}<br></pre>
+<p>It is a very simple interface similar to (and based upon)
+java.io.File. The reference implementation, CrawlableDatasetFile, is
+built on top of java.io.File. Two other implementations exist:<br>
+</p>
+<ul>
+  <li>the first one implements CrawlableDataset on top of the OPeNDAP server dods_dir responses;</li>
+  <li>the second one implements CrawlableDataset on top of the OPeNDAP Server4 BES responses.</li>
+</ul>
+Other possible implementations include:<br>
+<ul>
+  <li>Crawling remote THREDDS catalogs (will be useful when NcML aggregation uses CrawlableDataset for scanning).</li>
+  <li>Using a CrawlableDataset implementation to reorganizing an existing CrawlableDataset collection.</li>
+  <li>Other ideas? Let us know.<br>
+  </li>
+</ul>
+
+<h2>thredds.cataloggen.CatalogBuilder</h2>
+<p>The CatalogBuilder interface provides methods for generating THREDDS
+catalogs. The main implementation generates catalogs based on the
+datasetScan configuration<br>
+</p>
+<h2>More Detail<br>
+
+</h2>
+
+<a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/cataloggen/devel/architecture.html">CrawlableDataset and CatalogBuilder Architecture</a>
 
 </body></html>
