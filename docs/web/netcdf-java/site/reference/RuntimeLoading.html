@@ -79,9 +79,12 @@
   if (elem != null)
     <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( elem, errlog);
 </pre>
-<p>For example, the ToolsUI application allows you to specify this file on the command line with the -<strong>runtimeConfig</strong> parameter:</p>
+<p>For example, the ToolsUI application allows you to specify this file on the command line with the -<strong>nj22Config</strong> parameter:</p>
 <pre>   public void main(String[] args) {
-<br>      for (int i = 0; i &lt; args.length; i++) {<br>        if (args[i].equalsIgnoreCase(&quot;-<strong>runtimeConfig</strong>&quot;) &amp;&amp; (i &lt; args.length-1)) {<br>          String runtimeConfig = args[i+1];<br>          i++;<br>          try {<br>            StringBuffer errlog = new StringBuffer();<br><strong>            FileInputStream fis = new FileInputStream( runtimeConfig);<br>            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);</strong><br>            System.out.println( errlog);<br>          } catch (IOException ioe) {<br>            System.out.println( &quot;Error reading &quot;+runtimeConfig+&quot;=&quot;+ioe.getMessage());<br>          }<br>        }<br>      }<br>    ...</pre>
+<br>      for (int i = 0; i &lt; args.length; i++) {<br>        if (args[i].equalsIgnoreCase(&quot;-<strong>nj22Config</strong>&quot;) &amp;&amp; (i &lt; args.length-1)) {<br>          String runtimeConfig = args[i+1];<br>          i++;<br>          try {<br>            StringBuffer errlog = new StringBuffer();<br><strong>            FileInputStream fis = new FileInputStream( runtimeConfig);<br>            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);</strong><br>            System.out.println( errlog);<br>          } catch (IOException ioe) {<br>            System.out.println( &quot;Error reading &quot;+runtimeConfig+&quot;=&quot;+ioe.getMessage());<br>          }<br>        }<br>      }<br>    ...
+</pre>
+<p>If none is specified on the command line, it will look for one at <strong>$USER_HOME/.unidata/nj22Config.xml.</strong><br>
+</p>
 <hr>
 <h2>Opening a TypedDataset</h2>
 <p>To open a TypedDataset, call <strong>ucar.nc2.dt.TypedDatasetFactory.open</strong>:</p>

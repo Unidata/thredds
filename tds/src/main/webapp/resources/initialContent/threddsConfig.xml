@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<threddsConfig>
+
+  <!-- examples
+  <context-param>
+    <param-name>ContextPath</param-name>
+    <param-value>thredds</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>CachePath</param-name>
+    <param-value>/temp/cache/</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>NetcdfServletCachePath</param-name>
+    <param-value>/temp/ncache/</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>CdmValidatorCachePath</param-name>
+    <param-value>/temp/vcache/</param-value>
+  </context-param>
+
+   <runtimeConfig>
+     <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
+     <coordSysBuilder convention="foo" class="test.Foo"/>
+     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
+     <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
+     <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
+     <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters" />
+   </runtimeConfig>
+  
+  <catalogRoot>tempCatalog.xml</catalogRoot>
+
+  end examples -->
+
+</threddsConfig>

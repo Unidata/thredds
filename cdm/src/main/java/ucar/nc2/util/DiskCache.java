@@ -92,7 +92,7 @@ public class DiskCache {
       if (home == null)
         home = ".";
 
-      root = home + "/.nj22/cache/";
+      root = home + "/.unidata/cache/";
     }
 
     String policy = System.getProperty("nj22.cachePolicy");

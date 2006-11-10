@@ -652,7 +652,7 @@ public class GridUI extends JPanel {
     // top tool panel
     toolPanel = new JPanel();
     toolPanel.setBorder(new EtchedBorder());
-    toolPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    toolPanel.setLayout(new thredds.ui.MFlowLayout(FlowLayout.LEFT, 0, 0));
 
     // menus
     JMenu dataMenu = new JMenu("Dataset");

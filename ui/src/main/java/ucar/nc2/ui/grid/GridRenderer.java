@@ -702,11 +702,44 @@ public class GridRenderer {
 
     if (!(xaxis instanceof CoordinateAxis2D) || !(yaxis instanceof CoordinateAxis2D))
       throw new IllegalArgumentException("must be CoordinateAxis2D");
-    
+
     // 2D case
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
+    /* if (geocs.isStaggered()) {
+      drawGridHorizStaggered(g, data, xaxis2D, yaxis2D);
+      return;
+    } */
+
+    ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges( xaxis2D.getMidpoints());
+    ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges( yaxis2D.getMidpoints());
+
+    Index ima = data.getIndex();
+    GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
+
+    int[] shape = xaxis2D.getShape(); // should both be the same
+    int ny = shape[0];
+    int nx = shape[1];
+
+    for (int y=0; y<ny; y++) {
+      for (int x=0; x < nx; x++) {
+        gp.reset();
+        gp.moveTo( (float) edgex.get(y, x), (float) edgey.get(y, x));
+        gp.lineTo( (float) edgex.get(y, x+1), (float) edgey.get(y, x+1));
+        gp.lineTo( (float) edgex.get(y+1, x+1), (float) edgey.get(y+1, x+1));
+        gp.lineTo( (float) edgex.get(y+1, x), (float) edgey.get(y+1, x));
+
+        double val = data.getDouble( ima.set(y, x));   // ordering LOOK
+        int colorIndex = cs.getIndexFromValue(val);
+        g.setColor( cs.getColor(colorIndex));
+        g.fill( gp);
+      }
+    }
+
+  }
+
+  private void drawGridHorizStaggered(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated( xaxis2D.getMidpoints());
     ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdgesRotated( yaxis2D.getMidpoints());
 
@@ -716,21 +749,6 @@ public class GridRenderer {
     int[] shape = xaxis2D.getShape(); // should both be the same
     int ny = shape[0];
     int nx = shape[1];
-
-    /* for (int y=0; y<ny-1; y++) {
-      for (int x=0; x < nx-1; x++) {
-        gp.reset();
-        gp.moveTo( (float) xaxis2D.getCoordValue(y, x), (float) yaxis2D.getCoordValue(y, x));
-        gp.lineTo( (float) xaxis2D.getCoordValue(y, x+1), (float) yaxis2D.getCoordValue(y, x+1));
-        gp.lineTo( (float) xaxis2D.getCoordValue(y+1, x+1), (float) yaxis2D.getCoordValue(y+1, x+1));
-        gp.lineTo( (float) xaxis2D.getCoordValue(y+1, x), (float) yaxis2D.getCoordValue(y+1, x));
-
-        double val = data.getDouble( ima.set(y, x));   // ordering LOOK
-        int colorIndex = cs.getIndexFromValue(val);
-        g.setColor( cs.getColor(colorIndex));
-        g.fill( gp);
-      }
-    } */
 
     // even y
     for (int y=0; y<ny-1; y+=2) {
@@ -764,6 +782,7 @@ public class GridRenderer {
       }
     }
   }
+
 
   /* draw using GeneralPath shape
   private GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);

@@ -86,7 +86,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return (double[]) midpoint.get1DJavaArray( double.class);
   }
 
-    /**
+  /**
    * Create a new CoordinateAxis2D as a section of this CoordinateAxis2D.
    * @param r1 the section on the first index
    * @param r2 the section on the second index
@@ -107,6 +107,95 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return midpoint;
   }
 
+  /**
+   * For regular Grids
+   * @param midx x coordinates of midpoints
+   * @return x coordinates of edges with shape (ny+1, nx+1)
+   */
+  static public ArrayDouble.D2 makeXEdges(ArrayDouble.D2 midx) {
+    int[] shape = midx.getShape();
+    int ny = shape[0];
+    int nx = shape[1];
+    ArrayDouble.D2 edgex = new ArrayDouble.D2(ny+1, nx+1);
+
+    for (int y=0; y<ny-1; y++) {
+      for (int x=0; x<nx-1; x++) {
+        // the interior edges are the average of the 4 surrounding midpoints
+        double xval = (midx.get(y,x) + midx.get(y,x+1) + midx.get(y+1,x) + midx.get(y+1,x+1))/4;
+        edgex.set(y+1, x+1, xval);
+      }
+      // extrapolate to exterior points
+      edgex.set(y+1, 0, edgex.get(y+1,1) - (edgex.get(y+1,2) - edgex.get(y+1,1)));
+      edgex.set(y+1, nx, edgex.get(y+1,nx-1) + (edgex.get(y+1,nx-1) - edgex.get(y+1,nx-2)));
+    }
+
+    // extrapolate to the first and last row
+    for (int x=0; x<nx+1; x++) {
+      edgex.set(0, x, edgex.get(1,x) - (edgex.get(2,x) - edgex.get(1,x)));
+      edgex.set(ny, x, edgex.get(ny-1,x) + (edgex.get(ny-1,x) - edgex.get(ny-2,x)));
+    }
+
+
+   /* for (int y=0; y<ny; y++) {
+      for (int x=1; x<nx; x++) {
+        double xmid = (midx.get(y,x-1) + midx.get(y,x))/2;
+        edgex.set(y, x, xmid);
+      }
+      edgex.set(y, 0, midx.get(y,0) - (edgex.get(y,1) - midx.get(y,0)));
+      edgex.set(y, nx, midx.get(y, nx-1) - (edgex.get(y,nx-1) - midx.get(y,nx-1)));
+    } */
+
+    return edgex;
+  }
+
+  /**
+   * For regular Grids
+   * @param midy y coordinates of midpoints
+   * @return y coordinates of edges with shape (ny+1, nx+1)
+   */
+  static public ArrayDouble.D2  makeYEdges(ArrayDouble.D2 midy) {
+    int[] shape = midy.getShape();
+    int ny = shape[0];
+    int nx = shape[1];
+    ArrayDouble.D2 edgey = new ArrayDouble.D2(ny+1, nx+1);
+
+    for (int y=0; y<ny-1; y++) {
+      for (int x=0; x<nx-1; x++) {
+        // the interior edges are the average of the 4 surrounding midpoints
+        double xval = (midy.get(y,x) + midy.get(y,x+1) + midy.get(y+1,x) + midy.get(y+1,x+1))/4;
+        edgey.set(y+1, x+1, xval);
+      }
+      // extrapolate to exterior points
+      edgey.set(y+1, 0, edgey.get(y+1,1) - (edgey.get(y+1,2) - edgey.get(y+1,1)));
+      edgey.set(y+1, nx, edgey.get(y+1,nx-1) + (edgey.get(y+1,nx-1) - edgey.get(y+1,nx-2)));
+    }
+
+    // extrapolate to the first and last row
+    for (int x=0; x<nx+1; x++) {
+      edgey.set(0, x, edgey.get(1,x) - (edgey.get(2,x) - edgey.get(1,x)));
+      edgey.set(ny, x, edgey.get(ny-1,x) + (edgey.get(ny-1,x) - edgey.get(ny-2,x)));
+    }
+
+
+    /* compute the interior rows
+    for (int x=0; x<nx; x++) {
+      for (int y=1; y<ny; y++) {
+        double yval = (midy.get(y-1,x) + midy.get(y,x))/2;
+        edgey.set(y, x, yval);
+      }
+      edgey.set(0, x, midy.get(0,x) - (edgey.get(1,x) - midy.get(0,x)));
+      edgey.set(ny, x,  midy.get(ny-1, x) - (edgey.get(ny-1,x) - midy.get(ny-1,x)));
+    } */
+
+    return edgey;
+  }
+
+
+  /**
+   * For staggered Grids
+   * @param midx x coordinates of midpoints
+   * @return x coordinates of edges with shape (ny+2, nx+1)
+   */
   static public ArrayDouble.D2 makeXEdgesRotated(ArrayDouble.D2 midx) {
     int[] shape = midx.getShape();
     int ny = shape[0];
@@ -134,9 +223,13 @@ public class CoordinateAxis2D extends CoordinateAxis {
       }
 
     return edgex;
-
   }
 
+  /**
+   * For staggered Grids
+   * @param midy y coordinates of midpoints
+   * @return y coordinates of edges with shape (ny+2, nx+1)
+   */
   static public ArrayDouble.D2  makeYEdgesRotated(ArrayDouble.D2 midy) {
     int[] shape = midy.getShape();
     int ny = shape[0];

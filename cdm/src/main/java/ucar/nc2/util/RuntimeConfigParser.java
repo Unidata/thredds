@@ -117,6 +117,29 @@ public class RuntimeConfigParser {
             errlog.append("TypedDatasetFactory "+className+" failed= "+e.getMessage()+"\n");
           }
 
+        } else if (elem.getName().equals("table")) {
+          String type = elem.getAttributeValue("type");
+          String filename = elem.getAttributeValue("filename");
+          if ((type == null) || (filename == null)) {
+            errlog.append("table element must have both type and filename attributes\n");
+            continue;
+          }
+
+          try {
+            if (type.equalsIgnoreCase("GRIB1")) { // LOOK - do this with reflection
+              ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup( filename);
+
+            } else if (type.equalsIgnoreCase("GRIB2")) {
+              ucar.grib.grib2.ParameterTable.addParametersUser( filename);
+
+            } else {
+              errlog.append("Unknown table type "+type+"\n");
+              continue;
+            }
+
+          } catch (Exception e) {
+            errlog.append("table read failed on  "+filename+" = "+e.getMessage()+"\n");
+          }
         }
       }
     }

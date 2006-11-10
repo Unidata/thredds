@@ -2733,24 +2733,38 @@ public class ToolsUI extends JPanel {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // look for run line arguments
-
-    if (args.length > 0) {
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].equalsIgnoreCase("-runtimeConfig") && (i < args.length-1)) {
-          String runtimeConfig = args[i+1];
-          i++;
-          try {
-            StringBuffer errlog = new StringBuffer();
-            FileInputStream fis = new FileInputStream( runtimeConfig);
-            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);
-            System.out.println( errlog);
-          } catch (IOException ioe) {
-            System.out.println( "Error reading "+runtimeConfig+"="+ioe.getMessage());
-          }
+    boolean configRead = false;
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length-1)) {
+        String runtimeConfig = args[i+1];
+        i++;
+        try {
+          StringBuffer errlog = new StringBuffer();
+          FileInputStream fis = new FileInputStream( runtimeConfig);
+          ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);
+          configRead = true;
+          System.out.println( errlog);
+        } catch (IOException ioe) {
+          System.out.println( "Error reading "+runtimeConfig+"="+ioe.getMessage());
         }
       }
     }
 
+    if (!configRead) {
+      String filename =  ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+      File f = new File(filename);
+      if (f.exists()) {
+        try {
+          StringBuffer errlog = new StringBuffer();
+          FileInputStream fis = new FileInputStream(filename);
+          ucar.nc2.util.RuntimeConfigParser.read(fis, errlog);
+          configRead = true;
+          System.out.println(errlog);
+        } catch (IOException ioe) {
+          System.out.println("Error reading " + filename + "=" + ioe.getMessage());
+        }
+      }
+    }
 
     // prefs storage
     try {
@@ -2768,7 +2782,7 @@ public class ToolsUI extends JPanel {
     // LOOK ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);  // turned off to allow debugging of typical access
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
-    Aggregation.setPersistenceCache( new DiskCache2("/.nj22/cachePersist", true, 60 * 24 * 30, 60));
+    Aggregation.setPersistenceCache( new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
 
     // test
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);

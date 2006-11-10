@@ -44,7 +44,7 @@ public class TestNcmlAggExistingCached extends TestCase {
   }
 
   public void setUp() {
-    Aggregation.setPersistenceCache( new DiskCache2("/.nj22/cachePersist", true, 60 * 24 * 30, 60));
+    Aggregation.setPersistenceCache( new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
     NetcdfFileCache.init(50, 70, 20 * 60);
   }
 
