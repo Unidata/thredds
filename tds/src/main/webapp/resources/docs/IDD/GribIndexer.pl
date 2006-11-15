@@ -14,7 +14,14 @@
 #
 # needed environment
 $JAVA = "/opt/jdk1.5/bin/java -Xmx256m";
-$ENV{ 'CLASSPATH' } = ":/opt/tomcat/webapps/thredds/WEB-INF/lib/grib.jar:/opt/tomcat/webapps/thredds/WEB-INF/lib/jpeg2000.jar";
+$T= "/opt/tomcat/webapps/thredds/WEB-INF";
+$T9= "/opt/tomcat9/webapps/thredds/WEB-INF";
+$L = "/home/rkambic";
+$ENV{ 'CLASSPATH' } = ":$T9/lib/grib-5.0.01.jar:$T9/lib/netcdf-2.2.17.jar:$T/lib/jpeg2000.jar:$T/classes:$T/lib/jdom.jar:$T/lib/nlog4j-1.2.21.jar";
+
+#$ENV{ 'CLASSPATH' } = ":$L/grib.jar:$T9/lib/netcdf-2.2.17.jar:$T/lib/jpeg2000.jar:$T/classes:$T/lib/jdom.jar:$T/lib/nlog4j-1.2.21.jar";
+
+#$ENV{ 'CLASSPATH' } = "/home/rkambic/grib.jar:/opt/tomcat/webapps/thredds/WEB-INF/lib/jpeg2000.jar";
 #
 # process command line switches
 while ($_ = $ARGV[0], /^-/) {
@@ -105,18 +112,36 @@ for( $i = 0; $i <= $#INODES; $i++ ) {
 	if( $INODES[ $i ] =~ /grib(\d)$/ ) {
 		$version = $1;
 		$gbx = $INODES[ $i ] . ".gbx";
+#print "deleting $gbx\n";
+#`rm -f $gbx`;
+#next;
+		$inv = $INODES[ $i ] . ".fmrInv.xml";
+#print "deleting $inv\n";
+#`rm -f $inv`;
+#next;
 		$cmd = "$JAVA ucar/grib/grib" . $version . "/Grib" . $version;
 		if( ! -e $gbx ) { # make a new index
 			# create new index
 			$cmd .= "Indexer"; 
 			print "Indexing $INODES[ $i ] ", `/bin/date`;
 			$status = `$cmd $INODES[ $i ] $gbx`;
+			#next if( $INODES[ $i ] =~ /RADAR/ );
+			print "Creating inventory for $INODES[ $i ] ", `/bin/date`;
+			$status = `$JAVA ucar/nc2/dt/fmrc/ForecastModelRunInventory $INODES[ $i ]`;
 
 		# only look at files < 3 hours old && need reindex
 		} elsif( -M $INODES[ $i ] < 0.1 && indexCheck( $INODES[ $i ], $gbx )) {
 			$cmd .= "IndexExtender"; 
 			print "IndexExtending $INODES[ $i ] ", `/bin/date`;
 			$status = `$cmd $INODES[ $i ] $gbx`;
+			#next if( $INODES[ $i ] =~ /RADAR/ );
+			print "Creating inventory for $INODES[ $i ] ", `/bin/date`;
+			$status = `$JAVA ucar/nc2/dt/fmrc/ForecastModelRunInventory $INODES[ $i ]`;
+		# test inventory program
+		} elsif( ! -e $inv ) {
+			#next if( $INODES[ $i ] =~ /RADAR/ );
+			print "Creating inventory for $INODES[ $i ] ", `/bin/date`;
+			$status = `$JAVA ucar/nc2/dt/fmrc/ForecastModelRunInventory $INODES[ $i ]`;
 		}
 	# get next set of INODES and step down into directory
 	} elsif( -d $INODES[ $i ] ) { 
