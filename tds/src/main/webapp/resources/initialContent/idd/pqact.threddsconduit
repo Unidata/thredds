@@ -48,15 +48,15 @@ CONDUIT		^data/nccf/com/gfs/prod/gfs\.(........)(..).*#000
 # RUC2 grids
 #
 # hybrid
-CONDUIT		^data/nccf/com/ruc/prod/ruc2a.(........)/ruc2.t(..)z.bgrb.*#000
+CONDUIT		^data/nccf/com/ruc/prod/ruc2a.(........)/ruc2.t(..)z.bgrb20.*#000
 	FILE	-close	data/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/RUC2_CONUS_20km_hybrid_\1_\200.grib2
 #
 # surface
-CONDUIT		^data/nccf/com/ruc/prod/ruc2a.(........)/ruc2.t(..)z.sgrb.*#000
+CONDUIT		^data/nccf/com/ruc/prod/ruc2a.(........)/ruc2.t(..)z.sgrb20.*#000
 	FILE	-close	data/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/RUC2_CONUS_20km_surface_\1_\200.grib2
 #
 # pressure
-CONDUIT		^data/nccf/com/ruc/prod/ruc2a.(........)/ruc2.t(..)z.pgrb.*#000
+CONDUIT		^data/nccf/com/ruc/prod/ruc2a.(........)/ruc2.t(..)z.pgrb20.*#000
 	FILE	-close	data/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/RUC2_CONUS_20km_pressure_\1_\200.grib2
 #
 # NAM grids
