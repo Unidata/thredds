@@ -35,6 +35,7 @@ while ($_ = $ARGV[0], /^-/) {
 }
 # configuration file given to process
 if( defined( $conf ) ) {
+	print "Start ", `/bin/date`;
 	open( CONF, "$conf" ) || die "cannot open $conf $!";
 	while( <CONF> ) {
 		next if( /^#/ );
@@ -44,11 +45,12 @@ if( defined( $conf ) ) {
 		startChecking();
 	}
 	close CONF;
-	print `/bin/date`;
+	print "End ", `/bin/date`;
 } else {
 	exit 1 if( $pattern eq "" || $number eq "" );
+	print "Start ", `/bin/date`;
 	startChecking();
-	print `/bin/date`;
+	print "End ", `/bin/date`;
 }
 
 sub startChecking {
@@ -92,9 +94,14 @@ for( $i = 0; $i <= $#INODES; $i++ ) {
 			next if( $INODES[ $j ] =~ /^\.$|^\.\.$/ || -l $INODES[ $j ] );
 			next unless ( $INODES[ $j ] =~ /$pattern/ && -M $INODES[ $j ] > $number );
 			$delete = $delete . " $INODES[ $j ]";
-			# if grib file delete gbx index too
+			# if grib file delete gbx index and inventory too
 			if( $INODES[ $j ] =~ /grib.$/ ) {
 				$delete = $delete . " $INODES[ $j ]" . ".gbx";
+				$delete = $delete . " $INODES[ $j ]" . ".fmrInv.xml";
+			}
+			# if bufr file delete bfx index too
+			if( $INODES[ $j ] =~ /bufr$/ ) {
+				$delete = $delete . " $INODES[ $j ]" . ".bfx";
 			}
 		} 
 		if( $delete ne "" ) {
