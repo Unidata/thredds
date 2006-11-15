@@ -55,7 +55,7 @@ public class InvService {
   public InvService( String name, String serviceTypeName, String base, String suffix, String desc) {
     this.name = name;
     this.type = ServiceType.getType(serviceTypeName);
-    this.base = base.trim();
+    this.base = (base == null) ? "" : base.trim();
     this.suffix = (suffix == null) ? "" : suffix.trim();
     this.desc = desc;
 
@@ -63,6 +63,10 @@ public class InvService {
     if (type == null) {
        log.append(" ** InvService: non-standard type =("+serviceTypeName+") for service ("+name+")");
        type = new ServiceType( serviceTypeName);
+    }
+
+    if (name == null) {
+       log.append(" ** InvService has no name");
     }
 
   }
@@ -249,56 +253,3 @@ public class InvService {
     return !uri.isAbsolute();
   }
 }
-
-/**
- * $Log: InvService.java,v $
- * Revision 1.9  2005/07/22 15:56:05  caron
- * no message
- *
- * Revision 1.8  2005/07/08 18:34:59  edavis
- * Fix problem dealing with service URLs that are relative
- * to the catalog (base="") and those that are relative to
- * the collection (base URL is not empty).
- *
- * Revision 1.7  2005/06/28 15:16:28  caron
- * no message
- *
- * Revision 1.6  2004/06/09 00:27:25  caron
- * version 2.0a release; cleanup javadoc
- *
- * Revision 1.5  2004/05/21 17:06:15  edavis
- * Ensure that services added to catalog have unique names.
- *
- * Revision 1.4  2004/05/11 23:30:28  caron
- * release 2.0a
- *
- * Revision 1.3  2004/03/19 20:12:53  caron
- * trim URLs
- *
- * Revision 1.2  2004/02/20 00:49:51  caron
- * 1.3 changes
- *
- * Revision 1.3  2003/05/29 21:30:47  john
- * resolve reletive URLS differently
- *
- * Revision 1.2  2002/11/26 00:05:55  caron
- * merge2 ethan's changes
- *
- * Revision 1.4  2002/11/19 21:15:15  edavis
- * Changes for CatalogGen release 0.6:
- * Allow classes that extend InvServiceImpl access to the validate()
- * method (i.e., change validate() from default to protected).
- *
- * Revision 1.2  2002/07/01 23:35:03  caron
- * release 0.6
- *
- * Revision 1.1  2002/06/28 21:28:26  caron
- * create vresion 6 object model
- *
- * Revision 1.2  2002/03/09 01:45:53  caron
- * better javadoc
- *
- * Revision 1.1.1.1  2002/02/26 17:24:37  caron
- * import sources
- *
- */

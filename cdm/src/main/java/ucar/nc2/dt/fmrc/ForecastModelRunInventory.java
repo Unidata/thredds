@@ -149,6 +149,10 @@ public class ForecastModelRunInventory {
     }
   }
 
+  public void close() throws IOException {
+    if (null != gds) gds.close();
+  }
+
   public void setName(String name) { this.name = name; }
   public String getName() { return name; }
 

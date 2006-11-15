@@ -317,8 +317,9 @@ public abstract class Array {
     return section(ranges).getIndexIterator();
   }
 
-  /** Get a fast index iterator for traversing the array in arbitrary order.
-   * @see IndexIterator
+  /** Do not use this unless you have complete control over the Array.
+   *  Use getIndexIterator(), which will return a fast iterator if possible.
+   * @see #getIndexIterator
    */
   public IndexIterator getIndexIteratorFast() {
     return indexCalc.getIndexIteratorFast(this);

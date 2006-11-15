@@ -34,13 +34,6 @@ import ucar.atd.dorade.*;
 import java.io.*;
 import java.util.*;
 
-
-
-/**
- * Netcdf header reading and writing for version 3 file format.
- * This is used by Giniiosp.
- */
-
 public class Doradeheader {
   private boolean debug = false, debugPos = false, debugString = false, debugHeaderSize = false;
   private ucar.nc2.NetcdfFile ncfile;
@@ -71,7 +64,7 @@ public class Doradeheader {
     DoradePARM[] parms = mySweep.getParamList();
     int nRays = mySweep.getNRays();
 
-    System.out.println(parms.length + " params in file");
+    if (debug) System.out.println(parms.length + " params in file");
 
     int numSensor = mySweep.getNSensors();
     int [] ncells = new int[numSensor];
@@ -259,7 +252,7 @@ public class Doradeheader {
               nCells =  parms[p].getNCells();
               int ii = getGateDimsIndex(nCells, gateDim, numSensor);
 
-              System.out.println("Param "+ p+ " name "+pval+" and ncel "+ nCells);
+              if (debug) System.out.println("Param "+ p+ " name "+pval+" and ncel "+ nCells);
               addVariable(ncfile, dims[ii], parms[p]);
            }
       } catch (Exception ex) {

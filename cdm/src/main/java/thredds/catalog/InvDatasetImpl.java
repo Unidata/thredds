@@ -510,6 +510,11 @@ public class InvDatasetImpl extends InvDataset {
     hashCode = 0;
   }
 
+  public void setDataFormatType(DataFormatType dataFormatType) {
+    tm.setDataFormatType(dataFormatType);
+    hashCode = 0;
+  }
+
   public void setDataType(DataType dataType) {
     tm.setDataType(dataType);
     hashCode = 0;

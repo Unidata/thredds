@@ -23,6 +23,7 @@ Changes in version 2.2.17
     GridCoordSystem allows time to depend on runtime.
   * Variable.slice()
  API changes
+  * NetcdfFileWriteable: addUnlimitedDimension, createNew and openExisting with default fill mode = true
   * VariableEnhanced interface: remove getOriginalVariable(), now package private on VariableDS.
   * new Grid processing moved to ucar.nc2.dt.grid, old one (deprecated) stays in ucar.nc2.dataset.grid. Some tweaks on the
     new grid interface, since we no longer have to be strictly backwards compatible.
@@ -38,6 +39,7 @@ Changes in version 2.2.17
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
+  * cant (necessarily) use FastIterator on convertScaleOffset!
   * cleanup ucar.nc2.util.NetworkUtils.resolve() for file: baseURLS. only reletive URLS not starting with / are supported. This is
     apparently different from the behavior of URI.resolve(), so may be trouble, but it allows NcML absolute location to be specified without
     the file: prefix.
@@ -57,12 +59,15 @@ Changes in version 2.2.17
   * ucar.ma2.Range.contains() off-by-one
   * NcML aggregation caching wasnt working correctly. 
  ToolsUI
-  * look for -runtimeConfig <filename> on command line
+  * GridViewer: 2D lat/lon, MFlowLayout
+  * default nj22Config.xml in home/.unidata
+  * look for -nj22Config <filename> on command line
   * seperate out PointObs and StationObsViewer
   * CoordSysTable axis has context menu to show coordinate values
   * Grid Viewer will show ensemble, runtime coordinates if they exist.
   * Radial Tab now works with RadialDatasetSweep interface
  Libraries
+  * bufr.lib had outdated version of raf
   * build: calculate MD5 checksum
 
 Changes in version 2.2.16

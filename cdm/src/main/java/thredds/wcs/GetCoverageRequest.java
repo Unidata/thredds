@@ -16,10 +16,10 @@ public class GetCoverageRequest {
   private LatLonRect bbox;
 
   public GetCoverageRequest( String coverage, String bbox, String time, String vertical, String format) {
-    this.coverage = coverage;
+    this.coverage = (coverage == null) ? null : coverage.trim();
     this.bbox = parseBB(bbox);
-    this.time = time;
-    this.vertical = vertical;
+    this.time = (time == null) ? null : time.trim();
+    this.vertical = (vertical == null) ? null : vertical.trim();
     this.format = Format.getType(format);
   }
 
@@ -31,6 +31,7 @@ public class GetCoverageRequest {
 
   private LatLonRect parseBB( String bbox) {
     if (bbox == null) return null;
+    bbox=bbox.trim();
     StringTokenizer stoker = new StringTokenizer( bbox, ", ");
     double minx = Double.parseDouble( stoker.nextToken());
     double miny = Double.parseDouble( stoker.nextToken());
@@ -53,6 +54,7 @@ public class GetCoverageRequest {
     public static java.util.Collection getAllTypes() { return hash.values(); }
     public static Format getType(String name) {
       if (name == null) return null;
+      name = name.trim();
       Format result = (Format) hash.get( name);
       if (result != null) return result;
       return null;

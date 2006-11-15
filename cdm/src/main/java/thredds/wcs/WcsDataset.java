@@ -22,7 +22,7 @@ package thredds.wcs;
 
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.util.DiskCache;
+import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -47,6 +47,11 @@ import java.util.List;
  */
 
 public class WcsDataset {
+  static private DiskCache2 diskCache = new DiskCache2("wcsCache/", true, -1, -1);
+  static public void setDiskCache(DiskCache2 _diskCache) {
+    diskCache = _diskCache;
+  }
+
   private String serverURL = "http://localhost:8080/thredds/wcs?";
 
   private GridDataset gridDataset;
@@ -143,7 +148,7 @@ public class WcsDataset {
     return null;
   }
 
-  public String getCoverage( GetCoverageRequest req) throws IOException, InvalidRangeException {
+  public File getCoverage( GetCoverageRequest req) throws IOException, InvalidRangeException {
     String vname = req.getCoverage();
     GridDatatype geogrid = gridDataset.findGridDatatype(vname);
     GridCoordSystem gcs = geogrid.getCoordinateSystem();
@@ -180,24 +185,24 @@ public class WcsDataset {
 
     if (req.getFormat() == GetCoverageRequest.Format.GeoTIFF || req.getFormat() == GetCoverageRequest.Format.GeoTIFFfloat) {
       //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-      File tifFile = DiskCache.getCacheFile(datasetPath+"-"+vname+".tif");
+      File tifFile = diskCache.getCacheFile(datasetPath+"-"+vname+".tif");
       if (debug) System.out.println(" tifFile="+tifFile.getPath());
 
       GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
       writer.writeGrid( gridDataset, subset, data, req.getFormat() == GetCoverageRequest.Format.GeoTIFF);
 
       writer.close();
-      return tifFile.getPath();
+      return tifFile;
 
     } else if (req.getFormat() == GetCoverageRequest.Format.NetCDF3) {
 
       //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-      File ncFile = DiskCache.getCacheFile(datasetPath+"-"+vname+".nc");
+      File ncFile = diskCache.getCacheFile(datasetPath+"-"+vname+".nc");
       if (debug) System.out.println(" ncFile="+ncFile.getPath());
 
       // LOOK - break encapsolation
       ((GeoGrid)subset).writeFile( ncFile.getPath());
-      return ncFile.getPath();
+      return ncFile;
 
     } else
       return null;

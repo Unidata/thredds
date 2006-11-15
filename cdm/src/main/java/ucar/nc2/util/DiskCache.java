@@ -258,7 +258,7 @@ public class DiskCache {
    * @param maxBytes max number of bytes in cache.
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(int maxBytes, StringBuffer sbuff) {
+  static public void cleanCache(long maxBytes, StringBuffer sbuff) {
     cleanCache( maxBytes, new FileLengthComparator(), sbuff);
   }
 
@@ -269,7 +269,7 @@ public class DiskCache {
    * @param fileComparator sort files first with this
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(int maxBytes, Comparator fileComparator, StringBuffer sbuff) {
+  static public void cleanCache(long maxBytes, Comparator fileComparator, StringBuffer sbuff) {
     if (sbuff != null) sbuff.append("CleanCache maxBytes= "+maxBytes+"\n");
 
     File dir = new File(root);

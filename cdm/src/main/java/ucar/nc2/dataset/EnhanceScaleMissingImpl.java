@@ -483,8 +483,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (debugRead) System.out.println("convertScaleOffset ");
 
     Array out = Array.factory( convertedDataType.getPrimitiveClassType(), in.getShape());
-    IndexIterator iterIn = in.getIndexIteratorFast();
-    IndexIterator iterOut = out.getIndexIteratorFast();
+    IndexIterator iterIn = in.getIndexIterator();
+    IndexIterator iterOut = out.getIndexIterator();
 
     if (isUnsigned && in.getElementType() == byte.class)
       convertScaleOffsetUnsignedByte( iterIn, iterOut);
@@ -530,7 +530,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   public Array convertMissing(Array in) {
     if (debugRead) System.out.println("convertMissing ");
 
-    IndexIterator iterIn = in.getIndexIteratorFast();
+    IndexIterator iterIn = in.getIndexIterator();
     if (in.getElementType() == double.class) {
       while (iterIn.hasNext()) {
         double val = iterIn.getDoubleNext();

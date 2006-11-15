@@ -382,7 +382,7 @@ public class GridCoordSys extends CoordinateSystem {
       e.printStackTrace();
       return;
     }
-    IndexIterator ii = data.getIndexIteratorFast();
+    IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext())
       ii.setDoubleCurrent( factor * ii.getDoubleNext());
 

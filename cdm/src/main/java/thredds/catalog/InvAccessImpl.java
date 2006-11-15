@@ -99,9 +99,8 @@ public class InvAccessImpl extends InvAccess {
     }
 
       // check urlPath is ok
-    java.net.URI uri = null;
     try {
-      uri = new java.net.URI(urlPath);
+      new java.net.URI(urlPath);
     } catch (java.net.URISyntaxException e) {
       log.append("**InvAccess in ("+dataset.getFullName()+"):\n"+
         "   urlPath= "+urlPath+")\n  URISyntaxException="+e.getMessage());
