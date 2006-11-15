@@ -14,7 +14,14 @@
 # level2 radar from CRAFT  feed
 #
 CRAFT	^L2-BZIP2/(....)/([0-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9])([0-2][0-9][0-5][0-9])([0-9][0-9])
-	FILE	data/pub/native/radar/level2/\1/\2/Level2_\1_\2_\3.ar2v
+	FILE	data/pub/native/radar/level2/\1/\2/.Level2_\1_\2_\3.ar2v
+#
+#
+# Done to move file after last record is received "/E" to prevent
+# autoupdate from seeing partially received files (dccraft_move is a
+# shell script copied from $NAWIPS/bin/scripts)
+CRAFT	^L2-BZIP2/(....)/([0-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9])([0-2][0-9][0-5][0-9])([0-9][0-9]).*/E$
+	EXEC	util/dccraft_move data/pub/native/radar/level2/\1/\2/.Level2_\1_\2_\3.ar2v data/pub/native/radar/level2/\1/\2/Level2_\1_\2_\3.ar2v
 #
 # level3 radar from NEXRAD feedtype
 #

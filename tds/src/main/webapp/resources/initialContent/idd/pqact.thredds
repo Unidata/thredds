@@ -163,24 +163,48 @@ NIMAGE	^satz/ch[0-9]/.*/(.*)/([12][0-9][0-9][0-9][01][0-9][0-3][0-9]) ([0-2][0-9
 	util/ldmfile.sh data/pub/native/satellite/\1/\5_\6/\2/\5_\6_\1_\2_\3\4.gini
 #
 # FSL hourly summary and 6-minute wind profiler data %Y%m%d_%H00
-FSL2	^FSL\.NetCDF\.NOAAnet\.windprofiler\.(01hr|06min)\.(....)(...)(..)
+FSL2	^FSL\.NetCDF\.NOAAnet\.windprofiler\.(01hr|06min)\.(....)(...)(..)(..)
 	FILE
-	data/pub/native/profiler/wind/\1/\2%m%d/PROFILER_wind_\1_\2%m%d_\400.nc
+	data/pub/native/profiler/wind/\1/\2%m%d/PROFILER_wind_\1_\2%m%d_\4\5.nc
 #
 # FSL hourly summary and 6-minute RASS profiler data %Y%m%d_%H00
 # FSL.NetCDF.NOAAnet.RASS.06min.20052731424
-FSL2	^FSL\.NetCDF\.NOAAnet\.RASS\.(01hr|06min)\.(....)(...)(..)
+FSL2	^FSL\.NetCDF\.NOAAnet\.RASS\.(01hr|06min)\.(....)(...)(..)(..)
 	FILE
-	data/pub/native/profiler/RASS/\1/\2%m%d/PROFILER_RASS_\1_\2%m%d_\400.nc
+	data/pub/native/profiler/RASS/\1/\2%m%d/PROFILER_RASS_\1_\2%m%d_\4\5.nc
 #
-# profile data in BUFR format
-#HRS	^IUPT0[1-4] KBOU ([0-3][0-9])([0-2][0-9])([0-9][0-9])
-#	FILE
-#	data/pub/native/profiler/bufr/(\1:yyyy)(\1:mm)\1/PROFILER_(\1:yyyy)(\1:mm)\1_\2.prof
+# profiler data in BUFR format
+HRS	^(IUPT0[1-4]|IUAK01) .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/profiler/bufr/profiler/PROFILER_(\2:yyyy)(\2:mm)\2_0000.bufr
 #
-#HRS	^([IJ]...).. (....) ([0-3][0-9])([0-2][0-9])([0-9][0-9])
-#	FILE
-#	data/pub/native/profiler/bufr/(\3:yyyy)(\3:mm)\3/PROFILER_\1_\2_(\3:yyyy)(\3:mm)\3_\4.bufr
+#
+# profiler data in BUFR format
+HRS	^IUPT41 KBOU ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/profiler/bufr/profiler1/PROFILER_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# profiler data in BUFR format
+HRS	^IUPT42 KBOU ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/profiler/bufr/profiler2/PROFILER_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# profiler data in BUFR format
+HRS	^IUPT43 KBOU ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/profiler/bufr/profiler3/PROFILER_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# profiler data in BUFR format
+HRS	^ISAT.. KBOU ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/profiler/bufr/profiler4/PROFILER_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# profiler data in BUFR format
+HRS	^IUPC0[12] .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/profiler/bufr/profiler5/PROFILER_(\1:yyyy)(\1:mm)\1_0000.bufr
 #
 # RADAR grid products
 #
@@ -307,9 +331,10 @@ HRS	^[YZ].(Y)... KWB. ([0-3][0-9])([0-2][0-9]).*/m(ETA|NAM)
 HRS	^[YZ].(Q)... KWB. ([0-3][0-9])([0-2][0-9]).*/mRUC
 	FILE
 	data/pub/native/grid/NCEP/RUC/CONUS_80km/RUC_CONUS_80km_(\2:yyyy)(\2:mm)\2_\300.grib1
-HRS	^[YZ].(W)... KWB. ([0-3][0-9])([0-2][0-9]).*/mRUC
-	FILE
-	data/pub/native/grid/NCEP/RUC/CONUS_40km/RUC_CONUS_40km_(\2:yyyy)(\2:mm)\2_\300.grib1
+# commented out cause same model come in on ^Y.W... KWB. (..)(..).*/mRUC2
+#HRS	^[YZ].(W)... KWB. ([0-3][0-9])([0-2][0-9]).*/mRUC
+#	FILE
+#	data/pub/native/grid/NCEP/RUC/CONUS_40km/RUC_CONUS_40km_(\2:yyyy)(\2:mm)\2_\300.grib1
 #
 # RUC2 grid on Lambert conformal CONUS grid
 HRS	^Y.W... KWB. (..)(..).*/mRUC2
@@ -335,12 +360,12 @@ HRS	^H.[A-D]... .... (..)(..).*(/mNOW|/mPWAV)
 # SST grid on global 5.0 x 2.5 degree grids
 HRS	^H.[A-D]... .... (..)(..).*/mSST
 	FILE
-	data/pub/decoded/netcdf/grid/NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_(\1:yyyy)(\1:mm)\1_\200.grib1
+	data/pub/native/grid/NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_(\1:yyyy)(\1:mm)\1_\200.grib1
 #
 # SST grid on global 2.0 x 2.0 degree grid
 HRS	^H.[T-W]... .... (..)(..).*/mSST
 	FILE
-	data/pub/decoded/netcdf/grid/NCEP/SST/Global_2x2deg/SST_Global_2x2deg_(\1:yyyy)(\1:mm)\1_\200.grib1
+	data/pub/native/grid/NCEP/SST/Global_2x2deg/SST_Global_2x2deg_(\1:yyyy)(\1:mm)\1_\200.grib1
 #
 # ECMWF grid on global 2.5 x 2.5 degree grid
 HRS	^H.[A-L]... ECMF (..)(..)
@@ -361,6 +386,194 @@ HRS	^H.[A-L]... ECMF (..)(..)
 HRS	^H.[I-P]... EGRR ([0-3][0-9])([0-2][0-9])
 	FILE
 	data/pub/native/grid/UKMET/thin/UKMET_(\1:yyyy)(\1:mm)\1_\200.grib1
+#
+# other soundings and surface products in BUFR format
+#
+# NCEP NAM MODEL BUFR SOUNDING
+# JUSA41 JUSA42 JUSB43 JUSB44 JUSB45 JUSB46 JUSX47 ? JUSX48 JUSX49 KWNO
+HRS	^JUS.41 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM41/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.42 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM42/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.43 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM43/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.44 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM44/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.45 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM45/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.46 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM46/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.47 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM47/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.48 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM48/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+HRS	^JUS.49 KWNO ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/NAM49/SoundingNAM_(\1:yyyy)(\1:mm)\1_\200.bufr
+#
+# NCEP GFS MODEL BUFR SOUNDING
+# JUSA41 JUSA42 JUSB43 JUSB44 JUSB45 JUSB46 JUSX47 JUSX48 JUSX49 KWBC
+HRS	^JUS.4. KWBC ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/GFS/SoundingVerticalGFS_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Surface data (satellite)
+#
+HRS	^ISXT.. KBOU ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/surface/satellite/SurfaceSatellite_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Surface data (satellite)
+#
+HRS	^(ISXX0.|FPAK79|SXUS..|SFUS41|SACN..|PEIK98) .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/surface/satellite1/SurfaceSatellite_(\2:yyyy)(\2:mm)\2_0000.bufr
+#
+# Surface data (satellite)
+#
+HRS	^ISZ.59 .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/surface/satellite2/SurfaceSatellite_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Surface data (satellite)
+#
+HRS	^ISXA.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/surface/satellite3/SurfaceSatellite_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Surface data (satellite)
+#
+HRS	^(ISXX0.|FPAK79|SXUS..|SFUS41|SACN..|PEIK98) .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/surface/satellite1/SurfaceSatellite_(\2:yyyy)(\2:mm)\2_0000.bufr
+#
+# Single level upper-air data (other than satellite)
+#
+HRS	^IUA... (CWAO|EGRR) ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/singlelevel/aircraft/SoundingSingleLevelAircraft_(\2:yyyy)(\2:mm)\2_0000.bufr
+#
+# Vertical soundings (other than satellite)
+HRS	^IUS[TX].[68] KWBC ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/vertical/radiosonde8/SoundingVerticalRadiosonde_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Vertical soundings (other than satellite)
+HRS	^IUS[TX].2 KWBC ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/vertical/radiosonde2/SoundingVerticalRadiosonde_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Vertical soundings (other than satellite)
+HRS	^IUS[TX].[13] KWBC ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/vertical/radiosonde3/SoundingVerticalRadiosonde_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Vertical soundings (other than satellite)
+HRS	^IUS[TX].4 KWBC ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/vertical/radiosonde4/SoundingVerticalRadiosonde_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Single level upper-air data (satellite)
+HRS	^J.CX.1 KNES ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/singlelevel/satellite/SoundingSingleLevelSatellite_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Single level upper-air data (satellite)
+HRS	^(IUCN[45678]|IUCS[5678]|JHCX1|JRCX7). .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/singlelevel/satellite1/SoundingSingleLevelSatellite_(\2:yyyy)(\2:mm)\2_0000.bufr
+#
+# Surface data - land
+#
+HRS	^JSAT.. KKCI ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/surface/land/SurfaceLand_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Vertical soundings (satellite)
+HRS	^JUTX.. KNES ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/vertical/satellite/SoundingVerticalSatellite_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+#
+# Vertical soundings (satellite)
+HRS	^IUTX.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/vertical/satellite1/SoundingVerticalSatellite_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Vertical soundings (other than satellite)
+HRS	^IXUS68 PACR ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/soundings/vertical/wind_profiler/SoundingVerticalWindProfiler_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Synoptic data feature 7
+HRS	^JUVE.. KKCI ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/synoptic/feature7/SynopticFeature7_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Synoptic data feature 6
+HRS	^JUCE.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/synoptic/feature6/SynopticFeature6_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Synoptic data feature 5
+HRS	^JUFE.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/synoptic/feature5/SynopticFeature5_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Synoptic data feature 4
+HRS	^(YUZI96 KWBC|JUBE99 ....) ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/synoptic/feature4/SynopticFeature4_(\2:yyyy)(\2:mm)\2_0000.bufr
+#
+# Synoptic data feature 3
+HRS	^JUVE.. EGRR ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/synoptic/feature3/SynopticFeature3_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Synoptic data feature 2
+HRS	^JUTE.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/synoptic/feature2/SynopticFeature2_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+# Synoptic data feature 1
+HRS	^JUWE.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/synoptic/feature1/SynopticFeature1_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+HRS	^JUVE.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/other/JUV/JUV_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+HRS	^IUPC0. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/other/IUPC/IUPC_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+HRS	^JSMT.. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/other/JSMT/JSMT_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+HRS	^JU[JOMN]E00 .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/other/JUE/JUE_(\1:yyyy)(\1:mm)\1_0000.bufr
+#
+HRS	^JSML1. .... ([0-3][0-9])([0-2][0-9])([0-9][0-9])
+	FILE
+	data/pub/native/other/JSML1/JSML1_(\1:yyyy)(\1:mm)\1_0000.bufr
 #
 # Other NMC assorted binary products
 HRS	^_ELSE_$
@@ -424,10 +637,10 @@ DDS|IDS	^U[ABDEFGHIJKLMPQRSTXZ].... .... ([0-3][0-9])
 	data/pub/decoded/netcdf/upperair
 #
 # buoy reports in yymmddhh_buoy.nc decoded into NetCDF format
-DDS|IDS	^S[NS].... .... ([0-3][0-9])
-	PIPE	decoders/buoy2nc
-	etc/buoy.cdl
-	data/pub/decoded/netcdf/surface/buoy
+#DDS|IDS	^S[NS].... .... ([0-3][0-9])
+#	PIPE	decoders/buoy2nc
+#	e,cdl
+#	data/pub/decoded/netcdf/surface/buoy
 #
 # Synoptic reports in yymmddhh_syn.nc decoded into NetCDF format
 DDS|IDS	^SM.... .... ([0-3][0-9])
@@ -456,7 +669,8 @@ HRS	^H.[A-L]... ECMF (..)(..)
 	data/pub/decoded/netcdf/grid/ECMWF/Global_2p5/ECMWF_Global_2p5_(\1:yyyy)(\1:mm)\1_\200.nc
 #
 # ETA grid on Lambert conformal CONUS grid
-HRS	^Y.Q... KWB. (..)(..).*/m(ETA|NAM)
+#HRS	^[YZ].Q... KWB. (..)(..).*/m(ETA|NAM)
+HRS	^[YZ].Q... .... (..)(..).*/m(ETA|NAM)
 	PIPE	decoders/gribtonc
 	etc/eta_211.cdl
 	data/pub/decoded/netcdf/grid/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_(\1:yyyy)(\1:mm)\1_\200.nc
