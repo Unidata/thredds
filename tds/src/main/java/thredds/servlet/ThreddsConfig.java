@@ -28,10 +28,13 @@ import java.io.File;
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.JDOMException;
 import org.jdom.Element;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.TimeUnit;
 
 /**
  * Read and process the threddsConfig.xml file
@@ -39,8 +42,10 @@ import org.jdom.Element;
 public class ThreddsConfig {
   private static javax.servlet.ServletContext _context;
   private static String _filename;
+  private static org.slf4j.Logger log;
+  private static Element rootElem;
 
-  private static HashMap paramHash;
+  //private static HashMap paramHash;
   private static ArrayList catalogRoots;
 
   static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
@@ -51,7 +56,7 @@ public class ThreddsConfig {
   }
 
   static void readConfig(org.slf4j.Logger log) {
-    paramHash = new HashMap();
+    //paramHash = new HashMap();
     catalogRoots = new ArrayList();
 
     File file = new File(_filename);
@@ -70,9 +75,9 @@ public class ThreddsConfig {
       log.error("ThreddsConfig: incorrectly formed xml file " + _filename, e);
       return;
     }
+    rootElem = doc.getRootElement();
 
-    // context-param : may override the ones in web.xml
-    Element rootElem = doc.getRootElement();
+    /* context-param : may override the ones in web.xml
     List paramList = rootElem.getChildren("context-param");
     for (int j = 0; j < paramList.size(); j++) {
       Element paramElem = (Element) paramList.get(j);
@@ -84,7 +89,7 @@ public class ThreddsConfig {
       }
       paramHash.put(name, value);
       //System.out.println("param= "+ name + " " + value);
-    }
+    } */
 
     List rootList = rootElem.getChildren("catalogRoot");
     for (int j = 0; j < rootList.size(); j++) {
@@ -97,7 +102,7 @@ public class ThreddsConfig {
     }
 
     // nj22 runtime loading
-    List viewerList = rootElem.getChildren("viewer");
+    List viewerList = rootElem.getChildren("Viewer");
     for (int j = 0; j < viewerList.size(); j++) {
       Element elem = (Element) viewerList.get(j);
       String className = elem.getText().trim();
@@ -105,7 +110,7 @@ public class ThreddsConfig {
     }
 
     // nj22 runtime loading
-    Element elem = rootElem.getChild("runtimeConfig");
+    Element elem = rootElem.getChild("nj22Config");
     if (elem != null) {
       StringBuffer errlog = new StringBuffer();
       ucar.nc2.util.RuntimeConfigParser.read( elem, errlog);
@@ -120,12 +125,94 @@ public class ThreddsConfig {
     extraList.addAll( catalogRoots);
   }
 
-  static public String getInitParameter(String name, String defaultValue) {
+  /* static public String getInitParameter(String name, String defaultValue) {
     if (null != paramHash.get(name))
       return (String) paramHash.get(name);
 
     String value = _context.getInitParameter(name);
     return (value == null) ? defaultValue : value;
+  } */
+
+  static public String get(String paramName, String defValue) {
+    String s = getParam( paramName);
+    return (s == null) ? defValue : s;
+  }
+
+  static public boolean getBoolean(String paramName, boolean defValue) {
+    String s = getParam( paramName);
+    if (s == null) return defValue;
+
+    try {
+      return Boolean.parseBoolean(s);
+    } catch (Exception e) {
+      log.error("ThreddsConfig: param "+paramName+" not a boolean: " + e.getMessage());
+    }
+    return defValue;
+  }
+
+  static public long getBytes(String paramName, long defValue) {
+    String s = getParam(paramName);
+    if (s == null) return defValue;
+
+    String num = s;
+    try {
+      long factor = 1;
+      int pos = s.indexOf(' ');
+      if (pos > 0) {
+        num = s.substring(0, pos);
+        String units = s.substring(pos + 1).trim();
+
+        char c = Character.toUpperCase(units.charAt(0));
+        if (c == 'K') factor = 1000;
+        else if (c == 'M') factor = 1000 * 1000;
+        else if (c == 'G') factor = 1000 * 1000 * 1000;
+        else if (c == 'T') factor = ((long)1000) * 1000 * 1000 * 1000;
+        else if (c == 'P') factor = ((long)1000) * 1000 * 1000 * 1000 * 1000;
+      }
+
+      return factor * Long.parseLong(num);
+
+    } catch (Exception e) {
+      log.error("ThreddsConfig: param " + paramName + " not a byte count: " + s+" "+e.getMessage());
+    }
+    return defValue;
+  }
+
+  static public int getInt(String paramName, int defValue) {
+    String s = getParam( paramName);
+    if (s == null) return defValue;
+
+    try {
+      return Integer.parseInt(s);
+    } catch (Exception e) {
+      log.error("ThreddsConfig: param "+paramName+" not an integer " + e.getMessage());
+    }
+    return defValue;
+  }
+
+  static public int getSeconds(String paramName, int defValue) {
+    String s = getParam( paramName);
+    if (s == null) return defValue;
+
+    try {
+      TimeUnit tu = new TimeUnit(s);
+      return (int) tu.getValueInSeconds();
+    } catch (Exception e) {
+      log.error("ThreddsConfig: param "+paramName+" not udunit time " + e.getMessage());
+    }
+    return defValue;
+  }
+
+  private static String getParam( String name) {
+    Element elem = rootElem;
+    StringTokenizer stoke = new StringTokenizer(name, ".");
+    while (stoke.hasMoreTokens()) {
+      String toke = stoke.nextToken();
+      elem = elem.getChild(toke);
+      if (null == elem)
+        return null;
+    }
+    return elem.getValue();
   }
 
 }

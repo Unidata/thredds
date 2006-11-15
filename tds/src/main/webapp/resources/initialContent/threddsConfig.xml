@@ -1,38 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threddsConfig>
 
-  <!-- examples
-  <context-param>
-    <param-name>ContextPath</param-name>
-    <param-value>thredds</param-value>
-  </context-param>
+  <!-- examples 
 
-  <context-param>
-    <param-name>CachePath</param-name>
-    <param-value>/temp/cache/</param-value>
-  </context-param>
-
-  <context-param>
-    <param-name>NetcdfServletCachePath</param-name>
-    <param-value>/temp/ncache/</param-value>
-  </context-param>
-
-  <context-param>
-    <param-name>CdmValidatorCachePath</param-name>
-    <param-value>/temp/vcache/</param-value>
-  </context-param>
-
-   <runtimeConfig>
-     <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
-     <coordSysBuilder convention="foo" class="test.Foo"/>
-     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
-     <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
-     <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
-     <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters" />
-   </runtimeConfig>
-  
   <catalogRoot>tempCatalog.xml</catalogRoot>
+  <catalogRoot>idd/catalog.xml</catalogRoot>
+  <catalogRoot>catgen/subdir/enhancedCatalog-1.0.xml</catalogRoot>
 
-  end examples -->
+  <NetcdfFileCache>
+    <minFiles>200</minFiles>
+    <maxFiles>400</maxFiles>
+    <scour>10 min</scour>
+  </NetcdfFileCache>
+
+  <NetcdfDatasetCache>
+    <minFiles>100</minFiles>
+    <maxFiles>200</maxFiles>
+    <scour>10 min</scour>
+  </NetcdfDatasetCache>
+
+  <HTTPFileCache>
+    <minFiles>25</minFiles>
+    <maxFiles>40</maxFiles>
+    <scour>10 min</scour>
+  </HTTPFileCache>
+
+  <CdmValidatorService>
+    <allow>true</allow>
+    <dir>/temp/vcache/</dir>
+    <maxFileUploadSize>1 Gb</maxFileUploadSize>
+    <scour>24 hours</scour>
+    <maxAge>30 days</maxAge>
+  </CdmValidatorService>
+
+  <NetcdfSubsetService>
+    <allow>true</allow>
+    <dir>/temp/ncache/</dir>
+    <scour>15 min</scour>
+    <maxAge>30 min</maxAge>
+  </NetcdfSubsetService>
+
+  <WCS>
+    <allow>true</allow>
+    <dir>/temp/ncache/</dir>
+    <scour>15 min</scour>
+    <maxAge>30 min</maxAge>
+  </WCS>
+
+  <Viewer>my.package.MyViewer</Viewer>
+
+  <FmrcInventory>
+    <openType>XML_ONLY</openType>
+  </FmrcInventory>
+
+  <nj22Config>
+    <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
+    <coordSysBuilder convention="foo" class="test.Foo"/>
+    <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
+    <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
+    <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
+    <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
+  </nj22Config>
+
+  <DiskCache>
+    <alwaysUse>true</alwaysUse>
+    <dir>/temp/cache/</dir>
+    <scour>1 hour</scour>
+    <maxSize>10 Gb</maxSize>
+  </DiskCache>
+
+  <GribIndexing>
+    <setExtendIndex>false</setExtendIndex>
+  </GribIndexing>
+
+  <AggregationCache>
+    <dir>/temp/acache/</dir>
+    <scour>24 hours</scour>
+    <maxAge>90 days</maxAge>
+  </AggregationCache>
+
+   end examples -->
 
 </threddsConfig>

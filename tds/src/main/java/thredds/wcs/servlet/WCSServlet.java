@@ -3,7 +3,6 @@ package thredds.wcs.servlet;
 import thredds.wcs.WcsDataset;
 import thredds.wcs.GetCoverageRequest;
 import thredds.wcs.SectionType;
-import thredds.catalog.InvCatalogImpl;
 import thredds.servlet.*;
 
 import java.io.*;
@@ -11,15 +10,16 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.util.DiskCache2;
 
 /**
  * Servlet handles serving data via WCS 1.0.
  *
  */
 public class WCSServlet extends AbstractServlet {
-  // private HashMap datasetHash = new HashMap(20);
-  private InvCatalogImpl rootCatalog;
-  private String tempDir;
+  private ucar.nc2.util.DiskCache2 diskCache = null;
+  private boolean allow = true, deleteImmediately = true;
+  private long maxFileDownloadSize;
 
   // must end with "/"
   protected String getPath() { return "wcs/"; }
@@ -28,15 +28,27 @@ public class WCSServlet extends AbstractServlet {
   public void init() throws ServletException {
     super.init();
 
-    try {
-      tempDir = contentPath+"temp/";
-      File tempDirFile = new File(tempDir);
-      tempDirFile.mkdirs();
+    allow = ThreddsConfig.getBoolean("WCS.allow", true);
+    maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
+    String cache = ThreddsConfig.get("WCS.dir", contentPath + "/wcache");
+    File cacheDir = new File(cache);
+    cacheDir.mkdirs();
 
-    } catch (Throwable t) {
-      log.error("CatalogServlet init", t);
-      t.printStackTrace();
-    }
+    int scourSecs = ThreddsConfig.getSeconds("WCS.scour", 60 * 10);
+    int maxAgeSecs = ThreddsConfig.getSeconds("WCS.maxAge", -1);
+    maxAgeSecs = Math.max(maxAgeSecs, 60 * 5);  // give at least 5 minutes to download before scouring kicks in.
+    scourSecs = Math.max(scourSecs, 60 * 5);  // always need to scour, in case user doesnt get the file, we need to clean it up
+
+    // LOOK: what happens if we are still downloading when the disk scour starts?
+    diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
+    diskCache.setLogger(org.slf4j.LoggerFactory.getLogger("cacheLogger"));
+    WcsDataset.setDiskCache(diskCache);
+  }
+
+  public void destroy() {
+    if (diskCache != null)
+      diskCache.exit();
+    super.destroy();
   }
 
   private WcsDataset openWcsDataset(HttpServletRequest req) throws IOException {
@@ -56,6 +68,10 @@ public class WCSServlet extends AbstractServlet {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return;
+    }
 
     ServletUtil.logServerAccessSetup( req );
 
@@ -147,8 +163,9 @@ public class WCSServlet extends AbstractServlet {
           return;
         }
 
-        String filename = wcsDataset.getCoverage( r);
-        ServletUtil.returnFile(this, "", filename, req, res, null);
+        File result = wcsDataset.getCoverage( r);
+        ServletUtil.returnFile(this, "", result.getPath(), req, res, null);
+        if (deleteImmediately) result.delete();
 
       } else {
         makeServiceException( res, "InvalidParameterValue", "Unknown request=" +request);
@@ -168,7 +185,9 @@ public class WCSServlet extends AbstractServlet {
       if (wcsDataset != null) {
         try {
           wcsDataset.close();
-        } catch (IOException ioe) { }
+        } catch (IOException ioe) {
+          log.error("Failed to close ", ioe);
+        }
       }
     }
   }

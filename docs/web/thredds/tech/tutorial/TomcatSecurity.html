@@ -39,15 +39,15 @@
 </ul>
 <h2>Store Passwords as Digest<a name="Digest"></a></h2>
 <p>The file <strong>${tomcat_home}/conf/tomcat-users.xml </strong> stores user names and passwords. By default the passwords are in clear text, e.g.: </p>
-<pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br>&lt;tomcat-users&gt;<br>  &lt;role rolename=&quot;config&quot;/&gt;<br>  &lt;role rolename=&quot;manager&quot;/&gt;<br>  &lt;role rolename=&quot;admin&quot;/&gt;<br>  &lt;user username=&quot;sysadmin&quot; password=&quot;yrPassword&quot; roles=&quot;manager,admin&quot;/&gt;
-  &lt;user username=&quot;cataloger&quot; password=&quot;myPassword&quot; roles=&quot;config&quot;/&gt;<br>&lt;/tomcat-users&gt;</pre>
+<pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br>&lt;tomcat-users&gt;<br>  &lt;role rolename=&quot;tdsConfig&quot;/&gt;<br>  &lt;role rolename=&quot;manager&quot;/&gt;<br>  &lt;role rolename=&quot;admin&quot;/&gt;<br>  &lt;user username=&quot;sysadmin&quot; password=&quot;yrPassword&quot; roles=&quot;manager,admin&quot;/&gt;
+  &lt;user username=&quot;cataloger&quot; password=&quot;myPassword&quot; roles=&quot;tdsConfig&quot;/&gt;<br>&lt;/tomcat-users&gt;</pre>
 <p>Store them instead in digested form. First generate the digest (do this for each user): </p>
 <pre>  &gt; cd  <strong>${tomcat_home}/</strong>bin
   &gt; ./digest.sh -a SHA yrPassword
   &gt; yrPassword:aa01ea2afaae56c2b7da5e25ec18c505e58f12d7</pre>
 <p>Then cut and paste the digested passwords into the <strong>tomcat-users.xml</strong>:</p>
-<pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br>&lt;tomcat-users&gt;<br>  &lt;role rolename=&quot;config&quot;/&gt;<br>  &lt;role rolename=&quot;manager&quot;/&gt;<br>  &lt;role rolename=&quot;admin&quot;/&gt;<br>  &lt;user username=&quot;sysadmin&quot; password=&quot;aa01ea2afaae56c2b7da5e25ec18c505e58f12d7&quot; roles=&quot;manager,admin&quot;/&gt;
-  &lt;user username=&quot;cataloger&quot; password=&quot;5413ee24723bba2c5a6ba2d0196c78b3ee4628d1&quot; roles=&quot;config&quot;/&gt;<br>&lt;/tomcat-users&gt;</pre>
+<pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br>&lt;tomcat-users&gt;<br>  &lt;role rolename=&quot;tdsConfig&quot;/&gt;<br>  &lt;role rolename=&quot;manager&quot;/&gt;<br>  &lt;role rolename=&quot;admin&quot;/&gt;<br>  &lt;user username=&quot;sysadmin&quot; password=&quot;aa01ea2afaae56c2b7da5e25ec18c505e58f12d7&quot; roles=&quot;manager,admin&quot;/&gt;
+  &lt;user username=&quot;cataloger&quot; password=&quot;5413ee24723bba2c5a6ba2d0196c78b3ee4628d1&quot; roles=&quot;tdsConfig&quot;/&gt;<br>&lt;/tomcat-users&gt;</pre>
 <p>Then change the <strong>server.xml</strong> file to tell it to use digested passwords, by adding this &lt;Realm&gt; element to the &lt;Host&gt; element named <strong>localhost</strong>:</p>
 <pre>&lt;Host name=&quot;localhost&quot; debug=&quot;0&quot; appBase=&quot;/opt/tomcat/webapps&quot; unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot; 
      xmlValidation=&quot;false&quot; xmlNamespaceAware=&quot;false&quot;&gt;

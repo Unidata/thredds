@@ -40,7 +40,9 @@
     table must follow the GRIB1 and GRIB2 <a href="http://www.unidata.ucar.edu/software/decoders/javadoc/Parameters.txt">table formats</a>, respectively.<br>
 </p>
 <h2>Runtime Configuration </h2>
-<pre> &lt;runtimeConfig&gt;
+<p>Instead of calling the above routines in your code, you can pass the nj22 library an XML configuration file, that looks like this: </p>
+<pre> &lt;?xml version=&quot;1.0&quot;?&gt;
+ &lt;nj22Config&gt;
 
 <strong>1)</strong> &lt;<strong>ioServiceProvider</strong>  class="edu.univ.ny.stuff.FooFiles"/&gt;
  
@@ -53,7 +55,7 @@
 <strong>5)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;
 
 <strong>6)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters&quot; /&gt;</pre>
-<pre>&lt;/runtimeConfig&gt;</pre>
+<pre>&lt;/nj22Config&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
   <li> Loads a <strong>CoordSysBuilderIF</strong> with the given class name, which looks for the given <strong>Convention</strong> attribute value. </li>
@@ -62,20 +64,20 @@
   <li>Load a GRIB-1 parameter table</li>
   <li>Load a GRIB-2 parameter table. </li>
 </ol>
-<p>From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
-<pre>  // read from file
+<p>There are several ways pass the XML to library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
+<pre>  // Example 1: read from file
   StringBuffer errlog = new StringBuffer();
   FileInputStream fis = new FileInputStream( filename);   
   <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( fis, errlog);
   System.out.println( errlog);
 
-  // read from resource
+  // Example 2: read from resource
   ClassLoader cl = this.getClassLoader();<br>  InputStream is = cl.getResourceAsStream(&quot;resources/nj22/configFile.xml&quot;);
   <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( is, errlog);
 
-  // extract JDOM element from a larger XML document:
+  // Example 3: extract JDOM element from a larger XML document:
   Document doc;<br>  SAXBuilder saxBuilder = new SAXBuilder();<br>  try {<br>    doc = saxBuilder.build(filename);<br>  } catch (JDOMException e) {<br>    throw new IOException(e.getMessage());<br>  }
-  Element root = doc.getRootElement();<br>  Element elem<strong> = </strong>root.getChild(&quot;<strong>runtimeConfig</strong>&quot;);
+  Element root = doc.getRootElement();<br>  Element elem<strong> = </strong>root.getChild(&quot;<strong>nj22Config</strong>&quot;);
   if (elem != null)
     <strong>ucar.nc2.util.RuntimeConfigParser.read</strong>( elem, errlog);
 </pre>
@@ -83,7 +85,7 @@
 <pre>   public void main(String[] args) {
 <br>      for (int i = 0; i &lt; args.length; i++) {<br>        if (args[i].equalsIgnoreCase(&quot;-<strong>nj22Config</strong>&quot;) &amp;&amp; (i &lt; args.length-1)) {<br>          String runtimeConfig = args[i+1];<br>          i++;<br>          try {<br>            StringBuffer errlog = new StringBuffer();<br><strong>            FileInputStream fis = new FileInputStream( runtimeConfig);<br>            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);</strong><br>            System.out.println( errlog);<br>          } catch (IOException ioe) {<br>            System.out.println( &quot;Error reading &quot;+runtimeConfig+&quot;=&quot;+ioe.getMessage());<br>          }<br>        }<br>      }<br>    ...
 </pre>
-<p>If none is specified on the command line, it will look for one at <strong>$USER_HOME/.unidata/nj22Config.xml.</strong><br>
+<p>If none is specified on the command line, it will look for the XML document in <strong>$USER_HOME/.unidata/nj22Config.xml.</strong><br>
 </p>
 <hr>
 <h2>Opening a TypedDataset</h2>
@@ -93,7 +95,7 @@
 <p>  The following are deprecated: <strong>PointObsDatasetFactory, RadialDatasetSweepFactory, TrajectoryObsDatasetFactory</strong></p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 09, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 15, 2006
 </address>
 </body>
 </html>

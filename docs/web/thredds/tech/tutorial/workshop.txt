@@ -33,30 +33,26 @@ Lunch break 11:45-1
  - Digital Library Harvesting (DL enhancer)
  - Metadata Standards
 
-(break 15 min)
- 
-8. TDS and NcML (90) 3:15 - 4:45
- - Dataset Modification/Dataset Aggregation
-
 ---------------------
 
 Second Day
 
-9. Forecast Model Runs (90) 8:30 - 10:00
+8. TDS and NcML (30) 8:45-9:15
+ - Dataset Modification/Dataset Aggregation
+
+9. Forecast Model Runs (45) 9:15 - 10:00
  - FMRC Aggregation
  - ForecastModelRun Inventory Display (modev)
  - FMRC definition files (GRIB)
  
 (break 15 min)
 
-10. Advanced TDS management (90) 10:15 - 11:45
+10. Advanced TDS management (75) 10:15 - 11:35
   - Logs
   - Performance
   - threddsConfig.xml
   - caching
-  - web.xml, server.xml
-    - restrict TDS access by IP (server.xml)
-    - Restricting access to manager by IP address (manager.xml)
+  - Pluggables
   - Viewers
   
 Lunch break 11:45-1

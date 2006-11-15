@@ -72,32 +72,40 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     InvDatasetScan.setContext( contextPath);
     InvDatasetScan.setCatalogServletName( "/catalog" );
 
-    // persistent user-defined params
+    // read in persistent user-defined params from threddsConfog.xml
     ThreddsConfig.init(this.getServletContext(), contentPath+"/threddsConfig.xml", log);
 
+    // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes
+    int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);
+    int max = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 400);
+    int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 10*60);
+    NetcdfFileCache.init(min, max, secs);
+
+    // NetcdfDatasetCache: // allow 100 - 200 open datasets, cleanup every 10 minutes
+    min = ThreddsConfig.getInt("NetcdfDatasetCache.minFiles", 100);
+    max = ThreddsConfig.getInt("NetcdfDatasetCache.minFiles", 200);
+    secs = ThreddsConfig.getSeconds("NetcdfDatasetCache.scour", 10*60);
+    NetcdfDatasetCache.init(min, max, secs);
+
+    // HTTP file access : // allow 20 - 40 open datasets, cleanup every 10 minutes
+    min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 25);
+    max = ThreddsConfig.getInt("HTTPFileCache.minFiles", 40);
+    secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 10*60);
+    FileCache.init(min, max, secs);
+
     // turn off Grib extend indexing; indexes are automatically done every 10 minutes externally
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( false);
+    boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
+    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( extendIndex);
 
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.N3iosp.setProperty( "syncExtendOnly", "true");
 
-    // cache initialization
-    // set the cache directory
-    String cache = ThreddsConfig.getInitParameter("CachePath", contentPath + "cache/");
-    DiskCache.setRootDirectory(cache);
-    DiskCache.setCachePolicy(false); // allow to write into data directory if possible
-
-    // DODS Server
-    NetcdfFileCache.init(200, 300, 10 * 60);  // allow 200 - 300 open files, cleanup every 10 minutes
-    // WCS Server
-    NetcdfDatasetCache.init(200, 300, 10 * 60); // allow 200 - 300 open datasets, cleanup every 10 minutes
-    // HTTP file access
-    FileCache.init(50, 70, 2 * 60);  // allow 20 - 40 open datasets, cleanup every 10 minutes
-
-    // for efficiency, persist aggregations. every 12 hours, delete stuff older than 10 days
-    String cache2 = ThreddsConfig.getInitParameter("CacheAged", contentPath + "cacheAged/");
-    aggCache = new DiskCache2(cache2, false, 60 * 24 * 10, 60 * 12);
-    Aggregation.setPersistenceCache( aggCache);  // */
+    // persist joinNew aggregations. default every 24 hours, delete stuff older than 30 days
+    String dir = ThreddsConfig.get("AggregationCache.dir", contentPath + "cacheAged/");
+    int scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
+    int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 30 * 24 * 60 * 60);
+    aggCache = new DiskCache2(dir, false, maxAgeSecs/60, scourSecs/60);
+    Aggregation.setPersistenceCache( aggCache);
     aggCache.setLogger( cacheLog);
 
     // some paths cant be set otherwise
@@ -115,17 +123,18 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     // Make sure the version info gets calculated.
     getVersion();
 
-    // cache scouring
-    Calendar c = Calendar.getInstance(); // contains current startup time
-    timer = new Timer();
-    // each morning between 1 - 2 am
-    /* c.set( Calendar.HOUR_OF_DAY, 1); // 1 am
-    c.add( Calendar.DAY_OF_YEAR, 1); // tommorrow
-    timer.scheduleAtFixedRate( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 * 24 ); */
+    // Nj22 disk cache
+    dir = ThreddsConfig.get("DiskCache.dir", contentPath + "cache/");
+    boolean alwaysUse = ThreddsConfig.getBoolean("DiskCache.alwaysUse", false);
+    scourSecs = ThreddsConfig.getSeconds("DiskCache.scour", 60 * 60);
+    long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);
+    DiskCache.setRootDirectory(dir);
+    DiskCache.setCachePolicy(alwaysUse);
 
-    // each hour, starting in 30 minutes
-    c.add( Calendar.MINUTE, 30);
-    timer.scheduleAtFixedRate( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 );
+    Calendar c = Calendar.getInstance(); // contains current startup time
+    c.add( Calendar.SECOND, scourSecs/2); // starting in half the scour time
+    timer = new Timer();
+    timer.scheduleAtFixedRate( new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs );
 
     HtmlWriter.init( contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
                       this.getUserCssPath(), this.getContextLogoPath(), this.getInstituteLogoPath() );
@@ -747,11 +756,14 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   }
 
   private class CacheScourTask extends TimerTask {
-    CacheScourTask( ) { }
+    long maxBytes;
+    CacheScourTask(long maxBytes ) {
+      this.maxBytes = maxBytes;
+    }
 
     public void run() {
       StringBuffer sbuff = new StringBuffer();
-      DiskCache.cleanCache(1000 * 1000 * 1000, sbuff); // 1 Gbyte
+      DiskCache.cleanCache(maxBytes, sbuff); // 1 Gbyte
       sbuff.append("----------------------\n");
       cacheLog.info(sbuff.toString());
     }

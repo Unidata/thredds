@@ -53,30 +53,48 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   private DiskCache2 cdmValidateCache = null;
   private DiskFileItemFactory factory;
   private File cacheDir;
+  private long maxFileUploadSize;
+  boolean allow, deleteImmediately;
 
   public void init() throws ServletException {
     super.init();
 
-    String cache = ThreddsConfig.getInitParameter("CdmValidatorCachePath", contentPath);
+    /*   <CdmValidatorService>
+    <allow>true</allow>
+    <dir>/temp/vcache/</dir>
+    <maxFileUploadSize>1 Gb</maxFileUploadSize>
+  </CdmValidatorService>
+  */
+
+    allow = ThreddsConfig.getBoolean("CdmValidatorService.allow", true);
+    maxFileUploadSize = ThreddsConfig.getBytes("CdmValidatorService.maxFileUploadSize", (long) 1000 * 1000 * 1000);
+    String cache = ThreddsConfig.get("CdmValidatorService.dir", contentPath);
+
+    int scourSecs = ThreddsConfig.getSeconds("CdmValidatorService.scour", -1);
+    int maxAgeSecs = ThreddsConfig.getSeconds("CdmValidatorService.maxAge", -1);
+    if (maxAgeSecs <= 0)
+      deleteImmediately = true;
+    else {
+      cdmValidateCache = new DiskCache2(cache, false, maxAgeSecs/60, scourSecs/60);
+      cdmValidateCache.setLogger( org.slf4j.LoggerFactory.getLogger("cacheLogger"));
+    }
 
     cacheDir = new File(cache);
     cacheDir.mkdirs();
     factory = new DiskFileItemFactory(0, cacheDir); // LOOK can also do in-memory
-
-    // every 24 hours, delete stuff older than 30 days
-    cdmValidateCache = new DiskCache2(cache, false, 60 * 24 * 30, 60 * 24);
-    cdmValidateCache.setLogger( org.slf4j.LoggerFactory.getLogger("cacheLogger"));
   }
 
   public void destroy() {
-    cdmValidateCache.exit();
+    if (cdmValidateCache != null)
+      cdmValidateCache.exit();
+    super.destroy();
   }
 
   protected String getPath() { return "cdmValidate/"; }
   protected void makeDebugActions() { }
 
   /**
-   * GET handles the case whete its a remote URL (dods or http)
+   * GET handles the case where its a remote URL (dods or http)
    * @param req  request
    * @param res  response
    * @throws ServletException
@@ -84,6 +102,11 @@ public class CoordSysValidatorServlet extends AbstractServlet {
    */
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException {
+
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return;
+    }
 
     ServletUtil.logServerAccessSetup(req);
 
@@ -97,26 +120,35 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     String xml = req.getParameter("xml");
     boolean wantXml = (xml != null) && xml.equals("true");
 
-    NetcdfDataset ncd;
+    NetcdfDataset ncd = null;
     try {
-      ncd = NetcdfDataset.openDataset(urlString, true, null);
+      try {
+        ncd = NetcdfDataset.openDataset(urlString, true, null);
 
-    } catch (IOException e) {
-      log.info("Cant open url "+urlString, e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-      return;
-    }
+      } catch (IOException e) {
+        ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        return;
+      }
 
-    try {
-      int len = showValidatorResults(res, ncd, wantXml);
-      log.info( "URL = " + urlString);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
+      try {
+        int len = showValidatorResults(res, ncd, wantXml);
+        log.info( "URL = " + urlString);
+        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
 
-    } catch (Exception e) {
-      log.error("Validator internal error", e);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Validator internal error");
+      } catch (Exception e) {
+        log.error("Validator internal error", e);
+        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Validator internal error");
+      }
+
+    } finally {
+      if (null != ncd)
+        try {
+          ncd.close();
+        } catch (IOException ioe) {
+          log.error( "Failed to close = " + urlString);
+        }
     }
   }
 
@@ -130,6 +162,11 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException {
 
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return;
+    }
+
     ServletUtil.logServerAccessSetup(req);
 
     // Check that we have a file upload request
@@ -142,7 +179,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
 
     //Create a new file upload handler
     ServletFileUpload upload = new ServletFileUpload(factory);
-    upload.setSizeMax(100 * 1000 * 1000);  // maximum bytes before a FileUploadException will be thrown
+    upload.setSizeMax(maxFileUploadSize);  // maximum bytes before a FileUploadException will be thrown
 
     List fileItems;
     try {
@@ -202,9 +239,29 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     uploadedFile.getParentFile().mkdirs();
     item.write(uploadedFile);
 
-    NetcdfDataset ncd = NetcdfDataset.openDataset(uploadedFile.getPath());
-    ncd.setLocation( filename);
-    int len = showValidatorResults( res, ncd, wantXml);
+    NetcdfDataset ncd = null;
+    int len = -1;
+    try {
+      ncd = NetcdfDataset.openDataset(uploadedFile.getPath());
+      ncd.setLocation(filename);
+      len = showValidatorResults(res, ncd, wantXml);
+
+    } finally {
+      if (null != ncd)
+        try {
+          ncd.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + uploadedFile.getPath());
+        }
+    }
+
+    if (deleteImmediately) {
+      try {
+        uploadedFile.delete();
+      } catch (Exception e) {
+        log.error( "Uploaded File = " + uploadedFile.getPath() + " delete failed = " + e.getMessage());
+      }
+    }
 
     if (req.getRemoteUser() == null) {
       if (username != null)
@@ -215,7 +272,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
   }
 
-  static public int showValidatorResults(HttpServletResponse res, NetcdfDataset ncd, boolean wantXml) throws Exception {
+  private int showValidatorResults(HttpServletResponse res, NetcdfDataset ncd, boolean wantXml) throws Exception {
 
     NetcdfDatasetInfo info = ncd.getInfo();
     String infoString;
@@ -246,9 +303,14 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     return infoString.length();
   }
 
-  static private InputStream getXSLT() {
+  private InputStream getXSLT() {
     Class c = CoordSysValidatorServlet.class;
-    return c.getResourceAsStream("/resources/xsl/cdmValidation.xsl"); 
+    String resource = "/resources/xsl/cdmValidation.xsl";
+    InputStream is = c.getResourceAsStream(resource);
+    if (null == is)
+      log.error( "Cant load XSLT resource = " + resource);
+
+    return is;
   }
 }
 

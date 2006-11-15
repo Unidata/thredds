@@ -4,11 +4,13 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.13
  Features
+  * WCS has its own working directory
+  * threddsConfig.xml now has all user-settable parameters
   * check for duplicate ids in catalogs
   * dynamic class loading parameters in threddsConfig.xml
   * debug/reinit also rereads in threddsConfig.xml
   * params.xml, extraCatalogs.txt is now threddsConfig.xml
-  * rearrange log files: cataloggen, catalogErrors, cache messages to seperate files
+  * rearrange log files: cataloggen, catalogErrors, cache messages to separate files
   * add folder icons
   * Forecast Model Run Collections : InvDatasetFmrc.
   * WCS logs have length
@@ -19,6 +21,7 @@ Changes in version 3.13
     - Streamline the discovery of CrawlableDataset descendants by adding
       exists() and getDescendant() methods.
  Bugs
+  * not properly closing files in the NetcdfSubset, CdmValidator services
   * locating DataRoot failed in some cases with multiple roots starting with same name
   * embedded NcML on dataset wasnt working
   * IDV.jnlp grid:opendap:URL

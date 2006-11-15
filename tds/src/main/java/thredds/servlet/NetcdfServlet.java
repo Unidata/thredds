@@ -58,315 +58,325 @@ import org.jdom.transform.XSLTransformer;
 
 /**
  * Netcdf Grid subsetting.
+ *
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class NetcdfServlet extends AbstractServlet {
-  private ucar.nc2.util.DiskCache2 fmrCache = null;
-  private boolean debug = false;
+  private ucar.nc2.util.DiskCache2 diskCache = null;
+  private boolean allow = true, deleteImmediately = true;
+  private long maxFileDownloadSize;
 
   // must end with "/"
-  protected String getPath() { return "ncServer/"; }
+  protected String getPath() {
+    return "ncServer/";
+  }
 
-  protected void makeDebugActions() { }
+  protected void makeDebugActions() {
+  }
 
 
   public void init() throws ServletException {
     super.init();
 
-    String cache = ThreddsConfig.getInitParameter("NetcdfServletCachePath", contentPath + "/cache");
+    /*   <NetcdfSubsetService>
+    <allow>true</allow>
+    <dir>/temp/ncache/</dir>
+    <maxFileDownloadSize>1 Gb</maxFileDownloadSize>
+  </NetcdfSubsetService> */
 
-    // cache the fmr inventory xml: keep for 1 day, scour once a day */
-    fmrCache = new DiskCache2(cache, false, 60 * 24, 60 * 24);
-    //fmrCache.setCachePathPolicy( DiskCache2.CACHEPATH_POLICY_NESTED_TRUNCATE, "grid/");
+    allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true);
+    maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
+    String cache = ThreddsConfig.get("NetcdfSubsetService.dir", contentPath + "/cache");
+    File cacheDir = new File(cache);
+    cacheDir.mkdirs();
+
+    int scourSecs = ThreddsConfig.getSeconds("NetcdfSubsetService.scour", 60 * 10);
+    int maxAgeSecs = ThreddsConfig.getSeconds("NetcdfSubsetService.maxAge", -1);
+    maxAgeSecs = Math.max(maxAgeSecs, 60 * 5);  // give at least 5 minutes to download before scouring kicks in.
+    scourSecs = Math.max(scourSecs, 60 * 5);  // always need to scour, in case user doesnt get the file, we need to clean it up
+
+    // LOOK: what happens if we are still downloading when the disk scour starts?
+    diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
+    diskCache.setLogger(org.slf4j.LoggerFactory.getLogger("cacheLogger"));
   }
 
   public void destroy() {
-    if (fmrCache != null)
-      fmrCache.exit();
+    if (diskCache != null)
+      diskCache.exit();
+    super.destroy();
   }
 
   protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-     doGet( req, res);
+    doGet(req, res);
   }
 
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return;
+    }
 
-    ServletUtil.logServerAccessSetup( req );
-    ServletUtil.showRequestDetail( this, req );
+    ServletUtil.logServerAccessSetup(req);
+    ServletUtil.showRequestDetail(this, req);
 
     String pathInfo = req.getPathInfo();
 
-    if (pathInfo.startsWith("/cache/")) {
-      pathInfo = pathInfo.substring(7);
-      File ncFile = fmrCache.getCacheFile(pathInfo);
-      ServletUtil.returnFile(this, "", ncFile.getPath(), req, res, "application/x-netcdf");
-      return;
-    }
 
-    // dorky thing to get the transferred file to end in ".nc"
-    // LOOK: problem when it does end in nc !!
-    if (pathInfo.endsWith(".nc"))
-       pathInfo = pathInfo.substring(0,pathInfo.length()-3);
-
-    GridDataset gds = DatasetHandler.openGridDataset( pathInfo);
-    ForecastModelRunInventory fmr = ForecastModelRunInventory.open(gds, null);
-
-    /* File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( pathInfo);
-    if (file == null) {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
-      res.sendError(HttpServletResponse.SC_NOT_FOUND);
-      return;
-    }
-    log.debug("**NetcdfService req="+file.getPath());
-
-    // for convenince, we open as an FMR, since it already has the XML we need for the form
-    ForecastModelRunInventory fmr = ForecastModelRunInventory.open( fmrCache, file.getPath(), ForecastModelRunInventory.OPEN_NORMAL, true);
-    fmr.setName( req.getRequestURI());  */
-
-    String wantXML = req.getParameter("wantXML");
-    String showForm = req.getParameter("showForm");
-    if (showForm != null) {
-      try {
-        showForm( res, fmr, wantXML != null);
-      } catch (Exception e) {
-        log.error("showForm", e);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      }
-      return;
-    }
-
-    // heres where we process the request for the netcdf subset
+    // just echo back the request
     String showRequest = req.getParameter("showRequest");
     if (showRequest != null) {
       OutputStream out = res.getOutputStream();
-      PrintStream ps = new PrintStream( out);
+      PrintStream ps = new PrintStream(out);
 
-      ps.println("**NetcdfService req="+pathInfo);
-      ps.println(ServletUtil.showRequestDetail( this, req ));
+      ps.println("**NetcdfService req=" + pathInfo);
+      ps.println(ServletUtil.showRequestDetail(this, req));
       ps.flush();
       return;
     }
 
-    // allowed form: grid=gridName or grid=gridName;gridName;gridName;...
-    ArrayList varList = new ArrayList();
-    String[] vars = ServletUtil.getParameterValuesIgnoreCase(req, "grid");
-    if (vars != null) {
-      for (int i = 0; i < vars.length; i++) {
-        StringTokenizer stoke = new StringTokenizer( vars[i], ";");
-        while (stoke.hasMoreTokens()) {
-          String gridName = StringUtil.unescape( stoke.nextToken());
-          varList.add(gridName);
-        }
-      }
-    }
-
-    // make sure all requested variables exist
-    int count = 0;
-    StringBuffer buff = new StringBuffer();
-    for (int i = 0; i < varList.size(); i++) {
-      String varName = (String) varList.get(i);
-      if (null == gds.findGridDatatype(varName)) {
-        buff.append(varName);
-        if (count > 0) buff.append(";");
-        count++;
-      }
-    }
-    if (buff.length() != 0) {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Grid(s) not found in dataset="+buff);
+    /// we have already created the file, now its going to get it
+    if (pathInfo.startsWith("/cache/")) {
+      pathInfo = pathInfo.substring(7);
+      File ncFile = diskCache.getCacheFile(pathInfo);
+      ServletUtil.returnFile(this, "", ncFile.getPath(), req, res, "application/x-netcdf");
+      if (deleteImmediately)
+        ncFile.delete();
       return;
     }
 
-    // check for bounding box
-    boolean hasBB = false;
-    double north=0.0, south=0.0, west=0.0, east=0.0;
-    String bb = ServletUtil.getParameterIgnoreCase(req, "bb");
-    if (bb != null) {
-      boolean err = false;
-      StringTokenizer stoke = new StringTokenizer( bb, ",");
-      if (stoke.countTokens() != 4)
-        err = true;
-      else try {
-        north = Double.parseDouble( stoke.nextToken());
-        south = Double.parseDouble( stoke.nextToken());
-        west = Double.parseDouble( stoke.nextToken());
-        east = Double.parseDouble( stoke.nextToken());
-        hasBB = true;
-      } catch (NumberFormatException e) {
-        err = true;
-      }
-      if (err) {
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "BoundingBox parameter must be 'north,south,west,east'");
+    // otherwise we are processing a new request to creat a subset
+
+    // dorky thing to get the transferred file to end in ".nc"
+    // LOOK: problem when it does end in nc !!
+    if (pathInfo.endsWith(".nc"))
+      pathInfo = pathInfo.substring(0, pathInfo.length() - 3);
+
+    ForecastModelRunInventory fmr = null;
+    try {
+      GridDataset gds = DatasetHandler.openGridDataset(pathInfo);
+      fmr = ForecastModelRunInventory.open(gds, null);
+
+      String wantXML = req.getParameter("wantXML");
+      String showForm = req.getParameter("showForm");
+      if (showForm != null) {
+        try {
+          showForm(res, fmr, wantXML != null);
+        } catch (Exception e) {
+          log.error("showForm", e);
+          ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
         return;
       }
-    } else {
-      String northS = ServletUtil.getParameterIgnoreCase(req, "north");
-      String southS = ServletUtil.getParameterIgnoreCase(req, "south");
-      String eastS = ServletUtil.getParameterIgnoreCase(req, "west");
-      String westS = ServletUtil.getParameterIgnoreCase(req, "east");
 
-      boolean haveSome = ((northS != null) && (northS.trim()).length() > 0) ||
-        ((southS != null) && (southS.trim()).length() > 0) ||
-        ((eastS != null) && (eastS.trim()).length() > 0) ||
-        ((westS != null) && (westS.trim()).length() > 0);
+      // parse the parameters
+
+      // allowed form: grid=gridName or grid=gridName;gridName;gridName;...
+      ArrayList varList = new ArrayList();
+      String[] vars = ServletUtil.getParameterValuesIgnoreCase(req, "grid");
+      if (vars != null) {
+        for (int i = 0; i < vars.length; i++) {
+          StringTokenizer stoke = new StringTokenizer(vars[i], ";");
+          while (stoke.hasMoreTokens()) {
+            String gridName = StringUtil.unescape(stoke.nextToken());
+            varList.add(gridName);
+          }
+        }
+      }
+
+      // make sure all requested variables exist
+      int count = 0;
+      StringBuffer buff = new StringBuffer();
+      for (int i = 0; i < varList.size(); i++) {
+        String varName = (String) varList.get(i);
+        if (null == gds.findGridDatatype(varName)) {
+          buff.append(varName);
+          if (count > 0) buff.append(";");
+          count++;
+        }
+      }
+      if (buff.length() != 0) {
+        ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Grid(s) not found in dataset=" + buff);
+        return;
+      }
+
+      // check for bounding box
+      boolean hasBB = false;
+      double north = 0.0, south = 0.0, west = 0.0, east = 0.0;
+      String bb = ServletUtil.getParameterIgnoreCase(req, "bb");
+      if (bb != null) {
+        boolean err = false;
+        StringTokenizer stoke = new StringTokenizer(bb, ",");
+        if (stoke.countTokens() != 4)
+          err = true;
+        else try {
+          north = Double.parseDouble(stoke.nextToken());
+          south = Double.parseDouble(stoke.nextToken());
+          west = Double.parseDouble(stoke.nextToken());
+          east = Double.parseDouble(stoke.nextToken());
+          hasBB = true;
+        } catch (NumberFormatException e) {
+          err = true;
+        }
+        if (err) {
+          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "BoundingBox parameter must be 'north,south,west,east'");
+          return;
+        }
+      } else {
+        String northS = ServletUtil.getParameterIgnoreCase(req, "north");
+        String southS = ServletUtil.getParameterIgnoreCase(req, "south");
+        String eastS = ServletUtil.getParameterIgnoreCase(req, "west");
+        String westS = ServletUtil.getParameterIgnoreCase(req, "east");
+
+        boolean haveSome = ((northS != null) && (northS.trim()).length() > 0) ||
+                ((southS != null) && (southS.trim()).length() > 0) ||
+                ((eastS != null) && (eastS.trim()).length() > 0) ||
+                ((westS != null) && (westS.trim()).length() > 0);
+
+        //if ya have one gotta have em all
+        if (haveSome) {
+          boolean err = false;
+          boolean haveAll = ((northS != null) && (northS.trim()).length() > 0) &&
+                  ((southS != null) && (southS.trim()).length() > 0) &&
+                  ((eastS != null) && (eastS.trim()).length() > 0) &&
+                  ((westS != null) && (westS.trim()).length() > 0);
+
+          if (!haveAll) {
+            err = true;
+
+          } else try {
+            north = Double.parseDouble(northS);
+            south = Double.parseDouble(southS);
+            west = Double.parseDouble(eastS);
+            east = Double.parseDouble(westS);
+
+            LatLonRect maxBB = fmr.getBB();
+            if (null == maxBB)
+              hasBB = true;
+            else {
+              hasBB = !ucar.nc2.util.Misc.closeEnough(north, maxBB.getUpperRightPoint().getLatitude()) ||
+                      !ucar.nc2.util.Misc.closeEnough(south, maxBB.getLowerLeftPoint().getLatitude()) ||
+                      !ucar.nc2.util.Misc.closeEnough(east, maxBB.getUpperRightPoint().getLongitude()) ||
+                      !ucar.nc2.util.Misc.closeEnough(west, maxBB.getLowerLeftPoint().getLongitude());
+            }
+          } catch (NumberFormatException e) {
+            err = true;
+          }
+
+          if (err) {
+            ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Must have valid north, south, west, east parameters");
+            return;
+          }
+        }
+      }
+      LatLonRect llbb = hasBB ? new LatLonRect(new LatLonPointImpl(south, west), new LatLonPointImpl(north, east)) : null;
+
+      // look for time range
+      boolean hasTimeRange = false;
+      double time_start = -1.0, time_end = -1.0;
+      /*String time_range = ServletUtil.getParameterIgnoreCase(req, "time_range");
+      if (time_range != null) {
+        boolean err = false;
+        StringTokenizer stoke = new StringTokenizer( bb, ",");
+        if (stoke.countTokens() != 2)
+          err = true;
+        else {
+          time_start = formatter.getISODate( stoke.nextToken());
+          time_end = formatter.getISODate( stoke.nextToken());
+          err = (time_start == null) || (time_end == null);
+          hasTimeRange = true;
+        }
+        if (err) {
+          ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "time_range must have start,end as valid ISO date strings");
+          return;
+        }
+      } else {  */
+
+      String startS = ServletUtil.getParameterIgnoreCase(req, "time_start");
+      String endS = ServletUtil.getParameterIgnoreCase(req, "time_end");
+
+      boolean haveSome = ((startS != null) && (startS.trim()).length() > 0) ||
+              ((endS != null) && (endS.trim()).length() > 0);
 
       //if ya have one gotta have em all
       if (haveSome) {
         boolean err = false;
-        boolean haveAll = ((northS != null) && (northS.trim()).length() > 0) &&
-          ((southS != null) && (southS.trim()).length() > 0) &&
-          ((eastS != null) && (eastS.trim()).length() > 0) &&
-          ((westS != null) && (westS.trim()).length() > 0);
+        boolean haveAll = ((startS != null) && (startS.trim()).length() > 0) &&
+                ((endS != null) && (endS.trim()).length() > 0);
 
         if (!haveAll) {
           err = true;
-
-        } else try {
-          north = Double.parseDouble( northS);
-          south = Double.parseDouble( southS);
-          west = Double.parseDouble( eastS);
-          east = Double.parseDouble( westS);
-
-          LatLonRect maxBB = fmr.getBB();
-          if (null == maxBB)
-            hasBB = true;
-          else {
-            hasBB = !ucar.nc2.util.Misc.closeEnough( north, maxBB.getUpperRightPoint().getLatitude()) ||
-                    !ucar.nc2.util.Misc.closeEnough( south, maxBB.getLowerLeftPoint().getLatitude()) ||
-                    !ucar.nc2.util.Misc.closeEnough( east, maxBB.getUpperRightPoint().getLongitude()) ||
-                    !ucar.nc2.util.Misc.closeEnough( west, maxBB.getLowerLeftPoint().getLongitude());
-          }
-        } catch (NumberFormatException e) {
-          err = true;
+        } else {
+          time_start = Double.parseDouble(startS);
+          time_end = Double.parseDouble(endS);
+          hasTimeRange = true;
         }
-
         if (err) {
-          ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Must have valid north, south, west, east parameters");
+          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Must have time_start and time_end parameters as offsets in hours");
           return;
         }
       }
-    }
-    LatLonRect llbb = hasBB ? new LatLonRect( new LatLonPointImpl(south, west), new LatLonPointImpl(north, east)) : null;
 
-    // look for time range
-    boolean hasTimeRange = false;
-    double time_start = -1.0, time_end = -1.0;
-    /*String time_range = ServletUtil.getParameterIgnoreCase(req, "time_range");
-    if (time_range != null) {
-      boolean err = false;
-      StringTokenizer stoke = new StringTokenizer( bb, ",");
-      if (stoke.countTokens() != 2)
-        err = true;
-      else {
-        time_start = formatter.getISODate( stoke.nextToken());
-        time_end = formatter.getISODate( stoke.nextToken());
-        err = (time_start == null) || (time_end == null);
-        hasTimeRange = true;
+      // look for strides
+      boolean hasStride = false;
+      int stride_xy = -1;
+      String s = ServletUtil.getParameterIgnoreCase(req, "stride_xy");
+      if (s != null) {
+        try {
+          stride_xy = Integer.parseInt(s);
+          hasStride = true;
+        } catch (NumberFormatException e) {
+          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_xy must have valid integer argument");
+          return;
+        }
       }
-      if (err) {
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "time_range must have start,end as valid ISO date strings");
-        return;
+      int stride_z = -1;
+      s = ServletUtil.getParameterIgnoreCase(req, "stride_z");
+      if (s != null) {
+        try {
+          stride_z = Integer.parseInt(s);
+          hasStride = true;
+        } catch (NumberFormatException e) {
+          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_z must have valid integer argument");
+          return;
+        }
       }
-    } else {  */
-
-    String startS = ServletUtil.getParameterIgnoreCase(req, "time_start");
-    String endS = ServletUtil.getParameterIgnoreCase(req, "time_end");
-
-    boolean haveSome = ((startS != null) && (startS.trim()).length() > 0) ||
-            ((endS != null) && (endS.trim()).length() > 0);
-
-    //if ya have one gotta have em all
-    if (haveSome) {
-      boolean err = false;
-      boolean haveAll = ((startS != null) && (startS.trim()).length() > 0) &&
-            ((endS != null) && (endS.trim()).length() > 0);
-
-      if (!haveAll) {
-        err = true;
-      } else {
-        time_start = Double.parseDouble( startS);
-        time_end = Double.parseDouble( endS);
-        hasTimeRange = true;
+      int stride_time = -1;
+      s = ServletUtil.getParameterIgnoreCase(req, "stride_time");
+      if (s != null) {
+        try {
+          stride_time = Integer.parseInt(s);
+          hasStride = true;
+        } catch (NumberFormatException e) {
+          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_time must have valid integer argument");
+          return;
+        }
       }
-      if (err) {
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Must have time_start and time_end parameters as offsets in hours");
-        return;
-      }
-    }
 
-    // look for strides
-    boolean hasStride = false;
-    int stride_xy = -1;
-    String s = ServletUtil.getParameterIgnoreCase(req, "stride_xy");
-    if (s != null) {
+      boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
+
       try {
-        stride_xy = Integer.parseInt(s);
-        hasStride = true;
-      } catch (NumberFormatException e) {
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_xy must have valid integer argument");
-        return;
+        sendFile(req, res, gds, varList, llbb, hasTimeRange, time_start, time_end, addLatLon, stride_xy, stride_z, stride_time);
+      } catch (InvalidRangeException e) {
+        ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
-    }
-    int stride_z = -1;
-    s = ServletUtil.getParameterIgnoreCase(req, "stride_z");
-    if (s != null) {
-      try {
-        stride_z = Integer.parseInt(s);
-        hasStride = true;
-      } catch (NumberFormatException e) {
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_z must have valid integer argument");
-        return;
-      }
-    }
-    int stride_time = -1;
-    s = ServletUtil.getParameterIgnoreCase(req, "stride_time");
-    if (s != null) {
-      try {
-        stride_time = Integer.parseInt(s);
-        hasStride = true;
-      } catch (NumberFormatException e) {
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_time must have valid integer argument");
-        return;
-      }
-    }
-
-    /* they want the entire file
-    // LOOK: conversion to CF
-    if ((varList.size() == 0) && !hasBB && !hasTimeRange && !hasStride) {
-      File result = new File(datasetPath);
-      if (!ncfileIn.isNetcdf3FileFormat()) {
-        String fileOut = "C:/temp/"+result.getName();
-        result = new File(fileOut);
-        if (result.exists())
-          result.delete();
-
-        NetcdfFile ncfileOut = FileWriter.writeToFile(ncfileIn, fileOut);
-        ncfileOut.close();
-      }
-      ncfileIn.close();
-
-      ServletUtil.returnFile(this, req, res, result, "application/x-netcdf");
-      return;
-
-    }   */
-
-    boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
-
-    try {
-      sendFile(req, res, gds, varList, llbb, hasTimeRange, time_start, time_end, addLatLon, stride_xy, stride_z, stride_time);
-    } catch (InvalidRangeException e) {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
-      return;
+    } finally {
+      if (null != fmr)
+        try {
+          fmr.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + pathInfo);
+        }
     }
   }
 
@@ -387,7 +397,7 @@ public class NetcdfServlet extends AbstractServlet {
       String gridName = (String) gridList.get(i);
       if (varNameList.contains(gridName))
         continue;
-      varNameList.add( gridName);
+      varNameList.add(gridName);
 
       GridDatatype grid = gds.findGridDatatype(gridName);
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
@@ -405,14 +415,14 @@ public class NetcdfServlet extends AbstractServlet {
       }
 
       Variable gridV = (Variable) grid.getVariable();
-      varList.add( gridV);
+      varList.add(gridV);
 
       GridCoordSystem gcs = grid.getCoordinateSystem();
       List axes = gcs.getCoordinateAxes();
       for (int j = 0; j < axes.size(); j++) {
         Variable axis = (Variable) axes.get(j);
         if (!varNameList.contains(axis.getName())) {
-          varNameList.add( axis.getName());
+          varNameList.add(axis.getName());
           varList.add(axis);
         }
       }
@@ -421,9 +431,9 @@ public class NetcdfServlet extends AbstractServlet {
       List ctList = gcs.getCoordinateTransforms();
       for (int j = 0; j < ctList.size(); j++) {
         CoordinateTransform ct = (CoordinateTransform) ctList.get(j);
-        Variable v = ncd.findVariable( ct.getName());
+        Variable v = ncd.findVariable(ct.getName());
         if (!varNameList.contains(ct.getName()) && (null != v)) {
-          varNameList.add( ct.getName());
+          varNameList.add(ct.getName());
           varList.add(v);
         }
       }
@@ -431,7 +441,7 @@ public class NetcdfServlet extends AbstractServlet {
       if (addLatLon) {
         Projection proj = gcs.getProjection();
         if ((null != proj) && !(proj instanceof LatLonProjection)) {
-          addLatLon2D(ncd, varList, proj, gcs.getXHorizAxis() , gcs.getYHorizAxis());
+          addLatLon2D(ncd, varList, proj, gcs.getXHorizAxis(), gcs.getYHorizAxis());
           addLatLon = false;
         }
       }
@@ -439,33 +449,33 @@ public class NetcdfServlet extends AbstractServlet {
 
     String path = req.getRequestURI();
     int pos = path.lastIndexOf("/");
-    path = path.substring(pos+1);
-    Random random = new Random( System.currentTimeMillis());
+    path = path.substring(pos + 1);
+    Random random = new Random(System.currentTimeMillis());
     int randomInt = random.nextInt();
 
     String filename = Integer.toString(randomInt) + "/" + path;
-    File ncFile = fmrCache.getCacheFile(filename);
+    File ncFile = diskCache.getCacheFile(filename);
     String cacheFilename = ncFile.getPath();
 
     String url = "/thredds/ncServer/cache/" + filename;
 
     try {
-      FileWriter writer = new FileWriter( cacheFilename, true);
-      writer.writeVariables( varList);
+      FileWriter writer = new FileWriter(cacheFilename, true);
+      writer.writeVariables(varList);
 
       String location = gds.getNetcdfFile().getLocation();
-      writer.writeGlobalAttribute( new Attribute("History", "GridDatatype extracted from dataset "+location));
+      writer.writeGlobalAttribute(new Attribute("History", "GridDatatype extracted from dataset " + location));
 
       List gatts = ncd.getGlobalAttributes();
       for (int i = 0; i < gatts.size(); i++) {
         Attribute att = (Attribute) gatts.get(i);
-        writer.writeGlobalAttribute( att);
+        writer.writeGlobalAttribute(att);
       }
 
       //writer.writeGlobalAttribute( new Attribute("Convention", "_Coordinates"));
       writer.finish();
     } catch (IOException ioe) {
-      log.error("Writing to "+cacheFilename, ioe);
+      log.error("Writing to " + cacheFilename, ioe);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
@@ -561,9 +571,14 @@ public class NetcdfServlet extends AbstractServlet {
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, infoString.length());
   }
 
-  static private InputStream getXSLT(String xslName) {
-    Class c = FmrcInventoryServlet.class;
-    return c.getResourceAsStream("/resources/xsl/" + xslName);
+  private InputStream getXSLT(String xslName) {
+    Class c = this.getClass();
+    String resource = "/resources/xsl/" + xslName;
+    InputStream is = c.getResourceAsStream(resource);
+    if (null == is)
+      log.error( "Cant load XSLT resource = " + resource);
+
+    return is;
   }
 
 }

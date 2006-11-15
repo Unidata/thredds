@@ -98,7 +98,7 @@ public class DataRootHandler {
   //private StringBuffer catalogErrorLog = new StringBuffer(); // used during initialization
   // @GuardedBy("this")
   private ArrayList catalogRootList = new ArrayList(); // List of root catalog filenames (String)
-  // @GuardedBy("this")
+  // @GuardedBy("this") LOOK should be able to access without synchronization
   private HashMap staticCatalogHash = new HashMap(); // Hash of static catalogs, key = path
   // @GuardedBy("this")
   private HashSet idHash = new HashSet(); // Hash of ids, to look for duplicates
