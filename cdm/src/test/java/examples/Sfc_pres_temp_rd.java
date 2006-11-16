@@ -1,4 +1,4 @@
-package ucar.nc2.iosp.nids;
+package examples;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileCache;
