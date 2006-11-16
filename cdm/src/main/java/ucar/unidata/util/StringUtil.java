@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id: StringUtil.java,v 1.41 2006/10/04 22:21:31 dmurray Exp $
+// $Id: StringUtil.java,v 1.46 2006/11/15 00:06:06 jeffmc Exp $
 
 
 package ucar.unidata.util;
@@ -37,7 +37,7 @@ import java.util.regex.*;
 /**
  * String utilities
  * @author John Caron
- * @version $Id: StringUtil.java,v 1.41 2006/10/04 22:21:31 dmurray Exp $
+ * @version $Id: StringUtil.java,v 1.46 2006/11/15 00:06:06 jeffmc Exp $
  */
 
 public class StringUtil {
@@ -351,9 +351,10 @@ public class StringUtil {
      */
     static public int match(String s1, String s2) {
       int i = 0;
-      while (i < s1.length() && i < s2.length()) {
-        if (s1.charAt(i) != s2.charAt(i))
+        while ((i < s1.length()) && (i < s2.length())) {
+            if (s1.charAt(i) != s2.charAt(i)) {
           break;
+            }
         i++;
       }
       return i;
@@ -621,7 +622,11 @@ public class StringUtil {
                 || (patternString.indexOf('|') >= 0)
                 || (patternString.indexOf('(') >= 0)
                 || (patternString.indexOf('$') >= 0)
-                || (patternString.indexOf('+') >= 0));
+                || (patternString.indexOf('?') >= 0)
+                || (patternString.indexOf('.') >= 0)
+                || ((patternString.indexOf('[') >= 0)
+                    && (patternString.indexOf(']')
+                        >= 0)) || (patternString.indexOf('+') >= 0));
     }
 
 
@@ -688,6 +693,9 @@ public class StringUtil {
                     }
                 }
                 //Next see if there are any regexp chars
+                if (patternString.toLowerCase().indexOf("t_") >= 0) {
+                    //                    System.err.println ("pattern:" + patternString + " " +StringUtil.containsRegExp(patternString));
+                }
                 if ( !StringUtil.containsRegExp(patternString)) {
                     return false;
                 }
@@ -1983,7 +1991,10 @@ public class StringUtil {
         for (int i = 0; i < toks.size(); i++) {
             String tok = (String) toks.get(i);
             if (nextMacro) {
-                String value = (String) props.get(tok);
+                Object obj   = props.get(tok);
+                String value = ((obj != null)
+                                ? obj.toString()
+                                : null);
                 if (value == null) {
                     if (throwError) {
                         throw new IllegalArgumentException(

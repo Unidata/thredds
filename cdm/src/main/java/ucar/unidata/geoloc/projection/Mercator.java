@@ -37,7 +37,7 @@ import ucar.unidata.util.SpecialMathFunction;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id:Mercator.java 63 2006-07-12 21:50:51Z edavis $
+ *   @version $Id: Mercator.java,v 1.6 2006/11/08 14:16:44 dmurray Exp $
  */
 
 
@@ -213,7 +213,7 @@ public class Mercator extends ProjectionImpl {
      * @return true if this represents the same Projection as proj.
      */
     public boolean equals(Object proj) {
-        if ( !(proj instanceof TransverseMercator)) {
+        if ( !(proj instanceof Mercator)) {
             return false;
         }
 

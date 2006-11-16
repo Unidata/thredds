@@ -1,5 +1,5 @@
 /*
- * $Id:LatLonProjection.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: LatLonProjection.java,v 1.29 2006/08/18 17:07:39 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -36,7 +37,7 @@ import ucar.unidata.util.Format;
  *
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id:LatLonProjection.java 63 2006-07-12 21:50:51Z edavis $
+ *   @version $Id: LatLonProjection.java,v 1.29 2006/08/18 17:07:39 dmurray Exp $
  */
 
 
@@ -168,8 +169,11 @@ public class LatLonProjection extends ProjectionImpl {
      * @return the "to" array
      */
     public float[][] projToLatLon(float[][] from, float[][] to) {
-        System.arraycopy(from[INDEX_X], 0, to[INDEX_LON], 0, from[0].length);
-        System.arraycopy(from[INDEX_Y], 0, to[INDEX_LAT], 0, from[0].length);
+
+        float[] fromX = from[INDEX_X];
+        float[] fromY = from[INDEX_Y];
+        to[INDEX_LAT] = fromY;
+        to[INDEX_LON] = fromX;
         return to;
     }
 
@@ -193,11 +197,17 @@ public class LatLonProjection extends ProjectionImpl {
         int cnt = from[0].length;
         System.arraycopy(from[latIndex], 0, to[INDEX_Y], 0, cnt);
         float[] toX     = to[INDEX_X];
+        float[] toY     = to[INDEX_Y];
+        float[] fromLat = from[latIndex];
         float[] fromLon = from[lonIndex];
+        float   lat, lon;
         for (int i = 0; i < cnt; i++) {
-            toX[i] = (float) (centerLon
+            lat = fromLat[i];
+            lon = (float) (centerLon
                               + Math.IEEEremainder(fromLon[i] - centerLon,
                                                    360.0));
+            toX[i] = lon;
+            toY[i] = lat;
         }
         return to;
     }
@@ -216,8 +226,11 @@ public class LatLonProjection extends ProjectionImpl {
      * @return the "to" array
      */
     public double[][] projToLatLon(double[][] from, double[][] to) {
-        System.arraycopy(from[INDEX_X], 0, to[INDEX_LON], 0, from[0].length);
-        System.arraycopy(from[INDEX_Y], 0, to[INDEX_LAT], 0, from[0].length);
+
+        double[] fromX = from[INDEX_X];
+        double[] fromY = from[INDEX_Y];
+        to[INDEX_LAT] = fromY;
+        to[INDEX_LON] = fromX;
         return to;
     }
 
@@ -240,11 +253,16 @@ public class LatLonProjection extends ProjectionImpl {
         int cnt = from[0].length;
         System.arraycopy(from[latIndex], 0, to[INDEX_Y], 0, cnt);
         double[] toX     = to[INDEX_X];
+        double[] toY     = to[INDEX_Y];
+        double[] fromLat = from[latIndex];
         double[] fromLon = from[lonIndex];
+        double   lat, lon;
         for (int i = 0; i < cnt; i++) {
-            toX[i] = (double) (centerLon
-                               + Math.IEEEremainder(fromLon[i] - centerLon,
-                                                    360.0));
+            lat = fromLat[i];
+            lon = centerLon
+                  + Math.IEEEremainder(fromLon[i] - centerLon, 360.0);
+            toX[i] = lon;
+            toY[i] = lat;
         }
         return to;
     }
@@ -400,36 +418,41 @@ public class LatLonProjection extends ProjectionImpl {
 
 }
 
-/* Change History:
-   $Log: LatLonProjection.java,v $
-   Revision 1.28  2005/05/13 18:29:18  jeffmc
-   Clean up the odd copyright symbols
-
-   Revision 1.27  2005/05/13 12:26:51  jeffmc
-   Some mods
-
-   Revision 1.26  2005/05/13 11:14:10  jeffmc
-   Snapshot
-
-   Revision 1.25  2004/09/22 21:19:52  caron
-   use Parameter, not Attribute; remove nc2 dependencies
-
-   Revision 1.24  2004/07/30 17:22:20  dmurray
-   Jindent and doclint
-
-   Revision 1.23  2004/02/27 21:21:40  jeffmc
-   Lots of javadoc warning fixes
-
-   Revision 1.22  2004/01/29 17:35:00  jeffmc
-   A big sweeping checkin after a big sweeping reformatting
-   using the new jindent.
-
-   jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
-   templates there is a '_more_' to remind us to fill these in.
-
-   Revision 1.21  2003/07/12 23:08:59  caron
-   add cvs headers, trailers
-
+/*
+ *  Change History:
+ *  $Log: LatLonProjection.java,v $
+ *  Revision 1.29  2006/08/18 17:07:39  dmurray
+ *  fix a problem with the projToLatLon and latlonToProj methods that
+ *  take arrays.  They were assuming that from and to were different, but
+ *  the could be the same to save on memory.
+ *
+ *  Revision 1.28  2005/05/13 18:29:18  jeffmc
+ *  Clean up the odd copyright symbols
+ *
+ *  Revision 1.27  2005/05/13 12:26:51  jeffmc
+ *  Some mods
+ *
+ *  Revision 1.26  2005/05/13 11:14:10  jeffmc
+ *  Snapshot
+ *
+ *  Revision 1.25  2004/09/22 21:19:52  caron
+ *  use Parameter, not Attribute; remove nc2 dependencies
+ *
+ *  Revision 1.24  2004/07/30 17:22:20  dmurray
+ *  Jindent and doclint
+ *
+ *  Revision 1.23  2004/02/27 21:21:40  jeffmc
+ *  Lots of javadoc warning fixes
+ *
+ *  Revision 1.22  2004/01/29 17:35:00  jeffmc
+ *  A big sweeping checkin after a big sweeping reformatting
+ *  using the new jindent. *
+ *  jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
+ *  templates there is a '_more_' to remind us to fill these in.
+ *
+ *  Revision 1.21  2003/07/12 23:08:59  caron
+ *  add cvs headers, trailers
+ *
 */
 
 

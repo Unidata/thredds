@@ -1,5 +1,5 @@
 /*
- * $Id:LatLonRect.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: LatLonRect.java,v 1.14 2006/07/19 21:10:34 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -32,7 +32,7 @@ package ucar.unidata.geoloc;
  *
  * @author Russ Rew
  * @author John Caron
- * @version $Id:LatLonRect.java 63 2006-07-12 21:50:51Z edavis $
+ * @version $Id: LatLonRect.java,v 1.14 2006/07/19 21:10:34 jeffmc Exp $
  */
 public class LatLonRect {
 
@@ -133,6 +133,7 @@ public class LatLonRect {
   public LatLonPointImpl getLowerLeftPoint() {
       return lowerLeft;
   }
+
     /**
      * Get the upper left corner of the bounding box.
      * @return upper left corner of the bounding box
@@ -196,13 +197,24 @@ public class LatLonRect {
      * @return true if point is contained in this bounding box
      */
     public boolean contains(LatLonPoint p) {
+        return contains(p.getLatitude(), p.getLongitude());
+    }
+
+    /**
+     * _more_
+     *
+     * @param lat _more_
+     * @param lon _more_
+     *
+     * @return _more_
+     */
+    public boolean contains(double lat, double lon) {
         // check lat first
-        if ((p.getLatitude() < lowerLeft.getLatitude())
-                || (p.getLatitude() > upperRight.getLatitude())) {
+        if ((lat < lowerLeft.getLatitude())
+                || (lat > upperRight.getLatitude())) {
             return false;
         }
 
-        double lon = p.getLongitude();
         if (crossDateline) {
             // bounding box crosses the +/- 180 seam
             return ((lon >= lowerLeft.getLongitude())
