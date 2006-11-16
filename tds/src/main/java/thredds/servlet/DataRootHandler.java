@@ -238,8 +238,8 @@ public class DataRootHandler {
       }
 
     }
-    catch (Throwable ioe) {
-      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + ioe.getMessage());
+    catch (Throwable t) {
+      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage(), t);
       return null;
     }
     finally {

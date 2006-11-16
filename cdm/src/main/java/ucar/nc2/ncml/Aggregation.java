@@ -1195,23 +1195,25 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       this.dataset = dataset;
     }
 
-    public Array read(Variable mainv, CancelTask cancelTask) throws IOException{
+    public Array read(Variable mainV, CancelTask cancelTask) throws IOException{
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile( cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
-        return mainv.read();
+        Variable proxyV = ncfile.findVariable( mainV.getName());
+        return proxyV.read();
       } finally {
         if (ncfile != null) ncfile.close();
       }
     }
 
-    public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    public Array read(Variable mainV, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile( cancelTask);
+        Variable proxyV = ncfile.findVariable( mainV.getName());
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
-        return mainv.read(section);
+        return proxyV.read(section);
       } finally {
         if (ncfile != null) ncfile.close();
       }

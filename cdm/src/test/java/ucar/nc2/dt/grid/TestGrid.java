@@ -8,7 +8,7 @@ import ucar.nc2.dt.grid.TestGeoGrid;
  *
  */
 public class TestGrid {
-  public static String topDir = "test/data/";
+  public static String topDir = "./src/test/data/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

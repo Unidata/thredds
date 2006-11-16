@@ -109,7 +109,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     aggCache.setLogger( cacheLog);
 
     // some paths cant be set otherwise
-    AggregationFmrc.setDefinitionDirectory( contentPath+"modelInventory/" );
+    AggregationFmrc.setDefinitionDirectory( rootPath+"idd/modelInventory/" );
 
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
     DataRootHandler.init(contentPath, contextPath);

@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.13
  Features
+  * move idd/modelInventory directory to inside webapps: rootPath/idd/modelInventory/
   * WCS has its own working directory
   * threddsConfig.xml now has all user-settable parameters
   * check for duplicate ids in catalogs

@@ -512,6 +512,9 @@ public class HtmlWriter
       }
       else // Not an InvCatalogRef
       {
+        if (ds.hasNestedDatasets())
+          sb.append( "<img src='/thredds/folder.gif' alt='folder' width='20' height='22'> &nbsp;");
+
         // Check if dataset has single resolver service.
         if ( ds.getAccess().size() == 1 &&
              ( (InvAccess) ds.getAccess().get( 0)).getService().getServiceType().equals( ServiceType.RESOLVER ) )

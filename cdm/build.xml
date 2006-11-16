@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.17"/>
-  <property name="release.version.minor" value="${release.version}.22"/>
+  <property name="release.version.minor" value="${release.version}.24"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>
@@ -43,7 +43,7 @@
   <!-- property name="dods.jar" value="dods-1.1.7c.jar"/ -->
   <property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/>
   <property name="bufr.jar" value="bufr.jar"/>
-  <property name="grib.jar" value="grib-5.0.01.jar"/>
+  <property name="grib.jar" value="grib-5.0.03.jar"/>
   <property name="httpclient.jar" value="commons-httpclient-3.0.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.0.4.jar"/>
   <property name="http-codec.jar" value="commons-codec-1.3.jar"/>

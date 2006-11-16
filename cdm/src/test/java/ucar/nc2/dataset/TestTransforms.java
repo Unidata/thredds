@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import junit.framework.TestCase;
 
 /**
- * Class Description.
+ * test various transforms that we have test data for.
  *
  * @author caron
  * @version $Revision$ $Date$
@@ -88,6 +88,53 @@ public class TestTransforms extends TestCase {
 
     ncd.close();
   }
+
+  public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
+     String filename = TestAll.testdataDir + "grid/netcdf/cf/climo.cam2.h0.0000-09.nc";
+     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
+     VariableDS lev = (VariableDS) ncd.findVariable("lev");
+     assert lev != null;
+     System.out.println(" dump of ctv = \n"+lev);
+
+     VariableDS v = (VariableDS) ncd.findVariable("T");
+     assert v != null;
+
+     List cList = v.getCoordinateSystems();
+     assert cList != null;
+     assert cList.size() == 1;
+     CoordinateSystem csys = (CoordinateSystem) cList.get(0);
+
+     List tList = csys.getCoordinateTransforms();
+     assert tList != null;
+     assert tList.size() == 1;
+     CoordinateTransform ct = (CoordinateTransform) tList.get(0);
+     assert ct.getTransformType() == TransformType.Vertical;
+     assert ct instanceof VerticalCT;
+
+     VerticalCT vct = (VerticalCT) ct;
+     assert vct.getVerticalTransformType() ==  VerticalCT.Type.HybridSigmaPressure;
+
+     VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
+     System.out.println(" dump of equivilent ctv = \n"+ctv);
+
+     Dimension timeDim = ncd.findDimension("time");
+     VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
+     assert vt != null;
+     assert vt instanceof HybridSigmaPressure;
+
+     assert vt.getUnitString().equals("Pa");
+     assert vt.isTimeDependent();
+
+     for (int i = 0; i < timeDim.getLength(); i++) {
+       ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
+       int[] shape = coordVals.getShape();
+       assert shape[0] == ncd.findDimension("lev").getLength();
+       assert shape[1] == ncd.findDimension("lat").getLength();
+       assert shape[2] == ncd.findDimension("lon").getLength();
+     }
+
+     ncd.close();
+   }
 
   public void testOceanS() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/transforms/OceanS.nc";

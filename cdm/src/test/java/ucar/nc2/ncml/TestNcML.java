@@ -47,7 +47,7 @@ public class TestNcML {
     // */
     // suite.addTest(new TestSuite(TestNcMLDoubleNested.class)); // */
 
-    //suite.addTest(new TestSuite(TestNcMLRSubset.class)); //
+    suite.addTest(new TestSuite(TestNcmlReadGridDataset.class)); 
 
     return suite;
   }

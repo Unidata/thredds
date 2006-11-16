@@ -1380,6 +1380,10 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
+      // close previous file
+      try { if (ds != null) ds.close(); }
+      catch (IOException ioe) { }
+
       Object spiObject = null;
       if (useDefinition) {
         String currentDef = (String) defComboBox.getSelectedItem();
@@ -1413,11 +1417,6 @@ public class ToolsUI extends JPanel {
         e.printStackTrace(new PrintStream(bos));
         ta.setText(bos.toString());
         err = true;
-      } finally {
-        try {
-          if (ds != null) ds.close();
-        } catch (IOException ioe) {
-        }
       }
 
       return !err;
@@ -2548,12 +2547,13 @@ public class ToolsUI extends JPanel {
               "<br><br>With thanks to these <b>Open Source</b> contributers:" +
               "<ul>" +
               "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
-              "<li><b>Apache Commons HttpClient</b> library: (http://http://jakarta.apache.org/commons/httpclient//)</li>" +
+              "<li><b>Apache Jakarta Commons</b> library: (http://http://jakarta.apache.org/commons/)</li>" +
               "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
-              "<li><b>IDV:</b> Don Murray, Jeff McWhirter, Doug Lindholm (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+              "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
               "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
               "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
               "<li><b>OpenDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
+              "<li><b>Xerces XML Parser</b> library: http://xerces.apache.org/xerces2-j/</li>" +
               " </ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
               " </center></body></html> ");
 
