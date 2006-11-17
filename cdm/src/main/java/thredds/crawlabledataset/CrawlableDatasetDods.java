@@ -2,6 +2,7 @@ package thredds.crawlabledataset;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,16 +64,7 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 
 			try {
 				new URI(path); // check syntax .. URISyntaxException if its not good
-				// Determine name (i.e., last name in the path name sequence).
-				if (!path.equals("/")) {
-					String tmpName = path.endsWith("/") ? path.substring(0, path
-							.length() - 1) : path;
-					int index = tmpName.lastIndexOf("/");
-					if (index != -1)
-						tmpName = tmpName.substring(index + 1);
-					this.name = tmpName;
-				} else
-					this.name = path;
+				name = getName(path);
 			} catch (URISyntaxException e) {
 		        String tmpMsg = "Bad URI syntax for path <" + path + ">: " + e.getMessage();
 		        log.debug( "CrawlableDatasetDods(): " + tmpMsg);
@@ -109,6 +101,28 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 			throw new IllegalArgumentException(tmpMsg);
 		}
 	}
+	
+	private CrawlableDatasetDods(CrawlableDatasetDods parent, String childPath)
+	{
+		String normalChildPath = childPath.startsWith("/")?childPath.substring(1):childPath;
+		this.path = parent.getPath();
+		this.path += this.path.endsWith("/") ? normalChildPath : "/" + normalChildPath;
+		this.name = getName(path);
+		this.configObj = null;
+	}
+
+	private String getName(String path) {
+		// Attempt to return the last name in the path name sequence.
+		if (!path.equals("/")) {
+			String tmpName = path.endsWith("/") ? path.substring(0, path
+					.length() - 1) : path;
+			int index = tmpName.lastIndexOf("/");
+			if (index != -1)
+				tmpName = tmpName.substring(index + 1);
+			return tmpName;
+		} else
+			return path;
+	}
 
 	public Object getConfigObject() {
 		return configObj;
@@ -126,15 +140,15 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 		return isCollection(path);
 	}
 
-  public CrawlableDataset getDescendant( String relativePath )
-  {
-    return null;
-  }
+	public CrawlableDataset getDescendant( String relativePath )
+	{
+		return new CrawlableDatasetDods(this, relativePath);
+	}
 
-  // how do we determine if a url is a collection?
-  // we can't count on a trailing backslash, as this was removed by CrawlableDatasetFactory
-  // for now, assume collection unless a known file extension is encountered
-  private static String [] knownFileExtensions = {".hdf", ".xml", ".nc", ".bz2", ".cdp", ".jpg"};
+	// how do we determine if a url is a collection?
+	// we can't count on a trailing backslash, as this was removed by CrawlableDatasetFactory
+	// for now, assume collection unless a known file extension is encountered
+	private static String [] knownFileExtensions = {".hdf", ".xml", ".nc", ".bz2", ".cdp", ".jpg"};
 	
 	private static boolean isCollection(String path)
 	{
@@ -271,8 +285,8 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 								+ ")");
 	
 				// So far so good .. curDsUrlString passed all tests, thus add it to the list
-				try {
-					list.add(CrawlableDatasetFactory.createCrawlableDataset(
+        try {
+          list.add(CrawlableDatasetFactory.createCrawlableDataset(
 							curDsUrlString, this.getClass().getName(), null));
 				} catch (ClassNotFoundException e) {
 					log.warn("listDatasets(): Can't make CrawlableDataset for child url <"
@@ -326,35 +340,54 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 			return null;
 	}
 
-  public boolean exists()
-  {
-    // ToDo Need to do something better here (erd 2006-11-09).
-    return true;
+  public boolean exists() {
+	if (pathUrlConnection == null)
+	try {
+		URL u = new URL(path);
+		pathUrlConnection = u.openConnection();
+	} catch (MalformedURLException e) {
+	} catch (IOException e) {
+	}
+	try {
+		int responseCode = ((HttpURLConnection)pathUrlConnection).getResponseCode();
+		if (responseCode >= 200 && responseCode < 300) // Successful
+			return true;
+	} catch (IOException e) {
+	}
+	return false;
   }
 
   public long length() {
     if (this.isCollection())
       return (0);
-    try {
-      if (pathUrlConnection == null)
-      {
-        URL u = new URL(path);
-        pathUrlConnection = u.openConnection();
-      }
-      return pathUrlConnection.getContentLength();
-    } catch (MalformedURLException e) {
-    } catch (IOException e) {
+    if (pathUrlConnection == null)
+    {
+    	try {
+	        URL u = new URL(path);
+	        pathUrlConnection = u.openConnection();
+	    } catch (MalformedURLException e) {
+	    } catch (IOException e) {
+	    }
     }
-    return (-1);
+    if (pathUrlConnection != null)
+    	return pathUrlConnection.getContentLength();
+    else
+    	return (-1);
   }
 
 	public Date lastModified() {
-		try {
-			if (pathUrlConnection == null)
-			{
+		if (pathUrlConnection == null)
+		{
+			try {
 				URL u = new URL(path);
 				pathUrlConnection = u.openConnection();
+			} catch (MalformedURLException e) {
+			} catch (IOException e) {
 			}
+		}
+
+		if (pathUrlConnection != null)
+		{
 			long lastModified = pathUrlConnection.getLastModified();
 			if (lastModified != 0)
 			{
@@ -365,9 +398,8 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 			}
 			else
 				return null;
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
 		}
-		return null;
+		else
+			return null;
 	}
 }
