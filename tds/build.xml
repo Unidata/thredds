@@ -25,6 +25,7 @@
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
+  <property name="initialContent.dir" location="${root.dir}/src/main/initialContent"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
 
@@ -250,6 +251,12 @@
       </fileset>
     </copy>
 
+    <!-- Copy initialContent to WEB-INF, so they will be hidden -->
+    <copy todir="${war.dir}/WEB-INF/initialContent/" overwrite="true" preservelastmodified="true">
+      <fileset dir="${initialContent.dir}" />
+    </copy>
+
+    <!-- Copy resources to WEB-INF/classes, so they will be in the classpath -->
     <copy todir="${war.dir}/WEB-INF/classes/resources" overwrite="true" preservelastmodified="true">
       <fileset dir="${resources.dir}" />
     </copy>

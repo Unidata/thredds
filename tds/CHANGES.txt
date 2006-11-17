@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.13
  Features
+  * add content/public for publically available data
+  * move initialContent to WEB-INF so not visible
   * move idd/modelInventory directory to inside webapps: rootPath/idd/modelInventory/
   * WCS has its own working directory
   * threddsConfig.xml now has all user-settable parameters
@@ -27,7 +29,7 @@ Changes in version 3.13
   * embedded NcML on dataset wasnt working
   * IDV.jnlp grid:opendap:URL
  Libraries
-  * grib-5.0.01
+  * grib-5.0.03
 
 Changes in version 3.12
  Features

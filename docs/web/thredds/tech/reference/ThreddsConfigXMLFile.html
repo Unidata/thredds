@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>threddsConfig.xml</title>
+</head>
+
+<body>
+ <h1><img src="../THREDDSlogo.jpg" height="54" width="67">Annotated THREDDS Configuration file</h1>
+ <hr>
+ <p>These are parameters that control the TDS that can be set by the TDS administrator in <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong>. These have been extensively reworked for version 3.14 (they do not apply to versions before that). </p>
+ <p>In general, you do not have to set any of these parameters, since the TDS will use default settings. If you do change any of these, you must restart the thredds webapp (eg through the tomcat manager application) for them to take effect. The exception is that the <strong>catalogRoot</strong> elements will be reread by doing a <strong>Debug/Reinit</strong>, if you have remote management enabled.</p>
+ <p>Here is an annotated example<a href="threddsConfig.xml.txt"> threddsConfig.xml</a>:</p>
+ <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;threddsConfig&gt;</pre>
+ <h3><strong>  Catalog Roots</strong></h3>
+ <pre><strong>  </strong>&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;
+  &lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;
+  &lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;</pre>
+ <p>These elements name your root catalogs that are not referenced from your main catalog ( <strong>${tomcat_home}/content/thredds/catalog.xml</strong>). On startup, the TDS reads the main catalog and any root catalogs you list here, plus any catalogs that are referenced by them in a <strong>catalogRef</strong>. Data roots and other needed information are found and cached. All the catalogs found in this way are called <em>static catalogs</em>, and all static catalogs must live under the <strong>${tomcat_home}/content/thredds</strong> directory. When you do a <strong>Debug/Reinit</strong>, the static  catalogs are reread. </p>
+ <h3>THREDDS File Caching </h3>
+ <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;
+    &lt;<strong>minFiles</strong>&gt;200&lt;/minFiles&gt;
+    &lt;<strong>maxFiles</strong>&gt;400&lt;/maxFiles&gt;
+    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;
+  &lt;/NetcdfFileCache&gt;</pre>
+ <pre>  &lt;<strong>NetcdfDatasetCache</strong>&gt;
+    &lt;<strong>minFiles</strong>&gt;100&lt;/minFiles&gt;
+    &lt;<strong>maxFiles</strong>&gt;200&lt;/maxFiles&gt;
+    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;
+  &lt;/NetcdfDatasetCache&gt;</pre>
+ <pre>  &lt;<strong>HTTPFileCache</strong>&gt;
+    &lt;<strong>minFiles</strong>&gt;25&lt;/minFiles&gt;
+    &lt;<strong>maxFiles</strong>&gt;40&lt;/maxFiles&gt;
+    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;
+  &lt;/HTTPFileCache&gt;
+</pre>
+ <p>These elements control the size of the TDS cache for objects/open file handles for <strong>NetcdfFile</strong>, <strong>NetcdfDataset</strong>, and files served through <strong>HTTP Range-Byte</strong> requests, respectively. Up to <strong>maxFiles</strong> objects will be cached, and every <strong>scour</strong> amount of time, older items in the cache will be released, until only <strong>minFiles</strong> objects are left. The amount of time specified by scour uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. </p>
+ <h3><strong>CdmValidatorService</strong></h3>
+ <pre>  &lt;<strong>CdmValidatorService</strong>&gt;
+    &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;
+    &lt;<strong>dir</strong>&gt;/temp/vcache/&lt;/dir&gt;
+    &lt;<strong>maxFileUploadSize</strong>&gt;1 Gb&lt;/maxFileUploadSize&gt;
+    &lt;<strong>scour</strong>&gt;24 hours&lt;/scour&gt;
+    &lt;<strong>maxAge</strong>&gt;30 days&lt;/maxAge&gt;
+  &lt;/CdmValidatorService&gt;
+</pre>
+ <p>This controls the <em><strong>CDM Validation Service</strong></em>, which allows users to send URLs and to upload files to the TDS, in order to analyze the coordinate systems (see motherlode <a href="http://motherlode.ucar.edu:8080/thredds/cdmValidate.html">CDM validation on motherlode </a>). </p>
+ <ol>
+   <li><strong>allow</strong> : to disallow, change this to false</li>
+   <li><strong>dir</strong> : the  working directory to put uploaded files in </li>
+   <li><strong>maxFileUploadSize</strong> : maximum size of uploaded file, can use units of Kb, Mb, Gb, Tb</li>
+   <li> <strong>scour</strong> : how often to scour the working directory</li>
+   <li><strong>maxAge</strong>: how long to leave the files in the working directory. If this value is 0 (or you dont include this element), the files will be deleted immediately. </li>
+ </ol>
+ <h3><strong>NetcdfSubsetService</strong></h3>
+ <pre>  &lt;<strong>NetcdfSubsetService</strong>&gt;
+    &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;
+    &lt;<strong>dir</strong>&gt;/temp/ncache/&lt;/dir&gt;
+    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;
+    &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;
+  &lt;/NetcdfSubsetService&gt;
+</pre>
+ <p>This controls the <em><strong>NetCDF Subset  Service</strong></em>, which allows users to specify a subset of a dataset  and download equivilent netCDF files.</p>
+ <ol>
+   <li><strong>allow</strong> : to disallow, change this to false. If you don't use a <strong>NetcdfServer</strong> service in your catalogs, there will be no valid URLs for this service anyway. </li>
+   <li><strong>dir</strong> : the working directory for  files to be downloaded </li>
+   <li> <strong>scour</strong> : how often to scour the working directory, to delete files that were not successfully downloaded. </li>
+   <li><strong>maxAge</strong>: how long to leave the files in the working directory while the download is occurring. The files are deleted after a successful download. </li>
+ </ol>
+ <h3>WCS Service </h3>
+ <pre>  &lt;<strong>WCS</strong>&gt;
+    &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;
+    &lt;<strong>dir</strong>&gt;/temp/ncache/&lt;/dir&gt;
+    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;
+    &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;
+  &lt;/WCS&gt;</pre>
+ <p>This controls the <em><strong>Web Coverage Service (WCS) </strong></em>, which allows WCS clients to specify a subset of a dataset and download GeoTIFF or netCDF files.</p>
+ <ol>
+   <li><strong>allow</strong> : to disallow, change this to false. If you don't use a <strong>WCS</strong> service in your catalogs, there will be no valid URLs for this service anyway. </li>
+   <li><strong>dir</strong> : the working directory for files to be downloaded </li>
+   <li> <strong>scour</strong> : how often to scour the working directory, to delete files that were not successfully downloaded. </li>
+   <li><strong>maxAge</strong>: how long to leave the files in the working directory while the download is occurring. The files are deleted after a successful download. </li>
+</ol>
+<h3>Loadable Viewers</h3>
+ <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
+ <p>You can load dataset <a href="../tutorial/Viewers.html">viewers</a> at runtime. Typically you  put your viewer code into a jar file and place it in the <strong>${tomcat_home}/shared</strong> directory. </p>
+ <h3>FmrcInventory</h3>
+ <pre>  &lt;<strong>FmrcInventory</strong>&gt;
+    &lt;<strong>openType</strong>&gt;XML_ONLY&lt;/<strong>openType</strong>&gt;
+  &lt;/FmrcInventory&gt;</pre>
+ <h3> NetCDF-Java runtime Loading </h3>
+ <pre>  &lt;<strong>nj22Config</strong>&gt;
+    &lt;<strong>ioServiceProvider</strong> class=&quot;edu.univ.ny.stuff.FooFiles&quot;/&gt;
+    &lt;<strong>coordSysBuilder</strong> convention=&quot;foo&quot; class=&quot;test.Foo&quot;/&gt;
+    &lt;<strong>coordTransBuilder</strong> name=&quot;atmos_ln_sigma_coordinates&quot; type=&quot;vertical&quot; class=&quot;my.stuff.atmosSigmaLog&quot;/&gt;
+    &lt;<strong>typedDatasetFactory</strong> datatype=&quot;Point&quot; class=&quot;gov.noaa.obscure.file.Flabulate&quot;/&gt;
+    &lt;<strong>table</strong> type=&quot;GRIB1&quot; filename=&quot;/home/rkambic/grib/tables/userlookup.lst&quot;/&gt;
+    &lt;<strong>table</strong> type=&quot;GRIB2&quot; filename=&quot;/home/rkambic/grib/tables/grib2userparameters&quot;/&gt;
+  &lt;/nj22Config&gt;</pre>
+ <p>These elements allow you to specify <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">Runtime parameters </a> for the Netcdf-Java library from the threddsConfig file. </p>
+ <h3>NetCDF-Java Disk cache </h3>
+ <pre>  &lt;<strong>DiskCache</strong>&gt;
+    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;
+    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;
+    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;
+    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;
+  &lt;/DiskCache&gt;
+</pre>
+ <p>These elements control where the <em><strong>CDM/NetCDF-Java</strong></em> library writes temporary files, for example when it needs to unzip files, or write GRIB index files, etc. If <strong>alwaysUse</strong> is true, these temporary files will always be written to the <em>cache directory</em> specified by <strong>dir</strong>. If <strong>alwaysUse</strong> is false, TDS will try to write them to the same directory as the original file, and if the TDS doesnt have write permission it will then write the files to the cache directory. Write permission will be determined by what rights the <em>Tomcat user</em> has (the user that starts up Tomcat). For security reasons, you  want to carefully limit the file permissions of the Tomcat user. </p>
+ <p>When opening a file, if <strong>alwaysUse</strong> is true, TDS looks only in the cache directory for the temporary file. If <strong>alwaysUse</strong> is false, TDS will first  look for the temporary file in the same directory as the original file, and if not found, then will look in the cache.</p>
+ <p>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs.</p>
+ <h3>GRIB indexing </h3>
+ <pre>  &lt;<strong>GribIndexing</strong>&gt;
+    &lt;<strong>setExtendIndex</strong>&gt;true&lt;/setExtendIndex&gt;
+  &lt;/GribIndexing&gt;
+</pre>
+ <p>This is for  servers that have dynamically growing GRIB files (such as TDS/IDD servers). New GRIB records may be appended to a GRIB file. Normally the library will detect this and auomaticallly extend the GRIB index. When GRIB indexing is being done by an external process, its best to turn off automatic index extension, so there is no possibility of a collision by the GRIB indexing process and the TDS. <br>
+</p>
+ <h3>Aggregation Cache </h3>
+ <pre>
+  &lt;<strong>AggregationCache</strong>&gt;
+    &lt;<strong>dir</strong>&gt;/temp/acache/&lt;/dir&gt;
+    &lt;<strong>scour</strong>&gt;24 hours&lt;/scour&gt;
+    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;
+  &lt;/AggregationCache&gt;
+</pre>
+ <p> If you  have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong>. Every <strong>scour</strong> amount of time, any item older than maxAge will be deleted. Set scour to -1 to not scour at all. </p>
+ <pre>&lt;/threddsConfig&gt;<br></pre>
+ <hr WIDTH="100%">
+ <address>
+ <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 15, 2006
+ </address>
+ <p></p>
+</body>
+</html>

@@ -252,7 +252,7 @@ public class ServletUtil {
   }
 
   public static String getInitialContentPath(HttpServlet servlet) {
-    return getRootPath(servlet) + "initialContent/";
+    return getRootPath(servlet) + "WEB-INF/initialContent/";
   }
 
   public static String formFilename(String dirPath, String filePath) {

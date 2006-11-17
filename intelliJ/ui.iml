@@ -30,6 +30,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="grib" />
     <orderEntryProperties />
   </component>
 </module>

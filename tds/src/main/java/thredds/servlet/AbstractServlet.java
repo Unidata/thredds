@@ -48,6 +48,14 @@ public abstract class AbstractServlet extends HttpServlet {
     log = org.slf4j.LoggerFactory.getLogger(getClass());
     ServletUtil.logServerSetup( this.getClass().getName() + ".init()" );
 
+    // debug actions
+    makeDebugActions();
+
+    log.info("--- initialized "+getClass().getName());
+  }
+
+  protected void initContent() throws javax.servlet.ServletException {
+
     // first time, create content directory
     String initialContentPath = ServletUtil.getInitialContentPath(this) + getPath();
     File initialContentFile = new File( initialContentPath);
@@ -60,10 +68,7 @@ public abstract class AbstractServlet extends HttpServlet {
       }
     }
 
-    // debug actions
-    makeDebugActions();
-
-    log.info("--- initialized "+getClass().getName());
   }
+
 
 }

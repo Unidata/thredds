@@ -65,6 +65,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
   public void init() throws ServletException  {
     super.init();
+    super.initContent(); // first time, create content directory
 
     // get the URL context :  URLS must be context/catalog/...
     // cannot be overridded in ThreddsConfig
@@ -368,15 +369,14 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     } else {
       // general case, doesnt start with /root/ or /content/
-      // we are getting content from the war file (webapps/thredds/) or from content/thredds/
+      // we are getting content from the war file (webapps/thredds/) or from content/thredds/public
       // first see if it exists under content
-      /*  remove this now
-      filename = ServletUtil.formFilename( contentPath, path);
+      filename = ServletUtil.formFilename( contentPath+"public/", path);
       if (filename != null) {
         File file = new File( filename);
         if (file.exists())
           return file;
-      }  */
+      }
 
       // otherwise try rootPath
      filename = ServletUtil.formFilename( rootPath, path);

@@ -107,7 +107,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
         }
       }
 
-      String fmrInvOpenType = ThreddsConfig.get("FmrInventory.OpenType", "");
+      String fmrInvOpenType = ThreddsConfig.get("FmrcInventory.openType", "");
       int mode = fmrInvOpenType.equalsIgnoreCase("XML_ONLY") ? ForecastModelRunInventory.OPEN_XML_ONLY : ForecastModelRunInventory.OPEN_NORMAL;
       if (debug) System.out.println("  FmrcInventory.make path="+fmrcDefinitionPath+" name= "+collectionName+" location= "+params.location
         +" suffix= "+params.suffix+" mode= "+mode);

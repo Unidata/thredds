@@ -327,7 +327,7 @@ public class DataRootHandler {
     // LOOK !!
     // rearrange scanDir if it starts with content
     if (dscan.getScanDir().startsWith("content/"))
-      dscan.setScanDir(contentPath + dscan.getScanDir().substring(8));
+      dscan.setScanDir(contentPath + "public/" + dscan.getScanDir().substring(8));
 
     File file = new File(dscan.getScanDir());
     if (!file.exists()) {
@@ -423,7 +423,7 @@ public class DataRootHandler {
 
     // rearrange dirLocation if it starts with content
     if (dirLocation.startsWith("content/"))
-      dirLocation = contentPath + dirLocation.substring(8);
+      dirLocation = contentPath + "public/" + dirLocation.substring(8);
 
     File file = new File(dirLocation);
     if (!file.exists()) {
