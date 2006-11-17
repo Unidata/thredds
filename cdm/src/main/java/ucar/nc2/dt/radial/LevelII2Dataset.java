@@ -545,9 +545,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       //System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
     }
     sw = rv.getSweep(0);
-      ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable readData");
+      //ucar.unidata.util.Trace.call1("LevelII2Dataset:testRadialVariable readData");
     float [] ddd = sw.readData();
-      ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable readData");
+      //ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable readData");
     assert(null != ddd);
     int nrays = sw.getRadialNumber();
     float [] az = new float[nrays];
@@ -578,9 +578,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
-  ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
+ // ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
     RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( thredds.catalog.DataType.RADIAL, fileIn, null, new StringBuffer());
-  ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
+ // ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();
     String id = rds.getRadarID();
