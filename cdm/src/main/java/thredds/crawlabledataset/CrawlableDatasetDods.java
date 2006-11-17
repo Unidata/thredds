@@ -348,7 +348,8 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 	} catch (MalformedURLException e) {
 	} catch (IOException e) {
 	}
-	try {
+  if ( pathUrlConnection != null )
+  try {
 		int responseCode = ((HttpURLConnection)pathUrlConnection).getResponseCode();
 		if (responseCode >= 200 && responseCode < 300) // Successful
 			return true;
