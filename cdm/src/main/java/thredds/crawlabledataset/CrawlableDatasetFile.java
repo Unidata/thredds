@@ -105,8 +105,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
    * @param path the path to be normalized.
    * @return the normalized path.
    * @throws NullPointerException if path is null.
-   *
-   * @see {@link CrawlableDatasetFactory.normalizePath(String) CrawlableDatasetFactory.normalizePath()}
+   * 
+   * @see {@link CrawlableDatasetFactory#normalizePath(String)  CrawlableDatasetFactory.normalizePath()}
    */
   private String normalizePath( String path )
   {
