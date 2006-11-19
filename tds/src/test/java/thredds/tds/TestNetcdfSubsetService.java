@@ -16,7 +16,7 @@ public class TestNetcdfSubsetService extends TestCase {
 
   public void testNetcdfSubsetService() throws IOException {
     String url = "/ncServer/gribCollection/NAM_CONUS_20km_surface_20060316_0000.grib1.nc?grid=K_index&grid=Sweat_index&west=-140&east=-90&north=50&south=20&time_start=3&time_end=12";
-    File fileSave = new File("testNetcdfSubsetService.nc");
+    File fileSave = new File("C:/TEMP/testNetcdfSubsetService.nc");
 
     thredds.util.IO.readURLtoFile(TestTDSAll.topCatalog+url, fileSave);
     System.out.println("Copied "+TestTDSAll.topCatalog+url+" to "+fileSave.getPath());

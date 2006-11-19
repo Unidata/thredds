@@ -1064,6 +1064,10 @@ public class DataRootHandler {
       catalog.setBaseURI(baseURI);
     }
 
+    // Check for tdr dynamic catalog.
+    if (catalog == null)
+      catalog = makeTDRDynamicCatalog(workPath, baseURI);
+
     // Check for dynamic catalog.
     if (catalog == null)
       catalog = makeDynamicCatalog(workPath, baseURI);
@@ -1129,6 +1133,26 @@ public class DataRootHandler {
 
     return cat;
   }
+
+  private InvCatalogImpl makeTDRDynamicCatalog(String path, URI baseURI) {
+    // Make sure this is a tdr catalog request.
+    if ( ! path.startsWith( "tdr"))
+      return null;
+
+    String catalogFullPath = contentPath + path;
+    File catFile = new File( catalogFullPath);
+    if (!catFile.exists()) return null;
+
+    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false); // no validation
+    InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
+    if ( cat == null ) {
+      log.warn( "initCatalog(): failed to read tdr catalog <" + catalogFullPath + ">." );
+      return null;
+    }
+
+    return cat;
+  }
+
 
   /* public void handleRequestForDataset(String path, DataServiceProvider dsp, HttpServletRequest req, HttpServletResponse res)
           throws IOException {

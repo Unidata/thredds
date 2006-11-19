@@ -171,6 +171,7 @@
     <webroots>
       <root url="file://$MODULE_DIR$/../tds/src/main/webapp/resources" relative="/" />
       <root url="file://$MODULE_DIR$/../tds/src/main/resources" relative="/WEB-INF/classes/resources" />
+      <root url="file://$MODULE_DIR$/../tds/src/main/initialContent" relative="/WEB-INF/initialContent" />
     </webroots>
   </component>
   <component name="WeblogicWebModuleProperties">

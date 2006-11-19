@@ -18,10 +18,10 @@
   <!-- listeners -->
   <!--listener>
     <listener-class>thredds.servlet.ServletListener</listener-class>
-  </listener -->
+  </listener
   <listener>
     <listener-class>dods.servers.netcdf.NcDODSSessionAttributeListener</listener-class>
-  </listener>
+  </listener> -->
 
   <!-- Default Servlet -->
   <servlet>

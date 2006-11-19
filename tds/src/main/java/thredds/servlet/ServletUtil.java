@@ -28,7 +28,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.xml.parsers.FactoryConfigurationError;
 
-import org.apache.log4j.MDC;
+import org.apache.log4j.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.FileCache;
@@ -95,10 +95,21 @@ public class ServletUtil {
       if (log4Jconfig == null)
         log4Jconfig = getRootPath(servlet) + "WEB-INF/log4j.xml";
       DOMConfigurator.configure(log4Jconfig);
-      System.out.println("+++Log4j configured");
+      System.out.println("+++Log4j configured from file "+log4Jconfig);
     } catch (FactoryConfigurationError t) {
       t.printStackTrace();
     }
+
+    /* read in user defined Log4J file
+    String log4Jconfig = ServletUtil.getContentPath(servlet) + "log4j.xml";
+    File test = new File(log4Jconfig);
+    if (test.exists())
+      try {
+        DOMConfigurator.configure(log4Jconfig);
+        System.out.println("+++Log4j configured from file "+log4Jconfig);
+      } catch (FactoryConfigurationError t) {
+        t.printStackTrace();
+      } */
 
     log = org.slf4j.LoggerFactory.getLogger(ServletUtil.class);
     logStats = org.slf4j.LoggerFactory.getLogger( "threddsAccessLogger");

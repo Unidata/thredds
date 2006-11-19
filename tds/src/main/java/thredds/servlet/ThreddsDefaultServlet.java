@@ -76,6 +76,15 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     // read in persistent user-defined params from threddsConfog.xml
     ThreddsConfig.init(this.getServletContext(), contentPath+"/threddsConfig.xml", log);
 
+    // maybe change the logging
+    // ( String datePattern, long maxFileSize, int maxFiles )
+    if (ThreddsConfig.hasElement("Logging")) {
+      String datePattern = ThreddsConfig.get("Logging.DatePattern", null);
+      long maxFileSize = ThreddsConfig.getBytes("Logging.MaxFileSize", -1);
+      int maxFiles = ThreddsConfig.getInt("Logging.MaxFiles", 5);
+      changeLogs( datePattern, maxFileSize, maxFiles );
+    }
+
     // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes
     int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);
     int max = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 400);
@@ -144,7 +153,6 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     // Checking for double init seeing in intellij debug
     log.info( "init(): done initializing <context= " + contextPath + ">." );
   }
-
 
   public void destroy() {
     timer.cancel();
@@ -693,6 +701,54 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     }
   }
 
+
+  private void changeLogs( String datePattern, long maxFileSize, int maxFiles ) {
+    // get the existing appender
+    Logger logger = LogManager.getLogger("thredds");
+    FileAppender fapp = (FileAppender) logger.getAppender("threddsServlet");
+    PatternLayout playout = (PatternLayout) fapp.getLayout();
+    String filename = fapp.getFile();
+
+    // create a new one
+    Appender newAppender = null;
+
+    try {
+      if (null != datePattern) {
+        newAppender = new DailyRollingFileAppender(playout, filename, datePattern);
+      } else if (maxFileSize > 0) {
+        RollingFileAppender rapp = new RollingFileAppender(playout, filename);
+        rapp.setMaximumFileSize(maxFileSize);
+        rapp.setMaxBackupIndex(maxFiles);
+        newAppender = rapp;
+      } else {
+        return;
+      }
+    } catch (IOException ioe) {
+      log.error("Error changing the logger", ioe);
+    }
+
+    // replace wherever you find it
+    Logger root = LogManager.getRootLogger();
+    replaceAppender( root, "threddsServlet", newAppender);
+
+    Enumeration logEnums = LogManager.getCurrentLoggers();
+    while (logEnums.hasMoreElements()) {
+      Logger log =  (Logger) logEnums.nextElement();
+      replaceAppender( log, "threddsServlet", newAppender);
+    }
+  }
+
+  private void replaceAppender(Logger logger, String want, Appender replaceWith) {
+    Enumeration appenders = logger.getAllAppenders();
+    while (appenders.hasMoreElements()) {
+      Appender app =  (Appender) appenders.nextElement();
+      if (app.getName().equals(want)) {
+        logger.removeAppender(app);
+        logger.addAppender(replaceWith);
+      }
+    }
+  }
+
   void showLoggers(HttpServletRequest req, PrintStream pw) {
     Logger root = LogManager.getRootLogger();
     showLogger( req, root, pw);
@@ -723,6 +779,11 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     while (appenders.hasMoreElements()) {
       Appender app =  (Appender) appenders.nextElement();
       pw.println("  appender= "+app.getName()+" "+app.getClass().getName());
+      Layout layout = app.getLayout();
+      if (layout instanceof PatternLayout) {
+        PatternLayout playout = (PatternLayout) layout;
+        pw.println("    layout pattern= "+playout.getConversionPattern());
+      }
       if (app instanceof AppenderSkeleton) {
         AppenderSkeleton skapp = (AppenderSkeleton) app;
         if (skapp.getThreshold() != null)

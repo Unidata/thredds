@@ -114,7 +114,9 @@ public class DiskCache2 {
     root = StringUtil.replace(cacheDir, '\\', "/"); // no nasty backslash
 
     File dir = new File(root);
-    dir.mkdirs();
+    if (!dir.mkdirs()) {
+      cacheLog.error("Failed to create directory "+root);
+    }
   }
 
   /**

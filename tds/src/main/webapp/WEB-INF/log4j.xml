@@ -90,6 +90,11 @@
     <appender-ref ref="catalogGen"/>
   </logger>
 
+  <logger name="thredds.cataloggen.servlet" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="catalogGen"/>
+  </logger>
+
   <logger name="thredds.servlet.DataRootHandler" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="catalogErrors"/>

@@ -138,6 +138,19 @@ public class ThreddsConfig {
     return (s == null) ? defValue : s;
   }
 
+  static public boolean hasElement(String paramName) {
+    Element elem = rootElem;
+    if (elem == null) return false;
+    StringTokenizer stoke = new StringTokenizer(paramName, ".");
+    while (stoke.hasMoreTokens()) {
+      String toke = stoke.nextToken();
+      elem = elem.getChild(toke);
+      if (null == elem)
+        return false;
+    }
+    return true;    
+  }
+
   static public boolean getBoolean(String paramName, boolean defValue) {
     String s = getParam( paramName);
     if (s == null) return defValue;
@@ -205,6 +218,7 @@ public class ThreddsConfig {
 
   private static String getParam( String name) {
     Element elem = rootElem;
+    if (elem == null) return null;
     StringTokenizer stoke = new StringTokenizer(name, ".");
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken();
@@ -212,7 +226,7 @@ public class ThreddsConfig {
       if (null == elem)
         return null;
     }
-    return elem.getValue();
+    return elem.getText();
   }
 
 }

@@ -46,10 +46,13 @@ import thredds.catalog.InvDatasetFmrc;
 public class FmrcInventoryServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
   private boolean debug = false;
+  private String defPath; // defaukt path where definition files are kept
   // private HashMap paramHash = new HashMap();  // key=path value=FmrcInventoryParams
 
   public void init() throws ServletException {
     super.init();
+
+    defPath = rootPath+"idd/modelInventory/";
 
     // remove caching in favor of creating these files when the grib indexer is run, externally as ldm user
     // cache the fmr inventory xml: keep for 10 days, scour once a day */
@@ -96,10 +99,10 @@ public class FmrcInventoryServlet extends AbstractServlet {
     try {
 
       if (debug) System.out.println("  FmrcInventoryParams="+params+" for path="+match.rootPath);
-      String fmrcDefinitionPath = contentPath;
+      String fmrcDefinitionPath = defPath;
       String collectionName = params.def;
       File file = new File(params.def);
-      if (file.isAbsolute()) {
+      if (file.isAbsolute()) { // allow absolute path of definition files
         int pos = params.def.lastIndexOf("/");
         if (pos > 0) {
           fmrcDefinitionPath = params.def.substring(0,pos+1);

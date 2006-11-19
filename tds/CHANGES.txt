@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.13
  Features
+  * allow tdr dynamic catalogs
   * add content/public for publically available data
   * move initialContent to WEB-INF so not visible
   * move idd/modelInventory directory to inside webapps: rootPath/idd/modelInventory/

@@ -565,6 +565,10 @@
       </fileset>
     </checksum>
 
+    <copy todir="${lib.dir}/release" overwrite="true">
+      <fileset dir="${build.dir}" includes="${jarMain}"/>
+    </copy>
+
     <copy todir="${release.javadoc.dir}" overwrite="true">
       <fileset dir="${javadoc.dir}"/>
     </copy>
@@ -576,9 +580,7 @@
       <fileset file="${build.dir}/CHANGES"/>
     </copy>
 
-    <copy todir="${lib.dir}/release" overwrite="true">
-      <fileset dir="${build.dir}" includes="${jarMain}"/>
-    </copy>
+
   </target>
 
   <target name="releaseInvCatSchema" description="Release InvCatalog schema to web.">
