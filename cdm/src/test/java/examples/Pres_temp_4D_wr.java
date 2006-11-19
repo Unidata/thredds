@@ -4,7 +4,6 @@ import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Dimension;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayFloat;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 
 import java.util.ArrayList;

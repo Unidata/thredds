@@ -41,15 +41,22 @@ import java.io.*;
 import java.util.List;
 
 /**
- * Encapsolates a GridDataset.
+ * Encapsolates a GridDataset, making it into something to be served through WCS.
  * @author caron
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 public class WcsDataset {
-  static private DiskCache2 diskCache = new DiskCache2("wcsCache/", true, -1, -1);
+  static private DiskCache2 diskCache = null;
+
   static public void setDiskCache(DiskCache2 _diskCache) {
     diskCache = _diskCache;
+  }
+
+  static private DiskCache2 getDiskCache() {
+    if (diskCache == null)
+      diskCache = new DiskCache2("/wcsCache/", true, -1, -1);
+    return diskCache;
   }
 
   private String serverURL = "http://localhost:8080/thredds/wcs?";
@@ -185,7 +192,7 @@ public class WcsDataset {
 
     if (req.getFormat() == GetCoverageRequest.Format.GeoTIFF || req.getFormat() == GetCoverageRequest.Format.GeoTIFFfloat) {
       //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-      File tifFile = diskCache.getCacheFile(datasetPath+"-"+vname+".tif");
+      File tifFile = getDiskCache().getCacheFile(datasetPath+"-"+vname+".tif");
       if (debug) System.out.println(" tifFile="+tifFile.getPath());
 
       GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
@@ -197,7 +204,7 @@ public class WcsDataset {
     } else if (req.getFormat() == GetCoverageRequest.Format.NetCDF3) {
 
       //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-      File ncFile = diskCache.getCacheFile(datasetPath+"-"+vname+".nc");
+      File ncFile = getDiskCache().getCacheFile(datasetPath+"-"+vname+".nc");
       if (debug) System.out.println(" ncFile="+ncFile.getPath());
 
       // LOOK - break encapsolation

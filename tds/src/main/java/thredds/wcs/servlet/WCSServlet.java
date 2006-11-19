@@ -41,7 +41,6 @@ public class WCSServlet extends AbstractServlet {
 
     // LOOK: what happens if we are still downloading when the disk scour starts?
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
-    diskCache.setLogger(org.slf4j.LoggerFactory.getLogger("cacheLogger"));
     WcsDataset.setDiskCache(diskCache);
   }
 

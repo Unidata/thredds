@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class Simple_xy_wr {
 
 
-     public static void main(String args[]) throws Exception, IOException
+     public static void main(String args[])
     {
         // We are writing 2D data, a 6 x 12 grid.
        final int NX = 6;

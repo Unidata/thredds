@@ -76,7 +76,6 @@ public class CoordSysValidatorServlet extends AbstractServlet {
       deleteImmediately = true;
     else {
       cdmValidateCache = new DiskCache2(cache, false, maxAgeSecs/60, scourSecs/60);
-      cdmValidateCache.setLogger( org.slf4j.LoggerFactory.getLogger("cacheLogger"));
     }
 
     cacheDir = new File(cache);

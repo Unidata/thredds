@@ -55,7 +55,7 @@ public class DiskCache2 {
   private String root = null;
   private int persistMinutes;
   private Timer timer;
-  private org.slf4j.Logger cacheLog;
+  private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
   /**
    * Create a cache on disk.
@@ -114,7 +114,8 @@ public class DiskCache2 {
     root = StringUtil.replace(cacheDir, '\\', "/"); // no nasty backslash
 
     File dir = new File(root);
-    if (!dir.mkdirs()) {
+    dir.mkdirs();
+    if (!dir.exists()) {
       cacheLog.error("Failed to create directory "+root);
     }
   }

@@ -348,7 +348,6 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
         spath = spath + "/";
     } */
     String reqPath = preq.getDataSet(); // was spath + preq.getDataSet();
-
     NetcdfFile ncd = DatasetHandler.getNetcdfFile(reqPath);
     if (ncd == null) {
       throw new DODSException(DODSException.NO_SUCH_FILE, "Cant find " + reqPath);

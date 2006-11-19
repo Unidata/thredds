@@ -466,7 +466,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
-   * @throws FileNotFoundException is there are no datasets
+   * @throws FileNotFoundException if there are no datasets
    */
   protected Dataset getTypicalDataset() throws IOException {
     int n = nestedDatasets.size();
