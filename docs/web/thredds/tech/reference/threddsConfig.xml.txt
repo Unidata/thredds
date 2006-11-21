@@ -78,6 +78,10 @@
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
   </AggregationCache>
+  
+   <Aggregation>
+    <typicalDataset>latest</typicalDataset>
+  </Aggregation>
 
    end examples -->
 

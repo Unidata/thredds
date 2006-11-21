@@ -1638,7 +1638,7 @@ public class ToolsUI extends JPanel {
             catComboBox = new JComboBox();
             catComboBox.setEditable( true);
             catSpinner = new JSpinner();
-            JPanel catPanel = new JPanel();
+            JPanel catPanel = new JPanel( new FlowLayout());
             catPanel.add(catComboBox);
             catPanel.add(catSpinner);
 

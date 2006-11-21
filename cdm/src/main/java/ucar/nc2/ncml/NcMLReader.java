@@ -139,7 +139,7 @@ public class NcMLReader {
    * @param cancelTask allow user to cancel the task; may be null
    */
   static public NetcdfDataset readNcML(String ncmlLocation, CancelTask cancelTask) throws IOException, java.net.MalformedURLException {
-    return readNcML( ncmlLocation, null, cancelTask);
+    return readNcML( ncmlLocation, (String) null, cancelTask);
   }
 
   /**
@@ -213,17 +213,18 @@ public class NcMLReader {
      }
 
     Element netcdfElem = doc.getRootElement();
-    NetcdfDataset ncd =  readNcML( netcdfElem, cancelTask);
+    NetcdfDataset ncd =  readNcML( null, netcdfElem, cancelTask);
     if (debugOpen) System.out.println("***NcMLReader.readNcML (stream) result= \n"+ncd);
     return ncd;
   }
 
   /**
     * Read NcML a JDOM Element, and construct a NetcdfDataset.
+    * @param ncmlLocation the location of the NcML, or may be just a unique name for caching purposes.
     * @param netcdfElem the NcML as a JDOM element
     * @param cancelTask allow user to cancel the task; may be null
     */
-   static public NetcdfDataset readNcML(Element netcdfElem, CancelTask cancelTask) throws IOException, java.net.MalformedURLException {
+   static public NetcdfDataset readNcML(String ncmlLocation, Element netcdfElem, CancelTask cancelTask) throws IOException, java.net.MalformedURLException {
 
      // the ncml probably refers to another dataset, but doesnt have to
      String referencedDatasetUri = netcdfElem.getAttributeValue("location");
@@ -231,7 +232,7 @@ public class NcMLReader {
        referencedDatasetUri = netcdfElem.getAttributeValue("uri");
 
      NcMLReader reader = new NcMLReader();
-     NetcdfDataset ncd = reader.readNcML( null, referencedDatasetUri, netcdfElem, cancelTask);
+     NetcdfDataset ncd = reader.readNcML( ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
      return ncd;
    }
 
@@ -264,7 +265,7 @@ public class NcMLReader {
   /**
    * common part of readNcML.
    *
-   * @param ncmlLocation the URL location string of the NcML document
+   * @param ncmlLocation the URL location string of the NcML document, or may be just a unique name for caching purposes.
    * @param referencedDatasetUri refers to this dataset (may be null)
    * @param netcdfElem JDOM netcdf element
    * @param cancelTask allow user to cancel the task; may be null
@@ -329,7 +330,7 @@ public class NcMLReader {
    * The user may be defining new elements or modifying old ones. The only way to tell is by seeing
    *  if the elements already exist.
    *
-   * @param ncmlLocation NcML URL location
+   * @param ncmlLocation NcML URL location, or may be just a unique name for caching purposes.
    * @param newds add the info to this one
    * @param refds the referenced datset; may equal newds
    * @param netcdfElem JDOM netcdf element

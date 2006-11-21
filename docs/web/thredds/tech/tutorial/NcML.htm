@@ -13,17 +13,19 @@
   <address>
   </address>
   <hr>
-  <p>An <em><strong>NcML document</strong></em> is an XML document that uses the <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a> to define a NetCDF dataset. NcML can be embedded directly into the TDS catalogs to achieve a number of powerful features, shown below. Because NcML creates virtual datsets, not actual files, you cannot serve these datasets out through a <em>file-serving protocol</em> like FTP or HTTP. You can use the <em>subsetting services </em> like OPeNDAP, WCS and NetcdfServer. </p>
-  <p>This embedded NcML is only useful in the TDS server catalogs, it is not meaningful to a THREDDS client, and so is not included in the client catalogs. </p>
-  <h2>Modify an existing dataset </h2>
-  <p>You can use  use NcML to modify an existing NetCDF dataset (see the <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML docs</a> for all your options):</p>
+  <p>An <em><strong>NcML document</strong></em> is an XML document that uses the <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a> to define a NetCDF dataset. NcML can be embedded directly into the TDS catalogs to achieve a number of powerful features, shown below. This embedded NcML is only useful in the TDS server catalogs, it is not meaningful to a THREDDS client, and so is not included in the client catalogs. </p>
+  <p>One can put an NcML element inside a <strong>dataset element</strong>, in which case it is a self-contained NcML dataset, or inside a <strong>datasetScan element</strong>, where it modifies a regular dataset. In both cases, we call the result a<em><strong> virtual dataset</strong></em>, and <em><strong>you cannot serve a virtual dataset with a file-serving protocol like FTP or HTTP</strong></em>. However, you can use <em>subsetting services </em> like OPeNDAP, WCS and NetcdfServer. </p>
+  <h2>Using NcML in a dataset element </h2>
+  <p> NcML embedded in a TDS <strong>dataset element</strong> creates a <em><strong>self-contained NcML</strong></em> <em><strong>  dataset</strong></em>. The TDS dataset does not refer to a data root, because the NcML contains its own location. The TDS dataset must have a unique URL path (this is true for all TDS datasets), but unlike a regular dataset, does not have to match a data root. </p>
+  <h3>Modifying an existing dataset </h3>
+  <p>You can use  use NcML to modify an existing CDM dataset (see the <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML docs</a> for all your options):</p>
   <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
          xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
          name=&quot;THREDDS-IDD OPeNDAP Data Server&quot; version=&quot;1.0.1&quot;&gt;
 
 (1)&lt;service name=&quot;all&quot; <strong>serviceType=&quot;Compound&quot;</strong> base=&quot;&quot;&gt;     <br>     &lt;service name=&quot;ncdods&quot; serviceType=&quot;<strong>OPENDAP</strong>&quot; <strong>base</strong>=&quot;/thredds/dodsC/&quot;/&gt;<br>     &lt;service name=&quot;WCSServer&quot; serviceType=&quot;<strong>WCS</strong>&quot; <strong>base</strong>=&quot;/thredds/wcs/&quot; /&gt;<br>   &lt;/service&gt;
 
-(2)&lt;<strong>dataset</strong> name=&quot;Example NcML Modified&quot; <strong>ID</strong>=&quot;ExampleNcMLModified&quot; <strong>urlPath</strong>=&quot;ExampleNcML/Modified.nc&quot;&gt;
+(2)&lt;<strong>dataset</strong> name=&quot;Example NcML Modified&quot; <strong>ID</strong>=&quot;ExampleNcML-Modified&quot; <strong>urlPath</strong>=&quot;<strong>ExampleNcML/Modified.nc</strong>&quot;&gt;
      &lt;serviceName&gt;all&lt;/serviceName&gt;
 
 (3)  &lt;<strong>netcdf</strong> xmlns=&quot;<strong>http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2</strong>&quot; location=<strong>&quot;/data/nc/example.nc&quot;</strong>&gt;<br>(4)    &lt;variable name=&quot;Temperature&quot; <strong>orgName</strong>=&quot;T&quot;/&gt;
@@ -38,14 +40,14 @@
 &lt;/catalog&gt;</pre>
   <ol>
     <li>A compound service is defined that allows the virtual dataset to be served through both <em><strong>OPENDAP</strong></em> and <em><strong>WCS</strong></em>. Make sure that the <strong>base</strong> attributes are exactly as shown </li>
-    <li>The dataset is given a <strong>urlPath</strong> of &quot;ExampleNcML/Modified.nc&quot;. The urlPath is essentially arbitrary, but you should maintain a consistent directoru and nameing convention, especially for large collections of data. Its important to also give the dataset a unique <strong>ID</strong>.</li>
-    <li>An NcML dataset is defined which references the netCDF file at the absolute location <strong>/data/nc/example.nc</strong>. Note that you must declare the NcML namespace exactly as <em><strong>http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2</strong></em>.</li>
+    <li>The dataset is given a <strong>urlPath</strong> of &quot;ExampleNcML/Modified.nc&quot;. The urlPath is essentially arbitrary, but must be unique within the TDS, and you  should maintain a consistent naming convention to ensure uniqueness, especially for large collections of data. Its important to also give the dataset a unique <strong>ID</strong>.</li>
+    <li>An NcML dataset is defined which references the netCDF file at the absolute location <strong>/data/nc/example.nc</strong>. Note that you must declare the NcML namespace exactly as shown. </li>
     <li>The variable named <strong>T</strong> in the original file is renamed Temperature.</li>
     <li>The variable named <strong>rh</strong> in the original file is renamed ReletiveHumidity.</li>
     <li>Two attributes of <strong>rh</strong> are defined, <strong>long_name</strong> and <strong>units</strong>. If these already exist, they are replaced.</li>
     <li>The attribute of <strong>rh</strong> called <strong>description</strong> is removed.</li>
   </ol>
-  <h2>Using NcML aggregation</h2>
+  <h3>Using NcML aggregation</h3>
   <p>Here is an example that defines a dataset using NcML aggregation. </p>
   <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
          xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
@@ -53,7 +55,7 @@
 
 (1)&lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
 
-(2)&lt;<strong>dataset</strong> name=&quot;WEST-CONUS_4km Aggregation&quot; ID=&quot;SSEC/IDD-Satellite/3.9/WEST-CONUS_4km-Agg&quot; <strong>urlPath</strong>=&quot;satellite/3.9/WEST-CONUS_4km&quot;&gt;
+(2)&lt;<strong>dataset</strong> name=&quot;WEST-CONUS_4km Aggregation&quot; ID=&quot;SSEC/IDD-Satellite/3.9/WEST-CONUS_4km-Agg&quot; <strong>urlPath</strong>=&quot;<strong>satellite/3.9/WEST-CONUS_4km</strong>&quot;&gt;
 (3)  &lt;serviceName&gt;<strong>ncdods</strong>&lt;/serviceName&gt;
 
 (4)  &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
@@ -74,16 +76,20 @@
     <li>The variable named <em><strong>IR</strong></em> will be aggregated.</li>
     <li>All the files in the directory <em><strong>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </strong></em>that end with <em><strong>.gini</strong></em> will be scanned to create the aggregation.</li>
   </ol>
-  <h2>Modify all datasets in a DatasetScan </h2>
-  <p>If an NcML element is added to a <a href="http://motherlode.ucar.edu:8080/thredds/docs/datasetScan/index.html">DatasetScan</a>, it will modify all of the datasets contained within the DatasetScan: </p>
-  <pre>(1)&lt;<strong>datasetScan</strong> name=&quot;Ocean Satellite Data&quot; ID=&quot;<strong>ocean/sat</strong>&quot; path=&quot;<strong>ocean/sat</strong>&quot; dirLocation=&quot;R:/tds/netcdf/&quot; filter=&quot;.*\.nc$&quot;&gt;<br>(2)  &lt;metadata <strong>inherited</strong>=&quot;true&quot;&gt;<br>       &lt;serviceName&gt;<strong>ncdods</strong>&lt;/serviceName&gt;<br>       &lt;dataType&gt;<strong>Grid</strong>&lt;/dataType&gt;<br>     &lt;/metadata&gt;<br>(3)  &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; <strong>enhance</strong>=&quot;true&quot; /&gt;<br>(4)  &lt;<strong>addID</strong> /&gt;
-<br>   &lt;/datasetScan&gt;</pre>
+  <p>See <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html">NcML Aggregation</a> for more details. </p>
+  <p>&nbsp;</p>
+  <h2>Using NcML in a datasetScan element  </h2>
+  <p>If an NcML element is added to a <a href="http://motherlode.ucar.edu:8080/thredds/docs/datasetScan/index.html">DatasetScan</a>, it will modify all of the datasets contained within the DatasetScan. It is not self-contained, however, since it gets its location from the datasets that are dynamically scanned.</p>
+  <pre>(1)&lt;<strong>datasetScan</strong> name=&quot;Ocean Satellite Data&quot; ID=&quot;<strong>ocean/sat</strong>&quot; path=&quot;<strong>ocean/sat</strong>&quot; dirLocation=&quot;R:/tds/netcdf/&quot; filter=&quot;.*\.nc$&quot;&gt;<br>(2)  &lt;metadata <strong>inherited</strong>=&quot;true&quot;&gt;<br>       &lt;serviceName&gt;<strong>ncdods</strong>&lt;/serviceName&gt;<br>       &lt;dataType&gt;<strong>Grid</strong>&lt;/dataType&gt;<br>     &lt;/metadata&gt;<br>(3)  &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+       &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.0&quot;/&gt;
+     &lt;/netcdf&gt;<br>(4)  &lt;<strong>addID</strong> /&gt;<br>   &lt;/datasetScan&gt;</pre>
   <ol>
     <li>A datasetScan element is created whose contained datasets start with URL path <strong>ocean/sat</strong>, and whose contents are all the files in the directory <strong>R:/testdata/tds/netcdf/</strong> which end in <strong>.nc</strong>. </li>
     <li>All contained datasets <em>inherit</em> metadata indicating they use the <strong>ncdods</strong> service and are of type <strong>Grid</strong>. </li>
-    <li>All contained datasets are <em>wrapped</em> by this ncml element. In this case, they are <em>enhanced</em> by calling NetcdfDataset.enhance(), which identifies coordinate systems, deals with packed values, etc. Note that there is no <strong>location</strong> attribute, which is implicitly supplied by the  datasets found by the datasetScan.</li>
+    <li>All contained datasets are <em>wrapped</em> by this NcML element. In this case, each dataset has the global attribute<em> :Conventions=&quot;CF-1.0&quot;</em> added to it. Note that there is no <strong>location</strong> attribute, which is implicitly supplied by the  datasets found by the datasetScan.</li>
     <li>This element causes <strong>ID</strong> attributes to be added to each of the datasets contained in the DatasetScan. </li>
   </ol>
+  <p>&nbsp;</p>
   <h2>Cautions</h2>
   <h3>scan vs datasetScan </h3>
   <p>The <strong>scan</strong> element in the NcML aggregation is similar in purpose to the <strong>datasetScan</strong> element, but be careful not to confuse the two. The <strong>datasetScan</strong> element is more powerful, and has more options for filtering etc. Its job is to create nested <strong>dataset</strong> elements inside the datasetScan, and so has various options to  add information to those nested datasets. It has a generalized framework (CrawlableDataset) for crawling other things besides file directories. The <strong>scan</strong> element's job is to easily specify what files go into an NcML aggregation, and those individual files are hidden inside the aggregation dataset. It can only scan file directories. In the future, some of the capabilities of <strong>datasetScan</strong> will migrate into NcML <strong>scan</strong>. </p>
@@ -98,7 +104,7 @@
   </ul>
   <hr WIDTH="100%">
   <address>
-  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 23, 2006
+  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2006
   </address>
   <p></p>
 </div>

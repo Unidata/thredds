@@ -150,7 +150,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       else
         return null;
     } catch (Exception e) {
-      logger.error("Error making catalog", e);
+      logger.error("Error making catalog for "+path, e);
       return null;
     }
   }
@@ -436,7 +436,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       return;
 
     Element ncml = getNcmlElement();
-    NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);
+    NetcdfDataset ncd = NcMLReader.readNcML(path, ncml, null);
     fmrc = new FmrcImpl( ncd);
     madeFmrc = true;
   }
@@ -570,11 +570,11 @@ public class InvDatasetFmrc extends InvCatalogRef {
         DateFormatter formatter = new DateFormatter();
         Date date = formatter.getISODate(id);
         if (date == null)
-         logger.warn("Cant parse date "+id);
+         logger.warn("Cant parse date "+id+" for dataset= "+path);
        else {
           result = fmrc.getForecastTimeDataset(date);
           if (result == null)
-            logger.warn("Dont have forecast date "+id);
+            logger.warn("Dont have forecast date "+id+" for dataset= "+path);
         }
       }
     }

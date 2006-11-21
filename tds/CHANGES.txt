@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.13
  Features
+  * add Aggregation.setTypicalDataset = random, latest, or penultimate
   * allow tdr dynamic catalogs
   * add content/public for publically available data
   * move initialContent to WEB-INF so not visible
@@ -25,6 +26,8 @@ Changes in version 3.13
     - Streamline the discovery of CrawlableDataset descendants by adding
       exists() and getDescendant() methods.
  Bugs
+  * NcML in TDS: set the cache name using the request path. joinExist.persist needs a cache name to work correctly.
+    use the urlPath instead of the IDs for the cache names.
   * not properly closing files in the NetcdfSubset, CdmValidator services
   * locating DataRoot failed in some cases with multiple roots starting with same name
   * embedded NcML on dataset wasnt working

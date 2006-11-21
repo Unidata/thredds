@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="NCEP-NDFD-CONUS_5km">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml">
   <vertCoord id="1" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="0" name="height_above_ground1" units="m">2.0</vertCoord>
-  <offsetHours id="0">96.0 108.0 120.0 132.0 144.0 156.0 168.0 180.0</offsetHours>
-  <offsetHours id="1">90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0</offsetHours>
-  <offsetHours id="2">108.0 132.0 156.0 180.0</offsetHours>
-  <offsetHours id="3">96.0 120.0 144.0 168.0</offsetHours>
-  <runSequence allUseSeq="0">
+  <offsetHours id="4">84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0</offsetHours>
+  <offsetHours id="5">96.0 108.0 120.0 132.0 144.0 156.0 168.0 180.0</offsetHours>
+  <offsetHours id="6">90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0</offsetHours>
+  <offsetHours id="7">108.0 132.0 156.0 180.0</offsetHours>
+  <offsetHours id="8">96.0 120.0 144.0 168.0</offsetHours>
+  <offsetHours id="9">90.0 102.0 114.0 126.0 138.0 150.0 162.0 174.0</offsetHours>
+  <offsetHours id="10">102.0 126.0 150.0 174.0</offsetHours>
+  <offsetHours id="11">90.0 114.0 138.0 162.0</offsetHours>
+  <runSequence>
+    <run runHour="12.0" offsetHourSeq="5" />
+    <run runHour="18.0" offsetHourSeq="9" />
     <variable name="Categorical_Rain" />
     <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" />
   </runSequence>
-  <runSequence allUseSeq="1">
+  <runSequence>
+    <run runHour="12.0" offsetHourSeq="7" />
+    <run runHour="18.0" offsetHourSeq="10" />
+    <variable name="Maximum_temperature" vertCoord="0" />
+  </runSequence>
+  <runSequence>
+    <run runHour="12.0" offsetHourSeq="8" />
+    <run runHour="18.0" offsetHourSeq="11" />
+    <variable name="Minimum_temperature" vertCoord="0" />
+  </runSequence>
+  <runSequence>
+    <run runHour="12.0" offsetHourSeq="6" />
+    <run runHour="18.0" offsetHourSeq="4" />
     <variable name="Dew_point_temperature" vertCoord="0" />
     <variable name="Total_cloud_cover" />
     <variable name="Wind_direction_from_which_blowing" vertCoord="1" />
     <variable name="Wind_speed" vertCoord="1" />
   </runSequence>
-  <runSequence allUseSeq="2">
-    <variable name="Maximum_temperature" vertCoord="0" />
-  </runSequence>
-  <runSequence allUseSeq="3">
-    <variable name="Minimum_temperature" vertCoord="0" />
-  </runSequence>
 </fmrcDefinition>
-

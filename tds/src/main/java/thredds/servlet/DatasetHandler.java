@@ -56,8 +56,8 @@ public class DatasetHandler {
     InvDatasetImpl ds = (InvDatasetImpl) ncmlDatasetHash.get(reqPath);
     if (ds != null) {
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= "+ds);
-      String cacheName = ds.getUniqueID();
-      return NetcdfFileCache.acquire(cacheName, -1, null, null, new NcmlFileFactory(ds));
+      //String cacheName = ds.getUniqueID(); // LOOK use reqPath !!
+      return NetcdfFileCache.acquire(reqPath, -1, null, null, new NcmlFileFactory(ds));
     }
 
     // look for an fmrc dataset
@@ -125,15 +125,7 @@ public class DatasetHandler {
 
     public NetcdfFile open(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
       org.jdom.Element netcdfElem = ds.getNcmlElement();
-
-      /*
-      NetcdfDataset ncd = new NetcdfDataset();
-      ncd.setCacheName(cacheName);
-
-      // transfer the ncml into the dataset
-      new NcMLReader().readNetcdf( null, ncd, ncd, netcdfElem, null);  */
-
-      return NcMLReader.readNcML(netcdfElem, cancelTask);
+      return NcMLReader.readNcML(cacheName, netcdfElem, cancelTask);
     }
   }
 

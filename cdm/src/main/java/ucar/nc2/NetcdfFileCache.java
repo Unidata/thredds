@@ -72,7 +72,7 @@ public class NetcdfFileCache {
   }
 
   /**
-   * Initialize the cache. If you dont, default values will be used. Call disable if you dont want caching.
+   * Initialize the cache.
    *
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.

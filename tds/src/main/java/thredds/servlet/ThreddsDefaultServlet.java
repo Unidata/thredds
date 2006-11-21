@@ -117,6 +117,11 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     aggCache = new DiskCache2(dir, false, maxAgeSecs/60, scourSecs/60);
     Aggregation.setPersistenceCache( aggCache);
 
+    // how to choose the typical dataset ?
+    String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", null);
+    if (null != typicalDataset)
+      Aggregation.setTypicalDatasetMode( typicalDataset);
+
     // some paths cant be set otherwise
     AggregationFmrc.setDefinitionDirectory( rootPath+"idd/modelInventory/" );
 

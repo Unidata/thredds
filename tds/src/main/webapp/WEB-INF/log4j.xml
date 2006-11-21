@@ -110,6 +110,11 @@
     <appender-ref ref="modelLog"/>
   </logger>
 
+  <logger name="thredds.catalog.InvDatasetFmrc" >
+    <level value="INFO"/>
+    <appender-ref ref="modelLog"/>
+  </logger>
+
   <!-- All normal logging messages go to threddsServlet.log -->
   <logger name="dods">
     <level value="INFO"/>

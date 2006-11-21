@@ -72,11 +72,28 @@ import thredds.util.DateFromString;
  * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */
 public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
+  static protected int TYPICAL_DATASET_RANDOM = 0;
+  static protected int TYPICAL_DATASET_LATEST = 1;
+  static protected int TYPICAL_DATASET_PENULTIMATE = 2;
+
+
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   static protected DiskCache2 diskCache2 = null;
+  static protected int typicalDatasetMode = 0;
 
   static public void setPersistenceCache(DiskCache2 dc) {
     diskCache2 = dc;
+  }
+
+  static public void setTypicalDatasetMode(String mode) {
+    if (mode.equalsIgnoreCase("random"))
+      typicalDatasetMode = TYPICAL_DATASET_RANDOM;
+    else if (mode.equalsIgnoreCase("latest"))
+      typicalDatasetMode = TYPICAL_DATASET_LATEST;
+    else if (mode.equalsIgnoreCase("penultimate"))
+      typicalDatasetMode = TYPICAL_DATASET_PENULTIMATE;
+    else
+      logger.error("Unknown setTypicalDatasetMode= "+mode);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -472,7 +489,15 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     int n = nestedDatasets.size();
     if (n == 0)
       throw new FileNotFoundException("No datasets in this aggregation");
-    int select = (n < 2) ? 0 : new Random().nextInt(n);
+
+    int select;
+    if (typicalDatasetMode == TYPICAL_DATASET_LATEST)
+      select = n-1;
+    else if (typicalDatasetMode == TYPICAL_DATASET_PENULTIMATE)
+      select = (n < 2) ? 0 : n-2;
+    else // random is default
+      select = (n < 2) ? 0 : new Random().nextInt(n);
+
     return (Dataset) nestedDatasets.get(select);
   }
 

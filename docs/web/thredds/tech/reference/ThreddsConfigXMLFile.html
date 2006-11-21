@@ -126,10 +126,15 @@
   &lt;/AggregationCache&gt;
 </pre>
  <p> If you  have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong>. Every <strong>scour</strong> amount of time, any item older than maxAge will be deleted. Set scour to -1 to not scour at all. </p>
+ <h3>Aggregation</h3>
+ <pre>  &lt;<strong>Aggregation</strong>&gt;<br>    &lt;<strong>typicalDataset</strong>&gt;latest&lt;/typicalDataset&gt;<br>  &lt;/Aggregation&gt;
+</pre>
+ <p>You can control how NcML Aggregation chooses its typical dataset, the one it uses to populate the metadata for the resulting aggregated dataset. Valid values are <strong>random</strong> (default), <strong>latest</strong> and <strong>penultimate</strong> (latest but one). <br>
+</p>
  <pre>&lt;/threddsConfig&gt;<br></pre>
  <hr WIDTH="100%">
  <address>
- <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 15, 2006
+ <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2006
  </address>
  <p></p>
 </body>
