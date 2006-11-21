@@ -39,41 +39,12 @@ public class TestTDS implements Runnable {
 
     FileOutputStream fout = new FileOutputStream(name+".txt");
     out = System.out; // new PrintStream( new BufferedOutputStream( fout));
-
-    //String catUrl = "http://motherlode.ucar.edu:8080/thredds/catalog.xml";
-    //String catUrl = "http://motherlode.ucar.edu:8080/thredds/idv/rt-models.1.0.xml";
-    //String catUrl = "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level3/catalog.xml";
-
-    //ce.transfer("http://newmotherlode.ucar.edu:8080/thredds/dodsC/nexrad/level2/KMAF/20051013/Level2_KMAF_20051013_0036.ar2v");
-    //ce.copy(catUrl, "C:/data/ncmodels/", task);
-    //ce.extractLoop(out, catUrl, CatalogCrawler.USE_RANDOM, task);
-
-    /* models
-    ce.extract(out, "http://motherlode.ucar.edu:8080/thredds/idd/dgex_model.xml", CatalogCrawler.USE_ALL, task);
-    ce.extract(out, "http://motherlode.ucar.edu:8080/thredds/idd/gfs_model.xml", CatalogCrawler.USE_ALL, task);
-    ce.extract(out, "http://motherlode.ucar.edu:8080/thredds/idd/nam_model.xml", CatalogCrawler.USE_ALL, task);
-    ce.extract(out, "http://motherlode.ucar.edu:8080/thredds/idd/ruc_model.xml", CatalogCrawler.USE_ALL, task);
-    ce.extract(out, "http://motherlode.ucar.edu:8080/thredds/idd/ndfd_model.xml", CatalogCrawler.USE_ALL, task);  // */
-
-    // radar
-    //ce.extractAll(out, "http://newmotherlode.ucar.edu:8080/thredds/idd/nexrad/level3/catalog.xml", task); //  */
-    //ce.extractAll(out, "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level2/catalog.xml", task);
-    /* ce.extractAll(out, "http://newmotherlode.ucar.edu:8080/thredds/idd/nexrad/composite/catalog.xml", task);
-    ce.extractAll(out, "http://newmotherlode.ucar.edu:8080/thredds/idd/nexrad/composite2/catalog.xml", task); //
-
-    ce.extractAll(out, "http://newmotherlode.ucar.edu:8080/thredds/idd/obsData.xml", task);   //
-    ce.extractAll(out, "http://motherlode.ucar.edu:8080/thredds/idd/satellite.xml", task);
-    ce.extractAll(out, "http://motherlode.ucar.edu:8080/thredds/idv/rt-models.1.0.xml", task);   //
-    ce.extractAll(out, "http://motherlode.ucar.edu:8080/thredds/cataloggen/catalogs/uniModelsInvCat1.0en.xml", task); // */
-
-    //out.flush();
-    //fout.close();
   }
 
 
   public void run() {
     try {
-      ce.extract(out, catUrl, type, false, stopButton);
+      ce.extractLoop(out, catUrl, type, false, stopButton);
     } catch (IOException e) {
       e.printStackTrace();
       label.setText("Error");
