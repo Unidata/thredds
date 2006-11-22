@@ -69,7 +69,7 @@ public class InvDatasetImpl extends InvDataset {
   // filter
   protected boolean mark = false;
 
-  // debug
+  // debug                                                             lsls -
   private boolean debugInherit = false, debugInherit2 = false;
 
   /**
