@@ -667,12 +667,14 @@ public class DataRootHandler {
     DataRoot reqDataRoot = matchPath2(path);
     if (reqDataRoot == null)
       return null;
+
     if ( reqDataRoot.scan != null)
       return reqDataRoot.scan.requestCrawlableDataset( path );
 
     if ( reqDataRoot.fmrc != null )
-      return null;
+      return null; // if fmrc exists, bail out and dela with it in caller
 
+    // must be a data root
     if ( reqDataRoot.dirLocation != null ) {
       if (reqDataRoot.datasetRootProxy == null)
         reqDataRoot.makeProxy();

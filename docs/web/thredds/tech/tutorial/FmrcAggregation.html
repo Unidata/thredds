@@ -10,6 +10,13 @@
 <p><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">Forecast Model Aggregation</a>
 </p>
 <p>&nbsp;</p>
-<p>hey!</p>
+<h2>File Access </h2>
+<p>Uses the fileServices service, for example: </p>
+<pre> &lt;service name=&quot;fileServices&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
+   &lt;service name=&quot;thisDODS&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
+   &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot;/&gt;
+   &lt;service name=&quot;NetcdfServer&quot; serviceType=&quot;NetcdfServer&quot; base=&quot;/thredds/ncServer/&quot;/&gt;
+ &lt;/service&gt;
+ </pre>
 </body>
 </html>

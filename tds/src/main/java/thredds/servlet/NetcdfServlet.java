@@ -144,7 +144,7 @@ public class NetcdfServlet extends AbstractServlet {
       return;
     }
 
-    // otherwise we are processing a new request to creat a subset
+    // otherwise we are processing a new request to create a subset
 
     // dorky thing to get the transferred file to end in ".nc"
     // LOOK: problem when it does end in nc !!
@@ -155,6 +155,10 @@ public class NetcdfServlet extends AbstractServlet {
     try {
       GridDataset gds = DatasetHandler.openGridDataset(pathInfo);
       fmr = ForecastModelRunInventory.open(gds, null);
+      // the name must be just the last part of the pathInfo; it becomes the "action" == reletive URL in the form
+      int pos = pathInfo.lastIndexOf("/");
+      String name = (pos <= 1) ? pathInfo : pathInfo.substring(pos+1);
+      fmr.setName(name);
 
       String wantXML = req.getParameter("wantXML");
       String showForm = req.getParameter("showForm");

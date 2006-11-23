@@ -333,7 +333,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     else
     {
       String name = dsElem.getAttributeValue( "name" );
-      factory.appendWarning("**Warning: Dataset "+name+" using old form of DatasetScan (dirLocation instead of location)");
+      factory.appendWarning("**Warning: Dataset "+name+" using old form of DatasetScan (dirLocation instead of location)\n");
 
       String path = dsElem.getAttributeValue( "path" );
 

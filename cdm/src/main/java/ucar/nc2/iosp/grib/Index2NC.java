@@ -550,7 +550,6 @@ public class Index2NC  {
     if (fmr.hasVariable( pname))
       return pname;
 
-    System.out.println("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname);
     logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname+" for file "+ncfile.getLocation());
 
     return null;

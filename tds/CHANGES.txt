@@ -2,6 +2,10 @@ CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 3.14
+ Bugs
+  * NetcdfSetver failing on non-fmrc datasets, due to urlPath not reletive.
+
 Changes in version 3.13
  Features
   * add Aggregation.setTypicalDataset = random, latest, or penultimate

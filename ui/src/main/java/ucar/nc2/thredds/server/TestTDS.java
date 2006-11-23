@@ -44,7 +44,7 @@ public class TestTDS implements Runnable {
 
   public void run() {
     try {
-      ce.extractLoop(out, catUrl, type, false, stopButton);
+      ce.extract(out, catUrl, type, false, stopButton);
     } catch (IOException e) {
       e.printStackTrace();
       label.setText("Error");
@@ -54,7 +54,7 @@ public class TestTDS implements Runnable {
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:9080/thredds";
+    String server = "http://motherlode.ucar.edu:8080/thredds";
 
     // HEY LOOK
     //ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);

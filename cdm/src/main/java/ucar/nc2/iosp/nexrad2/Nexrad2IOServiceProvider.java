@@ -55,7 +55,7 @@ public class Nexrad2IOServiceProvider implements IOServiceProvider {
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ;
     } catch (IOException ioe) {
       return false;
-    }
+    }  
   }
 
   private Level2VolumeScan volScan;
