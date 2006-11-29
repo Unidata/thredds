@@ -490,6 +490,11 @@ public class HtmlWriter
       {
         InvCatalogRef catref = (InvCatalogRef) ds;
         String href = catref.getXlinkHref();
+        if ( ! isLocalCatalog )
+        {
+          URI hrefUri = cat.getBaseURI().resolve( href);
+          href = hrefUri.toString();
+        }
         try {
           URI uri = new URI(href);
           if (uri.isAbsolute()) {
