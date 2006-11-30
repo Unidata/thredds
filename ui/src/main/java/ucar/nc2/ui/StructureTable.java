@@ -108,6 +108,7 @@ public class StructureTable extends JPanel {
   // save state
   public void saveState() {
     fileChooser.save();
+    mainPrefs.getBean("DumpWindowBounds",  dumpWindow.getBounds());
   }
 
   /** This is used when we have a Structure */

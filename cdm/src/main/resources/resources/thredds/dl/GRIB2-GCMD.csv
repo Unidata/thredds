@@ -1,0 +1,217 @@
+Meteorological products,Temperature,Temperature,,,,,Atmosphere > Atmospheric Temperature > Air Temperature
+,,Virtual temperarure,,,,,Atmosphere > Atmospheric Temperature > Virtual Temperature 
+,,Potential Temperature,,,,,Atmosphere > Atmospheric Temperature > Potential Temperature
+,,Pseudo-adiabatic potential temperature,equivalent potential temperarture,,,,Atmosphere > Atmospheric Temperature > Potential Temperature
+,,Maximum temperature,,,,,Atmosphere > Atmospheric Temperature > Maximum/Minimum Temperature 
+,,Minimum temperature,,,,,Atmosphere > Atmospheric Temperature > Maximum/Minimum Temperature 
+,,Dew point temperature,,,,,Atmosphere > Atmospheric Temperature > Dew Point Temperature 
+,,Dew point depression,deficit,,,,Atmosphere > Atmospheric Temperature > Dew Point Temperature 
+,,Lapse rate,,,,,n/a
+,,temperature anomaly,,,,,Atmosphere > Atmospheric Temperature > Temperature Anomalies 
+,,Latent heat net flux,,,,,Atmosphere > Atmospheric Radiation > Heat Flux
+,,Sensible heat net flux,,,,,Atmosphere > Atmospheric Radiation > Heat Flux
+,,Heat index,,,,,n/a
+,,Wind chill factor,,,,,Atmosphere > Atmospheric Winds > Wind Chill 
+,,Minimum dew point depression,,,,,Atmosphere > Atmospheric Temperature > Dew Point Temperature
+,,Virtual potential temperature,,,,,Atmosphere > Atmospheric Temperature > Virtual Temperature 
+,Moisture,Specific humidity,,,,,Atmosphere > Atmospheric Water Vapor > Humidity 
+,,Relative humidity,,,,,Atmosphere > Atmospheric Water Vapor > Humidity 
+,,Humidity mixing ratio,,,,,Atmosphere > Atmospheric Water Vapor > Humidity 
+,,Precipitable water,,,,,Atmosphere > Atmospheric Water Vapor > Precipitable Water
+,,Vapor pressure,,,,,Atmosphere > Atmospheric Water Vapor > Water Vapor 
+,,Saturation deficit,,,,,n/a
+,,Evaporation,,,,,Atmosphere > Atmospheric Water Vapor > Evaporation 
+,,Precipitation rate,,,,,Atmosphere > Precipitation > Precipitation Rate
+,,Total precipitation,,,,,Atmosphere > Precipitation > Precipitation Amount 
+,,Large scale precipitation,non-convective,,,,Atmosphere > Precipitation > Precipitation Amount 
+,,Convective precipitation,,,,,Atmosphere > Precipitation > Precipitation Amount 
+,,snow depth,,,,,Cryosphere > Snow/Ice > Snow Depth
+,,Snowfall rate water equivalent,,,,,Atmosphere > Precipitation > Liquid Water Equivalent
+,,Water equivalent of accumulated snow depth,,,,,Cryosphere > Snow/Ice > Snow Water Equivalent
+,,Convective snow,,,,,Atmosphere > Precipitation > Snow 
+,,Large scale snow,,,,,Atmosphere > Precipitation > Snow 
+,,SNow melt,,,,,Cryosphere > Snow/Ice > Snow Melt 
+,,Snow age,,,,,n/a
+,,Absolute humidity,,,,,Atmosphere > Atmospheric Water Vapor > Humidity 
+,,Precipitation type,,,,,Atmosphere > Precipitation
+,,Integrated liquid water,,,,,Atmosphere > Precipitation > Liquid Water Equivalent 
+,,Condensate,,,,,Atmosphere > Atmospheric Water Vapor > Condensation 
+,,Cloud mixing ratio,,,,,n/a
+,,Ice water mixing ratio,,,,,n/a
+,,Rain mixing ratio,,,,,Atmosphere > Precipitation > Rain
+,,Snow mixing ratio,,,,,Atmosphere > Precipitation > Snow 
+,,Horizontal moisture convergence,,,,,n/a
+,,Maximum relative humidity,,,,,Atmosphere > Atmospheric Water Vapor > Humidity 
+,,Maximum absolute humidity,,,,,Atmosphere > Atmospheric Water Vapor > Humidity 
+,,Total snowfall,,,,,Atmosphere > Precipitation > Snow
+,,Preciptable water category,,,,,Atmosphere > Atmospheric Water Vapor > Precipitable Water 
+,,Hail,,,,,Atmosphere > Precipitation > Hail
+,,Graupel,snow pellets,,,,Atmosphere > Precipitation > Sleet 
+,Momentum,Wind direction,,,,,Atmosphere > Atmospheric Winds > Surface Winds
+,,wind speed,,,,,Atmosphere > Atmospheric Winds > Surface Winds
+,,u-component of wind,,,,,Atmosphere > Atmospheric Winds > Surface Winds
+,,v-component of wind,,,,,Atmosphere > Atmospheric Winds > Surface Winds
+,,Stream function,,,,,Atmosphere > Atmospheric Winds > Streamfunctions 
+,,Velocity potential,,,,,n/a
+,,Montgomery stream function,,,,,Atmosphere > Atmospheric Winds > Streamfunctions 
+,,Sigma coordinate vertical velocity,,,,,Atmosphere > Atmospheric Winds > Vertical Wind Motion
+,,Verical velocity,pressure,,,,Atmosphere > Atmospheric Winds > Vertical Wind Motion
+,,Vertical velocity,geometric,,,,Atmosphere > Atmospheric Winds > Vertical Wind Motion
+,,Absolute vorticity,,,,,Atmosphere > Atmospheric Winds > Vorticity
+,,Absolute divergence,,,,,Atmosphere > Atmospheric Winds > Convergence/Divergence
+,,Relative vorticity,,,,,Atmosphere > Atmospheric Winds > Vorticity
+,,Relative divergence,,,,,Atmosphere > Atmospheric Winds > Convergence/Divergence 
+,,Potential vorticity,,,,,Atmosphere > Atmospheric Winds > Vorticity 
+,,Vertical u-component shear,,,,,Atmosphere > Atmospheric Winds > Wind Shear
+,,Vertical v-component shear,,,,,Atmosphere > Atmospheric Winds > Wind Shear
+,,"Momentum flux, u-component",,,,,n/a
+,,"Momentum flux, v-component",,,,,n/a
+,,Wind mixing energy,,,,,n/a
+,,Boundary layer dissipitation,,,,,n/a
+,,Maximum wind speed,,,,,Atmosphere > Atmospheric Winds > Surface Winds 
+,,u-component of wind,gust,,,,Atmosphere > Atmospheric Winds > Surface Winds 
+,,v-component of wind,gust,,,,Atmosphere > Atmospheric Winds > Surface Winds 
+,Mass,Pressure,,,,,Atmosphere > Atmospheric Pressure > Atmospheric Pressure Measurements 
+,,Pressure reduced to MSL,,,,,Atmosphere > Atmospheric Pressure > Sea Level Pressure
+,,Pressure tendency,,,,,Atmosphere > Atmospheric Pressure > Pressure Tendency
+,,ICAO Standard Atmosphere Reference Height,,,,,n/a
+,,Geopotential,,,,,Atmosphere > Altitude > Geopotential Height 
+,,Geopotential height,,,,,Atmosphere > Altitude > Geopotential Height 
+,,Standard deviation of height,,,,,n/a
+,,Pressure anomaly,,,,,Atmosphere > Atmospheric Pressure > Pressure Anomalies
+,,Geopotential height anomaly,,,,,Atmosphere > Altitude > Geopotential Height
+,,Density,,,,,n/a
+,,Altimeter setting,,,,,n/a
+,,Thickness,,,,,Atmosphere > Atmospheric Pressure > Pressure Thickness
+,,Pressure altitude,,,,,Atmosphere > Altitude > Barometric Altitude 
+,,Density altitude,,,,,Atmosphere > Altitude > Barometric Altitude 
+,Short-wave Radiation,Net short-wave radiation flux,surface,,,,Atmosphere > Atmospheric Radiation > Shortwave Radiation 
+,,Net short-wave radiation flux,top of atmosphere,,,,Atmosphere > Atmospheric Radiation > Shortwave Radiation 
+,,Short wave radiation flux,,,,,Atmosphere > Atmospheric Radiation > Shortwave Radiation 
+,,Global radiation flux,,,,,Atmosphere > Atmospheric Radiation > Radiative Flux
+,,Brightness temperature,,,,,Spectral/Engineering > Infrared Wavelengths > Brightness Temperature 
+,,Radiance,w.r.t. wave number,,,,Spectral/Engineering > Infrared Wavelengths > Infrared Radiance 
+,,Radiance,w.r.t. wave length,,,,Spectral/Engineering > Infrared Wavelengths > Infrared Radiance 
+,Long-wave Radiation,Net long-wave radiation flux,surface,,,,Atmosphere > Atmospheric Radiation > Longwave Radiation 
+,,Net long-wave radiation flux,top of atmosphere,,,,Atmosphere > Atmospheric Radiation > Longwave Radiation 
+,,Lang wave radiation flux,,,,,Atmosphere > Atmospheric Radiation > Longwave Radiation 
+,Cloud,Cloud ice,,,,,Atmosphere > Clouds > Cloud Liquid Water/Ice
+,,Total cloud cover,,,,,Atmosphere > Clouds > Cloud Amount/Frequency 
+,,Convective cloud cover,,,,,Atmosphere > Clouds > Cloud Amount/Frequency 
+,,Low cloud cover,,,,,Atmosphere > Clouds > Cloud Amount/Frequency 
+,,Medium cloud cover,,,,,Atmosphere > Clouds > Cloud Amount/Frequency 
+,,High cloud cover,,,,,Atmosphere > Clouds > Cloud Amount/Frequency 
+,,Cloud water,,,,,Atmosphere > Clouds > Cloud Liquid Water/Ice
+,,Cloud amount,,,,,Atmosphere > Clouds > Cloud Amount/Frequency 
+,,Cloud type,,,,,Atmosphere > Clouds > Cloud Types
+,,Thunderstorm maximum tops,,,,,Atmosphere > Clouds > Cloud Vertical Distribution 
+,,Thunderstorm coverage,,,,,n/a
+,,Cloud base,,,,,Atmosphere > Clouds > Cloud Base
+,,Cloud top,,,,,n/a
+,,Ceiling,,,,,Atmosphere > Clouds > Cloud Ceiling 
+,Thermodynamic Stability Indices,Parcel lifted index,to 500 hPa,,,,n/a
+,,Best lifted index,to 500 hPa,,,,n/a
+,,K index,,,,,n/a
+,,KO index,,,,,n/a
+,,Total totals index,,,,,n/a
+,,Sweat index,,,,,n/a
+,,Convvective available potential energy,,,,,n/a
+,,Convective inhibition,,,,,n/a
+,,Storm relative helicity,,,,,n/a
+,,Energy helocity index,,,,,n/a
+,Aerosols,Aerosol type,,,,,Atmosphere > Aerosols
+,Trace Gases,Total ozone,,,,,Atmosphere > Atmospheric Chemistry/Oxygen Compounds > Ozone 
+,Radar,Base spectrum width,,,,,n/a
+,,Base reflectivity,,,,,Spectral/Engineering > Radar > Radar Reflectivity 
+,,Base radial velocity,,,,,Spectral/Engineering > Radar > Doppler Velocity
+,,Vertically-integrated liquid,,,,,n/a
+,,Layer maximum base reflectiity,,,,,Spectral/Engineering > Radar > Radar Reflectivity 
+,,Precipitation,,,,,Atmosphere > Precipitation > Precipitation Rate 
+,,Radar spectra (1),,,,,Spectral/Engineering > Radar
+,,Radar spectra (2),,,,,Spectral/Engineering > Radar
+,,Radar spectra (3),,,,,Spectral/Engineering > Radar
+,Nuclear/radiology,Air concentration of Caesium 137,,,,,Human Dimensions > Environmental Impacts > Nuclear Radiation
+,,Air concentration of Iodine 131,,,,,Human Dimensions > Environmental Impacts > Nuclear Radiation
+,,Air concentration of radioactive pollutant,,,,,Human Dimensions > Environmental Impacts > Nuclear Radiation
+,,Ground deposition of Caesium 137,,,,,Human Dimensions > Environmental Impacts > Nuclear Radiation
+,,Ground deposition of Iodine 131,,,,,Human Dimensions > Environmental Impacts > Nuclear Radiation
+,Physical atmospheric properties,Visibility,,,,,Atmosphere > Air Quality > Visibility
+,,Albedo,,,,,Atmosphere > Atmospheric Radiation > Albedo 
+,,Thunderstorm probability,,,,,n/a
+,,Mixed layer depth,,,,,n/a
+,,Volcanic ash,,,,,Atmosphere > Aerosols > Dust/Ash 
+,,Icing top,,,,,n/a
+,,Icing base,,,,,n/a
+,,Icing,,,,,n/a
+,,Turbulence top,,,,,Atmosphere > Atmospheric Winds > Turbulence 
+,,Turbulence base,,,,,Atmosphere > Atmospheric Winds > Turbulence 
+,,Turbulence,,,,,Atmosphere > Atmospheric Winds > Turbulence 
+,,Turbulent kinetic energy,,,,,Atmosphere > Atmospheric Winds > Turbulence 
+,,Planetary boundary layer regime,,,,,Atmosphere > Altitude > Planetary Boundary Layer Height 
+,,Contrail intensity,,,,,n/a
+,,Contrail engine type,,,,,n/a
+,,Contrail top,,,,,n/a
+,,Contrail base,,,,,n/a
+Hydrologic products,Hydrology Base Products,Flash flood guidance,,,,,Hydrosphere > Surface Water > Floods 
+,,Flash flood runoff,,,,,Hydrosphere > Surface Water > Runoff 
+,,Remotely-sensed snow cover,,,,,Cryosphere > Snow/Ice > Snow Cover 
+,,Elevation of snow covered terrain,,,,,Land Surface > Topography > Terrain Elevation
+,,Snow water equivalent percent of normal,,,,,Cryosphere > Snow/Ice > Snow Water Equivalent
+,Hydrologic probabilities,Conditional percent precipitation amount fractile for an overall period,,,,,Atmosphere > Precipitation > Precipitation Amount 
+,,Percent precipitation ina sub-period of an overall period,,,,,Atmosphere > Precipitation > Precipitation Amount 
+,,Probability of 0.01 inch of precipitation (POP),,,,,Atmosphere > Precipitation > Precipitation Amount 
+Land Surface Products,Vegetation/Biomass,Land cover,"1=land, 2-sea",,,,Land Surface > Land Use/Land Cover > Land Cover
+,,Surface roughness,,,,,Land Surface > Topography > Surface Roughness
+,,Soil temperature,,,,,Land Surface > Soils > Soil Temperature 
+,,Soil Moisture content,,,,,Land Surface > Soils > Soil Moisture/Water Content 
+,,Vegetation,,,,,Biosphere > Vegetation > Vegetation Cover 
+,,Water runoff,,,,,Hydrosphere > Surface Water > Runoff
+,,Evapotranspiration,,,,,Atmosphere > Atmospheric Water Vapor > Evapotranspiration 
+,,Model terrain height,,,,,Land Surface > Topography > Terrain Elevation
+,,Land use,,,,,Land Surface > Land Use/Land Cover > Land Use Classes
+,Soil Products,Soil type,,,,,Land Surface > Soils > Soil Horizons/Profile 
+,,Upper layer soil temperature,,,,,Land Surface > Soils > Soil Temperature 
+,,Upper layer soil moisture,,,,,Land Surface > Soils > Soil Moisture/Water Content 
+,,Lower layer soil moisture,,,,,Land Surface > Soils > Soil Moisture/Water Content 
+,,Bottom layer soil temperature,,,,,Land Surface > Soils > Soil Temperature 
+Space Products,Image format products,Scaled radiance,,,,,Spectral/Engineering > Visible Wavelengths > Visible Radiance
+,,Scaled albedo,,,,,Atmosphere > Atmospheric Radiation > Albedo
+,,Scaled brightness temperature,,,,,Spectral/Engineering > Infrared Wavelengths > Brightness Temperature 
+,,Scaled precipitable water,,,,,Atmosphere > Atmospheric Water Vapor > Precipitable Water
+,,Scaled lifted index,,,,,n/a
+,,Scaled cloud top presure,,,,,Atmosphere > Clouds > Cloud Top Pressure
+,,Scaled cloud top pressure,,,,,Atmosphere > Clouds > Cloud Top Pressure
+,,Scaled skin temperature,,,,,Atmosphere > Atmospheric Temperature > Skin Temperature
+,Quantitative Products,Estimated precipitation,,,,,Atmosphere > Precipitation > Precipitation Amount
+Oceanographic Products,Waves,Wave spectra (1),,,,,Oceans > Ocean Waves > Wave Spectra
+,,Wave spectra (2),,,,,Oceans > Ocean Waves > Wave Spectra
+,,Wave spectra (3),,,,,Oceans > Ocean Waves > Wave Spectra
+,,Significant height of combined wind waves and swell,,,,,Oceans > Ocean Waves > Significant Wave Height 
+,,Direction of wind waves,,,,,Oceans > Ocean Waves > Wave Speed/Direction 
+,,Significant height of wind waves,,,,,Oceans > Ocean Waves > Significant Wave Height 
+,,Mean period of wind waves,,,,,Oceans > Ocean Waves > Wave Period 
+,,Direction of swell waves,,,,,Oceans > Ocean Waves > Swells 
+,,Significant height of swell waves,,,,,Oceans > Ocean Waves > Significant Wave Height 
+,,Mean period of swell waves,,,,,Oceans > Ocean Waves > Wave Period 
+,,Primary wave direction,,,,,Oceans > Ocean Waves > Wave Speed/Direction
+,,Primary wave mean period,,,,,Oceans > Ocean Waves > Wave Period
+,,Secondary wave direction,,,,,Oceans > Ocean Waves > Wave Speed/Direction 
+,,Secondary wave mean period,,,,,Oceans > Ocean Waves > Wave Period
+,Currents,Current direction,,,,,Oceans > Ocean Circulation > Ocean Currents 
+,,Current speed,,,,,Oceans > Ocean Circulation > Ocean Currents 
+,,u-component of current,,,,,Oceans > Ocean Circulation > Ocean Currents 
+,,v-component of current,,,,,Oceans > Ocean Circulation > Ocean Currents 
+,Ice,Ice cover,,,,,n/a
+,,Ice thickness,,,,,Cryosphere > Snow/Ice > Ice Depth/Thickness 
+,,Direction of ice drift,,,,,Cryosphere > Snow/Ice > Ice Motion 
+,,Speed of ice drift,,,,,Cryosphere > Snow/Ice > Ice Motion 
+,,u-component of drift,,,,,Cryosphere > Snow/Ice > Ice Motion 
+,,v-component of drift,,,,,Cryosphere > Snow/Ice > Ice Motio
+,,Ice growth rate,,,,,Cryosphere > Snow/Ice > Ice Growth/Melt
+,,Ice divergence,,,,,n/a
+,Surface Properties,Water temperature,,,,,Oceans > Ocean Temperature > Water Temperature 
+,,Deviation of sea level from mean,,,,,Oceans > Coastal Processes > Sea Level Rise
+,Sub-surface Properties,Main thermocline depth,,,,,Oceans > Ocean Temperature > Thermocline 
+,,Main thermocline anomaly,,,,,Oceans > Ocean Temperature > Thermocline 
+,,Transient themocline depth,,,,,Oceans > Ocean Temperature > Thermocline 
+,,Salinity,,,,,Oceans > Salinity/Density > Salinity 

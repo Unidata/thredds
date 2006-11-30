@@ -404,13 +404,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
       isRegular = true;
     else {
       start = getCoordValue(0);
-      increment = getCoordValue(1) - getCoordValue(0);
+      int n = (int) getSize();
+      increment = (getCoordValue(n-1) - getCoordValue(0))/(n-1);
       isRegular = true;
       for (int i=1; i< getSize(); i++)
-        if (!ucar.nc2.util.Misc.closeEnough(getCoordValue(i) - getCoordValue(i-1), increment)) {
+        if (!ucar.nc2.util.Misc.closeEnough(getCoordValue(i) - getCoordValue(i-1), increment, 5.0e-3)) {
           isRegular = false;
           // double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
-          // System.out.println(i+" diff= "+diff);
+          //System.out.println(i+" diff= "+getCoordValue(i)+" "+getCoordValue(i-1));
           break;
         }
     }

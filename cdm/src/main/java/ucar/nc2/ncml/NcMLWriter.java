@@ -23,6 +23,7 @@ package ucar.nc2.ncml;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.util.NetworkUtils;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.StringUtil;
@@ -34,6 +35,7 @@ import org.jdom.output.Format;
 
 import java.io.*;
 import java.util.*;
+import java.net.URI;
 
 /**
  * Helper class to write NcML.
@@ -113,10 +115,12 @@ public class NcMLWriter {
         "http://www.ucar.edu/schemas/netcdf-2.2 http://www.unidata.ucar.edu/schemas/netcdf-2.2.xsd", xsiNS);
     */
 
-    if (null != location)
-      rootElem.setAttribute("location", location);
-    else if (null != ncd.getLocation())
-      rootElem.setAttribute("location", ncd.getLocation());
+    if (null == location)
+      location = ncd.getLocation();
+
+    if (null != location) {
+      rootElem.setAttribute("location", NetworkUtils.canonicalize( location));
+    }
 
     if (null != ncd.getId())
       rootElem.setAttribute("id", ncd.getId());

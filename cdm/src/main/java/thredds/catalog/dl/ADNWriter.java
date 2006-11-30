@@ -177,15 +177,19 @@ public class ADNWriter {
       list = ds.getPublishers();
       for (int i=0; i<list.size(); i++) {
         ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(i);
-        if(emailOK(p))
+        if (p.getNameVocab().getVocabulary().equalsIgnoreCase("ADN")) {
           contributors.addContent( writeSource(p, "Publisher"));
+          break;
+        }
       }
 
       list = ds.getCreators();
       for (int i=0; i<list.size(); i++) {
         ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(i);
-        if(emailOK(p))
+        if (p.getNameVocab().getVocabulary().equalsIgnoreCase("ADN")) {
           contributors.addContent( writeSource(p, "Author"));
+          break;
+        }
       }
     }
 
@@ -253,17 +257,6 @@ public class ADNWriter {
     online.addContent( mediums);
     mediums.addContent( new Element("medium", defNS).addContent("text/html"));
 
-    /*<requirements>
-<requirement>
-<reqType>DLESE:Other:More specific technical requirements</reqType>
-</requirement>
-</requirements>
-<otherRequirements>
-<otherRequirement>
-<otherType>Requires data viewer or tool for grib data. See the documentation page in the resource.</otherType>
-</otherRequirement>
-</otherRequirements> */
-
     Element reqs = new Element("requirements", defNS);
     online.addContent( reqs);
     Element req = new Element("requirement", defNS);
@@ -327,12 +320,20 @@ public class ADNWriter {
 
     Element organization = new Element("organization", defNS);
     contributor.addContent( organization);
-    organization.addContent( new Element("instName", defNS).addContent(p.getNameVocab().getText()));
+
+    String name = p.getNameVocab().getText();
+    int pos = name.indexOf("/");
+    if (pos > 0) {
+      organization.addContent( new Element("instName", defNS).addContent(name.substring(0,pos)));
+      organization.addContent( new Element("instDept", defNS).addContent(name.substring(pos+1)));
+    } else
+      organization.addContent( new Element("instName", defNS).addContent(name));
 
     if ((p.getUrl() != null) && p.getUrl().length() > 0)
       organization.addContent( new Element("instUrl", defNS).addContent(p.getUrl()));
 
-    organization.addContent( new Element("instEmail", defNS).addContent(p.getEmail()));
+    if (emailOK(p))
+      organization.addContent( new Element("instEmail", defNS).addContent(p.getEmail()));
 
     return contributor;
   }

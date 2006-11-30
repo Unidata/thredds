@@ -160,7 +160,7 @@ public class DIFWriter {
       vs = ds.getVariables("GRIB-2");
     if ((vs == null) || (vs.getVariableList().size() == 0)) {
       ok = false;
-      sbuff.append(" missing Variables with DIF or GRIB-1 compatible vocabulary\n");
+      sbuff.append(" missing Variables with DIF or GRIB compatible vocabulary\n");
     }
 
     List list = ds.getPublishers();
@@ -261,7 +261,7 @@ public class DIFWriter {
         vs = ds.getVariables("GRIB-2");
         if ((vs != null) && (vs.getVariableList().size() != 0)) {
           Iterator iter = translateGribVocabulary(vs, false, mess);
-          while (iter.hasNext()) {
+          while ((iter != null) && iter.hasNext()) {
             ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) iter.next();
             writeVariable( rootElem, v);
           }
@@ -342,9 +342,12 @@ public class DIFWriter {
     if (list.size() > 0) {
       for (int i=0; i<list.size(); i++) {
         ThreddsMetadata.Source p = (ThreddsMetadata.Source) list.get(i);
-        Element dataCenter = new Element("Data_Center", defNS);
-        rootElem.addContent( dataCenter);
-        writeDataCenter(p, dataCenter);
+        if (p.getNameVocab().getVocabulary().equalsIgnoreCase("DIF")) {
+          Element dataCenter = new Element("Data_Center", defNS);
+          rootElem.addContent( dataCenter);
+          writeDataCenter(p, dataCenter);
+          break;
+        }
       }
     }
 

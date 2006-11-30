@@ -39,6 +39,8 @@ Changes in version 2.2.17
   * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
   * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
  Bugs
+  * try to figure out when file: needs to be added to location in NcML
+  * relax CoordinateAxis1D.isRegular() to 5.0e-3 tolerance
   * cant (necessarily) use FastIterator on convertScaleOffset!
   * cleanup ucar.nc2.util.NetworkUtils.resolve() for file: baseURLS. only reletive URLS not starting with / are supported. This is
     apparently different from the behavior of URI.resolve(), so may be trouble, but it allows NcML absolute location to be specified without
@@ -63,7 +65,7 @@ Changes in version 2.2.17
   * GridViewer: 2D lat/lon, MFlowLayout
   * default nj22Config.xml in home/.unidata
   * look for -nj22Config <filename> on command line
-  * seperate out PointObs and StationObsViewer
+  * seperate out PointObs and StationObsViewer, add showData in PontObsViewer
   * CoordSysTable axis has context menu to show coordinate values
   * Grid Viewer will show ensemble, runtime coordinates if they exist.
   * Radial Tab now works with RadialDatasetSweep interface

@@ -29,15 +29,55 @@ package ucar.nc2.util;
  */
 public class Misc {
 
-  private static double TOL = 1.0e-6;
+  private static boolean show = false;
+  private static double maxAbsoluteError = 1.0e-6;
+  private static double maxReletiveError = 1.0e-6;
+
+  /*  http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
   public static boolean closeEnough( double v1, double v2) {
-    double diff = (v2 < TOL) ? Math.abs(v1-v2) : Math.abs(v1/v2-1);
-    return diff < TOL;
+    double d1 = Math.abs(v1-v2);
+    if (d1 < maxAbsoluteError) return true;
+
+    double diff = (Math.abs(v2) > Math.abs(v1)) ? Math.abs((v1-v2)/v2) :  Math.abs((v1-v2)/v1);
+    return diff < maxReletiveError;
+  } */
+
+  public static boolean closeEnough( double v1, double v2, double tol) {
+    if (show) {
+      double d1 = Math.abs(v1-v2);
+      double d3 = Math.abs(v1/v2);
+      double d2 = Math.abs((v1/v2)-1);
+      System.out.println("v1= "+v1+" v2="+v2+" diff="+d1+" abs(v1/v2)="+d3+" abs(v1/v2-1)="+d2);
+    }
+
+    double diff = (v2 == 0.0) ? Math.abs(v1-v2) : Math.abs(v1/v2-1);
+    return diff < tol;
+  }
+
+  public static boolean closeEnough( double v1, double v2) {
+    if (v1 == v2) return true;
+    double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
+    return diff < maxReletiveError;
   }
 
   public static boolean closeEnough( float v1, float v2) {
-    double diff = (v2 < TOL) ? Math.abs(v1-v2) : Math.abs(v1/v2-1);
-    return diff < TOL;
+    if (v1 == v2) return true;
+    double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
+    return diff < maxReletiveError;
   }
+
+  public static void main(String args[]) {
+    /* double val = 1.0e-10;
+    while (closeEnough(1.0+val, 1.0))
+      val = val*10; */
+
+    double val = -1.9531250532132835E-30;
+    double val2 = 1.953125E-30;
+    closeEnough(val, val2, 1.0e-5);
+
+    /* while (closeEnough(val+diff, val))
+      val = val/10;  */
+  }
+
 
 }

@@ -326,6 +326,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     this.conventionName = convName;
   }
 
+  public String getConventionUsed() {
+    return conventionName;
+  }
+
   public void addUserAdvice( String advice) {
     userAdvice.append(advice);
   }

@@ -17,6 +17,12 @@ public interface CoordSysBuilderIF {
   public void setConventionUsed( String convName);
 
   /**
+   * Get the name of the Convention. In the case where the Convention attribute is not set in the file,
+   *  this name cannot be used to identify the COnvention. The isMine() method is called instead.
+   */
+  public String getConventionUsed();
+
+  /**
    * Make changes to the dataset, like adding new variables, attribuites, etc.
    *
    * @param ncDataset modify this dataset

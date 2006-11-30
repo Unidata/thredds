@@ -62,18 +62,18 @@ public class NetworkUtils {
     if ((baseUrl == null) || (relativeUrl == null))
       return relativeUrl;
 
+    relativeUrl = canonicalize( relativeUrl);
     URI refURI = URI.create(relativeUrl);
     if (refURI.isAbsolute())
       return relativeUrl;
 
-    // deal with a file URL
+    // deal with a base file URL
     if (baseUrl.startsWith("file:")) {
       if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '#'))
         return baseUrl + relativeUrl;
 
     if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '/'))
       return relativeUrl;
-
 
       int pos = baseUrl.lastIndexOf('/');
       if (pos > 0) {
@@ -85,6 +85,18 @@ public class NetworkUtils {
     URI baseURI = URI.create(baseUrl);
     URI resolvedURI = baseURI.resolve(refURI);
     return resolvedURI.toASCIIString();
+  }
+
+  /// try to figure out if we need to add file: to the location
+  static public String canonicalize(String location) {
+    try {
+      URI refURI = URI.create(location);
+      if (refURI.isAbsolute())
+        return location;
+    } catch (Exception e)  {
+      return "file:" + location;
+    }
+    return location;
   }
 
   public static String resolveFile( String baseDir, String filepath) {

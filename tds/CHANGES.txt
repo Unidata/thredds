@@ -4,7 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.14
  Bugs
-  * NetcdfSetver failing on non-fmrc datasets, due to urlPath not reletive.
+  * CrawlDataset needs to get ProxyDataset from catref
+  * HtmlWriter was not handling remote catalogs with reletive catrefs
+  * NetcdfServer failing on non-fmrc datasets, due to urlPath not reletive.
 
 Changes in version 3.13
  Features

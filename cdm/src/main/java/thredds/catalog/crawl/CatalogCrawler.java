@@ -42,10 +42,10 @@ import thredds.catalog.InvCatalogRef;
  * Example use:
  * <pre>
  * CatalogCrawler.Listener listener = new CatalogCrawler.Listener() {
- * public void getDataset(InvDataset dd) {
- * if (dd.isHarvest())
- * doHarvest(dd);
- * }
+ *   public void getDataset(InvDataset dd) {
+ *     if (dd.isHarvest())
+ *       doHarvest(dd);
+ *   }
  * };
  * CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, listener);
  * </pre>
@@ -172,7 +172,10 @@ public class CatalogCrawler {
     // recurse - depth first
     if (!skipScanChildren) {
       java.util.List dlist = ds.getDatasets();
-      if (isCatRef) listen.getDataset(ds); // wait till a catref is read, so all metadata is there !
+      if (isCatRef) {
+        InvCatalogRef catref = (InvCatalogRef) ds;
+        listen.getDataset(catref.getProxyDataset()); // wait till a catref is read, so all metadata is there !
+      }
 
       for (int i = 0; i < dlist.size(); i++) {
         InvDataset dds = (InvDataset) dlist.get(i);
