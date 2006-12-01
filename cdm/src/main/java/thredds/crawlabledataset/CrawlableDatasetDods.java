@@ -124,7 +124,24 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 			return path;
 	}
 
-	public Object getConfigObject() {
+  /**
+   * Provide access to the java.net.URI that this CrawlableDataset represents.
+   *
+   * @return the java.net.URI that this CrawlableDataset represents.
+   */
+  public URI getUri()
+  {
+    try
+    {
+      return new URI( this.path);
+    }
+    catch ( URISyntaxException e )
+    {
+      return null;
+    }
+  }
+
+  public Object getConfigObject() {
 		return configObj;
 	}
 

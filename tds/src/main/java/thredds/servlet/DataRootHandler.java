@@ -22,6 +22,7 @@ package thredds.servlet;
 import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
+import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.util.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.datatype.DateType;
@@ -329,11 +330,33 @@ public class DataRootHandler {
     if (dscan.getScanDir().startsWith("content/"))
       dscan.setScanDir(contentPath + "public/" + dscan.getScanDir().substring(8));
 
-    File file = new File(dscan.getScanDir());
-    if (!file.exists()) {
-      log.error("**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist");
+    // Check that scan location exists.
+    File file = new File( dscan.getScanDir() );
+    if ( !file.exists() )
+    {
+      log.error( "**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist" );
       return false;
     }
+    // ToDo Only know how to handle CrDsFile and CrDsDods. Figure out a more general extensible way.
+    // todo getCrDsAsFile() expects path as argument not location
+//    File file = getCrawlableDatasetAsFile( dscan.getScanDir());
+//    if ( file != null )
+//    {
+//      if ( !file.exists() )
+//      {
+//        log.error( "**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist" );
+//        return false;
+//      }
+//    }
+//    else
+//    {
+//      URI uri = getCrawlableDatasetAsOpendapUri( dscan.getScanDir());
+//      if ( uri == null )
+//      {
+//        log.error( "**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist" );
+//        return false;
+//      }
+//    }
 
     // add it
     droot = new DataRoot(dscan);
@@ -672,7 +695,7 @@ public class DataRootHandler {
       return reqDataRoot.scan.requestCrawlableDataset( path );
 
     if ( reqDataRoot.fmrc != null )
-      return null; // if fmrc exists, bail out and dela with it in caller
+      return null; // if fmrc exists, bail out and deal with it in caller
 
     // must be a data root
     if ( reqDataRoot.dirLocation != null ) {
@@ -725,6 +748,41 @@ public class DataRootHandler {
       retFile = ((CrawlableDatasetFile) crDs).getFile();
 
     return retFile;
+  }
+
+  /**
+   * Return the java.io.File represented by the CrawlableDataset to which the
+   * given path maps. Null is returned if the dataset does not exist, the
+   * matching InvDatasetScan or DataRoot filters out the requested
+   * CrawlableDataset, the CrawlableDataset does not represent a File
+   * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs whil
+   * locating the requested dataset.
+   *
+   * @param path the request path.
+   * @return the requested java.io.File or null.
+   * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
+   */
+  public URI getCrawlableDatasetAsOpendapUri( String path ) {
+    if (path.length() > 0) {
+      if (path.startsWith("/"))
+        path = path.substring(1);
+    }
+
+    CrawlableDataset crDs = null;
+    try
+    {
+      crDs = getCrawlableDataset( path );
+    }
+    catch ( IOException e )
+    {
+      return null;
+    }
+    if ( crDs == null ) return null;
+    URI retUri = null;
+    if ( crDs instanceof CrawlableDatasetDods )
+      retUri = ((CrawlableDatasetDods) crDs).getUri();
+
+    return retUri;
   }
 
   public boolean isProxyDataset( String path )
