@@ -50,8 +50,12 @@ public class IFPSConvention extends CoordSysBuilder {
   }
 
   private Variable projVar = null; // use this to get projection info
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+
+  public IFPSConvention() {
     this.conventionName = "IFPS";
+  }
+
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
     parseInfo.append("IFPS augmentDataset \n");
 
    // Figure out projection info. Assume the same for all variables

@@ -178,7 +178,8 @@ public class MetadataExtractor {
   static public ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset, GridDataset gridDataset) {
 
     thredds.catalog.DataFormatType fileFormat = threddsDataset.getDataFormatType();
-    if (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2)) {
+    if ((fileFormat != null) &&
+        (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2))) {
       boolean isGrib1 = fileFormat.equals(DataFormatType.GRIB1);
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
       java.util.List grids = gridDataset.getGrids();

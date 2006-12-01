@@ -61,6 +61,10 @@ public class WRFConvention extends CoordSysBuilder {
   private double centerX = 0.0, centerY = 0.0;
   private ProjectionCT projCT = null;
 
+  public WRFConvention() {
+    this.conventionName = "WRF";
+  }
+
   /* ARW Users Guide p 3-19
   <pre>
 7. MAP_PROJ_NAME: Character string specifying type of map projection. Valid entries are:
@@ -89,7 +93,6 @@ may be set to different values.
 orientation of the grid). This should be set equal to the center longitude in most cases.
 */
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
-    this.conventionName = "WRF";
 
     // kludge in fixing the units
     List vlist = ds.getVariables();

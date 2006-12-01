@@ -85,9 +85,9 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
   private CoordinateTransform ct = null;
   private  NetcdfDataset ncd = null;
 
-
-  // Commands:
-
+  public M3IOVGGridConvention() {
+    this.conventionName = "M3IOVGGrid";
+  }
 
   /*
    * Create a NetcdfDataset out of this NetcdfFile, adding coordinates, etc.
@@ -98,7 +98,6 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @post conventionName.equals( "M3IOVGGrid" )
    */
   public void augmentDataset( NetcdfDataset ncd, CancelTask cancelTask) {
-    this.conventionName = "M3IOVGGrid";
     this.ncd = ncd;
     constructCoordAxes( ncd);
     ncd.finish();

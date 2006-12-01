@@ -61,8 +61,11 @@ public class CF1Convention extends CSMConvention {
           "ocean_sigma_z_coordinate",
           "ocean_double_sigma_coordinate"};
 
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
+  public CF1Convention() {
     this.conventionName = "CF-1.0";
+  }
+
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
 
     // look for transforms
     List vars = ds.getVariables();

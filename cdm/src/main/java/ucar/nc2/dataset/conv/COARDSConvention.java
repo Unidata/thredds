@@ -40,12 +40,11 @@ import java.io.IOException;
 
 public class COARDSConvention extends CoordSysBuilder {
 
-  public void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) {
+  public COARDSConvention() {
     this.conventionName = "COARDS";
   }
 
   // we assume that coordinate axes get identified by being coordinate variables
-
   protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {
 
     String unit = v.getUnitsString();

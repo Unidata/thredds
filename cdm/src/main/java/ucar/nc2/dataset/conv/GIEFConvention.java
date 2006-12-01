@@ -39,8 +39,11 @@ import java.io.IOException;
 public class GIEFConvention extends CoordSysBuilder {
   private Attribute translation, affine;
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public GIEFConvention() {
     this.conventionName = "GIEF";
+  }
+
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     NcMLReader.wrapNcMLresource( ds, CoordSysBuilder.resourcesDir+"GIEF.ncml", cancelTask);
 
     Variable timeVar = ds.findVariable("time");

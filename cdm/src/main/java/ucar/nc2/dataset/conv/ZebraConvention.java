@@ -44,8 +44,11 @@ public class ZebraConvention extends ATDRadarConvention {
     return s.startsWith("Zebra");
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public ZebraConvention() {
     this.conventionName = "Zebra";
+  }
+
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     NcMLReader.wrapNcMLresource( ds, CoordSysBuilder.resourcesDir+"Zebra.ncml", cancelTask);
 
     // special time handling

@@ -58,8 +58,11 @@ public class AWIPSConvention extends CoordSysBuilder {
   private ProjectionCT projCT = null;
   private double startx, starty;
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+  public AWIPSConvention() {
     this.conventionName = "AWIPS";
+  }
+
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
 
     Dimension dimx = ds.findDimension("x");
     int nx = dimx.getLength();

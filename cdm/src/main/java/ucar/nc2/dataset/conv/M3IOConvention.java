@@ -59,9 +59,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
   private boolean isLatLon = false;
 
-
-  /** create a NetcdfDataset out of this NetcdfFile, adding coordinates etc. */
-  public void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) {
+  public M3IOConvention() {
     this.conventionName = "M3IO";
   }
 

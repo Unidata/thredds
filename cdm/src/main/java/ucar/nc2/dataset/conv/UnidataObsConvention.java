@@ -40,7 +40,11 @@ import java.util.StringTokenizer;
  */
 public class UnidataObsConvention extends CoordSysBuilder {
 
-    /** create a NetcdfDataset out of this NetcdfFile, adding coordinates etc. */
+  public UnidataObsConvention() {
+    this.conventionName = "Unidata Observation Dataset v1.0";
+  }
+
+  /** create a NetcdfDataset out of this NetcdfFile, adding coordinates etc. */
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
 
     // latitude

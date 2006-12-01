@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.14
  Bugs
+  * Upgrade ADN/DIF records to latest version
+  * MetadataExtractor was assuming that theres alwasys a fileFormat element in the catalog
   * CrawlDataset needs to get ProxyDataset from catref
   * HtmlWriter was not handling remote catalogs with reletive catrefs
   * NetcdfServer failing on non-fmrc datasets, due to urlPath not reletive.

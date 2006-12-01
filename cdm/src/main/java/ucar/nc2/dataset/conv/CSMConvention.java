@@ -43,8 +43,11 @@ public class CSMConvention extends COARDSConvention {
 
   protected HashMap ctHash = new HashMap();
 
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
+  public CSMConvention() {
     this.conventionName = "NCAR-CSM";
+  }
+
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
 
     List vars = ds.getVariables();
     for (int i = 0; i < vars.size(); i++) {

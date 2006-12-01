@@ -48,13 +48,16 @@ public class ADASConvention extends CoordSysBuilder {
     dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
+  public ADASConvention() {
+    this.conventionName = "ARPS/ADAS";
+  }
+
   // private double originX = 0.0, originY = 0.0;
   private ProjectionCT projCT = null;
   private boolean debugProj = false;
 
   /** create a NetcdfDataset out of this NetcdfFile, adding coordinates etc. */
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    this.conventionName = "ARPS/ADAS";
 
     // old way
     Attribute att = ds.findGlobalAttribute("MAPPROJ");

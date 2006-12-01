@@ -49,8 +49,11 @@ public class NUWGConvention extends CoordSysBuilder {
 
   private final boolean debugProj = false, dumpNav = false, debugPoint = false, debug = false;
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+  public NUWGConvention() {
     this.conventionName = "NUWG";
+  }
+
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
 
     // find all variables that have the nav dimension
     // put them into a NavInfoList

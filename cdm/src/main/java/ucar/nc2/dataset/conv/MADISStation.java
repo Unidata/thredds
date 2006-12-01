@@ -41,10 +41,11 @@ import java.util.StringTokenizer;
  */
 
 public class MADISStation extends CoordSysBuilder {
-  private Attribute translation, affine;
+  public MADISStation() {
+    this.conventionName = "MADIS_Station_1.0";
+  }
 
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    this.conventionName = "MADIS_Station_1.0";
 
     String timeVars = ds.findAttValueIgnoreCase(null, "timeVariables", "");
     StringTokenizer stoker = new StringTokenizer( timeVars, ", ");

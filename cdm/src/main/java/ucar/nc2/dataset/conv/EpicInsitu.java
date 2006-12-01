@@ -18,9 +18,11 @@ import java.util.List;
 
 public class EpicInsitu extends ucar.nc2.dataset.CoordSysBuilder {
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  public EpicInsitu() {
     this.conventionName = "EpicInsitu";
+  }
 
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     List vars = ds.getVariables();
     findAxes(vars);
     ds.finish();

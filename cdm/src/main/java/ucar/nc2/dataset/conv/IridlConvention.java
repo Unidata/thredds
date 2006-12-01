@@ -33,7 +33,7 @@ import ucar.nc2.util.CancelTask;
 
 public class IridlConvention extends COARDSConvention {
 
-  public void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) {
+  public IridlConvention() {
     this.conventionName = "IRIDL";
   }
 

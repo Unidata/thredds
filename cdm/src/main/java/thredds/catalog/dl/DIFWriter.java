@@ -278,12 +278,7 @@ public class DIFWriter {
       }
     }
 
-    // LOOK KLUDGE - these need to be added to the catalog !!  see http://gcmd.nasa.gov/Resources/valids/sources.html
-    Element platform = new Element("Source_Name", defNS);
-    rootElem.addContent(platform);
-    platform.addContent( new Element("Short_Name", defNS).addContent("MODELS"));
-
-    //temporal
+     //temporal
     DateRange tm = ds.getTimeCoverage();
     if (tm != null) {
       DateType end = tm.getEnd();
@@ -293,7 +288,14 @@ public class DIFWriter {
         String reletiveTime = "RELATIVE_START_DATE: "+((int)ndays);
         rootElem.addContent( new Element("Keyword", defNS).addContent(reletiveTime));
       }
+    }
 
+    // LOOK KLUDGE - these need to be added to the catalog !!  see http://gcmd.nasa.gov/Resources/valids/sources.html
+    Element platform = new Element("Source_Name", defNS);
+    rootElem.addContent(platform);
+    platform.addContent( new Element("Short_Name", defNS).addContent("MODELS"));
+
+    if (tm != null) {
       Element tmElem = new Element("Temporal_Coverage", defNS);
       rootElem.addContent(tmElem);
 
@@ -357,40 +359,47 @@ public class DIFWriter {
       rootElem.addContent( new Element("Summary", defNS).addContent(summaryLines));
     }
 
-    Element primaryURLelem = new Element("Related_URL", defNS);
-    rootElem.addContent( primaryURLelem);
-
+    URI uri;
     String href;
     if (ds instanceof InvCatalogRef) {      // LOOK !!
       InvCatalogRef catref = (InvCatalogRef) ds;
-      URI uri = catref.getURI();
+      uri = catref.getURI();
       href = uri.toString();
       int pos = href.lastIndexOf('.');
       href = href.substring(0,pos)+".html";
 
     } else {
       InvCatalogImpl cat = (InvCatalogImpl) ds.getParentCatalog();
-      String catURL = cat.getBaseURI().toString();
+      uri = cat.getBaseURI();
+      String catURL = uri.toString();
       int pos = catURL.lastIndexOf('.');
-      String catURLh = catURL.substring(0,pos)+".html";
-      href = catURLh+"?dataset="+ds.getID();
+      href = catURL.substring(0,pos)+".html";
+      if (ds.hasAccess())
+        href = href+"?dataset="+ds.getID();
     }
 
-    primaryURLelem.addContent( new Element("URL_Content_Type", defNS).addContent("GET DATA"));
-    primaryURLelem.addContent( new Element("URL", defNS).addContent( href));
+    rootElem.addContent( makeRelatedURL("GET DATA", "THREDDS CATALOG", uri.toString()));
+    rootElem.addContent( makeRelatedURL("GET DATA", "THREDDS DIRECTORY", href));
 
     InvAccess access;
     if (null != (access = ds.getAccess(ServiceType.OPENDAP))) {
-      Element dodsURLelem = new Element("Related_URL", defNS);
-      rootElem.addContent( dodsURLelem);
-      dodsURLelem.addContent( new Element("URL_Content_Type", defNS).addContent("GET DATA"));
-      dodsURLelem.addContent( new Element("URL", defNS).addContent( access.getStandardUrlName()));
+      rootElem.addContent( makeRelatedURL("GET DATA", "OPENDAP DATA", access.getStandardUrlName()));
     }
 
     rootElem.addContent(new Element("Metadata_Name", defNS).addContent("CEOS IDN DIF"));
     rootElem.addContent(new Element("Metadata_Version", defNS).addContent("9.4"));
     DateType today = new DateType(false, new Date());
     rootElem.addContent(new Element("DIF_Creation_Date", defNS).addContent(today.toDateString()));
+  }
+
+  private Element makeRelatedURL(String type, String subtype, String url) {
+    Element elem = new Element("Related_URL", defNS);
+    Element uctElem = new Element("URL_Content_Type", defNS);
+    elem.addContent(uctElem);
+    uctElem.addContent( new Element("Type", defNS).addContent(type));
+    uctElem.addContent( new Element("Subtype", defNS).addContent(subtype));
+    elem.addContent( new Element("URL", defNS).addContent(url));
+    return elem;
   }
 
   private void writeDataCenter(ThreddsMetadata.Source p, Element dataCenter) {

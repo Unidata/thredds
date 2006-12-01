@@ -40,8 +40,11 @@ import java.util.*;
 public class GDVConvention extends CSMConvention {
   protected ProjectionCT projCT = null;
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+  public GDVConvention() {
     this.conventionName = "GDV";
+  }
+
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
 
     projCT = makeProjectionCT( ds);
     if (projCT != null) {

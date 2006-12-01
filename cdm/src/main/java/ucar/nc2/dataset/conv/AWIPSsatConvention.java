@@ -64,8 +64,11 @@ public class AWIPSsatConvention extends CoordSysBuilder {
   private ProjectionCT projCT = null;
   private double startx, starty, dx, dy;
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+  public AWIPSsatConvention() {
     this.conventionName = "AWIPS-Sat";
+  }
+
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
 
     Dimension dimx = ds.findDimension("x");
     int nx = dimx.getLength();

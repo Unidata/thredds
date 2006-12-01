@@ -43,8 +43,11 @@ public class ATDRadarConvention extends CoordSysBuilder {
     return s.equalsIgnoreCase("CRAFT/NEXRAD");
   }
 
-  public void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
+  public ATDRadarConvention() {
     this.conventionName = "ATDRadar";
+  }
+
+  public void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
     NcMLReader.wrapNcMLresource( ncDataset, CoordSysBuilder.resourcesDir+"ATDRadar.ncml", cancelTask);
   }
 

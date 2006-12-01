@@ -2,6 +2,10 @@ CHANGES for Netcdf-Java library
 Version @VERSION@
 Build Date = @BUILDTIME@
 
+Changes in version 2.2.18
+ Bugs
+  * CoordSysBuilders must set their name in constructor, for reflection
+
 Changes in version 2.2.17
  Features
   * default log4j.xml in resources directory
