@@ -131,6 +131,8 @@
     <variable name="Total_Column_Integrated_Rain" />
     <variable name="Total_Column_Integrated_Snow" />
     <variable name="Total_cloud_cover" />
+    <variable name="Total_column-integrated_melting_ice" />
+    <variable name="Total_column-integrated_supercooled_liquid_water" />
     <variable name="Transpiration_Stress-onset_soil_moisture" />
     <variable name="Turbulent_kinetic_energy" />
     <variable name="U-Component_Storm_Motion" vertCoord="18" />

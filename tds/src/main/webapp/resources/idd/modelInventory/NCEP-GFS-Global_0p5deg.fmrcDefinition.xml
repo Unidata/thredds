@@ -41,7 +41,7 @@
     <variable name="Potential_temperature" />
     <variable name="Precipitable_water" />
     <variable name="Pressure_maximum_wind" />
-    <variable name="Pressure_potential_vorticity_surface" vertCoord="4" />
+    <variable name="Pressure" vertCoord="4" />
     <variable name="Pressure_reduced_to_MSL" />
     <variable name="Pressure_surface" />
     <variable name="Pressure_tropopause" />
@@ -135,8 +135,8 @@
     <variable name="Zonal_Flux_of_Gravity_Wave_Stress" />
   </runSequence>
   <runSequence allUseSeq="2">
-    <variable name="Pressure" />
     <variable name="Pressure_convective_cloud_top" />
+    <variable name="Pressure_convective_cloud_bottom" />
   </runSequence>
 </fmrcDefinition>
 

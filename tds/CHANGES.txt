@@ -41,7 +41,7 @@ Changes in version 3.13
   * embedded NcML on dataset wasnt working
   * IDV.jnlp grid:opendap:URL
  Libraries
-  * grib-5.0.03
+  * grib-5.0.04
 
 Changes in version 3.12
  Features
