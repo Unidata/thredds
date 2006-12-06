@@ -22,8 +22,8 @@ import java.io.IOException;
  *
  * <p> The CrawlableDataset interface is a generalization (and simplification) of
  * the java.io.File class. A CrawlableDataset path is made up of ONE or more
- * path segments each seperated by a slash ("/"). The path may start with a
- * slash ("/") but may not end with a slash ("/").</p>
+ * path segments each seperated by a slash ("/"). The path may start or end with
+ * a slash ("/").</p>
  *
  * <p>Implementation Notes:</p>
  * <ol>
@@ -33,9 +33,8 @@ import java.io.IOException;
  * for the CrawlableDataset being constructed, the Object argument is a
  * configuration object.</li>
  * <li> The thredds.cataloggen.CollectionLevelScanner framework does not support
- * building a catalog for the collection based at the CrawlableDataset path "/"
- * (this is related to the assumption, specified above, that paths do not end
- * with a "/"). So, do not implement your CrawlableDataset so that the path "/"
+ * building a catalog for the collection based at the CrawlableDataset path "/".
+ * So, do not implement your CrawlableDataset so that the path "/"
  * is allowed, or at least so that it is not likely to be used as the root of
  * a dataset collection (e.g., CrawlableDatasetFile is probably safe because
  * the root directory ("/") should never be used as the base of a data

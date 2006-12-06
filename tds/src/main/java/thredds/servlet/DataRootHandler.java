@@ -331,32 +331,24 @@ public class DataRootHandler {
       dscan.setScanDir(contentPath + "public/" + dscan.getScanDir().substring(8));
 
     // Check that scan location exists.
-    File file = new File( dscan.getScanDir() );
-    if ( !file.exists() )
+    CrawlableDataset crDs = null;
+    try
     {
-      log.error( "**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist" );
+      crDs = dscan.requestCrawlableDataset( dscan.getPath() );
+    }
+    catch ( IOException e )
+    {
+      log.error( "**Error: DatasetScan =" + dscan.getPath() + " location=<" + crDs.getPath() + ">, I/O error checking existence.");
       return false;
     }
-    // ToDo Only know how to handle CrDsFile and CrDsDods. Figure out a more general extensible way.
-    // todo getCrDsAsFile() expects path as argument not location
-//    File file = getCrawlableDatasetAsFile( dscan.getScanDir());
-//    if ( file != null )
-//    {
-//      if ( !file.exists() )
-//      {
-//        log.error( "**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist" );
-//        return false;
-//      }
-//    }
-//    else
-//    {
-//      URI uri = getCrawlableDatasetAsOpendapUri( dscan.getScanDir());
-//      if ( uri == null )
-//      {
-//        log.error( "**Error: DatasetScan =" + path + " directory= <" + dscan.getScanDir() + "> does not exist" );
-//        return false;
-//      }
-//    }
+    if ( ! crDs.exists())
+    {
+      log.error( "**Error: DatasetScan =" + dscan.getPath() + " location= <" + crDs.getPath() + "> does not exist" );
+      return false;
+    }
+    //
+    String cmpThis = crDs.getPath();
+    String cmpToThis= dscan.getScanDir();
 
     // add it
     droot = new DataRoot(dscan);
