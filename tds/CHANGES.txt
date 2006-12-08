@@ -8,7 +8,10 @@ Changes in version 3.14
   * MetadataExtractor was assuming that theres alwasys a fileFormat element in the catalog
   * CrawlDataset needs to get ProxyDataset from catref
   * HtmlWriter was not handling remote catalogs with reletive catrefs
-  * NetcdfServer failing on non-fmrc datasets, due to urlPath not reletive.
+  * NetcdfServer failing on non-fmrc datasets, due to urlPath not relative.
+  * Use of CrawlableDatasetDods in datasetScan failing. Update TDS to use
+    CrawlableDataset interface to find parent dataset and compare paths
+    instead of string manipulation on datasetScan@location string.
 
 Changes in version 3.13
  Features
@@ -41,7 +44,7 @@ Changes in version 3.13
   * embedded NcML on dataset wasnt working
   * IDV.jnlp grid:opendap:URL
  Libraries
-  * grib-5.0.04
+  * grib-5.0.03
 
 Changes in version 3.12
  Features
