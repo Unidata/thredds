@@ -22,7 +22,6 @@ package thredds.catalog;
 import thredds.cataloggen.*;
 import thredds.cataloggen.datasetenhancer.RegExpAndDurationTimeCoverageEnhancer;
 import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
-import thredds.cataloggen.inserter.LatestCompleteProxyDsHandler;
 import thredds.crawlabledataset.*;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 import thredds.crawlabledataset.filter.RegExpMatchOnNameSelector;
@@ -301,31 +300,36 @@ public class InvDatasetScan extends InvCatalogRef {
     return dsScanCatBuilder;
   }
 
-  public String translatePathToLocation( String path )
+  /**
+   * Return the CrawlableDataset path/location that corresponds to the
+   * given dataset path. The given dataset path must start with the
+   * datasetScan path for this InvDatasetScan, if not, a null is returned.
+   *
+   * @param dsPath a datasetScan dsPath that
+   * @return the CrawlableDataset path that corresponds to the given dataset path or null.
+   */
+  public String translatePathToLocation( String dsPath )
   {
-    if ( path == null ) return null;
+    if ( dsPath == null ) return null;
 
-    if ( path.length() > 0 )
-      if ( path.startsWith( "/" ) )
-        path = path.substring( 1 );
+    if ( dsPath.length() > 0 )
+      if ( dsPath.startsWith( "/" ) )
+        dsPath = dsPath.substring( 1 );
 
-    if ( ! path.startsWith( this.getPath()))
+    if ( ! dsPath.startsWith( this.getPath()))
       return null;
 
     // remove the matching part, the rest is the "data directory"
-    String dataDir = path.substring( this.getPath().length() );
+    String dataDir = dsPath.substring( this.getPath().length() );
     if ( dataDir.startsWith( "/" ) )
       dataDir = dataDir.substring( 1 );
 
-    // the translated path is the dirLocaton plus the data directory
-    String fullPath = this.getScanDir()
-                      + ( this.getScanDir().endsWith( "/" ) ? "" : "/" )
-                      + dataDir;
-    fullPath = CrawlableDatasetFactory.normalizePath( fullPath );
+    CrawlableDataset scanCrDs = this.getScanLocationCrDs();
+    CrawlableDataset curCrDs = scanCrDs.getDescendant( dataDir);
 
-    if ( log.isDebugEnabled() ) log.debug( "translatePathToLocation(): url path= " + path + " to dataset path= " + fullPath );
+    if ( log.isDebugEnabled() ) log.debug( "translatePathToLocation(): url dsPath= " + dsPath + " to dataset dsPath= " + curCrDs.getPath() );
 
-    return fullPath;
+    return curCrDs.getPath();
   }
 
   /**
@@ -380,17 +384,19 @@ public class InvDatasetScan extends InvCatalogRef {
       return null;
     }
 
-    // Remove the filename, if any.
-    int pos = dsDirPath.lastIndexOf( "/" );
-    if ( pos >= 0 )
-      dsDirPath = dsDirPath.substring( 0, pos );
+    // A very round about way to remove the filename (e.g., "catalog.xml").
+    // Note: Gets around "path separator at end of path" issues that are CrDs implementation dependant.
+    // Note: Does not check that CrDs is allowed by filters.
+    CrawlableDataset locCrDs = this.getScanLocationCrDs();
+    CrawlableDataset reqCrDs = locCrDs.getDescendant( dsDirPath.substring( locCrDs.getPath().length()));
+    dsDirPath = reqCrDs.getParentDataset().getPath();
 
     // Setup and create catalog builder.
     CatalogBuilder catBuilder = buildCatalogBuilder();
     if ( catBuilder == null )
       return null;
 
-    // Get the CrawlableDataset for the desired catalog level.
+    // Get the CrawlableDataset for the desired catalog level (checks that allowed by filters).
     CrawlableDataset catalogCrDs;
     try
     {
@@ -401,6 +407,7 @@ public class InvDatasetScan extends InvCatalogRef {
       log.error( "makeCatalogForDirectory(): I/O error getting catalog level <" + dsDirPath + ">: " + e.getMessage(), e );
       return null;
     }
+
     if ( catalogCrDs == null )
     {
       log.warn( "makeCatalogForDirectory(): requested catalog level <" + dsDirPath + "> not allowed (filtered out).");

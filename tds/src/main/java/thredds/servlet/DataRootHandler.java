@@ -346,9 +346,6 @@ public class DataRootHandler {
       log.error( "**Error: DatasetScan =" + dscan.getPath() + " location= <" + crDs.getPath() + "> does not exist" );
       return false;
     }
-    //
-    String cmpThis = crDs.getPath();
-    String cmpToThis= dscan.getScanDir();
 
     // add it
     droot = new DataRoot(dscan);

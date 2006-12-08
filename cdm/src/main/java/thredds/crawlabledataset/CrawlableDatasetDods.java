@@ -345,14 +345,12 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 
 	public CrawlableDataset getParentDataset() {
 		if (!path.equals("/")) {
-			String parentPath = path.endsWith("/") ? path.substring(0, path
-					.length() - 1) : path;
-			int index = parentPath.lastIndexOf("/");
-			if (index != -1)
-				parentPath = parentPath.substring(0, index - 1);
-			String normalizedPath = CrawlableDatasetFactory
-					.normalizePath(parentPath);
-			return new CrawlableDatasetDods(normalizedPath, null);
+      String parentPath = path;
+      int index = parentPath.lastIndexOf( "/", parentPath.endsWith( "/") ? parentPath.length() - 2 : parentPath.length() - 1 );
+      if ( index != -1 )
+        parentPath = parentPath.substring( 0, index + 1 );
+      
+			return new CrawlableDatasetDods( parentPath, null);
 		} else
 			return null;
 	}

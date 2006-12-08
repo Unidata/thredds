@@ -62,7 +62,7 @@ public class CrawlableDatasetFile implements CrawlableDataset
       file = new File( path );
     }
 
-    this.path = this.normalizePath( path );
+    this.path = this.normalizePath( this.file.getPath() );
     this.name = this.file.getName();
 
     if ( configObj != null )
@@ -76,11 +76,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
 
   private CrawlableDatasetFile( CrawlableDatasetFile parent, String childPath )
   {
-    String normalChildPath = this.normalizePath( childPath );
-    if ( normalChildPath.startsWith( "/"))
-      normalChildPath = normalChildPath.substring( 1);
-    this.path = parent.getPath() + "/" + normalChildPath;
-    this.file = new File( parent.getFile(), normalChildPath );
+    this.file = new File( parent.getFile(), childPath);
+    this.path = this.normalizePath( this.file.getPath());
     this.name = this.file.getName();
 
     this.configObj = null;
@@ -89,24 +86,20 @@ public class CrawlableDatasetFile implements CrawlableDataset
   private CrawlableDatasetFile( File file )
   {
     this.file = file;
-    this.path = this.normalizePath( file.getPath() );
+    this.path = this.normalizePath( this.file.getPath() );
     this.name = this.file.getName();
     this.configObj = null;
   }
 
   /**
-   * Normalize the given path so that it can be used in the creation of a CrawlableDataset.
+   * Return the given path with backslashes ("\") converted to slashes ("/).
+   * Slashes are the normalized CrawlableDatset path seperator.
    * This method can be used on absolute or relative paths.
    * <p/>
-   * Normal uses slashes ("/") as path seperator, not backslashes ("\"), and does
-   * not use trailing slashes. This function allows users to specify Windows
-   * pathnames and UNC pathnames in there normal manner.
    *
    * @param path the path to be normalized.
    * @return the normalized path.
    * @throws NullPointerException if path is null.
-   * 
-   * @see {@link CrawlableDatasetFactory#normalizePath(String)  CrawlableDatasetFactory.normalizePath()}
    */
   private String normalizePath( String path )
   {
@@ -116,9 +109,10 @@ public class CrawlableDatasetFile implements CrawlableDataset
     //       Was path.replaceAll( "\\\\+", "/");
     String newPath = path.replaceAll( "\\\\", "/" );
 
-    // Remove trailing slashes.
-    while ( newPath.endsWith( "/" ) && ! newPath.equals( "/" ) )
-      newPath = newPath.substring( 0, newPath.length() - 1 );
+    // Note: No longer remove trailing slashes as new File() removes slashes for us.
+//    // Remove trailing slashes.
+//    while ( newPath.endsWith( "/" ) && ! newPath.equals( "/" ) )
+//      newPath = newPath.substring( 0, newPath.length() - 1 );
 
     return newPath;
   }

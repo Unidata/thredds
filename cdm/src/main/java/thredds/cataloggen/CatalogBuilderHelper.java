@@ -39,21 +39,19 @@ class CatalogBuilderHelper
                                                    String path,
                                                    CrawlableDatasetFilter filter )
   {
-    String tmpPath = CrawlableDatasetFactory.normalizePath( path);
-
     // Make sure requested path is descendant of ancestor dataset.
     if ( ! ancestorCrDs.isCollection() )
       throw new IllegalArgumentException( "Ancestor dataset <" + ancestorCrDs.getPath() + "> not a collection." );
-    if ( ! tmpPath.startsWith( ancestorCrDs.getPath() ) )
-      throw new IllegalArgumentException( "Dataset path <" + tmpPath + "> not descendant of given dataset <" + ancestorCrDs.getPath() + ">." );
+    if ( ! path.startsWith( ancestorCrDs.getPath() ) )
+      throw new IllegalArgumentException( "Dataset path <" + path + "> not descendant of given dataset <" + ancestorCrDs.getPath() + ">." );
 
     // If path and ancestor are the same, return ancestor.
-    if ( tmpPath.length() == ancestorCrDs.getPath().length() )
+    if ( path.length() == ancestorCrDs.getPath().length() )
       return ancestorCrDs;
 
     // Crawl into the dataset collection through each level of the given path
     // checking that each level is accepted by the given CrawlableDatasetFilter.
-    String remainingPath = tmpPath.substring( ancestorCrDs.getPath().length() + 1 );
+    String remainingPath = path.substring( ancestorCrDs.getPath().length() + 1 );
     String[] pathSegments = remainingPath.split( "/" );
     CrawlableDataset curCrDs = ancestorCrDs;
     for ( int i = 0; i < pathSegments.length; i++ )
