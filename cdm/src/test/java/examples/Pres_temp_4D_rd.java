@@ -1,4 +1,3 @@
-package examples;
 
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
@@ -8,7 +7,6 @@ import ucar.ma2.InvalidRangeException;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA.
  * User: yuanho
  * Date: Nov 16, 2006
  * Time: 11:19:11 AM
@@ -33,13 +31,7 @@ public class Pres_temp_4D_rd {
    NetcdfFile dataFile = null;
    try {
 
-     try {
-       dataFile = NetcdfFile.open(filename, null);
-     } catch (java.io.IOException e) {
-       System.out.println("Error opening file " + filename);
-       e.printStackTrace();
-       return;
-     }
+     dataFile = NetcdfFile.open(filename, null);
 
      // Get the latitude and longitude Variables.
      Variable latVar = dataFile.findVariable("latitude");
@@ -57,14 +49,10 @@ public class Pres_temp_4D_rd {
      // Get the lat/lon data from the file.
      ArrayFloat.D1 latArray;
      ArrayFloat.D1 lonArray;
-     try {
-       latArray = (ArrayFloat.D1) latVar.read();
-       lonArray = (ArrayFloat.D1) lonVar.read();
-     } catch (IOException e) {
-       System.out.println("Error reading " + filename);
-       e.printStackTrace();
-       return;
-     }
+
+     latArray = (ArrayFloat.D1) latVar.read();
+     lonArray = (ArrayFloat.D1) lonVar.read();
+
 
      // Check the coordinate variable data.
      for (int lat = 0; lat < NLAT; lat++)
@@ -100,18 +88,10 @@ public class Pres_temp_4D_rd {
 
        // read 3D array for that index
        ArrayFloat.D3 presArray, tempArray;
-       try {
-         presArray = (ArrayFloat.D3) (presVar.read(origin, shape).reduce());
-         tempArray = (ArrayFloat.D3) (tempVar.read(origin, shape).reduce());
-       } catch (InvalidRangeException e) {
-         System.out.println("Bad range reading " + filename);
-         e.printStackTrace();
-         return;
-       }  catch (IOException e) {
-         System.out.println("Error reading " + filename);
-         e.printStackTrace();
-         return;
-       }
+
+       presArray = (ArrayFloat.D3) (presVar.read(origin, shape).reduce());
+       tempArray = (ArrayFloat.D3) (tempVar.read(origin, shape).reduce());
+
 
        // now checking the value
        int count = 0;
@@ -126,6 +106,12 @@ public class Pres_temp_4D_rd {
      }
 
      // The file is closed no matter what by putting inside a try/catch block.
+   } catch (java.io.IOException e) {
+       e.printStackTrace();
+       return;
+   } catch (InvalidRangeException e) {
+       e.printStackTrace();
+       return;
    } finally {
      if (dataFile != null)
        try {
