@@ -42,8 +42,8 @@ public class Sfc_pres_temp_wr {
             // hold the actual latitudes and longitudes. Since they hold data
             // about the coordinate system, the netCDF term for these is:
             // "coordinate variables."
-            Dimension latDim = dataFile.addDimension("latitude", NLAT, true, false, false);
-            Dimension lonDim = dataFile.addDimension("longitude", NLON, true, false, false);
+            Dimension latDim = dataFile.addDimension("latitude", NLAT );
+            Dimension lonDim = dataFile.addDimension("longitude", NLON );
             ArrayList dims =  null;
 
 
@@ -70,11 +70,8 @@ public class Sfc_pres_temp_wr {
 
             // Write the coordinate variable data. This will put the latitudes
             // and longitudes of our data grid into the netCDF file.
-            try {
-                dataFile.create();
-            } catch (IOException e) {
-                e.printStackTrace(System.err);
-            }
+            dataFile.create();
+
 
             ArrayFloat.D1 dataLat = new ArrayFloat.D1(latDim.getLength());
             ArrayFloat.D1 dataLon = new ArrayFloat.D1(lonDim.getLength());
@@ -93,15 +90,9 @@ public class Sfc_pres_temp_wr {
                dataLon.set(j,  START_LON + 5.f * j );
             }
 
-            try {
-                dataFile.write("latitude", dataLat);
-                dataFile.write("longitude", dataLon);
-            } catch (IOException e) {
-                e.printStackTrace(System.err);
-            } catch (InvalidRangeException e) {
-                e.printStackTrace(System.err);
-            }
 
+            dataFile.write("latitude", dataLat);
+            dataFile.write("longitude", dataLon);
 
             // Create the pretend data. This will write our surface pressure and
             // surface temperature data.
@@ -117,16 +108,15 @@ public class Sfc_pres_temp_wr {
             }
 
             int[] origin = new int[2];
-            try {
-              dataFile.write("pressure", origin, dataPres);
-              dataFile.write("temperature", origin, dataTemp);
-            } catch (IOException e) {
-              System.err.println("ERROR writing file");
-            } catch (InvalidRangeException e) {
-              e.printStackTrace();
-            }
 
-        // The file is closed.
+            dataFile.write("pressure", origin, dataPres);
+            dataFile.write("temperature", origin, dataTemp);
+
+
+        } catch (IOException e) {
+              e.printStackTrace();
+        } catch (InvalidRangeException e) {
+              e.printStackTrace();
         } finally {
             if (null != dataFile)
             try {
