@@ -1,4 +1,3 @@
-package examples;
 
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Dimension;
@@ -40,10 +39,10 @@ public class Pres_temp_4D_wr {
             dataFile = NetcdfFileWriteable.createNew(filename, false);
 
             //add dimensions  where time dimension is unlimit
-            Dimension lvlDim = dataFile.addDimension("level", NLVL, true, false, false);
-            Dimension latDim = dataFile.addDimension("latitude", NLAT, true, false, false);
-            Dimension lonDim = dataFile.addDimension("longitude", NLON, true, false, false);
-            Dimension timeDim = dataFile.addDimension("time", -1, true, true, false);
+            Dimension lvlDim = dataFile.addDimension("level", NLVL ); //, true, false, false);
+            Dimension latDim = dataFile.addDimension("latitude", NLAT ); //, true, false, false);
+            Dimension lonDim = dataFile.addDimension("longitude", NLON ); //, true, false, false);
+            Dimension timeDim = dataFile.addUnlimitedDimension("time", -1);
 
             ArrayList dims =  null;
 
@@ -104,28 +103,22 @@ public class Pres_temp_4D_wr {
             }
 
             //Create the file. At this point the (empty) file will be written to disk
-            try {
-                dataFile.create();
-            } catch (IOException e) {
-                e.printStackTrace(System.err);
-            }
+            dataFile.create();
 
             // A newly created Java integer array to be initialized to zeros.
             int[] origin = new int[4];
-            try {
-                dataFile.write("latitude", lats);
-                dataFile.write("longitude", lons);
-                dataFile.write("pressure", origin, dataPres);
-                dataFile.write("temperature", origin, dataTemp);
-            } catch (IOException e) {
-                e.printStackTrace(System.err);
-            } catch (InvalidRangeException e) {
-                e.printStackTrace(System.err);
-            }
 
-            // The file is closed.
+            dataFile.write("latitude", lats);
+            dataFile.write("longitude", lons);
+            dataFile.write("pressure", origin, dataPres);
+            dataFile.write("temperature", origin, dataTemp);
 
-        } finally {
+
+        } catch (IOException e) {
+                e.printStackTrace(System.err);
+        } catch (InvalidRangeException e) {
+                e.printStackTrace(System.err);
+        }finally {
             if (dataFile != null)
             try {
              dataFile.close();
