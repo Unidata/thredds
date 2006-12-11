@@ -1,4 +1,3 @@
-package examples;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -7,7 +6,6 @@ import ucar.ma2.*;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA.
  * User: yuanho
  * Date: Oct 16, 2006
  * Time: 10:16:50 AM
@@ -30,14 +28,7 @@ public class Simple_xy_rd {
        // Open the file.
        try {
 
-            try {
-                System.out.println("**** Open "+filename);
-                dataFile = NetcdfFile.open(filename, null);
-            } catch (java.io.IOException e) {
-                System.out.println("Error opening file " + filename);
-                e.printStackTrace();
-                return;
-            }
+           dataFile = NetcdfFile.open(filename, null);
 
            // Retrieve the variable named "data"
             Variable dataVar = dataFile.findVariable("data");
@@ -52,17 +43,8 @@ public class Simple_xy_rd {
             int[] origin = new int[2];
 
             ArrayInt.D2 dataArray;
-            try {
-                dataArray = (ArrayInt.D2) dataVar.read(origin, shape);
-            } catch (InvalidRangeException e) {
-                System.out.println("Bad range reading " + filename);
-                e.printStackTrace();
-                return;
-            }  catch (IOException e) {
-                System.out.println("Error reading " + filename);
-                e.printStackTrace();
-                return;
-            }
+             
+            dataArray = (ArrayInt.D2) dataVar.read(origin, shape);
 
            // Check the values.
             assert shape[0] == NX;
@@ -76,6 +58,11 @@ public class Simple_xy_rd {
 
 
        // The file is closed no matter what by putting inside a try/catch block.
+       } catch (java.io.IOException e) {
+                e.printStackTrace();
+                return;
+       }  catch (InvalidRangeException e) {
+                e.printStackTrace();
        } finally {
            if (dataFile != null)
            try {
@@ -83,7 +70,7 @@ public class Simple_xy_rd {
            } catch (IOException ioe) {
              ioe.printStackTrace();
            }
-    }
+        }
 
     System.out.println( "*** SUCCESS reading example file simple_xy.nc!");
 
