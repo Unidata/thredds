@@ -1,4 +1,4 @@
-package examples;
+//package examples;
 
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
  * User: yuanho
  * Date: Oct 16, 2006
  * Time: 2:11:51 PM
@@ -32,8 +31,8 @@ public class Simple_xy_wr {
            dataFile = NetcdfFileWriteable.createNew(filename, false);
 
            // Create netCDF dimensions,
-            Dimension xDim = dataFile.addDimension("x", NX, true, false, false);
-            Dimension yDim = dataFile.addDimension("y", NY, true, false, false);
+            Dimension xDim = dataFile.addDimension("x", NX );
+            Dimension yDim = dataFile.addDimension("y", NY );
 
             ArrayList dims =  new ArrayList();
 
@@ -61,28 +60,19 @@ public class Simple_xy_wr {
            }
 
            // create the file
-            try {
-               dataFile.create();
-            }  catch (IOException e) {
-              System.err.println("ERROR creating file "+dataFile.getLocation()+"\n"+e);
-           }
+           dataFile.create();
+
 
            // Write the pretend data to the file. Although netCDF supports
            // reading and writing subsets of data, in this case we write all
            // the data in one operation.
+          dataFile.write("data", dataOut);
 
-            try {
-              dataFile.write("data", dataOut);
-            } catch (IOException e) {
-              System.err.println("ERROR writing file");
-            } catch (InvalidRangeException e) {
+
+       } catch (IOException e) {
               e.printStackTrace();
-            }
-
-           // The file will be close
-           /////////////////////////////////////////////////////////////////////
-            // all done
-
+       } catch (InvalidRangeException e) {
+              e.printStackTrace();
        } finally {
             if (null != dataFile)
             try {
@@ -91,7 +81,8 @@ public class Simple_xy_wr {
                 ioe.printStackTrace();
             }
        }
-       System.out.println( "*** SUCCESS writing example file simple_xy.nc!");
+
+        System.out.println( "*** SUCCESS writing example file simple_xy.nc!");
     }
 
 }
