@@ -1,4 +1,3 @@
-package examples;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileCache;
@@ -8,7 +7,6 @@ import ucar.ma2.ArrayFloat;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA.
  * User: yuanho
  * Date: Nov 16, 2006
  * Time: 11:59:38 AM
@@ -43,14 +41,8 @@ public class Sfc_pres_temp_rd {
         NetcdfFile dataFile = null;
 
         try {
-            try {
-              System.out.println("**** Open "+ filename);
-              dataFile = NetcdfFileCache.acquire(filename, null);
 
-            } catch (java.io.IOException e) {
-              System.out.println(" fail = "+e);
-              e.printStackTrace();
-            }
+            dataFile = NetcdfFileCache.acquire(filename, null);
 
             Variable latVar = dataFile.findVariable("latitude");
             if (latVar == null) {
@@ -94,14 +86,9 @@ public class Sfc_pres_temp_rd {
             ArrayFloat.D1 latArray;
             ArrayFloat.D1 lonArray;
 
-            try {
-              latArray = (ArrayFloat.D1)latVar.read();
-              lonArray = (ArrayFloat.D1)lonVar.read();
-            } catch (IOException e) {
-              System.err.println("ERROR reading file");
-              assert(false);
-              return;
-            }
+            latArray = (ArrayFloat.D1)latVar.read();
+            lonArray = (ArrayFloat.D1)lonVar.read();
+
 
             int[] shape = latArray.getShape();
             for (int i=0; i<shape[0]; i++) {
@@ -128,15 +115,9 @@ public class Sfc_pres_temp_rd {
             // that the data arrays in this program are the correct size to
             // hold all the data.
             ArrayFloat.D2 presArray, tempArray;
-            try {
-              presArray = (ArrayFloat.D2)presVar.read();
-              tempArray = (ArrayFloat.D2)tempVar.read();
-            } catch (IOException e) {
-              System.err.println("ERROR reading file");
-              assert(false);
-              return;
-            }
 
+            presArray = (ArrayFloat.D2)presVar.read();
+            tempArray = (ArrayFloat.D2)tempVar.read();
 
             int [] shape1 = presArray.getShape();
 
@@ -171,9 +152,9 @@ public class Sfc_pres_temp_rd {
                   System.err.println("ERROR reading variable temperature units");
 
 
-            // The file will be closed.
-
-
+        } catch (java.io.IOException e) {
+              System.out.println(" fail = "+e);
+              e.printStackTrace();
         } finally {
            if (dataFile != null)
            try {
