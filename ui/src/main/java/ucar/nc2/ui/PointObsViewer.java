@@ -215,7 +215,7 @@ public class PointObsViewer extends JPanel {
     stnTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPosH", splitH.getDividerLocation());
-    prefs.getBean("DumpWindowBounds", dumpWindow.getBounds());
+    prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
   }
 
   private void showData(PointObsDatatype pobs) {

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.18"/>
-  <property name="release.version.minor" value="${release.version}.rc6"/>
+  <property name="release.version.minor" value="${release.version}.rc7"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmrcDefinition dataset="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_20km/surface/files/catalog.xml">
-  <vertCoord id="12" name="depth_below_surface" units="m">1.1111111234640703E-5</vertCoord>
-  <vertCoord id="5" name="depth_below_surface_layer" units="m">2.499999936844688E-5,9.999999747378752E-5 9.999999747378752E-5,6.249999860301614E-4 0.0,0.009999999776482582 6.249999860301614E-4,0.009999999776482582</vertCoord>
-  <vertCoord id="6" name="depth_below_surface_layer1" units="m">0.0,9.999999747378752E-5</vertCoord>
-  <vertCoord id="11" name="depth_below_surface_layer2" units="m">0.0,2.499999936844688E-5</vertCoord>
+  <vertCoord id="12" name="depth_below_surface" units="m">3.0</vertCoord>
+  <vertCoord id="5" name="depth_below_surface_layer" units="m">1.0,2.0 0.4,1.0 0.1,0.4 0.0,0.1</vertCoord>
+  <vertCoord id="6" name="depth_below_surface_layer1" units="m">0.0,1.0</vertCoord>
+  <vertCoord id="11" name="depth_below_surface_layer2" units="m">0.0,2.0</vertCoord>
   <vertCoord id="3" name="height_above_ground" units="m">1000.0 4000.0</vertCoord>
   <vertCoord id="8" name="height_above_ground1" units="m">10.0</vertCoord>
   <vertCoord id="13" name="height_above_ground2" units="m">2.0 10.0</vertCoord>

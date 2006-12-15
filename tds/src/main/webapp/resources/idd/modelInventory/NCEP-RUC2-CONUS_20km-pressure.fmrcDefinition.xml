@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmrcDefinition dataset="NCEP-RUC2-CONUS_20km-pressure">
-  <vertCoord id="1" name="depth_below_surface" units="m">1.1111111234640703E-5</vertCoord>
+  <vertCoord id="1" name="depth_below_surface" units="m">3.0</vertCoord>
   <vertCoord id="7" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="6" name="height_above_ground1" units="m">1000.0</vertCoord>
   <vertCoord id="3" name="height_above_ground2" units="m">2.0</vertCoord>

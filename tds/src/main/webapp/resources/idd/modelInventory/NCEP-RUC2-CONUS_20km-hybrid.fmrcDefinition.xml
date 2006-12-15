@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmrcDefinition dataset="NCEP-RUC2-CONUS_20km-hybrid">
-  <vertCoord id="7" name="depth_below_surface" units="m">0.03999999910593033 6.249999860301614E-4 1.1111111234640703E-5 3.9062499126885086E-5 0.0024999999441206455</vertCoord>
-  <vertCoord id="0" name="depth_below_surface1" units="m">1.1111111234640703E-5</vertCoord>
-  <vertCoord id="4" name="depth_below_surface2" units="m">6.249999860301614E-4 0.03999999910593033 1.1111111234640703E-5 3.9062499126885086E-5 0.0024999999441206455</vertCoord>
   <vertCoord id="6" name="depth_below_surface3" units="m">0.03999999910593033 0.009999999776482582</vertCoord>
-  <vertCoord id="2" name="depth_below_surface4" units="m">0.03999999910593033</vertCoord>
-  <vertCoord id="8" name="depth_below_surface5" units="m">0.009999999776482582 0.03999999910593033</vertCoord>
+
+  <vertCoord id="4" name="depth_below_surface" units="m">3.0 1.6 0.4 0.2 0.05</vertCoord>
+  <vertCoord id="8" name="depth_below_surface1" units="m">0.1 0.05</vertCoord>
+  <vertCoord id="0" name="depth_below_surface2" units="m">3.0</vertCoord>
+  <vertCoord id="2" name="depth_below_surface3" units="m">0.05</vertCoord>
+
   <vertCoord id="5" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="3" name="height_above_ground1" units="m">2.0</vertCoord>
   <vertCoord id="1" name="pressure_difference" units="Pa">25500.0</vertCoord>
@@ -23,8 +24,10 @@
     <variable name="Convective_available_potential_energy" vertCoord="1" />
     <variable name="Convective_inhibition" vertCoord="1" />
     <variable name="Density" vertCoord="2" />
+    <variable name="Geopotential_height" />
     <variable name="Graupel_snow_pellets" />
     <variable name="Humidity_mixing_ratio" vertCoord="3" />
+    <variable name="Humidity_mixing_ratio_hybrid" />
     <variable name="Humidity_mixing_ratio_surface" />
     <variable name="Ice_water_mixing_ratio" />
     <variable name="Latent_heat_net_flux" />
@@ -37,6 +40,7 @@
     <variable name="Potential_temperature" />
     <variable name="Precipitable_water" />
     <variable name="Precipitation_rate" />
+    <variable name="Pressure" />
     <variable name="Pressure_tropopause" />
     <variable name="Rain_mixing_ratio" />
     <variable name="Rate_of_water_dropping_from_canopy_to_ground" />
@@ -54,22 +58,15 @@
     <variable name="U-component_of_wind" vertCoord="5" />
     <variable name="U-component_of_wind_hybrid" />
     <variable name="U-component_of_wind_tropopause" />
-    <variable name="Unknown" vertCoord="6" />
-    <variable name="Unknown_hybrid" />
-    <variable name="Unknown_msl" />
-    <variable name="Unknown_surface" />
     <variable name="V-component_of_wind" vertCoord="5" />
     <variable name="V-component_of_wind_hybrid" />
     <variable name="V-component_of_wind_tropopause" />
     <variable name="Vegetation_Type" />
     <variable name="Vertical_velocity_pressure" />
-    <variable name="Volumetric_Soil_Moisture_Content" vertCoord="7" />
+    <variable name="Virtual_potential_temperature" />
+    <variable name="Volumetric_Soil_Moisture_Content" vertCoord="4" />
     <variable name="Volumetric_Soil_Moisture_Content_surface" />
     <variable name="Water_equivalent_of_accumulated_snow_depth" />
-    <variable name="Geopotential_height" />
-    <variable name="Humidity_mixing_ratio_hybrid" />
-    <variable name="Pressure" />
-    <variable name="Virtual_potential_temperature" />
   </runSequence>
   <runSequence>
     <run runHour="0.0" offsetHourSeq="3" />

@@ -42,7 +42,7 @@ public class Pres_temp_4D_wr {
             Dimension lvlDim = dataFile.addDimension("level", NLVL ); //, true, false, false);
             Dimension latDim = dataFile.addDimension("latitude", NLAT ); //, true, false, false);
             Dimension lonDim = dataFile.addDimension("longitude", NLON ); //, true, false, false);
-            Dimension timeDim = dataFile.addUnlimitedDimension("time", -1);
+            Dimension timeDim = dataFile.addUnlimitedDimension("time");
 
             ArrayList dims =  null;
 

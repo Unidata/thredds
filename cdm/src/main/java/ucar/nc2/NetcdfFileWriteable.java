@@ -186,12 +186,12 @@ public class NetcdfFileWriteable extends NetcdfFile {
   }
 
   /**
-   * Add an Uunlimited Dimension to the file. Must be in define mode.
+   * Add an unlimited Dimension to the file. Must be in define mode.
    *
    * @param dimName name of unlimited dimension
    * @return the created dimension
    */
-  public Dimension addUnlimitedDimension(String dimName, int length) {
+  public Dimension addUnlimitedDimension(String dimName) {
     return addDimension(dimName, Dimension.UNLIMITED.getLength(), true, true, false);
   }
 
