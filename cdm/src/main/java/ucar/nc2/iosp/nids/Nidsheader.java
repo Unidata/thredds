@@ -1252,7 +1252,7 @@ class Nidsheader{
         int [] levels = getLevels(nlevel, threshold);
 
         //prod_info_size = (int) (num_rows * scale);
-        out.println( "resp scale " + (int)rasp_xscale + " and " + (int)rasp_xscalefract+ " and " + (int)rasp_yscale+ " and " + (int)rasp_yscalefract );
+        //out.println( "resp scale " + (int)rasp_xscale + " and " + (int)rasp_xscalefract+ " and " + (int)rasp_yscale+ " and " + (int)rasp_yscalefract );
         numY0 = rasp_j;
         numX0 = rasp_i;
         numX = num_rows;
