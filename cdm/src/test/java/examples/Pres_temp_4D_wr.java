@@ -39,9 +39,9 @@ public class Pres_temp_4D_wr {
             dataFile = NetcdfFileWriteable.createNew(filename, false);
 
             //add dimensions  where time dimension is unlimit
-            Dimension lvlDim = dataFile.addDimension("level", NLVL ); //, true, false, false);
-            Dimension latDim = dataFile.addDimension("latitude", NLAT ); //, true, false, false);
-            Dimension lonDim = dataFile.addDimension("longitude", NLON ); //, true, false, false);
+            Dimension lvlDim = dataFile.addDimension("level", NLVL );
+            Dimension latDim = dataFile.addDimension("latitude", NLAT );
+            Dimension lonDim = dataFile.addDimension("longitude", NLON );
             Dimension timeDim = dataFile.addUnlimitedDimension("time");
 
             ArrayList dims =  null;
