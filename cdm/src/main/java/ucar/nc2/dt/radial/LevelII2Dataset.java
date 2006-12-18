@@ -27,7 +27,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
-
+import ucar.nc2.Attribute;
 import java.io.IOException;
 import java.util.List;
 import java.util.Date;
@@ -51,7 +51,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     String convention = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
-      if (format.equals("ARCHIVE2") || format.equals("AR2V0001"))
+      if (format.equals("ARCHIVE2") || format.equals("AR2V0001") || format.equals("CINRAD-SA"))
         return true;
     }
     return false;
@@ -81,9 +81,23 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
   }
 
   protected void setEarthLocation() {
-    latv = ds.findGlobalAttribute("StationLatitude").getNumericValue().doubleValue();
-    lonv = ds.findGlobalAttribute("StationLongitude").getNumericValue().doubleValue();
-    elev = ds.findGlobalAttribute("StationElevationInMeters").getNumericValue().doubleValue();
+    Attribute ga = ds.findGlobalAttribute("StationLatitude");
+    if(ga != null )
+        latv = ga.getNumericValue().doubleValue();
+    else
+        latv = 0.0;
+
+    ga = ds.findGlobalAttribute("StationLongitude");
+    if(ga != null)
+        lonv = ga.getNumericValue().doubleValue();
+    else
+        lonv = 0.0;
+
+    ga = ds.findGlobalAttribute("StationElevationInMeters");
+    if(ga != null)
+      elev = ga.getNumericValue().doubleValue();
+    else
+      elev = 0.0;
 
     origin = new EarthLocationImpl(latv, lonv, elev);
   }
@@ -535,7 +549,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       mele = sw.getMeanElevation();
       //ucar.unidata.util.Trace.call2("LevelII2Dataset:testRadialVariable getSweep " + i);
       float me = sw.getMeanElevation();
-      //System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
+      System.out.println("*** radar Sweep mean elevation of sweep " + i + " is: " + me);
       int nrays = sw.getRadialNumber();
       float [] az = new float[nrays];
       for (int j = 0; j < nrays; j++) {
@@ -574,7 +588,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-    String fileIn = "/home/yuanho/dorade/KATX_20040113_0107";
+    String fileIn = "/home/yuanho/dorade/CHGZ_2006071512.0300";
 
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
