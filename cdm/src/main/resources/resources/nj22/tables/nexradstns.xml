@@ -156,4 +156,10 @@
 <station idn="000334" id="RLX" name="Charleston/Ruthdale" st="WV" co="US" lat="38:18:40" lon="-81:43:23" elev="329"/>
 <station idn="000335" id="CYS" name="Cheyenne" st="WY" co="US" lat="41:09:07" lon="-104:48:22" elev="1868"/>
 <station idn="000392" id="RIW" name="Riverton" st="WY" co="US" lat="43:03:58" lon="-108:28:38" elev="1697"/>
+<station idn="000881" id="CHGZ" name="GuangDong/Guang Zhou" st="GD" co="CH" lat="23:0:14" lon="113:21:18" elev="180"/>
+<station idn="000882" id="CHYJ" name="GuangDong/Yang Jiang" st="GD" co="CH" lat="21:50:42" lon="111:58:44" elev="102"/>
+<station idn="000883" id="CHMZ" name="GuangDong/Mei Zhou" st="GD" co="CH" lat="24:15:0" lon="115:59:34" elev="423"/>
+<station idn="000884" id="CHSG" name="GuangDong//Shao Guan" st="GD" co="CH" lat="24:47:60" lon="113:33:57" elev="301"/>
+<station idn="000885" id="CHST" name="GuangDong/Shan Tou" st="GD" co="CH" lat="23:16:58" lon="116:44:27" elev="119"/>
+<station idn="000886" id="CHSZ" name="GuangDong/Sheng Zhen" st="GD" co="CH" lat="22:32:20" lon="114:0:18" elev="149"/>
 </stationtable>
