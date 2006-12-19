@@ -393,8 +393,8 @@ public class InvDatasetImpl extends InvDataset {
     super(from.getParent(), from.getName());
 
     // steal everything
-    this.tm = from.getLocalMetadata();
-    this.tmi = from.getLocalMetadataInheritable();
+    this.tm = new ThreddsMetadata( from.getLocalMetadata());
+    this.tmi =  new ThreddsMetadata( from.getLocalMetadataInheritable());
     this.accessLocal = new ArrayList( from.getAccessLocal());
     this.servicesLocal = new ArrayList( from.getServicesLocal());
     

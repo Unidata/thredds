@@ -42,7 +42,7 @@ import ucar.nc2.thredds.MetadataExtractor;
 import thredds.datatype.DateRange;
 
 /**
- * InvDatasetFmrc deals with datasetFmrc elementss.
+ * InvDatasetFmrc represents an <datasetFmrc> element in a TDS catalog.
  *
  * @author caron
  */
@@ -135,6 +135,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return true;
   }
 
+  /**
+   * Creath the FMRC catalog, or one of its nested catalogs.
+   * @param match which catalog, one of null, RUNS, OFFSET, FORECAST, or SCAN
+   * @param orgPath
+   * @param baseURI
+   * @return the requested catalog
+   */
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI ) {
     try {
       if ((match == null) || (match.length() == 0))
@@ -248,13 +255,20 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return changed;
   }
 
+  /**
+   * Make the top FMRC catalog.
+   *
+   * @param baseURI base URI of the request
+   * @return the top FMRC catalog
+   * @throws IOException
+   * @throws URISyntaxException
+   */
   private InvCatalogImpl makeCatalog(URI baseURI) throws IOException, URISyntaxException {
-    boolean changed = checkIfChanged();
 
-    if (changed || (catalog == null)) {
-      InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
+    if ((catalog == null) || checkIfChanged()) {
+      InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
       URI myURI = baseURI.resolve( getXlinkHref());
-      InvCatalogImpl mainCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
+      InvCatalogImpl mainCatalog = new InvCatalogImpl( getFullName(), parentCatalog.getVersion(), myURI);
 
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
@@ -299,7 +313,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
       // any referenced services need to be local
       List serviceLocal = getServicesLocal();
-      List serviceAll = parent.getServices();
+      List serviceAll = parentCatalog.getServices();
       for (int i = 0; i < serviceAll.size(); i++) {
         InvService service = (InvService) serviceAll.get(i);
         if (!serviceLocal.contains(service))
@@ -315,6 +329,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       mainCatalog.finish();
       this.catalog = mainCatalog;
     }
+
     return catalog;
   }
 
@@ -331,9 +346,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   private InvCatalogImpl makeCatalogRuns(URI baseURI) throws IOException {
-    boolean changed = checkIfChanged();
 
-    if (changed || catalogRuns == null) {
+    if ((catalogRuns == null) || checkIfChanged()) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       URI myURI = baseURI.resolve( getCatalogHref(RUNS));
       InvCatalogImpl runCatalog  = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
@@ -362,9 +376,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   private InvCatalogImpl makeCatalogOffsets(URI baseURI) throws IOException {
-    boolean changed = checkIfChanged();
 
-    if (changed || catalogOffsets == null) {
+    if ((catalogOffsets == null) || checkIfChanged()) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       URI myURI = baseURI.resolve( getCatalogHref(OFFSET));
       InvCatalogImpl offCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
@@ -393,9 +406,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   private InvCatalogImpl makeCatalogForecasts(URI baseURI) throws IOException {
-    boolean changed = checkIfChanged();
 
-    if (changed || catalogForecasts == null) {
+    if ((catalogForecasts == null) || checkIfChanged()){
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
       URI myURI = baseURI.resolve( getCatalogHref(FORECAST));
       InvCatalogImpl foreCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);

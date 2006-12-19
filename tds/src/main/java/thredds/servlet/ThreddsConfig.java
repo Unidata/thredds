@@ -156,7 +156,7 @@ public class ThreddsConfig {
     if (s == null) return defValue;
 
     try {
-      return Boolean.parseBoolean(s);
+      return Boolean.valueOf(s).booleanValue(); // Boolean.parseBoolean();  (1.5)
     } catch (Exception e) {
       log.error("ThreddsConfig: param "+paramName+" not a boolean: " + e.getMessage());
     }

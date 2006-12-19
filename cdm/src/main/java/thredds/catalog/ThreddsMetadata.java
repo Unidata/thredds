@@ -68,9 +68,18 @@ public class ThreddsMetadata {
 
   public ThreddsMetadata(boolean inherited) { this.inherited = inherited; }
 
+  /**
+   * Copy Constructor.
+   * @param from copy from here
+   */
+  public ThreddsMetadata(ThreddsMetadata from) {
+    this.inherited = from.inherited;
+    add( from, true);
+  }
+
   /** Add all the content from another ThreddsMetadata
    * @param tmd get content from here
-   * @param includeInherited if false, dontadd inherited InvMetdata
+   * @param includeInherited if false, dont add inherited InvMetadata
    */
   public void add( ThreddsMetadata tmd, boolean includeInherited) {
     creators.addAll( tmd.getCreators());
@@ -94,6 +103,7 @@ public class ThreddsMetadata {
       }
     }
 
+    // LOOK! should be copies ??!!
     if (gc == null) gc = tmd.getGeospatialCoverage();
     if (timeCoverage == null) timeCoverage = tmd.getTimeCoverage();
     if (serviceName == null) serviceName = tmd.getServiceName();

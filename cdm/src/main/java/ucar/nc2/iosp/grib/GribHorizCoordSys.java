@@ -396,14 +396,30 @@ public class GribHorizCoordSys {
   }
 
   private void makeOrthographic() {
-    double Lat0 = gdsIndex.readDouble("Latitude of sub-satellite point");
-    double Lon0 = gdsIndex.readDouble("Longitude of sub-satellite pt");
+    double Lat0 = gdsIndex.readDouble("Lap");
+    double Lon0 = gdsIndex.readDouble("Lop");
 
-    double xp = gdsIndex.readDouble("X-coordinateSub-satellite");
-    double yp = gdsIndex.readDouble("Y-coordinateSub-satellite");
+    double xp = gdsIndex.readDouble("Xp");
+    double yp = gdsIndex.readDouble("Yp");
 
-    startx = gdsIndex.readDouble("X-coordinateOrigin") - xp;
-    starty = gdsIndex.readDouble("Y-coordinateOrigin") - yp;
+    double centerx = xp / 1000;  // units of grid length
+    double centery = yp / 1000;
+
+    double dx = gdsIndex.readDouble("Dx");
+    double dy = gdsIndex.readDouble("Dy");
+
+    double gridLengthX = 2* Earth.getRadius() / dx; // m
+    double gridLengthY = 2* Earth.getRadius() / dy; // m
+
+    gdsIndex.dx = gridLengthX; // meters
+    gdsIndex.dy = gridLengthY;
+
+    startx = .001 * gridLengthX * (centerx - gdsIndex.nx/2);  // km
+    starty = .001 * gridLengthY * (centery - gdsIndex.ny/2);
+
+    double nr = gdsIndex.readDouble("Nr");
+    double rx = 2 * Math.asin( 10e6/nr)/dx * Earth.getRadius();
+    double ry = 2 * Math.asin( 10e6/nr)/dy * Earth.getRadius();
 
     proj = new Orthographic(Lat0, Lon0);
 
@@ -416,7 +432,7 @@ public class GribHorizCoordSys {
       double Lo2 = gdsIndex.readDouble("Lo2") + 360.0;
       double La2 = gdsIndex.readDouble("La2");
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
-      System.out.println("GribHorizCoordSys.makeMercator end at latlon " + endLL);
+      System.out.println("GribHorizCoordSys.makeOrthographic end at latlon " + endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
       System.out.println("   end at proj coord " + endPP);

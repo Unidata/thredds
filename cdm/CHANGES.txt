@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.18
  Bugs
+  * GRIB Orthographic projections
   * CoordSysBuilders must set their name in constructor, for reflection
 
 Changes in version 2.2.17

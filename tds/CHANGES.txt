@@ -12,6 +12,8 @@ Changes in version 3.14
   * Use of CrawlableDatasetDods in datasetScan failing. Update TDS to use
     CrawlableDataset interface to find parent dataset and compare paths
     instead of string manipulation on datasetScan@location string.
+ Libraries
+  * grib-5.0.04
 
 Changes in version 3.13
  Features
