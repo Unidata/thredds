@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
-  <property name="release.version" value="3.14"/>
+  <property name="release.version" value="3.15"/>
   <property name="release.version.minor" value="${release.version}.00"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
