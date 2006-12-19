@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.14
  Bugs
+  * InvDataset copy constructor wasnt making copies - dup metadata in InvDatasetFmrc
   * Upgrade ADN/DIF records to latest version
   * MetadataExtractor was assuming that theres alwasys a fileFormat element in the catalog
   * CrawlDataset needs to get ProxyDataset from catref

@@ -21,7 +21,7 @@
 <div class="head">
   <h1>Tomcat FAQ </h1>
   <address>
-  last update: May 22, 2006 
+  last update: Dec 12, 2006 
   </address>
   <hr>
   <div class="head"></div>
@@ -51,8 +51,10 @@
   <h3>Remove port 8009 when using tomcat in standalone mode:</h3>
   <p>Unless you are using Tomcat with the Apache server, comment out this line in <strong>server.xml:</strong> </p>
   <pre>  &lt;Connector port=&quot;8009&quot; enableLookups=&quot;false&quot; redirectPort=&quot;8443&quot; protocol=&quot;AJP/1.3&quot; /&gt;</pre>
-  <h3>Running out of String intern space</h3>
-  <p>If you reload thredds.war servlet enough without restarting Tomcat, you will eventually run into &quot;String intern spcae exceeded. This is a known bug in  JDK/Tomcat, which will be fixed eventually. The only thing to do is to stop and restart Tomcat. </p>
+  <h3>Running out of <strong>PermGen</strong> (String intern) space</h3>
+  <p>If you reload thredds.war servlet enough times without restarting Tomcat, you will eventually run into &quot;<strong>java.lang.OutOfMemoryError: PermGen space</strong>&quot;. This is a known bug in  JDK/Tomcat, which will be fixed eventually. The only thing to do is to stop and restart Tomcat. The error log looks like: </p>
+  <pre>+++ServletUtil.initLogging<br>Dec 19, 2006 2:43:27 PM org.apache.catalina.startup.HostConfig deployWAR<br>INFO: Deploying web application archive thredds.war<br>Dec 19, 2006 2:43:41 PM org.apache.catalina.startup.HostConfig deployWAR<br>SEVERE: Error deploying web application archive thredds.war<br>java.lang.OutOfMemoryError: PermGen space<br>java.lang.reflect.InvocationTargetException<br>
+  </pre>
   <h3>Resources</h3>
   <ul>
     <li><a href="/manager/status">Tomcat Server Status</a> page</li>

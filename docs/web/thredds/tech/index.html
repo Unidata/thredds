@@ -13,7 +13,7 @@
 <h2> Contents</h2>
 <ul><li><a href="#tools"><b>Data Provider Tools</b></a> 
     <ul>
-      <li><a href="#TDS">THREDDS Data Server (TDS)</a></li>
+      <li><a href="TDS.html">THREDDS Data Server (TDS)</a></li>
         <li><a href="#TDS/IDD">THREDDS/IDD Server</a> </li>
         <li><a href="#Crawler">Catalog Generator/Crawler</a></li>
         <li><a href="#Services">Catalog Services</a> include catalog <em><strong>validation</strong></em> and <em><strong>viewing as HTML</strong></em> </li>
@@ -57,24 +57,7 @@
 
 <blockquote> 
   <h3>
-  <strong><a name="TDS" id="TDS"></a>THREDDS Data Server</strong></h3>
-  <p> The THREDDS Data Server (TDS) is a web server that provides metadata and data access for scientific datasets, building on and extending a number of existing technologies: </p>
-  <ol>
-    <li>THREDDS Dataset Inventory Catalogs are used to provide virtual directories of available data and their associated metadata. These catalogs can be generated dynamically or statically. </li>
-    <li>The <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java library</a> reads NetCDF, OpenDAP, and HDF5 datasets, as well as other binary formats such as GRIB and NEXRAD into a &quot;Common Data Model&quot; (CDM). This is an abstract data model that the netCDF (Unidata), HDF5 (NCSA) and OPeNDAP (University of Rhode Island) developers are using to converge their respective data models towards. The CDM also adds &quot;Georeferencing Coordinate Systems&quot; and specialized &quot;Scientific Data Type&quot; layers, which provides the semantics needed to convert datasets to other protocols and formats such as those required by GIS systems. The library adds this information by parsing well known &quot;attribute conventions&quot;, and by using THREDDS metadata to add missing coordinate system information and other metadata. </li>
-    <li>An integrated server provides OpenDAP access to any  datasets that can be read through the Netcdf-Java library. OpenDAP is a widely used, subsetting data access method built on the HTTP (web) protocol. </li>
-    <li>An integrated server provides bulk file access through the HTTP protocol. </li>
-    <li>An integrated server provides data access through the OpenGIS Consortium (OGC) Web Coverage Service (WCS) protocol for any &quot;gridded&quot; dataset whose coordinate system information is complete. Users can add missing information to a dataset where needed, in order to make this work. </li>
-  </ol>
-  <p>The THREDDS Data Server is implemented in 100% Java, and is contained in a single war file, which allows very easy installation into the open-source <a href="http://jakarta.apache.org/tomcat/">Tomcat</a>  web server. Configuration is made as simple and as automatic as possible, and we have made the server as secure as possible.</p>
-  <ul>
-    <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.12/thredds.war">Download</a> the latest stable version (3.12). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.12/CHANGES.txt">Change Log</a>. </li>
-    <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.13/thredds.war">Download</a> the latest development version (3.13). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.13/CHANGES.txt">Change Log</a>. </li>
-    <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.14/thredds.war">Download</a> 3.14 release candidate. <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.14/CHANGES.txt">Change Log</a>. </li>
-    <li><a href="http://motherlode.ucar.edu:8080/thredds/docs/">THREDDS Data Server documentation</a></li>
-    <li>The TDS uses the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java library</a> </li>
-    <li>The TDS <a href="tutorial/index.html">Tutorial</a> </li>
-  </ul>
+  <strong><a name="TDS" id="TDS"></a> <a href="TDS.html">THREDDS Data Server</a></strong></h3>
   <h3><strong><a name="TDS/IDD" id="TDS/IDD"></a>THREDDS Internet Data Distribution (IDD)  Server</strong></h3>
   <p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is available through a THREDDS Data Server hosted at Unidata on <a href="http://motherlode.ucar.edu:8080/thredds/">motherlode.ucar.edu</a>. You are welcome to browse and access these meteorological datasets.</p>
   <p>If you have an IDD running, you can run your own THREDDS/IDD Server. We have written standard THREDDS/IDD pqact files that have corresponding catalogs. You should download and install the latest TDS version, and follow these <a href="http://motherlode.ucar.edu:8080/thredds/docs/IDD.html">instructions</a>. </p>
