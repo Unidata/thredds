@@ -107,11 +107,19 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
   }
 
   public String getRadarID() {
-    return ds.findGlobalAttribute("Station").getStringValue();
+    Attribute ga = ds.findGlobalAttribute("Station");
+    if(ga != null)
+        return ga.getStringValue();
+    else
+        return "XXXX";
   }
 
   public String getRadarName() {
-    return ds.findGlobalAttribute("StationName").getStringValue();
+    Attribute ga = ds.findGlobalAttribute("StationName");
+    if(ga != null)
+        return ga.getStringValue();
+    else
+        return "Unknown Station";
   }
 
   public String getDataFormat() {
