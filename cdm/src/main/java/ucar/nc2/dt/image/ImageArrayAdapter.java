@@ -46,6 +46,9 @@ public class ImageArrayAdapter {
   public static java.awt.image.BufferedImage makeGrayscaleImage( Array ma) {
 
     if (ma.getRank() == 3)
+      ma = ma.reduce();
+
+    if (ma.getRank() == 3)
       ma = ma.slice( 0, 0); // we need 2D
 
     int h = ma.getShape()[0];
@@ -63,10 +66,7 @@ public class ImageArrayAdapter {
     ComponentColorModel colorModel = new ComponentColorModel(cs,new int[] {8},
         false,false,Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 
-    BufferedImage image = new BufferedImage( colorModel, raster, false, null);
-
-    return image;
-
+    return new BufferedImage( colorModel, raster, false, null);
   }
 
   private static DataBuffer makeDataBuffer( Array ma) {

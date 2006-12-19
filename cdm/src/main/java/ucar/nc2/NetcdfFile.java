@@ -46,6 +46,17 @@ import java.io.*;
     }
   </pre>
  *
+ * <p>Be sure to close the file after opening, eg:
+ * <pre>
+ *  NetcdfFile ncfile = null;
+    try {
+        ncfile = NetcdfFile.open(fileName);
+        ...
+    } finally {
+        if (null != ncfile) ncfile.close();
+    }
+   </pre>
+ *
  * <h3>Naming</h3>
  * Each object has a name (aka "full name") that is unique within the entire netcdf file, and
  * a "short name" that is unique within the parent group.

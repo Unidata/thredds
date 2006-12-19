@@ -20,7 +20,7 @@ public class TestH5read extends TestCase {
     readAllDir( TestH5.topdir+"msg");
   }
 
-  public void utestAll() {
+  public void testAll() {
     readAllDir( TestH5.topdir);
   }
 

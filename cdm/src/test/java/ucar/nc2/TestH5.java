@@ -7,7 +7,7 @@ import junit.framework.*;
  *
  */
 public class TestH5 {
-  public static String topdir = TestAll.testdataDir+"hdf5/";
+  public static String topdir = "C:/data/hdf5"; // TestAll.testdataDir+"hdf5/";
   public static boolean dumpFile = false;
 
  public static NetcdfFile open( String filename) {

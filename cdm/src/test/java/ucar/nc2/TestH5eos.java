@@ -14,9 +14,12 @@ public class TestH5eos extends TestCase {
   }
 
   public void testEosMetadata() {
-    NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
+    //NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
+    NetcdfFile ncfile = TestH5.open("C:/doc/hdf5Conference/auraData/HIRDLS2-Aura73p_b029_2000d275.he5");
 
-    Variable dset = ncfile.findVariable("HDFEOS_INFORMATION/StructMetadata-0");
+    Group root = ncfile.getRootGroup();
+    Group g = root.findGroup("HDFEOS_INFORMATION");
+    Variable dset = g.findVariable("StructMetadata.0");
     assert(null != dset );
     assert(dset.getDataType() == DataType.CHAR);
 
@@ -35,11 +38,12 @@ public class TestH5eos extends TestCase {
 
     ArrayChar ca = (ArrayChar) A;
     String sval = ca.getString();
-    System.out.println("Len = "+sval.length());
-    System.out.println("Value = "+sval);
+    System.out.println(dset.getName());
+    System.out.println(" Length = "+sval.length());
+    System.out.println(" Value = "+sval);
 
     ////////////////
-    dset = ncfile.findVariable("HDFEOS_INFORMATION/coremetadata-0");
+    dset = g.findVariable("coremetadata.0");
     assert(null != dset );
     assert(dset.getDataType() == DataType.CHAR);
 
@@ -57,8 +61,9 @@ public class TestH5eos extends TestCase {
 
     ca = (ArrayChar) A;
     sval = ca.getString();
-    System.out.println("Len = "+sval.length());
-    System.out.println("Value = "+sval);
+    System.out.println(dset.getName());
+    System.out.println(" Length = "+sval.length());
+    System.out.println(" Value = "+sval);
   }
 
   public static void main(String[] args) {

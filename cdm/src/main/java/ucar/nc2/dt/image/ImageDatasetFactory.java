@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
 
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -161,8 +163,10 @@ public class ImageDatasetFactory {
     if (currentDir == null) {
       currentDirFileNo = 0;
       currentDir = currentFile.getParentFile();
-      currentDirFileList = Arrays.asList(currentDir.listFiles());
-      Collections.sort(currentDirFileList);
+      currentDirFileList = new ArrayList();
+      addToList( currentDir, currentDirFileList);
+      //Arrays.asList(currentDir.listFiles());
+      //Collections.sort(currentDirFileList);
       for (int i = 0; i < currentDirFileList.size(); i++) {
         File file = (File) currentDirFileList.get(i);
         if (file.equals(currentFile))
@@ -188,6 +192,17 @@ public class ImageDatasetFactory {
       return getNextImage( forward);
     }
 
+  }
+
+  private void addToList( File dir, List list) {
+    File[] files = dir.listFiles();
+    for (int i = 0; i < files.length; i++) {
+      File file = files[i];
+      if (file.isDirectory())
+        addToList(file, list);
+      else if (file.getName().endsWith(".jpg"))
+        list.add( file);
+    }
   }
 
 }

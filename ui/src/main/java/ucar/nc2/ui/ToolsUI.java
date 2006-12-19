@@ -433,11 +433,11 @@ public class ToolsUI extends JPanel {
     };
     BAMutil.setActionProperties(useDebugWindowAction, null, "Use Debug Window", true, 'C', -1);
     BAMutil.addActionToMenu(debugMenu, useDebugWindowAction);
-    if (mainPrefs.getBoolean("useDebugWindow", false)) {
+    /* if (mainPrefs.getBoolean("useDebugWindow", false)) {
       useDebugWindowAction.putValue(BAMutil.STATE, Boolean.TRUE);
       setDebugFlags();
       setDebugOutputStream(true);
-    }
+    } */
 
     // show the debug window
     AbstractAction showDebugAction = new AbstractAction() {
