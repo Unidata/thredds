@@ -46,7 +46,7 @@ public class LdmServlet extends AbstractServlet {
     }
 
     protected String getPath() {
-        return "ldm/";
+        return "idd/";
     }
 
     public String[] getDAYS(String dirS, PrintWriter pw) {
@@ -102,14 +102,18 @@ public class LdmServlet extends AbstractServlet {
         BufferedReader br = getInputStreamReader(dqc);
         String input = "";
         String stn = "";
+        String stnLine = "";
 
         while ((input = br.readLine()) != null) {
             if (!p.p_station_name.matcher(input).find()) {
-                continue;
+               if( pw != null )
+                  pw.println( input );
+               continue;
             }
 //		s#value="([A-Z0-9]*)"## ;
             m = p.p_value2.matcher(input);
             if (m.find()) {
+                stnLine = input;
                 stn = m.group(1);
             } else {
                 continue;
@@ -133,8 +137,19 @@ public class LdmServlet extends AbstractServlet {
                 inBound = false;
             }
             if (inBound) {
+                if( pw != null ) {
+                  pw.println( stnLine );
+                  pw.println( input );
+                  input = br.readLine(); // elevation
+                  pw.println( input );
+                  input = br.readLine(); // </station> tag
+                  pw.println( input );
+                }
                 STNSal.add(stn);
                 //pw.println(  "<p>stn inbound "+ stn +" </p>" );
+            } else {
+                input = br.readLine(); // elevation
+                input = br.readLine(); // </station> tag
             }
         }  // end while
 
