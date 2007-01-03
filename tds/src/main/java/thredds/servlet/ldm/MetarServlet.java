@@ -27,14 +27,15 @@ import javax.servlet.http.*;
 
 public class MetarServlet extends LdmServlet {
 
-    // static configuration file ThreddsLdm.cfg parameters
+    // static configuration file ThreddsIDD.cfg parameters
     static protected String catalogVersion;
     static protected String defaultCatalog;
     static protected String backgroundImage;
     static protected String metarDQC;
     static protected String metarDir = null;
     static protected String metarHTTPServiceName;
-    static protected String metarHTTPUrlPath;
+    static protected String metarHTTPServiceType;
+    static protected String metarHTTPServiceBase;
     static protected String metarHTTPDataFormatType;
     static protected String metarASCIIServiceName;
     static protected String metarASCIIUrlPath;
@@ -57,8 +58,9 @@ public class MetarServlet extends LdmServlet {
         String returns;
         String ll = null;
         String ur = null;
-        String serviceType;
         String serviceName = null;
+        String serviceType = null;
+        String serviceBase = null;
         String urlPath = null;
         PrintWriter pw;
 
@@ -81,9 +83,9 @@ public class MetarServlet extends LdmServlet {
             //    PRODS[0] = "N0R";
             //}
 
-            dtime = ServletUtil.getParameterIgnoreCase(req, "time");
-            //if (dtime == null)
-            //    dtime = "latest";
+            dtime = ServletUtil.getParameterIgnoreCase(req, "dtime");
+            if (dtime == null)
+                dtime = "latest";
 
             dateStart = ServletUtil.getParameterIgnoreCase(req, "dateStart");
 
@@ -123,61 +125,86 @@ public class MetarServlet extends LdmServlet {
                 res.setContentType("text/plain");
             }
             pw = res.getWriter();
+            //pw.println( "pw works" );
+            //if( 1 > 0 ) return;
             //pw.println( "returns =" + returns );
             //pw.println( "dtime =" + dtime );
             //for( int i = 0; i < STNS.length; i++ )
-            //    pw.println( "Station " + i +" = "+ STNS[ i ] );
+                //pw.println( "Station " + i +" = "+ STNS[ i ] );
 
             contentPath = ServletUtil.getContentPath(this);
             //pw.println( "rootPath =" + ServletUtil.getRootPath( this ) );
             //pw.println( "contentPath =" + contentPath );
-            //pw.println( "ThreddsLdm.cfg =" + contentPath + "ThreddsLdm.cfg" );
+            //pw.println( "ThreddsIDD.cfg ="+ contentPath + getPath() +"ThreddsIDD.cfg" );
 
-            //processRequest();
             //ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
 
             } else { // command line testing here
 
-            contentPath = "/home/rkambic/code/thredds/resourceswar/initialContent/";
+            contentPath = "/home/rkambic/code/thredds/tds/src/main/initialContent/";
             pw = new PrintWriter(System.out, true);
             pw.println( "command line testing" ) ;
 
             STNS = new String[2];
-            STNS[0] = "KDTN";
-            STNS[1] = "KDNV";
-            dtime = "latest";
-            //dtime = "2005-03-14T23:53:00";
-            //dtime = "6hour";
+            STNS[0] = "KDEN";
+            STNS[1] = "KSEA";
+            //dtime = "latest";
+            dtime = "2006-12-28T16:53:00";
+            dtime = "6hour";
             //dtime = "5day";
-            //dateStart = "2005-05-01T06:12:30";
-            //dateEnd = "2005-05-01T12:12:30";
-            //returns = "catalog";
-            returns = "ascii";
+            //dateStart = "2006-12-26T00:12:30";
+            //dateEnd = "2006-12-26T12:12:30";
+
+            returns = "catalog";
+            //returns = "ascii";
             //returns = "html";
-            returns = "xml";
+            //returns = "xml";
+            //returns = "dqc";
+
             //serviceType = "HTTPServer";
             serviceType = "";
             //serviceName = metarHTTPServiceName;
             //pw.println( "serviceName =" + serviceName );
-            //urlPath =  metarHTTPUrlPath ;
             //pw.println( "urlPath =" + urlPath );
-            //ll = "-45:-90";
-            //ur = "45:90";
+            //ll = "-15:-90";
+            //ur = "15:90";
         
-            }
+            } // end command line testing
 
-            //  get configurations from ThreddsLdm.cfg
+            //  get configurations from ThreddsIDD.cfg
             if( metarDir == null )
                getConfigurations("buoy", pw);
             // pw.println( "metarDQC =" + metarDQC );
             // pw.println( "metarDir =" + metarDir );
 
+        if (p.p_qc_or_dqc_i.matcher(returns).find()) { // returns dqc doc
+
+            if( ll != null && ur != null ) {
+                STNS = boundingBox(ll, ur, metarDQC, pw);
+                //pw.println( "<stations>" );
+                //for (int j = 0; j < STNS.length; j++) {
+                //    pw.println( "    <station name=\""+ STNS[ j ] +"\" />" );
+                //}
+                //pw.println( "</stations>" );
+            } else {
+      
+                //pw.println(metarDQC);
+                BufferedReader br = getInputStreamReader(metarDQC);
+                String input = "";
+                while ((input = br.readLine()) != null) {
+                    pw.println(input);
+                }
+                br.close();
+            }
+            return;
+        }
+
         // requesting a catalog with different serviceTypes
         if (p.p_HTTPServer_i.matcher(serviceType).find() ||
                 (p.p_catalog_i.matcher(returns).find()) ) { // backward capatiablity
-                serviceType = "HTTPServer";
                 serviceName = metarHTTPServiceName;
-                urlPath = metarHTTPUrlPath;
+                serviceType = metarHTTPServiceType;
+                serviceBase = metarHTTPServiceBase;
                 if (p.p_catalog_i.matcher(returns).find()) {
                     returns = "xml";  // default
                 }
@@ -194,27 +221,27 @@ public class MetarServlet extends LdmServlet {
         if ( ! serviceType.equals( "" )) {
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             pw.print("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"");
-            pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Metar datasets in near real time\">");
+            pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Metar datasets in near real time\" version=\""+ catalogVersion +"\">");
             pw.println("");
-            pw.print("  <service serviceType=\"" + serviceType + "\" name=\"" + serviceName + "\" ");
-            pw.println(" base=\"" + urlPath + "\"/>");
-            pw.print("    <dataset name=\"Metar datasets for available stations and times\" collectionType=\"TimeSeries\" urlPath=\"returns=" + returns + "&amp;");
+            pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
+            pw.println(" base=\"" + serviceBase + "\"/>");
+            pw.print("    <dataset name=\"Metar datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"returns=" + returns + "&");
             if( STNS != null ) {
                 for (int i = 0; i < STNS.length; i++) {
-                    pw.print("stn=" + STNS[i] +"&amp;");
+                    pw.print("stn=" + STNS[i] +"&");
                 }
             } else if( ll != null && ur != null ) {
-                pw.print("ll="+ ll +"&amp;ur="+ ur +"&amp;" );
+                pw.print("ll="+ ll +"&ur="+ ur +"&" );
             } else {
-                pw.print("stn=all&amp;");
+                pw.print("stn=all&");
             }
 
             if( dtime != null ) {
-                pw.println("time=" + dtime + "\">");
+                pw.println("dtime=" + dtime + "\">");
             } else if( dateEnd != null ) {
-                pw.println("dateStart=" + dateStart +"&amp;dateEnd=" +dateEnd +"\">");
+                pw.println("dateStart=" + dateStart +"&dateEnd=" +dateEnd +"\">");
             } else {
-                pw.println("time=latest\">");
+                pw.println("dtime=latest\">");
                 dtime = "latest";  // default
             }
             pw.println("    <metadata inherited=\"true\">");
@@ -222,28 +249,8 @@ public class MetarServlet extends LdmServlet {
             pw.println("      <dataFormat>" + returns + "</dataFormat>");
             pw.println("      <serviceName>" + serviceName + "</serviceName>");
             pw.println("    </metadata>");
-            pw.println("");
+            pw.println();
 
-//      output data in returns type format
-        } else if (p.p_qc_or_dqc_i.matcher(returns).find()) { // returns dqc doc
-
-            if( ll != null && ur != null ) {
-                STNS = boundingBox(ll, ur, metarDQC, pw);
-                pw.println( "<stations>" );
-                for (int j = 0; j < STNS.length; j++) {
-                    pw.println( "    <station name=\""+ STNS[ j ] +"\" />" );
-                }
-                pw.println( "</stations>" );
-            } else {
-      
-                BufferedReader br = getInputStreamReader(metarDQC);
-                String input = "";
-                while ((input = br.readLine()) != null) {
-                    pw.println(input);
-                }
-                br.close();
-            }
-            return;
         } else if (p.p_html_i.matcher(returns).find()) { // returns html
 
             pw.println("<Head><Title>THREDDS Metar Server</Title></Head>");
@@ -266,7 +273,8 @@ public class MetarServlet extends LdmServlet {
 //
         // bounding box given to determine stns
         if (ll != null && ur != null) {
-            STNS = boundingBox(ll, ur, metarDQC, pw);
+            //STNS = boundingBox(ll, ur, metarDQC, pw);
+            STNS = boundingBox(ll, ur, metarDQC, null);
             //pw.println(  "STNS.length="+ STNS.length );
             if (STNS.length == 0) {
                 pw.println("      <documentation>No data available for station(s) "+
@@ -285,7 +293,7 @@ public class MetarServlet extends LdmServlet {
 
         // if request for all stns given, populate STNS 
         if (STNS == null || p.p_all_i.matcher(STNS[0]).find()) {
-            pw.println( "metarDir + DAYS[ 0 ] =" + metarDir +"/"+  DAYS[ 0 ] );
+            //pw.println( "metarDir + DAYS[ 0 ] =" + metarDir +"/"+  DAYS[ 0 ] );
             File dir = new File(metarDir + "/" + DAYS[0]);
             STNS = dir.list();
             //pw.println( "STNS.length =" + STNS.length );
@@ -348,16 +356,16 @@ public class MetarServlet extends LdmServlet {
             boolean firstTime = true; // so header only printed once
             File fstn;
             Matcher m;
-            String var1 = "", var2 = "", var3 = "";
+            String key = "", var1 = "", var2 = "", var3 = "";
 
             for (int i = 0; i < DAYS.length && notDone; i++) {
+                //pw.println( "<p>dir =" + DAYS[ i ] + "</p>\n");
                 if( ! isValidDay( DAYS[ i ], yyyymmddStart, yyyymmddEnd ) )
                     continue;
 
-                //pw.println( "<p>dir =" + DAYS[ i ] + "</p>\n");
                 String day = DAYS[ i ].substring( 0, 4 ) +"-"+
-                    DAYS[ i ].substring( 4, 6 ) +"-"+ DAYS[ i ].substring( 6 ) +
-                    "T";
+                    DAYS[ i ].substring( 4, 6 ) +"-";
+//+ DAYS[ i ].substring( 6 ) + "T";
                 //pw.println( "<p>day =" + day + "</p>\n");
                 // optimize for 3 char US stations then Canadians
                 if (station.length() == 3) {
@@ -390,17 +398,21 @@ public class MetarServlet extends LdmServlet {
                         var1 = m.group(1);
                         var2 = m.group(2);
                         var3 = m.group(3);
-                        //pw.println( "<p>dateReport =" + day + var2 +":"+ var3 +":00"+ "</p>\n");
-                        if( ! isValidDate( day + var2 +":"+ var3 +":00", dateStart, dateEnd ) )
+                        //pw.println( "<p>dateReport ="+ day + var1 +"T"+ var2 +":"+ var3 +":00"+ "</p>\n");
+                        if( ! isValidDate( day + var1 +"T"+ var2 +":"+ var3 +":00", dateStart, dateEnd ) )
                             continue;
+                        //pw.println( "<p>key =" + var1 +":"+ var2 +":"+ var3 +"</p>\n");
 
-                        if (RPTS.containsKey(var2 + var3)) {
-                            String rptsValue = (String) RPTS.get(var2 + var3);
+                        key = var1 + var2 + var3;
+                        if (RPTS.containsKey( key )) {
+                            String rptsValue = (String) RPTS.get( key );
                             if (rptsValue.length() < input.length()) {
-                                RPTS.put(var2 + var3, input);
+                                RPTS.put( key, input);
                             }
                         } else {
-                            RPTS.put(var2 + var3, input);
+                            RPTS.put( key, input);
+                            //pw.println( "<p>entering =" + var2 +":"+ var3 +"</p>\n");
+                            
                         }
                     }
                 } // end while check for valid date, eliminate dups and store 
@@ -408,8 +420,9 @@ public class MetarServlet extends LdmServlet {
 
                 // write out data/datasets element is latest first order
                 for (Iterator it = RPTS.keySet().iterator(); it.hasNext();) {
-                    String key = (String) it.next();
+                    key = (String) it.next();
                     String report = (String) RPTS.get(key);
+                    //pw.println("<p>" + report + "</p>\n");
                     if (p.p_html_i.matcher(returns).find()) {
                         if (firstTime) {
                             pw.println("<h3>Report(s) for station "
@@ -423,7 +436,7 @@ public class MetarServlet extends LdmServlet {
                         m = p.p_station_dateZ.matcher(report);
                         if (m.lookingAt()) {
                             var1 = m.group(1);
-                            catalogOut(day, var1, station, pw, serviceType, returns);
+                            catalogOut(day, key, station, pw, serviceType, serviceBase, returns);
                         }
                     } else if (p.p_ascii_i.matcher(returns).find()) {
                             pw.println(report);
@@ -485,25 +498,31 @@ public class MetarServlet extends LdmServlet {
     }
 
     // create a dataset entry for a catalog
-    public void catalogOut(String day, String ddhhmm, String stn, PrintWriter pw, String serviceType, String returns) {
+    public void catalogOut(String day, String ddhhmm, String stn, PrintWriter pw, String serviceType, String serviceBase, String returns) {
 
-        String theTime = "";
+        //String theTime = "";
 
-        pw.print("\t<dataset name=\"");
+        pw.print("      <dataset name=\"");
 
-        theTime = day + ddhhmm.substring(2, 4) +":"+ ddhhmm.substring(4, 6) +":00";
+        String theTime = day + ddhhmm.substring(0,2) +"T"+ ddhhmm.substring(2, 4) +":"+ ddhhmm.substring(4, 6) +":00";
 
-        pw.print(theTime);
+//  + stn + " Metar data\" " ;
 
-        pw.print(" " + stn + " Metar data\" urlPath=\"");
+        //pw.print(theTime);
+
+        //pw.print(" " + stn + " Metar data\" urlPath=\""+ serviceBase);
+        //theTime = theTime +" " + stn + " Metar data\" " ; 
+        pw.print( theTime +" " + stn + " Metar data\"" ); 
+        pw.println( " ID=\""+ theTime.hashCode() +"\"" ); 
+        pw.print("        urlPath=\"");
         if (p.p_HTTPServer_i.matcher(serviceType).find()) {
-            pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;time=" + theTime + "\"/>");
+            pw.println("returns="+ returns +"&stn=" + stn + "&dtime=" + theTime + "\"/>");
         } else if (p.p_ADDE_i.matcher(serviceType).find()) {
-            pw.println("group=rtptsrc&amp;descr=sfchourly&amp;select='id%20" + stn + "'" +
-                    "&amp;num=all&amp;param=day%20time%20t%20td%20psl\"/>");
+            pw.println("group=rtptsrc&descr=sfchourly&select='id%20" + stn + "'" +
+                    "&num=all&param=day%20time%20t%20td%20psl\"/>");
         } else if (p.p_DODS_i.matcher(serviceType).find()) {
-            pw.println("group=rtptsrc&amp;descr=sfchourly&amp;select='id " + stn + "'" +
-                    "&amp;num=all&amp;param=day time t td psl\"/>");
+            pw.println("group=rtptsrc&descr=sfchourly&select='id " + stn + "'" +
+                    "&num=all&param=day time t td psl\"/>");
         }
 
     } // end catalogOut
@@ -511,7 +530,7 @@ public class MetarServlet extends LdmServlet {
     // create xml tags for the reports parameters
     public void outputXML(String day, String report, PrintWriter pw) {
 
-         MetarParseReport mpr = new MetarParseReport();
+        MetarParseReport mpr = new MetarParseReport();
         LinkedHashMap metar = mpr.parseReport(report);
         String key;
 
@@ -538,7 +557,7 @@ public class MetarServlet extends LdmServlet {
         pw.println("</station>");
     } // end outputXML
 
-    // get configurations from ThreddsLdm.cfg file
+    // get configurations from ThreddsIDD.cfg file
     public void getConfigurations(String stopAt, PrintWriter pw)
             throws FileNotFoundException, IOException {
 
@@ -546,8 +565,8 @@ public class MetarServlet extends LdmServlet {
         Matcher m;
         String variable, value;
 
-        //pw.println(contentPath + getPath() +"ThreddsLdm.cfg" );
-        BufferedReader br = getInputStreamReader(contentPath + getPath() +"ThreddsLdm.cfg");
+        //pw.println(contentPath + getPath() +"ThreddsIDD.cfg" );
+        BufferedReader br = getInputStreamReader(contentPath + getPath() +"ThreddsIDD.cfg");
         String input = "";
         while ((input = br.readLine()) != null) {
 
@@ -577,8 +596,10 @@ public class MetarServlet extends LdmServlet {
                     metarDir = value;
                 } else if (variable.equals("metarHTTPServiceName")) {
                     metarHTTPServiceName = value;
-                } else if (variable.equals("metarHTTPUrlPath")) {
-                    metarHTTPUrlPath = value;
+                } else if (variable.equals("metarHTTPServiceType")) {
+                    metarHTTPServiceType = value;
+                } else if (variable.equals("metarHTTPServiceBase")) {
+                    metarHTTPServiceBase = value;
                 } else if (variable.equals("metarHTTPDataFormatType")) {
                     metarHTTPDataFormatType = value;
                 } else if (variable.equals("metarASCIIServiceName")) {
