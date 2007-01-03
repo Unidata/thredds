@@ -15,7 +15,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/bufr.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/bufr-1.1.00.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -24,7 +24,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/grib-5.0.03.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/grib-5.1.00.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
