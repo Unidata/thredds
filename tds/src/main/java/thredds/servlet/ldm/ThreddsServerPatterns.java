@@ -37,6 +37,8 @@ public class ThreddsServerPatterns {
 
     public static final Pattern p_B_D8 = Pattern.compile("^\\d{8}");
 
+    public static final Pattern p_D8_D4 = Pattern.compile("\\d{8}_\\d{4}");
+
     public static final Pattern p_B_CR = Pattern.compile("^\\n");
 
     //public static final Pattern p_B_GBALLGECR = Pattern.compile("^(.*)\\n");
@@ -409,7 +411,7 @@ public class ThreddsServerPatterns {
 
     public static final Pattern p_pressureTendency = Pattern.compile("5(0|1|2|3|4|5|6|7|8)(\\d{3}/?|///)\\s+");
 
-    public static final Pattern p_qc_or_dqc_i = Pattern.compile("qc|dqc", Pattern.CASE_INSENSITIVE);
+    public static final Pattern p_qc_or_dqc_i = Pattern.compile("(qc|dqc)", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern p_serviceName_urlPath = Pattern.compile("serviceName=\"(.*)\"\\s+urlPath=\"(.*)\"");
 
