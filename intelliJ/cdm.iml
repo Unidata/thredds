@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4" relativePaths="true" type="JAVA_MODULE">
   <component name="ModuleRootManager" />
-  <component name="NewModuleRootManager">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../cdm/target/classes" />
+    <exclude-output />
     <output-test url="file://$MODULE_DIR$/../cdm/target/test/classes" />
     <content url="file://$MODULE_DIR$/../cdm">
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/test/java" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target/idv" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target/javadoc" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target/javadocAll" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target/srcZip" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target/test" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target/uiZip" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/target/zip" />
-      <excludeFolder url="file://$MODULE_DIR$/../cdm/test" />
+      <sourceFolder url="file://$MODULE_DIR$/../cdm/src/timing/java" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -22,6 +16,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/release/bufr.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/release/grib-5.0.03.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -156,7 +159,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="grib" />
     <orderEntryProperties />
   </component>
 </module>
