@@ -5,6 +5,7 @@
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../tds/target/classes" />
     <exclude-output />
+    <exploded url="file://$MODULE_DIR$/../tds/target/exploded" />
     <exclude-exploded />
     <output-test url="file://$MODULE_DIR$/../tds/target/test/classes" />
     <content url="file://$MODULE_DIR$/../tds">
@@ -48,7 +49,7 @@
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
-    <setting name="EXPLODED_URL" value="file://" />
+    <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../tds/target/exploded" />
     <setting name="EXPLODED_ENABLED" value="false" />
     <setting name="JAR_URL" value="file://$MODULE_DIR$/../tds/target/thredds.war" />
     <setting name="JAR_ENABLED" value="true" />
@@ -134,13 +135,23 @@
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/bufr.jar" />
+      <attribute name="URI" value="/WEB-INF/lib/bufr-1.1.00.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/bufr-1.1.00.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="0" />
+      <attribute name="URI" value="&lt;N/A&gt;" />
       <url>jar://$MODULE_DIR$/../lib/release/bufr.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="0" />
       <attribute name="URI" value="/WEB-INF/lib/grib-5.0.03.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/grib-5.0.03.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/grib-5.1.00.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.00.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -158,14 +169,11 @@
       <option name="NAME" value="unknown.xml" />
       <option name="DESCRIPTION" value="Additional Resource" />
     </deploymentDescriptor>
-    <deploymentDescriptor name="" url="file://$MODULE_DIR$/../tds/src/main/webapp/META-INF/context-thredds.xml" optional="false">
-      <option name="DEFAULT_DIR" value="WEB-INF" />
-      <option name="NAME" value="" />
-      <option name="DESCRIPTION" value="" />
-    </deploymentDescriptor>
+    <deploymentDescriptor name="context.xml" url="file://$MODULE_DIR$/../tds/src/main/webapp/META-INF/context-thredds.xml" optional="false" version="5.x" />
     <webroots>
       <root url="file://$MODULE_DIR$/../tds/src/main/webapp/resources" relative="/" />
       <root url="file://$MODULE_DIR$/../tds/src/main/resources/xsl" relative="/WEB-INF/xsl" />
+      <root url="file://$MODULE_DIR$/../tds/src/main/initialContent" relative="/WEB-INF/initialContent" />
     </webroots>
   </component>
   <component name="WeblogicWebModuleProperties" />
