@@ -81,24 +81,21 @@ public class LdmServlet extends AbstractServlet {
 
     }
 
-    public String[] boundingBox(String ll, String ur, String dqc, PrintWriter pw)
-            throws FileNotFoundException, IOException {
+    public String[] boundingBox(String y0, String y1, String x0, String x1, 
+        String dqc, PrintWriter pw) throws FileNotFoundException, IOException {
 
-        String[] TMP;
         ArrayList STNSal = new ArrayList();
-        float lat, lon, lat1, lon1, lat2, lon2;
+        float lat, lon, minLat, minLon, maxLat, maxLon;
         Matcher m;
         boolean inBound;
 
-        TMP = p.p_colon.split(ll);
-        lat1 = Float.parseFloat(TMP[0]);
-        lon1 = Float.parseFloat(TMP[1]);
+        minLat = Float.parseFloat( y0 );
+        maxLat = Float.parseFloat( y1 );
 
-        TMP = p.p_colon.split(ur);
-        lat2 = Float.parseFloat(TMP[0]);
-        lon2 = Float.parseFloat(TMP[1]);
+        minLon = Float.parseFloat( x0 );
+        maxLon = Float.parseFloat( x1 );
 
-        //pw.println( "<p>lat1="+ lat1 +" lon1="+ lon1 +" lat2="+ lat2 +" lon2="+ lon2 +"</p>" );
+        //pw.println( "<p>minLat="+ minLat +" minLon="+ minLon +" maxLat="+ maxLat +" maxLon="+ maxLon +"</p>" );
         BufferedReader br = getInputStreamReader(dqc);
         String input = "";
         String stn = "";
@@ -130,10 +127,10 @@ public class LdmServlet extends AbstractServlet {
 
             //pw.println( "<p>lat="+ lat +" lon="+ lon +" </p>" );
             inBound = true;
-            if (lat < lat1 || lat > lat2) {
+            if (lat < minLat || lat > maxLat) {
                 inBound = false;
             }
-            if (lon < lon1 || lon > lon2) {
+            if (lon < minLon || lon > maxLon) {
                 inBound = false;
             }
             if (inBound) {
@@ -251,6 +248,30 @@ public class LdmServlet extends AbstractServlet {
 
             return s2.compareTo(s1);
         }
+    }
+
+    // returns if day is between dayStart and dayEnd
+    public boolean isValidDay( String dateDir, String yyyymmddStart, String yyyymmddEnd )
+    {
+
+       if( dateDir.compareTo( yyyymmddStart ) >= 0 && 
+           dateDir.compareTo( yyyymmddEnd ) <= 0 )
+           return true;
+
+       return false;
+
+    }
+
+    // returns if date is between dateStart and dateEnd
+    public boolean isValidDate( String dateReport, String dateStart, 
+       String dateEnd ) {
+
+       if( dateReport.compareTo( dateStart ) >= 0 &&
+           dateReport.compareTo( dateEnd ) <= 0 )
+           return true;
+
+       return false;
+
     }
 
 } // end LdmServlet

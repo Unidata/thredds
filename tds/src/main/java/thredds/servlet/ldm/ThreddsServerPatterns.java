@@ -19,6 +19,10 @@ public class ThreddsServerPatterns {
 
     public static final Pattern p_ACFT = Pattern.compile("\\(?ACFT\\s?MSHP\\)?\\s+");
 
+    public static final Pattern p_text_i = Pattern.compile("text", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern p_TEXTServer_i = Pattern.compile("TEXTServer", Pattern.CASE_INSENSITIVE);
+
     public static final Pattern p_ascii_i = Pattern.compile("ascii", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern p_ASCIIServer_i = Pattern.compile("ASCIIServer", Pattern.CASE_INSENSITIVE);
