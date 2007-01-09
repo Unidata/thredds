@@ -25,7 +25,6 @@ package thredds.catalog.query;
  * Implementation of a DQC select geo region.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class SelectGeoRegion extends Selector {
@@ -76,21 +75,3 @@ public class SelectGeoRegion extends Selector {
   private volatile int hashCode = 0; // Bloch, item 8
 
 }
-
-/* Change History:
-   $Log: SelectGeoRegion.java,v $
-   Revision 1.3  2004/09/24 03:26:29  caron
-   merge nj22
-
-   Revision 1.2  2004/06/19 00:45:43  caron
-   redo nested select list
-
-   Revision 1.1  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.2  2004/05/21 05:57:32  caron
-   release 2.0b
-
-   Revision 1.1  2004/05/11 23:30:30  caron
-   release 2.0a
- */

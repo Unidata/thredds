@@ -163,8 +163,10 @@ public class DiskCache2 {
    */
   private String makeCachePath(String fileLocation) {
 
-    // remove ':', replace '\' with '/', leading or trailing '/'
+    // remove ':', '?', '=', replace '\' with '/', leading or trailing '/'
     String cachePath = StringUtil.remove(fileLocation, ':');
+    cachePath = StringUtil.remove(cachePath, '?');
+    cachePath = StringUtil.remove(cachePath, '=');
     cachePath = StringUtil.replace(cachePath, '\\', "/");
     if (cachePath.startsWith("/"))
       cachePath = cachePath.substring(1);

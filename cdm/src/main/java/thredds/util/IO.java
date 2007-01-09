@@ -37,6 +37,7 @@ import java.util.Iterator;
  */
 public class IO {
 
+  static private int default_socket_buffersize = 64000;
   static boolean showStackTrace = true;
   static boolean debug = false, showResponse = false;
 
@@ -367,6 +368,7 @@ public class IO {
   /**
    * read the contents from the named URL, write to a file.
    * @param urlString the URL to read from.
+   * @param file write to this file
    * @return status or error message.
    */
   static public String  readURLtoFile( String urlString, File file) {
@@ -400,13 +402,28 @@ public class IO {
   /**
    * read the contents from the named URL, write to a file.
    * @param urlString the URL to read from.
+   * @param file write to this file
    * @return status or error message.
+   * @throws IOException if failure
    */
   static public String readURLtoFileWithExceptions( String urlString, File file) throws IOException {
+    return readURLtoFileWithExceptions( urlString, file, default_socket_buffersize);
+
+  }
+
+  /**
+   * read the contents from the named URL, write to a file.
+   * @param urlString the URL to read from.
+   * @param file write to this file
+   * @param buffer_size read/write in this size chunks
+   * @return status or error message.
+   * @throws IOException if failure
+   */
+  static public String readURLtoFileWithExceptions( String urlString, File file, int buffer_size) throws IOException {
     OutputStream out = new BufferedOutputStream( new FileOutputStream( file));
 
     try {
-      copyUrlB(urlString, out, 20000);
+      copyUrlB(urlString, out, buffer_size);
       return "ok";
 
     } finally {

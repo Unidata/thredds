@@ -27,9 +27,7 @@ import java.util.*;
  * Implementation of a DQC service selector element.
  * A SelectService contains a list of Objects of type ServiceChoice.
  *
- * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
- */
+ * @author john caron */
 
 public class SelectService extends Selector {
   private ArrayList choices = new ArrayList();
@@ -114,24 +112,3 @@ public class SelectService extends Selector {
   }
 
 }
-
-/* Change History:
-   $Log: SelectService.java,v $
-   Revision 1.6  2004/06/19 00:45:43  caron
-   redo nested select list
-
-   Revision 1.5  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.4  2004/06/12 04:12:43  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/06/12 02:01:10  caron
-   dqc 0.3
-
-   Revision 1.2  2004/05/21 05:57:32  caron
-   release 2.0b
-
-   Revision 1.1  2004/05/11 23:30:30  caron
-   release 2.0a
- */

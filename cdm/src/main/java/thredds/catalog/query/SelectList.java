@@ -28,7 +28,6 @@ import java.util.*;
  * A SelectList contains a list of Objects of type ListChoice.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class SelectList extends Selector {
@@ -82,21 +81,3 @@ public class SelectList extends Selector {
   private volatile int hashCode = 0; // Bloch, item 8
 
 }
-
-/* Change History:
-   $Log: SelectList.java,v $
-   Revision 1.5  2004/08/23 16:45:19  edavis
-   Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
-
-   Revision 1.4  2004/06/19 00:45:43  caron
-   redo nested select list
-
-   Revision 1.3  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.2  2004/05/21 05:57:32  caron
-   release 2.0b
-
-   Revision 1.1  2004/05/11 23:30:30  caron
-   release 2.0a
- */

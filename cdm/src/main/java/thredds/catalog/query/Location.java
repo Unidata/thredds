@@ -26,7 +26,6 @@ package thredds.catalog.query;
  * Implementation of a DQC location element.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class Location {
@@ -121,19 +120,3 @@ public class Location {
 
 
 }
-
-/* Change History:
-   $Log: Location.java,v $
-   Revision 1.6  2004/09/24 03:26:29  caron
-   merge nj22
-
-   Revision 1.5  2004/06/09 00:27:27  caron
-   version 2.0a release; cleanup javadoc
-
-   Revision 1.4  2004/05/11 23:30:30  caron
-   release 2.0a
-
-   Revision 1.3  2004/02/20 00:49:52  caron
-   1.3 changes
-
- */

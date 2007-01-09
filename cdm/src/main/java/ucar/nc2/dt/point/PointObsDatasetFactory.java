@@ -62,7 +62,7 @@ public class PointObsDatasetFactory {
     if (location.startsWith("adde:"))
       return new AddeStationObsDataset( location, task);
 
-    if (location.startsWith("thredds:")) { // LOOK need to distinguish between a DQC and a Catalog !!
+    /* if (location.startsWith("thredds:")) { // LOOK need to distinguish between a DQC and a Catalog !!
       location = location.substring(8);
       DqcFactory dqcFactory = new DqcFactory(true);
       QueryCapability dqc = dqcFactory.readXML(location);
@@ -72,7 +72,7 @@ public class PointObsDatasetFactory {
       }
 
       return ucar.nc2.thredds.DqcStationObsDataset.factory( null, dqc);
-    }
+    } */
 
     // otherwise open as netcdf and have a look. use NetcdfDataset in order to deal with scale/enhance, etc.
     NetcdfDataset ncfile = NetcdfDatasetCache.acquire( location, task);

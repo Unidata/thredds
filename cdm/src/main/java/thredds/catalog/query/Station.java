@@ -25,7 +25,6 @@ package thredds.catalog.query;
  * Implementation of a DQC  station element. This extends Choice with a location.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class Station extends ListChoice {
@@ -67,19 +66,3 @@ public class Station extends ListChoice {
   private volatile int hashCode = 0; // Bloch, item 8
 
 }
-
-/* Change History:
-   $Log: Station.java,v $
-   Revision 1.5  2004/09/24 03:26:30  caron
-   merge nj22
-
-   Revision 1.4  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.3  2004/05/11 23:30:31  caron
-   release 2.0a
-
-   Revision 1.2  2004/02/20 00:49:52  caron
-   1.3 changes
-
- */

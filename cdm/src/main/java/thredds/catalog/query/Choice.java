@@ -25,20 +25,9 @@ package thredds.catalog.query;
  * Abstraction of a choice a user can make.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public interface Choice {
   public String toString(); // human display
   public String getValue(); // value for the query
 }
-
-/* Change History:
-   $Log: Choice.java,v $
-   Revision 1.6  2004/09/24 03:26:29  caron
-   merge nj22
-
-   Revision 1.5  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
- */

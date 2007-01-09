@@ -138,6 +138,8 @@ public class NetcdfServlet extends AbstractServlet {
     if (pathInfo.startsWith("/cache/")) {
       pathInfo = pathInfo.substring(7);
       File ncFile = diskCache.getCacheFile(pathInfo);
+      res.setHeader("Content-Disposition", "attachment; filename=");
+
       ServletUtil.returnFile(this, "", ncFile.getPath(), req, res, "application/x-netcdf");
       if (deleteImmediately)
         ncFile.delete();
@@ -174,10 +176,13 @@ Content-Length: 38656356
 X-Cache: MISS from www.eumetsat.int
 Connection: keep-alive
 ----------------------------------------------------------
+
+res.setHeader("Content-Disposition", "attachment; filename=" + filename);
+
 */
 
-    if (pathInfo.endsWith(".nc"))
-      pathInfo = pathInfo.substring(0, pathInfo.length() - 3);
+    /* if (pathInfo.endsWith(".nc"))
+      pathInfo = pathInfo.substring(0, pathInfo.length() - 3); */
 
     ForecastModelRunInventory fmr = null;
     try {
@@ -478,17 +483,20 @@ Connection: keep-alive
       }
     }
 
-    String path = req.getRequestURI();
-    int pos = path.lastIndexOf("/");
-    path = path.substring(pos + 1);
+    String filename = req.getRequestURI();
+    int pos = filename.lastIndexOf("/");
+    filename = filename.substring(pos + 1);
+    if (!filename.endsWith(".nc"))
+      filename = filename + ".nc";
+
     Random random = new Random(System.currentTimeMillis());
     int randomInt = random.nextInt();
 
-    String filename = Integer.toString(randomInt) + "/" + path;
-    File ncFile = diskCache.getCacheFile(filename);
+    String pathname = Integer.toString(randomInt) + "/" + filename;
+    File ncFile = diskCache.getCacheFile(pathname);
     String cacheFilename = ncFile.getPath();
 
-    String url = "/thredds/ncServer/cache/" + filename;
+    String url = "/thredds/ncServer/cache/" + pathname;
 
     try {
       FileWriter writer = new FileWriter(cacheFilename, true);
@@ -512,7 +520,7 @@ Connection: keep-alive
     }
 
     res.addHeader("Content-Location", url);
-    //res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+    res.setHeader("Content-Disposition", "attachment; filename="+filename);
 
     ServletUtil.returnFile(this, "", cacheFilename, req, res, "application/x-netcdf");
   }

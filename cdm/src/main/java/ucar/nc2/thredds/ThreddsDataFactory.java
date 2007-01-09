@@ -30,6 +30,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 
 import thredds.catalog.*;
+import thredds.catalog.query.DqcFactory;
+import thredds.catalog.query.QueryCapability;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -183,8 +185,35 @@ public class ThreddsDataFactory {
       return result;
     }
 
+    // special handling for DQC
+    InvAccess qc = invDataset.getAccess(ServiceType.QC);
+    if (qc != null) {
+      String dqc_location = qc.getStandardUrlName();
+
+      if (result.dataType == thredds.catalog.DataType.STATION) {
+
+        /* DqcFactory dqcFactory = new DqcFactory(true);
+        QueryCapability dqc = dqcFactory.readXML(dqc_location);
+        if (dqc.hasFatalError()) {
+          result.errLog.append(dqc.getErrorMessages());
+          result.fatalError = true;
+        } */
+
+        result.tds = ucar.nc2.thredds.DqcStationObsDataset.factory(invDataset, dqc_location, result.errLog);
+        result.fatalError = (result.tds == null);
+
+      } else {
+        result.errLog.append("DQC must be station DQC, dataset = "+invDataset.getName());
+        result.fatalError = true;
+      }
+
+      return result;
+    }
+
+
     NetcdfDataset ncd = openDataset(invDataset, true, task, result.errLog);
-    result.tds = TypedDatasetFactory.open(result.dataType, ncd, task, result.errLog);
+    if (null != ncd)
+      result.tds = TypedDatasetFactory.open(result.dataType, ncd, task, result.errLog);
 
     if (null == result.tds)
       result.fatalError = true;

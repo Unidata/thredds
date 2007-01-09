@@ -1,4 +1,4 @@
-// $Id: DqcConvertIF.java 48 2006-07-12 16:15:40Z caron $
+// $Id: $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,19 +19,40 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.catalog.query;
+package thredds.util.net;
+
+import java.net.*;
+import java.io.IOException;
+import java.util.Date;
 
 /**
- * Converts XML DOM to DQC Objects.
+ * Class Description.
  *
- * @see DqcFactory
- * @author John Caron
+ * @author caron
+ * @version $Revision$ $Date$
  */
+public class HttpIO {
 
-public interface DqcConvertIF {
+  static public java.io.InputStream getIfModifiedSince(String urlString, long ifmodifiedsince) throws IOException {
+    HttpURLConnection conn = null;
+    URL u = new URL(urlString);
 
-  public QueryCapability parseXML( DqcFactory fac, org.jdom.Document domDoc, java.net.URI docURI) throws java.io.IOException;
+    try {
+      conn = (HttpURLConnection) u.openConnection();
+      conn.setRequestMethod("GET");
+      conn.setIfModifiedSince(ifmodifiedsince);
 
-  public void writeXML(QueryCapability qc, java.io.OutputStream os) throws java.io.IOException;
+      int code = conn.getResponseCode();
+      if (code == HttpURLConnection.HTTP_NOT_MODIFIED)
+        return null;
+
+      return conn.getInputStream();
+
+    } finally {
+      
+      if (conn != null)
+        conn.disconnect();
+    }
+  }
 
 }

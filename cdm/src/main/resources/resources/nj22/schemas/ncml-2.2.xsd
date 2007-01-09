@@ -30,6 +30,9 @@
       <xsd:attribute name="enhance" type="xsd:boolean"/>
       <xsd:attribute name="addRecords" type="xsd:boolean"/>
 
+      <xsd:attribute name="iosp" type="xsd:string"/>
+      <xsd:attribute name="iospSpecial" type="xsd:string"/>
+
       <!-- for aggregations -->
       <xsd:attribute name="ncoords" type="xsd:string"/>
       <xsd:attribute name="coordValue" type="xsd:string"/>

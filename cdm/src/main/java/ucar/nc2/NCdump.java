@@ -177,7 +177,8 @@ public class NCdump {
 
     NetcdfFile nc = null;
     try {
-      nc = NetcdfFileCache.acquire(fileName, ct);
+      //nc = NetcdfFileCache.acquire(fileName, ct);
+      nc = NetcdfFile.open(fileName, ct);
       return print(nc, out, showAll, showCoords, ncml, strict, varNames, ct);
 
     } catch (java.io.FileNotFoundException e) {
@@ -186,7 +187,8 @@ public class NCdump {
       return false;
 
     } finally {
-      NetcdfFileCache.release(nc);
+      //NetcdfFileCache.release(nc);
+      if (nc != null) nc.close();
     }
 
   }
@@ -940,6 +942,8 @@ public class NCdump {
 
     try {
       NCdump.print(sbuff.toString(), System.out, null);
+
+      // NCdump.print(args[0], System.out, false, false, false, false, null, null);
 
     } catch (java.io.IOException ioe) {
       ioe.printStackTrace();

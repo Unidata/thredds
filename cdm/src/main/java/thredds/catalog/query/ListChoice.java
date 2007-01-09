@@ -28,7 +28,6 @@ import java.util.*;
  * Implementation of a thredds query choice element.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class ListChoice implements Choice {
@@ -93,22 +92,3 @@ public class ListChoice implements Choice {
 
 
 }
-
-/* Change History:
-   $Log: ListChoice.java,v $
-   Revision 1.2  2004/06/19 00:45:42  caron
-   redo nested select list
-
-   Revision 1.1  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.4  2004/06/12 02:01:10  caron
-   dqc 0.3
-
-   Revision 1.3  2004/05/11 23:30:29  caron
-   release 2.0a
-
-   Revision 1.2  2004/02/20 00:49:52  caron
-   1.3 changes
-
- */

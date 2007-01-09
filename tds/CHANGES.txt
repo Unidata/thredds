@@ -4,7 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.15
  Features
+  Libraries
+  * asssume jdk1.5, dont need xerces.jar or xml-api.jar anymore
  Bugs
+  * NetcdfServlet: use Content-Disposition header (attachment; filename=filename) instead of always appending ".nc"
 
 Changes in version 3.14
  Bugs

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.thredds.ThreddsDataFactory;
 import thredds.catalog.DataType;
 
 /**
@@ -66,8 +67,8 @@ public class TypedDatasetFactory {
 
 
    /**
-    * Register a class that implements a Coordinate Transform.
-    * @param className name of class that implements CoordTransBuilderIF.
+    * Register a class that implements a TypedDatasetFactoryIF.
+    * @param className name of class that implements TypedDatasetFactoryIF.
     */
    static public void registerFactory( thredds.catalog.DataType datatype, String className) throws ClassNotFoundException {
      Class c = Class.forName( className);
@@ -115,6 +116,7 @@ public class TypedDatasetFactory {
 
   /**
    * Open a dataset as a TypedDataset.
+   *
    * @param datatype may be null, which means search all factories
    * @param location URL or file location of the dataset
    * @param task user may cancel
@@ -122,6 +124,13 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset
    */
   static public TypedDataset open( thredds.catalog.DataType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    // special processing for thredds: datasets
+    if (location.startsWith("thredds:") && (datatype != null)) {
+      ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
+      errlog.append( result.errLog);
+      return (result.fatalError) ? null : result.tds;
+    }
+
     NetcdfDataset ncd = NetcdfDataset.acquireDataset( location, task);
     return open( datatype, ncd, task, errlog);
   }

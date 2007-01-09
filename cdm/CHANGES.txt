@@ -4,14 +4,21 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.19
  Features
+ NcML
+  * can specify iosp class and parameter
  API changes
  Bugs
+  * NCdump.print was using NetcdfFileCache
  Libraries
+  * detect if java version 1.5+ in XMLEntityResolver, dont need to include Xerces if so.
+  * grib-5.1.00
+  * bufr-1.1.00
 
 Changes in version 2.2.18
  Bugs
   * GRIB Orthographic projections
   * CoordSysBuilders must set their name in constructor, for reflection
+  * WRF Stereographic Projection (thanks to Heiko Klein)
 
 Changes in version 2.2.17
  Features

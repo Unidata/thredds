@@ -29,6 +29,7 @@ import ucar.nc2.util.CancelTask;
 
 import java.util.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import thredds.catalog.*;
 import thredds.catalog.query.*;
@@ -42,7 +43,15 @@ import thredds.catalog.query.*;
 
 public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImpl {
 
-  static public DqcStationObsDataset factory(InvDataset ds, QueryCapability dqc) {
+  static public DqcStationObsDataset factory(InvDataset ds, String dqc_location, StringBuffer errlog) throws IOException {
+
+    DqcFactory dqcFactory = new DqcFactory(true);
+    QueryCapability dqc = dqcFactory.readXML(dqc_location);
+    if (dqc.hasFatalError()) {
+      errlog.append(dqc.getErrorMessages());
+      return null;
+    }
+
     // have a look at what selectors there are before proceeding
     SelectStation ss = null;
     SelectRangeDate sd = null;
@@ -57,8 +66,10 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       if (s instanceof SelectService)
         sss = (SelectService) s;
     }
-    if (ss == null)
+    if (ss == null) {
+      errlog.append("DqcStationObsDataset must have Station selector");
       return null;
+    }
 
     // for the moment, only doing XML
     SelectService.ServiceChoice wantServiceChoice = null;
@@ -68,8 +79,11 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       if (serviceChoice.getService().equals("HTTPServer") && serviceChoice.getDataFormat().equals("text/xml"))
         wantServiceChoice = serviceChoice;
     }
-    if (wantServiceChoice == null)
+
+    if (wantServiceChoice == null){
+      errlog.append("DqcStationObsDataset must have HTTPServer Service with DataFormat=text/xml");
       return null;
+    }
 
     return new DqcStationObsDataset( ds, dqc, sss, ss, sd, wantServiceChoice);
   }
@@ -83,7 +97,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   private SelectRangeDate selDate;
   private SelectService.ServiceChoice service;
 
-  private boolean debugQuery = false;
+  private boolean debugQuery = true;
 
   private DqcStationObsDataset(InvDataset ds, QueryCapability dqc, SelectService selService, SelectStation selStation,
       SelectRangeDate selDate, SelectService.ServiceChoice service) {
@@ -119,13 +133,6 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   public String getTitle() { return dqc.getName(); }
   public String getLocationURI() {return dqc.getCreateFrom(); }
   public String getDescription() { return ds.getDocumentation("summary"); }
-  public List getDataVariables() {return null; } // LOOK !!
-  public VariableSimpleIF getDataVariable(String name) {return null; }
-
-  public int getStationDataCount( Station s) {
-    DqcStation si = (DqcStation)s;
-    return si.getNumObservations();
-  }
 
   public List getData( Station s, CancelTask cancel) throws IOException {
     return ((DqcStation)s).getObservations();
@@ -180,6 +187,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       this.alt = s.getLocation().getElevation();
     }
 
+    // LOOK: currently implemting only "get all"
     protected ArrayList readObservations()  throws IOException {
       ArrayList obs = new ArrayList();
       makeQuery( this);
@@ -188,9 +196,9 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
 
   }
 
-  public Class getDataClass() {
+ /* public Class getDataClass() {
     return DqcObsImpl.class;
-  }
+  } */
 
   public List getData(CancelTask cancel) throws IOException {
     return null;
@@ -200,7 +208,11 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
     return -1;
   }
 
-  public class DqcObsImpl extends ucar.nc2.dt.point.StationObsDatatypeImpl {
+  public DataIterator getDataIterator(int bufferSize) throws IOException {
+    return null;
+  }
+
+  /* public class DqcObsImpl extends ucar.nc2.dt.point.StationObsDatatypeImpl {
     private int recno;
 
     private DqcObsImpl( DqcStation station, double dateValue, int recno) {
@@ -222,8 +234,6 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   }
 
 
-  public DataIterator getDataIterator(int bufferSize) throws IOException {
-    return null;
-  }
+ */
 
 }

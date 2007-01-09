@@ -41,7 +41,7 @@
         </h3>
         <hr/>
         
-        <form method="GET" action="{forecastModelRun/attribute::name}.nc">
+        <form method="GET" action="{forecastModelRun/attribute::name}">
           <table border="0" cellpadding="4" cellspacing="2">
             <tr valign="top"> 
               <td>

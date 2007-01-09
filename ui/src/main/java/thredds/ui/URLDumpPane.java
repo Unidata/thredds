@@ -22,7 +22,6 @@
 package thredds.ui;
 
 import thredds.util.IO;
-import thredds.util.net.EasySSLProtocolSocketFactory;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 

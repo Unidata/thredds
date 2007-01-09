@@ -148,14 +148,6 @@ orientation of the grid). This should be set equal to the center longitude in mo
       double standardLon = findAttributeDouble( ds, "STAND_LON"); // true longitude
       double standardLat = findAttributeDouble( ds, "MOAD_CEN_LAT");
 
-      /* if (Double.isNaN(standardLon) || Double.isNaN(standardLat)) {
-        userAdvice.append("WARN: no explicit projection origin, projection may be wrong");
-        parseInfo.append("WARN: no explicit projection origin, projection may be wrong ");
-      }
-
-      double lon0 = (Double.isNaN(standardLat)) ? centralLon : standardLat;
-      double lat0 = (Double.isNaN(centerLat)) ? centralLat : centerLat; */
-
       ProjectionImpl proj = null;
       switch (projType) {
         case 1:
@@ -164,7 +156,10 @@ orientation of the grid). This should be set equal to the center longitude in mo
           // System.out.println(" using LC "+proj.paramsToString());
           break;
         case 2:
-          proj = new Stereographic(centralLat, centralLon, 1.0);
+          // Thanks to Heiko Klein for figuring out WRF Stereographic
+          double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
+          double scaleFactor = (1+Math.sin(Math.toRadians(lat1)))/2.;
+          proj = new Stereographic(lat2, lon0, scaleFactor);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
         case 3:

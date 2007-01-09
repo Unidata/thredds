@@ -27,7 +27,6 @@ import java.util.*;
  * Implementation of a thredds DQC object.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class QueryCapability {
@@ -127,28 +126,3 @@ public class QueryCapability {
   private volatile int hashCode = 0; // Bloch, item 8
 
 }
-
-/* Change History:
-   $Log: QueryCapability.java,v $
-   Revision 1.8  2004/09/24 03:26:29  caron
-   merge nj22
-
-   Revision 1.7  2004/08/23 16:45:19  edavis
-   Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
-
-   Revision 1.6  2004/06/19 00:45:42  caron
-   redo nested select list
-
-   Revision 1.5  2004/06/12 04:12:43  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/06/12 02:01:10  caron
-   dqc 0.3
-
-   Revision 1.3  2004/05/11 23:30:30  caron
-   release 2.0a
-
-   Revision 1.2  2004/02/20 00:49:52  caron
-   1.3 changes
-
- */

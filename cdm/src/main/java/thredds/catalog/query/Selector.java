@@ -28,7 +28,6 @@ import java.util.*;
  * Abstract class for DQC selector elements.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public abstract class Selector {
@@ -133,33 +132,3 @@ public abstract class Selector {
   }
 
 }
-
-/* Change History:
-   $Log: Selector.java,v $
-   Revision 1.11  2005/05/19 23:43:45  caron
-   clean up javadoc
-
-   Revision 1.10  2004/11/07 02:55:09  caron
-   no message
-
-   Revision 1.9  2004/09/25 00:09:43  caron
-   add images, thredds tab
-
-   Revision 1.8  2004/09/24 03:26:29  caron
-   merge nj22
-
-   Revision 1.7  2004/08/23 16:45:20  edavis
-   Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
-
-   Revision 1.6  2004/06/19 00:45:43  caron
-   redo nested select list
-
-   Revision 1.5  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.4  2004/05/21 05:57:32  caron
-   release 2.0b
-
-   Revision 1.3  2004/05/11 23:30:31  caron
-   release 2.0a
- */
