@@ -9,6 +9,8 @@
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/timing/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../cdm/doc" />
+      <excludeFolder url="file://$MODULE_DIR$/../cdm/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -54,24 +56,6 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/jpeg2000.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/xercesImpl.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/xml-apis.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
