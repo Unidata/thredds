@@ -163,14 +163,15 @@ public class MetarServlet extends LdmServlet {
             //dateEnd = "2007-01-08T18:12:30";
 
             returns = "catalog";
-            returns = "text";
+            //returns = "text";
             //returns = "html";
             //returns = "xml";
             //returns = "dqc";
 
             serviceType = "HTTPServer";
             //serviceType = "";
-            //serviceType = "DODS";
+            serviceName = "HTTPServer";
+            //serviceName = "DODS";
             y0 = "39";
             y1 = "40";
             x0 = "-105";
@@ -208,14 +209,15 @@ public class MetarServlet extends LdmServlet {
 
         // requesting a catalog with different serviceName
         //  serviceName =~ /DODS/i
-        if (p.p_DODS_i.matcher(serviceType).find()) {
+        if (p.p_DODS_i.matcher(serviceName).find()) {
                 serviceName = metarDODSServiceName;
                 serviceType = metarDODSServiceType;
                 serviceBase = metarDODSServiceBase;
                 returns = "catalog";
 
         //  serviceName =~ /HTTPService/i
-        } else if ( p.p_catalog_i.matcher(returns).find() ) { 
+        // else if ( p.p_catalog_i.matcher(returns).find() )  
+        } else {
                 serviceName = metarHTTPServiceName;
                 serviceType = metarHTTPServiceType;
                 serviceBase = metarHTTPServiceBase;
@@ -337,6 +339,12 @@ public class MetarServlet extends LdmServlet {
             } else if (dtime.equals("5day")) {
                 now.add( Calendar.HOUR, -120 );
                 dateStart = dateFormatISO.format(now.getTime());
+            } else if (dtime.equals("6day")) {
+                now.add( Calendar.HOUR, -144 );
+                dateStart = dateFormatISO.format(now.getTime());
+            } else if (dtime.equals("7day") || dtime.equals("all")) {
+                now.add( Calendar.HOUR, -168 );
+                dateStart = dateFormatISO.format(now.getTime());
 
             //      individual data report return for set time dtime
             } else if (p.p_isodate.matcher(dtime).find()) {
@@ -443,7 +451,7 @@ public class MetarServlet extends LdmServlet {
                         m = p.p_station_dateZ.matcher(report);
                         if (m.lookingAt()) {
                             var1 = m.group(1);
-                            catalogOut(day, key, station, pw, serviceType, serviceBase, returns);
+                            catalogOut(day, key, station, pw, serviceName, serviceBase, returns);
                         }
                     } else if (p.p_text_i.matcher(returns).find()) {
                             pw.println(report);
@@ -481,7 +489,7 @@ public class MetarServlet extends LdmServlet {
     } // end doGet
 
     // create a dataset entry for a catalog
-    public void catalogOut(String day, String ddhhmm, String stn, PrintWriter pw, String serviceType, String serviceBase, String returns) {
+    public void catalogOut(String day, String ddhhmm, String stn, PrintWriter pw, String serviceName, String serviceBase, String returns) {
 
         //String theTime = "";
 
@@ -498,13 +506,13 @@ public class MetarServlet extends LdmServlet {
         pw.print( theTime +" " + stn + " Metar data\"" ); 
         pw.println( " ID=\""+ theTime.hashCode() +"\"" ); 
         pw.print("        urlPath=\"");
-        if (p.p_HTTPServer_i.matcher(serviceType).find()) {
+        if (p.p_HTTPServer_i.matcher(serviceName).find()) {
             pw.println("returns=text&amp;stn=" + stn + "&amp;dtime=" + theTime + "\"/>");
             //pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + theTime + "\"/>");
-        } else if (p.p_ADDE_i.matcher(serviceType).find()) {
+        } else if (p.p_ADDE_i.matcher(serviceName).find()) {
             pw.println("group=rtptsrc&amp;descr=sfchourly&amp;select='id%20" + stn + "'" +
                     "&amp;num=all&amp;param=day%20time%20t%20td%20psl\"/>");
-        } else if (p.p_DODS_i.matcher(serviceType).find()) {
+        } else if (p.p_DODS_i.matcher(serviceName).find()) {
             pw.println("returns=text&amp;stn=" + stn + "&amp;dtime=" + theTime + "\"/>");
         }
 
