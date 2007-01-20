@@ -9,7 +9,7 @@
 <body>
 <h1>Unidata  Observation Dataset Conventions</h1>
 <p><em>John Caron, Ethan Davis, Robb Kambic</em></p>
-<p><em>last updated Oct 25, 2006</em></p>
+<p><em>last updated Jan 18, 2007 </em></p>
 <p>This document describes a <a href="http://www.unidata.ucar.edu/content/software/netcdf/conventions.html">Convention for NetCDF (version 3) files</a> for writing Point, Trajectory, and Station observation data. It  uses the <a href="DataDiscoveryAttConvention.html">NetCDF Attribute Convention for Dataset Discovery.</a> Files that follow this conventions can be read by the NetCDF-Java library and the <a href="http://www.unidata.ucar.edu/software/idv/">IDV</a> into    the Point, Trajectory, and Station data types of the <a href="http://www.unidata.ucar.edu/software/netcdf/CDM/index.html">Common Data Model</a>.</p>
 <p>Also see: </p>
 <ul>
@@ -38,18 +38,18 @@
 <h3>Associating Structures</h3>
 <p>Often we need  to associate a list of structures together, and attach them to another structure. For example, we need to identify the list of all observations for a particular station. In this case we call the station the <em><strong>container/parent</strong></em> structure and the observations the <em><strong>contained/child</strong></em> structures. The order of the children is important. Another example is the list of observations for a particular trajectory, especially when there are multiple trajectories in a single file. In that case the order is crucial, since trajectory observations are assumed to be connected along a line in time and space. Given a parent, we want to  find its children efficiently, i.e. not have to read the entire file. </p>
 <p>There are three ways that you can create parent-children associations in this Convention.</p>
-<p>1. A <em><strong>linked list</strong></em> uses the  index of the children  to create a forward or backward linked list. The parent structure maintains the <strong>first</strong> or <strong>last child</strong> index, and the children structures have a <strong>next</strong> or <strong>previous child</strong> index. The end of the list is indicated by a child index equal to <strong>-1</strong>. The advantage of linked lists is that each parent can have a variable number of children, which can be stored in any order. The variables containing the child indices are determined in one of two ways:</p>
+<p>1. A <em><strong>linked list</strong></em> uses the  index of the children  to create a forward or backward linked list. The parent structure maintains the <strong>first</strong> or <strong>last child</strong> index, and the children structures have a <strong>next</strong> or <strong>previous child</strong> index. The end of the list is indicated by a child index equal to <strong>-1</strong>. <em>Note that indices are zero-based</em>. The advantage of linked lists is that each parent can have a variable number of children, which can be stored in any order. The variables containing the child indices are determined in one of two ways:</p>
 <ol>
   <li>Child structure  variables explicitly named <strong>nextChild </strong>or<strong> prevChild, </strong>and parent Structure variables named <strong>firstChild</strong> or <strong>lastChild</strong>. </li>
   <li>Global attributes <strong>firstChild_variable </strong>and<strong> nextChild_variable</strong> or <strong>lastChild_variable</strong> and <strong>prevChild</strong><strong>_variable</strong>, whose values are the names of the corresponding variables. </li>
 </ol>
-<p>Each child structure also keeps its parent index in a variable called <strong>parent_index</strong> or named by the <strong>parent_index_variable</strong> attribute. Optionally, each parent keeps track of the number of children in a variable called <strong>numChildren</strong> or named by the <strong>numChildren_variable</strong> attribute. </p>
-<p>2. A <em><strong>contiguous list</strong></em> stores the children contiguously in the array, and the parent structures maintain the <strong>first</strong> <strong>child</strong> index and the <strong>number of children</strong>. The the ith parent structure contains children  between <strong>firstChild(i) </strong>and <strong>firstChild(i)</strong> + <strong>numChildren(i) - 1</strong> inclusive.  The advantage of contiguous lists is that each parent can have a variable number of children, and  all the chilren for one parent are stored together on disk for fast access. The variables containing the child indices are determined in one of two ways:</p>
+<p>Each child structure also keeps its parent index in a variable called <strong>parent_index</strong> or named by the <strong>parent_index_variable</strong> attribute. Optionally, each parent keeps track of the number of children in a variable called <strong>numChildren</strong> or named by the <strong>numChildren_variable</strong> attribute. <em>Note that indices are zero-based</em>. </p>
+<p>2. A <em><strong>contiguous list</strong></em> stores the children contiguously in the array, and the parent structures maintain the <strong>first</strong> <strong>child</strong> index and the <strong>number of children</strong>. The the ith parent structure contains children  between <strong>firstChild(i) </strong>and <strong>firstChild(i)</strong> + <strong>numChildren(i) - 1</strong> inclusive.  <em>Note that indices are zero-based</em>. The advantage of contiguous lists is that each parent can have a variable number of children, and  all the chilren for one parent are stored together on disk for fast access. The variables containing the child indices are determined in one of two ways:</p>
 <ol>
   <li>Parent Structure variables explicitly named <strong>firstChild</strong> and <strong>numChildren</strong>.</li>
   <li>Global attributes <strong>firstChild_variable </strong>and<strong> </strong><strong>numChildren</strong><strong>_variable</strong>, whose values are the names of the corresponding variables. </li>
 </ol>
-<p>Each child structure also keeps its parent index in a variable called <strong>parent_index</strong> or named by the <strong>parent_index_variable</strong> attribute. </p>
+<p>Each child structure also keeps its parent index in a variable called <strong>parent_index</strong> or named by the <strong>parent_index_variable</strong> attribute. <em>Note that indices are zero-based</em>. </p>
 <p>3. When each parent has the same number of children (or there is a maximum number of children and you don't mind wasting some space), then you can also use a <em><strong>multidimensional  structure</strong></em>. The parent structure dimension must be the outermost dimension, and the child structure dimension must be the next outer dimension, e.g. the children structure variables would look like <em>float varName( parentDim, childDim). </em>Concrete examples are given below. </p>
 <h2>Conventions used by all Observation Datasets</h2>
 <h3>Conventions global attribute </h3>
@@ -163,6 +163,7 @@
 <h2>Changes: </h2>
 <ul>
   <li>Oct 25, 2006: Altitude Variable is optional </li>
+  <li>Jan 18, 2008: clarify indexes are zero-based </li>
 </ul>
 <hr>
 <p>&nbsp;</p>
