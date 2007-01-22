@@ -8,15 +8,21 @@
     </metadata>
     <datasetScan name="headerOnly.OIS" ID="testData/dmsp/headerOnly.OIS"
                  path="" location="" >
-      <filter logicalComp="AND">
-        <filter logicalComp="OR">
-          <filterA />
-          <filterB />
+      <filter logicalComp="OR">
+        <!-- Only grib1 files that are older than 60 seconds -->
+        <filter logicalComp="AND">
+          <filter>
+            <include wildcard="*.grib1"/>
+          </filter>
+          <filter lastModifiedLimit="60000"  />
         </filter>
-        <filter logicalComp="NOT">
-          <filter logicalComp="AND">
-            <filterC />
-            <filterD />
+        <!-- Only nc files that are less then 60 seconds old -->
+        <filter logicalComp="AND">
+          <filter>
+            <include wildcard="*.nc"/>
+          </filter>
+          <filter logicalComp="NOT">
+            <filter lastModifiedLimit="60000"/>
           </filter>
         </filter>
       </filter>

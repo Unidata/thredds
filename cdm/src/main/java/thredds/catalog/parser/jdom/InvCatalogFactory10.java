@@ -25,10 +25,7 @@ import thredds.catalog.*;
 import thredds.datatype.*;
 import thredds.crawlabledataset.*;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
-import thredds.crawlabledataset.filter.MultiSelectorFilter;
-import thredds.crawlabledataset.filter.Selector;
-import thredds.crawlabledataset.filter.WildcardMatchOnNameSelector;
-import thredds.crawlabledataset.filter.RegExpMatchOnNameSelector;
+import thredds.crawlabledataset.filter.*;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.cataloggen.DatasetEnhancer;
 import thredds.cataloggen.CatalogRefExpander;
@@ -517,36 +514,82 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   protected CrawlableDatasetFilter readDatasetScanFilter( Element filterElem )
   {
-    CrawlableDatasetFilter filter = null;
+    CrawlableDatasetFilter filter = null;  //lastModifiedLimit
+
+    // Handle LastModifiedLimitFilter CrDsFilters.
+    Attribute lastModLimitAtt = filterElem.getAttribute( "lastModifiedLimit");
+    if ( lastModLimitAtt != null )
+    {
+      long lastModLimit;
+      try
+      {
+        lastModLimit = lastModLimitAtt.getLongValue();
+      }
+      catch ( DataConversionException e )
+      {
+        String tmpMsg = "readDatasetScanFilter(): bad lastModifedLimit value <" + lastModLimitAtt.getValue() + ">, couldn't parse into long: " + e.getMessage();
+        factory.appendErr( tmpMsg );
+        logger.warn( tmpMsg );
+        return null;
+      }
+      return new LastModifiedLimitFilter( lastModLimit);
+    }
+
+    // Handle LogicalCompositionFilterFactory CrDsFilters.
     String compType = filterElem.getAttributeValue( "logicalComp");
     if ( compType != null )
     {
-      Element filterElem1;
-      Element filterElem2;
-      CrawlableDatasetFilter filter1 = null;
-      CrawlableDatasetFilter filter2 = null;
       List filters = filterElem.getChildren( "filter", defNS );
       if ( compType.equalsIgnoreCase( "AND") )
       {
         if ( filters.size() != 2 )
         {
-          String tmpMsg = "readDatasetScanFilter(): too many filters <" + filters.size() + ">, expect 2 for AND";
+          String tmpMsg = "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for AND (2 expected).";
           factory.appendErr( tmpMsg );
           logger.warn( tmpMsg );
+          return null;
         }
+        filter = LogicalCompositionFilterFactory.getAndFilter(
+                readDatasetScanFilter( (Element) filters.get( 0)),
+                readDatasetScanFilter( (Element) filters.get( 1) ) );
       }
-
-      if ( filterElem != null )
-        filter = readDatasetScanFilter( filterElem );
+      else if ( compType.equalsIgnoreCase( "OR") )
+      {
+        if ( filters.size() != 2 )
+        {
+          String tmpMsg = "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for OR (2 expected).";
+          factory.appendErr( tmpMsg );
+          logger.warn( tmpMsg );
+          return null;
+        }
+        filter = LogicalCompositionFilterFactory.getOrFilter(
+                readDatasetScanFilter( (Element) filters.get( 0 ) ),
+                readDatasetScanFilter( (Element) filters.get( 1 ) ) );
+      }
+      else if ( compType.equalsIgnoreCase( "NOT" ) )
+      {
+        if ( filters.size() != 1 )
+        {
+          String tmpMsg = "readDatasetScanFilter(): wrong number of filters <" + filters.size() + "> for NOT (1 expected).";
+          factory.appendErr( tmpMsg );
+          logger.warn( tmpMsg );
+          return null;
+        }
+        filter = LogicalCompositionFilterFactory.getNotFilter(
+                readDatasetScanFilter( (Element) filters.get( 0 ) ) );
+      }
 
       return filter;
     }
+
+    // Handle user defined CrDsFilters.
     Element userDefElem = filterElem.getChild( "crawlableDatasetFilterImpl", defNS);
     if ( userDefElem != null )
     {
       filter = (CrawlableDatasetFilter) readDatasetScanUserDefined( userDefElem, CrawlableDatasetFilter.class );
     }
-    // Read MultiSelectorFilter using regExp or wildcard.
+    
+    // Handle MultiSelectorFilter and contained Selectors.
     else
     {
       List selectorList = new ArrayList();
