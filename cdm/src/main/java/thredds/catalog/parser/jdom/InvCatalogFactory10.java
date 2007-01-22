@@ -518,6 +518,29 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   protected CrawlableDatasetFilter readDatasetScanFilter( Element filterElem )
   {
     CrawlableDatasetFilter filter = null;
+    String compType = filterElem.getAttributeValue( "logicalComp");
+    if ( compType != null )
+    {
+      Element filterElem1;
+      Element filterElem2;
+      CrawlableDatasetFilter filter1 = null;
+      CrawlableDatasetFilter filter2 = null;
+      List filters = filterElem.getChildren( "filter", defNS );
+      if ( compType.equalsIgnoreCase( "AND") )
+      {
+        if ( filters.size() != 2 )
+        {
+          String tmpMsg = "readDatasetScanFilter(): too many filters <" + filters.size() + ">, expect 2 for AND";
+          factory.appendErr( tmpMsg );
+          logger.warn( tmpMsg );
+        }
+      }
+
+      if ( filterElem != null )
+        filter = readDatasetScanFilter( filterElem );
+
+      return filter;
+    }
     Element userDefElem = filterElem.getChild( "crawlableDatasetFilterImpl", defNS);
     if ( userDefElem != null )
     {

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="DODS" base="/thredds/dodsC/"/>
+  <dataset name="dmsp" ID="testData/dmsp">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <datasetScan name="headerOnly.OIS" ID="testData/dmsp/headerOnly.OIS"
+                 path="" location="" >
+      <filter logicalComp="AND">
+        <filter logicalComp="OR">
+          <filterA />
+          <filterB />
+        </filter>
+        <filter logicalComp="NOT">
+          <filter logicalComp="AND">
+            <filterC />
+            <filterD />
+          </filter>
+        </filter>
+      </filter>
+    </datasetScan>
+  </dataset>
+</catalog>
