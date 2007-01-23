@@ -1,8 +1,8 @@
-// $Id: MultiSelectorFilter.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.crawlabledataset.filter;
 
 import java.util.List;
 import java.util.Iterator;
+import java.util.Collections;
 
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
@@ -21,13 +21,19 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
 
   private List selectorGroup;
 
-  public MultiSelectorFilter( Object selectorGroup )
+  public MultiSelectorFilter( List selectorGroup )
   {
-    if ( selectorGroup == null ) throw new IllegalArgumentException( "Selector group parameter must not be null." );
-    if ( selectorGroup instanceof List )
-      this.selectorGroup = (List) selectorGroup;
+    if ( selectorGroup == null )
+      throw new IllegalArgumentException( "Selector group parameter must not be null." );
+    this.selectorGroup = selectorGroup;
+  }
+
+  public MultiSelectorFilter( thredds.crawlabledataset.filter.Selector selector)
+  {                         
+    if ( selector == null )
+      selectorGroup = Collections.EMPTY_LIST;
     else
-      throw new IllegalArgumentException( "Config object not a list <" + selectorGroup.getClass().getName() + ">.");
+      selectorGroup = Collections.singletonList( selector);
   }
 
   public Object getConfigObject() { return selectorGroup; }
@@ -48,7 +54,8 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     boolean doAnySelectorsApply = false;
     for ( Iterator it = selectorGroup.iterator(); it.hasNext(); )
     {
-      Selector curSelector = (Selector) it.next();
+      thredds.crawlabledataset.filter.Selector curSelector =
+              (thredds.crawlabledataset.filter.Selector) it.next();
 
       if ( curSelector.isApplicable( dataset ) )
       {
@@ -85,4 +92,61 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     return ( false );
   }
 
+  /**
+   * NOT USED YET. First attempt at moving Selector into MultiSelectorFilter.
+   * ToDo: Still need to think about how it would affect InvCatalogFactory10.writeDatasetScanFilter
+   * Once start using, make class public.
+   */
+  private static class Selector
+  {
+    private boolean includer;
+    private boolean applyToAtomicDataset;
+    private boolean applyToCollectionDataset;
+
+    private CrawlableDatasetFilter filter;
+
+
+    public Selector( CrawlableDatasetFilter filter, boolean includer,
+                     boolean applyToAtomicDataset, boolean applyToCollectionDataset )
+    {
+      this.filter = filter;
+
+      this.includer = includer;
+      this.applyToAtomicDataset = applyToAtomicDataset;
+      this.applyToCollectionDataset = applyToCollectionDataset;
+    }
+
+    public boolean isApplyToAtomicDataset()
+    {
+      return applyToAtomicDataset;
+    }
+
+    public boolean isApplyToCollectionDataset()
+    {
+      return applyToCollectionDataset;
+    }
+
+    public boolean match( CrawlableDataset dataset )
+    {
+      return filter.accept( dataset );
+    }
+
+    public boolean isApplicable( CrawlableDataset dataset )
+    {
+      if ( this.applyToAtomicDataset && !dataset.isCollection() ) return true;
+      if ( this.applyToCollectionDataset && dataset.isCollection() ) return true;
+      return false;
+    }
+
+    public boolean isIncluder()
+    {
+      return includer;
+    }
+
+    public boolean isExcluder()
+    {
+      return !includer;
+    }
+
+  }
 }

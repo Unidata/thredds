@@ -83,7 +83,7 @@ public class CrawlableDatasetFile implements CrawlableDataset
     this.configObj = null;
   }
 
-  private CrawlableDatasetFile( File file )
+  public CrawlableDatasetFile( File file )
   {
     this.file = file;
     this.path = this.normalizePath( this.file.getPath() );

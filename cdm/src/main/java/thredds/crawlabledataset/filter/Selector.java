@@ -7,6 +7,8 @@ import thredds.crawlabledataset.CrawlableDataset;
  * Used by a MultiSelectorFilter to determine whether to include
  * or exclude a CrawlableDataset.
  *
+ * Note: Best implemented as a wrapper around a CrDsFilter.
+ *
  * @author edavis
  * @since Nov 4, 2005 9:15:15 PM
  */
