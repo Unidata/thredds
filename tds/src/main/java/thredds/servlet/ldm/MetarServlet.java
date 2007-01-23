@@ -165,7 +165,7 @@ public class MetarServlet extends LdmServlet {
             returns = "catalog";
             //returns = "text";
             //returns = "html";
-            //returns = "xml";
+            returns = "xml";
             //returns = "dqc";
 
             serviceType = "HTTPServer";
@@ -522,28 +522,34 @@ public class MetarServlet extends LdmServlet {
     public void outputXML(String day, String ddhhmm, String report, PrintWriter pw) {
 
         MetarParseReport mpr = new MetarParseReport();
-        LinkedHashMap metar = mpr.parseReport(report);
+        mpr.parseReport(report);
+        LinkedHashMap field = mpr.getFields();
+        HashMap unit = mpr.getUnits();
         String key;
 
-        if (metar == null) {
+        if (field == null) {
             System.out.println("return null Hash parse");
             //System.exit( 1 );
             return;
         }
-        pw.println("<station name=\"" + (String) metar.get("Station") + "\">");
+        pw.println("<station name=\"" + (String) field.get("Station") + "\">");
         pw.println("\t<parameter name=\"Date\" value=\""+ day +
-            ddhhmm.substring( 0, 2) +"T"+
-            (String) metar.get( "Hour") +":"+ (String) metar.get( "Minute") +":00\"/>");
-        pw.println("\t<parameter name=\"Report\" value=\"" + report + "\"/>");
-        for( Iterator it = metar.keySet().iterator(); it.hasNext(); ) {
+            ddhhmm.substring( 0, 2) +"T"+ (String) field.get( "Hour") +":"+ 
+           (String) field.get( "Minute") +":00\" units=\"\"/>");
+        pw.println("\t<parameter name=\"Report\" value=\"" + report 
+           +"\" units=\"\"/>");
+        for( Iterator it = field.keySet().iterator(); it.hasNext(); ) {
             key = (String) it.next();
             if( key.equals( "Day") || key.equals( "Hour") || key.equals( "Minute") 
                 || key.equals( "Station") )
                 continue;
 
-            //System.out.println( key + "\t\t" + (String) metar.get( key ) );
+            //System.out.println( key + "\t\t" + (String) field.get( key ) );
+            //pw.println("\t<parameter name=\""+ key +"\" value=\""+ 
+            //    (String) metar.get(key) + "\"/>");
             pw.println("\t<parameter name=\""+ key +"\" value=\""+ 
-                (String) metar.get(key) + "\"/>");
+           (String) field.get(key) +"\" units=\""+ (String) unit.get(key)
+            + "\"/>");
 
         }
         pw.println("</station>");

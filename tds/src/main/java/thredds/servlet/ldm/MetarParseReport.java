@@ -7,25 +7,39 @@
 package thredds.servlet.ldm;
 
 import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 public class MetarParseReport {
 
-    public LinkedHashMap parseReport(String input) {
+    /**
+     * Used to store fields values
+    **/
+    private LinkedHashMap field = new LinkedHashMap();
 
-        LinkedHashMap metar = new LinkedHashMap();
+    /**
+     * Used to store fields units
+    **/
+    private HashMap unit = new LinkedHashMap();
+
+    public void parseReport(String input) {
+
         ThreddsServerPatterns p = new ThreddsServerPatterns();
         Matcher m;
         float var1, var2, var3;
 
 //	next if( /\d4,6Z.*\d4,6Z/ ) ;
-        if (p.p_bad_date.matcher(input).find())
-            return null;
+        if (p.p_bad_date.matcher(input).find()) {
+            field = null;
+            return;
+        }
 //	next if( /^\n/ ) ;
-        if (p.p_B_CR.matcher(input).find())
-            return null;
+        if (p.p_B_CR.matcher(input).find()) {
+            field = null;
+            return;
+        }
 
 //	s#\n|\s+# #g ;
 
@@ -33,42 +47,52 @@ public class MetarParseReport {
         input = input + " ";
 
 //	$rep_type = $bulletin_type ;
-        metar.put("Report_Type", "METAR");
+        field.put("Report_Type", "METAR");
+        unit.put("Report_Type", "" );
 //	$rep_type = $1 if( s#^(METAR|SPECI|TESTM|TESTS) ## ) ;
         m = p.p_B_metar.matcher(input);
         if (m.find()) {
-            metar.put("Report_Type", m.group(1));
+            field.put("Report_Type", m.group(1));
+            unit.put("Report_Type", "" );
             input = m.replaceFirst("");
         }
 //	$stn_name = $1 if( s#^(\w4) ## ) ;
 //	next unless( $stn_name ) ;
         m = p.p_station.matcher(input);
         if (m.find()) {
-            metar.put("Station", m.group(1));
+            field.put("Station", m.group(1));
+            unit.put("Station", "" );
             //input = p.p_B_W4.matcher( input ).replaceFirst( "" );
             input = m.replaceFirst("");
         } else {
-            return null;
+            field = null;
+            return;
         }
         // get day hour minute
 //	if( s#^(\d2)(\d2)(\d2)Z## )
         m = p.p_ddhhmmZ.matcher(input);
         if (m.find()) {
 //		$rday = $1 ;
-            metar.put("Day", m.group(1));
+            field.put("Day", m.group(1));
+            unit.put("Day", "" );
 //		$rhour = $2 ;
-            metar.put("Hour", m.group(2));
+            field.put("Hour", m.group(2));
+            unit.put("Hour", "" );
 //		$rmin = $3 ;
-            metar.put("Minute", m.group(3));
+            field.put("Minute", m.group(3));
+            unit.put("Minute", "" );
             input = m.replaceFirst("");
         } else {
-            return null;
+            field = null;
+            return;
         }
 
         // skip NIL reports
 //	next if( s#NIL\s*## ) ;
-        if (p.p_NILS.matcher(input).find())
-            return null;
+        if (p.p_NILS.matcher(input).find()) {
+            field = null;
+            return;
+        }
 
         m = p.p_COR.matcher(input);
         if (m.find()) {
@@ -78,7 +102,8 @@ public class MetarParseReport {
 //	$AUTO = 1 if( s#AUTO\s+## ) ;
         m = p.p_AUTOS.matcher(input);
         if (m.find()) {
-            metar.put("AUTOS", "1");
+            field.put("AUTOS", "");
+            unit.put("AUTOS", "" );
             input = m.replaceFirst("");
         }
 
@@ -90,23 +115,28 @@ public class MetarParseReport {
             if (m.group(2).equals("VRB")) {
 //			$VRB = 1 ;
                 if( m.group(1) == null ) {
-                    metar.put("Variable_Wind_direction", "1" );
+                    field.put("Variable_Wind_direction", "" );
+                    unit.put("Variable_Wind_direction", "" );
                 } else {
-                    metar.put("Variable_Wind_direction", m.group(1));
+                    field.put("Variable_Wind_direction", m.group(1));
+                    unit.put("Variable_Wind_direction", "" );
                 }
             } else {
 //			$DIR = $2 ;
-                metar.put("Wind_Direction", m.group(2));
+                field.put("Wind_Direction", m.group(2));
+                unit.put("Wind_Direction", "degrees" );
 //
             }
 //		$SPD = $3 ;
-            metar.put("Wind_Speed_" +  m.group(6), m.group(3));
+            field.put("Wind_Speed", m.group(3));
 //		$GUST = $5 if( $4 eq "G" ) ;
             if (m.group(4) != null && m.group(4).equals("G")) {
-                metar.put("Wind_Gust_" +  m.group(6), m.group(5));
+                field.put("Wind_Gust", m.group(5));
             }
 //		$UNITS = $6 ;
-            //metar.put("Wind_Units", m.group(6));
+            //field.put("Wind_Units", m.group(6));
+            unit.put("Wind_Speed", m.group(6));
+            unit.put("Wind_Gust", m.group(6));
             input = m.replaceFirst("");
 //
         }
@@ -115,9 +145,11 @@ public class MetarParseReport {
         m = p.p_min_max_wind_dir.matcher(input);
         if (m.find()) {
 //		$DIRmin = $1 ;
-            metar.put("Wind_Direction_Min", m.group(1));
+            field.put("Wind_Direction_Min", m.group(1));
+            unit.put("Wind_Direction_Min", "degrees" );
 //		$DIRmax = $2 ;
-            metar.put("Wind_Direction_Max", m.group(2));
+            field.put("Wind_Direction_Max", m.group(2));
+            unit.put("Wind_Direction_Max", "degrees" );
             input = m.replaceFirst("");
         }
         // some reports use a place holder for visibility
@@ -128,28 +160,33 @@ public class MetarParseReport {
 //	$prevail_VIS_SM = 0.0 if( s#^M1/4SM\s+|<1/4SM\s+## ) ;
         m = p.p_visibilitySM.matcher(input);
         if (m.find()) {
-            metar.put("Visibility_SM", "0.0");
+            field.put("Visibility", "0.0");
+            unit.put("Visibility", "miles");
             input = m.replaceFirst("");
         }
 
 //	$prevail_VIS_KM = 0.0 if( s#^M1/4KM\s+|<1/4KM\s+## ) ;
         m = p.p_visibilityKM.matcher(input);
         if (m.find()) {
-            metar.put("Visibility_KM", "0.0");
+            field.put("Visibility", "0.0");
+            unit.put("Visibility", "kilometer");
             input = m.replaceFirst("");
         }
 
 //	$plus_VIS_SM = 1 if( s#^P(\d1,3)SM\s+#$1SM # ) ;
+// comment p_B_P is not a good pattern
         m = p.p_B_P.matcher(input);
         if (m.find()) {
-            metar.put("Plus_Visibility", "1");
+            field.put("Plus_Visibility", "");
+            unit.put("Plus_Visibility", "");
             input = m.replaceFirst("");
         }
 
 //	$plus_VIS_KM = 1 if( s#^P(\d1,3)KM\s+#$1KM # ) ;
         //m = p.p_B_P.matcher(input);
         //if (m.find()) {
-            //metar.put("Plus_Visibility_KM", "1");
+            //field.put("Plus_Visibility_KM", "1");
+            //unit.put("Plus_Visibility", "");
             //input = m.replaceFirst("");
         //}
 
@@ -162,11 +199,13 @@ public class MetarParseReport {
             var3 = Float.parseFloat(m.group(3));
             var1 = var1 + (var2 / var3);
             if (m.group(4).equals("SM")) {
-                metar.put("Visibility_SM", Float.toString(var1));
+                field.put("Visibility", Float.toString(var1));
+                unit.put("Visibility", "miles");
 			
 //		$prevail_VIS_KM = $1 + ( $2 / $3 ) if( $4 eq "KM" ) ;
             } else {
-                metar.put("Visibility_KM", Float.toString(var1));
+                field.put("Visibility", Float.toString(var1));
+                unit.put("Visibility", "kilometer");
             }
             input = m.replaceFirst("");
 
@@ -179,11 +218,13 @@ public class MetarParseReport {
                 var1 = var1 / var2;
 //			$prevail_VIS_SM = $1 / $2  if( $3 eq "SM" ) ;
                 if (m.group(3).equals("SM")) {
-                    metar.put("Visibility_SM", Float.toString(var1));
+                    field.put("Visibility", Float.toString(var1));
+                    unit.put("Visibility", "miles");
 			
 //			$prevail_VIS_KM = $1 / $2  if( $3 eq "KM" ) ;
                 } else {
-                    metar.put("Visibility_KM", Float.toString(var1));
+                    field.put("Visibility", Float.toString(var1));
+                    unit.put("Visibility", "kilometer");
                 }
                 input = m.replaceFirst("");
 
@@ -193,10 +234,12 @@ public class MetarParseReport {
                 if (m.find()) {
 //				$prevail_VIS_SM = $1 if( $2 eq "SM" ) ;
                     if (m.group(2).equals("SM")) {
-                        metar.put("Visibility_SM", m.group(1));
+                        field.put("Visibility", m.group(1));
+                        unit.put("Visibility", "miles");
 //				$prevail_VIS_KM = $1 if( $2 eq "KM" ) ;
                     } else {
-                        metar.put("Visibility_KM", m.group(1));
+                        field.put("Visibility", m.group(1));
+                        unit.put("Visibility", "kilometer");
                     }
                     input = m.replaceFirst("");
 
@@ -205,9 +248,11 @@ public class MetarParseReport {
                     m = p.p_visibility_direction.matcher(input);
                     if (m.find()) {
 //					$prevail_VIS_M = $1 ;
-                        metar.put("Visibility_M", m.group(1));
+                        field.put("Visibility", m.group(1));
+                        unit.put("Visibility", "meters");
 //					$VIS_dir = $2 ;
-                        metar.put("Visibility_Direction", m.group(2));
+                        field.put("Visibility_Direction", m.group(2));
+                        unit.put("Visibility_Direction", "degrees");
                         input = m.replaceFirst("");
                     }
                 }
@@ -217,7 +262,8 @@ public class MetarParseReport {
 //	$CAVOK = 1 if( s#CAVOK\s+## ) ;
         m = p.p_CAVOKS.matcher(input);
         if (m.find()) {
-            metar.put("Clear_Air", "1");
+            field.put("Clear_Air", "");
+            unit.put("Clear_Air", "" );
             input = m.replaceFirst("");
         }
 
@@ -225,7 +271,8 @@ public class MetarParseReport {
 //	$RVRNO = 1 if( s#RVRNO\s+## ) ;
         m = p.p_RVRNOS.matcher(input);
         if (m.find()) {
-            metar.put("RVRNOS", "1");
+            field.put("RVRNOS", "");
+            unit.put("RVRNOS", "");
             input = m.replaceFirst("");
         }
 //	for( $i = 0; $i < 4; $i++ )
@@ -235,34 +282,42 @@ public class MetarParseReport {
             if (m.find()) {
 //			$RV_designator[ $i ] = "$1$2" ;
                 String RV = "RV" + Integer.toString(i +1);
-                metar.put(RV, m.group(1) + m.group(2));
+                field.put(RV, m.group(1) + m.group(2));
+                unit.put(RV, "");
 
 //			$RV_above_max[ $i ] = 1 
 //				if( $3 eq "P" || $5 eq "P" ) ;
                 if ((m.group(3) != null && m.group(3).equals("P")) || 
                     (m.group(5) != null && m.group(5).equals("P")))
-                    metar.put(RV + "_Above_Max", "1");
+                    field.put(RV + "_Above_Max", "");
+                    unit.put(RV + "_Above_Max", "");
 
 //			$RV_below_min[ $i ] = 1 
 //				if( $3 eq "M" || $5 eq "M" ) ;
                 if ((m.group(3) != null && m.group(3).equals("M")) || 
                     (m.group(5) != null && m.group(5).equals("M")))
-                    metar.put(RV + "_Below_Min", "1");
+                    field.put(RV + "_Below_Min", "");
+                    unit.put(RV + "_Below_Min", "");
 
 //			$RV_vrbl[ $i ] = 1 if( $6 ne "" ) ;
 //			if( $RV_vrbl[ $i ] ) 
 //				$RV_min[ $i ] = $4 * 1;
 //				$RV_max[ $i ] = $6 * 1;
                 if (m.group(6) != null) {
-                    metar.put(RV + "_Vrbl", "1");
-                    metar.put(RV + "_Min_FT", m.group(4));
-                    metar.put(RV + "_Max_FT", m.group(6));
+                    field.put(RV + "_Vrbl", "");
+                    unit.put(RV + "_Vrbl", "");
+                    field.put(RV + "_Min", m.group(4));
+                    unit.put(RV + "_Min", "feet");
+                    field.put(RV + "_Max", m.group(6));
+                    unit.put(RV + "_Max", "feet");
                 } else {
 //				$RV_visRange[ $i ] = $4 * 1;
                     if(m.group(7) != null && m.group(7).equals( "FT")) {
-                        metar.put(RV + "_Visibility_Range_FT", m.group(4));
+                        field.put(RV + "_Visibility_Range", m.group(4));
+                        unit.put(RV + "_Visibility_Range", "feet");
                     } else {
-                        metar.put(RV + "_Visibility_Range", m.group(4));
+                        field.put(RV + "_Visibility_Range", m.group(4));
+                        unit.put(RV + "_Visibility_Range", "");
                     }
                 }
                 input = m.replaceFirst("");
@@ -312,19 +367,22 @@ public class MetarParseReport {
             }
         }
         if (WX.length() > 0) {
-            metar.put("Weather", WX);
+            field.put("Weather", WX);
+            unit.put("Weather", "");
         }
 // 	Interpret cloud conditions
 //	$cloud_type[ 0 ] = $1 if( s#(CLR|SKC)\s+## ) ;
         m = p.p_CLR_or_SKC.matcher(input);
         if (m.find()) {
-            metar.put("Cloud_Type", "1");
+            field.put("Cloud_Type", m.group(1));
+            unit.put("Cloud_Type", "");
             input = m.replaceFirst("");
         }
 //	$vert_VIS = cloud_hgt2_meters( $1 ) if( s#^VV(\d3)\s+## ) ;
         m = p.p_vertical_VIS.matcher(input);
         if (m.find()) {
-            metar.put("Vertical_Visibility", cloud_hgt2_meters(m.group(1)));
+            field.put("Vertical_Visibility", cloud_hgt2_meters(m.group(1)));
+            unit.put("Vertical_Visibility", "meters" );
             input = m.replaceFirst("");
         }
 
@@ -337,18 +395,23 @@ public class MetarParseReport {
                 String cloud = "Cloud_Layer_" + Integer.toString(i + 1);
 //			$cloud_type[ $i ] = padstr( "$1$2", 4 ) ;
                 if (m.group(1) == null) {
-                    metar.put(cloud + "_Type", m.group(2));
+                    field.put(cloud + "_Type", m.group(2));
+                    unit.put(cloud + "_Type", "");
                 } else {
-                    metar.put(cloud + "_Type", m.group(1) + m.group(2));
+                    field.put(cloud + "_Type", m.group(1) + m.group(2));
+                    unit.put(cloud + "_Type", "");
                 }
 //			$cloud_hgt[ $i ] = $3 * 100 ;
-                metar.put(cloud + "_Height_Feet", Integer.toString(Integer.parseInt(m.group(3)) * 100));
+                field.put(cloud + "_Height", Integer.toString(Integer.parseInt(m.group(3)) * 100));
+                unit.put(cloud + "_Height", "feet");
 
 //			$cloud_meters[ $i ] = cloud_hgt2_meters( $3 ) ;
-                metar.put(cloud + "_Height_Meters", cloud_hgt2_meters(m.group(3)));
+                field.put(cloud + "_Height", cloud_hgt2_meters(m.group(3)));
+                unit.put(cloud + "_Height", "meters");
 //			$cloud_phenom[ $i ] = padstr( $4, 4 ) if( $4 ) ;
                 if (m.group(4) != null) {
-                    metar.put(cloud + "_Phenom", m.group(4));
+                    field.put(cloud + "_Phenom", m.group(4));
+                    unit.put(cloud + "_Phenom", "");
                 }
                 input = m.replaceFirst("");
             } else {
@@ -367,7 +430,8 @@ public class MetarParseReport {
             if (m.group(1) != null) {
                 T = "-" + T;
             }
-            metar.put("Temperature", T);
+            field.put("Temperature", T);
+            unit.put("Temperature", "Celsius");
 //		$TD = $4 if( defined( $4 ) ) ;
             if (m.group(4) != null) {
                 String TD = m.group(4);
@@ -375,7 +439,8 @@ public class MetarParseReport {
                 if (m.group(3) != null) {
                     TD = "-" + TD;
                 }
-                metar.put("DewPoint", TD);
+                field.put("DewPoint", TD);
+                unit.put("DewPoint", "Celsius");
             }
             input = m.replaceFirst("");
         } // end T and TD
@@ -387,10 +452,12 @@ public class MetarParseReport {
 //		if( $1 eq "A" )
             if (m.group(1).equals("A")) {
 //			$inches_ALTIM = $2 * 0.01 ;
-                metar.put("Inches_Altimeter", Double.toString(Float.parseFloat(m.group(2)) * 0.01));
+                field.put("Altimeter", Double.toString(Float.parseFloat(m.group(2)) * 0.01));
+                unit.put("Altimeter", "inches");
             } else {
 //			$hectoPasc_ALTIM = $2 ;
-                metar.put("HectoPasc_Altimeter", m.group(2));
+                field.put("Altimeter", m.group(2));
+                unit.put("Altimeter", "hectopascal");
             }
             input = m.replaceFirst("");
         }
@@ -398,7 +465,8 @@ public class MetarParseReport {
 //	$NOSIG = 1 if( s#NOSIG## ) ;
         m = p.p_NOSIG.matcher(input);
         if (m.find()) {
-            metar.put("No_Weather", "1");
+            field.put("No_Weather", "");
+            unit.put("No_Weather", "");
             input = m.replaceFirst("");
         }
 
@@ -408,8 +476,9 @@ public class MetarParseReport {
             input = m.replaceFirst("");
         } else {
             if(input.length() > 0)
-                metar.put("Plain_Language_remarks", input);
-            return metar;
+                field.put("Plain_Language_remarks", input);
+                unit.put("Plain_Language_remarks", "");
+            //return metar;
         }
 
         // process remarks now, looking for most used ones first
@@ -419,20 +488,22 @@ public class MetarParseReport {
 //		$AUTOindicator = padstr( $1, 4 )
         m = p.p_automatic_report.matcher(input);
         if (m.find()) {
-            metar.put("Automatic_Report", m.group(1));
+            field.put("Automatic_Report", m.group(1));
+            unit.put("Automatic_Report", "");
             input = m.replaceFirst("");
         }
 
 //	check if no more info in report
         if (input.equals("") || p.p_spaces.matcher(input).matches()) {
-            return metar;
+            return;
         }
 
         // Sea-Level presure
         //$SLPNO = 1 if( s#SLPNO\s+## ) ;
         m = p.p_SLPNO.matcher(input);
         if (m.find()) {
-            metar.put("SLPNO", "1");
+            field.put("SLPNO", "");
+            unit.put("SLPNO", "");
             input = m.replaceFirst("");
         }
 
@@ -443,17 +514,18 @@ public class MetarParseReport {
             //	if( $1 >= 550 )
             if (Integer.parseInt(m.group(1)) >= 550) {
                 //		$SLP = $1 / 10. + 900. ;
-                metar.put("Sea_Level_Pressure", Double.toString(Float.parseFloat(m.group(1)) * 0.1 + 900));
+                field.put("Sea_Level_Pressure", Double.toString(Float.parseFloat(m.group(1)) * 0.1 + 900));
 
             } else {
                 //		$SLP =  $1 / 10. + 1000. ;
-                metar.put("Sea_Level_Pressure", Double.toString(Float.parseFloat(m.group(1)) * 0.1 + 1000));
+                field.put("Sea_Level_Pressure", Double.toString(Float.parseFloat(m.group(1)) * 0.1 + 1000));
             }
+            unit.put("Sea_Level_Pressure", "hectopascal");
             input = m.replaceFirst("");
         }
 //	check if no more info in report
         if (input.equals("") || p.p_spaces.matcher(input).matches()) {
-            return metar;
+            return;
         }
 
 // 	Temperature and Dew Point
@@ -469,7 +541,8 @@ public class MetarParseReport {
             if (m.group(1).equals("1")) {
                 T = "-" + T;
             }
-            metar.put("Temperature", T);
+            field.put("Temperature", T);
+            unit.put("Temperature", "Celsius");
 
 //		if( defined( $3 ) && $3 == 0 ) 
 //			$TD_tenths = 0.1 * $4 ;
@@ -482,53 +555,57 @@ public class MetarParseReport {
                 if (m.group(3).equals("1")) {
                     TD = "-" + TD;
                 }
-                metar.put("DewPoint", TD);
+                field.put("DewPoint", TD);
+                unit.put("DewPoint", "Celsius");
             }
             input = m.replaceFirst("");
         } // end Temperature and Dew Point
 
 //	check if no more info in report
         if (input.equals("") || p.p_spaces.matcher(input).matches()) {
-            return metar;
+            return;
         }
 
 // 	Hourly precipitation amount
 //	$PRECIP_hourly = $1 / 100 if( s#P ?(\d1,5)\s+## ) ;
         m = p.p_hourly_precip.matcher(input);
         if (m.find()) {
-            metar.put("Hourly_Precipitation", Double.toString(Float.parseFloat(m.group(1)) * .01));
+            field.put("Hourly_Precipitation", Double.toString(Float.parseFloat(m.group(1)) * .01));
+            unit.put("Hourly_Precipitation", "inches");
             input = m.replaceFirst("");
         }
 
 //	check if no more info in report
         if (input.equals("") || p.p_spaces.matcher(input).matches()) {
-            return metar;
+            return;
         }
 
         // precipitation sensor not working  PWINO
         //$PWINO = 1 if( s#PWINO\s+## ) ;
         m = p.p_PWINO.matcher(input);
         if (m.find()) {
-            metar.put("PWINO", "1");
+            field.put("PWINO", "");
+            unit.put("PWINO", "");
             input = m.replaceFirst("");
         }
 
 //	check if no more info in report
         if (input.equals("") || p.p_spaces.matcher(input).matches()) {
-            return metar;
+            return;
         }
 
 // 	Lightning detection sensor not working  TSNO
 //	$TSNO = 1 if( s#TSNO\s+## ) ;
         m = p.p_TSNO.matcher(input);
         if (m.find()) {
-            metar.put("TSNO", "1");
+            field.put("TSNO", "");
+            unit.put("TSNO", "");
             input = m.replaceFirst("");
         }
 
 //	check if no more info in report
         if (input.equals("") || p.p_spaces.matcher(input).matches()) {
-            return metar;
+            return;
         }
 
 // 	get Tornado data if present
@@ -536,7 +613,8 @@ public class MetarParseReport {
         m = p.p_tornado.matcher(input);
         if (m.find()) {
 //		$TornadicType = padstr( $1, 15 ) ;
-            metar.put("TornadicType", m.group(1));
+            field.put("TornadicType", m.group(1));
+            unit.put("TornadicType", "");
             input = m.replaceFirst("");
 //		if( s#(B|E)(\d\d)(\d\d)?\s+## )
             m = p.p_tornadoTime.matcher(input);
@@ -545,11 +623,13 @@ public class MetarParseReport {
                 if (m.group(1).equals("B")) {
 //				$BTornadic_hh = $2 ;
 //				$BTornadic_mm = $3 ;
-                    metar.put("Begin_Tornado", m.group(2) + m.group(3));
+                    field.put("Begin_Tornado", m.group(2) + m.group(3));
+                    unit.put("Begin_Tornado", "");
                 } else {
 //				$ETornadic_hh = $2 ;
 //				$ETornadic_mm = $3 if( defined( $3 ) ) ;
-                    metar.put("End_Tornado", m.group(2) + m.group(3));
+                    field.put("End_Tornado", m.group(2) + m.group(3));
+                    unit.put("End_Tornado", "");
                 }
                 input = m.replaceFirst("");
             }
@@ -557,7 +637,8 @@ public class MetarParseReport {
 //			if( s#^(DSNT|VCY STN|VC STN|VCY|VC)\s+## ) ;
             m = p.p_tornadoLocation.matcher(input);
             if (m.find()) {
-                metar.put("Tornado_Location", m.group(1));
+                field.put("Tornado_Location", m.group(1));
+                unit.put("Tornado_Location", "");
                 input = m.replaceFirst("");
             }
 
@@ -565,7 +646,8 @@ public class MetarParseReport {
 //			if( s#^(NE|NW|SE|SW|N|S|E|W)\s+## ) ;
             m = p.p_tornadoDirection.matcher(input);
             if (m.find()) {
-                metar.put("Tornado_Direction", m.group(1));
+                field.put("Tornado_Direction", m.group(1));
+                unit.put("Tornado_Direction", "");
                 input = m.replaceFirst("");
             }
         } // end tornado
@@ -575,12 +657,15 @@ public class MetarParseReport {
         m = p.p_peakWind.matcher(input);
         if (m.find()) {
 //		$PKWND_dir = $1 ;
-            metar.put("Peak_Wind_Direction", m.group(1));
+            field.put("Peak_Wind_Direction", m.group(1));
+            unit.put("Peak_Wind_Direction", "degrees");
 //		$PKWND_spd = $2 ;
-            metar.put("Peak_Wind_Speed", m.group(2));
+            field.put("Peak_Wind_Speed", m.group(2));
+            field.put("Peak_Wind_Speed", "meters");
 //		$PKWND_hh = $3 if( defined( $3 ) ) ;
 //		$PKWND_mm = $4 ;
-            metar.put("Peak_Wind_Time", m.group(3) + m.group(4));
+            field.put("Peak_Wind_Time", m.group(3) + m.group(4));
+            unit.put("Peak_Wind_Time", "");
             input = m.replaceFirst("");
         }
 
@@ -590,7 +675,8 @@ public class MetarParseReport {
         if (m.find()) {
 //		$WshfTime_hh = $1 if( defined( $1 ) );
 //		$WshfTime_mm = $2 ;
-            metar.put("Wind_Shift", m.group(1) + m.group(2));
+            field.put("Wind_Shift", m.group(1) + m.group(2));
+            unit.put("Wind_Shift", "");
             input = m.replaceFirst("");
         }
 
@@ -598,7 +684,8 @@ public class MetarParseReport {
 //	$Wshft_FROPA = 1 if( s#FROPA\s+## ) ;
         m = p.p_FROPA.matcher(input);
         if (m.find()) {
-            metar.put("Wind_Shift_Frontal_Passage", "1");
+            field.put("Wind_Shift_Frontal_Passage", "");
+            unit.put("Wind_Shift_Frontal_Passage", "");
             input = m.replaceFirst("");
         }
 
@@ -611,7 +698,8 @@ public class MetarParseReport {
             var2 = Float.parseFloat(m.group(3));
             var3 = Float.parseFloat(m.group(4));
             var1 = var1 + (var2 / var3);
-            metar.put("Tower_Visibility", Float.toString(var1));
+            field.put("Tower_Visibility", Float.toString(var1));
+            unit.put("Tower_Visibility", "miles");
             input = m.replaceFirst("");
 // 	elsif( s#TWR (VIS|VSBY) (\d1,2)/(\d1,2)\s+## ) 
 //		$VIS_TWR = ( $2 / $3 ) ;
@@ -621,14 +709,16 @@ public class MetarParseReport {
                 var1 = Float.parseFloat(m.group(2));
                 var2 = Float.parseFloat(m.group(3));
                 var1 = var1 / var2;
-                metar.put("Tower_Visibility", Float.toString(var1));
+                field.put("Tower_Visibility", Float.toString(var1));
+                unit.put("Tower_Visibility", "miles");
                 input = m.replaceFirst("");
 // 		elsif( s#TWR (VIS|VSBY) (\d1,3)\s+## ) 
 //			$VIS_TWR = $2 ;
             } else {
                 m = p.p_towerVisibility3.matcher(input);
                 if (m.find()) {
-                    metar.put("Tower_Visibility", m.group(2));
+                    field.put("Tower_Visibility", m.group(2));
+                    unit.put("Tower_Visibility", "miles");
                     input = m.replaceFirst("");
                 }
             }
@@ -642,7 +732,8 @@ public class MetarParseReport {
             var2 = Float.parseFloat(m.group(3));
             var3 = Float.parseFloat(m.group(4));
             var1 = var1 + (var2 / var3);
-            metar.put("Surface_Visibility", Float.toString(var1));
+            field.put("Surface_Visibility", Float.toString(var1));
+            unit.put("Surface_Visibility", "miles");
             input = m.replaceFirst("");
 // 		elsif( s#SFC (VIS|VSBY) (\d1,2)/(\d1,2)\s+## ) 
 //			$VIS_SFC = ( $2 / $3 ) ;
@@ -652,14 +743,16 @@ public class MetarParseReport {
                 var1 = Float.parseFloat(m.group(2));
                 var2 = Float.parseFloat(m.group(3));
                 var1 = var1 / var2;
-                metar.put("Surface_visibility", Float.toString(var1));
+                field.put("Surface_Visibility", Float.toString(var1));
+                unit.put("Surface_Visibility", "miles");
                 input = m.replaceFirst("");
 // 		elsif( s#SFC (VIS|VSBY) (\d1,3)\s+## ) 
 //			$VIS_SFC = $2 ;
             } else {
                 m = p.p_surfaceVisibility3.matcher(input);
                 if (m.find()) {
-                    metar.put("Surface_visibility", m.group(2));
+                    field.put("Surface_Visibility", m.group(2));
+                    unit.put("Surface_Visibility", "miles");
                     input = m.replaceFirst("");
                 }
             }
@@ -674,12 +767,14 @@ public class MetarParseReport {
             var2 = Float.parseFloat(m.group(3));
             var3 = Float.parseFloat(m.group(4));
             var1 = var1 + (var2 / var3);
-            metar.put("Variable_Visibility_Min", Float.toString(var1));
+            field.put("Variable_Visibility_Min", Float.toString(var1));
+            unit.put("Variable_Visibility_Min", "miles");
             var1 = Float.parseFloat(m.group(5));
             var2 = Float.parseFloat(m.group(6));
             var3 = Float.parseFloat(m.group(7));
             var1 = var1 + (var2 / var3);
-            metar.put("Variable_Visibility_Max", Float.toString(var1));
+            field.put("Variable_Visibility_Max", Float.toString(var1));
+            unit.put("Variable_Visibility_Max", "miles");
             input = m.replaceFirst("");
 //	 elsif( s#(VIS|VSBY) (\d1,3)V(\d1,3) (\d1,2)/(\d1,2)\s+## ) 
 //		$VISmin = $2 ;
@@ -687,12 +782,14 @@ public class MetarParseReport {
         } else {
             m = p.p_variableVisibility2.matcher(input);
             if (m.find()) {
-                metar.put("Variable_Visibility_Min", m.group(2));
+                field.put("Variable_Visibility_Min", m.group(2));
+                unit.put("Variable_Visibility_Min", "miles");
                 var1 = Float.parseFloat(m.group(2));
                 var2 = Float.parseFloat(m.group(3));
                 var3 = Float.parseFloat(m.group(4));
                 var1 = var1 + (var2 / var3);
-                metar.put("Variable_Visibility_Max", Float.toString(var1));
+                field.put("Variable_Visibility_Max", Float.toString(var1));
+                unit.put("Variable_Visibility_Max", "miles");
                 input = m.replaceFirst("");
 // 		elsif( s#(VIS|VSBY) (\d1,2)/(\d1,2)V(\d1,3) (\d1,2)/(\d1,2)\s+## ) 
 //			$VISmin = ( $2 / $3 ) ;
@@ -703,12 +800,14 @@ public class MetarParseReport {
                     var1 = Float.parseFloat(m.group(2));
                     var2 = Float.parseFloat(m.group(3));
                     var1 = var1 / var2;
-                    metar.put("Variable_Visibility_Min", Float.toString(var1));
+                    field.put("Variable_Visibility_Min", Float.toString(var1));
+                    unit.put("Variable_Visibility_Min", "miles");
                     var1 = Float.parseFloat(m.group(2));
                     var2 = Float.parseFloat(m.group(3));
                     var3 = Float.parseFloat(m.group(4));
                     var1 = var1 + (var2 / var3);
-                    metar.put("Variable_Visibility_Max", Float.toString(var1));
+                    field.put("Variable_Visibility_Max", Float.toString(var1));
+                    unit.put("Variable_Visibility_Max", "miles");
                     input = m.replaceFirst("");
 // 			elsif( s#(VIS|VSBY) (\d1,3) (\d1,2)/(\d1,2)V(\d1,3)\s+## ) 
 //				$VISmin = $2 + ( $3 / $4 ) ;
@@ -720,8 +819,10 @@ public class MetarParseReport {
                         var2 = Float.parseFloat(m.group(3));
                         var3 = Float.parseFloat(m.group(4));
                         var1 = var1 + (var2 / var3);
-                        metar.put("Variable_Visibility_Min", Float.toString(var1));
-                        metar.put("Variable_Visibility_Max", m.group(5));
+                        field.put("Variable_Visibility_Min", Float.toString(var1));
+                        unit.put("Variable_Visibility_Min", "miles");
+                        field.put("Variable_Visibility_Max", m.group(5));
+                        unit.put("Variable_Visibility_Max", "miles");
                         input = m.replaceFirst("");
 // 				elsif( s#(VIS|VSBY) (\d1,3)V(\d1,3)\s+## ) 
 //					$VISmin = $2 ;
@@ -729,8 +830,10 @@ public class MetarParseReport {
                     } else {
                         m = p.p_variableVisibility5.matcher(input);
                         if (m.find()) {
-                            metar.put("Variable_Visibility_Min", m.group(2));
-                            metar.put("Variable_Visibility_Max", m.group(3));
+                            field.put("Variable_Visibility_Min", m.group(2));
+                            unit.put("Variable_Visibility_Min", "miles");
+                            field.put("Variable_Visibility_Max", m.group(3));
+                            unit.put("Variable_Visibility_Max", "miles");
                             input = m.replaceFirst("");
 //	 				elsif( s#(VIS|VSBY) (\d1,2)/(\d1,2)V(\d1,3)\s+## ) 
 //						$VISmin = ( $2 / $3 ) ;
@@ -741,8 +844,10 @@ public class MetarParseReport {
                                 var1 = Float.parseFloat(m.group(2));
                                 var2 = Float.parseFloat(m.group(3));
                                 var1 = var1 / var2;
-                                metar.put("Variable_Visibility_Min", Float.toString(var1));
-                                metar.put("Variable_Visibility_Max", m.group(4));
+                                field.put("Variable_Visibility_Min", Float.toString(var1));
+                                unit.put("Variable_Visibility_Min", "miles");
+                                field.put("Variable_Visibility_Max", m.group(4));
+                                unit.put("Variable_Visibility_Max", "miles");
                                 input = m.replaceFirst("");
                             }
                         }
@@ -761,8 +866,10 @@ public class MetarParseReport {
             var2 = Float.parseFloat(m.group(3));
             var3 = Float.parseFloat(m.group(4));
             var1 = var1 + (var2 / var3);
-            metar.put("Second_Site_Visibility", Float.toString(var1));
-            metar.put("Second_Site_Location", m.group(5));
+            field.put("Second_Site_Visibility", Float.toString(var1));
+            unit.put("Second_Site_Visibility", "miles");
+            field.put("Second_Site_Location", m.group(5));
+            unit.put("Second_Site_Location", "");
             input = m.replaceFirst("");
 // 	elsif( s#(VIS|VSBY) (\d1,3) (RY\d1,2)\s+## ) 
 //		$VIS_2ndSite = $2 ;
@@ -770,8 +877,10 @@ public class MetarParseReport {
         } else {
             m = p.p_Visibility2ndSite2.matcher(input);
             if (m.find()) {
-                metar.put("Second_Site_Visibility", m.group(2));
-                metar.put("Second_Site_Location", m.group(3));
+                field.put("Second_Site_Visibility", m.group(2));
+                unit.put("Second_Site_Visibility", "miles");
+                field.put("Second_Site_Location", m.group(3));
+                unit.put("Second_Site_Location", "");
                 input = m.replaceFirst("");
 // 		elsif( s#(VIS|VSBY) (\d1,2)/(\d1,2) (RY\d1,2)\s+## ) 
 //			$VIS_2ndSite = ( $2 / $3 ) ;
@@ -782,8 +891,10 @@ public class MetarParseReport {
                     var1 = Float.parseFloat(m.group(2));
                     var2 = Float.parseFloat(m.group(3));
                     var1 = var1 / var2;
-                    metar.put("Second_Site_Visibility", Float.toString(var1));
-                    metar.put("Second_Site_Location", m.group(4));
+                    field.put("Second_Site_Visibility", Float.toString(var1));
+                    unit.put("Second_Site_Visibility", "miles");
+                    field.put("Second_Site_Location", m.group(4));
+                    unit.put("Second_Site_Location", "");
                     input = m.replaceFirst("");
                 }
             }
@@ -805,7 +916,8 @@ public class MetarParseReport {
 //		$LTG_AP = 1 if( $3 eq "AP" ) ;
 //		$LTG_VcyStn = 1 if( $3 eq "VCY STN" || $3 eq "VCNTY STN" ) ;
 //		$LTG_DIR = padstr( $4, 2 ) if( defined( $4 ) ) ;
-            metar.put("Lightning", m.group(0));
+            field.put("Lightning", m.group(0));
+            unit.put("Lightning", "");
             input = m.replaceFirst("");
         } // end Lightning data
 
@@ -815,8 +927,10 @@ public class MetarParseReport {
 //		$Ceiling_max = $2 ;
         m = p.p_CIG.matcher(input);
         if (m.find()) {
-            metar.put("Ceiling_Min", Integer.toString(Integer.parseInt(m.group(1)) * 100));
-            metar.put("Ceiling_Max", Integer.toString(Integer.parseInt(m.group(2)) * 100));
+            field.put("Ceiling_Min", Integer.toString(Integer.parseInt(m.group(1)) * 100));
+            unit.put("Ceiling_Min", "feet");
+            field.put("Ceiling_Max", Integer.toString(Integer.parseInt(m.group(2)) * 100));
+            unit.put("Ceiling_Max", "feet");
             input = m.replaceFirst("");
         }
 
@@ -828,8 +942,10 @@ public class MetarParseReport {
         m = p.p_CIG_RY.matcher(input);
         if (m.find()) {
             var1 = Float.parseFloat(m.group(1)) * 10;
-            metar.put("Second_Site_Sky", Float.toString(var1));
-            metar.put("Second_Site_Sky_Location", m.group(2));
+            field.put("Second_Site_Sky", Float.toString(var1));
+            unit.put("Second_Site_Sky", "feet");
+            field.put("Second_Site_Sky_Location", m.group(2));
+            unit.put("Second_Site_Sky_Location", "");
             input = m.replaceFirst("");
         }
 
@@ -837,7 +953,8 @@ public class MetarParseReport {
 //	$PRESFR = 1 if( s#PRESFR/?\s+## ) ;
         m = p.p_PRESFR.matcher(input);
         if (m.find()) {
-            metar.put("Pressure_Falling_Rapidly", "1");
+            field.put("Pressure_Falling_Rapidly", "");
+            unit.put("Pressure_Falling_Rapidly", "");
             input = m.replaceFirst("");
         }
 
@@ -845,7 +962,8 @@ public class MetarParseReport {
 //	$PRESRR = 1 if( s#PRESRR/?\s+## ) ;
         m = p.p_PRESRR.matcher(input);
         if (m.find()) {
-            metar.put("Pressure_Rising_Rapidly", "1");
+            field.put("Pressure_Rising_Rapidly", "");
+            unit.put("Pressure_Rising_Rapidly", "");
             input = m.replaceFirst("");
         }
 
@@ -855,12 +973,14 @@ public class MetarParseReport {
 //		$SectorVIS = $3 + ( $4 / $5 ) ;
         m = p.p_sectorVisibility1.matcher(input);
         if (m.find()) {
-            metar.put("Sector_Visibility_Direction", m.group(2));
+            field.put("Sector_Visibility_Direction", m.group(2));
+            unit.put("Sector_Visibility_Direction", "");
             var1 = Float.parseFloat(m.group(3));
             var2 = Float.parseFloat(m.group(4));
             var3 = Float.parseFloat(m.group(5));
             var1 = var1 + (var2 / var3);
-            metar.put("Sector_Visibility", Float.toString(var1));
+            field.put("Sector_Visibility", Float.toString(var1));
+            unit.put("Sector_Visibility", "miles");
             input = m.replaceFirst("");
 // 	elsif( s#(VIS|VSBY) (NE|NW|SE|SW|N|S|E|W) (\d1,2)/(\d1,2)\s+## ) 
 //		$SectorVIS_DIR = padstr( $2, 2 ) ;
@@ -868,11 +988,13 @@ public class MetarParseReport {
         } else {
             m = p.p_sectorVisibility2.matcher(input);
             if (m.find()) {
-                metar.put("Sector_Visibility_Direction", m.group(2));
+                field.put("Sector_Visibility_Direction", m.group(2));
+                unit.put("Sector_Visibility_Direction", "");
                 var1 = Float.parseFloat(m.group(1));
                 var2 = Float.parseFloat(m.group(2));
                 var1 = var1 / var2;
-                metar.put("Sector_Visibility", Float.toString(var1));
+                field.put("Sector_Visibility", Float.toString(var1));
+                unit.put("Sector_Visibility", "miles");
                 input = m.replaceFirst("");
 // 		elsif( s#(VIS|VSBY) (NE|NW|SE|SW|N|S|E|W)(\d1,3)\s+## ) 
 //			$SectorVIS_DIR = padstr( $2, 2 ) ;
@@ -880,8 +1002,10 @@ public class MetarParseReport {
             } else {
                 m = p.p_sectorVisibility3.matcher(input);
                 if (m.find()) {
-                    metar.put("Sector_Visibility_Direction", m.group(2));
-                    metar.put("Sector_Visibility", m.group(3));
+                    field.put("Sector_Visibility_Direction", m.group(2));
+                    unit.put("Sector_Visibility_Direction", "");
+                    field.put("Sector_Visibility", m.group(3));
+                    unit.put("Sector_Visibility", "miles");
                     input = m.replaceFirst("");
                 }
             }
@@ -893,8 +1017,10 @@ public class MetarParseReport {
 //		$GRsize = 1 / 8 ;
         m = p.p_GR1.matcher(input);
         if (m.find()) {
-            metar.put("Hailstone_Activity", "1");
-            metar.put("Hailstone_Size", "0.25");
+            field.put("Hailstone_Activity", "");
+            unit.put("Hailstone_Activity", "");
+            field.put("Hailstone_Size", "0.25");
+            unit.put("Hailstone_Size", "");
             input = m.replaceFirst("");
 // 	elsif( s#GR (\d1,3) (\d1,2)/(\d1,2)\s+## ) 
 //		$GR = 1 ;
@@ -902,12 +1028,14 @@ public class MetarParseReport {
         } else {
             m = p.p_GR2.matcher(input);
             if (m.find()) {
-                metar.put("Hailstone_Activity", "1");
+                field.put("Hailstone_Activity", "");
+                unit.put("Hailstone_Activity", "");
                 var1 = Float.parseFloat(m.group(1));
                 var2 = Float.parseFloat(m.group(2));
                 var3 = Float.parseFloat(m.group(3));
                 var1 = var1 + (var2 / var3);
-                metar.put("Hailstone_Size", Float.toString(var1));
+                field.put("Hailstone_Size", Float.toString(var1));
+                unit.put("Hailstone_Size", "");
                 input = m.replaceFirst("");
 // 		elsif( s#GR (\d1,2)/(\d1,2)\s+## ) 
 //			$GR = 1 ;
@@ -915,19 +1043,23 @@ public class MetarParseReport {
             } else {
                 m = p.p_GR3.matcher(input);
                 if (m.find()) {
-                    metar.put("Hailstone_Activity", "1");
+                    field.put("Hailstone_Activity", "");
+                    unit.put("Hailstone_Activity", "");
                     var1 = Float.parseFloat(m.group(1));
                     var2 = Float.parseFloat(m.group(2));
                     var1 = var1 / var2;
-                    metar.put("Hailstone_Size", Float.toString(var1));
+                    field.put("Hailstone_Size", Float.toString(var1));
+                    unit.put("Hailstone_Size", "");
 // 			elsif( s#GR (\d1,3)\s+## ) 
 //				$GR = 1 ;
 //				$GRsize = $1 ;
                 } else {
                     m = p.p_GR4.matcher(input);
                     if (m.find()) {
-                        metar.put("Hailstone_Activity", "1");
-                        metar.put("Hailstone_Size", m.group(1));
+                        field.put("Hailstone_Activity", "");
+                        unit.put("Hailstone_Activity", "");
+                        field.put("Hailstone_Size", m.group(1));
+                        unit.put("Hailstone_Size", "");
                         input = m.replaceFirst("");
                     }
                 }
@@ -936,7 +1068,8 @@ public class MetarParseReport {
 //	$GR = 1 if( s#GS\s+## ) ;
         m = p.p_GR.matcher(input);
         if (m.find()) {
-            metar.put("Hailstone_Activity", "1");
+            field.put("Hailstone_Activity", "");
+            unit.put("Hailstone_Activity", "");
             input = m.replaceFirst("");
         }
 
@@ -946,8 +1079,10 @@ public class MetarParseReport {
 //		$VIRGAdir = padstr( $2, 2 ) if( $2 ) ;
         m = p.p_VIRGA.matcher(input);
         if (m.find()) {
-            metar.put("Virga_Activity", "1");
-            metar.put("Virga_Direction", m.group(2));
+            field.put("Virga_Activity", "");
+            unit.put("Virga_Activity", "");
+            field.put("Virga_Direction", m.group(2));
+            unit.put("Virga_Direction", "");
             input = m.replaceFirst("");
         }
 
@@ -975,9 +1110,11 @@ public class MetarParseReport {
                 tmp = m.group(5);
             }
             if ( ! tmp.equals("")) {
-                metar.put("Surface_Obscuration", tmp );
+                field.put("Surface_Obscuration", tmp );
+                unit.put("Surface_Obscuration", "" );
             }
-            metar.put("OctsSkyObscured", m.group(6));
+            field.put("OctsSkyObscured", m.group(6));
+            unit.put("OctsSkyObscured", "");
             input = m.replaceFirst("");
         }
 
@@ -985,7 +1122,8 @@ public class MetarParseReport {
 //	$CIGNO = 1 if( s#CIGNO\s+## ) ;
         m = p.p_CIGNO.matcher(input);
         if (m.find()) {
-            metar.put("CIGNO", "1");
+            field.put("CIGNO", "");
+            unit.put("CIGNO", "");
             input = m.replaceFirst("");
         }
 //	if( s#CIG(E)?(\d3)\s+## ) 
@@ -997,9 +1135,11 @@ public class MetarParseReport {
         if (m.find()) {
             String est = Integer.toString(Integer.parseInt(m.group(2)) * 100);
             if (m.group(1).equals("E")) {
-                metar.put("Ceiling_Estimate", est);
+                field.put("Ceiling_Estimate", est);
+                unit.put("Ceiling_Estimate", "feet");
             } else {
-                metar.put("Ceiling", est);
+                field.put("Ceiling", est);
+                unit.put("Ceiling", "feet");
             }
             input = m.replaceFirst("");
         }
@@ -1011,12 +1151,15 @@ public class MetarParseReport {
 //		$VrbSkyAbove = $3 ;
         m = p.p_variableSky.matcher(input);
         if (m.find()) {
-            metar.put("Variable_Sky_Below", m.group(1));
+            field.put("Variable_Sky_Below", m.group(1));
+            unit.put("Variable_Sky_Below", "");
             //String est = Integer.toString(Integer.parseInt(m.group(2)) * 100);
             if (m.group(2) != null) {
-                metar.put("Variable_Sky_Height", Integer.toString(Integer.parseInt(m.group(2)) * 100));
+                field.put("Variable_Sky_Height", Integer.toString(Integer.parseInt(m.group(2)) * 100));
+                unit.put("Variable_Sky_Height", "feet");
             }
-            metar.put("Variable_Sky_Above", m.group(3));
+            field.put("Variable_Sky_Above", m.group(3));
+            field.put("Variable_Sky_Above", "feet");
             input = m.replaceFirst("");
         }
 
@@ -1029,15 +1172,18 @@ public class MetarParseReport {
 //			if( s#^(NE|NW|SE|SW|N|S|E|W)(\-| MOV )?(NE|NW|SE|SW|N|S|E|W)?/?\s+## ) ;
         m = p.p_significantCloud.matcher(input);
         if (m.find()) {
-            metar.put("Significant_Cloud", m.group(1));
+            field.put("Significant_Cloud", m.group(1));
+            unit.put("Significant_Cloud", "");
             input = m.replaceFirst("");
             m = p.p_significantCloud1.matcher(input);
             if (m.find()) {
-                metar.put("Significant_Cloud_Vicinity", m.group(1));
+                field.put("Significant_Cloud_Vicinity", m.group(1));
+                unit.put("Significant_Cloud_Vicinity", "" );
                 input = m.replaceFirst("");
                 m = p.p_significantCloud2.matcher(input);
                 if (m.find()) {
-                    metar.put("Significant_Cloud_Direction", m.group(1));
+                    field.put("Significant_Cloud_Direction", m.group(1));
+                    unit.put("Significant_Cloud_Direction", "");
                     input = m.replaceFirst("");
                 }
             }
@@ -1068,11 +1214,14 @@ public class MetarParseReport {
                 tmp = m.group(5);
             }
             if ( ! tmp.equals("")) {
-                metar.put("Surface_Phenomena", tmp );
+                field.put("Surface_Phenomena", tmp );
+                unit.put("Surface_Phenomena", "" );
             }
-            metar.put("Obscuring_Phenomena_Sky", m.group(6));
+            field.put("Obscuring_Phenomena_Sky", m.group(6));
+            unit.put("Obscuring_Phenomena_Sky", "");
             if (m.group(7) != null) {
-                metar.put("Obscuring_Phenomena_Sky_Height", Integer.toString(Integer.parseInt(m.group(7)) * 100));
+                field.put("Obscuring_Phenomena_Sky_Height", Integer.toString(Integer.parseInt(m.group(7)) * 100));
+                unit.put("Obscuring_Phenomena_Sky_Height", "feet");
             }
             input = m.replaceFirst("");
         }
@@ -1081,7 +1230,8 @@ public class MetarParseReport {
 //	$ACFTMSHP = 1 if( s#\(?ACFT\s?MSHP\)?\s+## ) ;
         m = p.p_ACFT.matcher(input);
         if (m.find()) {
-            metar.put("Air_craft_mishap", "1");
+            field.put("Air_craft_mishap", "");
+            unit.put("Air_craft_mishap", "");
             input = m.replaceFirst("");
         }
 
@@ -1089,7 +1239,8 @@ public class MetarParseReport {
 //	$NOSPECI = 1 if( s#NOSPECI\s+## ) ;
         m = p.p_NOSPECI.matcher(input);
         if (m.find()) {
-            metar.put(" No_changes_in_weather", "1");
+            field.put(" No_changes_in_weather", "");
+            unit.put(" No_changes_in_weather", "");
             input = m.replaceFirst("");
         }
 
@@ -1097,7 +1248,8 @@ public class MetarParseReport {
 //	$FIRST = 1 if( s#FIRST\s+## ) ;
         m = p.p_FIRST.matcher(input);
         if (m.find()) {
-            metar.put("First_Report_Today", "1");
+            field.put("First_Report_Today", "");
+            unit.put("First_Report_Today", "");
             input = m.replaceFirst("");
         }
 
@@ -1105,7 +1257,8 @@ public class MetarParseReport {
 //	$LAST = 1 if( s#LAST\s+## ) ;
         m = p.p_LAST.matcher(input);
         if (m.find()) {
-            metar.put("Last_Report_Today", "1");
+            field.put("Last_Report_Today", "");
+            unit.put("Last_Report_Today", "");
             input = m.replaceFirst("");
         }
 
@@ -1116,9 +1269,12 @@ public class MetarParseReport {
 //		$Cloud_high = $3 ;
         m = p.p_cloud_height.matcher(input);
         if (m.find()) {
-            metar.put("Cloud_Low", m.group(1));
-            metar.put("Cloud_Medium", m.group(2));
-            metar.put("Cloud_High", m.group(3));
+            field.put("Cloud_Low", m.group(1));
+            unit.put("Cloud_Low", "");
+            field.put("Cloud_Medium", m.group(2));
+            unit.put("Cloud_Medium", "");
+            field.put("Cloud_High", m.group(3));
+            unit.put("Cloud_High", "");
             input = m.replaceFirst("");
         }
 //
@@ -1128,8 +1284,10 @@ public class MetarParseReport {
 //		$SNINCR_TotalDepth = $2 ;
         m = p.p_SNINCR.matcher(input);
         if (m.find()) {
-            metar.put("Snow_Increasing_Rapidly", m.group(1));
-            metar.put("Snow_Increasing_Depth", m.group(2));
+            field.put("Snow_Increasing_Rapidly", m.group(1));
+            unit.put("Snow_Increasing_Rapidly", "");
+            field.put("Snow_Increasing_Depth", m.group(2));
+            unit.put("Snow_Increasing_Depth", "");
             input = m.replaceFirst("");
         }
 //
@@ -1138,7 +1296,8 @@ public class MetarParseReport {
 //		$SN_depth = $1 ;
         m = p.p_snowDepth.matcher(input);
         if (m.find()) {
-            metar.put("Snow_Depth", m.group(1));
+            field.put("Snow_Depth", m.group(1));
+            unit.put("Snow_Depth", "");
             input = m.replaceFirst("");
         }
 //
@@ -1146,7 +1305,8 @@ public class MetarParseReport {
 //	$SN_waterequiv = $1 / 10 if( s# 933(\d3)\s+# # ) ;
         m = p.p_waterEquiv.matcher(input);
         if (m.find()) {
-            metar.put("Water_Equivalent_of_Snow", Double.toString(Float.parseFloat(m.group(1)) * 0.1 ));
+            field.put("Water_Equivalent_of_Snow", Double.toString(Float.parseFloat(m.group(1)) * 0.1 ));
+            unit.put("Water_Equivalent_of_Snow", "");
             input = m.replaceFirst("");
         }
 
@@ -1159,9 +1319,11 @@ public class MetarParseReport {
         m = p.p_sunShine.matcher(input);
         if (m.find()) {
             if( m.group(1).equals("///") ) {
-                metar.put("Sun_Sensor_Out", "1");
+                field.put("Sun_Sensor_Out", "");
+                unit.put("Sun_Sensor_Out", "");
             } else {
-                metar.put("Sun_Sensor_Duration", m.group(1));
+                field.put("Sun_Sensor_Duration", m.group(1));
+                unit.put("Sun_Sensor_Duration", "");
             }
             input = m.replaceFirst("");
         }
@@ -1172,7 +1334,8 @@ public class MetarParseReport {
         m = p.p_precipitation.matcher(input);
         if (m.find()) {
             if( ! m.group(1).equals("////") ) {
-                metar.put("Precipitation_amount", Double.toString(Float.parseFloat(m.group(1)) * 0.01 ));
+                field.put("Precipitation_amount", Double.toString(Float.parseFloat(m.group(1)) * 0.01 ));
+                unit.put("Precipitation_amount", "");
             }
             input = m.replaceFirst("");
         }
@@ -1183,7 +1346,8 @@ public class MetarParseReport {
         m = p.p_precipitation24.matcher(input);
         if (m.find()) {
             if( ! m.group(1).equals("////") ) {
-                metar.put("Precipitation_amount_24Hours", Double.toString(Float.parseFloat(m.group(1)) * 0.01 ));
+                field.put("Precipitation_amount_24Hours", Double.toString(Float.parseFloat(m.group(1)) * 0.01 ));
+                unit.put("Precipitation_amount_24Hours", "");
             }
             input = m.replaceFirst("");
         }
@@ -1196,9 +1360,11 @@ public class MetarParseReport {
         m = p.p_maxTemperature.matcher(input);
         if (m.find()) {
             if( ! m.group(2).equals("////") && m.group(1).equals("1") ) {
-                metar.put("Max_Temperature", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
+                field.put("Max_Temperature", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
+                unit.put("Max_Temperature", "");
             } else {
-                metar.put("Max_Temperature", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                field.put("Max_Temperature", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                unit.put("Max_Temperature", "");
             }
             input = m.replaceFirst("");
         }
@@ -1209,9 +1375,11 @@ public class MetarParseReport {
         m = p.p_minTemperature.matcher(input);
         if (m.find()) {
             if( ! m.group(2).equals("////") && m.group(1).equals("1") ) {
-                metar.put("Min_Temperature", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
+                field.put("Min_Temperature", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
+                unit.put("Min_Temperature", "");
             } else {
-                metar.put("Min_Temperature", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                field.put("Min_Temperature", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                unit.put("Min_Temperature", "");
             }
             input = m.replaceFirst("");
         }
@@ -1225,14 +1393,18 @@ public class MetarParseReport {
         m = p.p_maxMinTemp24.matcher(input);
         if (m.find()) {
             if( ! m.group(2).equals("////") && m.group(1).equals("1") ) {
-                metar.put("Max_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
+                field.put("Max_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
+                unit.put("Max_Temperature_24Hours", "");
             } else {
-                metar.put("Max_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                field.put("Max_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                unit.put("Max_Temperature_24Hours", "");
             }
             if( ! m.group(4).equals("////") && m.group(3).equals("1") ) {
-                metar.put("Min_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(4)) * -0.1 ));
+                field.put("Min_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(4)) * -0.1 ));
+                unit.put("Min_Temperature_24Hours", "");
             } else {
-                metar.put("Min_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(4)) * 0.1 ));
+                field.put("Min_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(4)) * 0.1 ));
+                unit.put("Min_Temperature_24Hours", "");
             }
             input = m.replaceFirst("");
         }
@@ -1244,9 +1416,11 @@ public class MetarParseReport {
 //
         m = p.p_pressureTendency.matcher(input);
         if (m.find()) {
-            metar.put("Presure_Tendency_char", m.group(1));
+            field.put("Presure_Tendency_char", m.group(1));
+            unit.put("Presure_Tendency_char", "");
             if( ! m.group(2).equals("////") ) {
-                metar.put("Presure_Tendency", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                field.put("Presure_Tendency", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
+                unit.put("Presure_Tendency", "");
             }
             input = m.replaceFirst("");
         }
@@ -1255,7 +1429,8 @@ public class MetarParseReport {
 //	$FZRANO = 1 if( s#FZRANO\s+## ) ;
         m = p.p_FZRANO.matcher(input);
         if (m.find()) {
-            metar.put("Freezing_Rain_sensor_not_working", "1");
+            field.put("Freezing_Rain_sensor_not_working", "");
+            unit.put("Freezing_Rain_sensor_not_working", "");
             input = m.replaceFirst("");
         }
 
@@ -1263,7 +1438,8 @@ public class MetarParseReport {
 //	$PNO = 1 if( s#PNO\s+## ) ;
         m = p.p_PNO.matcher(input);
         if (m.find()) {
-            metar.put("Tipping_bucket_rain_gauge_inoperative", "1");
+            field.put("Tipping_bucket_rain_gauge_inoperative", "");
+            unit.put("Tipping_bucket_rain_gauge_inoperative", "");
             input = m.replaceFirst("");
         }
 
@@ -1271,7 +1447,8 @@ public class MetarParseReport {
 //	$maintIndicator = 1 if( s#\$\s+## ) ;
         m = p.p_maintenace.matcher(input);
         if (m.find()) {
-            metar.put("Maintenance_needed_on_system", "1");
+            field.put("Maintenance_needed_on_system", "");
+            unit.put("Maintenance_needed_on_system", "");
             input = m.replaceFirst("");
         }
 
@@ -1301,7 +1478,8 @@ public class MetarParseReport {
                     tmp = tmp + m.group(5);
                 }
                 if ( ! tmp.equals("")) {
-                    metar.put( RWX, tmp );
+                    field.put( RWX, tmp );
+                    unit.put( RWX, "" );
                 } else {
                     break;
                 }
@@ -1310,13 +1488,15 @@ public class MetarParseReport {
 //			$Recent_WX_Bmm[ $i ] = substr( $6, 3, 2 ) * 1 ;
 //		elsif( length( $6 ) == 3 ) 
 //			$Recent_WX_Bmm[ $i ] = substr( $6, 1, 2 ) * 1 ;
-                metar.put( RWX +"_Begin_Time", m.group(6) );
+                field.put( RWX +"_Begin_Time", m.group(6) );
+                unit.put( RWX +"_Begin_Time", "" );
 //		if( length( $7 ) == 5 ) 
 //			$Recent_WX_Ehh[ $i ] = substr( $7, 1, 2 ) * 1 ;
 //			$Recent_WX_Emm[ $i ] = substr( $7, 3, 2 ) * 1 ;
 //	   	elsif( length( $7 ) == 3 ) 
 //			$Recent_WX_Emm[ $i ] = substr( $7, 1, 2 ) * 1 ;
-                metar.put( RWX +"_End_Time", m.group(7) );
+                field.put( RWX +"_End_Time", m.group(7) );
+                unit.put( RWX +"_End_Time", "" );
                 input = m.replaceFirst("");
 //	    elsif( s#(\+|-|VC|PR)?(MI|BC|DR|BL|SH|TS|FZ)?(DZ|RA|SN|SG|IC|PE|PL|GR|GS|UP)?(BR|FG|FU|VA|DU|SA|HZ|PY)?(PO|SQ|FC|SS|DS)?(B|E)(\d2,4)\s+## ) 
             } else {
@@ -1340,7 +1520,8 @@ public class MetarParseReport {
                         tmp = tmp + m.group(5);
                     }
                     if ( ! tmp.equals("")) {
-                        metar.put( RWX, tmp );
+                        field.put( RWX, tmp );
+                        unit.put( RWX, "" );
                     } else {
                         break;
                     }
@@ -1350,14 +1531,16 @@ public class MetarParseReport {
 //		 elsif( $6 eq "B" && ( length( $7 ) == 2 )) 
 //			$Recent_WX_Bmm[ $i ] = substr( $7, 0, 2 ) * 1 ;
                     if( m.group(6).equals("B" ) ) {
-                        metar.put( RWX +"_Begin_Time", m.group(7) );
+                        field.put( RWX +"_Begin_Time", m.group(7) );
+                        unit.put( RWX +"_Begin_Time", "" );
 //		 elsif( $6 eq "E" && ( length( $7 ) == 4 )) 
 //			$Recent_WX_Ehh[ $i ] = substr( $7, 0, 2 ) * 1 ;
 //			$Recent_WX_Emm[ $i ] = substr( $7, 2, 2 ) * 1 ;
 //		 elsif( $6 eq "E" && ( length( $7 ) == 2 )) 
 //			$Recent_WX_Emm[ $i ] = substr( $7, 0, 2 ) * 1 ;
                      } else {
-                        metar.put( RWX +"_End_Time", m.group(7) );
+                        field.put( RWX +"_End_Time", m.group(7) );
+                        unit.put( RWX +"_End_Time", "" );
 		             }
                      input = m.replaceFirst("");
 	        } else {
@@ -1371,16 +1554,17 @@ public class MetarParseReport {
 //	$PlainText = padstr( $1, 128 ) if( s#(\w.*)## ) ;
         m = p.p_plainText.matcher(input);
         if (m.find()) {
-            metar.put("Plain_Language_remarks", m.group(1));
+            field.put("Plain_Language_remarks", m.group(1));
+            unit.put("Plain_Language_remarks", "");
             input = m.replaceFirst("");
         }
 
-        return metar; // all the fields decoded
+        //return metar; // all the fields decoded
 
     } // end parseReport
 
 // convert cloud height to  meters
-    public String cloud_hgt2_meters(String height) {
+    private String cloud_hgt2_meters(String height) {
 
         if (height.equals("999")) {
             return "30000";
@@ -1390,29 +1574,52 @@ public class MetarParseReport {
         }
     } // end cloud_hgt2_meters
 
+    /**
+     * Used to return fields in Metar report.
+     * @return LinkedHashMap
+     **/
+     public LinkedHashMap getFields() {
+        return field;
+     }
+
+    /**
+     * Used to return units of the fields in Metar report.
+     * @return LinkedHashMap
+     **/
+     public HashMap getUnits() {
+        return unit;
+     }
+
     public static void main(String args[]) {
 
         //String report = "KD07 150256Z AUTO 28005KT M08/M11 A3005 RMK AO2 SLP223  T10781111 50006 PWINO FZRANO";
-      String report = "METAR K1V4 251254Z AUTO 01/01 A3002 RMK AO2 SLP172 P0001 T00110006 PWINO FZRANO TSNO ";
+      //String report = "METAR K1V4 251254Z AUTO 01/01 A3002 RMK AO2 SLP172 P0001 T00110006 PWINO FZRANO TSNO ";
 
         //String report = "KDEN 201453Z 35007KT 1/4SM R35L/5000V6000FT -DZ BR OVC003 05/04 A2996 RMK CIG 003V006";
         //String report = "KDEN 201553Z 01006KT 1/4SM R35L/4500VP6000FT  -DZ BR OVC003 05/04 A2996 RMK AO2 SFC VIS 3/4 CIG 003V006 SLP124 P0000 T00500044";
-        //String report = "SOCA 202000Z 10003KT 9999 VCSH FEW010CB SCT015TCU 27/26 Q1010 TEMPO 4000 CB & TCU AU S ET W";
+        String report = "SOCA 202000Z 10003KT 9999 VCSH FEW010CB SCT015TCU 27/26 Q1010 TEMPO 4000 CB & TCU AU S ET W";
         System.out.println( report );
         // Function References
         MetarParseReport func = new MetarParseReport();
 
-        LinkedHashMap metar = func.parseReport(report);
+        func.parseReport(report);
+        LinkedHashMap field = func.getFields();
+        HashMap unit = func.getUnits();
         String key;
 
-        if (metar == null) {
+        if (field == null) {
             System.out.println("return null Hash parse");
             System.exit(1);
         }
-        for( Iterator it = metar.keySet().iterator(); it.hasNext(); ) {
+        System.out.println("<report>");
+        for( Iterator it = field.keySet().iterator(); it.hasNext(); ) {
             key = (String) it.next();
-            System.out.println(key + "\t\t" + (String) metar.get(key));
+            //System.out.println(key + "\t\t" + (String) field.get(key));
+            System.out.println("\t<parameter name=\""+ key +"\" value=\""+ 
+           (String) field.get(key) +"\" units=\""+ (String) unit.get(key)
+           +"\" />" );
         }
+        System.out.println("</report>");
 
     }
 
