@@ -113,7 +113,7 @@ public class TestLogicalCompFilterFactory extends TestCase
   {
     try
     {
-      tmpFile = File.createTempFile( "temp", "file" );
+      tmpFile = File.createTempFile( "thredds.testLogicalCompFilterFactory", "file" );
     }
     catch ( IOException e )
     {
@@ -122,14 +122,14 @@ public class TestLogicalCompFilterFactory extends TestCase
       return;
     }
 
-    tmpDir = new File( tmpFile.getParentFile(), "thredds.testLogicalComFilterFactory" );
+    tmpDir = new File( tmpFile.getParentFile(), "thredds.testLogicalCompFilterFactory" );
 
     file1 = new File( tmpDir, "new.grib1" );
     file2 = new File( tmpDir, "old.grib1" );
     file3 = new File( tmpDir, "new.nc" );
     file4 = new File( tmpDir, "old.nc" );
 
-    if ( !tmpDir.mkdir() )
+    if ( ! tmpDir.mkdir() )
     {
       assertTrue( "Failed to create test dir <" + tmpDir.getAbsolutePath() + ">.",
                   false );
