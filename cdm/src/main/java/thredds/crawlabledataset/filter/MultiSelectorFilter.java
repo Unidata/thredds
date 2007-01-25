@@ -97,7 +97,7 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
    * ToDo: Still need to think about how it would affect InvCatalogFactory10.writeDatasetScanFilter
    * Once start using, make class public.
    */
-  private static class Selector
+  public static class Selector
   {
     private boolean includer;
     private boolean applyToAtomicDataset;
@@ -114,6 +114,11 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
       this.includer = includer;
       this.applyToAtomicDataset = applyToAtomicDataset;
       this.applyToCollectionDataset = applyToCollectionDataset;
+    }
+
+    public CrawlableDatasetFilter getFilter()
+    {
+      return filter;
     }
 
     public boolean isApplyToAtomicDataset()
