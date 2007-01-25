@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.IOException;
 
-import thredds.crawlabledataset.filter.MultiSelectorFilter;
-import thredds.crawlabledataset.filter.RegExpMatchOnNameSelector;
-import thredds.crawlabledataset.filter.WildcardMatchOnNameSelector;
+import thredds.crawlabledataset.filter.*;
 
 /**
  * _more_
@@ -55,7 +53,7 @@ public class TestCrawlableDatasetFilter extends TestCase
 
     // Construct filter
     List selectors = new ArrayList();
-    selectors.add( new RegExpMatchOnNameSelector( ".*", true, true, false ) );
+    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*"), true, true, false ) );
     CrawlableDatasetFilter me = new MultiSelectorFilter( selectors );
     assertTrue( me != null );
 
@@ -92,8 +90,8 @@ public class TestCrawlableDatasetFilter extends TestCase
 
     // Construct filter
     List selectors = new ArrayList();
-    selectors.add( new RegExpMatchOnNameSelector( ".*nc$", true, true, false ) );
-    selectors.add( new RegExpMatchOnNameSelector( "CVS", false, false, true ) );
+    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( ".*nc$"), true, true, false ) );
+    selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( "CVS"), false, false, true ) );
     CrawlableDatasetFilter me = new MultiSelectorFilter( selectors );
     assertTrue( me != null );
 
@@ -126,8 +124,8 @@ public class TestCrawlableDatasetFilter extends TestCase
 
     // Construct filter
     List selectors = new ArrayList();
-    selectors.add( new WildcardMatchOnNameSelector( "*.nc$", true, true, false ) );
-    selectors.add( new WildcardMatchOnNameSelector( "CVS", false, false, true ) );
+    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.nc$"), true, true, false ) );
+    selectors.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "CVS"), false, false, true ) );
     CrawlableDatasetFilter me = new MultiSelectorFilter( selectors );
     assertTrue( me != null );
 

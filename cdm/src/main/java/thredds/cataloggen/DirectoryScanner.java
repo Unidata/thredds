@@ -12,7 +12,6 @@ import thredds.crawlabledataset.CrawlableDatasetFactory;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.crawlabledataset.filter.MultiSelectorFilter;
 import thredds.crawlabledataset.filter.RegExpMatchOnNameFilter;
-import thredds.crawlabledataset.filter.RegExpMatchOnNameSelector;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 
 import java.io.File;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 
 /**
  * Allow generation of THREDDS InvCatalog documents from the contents of a local directory.
@@ -167,8 +165,8 @@ public class DirectoryScanner
     if ( filterPattern != null )
     {
       // Include atomic datasets that match the given filter string.
-      RegExpMatchOnNameSelector filterSelector = new RegExpMatchOnNameSelector( filterPattern, true, true, false );
-      filter = new MultiSelectorFilter( Collections.singletonList( filterSelector ) );
+      MultiSelectorFilter.Selector selector = new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( filterPattern), true, true, false );
+      filter = new MultiSelectorFilter( selector );
     }
     else
     {

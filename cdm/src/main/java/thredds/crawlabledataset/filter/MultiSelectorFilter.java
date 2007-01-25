@@ -28,7 +28,7 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     this.selectorGroup = selectorGroup;
   }
 
-  public MultiSelectorFilter( thredds.crawlabledataset.filter.Selector selector)
+  public MultiSelectorFilter( Selector selector)
   {                         
     if ( selector == null )
       selectorGroup = Collections.EMPTY_LIST;
@@ -54,8 +54,7 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     boolean doAnySelectorsApply = false;
     for ( Iterator it = selectorGroup.iterator(); it.hasNext(); )
     {
-      thredds.crawlabledataset.filter.Selector curSelector =
-              (thredds.crawlabledataset.filter.Selector) it.next();
+      Selector curSelector = (Selector) it.next();
 
       if ( curSelector.isApplicable( dataset ) )
       {
@@ -93,11 +92,10 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
   }
 
   /**
-   * NOT USED YET. First attempt at moving Selector into MultiSelectorFilter.
-   * ToDo: Still need to think about how it would affect InvCatalogFactory10.writeDatasetScanFilter
-   * Once start using, make class public.
-   */
-  public static class Selector
+  * Used by a MultiSelectorFilter to determine whether to include
+  * or exclude a CrawlableDataset.
+  */
+ public static class Selector
   {
     private boolean includer;
     private boolean applyToAtomicDataset;
@@ -106,6 +104,14 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     private CrawlableDatasetFilter filter;
 
 
+    /**
+     * Construct a Selector which uses the given CrawlableDatasetFilter to determine a dataset match.
+     *
+     * @param filter the filter used by this Selector to match against datasets.
+     * @param includer if true, matching datasets will be included, otherwise they will be excluded.
+     * @param applyToAtomicDataset if true, this selector applies to atomic datasets.
+     * @param applyToCollectionDataset if true, this selector applies to collection datasets.
+     */
     public Selector( CrawlableDatasetFilter filter, boolean includer,
                      boolean applyToAtomicDataset, boolean applyToCollectionDataset )
     {
@@ -131,11 +137,20 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
       return applyToCollectionDataset;
     }
 
+    /**
+     * Determine if the given dataset matches this selector.
+     */
     public boolean match( CrawlableDataset dataset )
     {
       return filter.accept( dataset );
     }
 
+    /**
+     * Test if this selector applies to the given dataset.
+     *
+     * @param dataset the CrawlableDataset to test if this selector applies.
+     * @return true if this selector applies to the given dataset, false otherwise.
+     */
     public boolean isApplicable( CrawlableDataset dataset )
     {
       if ( this.applyToAtomicDataset && !dataset.isCollection() ) return true;
@@ -143,6 +158,9 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
       return false;
     }
 
+    /**
+     * If true, this selector includes any matching dataset.
+     */
     public boolean isIncluder()
     {
       return includer;

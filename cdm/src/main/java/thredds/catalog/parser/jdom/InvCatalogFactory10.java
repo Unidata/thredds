@@ -599,10 +599,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
         String regExpAttVal = curElem.getAttributeValue( "regExp");
         String wildcardAttVal = curElem.getAttributeValue( "wildcard");
-        if ( regExpAttVal == null && wildcardAttVal == null )
+        String lastModLimitAttVal = curElem.getAttributeValue( "lastModLimitInMillis");
+        if ( regExpAttVal == null && wildcardAttVal == null && lastModLimitAttVal == null )
         {
           // If no regExp or wildcard attributes, skip this selector.
-          logger.warn( "readDatasetScanFilter(): no regExp or wildcard attribute in filter child <" + curElem.getName() + ">." );
+          logger.warn( "readDatasetScanFilter(): no regExp, wildcard, or lastModLimitInMillis attribute in filter child <" + curElem.getName() + ">." );
         }
         else
         {
@@ -640,11 +641,15 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           // Determine if regExp or wildcard
           if ( regExpAttVal != null )
           {
-            selectorList.add( new RegExpMatchOnNameSelector( regExpAttVal, includer, atomic, collection ) );
+            selectorList.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( regExpAttVal), includer, atomic, collection ) );
           }
           else if ( wildcardAttVal != null )
           {
-            selectorList.add( new WildcardMatchOnNameSelector( wildcardAttVal, includer, atomic, collection ) );
+            selectorList.add( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( wildcardAttVal), includer, atomic, collection ) );
+          }
+          else if ( lastModLimitAttVal != null )
+          {
+            selectorList.add( new MultiSelectorFilter.Selector( new LastModifiedLimitFilter( Long.parseLong( lastModLimitAttVal)), includer, atomic, collection ) );
           }
         }
       }
@@ -1767,26 +1772,31 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     {
       for ( Iterator it = ((List) filter.getConfigObject()).iterator(); it.hasNext(); )
       {
-        Selector curSelector = (Selector) it.next();
+        MultiSelectorFilter.Selector curSelector = (MultiSelectorFilter.Selector) it.next();
         Element curSelectorElem;
         if ( curSelector.isIncluder() )
           curSelectorElem = new Element( "include", defNS );
         else
           curSelectorElem = new Element( "excluder", defNS );
 
-        if ( curSelector instanceof WildcardMatchOnNameSelector )
+        CrawlableDatasetFilter curFilter = curSelector.getFilter();
+        if ( curFilter instanceof WildcardMatchOnNameFilter )
         {
-          WildcardMatchOnNameSelector wildSelector = (WildcardMatchOnNameSelector) curSelector;
-          curSelectorElem.setAttribute( "wildcard", wildSelector.getWildcardString() );
-          curSelectorElem.setAttribute( "atomic", wildSelector.isApplyToAtomicDataset() ? "true" : "false" );
-          curSelectorElem.setAttribute( "collection", wildSelector.isApplyToCollectionDataset() ? "true" : "false" );
+          curSelectorElem.setAttribute( "wildcard", ((WildcardMatchOnNameFilter) curFilter).getWildcardString() );
+          curSelectorElem.setAttribute( "atomic", curSelector.isApplyToAtomicDataset() ? "true" : "false" );
+          curSelectorElem.setAttribute( "collection", curSelector.isApplyToCollectionDataset() ? "true" : "false" );
         }
-        else if ( curSelector instanceof RegExpMatchOnNameSelector )
+        else if ( curFilter instanceof RegExpMatchOnNameFilter )
         {
-          RegExpMatchOnNameSelector regSelector = (RegExpMatchOnNameSelector) curSelector;
-          curSelectorElem.setAttribute( "regExp", regSelector.getRegExpString() );
-          curSelectorElem.setAttribute( "atomic", regSelector.isApplyToAtomicDataset() ? "true" : "false" );
-          curSelectorElem.setAttribute( "collection", regSelector.isApplyToCollectionDataset() ? "true" : "false" );
+          curSelectorElem.setAttribute( "regExp", ((RegExpMatchOnNameFilter) curFilter).getRegExpString() );
+          curSelectorElem.setAttribute( "atomic", curSelector.isApplyToAtomicDataset() ? "true" : "false" );
+          curSelectorElem.setAttribute( "collection", curSelector.isApplyToCollectionDataset() ? "true" : "false" );
+        }
+        else if ( curFilter instanceof LastModifiedLimitFilter )
+        {
+          curSelectorElem.setAttribute( "lastModLimitInMillis", Long.toString( ( (LastModifiedLimitFilter) curFilter ).getLastModifiedLimitInMillis() ) );
+          curSelectorElem.setAttribute( "atomic", curSelector.isApplyToAtomicDataset() ? "true" : "false" );
+          curSelectorElem.setAttribute( "collection", curSelector.isApplyToCollectionDataset() ? "true" : "false" );
         }
         else
           curSelectorElem.addContent( new Comment( "Unknown selector type <" + curSelector.getClass().getName() + ">.") );

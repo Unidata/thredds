@@ -44,8 +44,6 @@ public class LastModifiedLimitFilter implements CrawlableDatasetFilter
     return false;
   }
 
-  public Object getConfigObject()
-  {
-    return null;
-  }
+  public Object getConfigObject()   { return null; }
+  public long getLastModifiedLimitInMillis()   { return lastModifiedLimitInMillis; }
 }

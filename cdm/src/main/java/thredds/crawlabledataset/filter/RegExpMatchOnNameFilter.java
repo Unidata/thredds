@@ -16,16 +16,17 @@ public class RegExpMatchOnNameFilter implements CrawlableDatasetFilter
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( RegExpMatchOnNameFilter.class );
 
-  private String regExp;
+  private String regExpString;
   private java.util.regex.Pattern pattern;
 
-  public RegExpMatchOnNameFilter( String regExp )
+  public RegExpMatchOnNameFilter( String regExpString )
   {
-    this.regExp = regExp;
-    this.pattern = java.util.regex.Pattern.compile( regExp );
+    this.regExpString = regExpString;
+    this.pattern = java.util.regex.Pattern.compile( regExpString );
   }
 
-  public Object getConfigObject() { return regExp; }
+  public Object getConfigObject() { return regExpString; }
+  public String getRegExpString() { return regExpString; }
 
   public boolean accept( CrawlableDataset dataset )
   {

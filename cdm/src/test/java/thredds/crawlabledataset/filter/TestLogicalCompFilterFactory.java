@@ -63,13 +63,13 @@ public class TestLogicalCompFilterFactory extends TestCase
       </filter>
      */
     CrawlableDatasetFilter includeGribFilter =
-            new MultiSelectorFilter( new WildcardMatchOnNameSelector( "*.grib1", true, true, false ) );
+            new MultiSelectorFilter( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.grib1"), true, true, false ) );
     CrawlableDatasetFilter lastModAtLeast4MinPastFilter = new LastModifiedLimitFilter( 240000 );
     CrawlableDatasetFilter oldGribFilter =
             LogicalCompositionFilterFactory.getAndFilter( includeGribFilter, lastModAtLeast4MinPastFilter);
 
     CrawlableDatasetFilter includeNcFilter =
-            new MultiSelectorFilter( new WildcardMatchOnNameSelector( "*.nc", true, true, false ) );
+            new MultiSelectorFilter( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.nc"), true, true, false ) );
     CrawlableDatasetFilter newNcFilter =
             LogicalCompositionFilterFactory.getAndFilter( includeNcFilter,
             LogicalCompositionFilterFactory.getNotFilter( lastModAtLeast4MinPastFilter ) );

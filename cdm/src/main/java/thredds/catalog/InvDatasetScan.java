@@ -24,9 +24,7 @@ import thredds.cataloggen.datasetenhancer.RegExpAndDurationTimeCoverageEnhancer;
 import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
 import thredds.crawlabledataset.*;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
-import thredds.crawlabledataset.filter.RegExpMatchOnNameSelector;
-import thredds.crawlabledataset.filter.MultiSelectorFilter;
-import thredds.crawlabledataset.filter.LastModifiedLimitSelector;
+import thredds.crawlabledataset.filter.*;
 
 import java.net.URI;
 import java.io.IOException;
@@ -132,19 +130,19 @@ public class InvDatasetScan extends InvCatalogRef {
     this.crDsClassName = null;
     this.crDsConfigObj = null;
 
-    ArrayList filters = new ArrayList();
+    ArrayList selectors = new ArrayList();
     if (lastModifiedLimit > 0) {
-      filters.add( new LastModifiedLimitSelector(lastModifiedLimit, false, true, false));
+      selectors.add( new MultiSelectorFilter.Selector( new LastModifiedLimitFilter(lastModifiedLimit), false, true, false));
     }
 
     if ( filter != null )
     {
       // Include atomic datasets that match the given filter string.
-      filters.add( new RegExpMatchOnNameSelector( filter, true, true, false ));
+      selectors.add( new MultiSelectorFilter.Selector( new RegExpMatchOnNameFilter( filter), true, true, false ));
     }
 
-    if (filters.size() > 0) {
-      this.filter = new MultiSelectorFilter( filters );
+    if (selectors.size() > 0) {
+      this.filter = new MultiSelectorFilter( selectors );
     } else {
       this.filter = null;
     }

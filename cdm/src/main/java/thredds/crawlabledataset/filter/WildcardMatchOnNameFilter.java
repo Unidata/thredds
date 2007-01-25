@@ -36,6 +36,7 @@ public class WildcardMatchOnNameFilter implements CrawlableDatasetFilter
   }
 
   public Object getConfigObject() { return wildcardString; }
+  public String getWildcardString() { return wildcardString; }
 
   public boolean accept( CrawlableDataset dataset )
   {
