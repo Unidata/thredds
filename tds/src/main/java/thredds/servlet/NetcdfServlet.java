@@ -147,46 +147,11 @@ public class NetcdfServlet extends AbstractServlet {
     }
 
     // otherwise we are processing a new request to create a subset
-
-    // dorky thing to get the transferred file to end in ".nc"
-    // LOOK: problem when it does end in nc !!
-
-
-// LOOK content-disposition
-/* http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=zip_tools_eps_view&RevisionSelectionMethod=LatestReleased
-
-GET /idcplg?IdcService=GET_FILE&dDocName=zip_tools_eps_view&RevisionSelectionMethod=LatestReleased HTTP/1.1
-Host: www.eumetsat.int
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.8) Gecko/20061025 Firefox/1.5.0.8
-Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,;q=0.5
-Accept-Language: en-us,en;q=0.5
-Accept-Encoding: gzip,deflate
-Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
-Keep-Alive: 300
-Connection: keep-alive
-Referer: http://www.eumetsat.int/Home/Main/Access_to_Data/User_Support/SP_1117714787347
-Cookie: JSESSIONID=62CD72D2B713D5676A48BE733B93AF98
-
-HTTP/1.x 200 OK
-Server: Apache/1.3.33 (Unix) mod_ssl/2.8.22 OpenSSL/0.9.7g
-Date: Mon, 18 Dec 2006 23:10:49 GMT
-Content-Type: Application/jar
-content-disposition: attachment;filename="zip_tools_eps_view.jar"
-Content-Length: 38656356
-X-Cache: MISS from www.eumetsat.int
-Connection: keep-alive
-----------------------------------------------------------
-
-res.setHeader("Content-Disposition", "attachment; filename=" + filename);
-
-*/
-
-    /* if (pathInfo.endsWith(".nc"))
-      pathInfo = pathInfo.substring(0, pathInfo.length() - 3); */
-
     ForecastModelRunInventory fmr = null;
     try {
-      GridDataset gds = DatasetHandler.openGridDataset(pathInfo);
+      GridDataset gds = DatasetHandler.openGridDataset(req, res, pathInfo);
+      if (gds == null) return;
+      
       fmr = ForecastModelRunInventory.open(gds, null);
       // the name must be just the last part of the pathInfo; it becomes the "action" == reletive URL in the form
       int pos = pathInfo.lastIndexOf("/");

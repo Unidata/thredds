@@ -32,6 +32,8 @@ import java.util.*;
 
 public abstract class Selector {
   protected ArrayList children = new ArrayList();
+  protected List compound; // List<Selector> : only one is operable
+  protected boolean isUsed; //
 
   protected String title, id, template;
   protected boolean required, multiple;
@@ -78,6 +80,24 @@ public abstract class Selector {
     this.multiple = (multiple == null) ? false : multiple.equals("true");
   }
   public String getSelectType() { return multiple ? "multiple" : "single"; }
+
+  public void setCompoundSelectors(List compound) {
+    this.compound = compound;
+  }
+  public boolean isUsed() { return isUsed; }
+  public void setUsed (boolean isUsed) {
+    this.isUsed = isUsed;
+    if (isUsed && compound != null) {
+      Iterator iter = compound.iterator();
+      while (iter.hasNext()) {
+        Selector s = (Selector) iter.next();
+        if (s != this)
+          s.setUsed(false);
+      }
+    }
+  }
+
+
 
   /////////////////////////////////////////////////////////////////////
   // forming the query string

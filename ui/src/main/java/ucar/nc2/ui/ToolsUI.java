@@ -2782,7 +2782,6 @@ public class ToolsUI extends JPanel {
     // initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
     // initCaches();
-    // LOOK ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);  // turned off to allow debugging of typical access
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache( new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
@@ -2818,7 +2817,12 @@ public class ToolsUI extends JPanel {
 
     // set Authentication for accessing passsword protected services like TDS PUT
     java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
-    thredds.util.net.HttpSession.setCredentialsProvider(new thredds.ui.UrlAuthenticatorDialog(frame));
+
+    // use HTTPClient
+    thredds.util.net.CredentialsProviderExt provider = new thredds.ui.UrlAuthenticatorDialog(frame);
+    thredds.util.net.HttpSession.setCredentialsProvider(provider);
+    ucar.nc2.dods.DODSNetcdfFile.setCredentialsProvider(provider);
+    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( false); 
 
     // load protocol for ADDE URLs
     URLStreamHandlerFactory.install();

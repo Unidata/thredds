@@ -1,5 +1,5 @@
 /*
- * $Id:ProjectionAdapter.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: ProjectionAdapter.java,v 1.17 2006/11/18 19:03:23 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -35,7 +36,7 @@ import ucar.unidata.geoloc.*;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id:ProjectionAdapter.java 63 2006-07-12 21:50:51Z edavis $
+ *   @version $Id: ProjectionAdapter.java,v 1.17 2006/11/18 19:03:23 dmurray Exp $
  */
 
 public class ProjectionAdapter extends ProjectionImpl {
@@ -142,34 +143,39 @@ public class ProjectionAdapter extends ProjectionImpl {
 
 }
 
-/* Change History:
-   $Log: ProjectionAdapter.java,v $
-   Revision 1.16  2005/05/13 18:29:18  jeffmc
-   Clean up the odd copyright symbols
+/*
+ *  Change History:
+ *  $Log: ProjectionAdapter.java,v $
+ *  Revision 1.17  2006/11/18 19:03:23  dmurray
+ *  jindent
+ *
+ *  Revision 1.16  2005/05/13 18:29:18  jeffmc
+ *  Clean up the odd copyright symbols
+ *
+ *  Revision 1.15  2005/05/13 11:14:10  jeffmc
+ *  Snapshot
+ *
+ *  Revision 1.14  2004/09/22 21:19:52  caron
+ *  use Parameter, not Attribute; remove nc2 dependencies
+ *
+ *  Revision 1.13  2004/07/30 17:22:20  dmurray
+ *  Jindent and doclint
+ *
+ *  Revision 1.12  2004/02/27 21:21:40  jeffmc
+ *  Lots of javadoc warning fixes
+ *
+ *  Revision 1.11  2004/01/29 17:35:00  jeffmc
+ *  A big sweeping checkin after a big sweeping reformatting
+ *  using the new jindent.
+ *
+ *  jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
+ *  templates there is a '_more_' to remind us to fill these in.
+ *
+ *  Revision 1.10  2003/07/12 23:08:59  caron
+ *  add cvs headers, trailers
+ *
+ */
 
-   Revision 1.15  2005/05/13 11:14:10  jeffmc
-   Snapshot
-
-   Revision 1.14  2004/09/22 21:19:52  caron
-   use Parameter, not Attribute; remove nc2 dependencies
-
-   Revision 1.13  2004/07/30 17:22:20  dmurray
-   Jindent and doclint
-
-   Revision 1.12  2004/02/27 21:21:40  jeffmc
-   Lots of javadoc warning fixes
-
-   Revision 1.11  2004/01/29 17:35:00  jeffmc
-   A big sweeping checkin after a big sweeping reformatting
-   using the new jindent.
-
-   jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
-   templates there is a '_more_' to remind us to fill these in.
-
-   Revision 1.10  2003/07/12 23:08:59  caron
-   add cvs headers, trailers
-
-*/
 
 
 

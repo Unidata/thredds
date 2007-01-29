@@ -10,6 +10,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package dods.dap;
+
 import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.DeflaterOutputStream;
@@ -18,23 +19,26 @@ import java.util.zip.DeflaterOutputStream;
  * The DataDDS class extends DDS to add new methods for retrieving data from
  * the server, and printing out the contents of the data.
  *
- * @version $Revision: 48 $
  * @author jehamby
+ * @version $Revision: 48 $
  * @see DDS
  */
 public class DataDDS extends DDS {
-  /** The ServerVersion returned from the open DODS connection. */
+  /**
+   * The ServerVersion returned from the open DODS connection.
+   */
   private ServerVersion ver;
 
   /**
    * Construct the DataDDS with the given server version.
+   *
    * @param ver the ServerVersion returned from the open DODS connection.
    */
   public DataDDS(ServerVersion ver) {
     super();
     this.ver = ver;
   }
-  
+
   public DataDDS(ServerVersion ver, BaseTypeFactory btf) {
     super(btf);
     this.ver = ver;
@@ -42,6 +46,7 @@ public class DataDDS extends DDS {
 
   /**
    * Returns the <code>ServerVersion</code> given in the constructor.
+   *
    * @return the <code>ServerVersion</code> given in the constructor.
    */
   public final ServerVersion getServerVersion() {
@@ -52,26 +57,26 @@ public class DataDDS extends DDS {
    * Read the data stream from the given InputStream.  In the C++ version,
    * this code was in Connect.
    *
-   * @param is the InputStream to read from
+   * @param is       the InputStream to read from
    * @param statusUI the StatusUI object to use, or null
-   * @exception EOFException if EOF is found before the variable is completely
-   *     deserialized.
-   * @exception IOException thrown on any other InputStream exception.
-   * @exception DataReadException when invalid data is read, or if the user
-   *     cancels the download.
-   * @exception DODSException if the DODS server returned an error.
+   * @throws EOFException      if EOF is found before the variable is completely
+   *                           deserialized.
+   * @throws IOException       thrown on any other InputStream exception.
+   * @throws DataReadException when invalid data is read, or if the user
+   *                           cancels the download.
+   * @throws DODSException     if the DODS server returned an error.
    */
-  public void readData(InputStream is, StatusUI statusUI)
-       throws IOException, EOFException, DODSException {
+  public void readData(InputStream is, StatusUI statusUI) throws IOException, EOFException, DODSException {
+
     // Buffer the input stream for better performance
     BufferedInputStream bufferedIS = new BufferedInputStream(is);
     // Use a DataInputStream for deserialize
     DataInputStream dataIS = new DataInputStream(bufferedIS);
 
-    for(Enumeration e = getVariables(); e.hasMoreElements(); ) {
+    for (Enumeration e = getVariables(); e.hasMoreElements();) {
       if (statusUI != null && statusUI.userCancelled())
-	throw new DataReadException("User cancelled");
-      ClientIO bt = (ClientIO)e.nextElement();
+        throw new DataReadException("User cancelled");
+      ClientIO bt = (ClientIO) e.nextElement();
       bt.deserialize(dataIS, ver, statusUI);
     }
     // notify GUI of finished download
@@ -86,8 +91,8 @@ public class DataDDS extends DDS {
    * @param os the <code>PrintWriter</code> to use.
    */
   public void printVal(PrintWriter os) {
-    for (Enumeration e = getVariables(); e.hasMoreElements(); ) {
-      BaseType bt = (BaseType)e.nextElement();
+    for (Enumeration e = getVariables(); e.hasMoreElements();) {
+      BaseType bt = (BaseType) e.nextElement();
       bt.printVal(os, "", true);
     }
     os.println();
@@ -95,6 +100,7 @@ public class DataDDS extends DDS {
 
   /**
    * Print the dataset using OutputStream.
+   *
    * @param os the <code>OutputStream</code> to use.
    */
   public final void printVal(OutputStream os) {
@@ -108,13 +114,13 @@ public class DataDDS extends DDS {
    * a multipart Mime document with the binary representation of the
    * DDS that is currently in memory.
    *
-   * @param os the <code>OutputStream</code> to use.
+   * @param os       the <code>OutputStream</code> to use.
    * @param compress <code>true</code> if we should compress the output.
-   * @param headers <code>true</code> if we should print HTTP headers.
-   * @exception IOException thrown on any <code>OutputStream</code> exception.
+   * @param headers  <code>true</code> if we should print HTTP headers.
+   * @throws IOException thrown on any <code>OutputStream</code> exception.
    */
   public final void externalize(OutputStream os, boolean compress, boolean headers)
-       throws IOException {
+          throws IOException {
     // First, print headers
     if (headers) {
       PrintWriter pw = new PrintWriter(new OutputStreamWriter(os));
@@ -123,7 +129,7 @@ public class DataDDS extends DDS {
       pw.println("Content-type: application/octet-stream");
       pw.println("Content-Description: dods_data");
       if (compress) {
-	pw.println("Content-Encoding: deflate");
+        pw.println("Content-Encoding: deflate");
       }
       pw.println();
       pw.flush();
@@ -151,8 +157,8 @@ public class DataDDS extends DDS {
 
     // Use a DataOutputStream for serialize
     DataOutputStream dataOS = new DataOutputStream(bufferedOS);
-    for(Enumeration e = getVariables(); e.hasMoreElements(); ) {
-      ClientIO bt = (ClientIO)e.nextElement();
+    for (Enumeration e = getVariables(); e.hasMoreElements();) {
+      ClientIO bt = (ClientIO) e.nextElement();
       bt.externalize(dataOS);
     }
     // Note: for DeflaterOutputStream, flush() is not sufficient to flush

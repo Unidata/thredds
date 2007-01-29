@@ -1,5 +1,5 @@
 /*
- * $Id:Mercator.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: Mercator.java,v 1.7 2006/11/18 19:03:22 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -37,7 +38,7 @@ import ucar.unidata.util.SpecialMathFunction;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id: Mercator.java,v 1.6 2006/11/08 14:16:44 dmurray Exp $
+ *   @version $Id: Mercator.java,v 1.7 2006/11/18 19:03:22 dmurray Exp $
  */
 
 
@@ -321,3 +322,4 @@ public class Mercator extends ProjectionImpl {
     }
 
 }
+

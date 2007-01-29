@@ -1,5 +1,5 @@
 /*
- * $Id:AtmosSigma.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: AtmosSigma.java,v 1.8 2006/11/18 19:03:31 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 package ucar.unidata.geoloc.vertical;
 
@@ -41,97 +42,104 @@ import java.io.IOException;
 
 public class AtmosSigma extends VerticalTransformImpl {
 
-  /**
-   * P-naught identifier
-   */
-  public static final String PTOP = "PressureTop_variableName";
+    /**
+     * P-naught identifier
+     */
+    public static final String PTOP = "PressureTop_variableName";
 
-  /**
-   * Surface pressure name identifier
-   */
-  public static final String PS = "SurfacePressure_variableName";
+    /**
+     * Surface pressure name identifier
+     */
+    public static final String PS = "SurfacePressure_variableName";
 
-  /**
-   * The "depth" variable name identifier
-   */
-  public static final String SIGMA = "Sigma_variableName";
+    /**
+     * The "depth" variable name identifier
+     */
+    public static final String SIGMA = "Sigma_variableName";
 
-  /**
-   * The ps, sigma variables
-   */
-  private Variable psVar;
+    /**
+     * The ps, sigma variables
+     */
+    private Variable psVar;
 
-  /**
-   * The sigma array, function of z
-   */
-  private double[] sigma;
+    /**
+     * The sigma array, function of z
+     */
+    private double[] sigma;
 
-  /**
-   * Top of the model
-   */
-  private double ptop;
+    /**
+     * Top of the model
+     */
+    private double ptop;
 
-  /**
-   * Create a new vertical transform for Ocean S coordinates
-   *
-   * @param ds      dataset
-   * @param timeDim time dimension
-   * @param vCT     vertical coordinate transform
-   */
-  public AtmosSigma(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    super(timeDim);
+    /**
+     * Create a new vertical transform for Ocean S coordinates
+     *
+     * @param ds      dataset
+     * @param timeDim time dimension
+     * @param vCT     vertical coordinate transform
+     */
+    public AtmosSigma(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+        super(timeDim);
 
-    String psName = vCT.findParameterIgnoreCase(PS).getStringValue();
-    psVar = ds.findStandardVariable(psName);
+        String psName = vCT.findParameterIgnoreCase(PS).getStringValue();
+        psVar = ds.findStandardVariable(psName);
 
-    String ptopName = vCT.findParameterIgnoreCase(PTOP).getStringValue();
-    Variable ptopVar = ds.findStandardVariable(ptopName);
-    try {
-      this.ptop = ptopVar.readScalarDouble();
-    } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosSigma failed to read " + ptopVar + " err= "+e.getMessage());
+        String   ptopName =
+            vCT.findParameterIgnoreCase(PTOP).getStringValue();
+        Variable ptopVar  = ds.findStandardVariable(ptopName);
+        try {
+            this.ptop = ptopVar.readScalarDouble();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("AtmosSigma failed to read "
+                    + ptopVar + " err= " + e.getMessage());
+        }
+
+        String sigmaName =
+            vCT.findParameterIgnoreCase(SIGMA).getStringValue();
+        Variable sigmaVar = ds.findStandardVariable(sigmaName);
+
+        try {
+            Array data = sigmaVar.read();
+            sigma = (double[]) data.get1DJavaArray(double.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("AtmosSigma failed to read "
+                    + sigmaName + " err= " + e.getMessage());
+        }
+
+        units = ds.findAttValueIgnoreCase(psVar, "units", "none");
     }
 
-    String sigmaName = vCT.findParameterIgnoreCase(SIGMA).getStringValue();
-    Variable sigmaVar = ds.findStandardVariable(sigmaName);
+    /**
+     * Get the 3D vertical coordinate array for this time step.
+     *
+     * @param timeIndex the time index. Ignored if !isTimeDependent().
+     * @return vertical coordinate array
+     * @throws IOException problem reading data
+     * @throws InvalidRangeException _more_
+     */
+    public ArrayDouble.D3 getCoordinateArray(int timeIndex)
+            throws IOException, InvalidRangeException {
+        Array          ps      = readArray(psVar, timeIndex);
+        Index          psIndex = ps.getIndex();
 
-    try {
-      Array data = sigmaVar.read();
-      sigma = (double[]) data.get1DJavaArray(double.class);
-    } catch (IOException e) {
-      throw new IllegalArgumentException("AtmosSigma failed to read " + sigmaName+ " err= "+e.getMessage());
+        int            nz      = sigma.length;
+        int[]          shape2D = ps.getShape();
+        int            ny      = shape2D[0];
+        int            nx      = shape2D[1];
+
+        ArrayDouble.D3 result  = new ArrayDouble.D3(nz, ny, nx);
+
+        for (int y = 0; y < ny; y++) {
+            for (int x = 0; x < nx; x++) {
+                double psVal = ps.getDouble(psIndex.set(y, x));
+                for (int z = 0; z < nz; z++) {
+                    result.set(z, y, x, ptop + sigma[z] * (psVal - ptop));
+                }
+            }
+        }
+
+        return result;
     }
-
-    units = ds.findAttValueIgnoreCase(psVar, "units", "none");
-  }
-
-  /**
-   * Get the 3D vertical coordinate array for this time step.
-   *
-   * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @return vertical coordinate array
-   * @throws IOException problem reading data
-   */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex)
-          throws IOException, InvalidRangeException {
-    Array ps = readArray(psVar, timeIndex);
-    Index psIndex = ps.getIndex();
-
-    int nz = sigma.length;
-    int[] shape2D = ps.getShape();
-    int ny = shape2D[0];
-    int nx = shape2D[1];
-
-    ArrayDouble.D3 result = new ArrayDouble.D3(nz, ny, nx);
-
-    for (int y = 0; y < ny; y++) {
-      for (int x = 0; x < nx; x++) {
-        double psVal = ps.getDouble(psIndex.set(y, x));
-        for (int z = 0; z < nz; z++)
-          result.set(z,y,x, ptop + sigma[z] * (psVal - ptop));
-      }
-    }
-
-    return result;
-  }
 }
+

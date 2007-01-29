@@ -150,7 +150,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 /*
     ArrayChar stationIdArray = (ArrayChar) stationIdVar.read();
 */
-    Array stationIdArray = (Array) stationIdVar.read();
+    Array stationIdArray = stationIdVar.read();
     ArrayChar stationDescArray = null;
     if (stationDescVar != null)
       stationDescArray = (ArrayChar) stationDescVar.read();
@@ -233,8 +233,11 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 
   public List getData(CancelTask cancel) throws IOException {
     ArrayList allData = new ArrayList();
-    for (int i=0; i<getDataCount(); i++) {
-      allData.add( makeObs(i));
+    int n = getDataCount();
+    for (int i=0; i<n; i++) {
+      StationObsDatatype obs = makeObs(i);
+      if (obs != null)
+        allData.add( obs);
       if ((cancel != null) && cancel.isCancel())
         return null;
     }
@@ -299,12 +302,19 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
   protected StationObsDatatype makeObs(int recno) throws IOException {
     try {
       StructureData sdata = recordVar.readStructure(recno);
-      //System.out.println( "stationIndexVar.getName()"+ stationIndexVar.getName());
-      //int stationIndex = sdata.getScalarInt(stationIndexVar.getName());
+
+      // find the station
       int stationIndex = sdata.getScalarInt(stationIndexVar.getShortName());
-      Station station = (Station) stations.get(stationIndex);
-      if (station == null)
+      if (stationIndex<0 || stationIndex >= stations.size()) {
         parseInfo.append("cant find station at index = "+stationIndex+"\n");
+        return null;
+      }
+
+      Station station = (Station) stations.get(stationIndex);
+      if (station == null) {
+        parseInfo.append("cant find station at index = "+stationIndex+"\n");
+        return null;
+      }
 
       float obsTime = sdata.getScalarFloat( timeVar.getName());
       float nomTime = (timeNominalVar != null) ? sdata.getScalarFloat( timeNominalVar.getName()) : 0.0f;

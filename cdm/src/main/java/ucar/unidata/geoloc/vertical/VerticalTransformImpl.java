@@ -1,5 +1,5 @@
 /*
- * $Id: VerticalTransformImpl.java 64 2006-07-12 22:30:50Z edavis $
+ * $Id: VerticalTransformImpl.java,v 1.9 2006/11/18 19:03:33 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,14 +20,16 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.vertical;
 
-
-import ucar.nc2.*;
 
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+
+
+import ucar.nc2.*;
 
 import java.io.IOException;
 
@@ -37,7 +39,7 @@ import java.io.IOException;
  * such as height or pressure.
  *
  * @author  Unidata Development Team
- * @version $Revision: 64 $
+ * @version $Revision: 1.9 $
  */
 
 public abstract class VerticalTransformImpl implements VerticalTransform {
@@ -64,10 +66,12 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
      *
      * @return  vertical coordinate array
      *
+     *
+     * @throws InvalidRangeException _more_
      * @throws java.io.IOException problem reading the data
      */
     public abstract ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex)
-            throws java.io.IOException, InvalidRangeException;
+     throws java.io.IOException, InvalidRangeException;
 
     /**
      * Get the unit string for the vertical coordinate.
@@ -106,8 +110,10 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
      * @return Array from   the variable at that time index
      *
      * @throws IOException problem reading data
+     * @throws InvalidRangeException _more_
      */
-    protected Array readArray(Variable v, int timeIndex) throws IOException, InvalidRangeException {
+    protected Array readArray(Variable v, int timeIndex)
+            throws IOException, InvalidRangeException {
         int[] shape  = v.getShape();
         int[] origin = new int[v.getRank()];
 
@@ -122,8 +128,24 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
         return v.read(origin, shape).reduce();
     }
 
-  public VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException {
-    return new VerticalTransformSubset(this, t_range, z_range, y_range, x_range);
-  }
+    /**
+     * _more_
+     *
+     * @param t_range _more_
+     * @param z_range _more_
+     * @param y_range _more_
+     * @param x_range _more_
+     *
+     * @return _more_
+     *
+     * @throws ucar.ma2.InvalidRangeException _more_
+     */
+    public VerticalTransform subset(Range t_range, Range z_range,
+                                    Range y_range, Range x_range)
+            throws ucar.ma2.InvalidRangeException {
+        return new VerticalTransformSubset(this, t_range, z_range, y_range,
+                                           x_range);
+    }
 
 }
+

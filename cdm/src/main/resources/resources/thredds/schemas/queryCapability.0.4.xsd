@@ -136,7 +136,7 @@
                   <xsd:extension base="cat:serviceTypes">
                     <xsd:attribute name="title" type="xsd:token"/>
                     <xsd:attribute name="dataFormatType" type="cat:dataFormatTypes"/>
-                    <xsd:attribute name="return" type="xsd:token" use="required"/>
+                    <xsd:attribute name="returns" type="xsd:token" use="required"/>
                     <xsd:attribute name="value" type="xsd:token" use="required"/>
                   </xsd:extension>
                 </xsd:simpleContent>

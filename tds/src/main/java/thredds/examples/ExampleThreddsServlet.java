@@ -331,7 +331,7 @@ public class ExampleThreddsServlet extends HttpServlet
     {
       public void doAction( DebugHandler.Event e )
       {
-        e.pw.println( ServletUtil.showSecurity( e.req ) );
+        e.pw.println( ServletUtil.showSecurity( e.req, "admin" ) );
       }
     };
     debugHandler.addAction( act );
@@ -339,12 +339,10 @@ public class ExampleThreddsServlet extends HttpServlet
 
   void showFlags( HttpServletRequest req, PrintStream pw )
   {
-    Iterator iter = Debug.keySet().iterator();
-    while ( iter.hasNext() )
-    {
-      String key = (String) iter.next();
+    for (Object o : Debug.keySet()) {
+      String key = (String) o;
       String url = req.getRequestURI() + "?toggleFlag=" + key;
-      pw.println( "  <a href='" + url + "'>" + key + " = " + Debug.isSet( key ) + "</a>" );
+      pw.println("  <a href='" + url + "'>" + key + " = " + Debug.isSet(key) + "</a>");
     }
   }
 

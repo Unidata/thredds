@@ -1,5 +1,5 @@
 /*
- * $Id:UtmProjection.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: UtmProjection.java,v 1.6 2006/11/18 19:03:23 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -39,7 +40,7 @@ import ucar.unidata.geoloc.*;
  * The central meridian = (zone * 6 - 183) degrees, where zone in [1,60].
  *
  * @author John Caron
- * @version $Id:UtmProjection.java 63 2006-07-12 21:50:51Z edavis $
+ * @version $Id: UtmProjection.java,v 1.6 2006/11/18 19:03:23 dmurray Exp $
  */
 
 
@@ -116,13 +117,10 @@ public class UtmProjection extends ProjectionImpl {
      */
     public void setZone(int newZone) {
         convert2latlon = new Utm_To_Gdc_Converter(convert2latlon.getA(),
-                                                  convert2latlon.getF(),
-                                                  newZone,
-                                                  convert2latlon.isNorth());
+                convert2latlon.getF(), newZone, convert2latlon.isNorth());
         convert2xy = new Gdc_To_Utm_Converter(convert2latlon.getA(),
-                                              convert2latlon.getF(),
-                                              convert2latlon.getZone(),
-                                              convert2latlon.isNorth());
+                convert2latlon.getF(), convert2latlon.getZone(),
+                convert2latlon.isNorth());
     }
 
     /**
@@ -143,13 +141,10 @@ public class UtmProjection extends ProjectionImpl {
      */
     public void setNorth(boolean newNorth) {
         convert2latlon = new Utm_To_Gdc_Converter(convert2latlon.getA(),
-                                                  convert2latlon.getF(),
-                                                  convert2latlon.getZone(),
-                                                  newNorth);
+                convert2latlon.getF(), convert2latlon.getZone(), newNorth);
         convert2xy = new Gdc_To_Utm_Converter(convert2latlon.getA(),
-                                              convert2latlon.getF(),
-                                              convert2latlon.getZone(),
-                                              convert2latlon.isNorth());
+                convert2latlon.getF(), convert2latlon.getZone(),
+                convert2latlon.isNorth());
     }
 
 
@@ -237,20 +232,17 @@ public class UtmProjection extends ProjectionImpl {
     public double[][] latLonToProj(double[][] from, double[][] to,
                                    int latIndex, int lonIndex) {
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "from array not same length as to array");
         }
 
         return convert2xy.latLonToProj(from, to, latIndex, lonIndex);
@@ -269,20 +261,17 @@ public class UtmProjection extends ProjectionImpl {
     public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
                                   int lonIndex) {
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "from array not same length as to array");
         }
 
         return convert2xy.latLonToProj(from, to, latIndex, lonIndex);
@@ -318,20 +307,17 @@ public class UtmProjection extends ProjectionImpl {
      */
     public float[][] projToLatLon(float[][] from, float[][] to) {
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "from array not same length as to array");
         }
 
         return convert2latlon.projToLatLon(from, to);
@@ -347,20 +333,17 @@ public class UtmProjection extends ProjectionImpl {
      */
     public double[][] projToLatLon(double[][] from, double[][] to) {
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "from array not same length as to array");
         }
 
         return convert2latlon.projToLatLon(from, to);
@@ -368,24 +351,29 @@ public class UtmProjection extends ProjectionImpl {
 
 }
 
-/* Change History:
-   $Log: UtmProjection.java,v $
-   Revision 1.5  2005/08/11 22:42:12  dmurray
-   jindent (I'll leave the javadoc to those who forgot to)
-
-   Revision 1.4  2005/05/13 18:29:19  jeffmc
-   Clean up the odd copyright symbols
-
-   Revision 1.3  2005/05/13 12:26:51  jeffmc
-   Some mods
-
-   Revision 1.2  2005/05/13 11:14:11  jeffmc
-   Snapshot
-
-   Revision 1.1  2005/02/01 01:35:50  caron
-   no message
-
+/*
+ *  Change History:
+ *  $Log: UtmProjection.java,v $
+ *  Revision 1.6  2006/11/18 19:03:23  dmurray
+ *  jindent
+ *
+ *  Revision 1.5  2005/08/11 22:42:12  dmurray
+ *  jindent (I'll leave the javadoc to those who forgot to)
+ *
+ *  Revision 1.4  2005/05/13 18:29:19  jeffmc
+ *  Clean up the odd copyright symbols
+ *
+ *  Revision 1.3  2005/05/13 12:26:51  jeffmc
+ *  Some mods
+ *
+ *  Revision 1.2  2005/05/13 11:14:11  jeffmc
+ *  Snapshot
+ *
+ *  Revision 1.1  2005/02/01 01:35:50  caron
+ *  no message
+ *
  */
+
 
 
 

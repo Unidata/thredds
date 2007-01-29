@@ -114,7 +114,7 @@
     <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
     <xsd:attribute name="harvest" type="xsd:boolean"/>
     <xsd:attribute name="ID" type="xsd:token"/>
-    <xsd:attribute name="resourceControl" type="xsd:string"/>
+    <xsd:attribute name="restrictAccess" type="xsd:string"/>
 
     <xsd:attribute name="serviceName" type="xsd:string"/>  <!-- deprecated : use element -->
     <xsd:attribute name="urlPath" type="xsd:token"/>

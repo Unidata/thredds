@@ -1,5 +1,5 @@
 /*
- * $Id: LatLonProjection.java,v 1.29 2006/08/18 17:07:39 dmurray Exp $
+ * $Id: LatLonProjection.java,v 1.31 2006/11/18 19:03:22 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -21,6 +21,7 @@
  */
 
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -37,7 +38,7 @@ import ucar.unidata.util.Format;
  *
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id: LatLonProjection.java,v 1.29 2006/08/18 17:07:39 dmurray Exp $
+ *   @version $Id: LatLonProjection.java,v 1.31 2006/11/18 19:03:22 dmurray Exp $
  */
 
 
@@ -133,9 +134,8 @@ public class LatLonProjection extends ProjectionImpl {
      */
     public ProjectionPoint latLonToProj(LatLonPoint latlon,
                                         ProjectionPointImpl result) {
-        result.setLocation(
-            LatLonPointImpl.lonNormal(latlon.getLongitude(), centerLon),
-            latlon.getLatitude());
+        result.setLocation(LatLonPointImpl.lonNormal(latlon.getLongitude(),
+                centerLon), latlon.getLatitude());
         return result;
     }
 
@@ -194,8 +194,7 @@ public class LatLonProjection extends ProjectionImpl {
      */
     public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
                                   int lonIndex) {
-        int cnt = from[0].length;
-        System.arraycopy(from[latIndex], 0, to[INDEX_Y], 0, cnt);
+        int     cnt     = from[0].length;
         float[] toX     = to[INDEX_X];
         float[] toY     = to[INDEX_Y];
         float[] fromLat = from[latIndex];
@@ -204,8 +203,8 @@ public class LatLonProjection extends ProjectionImpl {
         for (int i = 0; i < cnt; i++) {
             lat = fromLat[i];
             lon = (float) (centerLon
-                              + Math.IEEEremainder(fromLon[i] - centerLon,
-                                                   360.0));
+                           + Math.IEEEremainder(fromLon[i] - centerLon,
+                               360.0));
             toX[i] = lon;
             toY[i] = lat;
         }
@@ -250,8 +249,7 @@ public class LatLonProjection extends ProjectionImpl {
      */
     public double[][] latLonToProj(double[][] from, double[][] to,
                                    int latIndex, int lonIndex) {
-        int cnt = from[0].length;
-        System.arraycopy(from[latIndex], 0, to[INDEX_Y], 0, cnt);
+        int      cnt     = from[0].length;
         double[] toX     = to[INDEX_X];
         double[] toY     = to[INDEX_Y];
         double[] fromLat = from[latIndex];
@@ -266,7 +264,6 @@ public class LatLonProjection extends ProjectionImpl {
         }
         return to;
     }
-
 
 
     /**
@@ -421,6 +418,12 @@ public class LatLonProjection extends ProjectionImpl {
 /*
  *  Change History:
  *  $Log: LatLonProjection.java,v $
+ *  Revision 1.31  2006/11/18 19:03:22  dmurray
+ *  jindent
+ *
+ *  Revision 1.30  2006/11/16 00:17:02  caron
+ *  add FlatEarth projection (used by Nids grids)
+ *
  *  Revision 1.29  2006/08/18 17:07:39  dmurray
  *  fix a problem with the projToLatLon and latlonToProj methods that
  *  take arrays.  They were assuming that from and to were different, but
@@ -446,19 +449,12 @@ public class LatLonProjection extends ProjectionImpl {
  *
  *  Revision 1.22  2004/01/29 17:35:00  jeffmc
  *  A big sweeping checkin after a big sweeping reformatting
- *  using the new jindent. *
+ *  using the new jindent.
+ *
  *  jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
  *  templates there is a '_more_' to remind us to fill these in.
  *
  *  Revision 1.21  2003/07/12 23:08:59  caron
  *  add cvs headers, trailers
  *
-*/
-
-
-
-
-
-
-
-
+ */

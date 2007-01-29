@@ -155,7 +155,9 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
     else
       return -1;
 
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( path);
+    if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK wierd Firefox beahviour?
+
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
     if ((file != null) && file.exists())
       return file.lastModified();
 
@@ -263,7 +265,7 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
 
         // need to pass normal "html" on to super class
       } else if (path.endsWith("catalog.xml") || path.endsWith("catalog.html") || path.endsWith("/")) {
-        if (DataRootHandler.getInstance().processReqForCatalog( req, res))
+        if (DataRootHandler.getInstance().processReqForCatalog(req, res))
           return;
       }
 
@@ -347,11 +349,18 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
       if (!spath.endsWith("/"))
         spath = spath + "/";
     } */
+
+    NetcdfFile ncd;
     String reqPath = preq.getDataSet(); // was spath + preq.getDataSet();
-    NetcdfFile ncd = DatasetHandler.getNetcdfFile(reqPath);
-    if (ncd == null) {
+    try {
+      ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
+    } catch (FileNotFoundException fne) {
       throw new DODSException(DODSException.NO_SUCH_FILE, "Cant find " + reqPath);
+    } catch (Throwable e) {
+      throw new DODSException(DODSException.UNDEFINED_ERROR, e.getMessage());
     }
+    if (null == ncd) return null;
+
     GuardedDatasetImpl gdataset = new GuardedDatasetImpl(reqPath, ncd, acceptSession);
 
     if (acceptSession) {

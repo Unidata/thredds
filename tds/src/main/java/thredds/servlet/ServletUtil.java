@@ -30,6 +30,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 
 import org.apache.log4j.*;
 import org.apache.log4j.xml.DOMConfigurator;
+
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.FileCache;
 import thredds.catalog.XMLEntityResolver;
@@ -931,6 +932,7 @@ public class ServletUtil {
       out.println("  context.getAttribute(\"" + name + "\"): " +
                      context.getAttribute(name));
     }
+
     out.println();
   }
 
@@ -1010,6 +1012,12 @@ public class ServletUtil {
     return null;
   }
 
+  /**
+   * Show deatails about the request
+   * @param servlet used to get teh servlet context, may be null
+   * @param req  the request
+   * @return string showing the details of the request.
+   */
   static public String showRequestDetail(HttpServlet servlet, HttpServletRequest req) {
     StringBuffer sbuff = new StringBuffer();
 
@@ -1027,7 +1035,7 @@ public class ServletUtil {
 
     sbuff.append(" req.getPathTranslated:"+ req.getPathTranslated()+"\n");
     String path = req.getPathTranslated();
-    if ( path != null) {
+    if (( path != null) && (servlet != null)) {
       ServletContext context = servlet.getServletContext();
       sbuff.append(" getMimeType:"+ context.getMimeType(path)+"\n");
     }
@@ -1075,6 +1083,23 @@ public class ServletUtil {
     }
     sbuff.append(" ------------------\n");
 
+    return sbuff.toString();
+  }
+
+  static public String showRequestHeaders(HttpServletRequest req) {
+    StringBuffer sbuff = new StringBuffer();
+    sbuff.append("Request Headers:\n");
+    Enumeration names = req.getHeaderNames();
+    while (names.hasMoreElements()) {
+      String name = (String) names.nextElement();
+      Enumeration values = req.getHeaders(name);  // support multiple values
+      if (values != null) {
+        while (values.hasMoreElements()) {
+          String value = (String) values.nextElement();
+          sbuff.append("  "+name + ": " + value+"\n");
+        }
+      }
+    }
     return sbuff.toString();
   }
 
@@ -1168,20 +1193,38 @@ public class ServletUtil {
 
   }
 
-  static public String showSecurity(HttpServletRequest req) {
+  static public String showSecurity(HttpServletRequest req, String role) {
     StringBuffer sbuff = new StringBuffer();
 
     sbuff.append("Security Info\n");
     sbuff.append(" req.getRemoteUser(): " + req.getRemoteUser()+"\n");
     sbuff.append(" req.getUserPrincipal(): " + req.getUserPrincipal()+"\n");
-    sbuff.append(" req.isUserInRole(admin):"+ req.isUserInRole("admin")+"\n");
-    sbuff.append(" req.isUserInRole(tdsConfig):"+ req.isUserInRole("tdsConfig")+"\n");
-    sbuff.append(" req.isUserInRole(resourceControl):"+ req.isUserInRole("resourceControl")+"\n");
-    sbuff.append(" req.isUserInRole(badRole):"+ req.isUserInRole("badRole")+"\n");
+    sbuff.append(" req.isUserInRole("+role+"):"+ req.isUserInRole(role)+"\n");
     sbuff.append(" ------------------\n");
 
     return sbuff.toString();
   }
+
+  /* from luca / ageci code, portResolver, portMapper not known
+    static public void getSecureRedirect(HttpServletRequest req) {
+        String pathInfo = req.getPathInfo();
+        String queryString = req.getQueryString();
+        String contextPath = req.getContextPath();
+        String destination = req.getServletPath() + ((pathInfo ==   null) ? "" : pathInfo)
+            + ((queryString == null) ? "" : ("?" + queryString));
+        String redirectUrl = contextPath;
+
+        Integer httpPort = new Integer(portResolver.getServerPort(req));
+        Integer httpsPort = portMapper.lookupHttpsPort(httpPort);
+        if (httpsPort != null) {
+            boolean includePort = true;
+            if (httpsPort.intValue() == 443) {
+                includePort = false;
+            }
+            redirectUrl = "https://" + req.getServerName() +   ((includePort) ? (":" + httpsPort) : "") + contextPath
+                + destination;
+        }
+    } */
 
   static private String getServerInfoName(String serverInfo) {
     int slash = serverInfo.indexOf('/');

@@ -35,7 +35,6 @@ import java.util.*;
  * Reads DQC.xml files, constructs object representation.
  *
  * @author John Caron
- * @version $Id: DqcConvert2.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public class DqcConvert2 implements DqcConvertIF {
@@ -325,32 +324,3 @@ public class DqcConvert2 implements DqcConvertIF {
   }
 
 }
-
-
-/* Change History:
-   $Log: DqcConvert2.java,v $
-   Revision 1.8  2006/01/17 01:46:51  caron
-   use jdom instead of dom everywhere
-
-   Revision 1.7  2005/04/20 00:05:36  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/09/24 03:26:28  caron
-   merge nj22
-
-   Revision 1.5  2004/08/23 16:45:19  edavis
-   Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
-
-   Revision 1.4  2004/06/19 00:45:42  caron
-   redo nested select list
-
-   Revision 1.3  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.2  2004/06/12 02:01:09  caron
-   dqc 0.3
-
-   Revision 1.1  2004/05/11 23:30:28  caron
-   release 2.0a
-
- */

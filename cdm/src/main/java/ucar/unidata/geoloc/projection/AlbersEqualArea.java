@@ -1,5 +1,5 @@
 /*
- * $Id: AlbersEqualArea.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: AlbersEqualArea.java,v 1.10 2006/11/18 19:03:21 dmurray Exp $
  *
  * Copyright  1997-2005 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -37,7 +38,7 @@ import ucar.unidata.util.Parameter;
  * @see Projection
  * @see ProjectionImpl
  * @author Unidata Development Team
- * @version $Id: AlbersEqualArea.java 63 2006-07-12 21:50:51Z edavis $
+ * @version $Id: AlbersEqualArea.java,v 1.10 2006/11/18 19:03:21 dmurray Exp $
  */
 
 public class AlbersEqualArea extends ProjectionImpl {
@@ -46,10 +47,10 @@ public class AlbersEqualArea extends ProjectionImpl {
     private double n, C, rho0;
 
     /** lat/lon in radians */
-    private double lat0, lon0;       // radians
+    private double lat0, lon0;  // radians
 
     /** parallel 1 and 2 */
-    private double par1, par2;       // degrees
+    private double par1, par2;  // degrees
 
     /** lon naught */
     private double lon0Degrees;
@@ -116,7 +117,7 @@ public class AlbersEqualArea extends ProjectionImpl {
         if (Math.abs(par2 - par1) < TOLERANCE) {  // single parallel
             n = Math.sin(par1r);
         } else {
-            n = (Math.sin(par1r) + Math.sin(par2r))/2.0;
+            n = (Math.sin(par1r) + Math.sin(par2r)) / 2.0;
         }
 
         double c2 = Math.pow(Math.cos(par1r), 2);
@@ -145,7 +146,7 @@ public class AlbersEqualArea extends ProjectionImpl {
      */
     private double computeTheta(double lon) {
         double dlon = LatLonPointImpl.lonNormal(Math.toDegrees(lon)
-                                                - lon0Degrees);
+                          - lon0Degrees);
         return n * Math.toRadians(dlon);
     }
 
@@ -341,14 +342,14 @@ public class AlbersEqualArea extends ProjectionImpl {
     MACROBODY*/
 
     /*BEGINGENERATED*/
- 
-/*
-Note this section has been generated using the convert.tcl script.
-This script, run as: 
-tcl convert.tcl AlbersEqualArea.java
-takes the actual projection conversion code defined in the MACROBODY 
-section above and generates the following 6 methods
-*/
+
+    /*
+    Note this section has been generated using the convert.tcl script.
+    This script, run as:
+    tcl convert.tcl AlbersEqualArea.java
+    takes the actual projection conversion code defined in the MACROBODY
+    section above and generates the following 6 methods
+    */
 
 
     /**
@@ -359,22 +360,23 @@ section above and generates the following 6 methods
      *
      * @return the given result
      */
-    public ProjectionPoint latLonToProj (LatLonPoint latLon, ProjectionPointImpl result) {
+    public ProjectionPoint latLonToProj(LatLonPoint latLon,
+                                        ProjectionPointImpl result) {
         double toX, toY;
-        double fromLat = latLon.getLatitude ();
-	double fromLon = latLon.getLongitude ();
-        	
-        
+        double fromLat = latLon.getLatitude();
+        double fromLon = latLon.getLongitude();
+
+
         fromLat = Math.toRadians(fromLat);
         fromLon = Math.toRadians(fromLon);
-        double rho = computeRho(fromLat);
+        double rho   = computeRho(fromLat);
         double theta = computeTheta(fromLon);
 
         toX = rho * Math.sin(theta);
-        toY = rho0 - rho*Math.cos(theta);
-      	
-	result.setLocation (toX, toY);
-	return result;
+        toY = rho0 - rho * Math.cos(theta);
+
+        result.setLocation(toX, toY);
+        return result;
     }
 
     /**
@@ -386,12 +388,13 @@ section above and generates the following 6 methods
      *
      * @return LatLonPoint convert to these lat/lon coordinates
      */
-    public LatLonPoint projToLatLon(ProjectionPoint world, LatLonPointImpl result) {
-	double toLat, toLon;
-	double fromX = world.getX ();
-	double fromY = world.getY ();
-        double rrho0 = rho0;	
-        
+    public LatLonPoint projToLatLon(ProjectionPoint world,
+                                    LatLonPointImpl result) {
+        double toLat, toLon;
+        double fromX = world.getX();
+        double fromY = world.getY();
+        double rrho0 = rho0;
+
         if (n < 0) {
             rrho0 *= -1.0;
             fromX *= -1.0;
@@ -399,19 +402,22 @@ section above and generates the following 6 methods
         }
 
 
-        double yd = rrho0-fromY;
-        double rho = Math.sqrt(fromX * fromX + yd*yd);
-        double theta = Math.atan2( fromX, yd);
-        if (n < 0) rho *= -1.0;
+        double yd    = rrho0 - fromY;
+        double rho   = Math.sqrt(fromX * fromX + yd * yd);
+        double theta = Math.atan2(fromX, yd);
+        if (n < 0) {
+            rho *= -1.0;
+        }
 
-        toLat = Math.toDegrees(Math.asin((C-Math.pow((rho*n/EARTH_RADIUS),2))/(2*n)));
+        toLat = Math.toDegrees(Math.asin((C - Math.pow((rho * n
+                / EARTH_RADIUS), 2)) / (2 * n)));
 
-        toLon = Math.toDegrees(theta/n + lon0);
+        toLon = Math.toDegrees(theta / n + lon0);
 
-             	
-	result.setLatitude (toLat);
-	result.setLongitude (toLon);
-	return result;
+
+        result.setLatitude(toLat);
+        result.setLongitude(toLon);
+        return result;
     }
 
     /**
@@ -420,38 +426,39 @@ section above and generates the following 6 methods
      * @param from     array of lat/lon coordinates: from[2][n],
      *                 where from[0][i], from[1][i] is the (lat,lon)
      *                 coordinate of the ith point
-     * @param to       resulting array of projection coordinates, 
-     *                 where to[0][i], to[1][i] is the (x,y) coordinate 
+     * @param to       resulting array of projection coordinates,
+     *                 where to[0][i], to[1][i] is the (x,y) coordinate
      *                 of the ith point
      * @param latIndex index of latitude in "from"
      * @param lonIndex index of longitude in "from"
      *
      * @return the "to" array.
      */
-    public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
-	int cnt = from[0].length;
-	float []fromLatA = from[latIndex];
-	float []fromLonA = from[lonIndex];
-	float []resultXA = to[INDEX_X];
-	float []resultYA = to[INDEX_Y];
-        double toX, toY;
-        
-	for (int i=0; i<cnt; i++) {
-	   double fromLat = fromLatA[i];
-	   double fromLon = fromLonA[i];
-           
-        fromLat = Math.toRadians(fromLat);
-        fromLon = Math.toRadians(fromLon);
-        double rho = computeRho(fromLat);
-        double theta = computeTheta(fromLon);
+    public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
+                                  int lonIndex) {
+        int     cnt      = from[0].length;
+        float[] fromLatA = from[latIndex];
+        float[] fromLonA = from[lonIndex];
+        float[] resultXA = to[INDEX_X];
+        float[] resultYA = to[INDEX_Y];
+        double  toX, toY;
 
-        toX = rho * Math.sin(theta);
-        toY = rho0 - rho*Math.cos(theta);
-      
-           resultXA[i] = (float)toX;
-           resultYA[i] = (float)toY;
-	}
-	return to;
+        for (int i = 0; i < cnt; i++) {
+            double fromLat = fromLatA[i];
+            double fromLon = fromLonA[i];
+
+            fromLat = Math.toRadians(fromLat);
+            fromLon = Math.toRadians(fromLon);
+            double rho   = computeRho(fromLat);
+            double theta = computeTheta(fromLon);
+
+            toX         = rho * Math.sin(theta);
+            toY         = rho0 - rho * Math.cos(theta);
+
+            resultXA[i] = (float) toX;
+            resultYA[i] = (float) toY;
+        }
+        return to;
     }
 
     /**
@@ -465,39 +472,42 @@ section above and generates the following 6 methods
      *                 of the ith point
      * @return the "to" array
      */
-    public float[][] projToLatLon (float[][]from, float[][]to) {
-	int cnt = from[0].length;
-	float []fromXA = from[INDEX_X];
-	float []fromYA = from[INDEX_Y];
-	float []toLatA = to[INDEX_LAT];
-	float []toLonA = to[INDEX_LON];
-        double rrho0 = rho0;				 
-        double toLat, toLon;
-	for (int i=0;i<cnt;i++) {
-	      double fromX = fromXA[i];
-              double fromY = fromYA[i];
-              
-        if (n < 0) {
-            rrho0 *= -1.0;
-            fromX *= -1.0;
-            fromY *= -1.0;
+    public float[][] projToLatLon(float[][] from, float[][] to) {
+        int     cnt    = from[0].length;
+        float[] fromXA = from[INDEX_X];
+        float[] fromYA = from[INDEX_Y];
+        float[] toLatA = to[INDEX_LAT];
+        float[] toLonA = to[INDEX_LON];
+        double  rrho0  = rho0;
+        double  toLat, toLon;
+        for (int i = 0; i < cnt; i++) {
+            double fromX = fromXA[i];
+            double fromY = fromYA[i];
+
+            if (n < 0) {
+                rrho0 *= -1.0;
+                fromX *= -1.0;
+                fromY *= -1.0;
+            }
+
+
+            double yd    = rrho0 - fromY;
+            double rho   = Math.sqrt(fromX * fromX + yd * yd);
+            double theta = Math.atan2(fromX, yd);
+            if (n < 0) {
+                rho *= -1.0;
+            }
+
+            toLat = Math.toDegrees(Math.asin((C
+                    - Math.pow((rho * n / EARTH_RADIUS), 2)) / (2 * n)));
+
+            toLon     = Math.toDegrees(theta / n + lon0);
+
+
+            toLatA[i] = (float) toLat;
+            toLonA[i] = (float) toLon;
         }
-
-
-        double yd = rrho0-fromY;
-        double rho = Math.sqrt(fromX * fromX + yd*yd);
-        double theta = Math.atan2( fromX, yd);
-        if (n < 0) rho *= -1.0;
-
-        toLat = Math.toDegrees(Math.asin((C-Math.pow((rho*n/EARTH_RADIUS),2))/(2*n)));
-
-        toLon = Math.toDegrees(theta/n + lon0);
-
-             				 
-              toLatA[i]= (float)toLat;
-              toLonA[i]= (float)toLon;
-	}
-	return to;
+        return to;
     }
 
     /**
@@ -506,38 +516,39 @@ section above and generates the following 6 methods
      * @param from     array of lat/lon coordinates: from[2][n],
      *                 where from[0][i], from[1][i] is the (lat,lon)
      *                 coordinate of the ith point
-     * @param to       resulting array of projection coordinates, 
-     *                 where to[0][i], to[1][i] is the (x,y) coordinate 
+     * @param to       resulting array of projection coordinates,
+     *                 where to[0][i], to[1][i] is the (x,y) coordinate
      *                 of the ith point
      * @param latIndex index of latitude in "from"
      * @param lonIndex index of longitude in "from"
      *
      * @return the "to" array.
      */
-    public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
-	int cnt = from[0].length;
-	double []fromLatA = from[latIndex];
-	double []fromLonA = from[lonIndex];
-	double []resultXA = to[INDEX_X];
-	double []resultYA = to[INDEX_Y];
-        double toX, toY;
-        
-	for (int i=0; i<cnt; i++) {
-	   double fromLat = fromLatA[i];
-	   double fromLon = fromLonA[i];
-           
-        fromLat = Math.toRadians(fromLat);
-        fromLon = Math.toRadians(fromLon);
-        double rho = computeRho(fromLat);
-        double theta = computeTheta(fromLon);
+    public double[][] latLonToProj(double[][] from, double[][] to,
+                                   int latIndex, int lonIndex) {
+        int      cnt      = from[0].length;
+        double[] fromLatA = from[latIndex];
+        double[] fromLonA = from[lonIndex];
+        double[] resultXA = to[INDEX_X];
+        double[] resultYA = to[INDEX_Y];
+        double   toX, toY;
 
-        toX = rho * Math.sin(theta);
-        toY = rho0 - rho*Math.cos(theta);
-      
-           resultXA[i] = (double)toX;
-           resultYA[i] = (double)toY;
-	}
-	return to;
+        for (int i = 0; i < cnt; i++) {
+            double fromLat = fromLatA[i];
+            double fromLon = fromLonA[i];
+
+            fromLat = Math.toRadians(fromLat);
+            fromLon = Math.toRadians(fromLon);
+            double rho   = computeRho(fromLat);
+            double theta = computeTheta(fromLon);
+
+            toX         = rho * Math.sin(theta);
+            toY         = rho0 - rho * Math.cos(theta);
+
+            resultXA[i] = (double) toX;
+            resultYA[i] = (double) toY;
+        }
+        return to;
     }
 
     /**
@@ -551,42 +562,45 @@ section above and generates the following 6 methods
      *                 of the ith point
      * @return the "to" array
      */
-    public double[][] projToLatLon (double[][]from, double[][]to) {
-	int cnt = from[0].length;
-	double []fromXA = from[INDEX_X];
-	double []fromYA = from[INDEX_Y];
-	double []toLatA = to[INDEX_LAT];
-	double []toLonA = to[INDEX_LON];
-        double rrho0 = rho0;				 
-        double toLat, toLon;
-	for (int i=0;i<cnt;i++) {
-	      double fromX = fromXA[i];
-              double fromY = fromYA[i];
-              
-        if (n < 0) {
-            rrho0 *= -1.0;
-            fromX *= -1.0;
-            fromY *= -1.0;
+    public double[][] projToLatLon(double[][] from, double[][] to) {
+        int      cnt    = from[0].length;
+        double[] fromXA = from[INDEX_X];
+        double[] fromYA = from[INDEX_Y];
+        double[] toLatA = to[INDEX_LAT];
+        double[] toLonA = to[INDEX_LON];
+        double   rrho0  = rho0;
+        double   toLat, toLon;
+        for (int i = 0; i < cnt; i++) {
+            double fromX = fromXA[i];
+            double fromY = fromYA[i];
+
+            if (n < 0) {
+                rrho0 *= -1.0;
+                fromX *= -1.0;
+                fromY *= -1.0;
+            }
+
+
+            double yd    = rrho0 - fromY;
+            double rho   = Math.sqrt(fromX * fromX + yd * yd);
+            double theta = Math.atan2(fromX, yd);
+            if (n < 0) {
+                rho *= -1.0;
+            }
+
+            toLat = Math.toDegrees(Math.asin((C
+                    - Math.pow((rho * n / EARTH_RADIUS), 2)) / (2 * n)));
+
+            toLon     = Math.toDegrees(theta / n + lon0);
+
+
+            toLatA[i] = (double) toLat;
+            toLonA[i] = (double) toLon;
         }
-
-
-        double yd = rrho0-fromY;
-        double rho = Math.sqrt(fromX * fromX + yd*yd);
-        double theta = Math.atan2( fromX, yd);
-        if (n < 0) rho *= -1.0;
-
-        toLat = Math.toDegrees(Math.asin((C-Math.pow((rho*n/EARTH_RADIUS),2))/(2*n)));
-
-        toLon = Math.toDegrees(theta/n + lon0);
-
-             				 
-              toLatA[i]= (double)toLat;
-              toLonA[i]= (double)toLon;
-	}
-	return to;
+        return to;
     }
 
-/*ENDGENERATED*/
+    /*ENDGENERATED*/
 
     /**
      * Test
@@ -594,7 +608,7 @@ section above and generates the following 6 methods
      * @param args not used
      */
     public static void main(String[] args) {
-        AlbersEqualArea     a = new AlbersEqualArea(23, -96, 29.5, 45.5);
+        AlbersEqualArea a = new AlbersEqualArea(23, -96, 29.5, 45.5);
         System.out.println("ll = 35N 75W");
         ProjectionPointImpl p = a.latLonToProj(35, -75);
         System.out.println("proj point = " + p);
@@ -603,18 +617,4 @@ section above and generates the following 6 methods
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

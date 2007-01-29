@@ -55,6 +55,11 @@ public class StructureMembers {
     members.add( m);
   }
 
+  public void addMember(String name, String desc, String units, DataType dtype, int []shape) {
+    Member m = new Member(name, desc, units, dtype, shape);
+    addMember( m);
+  }
+
   /**
    * Get the total size of the Structure in bytes.
    */

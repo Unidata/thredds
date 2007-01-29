@@ -45,11 +45,13 @@ public class CoordTransBuilder {
     registerTransform("albers_conical_equal_area", AlbersEqualArea.class);
     registerTransform("lambert_azimuthal_equal_area", LambertAzimuthal.class);
     registerTransform("lambert_conformal_conic", LambertConformalConic.class);
+    registerTransform("mcidas_area", McIDASArea.class);
     registerTransform("mercator", Mercator.class);
     registerTransform("orthographic", Orthographic.class);
     registerTransform("polar_stereographic", PolarStereographic.class);
     registerTransform("stereographic", Stereographic.class);
     registerTransform("transverse_mercator", TransverseMercator.class);
+    registerTransform("vertical_perspective", VerticalPerspective.class);
     registerTransform("UTM", UTM.class);
 
     registerTransform("atmosphere_sigma_coordinate", VAtmSigma.class);

@@ -185,6 +185,7 @@ public class URLDumpPane extends TextHistoryPane {
 
     httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
 
+    
     HttpMethodBase m = null;
     if (cmd == GET)
       m = new GetMethod(urlString);

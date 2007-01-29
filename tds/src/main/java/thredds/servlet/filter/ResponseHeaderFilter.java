@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.servlet;
+package thredds.servlet.filter;
 
 import java.io.*;
 import javax.servlet.*;
@@ -31,47 +31,44 @@ import java.util.*;
  * @see "http://www.onjava.com/pub/a/onjava/2004/03/03/filters.html"
  */
 
-/*  cache for 1 hour:
-  <filter>
-  <filter-name>
-   ResponseHeaderFilter</filter-name>
-  <filter-class>
-   com.jspbook.ResponseHeaderFilter</filter-class>
-  <init-param>
-    <param-name>
-     Cache-Control</param-name>
-    <param-value>
-     max-age=3600</param-value>
-  </init-param>
-</filter>
+/*  cache for 10 days:
 
-<filter-mapping>
-  <filter-name>
-   ResponseHeaderFilter</filter-name>
-  <url-pattern>/logo.png</url-pattern>
-</filter-mapping>
+  <filter>
+    <filter-name>Cache10dayFilter</filter-name>
+    <filter-class>thredds.servlet.ResponseHeaderFilter</filter-class>
+    <init-param>
+      <param-name>Cache-Control</param-name>
+      <param-value>max-age=864000</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>Cache10dayFilter</filter-name>
+    <url-pattern>/folder.gif</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Cache10dayFilter</filter-name>
+    <url-pattern>/thredds.jpg</url-pattern>
+  </filter-mapping>
 
  do not cache:
  
 <filter>
-  <filter-name>
-   ResponseHeaderFilter</filter-name>
-  <filter-class>
-   com.jspbook.ResponseHeaderFilter</filter-class>
+  <filter-name>NoCacheFilter</filter-name>
+   <filter-class>thredds.servlet.ResponseHeaderFilter</filter-class>
   <init-param>
     <param-name>Cache-Control</param-name>
-    <param-value>
-      private,no-cache,no-store</param-value>
+    <param-value>private,no-cache,no-store</param-value>
    </init-param>
 </filter>
 
  */
   
 public class ResponseHeaderFilter implements Filter {
-  FilterConfig fc;
+  private FilterConfig fc;
 
-  public void doFilter(ServletRequest req, ServletResponse res,
-                       FilterChain chain)
+  public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
                        throws IOException, ServletException {
     HttpServletResponse response = (HttpServletResponse) res;
 

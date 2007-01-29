@@ -249,7 +249,7 @@ public class JplQuikSCAT extends DqcHandler
 
     // Create the SelectService and add to the DQC.
     SelectService selectService = new SelectService( "serviceType", "Select service type." );
-    selectService.addServiceChoice( "OpenDAP", "OPeNDAP/DODS", null );
+    selectService.addServiceChoice( "OpenDAP", "OPeNDAP/DODS", null, null, null );
     selectService.setRequired( "false" );
     dqc.addUniqueSelector( selectService );
     dqc.setServiceSelector( selectService );

@@ -1,5 +1,5 @@
 /*
- * $Id:LatLonPointImpl.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: LatLonPointImpl.java,v 1.23 2006/11/18 19:03:12 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc;
 
 
@@ -34,7 +35,7 @@ import ucar.unidata.util.Format;
  * @see LatLonPoint
  * @author Russ Rew
  * @author John Caron
- * @version $Id:LatLonPointImpl.java 63 2006-07-12 21:50:51Z edavis $
+ * @version $Id: LatLonPointImpl.java,v 1.23 2006/11/18 19:03:12 dmurray Exp $
  */
 public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
 
@@ -341,116 +342,121 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
 
 }
 
-/* Change History:
-   $Log: LatLonPointImpl.java,v $
-   Revision 1.22  2006/01/25 18:05:17  jeffmc
-   Add a equals(object) method
+/*
+ *  Change History:
+ *  $Log: LatLonPointImpl.java,v $
+ *  Revision 1.23  2006/11/18 19:03:12  dmurray
+ *  jindent
+ *
+ *  Revision 1.22  2006/01/25 18:05:17  jeffmc
+ *  Add a equals(object) method
+ *
+ *  Revision 1.21  2005/05/27 00:33:42  caron
+ *  remove StringBufffer object variable - no need to optimize gc anymore
+ *
+ *  Revision 1.20  2005/05/13 18:29:09  jeffmc
+ *  Clean up the odd copyright symbols
+ *
+ *  Revision 1.19  2005/05/06 14:01:55  dmurray
+ *  run jindent on these.  It would be good if we could agree on using
+ *  Jindent for the common packages.
+ *
+ *  Revision 1.18  2005/02/19 22:17:47  caron
+ *  no message
+ *
+ *  Revision 1.17  2004/12/10 15:07:50  dmurray
+ *  Jindent John's changes
+ *
+ *  Revision 1.16  2004/09/22 21:22:58  caron
+ *  mremove nc2 dependence
+ *
+ *  Revision 1.15  2004/07/30 16:24:40  dmurray
+ *  Jindent and javadoc
+ *
+ *  Revision 1.14  2004/06/07 20:17:42  caron
+ *  use approx float compare
+ *
+ *  Revision 1.13  2004/02/27 21:21:27  jeffmc
+ *  Lots of javadoc warning fixes
+ *
+ *  Revision 1.12  2004/01/29 17:34:57  jeffmc
+ *  A big sweeping checkin after a big sweeping reformatting
+ *  using the new jindent.
+ *
+ *  jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
+ *  templates there is a '_more_' to remind us to fill these in.
+ *
+ *  Revision 1.11  2003/06/03 20:06:17  caron
+ *  fix javadocs
+ *
+ *  Revision 1.10  2003/04/15 16:03:05  jeffmc
+ *  Lots of changes. Mostly added in a MACROBDY tag in the leaf proj classes
+ *  so we only have to define the actual math once. The script convert.tcl
+ *  is used to generate the different projToLatLon/latLonToProj methods.
+ *
+ *  Cleaned up the use of hard coded indices into the latlon and proj arrays.
+ *
+ *  Added utility attribute setting methods in ProjectionImpl for the leaf classes
+ *  to use.
+ *
+ *  The old way of using the workP and workL objects was not thread safe, there
+ *  was no synchronization on those objects. Changed the leaf methods
+ *  to take a workP and workL object that can be created by the parent class method.
+ *  For individual conversion calls it is still no thread safe but for the bulk
+ *  ones it is.
+ *
+ *  Revision 1.9  2003/04/08 15:59:06  caron
+ *  rework for nc2 framework
+ *
+ *  Revision 1.1  2002/12/13 00:53:09  caron
+ *  pass 2
+ *
+ *  Revision 1.1.1.1  2002/02/26 17:24:45  caron
+ *  import sources
+ *
+ *  Revision 1.4  2000/08/18 04:15:16  russ
+ *  Licensed under GNU LGPL.
+ *
+ *  Revision 1.3  2000/05/16 22:24:56  caron
+ *  add latToString, LonToString
+ *
+ *  Revision 1.2  2000/05/09 20:42:49  caron
+ *  change deprecated Format method
+ *
+ *  Revision 1.1  1999/12/16 23:06:56  caron
+ *  projection changes
+ *
+ *  Revision 1.6  1999/07/07 19:37:08  dmurray
+ *  setLat/setLon vs setLatitude/setLongitude changes
+ *
+ *  Revision 1.5  1999/07/07 19:33:22  dmurray
+ *  more changes for setLat, setLon deprecation and setLatitude and setLongitude
+ *  additions
+ *
+ *  Revision 1.4  1999/07/07 19:18:38  dmurray
+ *  deprecated setLat, setLon, added setLatitude, setLongitude to go with
+ *  corresponding get methods
+ *
+ *  Revision 1.3  1999/06/03 01:43:49  caron
+ *  remove the damn controlMs
+ *
+ *  Revision 1.2  1999/06/03 01:26:15  caron
+ *  another reorg
+ *
+ *  Revision 1.1.1.1  1999/05/21 17:33:52  caron
+ *  startAgain
+ *
+ * # Revision 1.5  1999/03/03  19:58:11  caron
+ * # more java2D changes
+ * #
+ * # Revision 1.4  1999/02/15  23:05:17  caron
+ * # upgrade to java2D, new ProjectionManager
+ * #
+ * # Revision 1.3  1998/12/14  17:10:47  russ
+ * # Add comment for accumulating change histories.
+ * #
+ */
 
-   Revision 1.21  2005/05/27 00:33:42  caron
-   remove StringBufffer object variable - no need to optimize gc anymore
-
-   Revision 1.20  2005/05/13 18:29:09  jeffmc
-   Clean up the odd copyright symbols
-
-   Revision 1.19  2005/05/06 14:01:55  dmurray
-   run jindent on these.  It would be good if we could agree on using
-   Jindent for the common packages.
-
-   Revision 1.18  2005/02/19 22:17:47  caron
-   no message
-
-   Revision 1.17  2004/12/10 15:07:50  dmurray
-   Jindent John's changes
-
-   Revision 1.16  2004/09/22 21:22:58  caron
-   mremove nc2 dependence
-
-   Revision 1.15  2004/07/30 16:24:40  dmurray
-   Jindent and javadoc
-
-   Revision 1.14  2004/06/07 20:17:42  caron
-   use approx float compare
-
-   Revision 1.13  2004/02/27 21:21:27  jeffmc
-   Lots of javadoc warning fixes
-
-   Revision 1.12  2004/01/29 17:34:57  jeffmc
-   A big sweeping checkin after a big sweeping reformatting
-   using the new jindent.
-
-   jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
-   templates there is a '_more_' to remind us to fill these in.
-
-   Revision 1.11  2003/06/03 20:06:17  caron
-   fix javadocs
-
-   Revision 1.10  2003/04/15 16:03:05  jeffmc
-   Lots of changes. Mostly added in a MACROBDY tag in the leaf proj classes
-   so we only have to define the actual math once. The script convert.tcl
-   is used to generate the different projToLatLon/latLonToProj methods.
-
-   Cleaned up the use of hard coded indices into the latlon and proj arrays.
-
-   Added utility attribute setting methods in ProjectionImpl for the leaf classes
-   to use.
-
-   The old way of using the workP and workL objects was not thread safe, there
-   was no synchronization on those objects. Changed the leaf methods
-   to take a workP and workL object that can be created by the parent class method.
-   For individual conversion calls it is still no thread safe but for the bulk
-   ones it is.
-
-   Revision 1.9  2003/04/08 15:59:06  caron
-   rework for nc2 framework
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:45  caron
-   import sources
-
-   Revision 1.4  2000/08/18 04:15:16  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.3  2000/05/16 22:24:56  caron
-   add latToString, LonToString
-
-   Revision 1.2  2000/05/09 20:42:49  caron
-   change deprecated Format method
-
-   Revision 1.1  1999/12/16 23:06:56  caron
-   projection changes
-
-   Revision 1.6  1999/07/07 19:37:08  dmurray
-   setLat/setLon vs setLatitude/setLongitude changes
-
-   Revision 1.5  1999/07/07 19:33:22  dmurray
-   more changes for setLat, setLon deprecation and setLatitude and setLongitude
-   additions
-
-   Revision 1.4  1999/07/07 19:18:38  dmurray
-   deprecated setLat, setLon, added setLatitude, setLongitude to go with
-   corresponding get methods
-
-   Revision 1.3  1999/06/03 01:43:49  caron
-   remove the damn controlMs
-
-   Revision 1.2  1999/06/03 01:26:15  caron
-   another reorg
-
-   Revision 1.1.1.1  1999/05/21 17:33:52  caron
-   startAgain
-
-# Revision 1.5  1999/03/03  19:58:11  caron
-# more java2D changes
-#
-# Revision 1.4  1999/02/15  23:05:17  caron
-# upgrade to java2D, new ProjectionManager
-#
-# Revision 1.3  1998/12/14  17:10:47  russ
-# Add comment for accumulating change histories.
-#
-*/
 
 
 

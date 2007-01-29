@@ -1,5 +1,5 @@
 /*
- * $Id:Bearing.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: Bearing.java,v 1.24 2006/11/18 19:03:12 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc;
 
 
@@ -32,7 +33,7 @@ import java.lang.Math;
  * two lat-lon positions on the Earth's surface. Reference ellipsoid is the WGS-84.
  *
  * @author Unidata Development Team
- * @version $Id:Bearing.java 63 2006-07-12 21:50:51Z edavis $
+ * @version $Id: Bearing.java,v 1.24 2006/11/18 19:03:12 dmurray Exp $
  */
 public class Bearing {
 
@@ -45,7 +46,7 @@ public class Bearing {
     /** separation in kilometers */
     private double distance;
 
-    /**  Earth radius */
+    /** Earth radius */
     private static final double A = 6378137.0;  // in meters
 
     /** Some constant */
@@ -222,8 +223,8 @@ public class Bearing {
         D   = (0.375 * X * X - 1.) * X;
         X   = E * CY;
         S   = 1. - E - E;
-        S = ((((SY * SY * 4. - 3.) * S * CZ * D / 6. - X) * D / 4. + CZ) * SY * D + Y)
-            * C * A * R;
+        S = ((((SY * SY * 4. - 3.) * S * CZ * D / 6. - X) * D / 4. + CZ) * SY
+             * D + Y) * C * A * R;
 
         result.distance = S / 1000.0;  // meters to km
         result.azimuth  = FAZ * deg;   // radians to degrees
@@ -473,9 +474,10 @@ public class Bearing {
         D     = ((E * CY * C + CZ) * SY * C + Y) * SA;
         GLON2 = GLON1 + X - (1. - C) * D * F;
         BAZ   = (Math.atan2(SA, BAZ) + Math.PI) * deg;
-        result.setLatitude(GLAT2*deg);
-        result.setLongitude(GLON2*deg);
+        result.setLatitude(GLAT2 * deg);
+        result.setLongitude(GLON2 * deg);
         return result;
     }
 
 }
+

@@ -24,6 +24,10 @@ public class TestStationDataset extends TestCase {
   }
 
 
+  public void testMultidimStationObsDataset() throws IOException {
+    testAllMethods( topDir+"misc/multidim.nc");
+  }
+
   public void testUnidataStationObsDataset() throws IOException {
     testAllMethods( topDir+"ldm/20050804_metar.nc");
   }

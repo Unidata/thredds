@@ -138,11 +138,12 @@ public class TypedDatasetFactory {
   /**
    * Open a dataset as a TypedDataset.
    *
-   * @param datatype open this kind of Typed Dataset; may be null, which means search all factories
+   * @param datatype open this kind of Typed Dataset; may be null, which means search all factories.
+   *   If datatype is not null, only return correct TypedDataset (eg PointObsDataset for DataType.POINT).
    * @param ncd  the NetcdfDataset to wrap in a TypedDataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
-   * @return a subclass of TypedDataset
+   * @return a subclass of TypedDataset, or null if cant find
    */
   static public TypedDataset open( thredds.catalog.DataType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
 
@@ -160,6 +161,11 @@ public class TypedDatasetFactory {
 
     // Factory not found
     if (null == useClass) {
+
+      // POINT is also a STATION
+      if (datatype == DataType.POINT) {
+        return open( thredds.catalog.DataType.STATION, ncd, task, errlog);
+      }
 
       // if explicitly requested, give em a GridDataset even if no Grids
       if (datatype == DataType.GRID) {

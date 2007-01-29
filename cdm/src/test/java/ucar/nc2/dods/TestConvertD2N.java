@@ -44,7 +44,7 @@ public class TestConvertD2N {
 
     // get the DataDDS
     System.out.println("--DConnect.getData CE= "+CE);
-    DataDDS dataDDS = dodsConnection.getData("?"+CE, null);
+    DataDDS dataDDS = dodsConnection.getData("?"+CE);
     dataDDS.print(System.out);
     System.out.println();
 
@@ -80,7 +80,7 @@ public class TestConvertD2N {
     DConnect dodsConnection = new DConnect(urlName, true);
 
     // get the DataDDS
-    DataDDS dataDDS = dodsConnection.getData("?", null);
+    DataDDS dataDDS = dodsConnection.getData("?");
     dataDDS.print(System.out);
     System.out.println();
     DodsV root = DodsV.parseDataDDS( dataDDS);

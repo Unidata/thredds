@@ -37,24 +37,32 @@ public class Index2NC  {
       if (gr.levelType1 == 141) return true;
       return false;
     } else {
-      return (gr.levelType2 != 255);
+      if (gr.levelType1 == 0) return false;
+      if (gr.levelType2 == 255) return false;
+      return true;      
+      // return (gr.levelType2 != 255);
     }
   }
 
   static public String makeLevelName(Index.GribRecord gr, TableLookup lookup) {
     String vname = lookup.getLevelName( gr);
-    boolean isGrib1 = (lookup instanceof Grib1Lookup); // for grib2, we need to add the layer to disambiguate
-    return (!isGrib1 && isLayer(gr, lookup)) ? vname + "_layer" : vname;
+    boolean isGrib1 = (lookup instanceof Grib1Lookup);
+    if (isGrib1) return vname;
+
+    // for grib2, we need to add the layer to disambiguate
+    return isLayer(gr, lookup) ? vname + "_layer" : vname;
   }
 
   static public String makeVariableName(Index.GribRecord gr, TableLookup lookup) {
     Parameter param = lookup.getParameter(gr);
-    return param.getDescription() + "_" + makeLevelName( gr, lookup);
+    String levelName = makeLevelName( gr, lookup);
+    return (levelName.length() == 0) ? param.getDescription() : param.getDescription() + "_" + levelName;
   }
 
   static public String makeLongName(Index.GribRecord gr, TableLookup lookup) {
     Parameter param = lookup.getParameter(gr);
-    return param.getDescription() + " @ " + makeLevelName( gr, lookup);
+    String levelName = makeLevelName( gr, lookup);
+    return (levelName.length() == 0) ? param.getDescription() : param.getDescription() + " @ " + makeLevelName( gr, lookup);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////

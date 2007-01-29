@@ -133,7 +133,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     sbuff.append("  Variables ("+vars.size()+")\n");
     for (int i = 0; i < vars.size(); i++) {
       VariableSimpleIF v = (VariableSimpleIF) vars.get(i);
-      sbuff.append("    "+v.getShortName()+" "+v.getDescription()+" "+v.getUnitsString()+" "+v.getDataType()+" "+"\n");
+      sbuff.append("    name='"+v.getShortName()+"' desc='"+v.getDescription()+"' units='"+v.getUnitsString()+"' type="+v.getDataType()+"\n");
     }
 
     sbuff.append("\nparseInfo=\n");

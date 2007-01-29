@@ -229,7 +229,7 @@ public class GribHorizCoordSys {
         makeMercator();
         break;
       case TableLookup.Orthographic:
-        makeOrthographic();
+        makeSpaceViewOrOthographic();
         break;
       default:
         throw new UnsupportedOperationException("unknown projection = " + gdsIndex.grid_type);
@@ -395,37 +395,52 @@ public class GribHorizCoordSys {
     }
   }
 
-  private void makeOrthographic() {
-    double Lat0 = gdsIndex.readDouble("Lap");
-    double Lon0 = gdsIndex.readDouble("Lop");
+  private void makeSpaceViewOrOthographic() {
+    double Lat0 = gdsIndex.readDouble("Lap"); // sub-satellite point lat
+    double Lon0 = gdsIndex.readDouble("Lop");  // sub-satellite point lon
 
-    double xp = gdsIndex.readDouble("Xp");
+    double xp = gdsIndex.readDouble("Xp"); // sub-satellite point in grid lengths
     double yp = gdsIndex.readDouble("Yp");
 
-    double centerx = xp / 1000;  // units of grid length
-    double centery = yp / 1000;
-
-    double dx = gdsIndex.readDouble("Dx");
+    double dx = gdsIndex.readDouble("Dx"); // apparent diameter in units of grid lengths
     double dy = gdsIndex.readDouble("Dy");
 
-    double gridLengthX = 2* Earth.getRadius() / dx; // m
-    double gridLengthY = 2* Earth.getRadius() / dy; // m
+    double major_axis = gdsIndex.readDouble("major_axis_earth"); // km
+    double minor_axis = gdsIndex.readDouble("minor_axis_earth"); // km
 
-    gdsIndex.dx = gridLengthX; // meters
-    gdsIndex.dy = gridLengthY;
+    // Nr = altitude of camera from center, in units of radius
+    double nr = gdsIndex.readDouble("Nr")  * 1e-6 ;
+    double apparentDiameter = 2 * Math.sqrt((nr-1)/(nr+1)); // apparent diameter, units of radius (see Snyder p 173)
 
-    startx = .001 * gridLengthX * (centerx - gdsIndex.nx/2);  // km
-    starty = .001 * gridLengthY * (centery - gdsIndex.ny/2);
+    // app diameter kmeters / app diameter grid lengths = m per grid length
+    double gridLengthX = major_axis * apparentDiameter / dx;
+    double gridLengthY = minor_axis * apparentDiameter / dy;
 
-    double nr = gdsIndex.readDouble("Nr");
-    double rx = 2 * Math.asin( 10e6/nr)/dx * Earth.getRadius();
-    double ry = 2 * Math.asin( 10e6/nr)/dy * Earth.getRadius();
+    gdsIndex.dx = 1000 * gridLengthX; // meters
+    gdsIndex.dy = 1000 * gridLengthY;
 
-    proj = new Orthographic(Lat0, Lon0);
+    startx = -gridLengthX * xp;  // km
+    starty = -gridLengthY * yp;
 
-    attributes.add(new Attribute("grid_mapping_name", "orthographic"));
-    attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lon0)));
-    attributes.add(new Attribute("latitude_of_projection_origin", new Double(Lat0)));
+    double radius = Earth.getRadius() / 1000.0; // km
+
+    if (nr == 1111111111.0) { // LOOK: not sure how all ones will appear as a double, need example
+      proj = new Orthographic(Lat0, Lon0, radius);
+
+      attributes.add(new Attribute("grid_mapping_name", "orthographic"));
+      attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lon0)));
+      attributes.add(new Attribute("latitude_of_projection_origin", new Double(Lat0)));
+
+    } else { // "space view perspective"
+
+      double height = (nr - 1.0)  * radius;  // height = the height of the observing camera in km
+      proj = new VerticalPerspectiveView(Lat0, Lon0, radius, height);
+
+      attributes.add(new Attribute("grid_mapping_name", "vertical_perspective"));
+      attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lon0)));
+      attributes.add(new Attribute("latitude_of_projection_origin", new Double(Lat0)));
+      attributes.add(new Attribute("height_above_earth", new Double(height)));
+    }
 
     if (GribServiceProvider.debugProj) {
 

@@ -15,6 +15,35 @@
     <param-value></param-value>
   </context-param>
 
+  <filter>
+    <filter-name>Cache10dayFilter</filter-name>
+    <filter-class>thredds.servlet.filter.ResponseHeaderFilter</filter-class>
+    <init-param>
+      <param-name>Cache-Control</param-name>
+      <param-value>max-age=864000</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>Cache10dayFilter</filter-name>
+    <url-pattern>/folder.gif</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Cache10dayFilter</filter-name>
+    <url-pattern>/thredds.jpg</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Cache10dayFilter</filter-name>
+    <url-pattern>/unidataLogo.gif</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Cache10dayFilter</filter-name>
+    <url-pattern>/upc.css</url-pattern>
+  </filter-mapping>
+
   <!-- listeners -->
   <!--listener>
     <listener-class>thredds.servlet.ServletListener</listener-class>
@@ -43,7 +72,8 @@
     </init-param>
     <init-param>
       <param-name>DebugOn</param-name>
-      <param-value></param-value> <!-- dods.util.Debug flags -->
+      <param-value></param-value>
+      <!-- dods.util.Debug flags -->
     </init-param>
     <load-on-startup>2</load-on-startup>
   </servlet>
@@ -104,6 +134,55 @@
     <servlet-class>thredds.servlet.StationObsCollectionServlet</servlet-class>
   </servlet>
 
+   <!-- Restricted Access (using Tomcat) -->
+  <servlet>
+    <servlet-name>RestrictedDataset</servlet-name>
+    <servlet-class>thredds.servlet.restrict.RestrictedDatasetServlet</servlet-class>
+
+    <init-param>
+      <param-name>Authorizer</param-name>
+      <param-value>thredds.servlet.restrict.TomcatAuthorizer</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>useSSL</param-name>
+      <param-value>false</param-value>
+    </init-param>
+
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <!-- Restricted Access (using CAS)
+  <servlet>
+    <servlet-name>RestrictedDataset</servlet-name>
+    <servlet-class>thredds.servlet.restrict.RestrictedDatasetServlet</servlet-class>
+
+    <init-param>
+      <param-name>Authorizer</param-name>
+      <param-value>thredds.servlet.restrict.CASAuthorizer</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>RoleDatabase</param-name>
+      <param-value>C:/Program Files (x86)/Apache Software Foundation/apache-tomcat-5.5.20/conf/tomcat-users.xml</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
+      <param-value>https://localhost:8443/cas/login</param-value>
+    </init-param>
+    <init-param>
+      <param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
+      <param-value>https://localhost:8443/cas/proxyValidate</param-value>
+    </init-param>
+    <init-param>
+      <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
+      <param-value>localhost:8080</param-value>
+    </init-param>
+
+    <load-on-startup>2</load-on-startup>
+  </servlet>  -->
+
   <!-- OGC Web Coverage server -->
   <servlet>
     <servlet-name>WCS</servlet-name>
@@ -148,25 +227,25 @@
   <servlet>
     <servlet-name>DLwriter</servlet-name>
     <servlet-class>thredds.servlet.DLwriterServlet</servlet-class>
-     <load-on-startup>10</load-on-startup>
+    <load-on-startup>10</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>View</servlet-name>
     <servlet-class>thredds.servlet.ViewServlet</servlet-class>
-     <load-on-startup>10</load-on-startup>
+    <load-on-startup>10</load-on-startup>
   </servlet>
 
-   <!-- Setup for the ADDE servlet.
-   <servlet>
-     <servlet-name>adde</servlet-name>
-     <servlet-class>thredds.adde.server.AddeServlet</servlet-class>
-     <init-param>
-        <param-name>DebugOn</param-name>
-        <param-value>AddeServlet/init AddeServlet/update AddeServlet/runTask AddeServlet/monitor AddeServlet/monitorStats AddeDataset/overlapFailure</param-value>
-      </init-param>
-      <load-on-startup>4</load-on-startup>
-    </servlet -->
+  <!-- Setup for the ADDE servlet.
+<servlet>
+  <servlet-name>adde</servlet-name>
+  <servlet-class>thredds.adde.server.AddeServlet</servlet-class>
+  <init-param>
+     <param-name>DebugOn</param-name>
+     <param-value>AddeServlet/init AddeServlet/update AddeServlet/runTask AddeServlet/monitor AddeServlet/monitorStats AddeDataset/overlapFailure</param-value>
+   </init-param>
+   <load-on-startup>4</load-on-startup>
+ </servlet -->
 
   <!-- default servlet -->
 
@@ -205,6 +284,11 @@
   <servlet-mapping>
     <servlet-name>ObsServer</servlet-name>
     <url-pattern>/obsServer/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>RestrictedDataset</servlet-name>
+    <url-pattern>/restrictedAccess/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -272,7 +356,7 @@
       <http-method>PUT</http-method>
       <!-- http-method>POST</http-method -->
     </web-resource-collection>
-    <auth-constraint />
+    <auth-constraint/>
   </security-constraint>
 
   <!-- This allows "remote configuration":
@@ -328,23 +412,22 @@
     </user-data-constraint>
   </security-constraint>
 
+  <!-- default restricted access uses DIGEST, but not HTTPS -->
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>testing</web-resource-name>
-      <url-pattern>/testSecurity</url-pattern>
+      <web-resource-name>restricted access datasets</web-resource-name>
+      <url-pattern>/restrictedAccess/*</url-pattern>
       <http-method>GET</http-method>
     </web-resource-collection>
     <auth-constraint>
-      <role-name>tdsConfig</role-name>
+      <role-name>restrictedDatasetUser</role-name>
     </auth-constraint>
-    <user-data-constraint>
-      <transport-guarantee>NONE</transport-guarantee>
-    </user-data-constraint>
   </security-constraint>
 
+  <!-- can only have one login-config for extire context. -->
   <login-config>
-    <auth-method>BASIC</auth-method>
-    <realm-name>Thredds Configuration</realm-name>
+    <auth-method>DIGEST</auth-method>
+    <realm-name>THREDDS Data Server</realm-name>
   </login-config>
 
   <!-- Define security roles. -->
@@ -352,4 +435,20 @@
     <description>The configuration role allows users to configure the THREDDS server.</description>
     <role-name>tdsConfig</role-name>
   </security-role>
+
+  <security-role>
+    <description>User who can access restricted datasets.</description>
+    <role-name>restrictedDatasetUser</role-name>
+  </security-role>
+
+  <security-role>
+    <description>User who can access tigge datasets.</description>
+    <role-name>tiggeData</role-name>
+  </security-role>
+
+  <security-role>
+    <description>User who can access ccsm datasets.</description>
+    <role-name>ccsmData</role-name>
+  </security-role>
+
 </web-app>

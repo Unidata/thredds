@@ -213,7 +213,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String id = dsElem.getAttributeValue("ID");
     String serviceName = dsElem.getAttributeValue("serviceName");
     String urlPath = dsElem.getAttributeValue("urlPath");
-    String resourceControl = dsElem.getAttributeValue("resourceControl");
+    String restrictAccess = dsElem.getAttributeValue("restrictAccess");
 
     DataType dataType = null;
     if (dataTypeName != null) {
@@ -234,7 +234,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (authority != null) dataset.setAuthority( authority);
     if (id != null) dataset.setID( id);
     if (harvest != null) dataset.setHarvest( harvest.equalsIgnoreCase("true"));
-    if (resourceControl != null) dataset.setResourceControl( resourceControl);
+    if (restrictAccess != null) dataset.setResourceControl( restrictAccess);
 
     if (collectionTypeName != null) {
       CollectionType collectionType = CollectionType.getType( collectionTypeName);
@@ -1627,8 +1627,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     catrefElem.setAttribute("title", name, xlinkNS);
     if ( catRef.getID() != null )
       catrefElem.setAttribute("ID", catRef.getID() );
-    if (catRef.getResourceControl() != null)
-      catrefElem.setAttribute("resourceControl", catRef.getResourceControl());
+    if (catRef.getRestrictAccess() != null)
+      catrefElem.setAttribute("restrictAccess", catRef.getRestrictAccess());
     catrefElem.setAttribute("name", "");
 
     /* List list = catRef.getDocumentation();
@@ -2021,8 +2021,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       dsElem.setAttribute("ID", ds.getID());
     if (ds.getUrlPath() != null)
       dsElem.setAttribute("urlPath", ds.getUrlPath());
-    if (ds.getResourceControl() != null)
-      dsElem.setAttribute("resourceControl", ds.getResourceControl());
+    if (ds.getRestrictAccess() != null)
+      dsElem.setAttribute("restrictAccess", ds.getRestrictAccess());
 
     // services (local only)
     Iterator services = ds.getServicesLocal().iterator();

@@ -1,5 +1,5 @@
 /*
- * $Id: Orthographic.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: Orthographic.java,v 1.2 2006/11/18 19:03:23 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -39,7 +40,7 @@ import ucar.units.*;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author Unidata Development Team
- *   @version $Id: Orthographic.java 63 2006-07-12 21:50:51Z edavis $
+ *   @version $Id: Orthographic.java,v 1.2 2006/11/18 19:03:23 dmurray Exp $
  */
 
 public class Orthographic extends ProjectionImpl {
@@ -597,10 +598,4 @@ public class Orthographic extends ProjectionImpl {
         System.out.println("ll = " + ll);
     }
 }
-
-
-
-
-
-
 

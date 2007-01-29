@@ -23,16 +23,25 @@ package ucar.nc2.thredds;
 
 import ucar.nc2.*;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.Station;
 import ucar.nc2.util.CancelTask;
+import ucar.ma2.*;
+import ucar.ma2.DataType;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.HttpURLConnection;
 
 import thredds.catalog.*;
 import thredds.catalog.query.*;
+import thredds.util.IO;
 
 /**
  * This implements a StationObsDataset with a DQC.
@@ -53,39 +62,58 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
     }
 
     // have a look at what selectors there are before proceeding
-    SelectStation ss = null;
-    SelectRangeDate sd = null;
-    SelectService sss = null;
+    SelectStation selStation = null;
+    SelectRangeDate selDate = null;
+    SelectService selService = null;
+    SelectGeoRegion selRegion = null;
+
     ArrayList selectors = dqc.getSelectors();
     for (int i = 0; i < selectors.size(); i++) {
       Selector s =  (Selector) selectors.get(i);
       if (s instanceof SelectStation)
-        ss = (SelectStation) s;
+        selStation = (SelectStation) s;
       if (s instanceof SelectRangeDate)
-        sd = (SelectRangeDate) s;
+        selDate = (SelectRangeDate) s;
       if (s instanceof SelectService)
-        sss = (SelectService) s;
+        selService = (SelectService) s;
+      if (s instanceof SelectGeoRegion)
+        selRegion = (SelectGeoRegion) s;
+     }
+
+    // gotta have these
+    if (selService == null) {
+      errlog.append("DqcStationObsDataset must have Service selector");
+      return null;
     }
-    if (ss == null) {
+    if (selStation == null) {
       errlog.append("DqcStationObsDataset must have Station selector");
       return null;
     }
+    if (selDate == null) {
+      errlog.append("DqcStationObsDataset must have Date selector");
+      return null;
+    }
+    if (selRegion == null) {
+      errlog.append("DqcStationObsDataset must have GeoRegion selector");
+      return null;
+    }
 
-    // for the moment, only doing XML
+    // decide on which service
     SelectService.ServiceChoice wantServiceChoice = null;
-    List services = sss.getChoices();
+    List services = selService.getChoices();
     for (int i = 0; i < services.size(); i++) {
       SelectService.ServiceChoice serviceChoice =  (SelectService.ServiceChoice) services.get(i);
-      if (serviceChoice.getService().equals("HTTPServer") && serviceChoice.getDataFormat().equals("text/xml"))
+      if (serviceChoice.getService().equals("HTTPServer") && serviceChoice.getDataFormat().equals("text/plain")
+         && serviceChoice.getReturns().equals("data")     ) // LOOK kludge
         wantServiceChoice = serviceChoice;
     }
 
     if (wantServiceChoice == null){
-      errlog.append("DqcStationObsDataset must have HTTPServer Service with DataFormat=text/xml");
+      errlog.append("DqcStationObsDataset must have HTTPServer Service with DataFormat=text/plain, and returns=data");
       return null;
     }
 
-    return new DqcStationObsDataset( ds, dqc, sss, ss, sd, wantServiceChoice);
+    return new DqcStationObsDataset( ds, dqc, selService, wantServiceChoice, selStation, selRegion, selDate);
   }
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -95,17 +123,21 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   private SelectService selService;
   private SelectStation selStation;
   private SelectRangeDate selDate;
+  private SelectGeoRegion selRegion;
   private SelectService.ServiceChoice service;
 
   private boolean debugQuery = true;
 
-  private DqcStationObsDataset(InvDataset ds, QueryCapability dqc, SelectService selService, SelectStation selStation,
-      SelectRangeDate selDate, SelectService.ServiceChoice service) {
+  private StructureMembers members;
+
+  private DqcStationObsDataset(InvDataset ds, QueryCapability dqc, SelectService selService, SelectService.ServiceChoice service,
+      SelectStation selStation, SelectGeoRegion selRegion, SelectRangeDate selDate) {
     super();
     this.ds = ds;
     this.dqc = dqc;
     this.selService = selService;
     this.selStation = selStation;
+    this.selRegion = selRegion;
     this.selDate = selDate;
     this.service = service;
 
@@ -118,10 +150,17 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
     startDate = new Date();
     endDate = new Date();
 
-    //startDate = sd.getStart();
-    //endDate = sd.getEnd();
+    try {
+      timeUnit = new DateUnit("hours since 1991-01-01T00:00");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
 
     // LOOK need to add typed variables
+
+     members = new StructureMembers( "fake");
+     members.addMember("line", null, null, ucar.ma2.DataType.STRING, new int [] {1});
 
   }
 
@@ -138,29 +177,38 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
     return ((DqcStation)s).getObservations();
   }
 
-  private void makeQuery( Station s) {
+  private ArrayList makeQuery( Station s) throws IOException {
+
      // construct the query
      StringBuffer queryb = new StringBuffer();
      queryb.append( dqc.getQuery().getUriResolved().toString());
 
      ArrayList choices = new ArrayList();
+     //choices.add("{service}");
+     //choices.add(service.getValue());
+     //selService.appendQuery( queryb, choices);
+     queryb.append( "returns=text&dtime=3day&");
+
+     choices.clear();
      choices.add("{value}");
      choices.add(s.getName());
      selStation.appendQuery( queryb, choices);
 
-     if (selDate != null) {
+     /* if (selDate != null) {
        choices = new ArrayList();
        choices.add("{value}");
        choices.add("all");
        selDate.appendQuery( queryb, choices);
-     }
+     } */
 
      String queryString = queryb.toString();
      if (debugQuery) {
        System.out.println("dqc makeQuery= "+queryString);
      }
 
-     // fetch the catalog
+     return readText(s, queryString);
+
+     /* fetch the catalog
      InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // use default factory
      InvCatalog catalog = factory.readXML( queryString);
      StringBuffer buff = new StringBuffer();
@@ -172,8 +220,53 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
      if (debugQuery) {
        System.out.println("dqc/showQueryResult catalog check msgs= "+buff.toString());
        System.out.println("  query result =\n"+thredds.util.IO.readURLcontents(queryString));
-     }
+     } */
    }
+
+  private ArrayList readText(Station s, String urlString) throws IOException {
+    ArrayList obsList = new ArrayList();
+
+    URL url;
+    java.io.InputStream is = null;
+    try {
+      url =  new URL( urlString);
+    } catch (MalformedURLException e) {
+      throw new IOException( "** MalformedURLException on URL <"+urlString+">\n"+e.getMessage()+"\n");
+    }
+
+    try {
+      java.net.URLConnection connection = url.openConnection();
+
+      if (connection instanceof HttpURLConnection) {
+        java.net.HttpURLConnection httpConnection = (HttpURLConnection) connection;
+        // check response code is good
+        int responseCode = httpConnection.getResponseCode();
+        if (responseCode/100 != 2)
+          throw new IOException( "** Cant open URL <"+urlString+">\n Response code = " +responseCode
+              +"\n"+httpConnection.getResponseMessage()+"\n");
+      }
+
+      // read it
+      is = connection.getInputStream();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+      while (true) {
+        String line = reader.readLine();
+        if (line == null) break;
+
+        obsList.add( new DqcObsImpl(s, 0, line));
+      }
+
+
+    } catch (java.net.ConnectException e) {
+        throw new IOException( "** ConnectException on URL: <"+urlString+">\n"+
+          e.getMessage()+"\nServer probably not running");
+
+    } finally {
+      if (is != null) is.close();
+    }
+
+    return obsList;
+  }
 
   private class DqcStation extends StationImpl {
 
@@ -187,11 +280,9 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       this.alt = s.getLocation().getElevation();
     }
 
-    // LOOK: currently implemting only "get all"
+    // LOOK: currently implementing only "get all"
     protected ArrayList readObservations()  throws IOException {
-      ArrayList obs = new ArrayList();
-      makeQuery( this);
-      return obs;
+      return makeQuery( this);
     }
 
   }
@@ -212,16 +303,23 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
     return null;
   }
 
-  /* public class DqcObsImpl extends ucar.nc2.dt.point.StationObsDatatypeImpl {
-    private int recno;
+  public class DqcObsImpl extends ucar.nc2.dt.point.StationObsDatatypeImpl {
+    String[] lineData;
+    ucar.ma2.StructureDataW sdata;
 
-    private DqcObsImpl( DqcStation station, double dateValue, int recno) {
+    private DqcObsImpl( Station station, double dateValue, String line) {
       super(station, dateValue, dateValue);
-      this.recno = recno;
+      this.lineData = new String[1];
+      lineData[0] = line;
     }
 
     public ucar.ma2.StructureData getData() throws IOException {
-      return null;
+      if (sdata == null) {
+        sdata = new ucar.ma2.StructureDataW( members);
+        Array array = Array.factory( String.class, new int[] {1}, lineData);
+        sdata.setMemberData("line", array);
+      }
+      return sdata;
     }
 
     public Date getNominalTimeAsDate() {
@@ -232,8 +330,5 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       return timeUnit.makeDate( getObservationTime());
     }
   }
-
-
- */
 
 }

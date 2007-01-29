@@ -185,7 +185,7 @@ public class CatalogServicesServlet extends HttpServlet {
         res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Cant find dataset=" + datasetID );
         return;
       }
-      if ( dataset.getResourceControl() != null )
+      /* if ( dataset.getResourceControl() != null )
       {
         if ( !req.isUserInRole( dataset.getResourceControl() ) )
         {
@@ -193,7 +193,7 @@ public class CatalogServicesServlet extends HttpServlet {
           res.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Need role=" + dataset.getResourceControl() );
           return;
         }
-      }
+      } */
 
       // html or xml ?
       if ( isHtmlReq )

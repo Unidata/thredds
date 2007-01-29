@@ -99,6 +99,11 @@ public class DqcFactory {
       defaultConverter = (DqcConvertIF) fac3o;
       registerConverter(XMLEntityResolver.DQC_NAMESPACE_03, (DqcConvertIF) fac3o);
 
+      Class fac4 = Class.forName("thredds.catalog.parser.jdom.DqcConvert4");
+      Object fac4o = fac4.newInstance();
+      defaultConverter = (DqcConvertIF) fac4o;
+      registerConverter(XMLEntityResolver.DQC_NAMESPACE_04, (DqcConvertIF) fac4o);
+
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("DqcFactory: no implementing class found: " + e.getMessage());
     } catch (InstantiationException e) {
@@ -341,7 +346,7 @@ public class DqcFactory {
       QueryCapability dqc = fac.readXML(url);
       System.out.println(" dqc hasFatalError= " + dqc.hasFatalError());
       System.out.println(" dqc messages= \n" + dqc.getErrorMessages());
-// fac.writeXML(dqc, System.out);
+      fac.writeXML(dqc, System.out);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -351,13 +356,7 @@ public class DqcFactory {
   public static void main(String[] args) throws Exception {
     DqcFactory fac = new DqcFactory(true);
 
-// dqc 0.2
-    doOne(fac, "file:///C:/dev/thredds/catalog/test/data/dqc/zoneDQC.xml");
-    doOne(fac, "file:///C:/dev/thredds/catalog/test/data/dqc/zoneDQCinvalid.xml");
-
-// dqc 0.3
-// doOne( fac, "file:///C:/dev/thredds/catalog/test/data/dqc/exampleDqc.xml");
-// doOne( fac, "file:///C:/dev/thredds/catalog/test/data/dqc.JplQuikScat.xml");
+    doOne(fac, "file:///C:/data/dqc/metarDQC.xml");
   }
 
 }

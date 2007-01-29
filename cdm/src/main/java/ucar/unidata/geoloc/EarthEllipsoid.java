@@ -1,6 +1,5 @@
-// $Id:EarthEllipsoid.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 2002 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -19,19 +18,24 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+// $Id: EarthEllipsoid.java,v 1.5 2006/11/18 19:03:12 dmurray Exp $
+
+
 package ucar.unidata.geoloc;
 
 
-import java.util.List;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+
+
+import java.util.List;
 
 
 /**
  * Type-safe enumeration of Earth Ellipsoids. Follows EPSG.
  *
  * @author john caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
+ * @version $Revision: 1.5 $ $Date: 2006/11/18 19:03:12 $
  *
  * @see "http://www.epsg.org/"
  */
@@ -178,9 +182,11 @@ public final class EarthEllipsoid extends Earth {
     }
 }
 
-
 /**
  * $Log: EarthEllipsoid.java,v $
+ * Revision 1.5  2006/11/18 19:03:12  dmurray
+ * jindent
+ *
  * Revision 1.4  2005/08/11 22:42:11  dmurray
  * jindent (I'll leave the javadoc to those who forgot to)
  *
@@ -195,3 +201,4 @@ public final class EarthEllipsoid extends Earth {
  * no message
  *
  */
+

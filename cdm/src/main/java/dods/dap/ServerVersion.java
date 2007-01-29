@@ -17,17 +17,23 @@ package dods.dap;
  * It is used so that classes which implement ClientIO don't need any knowledge
  * of the DDS class.
  *
- * @version $Revision: 48 $
  * @author jehamby
+ * @version $Revision: 48 $
  * @see ClientIO
  * @see DDS
  */
 public class ServerVersion {
-  /** Major version number. */
+  /**
+   * Major version number.
+   */
   private int major;
-  /** Minor version number. */
+  /**
+   * Minor version number.
+   */
   private int minor;
-  /** Full version string. */
+  /**
+   * Full version string.
+   */
   private String versionString;
 
   /**
@@ -37,7 +43,13 @@ public class ServerVersion {
    * @param ver the full version string.
    */
   public ServerVersion(String ver) {
-    
+    if (ver == null) {  // do something reasonable
+      this.major = 3;
+      this.minor = 0;
+      this.versionString = "DODS/" + major + "." + minor;
+      return;
+    }
+
     this.versionString = ver;
     this.major = this.minor = 0;  // set version to default values
     // search for the String, e.g. DODS/2.15, and set major and minor
@@ -47,14 +59,14 @@ public class ServerVersion {
       verIndex += 1;  // skip over "/" to number
       int dotIndex = ver.indexOf('.', verIndex);
       if (dotIndex != -1) {
-	String majorString = ver.substring(verIndex, dotIndex);
-	major = Integer.parseInt(majorString);
-	String minorString = ver.substring(dotIndex+1);
-	int minorDotIndex = minorString.indexOf('.');
-	if(minorDotIndex != -1) 
-	    minor = Integer.parseInt(minorString.substring(0,minorDotIndex));
-	else 
-	    minor = Integer.parseInt(minorString);
+        String majorString = ver.substring(verIndex, dotIndex);
+        major = Integer.parseInt(majorString);
+        String minorString = ver.substring(dotIndex + 1);
+        int minorDotIndex = minorString.indexOf('.');
+        if (minorDotIndex != -1)
+          minor = Integer.parseInt(minorString.substring(0, minorDotIndex));
+        else
+          minor = Integer.parseInt(minorString);
       }
     }
   }
@@ -73,14 +85,16 @@ public class ServerVersion {
 
   /**
    * Returns the major version number.
+   *
    * @return the major version number.
    */
   public final int getMajor() {
     return major;
   }
 
-  /** 
+  /**
    * Returns the minor version number.
+   *
    * @return the minor version number.
    */
   public final int getMinor() {
@@ -89,6 +103,7 @@ public class ServerVersion {
 
   /**
    * Returns the full version string.
+   *
    * @return the full version string.
    */
   public final String toString() {

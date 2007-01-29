@@ -1,5 +1,5 @@
 /*
- * $Id:HybridSigmaPressure.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: HybridSigmaPressure.java,v 1.15 2006/11/18 19:03:31 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,13 +20,15 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.vertical;
+
+
+import ucar.ma2.*;
 
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
-
-import ucar.ma2.*;
 
 import java.io.IOException;
 
@@ -41,107 +43,109 @@ import java.io.IOException;
  */
 public class HybridSigmaPressure extends VerticalTransformImpl {
 
-  /**
-   * P-naught identifier
-   */
-  public static final String P0 = "P0_variableName";
+    /**
+     * P-naught identifier
+     */
+    public static final String P0 = "P0_variableName";
 
-  /**
-   * Surface pressure name identifier
-   */
-  public static final String PS = "SurfacePressure_variableName";
+    /**
+     * Surface pressure name identifier
+     */
+    public static final String PS = "SurfacePressure_variableName";
 
-  /**
-   * The "a" variable name identifier
-   */
-  public static final String A = "A_variableName";
+    /**
+     * The "a" variable name identifier
+     */
+    public static final String A = "A_variableName";
 
-  /**
-   * The "b" variable name identifier
-   */
-  public static final String B = "B_variableName";
+    /**
+     * The "b" variable name identifier
+     */
+    public static final String B = "B_variableName";
 
-  /**
-   * value of p-naught
-   */
-  private double p0;
+    /**
+     * value of p-naught
+     */
+    private double p0;
 
-  /**
-   * ps, a, and b variables
-   */
-  private Variable psVar, aVar, bVar, p0Var;
+    /**
+     * ps, a, and b variables
+     */
+    private Variable psVar, aVar, bVar, p0Var;
 
-  /**
-   * a and b Arrays
-   */
-  private Array aArray = null,
-          bArray = null;
+    /**
+     * a and b Arrays
+     */
+    private Array aArray = null,
+                  bArray = null;
 
-  /**
-   * Construct a coordinate transform for sigma pressure
-   *
-   * @param ds      netCDF dataset
-   * @param timeDim time dimension
-   * @param vCT     vertical coordinate transform
-   */
-  public HybridSigmaPressure(NetcdfDataset ds, Dimension timeDim,
-          VerticalCT vCT) {
+    /**
+     * Construct a coordinate transform for sigma pressure
+     *
+     * @param ds      netCDF dataset
+     * @param timeDim time dimension
+     * @param vCT     vertical coordinate transform
+     */
+    public HybridSigmaPressure(NetcdfDataset ds, Dimension timeDim,
+                               VerticalCT vCT) {
 
-    super(timeDim);
-    String psName = vCT.findParameterIgnoreCase(PS).getStringValue();
-    String aName = vCT.findParameterIgnoreCase(A).getStringValue();
-    String bName = vCT.findParameterIgnoreCase(B).getStringValue();
-    String p0Name = vCT.findParameterIgnoreCase(P0).getStringValue();
+        super(timeDim);
+        String psName = vCT.findParameterIgnoreCase(PS).getStringValue();
+        String aName  = vCT.findParameterIgnoreCase(A).getStringValue();
+        String bName  = vCT.findParameterIgnoreCase(B).getStringValue();
+        String p0Name = vCT.findParameterIgnoreCase(P0).getStringValue();
 
-    psVar = ds.findStandardVariable(psName);
-    aVar = ds.findStandardVariable(aName);
-    bVar = ds.findStandardVariable(bName);
-    p0Var = ds.findStandardVariable(p0Name);
+        psVar = ds.findStandardVariable(psName);
+        aVar  = ds.findStandardVariable(aName);
+        bVar  = ds.findStandardVariable(bName);
+        p0Var = ds.findStandardVariable(p0Name);
 
-    units = ds.findAttValueIgnoreCase(psVar, "units", "none");
-  }
-
-  /**
-   * Get the 3D vertical coordinate array for this time step.
-   *
-   * @param timeIndex the time index. Ignored if !isTimeDependent().
-   * @return vertical coordinate array
-   * @throws IOException problem reading data
-   */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex)
-          throws IOException, InvalidRangeException {
-    Array psArray = readArray(psVar, timeIndex);
-
-    if (null == aArray) {
-      aArray = aVar.read();
-      bArray = bVar.read();
-      p0 = p0Var.readScalarDouble();
+        units = ds.findAttValueIgnoreCase(psVar, "units", "none");
     }
 
-    int nz = (int) aArray.getSize();
-    Index aIndex = aArray.getIndex();
-    Index bIndex = bArray.getIndex();
+    /**
+     * Get the 3D vertical coordinate array for this time step.
+     *
+     * @param timeIndex the time index. Ignored if !isTimeDependent().
+     * @return vertical coordinate array
+     * @throws IOException problem reading data
+     * @throws InvalidRangeException _more_
+     */
+    public ArrayDouble.D3 getCoordinateArray(int timeIndex)
+            throws IOException, InvalidRangeException {
+        Array psArray = readArray(psVar, timeIndex);
 
-    int[]  shape2D = psArray.getShape();
-    int ny = shape2D[0];
-    int nx = shape2D[1];
-    Index psIndex = psArray.getIndex();
-
-    ArrayDouble.D3 press = new ArrayDouble.D3(nz, ny, nx);
-
-    for (int z = 0; z < nz; z++) {
-      double term1 = aArray.getDouble(aIndex.set(z)) * p0;
-      double bz = bArray.getDouble(bIndex.set(z));
-
-      for (int y = 0; y < ny; y++) {
-        for (int x = 0; x < nx; x++) {
-          double ps = psArray.getDouble(psIndex.set(y, x));
-          press.set(z, y, x, term1 + bz * ps);
+        if (null == aArray) {
+            aArray = aVar.read();
+            bArray = bVar.read();
+            p0     = p0Var.readScalarDouble();
         }
-      }
-    }
 
-    return press;
-  }
+        int            nz      = (int) aArray.getSize();
+        Index          aIndex  = aArray.getIndex();
+        Index          bIndex  = bArray.getIndex();
+
+        int[]          shape2D = psArray.getShape();
+        int            ny      = shape2D[0];
+        int            nx      = shape2D[1];
+        Index          psIndex = psArray.getIndex();
+
+        ArrayDouble.D3 press   = new ArrayDouble.D3(nz, ny, nx);
+
+        for (int z = 0; z < nz; z++) {
+            double term1 = aArray.getDouble(aIndex.set(z)) * p0;
+            double bz    = bArray.getDouble(bIndex.set(z));
+
+            for (int y = 0; y < ny; y++) {
+                for (int x = 0; x < nx; x++) {
+                    double ps = psArray.getDouble(psIndex.set(y, x));
+                    press.set(z, y, x, term1 + bz * ps);
+                }
+            }
+        }
+
+        return press;
+    }
 
 }
+

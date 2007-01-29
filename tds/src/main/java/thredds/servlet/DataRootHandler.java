@@ -56,11 +56,12 @@ public class DataRootHandler {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
 
   /**
-   * Initialize the CatalogHandler singleton instance.
+   * Initialize the DataRootHandler singleton instance.
    *
    * This method should only be called once. Additional calls will result in an IllegalStateException being thrown.
    *
    * @param contentPath should be absolute path under which all catalogs lay, typically ${tomcat_home}/content/thredds/
+   * @param servletContextPath the servlet context path
    * @throws IllegalStateException if called more than once.
    */
   static public void init(String contentPath, String servletContextPath) {
@@ -91,20 +92,17 @@ public class DataRootHandler {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //private final InvCatalogFactory factory;
   private final String contentPath;
   private final String servletContextPath;
 
-  // @GuardedBy("this")
-  //private StringBuffer catalogErrorLog = new StringBuffer(); // used during initialization
-  // @GuardedBy("this")
-  private ArrayList catalogRootList = new ArrayList(); // List of root catalog filenames (String)
   // @GuardedBy("this") LOOK should be able to access without synchronization
-  private HashMap staticCatalogHash = new HashMap(); // Hash of static catalogs, key = path
+  private HashMap<String,InvCatalogImpl> staticCatalogHash; // Hash of static catalogs, key = path
+
   // @GuardedBy("this")
-  private HashSet idHash = new HashSet(); // Hash of ids, to look for duplicates
+  private HashSet<String> idHash = new HashSet<String>(); // Hash of ids, to look for duplicates
+
   //  PathMatcher is "effectively immutable"; use volatile for visibilty
-  private volatile PathMatcher pathMatcher = new PathMatcher(); // Keeps a Collection of DataRoot objects
+  private volatile PathMatcher pathMatcher = new PathMatcher(); // collection of DataRoot objects
 
   /**
    * Constructor.
@@ -114,30 +112,20 @@ public class DataRootHandler {
   private DataRootHandler(String contentPath, String servletContextPath) {
     this.contentPath = contentPath;
     this.servletContextPath = servletContextPath;
+    this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
   }
 
   /**
-   * Reread all the catalogs and reinit the data roots.
-   * Call this when the catalogs have changed, so you dont have to restart.
-   * Also available under the TDS debug menu.
-   *
-   * @throws IOException
+   * Reinitialize lists of static catalogs, data roots, dataset Ids.
    */
-  public synchronized void reinit() throws IOException {
-    staticCatalogHash = new HashMap();
+  synchronized void reinit() {
+    staticCatalogHash = new HashMap<String,InvCatalogImpl>();
     pathMatcher = new PathMatcher();
-    catalogRootList = new ArrayList();
-    idHash = new HashSet();
+    idHash = new HashSet<String>();
+
+    DatasetHandler.reinit(); // NcML datasets
 
     log.info("\n**************************************\n**************************************\nCatalog reinit ");
-    /* int size = catalogRootList.size();
-    for (int i = 0; i < size; i++) {
-      String path;
-      path = (String) catalogRootList.get(i);
-      // May be too expensive to synchronize over.
-      initCatalog(path, true );
-    }
-    //writeCatalogErrorLog(); */
   }
 
   /**
@@ -145,21 +133,20 @@ public class DataRootHandler {
    * Recurse into nested catalog refs that are reletive to contentPath.
    *
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
-   * @throws IOException
+   * @throws IOException if reading catalog fails
    */
   public synchronized void initCatalog(String path) throws IOException {
     log.info("\n**************************************\nCatalog init "+path);
-    if ( ! catalogRootList.contains( path) )
-      catalogRootList.add(path);
-    initCatalog(path, true );
-    //writeCatalogErrorLog();
+    initCatalog(path, true);
   }
 
   /**
-   * Does the actual work. Only called by synchronized methods.
+   * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
+   *
+   * Only called by synchronized methods.
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @param recurse  if true, look for catRefs in this catalog
-   * @throws IOException
+   * @throws IOException if reading catalog fails
    */
   private void initCatalog(String path, boolean recurse ) throws IOException {
     String catalogFullPath = contentPath + path;
@@ -172,8 +159,7 @@ public class DataRootHandler {
 
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
     InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
-    if ( cat == null )
-    {
+    if ( cat == null ) {
       log.warn( "initCatalog(): failed to read catalog <" + catalogFullPath + ">." );
       return;
     }
@@ -182,15 +168,16 @@ public class DataRootHandler {
     Iterator roots = cat.getDatasetRoots().iterator();
     while ( roots.hasNext() ) {
       InvProperty p = (InvProperty) roots.next();
-      addRoot( p.getName(), p.getValue() );
+      addRoot( p.getName(), p.getValue(), true );
     }
+
     Iterator services = cat.getServices().iterator();
     while ( services.hasNext() ) {
       InvService s = (InvService) services.next();
       roots = s.getDatasetRoots().iterator();
       while ( roots.hasNext() ) {
         InvProperty p = (InvProperty) roots.next();
-        addRoot( p.getName(), p.getValue() );
+        addRoot( p.getName(), p.getValue(), true );
       }
     }
 
@@ -199,17 +186,25 @@ public class DataRootHandler {
     String dirPath = ( pos > 0 ) ? path.substring( 0, pos + 1 ) : "";
 
     // look for datasetScans and NcML elements
-    findSpecialDatasets( cat.getDatasets() );
+    initSpecialDatasets( cat.getDatasets() );
 
     // add catalog to hash tables
     staticCatalogHash.put(path, cat);
     if (log.isDebugEnabled()) log.debug("  add static catalog=" + path);
 
     if (recurse) {
-      check4Catrefs(dirPath, cat.getDatasets());
+      initFollowCatrefs(dirPath, cat.getDatasets());
     }
   }
 
+  /**
+   * Does the actual work of reading a catalog.
+   *
+   * @param factory  use this InvCatalogFactory
+   * @param path reletive path starting from content root
+   * @param catalogFullPath absolute location on disk
+   * @return the InvCatalogImpl, or null if failure
+   */
   private InvCatalogImpl readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {
     URI uri;
     try {
@@ -258,20 +253,19 @@ public class DataRootHandler {
   }
 
   /**
-   * Look for datasetScans and NcML elements recursively in a list of InvDatasetImpl, but dont follow catRefs.
+   * Finds datasetScan, datasetFmrc, NcML and restricted access datasets.
+   * Look for duplicate Ids (give message). Dont follow catRefs.
    * Only called by synchronized methods.
    * @param dsList the list of InvDatasetImpl
    */
-  private void findSpecialDatasets( List dsList) {
-    Iterator iter = dsList.iterator();
-    while (iter.hasNext()) {
-      InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
+  private void initSpecialDatasets( List<InvDatasetImpl> dsList) {
 
+    for (InvDatasetImpl invDataset : dsList) {
       // look for duplicate ids
       String id = invDataset.getUniqueID();
       if (id != null) {
         if (idHash.contains(id)) {
-          log.warn("Duplicate id on  " + invDataset.getFullName() + " id= "+id);
+          log.warn("Duplicate id on  " + invDataset.getFullName() + " id= " + id);
         } else {
           idHash.add(id);
         }
@@ -284,24 +278,47 @@ public class DataRootHandler {
           log.error("InvDatasetScan " + ds.getFullName() + " has no default Service - skipping");
           continue;
         }
-
         addRoot(ds);
 
       } else if (invDataset instanceof InvDatasetFmrc) {
-          InvDatasetFmrc fmrc = (InvDatasetFmrc) invDataset;
-          addRoot(fmrc);
+        InvDatasetFmrc fmrc = (InvDatasetFmrc) invDataset;
+        addRoot(fmrc);
 
         // not a DatasetScan or InvDatasetFmrc
       } else if (invDataset.getNcmlElement() != null) {
-          DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
+        DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
+      }
+
+      // check for resource control
+      if (invDataset.getRestrictAccess() != null) {
+        DatasetHandler.putResourceControl(invDataset);
       }
 
       if (!(invDataset instanceof InvCatalogRef)) {
         // recurse
-        findSpecialDatasets( invDataset.getDatasets());
+        initSpecialDatasets(invDataset.getDatasets());
       }
     }
 
+  }
+
+  // Only called by synchronized methods
+  private void initFollowCatrefs(String dirPath, List datasets)  throws IOException {
+    Iterator iter = datasets.iterator();
+    while (iter.hasNext()) {
+      InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
+
+      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+        InvCatalogRef catref = (InvCatalogRef) invDataset;
+        String href = catref.getXlinkHref();
+        if (!href.startsWith("http:")) // must be a reletive catref
+          initCatalog(dirPath + href, true ); // go check it out
+
+      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+        // recurse through nested datasets
+        initFollowCatrefs(dirPath, invDataset.getDatasets());
+      }
+    }
   }
 
   // Only called by synchronized methods
@@ -389,45 +406,12 @@ public class DataRootHandler {
     return true;
   }
 
-  /* private void addRoots(String dirPath, String contextPath, InvService service, InvProperty p) {
-    String serviceBase = service.getBase();
-    String path = p.getName();
-    String dirLocation = p.getValue();
-
-    if (service.getServiceType() != ServiceType.COMPOUND) {
-
-      if (serviceBase.length() != 0) { // not blank
-        if (contextPath != null) {
-          if (serviceBase.startsWith(contextPath + "/"))
-            serviceBase = serviceBase.substring(contextPath.length() + 1);
-        }
-        addRoot(serviceBase + path, dirLocation);
-
-      } else {
-        addRoot(dirPath + path, dirLocation);
-      }
-
-    } else { // compound type
-
-      java.util.List serviceList = service.getServices();
-      for (int i = 0; i < serviceList.size(); i++) {
-        InvService nestedService = (InvService) serviceList.get(i);
-        String nestedServiceBase = nestedService.getBase();
-        if (contextPath != null) {
-          if (nestedServiceBase.startsWith(contextPath + "/"))
-            nestedServiceBase = nestedServiceBase.substring(contextPath.length() + 1);
-        }
-        addRoot(nestedServiceBase + path, dirLocation);
-      }
-    }
-  } */
-
   // Only called by synchronized methods
-  private boolean addRoot(String path, String dirLocation) {
+  private boolean addRoot(String path, String dirLocation, boolean wantErr) {
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">"+
+      if (wantErr) log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">"+
               " wanted to map to <" + dirLocation + ">");
 
       return false;
@@ -449,26 +433,6 @@ public class DataRootHandler {
 
     log.debug(" added rootPath=<" + path + ">  for directory= <" + dirLocation + ">");
     return true;
-  }
-
-  // Only called by synchronized methods
-  private void check4Catrefs(String dirPath, List datasets)  throws IOException
-  {
-    Iterator iter = datasets.iterator();
-    while (iter.hasNext()) {
-      InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
-
-      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
-        InvCatalogRef catref = (InvCatalogRef) invDataset;
-        String href = catref.getXlinkHref();
-        if (!href.startsWith("http:")) // must be a reletive catref
-          initCatalog(dirPath + href, true ); // go check it out
-
-      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
-        // recurse through nested datasets
-        check4Catrefs(dirPath, invDataset.getDatasets());
-      }
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -542,10 +506,10 @@ public class DataRootHandler {
 
   /**
    * Find the longest match for this path.
-   * @param fullpath
+   * @param fullpath the complete path name
    * @return best DataRoot or null if no match.
    */
-  private DataRoot matchPath2(String fullpath) {
+  private DataRoot findDataRoot(String fullpath) {
     if ((fullpath.length() > 0) && (fullpath.charAt(0) == '/'))
       fullpath = fullpath.substring(1);
 
@@ -571,7 +535,7 @@ public class DataRootHandler {
   }
 
   public DataRootMatch findDataRootMatch(String spath) {
-    DataRoot dataRoot = matchPath2(spath);
+    DataRoot dataRoot = findDataRoot(spath);
     if (dataRoot == null)
       return null;
 
@@ -584,57 +548,6 @@ public class DataRootHandler {
     match.dataRoot = dataRoot;
     return match;
   }
-
-  /*
-   * Extract the path from the request and call translatePath.
-   *
-   * @param req the request
-   * @return the translated path.
-   * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler.findRequestedDataset( path )).getFile();
-
-   *
-  public String translatePath(HttpServletRequest req) {
-    String spath = req.getPathInfo(); // was req.getServletPath() + req.getPathInfo();
-
-    if (spath.length() > 0) {
-      if (spath.startsWith("/"))
-        spath = spath.substring(1);
-    }
-
-    return translatePath(spath);
-  }
-
-  /*
-   * Try to match the given path with all available data roots. If match, then translate into a CrawlableDataset path.
-   *
-   * @param path the reletive path, ie req.getPathInfo()
-   * @return the translated path, as a CrawlableDataset path, or null if no dataroot matches.
-   * @deprecated Should instead use InvDatasetScan.translatePathToLocation() or something like ((CrawlableDatasetFile)DataRootHandler.findRequestedDataset( path )).getFile();
-   *
-  public String translatePath(String path) {
-    if (path.startsWith("/"))
-      path = path.substring(1);
-
-    DataRoot dataRoot = matchPath2(path);
-    if (dataRoot == null) {
-      log.debug("translatePath(): no InvDatasetScan for " + path);
-      return null;
-    }
-
-    // remove the matching part, the rest is the "data directory"
-    String dataDir = path.substring(dataRoot.path.length());
-    if (dataDir.startsWith("/"))
-      dataDir = dataDir.substring(1);
-
-    // the translated path is the dirLocaton plus the data directory
-    String fullPath = dataRoot.dirLocation
-            + (dataRoot.dirLocation.endsWith("/") ? "" : "/")
-            + dataDir;
-
-    if (log.isDebugEnabled()) log.debug(" translatePath= " + path + " to dataset path= " + fullPath);
-
-    return fullPath;
-  } */
 
   /**
    * Return true if the given path matches a dataRoot, otherwise return false.
@@ -649,7 +562,7 @@ public class DataRootHandler {
       if (path.startsWith("/"))
         path = path.substring(1);
 
-    DataRoot dataRoot = matchPath2(path);
+    DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
       log.debug("hasDataRootMatch(): no InvDatasetScan for " + path);
       return false;
@@ -676,7 +589,7 @@ public class DataRootHandler {
         path = path.substring(1);
     }
 
-    DataRoot reqDataRoot = matchPath2(path);
+    DataRoot reqDataRoot = findDataRoot(path);
     if (reqDataRoot == null)
       return null;
 
@@ -722,7 +635,7 @@ public class DataRootHandler {
       return match.dataRoot.fmrc.getFile(match.remaining);
     }
 
-    CrawlableDataset crDs = null;
+    CrawlableDataset crDs;
     try
     {
       crDs = getCrawlableDataset( path );
@@ -757,7 +670,7 @@ public class DataRootHandler {
         path = path.substring(1);
     }
 
-    CrawlableDataset crDs = null;
+    CrawlableDataset crDs;
     try
     {
       crDs = getCrawlableDataset( path );
@@ -805,7 +718,7 @@ public class DataRootHandler {
 
   private InvDatasetScan getMatchingScan( String path )
   {
-    DataRoot reqDataRoot = matchPath2( path );
+    DataRoot reqDataRoot = findDataRoot( path );
     if ( reqDataRoot == null )
       return null;
 
@@ -858,7 +771,7 @@ public class DataRootHandler {
     }
 
     String baseUriString = req.getRequestURL().toString();
-    URI baseURI = null;
+    URI baseURI;
     try
     {
       baseURI = new URI( baseUriString );
@@ -890,8 +803,6 @@ public class DataRootHandler {
     res.setContentLength( result.length() );
     res.setContentType( "text/xml" );
     res.getOutputStream().write( result.getBytes() );
-
-    return;
   }
 
   /**
@@ -1087,7 +998,7 @@ public class DataRootHandler {
     // Check for static catalog.
     InvCatalogImpl catalog;
     synchronized (this) {
-      catalog = (InvCatalogImpl) staticCatalogHash.get(workPath);
+      catalog = staticCatalogHash.get(workPath);
     }
 
     if (catalog != null) {
@@ -1199,6 +1110,13 @@ public class DataRootHandler {
       return null;
     }
 
+        /* look for datasetRoots
+    Iterator roots = cat.getDatasetRoots().iterator();
+    while ( roots.hasNext() ) {
+      InvProperty p = (InvProperty) roots.next();
+      addRoot( p.getName(), p.getValue(), false );
+    }  */
+
     return cat;
   }
 
@@ -1292,7 +1210,7 @@ public class DataRootHandler {
     }
 
     // Find InvDatasetScan with a maximal match.
-    DataRoot dataRoot = matchPath2(path);
+    DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
       String resMsg = "No scan root matches requested path <" + path + ">.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
@@ -1321,7 +1239,7 @@ public class DataRootHandler {
     }
 
     String reqBase = ServletUtil.getRequestBase(req); // this is the base of the request
-    URI reqBaseURI = null;
+    URI reqBaseURI;
     try
     {
       reqBaseURI = new URI( reqBase );
@@ -1367,7 +1285,7 @@ public class DataRootHandler {
     if (path.startsWith("/"))
       path = path.substring(1);
 
-    DataRoot dataRoot = matchPath2(path);
+    DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
       log.debug("_getNcML no InvDatasetScan for =" + path);
       return null;
@@ -1378,22 +1296,6 @@ public class DataRootHandler {
     if (dscan == null) return null;
     return dscan.getNcmlElement();
   }
-
-  /* LOOK
-  public String getResourceControl( String path) {
-   if (path.startsWith("/"))
-     path= path.substring(1);
-
-   DataRoot dataRoot = matchPath2( path);
-   if (dataRoot == null) {
-     log.debug("_getNcML no InvDatasetScan for ="+ path);
-     return null;
-   }
-
-    InvDatasetScan dscan = dataRoot.scan;
-    if (dscan == null) return null;
-    return dscan.getResourceControl();
- } */
 
   /*   public boolean isRequestForConfigCatalog(String path) {
     String catPath = path;
@@ -1463,7 +1365,7 @@ public class DataRootHandler {
 
     act = new DebugHandler.Action("showStatic", "Show static catalogs") {
      public void doAction(DebugHandler.Event e) {
-       ArrayList list;
+       ArrayList<String> list;
        StringBuffer sbuff = new StringBuffer();
        synchronized ( DataRootHandler.this )
        {

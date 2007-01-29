@@ -25,7 +25,7 @@ import ucar.unidata.util.StringUtil;
 import java.util.*;
 
 /**
- * A Collection of (String key, Object) which is sorted on key.
+ * A Collection of (String key, Object value) which is sorted on key.
  * match( String path) returns the Object whose key is the longest that matches path.
  * Match means that path.startsWith( key).
  *
@@ -50,6 +50,7 @@ public class PathMatcher {
 
   /**
    * See if this object already exists in the collection, using equals().
+   * @param key find object that has this key
    * @return existing object, else null.
    */
   public Object get(String  key) {
@@ -66,7 +67,7 @@ public class PathMatcher {
 
   /**
    * Find the longest match.
-   * @param path
+   * @param path find object with longeth match where path.startsWith( key)
    * @return the value whose key is the longest that matches path, or null if none
    */
   public Object match( String path) {
@@ -81,8 +82,8 @@ public class PathMatcher {
     Iterator iter = tail.keySet().iterator();
     while (iter.hasNext()) {
       String key =  (String) iter.next();
-      if (path.startsWith( key))
-        return treeMap.get( key);
+      if (path.startsWith(key))
+        return treeMap.get(key);
       // terminate when theres no match at all.
       if (StringUtil.match(path, key) == 0)
         break;

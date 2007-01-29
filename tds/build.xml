@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="3.15"/>
-  <property name="release.version.minor" value="${release.version}.00"/>
+  <property name="release.version.minor" value="${release.version}.01"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -71,8 +71,7 @@
     <include name="thredds/dqc/server/**/*.java"/>
     <include name="thredds/examples/*.java"/>
     <include name="thredds/servlet/*.java"/>
-    <exclude name="thredds/servlet/ForecastModelRunServlet.java"/>
-    <include name="thredds/servlet/ldm/*.java"/>
+    <include name="thredds/servlet/**/*.java"/>
     <include name="thredds/wcs/servlet/*.java"/>
   </patternset>
 
@@ -84,19 +83,20 @@
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
+  <property name="cas.jar" value="external/casclient-2.1.1.jar"/>
+  <property name="fileupload.jar" value="external/commons-fileupload-1.1.1.jar"/>
+  <property name="httpclient.jar" value="external/commons-httpclient-3.0.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
-  <property name="fileupload.jar" value="external/commons-fileupload-1.1.jar"/>
-  <property name="httpclient.jar" value="external/commons-httpclient-3.0.jar"/>
-  <property name="logging.jar" value="external/nlog4j-1.2.21.jar"/>
+  <property name="logging.jar" value="external/nlog4j-1.2.25.jar"/>
 
   <!-- Third-party libraries needed for runtime. -->
-  <property name="commons-io.jar" value="external/commons-io-1.1.jar"/>
+  <property name="commons-io.jar" value="external/commons-io-1.2.jar"/>
   <property name="gnu-regexp.jar" value="external/gnu-regexp-1.1.4.jar"/>
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
-  <property name="http-logging.jar" value="external/commons-logging-1.0.4.jar"/>
+  <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
   <property name="jpeg2000.jar" value="external/jpeg2000.jar"/>
-  <property name="xml-apis.jar" value="external/xml-apis.jar"/>
-  <property name="xercesImpl.jar" value="external/xercesImpl.jar"/>
+  <!--property name="xml-apis.jar" value="external/xml-apis.jar"/>
+  <property name="xercesImpl.jar" value="external/xercesImpl.jar"/ -->
 
   <!-- The servlet jar file is needed to compile the servlet but is not needed
     by the servlet engine, therefore, it is not needed in the war file. -->
@@ -117,9 +117,10 @@
       <include name="${prefs.jar}"/>
       <include name="${visadNoDods.jar}"/>
 
-      <include name="${jdom.jar}"/>
+      <include name="${cas.jar}"/>
       <include name="${fileupload.jar}"/>
       <include name="${httpclient.jar}"/>
+      <include name="${jdom.jar}"/>
       <include name="${logging.jar}"/>
     </patternset>
   </fileset>
@@ -132,8 +133,8 @@
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
       <include name="${jpeg2000.jar}"/>
-      <include name="${xml-apis.jar}"/>
-      <include name="${xercesImpl.jar}"/>
+      <!-- include name="${xml-apis.jar}"/>
+      <include name="${xercesImpl.jar}"/ -->
     </patternset>
   </fileset>
 
@@ -184,7 +185,7 @@
   <target name="dist" depends="compile, makeWar"/>
 
   <target name="compile" depends="init, release-settings" description="TDS compile">
-    <javac destdir="${build.classes.dir}" source="1.4" target="1.4" debug="${build.debug}"
+    <javac destdir="${build.classes.dir}" source="1.5" target="1.5" debug="${build.debug}"
            debuglevel="${build.debuglevel}" includeAntRuntime="false">
       <src refid="sourcepath"/>
       <patternset refid="sources"/>
@@ -335,7 +336,7 @@
           description="create a war file from the distribution directory">
 
     <!-- build thredds.dqc.DqcServletRedirect -->
-    <javac destdir="${build.classes.dir}" source="1.4" target="1.4" debug="${build.debug}"
+    <javac destdir="${build.classes.dir}" source="1.5" target="1.5" debug="${build.debug}"
            debuglevel="${build.debuglevel}"
            includeAntRuntime="false">
       <src refid="sourcepath"/>
@@ -412,7 +413,7 @@
   <target name="javadoc" description="make the javadocs">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc Doctitle="THREDDS" Windowtitle="THREDDS" maxmemory="256m" Use="true"
-             sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.4">
+             sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.5">
 
       <classpath refid="compile.classpath"/>
 
@@ -592,7 +593,7 @@
     <property name="test.classpath" refid="test.classpath"/>
     <echo>test.classpath=${test.classpath}</echo>
 
-    <javac destdir="${test.classes.dir}" source="1.4" target="1.4" debug="${build.debug}" srcdir="${test.src.dir}">
+    <javac destdir="${test.classes.dir}" source="1.5" target="1.5" debug="${build.debug}" srcdir="${test.src.dir}">
       <classpath refid="test.classpath"/>
     </javac>
 

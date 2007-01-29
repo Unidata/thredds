@@ -6,34 +6,36 @@
 // Package: GeoTransform http://www.ai.sri.com/geotransform/
 //
 // Acknowledgements:
-//   The algorithms used in the package were created by Ralph Toms and
-//   first appeared as part of the SEDRIS Coordinate Transformation API.
-//   These were subsequently modified for this package. This package is
-//   not part of the SEDRIS project, and the Java code written for this
-//   package has not been certified or tested for correctness by NIMA.
+// The algorithms used in the package were created by Ralph Toms and
+// first appeared as part of the SEDRIS Coordinate Transformation API.
+// These were subsequently modified for this package. This package is
+// not part of the SEDRIS project, and the Java code written for this
+// package has not been certified or tested for correctness by NIMA.
 //
 // License:
-//   The contents of this file are subject to GeoTransform License Agreement
-//   (the "License"); you may not use this file except in compliance with
-//   the License. You may obtain a copy of the License at
-//   http://www.ai.sri.com/geotransformtest/license.html
+// The contents of this file are subject to GeoTransform License Agreement
+// (the "License"); you may not use this file except in compliance with
+// the License. You may obtain a copy of the License at
+// http://www.ai.sri.com/geotransformtest/license.html
 //
-//   Software distributed under the License is distributed on an "AS IS"
-//   basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
-//   the License for the specific language governing rights and limitations
-//   under the License.
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+// the License for the specific language governing rights and limitations
+// under the License.
 //
-//   Portions are Copyright (c) SRI International, 1998.
+// Portions are Copyright (c) SRI International, 1998.
 //
 
 package ucar.unidata.geoloc.projection;
 
 
-import java.lang.*;
+import ucar.unidata.geoloc.EarthEllipsoid;
+import ucar.unidata.geoloc.LatLonPoint;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.EarthEllipsoid;
+
+
+import java.lang.*;
 
 
 /**
@@ -63,7 +65,7 @@ import ucar.unidata.geoloc.EarthEllipsoid;
  *
  * timing: inverse(f(x)) takes 2 - 3 microseconds.
  *
- * @version $Id:Utm_To_Gdc_Converter.java 63 2006-07-12 21:50:51Z edavis $
+ * @version $Id: Utm_To_Gdc_Converter.java,v 1.5 2006/11/18 19:03:23 dmurray Exp $
  */
 
 class Utm_To_Gdc_Converter {
@@ -273,8 +275,9 @@ class Utm_To_Gdc_Converter {
                                      + d2 * ((-Con24) * b4
                                              + d2 * Con720 * b6)));
         double longitude = xlon0
-                           + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5))
-                             / cp;
+                           + d1 * (1.0
+                                   + d2 * (-Con6 * b3
+                                           + d2 * Con120 * b5)) / cp;
 
         latlon.setLatitude(latitude * DEGREES_PER_RADIAN);
         latlon.setLongitude(longitude * DEGREES_PER_RADIAN);
@@ -345,10 +348,11 @@ class Utm_To_Gdc_Converter {
                               - tp * top
                                 * (d2 * (Con2
                                          + d2 * ((-Con24) * b4
-                                                 + d2 * Con720 * b6)));
-            double longitude =
-                xlon0
-                + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
+                                             + d2 * Con720 * b6)));
+            double longitude = xlon0
+                               + d1 * (1.0
+                                       + d2 * (-Con6 * b3
+                                           + d2 * Con120 * b5)) / cp;
 
             to[0][i] = (float) (latitude * DEGREES_PER_RADIAN);
             to[1][i] = (float) (longitude * DEGREES_PER_RADIAN);
@@ -421,10 +425,11 @@ class Utm_To_Gdc_Converter {
                               - tp * top
                                 * (d2 * (Con2
                                          + d2 * ((-Con24) * b4
-                                                 + d2 * Con720 * b6)));
-            double longitude =
-                xlon0
-                + d1 * (1.0 + d2 * (-Con6 * b3 + d2 * Con120 * b5)) / cp;
+                                             + d2 * Con720 * b6)));
+            double longitude = xlon0
+                               + d1 * (1.0
+                                       + d2 * (-Con6 * b3
+                                           + d2 * Con120 * b5)) / cp;
 
             to[0][i] = (latitude * DEGREES_PER_RADIAN);
             to[1][i] = (longitude * DEGREES_PER_RADIAN);
@@ -434,5 +439,4 @@ class Utm_To_Gdc_Converter {
     }
 
 }
-
 

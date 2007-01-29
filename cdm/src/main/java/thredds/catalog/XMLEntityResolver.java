@@ -163,6 +163,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   // dqc namespaces
   static public final String DQC_NAMESPACE_02 = "http://www.unidata.ucar.edu/schemas/thredds/queryCapability";
   static public final String DQC_NAMESPACE_03 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3";
+  static public final String DQC_NAMESPACE_04 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4";
 
   // catgen namespace
   static public final String CATGEN_NAMESPACE_05 = "http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5";
@@ -221,6 +222,11 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
     initEntity( DQC_NAMESPACE_03,
                 "/resources/thredds/schemas/queryCapability.0.3.xsd",
                 "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd");
+
+    // DQC schema 0.4
+    initEntity( DQC_NAMESPACE_04,
+                "/resources/thredds/schemas/queryCapability.0.4.xsd",
+                "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.4.xsd");
 
     // nj22 schema
     initEntity( NJ22_NAMESPACE,
@@ -295,7 +301,6 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
       Method m = version.getMethod("getVersion", (Class []) null);
       return (String) m.invoke(null, (Object []) null);
     } catch (Exception e) {
-      e.printStackTrace();
       return "Error= "+e.getMessage();
     }
   }

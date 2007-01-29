@@ -1,4 +1,3 @@
-// $Id: VTfromExistingData.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -18,19 +17,25 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
+// $Id: VTfromExistingData.java,v 1.6 2006/11/18 19:03:32 dmurray Exp $
+
 package ucar.unidata.geoloc.vertical;
 
 
-import ucar.ma2.ArrayDouble;
 import ucar.ma2.Array;
-import ucar.ma2.MAMath;
+
+
+import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.Variable;
-import ucar.nc2.Dimension;
 
 import java.io.IOException;
 
@@ -73,6 +78,7 @@ public class VTfromExistingData extends VerticalTransformImpl {
      * @return _more_
      *
      * @throws IOException _more_
+     * @throws InvalidRangeException _more_
      */
     public ArrayDouble.D3 getCoordinateArray(int timeIndex)
             throws IOException, InvalidRangeException {
@@ -86,3 +92,4 @@ public class VTfromExistingData extends VerticalTransformImpl {
         return ddata;
     }
 }
+

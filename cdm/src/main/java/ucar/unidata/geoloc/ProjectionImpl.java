@@ -1,5 +1,5 @@
 /*
- * $Id:ProjectionImpl.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: ProjectionImpl.java,v 1.39 2006/11/18 19:03:13 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 package ucar.unidata.geoloc;
 
@@ -59,10 +60,10 @@ import java.util.*;
  *
  * @see Projection
  * @author John Caron
- * @version $Revision:63 $
+ * @version $Revision: 1.39 $
  */
-public abstract class ProjectionImpl
-        implements Projection, Cloneable, java.io.Serializable {
+public abstract class ProjectionImpl implements Projection, Cloneable,
+        java.io.Serializable {
 
     /** Projection Name */
     public static final String ATTR_NAME = "Projection_Name";
@@ -209,9 +210,6 @@ public abstract class ProjectionImpl
      * @return true if this represents the same Projection as proj.
      */
     public abstract boolean equals(Object proj);
-
-    /** Ovveride to make hashCode consistent with equals */
-    // public abstract int hashCode();
 
     /**
      * Get the name of this specific projection (also see getClassName)
@@ -425,20 +423,17 @@ public abstract class ProjectionImpl
      */
     public double[][] projToLatLon(double[][] from, double[][] to) {
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "from array not same length as to array");
         }
 
         for (int i = 0; i < from[0].length; i++) {
@@ -477,20 +472,17 @@ public abstract class ProjectionImpl
      */
     public float[][] projToLatLon(float[][] from, float[][] to) {
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.projToLatLon:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
+                    + "from array not same length as to array");
         }
 
         ProjectionPointImpl ppi  = new ProjectionPointImpl();
@@ -570,20 +562,17 @@ public abstract class ProjectionImpl
     public double[][] latLonToProj(double[][] from, double[][] to,
                                    int latIndex, int lonIndex) {
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "from array not same length as to array");
         }
 
         ProjectionPointImpl ppi  = new ProjectionPointImpl();
@@ -666,20 +655,17 @@ public abstract class ProjectionImpl
         //      ucar.unidata.util.Misc.printStack ("latLonToProj-" + this + " size=" + from[0].length, 4, null);
 
         if ((from == null) || (from.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (from)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (from)");
         }
         if ((to == null) || (to.length != 2)) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "null array argument or wrong dimension (to)");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "null array argument or wrong dimension (to)");
         }
 
         if (from[0].length != to[0].length) {
-            throw new IllegalArgumentException(
-                "ProjectionImpl.latLonToProj:"
-                + "from array not same length as to array");
+            throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
+                    + "from array not same length as to array");
         }
 
         ProjectionPointImpl ppi  = new ProjectionPointImpl();
@@ -761,7 +747,7 @@ public abstract class ProjectionImpl
 
         // make bounding box out of those two corners
         ProjectionRect world = new ProjectionRect(w1.getX(), w1.getY(),
-                                                  w2.getX(), w2.getY());
+                                   w2.getX(), w2.getY());
 
         LatLonPointImpl la = new LatLonPointImpl();
         LatLonPointImpl lb = new LatLonPointImpl();
@@ -934,3 +920,4 @@ public abstract class ProjectionImpl
      */
 
 }
+

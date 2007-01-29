@@ -50,13 +50,14 @@ public class WCSServlet extends AbstractServlet {
     super.destroy();
   }
 
-  private WcsDataset openWcsDataset(HttpServletRequest req) throws IOException {
+  private WcsDataset openWcsDataset(HttpServletRequest req, HttpServletResponse res) throws IOException {
     String datasetURL = ServletUtil.getParameterIgnoreCase(req, "dataset");
     boolean isRemote = (datasetURL != null);
     String datasetPath = isRemote ? datasetURL : req.getPathInfo();
 
     // convert to a GridDataset
-    GridDataset gd = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset( datasetPath);
+    GridDataset gd = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset( req, res, datasetPath);
+    if (gd == null) return null;
 
     // convert to a WcsDataset
     WcsDataset ds = new WcsDataset(gd, datasetPath, isRemote);
@@ -94,7 +95,8 @@ public class WCSServlet extends AbstractServlet {
         return;
       }
 
-      wcsDataset = openWcsDataset( req);
+      wcsDataset = openWcsDataset( req, res);
+      if (wcsDataset == null) return;
 
       if (request.equals("GetCapabilities")) {
 

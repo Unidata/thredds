@@ -36,7 +36,6 @@ import java.util.*;
  * Reads DQC.xml files, constructs object representation.
  *
  * @author John Caron
- * @version $Id: DqcConvert3.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public class DqcConvert3 implements DqcConvertIF {
@@ -470,7 +469,7 @@ public class DqcConvert3 implements DqcConvertIF {
       String name = choice.getText();
       String title = choice.getAttributeValue("title");
       String dataFormatType = choice.getAttributeValue("dataFormatType");
-      ss.addServiceChoice( name, title, dataFormatType);
+      ss.addServiceChoice( name, title, dataFormatType, null, null);
     }
 
     return ss;
@@ -564,42 +563,3 @@ public class DqcConvert3 implements DqcConvertIF {
   }
 
 }
-
-
-/* Change History:
-   $Log: DqcConvert3.java,v $
-   Revision 1.11  2006/04/20 22:13:14  caron
-   improve DL record extraction
-   CatalogCrawler improvements
-
-   Revision 1.10  2006/01/17 01:46:51  caron
-   use jdom instead of dom everywhere
-
-   Revision 1.9  2005/04/20 00:05:37  caron
-   *** empty log message ***
-
-   Revision 1.8  2004/09/24 03:26:28  caron
-   merge nj22
-
-   Revision 1.7  2004/06/19 00:45:42  caron
-   redo nested select list
-
-   Revision 1.6  2004/06/18 21:54:26  caron
-   update dqc 0.3
-
-   Revision 1.5  2004/06/12 04:12:42  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/06/12 02:01:09  caron
-   dqc 0.3
-
-   Revision 1.3  2004/06/09 00:27:26  caron
-   version 2.0a release; cleanup javadoc
-
-   Revision 1.2  2004/05/21 05:57:31  caron
-   release 2.0b
-
-   Revision 1.1  2004/05/11 23:30:29  caron
-   release 2.0a
-
- */

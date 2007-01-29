@@ -42,8 +42,8 @@ public class SelectService extends Selector {
   }
 
 
-  public void addServiceChoice( String service, String title, String dataFormat) {
-    choices.add( new ServiceChoice(service, title, dataFormat));
+  public void addServiceChoice( String service, String title, String dataFormat, String returns, String value) {
+    choices.add( new ServiceChoice(service, title, dataFormat, returns, value));
   }
   public ArrayList getChoices() { return choices; }
   public int getSize() { return choices.size(); }
@@ -74,19 +74,23 @@ public class SelectService extends Selector {
   private volatile int hashCode = 0;
 
   public class ServiceChoice implements Choice {
-    private String service, title, dataFormat;
-    ServiceChoice( String service, String title, String dataFormat) {
+    private String service, title, dataFormat, returns, value;
+    ServiceChoice( String service, String title, String dataFormat, String returns, String value) {
       this.service = service;
       this.title = title;
       this.dataFormat = dataFormat;
+      this.returns = returns;
+      this.value = value;
     }
     public String getService() { return service; }
     public String getTitle() { return title; }
     public String getDataFormat() { return dataFormat; }
+    public String getReturns() { return returns; }
 
     // Choice
     public String toString() { return title != null ? title : service; }
-    public String getValue() { return service; }
+    public String getValue2() { return value; }
+    public String getValue() { return value != null ? value : service; }
 
     /** SelectService with same values are equal */
     public boolean equals(Object o) {
@@ -103,6 +107,10 @@ public class SelectService extends Selector {
           result = 37*result + getTitle().hashCode();
         if (getDataFormat() != null)
           result = 37*result + getDataFormat().hashCode();
+        if (getReturns() != null)
+          result = 37*result + getReturns().hashCode();
+        if (getValue() != null)
+          result = 37*result + getValue().hashCode();
         hashCode = result;
       }
       return hashCode;

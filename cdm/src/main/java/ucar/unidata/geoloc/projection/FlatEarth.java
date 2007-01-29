@@ -1,5 +1,5 @@
 /*
- * $Id: FlatEarth.java  $
+ * $Id: FlatEarth.java,v 1.2 2006/11/18 19:03:22 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -31,7 +32,7 @@ import ucar.unidata.geoloc.*;
  *   FlatEarth Projection
  *   This projection surface is tangent at some point (lat0, lon0) and
  *   has a y axis rotated from true North by some angle.
-
+ *
  *   We call it "flat" because it should only be used where the spherical
  *   geometry of the earth is not significant. In actuallity, we use the simple
  *   "arclen" routine which computes dy along a meridian, and dx along a
@@ -43,11 +44,12 @@ import ucar.unidata.geoloc.*;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author Unidata Development Team
- *   @version $Id: FlatEarth.java 63 2006-09-30 $
+ *   @version $Id: FlatEarth.java,v 1.2 2006/11/18 19:03:22 dmurray Exp $
  */
 
 public class FlatEarth extends ProjectionImpl {
-       /* double Lat0, Lon0, Rot_cos, Rot_sin;*/
+
+    /* double Lat0, Lon0, Rot_cos, Rot_sin;*/
 
     /** constants from Snyder's equations */
     private double rotAngle;
@@ -83,20 +85,20 @@ public class FlatEarth extends ProjectionImpl {
      */
     public FlatEarth(double lat0, double lon0, double rotAngle) {
 
-        this.lat0 = Math.toRadians(lat0);
-        this.lon0 = Math.toRadians(lon0);
+        this.lat0     = Math.toRadians(lat0);
+        this.lon0     = Math.toRadians(lon0);
         this.rotAngle = Math.toRadians(rotAngle);
 
-        origin    = new LatLonPointImpl(lat0, lon0);
+        origin        = new LatLonPointImpl(lat0, lon0);
         precalculate();
 
         addParameter(ATTR_NAME, "flat_earth");
-        addParameter("latitude_of_projection_origin",  lat0);
+        addParameter("latitude_of_projection_origin", lat0);
         addParameter("longitude_of_projection_origin", lon0);
         addParameter("rotationAngle", rotAngle);
     }
 
-     /**
+    /**
      * Construct a FlatEarth Projection, two standard parellels.
      * For the one standard parellel case, set them both to the same value.
      *
@@ -107,15 +109,15 @@ public class FlatEarth extends ProjectionImpl {
      */
     public FlatEarth(double lat0, double lon0) {
 
-        this.lat0 = Math.toRadians(lat0);
-        this.lon0 = Math.toRadians(lon0);
+        this.lat0     = Math.toRadians(lat0);
+        this.lon0     = Math.toRadians(lon0);
         this.rotAngle = Math.toRadians(0.0);
 
-        origin    = new LatLonPointImpl(lat0, lon0);
+        origin        = new LatLonPointImpl(lat0, lon0);
         precalculate();
 
         addParameter(ATTR_NAME, "flat_earth");
-        addParameter("latitude_of_projection_origin",  lat0);
+        addParameter("latitude_of_projection_origin", lat0);
         addParameter("longitude_of_projection_origin", lon0);
         addParameter("rotationAngle", rotAngle);
         addParameter("units", "km");
@@ -126,8 +128,8 @@ public class FlatEarth extends ProjectionImpl {
      * Precalculate some stuff
      */
     private void precalculate() {
-        sinRot     = Math.sin(rotAngle);
-        cosRot     = Math.cos(rotAngle);
+        sinRot = Math.sin(rotAngle);
+        cosRot = Math.cos(rotAngle);
     }
 
     /**
@@ -156,7 +158,7 @@ public class FlatEarth extends ProjectionImpl {
         FlatEarth oo = (FlatEarth) proj;
         return ((this.getOriginLat() == oo.getOriginLat())
                 && (this.getOriginLon() == oo.getOriginLon())
-                && this.rotAngle == oo.rotAngle );
+                && (this.rotAngle == oo.rotAngle));
     }
 
 
@@ -235,8 +237,9 @@ public class FlatEarth extends ProjectionImpl {
 
         fromLat = Math.toRadians(fromLat);
 
-        dy = Earth.getRadius() * (fromLat - lat0);
-        dx = Earth.getRadius() * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
+        dy      = Earth.getRadius() * (fromLat - lat0);
+        dx = Earth.getRadius() * Math.cos(fromLat)
+             * (Math.toRadians(fromLon) - lon0);
 
 
         toX = cosRot * dx - sinRot * dy;
@@ -263,21 +266,23 @@ public class FlatEarth extends ProjectionImpl {
         double toLat, toLon;
         double x = world.getX();
         double y = world.getY();
-        double  cosl;
-        int TOLERENCE = 1;
+        double cosl;
+        int    TOLERENCE = 1;
         double xp, yp;
 
-	    xp = cosRot * x + sinRot * y;
-	    yp = -sinRot * x + cosRot * y;
+        xp    = cosRot * x + sinRot * y;
+        yp    = -sinRot * x + cosRot * y;
 
-        toLat =  Math.toDegrees(lat0) + Math.toDegrees(yp/Earth.getRadius());
+        toLat = Math.toDegrees(lat0) + Math.toDegrees(yp / Earth.getRadius());
         //double lat2;
         //lat2 = lat0 + Math.toDegrees(yp/Earth.getRadius());
-        cosl = Math.cos( Math.toRadians(toLat) );
-        if (Math.abs( cosl) < TOLERANCE)
-	        toLon = Math.toDegrees(lon0);
-	    else
-	        toLon = Math.toDegrees(lon0) + Math.toDegrees(xp/cosl/Earth.getRadius());
+        cosl = Math.cos(Math.toRadians(toLat));
+        if (Math.abs(cosl) < TOLERANCE) {
+            toLon = Math.toDegrees(lon0);
+        } else {
+            toLon = Math.toDegrees(lon0)
+                    + Math.toDegrees(xp / cosl / Earth.getRadius());
+        }
 
         toLon = LatLonPointImpl.lonNormal(toLon);
 
@@ -318,11 +323,12 @@ public class FlatEarth extends ProjectionImpl {
 
             fromLat = Math.toRadians(fromLat);
             double dy = Earth.getRadius() * (fromLat - lat0);
-            double dx = Earth.getRadius() * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
+            double dx = Earth.getRadius() * Math.cos(fromLat)
+                        * (Math.toRadians(fromLon) - lon0);
 
 
-            toX = cosRot * dx - sinRot * dy;
-            toY = sinRot * dx + cosRot * dy;
+            toX         = cosRot * dx - sinRot * dy;
+            toY         = sinRot * dx + cosRot * dy;
 
             resultXA[i] = (float) toX;
             resultYA[i] = (float) toY;
@@ -330,7 +336,7 @@ public class FlatEarth extends ProjectionImpl {
         return to;
     }
 
-        /**
+    /**
      *  This returns true when the line between pt1 and pt2 crosses the seam.
      *  When the cone is flattened, the "seam" is lon0 +- 180.
      *
@@ -367,17 +373,20 @@ public class FlatEarth extends ProjectionImpl {
             double fromX = fromXA[i];
             double fromY = fromYA[i];
 
-            double xp = cosRot * fromX + sinRot * fromY;
-            double yp = -sinRot * fromX + cosRot * fromY;
+            double xp    = cosRot * fromX + sinRot * fromY;
+            double yp    = -sinRot * fromX + cosRot * fromY;
 
 
-            toLat =  Math.toDegrees(lat0) + Math.toDegrees(yp/Earth.getRadius());
-            double cosl = Math.cos( Math.toRadians(toLat) );
+            toLat = Math.toDegrees(lat0)
+                    + Math.toDegrees(yp / Earth.getRadius());
+            double cosl = Math.cos(Math.toRadians(toLat));
 
-            if (Math.abs( cosl) < TOLERANCE)
-	            toLon = Math.toDegrees(lon0);
-	        else
-                toLon = Math.toDegrees(lon0) + Math.toDegrees(xp/cosl/Earth.getRadius());
+            if (Math.abs(cosl) < TOLERANCE) {
+                toLon = Math.toDegrees(lon0);
+            } else {
+                toLon = Math.toDegrees(lon0)
+                        + Math.toDegrees(xp / cosl / Earth.getRadius());
+            }
 
             toLon     = LatLonPointImpl.lonNormal(toLon);
 
@@ -417,14 +426,15 @@ public class FlatEarth extends ProjectionImpl {
 
             fromLat = Math.toRadians(fromLat);
             double dy = Earth.getRadius() * (fromLat - lat0);
-            double dx = Earth.getRadius() * Math.cos(fromLat) * (Math.toRadians(fromLon) - lon0);
+            double dx = Earth.getRadius() * Math.cos(fromLat)
+                        * (Math.toRadians(fromLon) - lon0);
 
-            toX = cosRot * dx - sinRot * dy;
-            toY = sinRot * dx + cosRot * dy;
+            toX         = cosRot * dx - sinRot * dy;
+            toY         = sinRot * dx + cosRot * dy;
 
 
-            resultXA[i] =   toX;
-            resultYA[i] =   toY;
+            resultXA[i] = toX;
+            resultYA[i] = toY;
         }
         return to;
     }
@@ -453,22 +463,25 @@ public class FlatEarth extends ProjectionImpl {
             double fromX = fromXA[i];
             double fromY = fromYA[i];
 
-            double xp = cosRot * fromX + sinRot * fromY;
-            double yp = -sinRot * fromX + cosRot * fromY;
+            double xp    = cosRot * fromX + sinRot * fromY;
+            double yp    = -sinRot * fromX + cosRot * fromY;
 
             //toLat =  lat0 + Math.toDegrees(yp);
-            toLat =  Math.toDegrees(lat0) + Math.toDegrees(yp/Earth.getRadius());
-            double cosl = Math.cos( Math.toRadians(toLat) );
+            toLat = Math.toDegrees(lat0)
+                    + Math.toDegrees(yp / Earth.getRadius());
+            double cosl = Math.cos(Math.toRadians(toLat));
 
-            if (Math.abs( cosl) < TOLERANCE)
-	            toLon = Math.toDegrees(lon0);
-	        else
-                toLon = Math.toDegrees(lon0) + Math.toDegrees(xp/cosl/Earth.getRadius());
+            if (Math.abs(cosl) < TOLERANCE) {
+                toLon = Math.toDegrees(lon0);
+            } else {
+                toLon = Math.toDegrees(lon0)
+                        + Math.toDegrees(xp / cosl / Earth.getRadius());
+            }
 
-            toLon  = LatLonPointImpl.lonNormal(toLon);
+            toLon     = LatLonPointImpl.lonNormal(toLon);
 
-            toLatA[i] =  toLat;
-            toLonA[i] =  toLon;
+            toLatA[i] = toLat;
+            toLonA[i] = toLon;
 
         }
         return to;
@@ -482,17 +495,12 @@ public class FlatEarth extends ProjectionImpl {
      * @param args not used
      */
     public static void main(String[] args) {
-        FlatEarth        a = new FlatEarth(40, -100, 0.0);
+        FlatEarth           a = new FlatEarth(40, -100, 0.0);
         ProjectionPointImpl p = a.latLonToProj(40.15, -100.2);
         System.out.println("proj point = " + p);
         LatLonPoint ll = a.projToLatLon(p);
         System.out.println("ll = " + ll);
     }
+
 }
-
-
-
-
-
-
 

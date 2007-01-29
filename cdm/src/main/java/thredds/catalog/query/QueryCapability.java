@@ -34,7 +34,7 @@ public class QueryCapability {
   private String createFrom, name, version;
   private Query query;
   private ArrayList selectors = new ArrayList(); // Selector
-  private ArrayList uniqueSelectors = new ArrayList();
+  private ArrayList uniqueSelectors = new ArrayList(); // no duplicate ids
   private ArrayList userInterfaces = new ArrayList();
   private Selector ss = null;
 
@@ -46,7 +46,9 @@ public class QueryCapability {
 
    /**
     * Construct from fields in XML catalog.
-    * @param name
+    * @param urlString the DQC document URI
+    * @param name name of DQC document
+    * @param version version string
     */
   public QueryCapability( String urlString, String name, String version) {
     this.createFrom = urlString;

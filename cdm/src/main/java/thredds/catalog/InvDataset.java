@@ -52,7 +52,7 @@ public abstract class InvDataset {
   protected DataType dataType;
   protected InvService defaultService;
   protected DataFormatType dataFormatType;
-  protected String resourceControl;
+  protected String restrictAccess;
 
   protected ArrayList docs;
   protected ArrayList metadata;
@@ -313,11 +313,11 @@ public abstract class InvDataset {
    *
    * @return the resource control value for this dataset (inherited from ancestor datasets).
    */
-  public String getResourceControl() {
-    if (resourceControl != null) return resourceControl;
+  public String getRestrictAccess() {
+    if (restrictAccess != null) return restrictAccess;
     // not found, look in parent
     if (parent != null)
-      return parent.getResourceControl();
+      return parent.getRestrictAccess();
     
     return null;
   }

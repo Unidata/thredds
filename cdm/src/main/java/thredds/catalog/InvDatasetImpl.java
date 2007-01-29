@@ -281,7 +281,7 @@ public class InvDatasetImpl extends InvDataset {
       getLocalMetadata().add( fromDs.getLocalMetadata(), false);
     transferInheritableMetadata(fromDs, getLocalMetadataInheritable());
 
-    setResourceControl( fromDs.getResourceControl());
+    setResourceControl( fromDs.getRestrictAccess());
   }
 
   /** transfer inherited metadata, consolidating it into target */
@@ -622,8 +622,8 @@ public class InvDatasetImpl extends InvDataset {
     hashCode = 0;
   }
 
-  public void setResourceControl( String resourceControl) {
-    this.resourceControl = resourceControl;
+  public void setResourceControl( String restrictAccess) {
+    this.restrictAccess = restrictAccess;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -932,8 +932,8 @@ public class InvDatasetImpl extends InvDataset {
     if (ds.getID() != null)
       buff.append( " <li><em>ID: </em>" ).append( StringUtil.quoteHtmlContent( ds.getID() ) ).append( "</li>\n" );
 
-    if (ds.getResourceControl() != null)
-      buff.append( " <li><em>ResourceControl: </em>" ).append( StringUtil.quoteHtmlContent( ds.getResourceControl() ) ).append( "</li>\n" );
+    if (ds.getRestrictAccess() != null)
+      buff.append( " <li><em>RestrictAccess: </em>" ).append( StringUtil.quoteHtmlContent( ds.getRestrictAccess() ) ).append( "</li>\n" );
 
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;

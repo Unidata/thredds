@@ -1,5 +1,5 @@
 /*
- * $Id:Stereographic.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: Stereographic.java,v 1.25 2006/11/18 19:03:23 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -35,7 +36,7 @@ import ucar.unidata.util.Format;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id:Stereographic.java 63 2006-07-12 21:50:51Z edavis $
+ *   @version $Id: Stereographic.java,v 1.25 2006/11/18 19:03:23 dmurray Exp $
  */
 
 public class Stereographic extends ProjectionImpl {
@@ -425,8 +426,8 @@ public class Stereographic extends ProjectionImpl {
                 lam = lont;
             } else if (Math.abs(coslatt) < TOLERANCE) {
                 lam = lont + Math.atan2(fromX, ((latt > 0)
-                                                ? -fromY
-                                                : fromY));
+                        ? -fromY
+                        : fromY));
             } else {
                 lam = lont
                       + Math.atan2(fromX * sinc,
@@ -535,8 +536,8 @@ public class Stereographic extends ProjectionImpl {
                 lam = lont;
             } else if (Math.abs(coslatt) < TOLERANCE) {
                 lam = lont + Math.atan2(fromX, ((latt > 0)
-                                                ? -fromY
-                                                : fromY));
+                        ? -fromY
+                        : fromY));
             } else {
                 lam = lont
                       + Math.atan2(fromX * sinc,
@@ -556,46 +557,51 @@ public class Stereographic extends ProjectionImpl {
 
 }
 
-/* Change History:
-   $Log: Stereographic.java,v $
-   Revision 1.24  2005/11/02 20:04:14  dmurray
-   add the Orthographic projection, refactor some of the constants up to
-   ProjectionImpl, move the radius declaration in Earth up to the top,
-   fix a problem in Mercator where infinite points were set to 0,0 instead
-   of infinity.
+/*
+ *  Change History:
+ *  $Log: Stereographic.java,v $
+ *  Revision 1.25  2006/11/18 19:03:23  dmurray
+ *  jindent
+ *
+ *  Revision 1.24  2005/11/02 20:04:14  dmurray
+ *  add the Orthographic projection, refactor some of the constants up to
+ *  ProjectionImpl, move the radius declaration in Earth up to the top,
+ *  fix a problem in Mercator where infinite points were set to 0,0 instead
+ *  of infinity.
+ *
+ *  Revision 1.23  2005/05/27 00:32:45  caron
+ *  bug in polar stereographic projection, esp Grib IOSP
+ *
+ *  Revision 1.22  2005/05/13 18:29:19  jeffmc
+ *  Clean up the odd copyright symbols
+ *
+ *  Revision 1.21  2005/05/13 11:14:10  jeffmc
+ *  Snapshot
+ *
+ *  Revision 1.20  2004/12/07 01:51:54  caron
+ *  make parameter names CF compliant.
+ *
+ *  Revision 1.19  2004/09/22 21:19:52  caron
+ *  use Parameter, not Attribute; remove nc2 dependencies
+ *
+ *  Revision 1.18  2004/07/30 17:22:21  dmurray
+ *  Jindent and doclint
+ *
+ *  Revision 1.17  2004/02/27 21:21:40  jeffmc
+ *  Lots of javadoc warning fixes
+ *
+ *  Revision 1.16  2004/01/29 17:35:01  jeffmc
+ *  A big sweeping checkin after a big sweeping reformatting
+ *  using the new jindent.
+ *
+ *  jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
+ *  templates there is a '_more_' to remind us to fill these in.
+ *
+ *  Revision 1.15  2003/07/12 23:08:59  caron
+ *  add cvs headers, trailers
+ *
+ */
 
-   Revision 1.23  2005/05/27 00:32:45  caron
-   bug in polar stereographic projection, esp Grib IOSP
-
-   Revision 1.22  2005/05/13 18:29:19  jeffmc
-   Clean up the odd copyright symbols
-
-   Revision 1.21  2005/05/13 11:14:10  jeffmc
-   Snapshot
-
-   Revision 1.20  2004/12/07 01:51:54  caron
-   make parameter names CF compliant.
-
-   Revision 1.19  2004/09/22 21:19:52  caron
-   use Parameter, not Attribute; remove nc2 dependencies
-
-   Revision 1.18  2004/07/30 17:22:21  dmurray
-   Jindent and doclint
-
-   Revision 1.17  2004/02/27 21:21:40  jeffmc
-   Lots of javadoc warning fixes
-
-   Revision 1.16  2004/01/29 17:35:01  jeffmc
-   A big sweeping checkin after a big sweeping reformatting
-   using the new jindent.
-
-   jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
-   templates there is a '_more_' to remind us to fill these in.
-
-   Revision 1.15  2003/07/12 23:08:59  caron
-   add cvs headers, trailers
-
-*/
 
 
 

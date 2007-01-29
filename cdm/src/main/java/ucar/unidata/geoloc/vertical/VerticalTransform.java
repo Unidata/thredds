@@ -1,5 +1,5 @@
 /*
- * $Id: VerticalTransform.java 64 2006-07-12 22:30:50Z edavis $
+ * $Id: VerticalTransform.java,v 1.13 2006/11/18 19:03:32 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,7 +20,9 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.vertical;
+
 
 import ucar.ma2.Range;
 
@@ -30,7 +32,7 @@ import ucar.ma2.Range;
  * such as height or pressure.
  *
  * @author  Unidata Development Team
- * @version $Revision: 64 $
+ * @version $Revision: 1.13 $
  */
 
 public interface VerticalTransform {
@@ -46,7 +48,8 @@ public interface VerticalTransform {
      * @throws java.io.IOException problem reading the data
      * @throws ucar.ma2.InvalidRangeException timeIndex out of bounds
      */
-    public ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    public ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex)
+     throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
     /**
      * Get the unit string for the vertical coordinate.
@@ -60,15 +63,18 @@ public interface VerticalTransform {
      */
     public boolean isTimeDependent();
 
-   /**
-     * Create a VerticalTransform as a section of an existing VerticalTransform.
-     *
-     * @param t_range subset the time dimension, or null if you want all of it
-     * @param z_range subset the vertical dimension, or null if you want all of it
-     * @param y_range subset the y dimension, or null if you want all of it
-     * @param x_range subset the x dimension, or null if you want all of it
-     * @return a new VerticalTransform for the given subset
-     * @throws ucar.ma2.InvalidRangeException if any Range is incompatible with the existing VerticalTransform
+    /**
+     *  Create a VerticalTransform as a section of an existing VerticalTransform.
+     * 
+     *  @param t_range subset the time dimension, or null if you want all of it
+     *  @param z_range subset the vertical dimension, or null if you want all of it
+     *  @param y_range subset the y dimension, or null if you want all of it
+     *  @param x_range subset the x dimension, or null if you want all of it
+     *  @return a new VerticalTransform for the given subset
+     *  @throws ucar.ma2.InvalidRangeException if any Range is incompatible with the existing VerticalTransform
      */
-    public VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
+    public VerticalTransform subset(Range t_range, Range z_range,
+                                    Range y_range, Range x_range)
+     throws ucar.ma2.InvalidRangeException;
 }
+

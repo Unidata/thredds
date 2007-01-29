@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id: StringUtil.java,v 1.46 2006/11/15 00:06:06 jeffmc Exp $
+// $Id: StringUtil.java,v 1.49 2007/01/09 20:07:45 dmurray Exp $
 
 
 package ucar.unidata.util;
@@ -37,7 +37,7 @@ import java.util.regex.*;
 /**
  * String utilities
  * @author John Caron
- * @version $Id: StringUtil.java,v 1.46 2006/11/15 00:06:06 jeffmc Exp $
+ * @version $Id: StringUtil.java,v 1.49 2007/01/09 20:07:45 dmurray Exp $
  */
 
 public class StringUtil {
@@ -350,14 +350,14 @@ public class StringUtil {
      * @return number of matching chars, starting from first char
      */
     static public int match(String s1, String s2) {
-      int i = 0;
+        int i = 0;
         while ((i < s1.length()) && (i < s2.length())) {
             if (s1.charAt(i) != s2.charAt(i)) {
-          break;
+                break;
             }
-        i++;
-      }
-      return i;
+            i++;
+        }
+        return i;
     }
 
     /**
@@ -565,6 +565,7 @@ public class StringUtil {
         if (debug) {
             System.err.println("findMatch:" + source + ":");
         }
+        //        debug = true;
         for (int i = 0; i < patternList.size(); i++) {
             Object object = patternList.get(i);
             if (object != null) {
@@ -1900,22 +1901,6 @@ public class StringUtil {
     }
 
     /**
-     * Method for debugging.
-     *
-     * @param args  arguments
-     *
-     * @throws Exception some problem
-     */
-    public static void main(String[] args) throws Exception {
-        for (int i = 0; i < args.length; i++) {
-            Date date = parseDate(args[i]);
-            System.err.println(args[i] + " -- " + date);
-        }
-    }
-
-
-
-    /**
      * test
      *
      * @param args args
@@ -2076,6 +2061,24 @@ public class StringUtil {
             }
         }
         return result;
+    }
+
+
+    /**
+     * Get "a" or "an" for prefixing to a string based on the first
+     * character
+     *
+     * @param subject subject to prefix
+     *
+     * @return "an" for vowels, "a" for consanants
+     */
+    public static String getAnOrA(String subject) {
+        String s = subject.toLowerCase();
+        if (s.startsWith("a") || s.startsWith("e") || s.startsWith("o")
+                || s.startsWith("i") || s.startsWith("u")) {
+            return "an";
+        }
+        return "a";
     }
 
 

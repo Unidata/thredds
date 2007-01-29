@@ -1,5 +1,5 @@
 /*
- * $Id:LambertConformal.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: LambertConformal.java,v 1.34 2006/11/18 19:03:22 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 package ucar.unidata.geoloc.projection;
 
@@ -41,7 +42,7 @@ import ucar.units.*;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author John Caron
- *   @version $Id:LambertConformal.java 63 2006-07-12 21:50:51Z edavis $
+ *   @version $Id: LambertConformal.java,v 1.34 2006/11/18 19:03:22 dmurray Exp $
  */
 
 public class LambertConformal extends ProjectionImpl {
@@ -57,10 +58,10 @@ public class LambertConformal extends ProjectionImpl {
     private double lon0Degrees;
 
     /** lat/lon in radians */
-    private double lat0, lon0;       // radians
+    private double lat0, lon0;  // radians
 
     /** parallel 1 and 2 */
-    private double par1, par2;       // degrees
+    private double par1, par2;  // degrees
 
 
     /** _more_ */
@@ -137,8 +138,8 @@ public class LambertConformal extends ProjectionImpl {
             try {
                 scale = getConversionFactor(units, "km");
             } catch (Exception e) {
-                throw new IllegalArgumentException(
-                    units + " not convertible to km");
+                throw new IllegalArgumentException(units
+                        + " not convertible to km");
             }
         }
         this.falseEasting  = scale * false_easting;
@@ -167,7 +168,7 @@ public class LambertConformal extends ProjectionImpl {
 
     // move this to ucar.unit or ucar.unidata.util
 
-    /** _more_          */
+    /** _more_ */
     static private UnitFormat format = UnitFormatManager.instance();
 
     /**
@@ -180,7 +181,8 @@ public class LambertConformal extends ProjectionImpl {
      *
      * @throws Exception _more_
      */
-    static private double getConversionFactor(String inputUnitString, String outputUnitString)
+    static private double getConversionFactor(String inputUnitString,
+            String outputUnitString)
             throws Exception {
         Unit uuInput  = format.parse(inputUnitString);
         Unit uuOutput = format.parse(outputUnitString);
@@ -816,67 +818,72 @@ public class LambertConformal extends ProjectionImpl {
 
 }
 
-/* Change History:
-   $Log: LambertConformal.java,v $
-   Revision 1.33  2005/11/02 20:04:14  dmurray
-   add the Orthographic projection, refactor some of the constants up to
-   ProjectionImpl, move the radius declaration in Earth up to the top,
-   fix a problem in Mercator where infinite points were set to 0,0 instead
-   of infinity.
+/*
+ *  Change History:
+ *  $Log: LambertConformal.java,v $
+ *  Revision 1.34  2006/11/18 19:03:22  dmurray
+ *  jindent
+ *
+ *  Revision 1.33  2005/11/02 20:04:14  dmurray
+ *  add the Orthographic projection, refactor some of the constants up to
+ *  ProjectionImpl, move the radius declaration in Earth up to the top,
+ *  fix a problem in Mercator where infinite points were set to 0,0 instead
+ *  of infinity.
+ *
+ *  Revision 1.32  2005/10/20 16:35:52  caron
+ *  remove dependence of ucar.nc2; call ucar.units directly
+ *
+ *  Revision 1.31  2005/10/19 19:01:36  caron
+ *  deal with NaNs correctly
+ *
+ *  Revision 1.30  2005/10/19 17:21:40  caron
+ *  Lambert Conformal Projection now allows false origin
+ *
+ *  Revision 1.29  2005/05/13 18:29:18  jeffmc
+ *  Clean up the odd copyright symbols
+ *
+ *  Revision 1.28  2005/05/13 12:26:51  jeffmc
+ *  Some mods
+ *
+ *  Revision 1.27  2005/05/13 11:14:10  jeffmc
+ *  Snapshot
+ *
+ *  Revision 1.26  2005/04/28 19:28:24  caron
+ *  grix x,y has to be in km
+ *
+ *  Revision 1.25  2005/04/07 23:33:05  caron
+ *  minor
+ *
+ *  Revision 1.24  2004/12/10 15:07:52  dmurray
+ *  Jindent John's changes
+ *
+ *  Revision 1.23  2004/12/07 01:51:54  caron
+ *  make parameter names CF compliant.
+ *
+ *  Revision 1.22  2004/11/04 00:38:55  caron
+ *  minor
+ *
+ *  Revision 1.21  2004/09/22 21:19:52  caron
+ *  use Parameter, not Attribute; remove nc2 dependencies
+ *
+ *  Revision 1.20  2004/07/30 17:22:20  dmurray
+ *  Jindent and doclint
+ *
+ *  Revision 1.19  2004/02/27 21:21:39  jeffmc
+ *  Lots of javadoc warning fixes
+ *
+ *  Revision 1.18  2004/01/29 17:35:00  jeffmc
+ *  A big sweeping checkin after a big sweeping reformatting
+ *  using the new jindent.
+ *
+ *  jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
+ *  templates there is a '_more_' to remind us to fill these in.
+ *
+ *  Revision 1.17  2003/07/12 23:08:59  caron
+ *  add cvs headers, trailers
+ *
+ */
 
-   Revision 1.32  2005/10/20 16:35:52  caron
-   remove dependence of ucar.nc2; call ucar.units directly
-
-   Revision 1.31  2005/10/19 19:01:36  caron
-   deal with NaNs correctly
-
-   Revision 1.30  2005/10/19 17:21:40  caron
-   Lambert Conformal Projection now allows false origin
-
-   Revision 1.29  2005/05/13 18:29:18  jeffmc
-   Clean up the odd copyright symbols
-
-   Revision 1.28  2005/05/13 12:26:51  jeffmc
-   Some mods
-
-   Revision 1.27  2005/05/13 11:14:10  jeffmc
-   Snapshot
-
-   Revision 1.26  2005/04/28 19:28:24  caron
-   grix x,y has to be in km
-
-   Revision 1.25  2005/04/07 23:33:05  caron
-   minor
-
-   Revision 1.24  2004/12/10 15:07:52  dmurray
-   Jindent John's changes
-
-   Revision 1.23  2004/12/07 01:51:54  caron
-   make parameter names CF compliant.
-
-   Revision 1.22  2004/11/04 00:38:55  caron
-   minor
-
-   Revision 1.21  2004/09/22 21:19:52  caron
-   use Parameter, not Attribute; remove nc2 dependencies
-
-   Revision 1.20  2004/07/30 17:22:20  dmurray
-   Jindent and doclint
-
-   Revision 1.19  2004/02/27 21:21:39  jeffmc
-   Lots of javadoc warning fixes
-
-   Revision 1.18  2004/01/29 17:35:00  jeffmc
-   A big sweeping checkin after a big sweeping reformatting
-   using the new jindent.
-
-   jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
-   templates there is a '_more_' to remind us to fill these in.
-
-   Revision 1.17  2003/07/12 23:08:59  caron
-   add cvs headers, trailers
-
-*/
 
 
 

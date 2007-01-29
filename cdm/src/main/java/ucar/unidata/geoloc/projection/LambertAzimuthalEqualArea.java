@@ -1,5 +1,5 @@
 /*
- * $Id: LambertAzimuthalEqualArea.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id: LambertAzimuthalEqualArea.java,v 1.3 2006/11/18 19:03:22 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,6 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+
 package ucar.unidata.geoloc.projection;
 
 
@@ -39,7 +40,7 @@ import ucar.units.*;
  *   @see Projection
  *   @see ProjectionImpl
  *   @author Unidata Development Team
- *   @version $Id: LambertAzimuthalEqualArea.java 63 2006-07-12 21:50:51Z edavis $
+ *   @version $Id: LambertAzimuthalEqualArea.java,v 1.3 2006/11/18 19:03:22 dmurray Exp $
  */
 
 public class LambertAzimuthalEqualArea extends ProjectionImpl {
@@ -120,8 +121,8 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
             try {
                 scale = getConversionFactor(units, "km");
             } catch (Exception e) {
-                throw new IllegalArgumentException(
-                    units + " not convertible to km");
+                throw new IllegalArgumentException(units
+                        + " not convertible to km");
             }
         }
         this.falseEasting  = scale * false_easting;
@@ -155,7 +156,8 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
      *
      * @throws Exception can't convert
      */
-    static private double getConversionFactor(String inputUnitString, String outputUnitString)
+    static private double getConversionFactor(String inputUnitString,
+            String outputUnitString)
             throws Exception {
         Unit uuInput  = format.parse(inputUnitString);
         Unit uuOutput = format.parse(outputUnitString);

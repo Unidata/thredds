@@ -128,7 +128,6 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
     DataRootHandler.init(contentPath, contextPath);
     catHandler = DataRootHandler.getInstance();
-
     initCatalogs();
 
     catHandler.makeDebugActions();
@@ -671,7 +670,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     act = new DebugHandler.Action("showSecurity", "Show Security info") {
       public void doAction(DebugHandler.Event e) {
-        e.pw.println( ServletUtil.showSecurity( e.req));
+        e.pw.println( ServletUtil.showSecurity( e.req, "admin"));
       }
     };
     debugHandler.addAction(act);
@@ -681,16 +680,10 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     debugHandler = DebugHandler.get("catalogs");
      act = new DebugHandler.Action("reinit", "Reinitialize") {
       public void doAction(DebugHandler.Event e) {
-        try {
-          DatasetHandler.reinit();
           catHandler.reinit();
           ThreddsConfig.readConfig(log);
           initCatalogs();
           e.pw.println( "reinit ok");
-        } catch (IOException e1) {
-          e.pw.println( "Error on reinit "+e1.getMessage());
-          log.error( "Error on reinit "+e1.getMessage());
-        }
       }
     };
     debugHandler.addAction( act);
