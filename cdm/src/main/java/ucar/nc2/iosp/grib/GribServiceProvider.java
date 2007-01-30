@@ -37,6 +37,7 @@ public abstract class GribServiceProvider implements IOServiceProvider {
   // debugging
   static boolean debugOpen = false, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
 
+  static private boolean alwaysInCache = false;
   static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
   static public boolean forceNewIndex = false; // force that a new index file is written
   static public boolean useMaximalCoordSys = false;
@@ -44,6 +45,14 @@ public abstract class GribServiceProvider implements IOServiceProvider {
 
   static public void useMaximalCoordSys(boolean b) { useMaximalCoordSys = b; }
   static public void setExtendIndex(boolean b) { extendIndex = b; }
+
+  /**
+   * Set disk cache policy for index files.
+   * Default = false, meaning try to write index files in same diectory as grib file.
+   * True means always use the DiskCache area. TDS sets this to true, so it wont interfere with external indexer.
+   * @param b
+   */
+  static public void setIndexAlwaysInCache( boolean b) { alwaysInCache = b; }
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("Grib/open");
@@ -96,7 +105,7 @@ public abstract class GribServiceProvider implements IOServiceProvider {
 
     } else {
       // get the index file, look in cache if need be
-      saveIndexFile = DiskCache.getFileStandardPolicy( indexLocation );
+      saveIndexFile = DiskCache.getFile(indexLocation, alwaysInCache);
     }
 
     // if exist already, read it

@@ -51,7 +51,7 @@
 <p>Then change the <strong>server.xml</strong> file to tell it to use digested passwords, by adding this &lt;Realm&gt; element to the &lt;Host&gt; element named <strong>localhost</strong>:</p>
 <pre>&lt;Host name=&quot;localhost&quot; debug=&quot;0&quot; appBase=&quot;/opt/tomcat/webapps&quot; unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot; 
      xmlValidation=&quot;false&quot; xmlNamespaceAware=&quot;false&quot;&gt;
-  &lt;Realm className=&quot;org.apache.catalina.realm.MemoryRealm&quot; digest=&quot;SHA&quot; /&gt;
+  <strong>&lt;Realm className=&quot;org.apache.catalina.realm.MemoryRealm&quot; digest=&quot;SHA&quot; /&gt;</strong>
   ...
 &lt;/Host&gt;</pre>
 <h2>Restrict Access to Tomcat  Manager Applications </h2>

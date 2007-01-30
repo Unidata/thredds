@@ -71,6 +71,7 @@
 
   <GribIndexing>
     <setExtendIndex>false</setExtendIndex>
+    <alwaysUseCache>true</alwaysUseCache>
   </GribIndexing>
 
   <AggregationCache>

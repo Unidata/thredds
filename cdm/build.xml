@@ -56,10 +56,9 @@
   <property name="logging.jar" value="nlog4j-1.2.25.jar"/>
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.2.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
-  <property name="netcdf1.jar" value="netcdf1.jar"/>
+  <!-- property name="netcdf1.jar" value="netcdf1.jar"/ -->
   <property name="prefs.jar" value="prefsAll.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
-  <property name="visad.jar" value="visad.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
   <property name="xml-apis.jar" value="xml-apis.jar"/>
   <property name="xercesImpl.jar" value="xercesImpl.jar"/>
@@ -82,8 +81,9 @@
     <include name="release/${bufr.jar}"/>
     <include name="release/${grib.jar}"/>
     <include name="release/${visadNoDods.jar}"/>
-    <include name="external/${jdom.jar}"/>
+    <include name="external/${gnu-regexp.jar}"/>
     <include name="external/${httpclient.jar}"/>
+    <include name="external/${jdom.jar}"/>
     <include name="external/${logging.jar}"/>
   </fileset>
 
@@ -92,7 +92,6 @@
   </path>
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
-    <include name="external/${gnu-regexp.jar}"/>
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
     <include name="external/${jpeg2000.jar}"/>
@@ -300,8 +299,8 @@
 
   </target>
 
-  <property name="fullSrc.jar" value="threddsSrc-${buildtime2}.jar"/>
-  <target name="makeFullSrc" description="make nj22/tds full source jar = threddsSrc-${buildtime2}.jar">
+  <property name="fullSrc.jar" value="threddsSrc-${release.version.minor}.jar"/>
+  <target name="makeFullSrc" description="make nj22/tds full source jar = threddsSrc-${release.version.minor}.jar">
     <jar jarfile="${build.dir}/${fullSrc.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
         <exclude name="cdm/doc/**" />
@@ -325,18 +324,19 @@
   </target>
 
   <!-- get rid of dods stuff in visad.jar -->
+  <property name="visad.jar" value="C:/dev/cvs/lib/visad.jar"/>   <!-- checkout visad.jar from cvs -->
   <property name="visadNoDods.tempdir" location="C:/TEMP/visad/"/>
-  <target name="makeVisad" description="remove dods from visad">
+  <target name="makeVisadNoDods" description="remove dods from visad">
     <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
     <mkdir dir="${visadNoDods.tempdir}"/>
     <unzip dest="${visadNoDods.tempdir}">
-      <fileset file="${lib.dir}/${visad.jar}"/>
+      <fileset file="${visad.jar}"/>
     </unzip>
 
     <delete dir="${visadNoDods.tempdir}/dods" failonerror="true"/>
     <delete dir="${visadNoDods.tempdir}/gnu/regexp" failonerror="true"/>
 
-    <jar jarfile="${lib.dir}/${visadNoDods.jar}" index="true" duplicate="preserve">
+    <jar jarfile="${lib.dir}/release/${visadNoDods.jar}" index="true" duplicate="preserve">
       <fileset dir="${visadNoDods.tempdir}"/>
     </jar>
   </target>

@@ -107,6 +107,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
     ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex( extendIndex);
 
+    boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
+    ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( alwaysUseCache);
+
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.N3iosp.setProperty( "syncExtendOnly", "true");
 

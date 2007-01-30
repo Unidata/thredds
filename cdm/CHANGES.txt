@@ -18,6 +18,7 @@ Changes in version 2.2.19
   * Grib2: levels 0 and 255 means no level name
   * NCdump.print was using NetcdfFileCache
  Libraries
+  * upgrade visadNoDods.jar to latest(01/29/07) CVS version
   * upgrade commons libraries: httpclient.3.0.1, logging-1.1
   * upgrade log4j : nlog4j.1.2.25, slf4j-jdk14-1.2
   * detect if java version 1.5+ in XMLEntityResolver, dont need to include Xerces if so.
