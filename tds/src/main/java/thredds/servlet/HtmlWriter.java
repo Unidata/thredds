@@ -136,18 +136,13 @@ public class HtmlWriter
   public String getUserHead()
   {
     return new StringBuffer()
-            .append( "<table width=\"100%\">\n")
-            .append( "    <tr>\n" )
-            .append( "        <td width=\"95\" height=\"95\" align=\"left\"><img src=\"").append( contextPath).append("/").append( instituteLogoPath ).append("\" alt=\"").append( instituteLogoAlt).append("\" width=\"95\" height=\"93\"> </td>\n")
-            .append( "        <td width=\"701\" align=\"left\" valign=\"top\">\n")
-            .append( "            <table width=\"303\">\n" )
-            .append( "                <tr>\n" )
-            .append( "                  <td width=\"295\" height=\"22\" align=\"left\" valign=\"top\"><h3><strong>").append( contextName).append("</strong></h3></td>\n" )
-            .append( "                </tr>\n" )
-            .append( "            </table>\n" )
-            .append( "        </td>\n" )
-            .append( "    </tr>\n" )
-            .append( "</table>")
+            .append( "<table width=\"100%\"><tr><td>\n")
+            .append( "  <img src=\"").append( contextPath).append("/").append( instituteLogoPath ).append("\"\n")
+            .append( "       alt=\"").append( instituteLogoAlt).append("\"\n")
+            .append( "       align=\"left\" valign=\"top\"\n")
+            .append( "       hspace=\"10\" vspace=\"2\">\n")
+            .append( "  <h3><strong>").append( contextName).append("</strong></h3>\n" )
+            .append( "</td></tr></table>\n")
             .toString();
   }
 
