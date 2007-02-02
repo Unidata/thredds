@@ -3,7 +3,6 @@ package thredds.cataloggen;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
 import thredds.catalog.InvService;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
@@ -98,104 +97,45 @@ public class CatGenAndWrite
 
     try
     {
-      cgaw.gen2CatAndSubCats( topCatCrDs );
+      cgaw.genCatAndSubCats( topCatCrDs );
     }
     catch ( IOException e )
     {
-      log.error( "");
+      log.error( "I/O error generating and writing catalogs at and under \"" + topCatCrDs.getPath() + "\": " + e.getMessage());
       return;
     }
 
-    CatalogBuilder catBuild = new StandardCatalogBuilder( "", "My data",
-                                                          collectionCrDs, filter,
-                                                          new InvService( "myServer", "File",
-                                                                          collectionCrDs.getPath() + "/", //"/thredds/dodsC/",
-                                                                          null, null ),
-                                                          "DATA", null, null, true, null, null, null, null, null);
-
-    File startFile = new File( collectionFile, startPath );
-    CrawlableDataset startCrDs = new CrawlableDatasetFile( startFile );
-    CrawlableDataset ncepCrDs;
-    try
-    {
-      ncepCrDs = catBuild.requestCrawlableDataset( startCrDs.getPath());
-    }
-    catch ( IOException e )
-    {
-      log.error( "I/O error getting CrDs: " + e.getMessage() );
-      return;
-    }
-
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false);
-    genCatAndSubCats( collectionCrDs, ncepCrDs, filter, catBuild, catWriteDirPath, factory );
-//      CrawlableDataset ncepGfsCrDs = catBuild.requestCrawlableDataset( dataPath + "/grid/NCEP/GFS");
-//      CrawlableDataset ncepGfsAkCrDs = catBuild.requestCrawlableDataset( dataPath + "/grid/NCEP/GFS/Alaska_191km");
-//      CrawlableDataset ncepNamCrDs = catBuild.requestCrawlableDataset( dataPath + "/grid/NCEP/NAM");
-//      CrawlableDataset ncepNamAkCrDs = catBuild.requestCrawlableDataset( dataPath + "/grid/NCEP/NAM/Alaska_95km");
   }
-
-  static void genCatAndSubCats( CrawlableDataset collectionCrDs,
-                                CrawlableDataset catCrDs,
-                                CrawlableDatasetFilter filter,
-                                CatalogBuilder catBuilder,
-                                String writePath,
-                                InvCatalogFactory factory )
+  public static void main2()
   {
-    File writeFile = new File( writePath );
+    // Test case 1: local data files served by TDS.
+    String collectionPath = "C:/Ethan/data/mlode";
+    String startPath = "grid/NCEP";
+    String catWriteDirPath = "C:/Ethan/data/tmpTest2";
 
-    File catParentDir = new File( writeFile, catCrDs.getPath().substring( collectionCrDs.getPath().length() ) );
-    if ( ! catParentDir.exists() )
-    {
-      if ( ! catParentDir.mkdirs() )
-      {
-        log.error( "genCatAndSubCats(): could not create directory(s) for " + catParentDir.getPath() );
-        return;
-      }
-    }
-    File catFile = new File( catParentDir, "catalog.xml" );
+    File catWriteDir = new File( catWriteDirPath );
 
-    InvCatalogImpl cat = null;
-    try
-    {
-      cat = catBuilder.generateCatalog( catCrDs );
-    }
-    catch ( IOException e )
-    {
-      log.error( "genCatAndSubCats(): could not generate catalog for " + catCrDs.getPath() + ": " + e.getMessage() );
-      return;
-    }
+    File collectionFile = new File( collectionPath );
+    CrawlableDataset collectionCrDs = new CrawlableDatasetFile( collectionFile );
+    InvService service = new InvService( "myServer", "OPENDAP", "/thredds/dodsC/", null, null );
+    CrawlableDatasetFilter filter = null;
+    CrawlableDataset topCatCrDs = collectionCrDs.getDescendant( startPath );
+
+    CatGenAndWrite cgaw = new CatGenAndWrite( "DATA", "My data", "tdr", service,
+                                              collectionCrDs, topCatCrDs, filter, catWriteDir );
 
     try
     {
-      factory.writeXML( cat, catFile.getAbsolutePath());
+      cgaw.genCatAndSubCats( topCatCrDs );
     }
     catch ( IOException e )
     {
-      log.error( "genCatAndSubCats(): could not write catalog <" + catCrDs.getPath() + "> to file <" + catFile.getAbsolutePath()+ ">: " + e.getMessage() );
+      log.error( "I/O error generating and writing catalogs at and under \"" + topCatCrDs.getPath() + "\": " + e.getMessage() );
       return;
     }
-
-    // Find child datasets that are collections and generate catalogs for those as well.
-    CrawlableDatasetFilter collectionOnlyFilter = new CollectionOnlyCrDsFilter( filter );
-    List collectionChildren = null;
-    try
-    {
-      collectionChildren = catCrDs.listDatasets( collectionOnlyFilter);
-    }
-    catch ( IOException e )
-    {
-      log.error( "genCatAndSubCats(): I/O error listing child datasets that are collections: " + e.getMessage());
-      return;
-    }
-    for ( Iterator it = collectionChildren.iterator(); it.hasNext(); )
-    {
-      CrawlableDataset curCrDs = (CrawlableDataset) it.next();
-
-      genCatAndSubCats( collectionCrDs, curCrDs, filter, catBuilder, writePath, factory );
-    }
-
   }
-  public void gen2CatAndSubCats( CrawlableDataset catCrDs )
+
+  public void genCatAndSubCats( CrawlableDataset catCrDs )
           throws IOException
   {
 
@@ -205,7 +145,7 @@ public class CatGenAndWrite
     {
       if ( ! catWriteDir.mkdirs() )
       {
-        log.error( "gen2CatAndSubCats(): could not create directory(s) for " + catWriteDir.getPath() );
+        log.error( "genCatAndSubCats(): could not create directory(s) for " + catWriteDir.getPath() );
         throw new IOException( "Could not create directory(s) for " + catWriteDir.getPath() );
       }
     }
@@ -222,7 +162,7 @@ public class CatGenAndWrite
     {
       CrawlableDataset curCrDs = (CrawlableDataset) it.next();
 
-      gen2CatAndSubCats( collectionCrDs );
+      genCatAndSubCats( curCrDs );
     }
 
   }
@@ -241,10 +181,10 @@ public class CatGenAndWrite
     {
       if ( dataset.isCollection() )
       {
-        if ( filter != null )
-          return filter.accept( dataset);
-        else
+        if ( filter == null )
           return true;
+        else
+          return filter.accept( dataset );
       }
       return false;
     }
