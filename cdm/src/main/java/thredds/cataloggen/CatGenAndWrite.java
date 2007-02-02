@@ -111,7 +111,8 @@ public class CatGenAndWrite
     // Test case 1: local data files served by TDS.
     String collectionPath = "C:/Ethan/data/mlode";
     String startPath = "grid/NCEP";
-    String catWriteDirPath = "C:/Ethan/data/tmpTest2";
+    String catWriteDirPath = "C:/Ethan/code/svnThredds/tds/content/thredds/catGenAndWrite";
+    //String catWriteDirPath = "C:/Ethan/data/tmpTest2";
 
     if ( args.length == 3 )
     {
@@ -128,7 +129,7 @@ public class CatGenAndWrite
     CrawlableDatasetFilter filter = null;
     CrawlableDataset topCatCrDs = collectionCrDs.getDescendant( startPath );
 
-    CatGenAndWrite cgaw = new CatGenAndWrite( "DATA", "My data", "tdr", service,
+    CatGenAndWrite cgaw = new CatGenAndWrite( "DATA", "My data", "mlode", service,
                                               collectionCrDs, topCatCrDs, filter, catWriteDir );
 
     try
