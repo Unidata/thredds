@@ -70,7 +70,7 @@ public class CatGenAndWrite
    *
    * @param args
    */
-  public static void main( String[] args )
+  public static void main1( String[] args )
   {
     // Test case 2: local data files.
     String collectionPath = "C:/Ethan/data/mlode";
@@ -106,12 +106,19 @@ public class CatGenAndWrite
     }
 
   }
-  public static void main2()
+  public static void main( String[] args )
   {
     // Test case 1: local data files served by TDS.
     String collectionPath = "C:/Ethan/data/mlode";
     String startPath = "grid/NCEP";
     String catWriteDirPath = "C:/Ethan/data/tmpTest2";
+
+    if ( args.length == 3 )
+    {
+      collectionPath = args[0];
+      startPath = args[1];
+      catWriteDirPath = args[2];
+    }
 
     File catWriteDir = new File( catWriteDirPath );
 
@@ -150,7 +157,7 @@ public class CatGenAndWrite
       }
     }
 
-    File catFile = new File( catWritePath, "catalog.xml" );
+    File catFile = new File( catWriteDir, "catalog.xml" );
 
     InvCatalogImpl cat = catBuilder.generateCatalog( catCrDs );
 

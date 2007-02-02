@@ -120,6 +120,8 @@ public class TestCatGenAndWrite extends TestCase
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false);
     InvCatalogImpl topCatalog = fac.readXML( topCatalogFile.toURI() );
 
+    //topCatalog.g
+
     
   }
 }
