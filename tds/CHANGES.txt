@@ -5,6 +5,9 @@ Build Date = @BUILDTIME@
 Changes in version 3.15
  Features
   * add restrict dataset processing
+  * CrawlableDataset
+    - Add LogicalFilterComposer for AND-ing, OR-ing, and NOT-ing CrawlableDatasetFilters
+    - Refactor MultiSelectorFilter so that Selector is an inner class.
  Libraries
   * add casclient-2.1.1
   * upgrade commons libraries: fileupload-1.1.1, httpclient.3.0.1, io-1.2, logging-1.1

@@ -16,7 +16,7 @@ import thredds.crawlabledataset.CrawlableDatasetFile;
  * @author edavis
  * @since Jan 22, 2007 10:04:56 PM
  */
-public class TestLogicalCompFilterFactory extends TestCase
+public class TestLogicalFilterComposer extends TestCase
 {
   private File tmpFile;
   private File tmpDir;
@@ -25,7 +25,7 @@ public class TestLogicalCompFilterFactory extends TestCase
   private File file3;
   private File file4;
 
-  public TestLogicalCompFilterFactory( String name )
+  public TestLogicalFilterComposer( String name )
   {
     super( name );
   }
@@ -66,15 +66,15 @@ public class TestLogicalCompFilterFactory extends TestCase
             new MultiSelectorFilter( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.grib1"), true, true, false ) );
     CrawlableDatasetFilter lastModAtLeast4MinPastFilter = new LastModifiedLimitFilter( 240000 );
     CrawlableDatasetFilter oldGribFilter =
-            LogicalCompositionFilterFactory.getAndFilter( includeGribFilter, lastModAtLeast4MinPastFilter);
+            LogicalFilterComposer.getAndFilter( includeGribFilter, lastModAtLeast4MinPastFilter);
 
     CrawlableDatasetFilter includeNcFilter =
             new MultiSelectorFilter( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( "*.nc"), true, true, false ) );
     CrawlableDatasetFilter newNcFilter =
-            LogicalCompositionFilterFactory.getAndFilter( includeNcFilter,
-            LogicalCompositionFilterFactory.getNotFilter( lastModAtLeast4MinPastFilter ) );
+            LogicalFilterComposer.getAndFilter( includeNcFilter,
+            LogicalFilterComposer.getNotFilter( lastModAtLeast4MinPastFilter ) );
 
-    CrawlableDatasetFilter oldGribOrNewNcFilter = LogicalCompositionFilterFactory.getOrFilter( oldGribFilter, newNcFilter);
+    CrawlableDatasetFilter oldGribOrNewNcFilter = LogicalFilterComposer.getOrFilter( oldGribFilter, newNcFilter);
 
     CrawlableDataset tmpDirCrDs = new CrawlableDatasetFile( tmpDir);
     List crDsList = null;

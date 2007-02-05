@@ -15,19 +15,19 @@ import thredds.crawlabledataset.CrawlableDataset;
  * (assuming A, B, C, and D are CrawlableDatasetFilters)
  *
  * <pre>
- * LogicalCompositionFilterFactory.getAndFilter(
- *     LocigalCompositionFilterFactory.getOrFilter( A, B),
- *     LocigalCompositionFilterFactory.getNotFilter(
- *         LocigalCompositionFilterFactory.getAndFilter( C, D) ) );
+ * LogicalFilterComposer.getAndFilter(
+ *     LogicalFilterComposer.getOrFilter( A, B),
+ *     LogicalFilterComposer.getNotFilter(
+ *         LogicalFilterComposer.getAndFilter( C, D) ) );
  * </pre>
  *
  * @author edavis
  * @since Jan 19, 2007 9:53:00 AM
  */
-public class LogicalCompositionFilterFactory
+public class LogicalFilterComposer
 {
   private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( LogicalCompositionFilterFactory.class );
+          org.slf4j.LoggerFactory.getLogger( LogicalFilterComposer.class );
 
   public static CrawlableDatasetFilter getAndFilter( CrawlableDatasetFilter filter1,
                                                      CrawlableDatasetFilter filter2 )

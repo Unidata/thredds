@@ -535,7 +535,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return new LastModifiedLimitFilter( lastModLimit);
     }
 
-    // Handle LogicalCompositionFilterFactory CrDsFilters.
+    // Handle LogicalFilterComposer CrDsFilters.
     String compType = filterElem.getAttributeValue( "logicalComp");
     if ( compType != null )
     {
@@ -549,7 +549,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           logger.warn( tmpMsg );
           return null;
         }
-        filter = LogicalCompositionFilterFactory.getAndFilter(
+        filter = LogicalFilterComposer.getAndFilter(
                 readDatasetScanFilter( (Element) filters.get( 0)),
                 readDatasetScanFilter( (Element) filters.get( 1) ) );
       }
@@ -562,7 +562,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           logger.warn( tmpMsg );
           return null;
         }
-        filter = LogicalCompositionFilterFactory.getOrFilter(
+        filter = LogicalFilterComposer.getOrFilter(
                 readDatasetScanFilter( (Element) filters.get( 0 ) ),
                 readDatasetScanFilter( (Element) filters.get( 1 ) ) );
       }
@@ -575,7 +575,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
           logger.warn( tmpMsg );
           return null;
         }
-        filter = LogicalCompositionFilterFactory.getNotFilter(
+        filter = LogicalFilterComposer.getNotFilter(
                 readDatasetScanFilter( (Element) filters.get( 0 ) ) );
       }
 

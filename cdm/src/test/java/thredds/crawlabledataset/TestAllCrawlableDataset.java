@@ -26,7 +26,7 @@ public class TestAllCrawlableDataset extends TestCase
     suite.addTestSuite( thredds.crawlabledataset.TestCrawlableDatasetFilter.class );
     suite.addTestSuite( thredds.crawlabledataset.filter.TestRegExpMatchOnNameFilter.class );
     suite.addTestSuite( thredds.crawlabledataset.filter.TestWildcardMatchOnNameFilter.class );
-    suite.addTestSuite( thredds.crawlabledataset.filter.TestLogicalCompFilterFactory.class );
+    suite.addTestSuite( thredds.crawlabledataset.filter.TestLogicalFilterComposer.class );
 
     return suite;
   }
