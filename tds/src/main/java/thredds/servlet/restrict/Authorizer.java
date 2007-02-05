@@ -43,12 +43,12 @@ public interface Authorizer {
   public void init(HttpServlet servlet) throws ServletException;
 
   /**
-   * Set the role database, if there is one. If not, assume no role authentication is needed.
-   * use RoleDatabase.hasRole() to test for role.
+   * Set the role source, if there is one. If not, assume no role authentication is needed.
+   * use RoleSource.hasRole() to test for role.
    *
-   * @param db the RoleDatabase
+   * @param roleSource tells whether a user has the named role.
    */
-  public void setRoleDatabase( RoleDatabase db);
+  public void setRoleSource( RoleSource roleSource);
 
   /**
    * Decide is this request is authorized in the named role.

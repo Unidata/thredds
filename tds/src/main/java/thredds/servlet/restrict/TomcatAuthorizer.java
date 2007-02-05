@@ -39,6 +39,8 @@ import thredds.servlet.ServletUtil;
 public class TomcatAuthorizer implements Authorizer {
 
   private boolean useSSL = false;
+  private String sslPort = "8443";
+
   private boolean debugResourceControl = true;
 
   public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException {
@@ -50,10 +52,8 @@ public class TomcatAuthorizer implements Authorizer {
     session.setAttribute("origRequest", ServletUtil.getRequest(req));
     session.setAttribute("role", role);
 
-    // LOOK wont work for SSL
-    // LOOK how to find the correct port number ?? see ServerUtil.getSecureRedirect
-    String urlr = useSSL ? "https://" + req.getServerName() + ":8443/thredds/restrictedAccess/" + role :
-                           "http://" + req.getServerName() + ":8080/thredds/restrictedAccess/" + role;
+    String urlr = useSSL ? "https://" + req.getServerName() + ":"+ sslPort + "/thredds/restrictedAccess/" + role :
+                           "http://" + req.getServerName() + ":"+ req.getServerPort() + "/thredds/restrictedAccess/" + role;
 
 
     if (debugResourceControl) System.out.println("redirect to = " + urlr);
@@ -63,9 +63,15 @@ public class TomcatAuthorizer implements Authorizer {
 
   public TomcatAuthorizer() {}
   public void init(HttpServlet servlet) throws ServletException {
-    useSSL = Boolean.valueOf(servlet.getInitParameter("useSSL"));
+    String s = servlet.getInitParameter("useSSL");
+    if (null != s)
+      useSSL = Boolean.valueOf(s);
+    
+    s = servlet.getInitParameter("portSSL");
+    if (null != s)
+      sslPort = s;
   }
-  public void setRoleDatabase(RoleDatabase db) {
+  public void setRoleSource(RoleSource db) {
     // not used
   }
 

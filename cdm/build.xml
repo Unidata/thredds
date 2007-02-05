@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.19"/>
-  <property name="release.version.minor" value="${release.version}.01"/>
+  <property name="release.version.minor" value="${release.version}.02"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>
@@ -338,6 +338,22 @@
 
     <jar jarfile="${lib.dir}/release/${visadNoDods.jar}" index="true" duplicate="preserve">
       <fileset dir="${visadNoDods.tempdir}"/>
+    </jar>
+  </target>
+
+  <!-- temp -->
+  <property name="makeViewerJar.tempdir" location="C:/TEMP/viewerJar/"/>
+  <target name="makeViewerJar">
+    <!-- delete dir="${makeViewerJar.tempdir}" failonerror="false"/>
+    <mkdir dir="${makeViewerJar.tempdir}"/>
+    <mkdir dir="${makeViewerJar.tempdir}/saidinViewer"/>
+
+    <copy todir="${makeViewerJar.tempdir}/saidinViewer" overwrite="true" preservelastmodified="true">
+      <fileset dir="C:/dev/thredds/tds/target/classes/saidinViewer"/>
+    </copy -->
+
+    <jar jarfile="${lib.dir}/external/viewerJar.jar" index="true" duplicate="preserve">
+      <fileset dir="${makeViewerJar.tempdir}"/>
     </jar>
   </target>
 

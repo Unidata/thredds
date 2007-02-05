@@ -427,6 +427,11 @@ public class DConnect {
     return getData(CE, null, new DefaultFactory());
   }
 
+  public DataDDS getData(String CE, StatusUI statusUI) throws IOException, ParseException, DODSException {
+
+    return getData(CE, statusUI, new DefaultFactory());
+  }
+
   /**
    * Returns the <code>ServerVersion</code> of the last connection.
    * @return the <code>ServerVersion</code> of the last connection.

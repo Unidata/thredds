@@ -35,7 +35,7 @@
 </pre>
 <p>You can also manage users and roles with the tomcat admin application, if you have<a href="http://wiki.apache.org/tomcat/HowTo#head-f50555909547d981d0e2b030323632b26047013e"> installed it</a>. </p>
 <p>In this example we are storing passwords in cleartext, but you are advised to <a href="../tutorial/TomcatSecurity.html#Digest">store  passwords in digest form</a>.</p>
-<p><strong>4</strong>. In the TDS configuration catalogs, add <strong>restrictAccess=&quot;</strong><strong>restrictedDatasetUser&quot;</strong> attributes to the <strong>dataset</strong> or <strong>datasetScan</strong> elements. This will also restrict access to all children of those dataset. Example: </p>
+<p><strong>4</strong>. In the TDS configuration catalogs, add <strong>restrictAccess=<em>{security role}</em></strong>  attributes to the <strong>dataset</strong> or <strong>datasetScan</strong> elements. This will also restrict access to all children of those dataset. Example: </p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;catalog name=&quot;TDS Catalog&quot; xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&gt;
 
@@ -43,13 +43,13 @@
   &lt;datasetRoot path=&quot;test&quot; location=&quot;/data/testdata/&quot;/&gt;
  
   &lt;dataset name=&quot;Test Single Dataset&quot; ID=&quot;<strong>testDataset</strong>&quot; serviceName=&quot;thisDODS&quot;
-      urlPath=&quot;test/testData.nc&quot; <strong>restrictAccess=&quot;</strong><strong>restrictedDatasetUser&quot;</strong>&gt;
+      urlPath=&quot;test/testData.nc&quot; <strong>restrictAccess=&quot;</strong><strong>tiggeData&quot;</strong>&gt;
 
     &lt;dataset name=&quot;Nested&quot; ID=&quot;<strong>nested</strong>&quot; serviceName=&quot;thisDODS&quot; urlPath=&quot;test/nested/testData.nc&quot; /&gt;
   &lt;/dataset&gt;
 
   &lt;datasetScan name=&quot;Test all files in a directory&quot; ID=&quot;<strong>testDatasetScan</strong>&quot;
-      path=&quot;testAll&quot; location=&quot;/data/testdata&quot; <strong>restrictAccess=&quot;</strong><strong>restrictedDatasetUser&quot;</strong> &gt;
+      path=&quot;testAll&quot; location=&quot;/data/testdata&quot; <strong>restrictAccess=&quot;</strong><strong>ccsmData&quot;</strong> &gt;
     
     &lt;metadata inherited=&quot;true&quot;&gt;
       &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
@@ -63,6 +63,7 @@
 <h4>Troubleshooting:</h4>
 <ul>
   <li>If your browser has cached credentials which are wrong, it will simply send them without giving you a chance to renter. Firefox, at least, doesnt seem to have a way to clear this cache. Try exiting all instances of the browser and restarting it.</li>
+  <li>You are denied access when you enter in your username/password, but subsequent tests allow you to access the data. Make sure that your user has both the <strong>restrictedDatasetUser</strong> and the particular security role needed for that dataset. </li>
 </ul>
 <p>&nbsp;</p>
 <h2><a name="SSL"></a>Requiring SSL authentication </h2>
@@ -72,12 +73,32 @@
 <p>We also recommend that you <a href="../tutorial/TomcatSecurity.html#Digest"> store Digest Passwords</a>. See the <a href="../tutorial/TomcatSecurity.html">Tomcat Security</a> guide. </p>
 <h3>2. Modify the TDS web.xml file </h3>
 <p>After <em>thredds.war</em> is expanded, edit <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml</strong>.</p>
-<p>Find the following element: </p>
+<p><strong>2.1</strong> Find the following element: </p>
 <pre>  &lt;security-constraint&gt;<br>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restrictedAccess&lt;/web-resource-name&gt;<br>      &lt;url-pattern&gt;<strong>/restrictedAccess/*</strong>&lt;/url-pattern&gt;<br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br>    &lt;auth-constraint&gt;<br>      &lt;role-name&gt;<strong>restrictedDatasetUser</strong>&lt;/role-name&gt;<br>    &lt;/auth-constraint&gt;<br>  &lt;/security-constraint&gt;
 </pre>
 <p>Add the following to it: </p>
 <pre>  &lt;security-constraint&gt;<br>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restrictedAccess&lt;/web-resource-name&gt;<br>      &lt;url-pattern&gt;/restrictedAccess/*&lt;/url-pattern&gt;<br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br>    &lt;auth-constraint&gt;<br>      &lt;role-name&gt;restrictedDatasetUser&lt;/role-name&gt;<br>    &lt;/auth-constraint&gt;<br>    <strong>&lt;user-data-constraint&gt;<br>      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;<br>    &lt;/user-data-constraint&gt;</strong><br>  &lt;/security-constraint&gt;
 </pre>
+<p>  <strong>2.2</strong> Find the following element: </p>
+<pre>
+   &lt;!-- Restricted Access (using Tomcat) --&gt;<br>  &lt;servlet&gt;<br>    &lt;servlet-name&gt;RestrictedDataset&lt;/servlet-name&gt;<br>    &lt;servlet-class&gt;thredds.servlet.restrict.RestrictedDatasetServlet&lt;/servlet-class&gt;</pre>
+<pre> 	  &lt;init-param&gt;
+      &lt;param-name&gt;Authorizer&lt;/param-name&gt;
+      &lt;param-value&gt;thredds.servlet.restrict.TomcatAuthorizer&lt;/param-value&gt;
+    &lt;/init-param&gt;</pre>
+<pre>    &lt;init-param&gt;
+      &lt;param-name&gt;<strong>useSSL</strong>&lt;/param-name&gt;
+      &lt;param-value&gt;<strong>false</strong>&lt;/param-value&gt;
+    &lt;/init-param&gt;</pre>
+<pre>    &lt;init-param&gt;
+      &lt;param-name&gt;<strong>portSSL</strong>&lt;/param-name&gt;
+      &lt;param-value&gt;<strong>8443</strong>&lt;/param-value&gt;
+    &lt;/init-param&gt;</pre>
+<pre>    &lt;load-on-startup&gt;2&lt;/load-on-startup&gt;
+ &lt;/servlet&gt;
+</pre>
+<p>Change <strong>useSSL</strong> to <strong>true</strong>, and change <strong>portSSL</strong>  to the correct value if it is not 8443. <br>
+</p>
 <h3>3. Restart Tomcat and Test</h3>
 <h4>Troubleshooting:</h4>
 <ul>
@@ -92,7 +113,7 @@
   </pre>
 <hr>
  <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jan 29, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jan 30, 2007 
 </address>
 <p>&nbsp; </p>
 </body>

@@ -6,7 +6,7 @@ Changes in version 2.2.19
  Features
   * DQC improvements - select Service
   * DODSNetcdfFile accept_deflate = true
-  * OpenDAP client uses HttpCLient, implements full security options
+  * OpenDAP client uses HttpClient, implements full security options
   * "Mcidas Area" projections based on mcidas area file parameters.
   * "vertical perspective" projection (GRIB2 Grid Definition Template 3.90)
   * typed dataset factory : if point fails, check for station

@@ -44,7 +44,7 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   static public final byte NC_FILL_BYTE = -127;
   static public final char NC_FILL_CHAR = (char) 0;
   static public final short NC_FILL_SHORT = (short) -32767;
-  static public final int NC_FILL_INT = -2147483647;
+  static public final int NC_FILL_INT = -2147483647; 
   static public final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
   static public final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
   static public final String FillValue = "_FillValue";

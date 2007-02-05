@@ -21,6 +21,8 @@
 
 package thredds.servlet.restrict;
 
+import thredds.servlet.ServletUtil;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +41,7 @@ public class RestrictedDatasetServlet extends HttpServlet {
   private static org.slf4j.Logger log;
   private static Authorizer handler = new TomcatAuthorizer();
   private static boolean initOK = false;
+  private static boolean debugResourceControl = true;
 
   public void init() throws ServletException {
     super.init();
@@ -72,7 +75,7 @@ public class RestrictedDatasetServlet extends HttpServlet {
       RoleDatabase db;
       try {
         db = new RoleDatabase(roleDBfile);
-        handler.setRoleDatabase( db);
+        handler.setRoleSource( db);
       } catch (IOException e) {
         log.error("Failed to read in RoleDatabase "+roleDBfile, e);
         throw new ServletException("Failed to read in RoleDatabase "+roleDBfile, e);
@@ -83,6 +86,7 @@ public class RestrictedDatasetServlet extends HttpServlet {
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     // ServletUtil.logServerAccessSetup( req );
+    if (debugResourceControl) System.out.println("RestrictedDatasetServlet = "+ ServletUtil.getRequest(req));    
     handler.doGet(req, res);
   }
 

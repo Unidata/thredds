@@ -37,7 +37,7 @@ import java.util.HashMap;
  * @author caron
  * @version $Revision$ $Date$
  */
-public class RoleDatabase {
+public class RoleDatabase implements RoleSource {
   private HashMap<String, User> users = new HashMap<String, User>();
 
   RoleDatabase( String filename) throws IOException {

@@ -75,6 +75,15 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/cams-webagent-servletFilter-2.1.13/lib/cams-webagent-servletFilter.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
@@ -96,6 +105,11 @@
       <attribute name="method" value="0" />
       <attribute name="URI" value="/WEB-INF/classes" />
       <url>file://$MODULE_DIR$/../../grib/resources</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="0" />
+      <attribute name="URI" value="&lt;N/A&gt;" />
+      <url>jar://$MODULE_DIR$/../../lib/cams-webagent-servletFilter-2.1.13/lib/cams-webagent-servletFilter.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="0" />

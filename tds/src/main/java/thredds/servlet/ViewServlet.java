@@ -45,10 +45,10 @@ import thredds.catalog.DataType;
  */
 public class ViewServlet extends AbstractServlet {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ViewServlet.class);
-  static private HashMap templates = new HashMap();
-  static private ArrayList viewerList;
+  static private HashMap<String,String> templates = new HashMap<String,String>();
+  static private ArrayList<Viewer> viewerList;
   static {
-    viewerList = new ArrayList();
+    viewerList = new ArrayList<Viewer>();
     registerViewer( new IDV());
     registerViewer( new Nj22ToolsUI());
   }
@@ -63,7 +63,7 @@ public class ViewServlet extends AbstractServlet {
    }
 
    if (!(Viewer.class.isAssignableFrom( vClass))) {
-     log.error("Attempt to load class "+className+" does not implement"+Viewer.class.getName());
+     log.error("Attempt to load class "+className+" does not implement "+Viewer.class.getName());
      return;
    }
 
@@ -87,7 +87,7 @@ public class ViewServlet extends AbstractServlet {
   }
 
   static private String getTemplate( String path) {
-    String template = (String) templates.get( path);
+    String template = templates.get( path);
     if (template != null) return template;
 
     try {
@@ -125,8 +125,8 @@ public class ViewServlet extends AbstractServlet {
       String values[] = req.getParameterValues(name);
       if (values != null) {
         String sname = "{"+name+"}";
-        for (int i = 0; i < values.length; i++) {
-          StringUtil.substitute( sbuff, sname, values[i]); // multiple ok
+        for (String value : values) {
+          StringUtil.substitute(sbuff, sname, value); // multiple ok
         }
       }
     }
@@ -145,18 +145,16 @@ public class ViewServlet extends AbstractServlet {
 
   static public void showViewers( StringBuffer sbuff, InvDatasetImpl dataset, HttpServletRequest req) {
     int count = 0;
-    for (int i = 0; i < viewerList.size(); i++) {
-      Viewer viewer = (Viewer) viewerList.get(i);
-      if (viewer.isViewable( dataset)) count ++;
+    for (Viewer viewer : viewerList) {
+      if (viewer.isViewable(dataset)) count++;
     }
     if (count == 0) return;
 
     sbuff.append("<h3>Viewers:</h3><ul>\r\n");
-    for (int i = 0; i < viewerList.size(); i++) {
-      Viewer viewer = (Viewer) viewerList.get(i);
-      if (viewer.isViewable( dataset)) {
+    for (Viewer viewer : viewerList) {
+      if (viewer.isViewable(dataset)) {
         sbuff.append("  <li> ");
-        sbuff.append( viewer.getViewerLinkHtml( dataset, req));
+        sbuff.append(viewer.getViewerLinkHtml(dataset, req));
         sbuff.append("</li>\n");
       }
     }

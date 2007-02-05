@@ -279,6 +279,7 @@ public class InvDatasetImpl extends InvDataset {
 
     if ( this != fromDs )
       getLocalMetadata().add( fromDs.getLocalMetadata(), false);
+    
     transferInheritableMetadata(fromDs, getLocalMetadataInheritable());
 
     setResourceControl( fromDs.getRestrictAccess());

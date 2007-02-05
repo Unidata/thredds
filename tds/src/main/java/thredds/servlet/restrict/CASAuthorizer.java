@@ -273,8 +273,8 @@ public class CASAuthorizer implements Authorizer {
     }
   }
 
-  private RoleDatabase db;
-  public void setRoleDatabase(RoleDatabase db) {
+  private RoleSource db;
+  public void setRoleSource(RoleSource db) {
     this.db = db;
   }
 

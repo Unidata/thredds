@@ -270,8 +270,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
       URI myURI = baseURI.resolve( getXlinkHref());
       InvCatalogImpl mainCatalog = new InvCatalogImpl( getFullName(), parentCatalog.getVersion(), myURI);
 
-      InvDatasetImpl top = new InvDatasetImpl(this);
-      top.setParent(null);
+      InvDatasetImpl top = new InvDatasetImpl(this); // LOOK clone correct ??
+      top.setParent( null);
       top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
 
       String id = getID();

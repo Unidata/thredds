@@ -15,6 +15,7 @@
     <param-value></param-value>
   </context-param>
 
+
   <filter>
     <filter-name>Cache10dayFilter</filter-name>
     <filter-class>thredds.servlet.filter.ResponseHeaderFilter</filter-class>
@@ -23,6 +24,27 @@
       <param-value>max-age=864000</param-value>
     </init-param>
   </filter>
+
+  <!-- filter>
+    <filter-name>Cams</filter-name>
+    <filter-class>com.cafesoft.security.webagent.servletFilter.CamsServletFilterWebAgent</filter-class>
+
+    <init-param>
+      <param-name>configPath</param-name>
+      <param-value>C:/Program Files (x86)/Apache Software Foundation/apache-tomcat-5.5.20/conf/cams-webagent.conf
+      </param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>contextClass</param-name>
+      <param-value>com.cafesoft.security.common.agent.StandardCamsAgentContext</param-value>
+    </init-param>
+  </filter -->
+
+  <!-- filter-mapping>
+    <filter-name>Cams</filter-name>
+    <url-pattern>/restrictedAccess/*</url-pattern>
+  </filter-mapping -->
 
   <filter-mapping>
     <filter-name>Cache10dayFilter</filter-name>
@@ -134,7 +156,7 @@
     <servlet-class>thredds.servlet.StationObsCollectionServlet</servlet-class>
   </servlet>
 
-   <!-- Restricted Access (using Tomcat) -->
+  <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <servlet>
     <servlet-name>RestrictedDataset</servlet-name>
     <servlet-class>thredds.servlet.restrict.RestrictedDatasetServlet</servlet-class>
@@ -142,6 +164,7 @@
     <init-param>
       <param-name>Authorizer</param-name>
       <param-value>thredds.servlet.restrict.TomcatAuthorizer</param-value>
+      <!-- param-value>thredds.servlet.restrict.CAMSAuthorizer</param-value-->
     </init-param>
 
     <init-param>
@@ -149,8 +172,13 @@
       <param-value>false</param-value>
     </init-param>
 
+    <init-param>
+      <param-name>portSSL</param-name>
+      <param-value>8443</param-value>
+    </init-param>
+
     <load-on-startup>2</load-on-startup>
-  </servlet>
+  </servlet> 
 
   <!-- Restricted Access (using CAS)
   <servlet>
@@ -439,16 +467,6 @@
   <security-role>
     <description>User who can access restricted datasets.</description>
     <role-name>restrictedDatasetUser</role-name>
-  </security-role>
-
-  <security-role>
-    <description>User who can access tigge datasets.</description>
-    <role-name>tiggeData</role-name>
-  </security-role>
-
-  <security-role>
-    <description>User who can access ccsm datasets.</description>
-    <role-name>ccsmData</role-name>
   </security-role>
 
 </web-app>
