@@ -65,20 +65,53 @@ public class CatalogServicesServlet extends HttpServlet {
       // get the requested catalog URI
       String htmlService = ServletUtil.getRequestBase( req); // this is the base of the request
       URI reqURI = new URI( htmlService); // current request as a URI
-      String requestedCatalog = req.getParameter("catalog");
+      String targetCatalog = req.getParameter("catalog");
+
+      // Determine if requested catalog is local to webapp.
+      boolean isLocalCat = false;
 
       URI catURI; // requested catalog as a URI
-      if ((requestedCatalog == null) || (requestedCatalog.length() == 0)) {
+      if ((targetCatalog == null) || (targetCatalog.length() == 0)) {
+        isLocalCat = true;
         catURI = reqURI.resolve( "catalog.xml"); // default catalog
-      } else if (requestedCatalog.endsWith("/")) {
-        catURI = reqURI.resolve( new URI( requestedCatalog+ "catalog.xml"));
-      } else if (requestedCatalog.endsWith(".html")) { // be lenient in what you accept
-        int len = requestedCatalog.length();
-        requestedCatalog = requestedCatalog.substring(0, len-4) + "xml";
-        catURI = reqURI.resolve( new URI( requestedCatalog));
-      } else {
-        catURI = reqURI.resolve( new URI( requestedCatalog)); // deals with possible reletive URL
       }
+      else
+      {
+        if (targetCatalog.endsWith("/"))
+        {
+          targetCatalog += "catalog.xml";
+        }
+        else if ( targetCatalog.endsWith( ".html" ) )
+        { // be lenient in what you accept
+          int len = targetCatalog.length();
+          targetCatalog = targetCatalog.substring( 0, len - 4 ) + "xml";
+        }
+
+        // Determine the catalog to handle whether target is local to webapp or not.
+        URI targetUri = new URI( targetCatalog );
+        catURI = reqURI.resolve( targetUri );
+        // Check if target scheme is same as request URI.
+        String scheme = catURI.getScheme();
+        if ( scheme != null && scheme.equalsIgnoreCase( reqURI.getScheme()))
+        {
+          // Check if target host is same as request URI.
+          String host = catURI.getHost();
+          if ( host != null && host.equalsIgnoreCase( reqURI.getHost()) )
+          {
+            // Check if target port is same as request URI.
+            if ( catURI.getPort() == reqURI.getPort() )
+            {
+              // Check if target path starts with the context path of the request being handled.
+              String path = catURI.getPath();
+              if ( path != null && path.startsWith( req.getContextPath()))
+              {
+                isLocalCat = true;
+              }
+            }
+          }
+        }
+      }
+      // ToDo Should call DataRootHandler.getCatalog() for local catalogs rather than read from URL
 
       // at this point, we really must insist that the catalog ends with an xml
 
@@ -95,7 +128,7 @@ public class CatalogServicesServlet extends HttpServlet {
       }
 
       boolean isHtmlReq = req.getServletPath().endsWith( ".html" );
-      handleCatalogServiceRequest( catalog, catURI, isHtmlReq, req, res );
+      handleCatalogServiceRequest( catalog, catURI, isHtmlReq, isLocalCat, req, res );
 
     } catch (Throwable t) {
       log.error("doGet req= "+ServletUtil.getRequest(req)+" got Exception", t);
@@ -119,7 +152,7 @@ public class CatalogServicesServlet extends HttpServlet {
    * @param res
    * @throws IOException
    */
-  public static void handleCatalogServiceRequest( InvCatalogImpl catalog, URI catURI, boolean isHtmlReq,
+  public static void handleCatalogServiceRequest( InvCatalogImpl catalog, URI catURI, boolean isHtmlReq, boolean isLocalCat,
                                                   HttpServletRequest req, HttpServletResponse res )
           throws IOException
   {
@@ -147,7 +180,7 @@ public class CatalogServicesServlet extends HttpServlet {
     // check if they want to show as html
     if ( cmd.equals( "show" ) )
     {
-      HtmlWriter.getInstance().writeCatalog( res, catalog, false ); // show catalog as HTML
+      HtmlWriter.getInstance().writeCatalog( res, catalog, isLocalCat ); // show catalog as HTML
       return;
     }
 

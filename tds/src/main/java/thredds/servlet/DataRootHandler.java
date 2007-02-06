@@ -955,7 +955,7 @@ public class DataRootHandler {
     // LOOK: What URL is this ?? Deal with catalogServices
     String query = req.getQueryString();
     if (query != null) {
-      CatalogServicesServlet.handleCatalogServiceRequest(catalog, baseURI, isHtmlReq, req, res);
+      CatalogServicesServlet.handleCatalogServiceRequest(catalog, baseURI, isHtmlReq, true, req, res);
       return true;
     }
 
