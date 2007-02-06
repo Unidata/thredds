@@ -451,6 +451,7 @@ public class HtmlWriter
     {
       // Setup HREF url to link to HTML dataset page (more below).
       catHtml = contextPath + "/catalog.html?cmd=subset&catalog=" + cat.getUriString() + "&";
+      // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path 
     }
     else
     { // replace xml with html
