@@ -226,6 +226,8 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   private ArrayList readText(Station s, String urlString) throws IOException {
     ArrayList obsList = new ArrayList();
 
+    System.out.println("readText= "+urlString);
+
     URL url;
     java.io.InputStream is = null;
     try {
