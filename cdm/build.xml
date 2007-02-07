@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.19"/>
-  <property name="release.version.minor" value="${release.version}.02"/>
+  <property name="release.version.minor" value="${release.version}.03"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>
@@ -57,7 +57,8 @@
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.2.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
   <!-- property name="netcdf1.jar" value="netcdf1.jar"/ -->
-  <property name="prefs.jar" value="prefsAll.jar"/>
+  <!-- property name="prefs.jar" value="prefsAll.jar"/ -->
+  <property name="jgoodies.jar" value="forms-1.0.7.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
   <property name="xml-apis.jar" value="xml-apis.jar"/>
@@ -107,9 +108,9 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${bufr.jar} ${grib.jar} ${visadNoDods.jar} ${jdom.jar} ${httpclient.jar} ${http-logging.jar} ${gnu-regexp.jar} ${http-codec.jar} ${http-logging.jar} ${jpeg2000.jar} ${prefs.jar} ${resourcesOptional.jar}"/>
+            value="${bufr.jar} ${grib.jar} ${visadNoDods.jar} ${jdom.jar} ${httpclient.jar} ${http-logging.jar} ${gnu-regexp.jar} ${http-codec.jar} ${http-logging.jar} ${jpeg2000.jar} ${jgoodies.jar} ${resourcesOptional.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${gnu-regexp.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${prefs.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
+            value="lib/${gnu-regexp.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${jgoodies.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -420,7 +421,7 @@
   <property name="resourcesUI.dir" location="${root.dir}/../ui/src/main/resources"/>
 
   <fileset id="compileUI.libraries" dir="${lib.dir}">
-    <include name="release/${prefs.jar}"/>
+    <include name="external/${jgoodies.jar}"/>
     <include name="external/${logging.jar}"/>
     <include name="external/${lucene.jar}"/>
   </fileset>
@@ -646,7 +647,7 @@
     <signjar alias="idv" jar="${lib.dir}/external/${http-logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}" signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${prefs.jar}" keystore="${keystore}" signedjar="${webstart_dir}/prefs.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}" signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}" signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${xercesImpl.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>

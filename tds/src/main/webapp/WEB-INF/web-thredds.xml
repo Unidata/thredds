@@ -286,7 +286,7 @@
 
   <servlet-mapping>
     <servlet-name>MetarServlet</servlet-name>
-    <url-pattern>/ldm/metar/*</url-pattern>
+    <url-pattern>/idd/metar/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -450,11 +450,14 @@
     <auth-constraint>
       <role-name>restrictedDatasetUser</role-name>
     </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
   </security-constraint>
 
   <!-- can only have one login-config for extire context. -->
   <login-config>
-    <auth-method>DIGEST</auth-method>
+    <auth-method>BASIC</auth-method>
     <realm-name>THREDDS Data Server</realm-name>
   </login-config>
 

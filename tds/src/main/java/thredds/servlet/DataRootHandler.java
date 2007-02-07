@@ -1025,8 +1025,9 @@ public class DataRootHandler {
     }
 
     // Check for tdr dynamic catalog.
-    if (catalog == null)
+    if (catalog == null) {
       catalog = makeTDRDynamicCatalog(workPath, baseURI);
+    }
 
     // Check for dynamic catalog.
     if (catalog == null)
@@ -1055,7 +1056,7 @@ public class DataRootHandler {
     // now look through the InvDatasetScans and get a maximal match
     DataRootMatch match = findDataRootMatch(workPath);
     if (match == null) {
-      log.warn("makeDynamicCatalog(): No DataRoot for =" + workPath + " request path= " + path); // LOOK why should there be a messaage ?
+      log.warn("makeDynamicCatalog(): No DataRoot for = " + workPath + " request path= " + path); // LOOK why should there be a messaage ?
       match = findDataRootMatch(workPath); // debug
       return null;
     }
@@ -1117,6 +1118,7 @@ public class DataRootHandler {
       addRoot( p.getName(), p.getValue(), false );
     }  */
 
+    if (cat != null) cat.setBaseURI(baseURI);
     return cat;
   }
 
