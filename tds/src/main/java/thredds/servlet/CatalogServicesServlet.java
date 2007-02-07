@@ -71,9 +71,11 @@ public class CatalogServicesServlet extends HttpServlet {
       boolean isLocalCat = false;
 
       URI catURI; // requested catalog as a URI
+      InvCatalogImpl catalog = null;
       if ((targetCatalog == null) || (targetCatalog.length() == 0)) {
         isLocalCat = true;
         catURI = reqURI.resolve( "catalog.xml"); // default catalog
+        catalog = (InvCatalogImpl) DataRootHandler.getInstance().getCatalog( "catalog.xml", catURI );
       }
       else
       {
@@ -106,25 +108,33 @@ public class CatalogServicesServlet extends HttpServlet {
               if ( path != null && path.startsWith( req.getContextPath()))
               {
                 isLocalCat = true;
+                // Remove context path plus trailing slash.
+                String catPath = path.substring( req.getContextPath().length() + 1);
+                // Remove CatalogServlet path if path starts with it
+                if ( catPath.startsWith( "catalog/"))
+                  catPath = catPath.substring( "catalog/".length());
+                catalog = (InvCatalogImpl) DataRootHandler.getInstance().getCatalog( catPath, catURI );
               }
             }
           }
         }
       }
-      // ToDo Should call DataRootHandler.getCatalog() for local catalogs rather than read from URL
 
       // at this point, we really must insist that the catalog ends with an xml
 
-     // LOOK need object cache to keep the catalogs !!
-      // parse the catalog
-      InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-      InvCatalogImpl catalog;
-      try {
-        catalog = catFactory.readXML( catURI);
-      } catch (Throwable t) {
-        // assume its a malformed catalog, dont log the error message
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
-        return;
+      // For catalogs not local to this webapp, read catalog from external URL.
+      if ( catalog == null )
+      {
+        // LOOK need object cache to keep the catalogs !!
+        // parse the catalog
+        InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
+        try {
+          catalog = catFactory.readXML( catURI);
+        } catch (Throwable t) {
+          // assume its a malformed catalog, dont log the error message
+          res.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
+          return;
+        }
       }
 
       boolean isHtmlReq = req.getServletPath().endsWith( ".html" );
