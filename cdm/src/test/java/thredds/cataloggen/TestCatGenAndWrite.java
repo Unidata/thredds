@@ -51,7 +51,7 @@ public class TestCatGenAndWrite extends TestCase
     try
     {
       cgaw = new CatGenAndWrite( "DATA", "My data", "", service,
-                                 collectionCrDs, topCatCrDs, filter, catWriteDir );
+                                 collectionCrDs, topCatCrDs, filter, null, catWriteDir );
     }
     catch ( IllegalArgumentException e )
     {
@@ -62,7 +62,7 @@ public class TestCatGenAndWrite extends TestCase
 
     try
     {
-      cgaw.genCatAndSubCats( topCatCrDs );
+      cgaw.genAndWriteCatalogTree();
     }
     catch ( IOException e )
     {
@@ -92,7 +92,7 @@ public class TestCatGenAndWrite extends TestCase
     try
     {
       cgaw = new CatGenAndWrite( "DATA", "My data", "tdr", service,
-                                 collectionCrDs, topCatCrDs, filter, catWriteDir );
+                                 collectionCrDs, topCatCrDs, filter, null, catWriteDir );
     }
     catch ( IllegalArgumentException e )
     {
@@ -103,7 +103,7 @@ public class TestCatGenAndWrite extends TestCase
 
     try
     {
-      cgaw.genCatAndSubCats( topCatCrDs );
+      cgaw.genAndWriteCatalogTree();
     }
     catch ( IOException e )
     {

@@ -6,6 +6,7 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.catalog.InvService;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvDatasetImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class CatGenAndWrite
                          String collectionUrlId, InvService service,
                          CrawlableDataset collectionCrDs, CrawlableDataset topCatCrDs,
                          CrawlableDatasetFilter filter,
+                         InvDatasetImpl topLevelMetadataContainer,
                          File catWriteDir )
   {
     String topCatWritePath = topCatCrDs.getPath().substring( collectionCrDs.getPath().length() );
@@ -52,7 +54,7 @@ public class CatGenAndWrite
 
     catBuilder = new StandardCatalogBuilder( collectionUrlId, collectionTitle,
                                              collectionCrDs, filter, service, collectionId,
-                                             null, null, true, null, null,null, null, null );
+                                             null, null, true, null, null,null, topLevelMetadataContainer, null );
 
     this.collectionCrDs = collectionCrDs;
     this.topCatCrDs = topCatCrDs;
@@ -93,7 +95,7 @@ public class CatGenAndWrite
     CrawlableDataset topCatCrDs = collectionCrDs.getDescendant( startPath );
 
     CatGenAndWrite cgaw = new CatGenAndWrite( "DATA", "My data", "", service,
-                                              collectionCrDs, topCatCrDs, filter, catWriteDir );
+                                              collectionCrDs, topCatCrDs, filter, null, catWriteDir );
 
     try
     {
@@ -130,7 +132,7 @@ public class CatGenAndWrite
     CrawlableDataset topCatCrDs = collectionCrDs.getDescendant( startPath );
 
     CatGenAndWrite cgaw = new CatGenAndWrite( "DATA", "My data", "mlode", service,
-                                              collectionCrDs, topCatCrDs, filter, catWriteDir );
+                                              collectionCrDs, topCatCrDs, filter, null, catWriteDir );
 
     try
     {
@@ -143,7 +145,13 @@ public class CatGenAndWrite
     }
   }
 
-  public void genCatAndSubCats( CrawlableDataset catCrDs )
+  public void genAndWriteCatalogTree()
+          throws IOException
+  {
+    this.genCatAndSubCats( topCatCrDs);
+  }
+
+  private void genCatAndSubCats( CrawlableDataset catCrDs )
           throws IOException
   {
 
