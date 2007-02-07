@@ -72,7 +72,7 @@ public class DebugHandler {
         }
       }
     }
-    pw.println("</pre></body>");
+    pw.println("</pre></body></html>");
 
     // send it out
     byte[] result = bos.toByteArray();
