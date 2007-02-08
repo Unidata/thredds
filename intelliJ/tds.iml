@@ -14,31 +14,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/servlet-api.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="http://java.sun.com/products/servlet/2.3/javadoc/" />
-        </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/httpunit.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/cas-client-java-2.1.1/lib/servlet.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -78,7 +58,16 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/cams-webagent-servletFilter-2.1.13/lib/cams-webagent-servletFilter.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/prefsAll.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/tomcat-5.5.20_servlet-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -105,16 +94,6 @@
       <attribute name="method" value="0" />
       <attribute name="URI" value="/WEB-INF/classes" />
       <url>file://$MODULE_DIR$/../../grib/resources</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="0" />
-      <attribute name="URI" value="&lt;N/A&gt;" />
-      <url>jar://$MODULE_DIR$/../../lib/cams-webagent-servletFilter-2.1.13/lib/cams-webagent-servletFilter.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="0" />
-      <attribute name="URI" value="&lt;N/A&gt;" />
-      <url>jar://$MODULE_DIR$/../../lib/cas-client-java-2.1.1/lib/servlet.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -152,8 +131,8 @@
       <url>jar://$MODULE_DIR$/../lib/external/commons-logging-1.1.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/gnu-regexp-1.1.4.jar" />
+      <attribute name="method" value="0" />
+      <attribute name="URI" value="&lt;N/A&gt;" />
       <url>jar://$MODULE_DIR$/../lib/external/gnu-regexp-1.1.4.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
@@ -184,7 +163,7 @@
     <containerElement type="library" level="module">
       <attribute name="method" value="0" />
       <attribute name="URI" value="&lt;N/A&gt;" />
-      <url>jar://$MODULE_DIR$/../lib/external/servlet-api.jar!/</url>
+      <url>jar://$MODULE_DIR$/../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -195,6 +174,11 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/grib-5.1.00.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.00.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/javadap-2.0.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/javadap-2.0.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />

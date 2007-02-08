@@ -27,14 +27,19 @@ import opendap.dap.DAP2Exception;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
-import thredds.servlet.*;
-
-import java.io.*;
-import java.net.URI;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
 import ucar.nc2.NetcdfFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.ServletException;
+
+import java.net.URI;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+
+import thredds.servlet.*;
 
 /**
  * ************************************************************************
@@ -70,7 +75,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       //contentPath = ServletUtil.getContentPath(this) +"dodsC/";
 
       // init logging
-      log = org.slf4j.LoggerFactory.getLogger(getClass());
+      log = org.slf4j.LoggerFactory.getLogger( getClass());
 
       debugInit |= Debug.isSet("ncdods/init");
       if (debugInit || Debug.isSet("ncdods/showServerInfo")) {
