@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
 import ucar.nc2.*;
 import ucar.nc2.dods.*;
@@ -28,6 +28,8 @@ import ucar.unidata.util.StringUtil;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
+
+import thredds.server.opendap.NcDDS;
 
 /**
  * Netcdf DAS object

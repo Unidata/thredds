@@ -23,8 +23,7 @@ package ucar.nc2.dods;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
-import ucar.unidata.util.StringUtil;
-import dods.dap.*;
+import opendap.dap.*;
 
 import java.util.*;
 
@@ -51,7 +50,7 @@ public class DODSVariable extends ucar.nc2.Variable {
   }
 
     // use when a dods variable is a scalar
-  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, dods.dap.BaseType dodsScalar) {
+  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, opendap.dap.BaseType dodsScalar) {
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
     this.dodsShortName = dodsShortName;
@@ -62,7 +61,7 @@ public class DODSVariable extends ucar.nc2.Variable {
     }
 
     // check for netcdf char array
-    Dimension strlenDim = null;
+    Dimension strlenDim;
     if ((dataType == DataType.STRING) &&
         (null != (strlenDim = dodsfile.getNetcdfStrlenDim( this)))) {
 
@@ -79,7 +78,7 @@ public class DODSVariable extends ucar.nc2.Variable {
 
    // use when a dods variable is an Array, rank > 0
   DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DArray dodsArray,
-                dods.dap.BaseType elemType ) {
+                opendap.dap.BaseType elemType ) {
 
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
@@ -93,7 +92,7 @@ public class DODSVariable extends ucar.nc2.Variable {
     ArrayList dims = dodsfile.constructDimensions( parentGroup, dodsArray);
 
     // check for netcdf char array
-    Dimension strlenDim = null;
+    Dimension strlenDim;
     if ((dataType == DataType.STRING) &&
         (null != (strlenDim = dodsfile.getNetcdfStrlenDim( this)))) {
 

@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 
-import dods.dap.DODSException;
 import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
 

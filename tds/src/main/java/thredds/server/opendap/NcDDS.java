@@ -19,13 +19,12 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.unidata.util.StringUtil;
 
-import dods.dap.*;
 import dods.dap.Server.*;
 
 import java.util.*;

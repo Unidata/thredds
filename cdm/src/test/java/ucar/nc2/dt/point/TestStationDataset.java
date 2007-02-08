@@ -24,7 +24,7 @@ public class TestStationDataset extends TestCase {
   }
 
 
-  public void testMultidimStationObsDataset() throws IOException {
+  public void utestMultidimStationObsDataset() throws IOException {
     testAllMethods( topDir+"misc/multidim.nc");
   }
 

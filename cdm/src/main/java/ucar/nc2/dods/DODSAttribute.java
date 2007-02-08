@@ -21,7 +21,6 @@
 package ucar.nc2.dods;
 
 import ucar.ma2.*;
-import ucar.nc2.*;
 import ucar.unidata.util.StringUtil;
 
 import java.util.*;
@@ -42,25 +41,25 @@ public class DODSAttribute extends ucar.nc2.Attribute {
   //private dods.dap.Attribute att;
 
   /** constructor: adapter around dods.dap.Attribute */
-  public DODSAttribute( String dodsName, dods.dap.Attribute att) {
+  public DODSAttribute( String dodsName, opendap.dap.Attribute att) {
     super( DODSNetcdfFile.makeNetcdfName( dodsName));
 
     DataType ncType = DODSNetcdfFile.convertToNCType( att.getType());
 
+    // count number
     int nvals = 0;
-    String[] vals = null;
-
-    Enumeration es = att.getValues();
-    while(es.hasMoreElements()) {
-      es.nextElement();
+    Iterator iter = att.getValuesIterator();
+    while(iter.hasNext()) {
+      iter.next();
       nvals++;
     }
 
-    vals = new String[nvals];
-    es = att.getValues();
+    // need String[]
+    String[] vals = new String[nvals];
+    iter = att.getValuesIterator();
     int count = 0;
-    while(es.hasMoreElements()) {
-      String val = (String) es.nextElement();
+    while(iter.hasNext()) {
+      String val = (String) iter.next();
       if (val.charAt(0) == '"')
         val = val.substring(1);
       int n = val.length();

@@ -280,64 +280,7 @@ public abstract class DODSServlet extends HttpServlet {
   }
 
 
-  /**
-   * ************************************************************************
-   * <p/>
-   * In this (default) implementation of the getDAS() method a locally cached
-   * DAS is retrieved and parsed. In this method the DAS for the passed dataset
-   * is loaded from the "das_cache_dir" indidcated in the "[Server]" section of the
-   * DODSiniFile. If the there is no file available a DODSException is
-   * thrown. It is certainly possible (and possibly very desirable) to override
-   * this method when overriding the getDDS() method. One reason for doing this
-   * is if the DODS server being implemented can generate the DAS information
-   * dynamically.
-   * <p/>
-   * When overriding this method be sure that it does the following:
-   * <ul>
-   * <li> Instantiates the DAS for the indicated (passed) dataset and
-   * populates it. This is accomplished in the default implementation
-   * by opening a (cached?) DAS stored in a file and parsing it. In
-   * a different implementation it could be created dynamically.
-   * <li> Returns this freshly minted DAS object. (to the servlet code where it is used.)
-   * </ul>
-   *
-   * @param rs The ReqState object for this client request.
-   * @return The DAS object for the data set specified in the parameter <code>dataSet</code>
-   * @see dods.dap.DAS
-   */
-  protected DAS getDAS(ReqState rs) throws DODSException, ParseException {
 
-    DataInputStream is = null;
-    DAS myDAS = new DAS();
-    boolean gotIt = false;
-
-    try {
-      is = openCachedDAS(rs);
-
-      myDAS.parse(is);
-      gotIt = true;
-    } catch (FileNotFoundException fnfe) {
-      // This is no big deal. We just trap it and return an
-      // empty DAS object.
-      gotIt = false;
-    } finally {
-      try {
-        if (is != null) is.close();
-      } catch (IOException ioe) {
-
-        // throw new DODSException(DODSException.UNKNOWN_ERROR, ioe.getMessage());
-      }
-    }
-
-    if (gotIt)
-      if (Debug.isSet("showResponse"))
-        System.out.println("Successfully opened and parsed DAS cache: " + rs.getDataSet());
-      else if (Debug.isSet("showResponse"))
-        System.out.println("No DAS present for dataset: " + rs.getDataSet());
-
-    return (myDAS);
-
-  }
   /***************************************************************************/
 
 
@@ -380,74 +323,7 @@ public abstract class DODSServlet extends HttpServlet {
   /***************************************************************************/
 
 
-  /**
-   * ************************************************************************
-   * Opens a DDS cached on local disk. This can be used on DODS servers (such
-   * as the DODS SQL Server) that rely on locally cached DDS files as opposed
-   * to dynamically generated DDS's.
-   * <p/>
-   * <p>This method uses the <code>iniFile</code> object cached by <code>
-   * loadIniFile()</code> to determine where to look for the cached <code>
-   * DDS</code>.
-   *
-   * @param rs The ReqState object for this client request.
-   * @return An open <code>DataInputStream</code> from which the DDS can
-   *         be read.
-   * @throws DODSException
-   */
-  public DataInputStream openCachedDDS(ReqState rs) throws DODSException {
 
-
-    String cacheDir = rs.getDDSCache();
-
-    try {
-
-      // go get a file stream that points to the requested DDSfile.
-
-      File fin = new File(cacheDir + rs.getDataSet());
-      FileInputStream fp_in = new FileInputStream(fin);
-      DataInputStream dds_source = new DataInputStream(fp_in);
-
-      return (dds_source);
-    } catch (FileNotFoundException fnfe) {
-      throw new DODSException(DODSException.CANNOT_READ_FILE, fnfe.getMessage());
-    }
-
-
-  }
-  /***************************************************************************/
-
-
-  /**
-   * ************************************************************************
-   * Opens a DAS cached on local disk. This can be used on DODS servers (such
-   * as the DODS SQL Server) that rely on locally cached DAS files as opposed
-   * to dynamically generated DAS's.
-   * <p/>
-   * <p>This method uses the <code>iniFile</code> object cached by <code>
-   * loadIniFile()</code> to determine where to look for the cached <code>
-   * DDS</code>.
-   * <p/>
-   * <p>If the DAS cannot be found an error is sent back to the client.
-   *
-   * @param rs The ReqState object for this client request.
-   * @return An open <code>DataInputStream</code> from which the DAS can
-   *         be read.
-   * @throws FileNotFoundException
-   */
-  public DataInputStream openCachedDAS(ReqState rs) throws FileNotFoundException {
-
-
-    String cacheDir = rs.getDASCache();
-
-    // go get a file stream that points to the requested DASfile.
-    File fin = new File(cacheDir + rs.getDataSet());
-    FileInputStream fp_in = new FileInputStream(fin);
-    DataInputStream das_source = new DataInputStream(fp_in);
-    return (das_source);
-
-
-  }
   /***************************************************************************/
 
 
@@ -1211,7 +1087,133 @@ public abstract class DODSServlet extends HttpServlet {
   }
   /***************************************************************************/
 
+  /**
+    * ************************************************************************
+    * <p/>
+    * In this (default) implementation of the getDAS() method a locally cached
+    * DAS is retrieved and parsed. In this method the DAS for the passed dataset
+    * is loaded from the "das_cache_dir" indidcated in the "[Server]" section of the
+    * DODSiniFile. If the there is no file available a DODSException is
+    * thrown. It is certainly possible (and possibly very desirable) to override
+    * this method when overriding the getDDS() method. One reason for doing this
+    * is if the DODS server being implemented can generate the DAS information
+    * dynamically.
+    * <p/>
+    * When overriding this method be sure that it does the following:
+    * <ul>
+    * <li> Instantiates the DAS for the indicated (passed) dataset and
+    * populates it. This is accomplished in the default implementation
+    * by opening a (cached?) DAS stored in a file and parsing it. In
+    * a different implementation it could be created dynamically.
+    * <li> Returns this freshly minted DAS object. (to the servlet code where it is used.)
+    * </ul>
+    *
+    * @param rs The ReqState object for this client request.
+    * @return The DAS object for the data set specified in the parameter <code>dataSet</code>
+    * @see dods.dap.DAS
+    */
+   protected DAS getDAS(ReqState rs) throws DODSException, ParseException {
 
+     DataInputStream is = null;
+     DAS myDAS = new DAS();
+     boolean gotIt = false;
+
+     try {
+       is = openCachedDAS(rs);
+
+       myDAS.parse(is);
+       gotIt = true;
+     } catch (FileNotFoundException fnfe) {
+       // This is no big deal. We just trap it and return an
+       // empty DAS object.
+       gotIt = false;
+     } finally {
+       try {
+         if (is != null) is.close();
+       } catch (IOException ioe) {
+
+         // throw new DODSException(DODSException.UNKNOWN_ERROR, ioe.getMessage());
+       }
+     }
+
+     if (gotIt)
+       if (Debug.isSet("showResponse"))
+         System.out.println("Successfully opened and parsed DAS cache: " + rs.getDataSet());
+       else if (Debug.isSet("showResponse"))
+         System.out.println("No DAS present for dataset: " + rs.getDataSet());
+
+     return (myDAS);
+
+   }
+
+   /**
+   * ************************************************************************
+   * Opens a DDS cached on local disk. This can be used on DODS servers (such
+   * as the DODS SQL Server) that rely on locally cached DDS files as opposed
+   * to dynamically generated DDS's.
+   * <p/>
+   * <p>This method uses the <code>iniFile</code> object cached by <code>
+   * loadIniFile()</code> to determine where to look for the cached <code>
+   * DDS</code>.
+   *
+   * @param rs The ReqState object for this client request.
+   * @return An open <code>DataInputStream</code> from which the DDS can
+   *         be read.
+   * @throws DODSException
+   */
+  public DataInputStream openCachedDDS(ReqState rs) throws DODSException {
+
+
+    String cacheDir = rs.getDDSCache();
+
+    try {
+
+      // go get a file stream that points to the requested DDSfile.
+
+      File fin = new File(cacheDir + rs.getDataSet());
+      FileInputStream fp_in = new FileInputStream(fin);
+      DataInputStream dds_source = new DataInputStream(fp_in);
+
+      return (dds_source);
+    } catch (FileNotFoundException fnfe) {
+      throw new DODSException(DODSException.CANNOT_READ_FILE, fnfe.getMessage());
+    }
+
+
+  }
+  /***************************************************************************/
+
+
+  /**
+   * ************************************************************************
+   * Opens a DAS cached on local disk. This can be used on DODS servers (such
+   * as the DODS SQL Server) that rely on locally cached DAS files as opposed
+   * to dynamically generated DAS's.
+   * <p/>
+   * <p>This method uses the <code>iniFile</code> object cached by <code>
+   * loadIniFile()</code> to determine where to look for the cached <code>
+   * DDS</code>.
+   * <p/>
+   * <p>If the DAS cannot be found an error is sent back to the client.
+   *
+   * @param rs The ReqState object for this client request.
+   * @return An open <code>DataInputStream</code> from which the DAS can
+   *         be read.
+   * @throws FileNotFoundException
+   */
+  public DataInputStream openCachedDAS(ReqState rs) throws FileNotFoundException {
+
+
+    String cacheDir = rs.getDASCache();
+
+    // go get a file stream that points to the requested DASfile.
+    File fin = new File(cacheDir + rs.getDataSet());
+    FileInputStream fp_in = new FileInputStream(fin);
+    DataInputStream das_source = new DataInputStream(fp_in);
+    return (das_source);
+
+
+  }
   /**
    * *************************************************************************
    * This method is used to convert special characters into their

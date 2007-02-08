@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
 import dods.dap.Server.*;
 
@@ -28,7 +28,8 @@ import java.io.DataOutputStream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.unidata.util.StringUtil;
+import thredds.server.opendap.HasNetcdfVariable;
+import thredds.server.opendap.NcDDS;
 
 /**
  * Wraps a netcdf scalar short variable.

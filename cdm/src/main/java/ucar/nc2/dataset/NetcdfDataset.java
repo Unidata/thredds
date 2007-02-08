@@ -1193,7 +1193,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /** debug */
-  public static void main(String arg[]) {
+  public static void main2(String arg[]) {
     //String urls = "file:///C:/data/buoy/cwindRM.xml";
     //String urls = "C:/data/conventions/wrf/wrf_masscore.nc";
     //String urls = "http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2004050712_eta_211.nc";
@@ -1212,6 +1212,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       System.out.println("error = " + filename);
       ioe.printStackTrace();
     }
+  }
+
+  public static void main( String arg[]) throws IOException {
+    String datasetIn = "http://motherlode.ucar.edu:9080/thredds/dodsC/nexrad/level2/KVTX/20070206/Level2_KVTX_20070206_2341.ar2v";
+    String filenameOut = "C:/temp/testWriteRadar.nc";
+    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
+    ucar.nc2.FileWriter.writeToFile( ncfileIn, filenameOut);
   }
 
 }

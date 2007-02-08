@@ -20,24 +20,18 @@
  */
 package ucar.nc2.dods;
 
-import dods.dap.*;
-import dods.dap.parser.ParseException;
+import opendap.dap.*;
+import opendap.dap.parser.ParseException;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.Range;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
 
 /**
    DodsV: a container for dods basetypes, so we can track stuff as we process it.
@@ -98,7 +92,7 @@ class DodsV implements Comparable {
    */
   static private void parseVariables(DodsV parent, Enumeration children) {
     while (children.hasMoreElements()) {
-      dods.dap.BaseType bt = (dods.dap.BaseType) children.nextElement();
+      opendap.dap.BaseType bt = (opendap.dap.BaseType) children.nextElement();
 
       if (bt instanceof DList){
         String mess = "Variables of type "+bt.getClass().getName()+" are not supported.";
@@ -164,7 +158,7 @@ class DodsV implements Comparable {
    */
   static private void parseDataVariables(DodsV parent, Enumeration children) throws NoSuchVariableException {
     while (children.hasMoreElements()) {
-      dods.dap.BaseType bt = (dods.dap.BaseType) children.nextElement();
+      opendap.dap.BaseType bt = (opendap.dap.BaseType) children.nextElement();
       DodsV dodsV = new DodsV(parent, bt);
       parent.children.add(dodsV);
 
@@ -363,7 +357,7 @@ class DodsV implements Comparable {
     Enumeration tableNames = das.getNames();
     while (tableNames.hasMoreElements()) {
       String tableName = (String) tableNames.nextElement();
-      AttributeTable attTable = das.getAttributeTable(tableName);
+      AttributeTable attTable = das.getAttributeTableN(tableName);
 
       if (tableName.equals("NC_GLOBAL") || tableName.equals("HDF_GLOBAL")) {
         addAttributeTable(this, attTable, tableName, true);
@@ -395,7 +389,7 @@ class DodsV implements Comparable {
     java.util.Enumeration attNames = attTable.getNames();
     while (attNames.hasMoreElements()) {
       String attName = (String) attNames.nextElement();
-      dods.dap.Attribute att = attTable.getAttribute(attName);
+      opendap.dap.Attribute att = attTable.getAttribute(attName);
       if (att == null) {
         logger.error("Attribute not found="+attName+" in table="+attTable.getName());
         continue;
@@ -404,7 +398,7 @@ class DodsV implements Comparable {
     }
   }
 
-  private void addAttribute(DodsV dodsV, dods.dap.Attribute att, String fullName, boolean match) {
+  private void addAttribute(DodsV dodsV, opendap.dap.Attribute att, String fullName, boolean match) {
     if (att == null) return;
     fullName = fullName+"."+att.getName();
 
@@ -414,15 +408,15 @@ class DodsV implements Comparable {
       if (debugAttributes) System.out.println(" addAttribute "+ncatt.getName()+" to "+dodsV.getFullName());
 
     } else if (att.getName() == null) {
-      logger.info("DODS attribute name is null, alias= "+att.getAliasedTo());
+      logger.info("DODS attribute name is null = "+att);
     } else {
       DodsV child = dodsV.findDodsV(att.getName(), false);
       if (child != null) {
-        addAttributeTable(child, att.getContainer(), fullName, match);
+        addAttributeTable(child, att.getContainerN(), fullName, match);
       } else {
         if (att.getName().equals("DODS")) return; // special case - DODS info
         if (debugAttributes) System.out.println(" Cant find nested Variable "+ att.getName()+" in "+dodsV.getFullName());
-        addAttributeTable(this, att.getContainer(), fullName, false);
+        addAttributeTable(this, att.getContainerN(), fullName, false);
       }
     }
   }
@@ -501,7 +495,7 @@ class DodsV implements Comparable {
     return dodsV;
   }
 
-  private static void doit(String urlName) throws IOException, MalformedURLException, DODSException, ParseException {
+  private static void doit(String urlName) throws IOException, MalformedURLException, DAP2Exception, ParseException {
     System.out.println("DODSV read ="+urlName);
     DConnect dodsConnection = new DConnect(urlName, true);
 
@@ -519,7 +513,7 @@ class DodsV implements Comparable {
     root.show( System.out, "");
   }
 
-  public static void main(String args[]) throws IOException, ParseException, DODSException {
+  public static void main(String args[]) throws IOException, ParseException, DAP2Exception {
     // doit("http://localhost:8080/thredds/dodsC/ncdodsTest/conventions/zebra/SPOL_3Volumes.nc");
     doit("http://iridl.ldeo.columbia.edu/SOURCES/.CAYAN/dods");
   }

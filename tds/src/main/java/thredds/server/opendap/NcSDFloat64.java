@@ -1,4 +1,4 @@
-// $Id: NcSDFloat32.java 51 2006-07-12 17:13:13Z caron $
+// $Id: NcSDFloat64.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
 import dods.dap.Server.*;
 
@@ -28,15 +28,16 @@ import java.io.DataOutputStream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.unidata.util.StringUtil;
+import thredds.server.opendap.HasNetcdfVariable;
+import thredds.server.opendap.NcDDS;
 
 /**
- * Wraps a netcdf scalar float variable.
+ * Wraps a netcdf scalar double variable.
  *
  * @author jcaron
  * @version $Revision: 51 $
  */
-public class NcSDFloat32 extends SDFloat32 implements HasNetcdfVariable {
+public class NcSDFloat64 extends SDFloat64 implements HasNetcdfVariable {
   private Variable ncVar;
 
   /**
@@ -44,13 +45,12 @@ public class NcSDFloat32 extends SDFloat32 implements HasNetcdfVariable {
    *
    * @param v : the netcdf Variable
    */
-  NcSDFloat32(Variable v) {
+  NcSDFloat64(Variable v) {
     super(NcDDS.escapeName(v.getShortName()));
     this.ncVar = v;
   }
 
   public Variable getVariable() { return ncVar; }
-
 
   /**
    * Read the value (parameters are ignored).
@@ -61,25 +61,25 @@ public class NcSDFloat32 extends SDFloat32 implements HasNetcdfVariable {
   }
 
   public void setData(Array data) {
-    ArrayFloat.D0 a = (ArrayFloat.D0) data;
+    ArrayDouble.D0 a = (ArrayDouble.D0) data;
     setValue(a.get());
     setRead(true);
   }
 
   public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
-    setValue( sdata.getScalarFloat(m));
+    setValue( sdata.getScalarDouble(m));
     externalize(sink);
   }
 }
 
 /* Change History:
-   $Log: NcSDFloat32.java,v $
+   $Log: NcSDFloat64.java,v $
    Revision 1.6  2006/04/20 22:25:22  caron
    dods server: handle name escaping consistently
    rename, reorganize servlets
    update Paths doc
 
-   Revision 1.5  2005/07/27 23:25:37  caron
+   Revision 1.5  2005/07/27 23:25:38  caron
    ncdods refactor, add Structure (2)
 
    Revision 1.4  2005/07/25 23:26:49  caron

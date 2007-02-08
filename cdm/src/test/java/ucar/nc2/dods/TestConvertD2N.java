@@ -1,7 +1,7 @@
 package ucar.nc2.dods;
 
-import dods.dap.*;
-import dods.dap.parser.ParseException;
+import opendap.dap.*;
+import opendap.dap.parser.ParseException;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,8 +24,8 @@ import ucar.nc2.NCdump;
 public class TestConvertD2N {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // debugging
-  static DataDDS testDataDDSfromServer(String urlName, String CE) throws IOException, dods.dap.parser.ParseException,
-          dods.dap.DODSException, InvalidRangeException {
+  static DataDDS testDataDDSfromServer(String urlName, String CE) throws IOException, opendap.dap.parser.ParseException,
+          opendap.dap.DAP2Exception, InvalidRangeException {
 
     System.out.println("--DConnect ="+urlName);
     DConnect dodsConnection = new DConnect(urlName, true);
@@ -44,7 +44,7 @@ public class TestConvertD2N {
 
     // get the DataDDS
     System.out.println("--DConnect.getData CE= "+CE);
-    DataDDS dataDDS = dodsConnection.getData("?"+CE);
+    DataDDS dataDDS = dodsConnection.getData("?"+CE, null);
     dataDDS.print(System.out);
     System.out.println();
 
@@ -73,14 +73,14 @@ public class TestConvertD2N {
     return dataDDS;
   }
 
-  static void testArray(String urlName) throws IOException, dods.dap.parser.ParseException,
-          dods.dap.DODSException {
+  static void testArray(String urlName) throws IOException, opendap.dap.parser.ParseException,
+          opendap.dap.DAP2Exception {
 
     System.out.println("checkArray ="+urlName);
     DConnect dodsConnection = new DConnect(urlName, true);
 
     // get the DataDDS
-    DataDDS dataDDS = dodsConnection.getData("?");
+    DataDDS dataDDS = dodsConnection.getData("?", null);
     dataDDS.print(System.out);
     System.out.println();
     DodsV root = DodsV.parseDataDDS( dataDDS);
@@ -120,7 +120,7 @@ public class TestConvertD2N {
 
   static boolean showData = false;
   static boolean useNC = false;
-  static void testConvertDDS( String urlName, DataDDS dataDDS, PrintStream out) throws IOException, DODSException {
+  static void testConvertDDS( String urlName, DataDDS dataDDS, PrintStream out) throws IOException, DAP2Exception {
     DODSNetcdfFile dodsfile = new DODSNetcdfFile(urlName);
     System.out.println(dodsfile.toString());
 
@@ -260,12 +260,12 @@ public class TestConvertD2N {
     out.print(")");
   }
 
-  static private void test(String url) throws IOException, ParseException, DODSException, InvalidRangeException {
+  static private void test(String url) throws IOException, ParseException, DAP2Exception, InvalidRangeException {
     testDataDDSfromServer(url, "");
     testArray(url);
   }
 
-  static public void main( String[] args) throws IOException, ParseException, DODSException, InvalidRangeException {
+  static public void main( String[] args) throws IOException, ParseException, DAP2Exception, InvalidRangeException {
     String server = "http://dods.coas.oregonstate.edu:8080/dods/dts/";
 
     /* test(server+"test.01"); // scalars

@@ -1,4 +1,7 @@
-package dods.servers.netcdf;
+package thredds.server.opendap;
+
+import thredds.server.opendap.NcDODSServlet;
+import thredds.server.opendap.GuardedDatasetImpl;
 
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;

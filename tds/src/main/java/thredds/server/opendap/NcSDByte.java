@@ -1,4 +1,4 @@
-// $Id: NcSDFloat64.java 51 2006-07-12 17:13:13Z caron $
+// $Id: NcSDByte.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
 import dods.dap.Server.*;
 
@@ -28,28 +28,30 @@ import java.io.DataOutputStream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.unidata.util.StringUtil;
+import thredds.server.opendap.HasNetcdfVariable;
+import thredds.server.opendap.NcDDS;
 
 /**
- * Wraps a netcdf scalar double variable.
+ * Wraps a netcdf scalar byte variable.
  *
  * @author jcaron
  * @version $Revision: 51 $
  */
-public class NcSDFloat64 extends SDFloat64 implements HasNetcdfVariable {
+public class NcSDByte extends SDByte implements HasNetcdfVariable {
   private Variable ncVar;
 
   /**
    * Constructor
    *
-   * @param v : the netcdf Variable
+   * @param ncVar : the netcdf Variable
    */
-  NcSDFloat64(Variable v) {
-    super(NcDDS.escapeName(v.getShortName()));
-    this.ncVar = v;
+  NcSDByte(Variable ncVar) {
+    super(NcDDS.escapeName(ncVar.getShortName()));
+    this.ncVar = ncVar;
   }
 
   public Variable getVariable() { return ncVar; }
+
 
   /**
    * Read the value (parameters are ignored).
@@ -60,25 +62,25 @@ public class NcSDFloat64 extends SDFloat64 implements HasNetcdfVariable {
   }
 
   public void setData(Array data) {
-    ArrayDouble.D0 a = (ArrayDouble.D0) data;
+    ArrayByte.D0 a = (ArrayByte.D0) data;
     setValue(a.get());
     setRead(true);
   }
 
   public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
-    setValue( sdata.getScalarDouble(m));
+    setValue( sdata.getScalarByte(m));
     externalize(sink);
   }
 }
 
 /* Change History:
-   $Log: NcSDFloat64.java,v $
-   Revision 1.6  2006/04/20 22:25:22  caron
+   $Log: NcSDByte.java,v $
+   Revision 1.6  2006/04/20 22:25:21  caron
    dods server: handle name escaping consistently
    rename, reorganize servlets
    update Paths doc
 
-   Revision 1.5  2005/07/27 23:25:38  caron
+   Revision 1.5  2005/07/27 23:25:37  caron
    ncdods refactor, add Structure (2)
 
    Revision 1.4  2005/07/25 23:26:49  caron

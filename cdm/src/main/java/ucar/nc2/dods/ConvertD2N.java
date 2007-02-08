@@ -20,7 +20,7 @@
  */
 package ucar.nc2.dods;
 
-import dods.dap.*;
+import opendap.dap.*;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -81,9 +81,9 @@ public class ConvertD2N {
    * @param flatten if true, remove the StructureData "wrapper".
    * @return the data as as Array
    * @throws IOException
-   * @throws DODSException
+   * @throws DAP2Exception
    */
-  public Array convertNestedVariable(ucar.nc2.Variable v, List section, DodsV dataV, boolean flatten) throws IOException, DODSException {
+  public Array convertNestedVariable(ucar.nc2.Variable v, List section, DodsV dataV, boolean flatten) throws IOException, DAP2Exception {
     Array data = convertTopVariable(v, section, dataV);
     if (flatten) {
       ArrayStructure as = (ArrayStructure) data;
@@ -129,9 +129,9 @@ public class ConvertD2N {
    * @param dataV the dataDDS has been parsed into this dodsV
    * @return the data as as Array
    * @throws IOException
-   * @throws DODSException
+   * @throws DAP2Exception
    */
-  public Array convertTopVariable(ucar.nc2.Variable v, List section, DodsV dataV) throws IOException, DODSException {
+  public Array convertTopVariable(ucar.nc2.Variable v, List section, DodsV dataV) throws IOException, DAP2Exception {
     Array data = convert(dataV);
 
     // arrays
@@ -173,9 +173,9 @@ public class ConvertD2N {
    * @param dataV the dataDDS has been parsed into this dodsV
    * @return the data as as Array
    * @throws IOException
-   * @throws DODSException
+   * @throws DAP2Exception
    */
-  public Array convert(DodsV dataV) throws IOException, DODSException {
+  public Array convert(DodsV dataV) throws IOException, DAP2Exception {
 
     // scalars
     if (dataV.darray == null) {
@@ -216,7 +216,7 @@ public class ConvertD2N {
       } else {
         // the DGrid case comes here also
         // create the array, using  DODS internal array so there's no copying
-        dods.dap.PrimitiveVector pv = dataV.darray.getPrimitiveVector();
+        opendap.dap.PrimitiveVector pv = dataV.darray.getPrimitiveVector();
         Object storage = pv.getInternalStorage();
         DataType dtype = DODSNetcdfFile.convertToNCType( dataV.elemType);
         return Array.factory( dtype.getPrimitiveClassType(), makeShape( dataV.darray), storage);
@@ -294,7 +294,7 @@ public class ConvertD2N {
   }
 
   // dataV is an array of DStructure: DArray with BaseTypePrimitiveVector, whose values are DStructure
-  private void iconvertDataStructureArray(DVector darray, StructureMembers members) throws DODSException {
+  private void iconvertDataStructureArray(DVector darray, StructureMembers members) throws DAP2Exception {
 
     List mlist = members.getMembers();
     for (int i = 0; i < mlist.size(); i++) {
@@ -314,7 +314,7 @@ public class ConvertD2N {
     }
   }
 
-  private void iconvertDataSequenceArray(DSequence dseq, StructureMembers members) throws DODSException {
+  private void iconvertDataSequenceArray(DSequence dseq, StructureMembers members) throws DAP2Exception {
     for (int row=0; row < dseq.getRowCount(); row++) {
       Vector dv = dseq.getRow(row);
       for (int j = 0; j < dv.size(); j++) {
@@ -326,7 +326,7 @@ public class ConvertD2N {
     }
   }
 
-  private void iconvertDataStructure(DConstructor ds, StructureMembers members) throws DODSException {
+  private void iconvertDataStructure(DConstructor ds, StructureMembers members) throws DAP2Exception {
     List mlist = members.getMembers();
     for (int i = 0; i < mlist.size(); i++) {
 
@@ -338,7 +338,7 @@ public class ConvertD2N {
       String name = member.getName();
       String dodsName = name; // LOOK should be: findDodsName (name);
       if (dodsName == null) {
-        throw new DODSException("Cant find dodsName for member variable "+name);
+        throw new DAP2Exception("Cant find dodsName for member variable "+name);
       }
 
       BaseType bt = ds.getVariable( dodsName);
@@ -346,7 +346,7 @@ public class ConvertD2N {
     }
   }
 
-  private void iconvertData(dods.dap.BaseType dodsVar, IndexIterator ii) throws DODSException {
+  private void iconvertData(opendap.dap.BaseType dodsVar, IndexIterator ii) throws DAP2Exception {
 
     if (dodsVar instanceof DSequence) {
       DSequence dseq = (DSequence) dodsVar;
@@ -535,7 +535,7 @@ public class ConvertD2N {
   }
 
   private Array convertStringArray(DArray dv) {
-    dods.dap.PrimitiveVector pv = dv.getPrimitiveVector();
+    opendap.dap.PrimitiveVector pv = dv.getPrimitiveVector();
     BaseTypePrimitiveVector btpv = (BaseTypePrimitiveVector) pv;
     int nStrings = btpv.getLength();
     String[] storage = new String[nStrings];
@@ -547,7 +547,7 @@ public class ConvertD2N {
   }
 
   // deal with length=1 barfalloney
-  // older dods servers send netcdf char data as Strings of length 1 (!!)
+  // older opendap servers send netcdf char data as Strings of length 1 (!!)
   private Array convertStringArray(Array data, Variable ncVar) {
     String[] storage = (String[]) data.getStorage();
     int max_len = 0;
@@ -604,7 +604,7 @@ public class ConvertD2N {
   }
 
   private Array convertStringArrayToChar(DArray dv, Variable ncVar, List section) {
-    dods.dap.PrimitiveVector pv = dv.getPrimitiveVector();
+    opendap.dap.PrimitiveVector pv = dv.getPrimitiveVector();
     BaseTypePrimitiveVector btpv = (BaseTypePrimitiveVector) pv;
     int nStrings = btpv.getLength();
 
@@ -672,7 +672,7 @@ public class ConvertD2N {
     return Array.factory( DataType.CHAR.getPrimitiveClassType(), ncVar.getShape(), storage);
   }
 
-  private int[] makeShape( dods.dap.DArray dodsArray) {
+  private int[] makeShape( opendap.dap.DArray dodsArray) {
     int count = 0;
     Enumeration enumerate = dodsArray.getDimensions();
     while (enumerate.hasMoreElements()) {
@@ -684,7 +684,7 @@ public class ConvertD2N {
     enumerate = dodsArray.getDimensions();
     count = 0;
     while (enumerate.hasMoreElements()) {
-      dods.dap.DArrayDimension dad = (dods.dap.DArrayDimension) enumerate.nextElement();
+      opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
       shape[count++] = dad.getSize();
     }
 

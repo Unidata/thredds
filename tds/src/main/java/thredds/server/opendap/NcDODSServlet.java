@@ -19,13 +19,13 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
-import dods.dap.*;
 import dods.dap.parser.ParseException;
 
 import dods.servlet.GuardedDataset;
 import dods.servlet.ReqState;
+import thredds.server.opendap.GuardedDatasetImpl;
 
 import thredds.servlet.*;
 

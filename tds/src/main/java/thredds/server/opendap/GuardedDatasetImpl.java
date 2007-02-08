@@ -18,13 +18,13 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
 import dods.servlet.GuardedDataset;
+import thredds.server.opendap.NcDDS;
+import thredds.server.opendap.NcDAS;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.NetcdfFileCache;
 
 import java.io.IOException;
 

@@ -24,7 +24,6 @@ import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.StringUtil;
-import dods.dap.*;
 
 import java.util.*;
 import java.io.IOException;

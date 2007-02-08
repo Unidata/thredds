@@ -22,8 +22,7 @@ package ucar.nc2.dods;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.unidata.util.StringUtil;
-import dods.dap.*;
+import opendap.dap.*;
 
 import java.util.*;
 import java.io.IOException;

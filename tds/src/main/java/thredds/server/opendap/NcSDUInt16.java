@@ -1,4 +1,4 @@
-// $Id: NcSDString.java 51 2006-07-12 17:13:13Z caron $
+// $Id: NcSDUInt16.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package dods.servers.netcdf;
+package thredds.server.opendap;
 
 import dods.dap.Server.*;
 
@@ -28,83 +28,74 @@ import java.io.DataOutputStream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.unidata.util.StringUtil;
+import thredds.server.opendap.HasNetcdfVariable;
+import thredds.server.opendap.NcDDS;
 
 /**
- * Wraps a netcdf scalar or 1D char variable.
+ * Wraps a netcdf scalar (unsigned) short variable.
  *
  * @author jcaron
  * @version $Revision: 51 $
  */
-public class NcSDString extends SDString implements HasNetcdfVariable {
+public class NcSDUInt16 extends SDUInt16 implements HasNetcdfVariable {
   private Variable ncVar;
-  private String localVal = null;
 
   /**
    * Constructor
    *
    * @param v : the netcdf Variable
    */
-  NcSDString(Variable v) {
+  NcSDUInt16(Variable v) {
     super(NcDDS.escapeName(v.getShortName()));
     this.ncVar = v;
-  }
-
-
-  /**
-   * Constructor
-   *
-   * @param name: name of variable
-   * @param val:  the value.
-   */
-  NcSDString(String name, String val) {
-    super(name);
-    this.localVal = val;
-    if (val != null)
-      setValue(val);
   }
 
   /**
    * Read the value (parameters are ignored).
    */
   public boolean read(String datasetName, Object specialO) throws IOException {
-    if (localVal == null) // read first time
-      setData(ncVar.read());
-
-    setValue(localVal);
-    setRead(true);
+    setData(ncVar.read());
     return (false);
   }
 
-
   public void setData(Array data) {
-
-    if (ncVar.getDataType() == DataType.STRING) {
-      localVal = (String) data.getObject(data.getIndex());
-
-    } else { // gotta be a CHAR
-
-      if (ncVar.getRank() == 0) {
-        // scalar char - convert to a String
-        ArrayChar.D0 a = (ArrayChar.D0) data;
-        byte[] b = new byte[1];
-        b[0] = (byte) a.get();
-        localVal = new String(b);
-      } else {
-        // 1D
-        ArrayChar.D1 a = (ArrayChar.D1) data;
-        localVal = a.getString(a.getIndex()); // fetches the entire String
-      }
-    }
-
-    setValue(localVal);
+    ArrayShort.D0 a = (ArrayShort.D0) data;
+    setValue(a.get());
     setRead(true);
   }
 
   public Variable getVariable() { return ncVar; }
+
   public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
-    localVal = sdata.getScalarString(m);
-    setValue(localVal);
-    externalize( sink);
+    setValue( sdata.getScalarShort(m));
+    externalize(sink);
   }
 }
+
+/* Change History:
+   $Log: NcSDUInt16.java,v $
+   Revision 1.4  2006/04/20 22:25:22  caron
+   dods server: handle name escaping consistently
+   rename, reorganize servlets
+   update Paths doc
+
+   Revision 1.3  2005/07/27 23:25:38  caron
+   ncdods refactor, add Structure (2)
+
+   Revision 1.2  2005/07/25 23:26:49  caron
+   ncdods refactor, add Structure
+
+   Revision 1.1  2005/01/21 00:58:12  caron
+   *** empty log message ***
+
+   Revision 1.2  2004/09/24 03:26:26  caron
+   merge nj22
+
+   Revision 1.1.1.1  2004/03/19 19:48:31  caron
+   move AS code here
+
+   Revision 1.1.1.1  2001/09/26 15:34:30  caron
+   checkin beta1
+
+
+ */

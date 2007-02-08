@@ -25,8 +25,8 @@ import ucar.nc2.*;
 import ucar.nc2.util.*;
 import ucar.unidata.util.StringUtil;
 
-import dods.dap.*;
-import dods.dap.parser.*;
+import opendap.dap.*;
+import opendap.dap.parser.*;
 
 import java.io.*;
 import java.util.*;
@@ -59,7 +59,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @param b true or false. default is false.
    */
   static public void setAllowSessions(boolean b) {
-    DConnect.setAllowSessions(b);
+    DConnect2.setAllowSessions(b);
   }
 
   /**
@@ -69,7 +69,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @param provider HttpClient credential provider
    */
   static public void setCredentialsProvider(org.apache.commons.httpclient.auth.CredentialsProvider provider) {
-    DConnect.setCredentialsProvider(provider);
+    DConnect2.setCredentialsProvider(provider);
   }
 
   static private boolean accept_deflate = true;
@@ -129,7 +129,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////////////////////////////////////////////////
   private ConvertD2N convertD2N = new ConvertD2N();
-  private DConnect dodsConnection = null;
+  private DConnect2 dodsConnection = null;
   private DDS dds;
   private DAS das;
 
@@ -170,7 +170,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     if (debugServerCall) System.out.println("DConnect to = <" + urlName + ">");
-    dodsConnection = new DConnect(urlName, accept_deflate);
+    dodsConnection = new DConnect2(urlName, accept_deflate);
     if (cancelTask != null && cancelTask.isCancel()) return;
 
     // fetch the DDS and DAS
@@ -194,12 +194,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (debugOpenResult)
         System.out.println("dodsVersion = " + dodsConnection.getServerVersion());
 
-    } catch (dods.dap.parser.ParseException e) {
+    } catch (opendap.dap.parser.ParseException e) {
       logger.info("DODSNetcdfFile " + datasetURL, e);
       throw new IOException(e.getMessage());
 
-    } catch (DODSException dodsE) {
-      if (dodsE.getErrorCode() == DODSException.NO_SUCH_FILE)
+    } catch (DAP2Exception dodsE) {
+      if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE)
         throw new FileNotFoundException(dodsE.getMessage());
       else
         throw new IOException(dodsE.getMessage());
@@ -243,7 +243,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (0 <= (pos = urlName.indexOf('?'))) {
       String datasetName = urlName.substring(0, pos);
       if (debugServerCall) System.out.println(" reconnect to = <" + datasetName + ">");
-      dodsConnection = new DConnect(datasetName, accept_deflate);
+      dodsConnection = new DConnect2(datasetName, accept_deflate);
 
       // parse the CE for projections
       String CE = urlName.substring(pos + 1);
@@ -434,7 +434,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     java.util.Enumeration tableNames = das.getNames();
     while (tableNames.hasMoreElements()) {
       String tableName = (String) tableNames.nextElement();
-      AttributeTable attTable = das.getAttributeTable(tableName);
+      AttributeTable attTable = das.getAttributeTableN(tableName);
 
       /* if (tableName.equals("NC_GLOBAL") || tableName.equals("HDF_GLOBAL")) {
         java.util.Enumeration attNames = attTable.getNames();
@@ -453,7 +453,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         while (attNames.hasMoreElements()) {
           String attName = (String) attNames.nextElement();
           if (attName.equals("Unlimited_Dimension")) {
-            dods.dap.Attribute att = attTable.getAttribute(attName);
+            opendap.dap.Attribute att = attTable.getAttribute(attName);
             DODSAttribute ncatt = new DODSAttribute(attName, att);
             setUnlimited(ncatt.getStringValue());
           } else
@@ -464,7 +464,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         java.util.Enumeration attNames = attTable.getNames();
         while (attNames.hasMoreElements()) {
           String attName = (String) attNames.nextElement();
-          dods.dap.Attribute att = attTable.getAttribute(attName);
+          opendap.dap.Attribute att = attTable.getAttribute(attName);
           DODSAttribute ncatt = new DODSAttribute(attName, att);
           int length = ncatt.getNumericValue().intValue();
           Dimension extraDim = new Dimension(attName, length, true);
@@ -579,7 +579,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
 
-    dods.dap.BaseType dodsBT = dodsV.bt;
+    opendap.dap.BaseType dodsBT = dodsV.bt;
     String dodsShortName = dodsBT.getName();
     if (debugConstruct) System.out.print("DODSNetcdf makeVariable try to init <" + dodsShortName + "> :");
 
@@ -594,7 +594,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       }
 
       // primitives
-    } else if ((dodsBT instanceof DBoolean) || (dodsBT instanceof DByte) ||
+    } else if ((dodsBT instanceof DByte) ||
             (dodsBT instanceof DFloat32) || (dodsBT instanceof DFloat64) ||
             (dodsBT instanceof DInt16) || (dodsBT instanceof DInt32) ||
             (dodsBT instanceof DUInt16) || (dodsBT instanceof DUInt32)) {
@@ -808,21 +808,21 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @return string length dimension, else null
    */
   Dimension getNetcdfStrlenDim(DODSVariable v) {
-    AttributeTable table = das.getAttributeTable(v.getName()); // LOOK this probably doesnt work for nested variables
+    AttributeTable table = das.getAttributeTableN(v.getName()); // LOOK this probably doesnt work for nested variables
     if (table == null) return null;
 
-    dods.dap.Attribute dodsAtt = table.getAttribute("DODS");
+    opendap.dap.Attribute dodsAtt = table.getAttribute("DODS");
     if (dodsAtt == null) return null;
 
-    AttributeTable dodsTable = dodsAtt.getContainer();
+    AttributeTable dodsTable = dodsAtt.getContainerN();
     if (dodsTable == null) return null;
 
-    dods.dap.Attribute att = dodsTable.getAttribute("strlen");
+    opendap.dap.Attribute att = dodsTable.getAttribute("strlen");
     if (att == null) return null;
-    String strlen = att.getValueAt(0);
+    String strlen = att.getValueAtN(0);
 
-    dods.dap.Attribute att2 = dodsTable.getAttribute("dimName");
-    String dimName = (att2 == null) ? null : att2.getValueAt(0);
+    opendap.dap.Attribute att2 = dodsTable.getAttribute("dimName");
+    String dimName = (att2 == null) ? null : att2.getValueAtN(0);
     if (debugCharArray) System.out.println(v.getName() + " has strlen= " + strlen + " dimName= " + dimName);
 
     int dimLength = 0;
@@ -859,13 +859,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // construct list of dimensions to use
-  ArrayList constructDimensions(Group group, dods.dap.DArray dodsArray) {
+  ArrayList constructDimensions(Group group, opendap.dap.DArray dodsArray) {
     if (group == null) group = rootGroup;
 
     ArrayList dims = new ArrayList();
     Enumeration enumerate = dodsArray.getDimensions();
     while (enumerate.hasMoreElements()) {
-      dods.dap.DArrayDimension dad = (dods.dap.DArrayDimension) enumerate.nextElement();
+      opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
       String name = dad.getName();
       if (name != null)
         name = StringUtil.unescape(dad.getName());
@@ -898,7 +898,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       logger.error(" DODS Unlimited_Dimension = " + dimName + " not found on " + location);
   }
 
-  protected int[] makeShape(dods.dap.DArray dodsArray) {
+  protected int[] makeShape(opendap.dap.DArray dodsArray) {
     int count = 0;
     Enumeration enumerate = dodsArray.getDimensions();
     while (enumerate.hasMoreElements()) {
@@ -910,7 +910,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     enumerate = dodsArray.getDimensions();
     count = 0;
     while (enumerate.hasMoreElements()) {
-      dods.dap.DArrayDimension dad = (dods.dap.DArrayDimension) enumerate.nextElement();
+      opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
       shape[count++] = dad.getSize();
     }
 
@@ -957,29 +957,29 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * This is the inverse of convertToNCType().
    *
    * @param dataType Netcdf data type.
-   * @return the corresponding DODS type enum, from dods.dap.Attribute.XXXX.
+   * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
    */
   static public int convertToDODSType(DataType dataType, boolean isUnsigned) {
 
     if (dataType == DataType.STRING)
-      return dods.dap.Attribute.STRING;
+      return opendap.dap.Attribute.STRING;
     if (dataType == DataType.BYTE)
-      return dods.dap.Attribute.BYTE;
+      return opendap.dap.Attribute.BYTE;
     if (dataType == DataType.FLOAT)
-      return dods.dap.Attribute.FLOAT32;
+      return opendap.dap.Attribute.FLOAT32;
     if (dataType == DataType.DOUBLE)
-      return dods.dap.Attribute.FLOAT64;
+      return opendap.dap.Attribute.FLOAT64;
     if (dataType == DataType.SHORT)
-      return isUnsigned ? dods.dap.Attribute.UINT16 : dods.dap.Attribute.INT16;
+      return isUnsigned ? opendap.dap.Attribute.UINT16 : opendap.dap.Attribute.INT16;
     if (dataType == DataType.INT)
-      return isUnsigned ? dods.dap.Attribute.UINT32 : dods.dap.Attribute.INT32;
+      return isUnsigned ? opendap.dap.Attribute.UINT32 : opendap.dap.Attribute.INT32;
     if (dataType == DataType.BOOLEAN)
-      return dods.dap.Attribute.BYTE;
+      return opendap.dap.Attribute.BYTE;
     if (dataType == DataType.LONG)
-      return dods.dap.Attribute.INT32; // LOOK no LONG type!
+      return opendap.dap.Attribute.INT32; // LOOK no LONG type!
 
     // shouldnt happen
-    return dods.dap.Attribute.STRING;
+    return opendap.dap.Attribute.STRING;
   }
 
   /**
@@ -992,19 +992,19 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    */
   static public DataType convertToNCType(int dodsDataType) {
     switch (dodsDataType) {
-      case dods.dap.Attribute.BYTE:
+      case opendap.dap.Attribute.BYTE:
         return DataType.BYTE;
-      case dods.dap.Attribute.FLOAT32:
+      case opendap.dap.Attribute.FLOAT32:
         return DataType.FLOAT;
-      case dods.dap.Attribute.FLOAT64:
+      case opendap.dap.Attribute.FLOAT64:
         return DataType.DOUBLE;
-      case dods.dap.Attribute.INT16:
+      case opendap.dap.Attribute.INT16:
         return DataType.SHORT;
-      case dods.dap.Attribute.UINT16:
+      case opendap.dap.Attribute.UINT16:
         return DataType.SHORT;
-      case dods.dap.Attribute.INT32:
+      case opendap.dap.Attribute.INT32:
         return DataType.INT;
-      case dods.dap.Attribute.UINT32:
+      case opendap.dap.Attribute.UINT32:
         return DataType.INT;
       default:
         return DataType.STRING;
@@ -1018,9 +1018,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @return true if unsigned
    */
   static public boolean isUnsigned(int dodsDataType) {
-    return (dodsDataType == dods.dap.Attribute.BYTE) ||
-            (dodsDataType == dods.dap.Attribute.UINT16) ||
-            (dodsDataType == dods.dap.Attribute.UINT32);
+    return (dodsDataType == opendap.dap.Attribute.BYTE) ||
+            (dodsDataType == opendap.dap.Attribute.UINT16) ||
+            (dodsDataType == opendap.dap.Attribute.UINT32);
   }
 
   /**
@@ -1031,7 +1031,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @return the corresponding netcdf DataType.
    * @see #isUnsigned
    */
-  static public DataType convertToNCType(dods.dap.BaseType dtype) {
+  static public DataType convertToNCType(opendap.dap.BaseType dtype) {
 
     if (dtype instanceof DString)
       return DataType.STRING;
@@ -1051,8 +1051,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       return DataType.SHORT;
     else if (dtype instanceof DByte)
       return DataType.BYTE;
-    else if (dtype instanceof DBoolean)
-      return DataType.BOOLEAN;
     else
       throw new IllegalArgumentException("DODSVariable illegal type = " + dtype.getTypeName());
   }
@@ -1063,7 +1061,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @param dtype DODS BaseType.
    * @return true if unsigned
    */
-  static public boolean isUnsigned(dods.dap.BaseType dtype) {
+  static public boolean isUnsigned(opendap.dap.BaseType dtype) {
     return (dtype instanceof DByte) ||
             (dtype instanceof DUInt16) ||
             (dtype instanceof DUInt32);
@@ -1072,14 +1070,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   /////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * This does the actual connection to the dods server and reading of the data.
+   * This does the actual connection to the opendap server and reading of the data.
    * All data calls go through here so we can add debugging.
    *
    * @param CE constraint expression; use empty string if none
    * @return DataDDS
    */
-  DataDDS readDataDDSfromServer(String CE) throws IOException, dods.dap.parser.ParseException,
-          dods.dap.DODSException {
+  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parser.ParseException,
+          opendap.dap.DAP2Exception {
     if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
 
     long start = 0;
@@ -1087,7 +1085,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     if (!CE.startsWith("?"))
       CE = "?" + CE;
-    DataDDS data = dodsConnection.getData(CE);
+    DataDDS data = dodsConnection.getData(CE, null);
 
     if (debugTime)
       System.out.println("DODSNetcdfFile.readDataDDSfromServer took = " + (System.currentTimeMillis() - start) / 1000.0);
@@ -1194,7 +1192,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
             } else
               data = convertD2N.convertTopVariable(var, null, dataV);
 
-          } catch (DODSException de) {
+          } catch (DAP2Exception de) {
             logger.error("ERROR convertVariable on " + var.getName(), de);
             throw new IOException(de.getMessage());
           }
@@ -1240,7 +1238,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       DodsV want = (DodsV) root.children.get(0); // can only be one
       dataArray = convertD2N.convertTopVariable(v, section, want);
     }
-    catch (DODSException ex) {
+    catch (DAP2Exception ex) {
       ex.printStackTrace();
       throw new IOException(ex.getMessage());
     }
@@ -1271,7 +1269,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       dataArray = convertD2N.convertNestedVariable(v, section, want, flatten);
 
     }
-    catch (DODSException ex) {
+    catch (DAP2Exception ex) {
       ex.printStackTrace();
       throw new IOException(ex.getMessage());
     }
@@ -1297,7 +1295,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       else
         dataArray = convertD2N.convertTopVariable(v, null, want);
     }
-    catch (DODSException ex) {
+    catch (DAP2Exception ex) {
       ex.printStackTrace();
       throw new IOException(ex.getMessage());
     }
@@ -1579,7 +1577,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // convert dodsVar to Array corresponding to the ncVar
-  private Array convertData(dods.dap.BaseType dodsVar, Variable ncVar) {
+  private Array convertData(opendap.dap.BaseType dodsVar, Variable ncVar) {
     if (debugConvertData)
       System.out.println("  convertData of dods type "+dodsVar.getClass().getName()+" ncType "+ncVar.getDataType());
 
