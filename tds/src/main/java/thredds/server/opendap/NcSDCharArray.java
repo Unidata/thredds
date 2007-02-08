@@ -24,22 +24,18 @@ package thredds.server.opendap;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-import dods.dap.Server.*;
-import thredds.server.opendap.NcSDString;
+import opendap.dap.*;
+import opendap.dap.Server.*;
 
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.DataOutputStream;
 import java.util.*;
 
-import thredds.server.opendap.HasNetcdfVariable;
-import thredds.server.opendap.NcDDS;
-
 /**
  * Wraps a netcdf char variable with rank > 1 as an SDArray.
  *
  * @author jcaron
- * @version $Revision: 51 $
  */
 public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDCharArray.class);
@@ -107,12 +103,12 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
       for (int i = 0; i < n; i++) {
         origin[i] = getStart(i);
         shape[i] = getStop(i) - getStart(i) + 1;
-        hasStride = hasStride && (getStride(i) > 1);
+        hasStride = hasStride || (getStride(i) > 1);
       }
       origin[n] = 0;
       shape[n] = strLen;
 
-      a = (Array) ncVar.read(origin, shape);
+      a = ncVar.read(origin, shape);
       if (debugRead) System.out.println("  Read = " + a.getSize() + " elems of type = " + a.getElementType());
 
       // deal with strides using a section
@@ -126,7 +122,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
           }
         }
         ranges.add(null); //  get all
-        a = (Array) a.section(ranges);
+        a = a.section(ranges);
         if (debugRead) System.out.println("   section size " + a.getSize());
       }
 

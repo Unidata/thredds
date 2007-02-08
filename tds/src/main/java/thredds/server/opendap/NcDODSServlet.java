@@ -21,11 +21,11 @@
 
 package thredds.server.opendap;
 
-import dods.dap.parser.ParseException;
+import opendap.dap.parser.ParseException;
+import opendap.dap.DAP2Exception;
 
-import dods.servlet.GuardedDataset;
-import dods.servlet.ReqState;
-import thredds.server.opendap.GuardedDatasetImpl;
+import opendap.servlet.GuardedDataset;
+import opendap.servlet.ReqState;
 
 import thredds.servlet.*;
 
@@ -44,7 +44,7 @@ import ucar.nc2.NetcdfFile;
  * @version $Id: NcDODSServlet.java 51 2006-07-12 17:13:13Z caron $
  */
 
-public class NcDODSServlet extends dods.servlet.DODSServlet {
+public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   static final String GDATASET = "guarded_dataset";
 
   private org.slf4j.Logger log;
@@ -61,7 +61,7 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
   //private InvCatalogImpl rootCatalog;
   private URI baseURI = null;
 
-  public void init() throws ServletException {
+  public void init() throws javax.servlet.ServletException {
     super.init();
 
     try {
@@ -132,7 +132,7 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
 
   // LOOK can we automate getting the version number ??
   public String getServerVersion() {
-    return "dods/3.7";
+    return "opendap/3.7";
   }
 
   // Servlets that support HTTP GET requests and can quickly determine their last modification time should
@@ -146,7 +146,7 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
       path = path.substring(0, path.length() - 4);
     else if (path.endsWith(".das"))
       path = path.substring(0, path.length() - 4);
-    else if (path.endsWith(".dods"))
+    else if (path.endsWith(".opendap"))
       path = path.substring(0, path.length() - 5);
     else if (path.endsWith(".html"))
       path = path.substring(0, path.length() - 5);
@@ -313,7 +313,7 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
 
   // any time the server needs access to the dataset, it gets a "GuardedDataset" which allows us to add caching
   // optionally, a session may be established, which allows us to reserve the dataset for that session.
-  protected GuardedDataset getDataset(ReqState preq) throws DODSException, IOException, ParseException {
+  protected GuardedDataset getDataset(ReqState preq) throws DAP2Exception, IOException, ParseException {
     HttpServletRequest req = preq.getRequest();
 
     // see if the client wants sessions
@@ -355,9 +355,9 @@ public class NcDODSServlet extends dods.servlet.DODSServlet {
     try {
       ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
     } catch (FileNotFoundException fne) {
-      throw new DODSException(DODSException.NO_SUCH_FILE, "Cant find " + reqPath);
+      throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, "Cant find " + reqPath);
     } catch (Throwable e) {
-      throw new DODSException(DODSException.UNDEFINED_ERROR, e.getMessage());
+      throw new DAP2Exception(DAP2Exception.UNDEFINED_ERROR, e.getMessage());
     }
     if (null == ncd) return null;
 

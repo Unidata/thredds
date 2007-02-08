@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 
-import thredds.server.opendap.NcDDS;
+import opendap.dap.AttributeExistsException;
 
 /**
  * Netcdf DAS object
@@ -38,7 +38,7 @@ import thredds.server.opendap.NcDDS;
  * @author jcaron
  */
 
-public class NcDAS extends dods.dap.DAS {
+public class NcDAS extends opendap.dap.DAS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDAS.class);
 
   HashMap usedDims = new HashMap();
@@ -54,19 +54,23 @@ public class NcDAS extends dods.dap.DAS {
     }
 
     // Global attributes
-    dods.dap.AttributeTable gtable = new dods.dap.AttributeTable("NC_GLOBAL");
+    opendap.dap.AttributeTable gtable = new opendap.dap.AttributeTable("NC_GLOBAL");
     int count = addAttributes(gtable, null, ncfile.getGlobalAttributes().iterator());
     if (count > 0)
-      addAttributeTable("NC_GLOBAL", gtable);
+      try {
+        addAttributeTable("NC_GLOBAL", gtable);
+      } catch (AttributeExistsException e) {
+        log.error("Cant add NC_GLOBAL", e);
+      }
 
     // unlimited  dimension
     iter = ncfile.getDimensions().iterator();
     while (iter.hasNext()) {
       Dimension d = (Dimension) iter.next();
       if (d.isUnlimited()) {
-        dods.dap.AttributeTable table = new dods.dap.AttributeTable("DODS_EXTRA");
+        opendap.dap.AttributeTable table = new opendap.dap.AttributeTable("DODS_EXTRA");
         try {
-          table.appendAttribute("Unlimited_Dimension", dods.dap.Attribute.STRING, d.getName());
+          table.appendAttribute("Unlimited_Dimension", opendap.dap.Attribute.STRING, d.getName());
           addAttributeTable("DODS_EXTRA", table);
         } catch (Exception e) {
           log.error("Error adding Unlimited_Dimension ="+e);
@@ -76,25 +80,29 @@ public class NcDAS extends dods.dap.DAS {
     }
 
     // unused dimensions
-    dods.dap.AttributeTable dimTable = null;
+    opendap.dap.AttributeTable dimTable = null;
     iter = ncfile.getDimensions().iterator();
     while (iter.hasNext()) {
       Dimension d = (Dimension) iter.next();
       if (null == usedDims.get(d.getName())) {
-        if (dimTable == null) dimTable = new dods.dap.AttributeTable("EXTRA_DIMENSION");
+        if (dimTable == null) dimTable = new opendap.dap.AttributeTable("EXTRA_DIMENSION");
         try {
-          dimTable.appendAttribute(d.getName(), dods.dap.Attribute.INT32, Integer.toString(d.getLength()));
+          dimTable.appendAttribute(d.getName(), opendap.dap.Attribute.INT32, Integer.toString(d.getLength()));
         } catch (Exception e) {
           log.error("Error adding Unlimited_Dimension ="+e);
         }
       }
     }
     if (dimTable != null)
-      addAttributeTable("EXTRA_DIMENSION", dimTable);
+      try {
+        addAttributeTable("EXTRA_DIMENSION", dimTable);
+      } catch (AttributeExistsException e) {
+        log.error("Cant add EXTRA_DIMENSION", e);
+      }
 
   }
 
-  private void doVariable( Variable v, dods.dap.AttributeTable parentTable) {
+  private void doVariable( Variable v, opendap.dap.AttributeTable parentTable) {
 
     List dims = v.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
@@ -105,11 +113,15 @@ public class NcDAS extends dods.dap.DAS {
     //if (v.getAttributes().size() == 0) return; // LOOK DAP 2 say must have empty
 
     String name = NcDDS.escapeName(v.getShortName());
-    dods.dap.AttributeTable table;
+    opendap.dap.AttributeTable table;
 
     if (parentTable == null) {
-      table = new dods.dap.AttributeTable(name);
-      addAttributeTable(name, table);
+      table = new opendap.dap.AttributeTable(name);
+      try {
+        addAttributeTable(name, table);
+      } catch (AttributeExistsException e) {
+        log.error("Cant add "+name, e);
+      }
     } else {
       table =  parentTable.appendContainer(name);
     }
@@ -128,7 +140,7 @@ public class NcDAS extends dods.dap.DAS {
 
   }
 
-  private int addAttributes(dods.dap.AttributeTable table, Variable v, Iterator iter) {
+  private int addAttributes(opendap.dap.AttributeTable table, Variable v, Iterator iter) {
     int count = 0;
 
     // add attribute table for this variable
@@ -159,10 +171,10 @@ public class NcDAS extends dods.dap.DAS {
       int strlen = (rank == 0) ? 0 : v.getShape()[rank-1];
       Dimension dim = (rank == 0) ? null : v.getDimension( rank-1);
       try {
-        dods.dap.AttributeTable dodsTable = table.appendContainer("DODS");
-        dodsTable.appendAttribute("strlen", dods.dap.Attribute.INT32, Integer.toString(strlen));
+        opendap.dap.AttributeTable dodsTable = table.appendContainer("DODS");
+        dodsTable.appendAttribute("strlen", opendap.dap.Attribute.INT32, Integer.toString(strlen));
         if (dim != null)
-          dodsTable.appendAttribute("dimName", dods.dap.Attribute.STRING, dim.getName());
+          dodsTable.appendAttribute("dimName", opendap.dap.Attribute.STRING, dim.getName());
         count++;
       } catch (Exception e) {
         log.error("Error appending attribute strlen\n"+e);
@@ -187,7 +199,7 @@ public class NcDAS extends dods.dap.DAS {
 /* Change History:
    $Log: NcDAS.java,v $
    Revision 1.11  2006/04/20 22:25:21  caron
-   dods server: handle name escaping consistently
+   opendap server: handle name escaping consistently
    rename, reorganize servlets
    update Paths doc
 

@@ -20,7 +20,9 @@
  */
 package thredds.server.opendap;
 
-import dods.dap.Server.*;
+import opendap.dap.Server.*;
+import opendap.dap.BaseType;
+import opendap.dap.NoSuchVariableException;
 
 import java.io.IOException;
 import java.io.EOFException;
@@ -31,13 +33,10 @@ import ucar.nc2.Structure;
 import ucar.ma2.*;
 
 import org.slf4j.*;
-import thredds.server.opendap.HasNetcdfVariable;
-import thredds.server.opendap.NcDDS;
 
 /**
  * Wraps a netcdf Structure, as an SDStructure.
  *
- * @version $Revision: 51 $
  * @author jcaron
  */
 
@@ -90,7 +89,7 @@ public class NcSDStructure extends SDStructure  {
     while (vars.hasMoreElements()) {
       // loop through both structures
       HasNetcdfVariable hasNetcdf = (HasNetcdfVariable) vars.nextElement();
-      StructureMembers.Member m = (StructureMembers.Member) sm.getMember(count++);
+      StructureMembers.Member m = sm.getMember(count++);
 
       // extract the data and set it into the dods object
       Array data = sdata.getArray(m);
@@ -103,7 +102,7 @@ public class NcSDStructure extends SDStructure  {
   ////////////////////////////////////////////////////////////////////////////////
  // overrride for array of Structures
   public void serialize(String dataset,DataOutputStream sink,CEEvaluator ce,Object specialO)
-                                    throws NoSuchVariableException, SDODSException, IOException {
+                                    throws NoSuchVariableException, DAP2ServerSideException, IOException {
 
     if (org == null) {
       super.serialize(dataset, sink, ce, specialO);

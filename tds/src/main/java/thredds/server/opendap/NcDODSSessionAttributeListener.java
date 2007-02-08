@@ -1,18 +1,8 @@
 package thredds.server.opendap;
 
-import thredds.server.opendap.NcDODSServlet;
-import thredds.server.opendap.GuardedDatasetImpl;
-
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Dec 6, 2005
- * Time: 10:14:41 AM
- * To change this template use File | Settings | File Templates.
- */
 public class NcDODSSessionAttributeListener  implements HttpSessionAttributeListener {
 
    // HttpSessionAttributeListener

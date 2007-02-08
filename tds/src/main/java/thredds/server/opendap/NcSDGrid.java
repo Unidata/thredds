@@ -21,19 +21,18 @@
 
 package thredds.server.opendap;
 
-import dods.dap.Server.*;
+import opendap.dap.Server.*;
+import opendap.dap.BaseType;
+import opendap.dap.NoSuchVariableException;
 
 import java.io.IOException;
 import java.io.EOFException;
 import java.util.ArrayList;
 
-import thredds.server.opendap.NcDDS;
-
 /**
  * Wraps a netcdf variable with rank > 0, whose dimensions all
  * have coordinate variables, as an SDGrid.
  *
- * @version $Revision: 51 $
  * @author jcaron
  */
 
@@ -52,8 +51,7 @@ public class NcSDGrid extends SDGrid {
       addVariable( (BaseType) list.get(i), MAPS);
   }
 
-  public boolean read(String datasetName, Object specialO) throws NoSuchVariableException,
-    IOException, EOFException {
+  public boolean read(String datasetName, Object specialO) throws NoSuchVariableException, IOException {
 
     java.util.Enumeration vars = getVariables();
     while (vars.hasMoreElements()) {

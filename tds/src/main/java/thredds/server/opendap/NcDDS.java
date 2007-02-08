@@ -25,7 +25,8 @@ import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.unidata.util.StringUtil;
 
-import dods.dap.Server.*;
+import opendap.dap.Server.*;
+import opendap.dap.BaseType;
 
 import java.util.*;
 
@@ -81,7 +82,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
     }
   }
 
-  // turn Variable into dods variable
+  // turn Variable into opendap variable
   private BaseType createVariable(Variable v) {
     BaseType bt;
 
@@ -170,7 +171,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
   }
 
   public static String escapeName(String vname) {
-    vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until dods code fixed
+    vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
     return StringUtil.escape(vname, NcDDS.DODScharset);
   }
 

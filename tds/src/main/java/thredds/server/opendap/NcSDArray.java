@@ -24,9 +24,10 @@ package thredds.server.opendap;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-import dods.dap.Server.*;
-import thredds.server.opendap.NcSDString;
-import thredds.server.opendap.NcSDStructure;
+import opendap.dap.Server.*;
+import opendap.dap.BaseType;
+import opendap.dap.DArrayDimension;
+import opendap.dap.PrimitiveVector;
 
 import java.io.IOException;
 import java.io.EOFException;
@@ -34,21 +35,17 @@ import java.io.DataOutputStream;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-import thredds.server.opendap.HasNetcdfVariable;
-import thredds.server.opendap.NcDDS;
-
 /**
  * Wraps a netcdf variable with rank > 0 as an SDArray.
  * For char arrays, use NcSDString (rank 0 or 1) or NcSDCharArray (rank > 1).
  *
  * @author jcaron
- * @version $Revision: 51 $
  * @see NcSDCharArray
  */
 public class NcSDArray extends SDArray implements HasNetcdfVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDArray.class);
 
-  private boolean debug = false, debugRead = false, showTiming = false;
+  private boolean debug = false, debugRead = false;
   private Variable ncVar = null;
   protected BaseType elemType;
 

@@ -20,9 +20,7 @@
  */
 package thredds.server.opendap;
 
-import dods.servlet.GuardedDataset;
-import thredds.server.opendap.NcDDS;
-import thredds.server.opendap.NcDAS;
+import opendap.servlet.GuardedDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -67,8 +65,8 @@ public class GuardedDatasetImpl implements GuardedDataset  {
     this.hasSession = hasSession;
   }
 
-  public dods.dap.Server.ServerDDS getDDS() { return (dods.dap.Server.ServerDDS) dds.clone(); }
-  public dods.dap.DAS getDAS() { return (dods.dap.DAS) das.clone(); }
+  public opendap.dap.Server.ServerDDS getDDS() { return (opendap.dap.Server.ServerDDS) dds.clone(); }
+  public opendap.dap.DAS getDAS() { return (opendap.dap.DAS) das.clone(); }
 
   public String toString() {
     String name = org_file.getLocation();

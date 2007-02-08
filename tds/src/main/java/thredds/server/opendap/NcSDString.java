@@ -21,21 +21,18 @@
 
 package thredds.server.opendap;
 
-import dods.dap.Server.*;
+import opendap.dap.Server.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import thredds.server.opendap.HasNetcdfVariable;
-import thredds.server.opendap.NcDDS;
 
 /**
  * Wraps a netcdf scalar or 1D char variable.
  *
  * @author jcaron
- * @version $Revision: 51 $
  */
 public class NcSDString extends SDString implements HasNetcdfVariable {
   private Variable ncVar;

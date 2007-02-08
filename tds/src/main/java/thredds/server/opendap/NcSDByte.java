@@ -21,21 +21,18 @@
 
 package thredds.server.opendap;
 
-import dods.dap.Server.*;
+import opendap.dap.Server.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import thredds.server.opendap.HasNetcdfVariable;
-import thredds.server.opendap.NcDDS;
 
 /**
  * Wraps a netcdf scalar byte variable.
  *
  * @author jcaron
- * @version $Revision: 51 $
  */
 public class NcSDByte extends SDByte implements HasNetcdfVariable {
   private Variable ncVar;
@@ -72,31 +69,3 @@ public class NcSDByte extends SDByte implements HasNetcdfVariable {
     externalize(sink);
   }
 }
-
-/* Change History:
-   $Log: NcSDByte.java,v $
-   Revision 1.6  2006/04/20 22:25:21  caron
-   dods server: handle name escaping consistently
-   rename, reorganize servlets
-   update Paths doc
-
-   Revision 1.5  2005/07/27 23:25:37  caron
-   ncdods refactor, add Structure (2)
-
-   Revision 1.4  2005/07/25 23:26:49  caron
-   ncdods refactor, add Structure
-
-   Revision 1.3  2005/01/21 00:58:11  caron
-   *** empty log message ***
-
-   Revision 1.2  2004/09/24 03:26:26  caron
-   merge nj22
-
-   Revision 1.1.1.1  2004/03/19 19:48:31  caron
-   move AS code here
-
-   Revision 1.1.1.1  2001/09/26 15:34:30  caron
-   checkin beta1
-
-
- */
