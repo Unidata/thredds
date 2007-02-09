@@ -55,6 +55,9 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"mars/","temp_air_01082000.nc", 1, 1, 4, 1); // uses GDV
     //doOne("C:/data/conventions/mm5/","n040.nc", -1, -1, -1, -1); // no Conventions code
 
+    doOne(griddir+"m3io/","agg.cctmJ3fx.b312.nh3c1.dep_wa.annual.2001base.nc", 13, 1, 5, 1); // m3io
+    doOne(griddir+"m3io/","19L.nc", 23, 1, 4, 1);   // M3IOVGGrid
+
     //// the uglies
     doOne(griddir+"nuwg/", "avn-x.nc", 31, 4, 8, 4);
     doOne(griddir+"nuwg/", "2003021212_avn-x.nc", 30, 5, 7, 4);

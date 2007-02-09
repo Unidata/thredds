@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="3.15"/>
-  <property name="release.version.minor" value="${release.version}.04"/>
+  <property name="release.version.minor" value="${release.version}.05"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -66,10 +66,10 @@
   </path>
 
   <patternset id="sources">
-    <include name="dods/servers/**/*.java"/>
     <include name="thredds/cataloggen/servlet/*.java"/>
     <include name="thredds/dqc/server/**/*.java"/>
     <include name="thredds/examples/*.java"/>
+    <include name="thredds/server/**/*.java"/>
     <include name="thredds/servlet/*.java"/>
     <include name="thredds/servlet/**/*.java"/>
     <include name="thredds/wcs/servlet/*.java"/>
@@ -80,6 +80,7 @@
   <property name="netcdf.jar" value="release/netcdf-2.2.19.jar"/>
   <property name="grib.jar" value="release/grib-5.1.00.jar"/>
   <property name="prefs.jar" value="release/prefsAll.jar"/>
+  <property name="opendap.jar" value="release/javadap-2.0.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
@@ -91,7 +92,7 @@
 
   <!-- Third-party libraries needed for runtime. -->
   <property name="commons-io.jar" value="external/commons-io-1.2.jar"/>
-  <property name="gnu-regexp.jar" value="external/gnu-regexp-1.1.4.jar"/>
+  <!-- property name="gnu-regexp.jar" value="external/gnu-regexp-1.1.4.jar"/ -->
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
   <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
   <property name="jpeg2000.jar" value="external/jpeg2000.jar"/>
@@ -114,12 +115,13 @@
       <include name="${bufr.jar}"/>
       <include name="${netcdf.jar}"/>
       <include name="${grib.jar}"/>
+      <include name="${opendap.jar}"/>
       <include name="${prefs.jar}"/>
       <include name="${visadNoDods.jar}"/>
 
       <include name="${cas.jar}"/>
       <include name="${fileupload.jar}"/>
-      <include name="${gnu-regexp.jar}"/>
+      <!-- include name="${gnu-regexp.jar}"/ -->
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${logging.jar}"/>

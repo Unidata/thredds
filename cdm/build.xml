@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.19"/>
-  <property name="release.version.minor" value="${release.version}.03"/>
+  <property name="release.version.minor" value="${release.version}.04"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>
@@ -43,14 +43,14 @@
   <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v2.2/webstart-dev"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
-  <!-- property name="dods.jar" value="dods-1.1.7c.jar"/ -->
-  <property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/>
+  <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
   <property name="bufr.jar" value="bufr-1.1.00.jar"/>
   <property name="grib.jar" value="grib-5.1.00.jar"/>
   <property name="httpclient.jar" value="commons-httpclient-3.0.1.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.1.jar"/>
   <property name="http-codec.jar" value="commons-codec-1.3.jar"/>
   <property name="jdom.jar" value="jdom.jar"/>
+  <property name="jgoodies.jar" value="forms-1.0.7.jar"/>
   <property name="jpeg2000.jar" value="jpeg2000.jar"/>
   <property name="junit.jar" value="junit.jar"/>
   <property name="logging.jar" value="nlog4j-1.2.25.jar"/>
@@ -58,7 +58,7 @@
   <property name="lucene.jar" value="lucene.jar"/>
   <!-- property name="netcdf1.jar" value="netcdf1.jar"/ -->
   <!-- property name="prefs.jar" value="prefsAll.jar"/ -->
-  <property name="jgoodies.jar" value="forms-1.0.7.jar"/>
+  <property name="opendap.jar" value="javadap-2.0.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
   <property name="xml-apis.jar" value="xml-apis.jar"/>
@@ -71,7 +71,7 @@
 
   <patternset id="sources">
     <include name="ucar/**/*.java"/>
-    <include name="dods/**/*.java"/>
+    <!-- include name="dods/**/*.java"/ -->
     <include name="thredds/**/*.java"/>
     <exclude name="thredds/util/net/*"/>
     <exclude name="thredds/util/reflect/*"/>
@@ -81,11 +81,11 @@
   <fileset id="compile.libraries" dir="${lib.dir}">
     <include name="release/${bufr.jar}"/>
     <include name="release/${grib.jar}"/>
-    <include name="release/${visadNoDods.jar}"/>
-    <include name="external/${gnu-regexp.jar}"/>
+    <include name="release/${opendap.jar}"/>
     <include name="external/${httpclient.jar}"/>
     <include name="external/${jdom.jar}"/>
     <include name="external/${logging.jar}"/>
+    <include name="release/${visadNoDods.jar}"/>
   </fileset>
 
   <path id="compile.classpath">
@@ -108,9 +108,9 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${bufr.jar} ${grib.jar} ${visadNoDods.jar} ${jdom.jar} ${httpclient.jar} ${http-logging.jar} ${gnu-regexp.jar} ${http-codec.jar} ${http-logging.jar} ${jpeg2000.jar} ${jgoodies.jar} ${resourcesOptional.jar}"/>
+            value="${bufr.jar} ${grib.jar} ${visadNoDods.jar} ${jdom.jar} ${httpclient.jar} ${http-logging.jar} ${opendap.jar} ${http-codec.jar} ${http-logging.jar} ${jpeg2000.jar} ${jgoodies.jar} ${resourcesOptional.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${gnu-regexp.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${jgoodies.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
+            value="lib/${opendap.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${jgoodies.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -232,6 +232,7 @@
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
+        <include name="release/${opendap.jar}"/>
       </fileset>
     </unzip>
     <unzip dest="${idv.dir}">
@@ -637,17 +638,17 @@
     <!-- netcdfUI webstart release -->
 	<target name="releaseWebstart" description="make webstart release; do dist or release first">
     <signjar alias="idv" jar="${build.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${gnu-regexp.jar}" keystore="${keystore}" signedjar="${webstart_dir}/gnu-regexp.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}" signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}" signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jpeg2000.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jpeg2000.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${httpclient.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${http-codec.jar}" keystore="${keystore}" signedjar="${webstart_dir}/codec.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${http-logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}" signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${opendap.jar}" keystore="${keystore}" signedjar="${webstart_dir}/opendap.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}" signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}" signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${xercesImpl.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>

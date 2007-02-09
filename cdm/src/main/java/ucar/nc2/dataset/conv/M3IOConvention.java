@@ -63,6 +63,11 @@ public class M3IOConvention extends CoordSysBuilder {
     this.conventionName = "M3IO";
   }
 
+  public void augmentDataset( NetcdfDataset ncd, CancelTask cancelTask) {
+    constructCoordAxes( ncd);
+    ncd.finish();
+  }
+
   private CoordinateTransform ct = null;
   protected void constructCoordAxes(NetcdfDataset ds) {
 
@@ -87,6 +92,12 @@ public class M3IOConvention extends CoordSysBuilder {
         ct = makeTMProjection(ds);
       else if (projType == 4)
         ct = makeSTProjection(ds);
+
+      if (ct != null) {
+        VariableDS v = makeCoordinateTransformVariable(ds, ct);
+        ds.addVariable(null, v);
+        v.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
+      }
     }
 
     makeZCoordAxis( ds, "LAY", "VGLVLS", "sigma");
@@ -124,6 +135,8 @@ public class M3IOConvention extends CoordSysBuilder {
     CoordinateAxis v = new CoordinateAxis1D( ds, null, "level", DataType.DOUBLE, dimName, unitName,
        "synthesized coordinate from "+levelsName+" global attributes");
     v.setCachedData( dataLev, true);
+    v.addAttribute(new Attribute("positive", "down"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
 
     // layer edges
     String edge_name = "layer";
@@ -132,7 +145,7 @@ public class M3IOConvention extends CoordSysBuilder {
     CoordinateAxis vedge = new CoordinateAxis1D( ds, null, edge_name, DataType.DOUBLE, edge_name, unitName,
        "synthesized coordinate from "+levelsName+" global attributes");
     vedge.setCachedData( dataLayers, true);
-    v. setBoundaryRef( edge_name);
+    v.setBoundaryRef( edge_name);
 
     ds.addCoordinateAxis( v);
     ds.addCoordinateAxis( vedge);
@@ -179,6 +192,7 @@ public class M3IOConvention extends CoordSysBuilder {
     CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, "time", DataType.INT, timeName, units,
        "synthesized time coordinate from SDATE, STIME, STEP global attributes");
     timeCoord.setCachedData( data, true);
+    timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     ds.addCoordinateAxis( timeCoord);
   }
@@ -234,43 +248,39 @@ public class M3IOConvention extends CoordSysBuilder {
 
   /////////////////////////////////////////////////////////////////////////
 
-  public boolean isXAxis( CoordinateAxis dc) {
-    return dc.getName().equalsIgnoreCase("x");
-  }
-  public boolean isYAxis( CoordinateAxis dc) {
-    return dc.getName().equalsIgnoreCase("y");
-  }
-  public boolean isZAxis( CoordinateAxis dc) {
-    if (!isXAxis(dc) && !isYAxis(dc) && !isTimeAxis(dc))
-      return true;
-    return false;
-  }
-  public boolean isTimeAxis( CoordinateAxis dc) {
-    return dc.getName().equalsIgnoreCase("time");
-  }
-  public boolean isLonAxis( CoordinateAxis dc) {
-    return dc.getName().equalsIgnoreCase("lon");
-  }
-  public boolean isLatAxis( CoordinateAxis dc) {
-    return dc.getName().equalsIgnoreCase("lat");
-  }
-  public boolean isHeightAxis( CoordinateAxis dc) {
-    return false;
-  }
-  public boolean isPressureAxis( CoordinateAxis v) {
-    return false;
+    protected AxisType getAxisType( NetcdfDataset ds, VariableEnhanced ve) {
+      Variable v = (Variable) ve;
+      String vname = v.getName();
+
+      if (vname.equalsIgnoreCase("x"))
+        return AxisType.GeoX;
+
+      if (vname.equalsIgnoreCase("y"))
+        return AxisType.GeoY;
+
+      if (vname.equalsIgnoreCase("lat"))
+        return AxisType.Lat;
+
+      if (vname.equalsIgnoreCase("lon"))
+        return AxisType.Lon;
+
+      if (vname.equalsIgnoreCase("time"))
+        return AxisType.Time;
+
+      if (vname.equalsIgnoreCase("level"))
+        return AxisType.GeoZ;
+
+      return null;
   }
 
-  public String getZisPositive( CoordinateAxis v) {
-    return "down";
-  }
-
-  protected List getCoordinateTransforms(CoordinateSystem cs) {
-    ArrayList list = new ArrayList();
-    if ((cs.getXaxis() != null) && (cs.getYaxis() != null) && (ct!=null))
-      list.add(ct);
-    return list;
-  }
+   protected void makeCoordinateTransforms( NetcdfDataset ds) {
+     if (ct != null) {
+      VarProcess vp = findVarProcess(ct.getName());
+      if (vp != null)
+        vp.ct = ct;
+     }
+     super.makeCoordinateTransforms(  ds);
+   }
 
   private double findAttributeDouble( NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);

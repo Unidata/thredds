@@ -43,7 +43,7 @@ import thredds.servlet.*;
 
 /**
  * ************************************************************************
- * NetCDF DODS server.
+ * NetCDF opendap server.
  *
  * @author John Caron
  * @version $Id: NcDODSServlet.java 51 2006-07-12 17:13:13Z caron $
@@ -144,23 +144,34 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   // override this method. This makes browser and proxy caches work more effectively, reducing the load on
   // server and network resources.
   protected long getLastModified(HttpServletRequest req) {
+    String query = req.getQueryString();
+    if (query != null) return -1;
+
     String path = req.getPathInfo();
     if (path == null) return -1;
 
-    if (path.endsWith(".dds"))
+    if (path.endsWith(".asc"))
       path = path.substring(0, path.length() - 4);
+    else if (path.endsWith(".ascii"))
+      path = path.substring(0, path.length() - 6);
     else if (path.endsWith(".das"))
       path = path.substring(0, path.length() - 4);
-    else if (path.endsWith(".opendap"))
+    else if (path.endsWith(".dds"))
+      path = path.substring(0, path.length() - 4);
+    else if (path.endsWith(".ddx"))
+      path = path.substring(0, path.length() - 4);
+    else if (path.endsWith(".dods"))
       path = path.substring(0, path.length() - 5);
     else if (path.endsWith(".html"))
       path = path.substring(0, path.length() - 5);
     else if (path.endsWith(".info"))
       path = path.substring(0, path.length() - 5);
+    else if (path.endsWith(".opendap"))
+      path = path.substring(0, path.length() - 5);
     else
       return -1;
 
-    if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK wierd Firefox beahviour?
+    if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox beahviour?
 
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
     if ((file != null) && file.exists())
@@ -183,6 +194,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
           doGetStatus(e.req, e.res);
         }
         catch (Exception ioe) {
+          log.error("ShowStatus", ioe);
         }
       }
     };
@@ -194,6 +206,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
           doGetHELP(e.req, e.res);
         }
         catch (Exception ioe) {
+          log.error("ShowHelp", ioe);
         }
       }
     };
@@ -207,36 +220,6 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
     debugHandler.addAction(act);
 
   }
-
-  /**
-   * ************************************************************************
-   * PUT requests: save a configuration file.
-   * <p/>
-   * Request must be of the form
-   * config?server=serverName
-   *
-   * @param req The client's <code> HttpServletRequest</code> request object.
-   * @param res The server's <code> HttpServletResponse</code> response object.
-   *            <p/>
-   *            public void doPut(HttpServletRequest req, HttpServletResponse res)
-   *            throws ServletException, IOException {
-   *            <p/>
-   *            String path = ServletUtil.getRequestPath( req);
-   *            if (Debug.isSet("showRequest"))
-   *            log.debug("**NcDODSSubset doPut="+ServletUtil.getRequest(req));
-   *            if (Debug.isSet("showRequestDetail"))
-   *            log.debug( ServletUtil.showRequestDetail(this, req));
-   *            <p/>
-   *            if (path.equals("/dodsC/catalogConfig.xml")) {
-   *            if (ServletUtil.saveFile( this, contentPath, "catalogConfig.xml", req, res)) {
-   *            readCatalog();
-   *            return; // ok
-   *            }
-   *            }
-   *            <p/>
-   *            res.sendError(HttpServletResponse.SC_NOT_FOUND);
-   *            }
-   */
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws IOException, ServletException {
@@ -364,8 +347,8 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
     } catch (Throwable e) {
       throw new DAP2Exception(DAP2Exception.UNDEFINED_ERROR, e.getMessage());
     }
-    if (null == ncd) return null;
 
+    if (null == ncd) return null;
     GuardedDatasetImpl gdataset = new GuardedDatasetImpl(reqPath, ncd, acceptSession);
 
     if (acceptSession) {

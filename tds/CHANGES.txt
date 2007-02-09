@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.15
  Features
+  * opendap: remove ascii recursive call; use DConnect2/HttpClient.
   * make SSL/Basic the default authentication
   * Add cas, cams example pluggable authorization
   * add restrict dataset processing
@@ -11,10 +12,12 @@ Changes in version 3.15
     - Add LogicalFilterComposer for AND-ing, OR-ing, and NOT-ing CrawlableDatasetFilters
     - Refactor MultiSelectorFilter so that Selector is an inner class.
  Libraries
+  * opendap now in seperate jar, includes gnu-regexp
   * add casclient-2.1.1
   * upgrade commons libraries: fileupload-1.1.1, httpclient.3.0.1, io-1.2, logging-1.1
   * asssume jdk1.5, dont need xerces.jar or xml-api.jar anymore
  Bugs
+  * opendap getLastModified() date was ignoring the CE (!)
   * tdr catalogs didnt have BaseURI set
   * NetcdfServlet: use Content-Disposition header (attachment; filename=filename) instead of always appending ".nc"
 

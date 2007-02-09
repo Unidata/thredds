@@ -73,12 +73,12 @@
 <h3>explicit_field</h3>
 <pre>
   char ExplicitField;
-    :<strong>standard_name</strong> = &quot;explicit_field&quot;;
-    :<strong>existingDataField</strong> = &quot;ght_hybr&quot;;<br>    :<strong>_CoordinateTransformType</strong> = &quot;vertical&quot;;<br>    :<strong>_CoordinateAxes</strong> = &quot;hybr&quot;;</pre>
+    :<strong>standard_name</strong> = &quot;explicit_field&quot;;  // canonical transform name
+    :<strong>existingDataField</strong> = &quot;ght_hybr&quot;;  // must be a 3 or 4D pressure / height / geopotential height field<br>    :<strong>_CoordinateTransformType</strong> = &quot;vertical&quot;; // unambiguouly identifies it as vertical transform<br>    :<strong>_CoordinateAxes</strong> = &quot;hybr&quot;; // attach transform to any coord sys with the &quot;hbyr&quot; axis.</pre>
 <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 23, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 09, 2007 
 </address>
 <p>&nbsp;</p>
 </body>
