@@ -74,12 +74,13 @@ public class DebugHandler {
     }
     pw.println("</pre></body></html>");
 
+    response.setStatus( HttpServletResponse.SC_OK );
+
     // send it out
     byte[] result = bos.toByteArray();
     PrintStream responsePS = new PrintStream(response.getOutputStream());
     responsePS.write(result);
     responsePS.flush();
-    response.setStatus(HttpServletResponse.SC_OK);
     ServletUtil.logServerAccess( HttpServletResponse.SC_OK, result.length );
   }
 

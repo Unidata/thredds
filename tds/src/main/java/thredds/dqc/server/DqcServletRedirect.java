@@ -303,8 +303,8 @@ public class DqcServletRedirect extends HttpServlet
     // Write the catalog out.
     PrintWriter out = res.getWriter();
     res.setContentType( "text/html" );
-    out.print( htmlResp );
     res.setStatus( HttpServletResponse.SC_OK );
+    out.print( htmlResp );
     ServletUtil.logServerAccess( HttpServletResponse.SC_OK, htmlResp.length() );
 
     return;
@@ -460,8 +460,8 @@ public class DqcServletRedirect extends HttpServlet
     // Write the catalog out.
     PrintWriter out = res.getWriter();
     res.setContentType( "text/html" );
-    out.print( htmlResp );
     res.setStatus( HttpServletResponse.SC_USE_PROXY );
+    out.print( htmlResp );
     ServletUtil.logServerAccess( HttpServletResponse.SC_USE_PROXY, 0 );
     return;
   }

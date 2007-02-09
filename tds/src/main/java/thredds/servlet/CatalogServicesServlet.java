@@ -272,8 +272,8 @@ public class CatalogServicesServlet extends HttpServlet {
     try {
       OutputStream os = res.getOutputStream();
       res.setContentType("text/xml");
+      res.setStatus( HttpServletResponse.SC_OK );
       catalog.writeXML(os);
-      res.setStatus(HttpServletResponse.SC_OK);
       os.flush();
     } catch (java.io.IOException ioe) {
       ServletUtil.handleException(ioe, res);

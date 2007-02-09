@@ -152,8 +152,8 @@ public class DqcServlet extends AbstractServlet
       out = res.getWriter();
       res.setContentType( "text/html" );
       String resString = this.htmlOfConfig( req.getContextPath() + req.getServletPath() );
-      out.print( resString);
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( resString);
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resString.length() );
       return;
     }
@@ -181,8 +181,8 @@ public class DqcServlet extends AbstractServlet
       // Write the catalog out.
       out = res.getWriter();
       res.setContentType( "text/xml");
-      out.print( catalogAsString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( catalogAsString );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, catalogAsString.length() );
       return;
     }

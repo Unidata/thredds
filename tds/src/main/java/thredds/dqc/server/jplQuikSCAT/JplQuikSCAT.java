@@ -149,8 +149,8 @@ public class JplQuikSCAT extends DqcHandler
       // Write DQC doc as response
       PrintWriter out = res.getWriter();
       res.setContentType( "text/xml" );
-      out.print( dqcAsString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( dqcAsString );
       log.debug( "handleRequest(): done writing DQC doc as response." );
       return;
     }
@@ -234,8 +234,8 @@ public class JplQuikSCAT extends DqcHandler
     String catalogAsString = fac.writeXML_1_0( (InvCatalogImpl) resultingCatalog );
 
     res.setContentType( "text/xml" );
-    out.print( catalogAsString );
     res.setStatus( HttpServletResponse.SC_OK );
+    out.print( catalogAsString );
     ServletUtil.logServerAccess( HttpServletResponse.SC_OK, catalogAsString.length() );
     return;
   }

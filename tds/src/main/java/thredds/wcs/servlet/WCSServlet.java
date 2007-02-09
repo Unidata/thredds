@@ -113,10 +113,10 @@ public class WCSServlet extends AbstractServlet {
 
         OutputStream os= res.getOutputStream();
         res.setContentType("text/xml");
+        res.setStatus( HttpServletResponse.SC_OK );
         int len = wcsDataset.getCapabilities(os, sectionType);
 
         ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
-        res.setStatus(HttpServletResponse.SC_OK);
         os.flush();
 
       } else if (request.equals("DescribeCoverage")) {
@@ -133,10 +133,10 @@ public class WCSServlet extends AbstractServlet {
 
         OutputStream os= res.getOutputStream();
         res.setContentType("text/xml");
+        res.setStatus( HttpServletResponse.SC_OK );
         int len = wcsDataset.describeCoverage(os, coverages);
 
         ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
-        res.setStatus(HttpServletResponse.SC_OK);
         os.flush();
 
       } else if (request.equals("GetCoverage")) {

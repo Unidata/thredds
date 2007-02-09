@@ -804,8 +804,8 @@ public class ServletUtil {
       thredds.util.IO.copy(req.getInputStream(), out);
       out.close();
       if ( debugRequest ) log.debug("saveFile(): ok= "+filename);
-      res.setStatus( HttpServletResponse.SC_OK);
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
+      res.setStatus( HttpServletResponse.SC_CREATED);
+      ServletUtil.logServerAccess( HttpServletResponse.SC_CREATED, -1);
       return true;
     } catch (IOException e) {
       log.error("saveFile(): Unable to PUT file "+filename+" to "+fileSave+"\n"+e.getMessage());

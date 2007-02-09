@@ -62,8 +62,8 @@ public class LatestDqcHandler extends DqcHandler
       String dqcAsString = dqcFactory.writeXML( dqc );
       PrintWriter out = res.getWriter();
       res.setContentType( "text/xml" );
-      out.print( dqcAsString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( dqcAsString );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, dqcAsString.length() );
       return;
     }
@@ -143,8 +143,8 @@ public class LatestDqcHandler extends DqcHandler
       // Send catalog as response.
       PrintWriter out = res.getWriter();
       res.setContentType( "text/xml" );
-      out.print( catalogAsString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( catalogAsString );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, catalogAsString.length() );
       return;
     }

@@ -151,9 +151,9 @@ public class CatGenServlet extends AbstractServlet
     {
       out = res.getWriter();
       res.setContentType( "text/html" );
+      res.setStatus( HttpServletResponse.SC_OK );
       String resString = this.getHtmlRootRequest( req);
       out.print( resString );
-      res.setStatus( HttpServletResponse.SC_OK );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resString.length() );
       return;
     }
@@ -182,9 +182,9 @@ public class CatGenServlet extends AbstractServlet
       log.debug( "doGet(): " + tmpMsg );
       out = res.getWriter();
       res.setContentType( "text/html" );
+      res.setStatus( HttpServletResponse.SC_OK );
       String responseString = this.getHtmlReturnMessage( req, tmpMsg);
       out.print( responseString );
-      res.setStatus( HttpServletResponse.SC_OK );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
       return;
     }
@@ -344,8 +344,8 @@ public class CatGenServlet extends AbstractServlet
             out = res.getWriter();
             res.setContentType( "text/html" );
             String resMsg = this.getHtmlAddTaskResultSuccess( req, newTask, messages );
-            out.print( resMsg );
             res.setStatus( HttpServletResponse.SC_OK );
+            out.print( resMsg );
             ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
             return;
           }
@@ -355,8 +355,8 @@ public class CatGenServlet extends AbstractServlet
             out = res.getWriter();
             res.setContentType( "text/html" );
             String resMsg = this.getHtmlAddTaskResultDuplicate( req, newTask, messages );
-            out.print( resMsg );
             res.setStatus( HttpServletResponse.SC_OK );
+            out.print( resMsg );
             ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
             return;
           }
@@ -368,8 +368,8 @@ public class CatGenServlet extends AbstractServlet
           out = res.getWriter();
           res.setContentType( "text/html" );
           String resMsg = this.getHtmlAddTaskResultInvalid( req, newTask, messages );
-          out.print( resMsg );
           res.setStatus( HttpServletResponse.SC_OK );
+          out.print( resMsg );
           ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
           return;
         }
@@ -411,8 +411,8 @@ public class CatGenServlet extends AbstractServlet
             out = res.getWriter();
             res.setContentType( "text/html" );
             String resMsg = this.getHtmlEditTaskResultSuccess( req, oldTask, newTask, messages );
-            out.print( resMsg );
             res.setStatus( HttpServletResponse.SC_OK );
+            out.print( resMsg );
             ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
             return;
           }
@@ -422,8 +422,8 @@ public class CatGenServlet extends AbstractServlet
             out = res.getWriter();
             res.setContentType( "text/html" );
             String resMsg = this.getHtmlEditTaskResultDuplicate( req, oldTask, newTask, messages );
-            out.print( resMsg );
             res.setStatus( HttpServletResponse.SC_OK );
+            out.print( resMsg );
             ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
             return;
           }
@@ -435,8 +435,8 @@ public class CatGenServlet extends AbstractServlet
           out = res.getWriter();
           res.setContentType( "text/html" );
           String resMsg = this.getHtmlEditTaskResultInvalid( req, oldTask, newTask, messages );
-          out.print( resMsg );
           res.setStatus( HttpServletResponse.SC_OK );
+          out.print( resMsg );
           ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
           return;
         }
@@ -456,8 +456,8 @@ public class CatGenServlet extends AbstractServlet
           out = res.getWriter();
           res.setContentType( "text/html" );
           String resMsg = this.getHtmlReturnMessage( req, "Task to delete not in list (" + fileName + ")" );
-          out.print( resMsg );
           res.setStatus( HttpServletResponse.SC_OK );
+          out.print( resMsg );
           ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
           return;
         }
@@ -469,8 +469,8 @@ public class CatGenServlet extends AbstractServlet
           out = res.getWriter();
           res.setContentType( "text/html" );
           String resMsg = this.getHtmlDeleteTaskResultSuccess( req, oldTask );
-          out.print( resMsg );
           res.setStatus( HttpServletResponse.SC_OK );
+          out.print( resMsg );
           ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
           return;
         }
@@ -480,8 +480,8 @@ public class CatGenServlet extends AbstractServlet
           out = res.getWriter();
           res.setContentType( "text/html" );
           String resMsg = this.getHtmlDeleteTaskResultFail( req, oldTask );
-          out.print( resMsg );
           res.setStatus( HttpServletResponse.SC_OK );
+          out.print( resMsg );
           ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
           return;
         }
@@ -494,8 +494,8 @@ public class CatGenServlet extends AbstractServlet
     out = res.getWriter();
     res.setContentType( "text/html" );
     String resMsg = this.getHtmlReturnMessage( req, "No path given for POST action." );
-    out.print( resMsg );
     res.setStatus( HttpServletResponse.SC_OK );
+    out.print( resMsg );
     ServletUtil.logServerAccess( HttpServletResponse.SC_OK, resMsg.length() );
     return;
   }
@@ -596,8 +596,8 @@ public class CatGenServlet extends AbstractServlet
       out = res.getWriter();
       res.setContentType( "text/html" );
       String responseString = this.getHtmlListTasks( req, this.mainConfig );
-      out.print( responseString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( responseString );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
       return;
     }
@@ -619,8 +619,8 @@ public class CatGenServlet extends AbstractServlet
       out = res.getWriter();
       res.setContentType( "text/html" );
       String responseString = this.getHtmlEditTask( req, task );
-      out.print( responseString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( responseString );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
       return;
     }
@@ -632,8 +632,8 @@ public class CatGenServlet extends AbstractServlet
       out = res.getWriter();
       res.setContentType( "text/html" );
       String responseString = this.getHtmlAddTask( req );
-      out.print( responseString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( responseString );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
       return;
     }
@@ -650,8 +650,8 @@ public class CatGenServlet extends AbstractServlet
       out = res.getWriter();
       res.setContentType( "text/html" );
       String responseString = this.getHtmlDeleteTask( req, task );
-      out.print( responseString );
       res.setStatus( HttpServletResponse.SC_OK );
+      out.print( responseString );
       ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
       return;
     }

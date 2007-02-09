@@ -73,7 +73,8 @@ public class AnnotateServlet extends AbstractServlet {
           log.debug("CatalogAnnotate: dataset = "+datasetID);
       }
 
-     PrintWriter pw = new PrintWriter(res.getOutputStream());
+      res.setStatus( HttpServletResponse.SC_OK );
+      PrintWriter pw = new PrintWriter(res.getOutputStream());
 
         res.setContentType("text/html");
         pw.println( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" );
@@ -97,7 +98,6 @@ public class AnnotateServlet extends AbstractServlet {
         pw.println("</ul></body></html>");
 
       pw.flush();
-      res.setStatus( HttpServletResponse.SC_OK);
 
     } catch (Throwable t) {
       log.error("doGet req= "+ServletUtil.getRequest(req)+" got Exception", t);
@@ -161,8 +161,8 @@ public class AnnotateServlet extends AbstractServlet {
         String title = req.getParameter("title");
         String desc = req.getParameter("description");
         Annotation.add( new Annotation(catURL, datasetID, title, desc, jnlpFile.getName(), "IDV"));
+        res.setStatus( HttpServletResponse.SC_OK );
         pw.println("\nOK");
-        res.setStatus( HttpServletResponse.SC_OK);
 
       } catch (IOException ioe) {
         ioe.printStackTrace();

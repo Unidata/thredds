@@ -1269,8 +1269,8 @@ public class DataRootHandler {
     String catAsString = catFactory.writeXML((InvCatalogImpl) cat);
     PrintWriter out = res.getWriter();
     res.setContentType("text/xml");
+    res.setStatus( HttpServletResponse.SC_OK );
     out.print(catAsString);
-    res.setStatus(HttpServletResponse.SC_OK);
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, catAsString.length());
     log.debug("Finished \"" + orgPath + "\".");
     return true;

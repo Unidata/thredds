@@ -79,6 +79,7 @@ public class MockOpendapDSP implements DataServiceProvider
       {
         PrintWriter out = res.getWriter();
         res.setContentType( "text/html" );
+        res.setStatus( HttpServletResponse.SC_OK );
         StringBuffer responseString = new StringBuffer();
         responseString
                 .append( getHtmlDoctypeAndOpenTag() )
@@ -96,7 +97,6 @@ public class MockOpendapDSP implements DataServiceProvider
                 .append( "</p>\n" )
                 .append( "</body></html>" );
         out.print( responseString.toString() );
-        res.setStatus( HttpServletResponse.SC_OK );
         out.flush();
 
         ServletUtil.logServerAccess( HttpServletResponse.SC_OK, responseString.length() );
