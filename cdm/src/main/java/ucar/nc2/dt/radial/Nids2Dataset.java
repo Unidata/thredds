@@ -423,6 +423,10 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         return origin;
       }
 
+      public int getSweepIndex() {
+        return 0;
+      }
+
     } // Nids2Sweep class
 
   } // Nids2Variable
