@@ -132,6 +132,9 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
 
     /** @return the ending time of the sweep, in units of getTimeUnits(). */
     public Date getEndingTime();
+
+    /** @return the index of sweep */
+    public int getSweepIndex();
   }
 
   static public final class Type {
