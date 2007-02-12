@@ -283,6 +283,10 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         return nrays;
       }
 
+      public int getSweepIndex() {
+        return 0;
+      }
+
       public float[] readData() throws java.io.IOException {
         return readAllData();
       }
