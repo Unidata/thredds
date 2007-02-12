@@ -465,9 +465,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         return endDate;
       }
 
-     // public int getNumRadials() {
-       // return nrays;
-     // }
+      public int getSweepIndex() {
+         return sweepno;
+      }
 
      // public int getNumGates() {
      //   return ngates;
@@ -492,7 +492,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getElevation(int ray) throws IOException {
-        if(eleData == null) initAzi();
+        if(eleData == null) initAzi();                      
         Index index = eleData.getIndex();
         return eleData.getFloat(index.set(ray));
       }
