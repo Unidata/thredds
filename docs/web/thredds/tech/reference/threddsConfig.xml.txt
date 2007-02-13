@@ -48,6 +48,8 @@
   </WCS>
 
   <Viewer>my.package.MyViewer</Viewer>
+  
+  <DatasetSource>my.package.DatasetSourceImpl</DatasetSource>
 
   <FmrcInventory>
     <openType>XML_ONLY</openType>

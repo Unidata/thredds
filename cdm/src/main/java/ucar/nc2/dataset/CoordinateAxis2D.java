@@ -81,6 +81,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
    *  @exception UnsupportedOperationException if !isNumeric()
    */
   public double[] getCoordValues() {
+    if (midpoint == null) doRead();
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis2D.getCoordValues() on non-numeric");
     return (double[]) midpoint.get1DJavaArray( double.class);

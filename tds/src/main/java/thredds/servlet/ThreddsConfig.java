@@ -101,12 +101,20 @@ public class ThreddsConfig {
       }
     }
 
-    // nj22 runtime loading
+    // viewer plug-in
     List viewerList = rootElem.getChildren("Viewer");
     for (int j = 0; j < viewerList.size(); j++) {
       Element elem = (Element) viewerList.get(j);
       String className = elem.getText().trim();
       ViewServlet.registerViewer(className);
+    }
+
+    // datasetSource plug-in
+    List sourceList = rootElem.getChildren("DatasetSource");
+    for (int j = 0; j < sourceList.size(); j++) {
+      Element elem = (Element) sourceList.get(j);
+      String className = elem.getText().trim();
+      DatasetHandler.registerDatasetSource(className);
     }
 
     // nj22 runtime loading

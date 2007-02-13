@@ -14,7 +14,9 @@ Changes in version 2.2.19
  NcML
   * can specify iosp class and parameter
  API changes
+  * add GridCoordSys.getLatLon()
  Bugs
+  * CoordinateAxis2D.getValues() not checking if read in
   * M3IOConvention wasnt working 
   * Grib2: levels 0 and 255 means no level name
   * NCdump.print was using NetcdfFileCache

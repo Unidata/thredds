@@ -84,7 +84,10 @@
 </ol>
 <h3>Loadable Viewers</h3>
  <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
- <p>You can load dataset <a href="../tutorial/Viewers.html">viewers</a> at runtime. Typically you  put your viewer code into a jar file and place it in the <strong>${tomcat_home}/shared</strong> directory. </p>
+ <p>You can load dataset <a href="../tutorial/Viewers.html">viewers</a> at runtime. Typically you  put your  code into a jar file and place it in the <strong>${tomcat_home}/webapps/thredds/WEB-INF/lib</strong> directory. </p>
+ <h3>Loadable Dataset Source </h3>
+ <pre>   &lt;<strong>DatsetSource</strong>&gt;my.package.DatsetSourceImpl&lt;/<strong>DatsetSource</strong>&gt;</pre>
+ <p>You can load <a href="DatasetSource.html">dataset sources</a> at runtime. Typically you put your  code into a jar file and place it in the <strong>${tomcat_home}/</strong><strong>webapps/thredds/WEB-INF/lib</strong> directory. </p>
  <h3>FmrcInventory</h3>
  <pre>  &lt;<strong>FmrcInventory</strong>&gt;
     &lt;<strong>openType</strong>&gt;XML_ONLY&lt;/<strong>openType</strong>&gt;

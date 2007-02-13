@@ -11,7 +11,7 @@
 <hr>
 <h2>Overview</h2>
 <p>When a client tries to access a restricted dataset, it is redirected to a URL that triggers a security challenge. If the challenge is successful, the client is redirected back to the original dataset URL, except now it has an authenticated session, represented by a session cookie passed to the client. For subsequest requests by the same client, no authentication is needed as long as the session remains valid. </p>
-<p>The default TDS configuration uses <a href="http://en.wikipedia.org/wiki/Digest_authentication">Digest authentication</a>. By modifying web.xml, the server administrator can require that  authentication be done differently, for example require  SSL. Changes to the TDS web.xml must be manually propagated to new versions of the TDS when upgrading. You can also <a href="PluggableRestrictedAccess.htm">plug in your own</a> Authentication. </p>
+<p>The default TDS configuration uses <a href="http://en.wikipedia.org/wiki/Digest_authentication">Digest authentication</a>. By modifying web.xml, the server administrator can require that  authentication be done differently, for example require  SSL. Changes to the TDS web.xml must be manually propagated to new versions of the TDS when upgrading. You can also <a href="PluggableRestrictedAccess.html">plug in your own</a> Authentication. </p>
 <p>To access any restricted dataset that a TDS might serve, a client such as a browser, OPeNDAP enabled application, or WCS client, must  be able to:</p>
 <ol>
   <li>follow redirects, including circular redirects.</li>
