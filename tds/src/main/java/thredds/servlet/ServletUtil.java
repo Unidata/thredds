@@ -37,7 +37,6 @@ import thredds.catalog.XMLEntityResolver;
 
 public class ServletUtil {
   static private org.slf4j.Logger log;
-  //static private org.slf4j.Logger logStats;
   static private boolean isDebugInit = false;
   static private boolean isLogInit = false;
 
@@ -113,7 +112,6 @@ public class ServletUtil {
       } */
 
     log = org.slf4j.LoggerFactory.getLogger(ServletUtil.class);
-    //logStats = org.slf4j.LoggerFactory.getLogger( "threddsAccessLogger");
 
     isLogInit = true;
   }
@@ -207,12 +205,7 @@ public class ServletUtil {
     long startTime = ( (Long) MDC.get( "startTime" )).longValue();
     long duration = endTime - startTime;
 
-    //logStats.info( resCode + " " + ( ( resSizeInBytes != -1 ) ? String.valueOf( resSizeInBytes ) : "-" ) + " " + duration );
     log.info( "Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration);
-//    String path = req.getPathInfo();
-//    String reqPath = req.getContextPath() + req.getServletPath() + ( path != null ? path : "" );
-//    logStats.info( req.getRemoteHost() + " - - \"" + req.getMethod() + " " + reqPath + " " + req.getProtocol() + "\" "
-//                   + resCode + " " + ( ( resSizeInBytes != -1 ) ? String.valueOf( resSizeInBytes ) : "-" ) );
   }
 
   public static String getRootPath(HttpServlet servlet) {
