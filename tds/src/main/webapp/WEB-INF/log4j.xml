@@ -24,18 +24,6 @@
     </layout>
   </appender>
 
-  <!--
-    Generate an access log similar to Apache server access_log.
-    139.140.167.4 - - [01/Mar/2005:00:00:00 -0700] "GET /cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2005030100_gfs_211.nc.dods?u[22:22][0:28][0:64][0:92] HTTP/1.1" 200 -
-  -->
-  <appender name="threddsAccess" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="${logdir}/threddsAccess.log"/>
-    <param name="DatePattern" value="'.'yyyy-MM"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n"/>
-    </layout>
-  </appender>
-
   <!-- keep track of Cache messages in a seperatefile. runs once a day -->
   <appender name="cacheLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${logdir}/cache.log"/>
