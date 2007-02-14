@@ -69,11 +69,6 @@
     <appender-ref ref="cacheLog"/>
   </logger>
 
-  <logger name="threddsAccessLogger">
-    <level value="ALL"/>
-    <appender-ref ref="threddsAccess"/>
-  </logger>
-
   <logger name="thredds.cataloggen.config" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="catalogGen"/>
