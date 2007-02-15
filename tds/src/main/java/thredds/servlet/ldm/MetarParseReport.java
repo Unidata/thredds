@@ -53,7 +53,7 @@ public class MetarParseReport {
         m = p.p_B_metar.matcher(input);
         if (m.find()) {
             field.put("Report_Type", m.group(1));
-            unit.put("Report_Type", "" );
+            //unit.put("Report_Type", "" );
             input = m.replaceFirst("");
         }
 //	$stn_name = $1 if( s#^(\w4) ## ) ;
@@ -102,7 +102,7 @@ public class MetarParseReport {
 //	$AUTO = 1 if( s#AUTO\s+## ) ;
         m = p.p_AUTOS.matcher(input);
         if (m.find()) {
-            field.put("AUTOS", "");
+            field.put("AUTOS", "yes");
             unit.put("AUTOS", "" );
             input = m.replaceFirst("");
         }
@@ -174,11 +174,11 @@ public class MetarParseReport {
         }
 
 //	$plus_VIS_SM = 1 if( s#^P(\d1,3)SM\s+#$1SM # ) ;
-// comment p_B_P is not a good pattern
+        // just treat as Visibility by removing ^P
         m = p.p_B_P.matcher(input);
         if (m.find()) {
-            field.put("Plus_Visibility", "");
-            unit.put("Plus_Visibility", "");
+            //field.put("Plus_Visibility", "");
+            //unit.put("Plus_Visibility", "miles");
             input = m.replaceFirst("");
         }
 
@@ -186,7 +186,7 @@ public class MetarParseReport {
         //m = p.p_B_P.matcher(input);
         //if (m.find()) {
             //field.put("Plus_Visibility_KM", "1");
-            //unit.put("Plus_Visibility", "");
+            //unit.put("Plus_Visibility", "kilometer");
             //input = m.replaceFirst("");
         //}
 
@@ -262,7 +262,7 @@ public class MetarParseReport {
 //	$CAVOK = 1 if( s#CAVOK\s+## ) ;
         m = p.p_CAVOKS.matcher(input);
         if (m.find()) {
-            field.put("Clear_Air", "");
+            field.put("Clear_Air", "yes");
             unit.put("Clear_Air", "" );
             input = m.replaceFirst("");
         }
@@ -465,7 +465,7 @@ public class MetarParseReport {
 //	$NOSIG = 1 if( s#NOSIG## ) ;
         m = p.p_NOSIG.matcher(input);
         if (m.find()) {
-            field.put("No_Weather", "");
+            field.put("No_Weather", "yes");
             unit.put("No_Weather", "");
             input = m.replaceFirst("");
         }
@@ -502,7 +502,7 @@ public class MetarParseReport {
         //$SLPNO = 1 if( s#SLPNO\s+## ) ;
         m = p.p_SLPNO.matcher(input);
         if (m.find()) {
-            field.put("SLPNO", "");
+            field.put("SLPNO", "yes");
             unit.put("SLPNO", "");
             input = m.replaceFirst("");
         }
@@ -584,7 +584,7 @@ public class MetarParseReport {
         //$PWINO = 1 if( s#PWINO\s+## ) ;
         m = p.p_PWINO.matcher(input);
         if (m.find()) {
-            field.put("PWINO", "");
+            field.put("PWINO", "yes");
             unit.put("PWINO", "");
             input = m.replaceFirst("");
         }
@@ -598,7 +598,7 @@ public class MetarParseReport {
 //	$TSNO = 1 if( s#TSNO\s+## ) ;
         m = p.p_TSNO.matcher(input);
         if (m.find()) {
-            field.put("TSNO", "");
+            field.put("TSNO", "yes");
             unit.put("TSNO", "");
             input = m.replaceFirst("");
         }
@@ -661,7 +661,7 @@ public class MetarParseReport {
             unit.put("Peak_Wind_Direction", "degrees");
 //		$PKWND_spd = $2 ;
             field.put("Peak_Wind_Speed", m.group(2));
-            field.put("Peak_Wind_Speed", "meters");
+            field.put("Peak_Wind_Speed", "knots");
 //		$PKWND_hh = $3 if( defined( $3 ) ) ;
 //		$PKWND_mm = $4 ;
             field.put("Peak_Wind_Time", m.group(3) + m.group(4));
@@ -684,7 +684,7 @@ public class MetarParseReport {
 //	$Wshft_FROPA = 1 if( s#FROPA\s+## ) ;
         m = p.p_FROPA.matcher(input);
         if (m.find()) {
-            field.put("Wind_Shift_Frontal_Passage", "");
+            field.put("Wind_Shift_Frontal_Passage", "yes");
             unit.put("Wind_Shift_Frontal_Passage", "");
             input = m.replaceFirst("");
         }
@@ -953,7 +953,7 @@ public class MetarParseReport {
 //	$PRESFR = 1 if( s#PRESFR/?\s+## ) ;
         m = p.p_PRESFR.matcher(input);
         if (m.find()) {
-            field.put("Pressure_Falling_Rapidly", "");
+            field.put("Pressure_Falling_Rapidly", "yes");
             unit.put("Pressure_Falling_Rapidly", "");
             input = m.replaceFirst("");
         }
@@ -962,7 +962,7 @@ public class MetarParseReport {
 //	$PRESRR = 1 if( s#PRESRR/?\s+## ) ;
         m = p.p_PRESRR.matcher(input);
         if (m.find()) {
-            field.put("Pressure_Rising_Rapidly", "");
+            field.put("Pressure_Rising_Rapidly", "yes");
             unit.put("Pressure_Rising_Rapidly", "");
             input = m.replaceFirst("");
         }
@@ -1017,7 +1017,7 @@ public class MetarParseReport {
 //		$GRsize = 1 / 8 ;
         m = p.p_GR1.matcher(input);
         if (m.find()) {
-            field.put("Hailstone_Activity", "");
+            field.put("Hailstone_Activity", "yes");
             unit.put("Hailstone_Activity", "");
             field.put("Hailstone_Size", "0.25");
             unit.put("Hailstone_Size", "");
@@ -1028,7 +1028,7 @@ public class MetarParseReport {
         } else {
             m = p.p_GR2.matcher(input);
             if (m.find()) {
-                field.put("Hailstone_Activity", "");
+                field.put("Hailstone_Activity", "yes");
                 unit.put("Hailstone_Activity", "");
                 var1 = Float.parseFloat(m.group(1));
                 var2 = Float.parseFloat(m.group(2));
@@ -1043,7 +1043,7 @@ public class MetarParseReport {
             } else {
                 m = p.p_GR3.matcher(input);
                 if (m.find()) {
-                    field.put("Hailstone_Activity", "");
+                    field.put("Hailstone_Activity", "yes");
                     unit.put("Hailstone_Activity", "");
                     var1 = Float.parseFloat(m.group(1));
                     var2 = Float.parseFloat(m.group(2));
@@ -1056,7 +1056,7 @@ public class MetarParseReport {
                 } else {
                     m = p.p_GR4.matcher(input);
                     if (m.find()) {
-                        field.put("Hailstone_Activity", "");
+                        field.put("Hailstone_Activity", "yes");
                         unit.put("Hailstone_Activity", "");
                         field.put("Hailstone_Size", m.group(1));
                         unit.put("Hailstone_Size", "");
@@ -1068,7 +1068,7 @@ public class MetarParseReport {
 //	$GR = 1 if( s#GS\s+## ) ;
         m = p.p_GR.matcher(input);
         if (m.find()) {
-            field.put("Hailstone_Activity", "");
+            field.put("Hailstone_Activity", "yes");
             unit.put("Hailstone_Activity", "");
             input = m.replaceFirst("");
         }
@@ -1079,7 +1079,7 @@ public class MetarParseReport {
 //		$VIRGAdir = padstr( $2, 2 ) if( $2 ) ;
         m = p.p_VIRGA.matcher(input);
         if (m.find()) {
-            field.put("Virga_Activity", "");
+            field.put("Virga_Activity", "yes");
             unit.put("Virga_Activity", "");
             field.put("Virga_Direction", m.group(2));
             unit.put("Virga_Direction", "");
@@ -1122,7 +1122,7 @@ public class MetarParseReport {
 //	$CIGNO = 1 if( s#CIGNO\s+## ) ;
         m = p.p_CIGNO.matcher(input);
         if (m.find()) {
-            field.put("CIGNO", "");
+            field.put("CIGNO", "yes");
             unit.put("CIGNO", "");
             input = m.replaceFirst("");
         }
@@ -1230,7 +1230,7 @@ public class MetarParseReport {
 //	$ACFTMSHP = 1 if( s#\(?ACFT\s?MSHP\)?\s+## ) ;
         m = p.p_ACFT.matcher(input);
         if (m.find()) {
-            field.put("Air_craft_mishap", "");
+            field.put("Air_craft_mishap", "yes");
             unit.put("Air_craft_mishap", "");
             input = m.replaceFirst("");
         }
@@ -1239,7 +1239,7 @@ public class MetarParseReport {
 //	$NOSPECI = 1 if( s#NOSPECI\s+## ) ;
         m = p.p_NOSPECI.matcher(input);
         if (m.find()) {
-            field.put(" No_changes_in_weather", "");
+            field.put(" No_changes_in_weather", "yes");
             unit.put(" No_changes_in_weather", "");
             input = m.replaceFirst("");
         }
@@ -1248,7 +1248,7 @@ public class MetarParseReport {
 //	$FIRST = 1 if( s#FIRST\s+## ) ;
         m = p.p_FIRST.matcher(input);
         if (m.find()) {
-            field.put("First_Report_Today", "");
+            field.put("First_Report_Today", "yes");
             unit.put("First_Report_Today", "");
             input = m.replaceFirst("");
         }
@@ -1257,7 +1257,7 @@ public class MetarParseReport {
 //	$LAST = 1 if( s#LAST\s+## ) ;
         m = p.p_LAST.matcher(input);
         if (m.find()) {
-            field.put("Last_Report_Today", "");
+            field.put("Last_Report_Today", "yes");
             unit.put("Last_Report_Today", "");
             input = m.replaceFirst("");
         }
@@ -1319,7 +1319,7 @@ public class MetarParseReport {
         m = p.p_sunShine.matcher(input);
         if (m.find()) {
             if( m.group(1).equals("///") ) {
-                field.put("Sun_Sensor_Out", "");
+                field.put("Sun_Sensor_Out", "yes");
                 unit.put("Sun_Sensor_Out", "");
             } else {
                 field.put("Sun_Sensor_Duration", m.group(1));
@@ -1335,7 +1335,7 @@ public class MetarParseReport {
         if (m.find()) {
             if( ! m.group(1).equals("////") ) {
                 field.put("Precipitation_amount", Double.toString(Float.parseFloat(m.group(1)) * 0.01 ));
-                unit.put("Precipitation_amount", "");
+                unit.put("Precipitation_amount", "inches");
             }
             input = m.replaceFirst("");
         }
@@ -1347,7 +1347,7 @@ public class MetarParseReport {
         if (m.find()) {
             if( ! m.group(1).equals("////") ) {
                 field.put("Precipitation_amount_24Hours", Double.toString(Float.parseFloat(m.group(1)) * 0.01 ));
-                unit.put("Precipitation_amount_24Hours", "");
+                unit.put("Precipitation_amount_24Hours", "inches");
             }
             input = m.replaceFirst("");
         }
@@ -1361,10 +1361,10 @@ public class MetarParseReport {
         if (m.find()) {
             if( ! m.group(2).equals("////") && m.group(1).equals("1") ) {
                 field.put("Max_Temperature", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
-                unit.put("Max_Temperature", "");
+                unit.put("Max_Temperature", "Celsius");
             } else {
                 field.put("Max_Temperature", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
-                unit.put("Max_Temperature", "");
+                unit.put("Max_Temperature", "Celsius");
             }
             input = m.replaceFirst("");
         }
@@ -1376,10 +1376,10 @@ public class MetarParseReport {
         if (m.find()) {
             if( ! m.group(2).equals("////") && m.group(1).equals("1") ) {
                 field.put("Min_Temperature", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
-                unit.put("Min_Temperature", "");
+                unit.put("Min_Temperature", "Celsius");
             } else {
                 field.put("Min_Temperature", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
-                unit.put("Min_Temperature", "");
+                unit.put("Min_Temperature", "Celsius");
             }
             input = m.replaceFirst("");
         }
@@ -1394,17 +1394,17 @@ public class MetarParseReport {
         if (m.find()) {
             if( ! m.group(2).equals("////") && m.group(1).equals("1") ) {
                 field.put("Max_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(2)) * -0.1 ));
-                unit.put("Max_Temperature_24Hours", "");
+                unit.put("Max_Temperature_24Hours", "Celsius");
             } else {
                 field.put("Max_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
-                unit.put("Max_Temperature_24Hours", "");
+                unit.put("Max_Temperature_24Hours", "Celsius");
             }
             if( ! m.group(4).equals("////") && m.group(3).equals("1") ) {
                 field.put("Min_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(4)) * -0.1 ));
-                unit.put("Min_Temperature_24Hours", "");
+                unit.put("Min_Temperature_24Hours", "Celsius");
             } else {
                 field.put("Min_Temperature_24Hours", Double.toString(Float.parseFloat(m.group(4)) * 0.1 ));
-                unit.put("Min_Temperature_24Hours", "");
+                unit.put("Min_Temperature_24Hours", "Celsius");
             }
             input = m.replaceFirst("");
         }
@@ -1420,7 +1420,7 @@ public class MetarParseReport {
             unit.put("Presure_Tendency_char", "");
             if( ! m.group(2).equals("////") ) {
                 field.put("Presure_Tendency", Double.toString(Float.parseFloat(m.group(2)) * 0.1 ));
-                unit.put("Presure_Tendency", "");
+                unit.put("Presure_Tendency", "hectopascals");
             }
             input = m.replaceFirst("");
         }
@@ -1429,7 +1429,7 @@ public class MetarParseReport {
 //	$FZRANO = 1 if( s#FZRANO\s+## ) ;
         m = p.p_FZRANO.matcher(input);
         if (m.find()) {
-            field.put("Freezing_Rain_sensor_not_working", "");
+            field.put("Freezing_Rain_sensor_not_working", "yes");
             unit.put("Freezing_Rain_sensor_not_working", "");
             input = m.replaceFirst("");
         }
@@ -1438,7 +1438,7 @@ public class MetarParseReport {
 //	$PNO = 1 if( s#PNO\s+## ) ;
         m = p.p_PNO.matcher(input);
         if (m.find()) {
-            field.put("Tipping_bucket_rain_gauge_inoperative", "");
+            field.put("Tipping_bucket_rain_gauge_inoperative", "yes");
             unit.put("Tipping_bucket_rain_gauge_inoperative", "");
             input = m.replaceFirst("");
         }
@@ -1447,7 +1447,7 @@ public class MetarParseReport {
 //	$maintIndicator = 1 if( s#\$\s+## ) ;
         m = p.p_maintenace.matcher(input);
         if (m.find()) {
-            field.put("Maintenance_needed_on_system", "");
+            field.put("Maintenance_needed_on_system", "yes");
             unit.put("Maintenance_needed_on_system", "");
             input = m.replaceFirst("");
         }

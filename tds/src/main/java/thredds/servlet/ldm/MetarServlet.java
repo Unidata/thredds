@@ -46,6 +46,32 @@ public class MetarServlet extends LdmServlet {
     static protected String metarDODSServiceType;
     static protected String metarDODSServiceBase;
 
+    protected long getLastModified(HttpServletRequest req) {
+      File file = getFile( req);
+      if (file == null)
+        return -1;
+
+      return file.lastModified();
+    }
+
+    private File getFile(HttpServletRequest req) {
+      String reqPath = req.getPathInfo();
+      if( reqPath == null )
+         return null;
+      if (reqPath.length() > 0) {
+        if (reqPath.startsWith("/"))
+          reqPath = reqPath.substring(1);
+      }
+
+      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( reqPath);
+      if (file == null)
+        return null;
+      if (!file.exists())
+        return null;
+
+      return file;
+    }
+
     // get parmameters from servlet call
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -97,6 +123,8 @@ public class MetarServlet extends LdmServlet {
             returns = ServletUtil.getParameterIgnoreCase(req, "returns");
             if (returns == null) // default
                 returns = "catalog";
+            if (returns.equals( "data" ) ) 
+                returns = "text";
 
             serviceType = ServletUtil.getParameterIgnoreCase(req, "serviceType");
             if (serviceType == null)
@@ -165,13 +193,12 @@ public class MetarServlet extends LdmServlet {
             returns = "catalog";
             //returns = "text";
             //returns = "html";
-            returns = "xml";
+            //returns = "xml";
             //returns = "dqc";
 
             serviceType = "HTTPServer";
             //serviceType = "";
-            serviceName = "HTTPServer";
-            //serviceName = "DODS";
+            //serviceType = "DODS";
             y0 = "39";
             y1 = "40";
             x0 = "-105";
@@ -209,15 +236,14 @@ public class MetarServlet extends LdmServlet {
 
         // requesting a catalog with different serviceName
         //  serviceName =~ /DODS/i
-        if (p.p_DODS_i.matcher(serviceName).find()) {
+        if (p.p_DODS_i.matcher(serviceType).find()) {
                 serviceName = metarDODSServiceName;
                 serviceType = metarDODSServiceType;
                 serviceBase = metarDODSServiceBase;
                 returns = "catalog";
 
         //  serviceName =~ /HTTPService/i
-        // else if ( p.p_catalog_i.matcher(returns).find() )  
-        } else {
+        } else if ( p.p_catalog_i.matcher(returns).find() ) { 
                 serviceName = metarHTTPServiceName;
                 serviceType = metarHTTPServiceType;
                 serviceBase = metarHTTPServiceBase;
@@ -339,12 +365,6 @@ public class MetarServlet extends LdmServlet {
             } else if (dtime.equals("5day")) {
                 now.add( Calendar.HOUR, -120 );
                 dateStart = dateFormatISO.format(now.getTime());
-            } else if (dtime.equals("6day")) {
-                now.add( Calendar.HOUR, -144 );
-                dateStart = dateFormatISO.format(now.getTime());
-            } else if (dtime.equals("7day") || dtime.equals("all")) {
-                now.add( Calendar.HOUR, -168 );
-                dateStart = dateFormatISO.format(now.getTime());
 
             //      individual data report return for set time dtime
             } else if (p.p_isodate.matcher(dtime).find()) {
@@ -451,7 +471,7 @@ public class MetarServlet extends LdmServlet {
                         m = p.p_station_dateZ.matcher(report);
                         if (m.lookingAt()) {
                             var1 = m.group(1);
-                            catalogOut(day, key, station, pw, serviceName, serviceBase, returns);
+                            catalogOut(day, key, station, pw, serviceType, serviceBase, returns);
                         }
                     } else if (p.p_text_i.matcher(returns).find()) {
                             pw.println(report);
@@ -489,7 +509,7 @@ public class MetarServlet extends LdmServlet {
     } // end doGet
 
     // create a dataset entry for a catalog
-    public void catalogOut(String day, String ddhhmm, String stn, PrintWriter pw, String serviceName, String serviceBase, String returns) {
+    public void catalogOut(String day, String ddhhmm, String stn, PrintWriter pw, String serviceType, String serviceBase, String returns) {
 
         //String theTime = "";
 
@@ -506,13 +526,13 @@ public class MetarServlet extends LdmServlet {
         pw.print( theTime +" " + stn + " Metar data\"" ); 
         pw.println( " ID=\""+ theTime.hashCode() +"\"" ); 
         pw.print("        urlPath=\"");
-        if (p.p_HTTPServer_i.matcher(serviceName).find()) {
+        if (p.p_HTTPServer_i.matcher(serviceType).find()) {
             pw.println("returns=text&amp;stn=" + stn + "&amp;dtime=" + theTime + "\"/>");
             //pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + theTime + "\"/>");
-        } else if (p.p_ADDE_i.matcher(serviceName).find()) {
+        } else if (p.p_ADDE_i.matcher(serviceType).find()) {
             pw.println("group=rtptsrc&amp;descr=sfchourly&amp;select='id%20" + stn + "'" +
                     "&amp;num=all&amp;param=day%20time%20t%20td%20psl\"/>");
-        } else if (p.p_DODS_i.matcher(serviceName).find()) {
+        } else if (p.p_DODS_i.matcher(serviceType).find()) {
             pw.println("returns=text&amp;stn=" + stn + "&amp;dtime=" + theTime + "\"/>");
         }
 

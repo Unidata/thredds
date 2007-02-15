@@ -142,6 +142,13 @@ public class LdmServlet extends AbstractServlet {
                   input = br.readLine(); // </station> tag
                   pw.println( input );
                 }
+                if( stn.length() == 3 ) {
+                    if( stnLine.lastIndexOf( " US") > 0 ) {
+                        stn = "K" + stn;
+                    } else {
+                        stn = "C" + stn;
+                    }
+                }
                 STNSal.add(stn);
                 //pw.println(  "<p>stn inbound "+ stn +" </p>" );
             } else {
