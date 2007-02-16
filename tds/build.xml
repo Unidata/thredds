@@ -591,6 +591,7 @@
 
   <target name="test-setup" description="compile and setup for tests">
     <mkdir dir="${test.classes.dir}"/>
+    <mkdir dir="${test.reports.dir}"/>
 
     <!-- debugging path -->
     <property name="test.classpath" refid="test.classpath"/>
@@ -610,6 +611,7 @@
   <target name="test" description="run tests"/>
 
   <target name="unit-test" depends="compile, test-setup" description="run junit tests">
+    <mkdir dir="${test.reports.dir}/unit-test"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
@@ -635,6 +637,7 @@
   </target>
 
   <target name="test-TDS-ping-motherlode-8080" depends="compile, test-setup" description="run ping on motherlode:8080 TDS">
+    <mkdir dir="${test.reports.dir}/ping-mlode-8080"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
