@@ -1,16 +1,8 @@
 package thredds.tds.ethan;
 
-import junit.framework.*;
+import junit.framework.TestCase;
 
-import thredds.catalog.*;
-import thredds.datatype.DateType;
-
-import java.util.*;
-import java.io.IOException;
-
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
-import ucar.nc2.dt.TypedDataset;
+import java.util.Properties;
 
 /**
  * _more_
@@ -18,7 +10,7 @@ import ucar.nc2.dt.TypedDataset;
  * @author edavis
  * @since Nov 30, 2006 11:13:36 AM
  */
-public class TestMotherlodeTDS extends TestCase
+public class TestTdsPingMotherlode extends TestCase
 {
 
   private String host = "motherlode.ucar.edu:8080";
@@ -28,9 +20,7 @@ public class TestMotherlodeTDS extends TestCase
   private String tdsConfigUser;
   private String tdsConfigWord;
 
-  private String tdsTestLevel = "BASIC";
-
-  public TestMotherlodeTDS( String name )
+  public TestTdsPingMotherlode( String name )
   {
     super( name );
   }
@@ -41,7 +31,6 @@ public class TestMotherlodeTDS extends TestCase
     host = env.getProperty( "thredds.tds.site", host );
     tdsConfigUser = env.getProperty( "thredds.tds.config.user" );
     tdsConfigWord = env.getProperty( "thredds.tds.config.password" );
-    tdsTestLevel = env.getProperty( "thredds.tds.test.level" );
 
     targetTomcatUrl = "http://" + host + "/";
     targetTdsUrl = "http://" + host + "/thredds/";

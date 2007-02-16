@@ -636,10 +636,10 @@
   <target name="ping-motherlode-TDS" depends="compile, test-setup" description="run ping on motherlode TDS">
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
-      <jvmarg value="-ea"/>
+      <jvmarg value="-ea -Dthredds.tds.test.level=PING-mlode"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.dir}" name="thredds.tds.ethan.TestMotherlodeTDS"/>
+      <test todir="${test.dir}" name="thredds.tds.ethan.TestAll"/>
     </junit>
 
     <!-- #Generate test reports -->

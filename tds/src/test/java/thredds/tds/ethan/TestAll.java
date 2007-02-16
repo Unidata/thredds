@@ -19,22 +19,9 @@ import ucar.nc2.dt.TypedDatasetFactory;
  */
 public class TestAll extends TestCase
 {
-  private String host = "motherlode.ucar.edu:8080";
-  private String targetTomcatUrl;
-  private String targetTdsUrl;
-
-  private String tdsConfigUser;
-  private String tdsConfigWord;
-
-  private String tdsTestLevel = "BASIC";
-
   public TestAll( String name )
   {
     super( name );
-  }
-
-  protected void setUp()
-  {
   }
 
   public static Test suite()
@@ -45,11 +32,12 @@ public class TestAll extends TestCase
     String tdsTestLevel = env.getProperty( "thredds.tds.test.level" );
 
     if ( tdsTestLevel.equalsIgnoreCase( "PING") )
-    suite.addTestSuite( thredds.tds.ethan.TestMotherlodeTDS.class );
+      suite.addTestSuite( thredds.tds.ethan.TestTdsPing.class );
+    else if ( tdsTestLevel.equalsIgnoreCase( "PING-mlode") )
+      suite.addTestSuite( thredds.tds.ethan.TestTdsPingMotherlode.class);
     else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL") )
-    {
+      // ToDo Need to implement this one.
       suite.addTestSuite( thredds.tds.ethan.TestTdsCrawl.class);
-    }
 
     return suite;
   }
