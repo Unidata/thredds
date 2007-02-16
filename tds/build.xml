@@ -45,10 +45,10 @@
   <property name="webstart_dir" location="${release.html.dir}/webstart"/>
   -->
 
-  <property name="test.dir" location="${root.dir}/src/test"/>
-  <property name="test.src.dir" location="${test.dir}/java"/>
-  <property name="test.data.dir" location="${test.dir}/data"/>
+  <property name="test.src.dir" location="${root.dir}/src/test/java"/>
+  <property name="test.data.dir" location="${root.dir}/src/test/data"/>
   <property name="test.classes.dir" location="${build.dir}/test/classes"/>
+  <property name="test.reports.dir" location="${build.dir}/test/reports"/>
 
   <!-- Webapp source locations. -->
   <property name="webapp.src.dir" location="${root.dir}/src/main/webapp"/>
@@ -615,49 +615,49 @@
       <jvmarg value="-ea"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.dir}" name="ucar.nc2.TestAll"/>
+      <test todir="${test.reports.dir}/unit-test" name="ucar.nc2.TestAll"/>
     </junit>
 
     <!-- #Generate test reports -->
-    <junitreport todir="${test.dir}">
-      <fileset dir="${test.dir}">
+    <junitreport todir="${test.reports.dir}/unit-test">
+      <fileset dir="${test.reports.dir}/unit-test">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${test.dir}"/>
+      <report format="frames" todir="${test.reports.dir}/unit-test"/>
     </junitreport>
     <!-- create temporary file indicating these tests failed -->
     <!-- #Test case bypass trick -->
-    <echo message="last build failed tests" file="${test.dir}/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.dir}/index.html for details.</fail>
+    <echo message="last build failed tests" file="${test.reports.dir}/unit-test/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/unit-test/index.html for details.</fail>
     <!-- Remove test failed file, as these tests succeeded -->
-    <delete file="${test.dir}/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
+    <delete file="${test.reports.dir}/unit-test/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/unit-test/index.html for details."/>
   </target>
 
-  <target name="test-TDS-ping-motherlode" depends="compile, test-setup" description="run ping on motherlode TDS">
+  <target name="test-TDS-ping-motherlode-8080" depends="compile, test-setup" description="run ping on motherlode:8080 TDS">
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
       <jvmarg value="-Dthredds.tds.test.level=PING-mlode"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.dir}" name="thredds.tds.ethan.TestAll"/>
+      <test todir="${test.reports.dir}/ping-mlode-8080" name="thredds.tds.ethan.TestAll"/>
     </junit>
 
     <!-- #Generate test reports -->
-    <junitreport todir="${test.dir}">
-      <fileset dir="${test.dir}">
+    <junitreport todir="${test.reports.dir}/ping-mlode-8080">
+      <fileset dir="${test.reports.dir}/ping-mlode-8080">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${test.dir}"/>
+      <report format="frames" todir="${test.reports.dir}/ping-mlode-8080"/>
     </junitreport>
     <!-- create temporary file indicating these tests failed -->
     <!-- #Test case bypass trick -->
-    <echo message="last build failed tests" file="${test.dir}/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.dir}/index.html for details.</fail>
+    <echo message="last build failed tests" file="${test.reports.dir}/ping-mlode-8080/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/ping-mlode-8080/index.html for details.</fail>
     <!-- Remove test failed file, as these tests succeeded -->
-    <delete file="${test.dir}/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
+    <delete file="${test.reports.dir}/ping-mlode-8080/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/ping-mlode-8080/index.html for details."/>
   </target>
 
 </project>
