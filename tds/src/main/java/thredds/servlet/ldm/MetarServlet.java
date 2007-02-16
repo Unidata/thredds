@@ -47,29 +47,18 @@ public class MetarServlet extends LdmServlet {
     static protected String metarDODSServiceBase;
 
     protected long getLastModified(HttpServletRequest req) {
-      File file = getFile( req);
-      if (file == null)
-        return -1;
+        try { 
+            //  get configurations from ThreddsIDD.cfg
+            if( metarDir == null )
+                getConfigurations("buoy", null);
+            File file = new File(  metarDQC );
 
-      return file.lastModified();
-    }
-
-    private File getFile(HttpServletRequest req) {
-      String reqPath = req.getPathInfo();
-      if( reqPath == null )
-         return null;
-      if (reqPath.length() > 0) {
-        if (reqPath.startsWith("/"))
-          reqPath = reqPath.substring(1);
-      }
-
-      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile( reqPath);
-      if (file == null)
-        return null;
-      if (!file.exists())
-        return null;
-
-      return file;
+            return file.lastModified();
+        } catch ( FileNotFoundException fnfe ) {
+            return -1;
+        } catch ( IOException ioe ) {
+            return -1;
+        }
     }
 
     // get parmameters from servlet call
