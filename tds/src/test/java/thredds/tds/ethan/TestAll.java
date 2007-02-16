@@ -38,6 +38,15 @@ public class TestAll extends TestCase
     else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL") )
       // ToDo Need to implement this one.
       suite.addTestSuite( thredds.tds.ethan.TestTdsCrawl.class);
+//    else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL-mlode" ) )
+//      // ToDo Need to implement this one.
+//      suite.addTestSuite( thredds.tds.ethan.TestTdsCrawlMotherlode.class );
+    else
+    {
+      suite.addTestSuite( thredds.tds.ethan.TestTdsPingMotherlode.class );
+      // suite.addTestSuite( thredds.tds.ethan.TestTdsCrawlMotherlode.class );
+    }
+
 
     return suite;
   }
@@ -97,29 +106,43 @@ public class TestAll extends TestCase
     InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl );
     if ( catalog != null )
     {
-      List resDs = findAllResolverDatasets( catalog.getDatasets() );
+      List resolverDsList = findAllResolverDatasets( catalog.getDatasets() );
       Map fail = new HashMap();
 
-      for ( Iterator it = resDs.iterator(); it.hasNext(); )
+      for ( Iterator it = resolverDsList.iterator(); it.hasNext(); )
       {
-        InvDatasetImpl curDs = (InvDatasetImpl) it.next();
-        InvAccess curAccess = curDs.getAccess( ServiceType.RESOLVER );
+        // Resolve the resolver dataset.
+        InvDatasetImpl curResolverDs = (InvDatasetImpl) it.next();
+        InvAccess curAccess = curResolverDs.getAccess( ServiceType.RESOLVER );
+        String curResDsPath = curAccess.getStandardUri().toString();
+        InvCatalogImpl curResolvedCat = openAndValidateCatalog( curResDsPath );
 
-        String dsPath = curAccess.getStandardUri().toString();
+        List curDatasets = curResolvedCat.getDatasets();
+        if ( curDatasets.size() != 1 )
+        {
+          fail.put( curResDsPath, "Wrong number of datasets <" + curDatasets.size() + "> in resolved catalog <" + curResDsPath + ">." );
+          continue;
+        }
+
+        // Open the actual (OPeNDAP) dataset.
+        InvDatasetImpl curResolvedDs = (InvDatasetImpl) curDatasets.get( 0);
+        InvAccess curResolvedDsAccess = curResolvedDs.getAccess( ServiceType.OPENDAP );
+        String curResolvedDsPath = curResolvedDsAccess.getStandardUri().toString(); 
+
         NetcdfDataset ncd;
         try
         {
-          ncd = NetcdfDataset.openDataset( dsPath );
+          ncd = NetcdfDataset.openDataset( curResolvedDsPath );
         }
         catch ( IOException e )
         {
-          fail.put( dsPath, "I/O error opening dataset <" + dsPath + ">: " + e.getMessage() );
+          fail.put( curResolvedDsPath, "I/O error opening dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
           continue;
         }
 
         if ( ncd == null )
         {
-          fail.put( dsPath, "Failed to open dataset <" + dsPath + ">." );
+          fail.put( curResolvedDsPath, "Failed to open dataset <" + curResolvedDsPath + ">." );
           continue;
         }
 
@@ -131,12 +154,12 @@ public class TestAll extends TestCase
         }
         catch ( IOException e )
         {
-          fail.put( dsPath, "I/O error opening typed dataset <" + dsPath + ">: " + e.getMessage() );
+          fail.put( curResolvedDsPath, "I/O error opening typed dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
           continue;
         }
         if ( typedDs == null )
         {
-          fail.put( dsPath, "Failed to open typed dataset <" + dsPath + ">." );
+          fail.put( curResolvedDsPath, "Failed to open typed dataset <" + curResolvedDsPath + ">." );
           //continue;
         }
 

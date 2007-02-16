@@ -582,6 +582,7 @@
   <!-- TESTING  -->
   <path id="test.classpath">
     <path refid="compile.classpath"/>
+    <fileset refid="runtime.libraries"/>
     <fileset dir="${lib.dir}" includes="${junit.jar}"/>
     <fileset dir="${lib.dir}" includes="${httpunit.jar}"/>
     <pathelement location="${build.classes.dir}"/>
@@ -633,10 +634,11 @@
     <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
   </target>
 
-  <target name="ping-motherlode-TDS" depends="compile, test-setup" description="run ping on motherlode TDS">
+  <target name="test-TDS-ping-motherlode" depends="compile, test-setup" description="run ping on motherlode TDS">
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
-      <jvmarg value="-ea -Dthredds.tds.test.level=PING-mlode"/>
+      <jvmarg value="-ea"/>
+      <jvmarg value="-Dthredds.tds.test.level=PING-mlode"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
       <test todir="${test.dir}" name="thredds.tds.ethan.TestAll"/>

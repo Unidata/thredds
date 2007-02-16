@@ -32,8 +32,8 @@ public class TestTdsPingMotherlode extends TestCase
     tdsConfigUser = env.getProperty( "thredds.tds.config.user" );
     tdsConfigWord = env.getProperty( "thredds.tds.config.password" );
 
-    targetTomcatUrl = "http://" + host + "/";
-    targetTdsUrl = "http://" + host + "/thredds/";
+    targetTomcatUrl = "http://" + host;
+    targetTdsUrl = "http://" + host + "/thredds";
   }
 
   public void testMainCatalog()
@@ -83,7 +83,7 @@ public class TestTdsPingMotherlode extends TestCase
 
   public void testVgeeCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/vgeeCatalog.xml" );
+    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudy/vgeeCatalog.1.0.xml" );
   }
 
   public void testAllNcModelsCatalog()
@@ -93,7 +93,7 @@ public class TestTdsPingMotherlode extends TestCase
 
   public void testDqcServletCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTomcatUrl + "dqcServlet/latestModel.xml" );
+    TestAll.openAndValidateCatalog( targetTomcatUrl + "/dqcServlet/latestModel.xml" );
   }
 
 }
