@@ -608,4 +608,54 @@
 
   <target name="test" description="run tests"/>
 
+  <target name="unit-test" depends="compile, test-setup" description="run junit tests">
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
+      <classpath refid="test.classpath"/>
+      <jvmarg value="-ea"/>
+      <formatter type="xml"/>
+      <formatter type="brief" usefile="false"/>
+      <test todir="${test.dir}" name="ucar.nc2.TestAll"/>
+    </junit>
+
+    <!-- #Generate test reports -->
+    <junitreport todir="${test.dir}">
+      <fileset dir="${test.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${test.dir}"/>
+    </junitreport>
+    <!-- create temporary file indicating these tests failed -->
+    <!-- #Test case bypass trick -->
+    <echo message="last build failed tests" file="${test.dir}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.dir}/index.html for details.</fail>
+    <!-- Remove test failed file, as these tests succeeded -->
+    <delete file="${test.dir}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
+  </target>
+
+  <target name="ping-motherlode-TDS" depends="compile, test-setup" description="run ping on motherlode TDS">
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
+      <classpath refid="test.classpath"/>
+      <jvmarg value="-ea"/>
+      <formatter type="xml"/>
+      <formatter type="brief" usefile="false"/>
+      <test todir="${test.dir}" name="thredds.tds.ethan.TestMotherlodeTDS"/>
+    </junit>
+
+    <!-- #Generate test reports -->
+    <junitreport todir="${test.dir}">
+      <fileset dir="${test.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${test.dir}"/>
+    </junitreport>
+    <!-- create temporary file indicating these tests failed -->
+    <!-- #Test case bypass trick -->
+    <echo message="last build failed tests" file="${test.dir}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.dir}/index.html for details.</fail>
+    <!-- Remove test failed file, as these tests succeeded -->
+    <delete file="${test.dir}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
+  </target>
+
 </project>

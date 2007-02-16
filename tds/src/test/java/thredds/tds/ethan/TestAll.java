@@ -1,26 +1,24 @@
-package thredds;
+package thredds.tds.ethan;
 
 import junit.framework.*;
-
-import thredds.catalog.*;
-import thredds.datatype.DateType;
 
 import java.util.*;
 import java.io.IOException;
 
+import thredds.catalog.*;
+import thredds.datatype.DateType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.TypedDataset;
+import ucar.nc2.dt.TypedDatasetFactory;
 
 /**
  * _more_
  *
  * @author edavis
- * @since Nov 30, 2006 11:13:36 AM
+ * @since Feb 15, 2007 10:10:08 PM
  */
-public class TestMotherlodeTDS extends TestCase
+public class TestAll extends TestCase
 {
-
   private String host = "motherlode.ucar.edu:8080";
   private String targetTomcatUrl;
   private String targetTdsUrl;
@@ -30,85 +28,33 @@ public class TestMotherlodeTDS extends TestCase
 
   private String tdsTestLevel = "BASIC";
 
-  public TestMotherlodeTDS( String name )
+  public TestAll( String name )
   {
     super( name );
   }
 
   protected void setUp()
   {
+  }
+
+  public static Test suite()
+  {
+    TestSuite suite = new TestSuite();
+
     Properties env = System.getProperties();
-    host = env.getProperty( "thredds.tds.site", host );
-    tdsConfigUser = env.getProperty( "thredds.tds.config.user" );
-    tdsConfigWord = env.getProperty( "thredds.tds.config.password" );
-    tdsTestLevel = env.getProperty( "thredds.tds.test.level" );
+    String tdsTestLevel = env.getProperty( "thredds.tds.test.level" );
 
-    targetTomcatUrl = "http://" + host + "/";
-    targetTdsUrl = "http://" + host + "/thredds/";
+    if ( tdsTestLevel.equalsIgnoreCase( "PING") )
+    suite.addTestSuite( thredds.tds.ethan.TestMotherlodeTDS.class );
+    else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL") )
+    {
+      suite.addTestSuite( thredds.tds.ethan.TestTdsCrawl.class);
+    }
 
+    return suite;
   }
 
-  public void testMainCatalog()
-  {
-    openAndValidateCatalog( targetTdsUrl + "/catalog.xml" );
-  }
-
-  public void testTopCatalog()
-  {
-    openAndValidateCatalog( targetTdsUrl + "/topcatalog.xml" );
-  }
-
-  public void testIdvModelsCatalog()
-  {
-    openAndValidateCatalog( targetTdsUrl + "/idv/models.xml" );
-  }
-
-  public void testIdvLatestModelsCatalog()
-  {
-    openValidateAndCheckLatestCatalog( targetTdsUrl + "/idv/latestModels.xml" );
-  }
-
-  public void testIdvRtModels10Catalog()
-  {
-    openValidateAndCheckExpires( targetTdsUrl + "/idv/rt-models.1.0.xml" );
-  }
-
-  public void testIdvRtModels06Catalog()
-  {
-    openValidateAndCheckExpires( targetTdsUrl + "/idv/rt-models.xml" );
-  }
-
-//  public void testCatGenIdvRtModels10Catalog()
-//  {
-//    openValidateAndCheckExpires( targetTdsUrl + "/cataloggen/catalogs/idv-rt-models.InvCat1.0.xml" );
-//  }
-
-//  public void testCatGenIdvRtModels06Catalog()
-//  {
-//    openValidateAndCheckExpires( targetTdsUrl + "/cataloggen/catalogs/idv-rt-models.xml" );
-//  }
-
-  public void testCatGenCdpCatalog()
-  {
-    openAndValidateCatalog( targetTdsUrl + "/cataloggen/catalogs/uniModelsInvCat1.0en.xml" );
-  }
-
-  public void testVgeeCatalog()
-  {
-    openAndValidateCatalog( targetTdsUrl + "/casestudies/vgeeCatalog.xml" );
-  }
-
-  public void testAllNcModelsCatalog()
-  {
-    openAndValidateCatalog( targetTdsUrl + "/idd/allModels.TDS-nc.xml" );
-  }
-
-  public void testDqcServletCatalog()
-  {
-    openAndValidateCatalog( targetTomcatUrl + "dqcServlet/latestModel.xml" );
-  }
-
-  private InvCatalogImpl openAndValidateCatalog( String catUrl )
+  public static InvCatalogImpl openAndValidateCatalog( String catUrl )
   {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
     StringBuffer validationMsg = new StringBuffer();
@@ -116,7 +62,7 @@ public class TestMotherlodeTDS extends TestCase
     {
       InvCatalogImpl cat = catFactory.readXML( catUrl );
       boolean isValid = cat.check( validationMsg, false );
-      if ( ! isValid )
+      if ( !isValid )
       {
         assertTrue( "Invalid catalog <" + catUrl + ">:\n" + validationMsg.toString(),
                     false );
@@ -124,7 +70,7 @@ public class TestMotherlodeTDS extends TestCase
       }
       else
       {
-        String tmpMsg = "Valid catalog <" + catUrl + ">." + (validationMsg.length() > 0 ? "" : " Validation messages:\n" + validationMsg.toString() );
+        String tmpMsg = "Valid catalog <" + catUrl + ">." + ( validationMsg.length() > 0 ? "" : " Validation messages:\n" + validationMsg.toString() );
         System.out.println( tmpMsg );
         return cat;
       }
@@ -138,7 +84,7 @@ public class TestMotherlodeTDS extends TestCase
     }
   }
 
-  private void openValidateAndCheckExpires( String catalogUrl )
+  public static void openValidateAndCheckExpires( String catalogUrl )
   {
     InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl );
     if ( catalog != null )
@@ -158,7 +104,7 @@ public class TestMotherlodeTDS extends TestCase
     }
   }
 
-  private void openValidateAndCheckLatestCatalog( String catalogUrl )
+  public static void openValidateAndCheckLatestCatalog( String catalogUrl )
   {
     InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl );
     if ( catalog != null )
@@ -193,7 +139,7 @@ public class TestMotherlodeTDS extends TestCase
         TypedDataset typedDs;
         try
         {
-          typedDs = TypedDatasetFactory.open( null, ncd, null, buf);
+          typedDs = TypedDatasetFactory.open( null, ncd, null, buf );
         }
         catch ( IOException e )
         {
@@ -210,29 +156,29 @@ public class TestMotherlodeTDS extends TestCase
         //if ( startDate.getTime() < System.currentTimeMillis()) ...
       }
 
-      if ( ! fail.isEmpty())
+      if ( !fail.isEmpty() )
       {
-        StringBuffer failMsg = new StringBuffer( "Some resolver datasets failed to open:");
+        StringBuffer failMsg = new StringBuffer( "Some resolver datasets failed to open:" );
         for ( Iterator it = fail.keySet().iterator(); it.hasNext(); )
         {
           String curPath = (String) it.next();
           String curMsg = (String) fail.get( curPath );
-          failMsg.append( "\n").append( curPath).append( ": ").append( curMsg);
+          failMsg.append( "\n" ).append( curPath ).append( ": " ).append( curMsg );
         }
         assertTrue( failMsg.toString(),
-                    false);
+                    false );
       }
     }
   }
 
-  private List findAllResolverDatasets( List datasets)
+  public static List findAllResolverDatasets( List datasets )
   {
     List resolverDsList = new ArrayList();
     for ( Iterator iterator = datasets.iterator(); iterator.hasNext(); )
     {
       InvDatasetImpl curDs = (InvDatasetImpl) iterator.next();
 
-      if ( ! (curDs instanceof InvDatasetImpl) ) continue;
+      if ( !( curDs instanceof InvDatasetImpl ) ) continue;
 
       if ( curDs.hasNestedDatasets() )
       {
