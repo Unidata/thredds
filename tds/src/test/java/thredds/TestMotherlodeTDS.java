@@ -20,10 +20,15 @@ import ucar.nc2.dt.TypedDataset;
  */
 public class TestMotherlodeTDS extends TestCase
 {
-  static private org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TestMotherlodeTDS.class );
 
-  private String mlodeTds = "http://motherlode.ucar.edu:8080/thredds";
+  private String host = "motherlode.ucar.edu:8080";
+  private String targetTomcatUrl;
+  private String targetTdsUrl;
+
+  private String tdsConfigUser;
+  private String tdsConfigWord;
+
+  private String tdsTestLevel = "BASIC";
 
   public TestMotherlodeTDS( String name )
   {
@@ -32,63 +37,76 @@ public class TestMotherlodeTDS extends TestCase
 
   protected void setUp()
   {
+    Properties env = System.getProperties();
+    host = env.getProperty( "thredds.tds.site", host );
+    tdsConfigUser = env.getProperty( "thredds.tds.config.user" );
+    tdsConfigWord = env.getProperty( "thredds.tds.config.password" );
+    tdsTestLevel = env.getProperty( "thredds.tds.test.level" );
+
+    targetTomcatUrl = "http://" + host + "/";
+    targetTdsUrl = "http://" + host + "/thredds/";
+
   }
 
   public void testMainCatalog()
   {
-    openAndValidateCatalog( mlodeTds + "/catalog.xml" );
+    openAndValidateCatalog( targetTdsUrl + "/catalog.xml" );
   }
 
   public void testTopCatalog()
   {
-    openAndValidateCatalog( mlodeTds + "/topcatalog.xml" );
+    openAndValidateCatalog( targetTdsUrl + "/topcatalog.xml" );
   }
 
   public void testIdvModelsCatalog()
   {
-    openAndValidateCatalog( mlodeTds + "/idv/models.xml" );
+    openAndValidateCatalog( targetTdsUrl + "/idv/models.xml" );
   }
 
   public void testIdvLatestModelsCatalog()
   {
-    openValidateAndCheckLatestCatalog( mlodeTds + "/idv/latestModels.xml" );
+    openValidateAndCheckLatestCatalog( targetTdsUrl + "/idv/latestModels.xml" );
   }
 
   public void testIdvRtModels10Catalog()
   {
-    openAndValidateCatalog( mlodeTds + "/idv/rt-models.1.0.xml" );
+    openValidateAndCheckExpires( targetTdsUrl + "/idv/rt-models.1.0.xml" );
   }
 
   public void testIdvRtModels06Catalog()
   {
-    openAndValidateCatalog( mlodeTds + "/idv/rt-models.xml" );
+    openValidateAndCheckExpires( targetTdsUrl + "/idv/rt-models.xml" );
   }
 
-  public void testCatGenIdvRtModels10Catalog()
-  {
-    openValidateAndCheckExpires( mlodeTds + "/cataloggen/catalogs/idv-rt-models.InvCat1.0.xml" );
-  }
+//  public void testCatGenIdvRtModels10Catalog()
+//  {
+//    openValidateAndCheckExpires( targetTdsUrl + "/cataloggen/catalogs/idv-rt-models.InvCat1.0.xml" );
+//  }
 
-  public void testCatGenIdvRtModels06Catalog()
-  {
-    openValidateAndCheckExpires( mlodeTds + "/cataloggen/catalogs/idv-rt-models.xml" );
-  }
+//  public void testCatGenIdvRtModels06Catalog()
+//  {
+//    openValidateAndCheckExpires( targetTdsUrl + "/cataloggen/catalogs/idv-rt-models.xml" );
+//  }
 
   public void testCatGenCdpCatalog()
   {
-    openAndValidateCatalog( mlodeTds + "/cataloggen/catalogs/uniModelsInvCat1.0en.xml" );
+    openAndValidateCatalog( targetTdsUrl + "/cataloggen/catalogs/uniModelsInvCat1.0en.xml" );
   }
 
   public void testVgeeCatalog()
   {
-    openAndValidateCatalog( mlodeTds + "/casestudy/vgeeCatalog.xml" );
+    openAndValidateCatalog( targetTdsUrl + "/casestudies/vgeeCatalog.xml" );
   }
 
   public void testAllNcModelsCatalog()
   {
-    openAndValidateCatalog( mlodeTds + "/idd/allModels.TDS-nc.xml" );
+    openAndValidateCatalog( targetTdsUrl + "/idd/allModels.TDS-nc.xml" );
   }
 
+  public void testDqcServletCatalog()
+  {
+    openAndValidateCatalog( targetTomcatUrl + "dqcServlet/latestModel.xml" );
+  }
 
   private InvCatalogImpl openAndValidateCatalog( String catUrl )
   {
@@ -106,7 +124,8 @@ public class TestMotherlodeTDS extends TestCase
       }
       else
       {
-        log.info( "Valid catalog <" + catUrl + ">. Validation messages:\n" + validationMsg.toString() );
+        String tmpMsg = "Valid catalog <" + catUrl + ">." + (validationMsg.length() > 0 ? "" : " Validation messages:\n" + validationMsg.toString() );
+        System.out.println( tmpMsg );
         return cat;
       }
     }
