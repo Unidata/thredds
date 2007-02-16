@@ -2,25 +2,9 @@
 package thredds.dqc.server;
 
 import junit.framework.TestCase;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.net.URI;
-import java.net.URL;
-import java.net.URISyntaxException;
-
-import thredds.catalog.query.*;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalog;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.XMLEntityResolver;
-import thredds.catalog.parser.jdom.InvCatalogFactory10;
 
 /**
  * A description
