@@ -1,5 +1,5 @@
 /*
- * $Id:Level2VolumeScan.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id:Cinrad2VolumeScan.java 63 2006-07-12 21:50:51Z edavis $
  *
  * Copyright 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -38,7 +38,7 @@ import ucar.unidata.io.bzip2.BZip2ReadException;
 
 
 /**
- * This class reads a NEXRAD level II data file.
+ * This class reads a CINRAD level II data file.
  * It can handle NCDC archives (ARCHIVE2), as well as CRAFT/IDD compressed files (AR2V0001).
  * <p/>
  * Adapted with permission from the Java Iras software developed by David Priegnitz at NSSL.<p>
@@ -587,7 +587,7 @@ public class Cinrad2VolumeScan {
           }
           if (obuff.length >= 0) dout2.write(obuff, 0, total);
         } catch (BZip2ReadException ioe) {
-          log.debug("Nexrad2IOSP.uncompress ", ioe);
+          log.debug("Cinrad2IOSP.uncompress ", ioe);
         }
         float nrecords = (float) (total / 2432.0);
         if (debug)
