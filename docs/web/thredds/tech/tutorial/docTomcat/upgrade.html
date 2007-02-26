@@ -23,17 +23,21 @@ installation.
 
 For this tutorial it is assumed that apache-tomcat-5.5.17.tar.gz is the old
 distribution and the new one is apache-tomcat-5.5.25.tar.gz. These steps are
-done as user tomcat.
+done as user root and tomcat.
 
 <pre>
 
-- Go to tomcat home directory
-% cd ~tomcat
+- Go to where tomcat was installed 
+% cd /opt
 
 - Get tomcat5 distribution ie apache-tomcat-5.5.25.tar.gz from: 
 	<a href="http://tomcat.apache.org">Apache Tomcat</a>
 
-- Unpack distribution  
+- Make Distribution directory and chown as root
+% mkdir apache-tomcat-5.5.25
+% chown tomcat:tomcat apache-tomcat-5.5.25
+
+Unpack distribution  as tomcat
 % tar xzvf apache-tomcat-5.5.25.tar.gz
 
 <!--
