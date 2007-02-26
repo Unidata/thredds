@@ -1,5 +1,5 @@
 /*
- * $Id:Level2Record.java 63 2006-07-12 21:50:51Z edavis $
+ * $Id:Cinrad2Record.java 63 2006-07-12 21:50:51Z edavis $
  *
  * Copyright � 1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -34,7 +34,7 @@ import java.util.Date;
 
 
 /**
- * This class reads one record (radial) in an NEXRAD level II file.
+ * This class reads one record (radial) in an CINRAD level II file.
  * File must be uncompressed.
  * Not handling messages yet, only data.
  * <p>
