@@ -12,7 +12,7 @@
 
   <!-- Current CDM javadoc URL. -->
   <property name="cdmAll.javadoc.url"
-            value="http://www.unidata.ucar.edu/software/netcdf-java/v2.2.17/javadocAll/"/>
+            value="http://www.unidata.ucar.edu/software/netcdf-java/v2.2.19/javadocAll/"/>
 
   <!-- Directories for releasing to FTP or WWW site, defaults are John's.
        Override by adding to build.properties file. -->
@@ -90,6 +90,12 @@
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="logging.jar" value="external/nlog4j-1.2.25.jar"/>
 
+  <!-- Third-party database libraries needed for compile. -->
+  <property name="bloat.jar" value="external/bloat-1.0.jar"/>
+  <property name="db4o-db4ounit.jar" value="external/db4o-6.0-db4ounit.jar"/>
+  <property name="db4o-java5.jar" value="external/db4o-6.0-java5.jar"/>
+  <property name="db4o-nqopt.jar" value="external/db4o-6.0-nqopt.jar"/>
+
   <!-- Third-party libraries needed for runtime. -->
   <property name="commons-io.jar" value="external/commons-io-1.2.jar"/>
   <!-- property name="gnu-regexp.jar" value="external/gnu-regexp-1.1.4.jar"/ -->
@@ -118,6 +124,11 @@
       <include name="${opendap.jar}"/>
       <include name="${prefs.jar}"/>
       <include name="${visadNoDods.jar}"/>
+
+      <include name="${bloat.jar}"/>
+      <include name="${db4o-db4ounit.jar}"/>
+      <include name="${db4o-java5.jar}"/>
+      <include name="${db4o-nqopt.jar}"/>
 
       <include name="${cas.jar}"/>
       <include name="${fileupload.jar}"/>
