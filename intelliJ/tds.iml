@@ -73,6 +73,42 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/bloat-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/db4o-6.0-java5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/db4o-6.0-nqopt.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/db4o-6.0-db4ounit.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
@@ -99,6 +135,11 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/classes" />
       <url>file://$MODULE_DIR$/../cdm/src/main/resources</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/bloat-1.0.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/bloat-1.0.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -129,6 +170,21 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
       <url>jar://$MODULE_DIR$/../lib/external/commons-logging-1.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/db4o-6.0-db4ounit.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/db4o-6.0-db4ounit.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/db4o-6.0-java5.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/db4o-6.0-java5.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/db4o-6.0-nqopt.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/db4o-6.0-nqopt.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="0" />
