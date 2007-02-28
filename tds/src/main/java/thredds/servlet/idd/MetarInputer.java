@@ -1,4 +1,4 @@
-package thredds.servlet.ldm;
+package thredds.servlet.idd;
 
 /**
  * Created by IntelliJ IDEA.

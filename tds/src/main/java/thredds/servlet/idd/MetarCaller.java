@@ -1,4 +1,4 @@
-package thredds.servlet.ldm;
+package thredds.servlet.idd;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

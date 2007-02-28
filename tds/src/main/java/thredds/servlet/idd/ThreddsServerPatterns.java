@@ -1,4 +1,4 @@
-package thredds.servlet.ldm;
+package thredds.servlet.idd;
 
 /*  a class to contain all the patterns in the ldm  THREDDS servers
  *

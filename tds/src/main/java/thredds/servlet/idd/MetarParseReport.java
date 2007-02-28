@@ -4,7 +4,7 @@
  * parses one METAR report into it's variables
  *
  */
-package thredds.servlet.ldm;
+package thredds.servlet.idd;
 
 import java.util.LinkedHashMap;
 import java.util.HashMap;

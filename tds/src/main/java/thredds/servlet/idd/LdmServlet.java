@@ -9,7 +9,7 @@
  *
  */
 
-package thredds.servlet.ldm;
+package thredds.servlet.idd;
 
 import thredds.servlet.*;
 import java.io.*;
