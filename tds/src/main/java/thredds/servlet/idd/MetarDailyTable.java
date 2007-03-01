@@ -29,7 +29,7 @@ import db4ounit.*;
 import com.db4o.diagnostic.DiagnosticToConsole;
 
 
-public class MetarDailyTable extends MetarQuery {
+public class MetarDailyTable {
     
     static protected final String DBFILE = "MetarObs.db4o";
     static private ObjectContainer db = null;
@@ -132,6 +132,39 @@ public class MetarDailyTable extends MetarQuery {
         //pw.println( "-----------------------------------------------");
         //printList( list );
         return;
+    }
+
+    protected HashMap removeDuplicates( List<MetarObservation> list ) {
+        HashMap<String, MetarObservation> hm = new HashMap( list.size() );
+        for (MetarObservation ob : list){
+            if (hm.containsKey( ob.key )) {
+                int storedLength = (int)((MetarObservation) hm.get( ob.key )).length;
+                if (storedLength < ob.length) { // replaced stored ob
+                    MetarObservation newob = new MetarObservation( ob );
+                    hm.put( ob.key, newob);
+                }
+             } else {
+                MetarObservation newob = new MetarObservation( ob );
+                hm.put( ob.key, newob);
+            }
+        }
+        return hm;
+    }
+
+    public void printHashMap( HashMap<String, MetarObservation> hm ) {
+        pw.println( "HashMap size ="+ hm.size());
+        for( Iterator it = hm.keySet().iterator(); it.hasNext();) {
+            String key = (String)it.next();
+            MetarObservation ob = (MetarObservation)hm.get( key );
+            pw.println( ob.report );
+        }
+    }
+
+    public void printList( List<MetarObservation> list ) {
+        pw.println( "list size ="+ list.size());
+        for (MetarObservation ob : list){
+            pw.println( ob.report );
+        }
     }
 
 
