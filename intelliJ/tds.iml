@@ -2,15 +2,12 @@
 <module version="4" relativePaths="true" type="J2EE_WEB_MODULE" j2ee-integration="Tomcat Server">
   <component name="AppServerSpecificValidatorsManager" />
   <component name="ModuleRootManager" />
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../tds/target/classes" />
     <exclude-output />
     <exploded url="file://$MODULE_DIR$/../tds/target/war2" />
     <exclude-exploded />
     <output-test url="file://$MODULE_DIR$/../tds/target/test/classes" />
-    <content url="file://$MODULE_DIR$/../../ferret/src">
-      <sourceFolder url="file://$MODULE_DIR$/../../ferret/src" isTestSource="false" />
-    </content>
     <content url="file://$MODULE_DIR$/../tds">
       <sourceFolder url="file://$MODULE_DIR$/../tds/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../tds/src/test/java" isTestSource="true" />
@@ -252,6 +249,11 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/grib-5.1.00.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.00.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="0" />
+      <attribute name="URI" value="/WEB-INF/lib/grib-5.1.02.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.02.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
