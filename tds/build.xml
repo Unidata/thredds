@@ -207,7 +207,7 @@
   </target>
 
   <target name="makeJar-TSF" >
-    <jar jarfile="${build.dir}/tsf-${release.version}.jar" index="true">
+    <jar jarfile="${build.dir}/tsf-${release.version.minor}.jar" index="true">
       <fileset dir="${build.classes.dir}">
         <include name="thredds/examples/*"/>
         <include name="thredds/servlet/*"/>
