@@ -36,10 +36,6 @@ public class MetarQuery {
     static private ObjectContainer db = null;
     private PrintWriter pw;
 
-    public MetarQuery(){
-        new MetarQuery( null, new PrintWriter(System.out, true) );
-    }
-    
     public MetarQuery( String path, PrintWriter pw ){
         // open Db4o
         String DBMS;
@@ -388,7 +384,7 @@ public class MetarQuery {
         if( args.length > 0 ) { 
             mq = new MetarQuery( args[ 0 ], new PrintWriter(System.out, true) );
         } else {
-            mq = new MetarQuery();
+            mq = new MetarQuery( null, new PrintWriter(System.out, true) );
         }
 
         Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));

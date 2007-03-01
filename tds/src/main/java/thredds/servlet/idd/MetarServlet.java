@@ -96,7 +96,8 @@ public class MetarServlet extends LdmServlet {
 
             returns = ServletUtil.getParameterIgnoreCase(req, "returns");
             if (returns == null) // default
-                returns = "catalog";
+                returns = "text";
+                //returns = "catalog";
 
             serviceType = ServletUtil.getParameterIgnoreCase(req, "serviceType");
             if (serviceType == null)
@@ -155,29 +156,31 @@ public class MetarServlet extends LdmServlet {
             STNS[0] = "KDEN";
             STNS[1] = "KSEA";
             //STNS = null;
-            dtime = "latest";
-            //dtime = null;
+            //dtime = "latest";
+            dtime = null;
             //dtime = "2006-12-28T16:53:00";
             //dtime = "6hour";
             //dtime = "5day";
-            dateStart = "2007-02-12T15:12:30";
-            dateEnd = "2007-02-12T18:12:30";
+            //dateStart = "2007-02-12T15:12:30";
+            //dateEnd = "2007-02-12T18:12:30";
 
-            returns = "catalog";
+            //returns = "catalog";
             returns = "text";
             //returns = "html";
             //returns = "xml";
             //returns = "dqc";
+            //returns = "dqc";
+            //returns = null;
 
             serviceType = "HTTPServer";
             //serviceType = "";
             serviceName = "HTTPServer";
             //serviceName = "DODS";
-            y0 = "39";
-            //y0 = null;
-            y1 = "40";
-            x0 = "-105";
-            x1 = "-104";
+            //y0 = "39";
+            y0 = null;
+            //y1 = "40";
+            //x0 = "-105";
+            //x1 = "-104";
         
             } // end command line testing
 
@@ -259,6 +262,7 @@ public class MetarServlet extends LdmServlet {
             pw.println("      <serviceName>" + serviceName + "</serviceName>");
             pw.println("    </metadata>");
             pw.println();
+            pw.println("   </dataset>");
             pw.println("</catalog>");
             return;
 
@@ -288,7 +292,7 @@ public class MetarServlet extends LdmServlet {
 
         // return TimeSeries for a set of stations
         if( STNS != null ) {
-            //pw.println( "STNS length ="+ STNS.length );
+            pw.println( "<p>STNS length ="+ STNS.length +"</p>" );
             for( int i = 0; i < STNS.length; i++ )
                 mq.getTimeSeries( STNS[ i ] );
             return;

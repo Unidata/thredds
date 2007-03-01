@@ -45,6 +45,7 @@ public class MetarInputer {
     Db4o.configure().objectClass(MetarObservation.class).objectField("timeObs").indexed(true);
     Db4o.configure().objectClass(MetarObservation.class).objectField("station").indexed(true);
     ObjectContainer db = Db4o.openFile(DBMS);
+    Db4o.configure().readOnly( true );
     try {
         // do something with db4o
         storeMetars(db);
