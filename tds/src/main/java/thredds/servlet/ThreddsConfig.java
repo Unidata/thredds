@@ -110,7 +110,7 @@ public class ThreddsConfig {
     }
 
     // datasetSource plug-in
-    List sourceList = rootElem.getChildren("DatasetSource");
+    List sourceList = rootElem.getChildren("datasetSource");
     for (int j = 0; j < sourceList.size(); j++) {
       Element elem = (Element) sourceList.get(j);
       String className = elem.getText().trim();

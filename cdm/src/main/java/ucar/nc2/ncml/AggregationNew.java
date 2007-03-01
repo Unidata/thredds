@@ -28,6 +28,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
@@ -91,6 +92,13 @@ public class AggregationNew extends Aggregation {
               dimName + " " + v.getDimensionsString(), null, null);
       vagg.setProxyReader(this);
       NcMLReader.transferVariableAttributes(v, vagg);
+
+      // _CoordinateAxes if it exists must be modified
+      Attribute att = vagg.findAttribute(_Coordinate.Axes.toString());
+      if (att!= null) {
+        String axes = dimName +" "+ att.getStringValue();
+        vagg.addAttribute(new Attribute(_Coordinate.Axes.toString(), axes));
+      }
 
       ncDataset.removeVariable(null, v.getShortName());
       ncDataset.addVariable(null, vagg);

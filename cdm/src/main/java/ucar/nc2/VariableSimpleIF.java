@@ -44,6 +44,8 @@ public interface VariableSimpleIF {
   public int getRank();
   /** Variable shape */
   public int[] getShape();
+  /** Variable dimensions */
+  public List getDimensions();
   /** Variable data type */
   public DataType getDataType();
 

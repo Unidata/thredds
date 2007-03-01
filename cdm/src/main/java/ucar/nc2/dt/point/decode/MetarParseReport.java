@@ -1441,8 +1441,9 @@ public class MetarParseReport {
 
     public static void main(String args[]) throws IOException, InvalidRangeException {
 
-      //doOneFile("C:/Documents and Settings/caron/My Documents/My Downloads/Surface_METAR_20060331_0000.nc");
-      doOneFile("C:/Documents and Settings/caron/My Documents/My Downloads/Surface_METAR_20060331_0000.nc");
+      doOneFile("R:/testdata/station/ldm/Surface_METAR_20060701_0000.nc");
+      //doOneFile("R:/testdata/station/ldm/Surface_METAR_20060110_0000.nc");
+
 
 /*
       String report = "METAR CYCD 311500Z 00000KT 1/2SM -RA FG FEW004 BKN012 OVC025 07/07 A2976 RMK FG1SF2SC4SC2 VIS N 1/2 SLP078";

@@ -49,6 +49,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
 
   public int getRank() {  return v.getRank(); }
   public int[] getShape() { return v.getShape(); }
+  public List getDimensions() { return v.getDimensions(); }
   public List getAttributes() { return v.getAttributes(); }
   public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
     return v.findAttributeIgnoreCase(attName);

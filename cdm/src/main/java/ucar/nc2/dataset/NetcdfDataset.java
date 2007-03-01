@@ -1070,8 +1070,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param values list of Strings
    * @throws NumberFormatException
    */
-  public void setValues(Variable v, ArrayList values) throws NumberFormatException {
+  public void setValues(Variable v, ArrayList values) throws IllegalArgumentException {
     Array data = makeArray(v.getDataType(), values);
+
+    if (data.getSize() != v.getSize())
+      throw new IllegalArgumentException("Incorrect number of values specified for the Variable "+v.getName()+
+        " given= "+v.getSize()+" needed="+data.getSize());
 
     if (v.getRank() != 1)
       data = data.reshape(v.getShape());
@@ -1085,8 +1089,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param dtype        data type of the array.
    * @param stringValues list of strings.
    * @return resulting 1D array.
+   * @throws NumberFormatException if string values not parssable to specified data type
    */
-  static public Array makeArray(DataType dtype, ArrayList stringValues) {
+  static public Array makeArray(DataType dtype, ArrayList stringValues) throws NumberFormatException {
     Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{stringValues.size()});
     IndexIterator dataI = result.getIndexIterator();
     Iterator iter = stringValues.iterator();

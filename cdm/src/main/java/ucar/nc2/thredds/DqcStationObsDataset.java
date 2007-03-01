@@ -26,6 +26,8 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.Station;
+import ucar.nc2.dt.point.StationObsDatatypeImpl;
+import ucar.nc2.dt.point.decode.MetarParseReport;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
@@ -53,6 +55,10 @@ import thredds.util.IO;
 public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImpl {
 
   static public DqcStationObsDataset factory(InvDataset ds, String dqc_location, StringBuffer errlog) throws IOException {
+    return factory(ds.getDocumentation("summary"), dqc_location, errlog);
+  }
+
+  static public DqcStationObsDataset factory(String desc, String dqc_location, StringBuffer errlog) throws IOException {
 
     DqcFactory dqcFactory = new DqcFactory(true);
     QueryCapability dqc = dqcFactory.readXML(dqc_location);
@@ -113,12 +119,12 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       return null;
     }
 
-    return new DqcStationObsDataset( ds, dqc, selService, wantServiceChoice, selStation, selRegion, selDate);
+    return new DqcStationObsDataset( desc, dqc, selService, wantServiceChoice, selStation, selRegion, selDate);
   }
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private InvDataset ds;
+  //private InvDataset ds;
   private QueryCapability dqc;
   private SelectService selService;
   private SelectStation selStation;
@@ -129,11 +135,12 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   private boolean debugQuery = true;
 
   private StructureMembers members;
+  private MetarParseReport parser;
 
-  private DqcStationObsDataset(InvDataset ds, QueryCapability dqc, SelectService selService, SelectService.ServiceChoice service,
+  private DqcStationObsDataset(String desc, QueryCapability dqc, SelectService selService, SelectService.ServiceChoice service,
       SelectStation selStation, SelectGeoRegion selRegion, SelectRangeDate selDate) {
     super();
-    this.ds = ds;
+    this.desc = desc;
     this.dqc = dqc;
     this.selService = selService;
     this.selStation = selStation;
@@ -156,6 +163,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       e.printStackTrace();
     }
 
+    parser = new MetarParseReport();
 
     // LOOK need to add typed variables
 
@@ -171,7 +179,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
 
   public String getTitle() { return dqc.getName(); }
   public String getLocationURI() {return dqc.getCreateFrom(); }
-  public String getDescription() { return ds.getDocumentation("summary"); }
+  public String getDescription() { return desc; }
 
   public List getData( Station s, CancelTask cancel) throws IOException {
     return ((DqcStation)s).getObservations();
@@ -249,11 +257,15 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       }
 
       // read it
+      boolean first = true;
       is = connection.getInputStream();
       BufferedReader reader = new BufferedReader(new InputStreamReader(is));
       while (true) {
         String line = reader.readLine();
         if (line == null) break;
+
+        if (first) show(line);
+        first = false;
 
         obsList.add( new DqcObsImpl(s, 0, line));
       }
@@ -268,6 +280,18 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
     }
 
     return obsList;
+  }
+
+  private void show(String line) {
+    System.out.println(line);
+    LinkedHashMap map = parser.parseReport(line);
+    Iterator ii = map.keySet().iterator();
+    while (ii.hasNext()) {
+      Object key = ii.next();
+      Object value=map.get(key);
+      System.out.println(" "+key +"==("+value+") ");
+    }
+
   }
 
   private class DqcStation extends StationImpl {
@@ -332,5 +356,25 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
       return timeUnit.makeDate( getObservationTime());
     }
   }
+
+  public static void main(String args[]) throws IOException {
+    StringBuffer errlog = new StringBuffer();
+    String dqc_location = "file:///C:/data/dqc/metarNew.xml";
+    DqcStationObsDataset ds = factory("test", dqc_location, errlog);
+    System.out.println(" errs= "+errlog);
+
+    List stns = ds.getStations();
+    System.out.println(" nstns= "+stns.size());
+
+    Station stn = (Station) stns.get(13);
+    List data = ds.getData( stn, null);
+    for (int i = 0; i < data.size(); i++) {
+      StationObsDatatypeImpl obs=  (StationObsDatatypeImpl) data.get(i);
+      StructureData sdata = obs.getData();
+      System.out.println(i+" "+sdata.getScalarString("line"));
+    }
+
+  }
+
 
 }

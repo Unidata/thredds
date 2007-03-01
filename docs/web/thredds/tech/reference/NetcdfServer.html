@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<div class="head">
+  <h1><img src="../THREDDSlogo.jpg" height="54" width="67">NetCDF Subset Service </h1>
+  <hr>
+  <p>The NetCDF Server is a web service for subsetting gridded CDM datasets. It outputs NetCDF-3 files in CF format. So far, we just have it working on the IDD/NCEP grib datasets. </p>
+  <h2>HTTP Call </h2>
+  <p>HTTP GET or POST: </p>
+  <blockquote>
+    <p> <strong> http://servername:port/thredds/ncServer/{data_root}/../filename?query</strong></p>
+  </blockquote>
+  <p>A form to allow interactive user input: </p>
+  <blockquote>
+    <p><strong>http://servername:port/thredds/ncServer/{data_root}/../filename?showForm</strong></p>
+    <p>&nbsp;</p>
+  </blockquote>
+  <h2><strong>Query Parameters </strong></h2>
+  <h3><strong>Specify variables</strong></h3>
+  <pre>  grid=varName[;varName]
+  grid=varName&amp;grid=varName&amp;...</pre>
+  <p>Examples:</p>
+  <ul>
+    <li><strong>grid=QCSurface</strong></li>
+    <li><strong>grid=QC;LZT;PQ</strong></li>
+    <li><strong>grid=QC&amp;grid=LZT&amp;grid=PQ</strong></li>
+  </ul>
+  <p>Variable names with illegal characters must be escaped. </p>
+  <h3><strong>Specify lat/lon bounding box</strong></h3>
+  <p>Specifying all of these parameters individually (order does not matter): </p>
+  <ol>
+    <ul>
+      <li><strong>north</strong>: latitude north (decimal degrees) </li>
+      <li><strong>south</strong>: latitude south (decimal degrees) </li>
+      <li><strong>east</strong>: longitude east (decimal degrees) </li>
+      <li><strong>west</strong>: longitude west (decimal degrees) </li>
+    </ul>
+  </ol>
+  <blockquote>
+    <pre>Example:<strong> north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></pre>
+  </blockquote>
+  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong> until the east edge. Units must be degrees east, may be positive or negetive, and will be taken modulo 360. Therefore, when crossing the dateline, the west edge may be greater than the east edge. </p>
+  <p>When applied to a grid in projection coordinates, the 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </p>
+  <h3><strong>Specify time range</strong></h3>
+  <p>Specify both parameters: </p>
+  <ol>
+    <ul>
+      <li><strong>time_start</strong>: starting time as hour offset from start of run </li>
+      <li><strong>time_end</strong>: ending time as hour offset from start of run </li>
+    </ul>
+    <p>&nbsp;</p>
+  </ol>
+  <h3>Specify whether to add Lat Lon coordinates</h3>
+  <p>If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
+  <h2> Rules:</h2>
+  <ul>
+    <li>A valid NetCDF file is returned in CF-1 format.</li>
+    <li>The specified variables(s) and their attributes are included.</li>
+    <li>All coordinate variables for the specified variable(s) are included.</li>
+    <li>If a bounding box or time range is specified, the variable and its coordinates are subsetted. </li>
+    <li>All global attributes are included. </li>
+  </ul>
+  <pre></pre>
+  <hr WIDTH="100%">
+  <address>
+  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 13, 2007
+  </address>
+  <br>
+</div>
+</body>
+</html>

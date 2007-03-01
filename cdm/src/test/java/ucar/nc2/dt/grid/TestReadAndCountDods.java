@@ -1,7 +1,6 @@
 package ucar.nc2.dt.grid;
 
 import junit.framework.*;
-import ucar.nc2.dt.grid.TestReadandCount;
 
 /** Count geogrid objects - sanity check when anything changes. */
 

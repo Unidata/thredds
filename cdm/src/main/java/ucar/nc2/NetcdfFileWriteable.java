@@ -196,6 +196,16 @@ public class NetcdfFileWriteable extends NetcdfFile {
   }
 
   /**
+   * Add a Global attribute to the file. Must be in define mode.
+   *
+   * @param att the attribute.
+   */
+  public void addGlobalAttribute(Attribute att) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    super.addAttribute(null, att);
+  }
+
+  /**
    * Add a Global attribute of type String to the file. Must be in define mode.
    *
    * @param name  name of attribute.
@@ -249,12 +259,12 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param dims          array of Dimensions for the variable, must already have been added.
    * @deprecated use addVariable(String varName, DataType dataType, ArrayList dims);
    */
-  public void addVariable(String varName, Class componentType, Dimension[] dims) {
+  public Variable addVariable(String varName, Class componentType, Dimension[] dims) {
     ArrayList list = new ArrayList();
     for (int i = 0; i < dims.length; i++)
       list.add(dims[i]);
 
-    addVariable(varName, DataType.getType(componentType), list);
+    return addVariable(varName, DataType.getType(componentType), list);
   }
 
   /**
@@ -265,12 +275,12 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param dims     array of Dimensions for the variable, must already have been added. Use an array of length 0
    *                 for a scalar variable.
    */
-  public void addVariable(String varName, DataType dataType, Dimension[] dims) {
+  public Variable addVariable(String varName, DataType dataType, Dimension[] dims) {
     ArrayList list = new ArrayList();
     for (int i = 0; i < dims.length; i++)
       list.add(dims[i]);
 
-    addVariable(varName, dataType, list);
+    return addVariable(varName, dataType, list);
   }
 
   /**
@@ -281,7 +291,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param dims     list of Dimensions for the variable, must already have been added. Use a list of length 0
    *                 for a scalar variable.
    */
-  public void addVariable(String varName, DataType dataType, List dims) {
+  public Variable addVariable(String varName, DataType dataType, String dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
@@ -291,6 +301,28 @@ public class NetcdfFileWriteable extends NetcdfFile {
     varHash.put(varName, v);
 
     super.addVariable(null, v);
+    return v;
+  }
+
+  /**
+   * Add a variable to the file. Must be in define mode.
+   *
+   * @param varName  name of Variable, must be unique with the file.
+   * @param dataType type of underlying element
+   * @param dims     list of Dimensions for the variable, must already have been added. Use a list of length 0
+   *                 for a scalar variable.
+   */
+  public Variable addVariable(String varName, DataType dataType, List dims) {
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+
+    Variable v = new Variable(this, rootGroup, null, varName);
+    v.setDataType(dataType);
+    v.setDimensions(dims);
+    varHash.put(varName, v);
+
+    super.addVariable(null, v);
+    return v;
   }
 
   /**

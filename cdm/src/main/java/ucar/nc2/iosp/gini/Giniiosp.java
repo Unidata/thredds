@@ -113,7 +113,7 @@ public class Giniiosp implements ucar.nc2.IOServiceProvider {
   }
 
   // all the work is here, so can be called recursively
-  public Array readData(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride) throws IOException, InvalidRangeException  {
+  private Array readData(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride) throws IOException, InvalidRangeException  {
 
     long length = myRaf.length();
     myRaf.seek(dataPos);

@@ -44,6 +44,9 @@ public class Simple_xy_wr {
            // Define a netCDF variable. The type of the variable in this case
            // is ncInt (32-bit integer).
            dataFile.addVariable("data", DataType.INT, dims);
+                 
+           // create the file
+           dataFile.create();
 
             // This is the data array we will write. It will just be filled
             // with a progression of numbers for this example.
@@ -58,10 +61,6 @@ public class Simple_xy_wr {
                     dataOut.set(i,j, i * NY + j);
                 }
            }
-
-           // create the file
-           dataFile.create();
-
 
            // Write the pretend data to the file. Although netCDF supports
            // reading and writing subsets of data, in this case we write all

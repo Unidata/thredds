@@ -171,7 +171,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
     else
       return -1;
 
-    if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox beahviour?
+    // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox beahviour?
 
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
     if ((file != null) && file.exists())

@@ -122,7 +122,7 @@ class N3raf extends N3iosp  {
         raf.seek ( chunk.getFilePos());
         for (int k=0; k<chunk.getNelems(); k++) {
           String val = (String) ii.getObjectNext();
-          raf.write( val.getBytes()); // ??
+          if (val != null) raf.write( val.getBytes()); // ??
         }
       }
       return;

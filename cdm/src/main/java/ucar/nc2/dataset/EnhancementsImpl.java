@@ -38,6 +38,9 @@ class EnhancementsImpl implements Enhancements {
    * Constructor when there's no underlying, existing Variable.
    * You can access units, description and coordSys.
    * All missing and scale/offset flags are false.
+   * @param forVar the Variable to decorate.
+   * @param units set unit string.
+   * @param desc set description.
    */
   public EnhancementsImpl( Variable forVar, String units, String desc) {
     this.forVar = forVar;

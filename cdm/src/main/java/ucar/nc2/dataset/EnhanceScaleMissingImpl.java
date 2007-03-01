@@ -79,7 +79,9 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
   /**
    * Constructor.
-   * @param forVar the original Variable to decorate.
+   * If scale/offset attributes are found, remove them from the decorated variable.
+   *
+   * @param forVar the Variable to decorate.
    * @param useNaNs pre-fill isMissing() data with NaNs
    * @param fillValueIsMissing  use _FillValue for isMissing()
    * @param invalidDataIsMissing use valid_range for isMissing()
@@ -112,6 +114,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         scale = att.getNumericValue().doubleValue();
         hasScaleOffset = true;
         scaleType = att.getDataType();
+        forVar.remove( att);
         if (debug) System.out.println("scale = "+ scale+" type "+scaleType);
       }
     }
@@ -122,6 +125,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         DataType offType = att.getDataType();
         if (rank(offType) > rank(scaleType))
           scaleType = offType;
+        forVar.remove( att);
         if (debug) System.out.println("offset = "+ offset);
       }
     }
@@ -133,6 +137,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         valid_max = att.getNumericValue(1).doubleValue();
         hasValidRange = true;
         validType = att.getDataType();
+        if (hasScaleOffset) forVar.remove( att);
         if (debug) System.out.println("valid_range = "+ valid_min+" "+valid_max);
       }
     }
@@ -142,6 +147,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
           valid_min = att.getNumericValue().doubleValue();
           hasValidMin = true;
           validType = att.getDataType();
+          if (hasScaleOffset) forVar.remove( att);
           if (debug) System.out.println("valid_min = "+ valid_min);
         }
       }
@@ -152,6 +158,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
           DataType t = att.getDataType();
           if (rank(t) > rank(validType))
             validType = t;
+          if (hasScaleOffset) forVar.remove( att);
           if (debug) System.out.println("valid_min = "+ valid_max);
         }
       }
@@ -165,6 +172,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       fillValue = att.getNumericValue().doubleValue();
       hasFillValue = true;
       fillType = att.getDataType();
+      if (hasScaleOffset) forVar.remove( att);      
       if (debug) System.out.println("missing_datum from _FillValue = "+ fillValue);
     }
 
@@ -199,6 +207,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         missType = att.getDataType();
         hasMissingValue = true;
       }
+      if (hasScaleOffset) forVar.remove( att);       
 
     }
 
@@ -285,7 +294,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   }
 
   /**
-   * Get the converted DataType, if hasScaleOffset is true.
+   * @return converted DataType, else null if hasScaleOffset is true.
    */
   public DataType getConvertedDataType() {
     return convertedDataType;
@@ -332,7 +341,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     this.useNaNs = useNaNs;
   }
 
-    /** get whether to use NaNs for missing values, for efficiency */
+    /** @return whether to use NaNs for missing values (for efficiency) */
   public boolean getUseNaNs() { return useNaNs; }
 
   /** set if _FillValue is considered isMissing(); better set in constructor if possible */
@@ -526,7 +535,12 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     }
   }
 
-  /** Translate missing data to NaNs. Data must be DOUBLE or FLOAT */
+  /**
+   * Translate missing data to NaNs. Data must be DOUBLE or FLOAT
+   *
+   * @param in convert this array
+   * @return same array, with missing values replaced by NaNs
+   */
   public Array convertMissing(Array in) {
     if (debugRead) System.out.println("convertMissing ");
 

@@ -30,8 +30,9 @@
       <xsd:attribute name="enhance" type="xsd:boolean"/>
       <xsd:attribute name="addRecords" type="xsd:boolean"/>
 
-      <xsd:attribute name="iosp" type="xsd:string"/>  <!-- class name -->
-      <xsd:attribute name="iospSpecial" type="xsd:string"/>
+      <xsd:attribute name="iosp" type="xsd:string"/>  <!-- iosp class name -->
+      <xsd:attribute name="iospSpecial" type="xsd:string"/> <!-- iosp parameter -->
+      <xsd:attribute name="buffer_size" type="xsd:integer"/>  <!-- raf buffer size -->
 
       <!-- for aggregations -->
       <xsd:attribute name="ncoords" type="xsd:string"/>

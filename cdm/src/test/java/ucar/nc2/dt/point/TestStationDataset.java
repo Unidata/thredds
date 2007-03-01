@@ -36,7 +36,7 @@ public class TestStationDataset extends TestCase {
     long start = System.currentTimeMillis();
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
-    ThreddsDataFactory.Result result = fac.openDatatype( "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/latest.xml", null);
+    ThreddsDataFactory.Result result = fac.openDatatype( "thredds:resolve:http://motherlode.ucar.edu:9080/thredds/idd/metar?returns=DQC", null);
     StationObsDataset sod = (StationObsDataset) result.tds;
     long took = System.currentTimeMillis() - start;
     System.out.println(" open took = "+took+" msec");

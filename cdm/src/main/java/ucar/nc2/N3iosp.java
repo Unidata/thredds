@@ -371,7 +371,11 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
         long begin = vinfo.begin + recnum*recsize;
         Indexer index = new RegularIndexer( v2.getShape(), v2.getElementSize(), begin, null, -1); // LOOK special case RegularIndexer
 
-        Array data = structureData.getArray( count, members.findMember( v2.getShortName()));
+        StructureMembers.Member m = members.findMember( v2.getShortName());
+        if (null == m)
+          continue; // this means that the data is missing from the ArrayStructure
+        
+        Array data = structureData.getArray( count, m);
         writeData( data, index, v2.getDataType());
      }
 

@@ -16,7 +16,7 @@
 	</nc:variable>
 	<nc:variable name="time" type="int" shape="time">
 		<nc:attribute name="units" type="string" value="hours"/>
-		<nc:values separator=" ">6 18</nc:values>
+		<nc:values separator=" ">6 18 24 36</nc:values>
 	</nc:variable>
 	
 	<nc:attribute name="title" type="string" value="Example Data"/>

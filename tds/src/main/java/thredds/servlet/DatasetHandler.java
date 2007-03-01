@@ -95,6 +95,11 @@ public class DatasetHandler {
 
   static public void registerDatasetSource(DatasetSource v) {
     sourceList.add(v);
+    System.out.println("registerDatasetSource "+ v.getClass().getName());
+  }
+
+  static public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    return getNetcdfFile( req, res, req.getPathInfo());
   }
 
   static public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
@@ -105,21 +110,8 @@ public class DatasetHandler {
       reqPath = reqPath.substring(1);
 
     // see if its under resource control
-    String rc = findResourceControl(reqPath);
-    if (rc != null) {
-      if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
-              + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
-
-      try {
-        if (!RestrictedDatasetServlet.authorize(req, res, rc)) {
-          return null;
-        }
-      } catch (ServletException e) {
-        throw new IOException(e.getMessage());
-      }
-
-      if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);
-    }
+    if (!resourceControlOk( req, res, reqPath))
+      return null;
 
     // look for a dataset (non scan, non fmrc) that has an ncml element
     InvDatasetImpl ds = ncmlDatasetHash.get(reqPath);
@@ -141,12 +133,7 @@ public class DatasetHandler {
       return ncfile;
     }
 
-    // otherwise, must have a datasetRoot in the path
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
-    if (file == null) {
-      throw new FileNotFoundException(reqPath);
-    }
-
+    // might be a pluggable DatasetSource
     NetcdfFile ncfile = null;
     for (DatasetSource datasetSource : sourceList) {
       if (datasetSource.isMine(req)) {
@@ -155,7 +142,14 @@ public class DatasetHandler {
       }
     }
 
+    // common case - its a file
     if (ncfile == null) {
+      // otherwise, must have a datasetRoot in the path
+      File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(reqPath);
+      if (file == null) {
+        throw new FileNotFoundException(reqPath);
+      }
+
       ncfile = NetcdfDataset.acquireFile(file.getPath(), null);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
     }
@@ -214,7 +208,7 @@ public class DatasetHandler {
    * @param path the complete path name of the dataset
    * @return ResourceControl for this dataset, or null if none
    */
-  static public String findResourceControl(String path) {
+  static private String findResourceControl(String path) {
     if (!hasResourceControl) return null;
 
     if (path.startsWith("/"))
@@ -225,6 +219,43 @@ public class DatasetHandler {
       rc = (String) resourceControlMatcher.match(path);
 
     return rc;
+  }
+
+  /**
+   * Check if this is making a request for a restricted dataset, and if so, if its allowed.
+   *
+   * @param req the request
+   * @param res the response
+   * @param reqPath  the request path; if null, use req.getPathInfo()
+   *
+   * @return true if ok to proceed. If false, the apppropriate error or redirect message has been sent, the caller only needs to return.
+   * @throws IOException
+   */
+  static public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+    if (null == reqPath)
+      reqPath = req.getPathInfo();
+
+    if (reqPath.startsWith("/"))
+      reqPath = reqPath.substring(1);
+
+    // see if its under resource control
+    String rc = findResourceControl(reqPath);
+    if (rc != null) {
+      if (debugResourceControl) System.out.println("DatasetHandler request has resource control =" + rc + "\n"
+              + ServletUtil.showRequestHeaders(req) + ServletUtil.showSecurity(req, rc));
+
+      try {
+        if (!RestrictedDatasetServlet.authorize(req, res, rc)) {
+          return false;
+        }
+      } catch (ServletException e) {
+        throw new IOException(e.getMessage());
+      }
+
+      if (debugResourceControl) System.out.println("ResourceControl granted = " + rc);
+    }
+
+    return true;
   }
 
   /**

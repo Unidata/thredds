@@ -316,7 +316,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         if (LatLonPointImpl.betweenLon( pos, getCoordEdge(x), getCoordEdge(x+1)))
           return x;
       }
-      return -1;
+      return pos <= getCoordEdge(0) ? 0 : (int)getSize()-1;  // LOOK could screw up if pos not normalized to longitude interval
     }
 
     if (lastIndex < 0) lastIndex = (int) getSize()/2;

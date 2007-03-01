@@ -12,10 +12,17 @@ Changes in version 2.2.19
   * typed dataset factory : if point fails, check for station
   * NetcdfServer: use Content-Disposition to name the returned file
  NcML
-  * can specify iosp class and parameter
+  * can specify iosp class, parameter, buffer_size
  API changes
+  * NetcdfFilleWriteable.addVariable() now returns the new Variable
+  * protected NetcdfFile constructor for passing in iosp class name
   * add GridCoordSys.getLatLon()
  Bugs
+  * COARDS: dont assign units="m" to AxisType.HEIGHT
+  * AggregationNew: look for _CoordinateAxes and add new dimension
+  * NcML: silent failure when incorrect # <values>
+  * Convention attribute: look for "/" separator
+  * VariableDS has scale/offset attributes removed when its enhanced.
   * CoordinateAxis2D.getValues() not checking if read in
   * M3IOConvention wasnt working 
   * Grib2: levels 0 and 255 means no level name
@@ -30,8 +37,12 @@ Changes in version 2.2.19
   * grib-5.1.00
   * bufr-1.1.00
 
-Changes in version 2.2.18
+ Changes in version 2.2.18
  Bugs
+  * Gini strides not working
+  * CoordinateAxis1D.findCoordElementBounded not staying in bounds for longitudes
+  * Cinrad iosp (Chinese NEXRAD radar)
+  * bzip2 not in core library
   * GRIB Orthographic projections
   * CoordSysBuilders must set their name in constructor, for reflection
   * WRF Stereographic Projection (thanks to Heiko Klein)

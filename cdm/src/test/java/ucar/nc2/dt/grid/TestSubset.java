@@ -3,7 +3,6 @@ package ucar.nc2.dt.grid;
 import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dt.grid.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.NCdump;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -11,12 +10,12 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import thredds.catalog.DataType;
 
 public class TestSubset extends TestCase {
-  private boolean show = false;
 
   public TestSubset(String name) {
     super(name);
@@ -114,6 +113,7 @@ public class TestSubset extends TestCase {
     String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/model/NCEP/DGEX/CONUS_12km/catalog.xml";
     String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
     ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype(cat+dsid, null);
+    assert !result.fatalError;
     assert result.dataType == DataType.GRID;
     assert result.tds != null;
 
@@ -260,58 +260,92 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-  public void utestLatLonSubset() throws Exception {
-    GridDataset dataset = GridDataset.open("thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml");
+  private void testLatLonSubset(GeoGrid grid, LatLonRect bbox, int[] shape) throws Exception {
+    LatLonProjection llproj = new LatLonProjection();
+    ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
+    System.out.println("\n constrain bbox= "+prect[0]);
+
+    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+    assert grid_section.getRank() == 2;
+
+    ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
+    System.out.println(" resulting bbox= "+subset_prect);
+
+    Array data = grid_section.readDataSlice(0, 0, -1, -1);
+    assert data != null;
+    assert data.getRank() == 2;
+    assert data.getShape()[0] == shape[0] : data.getShape()[0];
+    assert data.getShape()[1] == shape[1] : data.getShape()[1];
+  }
+
+
+  public void testLatLonSubset() throws Exception {
+    GridDataset dataset = GridDataset.open("R:/testdata/grid/netcdf/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
     //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
     // GridDataset dataset = GridDataset.open("R:/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
-    GeoGrid grid = dataset.findGridByName("Relative_humidity");
+    GeoGrid grid = dataset.findGridByName("micron11");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
-    assert grid.getRank() == 4;
+    assert grid.getRank() == 2;
+
+    System.out.println("original bbox= "+gcs.getBoundingBox());
 
     Array data = null;
 
-    long start, took;
-    for (int time =0; time < 5; time++) {
-      start = System.currentTimeMillis();
-      data = grid.readDataSlice(0, -1, -1, -1);
-      took = System.currentTimeMillis() -start;
-      System.out.println(" whole took= "+took+" msec");
-    }
-
     LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
-    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
-    for (int time =0; time < 5; time++) {
-      start = System.currentTimeMillis();
-      data = grid_section.readDataSlice(0, -1, -1, -1);
-      took = System.currentTimeMillis() -start;
-      System.out.println(" subset took= "+took+" msec");
-    }
+    testLatLonSubset( grid, bbox, new int[] {141,281});
 
-    assert data.getRank() == 3;
-    //assert data.getShape()[0] == 6 : data.getShape()[0];
-    //assert data.getShape()[1] == 101 : data.getShape()[1];
-    //assert data.getShape()[2] == 164 : data.getShape()[2];
+    bbox = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
+    testLatLonSubset( grid, bbox, new int[] {800,1300});
 
-    /* IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      float val = ii.getFloatNext();
-      if (grid_section.isMissingData(val)) {
-        if (!Float.isNaN(val)) {
-          System.out.println(" got not NaN at =" + ii);
-        }
-        int[] current = ii.getCurrentCounter();
-        if ((current[1] > 0) && (current[2] > 1)) {
-          System.out.println(" got missing at =" + ii);
-          System.out.println(current[1] + " " + current[2]);
-        }
-      }
-    }  */
 
     dataset.close();
   }
 
+  public void testGiniSubsetStride() throws Exception {
+    GridDataset dataset = GridDataset.open("C:/data/problem/WEST-CONUS_4km_IR_20070216_1500.gini");
+    GeoGrid grid = dataset.findGridByName("IR");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+    assert grid.getRank() == 2;
+    int[] org_shape = grid.getShape();
 
+    Array data_org = grid.readDataSlice(0, 0, -1, -1);
+    assert data_org != null;
+    assert data_org.getRank() == 2;
+    int [] data_shape = data_org.getShape();
+    assert org_shape[0]  == data_shape[0];
+    assert org_shape[1]  == data_shape[1];
+
+    System.out.println("original bbox= "+gcs.getBoundingBox());
+
+    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+
+    LatLonProjection llproj = new LatLonProjection();
+    ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
+    System.out.println("\n constrain bbox= "+prect[0]);
+
+    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 2, 3);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+    assert grid_section.getRank() == 2;
+
+    ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
+    System.out.println(" resulting bbox= "+subset_prect);
+
+    Array data = grid_section.readDataSlice(0, 0, -1, -1);
+    assert data != null;
+    assert data.getRank() == 2;
+        
+    int [] shape = data.getShape();
+    assert org_shape[0]  == 2 * shape[0];
+    assert org_shape[1]  == 3 * shape[1];
+
+    dataset.close();
+  }
 }
 

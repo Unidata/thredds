@@ -71,8 +71,8 @@ public class COARDSConvention extends CoordSysBuilder {
       return AxisType.Time;
 
     // look for other z coordinate
-    if (SimpleUnit.isCompatible("m", unit))
-      return AxisType.Height;
+    //if (SimpleUnit.isCompatible("m", unit))
+    //  return AxisType.Height;
     if (SimpleUnit.isCompatible("mbar", unit))
       return AxisType.Pressure;
     if (unit.equalsIgnoreCase("level") || unit.equalsIgnoreCase("layer") || unit.equalsIgnoreCase("sigma_level"))

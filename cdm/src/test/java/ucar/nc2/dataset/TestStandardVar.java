@@ -150,6 +150,9 @@ public class TestStandardVar extends TestCase {
       }
     }
 
+    assert( null == t1.findAttribute("scale_factor"));
+    assert( null == t1.findAttribute("add_offset"));
+
     System.out.println( "**************TestStandardVar ReadDouble");
   }
 
@@ -331,6 +334,10 @@ public class TestStandardVar extends TestCase {
         assert( val == want) : val+" != "+ want;
       }
     }
+
+    assert( null == vs.findAttribute("scale_factor"));
+    assert( null == vs.findAttribute("add_offset"));
+    assert( null == vs.findAttribute("missing_value"));
 
     System.out.println( "**************TestStandardVar Read readShort2FloatMissing");
   }

@@ -225,24 +225,37 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       // now look for Convention parsing class
       convClass = (Class) conventionHash.get( convName);
 
-      // now look for comma or semicolon delimited list
-      if ((convClass == null) && ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)))  {
+      // now look for comma or semicolon or / delimited list
+      if (convClass == null) {
         ArrayList names = new ArrayList();
-        StringTokenizer stoke = new StringTokenizer(convName, ",;");
-        while (stoke.hasMoreTokens()) {
-          String name = stoke.nextToken();
-          names.add(name.trim());
+
+        if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0))  {
+          StringTokenizer stoke = new StringTokenizer(convName, ",;");
+          while (stoke.hasMoreTokens()) {
+            String name = stoke.nextToken();
+            names.add(name.trim());
+          }
+        } else if ((convName.indexOf('/') > 0)) {
+           StringTokenizer stoke = new StringTokenizer(convName, "/");
+          while (stoke.hasMoreTokens()) {
+            String name = stoke.nextToken();
+            names.add(name.trim());
+          }
         }
 
-        // search the registered conventions, in order
-        for (int i = 0; i < conventionList.size(); i++) {
-          Convention conv = (Convention) conventionList.get(i);
-          for (int j = 0; j < names.size(); j++) {
-            convName = (String) names.get(j);
-            if (convName.equalsIgnoreCase(conv.convName))
-              convClass = conv.convClass;
+        if (names.size() > 0) {
+          // search the registered conventions, in order
+          for (int i = 0; i < conventionList.size(); i++) {
+            Convention conv = (Convention) conventionList.get(i);
+            for (int j = 0; j < names.size(); j++) {
+              String name = (String) names.get(j);
+              if (name.equalsIgnoreCase(conv.convName)) {
+                convClass = conv.convClass;
+                convName = name;
+              }
+            }
+            if (convClass != null) break;
           }
-          if (convClass != null) break;
         }
       }
     }

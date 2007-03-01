@@ -354,6 +354,8 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
       return new int[0];
     }
 
+    public List getDimensions() { return new ArrayList(); }
+
     public DataType getDataType() {
       return dt;
     }
