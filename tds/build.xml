@@ -647,7 +647,8 @@
     <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/unit-test/index.html for details."/>
   </target>
 
-  <target name="test-TDS-ping-motherlode-8080" depends="compile, test-setup" description="run ping on motherlode:8080 TDS">
+  <!--target name="test-TDS-ping-motherlode-8080" depends="compile, test-setup" description="run ping on motherlode:8080 TDS"-->
+  <target name="test-TDS-ping-motherlode-8080" description="run ping on motherlode:8080 TDS">
     <mkdir dir="${test.reports.dir}/ping-mlode-8080"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
