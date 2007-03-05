@@ -12,6 +12,7 @@
 package thredds.servlet.idd;
 
 import thredds.servlet.*;
+
 import java.io.*;
 import java.util.*;
 //import java.net.URL;
@@ -153,10 +154,10 @@ public class MetarServlet extends LdmServlet {
             pw.println( "command line testing" ) ;
 
             STNS = new String[2];
-            STNS[0] = "KDEN";
-            STNS[1] = "KSEA";
-            //STNS = null;
-            //dtime = "latest";
+            //STNS[0] = "KDEN";
+            //STNS[1] = "KSEA";
+            STNS = null;
+            dtime = "latest";
             dtime = null;
             //dtime = "2006-12-28T16:53:00";
             //dtime = "6hour";
@@ -187,8 +188,11 @@ public class MetarServlet extends LdmServlet {
             //  get configurations from ThreddsIDD.cfg
             if( metarDir == null )
                getConfigurations("buoy", pw);
-            // pw.println( "metarDQC =" + metarDQC );
-            // pw.println( "metarDir =" + metarDir );
+            // couldn't find configuration file, etc
+            if( metarDir == null ) 
+                return;
+            pw.println( "metarDQC =" + metarDQC );
+            pw.println( "metarDir =" + metarDir );
 
         if (p.p_qc_or_dqc_i.matcher(returns).find()) { // returns dqc doc
 
@@ -288,6 +292,7 @@ public class MetarServlet extends LdmServlet {
 //
 // main code body, no configurations below this line
 //
+        pw.println("before call to open database");
         MetarQuery mq = new MetarQuery( "/local/ldm/data/pub/native/surface/metar", pw );
 
         // return TimeSeries for a set of stations
@@ -467,9 +472,15 @@ public class MetarServlet extends LdmServlet {
         Pattern p_stop = Pattern.compile(stopAt);
         Matcher m;
         String variable, value;
+        BufferedReader br;
 
-        //pw.println(contentPath + getPath() +"ThreddsIDD.cfg" );
-        BufferedReader br = getInputStreamReader(contentPath + getPath() +"ThreddsIDD.cfg");
+        try {
+            pw.println(contentPath + getPath() +"ThreddsIDD.cfg" );
+            br = getInputStreamReader(contentPath + getPath() +"ThreddsIDD.cfg");
+        } catch ( FileNotFoundException fnfe ) {
+            pw.println( "<p>config not found "+ contentPath + getPath() +"ThreddsIDD.cfg" );
+            return;
+        }
         String input = "";
         while ((input = br.readLine()) != null) {
 
