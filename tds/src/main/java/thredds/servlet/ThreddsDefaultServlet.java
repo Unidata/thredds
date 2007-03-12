@@ -54,7 +54,13 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   protected String getUserCssPath() { return "upc.css"; }
 
   protected String getContextLogoPath() { return "thredds.jpg"; }
+  protected String getContextLogoAlt() { return "thredds"; }
+
   protected String getInstituteLogoPath() { return "unidataLogo.gif"; }
+  protected String getInstituteLogoAlt() { return "unidata"; }
+
+  protected String getFolderIconPath() { return "folder.gif"; }
+  protected String getFolderIconAlt() { return "folder"; }
 
   protected DataRootHandler catHandler;  // singleton
 
@@ -153,7 +159,10 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     timer.scheduleAtFixedRate( new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs );
 
     HtmlWriter.init( contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
-                      this.getUserCssPath(), this.getContextLogoPath(), this.getInstituteLogoPath() );
+                      this.getUserCssPath(),
+                      this.getContextLogoPath(), this.getContextLogoAlt(),
+                      this.getInstituteLogoPath(), this.getInstituteLogoAlt(),
+                      this.getFolderIconPath(), this.getFolderIconAlt());
 
     cacheLog.info("Restarted");
     // Checking for double init seeing in intellij debug

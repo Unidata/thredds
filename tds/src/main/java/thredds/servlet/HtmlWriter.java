@@ -19,7 +19,11 @@ import java.net.URISyntaxException;
 import java.io.*;
 
 /**
- * _more_
+ * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
+ *
+ * HtmlWriter is implemented as a singleton. Before HtmlWriter can be used it
+ * must be initialized with init(...). The singleton instance can then be
+ * obtained with getInstance().
  *
  * @author edavis
  * @since Feb 24, 2006 3:18:50 PM
@@ -40,6 +44,8 @@ public class HtmlWriter
   private String instituteLogoPath; // relative to context path
   private String instituteLogoAlt;  // Alternate text for logo
   private String docsPath;    // relative to context path
+  private String folderIconPath; // relative to context path
+  private String folderIconAlt; // alternate text for folder icon
 
   private ucar.nc2.units.DateFormatter formatter = new ucar.nc2.units.DateFormatter();
 
@@ -52,9 +58,28 @@ public class HtmlWriter
 
   */
 
+  /**
+   * Initialize the HtmlWriter singleton instance.
+   *
+   * Note: All paths must be relative to the context path.
+   *
+   * @param contextPath the context path for this web app (e.g., "/thredds")
+   * @param contextName the name of the web app (e.g., "THREDDS Data Server")
+   * @param contextVersion the version of the web app (e.g., "3.14.00")
+   * @param docsPath the path for the main documentation page (e.g., "docs/")
+   * @param userCssPath the path for the CSS document (e.g., "upc.css")
+   * @param contextLogoPath the path for the context logo (e.g., "thredds.jpg")
+   * @param contextLogoAlt alternate text for the context logo (e.g., "thredds")
+   * @param instituteLogoPath the path for the institute logo (e.g., "unidataLogo.jpg")
+   * @param instituteLogoAlt alternate text for the institute logo (e.g., "Unidata")
+   * @param folderIconPath the path for the folder icon (e.g., "folder.gif"), try to keep small, ours is 20x22 pixels
+   * @param folderIconAlt alternate text for the folder icon (e.g., "folder")
+   */
   public static void init( String contextPath, String contextName, String contextVersion,
                            String docsPath, String userCssPath,
-                           String contextLogoPath, String instituteLogoPath )
+                           String contextLogoPath, String contextLogoAlt,
+                           String instituteLogoPath, String instituteLogoAlt,
+                           String folderIconPath, String folderIconAlt )
   {
     if ( singleton != null )
     {
@@ -64,7 +89,9 @@ public class HtmlWriter
     }
     singleton = new HtmlWriter( contextPath, contextName, contextVersion,
                                 docsPath, userCssPath,
-                                contextLogoPath, instituteLogoPath );
+                                contextLogoPath, contextLogoAlt,
+                                instituteLogoPath, instituteLogoAlt,
+                                folderIconPath, folderIconAlt );
   }
 
   public static HtmlWriter getInstance()
@@ -83,7 +110,9 @@ public class HtmlWriter
 
   private HtmlWriter( String contextPath, String contextName, String contextVersion,
                       String docsPath, String userCssPath,
-                      String contextLogoPath, String instituteLogoPath )
+                      String contextLogoPath, String contextLogoAlt,
+                      String instituteLogoPath, String instituteLogoAlt,
+                      String folderIconPath, String folderIconAlt )
   {
     this.contextPath = contextPath;
     this.contextName = contextName;
@@ -91,9 +120,11 @@ public class HtmlWriter
     this.docsPath = docsPath;
     this.userCssPath = userCssPath;
     this.contextLogoPath = contextLogoPath;
-    this.contextLogoAlt = "";
+    this.contextLogoAlt = contextLogoAlt;
     this.instituteLogoPath = instituteLogoPath;
-    this.instituteLogoAlt = "";
+    this.instituteLogoAlt = instituteLogoAlt;
+    this.folderIconPath = folderIconPath;
+    this.folderIconAlt = folderIconAlt;
   }
 
   public String getContextPath() { return contextPath; }
@@ -505,7 +536,8 @@ public class HtmlWriter
           log.error(href, e);
         }
 
-        sb.append( "<img src='/thredds/folder.gif' alt='folder' width='20' height='22'> &nbsp;");
+        sb.append( "<img src='").append( contextPath ).append( "/" ).append( this.folderIconPath )
+                   .append("' alt='").append(this.folderIconAlt).append("'> &nbsp;");
         sb.append( "<a href=\"" );
         sb.append( StringUtil.quoteHtmlContent( href ) );
         sb.append( "\"><tt>" );
@@ -515,7 +547,8 @@ public class HtmlWriter
       else // Not an InvCatalogRef
       {
         if (ds.hasNestedDatasets())
-          sb.append( "<img src='/thredds/folder.gif' alt='folder' width='20' height='22'> &nbsp;");
+          sb.append( "<img src='").append( contextPath ).append( "/" ).append( this.folderIconPath )
+                  .append("' alt='").append( this.folderIconAlt ).append("'> &nbsp;");
 
         // Check if dataset has single resolver service.
         if ( ds.getAccess().size() == 1 &&

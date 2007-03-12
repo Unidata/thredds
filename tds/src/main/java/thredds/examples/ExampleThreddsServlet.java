@@ -45,15 +45,14 @@ public class ExampleThreddsServlet extends HttpServlet
     return "upc.css";
   }
 
-  protected String getContextLogoPath()
-  {
-    return "thredds.jpg";
-  }
+  protected String getContextLogoPath() { return "thredds.jpg"; }
+  protected String getContextLogoAlt() { return "thredds"; }
 
-  protected String getInstituteLogoPath()
-  {
-    return "unidataLogo.gif";
-  }
+  protected String getInstituteLogoPath() { return "unidataLogo.gif"; }
+  protected String getInstituteLogoAlt() { return "unidata"; }
+
+  protected String getFolderIconPath() { return "folder.gif"; }
+  protected String getFolderIconAlt() { return "folder"; }
 
 
   public void init() throws javax.servlet.ServletException
@@ -112,7 +111,10 @@ public class ExampleThreddsServlet extends HttpServlet
     HtmlWriter.init( ServletUtil.getContextPath( this ),
                       this.getServletContext().getServletContextName(),
                       this.getVersion(), this.getDocsPath(),
-                      this.getUserCssPath(), this.getContextLogoPath(), this.getInstituteLogoPath());
+                      this.getUserCssPath(),
+                      this.getContextLogoPath(), this.getContextLogoAlt(),
+                      this.getInstituteLogoPath(), this.getContextLogoAlt(),
+                      this.getFolderIconPath(), this.getFolderIconAlt());
 
     log.info( "--- initialized " + getClass().getName() );
   }
