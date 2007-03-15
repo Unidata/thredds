@@ -25,6 +25,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.nc2.util.DiskCache;
+import ucar.nc2.util.CancelTask;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;
@@ -268,6 +269,7 @@ public class NetcdfFile {
     ucar.unidata.io.RandomAccessFile raf;
     if (uriString.startsWith("http:")) { // open through URL
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile3(uriString);
+
     } else {
 
       String uncompressedFileName = makeUncompressed(uriString);
@@ -424,6 +426,33 @@ public class NetcdfFile {
 
     if (spiObject != null)
       spi.setSpecial(spiObject);
+
+    return new NetcdfFile(spi, raf, location, cancelTask);
+  }
+
+  // experimental - pass in the iosp
+  static public NetcdfFile open( String location, String className, int bufferSize, CancelTask cancelTask, String iospParam)
+      throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+
+    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(className);
+    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
+
+    if (iospParam != null)
+      spi.setSpecial(iospParam);
+
+       // get rid of file prefix, if any
+    String uriString = location.trim();
+    if (uriString.startsWith("file://"))
+      uriString = uriString.substring(7);
+    else if (uriString.startsWith("file:"))
+      uriString = uriString.substring(5);
+
+    // get rid of crappy microsnot \ replace with happy /
+    uriString = StringUtil.replace(uriString, '\\', "/");
+
+    if (bufferSize <= 0)
+      bufferSize = default_buffersize;
+    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", bufferSize);
 
     return new NetcdfFile(spi, raf, location, cancelTask);
   }

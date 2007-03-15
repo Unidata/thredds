@@ -288,24 +288,28 @@ public class NetcdfFileWriteable extends NetcdfFile {
    *
    * @param varName  name of Variable, must be unique with the file.
    * @param dataType type of underlying element
-   * @param dims     list of Dimensions for the variable, must already have been added. Use a list of length 0
-   *                 for a scalar variable.
+   * @param dims     names of Dimensions for the variable, blank seperated.
+   *    Must already have been added. Use an empty string for a scalar variable.
    */
   public Variable addVariable(String varName, DataType dataType, String dims) {
-    if (!defineMode)
-      throw new UnsupportedOperationException("not in define mode");
+    // parse the list
+    ArrayList list = new ArrayList();
+    StringTokenizer stoker = new StringTokenizer( dims);
+    while (stoker.hasMoreTokens()) {
+      String tok = stoker.nextToken();
+      Dimension d = rootGroup.findDimension(tok);
+      if (null == d)
+        throw new IllegalArgumentException("Canat find dimension "+tok);
+      list.add(d);
+    }
 
-    Variable v = new Variable(this, rootGroup, null, varName);
-    v.setDataType(dataType);
-    v.setDimensions(dims);
-    varHash.put(varName, v);
-
-    super.addVariable(null, v);
-    return v;
+    return addVariable( varName, dataType, list);
   }
 
   /**
    * Add a variable to the file. Must be in define mode.
+   * If you use DataType = String, then a new dimension with name varName_strlen in automatically added.
+   * You should use writeData(), then the length will be calculated.
    *
    * @param varName  name of Variable, must be unique with the file.
    * @param dataType type of underlying element
@@ -317,6 +321,15 @@ public class NetcdfFileWriteable extends NetcdfFile {
       throw new UnsupportedOperationException("not in define mode");
 
     Variable v = new Variable(this, rootGroup, null, varName);
+
+    if (dataType == DataType.STRING) {
+      dataType = DataType.CHAR;
+      Dimension d = addDimension(varName+"_strlen", 1);
+      ArrayList sdims = new ArrayList( dims);
+      sdims.add(d);
+      dims = sdims;
+    }
+
     v.setDataType(dataType);
     v.setDimensions(dims);
     varHash.put(varName, v);
@@ -418,7 +431,24 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException
    */
   public void write(String varName, Array values) throws java.io.IOException, InvalidRangeException {
-    write(varName, new int[ values.getRank()], values);
+    if (values.getElementType() == String.class) {
+      ArrayChar cvalues =  ArrayChar.makeFromStringArray((ArrayObject) values);
+
+      // set the string dimension length - really its private to the variable
+      int[] shape = cvalues.getShape();
+      int strlen = shape[ cvalues.getRank()-1];
+      Dimension d = findDimension(varName+"_strlen");
+      d.setLength( strlen);
+
+      ucar.nc2.Variable v2 = findVariable(varName);
+      if (v2 == null)
+        throw new IllegalArgumentException("NetcdfFileWriteable.write illegal variable name = " + varName);
+      v2.
+      write(varName, new int[ cvalues.getRank()], cvalues);
+
+    } else {
+      write(varName, new int[ values.getRank()], values);
+    }
   }
 
   /**
@@ -435,6 +465,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     ucar.nc2.Variable v2 = findVariable(varName);
     if (v2 == null)
       throw new IllegalArgumentException("NetcdfFileWriteable.write illegal variable name = " + varName);
+
     spiw.writeData(v2, Range.factory(origin, values.getShape()), values);
     v2.invalidateCache();
   }

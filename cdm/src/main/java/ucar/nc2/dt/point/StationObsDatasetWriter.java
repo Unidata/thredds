@@ -52,7 +52,7 @@ public class StationObsDatasetWriter {
   private static final String idName = "name";
   private static final String descName = "description";
   private static final String wmoName = "wmo_id";
-  private static final String timeStrLenDim = "time_strlen";
+  // private static final String timeStrLenDim = "time_strlen";
 
   DateFormatter dateFormatter = new DateFormatter();
 
@@ -105,7 +105,7 @@ public class StationObsDatasetWriter {
     // add the dimensions
     ncfile.addUnlimitedDimension(recordDimName);
     ncfile.addDimension(stationDimName, nstns);
-    ncfile.addDimension(timeStrLenDim, 20);
+    // ncfile.addDimension(timeStrLenDim, 20);
 
     List dataVars = sobsDataset.getDataVariables();
     for (int i = 0; i < dataVars.size(); i++) {
@@ -167,7 +167,7 @@ public class StationObsDatasetWriter {
     }
 
     // time variable
-    Variable timeVar = ncfile.addVariable(timeName, DataType.CHAR, recordDimName+" "+timeStrLenDim);
+    Variable timeVar = ncfile.addVariable(timeName, DataType.STRING, recordDimName);
     ncfile.addVariableAttribute(timeVar, new Attribute("long_name", "ISO-8601 Date"));    
 
     // done with define mode
@@ -248,12 +248,12 @@ public class StationObsDatasetWriter {
 
   public static void main(String args[]) throws IOException {
 
-    String location = "C:/data/test/finalMonth2003.nc";
+    String location = "C:/data/station/madis/metar.20040604_1600.nc";
     StringBuffer errlog = new StringBuffer();
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, errlog);
 
     StationObsDatasetWriter writer = new StationObsDatasetWriter();
-    String fileOut = "C:/temp/sobs.nc";
+    String fileOut = "C:/data/station/madis/metar.rewrite.nc";
     writer.write(sobs, fileOut);
   }
 

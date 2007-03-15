@@ -20,6 +20,8 @@
  */
 package ucar.ma2;
 
+import java.util.List;
+
 /**
  * Concrete implementation of Array specialized for chars.
  * Data storage is with 1D java array of chars.
@@ -663,6 +665,49 @@ public class ArrayChar extends Array {
       newsiter.setObjectNext( siter.next());
     }
     return (ArrayObject) sarr;
+  }
+
+  /**
+   * Create an ArrayChar from an ArrayObject of Strings.
+   * Inverse of make1DStringArray. Copies the data.
+   *
+   * @param values
+   * @return equivilent ArrayChar, using maximum length of String. Unused are zero filled.
+   */
+  public static ArrayChar makeFromStringArray(ArrayObject values) {
+    // find longest string
+    IndexIterator ii = values.getIndexIterator();
+    int strlen = 0;
+    while (ii.hasNext()) {
+      String s = (String) ii.next();
+      strlen = Math.max(s.length(), strlen);
+    }
+
+    // create shape for equivilent charArray
+    List ranges = Range.factory( values.getShape());
+    try {
+      ranges = Range.appendShape( ranges, strlen);
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();  // cant happen.
+      return null;
+    }
+    int[] shape = Range.getShape( ranges);
+    long size = Range.computeSize( ranges);
+
+    // populate char array
+    char[] cdata = new char[ (int) size];
+    int start = 0;
+    ii = values.getIndexIterator();
+    while (ii.hasNext()) {
+      String s = (String) ii.next();
+      for (int k=0; k<s.length(); k++)
+        cdata[start+k] = s.charAt(k);
+      start += strlen;
+    }
+
+    // ready to create the char Array
+    Array carr = Array.factory( char.class, shape, cdata );
+    return (ArrayChar) carr;
   }
 
 }

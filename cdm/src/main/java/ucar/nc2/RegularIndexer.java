@@ -76,7 +76,8 @@ class RegularIndexer extends Indexer {
 
     } else {
       // check ranges are valid
-      if (section.size() != varRank) throw new InvalidRangeException("Bad section rank");
+      if (section.size() != varRank)
+        throw new InvalidRangeException("Bad section rank");
       wantShape = new int[ varRank];
 
       for (int ii = 0; ii < varRank; ii++) {
