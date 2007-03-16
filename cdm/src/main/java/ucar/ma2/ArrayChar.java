@@ -669,9 +669,8 @@ public class ArrayChar extends Array {
 
   /**
    * Create an ArrayChar from an ArrayObject of Strings.
-   * Inverse of make1DStringArray. Copies the data.
    *
-   * @param values
+   * @param values ArrayObject of String
    * @return equivilent ArrayChar, using maximum length of String. Unused are zero filled.
    */
   public static ArrayChar makeFromStringArray(ArrayObject values) {
@@ -682,6 +681,19 @@ public class ArrayChar extends Array {
       String s = (String) ii.next();
       strlen = Math.max(s.length(), strlen);
     }
+
+    return  makeFromStringArray(values, strlen);
+  }
+
+  /**
+   * Create an ArrayChar from an ArrayObject of Strings.
+   * Inverse of make1DStringArray. Copies the data.
+   *
+   * @param values ArrayObject of String
+   * @param strlen string length dimension size
+   * @return equivilent ArrayChar. Unused are zero filled.
+   */
+  public static ArrayChar makeFromStringArray(ArrayObject values, int strlen) {
 
     // create shape for equivilent charArray
     List ranges = Range.factory( values.getShape());
@@ -697,7 +709,7 @@ public class ArrayChar extends Array {
     // populate char array
     char[] cdata = new char[ (int) size];
     int start = 0;
-    ii = values.getIndexIterator();
+    IndexIterator ii = values.getIndexIterator();
     while (ii.hasNext()) {
       String s = (String) ii.next();
       for (int k=0; k<s.length(); k++)

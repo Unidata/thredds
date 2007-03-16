@@ -308,8 +308,6 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
   /**
    * Add a variable to the file. Must be in define mode.
-   * If you use DataType = String, then a new dimension with name varName_strlen in automatically added.
-   * You should use writeData(), then the length will be calculated.
    *
    * @param varName  name of Variable, must be unique with the file.
    * @param dataType type of underlying element
@@ -321,16 +319,35 @@ public class NetcdfFileWriteable extends NetcdfFile {
       throw new UnsupportedOperationException("not in define mode");
 
     Variable v = new Variable(this, rootGroup, null, varName);
-
-    if (dataType == DataType.STRING) {
-      dataType = DataType.CHAR;
-      Dimension d = addDimension(varName+"_strlen", 1);
-      ArrayList sdims = new ArrayList( dims);
-      sdims.add(d);
-      dims = sdims;
-    }
-
     v.setDataType(dataType);
+    v.setDimensions(dims);
+    varHash.put(varName, v);
+
+    super.addVariable(null, v);
+    return v;
+  }
+
+  /**
+   * Add a variable with DataType = String to the file. Must be in define mode.
+   * The variable will be stored in the file as a CHAR variable.
+   * A new dimension with name "varName_strlen" is automatically added, with length max_strlen.
+   *
+   * @param varName  name of Variable, must be unique within the file.
+   * @param dims     list of Dimensions for the variable, must already have been added. Use a list of length 0
+   *                 for a scalar variable. Do not include the string length dimension.
+   * @param max_strlen maximum string length.
+   */
+  public Variable addStringVariable(String varName, List dims, int max_strlen) {
+    if (!defineMode)
+      throw new UnsupportedOperationException("not in define mode");
+
+    Variable v = new Variable(this, rootGroup, null, varName);
+    v.setDataType(DataType.CHAR);
+
+    Dimension d = addDimension(varName+"_strlen", max_strlen);
+    ArrayList sdims = new ArrayList( dims);
+    sdims.add(d);
+    dims = sdims;
     v.setDimensions(dims);
     varHash.put(varName, v);
 
@@ -431,25 +448,53 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException
    */
   public void write(String varName, Array values) throws java.io.IOException, InvalidRangeException {
-    if (values.getElementType() == String.class) {
-      ArrayChar cvalues =  ArrayChar.makeFromStringArray((ArrayObject) values);
-
-      // set the string dimension length - really its private to the variable
-      int[] shape = cvalues.getShape();
-      int strlen = shape[ cvalues.getRank()-1];
-      Dimension d = findDimension(varName+"_strlen");
-      d.setLength( strlen);
-
-      ucar.nc2.Variable v2 = findVariable(varName);
-      if (v2 == null)
-        throw new IllegalArgumentException("NetcdfFileWriteable.write illegal variable name = " + varName);
-      v2.
-      write(varName, new int[ cvalues.getRank()], cvalues);
-
-    } else {
-      write(varName, new int[ values.getRank()], values);
-    }
+    write(varName, new int[ values.getRank()], values);
   }
+
+  /**
+   * Write String data to a CHAR variable, origin assumed to be 0. Must not be in define mode.
+   *
+   * @param varName name of variable, must be of type CHAR.
+   * @param values  write this array; must be ArrayObject of String
+   * @throws IOException
+   */
+  public void writeStringData(String varName, Array values) throws java.io.IOException, InvalidRangeException {
+    writeStringData(varName, new int[ values.getRank()], values);
+  }
+
+
+  /**
+   * Write String data to a CHAR variable. Must not be in define mode.
+   *
+   * @param varName name of variable, must be of type CHAR.
+   * @param origin  offset to start writing, ignore the strlen dimension.
+   * @param values  write this array; must be ArrayObject of String
+   * @throws IOException
+   */
+  public void writeStringData(String varName, int [] origin, Array values) throws java.io.IOException, InvalidRangeException {
+
+    if (values.getElementType() != String.class)
+      throw new IllegalArgumentException("Must be ArrayObject of String ");
+
+    ucar.nc2.Variable v2 = findVariable(varName);
+    if (v2 == null)
+      throw new IllegalArgumentException("illegal variable name = " + varName);
+
+    if (v2.getDataType() != DataType.CHAR)
+      throw new IllegalArgumentException("variable " + varName+" is not type CHAR");
+    int rank = v2.getRank();
+    int strlen = v2.getShape()[rank-1];
+
+    // turn it into an ArrayChar
+    ArrayChar cvalues =  ArrayChar.makeFromStringArray((ArrayObject) values, strlen);
+
+    int[] corigin = new int[ rank];
+    for (int i=0; i<rank-1; i++)
+      corigin[i] = origin[i];
+
+    write(varName, corigin, cvalues);
+  }
+
 
   /**
    * Write data to the named variable. Must not be in define mode.

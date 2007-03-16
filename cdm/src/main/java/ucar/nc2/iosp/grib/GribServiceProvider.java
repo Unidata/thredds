@@ -48,7 +48,7 @@ public abstract class GribServiceProvider implements IOServiceProvider {
 
   /**
    * Set disk cache policy for index files.
-   * Default = false, meaning try to write index files in same diectory as grib file.
+   * Default = false, meaning try to write index files in same directory as grib file.
    * True means always use the DiskCache area. TDS sets this to true, so it wont interfere with external indexer.
    * @param b
    */
@@ -134,6 +134,9 @@ public abstract class GribServiceProvider implements IOServiceProvider {
       }
 
     } else {
+      // doesnt exist
+      // saveIndexFile = DiskCache.getFile(indexLocation, alwaysInCache);
+
       // doesnt exist (or is being forced), create it and write it
       saveIndex = writeIndex( edition, saveIndexFile, raf);
       if (debugOpen) System.out.println("  write index = "+saveIndexFile.getPath());

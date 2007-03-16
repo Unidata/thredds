@@ -55,6 +55,7 @@ public class StationObsDatasetWriter {
   // private static final String timeStrLenDim = "time_strlen";
 
   DateFormatter dateFormatter = new DateFormatter();
+  int name_strlen, desc_strlen, wmo_strlen;
 
   public void write(StationObsDataset sobsDataset, String fileOut) throws IOException {
     HashSet dimSet = new HashSet();
@@ -62,6 +63,27 @@ public class StationObsDatasetWriter {
            
     List stnList = sobsDataset.getStations();
     int nstns = stnList.size();
+
+        // see if theree altitude, wmoId
+    boolean useAlt = false;
+    boolean useWmoId = false;
+    for (int i = 0; i < nstns; i++) {
+      Station stn = (Station) stnList.get(i);
+      if (!Double.isNaN(stn.getAltitude()))
+        useAlt = true;
+      if ((stn.getWmoId() != null) && (stn.getWmoId().trim().length() > 0)) {
+        useWmoId = true;
+        break;
+      }
+    }
+
+    // find string lengths
+    for (int i = 0; i < nstns; i++) {
+      Station station = (Station) stnList.get(i);
+      name_strlen = Math.max( name_strlen, station.getName().length());
+      desc_strlen = Math.max( desc_strlen, station.getDescription().length());
+      if (useWmoId) wmo_strlen = Math.max( wmo_strlen, station.getName().length());
+    }
 
     // global attributes
     List gatts = sobsDataset.getGlobalAttributes();
@@ -86,26 +108,17 @@ public class StationObsDatasetWriter {
 
     ncfile.addGlobalAttribute("time_coverage_start", dateFormatter.toDateTimeStringISO( sobsDataset.getStartDate()));
     ncfile.addGlobalAttribute("time_coverage_end", dateFormatter.toDateTimeStringISO( sobsDataset.getEndDate()));
-
-    // see if theres a altitude, wmoId
-    boolean useAlt = false;
-    boolean useWmoId = false;
-    for (int i = 0; i < stnList.size(); i++) {
-      Station stn = (Station) stnList.get(i);
-      if (!Double.isNaN(stn.getAltitude()))
-        useAlt = true;
-      if ((stn.getWmoId() != null) && (stn.getWmoId().trim().length() > 0)) {
-        useWmoId = true;
-        break;
-      }
-    }
     if (useAlt)
       ncfile.addGlobalAttribute("altitude_coordinate", altName);
 
     // add the dimensions
-    ncfile.addUnlimitedDimension(recordDimName);
-    ncfile.addDimension(stationDimName, nstns);
-    // ncfile.addDimension(timeStrLenDim, 20);
+    Dimension recordDim = ncfile.addUnlimitedDimension(recordDimName);
+    ArrayList recordDims = new ArrayList();
+    recordDims.add( recordDim);
+
+    Dimension stationDim = ncfile.addDimension(stationDimName, nstns);
+    ArrayList stationDims = new ArrayList();
+    stationDims.add( stationDim);
 
     List dataVars = sobsDataset.getDataVariables();
     for (int i = 0; i < dataVars.size(); i++) {
@@ -136,14 +149,14 @@ public class StationObsDatasetWriter {
       ncfile.addVariableAttribute(v, new Attribute("long_name", "station altitude"));
     }
 
-    v = ncfile.addVariable(idName, DataType.STRING, stationDimName);
+    v = ncfile.addStringVariable(idName, stationDims, name_strlen);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "station identifier"));
 
-    v = ncfile.addVariable(descName, DataType.STRING, stationDimName);
+    v = ncfile.addStringVariable(descName, stationDims, desc_strlen);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "station description"));
 
     if (useWmoId) {
-      v = ncfile.addVariable(wmoName, DataType.STRING, stationDimName);
+      v = ncfile.addStringVariable(wmoName, stationDims, wmo_strlen);
       ncfile.addVariableAttribute(v, new Attribute("long_name", "station WMO id"));
     }
 
@@ -167,8 +180,8 @@ public class StationObsDatasetWriter {
     }
 
     // time variable
-    Variable timeVar = ncfile.addVariable(timeName, DataType.STRING, recordDimName);
-    ncfile.addVariableAttribute(timeVar, new Attribute("long_name", "ISO-8601 Date"));    
+    Variable timeVar = ncfile.addStringVariable(timeName, recordDims, 20);
+    ncfile.addVariableAttribute(timeVar, new Attribute("long_name", "ISO-8601 Date"));
 
     // done with define mode
     ncfile.create();
@@ -197,9 +210,9 @@ public class StationObsDatasetWriter {
       ncfile.write(latName, latArray);
       ncfile.write(lonName, lonArray);
       if (useAlt) ncfile.write(altName, altArray);
-      ncfile.write(idName, idArray);
-      ncfile.write(descName, descArray);
-      if (useWmoId) ncfile.write(wmoName, wmoArray);
+      ncfile.writeStringData(idName, idArray);
+      ncfile.writeStringData(descName, descArray);
+      if (useWmoId) ncfile.writeStringData(wmoName, wmoArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -234,7 +247,7 @@ public class StationObsDatasetWriter {
       originTime[0] = recno;
       try {
         ncfile.write("record", origin, sArray);
-        ncfile.write(timeName, originTime, timeArray);
+        ncfile.writeStringData(timeName, originTime, timeArray);
 
       } catch (InvalidRangeException e) {
         e.printStackTrace();
@@ -248,12 +261,13 @@ public class StationObsDatasetWriter {
 
   public static void main(String args[]) throws IOException {
 
-    String location = "C:/data/station/madis/metar.20040604_1600.nc";
+    //String location = "R:/testdata/station/ldm/Surface_METAR_20060110_0000.nc";
+    String location = "R:/testdata/station/ldm/20050920_metar.nc";
     StringBuffer errlog = new StringBuffer();
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, errlog);
 
     StationObsDatasetWriter writer = new StationObsDatasetWriter();
-    String fileOut = "C:/data/station/madis/metar.rewrite.nc";
+    String fileOut = "R:/testdata/station/ldm/20050920_metar.rewrite.nc";
     writer.write(sobs, fileOut);
   }
 

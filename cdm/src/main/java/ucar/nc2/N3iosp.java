@@ -495,7 +495,7 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
 
     } else if (classType == char.class) {
       char[] storageP = new char[1];
-      storageP[0] = (att == null) ? NC_FILL_CHAR : att.getStringValue().charAt(0);
+      storageP[0] = (att != null) && (att.getStringValue().length() > 0) ? att.getStringValue().charAt(0) : NC_FILL_CHAR;
       storage = storageP;
     }
 
