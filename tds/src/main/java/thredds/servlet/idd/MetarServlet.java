@@ -47,6 +47,23 @@ public class MetarServlet extends LdmServlet {
     static protected String metarDODSServiceType;
     static protected String metarDODSServiceBase;
 
+    protected long getLastModified(HttpServletRequest req) {
+        try { 
+            //  get configurations from ThreddsIDD.cfg
+            if( metarDir == null ) {
+                contentPath = ServletUtil.getContentPath(this);
+                getConfigurations("buoy", null);
+            }
+            File file = new File(  metarDQC );
+
+            return file.lastModified();
+        } catch ( FileNotFoundException fnfe ) {
+            return -1;
+        } catch ( IOException ioe ) {
+            return -1;
+        }
+    }
+
     // get parmameters from servlet call
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -158,7 +175,7 @@ public class MetarServlet extends LdmServlet {
             //STNS[1] = "KSEA";
             STNS = null;
             dtime = "latest";
-            dtime = null;
+            //dtime = null;
             //dtime = "2006-12-28T16:53:00";
             //dtime = "6hour";
             //dtime = "5day";
@@ -170,18 +187,17 @@ public class MetarServlet extends LdmServlet {
             //returns = "html";
             //returns = "xml";
             //returns = "dqc";
-            //returns = "dqc";
             //returns = null;
 
             serviceType = "HTTPServer";
             //serviceType = "";
             serviceName = "HTTPServer";
             //serviceName = "DODS";
-            //y0 = "39";
-            y0 = null;
-            //y1 = "40";
-            //x0 = "-105";
-            //x1 = "-104";
+            y0 = "39";
+            //y0 = null;
+            y1 = "40";
+            x0 = "-105";
+            x1 = "-104";
         
             } // end command line testing
 
@@ -191,8 +207,8 @@ public class MetarServlet extends LdmServlet {
             // couldn't find configuration file, etc
             if( metarDir == null ) 
                 return;
-            pw.println( "metarDQC =" + metarDQC );
-            pw.println( "metarDir =" + metarDir );
+            //pw.println( "metarDQC =" + metarDQC );
+            //pw.println( "metarDir =" + metarDir );
 
         if (p.p_qc_or_dqc_i.matcher(returns).find()) { // returns dqc doc
 
@@ -280,10 +296,7 @@ public class MetarServlet extends LdmServlet {
         } else if (p.p_text_i.matcher(returns).find()) {
 
         } else if (p.p_xml_i.matcher(returns).find()) {
-
-            //pw.println("<reports>");
             pw.println("<reports>");
-
         }
 //
 //
@@ -292,12 +305,12 @@ public class MetarServlet extends LdmServlet {
 //
 // main code body, no configurations below this line
 //
-        pw.println("before call to open database");
+        //pw.println("before call to open database");
         MetarQuery mq = new MetarQuery( "/local/ldm/data/pub/native/surface/metar", pw );
 
         // return TimeSeries for a set of stations
         if( STNS != null ) {
-            pw.println( "<p>STNS length ="+ STNS.length +"</p>" );
+            //pw.println( "<p>STNS length ="+ STNS.length +"</p>" );
             for( int i = 0; i < STNS.length; i++ )
                 mq.getTimeSeries( STNS[ i ] );
             return;
@@ -375,22 +388,22 @@ public class MetarServlet extends LdmServlet {
             //} else if (p.p_isodate.matcher(dtime).find()) {
             //    dateStart = dateEnd = dtime;
             } else {
-                pw.println("time is invalid " + dtime);
+                pw.println("<p>time is invalid " + dtime);
                 return;
             }
-                                    //pw.println("inside MetarQuery");
+            //pw.println("inside MetarQuery");
             if( y0 != null ) {
                 report = mq.getFromTime( start, STNS );
             } else {
-		        //pw.println("called mq.getFromTime( start ) = "+ start );
+		//pw.println("called mq.getFromTime( start ) = "+ start );
                 report = mq.getFromTime( start );
                 //pw.println("report ="+ report.size() );
             }
             //return;
         } else { // dateStart and dateEnd processing
-            pw.println("dateStart =" + dateStart);
+            //pw.println("dateStart =" + dateStart);
             Date start = dateFormatISO.parse( dateStart);
-            pw.println("dateEnd =" + dateEnd);
+            //pw.println("dateEnd =" + dateEnd);
             Date end = dateFormatISO.parse( dateEnd);
             if( y0 != null ) {
                 mq.getTimeRange(start.getTime(), end.getTime(), STNS );
@@ -439,8 +452,7 @@ public class MetarServlet extends LdmServlet {
             HashMap unit = mpr.getUnits();
 
             if (field == null) {
-                System.out.println("return null Hash parse");
-                //System.exit( 1 );
+                pw.println("return null Hash parse");
                 return;
             }
             pw.println("<station name=\"" + ob.station + "\">");
@@ -475,7 +487,7 @@ public class MetarServlet extends LdmServlet {
         BufferedReader br;
 
         try {
-            pw.println(contentPath + getPath() +"ThreddsIDD.cfg" );
+            //pw.println(contentPath + getPath() +"ThreddsIDD.cfg" );
             br = getInputStreamReader(contentPath + getPath() +"ThreddsIDD.cfg");
         } catch ( FileNotFoundException fnfe ) {
             pw.println( "<p>config not found "+ contentPath + getPath() +"ThreddsIDD.cfg" );

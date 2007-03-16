@@ -59,6 +59,8 @@ public class LdmServlet extends AbstractServlet {
         //pw.println( "<p>check = "+ check +"</p>");
 
         File dir = new File(dirS);
+        if( ! dir.exists() )
+            return null;
         String[] TMP = dir.list();
         ArrayList days = new ArrayList();
 
@@ -125,7 +127,7 @@ public class LdmServlet extends AbstractServlet {
                 continue;
             }
 
-            //pw.println( "<p>lat="+ lat +" lon="+ lon +" </p>" );
+            //System.out.println( "<p>lat="+ lat +" lon="+ lon +" </p>" );
             inBound = true;
             if (lat < minLat || lat > maxLat) {
                 inBound = false;
@@ -135,24 +137,33 @@ public class LdmServlet extends AbstractServlet {
             }
             if (inBound) {
                 if( pw != null ) {
-                  pw.println( stnLine );
-                  pw.println( input );
-                  input = br.readLine(); // elevation
-                  pw.println( input );
-                  input = br.readLine(); // </station> tag
-                  pw.println( input );
+                    pw.println( stnLine );
+                    pw.println( input );
+                    input = br.readLine(); 
+
+                    if( input.contains( "</station>" ) ) {
+                        pw.println( input );
+                    } else { // else read was elevation
+                        pw.println( input );
+                        input = br.readLine(); // </station> tag
+                        pw.println( input );
+                    }
                 }
                 if( stn.length() == 3 ) {
                     if( stnLine.lastIndexOf( " US") > 0 ) {
                         stn = "K" + stn;
-                    } else {
+                    } else if( stnLine.lastIndexOf( " CN") > 0 ) {
                         stn = "C" + stn;
+                    } else {
+                        stn = "K" + stn;
                     }
                 }
                 STNSal.add(stn);
-                //pw.println(  "<p>stn inbound "+ stn +" </p>" );
+                //System.out.println(  "<p>stn inbound "+ stn +" </p>" );
             } else {
-                input = br.readLine(); // elevation
+                input = br.readLine(); 
+                if( input.contains( "</station>" ) )
+                    continue;  // else read was elevation
                 input = br.readLine(); // </station> tag
             }
         }  // end while
@@ -164,7 +175,7 @@ public class LdmServlet extends AbstractServlet {
         for (int i = 0; i < STNSal.size(); i++)
             stns[i] = (String) STNSal.get(i);
 
-        //pw.println(  "stns.length="+ stns.length );
+        //System.out.println(  "stns.length="+ stns.length );
         return stns;
     } // end boundingBox
 

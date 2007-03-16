@@ -47,6 +47,23 @@ public class RadarLevel2Servlet extends LdmServlet {
     static protected String radarLevel2DODSServiceBase;
     //static protected String radarLevel2DODSUrlPath;
 
+    protected long getLastModified(HttpServletRequest req) {
+        try { 
+            //  get configurations from ThreddsIDD.cfg
+            if( radarLevel2Dir == null ) {
+                contentPath = ServletUtil.getContentPath(this);
+                getConfigurations("synoptic", null);
+            }
+            File file = new File(  radarLevel2DQC );
+
+            return file.lastModified();
+        } catch ( FileNotFoundException fnfe ) {
+            return -1;
+        } catch ( IOException ioe ) {
+            return -1;
+        }
+    }
+
     // get parmameters from servlet call
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -58,8 +75,12 @@ public class RadarLevel2Servlet extends LdmServlet {
         String dateStart = null;
         String dateEnd = null;
         String returns;
-        String ll = null;
-        String ur = null;
+        //String ll = null;
+        //String ur = null;
+        String y0 = null;
+        String y1 = null;
+        String x0 = null;
+        String x1 = null;
         String serviceName = null;
         String serviceType = null;
         String serviceBase = null;
@@ -99,15 +120,21 @@ public class RadarLevel2Servlet extends LdmServlet {
 
             serviceType = ServletUtil.getParameterIgnoreCase(req, "serviceType");
             if (serviceType == null)
-                serviceType = "";
+                serviceType = "HTTPServer";
 
             serviceName = ServletUtil.getParameterIgnoreCase(req, "serviceName");
 
             urlPath = ServletUtil.getParameterIgnoreCase(req, "urlPath");
 
-            ll = ServletUtil.getParameterIgnoreCase(req, "ll");
+            //ll = ServletUtil.getParameterIgnoreCase(req, "ll");
 
-            ur = ServletUtil.getParameterIgnoreCase(req, "ur");
+            //ur = ServletUtil.getParameterIgnoreCase(req, "ur");
+
+            // bounding box min/max lat  min/max lon
+            y0 = ServletUtil.getParameterIgnoreCase(req, "y0");
+            y1 = ServletUtil.getParameterIgnoreCase(req, "y1");
+            x0 = ServletUtil.getParameterIgnoreCase(req, "x0");
+            x1 = ServletUtil.getParameterIgnoreCase(req, "x1");
 
             // set ContentType
             // requesting a catalog
@@ -150,6 +177,7 @@ public class RadarLevel2Servlet extends LdmServlet {
             STNS = new String[2];
             STNS[0] = "KFTG";
             STNS[1] = "KFTG";
+            STNS = null;
             dtime = "latest";
             //dtime = "2007-01-05T17:05:00";
             //dtime = "6hour";
@@ -166,13 +194,18 @@ public class RadarLevel2Servlet extends LdmServlet {
             //returns = "data";
 
             serviceType = "HTTPServer";
-            serviceType = "";
-            //serviceType = "DODS";
+            //serviceType = "";
+            serviceType = "DODS";
             //serviceName = radarLevel2HTTPServiceName;
             //pw.println( "serviceName =" + serviceName );
             //pw.println( "urlPath =" + urlPath );
             //ll = "-15:-90";
             //ur = "15:90";
+            y0 = "39";
+            y0 = null;
+            y1 = "40";
+            x0 = "-105";
+            x1 = "-100";
         
             } // end command line testing
 
@@ -184,14 +217,14 @@ public class RadarLevel2Servlet extends LdmServlet {
 
         if (p.p_qc_or_dqc_i.matcher(returns).find()) { // returns dqc doc
 
-            if( ll != null && ur != null ) {
+            //if( ll != null && ur != null ) {
                 //STNS = boundingBox(ll, ur, radarLevel2DQC, pw);
                 //pw.println( "<stations>" );
                 //for (int j = 0; j < STNS.length; j++) {
                 //    pw.println( "    <station name=\""+ STNS[ j ] +"\" />" );
                 //}
                 //pw.println( "</stations>" );
-            } else {
+            //} else {
       
                 //pw.println(radarLevel2DQC);
                 BufferedReader br = getInputStreamReader(radarLevel2DQC);
@@ -200,31 +233,25 @@ public class RadarLevel2Servlet extends LdmServlet {
                     pw.println(input);
                 }
                 br.close();
-            }
+            //}
             return;
         }
 
         // requesting a catalog with different serviceTypes
-        if (p.p_HTTPServer_i.matcher(serviceType).find() ||
-                (p.p_catalog_i.matcher(returns).find()) ) { // backward capatiablity
+        if (p.p_HTTPServer_i.matcher(serviceType).find() ) {
+                //|| (p.p_catalog_i.matcher(returns).find()) ) { // backward capatiablity
                 serviceName = radarLevel2HTTPServiceName;
                 serviceType = radarLevel2HTTPServiceType;
                 serviceBase = radarLevel2HTTPServiceBase;
-                //serviceBase = "/thredds/fileServer/nexrad/level2/";
-                if (p.p_catalog_i.matcher(returns).find()) {
-                    returns = "data";  // default
-                }
-        //  serviceType =~ /ADDE/i
-        //} else if (p.p_ADDE_i.matcher(serviceType).find()) {
-        //        serviceName = radarLevel2ADDEServiceName;
-        //        urlPath = radarLevel2ADDEUrlPath;
+                //if (p.p_catalog_i.matcher(returns).find()) {
+                //    returns = "data";  // default
+                //}
         //  serviceType =~ /DODS/i
         } else if (p.p_DODS_i.matcher(serviceType).find()) {
                 serviceName = radarLevel2DODSServiceName;
                 serviceType = radarLevel2DODSServiceType;
                 serviceBase = radarLevel2DODSServiceBase;
-                //urlPath = radarLevel2DODSUrlPath;
-                returns = "xml";  // default
+                //returns = "xml";  // default
         }
         // write out catalog with datasets
         if ( ! serviceType.equals( "" )) {
@@ -235,14 +262,17 @@ public class RadarLevel2Servlet extends LdmServlet {
             pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
             pw.println(" base=\"" + serviceBase + "\"/>");
             pw.print("    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"returns=" + returns + "&amp;");
-            if( STNS != null ) {
+            if( STNS != null && ! STNS[ 0 ].equals( "all" )) {
                 for (int i = 0; i < STNS.length; i++) {
                     pw.print("stn=" + STNS[i] +"&amp;");
                 }
-            } else if( ll != null && ur != null ) {
-                pw.print("ll="+ ll +"&amp;ur="+ ur +"&amp;" );
+            } else if( y0 != null && y1 != null && x0 != null && x1 != null ) {
+                pw.print("y0="+ y0 +"&amp;y1="+ y1 +"&amp;" );
+                pw.print("x0="+ x0 +"&amp;x1="+ x1 +"&amp;" );
             } else {
                 pw.print("stn=all&amp;");
+                STNS = boundingBox( "-90", "90", "-180", "180", radarLevel2DQC, null);
+                //pw.println(  "STNS.length="+ STNS.length +" ="+ STNS[ 0 ]);
             }
 
             if( dtime != null ) {
@@ -281,36 +311,22 @@ public class RadarLevel2Servlet extends LdmServlet {
 //
 // main code body, no configurations below this line
 //
-        // bounding box given to determine stns
-        if (ll != null && ur != null) {
-            //STNS = boundingBox(ll, ur, radarLevel2DQC, pw);
-            //STNS = boundingBox(ll, ur, radarLevel2DQC, null);
-            //pw.println(  "STNS.length="+ STNS.length );
-            if (STNS.length == 0) {
-                pw.println("      <documentation>No data available for station(s) "+
-                    "and time range</documentation>");
-                pw.println("    </dataset>");
-                pw.println("</catalog>");
-                return;
-            }
+        // use bounding box given to determine stations
+        //pw.println( "<p>minLat="+ y0 +" minLon="+ x0 +" maxLat="+ y1 +" maxLon="+ x1 +"</p>" );
+        if( y0 != null && y1 != null && x0 != null && x1 != null ) {
+            //STNS = boundingBox( y0, y1, x0, x1, radarLevel2DQC, pw);
+            STNS = boundingBox( y0, y1, x0, x1, radarLevel2DQC, null);
+            //pw.println(  "STNS.length="+ STNS.length +" ="+ STNS[ 0 ]);
         } //end bounding box
 
-        // Obtain the days available
-        //String[] DAYS = getDAYS(radarLevel2Dir, pw);
-        //pw.println( "DAYS.length =" + DAYS.length);
-        //if (DAYS.length == 0)
-        //    return;
-
-        // if request for all stns given, populate STNS 
-/*
-        if (STNS == null || p.p_all_i.matcher(STNS[0]).find()) {
-            pw.println( "radarLevel2Dir + DAYS[ 0 ] =" + radarLevel2Dir +"/"+  DAYS[ 0 ] );
-            File dir = new File(radarLevel2Dir + "/" + DAYS[0]);
-            STNS = dir.list();
-            //pw.println( "STNS.length =" + STNS.length );
-            //dtime = "latest";
+        // this point should have stations
+        if (STNS == null || STNS.length == 0) {
+            pw.println("      <documentation>No data available for station(s) "+
+                "and time range</documentation>");
+            pw.println("    </dataset>");
+            pw.println("</catalog>");
+            return;
         }
-*/
         // if no dataStart/dateEnd given, look for time place holders
         if( dateEnd == null ) {
             Calendar now = Calendar.getInstance();
@@ -379,9 +395,9 @@ public class RadarLevel2Servlet extends LdmServlet {
             // Obtain the days available
             //pw.println( "Dir =" + radarLevel2Dir +"/"+ station);
             String[] DAYS = getDAYS(radarLevel2Dir +"/"+ station, pw);
-            //pw.println( "DAYS.length =" + DAYS.length);
-            if (DAYS.length == 0)
+            if (DAYS == null || DAYS.length == 0)
                 continue;
+            //pw.println( "DAYS.length =" + DAYS.length);
 
             for (int i = 0; i < DAYS.length && notDone; i++) {
                 //pw.println( "<p>dir =" + DAYS[ i ] + "</p>\n");
@@ -441,7 +457,7 @@ public class RadarLevel2Servlet extends LdmServlet {
         } //end foreach station
 
         // add ending tags
-        if (!serviceType.equals( "" )) {
+        if (p.p_catalog_i.matcher(returns).find() ) { 
             if (nodata) {
                 pw.println("      <documentation>No data available for station(s) "+
                     "and time range</documentation>");
@@ -453,8 +469,8 @@ public class RadarLevel2Servlet extends LdmServlet {
         } else if (p.p_xml_i.matcher(returns).find()) {
             pw.println("</reports>");
         }
-            if( req != null )
-               ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
+        if( req != null )
+           ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
 
         } catch (Throwable t) {
             if( req != null )
@@ -464,7 +480,7 @@ public class RadarLevel2Servlet extends LdmServlet {
 
     // create a dataset entry for a catalog
     public void catalogOut(String product, String stn, PrintWriter pw, String serviceType, String serviceBase, String returns) {
-
+        //pw.println("Station ="+ stn );
         pw.println("      <dataset name=\""+ product +"\" ID=\""+ 
            product.hashCode() +"\"" );
 
@@ -486,9 +502,6 @@ public class RadarLevel2Servlet extends LdmServlet {
         if (p.p_HTTPServer_i.matcher(serviceType).find()) {
             //pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
              pw.println( stn +"/"+ pDay +"/"+ product +"\"/>" );
-        } else if (p.p_ADDE_i.matcher(serviceType).find()) {
-            pw.println("group=rtptsrc&amp;descr=sfchourly&amp;select='id%20" + stn + "'" +
-                    "&amp;num=all&amp;param=day%20time%20t%20td%20psl\"/>");
         } else if (p.p_DODS_i.matcher(serviceType).find()) {
             pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
             //pw.println( "<a href=\""+ serviceBase + stn +"/"+ pDay +"\">"+

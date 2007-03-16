@@ -41,7 +41,7 @@ public class MetarQuery {
         String DBMS;
         if( path != null ) { 
             DBMS = (( path.endsWith("/") )? path: path +"/") +DBFILE;
-            pw.println( "DBMS ="+ DBMS );
+            //pw.println( "DBMS ="+ DBMS );
         } else {
             DBMS = DBFILE;
         }
@@ -92,7 +92,7 @@ public class MetarQuery {
             //pw.println( ob.report );
         }
         //printList( list );
-        pw.println( "------" );
+        //pw.println( "------" );
         printList( al );
         return al;
     }
@@ -118,7 +118,7 @@ public class MetarQuery {
  
         ArrayList station = new ArrayList( 6000 );
         HashMap<String, MetarObservation> hm = getTimeRange(start, end) ;
-        pw.println( "HashMap size ="+ hm.size());
+        //pw.println( "HashMap size ="+ hm.size());
         for( Iterator it = hm.keySet().iterator(); it.hasNext();) {
             // key = wwww ddhhmm
             String key = (String)it.next();
@@ -132,23 +132,17 @@ public class MetarQuery {
     }
 
     public HashMap<String, MetarObservation> getLatest() {
-        //pw.println("0 inside MetarQuery");
         Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
         final long start = cal.getTimeInMillis() -3600000; 
-        pw.println("start ="+ start);
  
-        //pw.println("1 inside MetarQuery");
         List<MetarObservation> list = db.query(new Predicate <MetarObservation> () {
             public boolean match(MetarObservation ob){
                 return ob.timeObs > start;
                 //return ob.timeObs > 1170867940767L;
             }
         });
-        //pw.println("2 inside MetarQuery");
         HashMap<String, MetarObservation> hm = removeDuplicates( list );
-        //pw.println("3 inside MetarQuery");
         printHashMap( hm );
-        //pw.println("4 inside MetarQuery");
         //pw.println( "-----------------------------------------------");
         //printList( list );
         return hm;
@@ -173,24 +167,13 @@ public class MetarQuery {
 
         public HashMap<String, MetarObservation> getFromTime( final long start ) {
 
-        //pw.println("1 inside MetarQuery");
         List<MetarObservation> list = db.query(new Predicate <MetarObservation> () {
             public boolean match(MetarObservation ob){
                 return ob.timeObs > start;
             }
         });
-/*
-        List list = db.query(new Predicate() {
-            public boolean match(MetarObservation ob){
-                return ob.timeObs > start;
-            }
-        });
-*/
-        //pw.println("2 inside MetarQuery");
         HashMap<String, MetarObservation> hm = removeDuplicates( list );
-        //pw.println("3 inside MetarQuery");
         printHashMap( hm );
-        //pw.println("4 inside MetarQuery");
         //pw.println( "-----------------------------------------------");
         //printList( list );
         return hm;
@@ -239,84 +222,23 @@ public class MetarQuery {
         return hm;
     }
 
-
-    //public void makeDailyArchive(final long start,final long end) {
-    public void makeDailyArchive() {
- 
-        // make archive database for 2 days ago
-        Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
-        int year = cal.get( Calendar.YEAR );
-        int month = cal.get( Calendar.MONTH );
-        int day = cal.get( Calendar.DAY_OF_MONTH );
-        //int hour = cal.get( Calendar.HOUR_OF_DAY );
-        //System.out.println( "Year ="+ year +" Month ="+ month );
-        // set day back 2, zero out hour minute sec
-        cal.set( year, month, day -2, 0, 0, 0 );
-        month = cal.get( Calendar.MONTH ) +1;
-        String monthS;
-        if( month < 10 ) {
-            monthS = "0"+ Integer.toString( month );
-        } else {
-            monthS = Integer.toString( month );
-        }
-        day = cal.get( Calendar.DAY_OF_MONTH );
-        String dayS;
-        if( day < 10 ) {
-            dayS = "0"+ Integer.toString( day );
-        } else {
-            dayS = Integer.toString( day );
-        }
-        String file = "Surface_Metar_"+ cal.get( Calendar.YEAR ) +
-             monthS + dayS +".db4o";
-        System.out.println( "file ="+ file );
-            
-        final long start = cal.getTimeInMillis() -90000; // -15 minutes 
-        //System.out.println( "start ="+ cal.toString() );
-        final long end = start +86400000; // + 24 hours
-
-        List<MetarObservation> list = db.query(new Predicate <MetarObservation> () {
-            public boolean match(MetarObservation ob){
-                return ob.timeObs > start && ob.timeObs < end;
-            }
-        });
-        HashMap<String, MetarObservation> hm = removeDuplicates( list );
-        // open database and store data for the day
-        Db4o.configure().readOnly( false );
-        Db4o.configure().objectClass(MetarObservation.class).objectField("timeObs").indexed(true);
-        Db4o.configure().objectClass(MetarObservation.class).objectField("station").indexed(true);
-        Db4o.configure().optimizeNativeQueries( true );
-        Db4o.configure().automaticShutDown(false);
-        ObjectContainer daily = Db4o.openFile( file );
-        System.out.println( "HashMap size ="+ hm.size());
-        for( Iterator it = hm.keySet().iterator(); it.hasNext();) {
-            String key = (String)it.next();
-            MetarObservation ob = (MetarObservation)hm.get( key );
-            daily.set( ob );
-            //System.out.println( ob.report );
-        }
-        daily.close();
-        //printHashMap( hm );
-        //pw.println( "-----------------------------------------------");
-        //printList( list );
-        return;
-    }
-
     public void printList( List<MetarObservation> list ) {
-        pw.println( "list size ="+ list.size());
+        //pw.println( "list size ="+ list.size());
         for (MetarObservation ob : list){
+            //pw.print( ob.timeObs +"  "+ ob.dateISO +"  " );
             pw.println( ob.report );
         }
     }
 
     public void printStation( ArrayList<String> list ) {
-        pw.println( "list size ="+ list.size());
+        //pw.println( "list size ="+ list.size());
         for (String stn : list){
             pw.println( stn );
         }
     }
 
     public void printHashMap( HashMap<String, MetarObservation> hm ) {
-        pw.println( "HashMap size ="+ hm.size());
+        //pw.println( "HashMap size ="+ hm.size());
         for( Iterator it = hm.keySet().iterator(); it.hasNext();) {
             String key = (String)it.next();
             MetarObservation ob = (MetarObservation)hm.get( key );
@@ -370,10 +292,11 @@ public class MetarQuery {
         public int compare(Object o1, Object o2) {
             MetarObservation mo1 = (MetarObservation) o1;
             MetarObservation mo2 = (MetarObservation) o2;
-            String s1 = (String) mo1.key;
-            String s2 = (String) mo2.key;
+            //String s1 = (String) mo1.key;
+            //String s2 = (String) mo2.key;
 
-            return s2.compareTo(s1);
+            //return s2.compareTo(s1);
+            return (int)( mo2.timeObs - mo1.timeObs );
         }
     }
 
@@ -396,15 +319,14 @@ public class MetarQuery {
         // do something with db4o
             //mq.getStations();
             //mq.getStations(start, end);
-            //mq.getFromTime( start );
+            mq.getFromTime( start );
             //mq.getFromTime( start, station );
             //mq.getLatest();
             //mq.getLatest( station ); // with bounding box
-            mq.getTimeSeries("KDEN");
+            //mq.getTimeSeries("KDEN");
             //mq.getTimeSeries("KSEA");
             //mq.getTimeRange(start, end);
             //mq.getTimeRange(start, end, station); // with bounding box
-            //mq.makeDailyArchive();
         }
         finally {
             db.close();

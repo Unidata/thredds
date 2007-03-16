@@ -154,12 +154,18 @@ public class MetarObservation {
             //+" Hour ="+ hour +" curHour ="+ curHour +" Min ="+ minute);
             // check report times, optimized for current time reports 
             if( day == curDay ) {
-                    if( hour > curHour ) return false; // in the future
+                if( hour > curHour ) return false; // in the future
             } else if( day < (curDay -1) ) { // older than 1 day
-                    return false;
+                return false;
             } else if( day > curDay ) { // only permit 1st of the month
-                    if( curDay != 1 || day < 28) return false;
-                    // work here need to set month and year
+                if( curDay != 1 || day < 28) return false;
+                // reset month and year
+                if( month != 0 ) {
+                    month--;
+                } else {
+                    year--;
+                    month = 12;
+               }
             } else if( hour < curHour ) {
                     return false; // 1 day older by hours
             }
