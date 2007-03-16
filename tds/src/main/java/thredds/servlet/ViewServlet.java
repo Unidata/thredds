@@ -185,8 +185,7 @@ public class ViewServlet extends AbstractServlet {
     }
 
     public String  getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
-      // LOOK use getContextName instead of hardcodeing thredds
-      return "<a href='/thredds/view/nj22UI.jnlp?" + ds.getSubsetUrl()+"'>NetCDF-Java Tools (webstart)</a>";
+      return "<a href='" + req.getContextPath() + "/view/nj22UI.jnlp?" + ds.getSubsetUrl()+"'>NetCDF-Java Tools (webstart)</a>";
     }
   }
 
@@ -218,7 +217,7 @@ public class ViewServlet extends AbstractServlet {
       }
 
       // LOOK use getContextName instead of hardcodeing thredds
-      return "<a href='/thredds/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+      return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
     }
 
   }
