@@ -705,6 +705,7 @@
 		<junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
 			<classpath refid="test.classpath"/>
 			<jvmarg value="-ea"/>
+      <jvmarg value="-Dunidata.upc.share.path=\\zero\share"/>
 			<formatter type="xml"/>
 			<formatter type="brief" usefile="false"/>
 			<test todir="${test.dir}" name="ucar.nc2.TestAll"/>
