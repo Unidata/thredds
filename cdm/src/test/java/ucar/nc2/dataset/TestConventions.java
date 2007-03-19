@@ -39,7 +39,7 @@ public class TestConventions  extends TestCase {
   }
 
   public void testWRF() throws IOException {
-     testWRF(TestAll.testdataDir + "grid/netcdf/wrf/wrf2.nc");
+     testWRF(TestAll.getUpcSharePath() + "/testdata/grid/netcdf/wrf/wrf2.nc");
   }
 
   private void testWRF(String location) throws IOException {

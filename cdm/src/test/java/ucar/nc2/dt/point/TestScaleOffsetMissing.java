@@ -31,7 +31,7 @@ import java.io.IOException;
 /** Test StationObsDataset adapters in the JUnit framework. */
 
 public class TestScaleOffsetMissing extends TestCase {
-  String topDir = ucar.nc2.TestAll.testdataDir+ "point/netcdf/";
+  String topDir = ucar.nc2.TestAll.getUpcSharePath()+ "/testdata/point/netcdf/";
   public TestScaleOffsetMissing( String name) {
     super(name);
   }

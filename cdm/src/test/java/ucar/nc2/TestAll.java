@@ -4,6 +4,8 @@ import junit.framework.*;
 import junit.extensions.TestSetup;
 
 import java.util.List;
+import java.util.Properties;
+import java.io.File;
 
 import ucar.unidata.io.RandomAccessFile;
 
@@ -14,9 +16,21 @@ import ucar.unidata.io.RandomAccessFile;
 public class TestAll {
 
   // public static String testdataDir = "/upc/share/testdata/";
-  public static String testdataDir = "R:/testdata/";
   public static String reletiveDir = "./src/test/data/";
   public static long startTime;
+
+  private static String upcShareDirPath;
+  static {
+    Properties env = System.getProperties();
+    String upcSharePath = env.getProperty( "unidata.upc.share.path" );
+    if ( upcSharePath == null )
+    {
+      System.out.println( "**No \"unidata.upc.share.path\"property, using \"/upc/share\"." );
+      upcSharePath = "/upc/share";
+    }
+    upcShareDirPath = upcSharePath;
+  }
+  public static String getUpcSharePath() { return upcShareDirPath; }
 
   public static junit.framework.Test suite ( ) {
     RandomAccessFile.setDebugLeaks( true);

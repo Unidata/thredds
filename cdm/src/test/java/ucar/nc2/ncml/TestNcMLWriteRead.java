@@ -24,7 +24,7 @@ public class TestNcMLWriteRead extends TestCase {
   }
 
   private ArrayList files;
-  private String datadir = TestAll.testdataDir+"grid/netcdf/";
+  private String datadir = TestAll.getUpcSharePath()+"/testdata/grid/netcdf/";
 
   public void setUp() {
     files = new ArrayList();

@@ -23,7 +23,7 @@ import java.util.Date;
 
 public class TestRadialDataset extends TestCase {
   // private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
-  private String topDir = ucar.nc2.TestAll.testdataDir+ "radar/";
+  private String topDir = ucar.nc2.TestAll.getUpcSharePath()+ "/testdata/radar/";
   private boolean show = false, showTime = false, doQuick = true;
 
   public TestRadialDataset( String name) {

@@ -199,9 +199,9 @@ public class TestStructure extends TestCase {
   }
 
   public void testReadBothWaysV3mode() throws IOException {
-    readBothWays(TestAll.testdataDir+"grid/netcdf/mm5/n040.nc");
+    readBothWays(TestAll.getUpcSharePath()+"/testdata/grid/netcdf/mm5/n040.nc");
     readBothWays(TestNC2.topDir+"testWriteRecord.nc");
-    readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
+    readBothWays(TestAll.getUpcSharePath()+"/testdata/station/ldm-old/2004061915_metar.nc");
 
     System.out.println("*** testReadBothWaysV3mode ok");
   }

@@ -47,7 +47,7 @@ public class TestReadandCountGrib extends TestCase {
   }
 
   private void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
-    dir = TestAll.testdataDir+ "grid/grib/" + dir;
+    dir = TestAll.getUpcSharePath()+ "/testdata/grid/grib/" + dir;
     TestReadandCount.doOne(dir, filename, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 

@@ -5,6 +5,7 @@ import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.NCdump;
+import ucar.nc2.TestAll;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -22,7 +23,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testRegular() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open("R:/metapps/test/data/grids/03061219_ruc.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestAll.getUpcSharePath() + "/metapps/test/data/grids/03061219_ruc.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;
@@ -52,7 +53,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testGrib() throws Exception {
-    GridDataset dataset = GridDataset.open("R:/testdata/grid/grib/grib1/data/AVN.wmo");
+    GridDataset dataset = GridDataset.open( TestAll.getUpcSharePath() + "/testdata/grid/grib/grib1/data/AVN.wmo");
 
     GeoGrid grid = dataset.findGridByName("Temperature");
     assert null != grid;
@@ -72,7 +73,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testWRF() throws Exception {
-    GridDataset dataset = GridDataset.open("R:/testdata/grid/netcdf/wrf/wrfout_v2_Lambert.nc");
+    GridDataset dataset = GridDataset.open( TestAll.getUpcSharePath() + "/testdata/grid/netcdf/wrf/wrfout_v2_Lambert.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;
@@ -169,7 +170,7 @@ public class TestSubset extends TestCase {
   }
 
   public void test2D() throws Exception {
-    GridDataset dataset = GridDataset.open("R:/testdata/grid/netcdf/cf/mississippi.nc");
+    GridDataset dataset = GridDataset.open( TestAll.getUpcSharePath() + "/testdata/grid/netcdf/cf/mississippi.nc");
 
     GeoGrid grid = dataset.findGridByName("salt");
     assert null != grid;
@@ -284,7 +285,7 @@ public class TestSubset extends TestCase {
   public void testLatLonSubset() throws Exception {
     GridDataset dataset = GridDataset.open("R:/testdata/grid/netcdf/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
     //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
-    // GridDataset dataset = GridDataset.open("R:/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
+    // GridDataset dataset = GridDataset.open(TestAll.getUpcSharePath() + "/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
     GeoGrid grid = dataset.findGridByName("micron11");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

@@ -10,6 +10,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.TestAll;
 import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
@@ -32,7 +33,7 @@ public class TestTrajectoryObsDataset extends TestCase
 {
   // @todo Use properties or env vars to override default values.
   private static String testDataDir = "./src/test/data";
-  private static String remoteTestDataDir = "R:/testdata";
+  private static String remoteTestDataDir = TestAll.getUpcSharePath() + "/testdata";
 
   public TestTrajectoryObsDataset( String name )
   {

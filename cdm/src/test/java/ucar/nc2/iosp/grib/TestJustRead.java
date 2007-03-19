@@ -18,11 +18,11 @@ public class TestJustRead extends TestCase {
   }
 
   public void testReadGrib1Files() throws Exception {
-    readAllDir( TestAll.testdataDir+ "motherlode/grid", "grib1");
+    readAllDir( TestAll.getUpcSharePath()+ "/testdata/motherlode/grid", "grib1");
   }
 
   public void testReadGrib2Files() throws Exception {
-    readAllDir( TestAll.testdataDir+ "motherlode/grid", "grib2");
+    readAllDir( TestAll.getUpcSharePath()+ "/testdata/motherlode/grid", "grib2");
   }
 
   void readAllDir(String dirName, String suffix) throws Exception {

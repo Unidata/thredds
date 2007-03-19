@@ -22,6 +22,7 @@
 package ucar.nc2.iosp.misc;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestAll;
 
 import java.io.IOException;
 
@@ -104,7 +105,7 @@ public class UspL2 {
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException {
     NetcdfFile.registerIOProvider(UspL2.class);
-    NetcdfFile ncfile = NetcdfFile.open("R:/testdata/lightning/uspln/uspln_20061023.18");
+    NetcdfFile ncfile = NetcdfFile.open( TestAll.getUpcSharePath() + "/testdata/lightning/uspln/uspln_20061023.18");
     System.out.println("ncfile = \n"+ncfile);
   }
 

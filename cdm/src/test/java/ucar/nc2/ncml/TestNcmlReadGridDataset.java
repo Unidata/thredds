@@ -19,7 +19,7 @@ public class TestNcmlReadGridDataset extends TestCase {
   }
 
   GridDataset gds = null;
-  String location = "file:"+TestAll.testdataDir + "grid/netcdf/cf/bora_test_agg.ncml";
+  String location = "file:"+TestAll.getUpcSharePath() + "/testdata/grid/netcdf/cf/bora_test_agg.ncml";
 
   public void setUp() {
     try {
