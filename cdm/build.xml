@@ -679,6 +679,7 @@
   <path id="test.classpath">
     <fileset refid="compile.libraries"/>
     <fileset refid="compileUI.libraries"/>
+    <fileset refid="runtime.libraries" />
     <pathelement location="${test.dir}/classes"/>
     <pathelement location="${resources.dir}"/>
     <pathelement location="${resourcesUI.dir}"/>
