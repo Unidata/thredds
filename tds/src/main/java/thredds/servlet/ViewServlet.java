@@ -105,7 +105,7 @@ public class ViewServlet extends AbstractServlet {
 
     String path = req.getPathInfo();
     int pos = path.lastIndexOf("/");
-    String filename = "views/" + path.substring(pos);
+    String filename = "views/" + path.substring(pos + 1);
     log.debug("**ViewManager req= "+path+" look for "+rootPath + filename);
 
     String template = getTemplate( rootPath + filename);
