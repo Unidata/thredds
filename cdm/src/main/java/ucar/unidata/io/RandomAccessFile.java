@@ -22,13 +22,7 @@
 package ucar.unidata.io;
 
 
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.EOFException;
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.io.UTFDataFormatException;
+import java.io.*;
 
 import java.nio.channels.FileChannel;
 

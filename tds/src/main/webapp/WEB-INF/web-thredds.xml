@@ -140,7 +140,7 @@
   <!-- Metar DQC Server -->
   <servlet>
     <servlet-name>MetarServlet</servlet-name>
-    <servlet-class>thredds.servlet.ldm.MetarServlet</servlet-class>
+    <servlet-class>thredds.servlet.idd.MetarServlet</servlet-class>
   </servlet>
 
   <!-- Netcdf Server -->

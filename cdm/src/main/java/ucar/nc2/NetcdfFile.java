@@ -32,6 +32,8 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.regex.*;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.io.*;
 
 /**
@@ -255,14 +257,16 @@ public class NetcdfFile {
   static private ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
 
     // get rid of file prefix, if any
-    String uriString = location.trim();
-    if (uriString.startsWith("file://"))
-      uriString = uriString.substring(7);
-    else if (uriString.startsWith("file:"))
-      uriString = uriString.substring(5);
+    //if (uriString.startsWith("file://"))
+    //  uriString = uriString.substring(7);
+    //else 
+    //if (uriString.startsWith("file:")) {
+    //  File file = new File( new URI(location));
+      //uriString = uri.toURL().getFile();
+      //uriString = uriString.substring(5);
+    //}
 
-    // get rid of crappy microsnot \ replace with happy /
-    uriString = StringUtil.replace(uriString, '\\', "/");
+    String uriString = location.trim();
 
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
@@ -271,6 +275,18 @@ public class NetcdfFile {
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile3(uriString);
 
     } else {
+      if (uriString.startsWith("file:")) {
+        File file;
+        try {
+          file = new File( new URI(location));
+        } catch (URISyntaxException e) {
+          throw new IOException(e.getMessage());
+        }
+        uriString = file.getAbsolutePath();
+      }
+
+      // get rid of crappy microsnot \ replace with happy /
+      uriString = StringUtil.replace(uriString, '\\', "/");
 
       String uncompressedFileName = makeUncompressed(uriString);
       if (uncompressedFileName != null) { // LOOK Might be safer to try this if open fails
