@@ -256,37 +256,29 @@ public class NetcdfFile {
 
   static private ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
 
-    // get rid of file prefix, if any
-    //if (uriString.startsWith("file://"))
-    //  uriString = uriString.substring(7);
-    //else 
-    //if (uriString.startsWith("file:")) {
-    //  File file = new File( new URI(location));
-      //uriString = uri.toURL().getFile();
-      //uriString = uriString.substring(5);
-    //}
-
     String uriString = location.trim();
 
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
+
     ucar.unidata.io.RandomAccessFile raf;
     if (uriString.startsWith("http:")) { // open through URL
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile3(uriString);
 
     } else {
-      if (uriString.startsWith("file:")) {
-        File file;
-        try {
-          file = new File( new URI(location));
-        } catch (URISyntaxException e) {
-          throw new IOException(e.getMessage());
-        }
-        uriString = file.getAbsolutePath();
-      }
-
       // get rid of crappy microsnot \ replace with happy /
       uriString = StringUtil.replace(uriString, '\\', "/");
+
+      if (uriString.startsWith("file:")) {
+        uriString = uriString.substring(5);
+        /* File file;
+        try {
+          file = new File( new URI(uriString));
+        } catch (Exception e) {
+          throw new IOException(e.getMessage()+" uri= "+uriString);
+        }
+        uriString = file.getAbsolutePath(); */
+      }
 
       String uncompressedFileName = makeUncompressed(uriString);
       if (uncompressedFileName != null) { // LOOK Might be safer to try this if open fails
