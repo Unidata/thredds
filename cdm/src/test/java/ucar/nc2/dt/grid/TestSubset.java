@@ -283,7 +283,7 @@ public class TestSubset extends TestCase {
 
 
   public void testLatLonSubset() throws Exception {
-    GridDataset dataset = GridDataset.open("R:/testdata/grid/netcdf/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
+    GridDataset dataset = GridDataset.open(TestAll.upcShareDir + "testdata/grid/netcdf/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc");
     //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
     // GridDataset dataset = GridDataset.open(TestAll.upcShareDir + "/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
     GeoGrid grid = dataset.findGridByName("micron11");
@@ -307,7 +307,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testGiniSubsetStride() throws Exception {
-    GridDataset dataset = GridDataset.open("C:/data/problem/WEST-CONUS_4km_IR_20070216_1500.gini");
+    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "satellite/gini/WEST-CONUS_4km_IR_20070216_1500.gini");
     GeoGrid grid = dataset.findGridByName("IR");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -338,13 +338,15 @@ public class TestSubset extends TestCase {
     ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
     System.out.println(" resulting bbox= "+subset_prect);
 
+    // test stride
+    grid_section = grid.subset(null, null, null, 1, 2, 3);
     Array data = grid_section.readDataSlice(0, 0, -1, -1);
     assert data != null;
     assert data.getRank() == 2;
         
     int [] shape = data.getShape();
-    assert org_shape[0]  == 2 * shape[0];
-    assert org_shape[1]  == 3 * shape[1];
+    assert Math.abs(org_shape[0] - 2 * shape[0]) < 2 : org_shape[0]+" != "+ (2 * shape[0]);
+    assert Math.abs(org_shape[1] - 3 * shape[1]) < 3 : org_shape[1]+" != "+ (3 * shape[1]);
 
     dataset.close();
   }

@@ -29,7 +29,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private JLabel label;
   private PrintStream out;
   private int countDatasets, countNoAccess, countNoOpen;
-  private boolean verbose = false;
+  private boolean verbose = true;
 
   TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
@@ -112,7 +112,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:9080/thredds";
+    //String server = "http://thredds.cise-nsf.gov:8080/thredds/";
+    String server = "http://motherlode.ucar.edu:8080/thredds";
     //String server = "http://lead1.unidata.ucar.edu:8080/thredds";
     String catalog = "/idd/models.xml";
 

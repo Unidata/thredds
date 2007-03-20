@@ -40,7 +40,7 @@ public class TestAggFmrcGrib extends TestCase {
     ncfile.close();
   }
 
-  public void testRunseq() throws Exception, InvalidRangeException {
+  public void utestRunseq() throws Exception, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggFmrcGribRunseq.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);

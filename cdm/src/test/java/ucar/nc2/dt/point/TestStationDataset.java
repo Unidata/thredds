@@ -29,7 +29,7 @@ public class TestStationDataset extends TestCase {
   }
 
   public void testUnidataStationObsDataset() throws IOException {
-    testAllMethods( topDir+"ldm/20050804_metar.nc");
+    testAllMethods( topDir+"ldm/metar/Surface_METAR_20060325_0000.nc");
   }
 
   public void testMetarDataset() throws IOException {
@@ -38,6 +38,8 @@ public class TestStationDataset extends TestCase {
     ThreddsDataFactory fac = new ThreddsDataFactory();
     ThreddsDataFactory.Result result = fac.openDatatype( "thredds:resolve:http://motherlode.ucar.edu:9080/thredds/idd/metar?returns=DQC", null);
     StationObsDataset sod = (StationObsDataset) result.tds;
+    assert sod != null;
+
     long took = System.currentTimeMillis() - start;
     System.out.println(" open took = "+took+" msec");
     start = System.currentTimeMillis();

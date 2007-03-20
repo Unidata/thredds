@@ -19,7 +19,7 @@ public class TestAll {
   static {
     Properties env = System.getProperties();
     String path = env.getProperty( "unidata.upc.share.path" );
-    if ( path == null )
+    if ( path == null )     
     {
       System.out.println( "**No \"unidata.upc.share.path\"property, using \"/upc/share/\"." );
       path = "/upc/share/";
@@ -31,7 +31,7 @@ public class TestAll {
     upcShareDir = path;
   }
 
-  public static String upcShareDir;
+  public static String upcShareDir = "R:/";
   public static String upcShareTestDataDir = upcShareDir + "testdata/";
 
   public static String cdmTestDataDir = "./src/test/data/";
