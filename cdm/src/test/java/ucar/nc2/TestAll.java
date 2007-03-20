@@ -5,6 +5,9 @@ import junit.extensions.TestSetup;
 
 import java.util.List;
 import java.util.Properties;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import ucar.unidata.io.RandomAccessFile;
 
@@ -17,13 +20,42 @@ public class TestAll {
   public static long startTime;
 
   static {
-    Properties env = System.getProperties();
-    String path = env.getProperty( "unidata.upc.share.path" );
-    if ( path == null )     
+    // Determine how /upc/share is mounted by reading system or THREDDS property.
+    String upcSharePropName = "unidata.upc.share.path";
+    String threddsPropFileName = "thredds.properties";
+
+    // Get system property
+    String path = System.getProperty( upcSharePropName );
+    if ( path == null )
     {
-      System.out.println( "**No \"unidata.upc.share.path\"property, using \"/upc/share/\"." );
+      // Get user property.
+      File userHomeDirFile = new File( System.getProperty( "user.home" ) );
+      File userThreddsPropsFile = new File( userHomeDirFile, threddsPropFileName );
+      if ( userThreddsPropsFile.exists() && userThreddsPropsFile.canRead() )
+      {
+        Properties userThreddsProps = new Properties();
+        try
+        {
+          userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
+        }
+        catch ( IOException e )
+        {
+          System.out.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
+        }
+        if ( userThreddsProps != null && ! userThreddsProps.isEmpty() )
+        {
+          path = userThreddsProps.getProperty( upcSharePropName );
+        }
+      }
+    }
+
+    if ( path == null )
+    {
+      // Get default path.
+      System.out.println( "**No \"unidata.upc.share.path\"property, defaulting to \"/upc/share/\"." );
       path = "/upc/share/";
     }
+    // Make sure path ends with a slash.
     if ((! path.endsWith( "/")) && ! path.endsWith( "\\"))
     {
       path = path + "/";
@@ -31,7 +63,7 @@ public class TestAll {
     upcShareDir = path;
   }
 
-  public static String upcShareDir = "R:/";
+  public static String upcShareDir;
   public static String upcShareTestDataDir = upcShareDir + "testdata/";
 
   public static String cdmTestDataDir = "./src/test/data/";
