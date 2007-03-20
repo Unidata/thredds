@@ -8,7 +8,6 @@ import ucar.nc2.NetcdfFileCache;
  *
  */
 public class TestNC2 {
-  public static String topDir = TestAll.reletiveDir;
   public static boolean dumpFile = false;
 
   public static NetcdfFile open( String filename) {
@@ -27,7 +26,7 @@ public class TestNC2 {
   }
 
   public static NetcdfFile openFile( String filename) {
-    return open( TestNC2.topDir+filename);
+    return open( TestAll.cdmTestDataDir +filename);
   }
 
   public static junit.framework.Test suite ( ) {

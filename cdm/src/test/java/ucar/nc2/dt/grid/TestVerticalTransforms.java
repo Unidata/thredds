@@ -24,7 +24,6 @@ package ucar.nc2.dt.grid;
 import junit.framework.TestCase;
 
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dt.grid.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.TestAll;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
@@ -47,8 +46,8 @@ public class TestVerticalTransforms extends TestCase {
   }
 
   public void testWRF() throws Exception {
-    testDataset( TestAll.getUpcSharePath() + "/testdata/grid/netcdf/wrf/wrfout_v2_Lambert.nc");
-    testDataset( TestAll.getUpcSharePath() + "/testdata/grid/netcdf/wrf/wrfout_d01_2006-03-08_21-00-00");
+    testDataset( TestAll.upcShareTestDataDir + "grid/netcdf/wrf/wrfout_v2_Lambert.nc");
+    testDataset( TestAll.upcShareTestDataDir + "grid/netcdf/wrf/wrfout_d01_2006-03-08_21-00-00");
   }
 
   private void testDataset( String location) throws IOException, InvalidRangeException {

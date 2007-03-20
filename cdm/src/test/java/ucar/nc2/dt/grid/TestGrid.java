@@ -2,13 +2,14 @@ package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.nc2.dt.grid.TestGeoGrid;
+import ucar.nc2.TestAll;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestGrid {
-  public static String topDir = "./src/test/data/";
+  public static String topDir = TestAll.cdmTestDataDir;
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

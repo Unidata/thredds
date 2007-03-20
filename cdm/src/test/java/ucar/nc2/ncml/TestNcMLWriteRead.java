@@ -3,7 +3,6 @@ package ucar.nc2.ncml;
 import junit.framework.*;
 
 import ucar.nc2.*;
-import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.TestDataset;
 import ucar.nc2.ncml.NcMLWriter;
@@ -24,7 +23,7 @@ public class TestNcMLWriteRead extends TestCase {
   }
 
   private ArrayList files;
-  private String datadir = TestAll.getUpcSharePath()+"/testdata/grid/netcdf/";
+  private String datadir = TestAll.upcShareTestDataDir + "grid/netcdf/";
 
   public void setUp() {
     files = new ArrayList();

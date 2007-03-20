@@ -14,14 +14,14 @@ public class TestH5read extends TestCase {
   }
 
   public void test1() {
-    readAllDir( TestH5.topdir+"support");
-    readAllDir( TestH5.topdir+"samples");
-    readAllDir( TestH5.topdir+"complex");
-    readAllDir( TestH5.topdir+"msg");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/support");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/samples");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/complex");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
   }
 
   public void testAll() {
-    readAllDir( TestH5.topdir);
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/");
   }
 
   void readAllDir(String dirName) {

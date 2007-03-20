@@ -18,7 +18,7 @@ import java.util.Iterator;
 /** Test StationObsDataset adapters in the JUnit framework. */
 
 public class TestStationDataset extends TestCase {
-  String topDir = ucar.nc2.TestAll.getUpcSharePath()+ "/testdata/station/";
+  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
   public TestStationDataset( String name) {
     super(name);
   }

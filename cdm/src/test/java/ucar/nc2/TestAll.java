@@ -5,7 +5,6 @@ import junit.extensions.TestSetup;
 
 import java.util.List;
 import java.util.Properties;
-import java.io.File;
 
 import ucar.unidata.io.RandomAccessFile;
 
@@ -15,22 +14,30 @@ import ucar.unidata.io.RandomAccessFile;
  */
 public class TestAll {
 
-  // public static String testdataDir = "/upc/share/testdata/";
-  public static String reletiveDir = "./src/test/data/";
   public static long startTime;
 
-  private static String upcShareDirPath;
   static {
     Properties env = System.getProperties();
-    String upcSharePath = env.getProperty( "unidata.upc.share.path" );
-    if ( upcSharePath == null )
+    String path = env.getProperty( "unidata.upc.share.path" );
+    if ( path == null )
     {
-      System.out.println( "**No \"unidata.upc.share.path\"property, using \"/upc/share\"." );
-      upcSharePath = "/upc/share";
+      System.out.println( "**No \"unidata.upc.share.path\"property, using \"/upc/share/\"." );
+      path = "/upc/share/";
     }
-    upcShareDirPath = upcSharePath;
+    if ((! path.endsWith( "/")) && ! path.endsWith( "\\"))
+    {
+      path = path + "/";
+    }
+    upcShareDir = path;
   }
-  public static String getUpcSharePath() { return upcShareDirPath; }
+
+  public static String upcShareDir;
+  public static String upcShareTestDataDir = upcShareDir + "testdata/";
+
+  public static String cdmTestDataDir = "./src/test/data/";
+  // public static String testdataDir = "/upc/share/testdata/";
+
+  public static String temporaryDataDir = "./target/test/tmp/";
 
   public static junit.framework.Test suite ( ) {
     RandomAccessFile.setDebugLeaks( true);

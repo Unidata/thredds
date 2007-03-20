@@ -35,7 +35,7 @@ public class TestDatasetWrap extends TestCase {
   }
 
   public void testDatasetWrap() throws Exception {
-    doOne(TestAll.getUpcSharePath()+ "/testdata/grid/netcdf/nuwg/eta.nc");
+    doOne(TestAll.upcShareTestDataDir+ "grid/netcdf/nuwg/eta.nc");
     //readAllDir( TestAll.testdataDir+ "grid/netcdf");
   }
 

@@ -55,7 +55,7 @@ import java.io.IOException;
  */
 public class TestWriteRecord extends TestCase  {
 
-  static String fileName = TestNC2.topDir+"testWriteRecord.nc"; // default name of file created
+  static String fileName = TestAll.cdmTestDataDir +"testWriteRecord.nc"; // default name of file created
   static boolean dumpAfterCreate = false;
 
   public TestWriteRecord( String name) {

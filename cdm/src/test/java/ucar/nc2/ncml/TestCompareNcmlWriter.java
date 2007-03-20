@@ -108,7 +108,7 @@ public class TestCompareNcmlWriter extends TestCase {
      // create a file and write it out
      int pos = location.lastIndexOf("/");
      String filename = location.substring(pos+1);
-     String ncmlOut = TestDataset.xmlDir+ "tmp/"+filename+ ".ncml";
+     String ncmlOut = TestAll.temporaryDataDir + filename + ".ncml";
      System.out.println(" output filename= "+ncmlOut);
      try {
        OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));
@@ -142,7 +142,7 @@ public class TestCompareNcmlWriter extends TestCase {
     // create a file and write it out
     int pos = location.lastIndexOf("/");
     String filename = location.substring(pos+1);
-    String ncmlOut = TestDataset.xmlDir+ "tmp/"+filename+ ".ncml";
+    String ncmlOut = TestAll.temporaryDataDir + filename + ".ncml";
     System.out.println(" output filename= "+ncmlOut);
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));

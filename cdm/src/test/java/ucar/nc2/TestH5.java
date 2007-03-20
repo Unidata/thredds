@@ -7,7 +7,6 @@ import junit.framework.*;
  *
  */
 public class TestH5 {
-  public static String topdir = TestAll.getUpcSharePath()+"/testdata/hdf5/";  // "C:/data/hdf5"
   public static boolean dumpFile = false;
 
  public static NetcdfFile open( String filename) {
@@ -27,8 +26,8 @@ public class TestH5 {
 
   public static NetcdfFile openH5( String filename) {
     try {
-      System.out.println("**** Open "+TestH5.topdir+filename);
-      NetcdfFile ncfile = NetcdfFile.open(TestH5.topdir+filename);
+      System.out.println("**** Open "+ TestAll.upcShareTestDataDir + "hdf5/"+filename);
+      NetcdfFile ncfile = NetcdfFile.open( TestAll.upcShareTestDataDir + "hdf5/"+filename);
       if (TestH5.dumpFile) System.out.println("open H5 "+ncfile);
       return ncfile;
 

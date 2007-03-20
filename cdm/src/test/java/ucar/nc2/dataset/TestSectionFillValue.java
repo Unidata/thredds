@@ -55,7 +55,7 @@ public class TestSectionFillValue {
 
   public static void main(String[] args) throws IOException, InvalidRangeException {
 
-    location = TestAll.getUpcSharePath() + "/testdata/grid/netcdf/cf/CLE_year.nc";
+    location = TestAll.upcShareTestDataDir + "grid/netcdf/cf/CLE_year.nc";
     // "dods://opendap.mercator-ocean.fr/thredds/dodsC/mercatorPsy3v1R1v_glo_mean_best_estimate";
     ncDataset = NetcdfDataset.acquireDataset(location, cTask);
     VariableDS v = (VariableDS) ncDataset.findVariable("D2_SO4");

@@ -37,7 +37,7 @@ public class TestCoordinates extends TestCase {
   }
 
   public void testAlias() throws IOException {
-    String filename = TestAll.getUpcSharePath() + "/testdata/fmrc/MM_cnrm_129_red.ncml";
+    String filename = TestAll.upcShareTestDataDir + "fmrc/MM_cnrm_129_red.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
     Dimension d = ncd.findDimension("ensemble");
     assert d.getCoordinateVariables().size() > 0;

@@ -22,7 +22,7 @@ public class TestWriteFill  extends TestCase {
   }
 
   public void testCreateWithFill() throws IOException {
-    String filename = TestNC2.topDir+"testWriteFill.nc";
+    String filename = TestAll.cdmTestDataDir +"testWriteFill.nc";
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true);
 
     // define dimensions

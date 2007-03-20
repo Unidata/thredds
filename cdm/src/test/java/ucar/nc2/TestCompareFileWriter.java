@@ -4,12 +4,6 @@ import junit.framework.*;
 import java.io.*;
 import java.util.*;
 
-import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.TestDataset;
-import ucar.nc2.ncml.NcMLWriter;
-import ucar.unidata.util.StringUtil;
-
 /** test FileWriting, then reading back and comparing to original. */
 
 public class TestCompareFileWriter extends TestCase {
@@ -21,11 +15,11 @@ public class TestCompareFileWriter extends TestCase {
 
   public ArrayList files;
   public void testCompare() throws IOException {
-    doOne(TestAll.getUpcSharePath()+"/testdata/satellite/gini/n0r_20041013_1852-compress", "C:/temp/n0r_20041013_1852.nc");
+    doOne(TestAll.upcShareTestDataDir+"satellite/gini/n0r_20041013_1852-compress", "C:/temp/n0r_20041013_1852.nc");
   }
 
   public void utestCompareAll() throws IOException {
-    readAllDir(TestAll.getUpcSharePath()+"/testdata/satellite/gini/");
+    readAllDir(TestAll.upcShareTestDataDir+"satellite/gini/");
   }
 
   void readAllDir(String dirName) throws IOException {

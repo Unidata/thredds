@@ -20,7 +20,6 @@ import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,8 +31,8 @@ import java.util.List;
 public class TestTrajectoryObsDataset extends TestCase
 {
   // @todo Use properties or env vars to override default values.
-  private static String testDataDir = "./src/test/data";
-  private static String remoteTestDataDir = TestAll.getUpcSharePath() + "/testdata";
+  private static String testDataDir = TestAll.cdmTestDataDir;
+  private static String remoteTestDataDir = TestAll.upcShareTestDataDir;
 
   public TestTrajectoryObsDataset( String name )
   {

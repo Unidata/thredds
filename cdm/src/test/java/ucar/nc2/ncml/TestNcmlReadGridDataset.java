@@ -2,11 +2,8 @@ package ucar.nc2.ncml;
 
 import junit.framework.*;
 
-import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 
@@ -19,7 +16,7 @@ public class TestNcmlReadGridDataset extends TestCase {
   }
 
   GridDataset gds = null;
-  String location = "file:"+TestAll.getUpcSharePath() + "/testdata/grid/netcdf/cf/bora_test_agg.ncml";
+  String location = "file:"+TestAll.upcShareTestDataDir + "grid/netcdf/cf/bora_test_agg.ncml";
 
   public void setUp() {
     try {

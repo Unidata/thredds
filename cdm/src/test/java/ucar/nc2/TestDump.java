@@ -32,8 +32,8 @@ public class TestDump extends TestCase  {
 
   public void testNCdump() {
     try {
-      NCdump.print(TestNC2.topDir+"testWrite.nc", out, false, true, false, false, null, null);
-      NCdump.printNcML(TestNC2.topDir+"testWriteRecord.nc", out);
+      NCdump.print( TestAll.cdmTestDataDir +"testWrite.nc", out, false, true, false, false, null, null);
+      NCdump.printNcML( TestAll.cdmTestDataDir +"testWriteRecord.nc", out);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       assert (false);

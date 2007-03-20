@@ -4,10 +4,7 @@ package ucar.nc2.iosp.dmsp;
 import junit.framework.TestCase;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +23,7 @@ import java.util.TimeZone;
  */
 public class TestDmspIosp extends TestCase
 {
-  private String testFilePath = "./src/test/data/dmsp";
+  private String testFilePath = TestAll.cdmTestDataDir + "dmsp";
   private String testDataFileName = "F14200307192230.n.OIS";
 
   private String testDataFileFileIdAttValue = "/dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp";

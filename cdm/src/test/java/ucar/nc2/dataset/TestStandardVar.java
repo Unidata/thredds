@@ -9,7 +9,7 @@ import java.util.*;
 /** Test TestStandardVar in JUnit framework. */
 
 public class TestStandardVar extends TestCase {
-  private String filename = TestDataset.topDir+"standardVar.nc";
+  private String filename = TestAll.cdmTestDataDir +"standardVar.nc";
 
   public TestStandardVar( String name) {
     super(name);

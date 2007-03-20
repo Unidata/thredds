@@ -37,7 +37,7 @@ public class TestOpenInMemory extends TestCase {
   }
 
   private NetcdfFile openInMemory( String filename) throws IOException {
-      String pathname = TestNC2.topDir+filename;
+      String pathname = TestAll.cdmTestDataDir +filename;
       System.out.println("**** OpenInMemory "+pathname);
 
       byte[] ba = IO.readFileToByteArray( pathname);

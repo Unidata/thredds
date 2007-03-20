@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class TestWriteRecordStructure extends TestCase  {
 
-  static String fileName = TestNC2.topDir+"testWriteRecordStructure.nc"; // default name of file created
+  static String fileName = TestAll.cdmTestDataDir +"testWriteRecordStructure.nc"; // default name of file created
   static boolean dumpAfterCreate = false;
 
   public TestWriteRecordStructure( String name) {

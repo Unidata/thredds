@@ -1,13 +1,14 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
+import ucar.nc2.TestAll;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestNcML {
-  public static String topDir = "./src/test/data/ncml/";
+  public static String topDir = TestAll.cdmTestDataDir + "ncml/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

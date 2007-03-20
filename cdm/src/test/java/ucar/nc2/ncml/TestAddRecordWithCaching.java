@@ -42,9 +42,8 @@ public class TestAddRecordWithCaching extends TestCase {
     NetcdfFileCache.init(50, 70, 20 * 60);
   }
 
-  String metarFile = TestAll.getUpcSharePath() + "/testdata/station/ldm/metar/Surface_METAR_20060325_0000.nc";
-  String wrappedMetarFile = TestAll.getUpcSharePath() + "/testdata/station/ldm/metar/test.ncml";
-  String addingMetarFile = "test/data/tmp/addRecords.nc";
+  String metarFile = TestAll.upcShareTestDataDir + "station/ldm/metar/Surface_METAR_20060325_0000.nc";
+  String wrappedMetarFile = TestAll.upcShareTestDataDir + "station/ldm/metar/test.ncml";
 
   public void testMetarFile() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = NetcdfDataset.openDataset(metarFile, false, null);

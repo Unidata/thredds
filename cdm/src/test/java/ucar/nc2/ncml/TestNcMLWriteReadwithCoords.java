@@ -23,7 +23,7 @@ public class TestNcMLWriteReadwithCoords extends TestCase {
   }
 
   private ArrayList files;
-  private String griddir = TestAll.getUpcSharePath()+"/testdata/grid/netcdf/";
+  private String griddir = TestAll.upcShareTestDataDir + "grid/netcdf/";
 
   public void setUp() {
     files = new ArrayList();
@@ -43,15 +43,15 @@ public class TestNcMLWriteReadwithCoords extends TestCase {
     // section
     // files.add( "C:/data/conventions/awips/19981109_1200.nc");
 
-    files.add( TestAll.getUpcSharePath() + "/testdata/grid/grib/grib2/data/eta2.wmo"); //
-    files.add( TestAll.getUpcSharePath() + "/testdata/grid/grib/grib2/data/ndfd.wmo"); // */
+    files.add( TestAll.upcShareTestDataDir + "grid/grib/grib2/data/eta2.wmo"); //
+    files.add( TestAll.upcShareTestDataDir + "grid/grib/grib2/data/ndfd.wmo"); // */
 
-    files.add( TestAll.getUpcSharePath() + "/testdata/satellite/gini/n0r_20041013_1852-compress"); // */
-    files.add( TestAll.getUpcSharePath() + "/testdata/satellite/gini/ntp_20041206_2154"); // */
-    files.add( TestAll.getUpcSharePath() + "/testdata/satellite/dmsp/F14200307192230.n.OIS"); // */
+    files.add( TestAll.upcShareTestDataDir + "satellite/gini/n0r_20041013_1852-compress"); // */
+    files.add( TestAll.upcShareTestDataDir + "satellite/gini/ntp_20041206_2154"); // */
+    files.add( TestAll.upcShareTestDataDir + "satellite/dmsp/F14200307192230.n.OIS"); // */
 
-    files.add( TestAll.getUpcSharePath() + "/testdata/radar/nexrad/level2/6500KHGX20000610_000110.Z"); // */
-    files.add( TestAll.getUpcSharePath() + "/testdata/radar/nexrad/level2/KPUX_20041020_1344"); // craft */
+    files.add( TestAll.upcShareTestDataDir + "radar/nexrad/level2/6500KHGX20000610_000110.Z"); // */
+    files.add( TestAll.upcShareTestDataDir + "radar/nexrad/level2/KPUX_20041020_1344"); // craft */
   }
 
 
@@ -80,7 +80,7 @@ public class TestNcMLWriteReadwithCoords extends TestCase {
     // create a file and write it out
     int pos = location.lastIndexOf("/");
     String filename = location.substring(pos+1);
-    String ncmlOut = TestDataset.xmlDir+ "tmp/"+filename+ ".ncml";
+    String ncmlOut = TestAll.temporaryDataDir + filename + ".ncml";
     if (showFiles) System.out.println(" output filename= "+ncmlOut);
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));

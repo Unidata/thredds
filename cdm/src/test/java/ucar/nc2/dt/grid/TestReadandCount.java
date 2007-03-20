@@ -14,14 +14,13 @@ import java.util.Iterator;
 /** Count geogrid objects - sanity check when anything changes. */
 
 public class TestReadandCount extends TestCase {
-  private String outDir = "test/data/dataset/out/";
   private static boolean show = false, showCount = true;
 
   public TestReadandCount( String name) {
     super(name);
   }
 
-  private String griddir = TestAll.getUpcSharePath()+"/testdata/grid/netcdf/";
+  private String griddir = TestAll.upcShareTestDataDir+"grid/netcdf/";
 
 
   public void testRead() throws Exception {
@@ -78,23 +77,23 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"ifps/","HUNGrids.netcdf", 26, 26, 29, 0); // *
 
     // our grib reader */
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib1/data/","NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);
 
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
 
       // radar mosaic
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib1/data/","radar_national.grib", 1, -1, -1, -1);
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib1/data/","radar_regional.grib", 1, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_national.grib", 1, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, -1, -1, -1);
 
     // redo grib files, forcing new index
     GribServiceProvider.forceNewIndex = true;
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib1/data/","RUC_W.wmo", 44, -1, -1, -1);
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
-    doOne(TestAll.getUpcSharePath()+"/testdata/grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","eta2.wmo", 35, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
     GribServiceProvider.forceNewIndex = false;
   }
 

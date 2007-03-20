@@ -370,7 +370,7 @@ public class UspLightning3 implements IOServiceProvider {
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException, InvalidRangeException {
     NetcdfFile.registerIOProvider(UspLightning3.class);
-    NetcdfFile ncfile = NetcdfFile.open( TestAll.getUpcSharePath() + "/testdata/lightning/uspln/uspln_20061023.18");
+    NetcdfFile ncfile = NetcdfFile.open( TestAll.upcShareTestDataDir + "lightning/uspln/uspln_20061023.18");
     System.out.println("ncfile = \n" + ncfile);
 
     /* Variable v = ncfile.findVariable("lat");

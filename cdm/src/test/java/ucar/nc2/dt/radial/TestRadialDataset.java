@@ -2,14 +2,8 @@ package ucar.nc2.dt.radial;
 
 import junit.framework.*;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
 import ucar.nc2.util.DiskCache;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -23,7 +17,7 @@ import java.util.Date;
 
 public class TestRadialDataset extends TestCase {
   // private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
-  private String topDir = ucar.nc2.TestAll.getUpcSharePath()+ "/testdata/radar/";
+  private String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "radar/";
   private boolean show = false, showTime = false, doQuick = true;
 
   public TestRadialDataset( String name) {

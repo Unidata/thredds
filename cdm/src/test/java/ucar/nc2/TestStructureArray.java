@@ -16,7 +16,7 @@ public class TestStructureArray extends TestCase {
 
   NetcdfFile ncfile;
   protected void setUp() throws Exception {
-    ncfile = TestNC2.open(TestAll.reletiveDir+"testStructures.nc");
+    ncfile = TestNC2.open(TestAll.cdmTestDataDir +"testStructures.nc");
     ncfile.addRecordStructure();
   }
   protected void tearDown() throws Exception {
