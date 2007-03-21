@@ -106,12 +106,19 @@ public class DiskCache {
    * @param cacheDir the cache directory
    */
   static public void setRootDirectory(String cacheDir) {
+    String oldRoot = root;
     if (!cacheDir.endsWith("/"))
       cacheDir = cacheDir + "/";
     root = StringUtil.replace(cacheDir, '\\', "/"); // no nasty backslash
 
     File dir = new File(root);
-    dir.mkdirs();
+    if ( ! dir.exists())
+      if ( ! dir.mkdirs() )
+      {
+        System.out.println( "DiskCache.setRootDirectory(): could not create root directory <" + root + ">." );
+        root = oldRoot;
+        // Todo maybe throw an exception???
+      }
   }
 
    static public String getRootDirectory() { return root; }

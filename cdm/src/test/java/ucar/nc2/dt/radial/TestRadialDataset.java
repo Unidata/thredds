@@ -32,7 +32,7 @@ public class TestRadialDataset extends TestCase {
     long start = System.currentTimeMillis();
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);
     DiskCache.setCachePolicy( true);
-    DiskCache.setRootDirectory( "C:/TEMP/cache/");
+    DiskCache.setRootDirectory( System.getProperty( "java.io.tmpdir" ) + "/cache/");
     doDirectory("V:/gempak/nexrad/craft/KCCX", false, 10);
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = "+took+" msec");
@@ -41,6 +41,11 @@ public class TestRadialDataset extends TestCase {
   private int doDirectory(String dirName, boolean alwaysUncompress, int max) throws IOException {
 
     File dir = new File(dirName);
+    if ( ! dir.exists())
+    {
+      System.out.println( "TestRadialDataset.doDirectory(): non-existent directory <" + dirName + ">." );
+      throw new IllegalArgumentException( "Non-existent directory <" + dirName + ">.");
+    }
     File[] files = dir.listFiles();
     if (alwaysUncompress) {
       for (int i = 0; i < files.length; i++) {

@@ -37,6 +37,11 @@ public class TestStationDataset extends TestCase {
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
     ThreddsDataFactory.Result result = fac.openDatatype( "thredds:resolve:http://motherlode.ucar.edu:9080/thredds/idd/metar?returns=DQC", null);
+    if ( result.fatalError )
+    {
+      System.out.println( "TestStationDataset.testMetarDataset():\n" + result.errLog.toString() );
+      assert false;
+    }
     StationObsDataset sod = (StationObsDataset) result.tds;
     assert sod != null;
 
