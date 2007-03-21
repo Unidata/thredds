@@ -35,7 +35,7 @@ public class TestExistingSSTA extends TestCase {
   }
 
   public void testSSTA() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggExistingSSTA.xml";
+    String filename = "file:"+TestNcML.topDir + "aggExistingSSTA.xml";
 
     NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
     System.out.println(" TestNcmlAggExisting.open "+ filename);

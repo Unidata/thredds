@@ -882,6 +882,12 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     protected void scanDirectory(String dirName, long now, List result, CancelTask cancelTask) {
       File allDir = new File( dirName);
+      if ( ! allDir.exists())
+      {
+        String tmpMsg = "Non-existent scan location <" + dirName + "> for aggregation <" + ncDataset.getLocation() + ">.";
+        logger.error( "scanDirectory(): " + tmpMsg);
+        throw new IllegalArgumentException( tmpMsg);
+      }
       File[] allFiles = allDir.listFiles();
       for (int i = 0; i < allFiles.length; i++) {
         File f = allFiles[i];
