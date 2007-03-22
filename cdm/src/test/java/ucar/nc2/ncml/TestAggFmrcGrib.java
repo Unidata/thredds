@@ -26,7 +26,7 @@ public class TestAggFmrcGrib extends TestCase {
     //System.out.println("file="+ncfile);
 
     String timeDimName = "time";
-    int naggs = 10;
+    int naggs = 8;
 
     testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
@@ -78,7 +78,7 @@ public class TestAggFmrcGrib extends TestCase {
     Dimension runDim = ncfile.findDimension("run");
     assert null != runDim;
     assert runDim.getName().equals("run");
-    assert runDim.getLength() == nagg : runDim.getLength();
+    assert runDim.getLength() == nagg : nagg +" != "+ runDim.getLength();
   }
 
  private void testCoordVar(NetcdfFile ncfile, int n) {

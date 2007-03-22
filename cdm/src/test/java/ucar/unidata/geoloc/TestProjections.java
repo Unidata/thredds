@@ -2,6 +2,8 @@ package ucar.unidata.geoloc;
 import junit.framework.*;
 
 import ucar.unidata.geoloc.projection.*;
+import ucar.nc2.TestAll;
+
 import java.awt.geom.Point2D;
 
 /** test methods projections have in common
@@ -19,11 +21,11 @@ public class TestProjections extends TestCase {
     super(name);
   }
 
-  boolean close (double d1, double d2) {
+  /* boolean close (double d1, double d2) {
     if (count++ < 10)
       System.out.println(d1 +" " +d2);
     return Math.abs( d1-d2) < TOLERENCE;
-  }
+  } */
 
   void testProjection (ProjectionImpl proj) {
     java.util.Random r = new java.util.Random((long)this.hashCode());
@@ -36,8 +38,8 @@ public class TestProjections extends TestCase {
       ProjectionPoint p = proj.latLonToProj( startL);
       LatLonPoint endL = proj.projToLatLon( p);
 
-      assert( close(startL.getLatitude(), endL.getLatitude()))  : proj.getClass().getName()+" failed start= "+startL+" end = "+ endL;
-      assert( close(startL.getLongitude(), endL.getLongitude())) : proj.getClass().getName()+" failed start= "+startL+" end = "+ endL;
+      assert( TestAll.closeEnough(startL.getLatitude(), endL.getLatitude()))  : proj.getClass().getName()+" failed start= "+startL+" end = "+ endL;
+      assert( TestAll.closeEnough(startL.getLongitude(), endL.getLongitude())) : proj.getClass().getName()+" failed start= "+startL+" end = "+ endL;
     }
 
     ProjectionPointImpl startP = new ProjectionPointImpl();
@@ -48,8 +50,8 @@ public class TestProjections extends TestCase {
       LatLonPoint ll = proj.projToLatLon( startP);
       ProjectionPoint endP = proj.latLonToProj( ll);
 
-      assert( close(startP.getX(), endP.getX()));
-      assert( close(startP.getY(), endP.getY()));
+      assert( TestAll.closeEnough(startP.getX(), endP.getX()));
+      assert( TestAll.closeEnough(startP.getY(), endP.getY()));
     }
 
     System.out.println("Tested " +NTRIALS +" pts for projection " +proj.getClassName());

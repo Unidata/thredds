@@ -15,7 +15,7 @@ public class TestCompareFileWriter extends TestCase {
 
   public ArrayList files;
   public void testCompare() throws IOException {
-    doOne(TestAll.upcShareTestDataDir+"satellite/gini/n0r_20041013_1852-compress", "C:/temp/n0r_20041013_1852.nc");
+    doOne(TestAll.upcShareTestDataDir+"satellite/gini/n0r_20041013_1852-compress", TestAll.temporaryDataDir+"n0r_20041013_1852.nc");
   }
 
   public void utestCompareAll() throws IOException {
