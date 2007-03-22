@@ -70,7 +70,7 @@ public abstract class InvCatalog {
   }
 
   /** Get top-level datasets.
-   *  @return List of Invdataset. May be empty, may not be null.
+   *  @return List of InvDataset. May be empty, may not be null.
    */
   public java.util.List getDatasets() { return datasets; }
 

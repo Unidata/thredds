@@ -38,8 +38,17 @@ public class TestCompare {
 
   static boolean showCompare = false;
   static boolean showEach = false;
+  static boolean compareData = false;
 
-  static public void compareFiles(NetcdfFile org, NetcdfFile copy) {
+   static public void compareFiles(NetcdfFile org, NetcdfFile copy) {
+     compareFiles( org,  copy, false, false, false);
+   }
+  
+  static public void compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach) {
+    showCompare = _showCompare;
+    showEach = _showEach;
+    compareData = _compareData;
+
     if ((org.getId() != null) || (copy.getId() != null))
       assert org.getId().equals( copy.getId());
     if ((org.getTitle() != null) || (copy.getTitle() != null))
@@ -96,12 +105,14 @@ public class TestCompare {
       checkAll( orge.getCoordinateSystems(), copye.getCoordinateSystems());
     }
 
-    /* data !!
-    try {
-      compareData(org, ncml);
-    } catch (IOException e) {
-      assert false;
-    } */
+    // data !!
+    if (compareData) {
+      try {
+        compareVariableData(org, copy);
+      } catch (IOException e) {
+        assert false;
+      }
+    }
 
     // nested variables
     if (org instanceof Structure)  {
@@ -158,10 +169,10 @@ public class TestCompare {
   }
 
   static public void compareVariableData(Variable var1, Variable var2) throws IOException {
-    if (showCompare) System.out.println("compareArrays  "+var1.getName()+" "+var2.getName());
     Array data1 = var1.read();
     Array data2 = var2.read();
 
+    if (showCompare) System.out.println("compareArrays  "+var1.getName()+" "+var1.isUnlimited()+ " size = "+data1.getSize());
     compareData(data1, data2);
   }
 
@@ -195,7 +206,7 @@ public class TestCompare {
       while (iter1.hasNext()) {
           int v1 = iter1.getIntNext();
           int v2 = iter2.getIntNext();
-          assert v1 == v2 : v1 + " != "+ v2;
+          assert v1 == v2 : v1 + " != "+ v2+" count="+iter1;
       }
     }
 

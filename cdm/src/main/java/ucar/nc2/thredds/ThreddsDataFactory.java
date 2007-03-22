@@ -126,7 +126,7 @@ public class ThreddsDataFactory {
       return openResolver(location, task, result);
     }
 
-    if (!location.startsWith("http:") && !location.startsWith("file:"))
+    if (!location.startsWith("http:") && !location.startsWith("file:"))   // LOOK whats this for??
       location = "http:" + location;
 
     InvCatalog catalog;

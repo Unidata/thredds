@@ -312,6 +312,9 @@ public class InvCatalogFactory {
 
     // decide on converter based on namespace
     Element root = jdomDoc.getRootElement();
+    if (!root.getName().equalsIgnoreCase("catalog")) {
+      throw new IllegalArgumentException("not a catalog");
+    }
     String namespace = root.getNamespaceURI();
     InvCatalogConvertIF fac = (InvCatalogConvertIF) converters.get( namespace);
     if (fac == null) {

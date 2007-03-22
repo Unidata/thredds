@@ -1220,8 +1220,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   public static void main( String arg[]) throws IOException {
-    String datasetIn = "http://motherlode.ucar.edu:9080/thredds/dodsC/nexrad/level2/KVTX/20070206/Level2_KVTX_20070206_2341.ar2v";
-    String filenameOut = "C:/temp/testWriteRadar.nc";
+    //String datasetIn = "http://motherlode.ucar.edu:9080/thredds/dodsC/nexrad/level2/KVTX/20070206/Level2_KVTX_20070206_2341.ar2v";
+    String datasetIn = "//zero/share/testdata/fmrc/NAMfmrc.nc";
+    String filenameOut = "C:/temp/test.nc";
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     ucar.nc2.FileWriter.writeToFile( ncfileIn, filenameOut);
   }
