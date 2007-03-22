@@ -261,7 +261,8 @@ public class RadarLevel2Servlet extends LdmServlet {
             pw.println("");
             pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
             pw.println(" base=\"" + serviceBase + "\"/>");
-            pw.print("    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"returns=" + returns + "&amp;");
+            pw.print("    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"serviceType="+ 
+serviceType +"&amp;returns=" + returns + "&amp;");
             if( STNS != null && ! STNS[ 0 ].equals( "all" )) {
                 for (int i = 0; i < STNS.length; i++) {
                     pw.print("stn=" + STNS[i] +"&amp;");
@@ -363,7 +364,9 @@ public class RadarLevel2Servlet extends LdmServlet {
             } else if (p.p_isodate.matcher(dtime).find()) {
                 dateStart = dateEnd = dtime;
             } else {
-                pw.println("time is invalid " + dtime);
+                pw.println("        <p>time is invalid "+ dtime +"<p>");
+                pw.println("    </dataset>");
+                pw.println("</catalog>");
                 return;
             }
             //pw.println("dateStart =" + dateStart);
@@ -503,7 +506,7 @@ public class RadarLevel2Servlet extends LdmServlet {
             //pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
              pw.println( stn +"/"+ pDay +"/"+ product +"\"/>" );
         } else if (p.p_DODS_i.matcher(serviceType).find()) {
-            pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
+            pw.println("serviceType="+ serviceType +"&amp;returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
             //pw.println( "<a href=\""+ serviceBase + stn +"/"+ pDay +"\">"+
             //   product +"</a>" );
         }
