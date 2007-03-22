@@ -32,7 +32,7 @@ public class TestStationDataset extends TestCase {
     testAllMethods( topDir+"ldm/metar/Surface_METAR_20060325_0000.nc");
   }
 
-  public void testMetarDataset() throws IOException {
+  public void utestMetarDataset() throws IOException {
     long start = System.currentTimeMillis();
 
     ThreddsDataFactory fac = new ThreddsDataFactory();

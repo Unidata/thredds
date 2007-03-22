@@ -4,6 +4,7 @@ import junit.framework.*;
 
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.dt.*;
+import ucar.nc2.TestAll;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -33,16 +34,15 @@ public class TestRadialDataset extends TestCase {
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);
     DiskCache.setCachePolicy( true);
     DiskCache.setRootDirectory( System.getProperty( "java.io.tmpdir" ) + "/cache/");
-    doDirectory("V:/gempak/nexrad/craft/KCCX", false, 10);
+    doDirectory(TestAll.upcShareTestDataDir + "radar/nexrad/level2/", false, 10, ".raw");
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = "+took+" msec");
   }
 
-  private int doDirectory(String dirName, boolean alwaysUncompress, int max) throws IOException {
+  private int doDirectory(String dirName, boolean alwaysUncompress, int max, String suffix) throws IOException {
 
     File dir = new File(dirName);
-    if ( ! dir.exists())
-    {
+    if ( ! dir.exists())  {
       System.out.println( "TestRadialDataset.doDirectory(): non-existent directory <" + dirName + ">." );
       throw new IllegalArgumentException( "Non-existent directory <" + dirName + ">.");
     }
@@ -63,8 +63,8 @@ public class TestRadialDataset extends TestCase {
       if (path.endsWith(".uncompress")) continue;
 
       if (file.isDirectory())
-        count += doDirectory(path, alwaysUncompress, max);
-      else {
+        count += doDirectory(path, alwaysUncompress, max, suffix);
+      else if (path.endsWith(suffix)) {
         testAllMethods( path );
         count++;
       }
