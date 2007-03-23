@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
+import java.text.ParseException;
 
 /**
  * Convenience routines for parsing a String to produce a Date.
@@ -55,6 +56,7 @@ public class DateFromString
    *
    * @param dateString the String to be parsed
    * @param dateFormatString the date format String
+   * @param demark the demarkation character
    * @return the Date that was parsed.
    */
   public static Date getDateUsingDemarkatedCount( String dateString, String dateFormatString, char demark )
@@ -85,6 +87,7 @@ public class DateFromString
    *
    * @param dateString the String to be parsed
    * @param dateFormatString the date format String
+   * @param demark the demarkation character
    * @return the Date that was parsed.
    */
   public static Date getDateUsingDemarkatedMatch( String dateString, String dateFormatString, char demark )
@@ -160,8 +163,11 @@ public class DateFromString
   {
     SimpleDateFormat dateFormat = new SimpleDateFormat( dateFormatString, Locale.US );
     dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-    // Might want to do dateFormat.setLenient( false)
-    return dateFormat.parse( dateString, new ParsePosition( startIndex ) );
+
+    // We have to cut off the dateString, so that it doesnt grab extra characters.
+    // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
+    String s = dateString.substring( 0, startIndex + dateFormatString.length());
+    return dateFormat.parse( s, new ParsePosition( startIndex ) );
   }
 
   /**
@@ -217,7 +223,7 @@ public class DateFromString
     // substituting the capture groups into the substitution pattern.
     StringBuffer dateStringFormatted = new StringBuffer();
     matcher.appendReplacement( dateStringFormatted, substitutionPattern );
-    if ( dateStringFormatted == null || dateStringFormatted.length() == 0 )
+    if ( dateStringFormatted.length() == 0 )
     {
       return null;
     }
@@ -225,7 +231,7 @@ public class DateFromString
     return getDateUsingCompleteDateFormat( dateStringFormatted.toString(), dateFormatString );
   }
 
-  public static void main(String args[]) {
+  public static void main(String args[]) throws ParseException {
    /*  dateString =  /data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc
    *  dateFormatString =                    #wrfout_d01_#yyyy-MM-dd_HHmm
    *  would extract the date 2006-07-06T08:00
@@ -244,8 +250,11 @@ public class DateFromString
     Date result = getDateUsingDemarkatedMatch( "/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc", "#wrfout_d01_#yyyy-MM-dd_HHmm", '#' );
     System.out.println(" 2006-07-06_080000 -> "+formatter.toDateTimeStringISO( result));
 
-    result = getDateUsingDemarkatedMatch( "/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc", "yyyyMMddHH#/wrfout_d01_#", '#' );
-    System.out.println(" 2006070611 -> "+formatter.toDateTimeStringISO( result));
+    result = getDateUsingDemarkatedMatch( "C:\\data\\nomads\\gfs-hi\\gfs_3_20061129_0600", "#gfs_3_#yyyyMMdd_HH", '#' );
+    System.out.println(" 20061129_06 -> "+formatter.toDateTimeStringISO( result));
+
+    System.out.println(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06"));
+    System.out.println(new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_0600"));
 
   }
 

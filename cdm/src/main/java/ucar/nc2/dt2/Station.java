@@ -1,0 +1,15 @@
+
+package ucar.nc2.dt2;
+
+/**
+ * A named location on the Earth.
+ * @author caron
+ */
+public interface Station extends EarthLocation {
+  /** Station name. Must be unique within the collection */
+  public String getName();
+  /** Station description */
+  public String getDescription();
+  /** WMO Station ID (optional) */
+  public String getWmoId();
+}

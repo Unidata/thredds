@@ -22,6 +22,8 @@ package ucar.nc2.dods;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.*;
 import ucar.unidata.util.StringUtil;
 
@@ -760,6 +762,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     for (int i = 0; i < atts.size(); i++) {
       DODSAttribute ncatt = (DODSAttribute) atts.get(i);
       v.addAttribute(ncatt);
+    }
+
+    // this is the case where its (probably) a Grid, and so _Coordinate.Axes has been assigned, but if
+    // theres alaso a coordinates attribute, need to add that info
+    Attribute axes = v.findAttribute("coordinates");
+    Attribute _axes = v.findAttribute(_Coordinate.Axes);
+    if ((null != axes) && (null != axes)) {
+      v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue()+" "+_axes.getStringValue()));
     }
   }
 

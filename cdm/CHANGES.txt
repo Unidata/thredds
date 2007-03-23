@@ -19,6 +19,9 @@ Changes in version 2.2.19
   * protected NetcdfFile constructor for passing in iosp class name
   * add GridCoordSys.getLatLon()
  Bugs
+  * thredds.util.getDateUsingCompleteDateFormatWithOffset() : SimpleDateFormat is grabbing extra characters at the end.
+      Filed bug report with Sun. workaround : truncate the input string.
+  * DODS Grids: check for coordinates attribute, add to _Coordinate.Axes
   * NetcdfFileWriteable: bug when FillValue = ""
   * COARDS: dont assign units="m" to AxisType.HEIGHT
   * AggregationNew: look for _CoordinateAxes and add new dimension

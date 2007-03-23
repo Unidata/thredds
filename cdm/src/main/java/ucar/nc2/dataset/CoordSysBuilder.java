@@ -601,7 +601,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
       VarProcess ap = findVarProcess( vname); // LOOK: full vs short name
-      if (ap != null)
+      if ((ap != null) && !axesList.contains(ap.v))
         axesList.add( ap.v);
       else {
         parseInfo.append("***Cant find Coordinate Axis "+vname+" referenced from var= "+varName+"\n");
@@ -1044,7 +1044,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       while (stoker.hasMoreTokens()) {
         String vname = stoker.nextToken();
         VarProcess ap = findVarProcess( vname); // LOOK: full vs short name
-        if (ap != null)
+        if ((ap != null) && !axesList.contains(ap.v))
           axesList.add( ap.v);
         else {
           parseInfo.append(" Cant find axes "+vname+ " for Coordinate System "+v.getName()+"\n");
@@ -1078,7 +1078,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess( vname); // LOOK: full vs short name
-          if (ap != null)
+          if ((ap != null) && !axesList.contains(ap.v))
             axesList.add( ap.v);
         }
       } else if (coordinates != null) { // CF partial listing of axes
