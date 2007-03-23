@@ -143,6 +143,12 @@
     <servlet-class>thredds.servlet.idd.MetarServlet</servlet-class>
   </servlet>
 
+  <!-- Radar DQC Server -->
+  <servlet>
+    <servlet-name>RadarLevel2Servlet</servlet-name>
+    <servlet-class>thredds.servlet.idd.RadarLevel2Servlet</servlet-class>
+  </servlet>
+
   <!-- Netcdf Server -->
   <servlet>
     <servlet-name>NetcdfServer</servlet-name>
@@ -287,6 +293,11 @@
   <servlet-mapping>
     <servlet-name>MetarServlet</servlet-name>
     <url-pattern>/idd/metar/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>RadarLevel2Servlet</servlet-name>
+    <url-pattern>/idd/radarLevel2/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
