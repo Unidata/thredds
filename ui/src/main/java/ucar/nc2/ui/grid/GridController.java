@@ -23,6 +23,8 @@ package ucar.nc2.ui.grid;
 import ucar.ma2.Array;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.*;
 import ucar.unidata.geoloc.*;
 
 import thredds.viewer.ui.*;
@@ -490,6 +492,18 @@ public class GridController {
   }
 
   String getDatasetXML() {
+    if (gridDataset == null) return "";
+    try {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      GridDatasetInfo info = new GridDatasetInfo((ucar.nc2.dt.grid.GridDataset) gridDataset, "path");
+      info.writeXML( bos);
+      return bos.toString();
+    } catch (IOException ioe) {}
+    return "";
+  }
+
+
+  String getNcML() {
     if (gridDataset == null) return "";
     try {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);

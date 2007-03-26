@@ -1352,9 +1352,10 @@ public class ToolsUI extends JPanel {
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            detailTA.setText(ds.getInfo().writeXML());
+            NetcdfDatasetInfo info = ds.getInfo();
+            detailTA.setText(info.writeXML());
             detailTA.appendLine("----------------------");
-            detailTA.appendLine(ds.getInfo().getParseInfo().toString());
+            detailTA.appendLine(info.getParseInfo().toString());
             detailTA.gotoTop();
             detailWindow.show();
           }

@@ -25,7 +25,10 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
@@ -38,8 +41,7 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 
 /**
- * A helper class for GridDataset to obtain information.
- * Creates a "gridDatasetInfo" XML document, used by the TDS "Common Data Model Coordinate System Validation".
+ * A helper class to GridDataset; creates a GridDatasetInfo XML document.
  *
  * @author caron
  * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
@@ -50,39 +52,49 @@ public class GridDatasetInfo {
   private StringBuffer parseInfo = new StringBuffer();
   private StringBuffer userAdvice = new StringBuffer();
 
-  public GridDatasetInfo( GridDataset gds, String path) {
+  public GridDatasetInfo(GridDataset gds, String path) {
     this.gds = gds;
     this.path = path;
   }
 
-  /** Detailed information when the coordinate systems were parsed */
-  public StringBuffer getParseInfo( ) {
+  /**
+   * Detailed information when the coordinate systems were parsed
+   */
+  public StringBuffer getParseInfo() {
     return parseInfo;
   }
-  /** Specific advice to a user about problems with the coordinate information in the file. */
-  public StringBuffer getUserAdvice( ) {
+
+  /**
+   * Specific advice to a user about problems with the coordinate information in the file.
+   */
+  public StringBuffer getUserAdvice() {
     return userAdvice;
   }
 
-  void addParseInfo( String info) {
+  void addParseInfo(String info) {
     parseInfo.append(info);
   }
-  void addUserAdvice( String advice) {
+
+  void addUserAdvice(String advice) {
     userAdvice.append(advice);
   }
 
-  /** Write the information as an XML document */
-  public String writeXML( )  {
-    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
-    return fmt.outputString( makeDocument());
+  /**
+   * Write the information as an XML document
+   */
+  public String writeXML() {
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    return fmt.outputString(makeDocument());
   }
 
   public void writeXML(OutputStream os) throws IOException {
-    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
-    fmt.output( makeDocument(), os);
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(makeDocument(), os);
   }
 
-  /** Create an XML document from this info */
+  /**
+   * Create an XML document from this info
+   */
   public Document makeDocument() {
     Element rootElem = new Element("gridDatasetInfo");
     Document doc = new Document(rootElem);
@@ -92,19 +104,39 @@ public class GridDatasetInfo {
     int nDataVariables = 0;
     int nOtherVariables = 0;
 
+    LatLonRect bb = null;
     List grids = gds.getGrids();
     for (int i = 0; i < grids.size(); i++) {
-      GeoGrid grid =  (GeoGrid) grids.get(i);
+      GeoGrid grid = (GeoGrid) grids.get(i);
       nDataVariables++;
       Element gridElem = new Element("grid");
       rootElem.addContent(gridElem);
       gridElem.setAttribute("name", grid.getName());
+
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      LatLonRect rect = gcs.getLatLonBoundingBox();
+      if (null == bb)
+        bb = rect;
+      else if (!bb.equals(rect))
+        bb.extend(rect);
+    }
+
+    // add lat/lon bounding box
+    if (bb != null) {
+      Element bbElem = new Element("horizBB");
+      rootElem.addContent(bbElem);
+      LatLonPoint llpt = bb.getLowerLeftPoint();
+      LatLonPoint urpt = bb.getUpperRightPoint();
+      bbElem.setAttribute("west", ucar.unidata.util.Format.dfrac(llpt.getLongitude(), 4));
+      bbElem.setAttribute("east", ucar.unidata.util.Format.dfrac(urpt.getLongitude(), 4));
+      bbElem.setAttribute("south", ucar.unidata.util.Format.dfrac(llpt.getLatitude(), 4));
+      bbElem.setAttribute("north", ucar.unidata.util.Format.dfrac(urpt.getLatitude(), 4));
     }
 
     return doc;
   }
 
-  private String getDecl( VariableEnhanced ve) {
+  private String getDecl(VariableEnhanced ve) {
     StringBuffer sb = new StringBuffer();
     sb.append(ve.getDataType().toString());
     sb.append(" ");
@@ -112,7 +144,7 @@ public class GridDatasetInfo {
     return sb.toString();
   }
 
-  private String getCoordSys( VariableEnhanced ve) {
+  private String getCoordSys(VariableEnhanced ve) {
     List csList = ve.getCoordinateSystems();
     if (csList.size() == 1) {
       CoordinateSystem cs = (CoordinateSystem) csList.get(0);
@@ -245,17 +277,19 @@ public class GridDatasetInfo {
     return su.getUnit().getCanonicalString();
   }
 
-  /** debug */
+  /**
+   * debug
+   */
   public static void main(String args[]) throws IOException {
     String url = "C:/data/grib/ruc/c20s/RUC2_CONUS_20km_surface_20060327_0900.grib1";
 
     GridDataset ncd = GridDataset.open(url);
-    GridDatasetInfo info = new GridDatasetInfo( ncd, "path");
+    GridDatasetInfo info = new GridDatasetInfo(ncd, "path");
     FileOutputStream fos2 = new FileOutputStream("C:/TEMP/gridInfo.xml");
     info.writeXML(fos2);
     fos2.close();
 
-    String infoString = info.writeXML();    
+    String infoString = info.writeXML();
     System.out.println(infoString);
   }
 

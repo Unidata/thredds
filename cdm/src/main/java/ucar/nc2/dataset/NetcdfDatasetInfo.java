@@ -38,8 +38,9 @@ import java.io.OutputStream;
 
 /**
  * Helper class for obtaining information about a NetcdfDataset.
+ * Creates a "netcdfDatasetInfo" XML document, used by the TDS "Common Data Model Coordinate System Validation".
+ *
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class NetcdfDatasetInfo {
   private NetcdfDataset ds;

@@ -101,15 +101,16 @@ public class GridUI extends JPanel {
 
   // actions
   private AbstractAction redrawAction;
-  private AbstractAction chooseProjectionAction, saveCurrentProjectionAction, chooseColorScaleAction;
-  private AbstractAction showDatasetXMLAction, showGridTableAction, showNetcdfDatasetAction, chooseLocalDatasetAction;
+  private AbstractAction showDatasetInfoAction;
+  private AbstractAction showNcMLAction;
+  private AbstractAction showGridTableAction;
+  private AbstractAction showGridDatasetInfoAction;
+  private AbstractAction showNetcdfDatasetAction;
   private AbstractAction minmaxHorizAction, minmaxVertAction, minmaxVolAction, minmaxHoldAction;
   private AbstractAction  fieldLoopAction, levelLoopAction, timeLoopAction;
- // private AbstractAction  geotiffAction;
 
   // state
   private boolean selected = false;
-  private AbstractAction showDatasetInfoAction; // , showNetcdfXMLAction;
   private int mapBeanCount = 0;
 
   // debugging
@@ -203,9 +204,10 @@ public class GridUI extends JPanel {
     selected = b;
 
     showGridTableAction.setEnabled( b);
-    showDatasetInfoAction.setEnabled( b);
-    showDatasetXMLAction.setEnabled( b);
+    showNcMLAction.setEnabled( b);
+    showNcMLAction.setEnabled( b);
     showNetcdfDatasetAction.setEnabled( b);
+    showGridDatasetInfoAction.setEnabled( b);
     //showNetcdfXMLAction.setEnabled( b);
 
     navToolbarAction.setEnabled( b);
@@ -354,23 +356,23 @@ public class GridUI extends JPanel {
   private void makeActionsDataset() {
 
       // choose local dataset
-    chooseLocalDatasetAction = new AbstractAction() {
+    AbstractAction chooseLocalDatasetAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         String filename = fileChooser.chooseFilename();
         if (filename == null) return;
 
         InvDataset invDs;
         try {
-          invDs = new InvDatasetImpl( filename, thredds.catalog.DataType.GRID, ServiceType.NETCDF);
+          invDs = new InvDatasetImpl(filename, DataType.GRID, ServiceType.NETCDF);
         } catch (Exception ue) {
-          javax.swing.JOptionPane.showMessageDialog(GridUI.this, "Invalid filename = <"+filename+">\n"+ue.getMessage());
+          JOptionPane.showMessageDialog(GridUI.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
           ue.printStackTrace();
           return;
         }
-        setDataset( invDs );
+        setDataset(invDs);
       }
     };
-    BAMutil.setActionProperties( chooseLocalDatasetAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+    BAMutil.setActionProperties(chooseLocalDatasetAction, "FileChooser", "open Local dataset...", false, 'L', -1);
 
     /* saveDatasetAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -437,10 +439,6 @@ public class GridUI extends JPanel {
         }
 
         datasetInfoTA.clear();
-        //datasetInfoTA.appendLine( "File Information:" );
-        //datasetInfoTA.appendLine( controller.getDatasetDetails());
-       // datasetInfoTA.appendLine( "===========================================================" );
-        //datasetInfoTA.appendLine( "Dataset Information:" );
         datasetInfoTA.appendLine( controller.getDatasetInfo());
         datasetInfoTA.gotoTop();
         infoWindow.show();
@@ -448,11 +446,29 @@ public class GridUI extends JPanel {
     };
     BAMutil.setActionProperties( showDatasetInfoAction, "Information", "Show info...", false, 'S', -1);
 
-    showDatasetXMLAction = new AbstractAction() {
+    showNcMLAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (ncmlWindow == null) {
           ncmlTA = new TextHistoryPane();
-          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlWindow);
+          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
+          ncmlWindow.setSize(700,700);
+          ncmlWindow.setLocation(200, 70);
+        }
+
+        ncmlTA.clear();
+        //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
+        ncmlTA.appendLine( controller.getNcML());
+        ncmlTA.gotoTop();
+        ncmlWindow.show();
+      }
+    };
+    BAMutil.setActionProperties( showNcMLAction, null, "Show NcML...", false, 'X', -1);
+
+    showGridDatasetInfoAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        if (ncmlWindow == null) {
+          ncmlTA = new TextHistoryPane();
+          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
           ncmlWindow.setSize(700,700);
           ncmlWindow.setLocation(200, 70);
         }
@@ -464,7 +480,7 @@ public class GridUI extends JPanel {
         ncmlWindow.show();
       }
     };
-    BAMutil.setActionProperties( showDatasetXMLAction, null, "Show NcML XML...", false, 'X', -1);
+    BAMutil.setActionProperties( showGridDatasetInfoAction, null, "Show GridDataset Info XML...", false, 'X', -1);
 
       // show gridTable
     showGridTableAction = new AbstractAction() {
@@ -786,7 +802,8 @@ public class GridUI extends JPanel {
       // Info
     BAMutil.addActionToMenu( datasetMenu, showGridTableAction);
     BAMutil.addActionToMenu( datasetMenu, showDatasetInfoAction);
-    BAMutil.addActionToMenu( datasetMenu, showDatasetXMLAction);
+    BAMutil.addActionToMenu( datasetMenu, showNcMLAction);
+    BAMutil.addActionToMenu( datasetMenu, showGridDatasetInfoAction);
     BAMutil.addActionToMenu( datasetMenu, showNetcdfDatasetAction);
     // BAMutil.addActionToMenu( datasetMenu, geotiffAction);
     //BAMutil.addActionToMenu( infoMenu, showNetcdfXMLAction);

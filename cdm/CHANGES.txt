@@ -32,6 +32,9 @@ Changes in version 2.2.19
   * M3IOConvention wasnt working 
   * Grib2: levels 0 and 255 means no level name
   * NCdump.print was using NetcdfFileCache
+ ToolsUI
+  * GridUI: bug in showDatasetXMLAction, rename showNcML; add showGridDatasetInfo XML
+  * add refresh button to FileManager
  Libraries
   * opendap now in seperate jar, includes gnu-regexp
   * bring ucar.util.prefs into ui module, use jgoodies.forms.1.0.7
