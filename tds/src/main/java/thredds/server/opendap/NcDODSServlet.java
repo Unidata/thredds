@@ -49,7 +49,7 @@ import thredds.servlet.*;
  * @version $Id: NcDODSServlet.java 51 2006-07-12 17:13:13Z caron $
  */
 
-public class NcDODSServlet extends javax.servlet.http.HttpServlet { // opendap.servlet.AbstractServlet {
+public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   static final String GDATASET = "guarded_dataset";
 
   private org.slf4j.Logger log;
