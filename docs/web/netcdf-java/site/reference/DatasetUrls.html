@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+<style type="text/css">
+<!--
+.style1 {font-weight: bold}
+-->
+</style>
+</head>
+
+<body>
+<h1>Dataset URLs </h1>
+<p>The netCDF-Java library can read <em><strong>datasets</strong></em> from a variety of sources. The dataset is named using a Uniform Resource Location (<em><strong>URL</strong></em>). This page summarizes the netCDF-Java API use of URLs.</p>
+<h2>ucar.nc2.NetcdfFile.open(String location) </h2>
+<p>1. NetcdfFile can work with <em><strong>local files</strong></em>, e.g: </p>
+<ul>
+  <li><em><strong>/usr/share/data/model.nc </strong></em></li>
+  <li><em><strong>C:/share/data/model.nc</strong></em></li>
+  <li><em><strong>file:/usr/share/data/model.nc </strong></em></li>
+  <li><em><strong>data/model.nc </strong></em> (relative to the current working directory)</li>
+</ul>
+<p>2. NetcdfFile can open <em><strong>remote files</strong></em>, served over HTTP, for example: </p>
+<ul>
+  <li><em><strong>http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc</strong></em></li>
+</ul>
+<p>The HTTP server must implement the <strong>getRange</strong> header. Performance will be strongly affected by file format and the data access pattern. </p>
+<p>The local or remote file must be one of the formats that the netCDF-Java library can read, e.g. netCDF-3, netCDF-3, HDF5, GRIB-1, GRIB-2, or any of the other formats with an IO Service Provider implementation. We call this set of files Common Data Model files, (or <em><strong>CDM files</strong></em> for short), to make clear that the NetCDF-Java library is not limited to netCDF files. </p>
+<p>If the URL ends with a with &quot;.Z&quot;, &quot;.zip&quot;, &quot;.gzip&quot;, &quot;.gz&quot;, or &quot;.bz2&quot;, the file is assumed to be <em><strong>compressed</strong></em>. The netCDF-Java library will uncompress/unzip and write a new file without the suffix, then read from the uncompressed file. Generally it prefers to place the uncompressed file in the same directory as the original file. If it does not have write permission on that directory, it will use the directory defined by ucar.nc2.util.DiskCache class.</p>
+<h2>ucar.nc2.dataset.NetcdfDataset.openFile(String location) </h2>
+<p>NetcdfDataset  opens the same URLs that NetcdfFile can open, plus the following:</p>
+<p>1. NetcdfDataset can open <em><strong>OPeNDAP</strong></em> datasets, which use a <em>dods:</em> or <em>http:</em> prefix, for example: </p>
+<ul>
+  <li><em><strong>http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1</strong></em></li>
+  <li><em><strong>dods://motherlode.ucar.edu:8080/thredds/models/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20070313_1200.nc</strong></em></li>
+</ul>
+<p>To avoid confusion with remote HTTP files, OPeNDAP URLs are often converted to use the <em>dods</em>: prefix. Also note that when passing an OPeNDAP dataset URL to the netCDF-Java library, do not include any of the access suffixes, e.g. <em>.dods, .ascii, .dds</em>, etc. </p>
+<p>2. NetcdfDataset can open <em><strong>NcML</strong></em> datasets, which may be local or remote, and must end with a <em>.xml</em> or <em>.ncml</em> suffix, for example: </p>
+<ul>
+  <li><em><strong>/usr/share/data/model.ncml</strong></em></li>
+  <li><em><strong>file:/usr/share/data/model.ncml </strong></em></li>
+  <li><em><strong>http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.xml</strong></em></li>
+</ul>
+<p>Because xml is so widely used, we recommend using the <em>.ncml</em> suffix when possible.</p>
+<p>3. NetcdfDataset can open <em><strong>THREDDS</strong></em> datasets, which are contained in THREDDS Catalogs. The general form is <strong><em>thredds</em></strong><em>:catalogURL#dataset_id , </em>where <em>catalogURL</em> is the URL of a THREDDS catalog, and <em>dataset_id</em> is the ID of a dataset inside of that catalog. The therdds: prefix ensures that it is understood as a THERDDS dataset. Example:</p>
+<ul>
+  <li><em><strong>thredds:http://localhost:8080/test/addeStationDataset.xml#surfaceHourly </strong></em></li>
+  <li><em><strong>thredds:file:c:/dev/netcdf-java-2.2/test/data/catalog/addeStationDataset.xml#AddeSurfaceData</strong></em></li>
+</ul>
+<p>In the first case, <em><strong>http://localhost:8080/test/addeStationDataset.xml</strong></em> must be a catalog containing a dataset with ID <em><strong>surfaceHourly</strong></em>. The second case will open a catalog stored at <em><strong>c:/dev/netcdf-java-2.2/test/data/catalog/addeStationDataset.xml</strong></em> and look for a dataset with ID <em><strong>AddeSurfaceData</strong></em>.</p>
+<p>NetcdfDataset will examine the dataset and extract the dataset URL and open it and return a NetcdfDataset. (If there are more than one <strong><em>dataset access URL</em></strong>, it will choose  a service that it understands the best, like OPeNDAP). The dataset metadata in the THREDDS catalog may be used to augment the metadata of the NetcdfDataset.</p>
+<p>4. NetcdfDataset can open <em><strong>THREDDS</strong></em> <em><strong>Resolver</strong></em> datasets, which have the form <strong><em>thredds:resolve:resolverURL</em></strong>. In this case it expects that the <strong><em>resolverURL</em></strong> will return a catalog with a single top level dataset, which is the target dataset. Example: </p>
+<ul class="style1">
+  <li><em>thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></li>
+</ul>
+<p>In this case, <strong><em>http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></strong> returns a catalog contining the latest dataset in the <strong><em>NCEP/NAM/CONUS_12km</em></strong> collection. NetcdfDataset will read the catalog, extract  the THREDDS dataset, and open it as in section 3 above. </p>
+<h3>ucar.nc2.dataset.NetcdfDataset.openDataset(String location) </h3>
+<p>NetcdfDataset.openDataset() simply calls a NetcdfDataset.openFile(), then enhances the dataset by 1) dealing with packed variables and missing values (if present), and 2) adding coordinate systems if possible. </p>
+<h2>NcML referenced datasets</h2>
+<p>NcML datasets typically reference other CDM datasets, using the <em>location</em> attribute of the <em>netcdf</em> element, for example:</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
+     <strong>location</strong>="file:/dev/netcdf-java-2.2/test/data/example1.nc"&gt;
+...</pre>
+<p>Allowable forms of the referenced dataset location are: </p>
+<ul>
+  <li>an absolute HTTP URL (eg <strong>http://server/myfile.nc</strong>)</li>
+  <li>An absolute file URL with an absolute path (eg <strong>file:/usr/local/data/mine.nc</strong>). You can sometimes omit the <strong>file:</strong> prefix, but not always, so we recommend using the <strong>file:</strong> prefix. </li>
+  <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened reletive to the working directory. </li>
+  <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
+</ul>
+<h2><br>
+ucar.nc2.dt.TypedDatasetFactory</h2>
+<p>The TypedDatasetFactory creates <em><strong>Scientific Typed Datasets</strong></em> such as GridDatasets, PointObsDatasets, RadialDatasetSweep, etc. Usually (but not always) these are based on NetcdfDataset objects. </p>
+<h3>ucar.nc2.dt.TypedDatasetFactory.open( thredds.catalog.DataType datatype, String location)</h3>
+<p>TypedDatasetFactory.open()  calls NetcdfDataset.openDataset(), then looks for an implementation of the TypedDatasetFactoryIF (interface) that knows how to create a TypedDataset out of the NetcdfDataset. If the thredds.catalog.DataType datatype parameter is not null, it will only look for factories that return that type. </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; </p>
+<p>The TypedDatasetFactory creates <em><strong>Scientific Typed Datasets</strong></em> such as GridDatasets, PointObsDatasets, RadialDatasetSweep, etc. </p>
+<p><br>
+  4. NetcdfDataset can open <em><strong>THREDDS</strong></em> <em><strong>Resolver</strong></em> datasets, which have the form <strong><em>thredds:resolve:resolverURL</em></strong>. In this case it expects that the <strong><em>resolverURL</em></strong> will return a catalog with a single top level dataset, which is the target dataset. Example: </p>
+<ul class="style1">
+  <li><em>thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></li>
+  <li><em>thredds:resolve:http://motherlode.ucar.edu:9080/thredds/idd/metar?returns=DQC</em></li>
+</ul>
+<p>In this case, <strong><em>http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></strong> returns a catalog contining the latest dataset in the <strong><em>NCEP/NAM/CONUS_12km</em></strong> collection. In the second case, <strong><em>http://motherlode.ucar.edu:9080/thredds/idd/metar?returns=DQC</em></strong> returns </p>
+<p>&nbsp; </p>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 20, 2007 
+</address>
+<p>&nbsp;</p>
+</body>
+</html>
