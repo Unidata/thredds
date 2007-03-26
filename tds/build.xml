@@ -80,7 +80,7 @@
   <property name="netcdf.jar" value="release/netcdf-2.2.19.jar"/>
   <property name="grib.jar" value="release/grib-5.1.00.jar"/>
   <property name="prefs.jar" value="release/prefsAll.jar"/>
-  <property name="opendap.jar" value="release/javadap-2.0.jar"/>
+  <property name="opendap.jar" value="release/opendap-2.0.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
