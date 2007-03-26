@@ -67,15 +67,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/servlet-api.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/bloat-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -104,6 +95,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/db4o-6.0-db4ounit.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/tomcat-5.5.20_servlet-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -238,7 +238,7 @@
     <containerElement type="library" level="module">
       <attribute name="method" value="0" />
       <attribute name="URI" value="&lt;N/A&gt;" />
-      <url>jar://$MODULE_DIR$/../lib/external/servlet-api.jar!/</url>
+      <url>jar://$MODULE_DIR$/../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -251,7 +251,7 @@
       <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.00.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
-      <attribute name="method" value="0" />
+      <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/grib-5.1.02.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.02.jar!/</url>
     </containerElement>
@@ -259,6 +259,11 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/javadap-2.0.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/javadap-2.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="0" />
+      <attribute name="URI" value="/WEB-INF/lib/opendap-2.0.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/opendap-2.0.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />

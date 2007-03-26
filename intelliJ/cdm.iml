@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4" relativePaths="true" type="JAVA_MODULE">
   <component name="ModuleRootManager" />
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_4" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../cdm/target/classes" />
     <exclude-output />
     <output-test url="file://$MODULE_DIR$/../cdm/target/test/classes" />
@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/timing/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../cdm/doc" />
+      <excludeFolder url="file://$MODULE_DIR$/../cdm/src/main/java/ucar/nc2/dt2" />
       <excludeFolder url="file://$MODULE_DIR$/../cdm/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -111,16 +112,16 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/javadap-2.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/grib-5.1.02.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/grib-5.1.02.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/opendap-2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -19,7 +19,7 @@ Changes in version 2.2.19
   * protected NetcdfFile constructor for passing in iosp class name
   * add GridCoordSys.getLatLon()
  Bugs
-  * thredds.util.getDateUsingCompleteDateFormatWithOffset() : SimpleDateFormat is grabbing extra characters at the end.
+  * thredds.util.getDateUsingCompleteDateFormatWithOffset() : java.text.SimpleDateFormat is grabbing extra characters at the end.
       Filed bug report with Sun. workaround : truncate the input string.
   * DODS Grids: check for coordinates attribute, add to _Coordinate.Axes
   * NetcdfFileWriteable: bug when FillValue = ""
@@ -36,13 +36,13 @@ Changes in version 2.2.19
   * GridUI: bug in showDatasetXMLAction, rename showNcML; add showGridDatasetInfo XML
   * add refresh button to FileManager
  Libraries
-  * opendap now in seperate jar, includes gnu-regexp
+  * opendap now in seperate jar opendap.2.0, includes gnu-regexp, gnu-getopt
   * bring ucar.util.prefs into ui module, use jgoodies.forms.1.0.7
   * upgrade visadNoDods.jar to latest(01/29/07) CVS version
   * upgrade commons libraries: httpclient.3.0.1, logging-1.1
   * upgrade log4j : nlog4j.1.2.25, slf4j-jdk14-1.2
   * detect if java version 1.5+ in XMLEntityResolver, dont need to include Xerces if so.
-  * grib-5.1.00
+  * grib-5.1.02
   * bufr-1.1.00
 
  Changes in version 2.2.18

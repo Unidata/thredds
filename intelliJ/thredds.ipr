@@ -15,8 +15,8 @@
       <customJdkName value="" />
       <maximumHeapSize value="128" />
       <properties />
-      <executeOn event="beforeRun" target="makeWar" runConfigurationType="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" runConfigurationName="tds" />
       <executeOn event="beforeRun" target="makeWar" runConfigurationType="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" runConfigurationName="TDS" />
+      <executeOn event="beforeRun" target="makeWar" runConfigurationType="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" runConfigurationName="tds" />
     </buildFile>
   </component>
   <component name="BuildJarProjectSettings">

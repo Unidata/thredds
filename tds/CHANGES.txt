@@ -12,16 +12,18 @@ Changes in version 3.15
   * CrawlableDataset
     - Add LogicalFilterComposer for AND-ing, OR-ing, and NOT-ing CrawlableDatasetFilters
     - Refactor MultiSelectorFilter so that Selector is an inner class.
- Libraries
-  * opendap now in seperate jar, includes gnu-regexp
-  * add casclient-2.1.1
-  * upgrade commons libraries: fileupload-1.1.1, httpclient.3.0.1, io-1.2, logging-1.1
-  * asssume jdk1.5, dont need xerces.jar or xml-api.jar anymore
  Bugs
+  * opendap look for encoded chars in the CE (eg %20)
+  * opendap should have the "-" bug fixed
   * opendap getLastModified() date was ignoring the CE (!)
   * tdr catalogs didnt have BaseURI set
   * NetcdfServlet: use Content-Disposition header (attachment; filename=filename) instead of always appending ".nc"
-
+ Libraries
+  * opendap now in seperate jar opendap.2.0, includes gnu-regexp, gnu-getopt
+  * add casclient-2.1.1
+  * upgrade commons libraries: fileupload-1.1.1, httpclient.3.0.1, io-1.2, logging-1.1
+  * asssume jdk1.5, dont need xerces.jar or xml-api.jar anymore
+  
 Changes in version 3.14
  Bugs
   * InvDataset copy constructor wasnt making copies - dup metadata in InvDatasetFmrc

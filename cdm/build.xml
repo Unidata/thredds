@@ -57,7 +57,7 @@
   <property name="lucene.jar" value="lucene.jar"/>
   <!-- property name="netcdf1.jar" value="netcdf1.jar"/ -->
   <!-- property name="prefs.jar" value="prefsAll.jar"/ -->
-  <property name="opendap.jar" value="javadap-2.0.jar"/>
+  <property name="opendap.jar" value="opendap-2.0.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
   <property name="xml-apis.jar" value="xml-apis.jar"/>
