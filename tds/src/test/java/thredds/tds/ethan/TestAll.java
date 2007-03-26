@@ -6,6 +6,8 @@ import java.util.*;
 import java.io.IOException;
 
 import thredds.catalog.*;
+import thredds.catalog.query.DqcFactory;
+import thredds.catalog.query.QueryCapability;
 import thredds.datatype.DateType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.TypedDataset;
@@ -49,6 +51,38 @@ public class TestAll extends TestCase
 
 
     return suite;
+  }
+
+  public static QueryCapability openAndValidateDqcDoc( String dqcUrl )
+  {
+    DqcFactory fac = new DqcFactory( true );
+    QueryCapability dqc = null;
+    try
+    {
+      dqc = fac.readXML( dqcUrl );
+    }
+    catch ( IOException e )
+    {
+      assertTrue( "I/O error reading DQC doc <" + dqcUrl + ">: " + e.getMessage(),
+                  false );
+      return null;
+    }
+
+    if ( dqc.hasFatalError() )
+    {
+      assertTrue( "Fatal error with DQC doc <" + dqcUrl + ">: " + dqc.getErrorMessages(),
+                  false );
+      return null;
+    }
+
+    String errMsg = dqc.getErrorMessages();
+    if ( errMsg != null && errMsg.length() > 0)
+    {
+      System.out.println( "Error message reading DQC doc <" + dqcUrl + ">:" );
+      System.out.println( errMsg );
+    }
+
+    return dqc;
   }
 
   public static InvCatalogImpl openAndValidateCatalog( String catUrl )
