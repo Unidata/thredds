@@ -19,8 +19,9 @@ public class TestAll {
 
   public static long startTime;
 
+  // Determine how Unidata "/upc/share" directory is mounted
+  // on local machine by reading system or THREDDS property.
   static {
-    // Determine how /upc/share is mounted by reading system or THREDDS property.
     String upcSharePropName = "unidata.upc.share.path";
     String threddsPropFileName = "thredds.properties";
 
@@ -63,12 +64,52 @@ public class TestAll {
     upcShareDir = path;
   }
 
+  /**
+   *  Unidata "/upc/share" directory (MAY NOT be used in Unidata nightly testing).
+   */
   public static String upcShareDir;
+
+  /**
+   * Level 3 test data directory (MAY NOT be used in Unidata nightly testing).
+   * Unidata "/upc/share/testdata" directory. For once off testing and debuging.
+   */
   public static String upcShareTestDataDir = upcShareDir + "testdata/";
 
-  public static String cdmTestDataDir = "./src/test/data/";
-  // public static String testdataDir = "/upc/share/testdata/";
+  /**
+   * Level 2 test data directory (MAY be used in Unidata nightly testing).
+   * Unidata "/upc/share/thredds/data" directory
+   */
+  public static String upcShareThreddsDataDir = upcShareDir + "thredds/data/";
 
+  // Make sure the temp data dir is created.
+  static
+  {
+    File file = new File( upcShareDir );
+    if ( ! file.exists() )
+    {
+      System.out.println( "**WARN: Non-existence of \"/upc/share\" directory <" + file.getAbsolutePath() + ">." );
+    }
+
+    file = new File( upcShareTestDataDir);
+    if ( ! file.exists() )
+    {
+      System.out.println( "**WARN: Non-existence of Level 3 test data directory <" + file.getAbsolutePath() + ">." );
+    }
+    file = new File( upcShareThreddsDataDir );
+    if ( ! file.exists() )
+    {
+      System.out.println( "**WARN: Non-existence if Level 2 test data directory <" + file.getAbsolutePath() + ">." );
+    }
+  }
+
+  /**
+   * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
+   */
+  public static String cdmTestDataDir = "./src/test/data/";
+
+  /**
+   * Temporary data directory (for writing temporary data).
+   */
   public static String temporaryDataDir = "./target/test/tmp/";
 
   // Make sure the temp data dir is created.
@@ -78,7 +119,7 @@ public class TestAll {
     {
       if ( ! tmpDataDir.mkdirs() )
       {
-        System.out.println( "**Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
+        System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
       }
     }
   }
