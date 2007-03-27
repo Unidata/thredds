@@ -71,6 +71,18 @@ public class TestAll {
 
   public static String temporaryDataDir = "./target/test/tmp/";
 
+  // Make sure the temp data dir is created.
+  static {
+    File tmpDataDir = new File( temporaryDataDir);
+    if ( ! tmpDataDir.exists() )
+    {
+      if ( ! tmpDataDir.mkdirs() )
+      {
+        System.out.println( "**Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
+      }
+    }
+  }
+
   public static junit.framework.Test suite ( ) {
     RandomAccessFile.setDebugLeaks( true);
 
