@@ -18,6 +18,11 @@
 <p>The CF CoordSysBuilder will add the <strong>_CoordinateTransformType</strong> attribute upon recognizing  a standard_name, so adding that is optional if you are using CF Conventions. CF also requires that you use the vertical coordinate as the Coordinate Transform Variable, so that the transform will be added to any Coordinate System that uses that vertical coordinate. The CF CoordSysBuilder will thus add the <strong>_CoordinateAxes = &quot;vertCoordName&quot;</strong> attribute to indicate this. </p>
 <p>The attributes of the Coordinate Transform Variable become the parameters of the transform. The following are the currently implemented transforms, and the attributes required for each. These follow the  <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html">CF-1.0 Conventions</a> Appendix D (Vertical Transforms) and  Appendix F (Projections). See that document for details on the meanings of the formula terms. </p>
 <h2>Standard Projections</h2>
+<h3>flat_earth</h3>
+<pre>   int Flat_Earth;<br>     :<strong>grid_mapping_name</strong> = &quot;flat_earth&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;<br>     :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;
+</pre>
+<p>This is not (yet) a standard CF projection. <br>
+</p>
 <h3>lambert_conformal_conic</h3>
 <p>These are examples of using a dummy Coordinate Transform Variable. If you are using CF Conventions, you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
 <pre>   int Lambert_Conformal;<br>     :<strong>grid_mapping_name</strong> = &quot;lambert_conformal_conic&quot;;<br>     :<strong>standard_parallel</strong> = 33.0, 45.0; <br>     :<strong>longitude_of_central_meridian</strong> = -97.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; 
@@ -78,7 +83,7 @@
 <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 09, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 26, 2007 
 </address>
 <p>&nbsp;</p>
 </body>

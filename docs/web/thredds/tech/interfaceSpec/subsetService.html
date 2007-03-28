@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>NetCDF Subset Service</title>
+</head>
+
+<body>
+<h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service (draft) </h1>
+<hr>
+<div class="head">
+  <p>The NetCDF Subset Service is a web service for subsetting  CDM datasets, returning netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), or XML. The service interface tries to follow <a href="http://www.xml.com/pub/a/2004/08/11/rest.html">REST principles</a>.</p>
+  <h2>What are the resources/URIs?</h2>
+  <p>The resources are THREDDS datasets. The data provider must add the &quot;SubsetService&quot; service in the TDS configuration catalog to enable this. </p>
+  <p>The URIs can be discovered in a THREDDS catalog, using the <em><strong>NetcdfServer</strong></em> Service type. Generally they look like: </p>
+  <blockquote>
+    <p> <strong> http://servername:8080/thredds/ncServer/path/filename</strong></p>
+  </blockquote>
+  <p>Typically the user wants a subset of the dataset:</p>
+  <blockquote>
+    <p><strong> http://servername:8080/thredds/ncServer/path/filename?{subset}</strong></p>
+  </blockquote>
+  <p>An HTML form to allow interactive user input: </p>
+  <blockquote>
+    <p><strong> http://servername:8080/thredds/ncServer/path/filename?view=form</strong></p>
+  </blockquote>
+  <blockquote>
+    <p>&nbsp;</p>
+  </blockquote>
+  <h2><strong>What's the format/representation?</strong></h2>
+  <p>Several representations are possible:</p>
+  <ul>
+    <li>a netCDF binary file, coded using CF-1.0 (when possible)</li>
+  </ul>
+  <p>&nbsp;</p>
+  <h2><strong>Subsetting Parameters </strong></h2>
+  <h3><strong>Specify variables</strong></h3>
+  <p>You must specify at least one. </p>
+  <pre>  grid=varName[;varName]
+  grid=varName&amp;grid=varName&amp;...</pre>
+  <p>Examples:</p>
+  <ul>
+    <li><strong>grid=QCSurface</strong></li>
+    <li><strong>grid=QC;LZT;PQ</strong></li>
+    <li><strong>grid=QC&amp;grid=LZT&amp;grid=PQ</strong></li>
+  </ul>
+  <p>Variable names with illegal characters must be escaped. </p>
+  <h3><strong>Specify lat/lon bounding box</strong></h3>
+  <p>Specifying all of these parameters individually (order does not matter): </p>
+  <ol>
+    <ul>
+      <li><strong>north</strong>: latitude north (decimal degrees) </li>
+      <li><strong>south</strong>: latitude south (decimal degrees) </li>
+      <li><strong>east</strong>: longitude east (decimal degrees) </li>
+      <li><strong>west</strong>: longitude west (decimal degrees) </li>
+    </ul>
+  </ol>
+  <blockquote>
+    <pre>Example:<strong> north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></pre>
+  </blockquote>
+  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong> until the east edge. Units must be degrees east, may be positive or negetive, and will be taken modulo 360. Therefore, when crossing the dateline, the west edge may be greater than the east edge. </p>
+  <p>When applied to a grid in projection coordinates, the 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </p>
+  <h3><strong>Specify time range</strong></h3>
+  <p>Specify both parameters: </p>
+  <ol>
+    <ul>
+      <li><strong>time_start</strong>: starting time as hour offset from start of run </li>
+      <li><strong>time_end</strong>: ending time as hour offset from start of run </li>
+    </ul>
+    <p>&nbsp;</p>
+  </ol>
+  <h3>Specify whether to add Lat Lon coordinates</h3>
+  <p>If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
+  <h3> File Writing Rules:</h3>
+  <ul>
+    <li>A valid NetCDF file is returned in CF-1 format.</li>
+    <li>The specified variables(s) and their attributes are included.</li>
+    <li>All coordinate variables for the specified variable(s) are included.</li>
+    <li>If a bounding box or time range is specified, the variable and its coordinates are subsetted. </li>
+    <li>All global attributes are included. </li>
+  </ul>
+  <p>&nbsp;</p>
+  <h2>Summary</h2>
+  <table border="1" cellpadding="3" cellspacing="0">
+    <tbody>
+      <tr>
+        <th width="87">Resource</th>
+        <th width="53">Method</th>
+        <th width="134">Representation</th>
+        <th width="123">mime type </th>
+        <th width="79">Status Codes</th>
+      </tr>
+      <tr>
+        <td>Dataset</td>
+        <td>GET</td>
+        <td>netCDF-CF</td>
+        <td>application/x-netcdf</td>
+        <td>200, 301, 410</td>
+      </tr>
+      <tr>
+        <td>Dataset </td>
+        <td>GET</td>
+        <td>XML</td>
+        <td>application/xml</td>
+        <td>200, 301, 400, 410</td>
+      </tr>
+      <tr>
+        <td>Dataset</td>
+        <td>GET</td>
+        <td>ascii</td>
+        <td>test/plain</td>
+        <td>200, 204</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p> </p>
+<hr WIDTH="100%">
+<address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 28, 2007 
+</address>
+<p>&nbsp;
+</p>
+</body>
+</html>
