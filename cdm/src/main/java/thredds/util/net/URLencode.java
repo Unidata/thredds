@@ -192,4 +192,17 @@ public class URLencode {
   }
 
 
+  private static void doOne(String in) {
+    System.out.println(" in =     "+in);
+    String esc = URLencode.escape(in);
+    System.out.println(" escape = "+esc);
+    String unesc = URLencode.unescape( esc);
+    System.out.println(" unescape="+unesc);
+    assert in.equals(unesc);
+
+  }
+  public static void main(String args[]) {
+    doOne(  "[0:1:0]");
+  }
+
 }
