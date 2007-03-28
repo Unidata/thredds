@@ -3,7 +3,7 @@
 
   <aggregation  dimName="time" type="joinNew" recheckEvery="20 sec" >
     <variableAgg name="IR_WV"/>
-    <scan location="R:/testdata/image/testSync" suffix=".gini" dateFormat="SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm"/>
+    <scan location="//zero/share/testdata/image/testSync" suffix=".gini" dateFormat="SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm"/>
   </aggregation>
 
 </netcdf>
