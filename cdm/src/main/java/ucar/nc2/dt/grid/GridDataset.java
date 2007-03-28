@@ -176,12 +176,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
 
   public Date getStartDate() {
     if (dateRangeMax == null) makeRanges();
-    return dateRangeMax.getStart().getDate();
+    return (dateRangeMax == null) ? null : dateRangeMax.getStart().getDate();
   }
 
   public Date getEndDate() {
     if (dateRangeMax == null) makeRanges();
-    return dateRangeMax.getEnd().getDate();
+    return (dateRangeMax == null) ? null : dateRangeMax.getEnd().getDate();
   }
 
   public LatLonRect getBoundingBox() {

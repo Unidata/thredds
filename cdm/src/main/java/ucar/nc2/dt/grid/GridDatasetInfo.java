@@ -21,24 +21,28 @@
 
 package ucar.nc2.dt.grid;
 
+import ucar.ma2.DataType;
+import ucar.nc2.Dimension;
+
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.util.Parameter;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.util.Parameter;
+
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.io.FileOutputStream;
 
 /**
  * A helper class to GridDataset; creates a GridDatasetInfo XML document.
@@ -49,34 +53,10 @@ import java.io.FileOutputStream;
 public class GridDatasetInfo {
   private GridDataset gds;
   private String path;
-  private StringBuffer parseInfo = new StringBuffer();
-  private StringBuffer userAdvice = new StringBuffer();
 
   public GridDatasetInfo(GridDataset gds, String path) {
     this.gds = gds;
     this.path = path;
-  }
-
-  /**
-   * Detailed information when the coordinate systems were parsed
-   */
-  public StringBuffer getParseInfo() {
-    return parseInfo;
-  }
-
-  /**
-   * Specific advice to a user about problems with the coordinate information in the file.
-   */
-  public StringBuffer getUserAdvice() {
-    return userAdvice;
-  }
-
-  void addParseInfo(String info) {
-    parseInfo.append(info);
-  }
-
-  void addUserAdvice(String advice) {
-    userAdvice.append(advice);
   }
 
   /**
@@ -96,198 +76,244 @@ public class GridDatasetInfo {
    * Create an XML document from this info
    */
   public Document makeDocument() {
-    Element rootElem = new Element("gridDatasetInfo");
+    Element rootElem = new Element("gridDataset");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", gds.getName());
-    rootElem.setAttribute("path", path);
+    if (null != path)
+      rootElem.setAttribute("path", path);
 
-    int nDataVariables = 0;
-    int nOtherVariables = 0;
+    // dimensions
+    List dims = getDimensions(gds);
+    for (int j = 0; j < dims.size(); j++) {
+      Dimension dim = (Dimension) dims.get(j);
+      rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeDimension(dim, null));
+    }
 
-    LatLonRect bb = null;
+    // coordinate axes
+    List coordAxes = getCoordAxes(gds);
+    for (int i = 0; i < coordAxes.size(); i++) {
+      CoordinateAxis axis = (CoordinateAxis) coordAxes.get(i);
+      rootElem.addContent(writeAxis(axis));
+    }
+
+    // grids
     List grids = gds.getGrids();
     for (int i = 0; i < grids.size(); i++) {
       GeoGrid grid = (GeoGrid) grids.get(i);
-      nDataVariables++;
-      Element gridElem = new Element("grid");
-      rootElem.addContent(gridElem);
-      gridElem.setAttribute("name", grid.getName());
+      rootElem.addContent(writeGrid(grid));
+    }
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      LatLonRect rect = gcs.getLatLonBoundingBox();
-      if (null == bb)
-        bb = rect;
-      else if (!bb.equals(rect))
-        bb.extend(rect);
+    // coordinate systems
+    List gridSets = gds.getGridsets();
+    for (int i = 0; i < gridSets.size(); i++) {
+      GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
+      rootElem.addContent(writeCoordSys(gridset.getGeoCoordSystem()));
+    }
+
+    // coordinate transforms
+    List coordTransforms = getCoordTransforms(gds);
+    for (int i = 0; i < coordTransforms.size(); i++) {
+      CoordinateTransform ct = (CoordinateTransform) coordTransforms.get(i);
+      rootElem.addContent(writeCoordTransform(ct));
+    }
+
+    // global attributes
+    Iterator atts = gds.getGlobalAttributes().iterator();
+    while (atts.hasNext()) {
+      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+      rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
     // add lat/lon bounding box
-    if (bb != null) {
-      Element bbElem = new Element("horizBB");
-      rootElem.addContent(bbElem);
-      LatLonPoint llpt = bb.getLowerLeftPoint();
-      LatLonPoint urpt = bb.getUpperRightPoint();
-      bbElem.setAttribute("west", ucar.unidata.util.Format.dfrac(llpt.getLongitude(), 4));
-      bbElem.setAttribute("east", ucar.unidata.util.Format.dfrac(urpt.getLongitude(), 4));
-      bbElem.setAttribute("south", ucar.unidata.util.Format.dfrac(llpt.getLatitude(), 4));
-      bbElem.setAttribute("north", ucar.unidata.util.Format.dfrac(urpt.getLatitude(), 4));
+    LatLonRect bb = gds.getBoundingBox();
+    if (bb != null)
+      rootElem.addContent( writeBoundingBox( bb));
+
+    // add date range
+    Date start  = gds.getStartDate();
+    Date end  = gds.getEndDate();
+    if ((start != null) && (end != null)) {
+      DateFormatter format = new DateFormatter();
+      Element dateRange = new Element("dateRange");
+      dateRange.setAttribute("startDate", format.toDateTimeStringISO(start));
+      dateRange.setAttribute("endDate", format.toDateTimeStringISO(end));
+      rootElem.addContent( dateRange);
     }
 
     return doc;
   }
 
-  private String getDecl(VariableEnhanced ve) {
-    StringBuffer sb = new StringBuffer();
-    sb.append(ve.getDataType().toString());
-    sb.append(" ");
-    ve.getNameAndDimensions(sb, true, true);
-    return sb.toString();
-  }
-
-  private String getCoordSys(VariableEnhanced ve) {
-    List csList = ve.getCoordinateSystems();
-    if (csList.size() == 1) {
-      CoordinateSystem cs = (CoordinateSystem) csList.get(0);
-      return cs.getName();
-    } else if (csList.size() > 1) {
-      StringBuffer sb = new StringBuffer();
-      for (int i = 0; i < csList.size(); i++) {
-        CoordinateSystem cs = (CoordinateSystem) csList.get(i);
-        if (i > 0) sb.append(";");
-        sb.append(cs.getName());
-      }
-      return sb.toString();
+  private List getCoordAxes(GridDataset gds) {
+    HashSet axesHash = new HashSet();
+    List gridSets = gds.getGridsets();
+    for (int i = 0; i < gridSets.size(); i++) {
+      GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
+      GridCoordSystem gcs = gridset.getGeoCoordSystem();
+      List axes = gcs.getCoordinateAxes();
+      for (int j = 0; j < axes.size(); j++)
+        axesHash.add(axes.get(j));
     }
-    return " ";
+
+    List list = Arrays.asList(axesHash.toArray());
+    Collections.sort(list);
+    return list;
   }
 
-  /* public void writeXML2( java.io.OutputStream os) {
-    StringBuffer sb = new StringBuffer();
+  private List getCoordTransforms(GridDataset gds) {
+    HashSet ctHash = new HashSet();
+    List gridSets = gds.getGridsets();
+    for (int i = 0; i < gridSets.size(); i++) {
+      GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
+      GridCoordSystem gcs = gridset.getGeoCoordSystem();
+      List ct = gcs.getCoordinateTransforms();
+      for (int j = 0; j < ct.size(); j++)
+        ctHash.add(ct.get(j));
+    }
 
-    PrintStream out = new PrintStream( os);
-    out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
-    out.print("<netcdfDataset location='"+q(ds.getLocation())+"' >\n");
-    if (coordSysBuilderName != null)
-      out.print("  <convention name='"+q(coordSysBuilderName)+"'/>\n");
-    out.print("\n");
+    List list = Arrays.asList(ctHash.toArray());
+    Collections.sort(list);
+    return list;
+  }
 
-    List axes = ds.getCoordinateAxes();
+  private List getDimensions(GridDataset gds) {
+    HashSet dimHash = new HashSet();
+    List grids = gds.getGrids();
+    for (int i = 0; i < grids.size(); i++) {
+      GeoGrid grid = (GeoGrid) grids.get(i);
+      List dims = grid.getDimensions();
+      for (int j = 0; j < dims.size(); j++) {
+        Dimension dim = (Dimension) dims.get(j);
+        dimHash.add(dim);
+      }
+    }
+    List list = Arrays.asList(dimHash.toArray());
+    Collections.sort(list);
+    return list;
+  }
+
+  private Element writeAxis(CoordinateAxis axis) {
+
+    Element varElem = new Element("axis");
+    varElem.setAttribute("name", axis.getName());
+    varElem.setAttribute("shape", axis.getDimensionsString());
+
+    DataType dt = axis.getDataType();
+    varElem.setAttribute("type", dt.toString());
+
+    AxisType axisType = axis.getAxisType();
+    if (null != axisType)
+      varElem.setAttribute("axisType", axisType.toString());
+
+    // attributes
+    Iterator atts = axis.getAttributes().iterator();
+    while (atts.hasNext()) {
+      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+    }
+
+    if (axis.getRank() < 2)
+      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null));
+
+    return varElem;
+  }
+
+  private Element writeBoundingBox(LatLonRect bb) {
+    Element bbElem = new Element("horizDomain");
+    LatLonPoint llpt = bb.getLowerLeftPoint();
+    LatLonPoint urpt = bb.getUpperRightPoint();
+    bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(llpt.getLongitude(), 4)));
+    bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(urpt.getLongitude(), 4)));
+    bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(llpt.getLatitude(), 4)));
+    bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(urpt.getLatitude(), 4)));
+    return bbElem;
+  }
+
+  private Element writeCoordSys(GridCoordSystem cs) {
+    Element csElem = new Element("coordSys");
+    csElem.setAttribute("name", cs.getName());
+    List axes = cs.getCoordinateAxes();
     for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis =  (CoordinateAxis) axes.get(i);
-      sb.setLength(0);
-      sb.append(axis.getDataType().toString());
-      sb.append(" ");
-      axis.getNameAndDimensions(sb, true, true);
-      out.print("  <axis name='"+q(sb.toString())+"' ");
-      if (axis.getAxisType() != null)
-        out.print("type='"+axis.getAxisType()+"' ");
-      if (axis.getUnitsString() != null) {
-        out.print("units='"+q(axis.getUnitsString())+"' ");
-        out.print("udunits='"+isUdunits(axis.getUnitsString())+"' ");
-      }
-      out.print("/>\n");
+      CoordinateAxis axis = (CoordinateAxis) axes.get(i);
+      Element axisElem = new Element("axisRef");
+      axisElem.setAttribute("name", axis.getName());
+      csElem.addContent(axisElem);
     }
-    out.print("\n");
-
-    int count = 0;
-    List coordTransforms = ds.getCoordinateTransforms();
-    for (int i = 0; i < coordTransforms.size(); i++) {
-      CoordinateTransform ct =  (CoordinateTransform) coordTransforms.get(i);
-      out.print("  <transform name='"+q(ct.getName())+"' ");
-      out.print(" type='"+q(ct.getTransformType().toString())+"' >\n");
-      List params = ct.getParameters();
-      for (int j = 0; j < params.size(); j++) {
-        Parameter pp = (Parameter) params.get(j);
-        out.print("    <param type='"+q(pp.getName())+"' value='"+pp.getStringValue()+"' />\n");
-      }
-      out.print("  </transform>\n");
-      count++;
+    List cts = cs.getCoordinateTransforms();
+    for (int j = 0; j < cts.size(); j++) {
+      CoordinateTransform ct = (CoordinateTransform) cts.get(j);
+      Element elem = new Element("coordTransRef");
+      elem.setAttribute("name", ct.getName());
+      csElem.addContent(elem);
     }
-    if (count > 0) out.print("\n");
-
-    count = 0;
-    List vars = ds.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      VariableEnhanced v =  (VariableEnhanced) vars.get(i);
-      if (v instanceof CoordinateAxis) continue;
-      GridCoordSys gcs = getGridCoordSys(v);
-      if (null != gcs) {
-        doVar(v, "grid", gcs, out);
-        count++;
-      }
-    }
-    if (count > 0) out.print("\n");
-
-    count = 0;
-    for (int i = 0; i < vars.size(); i++) {
-      VariableEnhanced v =  (VariableEnhanced) vars.get(i);
-      if (v instanceof CoordinateAxis) continue;
-      if (null == getGridCoordSys(v)) {
-        doVar(v, "variable", null, out);
-        count++;
-      }
-    }
-    if (count > 0) out.print("\n");
-
-    if (parseInfo != null) {
-      out.print("  <parseInfo>\n");
-      out.print(parseInfo);
-      out.print("  </parseInfo>\n");
-    }
-
-    out.print("</netcdfDataset>\n");
-    out.flush();
+    return csElem;
   }
 
-
-  private void doVar( VariableEnhanced ve, String elementName, CoordinateSystem cs, PrintStream out) {
-    StringBuffer sb = new StringBuffer();
-    sb.setLength(0);
-    sb.append(ve.getDataType().toString());
-    sb.append(" ");
-    ve.getNameAndDimensions(sb, true, true);
-    out.print("  <"+elementName+" name='"+q(sb.toString())+"' ");
-    if (ve.getUnitsString() != null) {
-      out.print("units='"+q(ve.getUnitsString())+"' ");
-      out.print("udunits='"+isUdunits(ve.getUnitsString())+"' ");
+  private Element writeCoordTransform(CoordinateTransform ct) {
+    Element ctElem = new Element("coordTransform");
+    ctElem.setAttribute("name", ct.getName());
+    ctElem.setAttribute("transformType", ct.getTransformType().toString());
+    List params = ct.getParameters();
+    for (int i = 0; i < params.size(); i++) {
+      Parameter param = (Parameter) params.get(i);
+      Element pElem = new Element("parameter");
+      pElem.setAttribute("name", param.getName());
+      pElem.setAttribute("value", param.getStringValue());
+      ctElem.addContent(pElem);
     }
-    if (cs != null)
-      out.print("coordSys='"+q(cs.getName())+"' ");
-    else {
-      List csList = ve.getCoordinateSystems();
-      if (csList.size() == 1) {
-        cs = (CoordinateSystem) csList.get(0);
-        out.print("coordSys='"+q(cs.getName())+"' ");
-      } else if (csList.size() > 1) {
-        out.print("/>\n");
-      }
-    }
-    out.print("/>\n");
+    return ctElem;
   }
 
-  private String q(String s) {
-    return StringUtil.quoteXmlAttribute(s);
-  } */
+  private Element writeGrid(GridDatatype grid) {
 
-  private String isUdunits(String unit) {
-    SimpleUnit su = SimpleUnit.factory(unit);
-    if (null == su) return "false";
-    if (su instanceof DateUnit) return "date";
-    if (su instanceof TimeUnit) return "time";
-    return su.getUnit().getCanonicalString();
+    Element varElem = new Element("grid");
+    varElem.setAttribute("name", grid.getName());
+
+    StringBuffer buff = new StringBuffer();
+    List dims = grid.getDimensions();
+    for (int i = 0; i < dims.size(); i++) {
+      Dimension dim = (Dimension) dims.get(i);
+      if (i > 0) buff.append(" ");
+      if (dim.isShared())
+        buff.append(dim.getName());
+      else
+        buff.append(dim.getLength());
+    }
+    if (buff.length() > 0)
+      varElem.setAttribute("shape", buff.toString());
+
+    DataType dt = grid.getDataType();
+    if (dt != null)
+      varElem.setAttribute("type", dt.toString());
+
+    GridCoordSystem cs = grid.getCoordinateSystem();
+    varElem.setAttribute("coordSys", cs.getName());
+
+    // attributes
+    Iterator atts = grid.getAttributes().iterator();
+    while (atts.hasNext()) {
+      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
+    }
+
+    return varElem;
   }
+
 
   /**
    * debug
    */
   public static void main(String args[]) throws IOException {
-    String url = "C:/data/grib/ruc/c20s/RUC2_CONUS_20km_surface_20060327_0900.grib1";
+    // String url = "C:/data/test2.nc";
+
+    String url = "C:/data/NAM_CONUS_80km_20070322_0000.grib1";
+
+    // String url = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NDFD/CONUS_5km/NDFD-CONUS_5km_best.ncd";
 
     GridDataset ncd = GridDataset.open(url);
-    GridDatasetInfo info = new GridDatasetInfo(ncd, "path");
-    FileOutputStream fos2 = new FileOutputStream("C:/TEMP/gridInfo.xml");
-    info.writeXML(fos2);
-    fos2.close();
+    GridDatasetInfo info = new GridDatasetInfo(ncd, null);
+    //FileOutputStream fos2 = new FileOutputStream("C:/TEMP/gridInfo.xml");
+    //info.writeXML(fos2);
+    //fos2.close();
 
     String infoString = info.writeXML();
     System.out.println(infoString);

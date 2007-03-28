@@ -52,7 +52,7 @@ import java.io.IOException;
  * @see "NCML documentation"
  */
 
-public class CoordinateAxis extends VariableDS {
+public class CoordinateAxis extends VariableDS implements Comparable {
 
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
@@ -314,4 +314,8 @@ public class CoordinateAxis extends VariableDS {
     return hashCode;
   }
   private volatile int hashCode = 0;
-}
+
+  public int compareTo(Object o) {
+    CoordinateAxis oaxis = (CoordinateAxis) o;
+    return getName().compareTo(oaxis.getName());
+  }}

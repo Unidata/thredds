@@ -37,7 +37,7 @@ import java.util.List;
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-public class Dimension {
+public class Dimension implements Comparable {
   static public Dimension UNLIMITED = new Dimension( "**", 0, true, true, false); // gets reset when file is read or written
   static public Dimension UNKNOWN = new Dimension( "*", -1, true, false, true); // for Sequences
 
@@ -120,6 +120,11 @@ public class Dimension {
   /** String representation. */
   public String toString() {
     return writeCDL( false);
+  }
+
+  public int compareTo(Object o) {
+    Dimension odim = (Dimension) o;
+    return name.compareTo(odim.getName());
   }
 
   /** String representation. */
@@ -213,4 +218,5 @@ public class Dimension {
     this.name = name;
     hashCode = 0;
   }
+
 }

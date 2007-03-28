@@ -201,12 +201,12 @@ public class NcMLWriter {
     return aggElem;
   }
 
-  private Element writeAttribute( ucar.nc2.Attribute att, String elementName) {
-    Element attElem = new Element(elementName, ncNS);
+  public static Element writeAttribute( ucar.nc2.Attribute att, String elementName, Namespace ns) {
+    Element attElem = new Element(elementName, ns);
     attElem.setAttribute("name", att.getName());
 
     DataType dt = att.getDataType();
-    if (dt != null)
+    if ((dt != null) && (dt != DataType.STRING))
       attElem.setAttribute("type", dt.toString());
 
     if (att.isString()) {
@@ -282,8 +282,8 @@ public class NcMLWriter {
   }  */
 
   // shared dimensions
-  private Element writeDim( Dimension dim) {
-    Element dimElem = new Element("dimension", ncNS);
+  public static Element writeDimension( Dimension dim, Namespace ns) {
+    Element dimElem = new Element("dimension", ns);
     dimElem.setAttribute("name", dim.getName());
     dimElem.setAttribute("length", Integer.toString(dim.getLength()));
     if (dim.isUnlimited())
@@ -299,14 +299,14 @@ public class NcMLWriter {
     Iterator dims = group.getDimensions().iterator();
     while ( dims.hasNext()) {
       Dimension dim = (Dimension) dims.next();
-      elem.addContent( writeDim( dim));
+      elem.addContent( writeDimension( dim, ncNS));
     }
 
        // attributes
     Iterator atts = group.getAttributes().iterator();
     while ( atts.hasNext()) {
       ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      elem.addContent( writeAttribute( att, "attribute"));
+      elem.addContent( writeAttribute( att, "attribute", ncNS));
     }
 
     /* if (addCoords) {
@@ -414,11 +414,11 @@ public class NcMLWriter {
     Iterator atts = var.getAttributes().iterator();
     while ( atts.hasNext()) {
       ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      varElem.addContent( writeAttribute( att, "attribute"));
+      varElem.addContent( writeAttribute( att, "attribute", ncNS));
     }
 
     if (var.isMetadata() || (var == aggCoord))
-      varElem.addContent( writeValues( var));
+      varElem.addContent( writeValues( var, ncNS));
 
     if (isStructure) {
       Structure s = (Structure) var;
@@ -442,8 +442,8 @@ public class NcMLWriter {
     return makeVariable(var);
   } */
 
-  private Element writeValues( VariableEnhanced v) {
-    Element elem = new Element("values", ncNS);
+  public static Element writeValues( VariableEnhanced v, Namespace ns) {
+    Element elem = new Element("values", ns);
 
     StringBuffer buff = new StringBuffer();
     Array a;
