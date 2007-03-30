@@ -10,30 +10,46 @@
 <h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service (draft) </h1>
 <hr>
 <div class="head">
-  <p>The NetCDF Subset Service is a web service for subsetting  CDM datasets, returning netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), or XML. The service interface tries to follow <a href="http://www.xml.com/pub/a/2004/08/11/rest.html">REST principles</a>.</p>
+  <p>The NetCDF Subset Service is a web service for subsetting  CDM scientific datasets, returning netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), or XML. The service interface tries to follow <a href="http://www.xml.com/pub/a/2004/08/11/rest.html">REST principles</a>.</p>
   <h2>What are the resources/URIs?</h2>
   <p>The resources are THREDDS datasets. The data provider must add the &quot;SubsetService&quot; service in the TDS configuration catalog to enable this. </p>
-  <p>The URIs can be discovered in a THREDDS catalog, using the <em><strong>NetcdfServer</strong></em> Service type. Generally they look like: </p>
+  <p>The URIs can be discovered in a THREDDS catalog, by looking for datasets that use the <em><strong>NetcdfServer</strong></em> Service type. Generally they look like: </p>
   <blockquote>
-    <p> <strong> http://servername:8080/thredds/ncServer/path/filename</strong></p>
+    <p> <strong> http://servername:8080/thredds/ncServer/{path/dataset}</strong></p>
   </blockquote>
   <p>Typically the user wants a subset of the dataset:</p>
   <blockquote>
-    <p><strong> http://servername:8080/thredds/ncServer/path/filename?{subset}</strong></p>
-  </blockquote>
-  <p>An HTML form to allow interactive user input: </p>
-  <blockquote>
-    <p><strong> http://servername:8080/thredds/ncServer/path/filename?view=form</strong></p>
+    <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}</strong></p>
   </blockquote>
   <blockquote>
     <p>&nbsp;</p>
   </blockquote>
   <h2><strong>What's the format/representation?</strong></h2>
-  <p>Several representations are possible:</p>
   <ul>
-    <li>a netCDF binary file, coded using CF-1.0 (when possible)</li>
+    <li> an XML file describing the dataset 
+      <ul>
+        <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}</strong></li>
+        <li><strong>http://servername:8080/thredds/ncServer/</strong><strong>{path/dataset}</strong>.<strong>xml</strong></li>
+        <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?view=form</strong></li>
+      </ul>
+    </li>
+    <li>      An HTML form to allow interactive user input: 
+      <ul>
+        <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}/form</strong>      </li>
+      </ul>
+    </li>
+    <ul>
+      <li><strong>http://servername:8080/thredds/ncServer{path/dataset}.form</strong></li>
+      <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?mime_type=text/html</strong></li>
+      <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?view=form</strong></li>
+      </ul>
+    <li> a netCDF binary file, coded using CF-1.0
+      <ul>
+        <li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}</strong></li>
+        <li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;mime_type=application/x-netcdf</strong></li>
+      </ul>
+    </li>
   </ul>
-  <p>&nbsp;</p>
   <h2><strong>Subsetting Parameters </strong></h2>
   <h3><strong>Specify variables</strong></h3>
   <p>You must specify at least one. </p>
@@ -108,8 +124,8 @@
       <tr>
         <td>Dataset</td>
         <td>GET</td>
-        <td>ascii</td>
-        <td>test/plain</td>
+        <td>HTML</td>
+        <td>text/html</td>
         <td>200, 204</td>
       </tr>
     </tbody>

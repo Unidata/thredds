@@ -2,11 +2,6 @@
 <head>
 <title>Aggregating netCDF files with netCDF Datasets</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<style type="text/css">
-<!--
-.style1 {color: #FF0000}
--->
-</style>
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
@@ -164,6 +159,7 @@ netcdf TestUnion.ncml {
   <li>If you do not specify a coordinate variable, and you do not add <em>coordValue</em> attributes, then a coordinate variable of type String will be added whose values are the names of the files. </li>
 </ol>
 <p>Note that you must explicitly specify the coordinate variable in order to assign attributes to it, which is something you are likely to need to do, for example defining a units attribute is usually necessary. Assigning the <strong>_CoordinateAxisType</strong> type is a recommended way to make sure that the <a href="http://www.unidata.ucar.edu/software/netcdf-java/CoordinateAttributes3.html#CoordinateAttributes">nj22 Coordinate layer</a> correctly identifies the coordinate type.</p>
+<p>Also note that, contrary to previous versions of NcML aggregation, you do <strong>not</strong> need to define a dimension element for the aggregation dimension (e.g. &lt;dimension name=&quot;time&quot;&gt; and <strong>must not</strong> use the old form     <em><strong>&lt;dimension name=&quot;time&quot; length=&quot;0&quot; /&gt;</strong></em> as it will override the dimension created by the aggregation. </p>
 <p><i>For all aggregations, the aggregation element is processed first, so that the objects (dimensions, attributes, groups, and variables) from the nested datasets exist and can be modified by other NcML elements.</i> </p>
 <h2>Aggregation by scanning  a directory</h2>
 <p>Its often convenient to indicate that all the files in some directory should be aggregated. This can be done for <strong>joinExisting</strong> and <strong>joinNew</strong> (not <strong>union</strong>) types. The following  example scans all of the files in the directory <strong>/data/model </strong> (and its subdirectories) which end in <strong>&quot;.nc&quot;.</strong> By default, the files are ordered by sorting on the filename. </p>
@@ -243,7 +239,7 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 08, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 29, 2007 
 </address>
 <p>&nbsp;</p>
 </body>

@@ -43,7 +43,7 @@
 <h2>3. Aggregating Forecast Model Runs</h2>
 <p>A common case is that the model output is spread out in multiple files. A special kind of NcML aggregation can be used to create an FMRC dataset. </p>
 <h3>Case 1: All data for each forecast model run is in a single file</h3>
-<p>This case is similar to a <a href="Aggregation.html#joinExisting">JoinExisting</a> aggregation, in that a new, outer dimension is created, and each file becomes one slice of the new dataset. </p>
+<p>This case is similar to a <a href="Aggregation.html#joinNew">JoinNew</a> aggregation, in that a new, outer dimension is created, and each file becomes one slice of the new dataset. </p>
 <pre>   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>(1)&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; <strong>enhance=&quot;true&quot;</strong> &gt;<br>(2) &lt;aggregation dimName=&quot;<strong>runtime</strong>&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot;&gt;
 (3)  &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0000.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T00:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;<br>     &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_0600.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T06:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;<br>     &lt;netcdf <strong>location</strong>=&quot;file:/data/ldm/NAM_CONUS_80km/Run_20060910_1200.grib1&quot; <strong>coordValue</strong>=&quot;2006-09-10T12:00:00Z&quot; <strong>enhance=&quot;true&quot;</strong> /&gt;
     &lt;/aggregation<br>   &lt;/netcdf&gt;</pre>
@@ -179,7 +179,7 @@
 <p>&nbsp; </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 11, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 28, 2007 
 </address>
 </body>
 </html>
