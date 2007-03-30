@@ -311,10 +311,15 @@ public class DataRootHandler {
       if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
         InvCatalogRef catref = (InvCatalogRef) invDataset;
         String href = catref.getXlinkHref();
-        if (!href.startsWith("http:")) // must be a reletive catref
-          initCatalog(dirPath + href, true ); // go check it out
-
-      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+        // Check that catRef is relative
+        if (!href.startsWith("http:"))
+        {
+          // Clean up relative URLs that start with "./"
+          if ( href.startsWith( "./" ) )
+            href = href.substring( 2 );
+          
+          initCatalog(dirPath + href, true ); // go check it out else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+        }
         // recurse through nested datasets
         initFollowCatrefs(dirPath, invDataset.getDatasets());
       }
