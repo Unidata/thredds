@@ -91,7 +91,7 @@ public class AggregationExisting extends Aggregation {
     makeProxies(typicalDataset, ncDataset);
     typical.close();
   }
-
+  
   /**
    * Persist info (nccords, coorValues) from joinExisting, since that can be expensive to recreate.
    * @throws IOException

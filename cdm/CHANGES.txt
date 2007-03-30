@@ -11,11 +11,10 @@ Changes in version 2.2.19
   * "Mcidas Area" projections based on mcidas area file parameters.
   * "vertical perspective" projection (GRIB2 Grid Definition Template 3.90)
   * typed dataset factory : if point fails, check for station
-  * NetcdfServer: use Content-Disposition to name the returned file
  NcML
   * can specify iosp class, parameter, buffer_size
  API changes
-  * NetcdfFilleWriteable.addVariable() now returns the new Variable
+  * NetcdfFileWriteable.addVariable() now returns the new Variable
   * protected NetcdfFile constructor for passing in iosp class name
   * add GridCoordSys.getLatLon()
  Bugs

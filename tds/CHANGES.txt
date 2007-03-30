@@ -9,10 +9,12 @@ Changes in version 3.15
   * make SSL/Basic the default authentication
   * Add cas, cams example pluggable authorization
   * add restrict dataset processing
+  * NetcdfServer: use Content-Disposition to name the returned file
   * CrawlableDataset
     - Add LogicalFilterComposer for AND-ing, OR-ing, and NOT-ing CrawlableDatasetFilters
     - Refactor MultiSelectorFilter so that Selector is an inner class.
  Bugs
+  * InvDatasetFmrc: replace " " with "_" in dataset name, so URLS are valid.
   * opendap look for encoded chars in the CE (eg %20)
   * opendap should have the "-" bug fixed
   * opendap getLastModified() date was ignoring the CE (!)
