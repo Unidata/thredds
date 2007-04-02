@@ -37,7 +37,7 @@ import java.io.*;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation
- *  with files that are complete runs (have all forecat times in the same file)
+ *  with files that are complete runs (have all forecast times in the same file)
  *
  * @author caron
  */

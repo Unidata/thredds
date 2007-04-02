@@ -139,4 +139,24 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
     stationHelper.sortByTime(stationObs);
   }
 
+  public DataIterator getDataIterator( Station s) {
+    try {
+      return new DataIteratorAdapter( getData(s).iterator());
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  /** Get data for this Station within the specified date range.
+   * @return Iterator over type getDataClass() */
+  public DataIterator getDataIterator( Station s, Date start, Date end) {
+    try {
+      return new DataIteratorAdapter( getData(s, start, end).iterator());
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
 }

@@ -1123,7 +1123,7 @@ public class NetcdfFile {
    * A Variable called "record" is added.
    * You can then access these through the record structure.
    *
-   * @return true if record was actually added on this call
+   * @return true if record was actually added on this call.
    */
   public boolean addRecordStructure() {
     if (null != getRootGroup().findVariable("record"))
@@ -1139,6 +1139,16 @@ public class NetcdfFile {
   }
 
   protected boolean addedRecordStructure = false;
+
+  /**
+   * Find out if if it has a record Structure.
+   * Optimization for Netcdf-3 files.
+   * @return  true if it has a record Structure
+   */
+  public boolean hasRecordStructure() {
+    Variable v = findVariable("record");
+    return (v != null) && (v.getDataType() == DataType.STRUCTURE);
+  }
 
   /**
    * Replace a Dimension in a Variable.

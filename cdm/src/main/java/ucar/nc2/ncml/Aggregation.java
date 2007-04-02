@@ -75,11 +75,10 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   static protected int TYPICAL_DATASET_RANDOM = 0;
   static protected int TYPICAL_DATASET_LATEST = 1;
   static protected int TYPICAL_DATASET_PENULTIMATE = 2;
-
+  static protected int typicalDatasetMode = 0;
 
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   static protected DiskCache2 diskCache2 = null;
-  static protected int typicalDatasetMode = 0;
 
   static public void setPersistenceCache(DiskCache2 dc) {
     diskCache2 = dc;

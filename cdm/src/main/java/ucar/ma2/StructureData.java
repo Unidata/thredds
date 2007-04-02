@@ -27,6 +27,14 @@ import java.util.List;
  * Is normally contained within an ArrayStructure, which is an Array of StructureData.
  * This is the abstract supertype for all implementations.
  *
+ * <pre>
+   for (Iterator iter = sdata.getMembers().iterator(); iter.hasNext(); ) {
+      StructureMembers.Member m = (StructureMembers.Member) iter.next();
+      Array sdataArray = sdata.getArray(m);
+      ...
+   }
+  </pre>
+ *
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */

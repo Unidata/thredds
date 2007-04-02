@@ -174,12 +174,12 @@ public class FileWriter {
       System.out.println("File Out= "+ncfile.toString());
 
    // see if it has a record dimension we can use
-    boolean useRecordDimension = fileIn.hasUnlimitedDimension();
-    if (useRecordDimension) {
-      useRecordDimension &= fileIn.addRecordStructure();
-      if (useRecordDimension)
-        useRecordDimension &= ncfile.addRecordStructure();
+    if (fileIn.hasUnlimitedDimension()) {
+      fileIn.addRecordStructure();
+      ncfile.addRecordStructure();
     }
+   boolean useRecordDimension = fileIn.hasRecordStructure() && ncfile.hasRecordStructure();
+
 
     // write non-record data
     long total = 0;
@@ -196,9 +196,11 @@ public class FileWriter {
         if (oldVar.getDataType() == DataType.STRING) {
           data = convertToChar( ncfile.findVariable(oldVar.getName()), data);
         }
-        ncfile.write(oldVar.getName(), data);
+        if (data.getSize() > 0)  // zero when record dimension = 0
+          ncfile.write(oldVar.getName(), data);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
+        throw new IOException(e.getMessage());
       }
     }
 

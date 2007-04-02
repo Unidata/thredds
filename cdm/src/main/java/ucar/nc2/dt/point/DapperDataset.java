@@ -431,30 +431,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   /////////////////////////
 
    public DataIterator getDataIterator(int bufferSize) throws IOException {
-    return new IteratorAdapter( getData( (CancelTask) null).iterator()); // LOOK
-  }
-
-  private class IteratorAdapter implements DataIterator {
-    Iterator iter;
-    IteratorAdapter(Iterator iter) {
-      this.iter = iter;
-    }
-
-    public boolean hasNext() {
-      return iter.hasNext();
-    }
-
-    public Object nextData() throws IOException {
-      return iter.next();
-    }
-
-    public Object next() {
-      return iter.next();
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
+    return new DataIteratorAdapter( getData( (CancelTask) null).iterator()); // LOOK
   }
 
   //////////////////////////////

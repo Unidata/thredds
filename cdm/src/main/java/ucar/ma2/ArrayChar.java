@@ -612,6 +612,19 @@ public class ArrayChar extends Array {
     }
   }
 
+  public String toString() {
+    StringBuffer sbuff = new StringBuffer();
+    StringIterator ii = getStringIterator();
+    int count = 0;
+    while (ii.hasNext()) {
+      if (count > 0) sbuff.append(",");
+      String data = ii.next();
+      sbuff.append(data);
+      count++;
+    }
+    return sbuff.toString();
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
   /**
    * Treat this Variable as an array of Strings, and iterate over all the strings in the array.

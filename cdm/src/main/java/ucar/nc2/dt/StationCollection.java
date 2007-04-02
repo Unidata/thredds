@@ -88,12 +88,12 @@ public interface StationCollection extends PointCollection {
 
 
   /** Get all data for this Station.
-   * @return iterator over type getDataClass() *
-  public DataIterator getDataIterator( Station s) throws IOException;
+   * @return iterator over type getDataClass() */
+  public DataIterator getDataIterator( Station s);
 
   /** Get data for this Station within the specified date range.
-   * @return Iterator over type getDataClass() *
-  public DataIterator getDataIterator( Station s, Date start, Date end) throws IOException;
+   * @return Iterator over type getDataClass() */
+  public DataIterator getDataIterator( Station s, Date start, Date end);
 
   /** Get all data for a list of Stations.
    * @return Iterator over type getDataClass() *

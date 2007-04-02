@@ -14,10 +14,12 @@ Changes in version 2.2.19
  NcML
   * can specify iosp class, parameter, buffer_size
  API changes
+  * NetcdfFile.hasRecordStructure - optimization for Netcdf-3 writing.
   * NetcdfFileWriteable.addVariable() now returns the new Variable
   * protected NetcdfFile constructor for passing in iosp class name
   * add GridCoordSys.getLatLon()
  Bugs
+  * FileWriter allows recno = 0.
   * thredds.util.getDateUsingCompleteDateFormatWithOffset() : java.text.SimpleDateFormat is grabbing extra characters at the end.
       Filed bug report with Sun. workaround : truncate the input string.
   * DODS Grids: check for coordinates attribute, add to _Coordinate.Axes
