@@ -45,7 +45,7 @@ public class TestVerticalTransforms extends TestCase {
     super(name);
   }
 
-  public void failsWithMemoryExceptionInTeamCity_testWRF() throws Exception {
+  public void testWRF() throws Exception {
     testDataset( TestAll.upcShareTestDataDir + "grid/netcdf/wrf/wrfout_v2_Lambert.nc");
     testDataset( TestAll.upcShareTestDataDir + "grid/netcdf/wrf/wrfout_d01_2006-03-08_21-00-00");
   }
