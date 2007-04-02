@@ -18,7 +18,7 @@ public class TestAggFmrcGrib extends TestCase {
     super(name);
   }
 
-  public void testSimple() throws Exception, InvalidRangeException {
+  public void failsWithMemoryExceptionInTeamCity_testSimple() throws Exception, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggFmrcGrib.xml";
     System.out.println("TestAggForecastModel.open "+ filename);
 
