@@ -5,6 +5,9 @@
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
+  <tstamp>
+    <format property="buildtime2" pattern="yyyy-MM-dd'T'HH.mm.ss" timezone="GMT"/>
+  </tstamp>
 
   <!-- Load environment and user properties. -->
   <property environment="env"/>
@@ -44,11 +47,6 @@
   <property name="release.javadoc.dir" value="${uni.ftp.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
   <property name="webstart_dir" location="${release.html.dir}/webstart"/>
   -->
-
-  <property name="test.src.dir" location="${root.dir}/src/test/java"/>
-  <property name="test.data.dir" location="${root.dir}/src/test/data"/>
-  <property name="test.classes.dir" location="${build.dir}/test/classes"/>
-  <property name="test.reports.dir" location="${build.dir}/test/reports"/>
 
   <!-- Webapp source locations. -->
   <property name="webapp.src.dir" location="${root.dir}/src/main/webapp"/>
@@ -286,16 +284,6 @@
         <exclude name=".svn"/-->
       </fileset>
     </copy>
-
-    <!-- Copy CatalogGen test data to initialContent/ directory for example setup. -->
-    <!--copy todir="${war.dir}/initialContent/cataloggen/testData/model" preservelastmodified="true" overwrite="true">
-      <fileset dir="${test.data.dir}/thredds/cataloggen/testData/model"/>
-    </copy-->
-
-    <!-- Copy DqcServlet test data to initialContent/ directory for example setup. -->
-    <!--copy todir="${war.dir}/initialContent/dqcServlet/testData" preservelastmodified="true" overwrite="true">
-      <fileset dir="${test.data.dir}/thredds/cataloggen/testData/model"/>
-    </copy-->
 
     <!-- Servlet engine needs write permission on log, config, and catalog directories. -->
     <chmod file="${war.dir}/initialContent/logs" perm="775" type="dir"/>
@@ -591,6 +579,11 @@
 
 
   <!-- TESTING  -->
+  <property name="test.src.dir" location="${root.dir}/src/test/java"/>
+  <property name="test.data.dir" location="${root.dir}/src/test/data"/>
+  <property name="test.classes.dir" location="${build.dir}/test/classes"/>
+  <property name="test.reports.dir" location="${build.dir}/test/reports"/>
+  
   <path id="test.classpath">
     <path refid="compile.classpath"/>
     <fileset refid="runtime.libraries"/>
@@ -619,8 +612,6 @@
 
   </target>
 
-  <target name="test" description="run tests"/>
-
   <target name="unit-test" depends="compile, test-setup" description="run junit tests">
     <mkdir dir="${test.reports.dir}/unit-test"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
@@ -628,7 +619,7 @@
       <jvmarg value="-ea"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.reports.dir}/unit-test" name="ucar.nc2.TestAll"/>
+      <test todir="${test.reports.dir}/unit-test" name="thredds.TestAll"/>
     </junit>
 
     <!-- #Generate test reports -->
