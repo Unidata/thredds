@@ -95,7 +95,14 @@
   <p>The <strong>scan</strong> element in the NcML aggregation is similar in purpose to the <strong>datasetScan</strong> element, but be careful not to confuse the two. The <strong>datasetScan</strong> element is more powerful, and has more options for filtering etc. Its job is to create nested <strong>dataset</strong> elements inside the datasetScan, and so has various options to  add information to those nested datasets. It has a generalized framework (CrawlableDataset) for crawling other things besides file directories. The <strong>scan</strong> element's job is to easily specify what files go into an NcML aggregation, and those individual files are hidden inside the aggregation dataset. It can only scan file directories. In the future, some of the capabilities of <strong>datasetScan</strong> will migrate into NcML <strong>scan</strong>. </p>
   <h3>Cant use HTTPServer</h3>
   <p>Remember that you cant use <strong>HTTPServer</strong> for NcML datasets. Use only the <em>subsetting services </em><strong>OpenDAP</strong>, <strong>WCS</strong> and <strong>NetcdfServer.</strong></p>
-  <p>&nbsp;</p>
+  <h3>Debugging tips</h3>
+  <p>When things go wrong, its best to first debug the aggregation outside of the TDS: </p>
+  <ol>
+    <li>Create a stand-alone NcML aggregation file, without a <strong>recheckEvery</strong> attribute on the scan element.. Try to read it in <a href="http://www.unidata.ucar.edu/content/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a>, or some other client using the Java-Netcdf library. </li>
+    <li> If the dataset is <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html#dynamic">dynamic</a> ( files can be added or deleted), add the <strong>recheckEvery</strong> attribute on the scan element and open the dataset, then reopen after a new file has arrived (and recheckEvery time has passed). Generally you make <strong>recheckEvery</strong> very short while testing. </li>
+    <li>Now add the NcML dataset to the TDS, and see if OPeNDAP access works, without a <strong>recheckEvery</strong> attribute on the scan element.</li>
+    <li> Add the <strong>recheckEvery</strong> attribute (if needed) and test again. </li>
+  </ol>
   <h2>Related Documents:</h2>
   <ul>
     <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a></li>
@@ -104,7 +111,7 @@
   </ul>
   <hr WIDTH="100%">
   <address>
-  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2006
+  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 01, 2007 
   </address>
   <p></p>
 </div>

@@ -18,9 +18,10 @@ public class TestAggFmrcGrib extends TestCase {
     super(name);
   }
 
-  public void failsWithMemoryExceptionInTeamCity_testSimple() throws Exception, InvalidRangeException {
+  public void testSimple() throws Exception {
     String filename = "file:./"+TestNcML.topDir + "aggFmrcGrib.xml";
     System.out.println("TestAggForecastModel.open "+ filename);
+    TestAll.showMem("TestAggFmrcGrib start ");
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     //System.out.println("file="+ncfile);
@@ -37,7 +38,8 @@ public class TestAggFmrcGrib extends TestCase {
     testReadData(ncfile, naggs);
  //   testReadSlice(ncfile);
 
-    ncfile.close();
+    TestAll.showMem("TestAggFmrcGrib end ");
+    ncfile.close();    
   }
 
   public void utestRunseq() throws Exception, InvalidRangeException {

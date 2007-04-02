@@ -1,6 +1,6 @@
 package ucar.nc2.dt;
 
-import ucar.nc2.dt.point.decode.MetarParseReport2;
+import ucar.nc2.dt.point.decode.MetarParseReport;
 
 import java.io.*;
 
@@ -24,9 +24,8 @@ public class TimeObsRaw {
 
         // System.out.println(line);
         try {
-          MetarParseReport2 parser = new MetarParseReport2();
-          parser.parseReport(line);
-          if (null == parser.getFields()) {
+          MetarParseReport parser = new MetarParseReport();
+          if (null == parser.parseReport( line)) {
             if (showErrs) System.out.println("*** NULL " + line);
             bad++;
           }
