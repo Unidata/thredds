@@ -108,12 +108,12 @@ public class TestDataRootHandler extends TestCase
     }
     catch ( IOException e )
     {
-      assertTrue( "Problem initializing catalog <" + configCatName + ">: " + e.getMessage(), false );
+      assertTrue( "I/O error while initializing catalog <" + configCatName + ">: " + e.getMessage(), false );
       return;
     }
     catch ( IllegalArgumentException e )
     {
-      assertTrue( "Problem initializing catalog <" + configCatName + ">: " + e.getMessage(), false );
+      assertTrue( "IllegalArgumentException while initializing catalog <" + configCatName + ">: " + e.getMessage(), false );
       return;
     }
 
