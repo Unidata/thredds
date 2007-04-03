@@ -303,29 +303,33 @@ public class DataRootHandler {
   }
 
   // Only called by synchronized methods
-  private void initFollowCatrefs(String dirPath, List datasets)  throws IOException {
-    Iterator iter = datasets.iterator();
-    while (iter.hasNext()) {
-      InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
+ private void initFollowCatrefs(String dirPath, List datasets)  throws IOException {
+   Iterator iter = datasets.iterator();
+   while (iter.hasNext()) {
+     InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
 
-      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
-        InvCatalogRef catref = (InvCatalogRef) invDataset;
-        String href = catref.getXlinkHref();
-        // Check that catRef is relative
-        if (!href.startsWith("http:"))
-        {
-          // Clean up relative URLs that start with "./"
-          if ( href.startsWith( "./" ) )
-            href = href.substring( 2 );
-          
-          initCatalog(dirPath + href, true ); // go check it out else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
-        }
-        // recurse through nested datasets
-        initFollowCatrefs(dirPath, invDataset.getDatasets());
-      }
-    }
-  }
+     if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+       InvCatalogRef catref = (InvCatalogRef) invDataset;
+       String href = catref.getXlinkHref();
+       if (log.isDebugEnabled()) log.debug("  catref.getXlinkHref=" + href);
 
+       // Check that catRef is relative
+       if (!href.startsWith("http:"))
+       {
+         // Clean up relative URLs that start with "./"
+         if ( href.startsWith( "./" ) )
+           href = href.substring( 2 );
+         initCatalog(dirPath + href, true );
+       }
+
+     }
+     else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc))
+     {
+       // recurse through nested datasets
+       initFollowCatrefs(dirPath, invDataset.getDatasets());
+     }
+   }
+ }
   // Only called by synchronized methods
   private boolean addRoot(InvDatasetScan dscan) {
     // check for duplicates
@@ -338,9 +342,9 @@ public class DataRootHandler {
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      if (!droot.dirLocation.equals( dscan.getScanDir())) {
+      if (!droot.dirLocation.equals( dscan.getScanLocation())) {
         String message = "**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-            " wanted to map to fmrc=<" + dscan.getScanDir() + "> in catalog "+dscan.getParentCatalog().getUriString();
+            " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog "+dscan.getParentCatalog().getUriString();
         log.error(message);
       }
 
@@ -349,23 +353,13 @@ public class DataRootHandler {
 
     // LOOK !!
     // rearrange scanDir if it starts with content
-    if (dscan.getScanDir().startsWith("content/"))
-      dscan.setScanDir(contentPath + "public/" + dscan.getScanDir().substring(8));
+    if (dscan.getScanLocation().startsWith("content/"))
+      dscan.setScanLocation(contentPath + "public/" + dscan.getScanLocation().substring(8));
 
-    // Check that scan location exists.
-    CrawlableDataset crDs = null;
-    try
+    // Check whether InvDatasetScan is valid before adding.
+    if ( ! dscan.isValid() )
     {
-      crDs = dscan.requestCrawlableDataset( dscan.getPath() );
-    }
-    catch ( IOException e )
-    {
-      log.error( "**Error: DatasetScan =" + dscan.getPath() + " location=<" + crDs.getPath() + ">, I/O error checking existence.");
-      return false;
-    }
-    if ( ! crDs.exists())
-    {
-      log.error( "**Error: DatasetScan =" + dscan.getPath() + " location= <" + crDs.getPath() + "> does not exist" );
+      log.error( dscan.getInvalidMessage());
       return false;
     }
 
@@ -373,7 +367,7 @@ public class DataRootHandler {
     droot = new DataRoot(dscan);
     pathMatcher.put(path, droot);
 
-    log.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanDir() + ">");
+    log.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
     return true;
   }
 
@@ -471,7 +465,7 @@ public class DataRootHandler {
     DataRoot(InvDatasetScan scan) {
       this.path = scan.getPath();
       this.scan = scan;
-      this.dirLocation = scan.getScanDir();
+      this.dirLocation = scan.getScanLocation();
       this.datasetRootProxy = null;
     }
 

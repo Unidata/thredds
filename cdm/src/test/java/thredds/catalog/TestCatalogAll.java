@@ -2,15 +2,15 @@ package thredds.catalog;
 
 import java.util.*;
 import junit.framework.*;
+import ucar.nc2.TestAll;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestCatalogAll extends TestCase {
-  public static String topDir = "";
-  public static String tmpDir = topDir + "test/tmp/";
-  public static String dataDir = topDir+"src/test/data/thredds/catalog/";
+  public static String tmpDir = TestAll.temporaryDataDir;
+  public static String dataDir = TestAll.cdmTestDataDir + "thredds/catalog/";
   static private boolean showValidation = false;
   static boolean debug = true, showValidationMessages = true;
 

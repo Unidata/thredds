@@ -7,6 +7,8 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import ucar.nc2.TestAll;
+
 /**
  * A description
  * <p/>
@@ -22,8 +24,7 @@ public class TestInvDatasetScan extends TestCase
   private String dsScanName = "Test Data";
   private String dsScanPath = "testData";
 
-  //private String dsScanDir = "C:/Ethan/dev/devel/netcdf-java-2.2/test/data";
-  private String dsScanDir = "../netcdf-java-2.2/test/data";
+  private String dsScanDir = TestAll.cdmTestDataDir;
   private String dsScanFilter = ".*\\.nc$";
 
   private String serviceName = "ncdods";
@@ -1065,4 +1066,48 @@ public class TestInvDatasetScan extends TestCase
     assertTrue( "Unexpected non-null NAM catalog, should be excluded by filter.",
                 cat4 == null );
   }
+
+  public void testDsScanNonexistentLocation()
+  {
+    //String expectedCatalogResourceName = configResourcePath + "/" + testInvDsScan_emptyServiceBase_ResourceName;
+
+    InvCatalogImpl configCat = null;
+    configCat = new InvCatalogImpl( "Test InvDatasetScan with non-existent scan location", "1.0.1", null );
+
+    InvService myService = new InvService( serviceName, ServiceType.DODS.toString(),
+                                           "", null, null );
+    configCat.addService( myService );
+
+    InvDatasetScan me = new InvDatasetScan( configCat, null, dsScanName, dsScanPath, dsScanDir + "nonExistentDir/", dsScanFilter, false, "false", false, null, null, null );
+    //me.setServiceName( serviceName );
+    // Set the serviceName (inherited) in InvDatasetScan.
+    ThreddsMetadata tm = new ThreddsMetadata( false );
+    tm.setServiceName( myService.getName() );
+    InvMetadata md = new InvMetadata( me, null, XMLEntityResolver.CATALOG_NAMESPACE_10, "", true, true, null, tm );
+    ThreddsMetadata tm2 = new ThreddsMetadata( false );
+    tm2.addMetadata( md );
+    me.setLocalMetadata( tm2 );
+
+    configCat.addDataset( me );
+
+    configCat.finish();
+
+    URI reqURI = null;
+    String reqUriString = baseURL + "/" + dsScanPath + "/catalog.xml";
+    try
+    {
+      reqURI = new URI( reqUriString );
+    }
+    catch ( URISyntaxException e )
+    {
+      assertTrue( "Bad URI syntax <" + reqUriString + ">: " + e.getMessage(),
+                  false );
+    }
+    InvCatalog catalog = me.makeCatalogForDirectory( dsScanPath + "/catalog.xml", reqURI );
+
+    // Compare the resulting catalog an the expected catalog resource.
+    //TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+
+  }
+
 }

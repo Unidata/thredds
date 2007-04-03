@@ -1704,7 +1704,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       dsElem = new Element( "datasetScan", defNS );
       writeDatasetInfo( ds, dsElem, false, true );
       dsElem.setAttribute( "path", ds.getPath() );
-      dsElem.setAttribute( "location", ds.getScanDir() );
+      dsElem.setAttribute( "location", ds.getScanLocation() );
 
       // Write datasetConfig element
       if ( ds.getCrDsClassName() != null )
@@ -1754,12 +1754,21 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
     else
     {
-      dsElem = new Element( "catalogRef", defNS );
-      writeDatasetInfo( ds, dsElem, false, false );
-      dsElem.setAttribute( "href", ds.getXlinkHref(), xlinkNS );
-      dsElem.setAttribute( "title", ds.getName(), xlinkNS );
-      dsElem.setAttribute( "name", "" );
-      dsElem.addContent( writeProperty( new InvProperty( "DatasetScan", "true" ) ) ); 
+      if ( ds.isValid() )
+      {
+        dsElem = new Element( "catalogRef", defNS );
+        writeDatasetInfo( ds, dsElem, false, false );
+        dsElem.setAttribute( "href", ds.getXlinkHref(), xlinkNS );
+        dsElem.setAttribute( "title", ds.getName(), xlinkNS );
+        dsElem.setAttribute( "name", "" );
+        dsElem.addContent( writeProperty( new InvProperty( "DatasetScan", "true" ) ) );
+      }
+      else
+      {
+        dsElem = new Element( "dataset", defNS );
+        dsElem.setAttribute( "name", "** Misconfigured DatasetScan <" + ds.getPath() + "> **" );
+        dsElem.addContent( new Comment( ds.getInvalidMessage() ) );
+      }
     }
 
     return dsElem;

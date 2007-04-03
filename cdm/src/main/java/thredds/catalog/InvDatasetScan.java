@@ -45,7 +45,7 @@ import java.lang.reflect.InvocationTargetException;
  * <li>The static methods setContext() and setCatalogServletName() should only
  * be called once per web application instance. For instance, in your
  * HttpServlet implementations init() method.</li>
- * <li>The method setScanDir() should not be used; it is "public by accident".
+ * <li>The method setScanLocation() should not be used; it is "public by accident".
  * </li>
  * </ol>
  *
@@ -64,7 +64,9 @@ public class InvDatasetScan extends InvCatalogRef {
 
   ////////////////////////////////////////////////
   private final String rootPath;
-  private String scanDir;
+  private String scanLocation;
+
+  private CrawlableDataset scanLocationCrDs;
 
   private final String crDsClassName;
   private final Object crDsConfigObj;
@@ -83,8 +85,11 @@ public class InvDatasetScan extends InvCatalogRef {
   private List childEnhancerList;
   private CatalogRefExpander catalogRefExpander;
 
-  public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanDir, String id, InvDatasetScan from )  {
-    this(parent, name, path , scanDir,
+  private boolean isValid;
+  private StringBuffer invalidMessage;
+
+  public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanLocation, String id, InvDatasetScan from )  {
+    this(parent, name, path , scanLocation,
          from.crDsClassName, from.crDsConfigObj, from.filter,
          from.identifier, from.namer, from.addDatasetSize,
          from.sorter, from.proxyDatasetHandlers, from.childEnhancerList,
@@ -93,11 +98,11 @@ public class InvDatasetScan extends InvCatalogRef {
     setID( id);
   }
 
-  public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanDir, String filter,
+  public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanLocation, String filter,
                          boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
                          String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration ) {
 
-    this( catalog,  parent,  name,  path,  scanDir,  filter, addDatasetSize, addLatest, sortOrderIncreasing,
+    this( catalog,  parent,  name,  path,  scanLocation,  filter, addDatasetSize, addLatest, sortOrderIncreasing,
                          datasetNameMatchPattern, startTimeSubstitutionPattern, duration, 0);
   }
 
@@ -108,7 +113,7 @@ public class InvDatasetScan extends InvCatalogRef {
    * @param parent parent dataset
    * @param name dataset name
    * @param path url path
-   * @param scanDir scan this directory
+   * @param scanLocation scan this directory
    * @param filter RegExp match on name
    * @param addDatasetSize add a size element
    * @param addLatest add a latest element
@@ -118,17 +123,40 @@ public class InvDatasetScan extends InvCatalogRef {
    * @param duration  time range using the file name
    * @param lastModifiedLimit only use datasets whose lastModified() time is at least this many msecs in the past. Ignore if <= 0
    */
-  public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanDir, String filter,
+  public InvDatasetScan( InvCatalogImpl catalog, InvDatasetImpl parent, String name, String path, String scanLocation, String filter,
                          boolean addDatasetSize, String addLatest, boolean sortOrderIncreasing,
                          String datasetNameMatchPattern, String startTimeSubstitutionPattern, String duration, long lastModifiedLimit ) {
 
     super(parent, name, makeHref(path));
-    log.debug(  "InvDatasetScan(): parent="+ parent + ", name="+ name +" , path="+ path +" , scanDir="+ scanDir +" , filter="+ filter +" , addLatest="+ addLatest +" , sortOrderIncreasing="+ sortOrderIncreasing +" , datasetNameMatchPattern="+ datasetNameMatchPattern +" , startTimeSubstitutionPattern= "+ startTimeSubstitutionPattern +", duration="+duration);
+    log.debug(  "InvDatasetScan(): parent="+ parent + ", name="+ name +" , path="+ path +" , scanLocation="+ scanLocation +" , filter="+ filter +" , addLatest="+ addLatest +" , sortOrderIncreasing="+ sortOrderIncreasing +" , datasetNameMatchPattern="+ datasetNameMatchPattern +" , startTimeSubstitutionPattern= "+ startTimeSubstitutionPattern +", duration="+duration);
 
     this.rootPath = path;
-    this.scanDir = scanDir;
+    this.scanLocation = scanLocation;
     this.crDsClassName = null;
     this.crDsConfigObj = null;
+    this.scanLocationCrDs = createScanLocationCrDs();
+    this.isValid = true;
+    if ( this.scanLocationCrDs == null )
+    {
+      isValid = false;
+      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=").append( path)
+              .append( "; scanLocation=" ).append( scanLocation )
+              .append(">: could not create CrawlableDataset for scanLocation." );
+    }
+    else if ( ! this.scanLocationCrDs.exists() )
+    {
+      isValid = false;
+      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+              .append( "; scanLocation=").append( scanLocation )
+              .append(">: CrawlableDataset for scanLocation does not exist." );
+    }
+    else if ( ! this.scanLocationCrDs.isCollection() )
+    {
+      isValid = false;
+      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+              .append( "; scanLocation=" ).append( scanLocation )
+              .append( ">: CrawlableDataset for scanLocation not a collection." );
+    }
 
     ArrayList selectors = new ArrayList();
     if (lastModifiedLimit > 0) {
@@ -179,7 +207,7 @@ public class InvDatasetScan extends InvCatalogRef {
     // catalogRefExpander = new BooleanCatalogRefExpander( this.datasetScan.??? );
   }
 
-  public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanDir,
+  public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanLocation,
                          String configClassName, Object configObj, CrawlableDatasetFilter filter,
                          CrawlableDatasetLabeler identifier, CrawlableDatasetLabeler namer,
                          boolean addDatasetSize,
@@ -188,9 +216,34 @@ public class InvDatasetScan extends InvCatalogRef {
   {
     super( parent, name, makeHref(path) );
     this.rootPath = path;
-    this.scanDir = scanDir;
+    this.scanLocation = scanLocation;
     this.crDsClassName = configClassName;
     this.crDsConfigObj = configObj;
+
+    this.scanLocationCrDs = createScanLocationCrDs();
+    this.isValid = true;
+    if ( this.scanLocationCrDs == null )
+    {
+      isValid = false;
+      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+              .append( "; scanLocation=" ).append( scanLocation )
+              .append( ">: could not create CrawlableDataset for scanLocation." );
+    }
+    else if ( ! this.scanLocationCrDs.exists() )
+    {
+      isValid = false;
+      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+              .append( "; scanLocation=" ).append( scanLocation )
+              .append( ">: CrawlableDataset for scanLocation does not exist." );
+    }
+    else if ( ! this.scanLocationCrDs.isCollection() )
+    {
+      isValid = false;
+      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+              .append( "; scanLocation=" ).append( scanLocation )
+              .append( ">: CrawlableDataset for scanLocation not a collection." );
+    }
+
     this.filter = filter;
     this.identifier = identifier;
     this.namer = namer;
@@ -208,17 +261,44 @@ public class InvDatasetScan extends InvCatalogRef {
   public String getPath() { return rootPath; }
   //public void setPath( String path) { this.rootPath = path; }
 
-  public String getScanDir() { return scanDir; }
+  public String getScanLocation() { return scanLocation; }
 
   /**
    * Resets the location being scanned (DO NOT USE THIS METHOD, "public by accident").
    *
    * <p>Used by DataRootHandler to allow scanning an aliased directory ("content").
    *
-   * @param scanDir the scan location.
+   * @param scanLocation the scan location.
    */
-  public void setScanDir(String scanDir) {
-    this.scanDir = scanDir;
+  public void setScanLocation(String scanLocation )
+  {
+    if ( ! scanLocation.equals( this.scanLocation))
+    {
+      this.isValid = true;
+      this.scanLocation = scanLocation;
+      this.scanLocationCrDs = createScanLocationCrDs();
+      if ( this.scanLocationCrDs == null )
+      {
+        isValid = false;
+        invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( rootPath )
+                .append( "; scanLocation=" ).append( scanLocation )
+                .append( ">: could not create CrawlableDataset for scanLocation." );
+      }
+      else if ( !this.scanLocationCrDs.exists() )
+      {
+        isValid = false;
+        invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( rootPath )
+                .append( "; scanLocation=" ).append( scanLocation )
+                .append( ">: CrawlableDataset for scanLocation does not exist." );
+      }
+      else if ( !this.scanLocationCrDs.isCollection() )
+      {
+        isValid = false;
+        invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( rootPath )
+                .append( "; scanLocation=" ).append( scanLocation )
+                .append( ">: CrawlableDataset for scanLocation not a collection." );
+      }
+    }
   }
 
   public String getCrDsClassName() { return crDsClassName; }
@@ -237,42 +317,45 @@ public class InvDatasetScan extends InvCatalogRef {
 
   public CatalogRefExpander getCatalogRefExpander() { return catalogRefExpander; }
 
-  private CrawlableDataset getScanLocationCrDs()
+  public boolean isValid() { return isValid; }
+  public String getInvalidMessage() { return invalidMessage.toString(); }
+
+  private CrawlableDataset createScanLocationCrDs()
   {
-    // Create the CrawlableDataset for the scan location (scanDir).
+    // Create the CrawlableDataset for the scan location (scanLocation).
     CrawlableDataset scanLocationCrDs;
     try
     {
-      scanLocationCrDs = CrawlableDatasetFactory.createCrawlableDataset( scanDir, crDsClassName, crDsConfigObj );
+      scanLocationCrDs = CrawlableDatasetFactory.createCrawlableDataset( scanLocation, crDsClassName, crDsConfigObj );
     }
     catch ( IllegalAccessException e )
     {
-      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( NoSuchMethodException e )
     {
-      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( IOException e )
     {
-      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( InvocationTargetException e )
     {
-      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( InstantiationException e )
     {
-      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
     catch ( ClassNotFoundException e )
     {
-      log.error( "getScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanDir + "> and class <" + crDsClassName + ">: " + e.getMessage() );
+      log.error( "createScanLocationCrDs(): failed to create CrawlableDataset for collectionLevel <" + scanLocation + "> and class <" + crDsClassName + ">: " + e.getMessage() );
       return null;
     }
 
@@ -282,17 +365,16 @@ public class InvDatasetScan extends InvCatalogRef {
   private CatalogBuilder buildCatalogBuilder()
   {
     // Setup and create catalog builder.
-    CrawlableDataset collectionCrDs = getScanLocationCrDs();
 
     InvService service = getServiceDefault();
     DatasetScanCatalogBuilder dsScanCatBuilder;
     try
     {
-      dsScanCatBuilder = new DatasetScanCatalogBuilder( this, collectionCrDs, service );
+      dsScanCatBuilder = new DatasetScanCatalogBuilder( this, scanLocationCrDs, service );
     }
     catch ( IllegalArgumentException e )
     {
-      log.error( "buildCatalogBuilder(): failed to create CatalogBuilder for this collection <" + collectionCrDs.getPath() + ">: " + e.getMessage() );
+      log.error( "buildCatalogBuilder(): failed to create CatalogBuilder for this collection <" + scanLocationCrDs.getPath() + ">: " + e.getMessage() );
       return null;
     }
     return dsScanCatBuilder;
@@ -322,8 +404,7 @@ public class InvDatasetScan extends InvCatalogRef {
     if ( dataDir.startsWith( "/" ) )
       dataDir = dataDir.substring( 1 );
 
-    CrawlableDataset scanCrDs = this.getScanLocationCrDs();
-    CrawlableDataset curCrDs = scanCrDs.getDescendant( dataDir);
+    CrawlableDataset curCrDs = scanLocationCrDs.getDescendant( dataDir);
 
     if ( log.isDebugEnabled() ) log.debug( "translatePathToLocation(): url dsPath= " + dsPath + " to dataset dsPath= " + curCrDs.getPath() );
 
@@ -370,7 +451,7 @@ public class InvDatasetScan extends InvCatalogRef {
       log.debug( "baseURI=" + baseURI );
       log.debug( "orgPath=" + orgPath );
       log.debug( "rootPath=" + rootPath );
-      log.debug( "scanDir=" + scanDir );
+      log.debug( "scanLocation=" + scanLocation );
     }
 
     // Get the dataset path.
@@ -385,8 +466,7 @@ public class InvDatasetScan extends InvCatalogRef {
     // A very round about way to remove the filename (e.g., "catalog.xml").
     // Note: Gets around "path separator at end of path" issues that are CrDs implementation dependant.
     // Note: Does not check that CrDs is allowed by filters.
-    CrawlableDataset locCrDs = this.getScanLocationCrDs();
-    CrawlableDataset reqCrDs = locCrDs.getDescendant( dsDirPath.substring( locCrDs.getPath().length()));
+    CrawlableDataset reqCrDs = scanLocationCrDs.getDescendant( dsDirPath.substring( scanLocationCrDs.getPath().length()));
     dsDirPath = reqCrDs.getParentDataset().getPath();
 
     // Setup and create catalog builder.
@@ -598,7 +678,7 @@ public class InvDatasetScan extends InvCatalogRef {
       isValid = false;
     }
 
-    if (getScanDir() == null) {
+    if ( getScanLocation() == null) {
       out.append( "**Error: DatasetScan (" ).append( getFullName() ).append( "): must have dirLocation attribute\n" );
       isValid = false;
     }

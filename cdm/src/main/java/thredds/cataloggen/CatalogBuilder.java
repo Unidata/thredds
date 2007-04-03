@@ -27,9 +27,8 @@ public interface CatalogBuilder
    * <p>This method can handle requests for regular datasets and proxy datasets.
    *
    * @param path the path of the requested CrawlableDataset
-   * @return the CrawlableDataset for the given path or null if the path is not allowed by this CatalogBuilder.
+   * @return the CrawlableDataset for the given path or null if the path is not allowed by this CatalogBuilder either due to filtering or due to the path not being a descendant (or self) of the collection level path.
    * @throws IOException if an I/O error occurs while locating the children datasets.
-   * @throws IllegalArgumentException if the given path is not a descendant of (or the same as) this CatalogBuilders collection level.
    */
   public CrawlableDataset requestCrawlableDataset( String path )
           throws IOException;

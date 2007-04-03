@@ -342,7 +342,7 @@ public class TDServerConfigurator extends JPanel {
         String ext = d.getName();
         String id = (dscan.getID() == null) ? ext : dscan.getID() + "/"+ ext;
         InvDatasetScan replaceNested = new InvDatasetScan(replace, ext, dscan.getPath() + "/" + ext,
-                dscan.getScanDir() + ext +"/", id, dscan);
+                dscan.getScanLocation() + ext +"/", id, dscan);
         replace.addDataset(replaceNested);
       } else {
         d.setParent( replace);

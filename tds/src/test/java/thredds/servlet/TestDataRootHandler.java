@@ -40,9 +40,13 @@ public class TestDataRootHandler extends TestCase
     File contentPathFile = new File( contentPath);
     if ( contentPathFile.exists() )
     {
-      assertTrue( "Pre-creation existence of temporary content path directory <" + contentPathFile.getAbsolutePath() + ">.",
-                  false );
-      return;
+      System.out.println( "**Deleting temporary content path <" + contentPath + "> from previous run." );
+      if ( ! deleteDirectoryAndContent( contentPathFile ))
+      {
+        assertTrue( "Unable to delete already existing temporary content path directory <" + contentPathFile.getAbsolutePath() + ">.",
+                    false );
+        return;
+      }
     }
 
     if ( ! contentPathFile.mkdirs() )
