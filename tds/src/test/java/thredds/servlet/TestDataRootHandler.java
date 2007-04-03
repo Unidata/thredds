@@ -30,7 +30,8 @@ public class TestDataRootHandler extends TestCase
   }
 
   /**
-   * Test ...
+   * Test behavior when a datasetScan@location results in
+   * a CrDs whose exists() method returns false.
    */
   public void testNonexistentScanLocation()
   {
@@ -39,21 +40,19 @@ public class TestDataRootHandler extends TestCase
     File contentPathFile = new File( contentPath);
     if ( contentPathFile.exists() )
     {
-      assertTrue( "pre-creation existence of temporary content path directory <" + contentPathFile.getAbsolutePath() + ">.",
+      assertTrue( "Pre-creation existence of temporary content path directory <" + contentPathFile.getAbsolutePath() + ">.",
                   false );
       return;
     }
 
     if ( ! contentPathFile.mkdirs() )
     {
-      assertTrue( "failed to make content path directory <" + contentPathFile.getAbsolutePath() + ">.",
+      assertTrue( "Failed to make content path directory <" + contentPathFile.getAbsolutePath() + ">.",
                   false );
       return;
     }
 
-    // Create a catalog with a datasetScan that points to a non-existent
-    // directory in the contentPath directory. E.g.,
-    // <datasetScan path="test" location="content/nonExistDir" ... />
+    // Create a catalog with a datasetScan that points to a non-existent location.
     InvCatalogImpl configCat = null;
     configCat = new InvCatalogImpl( "Test TDS Config Catalog with nonexistent scan location", "1.0.1", null );
 
@@ -61,8 +60,12 @@ public class TestDataRootHandler extends TestCase
                                            "/thredds/dodsC/", null, null );
     configCat.addService( myService );
 
-    InvDatasetScan dsScan = new InvDatasetScan( null, "Test Nonexist Location", "testNonExistLoc",
-                                            "content/nonExistDir", null, null, null, null, null,
+    // Create the test datasetScan that points to nonexistent location.
+    String dsScanName = "Test Nonexist Location";
+    String dsScanPath = "testNonExistLoc";
+    String dsScanLocation = "content/nonExistDir";
+    InvDatasetScan dsScan = new InvDatasetScan( null, dsScanName, dsScanPath,
+                                                dsScanLocation, null, null, null, null, null,
                                             true, null, null, null, null );
     ThreddsMetadata tm = new ThreddsMetadata( false );
     tm.setServiceName( myService.getName() );
@@ -103,22 +106,30 @@ public class TestDataRootHandler extends TestCase
     }
     catch ( FileNotFoundException e )
     {
-      assertTrue( e.getMessage(), false );
+      assertTrue( e.getMessage(),
+                  false );
       return;
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error while initializing catalog <" + configCatName + ">: " + e.getMessage(), false );
+      assertTrue( "I/O error while initializing catalog <" + configCatName + ">: " + e.getMessage(),
+                  false );
       return;
     }
     catch ( IllegalArgumentException e )
     {
-      assertTrue( "IllegalArgumentException while initializing catalog <" + configCatName + ">: " + e.getMessage(), false );
+      assertTrue( "IllegalArgumentException while initializing catalog <" + configCatName + ">: " + e.getMessage(),
+                  false );
       return;
     }
 
-    // TODO Do some testing
-    // TODO add a datasetScan with good scan location and check both good and bad
+    // Check that bad dsScan wasn't added to DataRootHandler.
+    if ( drh.hasDataRootMatch( dsScanPath) )
+    {
+      assertTrue( "DataRootHandler has path match for DatasetScan <" + dsScanPath + ">.",
+                  false );
+      return;
+    }
 
     // Remove temporary contentPath dir and contents
     deleteDirectoryAndContent( contentPathFile );
