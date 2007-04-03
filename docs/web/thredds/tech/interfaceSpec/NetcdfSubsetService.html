@@ -23,34 +23,34 @@
   <blockquote>
     <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}</strong></p>
   </blockquote>
-  <p>A desired representation of the resource is specified using the <strong>mimeType</strong>  parameter. These different representations are not considered separate resources. </p>
+  <p>A desired representation of the resource is specified using the <strong>accept</strong>  parameter. These different representations are not considered separate resources. </p>
   <blockquote>
-    <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;mimeType={mime-type}</strong></p>
+    <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept={mime-type}</strong></p>
   </blockquote>
   <h3><strong>2. What's the format/representation?</strong></h3>
   <p>The dataset itself has two representations: </p>
   <ul>
     <li> an XML file describing the dataset, called the <a href="DatasetDescription">Dataset Description</a>      <ul>
         <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}</strong></li>
-        <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?mimeType=application/xml</strong></li>
+        <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?accept=application/xml</strong></li>
       </ul>
     </li>
     <li>      An HTML form to allow interactive user input:</li>
-    <ul><li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?mimeType=text/html</strong></li>
+    <ul><li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?accept=text/html</strong></li>
     </ul>
   </ul>
   <p>Results of a subset request can be: </p>
   <ul>
-    <li> a netCDF binary file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;mimeType=application/x-netcdf</strong></li>
+    <li> a netCDF binary file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=application/x-netcdf</strong></li>
       </ul>
     </li>
-    <li> an XML file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;mimeType=application/xml</strong></li>
+    <li> an XML file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=application/xml</strong></li>
       </ul>
     </li>
-    <li>an ASCII text file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;mimeType=text/plain</strong></li>
+    <li>an ASCII text file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=text/plain</strong></li>
           </ul>
     </li>
-    <li>an Excel csv file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;mimeType=text/csv</strong></li>
+    <li>an Excel csv file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=text/csv</strong></li>
       </ul>
     </li>
   </ul>
@@ -222,7 +222,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 30, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 2, 2007 
 </address>
 <p>&nbsp;
 </p>

@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4" relativePaths="true" type="JAVA_MODULE">
   <component name="ModuleRootManager" />
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../cdm/target/classes" />
     <exclude-output />
     <output-test url="file://$MODULE_DIR$/../cdm/target/test/classes" />
+    <content url="file://$MODULE_DIR$/../../grib/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../grib/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../grib/src/ucar/unidata" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../java-dap/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../java-dap/src" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/../cdm">
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/test/java" isTestSource="true" />
@@ -109,19 +116,19 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/grib-5.1.02.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/external/tomcat-5.5.20_servlet-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/opendap-2.0.jar!/" />
+          <root url="file://$MODULE_DIR$/../../grib/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

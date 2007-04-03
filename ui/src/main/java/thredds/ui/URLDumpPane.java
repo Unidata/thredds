@@ -294,6 +294,11 @@ public class URLDumpPane extends TextHistoryPane {
 
       // response headers
       appendLine(" HTTP/1.x " + code + " " + response);
+      appendLine(" content-length: " + currentConnection.getContentLength());
+      appendLine(" content-encoding: " + currentConnection.getContentEncoding());
+      appendLine(" content-type: " + currentConnection.getContentType());
+      appendLine("\nHeaders: ");
+
       for (int j = 1; ; j++) {
         String header = currentConnection.getHeaderField(j);
         String key = currentConnection.getHeaderFieldKey(j);
