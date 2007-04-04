@@ -350,5 +350,35 @@ public class TestSubset extends TestCase {
 
     dataset.close();
   }
+
+  public void testBBSubset() throws Exception {
+    GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/GFS/CONUS_80km/NCEP-GFS-CONUS_80km_best.ncd");
+    GeoGrid grid = dataset.findGridByName("Pressure");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    System.out.println("original bbox= "+gcs.getBoundingBox());
+    System.out.println("lat/lon bbox= "+gcs.getLatLonBoundingBox());
+
+    ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
+    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth()/2);
+    System.out.println("subset lat/lon bbox= "+llbb_subset);
+
+    GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+
+    System.out.println("result lat/lon bbox= "+gcs2.getLatLonBoundingBox());
+    System.out.println("result bbox= "+gcs2.getBoundingBox());
+
+    ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
+    System.out.println("projection mapArea= "+pr);
+    assert(pr.equals(gcs2.getBoundingBox()));
+
+    dataset.close();
+  }
+
+
 }
 

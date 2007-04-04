@@ -383,7 +383,7 @@ class N3header {
   }
 
     // find number of bytes needed to pad to a 4 byte boundary
-  private int padding( int nbytes) {
+  static int padding( int nbytes) {
     int pad = nbytes % 4;
     if (pad != 0) pad = 4 - pad;
     return pad;
@@ -426,7 +426,7 @@ class N3header {
     throw new IllegalStateException("unknown type == "+type);
   }
 
-  private int getType( DataType dt) {
+  static int getType( DataType dt) {
     if (dt == DataType.BYTE) return 1;
     else if ((dt == DataType.CHAR) || (dt == DataType.STRING)) return 2;
     else if (dt == DataType.SHORT) return 3;

@@ -27,7 +27,7 @@ public class TestProjections extends TestCase {
     return Math.abs( d1-d2) < TOLERENCE;
   } */
 
-  void testProjection (ProjectionImpl proj) {
+  private void testProjection (ProjectionImpl proj) {
     java.util.Random r = new java.util.Random((long)this.hashCode());
     LatLonPointImpl startL = new LatLonPointImpl();
 
@@ -57,37 +57,103 @@ public class TestProjections extends TestCase {
     System.out.println("Tested " +NTRIALS +" pts for projection " +proj.getClassName());
   }
 
+  // must have lon within 180, x,y within Earth Radius
+  public void testProjectionLon180 (ProjectionImpl proj) {
+    java.util.Random r = new java.util.Random((long)this.hashCode());
+    LatLonPointImpl startL = new LatLonPointImpl();
+
+    for (int i=0; i<NTRIALS; i++) {
+      startL.setLatitude(180.0 * (r.nextDouble() - .5)); // random latlon point
+      startL.setLongitude(180.0 * (r.nextDouble() - .5));
+
+      ProjectionPoint p = proj.latLonToProj( startL);
+      LatLonPoint endL = proj.projToLatLon( p);
+
+      double tolerence = 5.0e-4;
+      assert( TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), tolerence))  : proj.getClass().getName()+" failed start= "+startL+" end = "+ endL;
+      assert( TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), tolerence)) : proj.getClass().getName()+" failed start= "+startL+" end = "+ endL;
+    }
+
+    ProjectionPointImpl startP = new ProjectionPointImpl();
+    for (int i=0; i<NTRIALS; i++) {
+      startP.setLocation(5000.0 * (r.nextDouble() - .5),  // random proj point
+                      5000.0 * (r.nextDouble() - .5));
+
+      LatLonPoint ll = proj.projToLatLon( startP);
+      ProjectionPoint endP = proj.latLonToProj( ll);
+
+      assert( TestAll.closeEnough(startP.getX(), endP.getX())) : " failed start= "+startP.getX()+" end = "+ endP.getX();
+      assert( TestAll.closeEnough(startP.getY(), endP.getY())) : " failed start= "+startP.getY()+" end = "+ endP.getY();
+    }
+
+    System.out.println("Tested " +NTRIALS +" pts for projection " +proj.getClassName());
+  }
+
   public void testLC() {
     testProjection(new LambertConformal());
+
+    LambertConformal lc = new LambertConformal();
+    LambertConformal lc2 = (LambertConformal) lc.clone();
+    assert lc.equals(lc2);
+
   }
 
   public void testTM() {
     testProjection(new TransverseMercator());
+
+    TransverseMercator p = new TransverseMercator();
+    TransverseMercator p2 = (TransverseMercator) p.clone();
+    assert p.equals(p2);
   }
 
   public void testStereo() {
     testProjection(new Stereographic());
+    Stereographic p = new Stereographic();
+    Stereographic p2 = (Stereographic) p.clone();
+    assert p.equals(p2);
   }
 
   public void testLA() {
     testProjection(new LambertAzimuthalEqualArea());
+    LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea();
+    LambertAzimuthalEqualArea p2 = (LambertAzimuthalEqualArea) p.clone();
+    assert p.equals(p2);
   }
 
-  public void utestOrtho() {
-    testProjection(new Orthographic());
+  public void testOrtho() {
+    testProjectionLon180(new Orthographic());
+    Orthographic p = new Orthographic();
+    Orthographic p2 = (Orthographic) p.clone();
+    assert p.equals(p2);
   }
 
   public void testAEA() {
+     testProjection(new AlbersEqualArea());
+     AlbersEqualArea p = new AlbersEqualArea();
+     AlbersEqualArea p2 = (AlbersEqualArea) p.clone();
+     assert p.equals(p2);
+   }
 
-    // LOOK failed on 8.697N 104.1E
-    //  49.94N 108.5E
-    // 16.29S 104.8E
-    // 53.96S 77.06E
-    // 23.00S 74.68E
-    // start= 62.36N 82.76E end = 62.36N 144.1E
-    testProjection(new AlbersEqualArea());
+  public void testFlatEarth() {
+     testProjection(new FlatEarth());
+     FlatEarth p = new FlatEarth();
+     FlatEarth p2 = (FlatEarth) p.clone();
+     assert p.equals(p2);
+   }
 
-  }
+  public void testMercator() {
+      testProjection(new Mercator());
+      Mercator p = new Mercator();
+      Mercator p2 = (Mercator) p.clone();
+      assert p.equals(p2);
+    }
+
+  public void testUTM() {
+      testProjection(new UtmProjection());
+      UtmProjection p = new UtmProjection();
+      UtmProjection p2 = (UtmProjection) p.clone();
+      assert p.equals(p2);
+    }
 
 
 }
