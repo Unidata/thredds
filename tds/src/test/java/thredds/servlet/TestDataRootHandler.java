@@ -297,7 +297,7 @@ public class TestDataRootHandler extends TestCase
     StringBuffer buf = new StringBuffer( "Generated catalog does not contain all the expected datasets (");
     for ( String curName : dataFileNames )
     {
-      if ( topDs.findDatasetByName( curName) != null )
+      if ( topDs.findDatasetByName( curName) == null )
       {
         ok = false;
         buf.append( curName).append( ", ");
