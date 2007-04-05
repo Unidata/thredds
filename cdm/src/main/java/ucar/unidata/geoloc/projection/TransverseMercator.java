@@ -50,6 +50,11 @@ public class TransverseMercator extends ProjectionImpl {
     /** origin point */
     private LatLonPointImpl origin;
 
+      /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new TransverseMercator( getOriginLat(), getTangentLon(), getScale());
+    }
+
     /** Constructor with default parameteres */
     public TransverseMercator() {
         this(40.0, -105.0, .9996);

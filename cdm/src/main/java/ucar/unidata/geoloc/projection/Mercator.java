@@ -71,6 +71,11 @@ public class Mercator extends ProjectionImpl {
     /** origin point */
     private LatLonPointImpl origin;
 
+        /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new Mercator( getOriginLat(), getOriginLon(), getParallel());
+    }
+
     /** Constructor with default parameteres */
     public Mercator() {
         this(40.0, -105, 20.0);

@@ -192,7 +192,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
 
   /////////////////////////////////////////////////////////////////////////////
-  private CoordinateSystem cs;
+  private ProjectionImpl proj;
+  // private CoordinateSystem cs;
   private CoordinateAxis horizXaxis, horizYaxis;
   private CoordinateAxis1D vertZaxis, ensembleAxis;
   private CoordinateAxis1DTime timeTaxis, runTimeAxis;
@@ -212,7 +213,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public GridCoordSys(CoordinateSystem cs, StringBuffer sbuff) {
     super();
-    this.cs = cs;
+    //this.cs = cs;
 
     if (cs.isGeoXY()) {
       horizXaxis = xAxis = cs.getXaxis();
@@ -229,11 +230,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     coordAxes.add(horizXaxis);
     coordAxes.add(horizYaxis);
-    ProjectionImpl proj = cs.getProjection();
 
     // set canonical area
-    if (proj != null)
+    ProjectionImpl projOrig = cs.getProjection();
+    if (projOrig != null) {
+      proj = projOrig.constructCopy();
       proj.setDefaultMapArea(getBoundingBox());
+    }
 
     // need to generalize to non 1D vertical.
     CoordinateAxis z = hAxis = cs.getHeightAxis();
@@ -340,7 +343,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    */
   public GridCoordSys(GridCoordSys from, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     super();
-    this.cs = from.cs;
+    // this.cs = from.cs;
 
     CoordinateAxis xaxis = from.getXHorizAxis();
     CoordinateAxis yaxis = from.getYHorizAxis();
@@ -372,11 +375,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     coordAxes.add(horizXaxis);
     coordAxes.add(horizYaxis);
-    ProjectionImpl proj = (ProjectionImpl) from.getProjection().clone();
 
-    // set canonical area
-    if ((proj != null) && (getBoundingBox() != null))
+        // set canonical area
+    ProjectionImpl projOrig = from.getProjection();
+    if (projOrig != null) {
+      proj = projOrig.constructCopy();
       proj.setDefaultMapArea(getBoundingBox());
+    }
 
     CoordinateAxis1D zaxis = from.getVerticalAxis();
     if (zaxis != null) {
@@ -549,7 +554,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * get the projection
    */
   public ProjectionImpl getProjection() {
-    return cs.getProjection();
+    return proj;
   }
 
   /**

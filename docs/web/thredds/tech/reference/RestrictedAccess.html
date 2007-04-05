@@ -10,8 +10,8 @@
 <h1><img src="../THREDDSlogo.jpg" height="54" width="67"> Restricting Access to Datasets in the TDS </h1>
 <hr>
 <h2>Overview</h2>
-<p>When a client tries to access a restricted dataset, it is redirected to a URL that triggers a security challenge. If the challenge is successful, the client is redirected back to the original dataset URL, except now it has an authenticated session, represented by a session cookie passed to the client. For subsequest requests by the same client, no authentication is needed as long as the session remains valid. </p>
-<p>The default TDS configuration uses <a href="http://en.wikipedia.org/wiki/Digest_authentication">Digest authentication</a>. By modifying web.xml, the server administrator can require that  authentication be done differently, for example require  SSL. Changes to the TDS web.xml must be manually propagated to new versions of the TDS when upgrading. You can also <a href="PluggableRestrictedAccess.html">plug in your own</a> Authentication. </p>
+<p>When a client tries to access a restricted dataset, it is redirected to a URL that triggers a security challenge. If the challenge is successful, the client is redirected back to the original dataset URL, except now it has an authenticated session, represented by a session cookie passed to the client. For subsequent requests by the same client, no authentication is needed as long as the session remains valid. </p>
+<p>The default TDS configuration uses <a href="http://en.wikipedia.org/wiki/Digest_authentication">Digest authentication</a>. By modifying web.xml, the server administrator can require that  authentication be done differently, for example require  SSL (changes to the TDS web.xml must be manually propagated to new versions of the TDS when upgrading). You can also <a href="PluggableRestrictedAccess.html">plug in your own</a> Authentication. </p>
 <p>To access any restricted dataset that a TDS might serve, a client such as a browser, OPeNDAP enabled application, or WCS client, must  be able to:</p>
 <ol>
   <li>follow redirects, including circular redirects.</li>
@@ -104,16 +104,13 @@
 <ul>
   <li>Your browser may tell you that your server certificate has expired. <a href="../tutorial/RemoteManagement.html#SSL">Create a new one</a>, and restart Tomcat.</li>
 </ul>
-<blockquote>&nbsp;</blockquote>
-
-
 <h2>Unique Realm Name </h2>
  <p>If you are not using SSL, it is more secure to have a  Realm name unique to your server, then to use the default <em>THREDDS Data Server</em> Realm name, so we recommend that you change it in the web.xml file. This name is presented to the user during authentication, so it should be descriptive and include the hostname, for example:</p>
  <pre>  &lt;login-config&gt;<br>    &lt;auth-method&gt;DIGEST&lt;/auth-method&gt;<br>    &lt;realm-name&gt;<strong>Unidata IDD Server (motherload.ucar.edu</strong>)&lt;/realm-name&gt;<br>  &lt;/login-config&gt; 
   </pre>
 <hr>
  <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jan 30, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 3, 2007 
 </address>
 <p>&nbsp; </p>
 </body>

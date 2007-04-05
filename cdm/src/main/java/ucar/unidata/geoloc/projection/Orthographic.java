@@ -61,6 +61,11 @@ public class Orthographic extends ProjectionImpl {
     /** spherical vs ellipsoidal */
     private boolean spherical = true;
 
+          /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new Orthographic( getOriginLat(), getOriginLon(), R);
+    }
+
     /**
      *  Constructor with default parameters
      */

@@ -57,6 +57,11 @@ public class ProjectionAdapter extends ProjectionImpl {
         return new ProjectionAdapter(proj);
     }
 
+            /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new ProjectionAdapter( proj);
+    }
+
     /**
      * Create a new ProjectionImpl from a Projection
      *

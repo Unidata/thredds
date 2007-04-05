@@ -52,6 +52,22 @@ public class UtmProjection extends ProjectionImpl {
     /** _more_ */
     private Gdc_To_Utm_Converter convert2xy;
 
+
+    private static class SaveParams {
+      double a;
+      double f;
+      SaveParams( double a, double f) {
+        this.a = a;
+        this.f = f;
+      }
+    }
+    private SaveParams save = null; // needed for constructCopy
+
+        /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return (save == null) ? new UtmProjection( getZone(), isNorth()) : new UtmProjection( save.a, save.f, getZone(), isNorth());
+    }
+
     /**
      *  Constructor with default parameters
      */
@@ -87,6 +103,8 @@ public class UtmProjection extends ProjectionImpl {
      * @param isNorth true if the UTM coordinate is in the northern hemisphere
      */
     public UtmProjection(double a, double f, int zone, boolean isNorth) {
+        save = new SaveParams(a, f);
+
         convert2latlon = new Utm_To_Gdc_Converter(a, f, zone, isNorth);
         convert2xy     = new Gdc_To_Utm_Converter(a, f, zone, isNorth);
 

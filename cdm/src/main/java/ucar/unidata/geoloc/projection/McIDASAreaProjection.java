@@ -55,6 +55,14 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     /** navigation block */
     private int[] navBlock;
 
+    // aux Block - needed for conxtructCopy
+    private int[] auxBlock;
+
+      /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new McIDASAreaProjection(dirBlock, navBlock, auxBlock);
+    }
+
     // needed for beans
     public McIDASAreaProjection() {}
 

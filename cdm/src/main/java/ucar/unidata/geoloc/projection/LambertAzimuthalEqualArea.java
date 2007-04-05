@@ -63,6 +63,11 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
     /** spherical vs ellipsoidal */
     private boolean spherical = true;
 
+        /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy( ) {
+      return new LambertAzimuthalEqualArea( getOriginLat(), getOriginLon(), getFalseEasting(), getFalseNorthing(), null, R);
+    }
+
     /**
      *  Constructor with default parameters
      */
@@ -104,7 +109,6 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
         this.lon0   = Math.toRadians(lon0);
         R           = earthRadius;
 
-        double scale = 1.0;
         if (Double.isNaN(false_easting)) {
             false_easting = 0.0;
         }
@@ -114,6 +118,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
         boolean useFalseOrigin = (false_easting != 0.0)
                                  || (false_northing != 0.0);
 
+        double scale = 1.0;
         if (useFalseOrigin) {
             if (units == null) {
                 units = "km";

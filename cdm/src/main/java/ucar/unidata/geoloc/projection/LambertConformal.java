@@ -76,6 +76,11 @@ public class LambertConformal extends ProjectionImpl {
     /** _more_ */
     private boolean spherical = true;
 
+    public ProjectionImpl constructCopy( ) {
+      return new LambertConformal( getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+              getFalseEasting(), getFalseNorthing(), null);     
+    }
+
     /**
      *  Constructor with default parameters
      */

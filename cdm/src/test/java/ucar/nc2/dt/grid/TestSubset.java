@@ -379,6 +379,23 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  public void utestFMRCSubset() throws Exception {
+    GridDataset dataset = GridDataset.open("dods://localhost:8080/thredds/dodsC/data/cip/fmrcCase1/CIPFMRCCase1_best.ncd");
+    GeoGrid grid = dataset.findGridByName("Latitude__90_to_+90");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    Range timeRange = new Range( 2, 2 );
+    int bestZIndex = 5;
+
+    GeoGrid subset = grid.subset( timeRange, new Range( bestZIndex, bestZIndex ), null, null );
+    Array yxData = subset.readYXData( 0, 0 );
+    NCdump.printArray(yxData, "xyData", System.out, null);
+
+    dataset.close();
+  }
+
 
 }
 

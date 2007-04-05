@@ -61,6 +61,11 @@ public class VerticalPerspectiveView extends ProjectionImpl {
     /** spherical vs ellipsoidal */
     private boolean spherical = true;
 
+          /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new VerticalPerspectiveView( getOriginLat(), getOriginLon(), R, getHeight(), false_east, false_north);
+    }
+
     /**
      *  Constructor with default parameters
      */

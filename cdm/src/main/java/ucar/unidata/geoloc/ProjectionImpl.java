@@ -109,6 +109,9 @@ public abstract class ProjectionImpl implements Projection, Cloneable,
     /** default map area */
     protected ProjectionRect defaultMapArea = new ProjectionRect();
 
+  /** copy constructor - avoid clone !! */
+    abstract public ProjectionImpl constructCopy();
+
     /**
      * Get the name of the type of the projection.
      * @return the class name
@@ -358,6 +361,7 @@ public abstract class ProjectionImpl implements Projection, Cloneable,
      * @param bb  bounding box
      */
     public void setDefaultMapArea(ProjectionRect bb) {
+        if (bb == null) return;
         defaultMapArea = (ProjectionRect) bb.clone();
     }
 

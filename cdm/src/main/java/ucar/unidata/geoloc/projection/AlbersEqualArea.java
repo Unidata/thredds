@@ -63,6 +63,11 @@ public class AlbersEqualArea extends ProjectionImpl {
     /** flag for spherical calculation */
     private boolean spherical = true;
 
+    /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new AlbersEqualArea( getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo());
+    }
+
     /**
      *  Constructor with default parameters
      */

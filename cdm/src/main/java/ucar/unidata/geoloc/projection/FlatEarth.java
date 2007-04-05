@@ -68,6 +68,11 @@ public class FlatEarth extends ProjectionImpl {
 
     private double radius = Earth.getRadius() * .001; // km
 
+      /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new FlatEarth( getOriginLat(), getOriginLon(), getRotationAngle());     
+    }
+
     /**
      *  Constructor with default parameters
      */
@@ -82,7 +87,7 @@ public class FlatEarth extends ProjectionImpl {
      *
      * @param lat0   lat origin of the coord. system on the projection plane
      * @param lon0   lon origin of the coord. system on the projection plane
-     * @param rotAngle   angle of rotation
+     * @param rotAngle   angle of rotation, in degrees
      * @throws IllegalArgumentException if lat0, par1, par2 = +/-90 deg
      */
     public FlatEarth(double lat0, double lon0, double rotAngle) {
@@ -122,7 +127,7 @@ public class FlatEarth extends ProjectionImpl {
         addParameter("latitude_of_projection_origin", lat0);
         addParameter("longitude_of_projection_origin", lon0);
         addParameter("rotationAngle", rotAngle);
-        addParameter("units", "km");
+        // addParameter("units", "km");
     }
     // move this to ucar.unit or ucar.unidata.util
 
@@ -153,7 +158,7 @@ public class FlatEarth extends ProjectionImpl {
      * @return true if they are equal
      */
     public boolean equals(Object proj) {
-        if ( !(proj instanceof Orthographic)) {
+        if ( !(proj instanceof FlatEarth)) {
             return false;
         }
 
@@ -184,26 +189,34 @@ public class FlatEarth extends ProjectionImpl {
         precalculate();
     }
 
-    /**
-     * Get the origin latitude.
-     * @return the origin latitude.
-     */
-    public double getOriginLat() {
-        return origin.getLatitude();
-    }
+  /**
+    * Get the origin latitude.
+    * @return the origin latitude.
+    */
+   public double getOriginLat() {
+       return origin.getLatitude();
+   }
 
-    /**
-     * Set the origin latitude.
-     *
-     * @param lat   the origin latitude.
-     */
-    public void setOriginLat(double lat) {
-        origin.setLatitude(lat);
-        lat0 = Math.toRadians(lat);
-        precalculate();
-    }
+  /**
+    * Get the rotation angle.
+    * @return the origin latitude.
+    */
+   public double getRotationAngle() {
+       return rotAngle;
+   }
 
-    /**
+   /**
+    * Set the origin latitude.
+    *
+    * @param lat   the origin latitude.
+    */
+   public void setOriginLat(double lat) {
+       origin.setLatitude(lat);
+       lat0 = Math.toRadians(lat);
+       precalculate();
+   }
+
+     /**
      * Get the label to be used in the gui for this type of projection
      *
      * @return Type label

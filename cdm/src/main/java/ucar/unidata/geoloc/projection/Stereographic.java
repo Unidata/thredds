@@ -47,6 +47,11 @@ public class Stereographic extends ProjectionImpl {
     /** origin point */
     private LatLonPointImpl origin;
 
+    /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new Stereographic( getTangentLat(), getTangentLon(), getScale());
+    }
+
     /** Constructor with default parameters = North Polar */
     public Stereographic() {
         this(90.0, -105.0, 1.0);

@@ -47,6 +47,11 @@ public class LatLonProjection extends ProjectionImpl {
     /** center longitude */
     private double centerLon = 0.0;
 
+    /** copy constructor - avoid clone !! */
+    public ProjectionImpl constructCopy() {
+      return new LatLonProjection(getName(), getDefaultMapArea());
+    }
+
     /**
      * Default constructor
      */
