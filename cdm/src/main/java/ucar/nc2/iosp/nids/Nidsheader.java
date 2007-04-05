@@ -781,12 +781,12 @@ class Nidsheader{
         Variable i0 = new Variable(ncfile, null, dist, "x_start");
         i0.setDimensions((String)null);
         i0.setDataType(DataType.SHORT);
-        i0.addAttribute( new Attribute("units", "KM/4"));
+        i0.addAttribute( new Attribute("units", "KM"));
         dist.addMemberVariable(i0);
         Variable j0 = new Variable(ncfile, null, dist, "y_start");
         j0.setDimensions((String)null);
         j0.setDataType(DataType.SHORT);
-        j0.addAttribute( new Attribute("units", "KM/4"));
+        j0.addAttribute( new Attribute("units", "KM"));
         dist.addMemberVariable(j0);
 
 
@@ -928,12 +928,12 @@ class Nidsheader{
       Variable i0 = new Variable(ncfile, null, dist, "x_start");
       i0.setDimensions((String)null);
       i0.setDataType(DataType.SHORT);
-      i0.addAttribute( new Attribute("units", "KM/4"));
+      i0.addAttribute( new Attribute("units", "KM"));
       dist.addMemberVariable(i0);
       Variable j0 = new Variable(ncfile, null, dist, "y_start");
       j0.setDimensions((String)null);
       j0.setDataType(DataType.SHORT);
-      j0.addAttribute( new Attribute("units", "KM/4"));
+      j0.addAttribute( new Attribute("units", "KM"));
       dist.addMemberVariable(j0);
       Variable direct = new Variable(ncfile, null, dist, "direction");
       direct.setDimensions((String)null);
@@ -1005,12 +1005,12 @@ class Nidsheader{
       Variable i0 = new Variable(ncfile, null, dist, "x_start");
       i0.setDimensions((String)null);
       i0.setDataType(DataType.SHORT);
-      i0.addAttribute( new Attribute("units", "KM/4"));
+      i0.addAttribute( new Attribute("units", "KM"));
       dist.addMemberVariable(i0);
       Variable j0 = new Variable(ncfile, null, dist, "y_start");
       j0.setDimensions((String)null);
       j0.setDataType(DataType.SHORT);
-      j0.addAttribute( new Attribute("units", "KM/4"));
+      j0.addAttribute( new Attribute("units", "KM"));
       dist.addMemberVariable(j0);
       Variable direct = new Variable(ncfile, null, dist, "direction");
       direct.setDimensions((String)null);
@@ -1068,12 +1068,12 @@ class Nidsheader{
         Variable i0 = new Variable(ncfile, null, dist, "x_start");
         i0.setDimensions((String)null);
         i0.setDataType(DataType.SHORT);
-        i0.addAttribute( new Attribute("units", "KM/4"));
+        i0.addAttribute( new Attribute("units", "KM"));
         dist.addMemberVariable(i0);
         Variable j0 = new Variable(ncfile, null, dist, "y_start");
         j0.setDimensions((String)null);
         j0.setDataType(DataType.SHORT);
-        j0.addAttribute( new Attribute("units", "KM/4"));
+        j0.addAttribute( new Attribute("units", "KM"));
         dist.addMemberVariable(j0);
         Variable tstr = new Variable(ncfile, null, dist, "textString");
         tstr.setDimensions((String)null);
@@ -1183,7 +1183,7 @@ class Nidsheader{
         ncfile.addVariable(null, v);
         v.addAttribute( new Attribute("long_name", ctitle+" at Symbology Layer "+ slayer));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
-        v.addAttribute( new Attribute("units", "KM/4"));
+        v.addAttribute( new Attribute("units", "KM"));
 
         for (int row=0; row < numRow; row++) {
 
@@ -1253,8 +1253,8 @@ class Nidsheader{
 
         //prod_info_size = (int) (num_rows * scale);
         //out.println( "resp scale " + (int)rasp_xscale + " and " + (int)rasp_xscalefract+ " and " + (int)rasp_yscale+ " and " + (int)rasp_yscalefract );
-        numY0 = rasp_j;
-        numX0 = rasp_i;
+        numY0 = 0; //rasp_j;
+        numX0 = 0; //rasp_i;
         numX = num_rows;
         numY = num_rows;
         Dimension jDim = new Dimension("y", numY, true, false, false);
@@ -1301,7 +1301,7 @@ class Nidsheader{
         xaxis.setDataType( DataType.DOUBLE);
         xaxis.setDimensions("x");
         xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
-        xaxis.addAttribute( new Attribute("units", "km/4"));
+        xaxis.addAttribute( new Attribute("units", "km"));
         xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
         double[] data1 = new double[numX];
         for (int i = 0; i < numX; i++)
@@ -1314,7 +1314,7 @@ class Nidsheader{
         yaxis.setDataType( DataType.DOUBLE);
         yaxis.setDimensions( "y");
         yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
-        yaxis.addAttribute( new Attribute("units", "km/4"));
+        yaxis.addAttribute( new Attribute("units", "km"));
         yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
         data1 = new double[numY];
         for (int i = 0; i < numY; i++)
@@ -1323,7 +1323,7 @@ class Nidsheader{
         yaxis.setCachedData( dataA, false);
         ncfile.addVariable(null, yaxis);
 
-        ProjectionImpl projection = new FlatEarth(latitude, longitude);
+        ProjectionImpl projection = new FlatEarth(lat_min, lon_max);
         //ProjectionImpl projection = new LambertConformal(latitude, longitude, latitude, latitude);
         // coordinate transform variable
         Variable ct = new Variable( ncfile, null, null, projection.getClassName());
@@ -1570,10 +1570,11 @@ class Nidsheader{
     java.util.Date startDate;
     String dstring;
     double t1 = 124.0 * 1.853 / 111.26;
+    double t2 = 230 / (111.26 * Math.cos(Math.toRadians(latitude)));
     lat_min = latitude -  t1;
     lat_max = latitude + t1;
-    lon_min = longitude + t1 * Math.cos(latitude);
-    lon_max = longitude - t1 * Math.cos(latitude);
+    lon_min = longitude +  t2; //* Math.cos(Math.toRadians(lat_min));
+    lon_max = longitude -  t2; //* Math.cos(Math.toRadians(lat_min));
     startDate = getDate( volumeScanDate, volumeScanTime*1000);
     endDate = getDate( volumeScanDate, volumeScanTime*1000);
 
@@ -1599,10 +1600,11 @@ class Nidsheader{
       cname = "BaseReflectivity248";
       summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 248 nm";
       t1 = 248.0 * 1.853 / 111.26;
+      t2 = 460 / (111.26 * Math.cos(Math.toRadians(latitude)));
       lat_min = latitude -  t1;
       lat_max = latitude + t1;
-      lon_min = longitude + t1 * Math.cos(latitude);
-      lon_max = longitude - t1 * Math.cos(latitude);
+      lon_min = longitude + t2;
+      lon_max = longitude - t2;
     } else if (prod_type == Comp_Reflect) {
       radial               = 3;
       prod_elevation  = -1;
