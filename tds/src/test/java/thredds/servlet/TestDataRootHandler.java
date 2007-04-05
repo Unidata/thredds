@@ -25,6 +25,8 @@ public class TestDataRootHandler extends TestCase
 //  static private org.slf4j.Logger log =
 //          org.slf4j.LoggerFactory.getLogger( TestDataRootHandler.class );
 
+  private String contentPath = TestAll.temporaryDataDir + "TestDataRootHandler/contentPath/";
+
   public TestDataRootHandler( String name )
   {
     super( name );
@@ -37,7 +39,6 @@ public class TestDataRootHandler extends TestCase
   public void testNonexistentScanLocation()
   {
     // Create a temporary contentPath directory for this test.
-    String contentPath = TestAll.temporaryDataDir + "TestDataRootHandler/testNonexistentScanLocation/contentPath/";
     File contentPathFile = createContentPathFile( contentPath );
 
     // Create a catalog with a datasetScan that points to a non-existent location
@@ -57,6 +58,7 @@ public class TestDataRootHandler extends TestCase
     // Call DataRootHandler.initCatalog() on the config catalog
     try
     {
+      drh.reinit();
       drh.initCatalog( catFilename );
     }
     catch ( FileNotFoundException e )
@@ -97,7 +99,6 @@ public class TestDataRootHandler extends TestCase
   public void testNondirectoryScanLocation()
   {
     // Create a temporary contentPath directory for this test.
-    String contentPath = TestAll.temporaryDataDir + "TestDataRootHandler/testNondirectoryScanLocation/contentPath/";
     File contentPathFile = createContentPathFile( contentPath );
 
     // Create public directory in content path.
@@ -144,6 +145,7 @@ public class TestDataRootHandler extends TestCase
     // Call DataRootHandler.initCatalog() on the config catalog
     try
     {
+      drh.reinit();
       drh.initCatalog( catFilename );
     }
     catch ( FileNotFoundException e )
@@ -185,7 +187,6 @@ public class TestDataRootHandler extends TestCase
   public void testScanLocationContainOnlyAtomicDatasets()
   {
     // Create a temporary contentPath directory for this test.
-    String contentPath = TestAll.temporaryDataDir + "TestDataRootHandler/testScanLocationContainOnlyAtomicDatasets/contentPath/";
     File contentPathFile = createContentPathFile( contentPath );
 
     // Create public data directory in content path.
@@ -240,6 +241,7 @@ public class TestDataRootHandler extends TestCase
     // Call DataRootHandler.initCatalog() on the config catalog
     try
     {
+      drh.reinit();
       drh.initCatalog( catFilename );
     }
     catch ( FileNotFoundException e )

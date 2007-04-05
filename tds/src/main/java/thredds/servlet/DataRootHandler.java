@@ -58,17 +58,16 @@ public class DataRootHandler {
   /**
    * Initialize the DataRootHandler singleton instance.
    *
-   * This method should only be called once. Additional calls will result in an IllegalStateException being thrown.
+   * This method should only be called once. Additional calls will be ignored.
    *
    * @param contentPath should be absolute path under which all catalogs lay, typically ${tomcat_home}/content/thredds/
    * @param servletContextPath the servlet context path
-   * @throws IllegalStateException if called more than once.
    */
   static public void init(String contentPath, String servletContextPath) {
     if ( singleton != null)
     {
-      log.error( "init(): Can only call init() once: failed call -- init(\"" + contentPath + "\",\"" + servletContextPath + "\"); and successful call -- init(\""+singleton.contentPath+"\",\""+singleton.servletContextPath+"\").");
-      throw new IllegalStateException( "Can only call init() once. [Context path: failed="+servletContextPath+"; initialized="+singleton.servletContextPath+".");
+      log.warn( "init(): Singleton already initialized: ignored call -- init(\"" + contentPath + "\",\"" + servletContextPath + "\"); successful call -- init(\""+singleton.contentPath+"\",\""+singleton.servletContextPath+"\").");
+      return;
     }
     singleton = new DataRootHandler(contentPath, servletContextPath);
   }
