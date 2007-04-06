@@ -19,15 +19,17 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dt;
+package thredds.servlet.ncSubset;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.StructureMembers;
+import ucar.nc2.dt.*;
 
 import java.io.*;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
@@ -35,32 +37,58 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 
-public class TimeStationObs {
+public class StationObsCollection {
   static private boolean debug = false;
 
   private static long timeToScan = 0;
 
-  public static void scanStation(String url, String station, Predicate p, Action a, Limit limit) throws IOException {
+  private ArrayList fileList = new ArrayList();
+
+
+  public StationObsCollection(String dirName) {
+
+    double size = 0.0;
+    int count = 0;
+    File dir = new File(dirName);
+    File[] files = dir.listFiles();
+    for (int i = 0; i < files.length; i++) {
+      File file = files[i];
+      String fileS = file.getAbsolutePath();
+      if (fileS.contains("Surface") && fileS.endsWith(".nc")) {
+        fileList.add(fileS);
+        size += file.length();
+        count++;
+      }
+    }
+    System.out.println("Reading directory " + dirName + " # files = " + count + " total file sizes = " + size / 1000 / 1000 + " Mb");
+  }
+
+  private void scanStations(String url, List<String> stns, Predicate p, Action a, Limit limit) throws IOException {
 
     StationObsDataset sod = null;
     try {
-      if (debug) System.out.println("scanStation open "+url);
+      if (debug) System.out.println("scanStation open " + url);
       sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, url, null, new StringBuffer());
 
-      Station s = sod.getStation(station);
-      if (s == null) return;
-
-      DataIterator iter = sod.getDataIterator(s);
-      while (iter.hasNext()) {
-        StationObsDatatype dtype = (StationObsDatatype) iter.nextData();
-        StructureData sdata = dtype.getData();
-        if (p.match(sdata)) {
-          a.act(sdata);
-          limit.matches++;
+      for (String stn : stns) {
+        Station s = sod.getStation(stn);
+        if (s == null) {
+          System.out.println("Cant find station "+s);
+          continue;
         }
 
-        limit.count++;
-        if (limit.count > limit.limit) break;
+        DataIterator iter = sod.getDataIterator(s);
+        while (iter.hasNext()) {
+          StationObsDatatype dtype = (StationObsDatatype) iter.nextData();
+          StructureData sdata = dtype.getData();
+          if ((p == null) || p.match(sdata)) {
+            a.act(sdata);
+            limit.matches++;
+          }
+
+          limit.count++;
+          if (limit.count > limit.limit) break;
+        }
       }
 
     } finally {
@@ -69,11 +97,11 @@ public class TimeStationObs {
     }
   }
 
-  public static void scanAll(String url, Predicate p, Action a, Limit limit) throws IOException {
+  private void scanAll(String url, Predicate p, Action a, Limit limit) throws IOException {
 
     PointObsDataset dataset = null;
     try {
-      if (debug) System.out.println("scanAll open "+url);
+      if (debug) System.out.println("scanAll open " + url);
       dataset = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, url, null, new StringBuffer());
 
       DataIterator iter = dataset.getDataIterator(0);
@@ -109,6 +137,42 @@ public class TimeStationObs {
     int limit = Integer.MAX_VALUE;
     int matches;
   }
+
+  public void writeRaw(List<String> stns, final java.io.PrintWriter writer) throws IOException {
+
+    Limit limit = new Limit();
+    Predicate p = new Predicate() {
+      public boolean match(StructureData sdata) {
+        return (sdata.getScalarFloat("wind_peak_speed") > 10);
+      }
+    };
+
+    Action act = new Action() {
+      public void act(StructureData sdata) throws IOException {
+        String report = sdata.getScalarString("report");
+        writer.println(report);
+      }
+    };
+
+    long start = System.currentTimeMillis();
+
+    for (int i = 0; i < fileList.size(); i++) {
+      String filename = (String) fileList.get(i);
+      scanStations(filename, stns, null, act, limit);
+    }
+
+    fout.close();
+
+    long took = System.currentTimeMillis() - start;
+    System.out.println("\nscanAllNetcdf  read " + limit.count + " records; match and write " + limit.matches + " raw records");
+    System.out.println("that took = " + took + " msecs");
+
+    long writeTime = took - timeToScan;
+    double mps = 1000 * limit.matches / writeTime;
+    System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
+  }
+
+  ///////////////////////////////////////////////////////////
 
   public void timeNetcdf() throws IOException {
 
@@ -151,16 +215,18 @@ public class TimeStationObs {
     };
 
     long start = System.currentTimeMillis();
+    List<String> stns = new ArrayList<String>();
+    stns.add("ACK");
 
     for (int i = 0; i < fileList.size(); i++) {
       String s = (String) fileList.get(i);
-      scanStation(s, "ACK", p, act, limit);
+      scanStations(s, stns, p, act, limit);
     }
 
     long took = System.currentTimeMillis() - start;
     double mps = 1000 * limit.count / took;
     System.out.println("\ntimeNetcdfStation successfully read " + limit.count + " records; found " + limit.matches + " matches");
-    System.out.println("that took = " + took + " msecs; obs/sec= "+mps);
+    System.out.println("that took = " + took + " msecs; obs/sec= " + mps);
   }
 
   private static DataOutputStream xout;
@@ -267,35 +333,16 @@ public class TimeStationObs {
    rootElem.addContent(elem);
  } */
 
-  static private ArrayList fileList = new ArrayList();
-
-  static private void getFiles(String dirName) {
-    double size = 0.0;
-    int count = 0;
-    File dir = new File(dirName);
-    File[] files = dir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
-      String fileS = file.getAbsolutePath();
-      if (fileS.contains("Surface") && fileS.endsWith(".nc")) {
-        fileList.add(fileS);
-        size += file.length();
-        count++;
-      }
-    }
-    System.out.println("Reading directory " + dirName + " # files = "+count+" total file sizes = " + size/1000/1000+" Mb");
-  }
 
   static public void main(String args[]) throws IOException {
     //getFiles("R:/testdata/station/ldm/metar/");
-    getFiles("C:/data/metars/");
+    StationObsCollection soc = new StationObsCollection("C:/data/metars/");
 
-    TimeStationObs t = new TimeStationObs();
-    t.timeNetcdf();
-    t.writeXML();
-    t.writeRaw();
+    soc.timeNetcdf();
+    soc.writeXML();
+    soc.writeRaw();
 
-    t.timeNetcdfStation();
+    soc.timeNetcdfStation();
   }
 
 }

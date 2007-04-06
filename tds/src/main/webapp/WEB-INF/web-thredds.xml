@@ -81,9 +81,14 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <servlet>
+    <servlet-name>NetcdfSubsetService</servlet-name>
+    <servlet-class>thredds.servlet.ncSubset.StationObsServlet</servlet-class>
+  </servlet>
+
   <!-- data services -->
 
-  <!-- NetCDF/OPeNDAP server -->
+  <!-- NetCDF/OPeNDAP server
   <servlet>
     <servlet-name>NetcdfDODS</servlet-name>
     <display-name>THREDDS/NetCDF DODS Server</display-name>
@@ -97,7 +102,7 @@
       <param-value></param-value>
     </init-param>
     <load-on-startup>2</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- Setup for the DQC servlet. -->
   <servlet>
@@ -290,6 +295,12 @@
   <!-- data services -->
 
   <servlet-mapping>
+    <servlet-name>NetcdfSubsetService</servlet-name>
+    <url-pattern>/ncss/*</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet-mapping>
     <servlet-name>MetarServlet</servlet-name>
     <url-pattern>/idd/metar/*</url-pattern>
   </servlet-mapping>
@@ -299,10 +310,10 @@
     <url-pattern>/idd/radarLevel2/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>NetcdfDODS</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>dqc</servlet-name>
