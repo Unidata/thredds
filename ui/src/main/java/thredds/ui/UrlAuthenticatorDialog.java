@@ -29,8 +29,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.RFC2617Scheme;
-import org.apache.commons.httpclient.auth.AuthScope;
-import thredds.util.net.HttpSession;
 
 /**
  * This can be used both for java.net authentication:
@@ -42,7 +40,7 @@ import thredds.util.net.HttpSession;
  * @author John Caron
  * @version $Id: UrlAuthenticatorDialog.java 50 2006-07-12 16:30:06Z caron $
  */
-public class UrlAuthenticatorDialog extends Authenticator implements thredds.util.net.CredentialsProviderExt {
+public class UrlAuthenticatorDialog extends Authenticator implements org.apache.commons.httpclient.auth.CredentialsProvider {
 
   private IndependentDialog dialog;
   private PasswordAuthentication pwa = null;
@@ -130,19 +128,19 @@ public class UrlAuthenticatorDialog extends Authenticator implements thredds.uti
       System.out.println("password= ("+new String(pwa.getPassword())+")");
     }
 
-    UsernamePasswordCredentials cred = new UsernamePasswordCredentials(pwa.getUserName(), new String(pwa.getPassword()));
+    return new UsernamePasswordCredentials(pwa.getUserName(), new String(pwa.getPassword()));
 
-    if (null != httpSession) {
+    /* if (null != httpSession) {
       AuthScope authScope = new AuthScope( host, port, scheme.getRealm());
       httpSession.setDefaultCredentials( authScope, cred);
-    }
+    } */
 
-    return cred;
+    // return cred;
   }
 
-  private HttpSession httpSession = null;
+  /* private HttpSession httpSession = null;
   public void setHttpSession(HttpSession httpSession) {
     this.httpSession = httpSession;
-  }
+  } */
 }
 

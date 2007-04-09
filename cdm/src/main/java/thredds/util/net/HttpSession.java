@@ -11,6 +11,7 @@ import org.apache.commons.httpclient.methods.*;
 
 /**
  * Manage an HttpSession. Uses org.apache.commons.httpclient.
+ * @deprecated use ucar.nc2.dataset.HttpClientManager
  * @author caron
  */
 public class HttpSession {

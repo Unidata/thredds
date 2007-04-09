@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
   <property name="release.version" value="2.2.19"/>
-  <property name="release.version.minor" value="${release.version}.09"/>
+  <property name="release.version.minor" value="${release.version}.10"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>
@@ -219,7 +219,7 @@
   <property name="zip.dir" location="${build.dir}/zip"/>
   <property name="uiZip.dir" location="${build.dir}/uiZip"/>
   <property name="idv.dir" location="${build.dir}/idv"/>
-  <target name="makeIDVjar" depends="makeJar" description="create netcdfAll zip file">
+  <target name="makeIDVjar" depends="makeJar" description="create nc2.2.jar for idv">
     <!--unzip so we can make idv jar -->
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">

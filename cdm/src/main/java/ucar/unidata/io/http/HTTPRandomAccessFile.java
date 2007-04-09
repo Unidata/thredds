@@ -67,7 +67,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (_client != null) return;
     MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
     _client = new HttpClient(connectionManager);
-    _client.getParams().setParameter("http.socket.timeout", new Integer(5000));  // 5 sec timeout
+    _client.getParams().setParameter("http.socket.timeout", new Integer(15000));  // 15 sec timeout
   }
 
   private String url;
@@ -134,7 +134,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       printHeaders("Request: " + method.getName() + " " + method.getPath(), method.getRequestHeaders());
       printHeaders("Response: " + method.getStatusCode(), method.getResponseHeaders());
     }
-
   }
 
   private void printHeaders(String title, Header[] heads) {
@@ -155,9 +154,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     HttpMethod method = null;
     try {
-      method = new GetMethod(url);  // LOOK: can we resuse?
+      method = new GetMethod(url);
       method.setFollowRedirects(true);
-
       method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
       doConnect(method);
 

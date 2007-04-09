@@ -23,6 +23,12 @@ package ucar.nc2.dataset;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -31,25 +37,28 @@ import opendap.dap.DConnect2;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 import thredds.util.net.EasySSLProtocolSocketFactory;
 
+import java.io.IOException;
+
 /**
  * Manage Http Client protocol settings.
  * <pre>
- * Example: 
+ * Example:
  *   org.apache.commons.httpclient.auth.CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-     ucar.nc2.dataset.HttpClientManager.init(provider, "ToolsUI");
-  </pre>
+ * ucar.nc2.dataset.HttpClientManager.init(provider, "ToolsUI");
+ * </pre>
  *
  * @author caron
  * @version $Revision$ $Date$
  */
 public class HttpClientManager {
-
+  static private boolean debug = false;
   static private boolean protocolRegistered = false;
   static private HttpClient _client;
 
-  /** initialize the HttpClient layer.
+  /**
+   * initialize the HttpClient layer.
    *
-   * @param provider CredentialsProvider.
+   * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
   static public void init(CredentialsProvider provider, String userAgent) {
@@ -64,11 +73,11 @@ public class HttpClientManager {
     if (provider != null)
       _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
     if (userAgent != null)
-      _client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent+"/NetcdfJava/HttpClient");
+      _client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent + "/NetcdfJava/HttpClient");
     else
       _client.getParams().setParameter(HttpMethodParams.USER_AGENT, "NetcdfJava/HttpClient");
 
-    setHttpClient( _client);
+    setHttpClient(_client);
   }
 
   /**
@@ -77,7 +86,7 @@ public class HttpClientManager {
    */
   static public void setHttpClient(HttpClient client) {
     _client = client;
-    DConnect2.setHttpClient( _client);
+    DConnect2.setHttpClient(_client);
     HTTPRandomAccessFile.setHttpClient(_client);
   }
 
@@ -96,12 +105,61 @@ public class HttpClientManager {
 
     params.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(15000));  // 15 sec timeout
     params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
-    params.setAuthenticationPreemptive(false);
-
+    params.setParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
     // look need default CredentialsProvider ??
     // _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
 
+  }
+
+  public static void clearState() {
+    _client.getState().clearCookies();
+    _client.getState().clearCredentials();
+  }
+
+  /**
+   * COnvenience better to use getResponseAsStream
+   */
+  public static String getContent(String urlString) throws IOException {
+    GetMethod m = new GetMethod(urlString);
+    m.setFollowRedirects(true);
+
+    try {
+      _client.executeMethod(m);
+      return m.getResponseBodyAsString();
+
+    } finally {
+      m.releaseConnection();
+    }
+  }
+
+  public static int putContent(String urlString, String content) throws IOException {
+    PutMethod m = new PutMethod(urlString);
+    m.setDoAuthentication( true );
+
+    try {
+      m.setRequestEntity(new StringRequestEntity(content));
+
+      _client.executeMethod(m);
+
+      int resultCode = m.getStatusCode();
+
+       // followRedirect wont work for PUT
+       if (resultCode == 302) {
+         String redirectLocation;
+         Header locationHeader = m.getResponseHeader("location");
+         if (locationHeader != null) {
+           redirectLocation = locationHeader.getValue();
+           if (debug) System.out.println("***Follow Redirection = "+redirectLocation);
+           resultCode = putContent(redirectLocation, content);
+         }
+       }
+
+      return resultCode;
+
+    } finally {
+      m.releaseConnection();
+    }
   }
 
 }

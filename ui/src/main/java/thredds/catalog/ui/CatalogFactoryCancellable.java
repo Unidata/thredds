@@ -23,14 +23,17 @@ package thredds.catalog.ui;
 
 import thredds.catalog.*;
 import thredds.ui.ProgressMonitorTask;
-import thredds.ui.UrlAuthenticatorDialog;
-import thredds.util.net.HttpSession;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.HttpClient;
+import ucar.nc2.dataset.HttpClientManager;
 
 /**
  * A subclass of InvCatalogFactory that allows the reading of a catalog to be cancelled by the user.
@@ -146,14 +149,16 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
       }
 
-      HttpSession httpSession = HttpSession.getSession();
+      GetMethod m = null;
       try {
-    	  if (httpSession == null) {
-    		  catalog = CatalogFactoryCancellable.super.readXML(catalogURI);
-    	  }
-    	  else {
-        catalog = CatalogFactoryCancellable.super.readXML(httpSession.getInputStream(catalogName), catalogURI);
-    	  }
+        m = new GetMethod(catalogName);
+        m.setFollowRedirects(true);
+
+        HttpClient client = HttpClientManager.getHttpClient();
+        client.executeMethod(m);
+        InputStream stream =  m.getResponseBodyAsStream();
+        catalog = CatalogFactoryCancellable.super.readXML( stream, catalogURI);
+
       } catch (IOException e) {
         catalog = new InvCatalogImpl(catalogName, null, null);
         catalog.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML IOException on URL (" +
@@ -164,8 +169,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
 
       } finally {
-        if (debug) System.out.println("Session= " + httpSession.getInfo());
-        if (httpSession != null) httpSession.close();
+        if (null != m) m.releaseConnection();
       }
 
       success = !cancel;

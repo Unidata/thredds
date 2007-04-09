@@ -24,9 +24,9 @@ package thredds.ui;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
 import thredds.util.*;
-import thredds.util.net.HttpSession;
 
 import ucar.util.prefs.*;
+import ucar.nc2.dataset.HttpClientManager;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -48,14 +48,13 @@ public class TextGetPutPane extends TextHistoryPane {
     private PreferencesExt prefs;
     private JComboBox cb;
     private JPanel buttPanel;
-    private JButton putButton;
 
-    private boolean addFileButton = true;
+  private boolean addFileButton = true;
     private AbstractAction fileAction = null;
     private FileManager fileChooserReader;
 
     private GetContentsTask task;
-    private HttpSession httpSession;
+    //private HttpSession httpSession;
 
     public TextGetPutPane(PreferencesExt prefs) {
       super(true);
@@ -97,7 +96,7 @@ public class TextGetPutPane extends TextHistoryPane {
           validate( (String) cb.getSelectedItem());
         }
       });
-      putButton = new JButton("Put");
+      JButton putButton = new JButton("Put");
       putButton.setToolTipText("PUT URL contents");
       putButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -110,22 +109,22 @@ public class TextGetPutPane extends TextHistoryPane {
         }
       });
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+      /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           clear();
           if (httpSession != null)
             setText( httpSession.getInfo());
         }
-      });
+      }); */
 
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
       if (null != fileAction)
         BAMutil.addActionToContainer(buttPanel, fileAction);
       buttPanel.add( getButton);
       buttPanel.add( validButton);
-      buttPanel.add( putButton);
-      buttPanel.add( infoButton);
+      buttPanel.add(putButton);
+      //buttPanel.add( infoButton);
 
       JPanel topPanel = new JPanel( new BorderLayout());
       topPanel.add(new JLabel("URL:"), BorderLayout.WEST);
@@ -162,7 +161,7 @@ public class TextGetPutPane extends TextHistoryPane {
       if (urlString == null) return;
       if (urlString.startsWith("file:")) {
         urlString = urlString.substring(5);
-        String contents = null;
+        String contents;
         try {
           contents = IO.readFile( urlString);
         } catch (IOException e) {
@@ -172,7 +171,7 @@ public class TextGetPutPane extends TextHistoryPane {
         return;
       }
 
-      httpSession = HttpSession.getSession();
+      // httpSession = HttpSession.getSession();
 
       task = new GetContentsTask(urlString);
       thredds.ui.ProgressMonitor pm = new thredds.ui.ProgressMonitor(task);
@@ -191,7 +190,6 @@ public class TextGetPutPane extends TextHistoryPane {
         }
       });
       pm.start(this, "Open URL " + urlString, 10);
-      return;
     }
 
     public void setCatalog(String urlString, InvCatalogImpl cat) throws IOException {
@@ -211,7 +209,7 @@ public class TextGetPutPane extends TextHistoryPane {
     private DqcFactory dqcFactory = null;
     void validate(String urlString) {
       if (urlString == null) return;
-      URI uri = null;
+      URI uri;
       try {
         uri = new URI(urlString);
       }
@@ -227,7 +225,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
       if (isCatalog) {
         if (catFactory == null) catFactory = InvCatalogFactory.getDefaultFactory(true);
-        InvCatalogImpl catalog = (InvCatalogImpl) catFactory.readXML(is, uri);
+        InvCatalogImpl catalog = catFactory.readXML(is, uri);
         StringBuffer buff = new StringBuffer();
         boolean check = catalog.check(buff);
         javax.swing.JOptionPane.showMessageDialog(this,
@@ -250,7 +248,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
     void putURL(String uriString) throws IOException {
       if (uriString == null) return;
-      URI uri = null;
+      URI uri;
       try {
         uri = new URI( uriString);
       } catch (URISyntaxException e) {
@@ -266,11 +264,9 @@ public class TextGetPutPane extends TextHistoryPane {
         IO.writeToFile( contents, path);
 
       } else {
-        if (httpSession == null) httpSession = HttpSession.getSession();
-        httpSession.putContent( uriString, contents);
-        // IO.Result result = thredds.util.IO.putToURL( uriString, contents);
-        javax.swing.JOptionPane.showMessageDialog(this, "Status code= " + httpSession.getResultCode() +
-                "\n" + httpSession.getResultText());
+
+        int status = HttpClientManager.putContent(uriString, contents);
+        javax.swing.JOptionPane.showMessageDialog(this, "Status code= " + status);
       }
     }
 
@@ -320,8 +316,8 @@ public class TextGetPutPane extends TextHistoryPane {
 
     public void run() {
       try {
-        contents = httpSession.getContent(urlString);
-        System.out.println(httpSession.getResultCode());
+        contents = HttpClientManager.getContent(urlString);
+
       } catch (IOException e) {
         setError(e.getMessage());
         done = true;

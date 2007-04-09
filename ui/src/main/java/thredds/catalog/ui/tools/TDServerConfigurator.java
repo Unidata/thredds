@@ -23,6 +23,7 @@ package thredds.catalog.ui.tools;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.util.StringUtil;
+import ucar.nc2.dataset.HttpClientManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +41,7 @@ import thredds.catalog.crawl.CatalogExtractor;
 import thredds.ui.*;
 import thredds.ui.PopupMenu;
 import thredds.util.IO;
-import thredds.util.net.HttpSession;
+//import thredds.util.net.HttpSession;
 
 /**
  * Experimental widget for creating Thredds Data server configuration Catalogs.
@@ -287,9 +288,8 @@ public class TDServerConfigurator extends JPanel {
         String catalogPath = (String) catalogCB.getSelectedItem();
         int pos = catalogPath.indexOf("/thredds/");
         String serverURL = catalogPath.substring(0,pos+9);
-        HttpSession httpSession = HttpSession.getSession();
         try {
-          String result = httpSession.getContent( serverURL+"debug?catalogs/reinit");
+          String result = HttpClientManager.getContent( serverURL+"debug?catalogs/reinit");
           savePane.setText(result);
         } catch (IOException e) {
           savePane.setText( e.getMessage());

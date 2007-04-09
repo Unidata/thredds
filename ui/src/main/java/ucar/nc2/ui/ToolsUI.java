@@ -279,6 +279,14 @@ public class ToolsUI extends JPanel {
     mb.add(sysMenu);
     //BAMutil.addActionToMenu( sysMenu, printAction);
 
+    AbstractAction clearHttpStateAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        HttpClientManager.clearState();
+      }
+    };
+    BAMutil.setActionProperties(clearHttpStateAction, null, "Clear Http State", false, 'S', -1);
+    BAMutil.addActionToMenu(sysMenu, clearHttpStateAction);
+
     AbstractAction showCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         viewerPanel.detailTA.setText("NetcdfFileCache contents\n");
