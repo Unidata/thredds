@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.19
  Features
+  * HttpClientManager - single place to control HTTP client usage
   * NetcdfFileWriteable: string array writing
   * DQC improvements - select Service
   * DODSNetcdfFile accept_deflate = true
@@ -14,6 +15,8 @@ Changes in version 2.2.19
  NcML
   * can specify iosp class, parameter, buffer_size
  API changes
+  * Switch to HttpRandomAccessFile (improvements in HttpClient use)
+  * add ProjectionImpl.constructCopy() - deprecate clone()
   * NetcdfFile.hasRecordStructure - optimization for Netcdf-3 writing.
   * NetcdfFileWriteable.addVariable() now returns the new Variable
   * protected NetcdfFile constructor for passing in iosp class name

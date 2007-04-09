@@ -39,6 +39,7 @@ import org.apache.commons.httpclient.HttpClientError;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -88,7 +89,7 @@ import javax.net.ssl.TrustManager;
  *         </p>
  */
 
-public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory {
+public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
 
   /**
    * Log object for this class.

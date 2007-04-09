@@ -263,7 +263,7 @@ public class NetcdfFile {
 
     ucar.unidata.io.RandomAccessFile raf;
     if (uriString.startsWith("http:")) { // open through URL
-      raf = new ucar.unidata.io.http.HTTPRandomAccessFile3(uriString);
+      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
 
     } else {
       // get rid of crappy microsnot \ replace with happy /
@@ -434,6 +434,9 @@ public class NetcdfFile {
 
     if (spiObject != null)
       spi.setSpecial(spiObject);
+
+    if (log.isDebugEnabled()) 
+      log.debug("Using IOSP "+spi.getClass().getName());
 
     return new NetcdfFile(spi, raf, location, cancelTask);
   }
@@ -962,7 +965,7 @@ public class NetcdfFile {
    */
   public NetcdfFile(URL url) throws IOException {
     this.location = url.toString();
-    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.http.HTTPRandomAccessFile3(location);
+    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.http.HTTPRandomAccessFile(location);
     this.spi = SPFactory.getServiceProvider();
     spi.open(raf, this, null);
     finish();

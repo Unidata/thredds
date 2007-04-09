@@ -15,9 +15,9 @@ import org.apache.commons.httpclient.methods.*;
  */
 public class HttpSession {
 
-  static {
+  /* static {
     Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
-  }
+  } */
 
   static private HttpSession singleton;
 

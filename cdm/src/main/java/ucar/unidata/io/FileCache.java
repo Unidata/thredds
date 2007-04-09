@@ -27,6 +27,8 @@ import java.io.IOException;
 
 /**
  * Keep cache of open RandomAccessFile, for performance.
+ * Used by TDS to optimize serving netCDF files over HTTP.
+ *
  * <pre>
   RandomAccessFile raf = null;
   try {
@@ -47,10 +49,7 @@ import java.io.IOException;
  * @author jcaron
  */
 public class FileCache {
-   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
-    //For now, use the LogUtil.LogCategory logger so the build don't break
-//    static private ucar.unidata.util.LogUtil.LogCategory log = new ucar.unidata.util.LogUtil.LogCategory(FileCache.class.getName());
-  //static private org.apache.commons.logging.Log log = LogFactory.getLog( FileCache.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static private ArrayList cache; // CacheElement
   static private final Object lock = new Object(); // for synchronizing
   static private int maxElements, minElements;

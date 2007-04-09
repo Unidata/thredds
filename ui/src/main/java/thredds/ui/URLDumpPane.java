@@ -24,6 +24,7 @@ package thredds.ui;
 import thredds.util.IO;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
+import ucar.nc2.dataset.HttpClientManager;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -35,6 +36,7 @@ import java.util.Enumeration;
 import javax.swing.*;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.methods.*;
@@ -88,7 +90,7 @@ public class URLDumpPane extends TextHistoryPane {
       });
 
       JButton readButton = new JButton("GET");
-      readButton.setToolTipText("Open URL connection, show content");
+      readButton.setToolTipText("Open URL connection, show content using HttpURLConnection");
       readButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String urlString = (String) cb.getSelectedItem();
@@ -181,11 +183,9 @@ public class URLDumpPane extends TextHistoryPane {
     clear();
 
     //Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
-    HttpClient httpclient = new HttpClient();
+    HttpClient httpclient = HttpClientManager.getHttpClient();
+    // httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
 
-    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
-
-    
     HttpMethodBase m = null;
     if (cmd == GET)
       m = new GetMethod(urlString);
@@ -195,7 +195,7 @@ public class URLDumpPane extends TextHistoryPane {
       m = new OptionsMethod(urlString);
     else if (cmd == PUT) {
       PutMethod p = new PutMethod(urlString);
-      p.setRequestBody( ta.getText());
+      p.setRequestEntity( new StringRequestEntity( ta.getText()));
       m = p;
     }
 
@@ -223,7 +223,7 @@ public class URLDumpPane extends TextHistoryPane {
       printHeaders("Response Headers = ", m.getResponseHeaders());
       if (cmd == GET) {
         appendLine("ResponseBody---------------");
-        appendLine(m.getResponseBodyAsString());
+        appendLine(m.getResponseBodyAsString()); // should use getResponseBodyAsStream()
       } else if (cmd == OPTIONS)
         printEnum("AllowedMethods = ", ((OptionsMethod)m).getAllowedMethods());
 

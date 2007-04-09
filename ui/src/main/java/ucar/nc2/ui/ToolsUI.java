@@ -54,6 +54,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.apache.commons.httpclient.auth.CredentialsProvider;
+
 /**
  * Netcdf Tools user interface.
  *
@@ -2820,10 +2822,9 @@ public class ToolsUI extends JPanel {
     java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
 
     // use HTTPClient
-    thredds.util.net.CredentialsProviderExt provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-    thredds.util.net.HttpSession.setCredentialsProvider(provider);
-    ucar.nc2.dods.DODSNetcdfFile.setCredentialsProvider(provider);
-    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( false); 
+    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
+    ucar.nc2.dataset.HttpClientManager.init(provider, "ToolsUI");
+    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( false);
 
     // load protocol for ADDE URLs
     URLStreamHandlerFactory.install();

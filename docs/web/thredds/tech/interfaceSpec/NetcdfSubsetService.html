@@ -19,11 +19,11 @@
   <blockquote>
     <p> <strong> http://servername:8080/thredds/ncServer/{path/dataset}</strong></p>
   </blockquote>
-  <p>Typically the user wants a subset of the dataset:</p>
+  <p>Typically the user wants a subset of the dataset.This is considered a <em>view</em> of a resource, rather than a separate resource: </p>
   <blockquote>
     <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}</strong></p>
   </blockquote>
-  <p>A desired representation of the resource is specified using the <strong>accept</strong>  parameter. These different representations are not considered separate resources. </p>
+  <p>A desired <em>representation</em> of the resource is specified using the <strong>accept</strong>  parameter. Again, different representations are not considered separate resources. </p>
   <blockquote>
     <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept={mime-type}</strong></p>
   </blockquote>
@@ -57,6 +57,7 @@
   <ol>
     <li>The netCDF binary file will be encoded using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF conventions</a> when possible, and when not possible, the encoding will be submitted to CF for approval.</li>
     <li>The XML, ASCII, and CSV files are intended for use only for small extractions of data, and are generally missing some or all of the metadata of the dataset. </li>
+    <li>Multiple accept values can be specified, eg <strong>accept=xml,csv </strong>(comma delimited, no spaces). The server will select from that list. </li>
   </ol>
   <h3>3. What are the Methods?</h3>
   <blockquote>
@@ -86,17 +87,18 @@
   <h2><strong>Subsetting Parameters </strong></h2>
   <h3><strong>A. Specify variables</strong></h3>
   <ul>
-    <li><strong>var=</strong>name of variables, separated by ';'</li>
+    <li><strong>var=</strong>name of variables, separated by ',' (comma).</li>
   </ul>
   <p>The list of valid variables is available from the Dataset Description. </p>
   <p>Examples:</p>
   <ul>
     <li><strong> </strong><strong>var=QCSurface</strong></li>
-    <li><strong>var=QC;LZT;PQ</strong></li>
+    <li><strong>var=QC,LZT,PQ</strong></li>
   </ul>
-  <p>Variable names with illegal characters must be escaped. </p>
+  <p>Variable names with spaces or other illegal characters must be escaped. </p>
   <p>&nbsp;</p>
   <h3><strong>B. Specify spatial extent</strong></h3>
+  <p>Latitude, longitude values are specified  in decimal degrees north and east, respectively. </p>
   <p>Use one of the following methods: </p>
   <h4><strong>1. Specify lat/lon bounding box</strong></h4>
   <p>Specify all of these parameters  (order does not matter): </p>
@@ -126,13 +128,14 @@
   </ul>
   <p><strong>3. Specify station(s)</strong></p>
   <ul>
-    <li><strong>stn=</strong>name of stations, separated by ';'</li>
+    <li><strong>stn=</strong>name of stations, separated by ',' (comma) </li>
   </ul>
-  <p>This can only be used for station datasets. The list of valid stations is available from the Dataset Description. </p>
+  <p>This can only be used for station datasets. The list of valid stations is available from the Dataset Description. Station names with spaces or other illegal characters must be escaped. </p>
   <p>Examples:</p>
   <ul>
     <li><strong> </strong><strong>stn=KDEN</strong></li>
-    <li><strong>stn=KDEN;KPAL;SDOL</strong></li>
+    <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
+    <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
   </ul>
   <h3>C. Specify time </h3>
   <p>Using one of the following methods:</p>
@@ -222,7 +225,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 2, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 6, 2007 
 </address>
 <p>&nbsp;
 </p>

@@ -34,6 +34,7 @@ import java.io.FileDescriptor;
 
 /**
  * Gives access to files over HTTP, using java.net.HttpURLConnection.
+ * @deprecated use HTTPRandomAccessFile
  * @author John Caron, based on work by Donald Denbo
  */
 

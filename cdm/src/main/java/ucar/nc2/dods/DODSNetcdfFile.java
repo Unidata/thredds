@@ -64,16 +64,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     DConnect2.setAllowSessions(b);
   }
 
-  /**
-   * Set a HttpClient credential provider.
-   * If you do not set this, cannot read "protected" datasets that need authentication.
-   *
-   * @param provider HttpClient credential provider
-   */
-  static public void setCredentialsProvider(org.apache.commons.httpclient.auth.CredentialsProvider provider) {
-    DConnect2.setCredentialsProvider(provider);
-  }
-
   static private boolean accept_deflate = true;
 
   /**

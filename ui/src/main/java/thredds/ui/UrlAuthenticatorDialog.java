@@ -42,12 +42,10 @@ import thredds.util.net.HttpSession;
  * @author John Caron
  * @version $Id: UrlAuthenticatorDialog.java 50 2006-07-12 16:30:06Z caron $
  */
-public class UrlAuthenticatorDialog extends Authenticator implements
-        thredds.util.net.CredentialsProviderExt {
+public class UrlAuthenticatorDialog extends Authenticator implements thredds.util.net.CredentialsProviderExt {
 
   private IndependentDialog dialog;
   private PasswordAuthentication pwa = null;
-  private PrefPanel pp;
   private Field.Text serverF, realmF, userF;
   private Field.Password passwF;
   private boolean debug = false;
@@ -56,7 +54,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements
      @param parent JFrame
    */
   public UrlAuthenticatorDialog(javax.swing.JFrame parent) {
-    pp = new PrefPanel("UrlAuthenticatorDialog", null);
+    PrefPanel pp = new PrefPanel("UrlAuthenticatorDialog", null);
     serverF = pp.addTextField("server", "Server", "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
     realmF = pp.addTextField("realm", "Realm", "");
     serverF.setEditable(false);

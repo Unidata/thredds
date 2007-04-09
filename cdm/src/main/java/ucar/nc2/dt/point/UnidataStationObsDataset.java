@@ -135,6 +135,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
         dataVariables, parseInfo);
     recordHelper.setStationInfo( stationIndexVar.getName(), stationDescVar == null ? null : stationDescVar.getName());
 
+    removeDataVariable(stationIndexVar.getName());
     removeDataVariable(timeVar.getName());
     if (timeNominalVar != null)
       removeDataVariable(timeNominalVar.getName());

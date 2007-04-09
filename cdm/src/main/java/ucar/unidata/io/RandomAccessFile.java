@@ -343,7 +343,9 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
     /**
      * Change the current endian mode. Subsequent reads of short, int, float, double, long, char will
-     *   use this. Does not currently effect writes.
+     *   use this. Does not currently affect writes.
+     * Default values is BIG_ENDIAN.
+     *
      * @param endian BIG_ENDIAN or LITTLE_ENDIAN
      */
     public void order(int endian) {
@@ -1580,22 +1582,24 @@ public class RandomAccessFile implements DataInput, DataOutput {
                + ", readonly=" + readonly + ", bm=" + bufferModified;
     }
 
-    /** Support for FileCache. */
+    /** Support for ucar.unidata.io.FileCache. */
     protected boolean cached;
 
     /**
-     * _more_
+     * Set whether this fie is in the cache.
      *
-     * @param cached _more_
+     * @param cached in the cache or not.
+     * @see ucar.unidata.io.FileCache
      */
     public void setCached(boolean cached) {
         this.cached = cached;
     }
 
     /**
-     * _more_
+      *  Find whether this fie is in the cache.
      *
-     * @return _more_
+     * @return true if in the cache.
+     * @see ucar.unidata.io.FileCache
      */
     public boolean isCached() {
         return cached;
