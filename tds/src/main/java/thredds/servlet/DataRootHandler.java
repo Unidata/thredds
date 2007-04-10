@@ -313,12 +313,20 @@ public class DataRootHandler {
        if (log.isDebugEnabled()) log.debug("  catref.getXlinkHref=" + href);
 
        // Check that catRef is relative
-       if (!href.startsWith("http:"))
-       {
+       if (!href.startsWith("http:")) {
          // Clean up relative URLs that start with "./"
-         if ( href.startsWith( "./" ) )
+         if ( href.startsWith( "./" ) ) {
            href = href.substring( 2 );
-         initCatalog(dirPath + href, true );
+         }
+
+         String path;
+         if ( href.startsWith( "/thredds/" ) ) {
+           path = href.substring( 9 ); // absolute starting from content root
+         } else {
+           path = dirPath + href;  // reletive starting from current directory
+         }
+
+         initCatalog(path, true );
        }
 
      }

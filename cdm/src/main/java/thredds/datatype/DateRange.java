@@ -145,12 +145,29 @@ public class DateRange {
   /**
    * Determine if the given date is included in this date range.
    * The date range includes the start and end dates.
+   * @param d date to check
+   * @return  true if date in inside this range
    */
   public boolean included( Date d) {
     if (invalid) return false;
 
     if (start.after( d)) return false;
     if (end.before( d)) return false;
+
+    return true;
+  }
+
+  /**
+   * Determine if the given range intersects this date range.
+   * @param start_want  range starts here
+   * @param end_want  range ends here
+   * @return  true if ranges intersect
+   */
+  public boolean intersect( Date start_want, Date end_want) {
+    if (invalid) return false;
+
+    if (start.after( end_want)) return false;
+    if (end.before( start_want)) return false;
 
     return true;
   }

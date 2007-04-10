@@ -105,7 +105,9 @@
     <li>501 : request requires too much server resources / data result would be too large </li>
   </ul>
   <p>&nbsp;</p>
-  <h2><strong><a name="subset"></a>Subsetting Parameters </strong></h2>
+  <h2><strong><a name="subset"></a>Subsetting </strong></h2>
+  <p><strong>The subset is not guarenteed to be ordered.</strong></p>
+  <p>&nbsp;</p>
   <h3><strong>A. Specify variables</strong></h3>
   <ul>
     <li><strong>var=</strong>name of variables, separated by ',' (comma).</li>
@@ -116,7 +118,7 @@
     <li><strong> </strong><strong>var=QCSurface</strong></li>
     <li><strong>var=QC,LZT,PQ</strong></li>
   </ul>
-  <p>Variable names with spaces or other illegal characters must be escaped. </p>
+  <p>Variable names with spaces or other illegal characters must be escaped. For station data, when  writing raw format, this parameter is ignored. </p>
   <p>&nbsp;</p>
   <h3><strong>B. Specify spatial extent</strong></h3>
   <p>Latitude, longitude values are specified  in decimal degrees north and east, respectively. </p>

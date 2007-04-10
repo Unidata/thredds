@@ -24,6 +24,11 @@ package thredds.datatype;
 import ucar.nc2.units.*;
 import ucar.units.ConversionException;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+import java.util.Date;
+
 /**
  * Implements the thredds "duration" XML element type: specifies a length of time.
  * This is really the same as a ucar.nc2.units.TimeUnit, but it allows xsd:duration syntax as well as udunits syntax. It
@@ -67,6 +72,8 @@ public class TimeDuration {
 
   private boolean debug = false;
 
+  private TimeDuration( ) {};
+
   /** copy constructor */
   public TimeDuration( TimeDuration src) {
     text = src.getText();
@@ -90,17 +97,48 @@ public class TimeDuration {
       return;
     }
 
-    // LOOK need xsd:duration parsing
-
     // see if its a udunits string
     try {
       timeUnit = new TimeUnit(text);
       if (debug) System.out.println(" set time unit= "+timeUnit);
     }
+
     catch (Exception e) {
-      throw new java.text.ParseException(e.getMessage(), 0);
+      // see if its a xsd:duration
+      try {
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        Duration d = factory.newDuration( text);
+        long secs = d.getTimeInMillis( new Date()) / 1000;
+        timeUnit = new TimeUnit(secs+" secs");
+      } catch (Exception e1) {
+        throw new java.text.ParseException(e.getMessage(), 0);
+      }
+
     }
 
+  }
+
+  /**
+   * time span as defined in the W3C XML Schema 1.0 specification
+   * @param text
+   * @return
+   * @throws java.text.ParseException
+   */
+  static public TimeDuration parseW3CDuration(String text) throws java.text.ParseException {
+    TimeDuration td = new TimeDuration();
+
+    text = (text == null) ? "" : text.trim();
+    td.text = text;
+
+    try {
+      DatatypeFactory factory = DatatypeFactory.newInstance();
+      Duration d = factory.newDuration( text);
+      long secs = d.getTimeInMillis( new Date()) / 1000;
+      td.timeUnit = new TimeUnit(secs+" secs");
+    } catch (Exception e) {
+      throw new java.text.ParseException(e.getMessage(), 0);
+    }
+    return td;
   }
 
   /** get the duration in natural units */

@@ -1,5 +1,5 @@
 /*
- * $Id: ProjectionRect.java,v 1.15 2006/11/18 19:03:14 dmurray Exp $
+ * $Id: ProjectionRect.java,v 1.16 2007/03/07 15:03:07 dmurray Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,6 +24,8 @@
 package ucar.unidata.geoloc;
 
 
+import ucar.unidata.util.Format;
+
 import java.awt.geom.Rectangle2D;
 
 import java.io.*;
@@ -36,7 +38,7 @@ import java.io.*;
  *   "upper left point" of the rectangle.
  *
  * @author John Caron
- * @version $Id: ProjectionRect.java,v 1.15 2006/11/18 19:03:14 dmurray Exp $
+ * @version $Id: ProjectionRect.java,v 1.16 2007/03/07 15:03:07 dmurray Exp $
  */
 public class ProjectionRect extends java.awt.geom.Rectangle2D.Double implements java.io.Serializable {
 
@@ -132,8 +134,9 @@ public class ProjectionRect extends java.awt.geom.Rectangle2D.Double implements 
      * @return a String representation of this object.
      */
     public String toString() {
-        return "min: " + getX() + " " + getY() + " size: " + getWidth() + " "
-               + getHeight();
+        return "min: " + Format.d(getX(), 3) + " " + Format.d(getY(), 3)
+               + " size: " + Format.d(getWidth(), 3) + " "
+               + Format.d(getHeight(), 3);
     }
 
     // bean serialization
@@ -211,6 +214,9 @@ public class ProjectionRect extends java.awt.geom.Rectangle2D.Double implements 
 /*
  *  Change History:
  *  $Log: ProjectionRect.java,v $
+ *  Revision 1.16  2007/03/07 15:03:07  dmurray
+ *  format the values in the toString method
+ *
  *  Revision 1.15  2006/11/18 19:03:14  dmurray
  *  jindent
  *

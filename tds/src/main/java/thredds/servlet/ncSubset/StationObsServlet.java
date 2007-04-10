@@ -144,13 +144,13 @@ public class StationObsServlet extends AbstractServlet {
     // time range
     qp.time_start = qp.parseDate(req, "time_start");
     qp.time_end = qp.parseDate(req, "time_end");
-    //qp.time_duration = qp.parseDuration(req, "time_duration");
+    qp.time_duration = qp.parseW3CDuration(req, "time_duration");
 
     // time point
     qp.time = qp.parseDate(req, "time");
 
     // last n
-    qp.time_latest = qp.parseInt(req, "time_latest");
+    // qp.time_latest = qp.parseInt(req, "time_latest");
 
     // choose a type
     String type;
@@ -172,7 +172,7 @@ public class StationObsServlet extends AbstractServlet {
     }
 
     if (qp.stns.size() > 0) {
-      soc.write(qp.vars, qp.stns, null, type, res.getWriter());
+      soc.write(qp.vars, qp.stns, qp.getDateRange(), type, res.getWriter());
 
     } else if (spatialAll) {
 

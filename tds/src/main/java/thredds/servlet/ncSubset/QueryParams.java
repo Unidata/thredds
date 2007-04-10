@@ -21,17 +21,18 @@
 
 package thredds.servlet.ncSubset;
 
-import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import thredds.servlet.ServletUtil;
+import thredds.datatype.DateRange;
+import thredds.datatype.TimeDuration;
+import thredds.datatype.DateType;
 
 /**
  * Class Description.
@@ -47,23 +48,32 @@ public class QueryParams {
   public double lat, lon;
   public List<String> stns;
 
-  public Date time_start, time_end, time;
-  public long time_duration;
+  public DateType time_start, time_end, time;
+  public TimeDuration time_duration;
   public int time_latest;
 
   public StringBuffer errs = new StringBuffer();
   public boolean fatal;
 
-  private DateFormatter format;
-
-  public Date parseDate(HttpServletRequest req, String key) {
+  public DateType parseDate(HttpServletRequest req, String key) {
     String s = ServletUtil.getParameterIgnoreCase(req, key);
     if (s != null) {
       try {
-        if (format == null) format = new DateFormatter();
-        return format.isoDateTimeFormat(s);
+        return new DateType(s, null, null);
       } catch (java.text.ParseException e) {
         errs.append("Illegal param= '" + key + "=" + s + "' must be valid ISO Date\n");
+      }
+    }
+    return null;
+  }
+
+  public TimeDuration parseW3CDuration(HttpServletRequest req, String key) {
+    String s = ServletUtil.getParameterIgnoreCase(req, key);
+    if (s != null) {
+      try {
+        return TimeDuration.parseW3CDuration(s);
+      } catch (java.text.ParseException e) {
+        errs.append("Illegal param= '" + key + "=" + s + "' must be valid ISO Duration\n");
       }
     }
     return null;
@@ -202,7 +212,6 @@ public class QueryParams {
     return new LatLonRect(new LatLonPointImpl(south, west), new LatLonPointImpl(north, east));
   }
 
-
   boolean hasValidPoint() {
     // no point
     if (Double.isNaN(lat) && Double.isNaN(lon))
@@ -214,6 +223,30 @@ public class QueryParams {
       return false;
     }
     return true;
+  }
+
+  boolean hasValidDateRange() {
+    // no range
+    if ((null == time_start) && (null == time_end) && (null == time_duration))
+      return false;
+
+    if ((null != time_start) && (null != time_end))
+      return true;
+
+    if ((null != time_start) && (null != time_duration))
+      return true;
+
+    if ((null != time_end) && (null != time_duration))
+      return true;
+
+    // misformed range
+    errs.append("Must have 2 of 3 parameters: time_start, time_end, time_duration\n");
+    return false;
+
+  }
+
+  DateRange getDateRange() {
+    return hasValidDateRange() ? new DateRange(time_start, time_end, time_duration, null) : null;
   }
 }
 

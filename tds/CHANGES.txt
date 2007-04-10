@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.15
  Features
+  * allow catalog config s to use /thredds/ as reletive path
   * DatasetSource plug-in
   * opendap: remove ascii recursive call; use DConnect2/HttpClient.
   * make SSL/Basic the default authentication
