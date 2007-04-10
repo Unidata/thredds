@@ -179,9 +179,9 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     } else {
 
       // copy the data into the PrimitiveVector
-      // this is optimized to eliminate the copy
-      // note we have to expose the internal ma2.Array storage :(
-      pv.setInternalStorage(data.getStorage());
+      // this is optimized to (possibly) eliminate the copy
+      Object pa = data.get1DJavaArray(data.getElementType());
+      pv.setInternalStorage(pa);
     }
 
     setRead(true);
