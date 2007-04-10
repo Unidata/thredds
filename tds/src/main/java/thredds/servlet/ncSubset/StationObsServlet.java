@@ -39,6 +39,19 @@ import thredds.servlet.ServletUtil;
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class StationObsServlet extends AbstractServlet {
+  static final String RAW = "text/plain";
+  static final String XML = "application/xml";
+  static final String CSV = "text/csv";
+
+  // the first in the list is the canonical name, the others are aliases
+  private static String[][] validAccept = new String[][]{
+          {XML, "text/xml", "xml"},
+          {RAW, "raw", "ascii"},
+          {CSV, "csv"},
+          {"text/html", "html"},
+          {"application/x-netcdf", "netcdf"},
+  };
+
   private boolean allow = true;
   private StationObsCollection soc;
 
@@ -54,191 +67,12 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    soc = new StationObsCollection("C:/data/metars/");
+    soc = new StationObsCollection("C:/data/metar/");
+    // soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
   }
 
   public void destroy() {
     super.destroy();
-  }
-
-  // the first in the list is the canonical name, the others are aliases
-  private static String[][] validAccept = new String[][]{
-      {"application/xml", "text/xml", "xml"},
-      {"text/html", "html"},
-      {"application/x-netcdf", "netcdf"},
-      {"text/plain", "raw", "ascii"},
-  };
-
-  public class QP {
-    public List<String> accept;
-
-    public double north, south, east, west;
-    public double lat, lon;
-    public List<String> stns;
-
-    public Date time_start, time_end, time;
-    public long time_duration;
-    public int time_latest;
-
-    public StringBuffer errs = new StringBuffer();
-    public boolean fatal;
-
-    private DateFormatter format;
-
-    public Date parseDate(HttpServletRequest req, String key) {
-      String s = ServletUtil.getParameterIgnoreCase(req, key);
-      if (s != null) {
-        try {
-          if (format == null) format = new DateFormatter();
-          return format.isoDateTimeFormat(s);
-        } catch (java.text.ParseException e) {
-          errs.append("Illegal param= '" + key + "=" + s + "' must be valid ISO Date\n");
-        }
-      }
-      return null;
-    }
-
-    public double parseDouble(HttpServletRequest req, String key) {
-      String s = ServletUtil.getParameterIgnoreCase(req, key);
-      if (s != null) {
-        try {
-          return Double.parseDouble(s);
-        } catch (NumberFormatException e) {
-          errs.append("Illegal param= '" + key + "=" + s + "' must be valid floating point number\n");
-        }
-      }
-      return Double.NaN;
-    }
-
-    public int parseInt(HttpServletRequest req, String key) {
-      String s = ServletUtil.getParameterIgnoreCase(req, key);
-      if (s != null) {
-        try {
-          return Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-          errs.append("Illegal param= '" + key + "=" + s + "' must be valid integer number\n");
-        }
-      }
-      return 0;
-    }
-
-    public double parseLat(HttpServletRequest req, String key) {
-      double lat = parseDouble(req, key);
-      if (!Double.isNaN(lat)) {
-        if ((lat > 90.0) || (lat < -90.0)) {
-          errs.append("Illegal param= '" + key + "=" + lat + "' must be between +/- 90.0\n");
-          lat = Double.NaN;
-        }
-      }
-      return lat;
-    }
-
-    public double parseLon(HttpServletRequest req, String key) {
-      double lon = parseDouble(req, key);
-      if (!Double.isNaN(lon)) {
-        lon = LatLonPointImpl.lonNormal(lon);
-      }
-      return lon;
-    }
-
-    public List<String> parseList(HttpServletRequest req, String key) {
-      ArrayList<String> result = new ArrayList<String>();
-
-      // may have multiple key=value
-      String[] vals = ServletUtil.getParameterValuesIgnoreCase(req, key);
-      for (String userVal : vals) {
-
-        if (userVal.contains(",")) { // comma separated values
-          StringTokenizer stoke = new StringTokenizer(userVal, ",");
-          while (stoke.hasMoreTokens()) {
-            String token = stoke.nextToken();
-            result.add(token);
-          }
-
-        } else { // single value
-          result.add(userVal);
-        }
-      }
-
-      return result;
-    }
-
-    public List<String> parseList(HttpServletRequest req, String key, String[][] valids, String defValue) {
-      ArrayList<String> result = new ArrayList<String>();
-
-      // may have multiple key=value
-      String[] vals = ServletUtil.getParameterValuesIgnoreCase(req, key);
-      for (String userVal : vals) {
-
-        if (userVal.contains(",")) { // comma separated values
-          StringTokenizer stoke = new StringTokenizer(userVal, ",");
-          while (stoke.hasMoreTokens()) {
-            String token = stoke.nextToken();
-            if (!findValid(token, valids, result))
-              errs.append("Illegal param '" + key + "=" + token + "'\n");
-          }
-
-        } else { // single value
-          if (!findValid(userVal, valids, result))
-            errs.append("Illegal param= '" + key + "=" + userVal + "'\n");
-        }
-      }
-
-      if (result.size() == 0) {
-        if (defValue == null) fatal = true;
-        else result.add(defValue);
-      }
-
-      return result;
-    }
-
-    // look for userVal in list of valids; add to result if found
-    // return true if found
-    private boolean findValid(String userVal, String[][] valids, ArrayList<String> result) {
-      for (String[] list : valids) {
-        String canon = list[0];
-        for (String valid : list) {
-          if (userVal.equalsIgnoreCase(valid)) {
-            result.add(canon);
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    boolean hasValidBB() {
-      // no bb
-      if (Double.isNaN(north) && Double.isNaN(south) && Double.isNaN(east) && Double.isNaN(west))
-        return false;
-
-      // misformed bb
-      if (Double.isNaN(north) || Double.isNaN(south) || Double.isNaN(east) || Double.isNaN(west)) {
-        errs.append("Bounding Box must have all 4 parameters: north,south,east,west\n");
-        return false;
-      }
-
-
-      return true;
-    }
-
-    LatLonRect getBB() {
-      return new LatLonRect(new LatLonPointImpl(south, west), new LatLonPointImpl(north, east));
-    }
-
-
-    boolean hasValidPoint() {
-      // no point
-      if (Double.isNaN(lat) && Double.isNaN(lon))
-        return false;
-
-      // misformed point
-      if (Double.isNaN(lat) || Double.isNaN(lon)) {
-        errs.append("Missing lat or lon parameter\n");
-        return false;
-      }
-      return true;
-    }
   }
 
 
@@ -254,8 +88,15 @@ public class StationObsServlet extends AbstractServlet {
     String pathInfo = req.getPathInfo();
 
     // parse the input
-    QP qp = new QP();
-    qp.accept = qp.parseList(req, "accept", validAccept, "text/plain");
+    QueryParams qp = new QueryParams();
+    qp.accept = qp.parseList(req, "accept", validAccept, RAW);
+
+    // list of variable names
+    qp.vars = qp.parseList(req, "var");
+    if (qp.vars.isEmpty())
+      qp.vars = null;
+
+    // spatial subsetting
 
     // bounding box
     qp.north = qp.parseLat(req, "north");
@@ -263,15 +104,42 @@ public class StationObsServlet extends AbstractServlet {
     qp.east = qp.parseDouble(req, "east");
     qp.west = qp.parseDouble(req, "west");
     boolean hasBB = qp.hasValidBB();
-
-    // lat/lon point
-    qp.lat = qp.parseLat(req, "lat");
-    qp.lon = qp.parseLon(req, "lon");
-    boolean hasPoint = qp.hasValidPoint();
+    if (qp.fatal) {
+      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
     // stations
     qp.stns = qp.parseList(req, "stn");
     boolean hasStns = qp.stns.size() > 0;
+    if (hasStns && soc.isStationListEmpty(qp.stns)) {
+      qp.errs.append("ERROR: No valid stations specified\n");
+      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
+
+    if (!hasStns && hasBB) {
+      qp.stns = soc.getStationNames(qp.getBB());
+      if (qp.stns.size() == 0) {
+        qp.errs.append("ERROR: Bounding Box contains no stations\n");
+        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+    }
+
+    boolean spatialAll = false;
+    if (!hasStns && !hasBB) {
+      // gotta have a lat/lon point
+      qp.lat = qp.parseLat(req, "lat");
+      qp.lon = qp.parseLon(req, "lon");
+
+      if (qp.hasValidPoint()) {
+        qp.stns.add( soc.findClosestStation(qp.lat, qp.lon));
+
+      } else {
+        spatialAll = true;
+      }
+    }
 
     // time range
     qp.time_start = qp.parseDate(req, "time_start");
@@ -284,9 +152,42 @@ public class StationObsServlet extends AbstractServlet {
     // last n
     qp.time_latest = qp.parseInt(req, "time_latest");
 
-    // kludge just a bit!
-    res.setContentType("text/plain");
-    soc.writeRaw( qp.stns, res.getWriter());
+    // choose a type
+    String type;
+    if (qp.accept.contains(RAW)) {
+      res.setContentType(RAW);
+      type = RAW;
+
+    } else if (qp.accept.contains(XML)) {
+      res.setContentType(XML);
+      type = XML;
+
+    } else if (qp.accept.contains(CSV)) {
+      res.setContentType("text/plain");
+      type = CSV;
+
+    } else {
+      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+      return;
+    }
+
+    if (qp.stns.size() > 0) {
+      soc.write(qp.vars, qp.stns, null, type, res.getWriter());
+
+    } else if (spatialAll) {
+
+    } else {
+      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+    }
+  }
+
+  private void writeErr(HttpServletResponse res, String s, int code) throws IOException {
+    res.setStatus(code);
+    if (s.length() > 0) {
+      PrintWriter pw = res.getWriter();
+      pw.print(s);
+      pw.close();
+    }
   }
 
 }

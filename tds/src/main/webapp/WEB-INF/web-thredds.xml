@@ -88,7 +88,7 @@
 
   <!-- data services -->
 
-  <!-- NetCDF/OPeNDAP server
+  <!-- NetCDF/OPeNDAP server -->
   <servlet>
     <servlet-name>NetcdfDODS</servlet-name>
     <display-name>THREDDS/NetCDF DODS Server</display-name>
@@ -102,7 +102,7 @@
       <param-value></param-value>
     </init-param>
     <load-on-startup>2</load-on-startup>
-  </servlet -->
+  </servlet>
 
   <!-- Setup for the DQC servlet. -->
   <servlet>
@@ -310,10 +310,10 @@
     <url-pattern>/idd/radarLevel2/*</url-pattern>
   </servlet-mapping>
 
-  <!-- servlet-mapping>
+  <servlet-mapping>
     <servlet-name>NetcdfDODS</servlet-name>
     <url-pattern>/dodsC/*</url-pattern>
-  </servlet-mapping -->
+  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>dqc</servlet-name>

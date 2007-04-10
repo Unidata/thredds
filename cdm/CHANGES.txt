@@ -37,6 +37,8 @@ Changes in version 2.2.19
   * Grib2: levels 0 and 255 means no level name
   * NCdump.print was using NetcdfFileCache
  ToolsUI
+  * File menu has "clear HTTP state" option.
+  * HttpSession deprecated, use HttpClientManager.
   * GridUI: bug in showDatasetXMLAction, rename showNcML; add showGridDatasetInfo XML
   * add refresh button to FileManager
  Libraries
