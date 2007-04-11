@@ -313,6 +313,7 @@ public class MetarServlet extends LdmServlet {
             //pw.println( "<p>STNS length ="+ STNS.length +"</p>" );
             for( int i = 0; i < STNS.length; i++ )
                 mq.getTimeSeries( STNS[ i ] );
+            mq.close();
             return;
         }
 
@@ -411,6 +412,7 @@ public class MetarServlet extends LdmServlet {
                 mq.getTimeRange(start.getTime(), end.getTime());
             }
         }
+        mq.close();
 
         // add ending tags
 /*

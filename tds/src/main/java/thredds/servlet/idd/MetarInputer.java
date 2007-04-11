@@ -29,7 +29,7 @@ public class MetarInputer {
     static final Pattern CtrlAC = Pattern.compile("(\\x01|\\x03)");
 
 
-    static public void main( String[] args ){
+    static public void main( String[] args ) {
 
     // accessDb4o
     String DBMS = "MetarObs.db4o";
@@ -49,6 +49,8 @@ public class MetarInputer {
     try {
         // do something with db4o
         storeMetars(db);
+    } catch ( Exception e ) {
+        System.out.println("Exception caught");
     }
     finally {
         db.close();
@@ -56,7 +58,8 @@ public class MetarInputer {
 
     }
 
-    public static void storeMetars(ObjectContainer db) {
+    public static void storeMetars(ObjectContainer db) 
+        throws IOException {
 
         //, report = "KDEN 262315 25035KT";
         StringBuilder report = new StringBuilder();
@@ -96,8 +99,9 @@ public class MetarInputer {
                         if( count == 100 ) {
                             db.commit();
                             count = 0;
-                            // remove obs over 3 days old on hourly basis
+                            // remove obs over 2.5 days old on hourly basis
                             if( ++delete == 80 ) { // ~8000 reports / hour
+                                //long remove = metar.timeObs -216000000;
                                 long remove = metar.timeObs -259200000;
                                 //long remove = metar.timeObs -3600000;
                                 removeBeforeTime( db, remove );
@@ -113,9 +117,10 @@ public class MetarInputer {
             } // end while
             bin.close();
 
-        } catch ( IOException ioe ) {
-            //break;
-            System.out.println("IOException caught");
+        } catch ( Exception e ) {
+            System.out.println("Exception caught");
+        } finally {
+            bin.close();
         }
     } // end storeMetars
 
