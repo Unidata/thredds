@@ -31,10 +31,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.Format;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Date;
+import java.util.*;
 
 import thredds.datatype.DateRange;
 import thredds.datatype.DateType;
@@ -60,8 +57,8 @@ public class StationObsCollection {
         try {
           sod = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, fileS, null, new StringBuffer());
           datasetList.add(new Dataset(fileS, sod.getStartDate(), sod.getEndDate()));
-        size += file.length();
-        count++;
+          size += file.length();
+          count++;
 
         } catch (IOException e) {
           log.error("Cant open " + fileS, e);
@@ -70,16 +67,18 @@ public class StationObsCollection {
           if (null != sod) try {
             sod.close();
           } catch (IOException e) {
+          }
+        }
       }
     }
-      }
-    }
+    // assume alpha sort = date sort
+    Collections.sort(datasetList);
 
     if (debug)
       System.out.println("Reading directory " + dirName + " # files = " + count + " total file sizes = " + size / 1000 / 1000 + " Mb");
   }
 
-  private class Dataset {
+  private class Dataset implements Comparable {
     String filename;
     Date time_start;
     Date time_end;
@@ -92,6 +91,11 @@ public class StationObsCollection {
       if (debug) System.out.println("scanStation open " + filename + " start= " + time_start + " end= " + time_end);
 
     }
+
+    public int compareTo(Object o) {
+      Dataset od = (Dataset) o;
+      return time_start.compareTo(od.time_start);
+    }
   }
 
   ///////////////////////////////////////
@@ -102,8 +106,8 @@ public class StationObsCollection {
   /**
    * Determine if any of the given station names are actually in the dataset.
    *
-   * @param stns  List of station names
-   * @return  true if list is empty, ie no names are in the actual station list
+   * @param stns List of station names
+   * @return true if list is empty, ie no names are in the actual station list
    * @throws IOException
    */
   public boolean isStationListEmpty(List<String> stns) throws IOException {
@@ -167,8 +171,8 @@ public class StationObsCollection {
    * Find the station closest to the specified point.
    * The metric is (lat-lat0)**2 + (cos(lat0)*(lon-lon0))**2
    *
-   * @param lat  latitude value
-   * @param lon  longitude value
+   * @param lat latitude value
+   * @param lon longitude value
    * @return name of station closest to the specified point
    * @throws IOException
    */
@@ -196,10 +200,45 @@ public class StationObsCollection {
   ////////////////////////////////////////////////////////
   // scanning
 
+  private void scanAll(Dataset ds, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
+
+    StationObsDataset sod = null;
+    try {
+      if (debug) System.out.println("scanAll open " + ds.filename);
+      sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ds.filename, null, new StringBuffer());
+
+      DataIterator iter = sod.getDataIterator(0);
+      while (iter.hasNext()) {
+        StationObsDatatype sobs = (StationObsDatatype) iter.nextData();
+
+        // date filter
+        if (null != range) {
+          Date obs = sobs.getObservationTimeAsDate();
+          if (!range.included(obs))
+            continue;
+        }
+
+        StructureData sdata = sobs.getData();
+        if ((p == null) || p.match(sdata)) {
+          a.act(sod, sobs, sdata);
+          limit.matches++;
+        }
+
+        limit.count++;
+        if (limit.count > limit.limit) break;
+      }
+
+    } finally {
+      if (null != sod)
+        sod.close();
+    }
+  }
+
   private void scanStations(Dataset ds, List<String> stns, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
 
     StationObsDataset sod = null;
     try {
+      if (debug) System.out.println("scanStations open " + ds.filename);
       sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ds.filename, null, new StringBuffer());
 
       for (String stn : stns) {
@@ -237,6 +276,71 @@ public class StationObsCollection {
         sod.close();
     }
   }
+
+  private void scanAll(Dataset ds, DateType time, Predicate p, Action a, Limit limit) throws IOException {
+
+    HashMap<Station, StationDataTracker> map = new HashMap<Station, StationDataTracker>();
+    long wantTime = time.getDate().getTime();
+
+    StationObsDataset sod = null;
+    try {
+      if (debug) System.out.println("scanAll open " + ds.filename);
+      sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ds.filename, null, new StringBuffer());
+
+      DataIterator iter = sod.getDataIterator(0);
+      while (iter.hasNext()) {
+        StationObsDatatype sobs = (StationObsDatatype) iter.nextData();
+
+        // general predicate filter
+        if (p != null) {
+          StructureData sdata = sobs.getData();
+          if (!p.match(sdata))
+            continue;
+        }
+
+        // find closest time for this station
+        long obsTime = sobs.getObservationTimeAsDate().getTime();
+        long diff = Math.abs(obsTime - wantTime);
+
+        Station s = sobs.getStation();
+        StationDataTracker track = map.get(s);
+        if (track == null) {
+          map.put(s, new StationDataTracker(sobs, diff));
+        } else {
+          if (diff < track.timeDiff) {
+            track.sobs = sobs;
+            track.timeDiff = diff;
+          }
+        }
+      }
+
+      Iterator<Station> siter = map.keySet().iterator();
+      while (siter.hasNext()) {
+        Station s = siter.next();
+        StationDataTracker track = map.get(s);
+        a.act(sod, track.sobs, track.sobs.getData());
+        limit.matches++;
+
+        limit.count++;
+        if (limit.count > limit.limit) break;
+      }
+
+    } finally {
+      if (null != sod)
+        sod.close();
+    }
+  }
+
+  private class StationDataTracker {
+    StationObsDatatype sobs;
+    long timeDiff = Long.MAX_VALUE;
+
+    StationDataTracker(StationObsDatatype sobs, long timeDiff) {
+      this.sobs = sobs;
+      this.timeDiff = timeDiff;
+    }
+  }
+
 
   private void scanStations(Dataset ds, List<String> stns, DateType time, Predicate p, Action a, Limit limit) throws IOException {
 
@@ -291,33 +395,6 @@ public class StationObsCollection {
     }
   }
 
-  private void scanAll(String url, Predicate p, Action a, Limit limit) throws IOException {
-
-    StationObsDataset dataset = null;
-    try {
-      if (debug) System.out.println("scanAll open " + url);
-      dataset = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, url, null, new StringBuffer());
-
-      DataIterator iter = dataset.getDataIterator(0);
-      while (iter.hasNext()) {
-        StationObsDatatype sobs = (StationObsDatatype) iter.nextData();
-
-        StructureData sdata = sobs.getData();
-        if ((p == null) || p.match(sdata)) {
-          a.act(dataset, sobs, sdata);
-          limit.matches++;
-        }
-
-        limit.count++;
-        if (limit.count > limit.limit) break;
-      }
-
-    } finally {
-      if (null != dataset)
-        dataset.close();
-    }
-  }
-
   private interface Predicate {
     boolean match(StructureData sdata);
   }
@@ -332,11 +409,10 @@ public class StationObsCollection {
     int matches;
   }
 
-
   ////////////////////////////////////////////////////////////////
   // date filter
 
-  private List<Dataset> filterDataset( DateRange range) {
+  private List<Dataset> filterDataset(DateRange range) {
     if (range == null)
       return datasetList;
 
@@ -349,19 +425,24 @@ public class StationObsCollection {
   }
 
   Dataset filterDataset(DateType time) {
+    if (time.isPresent())
+      return datasetList.get(datasetList.size() - 1);
+
     for (Dataset ds : datasetList) {
       if (time.before(ds.time_end) && time.after(ds.time_start))
         return ds;
       if (time.equals(ds.time_end) || time.equals(ds.time_start))
         return ds;
-  }
+    }
     return null;
   }
 
-   ////////////////////////////////////////////////////////////////
-  // writing in different formats
+  ////////////////////////////////////////////////////////////////
+  // writing
 
-  public void write(List<String> vars, List<String> stns, DateRange range, String type, java.io.PrintWriter pw) throws IOException {
+  // have a date range filter
+
+  public void write(List<String> vars, List<String> stns, DateRange range, DateType time, String type, java.io.PrintWriter pw) throws IOException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
 
@@ -376,10 +457,29 @@ public class StationObsCollection {
 
     Action act = w.getAction();
     w.header();
-    List<Dataset> need = filterDataset( range);
-    for (Dataset ds : need) {
-      scanStations(ds, stns, range, null, act, counter);
+
+    boolean useAll = stns.size() == 0;
+
+    if (null == time) {
+      // use range, null means all
+      List<Dataset> need = filterDataset(range);
+      for (Dataset ds : need) {
+
+        if (useAll)
+          scanAll(ds, range, null, act, counter);
+        else
+          scanStations(ds, stns, range, null, act, counter);
+      }
+
+    } else {
+      // match specific time point
+      Dataset need = filterDataset(time);
+      if (useAll)
+        scanAll(need, time, null, act, counter);
+      else
+        scanStations(need, stns, time, null, act, counter);
     }
+
     w.trailer();
 
     pw.flush();
@@ -395,27 +495,6 @@ public class StationObsCollection {
         System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
       }
     }
-  }
-
-  public void write(List<String> vars, List<String> stns, DateType time, String type, java.io.PrintWriter pw) throws IOException {
-    Limit counter = new Limit();
-
-    Writer w = null;
-    if (type.equals(StationObsServlet.RAW)) {
-      w = new WriterRaw(vars, pw);
-    } else if (type.equals(StationObsServlet.XML)) {
-      w = new WriterXML(vars, pw);
-    } else if (type.equals(StationObsServlet.CSV)) {
-      w = new WriterCSV(vars, pw);
-    }
-
-    Action act = w.getAction();
-    w.header();
-    Dataset need = filterDataset(time);
-    scanStations(need, stns, time, null, act, counter);
-    w.trailer();
-
-    pw.flush();
   }
 
   abstract class Writer {
@@ -452,8 +531,11 @@ public class StationObsCollection {
       super(vars, writer);
     }
 
-    public void header() { }
-    public void trailer() { }
+    public void header() {
+    }
+
+    public void trailer() {
+    }
 
     Action getAction() {
       return new Action() {
@@ -484,17 +566,17 @@ public class StationObsCollection {
     Action getAction() {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
-          Station s= sobs.getStation();
+          Station s = sobs.getStation();
 
           writer.print("  <metar date='");
-          writer.print(  format.toDateTimeStringISO( sobs.getObservationTimeAsDate()));
+          writer.print(format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
           writer.println("'>");
 
           writer.print("    <station name='" + s.getName() +
                   "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
                   "' longitude='" + Format.dfrac(s.getLongitude(), 3));
           if (!Double.isNaN(s.getAltitude()))
-            writer.print("' altitude='" + Format.dfrac(s.getAltitude(),0));
+            writer.print("' altitude='" + Format.dfrac(s.getAltitude(), 0));
           writer.println("'/>");
 
           List<String> varNames = getVarNames(vars, sod.getDataVariables());
@@ -518,8 +600,11 @@ public class StationObsCollection {
       super(stns, writer);
     }
 
-    public void header() {}
-    public void trailer() {}
+    public void header() {
+    }
+
+    public void trailer() {
+    }
 
     Action getAction() {
       return new Action() {
@@ -535,15 +620,15 @@ public class StationObsCollection {
             headerWritten = true;
           }
 
-          Station s= sobs.getStation();
+          Station s = sobs.getStation();
 
-          writer.print(  format.toDateTimeStringISO( sobs.getObservationTimeAsDate()));
+          writer.print(format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
           writer.print(',');
           writer.print(s.getName());
           writer.print(',');
-          writer.print(Format.dfrac(s.getLatitude(),3));
+          writer.print(Format.dfrac(s.getLatitude(), 3));
           writer.print(',');
-          writer.print(Format.dfrac(s.getLongitude(),3));
+          writer.print(Format.dfrac(s.getLongitude(), 3));
 
           for (String name : validVarNames) {
             writer.print(',');

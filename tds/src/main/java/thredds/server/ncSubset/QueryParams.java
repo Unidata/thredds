@@ -220,6 +220,7 @@ public class QueryParams {
     // misformed point
     if (Double.isNaN(lat) || Double.isNaN(lon)) {
       errs.append("Missing lat or lon parameter\n");
+      fatal = true;
       return false;
     }
     return true;

@@ -63,9 +63,8 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    soc = new StationObsCollection("C:/data/metars/");
-    // soc = new StationObsCollection("C:/data/metar/");
-    // soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
+    // soc = new StationObsCollection("C:/data/metars/");
+    soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
   }
 
   public void destroy() {
@@ -124,17 +123,19 @@ public class StationObsServlet extends AbstractServlet {
       }
     }
 
-    boolean spatialAll = false;
+    boolean useAll = false;
     if (!hasStns && !hasBB) {
-      // gotta have a lat/lon point
+      // does it have a lat/lon point
       qp.lat = qp.parseLat(req, "lat");
       qp.lon = qp.parseLon(req, "lon");
 
       if (qp.hasValidPoint()) {
-        qp.stns.add( soc.findClosestStation(qp.lat, qp.lon));
-
+        qp.stns.add(soc.findClosestStation(qp.lat, qp.lon));
+      } else if (qp.fatal) {
+        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return;
       } else {
-        spatialAll = true;
+        useAll = true;
       }
     }
 
@@ -145,14 +146,20 @@ public class StationObsServlet extends AbstractServlet {
 
     // time point
     qp.time = qp.parseDate(req, "time");
-    if ((qp.time != null) && (soc.filterDataset( qp.time) == null)) {
-        qp.errs.append("ERROR: This dataset does not contain the time point= "+qp.time+" \n");
-        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
-      }
+    if ((qp.time != null) && (soc.filterDataset(qp.time) == null)) {
+      qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
+      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
     // last n
     // qp.time_latest = qp.parseInt(req, "time_latest");
+
+    if (useAll && (qp.getDateRange() == null) && (qp.time == null)) {
+      qp.errs.append("ERROR: You must subset by space or time\n");
+      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
     // choose a type
     String type;
@@ -173,17 +180,7 @@ public class StationObsServlet extends AbstractServlet {
       return;
     }
 
-    if (qp.stns.size() > 0) {
-      if (qp.time != null)
-        soc.write(qp.vars, qp.stns, qp.time, type, res.getWriter());
-      else
-      soc.write(qp.vars, qp.stns, qp.getDateRange(), type, res.getWriter());
-
-    } else if (spatialAll) {
-
-    } else {
-      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-    }
+    soc.write(qp.vars, qp.stns, qp.getDateRange(), qp.time, type, res.getWriter());
   }
 
   private void writeErr(HttpServletResponse res, String s, int code) throws IOException {

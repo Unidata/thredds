@@ -19,33 +19,47 @@
   <ul>
     <li>All data at the station ACK, in raw fomat:
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?stn=ACK">http://motherlode.ucar.edu:9080/thredds/ncss/metars?stn=ACK</a></strong> </li>
+        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?stn=ACK">http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=raw&amp;stn=ACK</a></strong> </li>
       </ul>
     </li>
     <li>All data from the station closest to lat, lon = (40, -105) in XML:
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&accept=xml&lat=40&lon=-105">http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&amp;accept=xml&amp;lat=40&amp;lon=-105</a></strong></li>
+        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&accept=xml&lat=40&lon=-105">http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&amp;lat=40&amp;lon=-105</a></strong></li>
       </ul>
     </li>
-    <li>All data within latitude [40,43] and longitude [-105, -103], in CSV: 
+    <li>All data within latitude [40,43] and longitude [-105, -103], in CSV format: 
       <ul>
         <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=csv&south=40&west=-105&north=43&east=-103">http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=csv&amp;south=40&amp;west=-105&amp;north=43&amp;east=-103</a></strong></li>
       </ul>
     </li>
-    <li>Only return the fields named <em>wind_speed</em> and <em>wind_from_direction:</em>
+    <li>Only return the fields named <em>wind_speed</em> and <em>wind_from_direction</em> in XML:
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&stn=KBRX&var=wind_speed,wind_from_direction%20">http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&amp;stn=KBRX&amp;var=wind_speed,wind_from_direction</a> </strong></li>
+        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&stn=KBRX&var=wind_speed,wind_from_direction">http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&amp;stn=KBRX&amp;var=wind_speed,wind_from_direction</a> </strong></li>
       </ul>
     </li>
-    <li>
+    <li>Get data starting at <strong>2007-04-10T00:00:00Z</strong> and ending 12 hours later
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&stn=ACK&var=wind_speed,wind_from_direction">http://motherlode.ucar.edu:9080/thredds/ncss/metars?accept=xml&amp;stn=ACK&amp;var=wind_speed,wind_from_direction</a> </strong></li>
+        <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=csv&stn=ACK&time_start=2007-04-10T00:00:00Z&time_duration=PT12H"><strong>http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=csv&amp;stn=ACK&amp;time_start=2007-04-10T00:00:00Z&amp;time_duration=PT12H </strong></a></li>
+      </ul>
+    </li>
+    <li>Get data closest to  <strong>2007-04-10T00:00:00Z</strong>, for stations within latitude [40,43] and longitude [-105, -103], in CSV format: </li>
+    <ul>
+      <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=csv&time=2007-04-10T00:00:00Z&south=40&west=-105&north=43&east=-103"><strong>http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=csv&amp;time=2007-04-10T00:00:00Z&amp;south=40&amp;west=-105&amp;north=43&amp;east=-103</strong></a></li>
+    </ul>
+    <li>Get latest data for all stations:
+      <ul>
+        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=ascii&time=present">http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=ascii&amp;time=present</a></strong></li>
+      </ul>
+    </li>
+    <li>Get data for 1 hour starting at <strong>2007-04-10T00:00:00Z</strong> for all stations:
+      <ul>
+        <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=text/plain&time_start=2007-04-10T00:00:00Z&time_duration=PT1H"><strong>http://motherlode.ucar.edu:9080/thredds/ncss/metar?<strong>accept=text/plain&amp;time_start=2007-04-10T00:00:00Z</strong>&amp;time_duration=PT1H</strong></a></li>
       </ul>
     </li>
   </ul>
   <p>This test service does not yet have dynamic updating, robust error checking, or netCDF file writing. We will  be testing it and other solutions against larger sets of data like LEAD. </p>
-  <p>&nbsp; </p>
-  <h2>REST design </h2>
+  <p>&nbsp;  </p>
+  <h2>REST Design </h2>
   <h3>1. What are the resources/URIs?</h3>
   <p>The resources are THREDDS datasets.  The resource URIs can be discovered in a <a href="../TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <em><strong>NetcdfServer</strong></em> Service type. Generally they look like: </p>
   <blockquote>
