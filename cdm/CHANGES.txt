@@ -22,7 +22,9 @@ Changes in version 2.2.19
   * protected NetcdfFile constructor for passing in iosp class name
   * add GridCoordSys.getLatLon()
  Bugs
-  * FileWriter allows recno = 0.
+  * CF parser: add _Coordinate.Axes attribute for vertical transform only if attribute not already existing. Affects the case
+      where same variable is used for both coordinate system and transform.
+  * FileWriter allows 0 in umlimited dimension
   * thredds.util.getDateUsingCompleteDateFormatWithOffset() : java.text.SimpleDateFormat is grabbing extra characters at the end.
       Filed bug report with Sun. workaround : truncate the input string.
   * DODS Grids: check for coordinates attribute, add to _Coordinate.Axes

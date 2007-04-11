@@ -83,7 +83,7 @@
 
   <servlet>
     <servlet-name>NetcdfSubsetService</servlet-name>
-    <servlet-class>thredds.servlet.ncSubset.StationObsServlet</servlet-class>
+    <servlet-class>thredds.server.ncSubsetStationObsServlet</servlet-class>
   </servlet>
 
   <!-- data services -->

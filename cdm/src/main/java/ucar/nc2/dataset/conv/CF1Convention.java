@@ -95,7 +95,8 @@ public class CF1Convention extends CSMConvention {
         for (int j = 0; j < vertical_coords.length; j++)
           if (sname.equalsIgnoreCase(vertical_coords[j])) {
             v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
-            v.addAttribute( new Attribute(_Coordinate.Axes, v.getName())); // LOOK: may also be time dependent
+            if (v.findAttribute(_Coordinate.Axes) == null)
+              v.addAttribute( new Attribute(_Coordinate.Axes, v.getName())); // LOOK: may also be time dependent
           }
       }
 

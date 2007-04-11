@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.servlet.ncSubset;
+package thredds.server.ncSubset;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
@@ -60,8 +60,8 @@ public class StationObsCollection {
         try {
           sod = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, fileS, null, new StringBuffer());
           datasetList.add(new Dataset(fileS, sod.getStartDate(), sod.getEndDate()));
-          size += file.length();
-          count++;
+        size += file.length();
+        count++;
 
         } catch (IOException e) {
           log.error("Cant open " + fileS, e);
@@ -70,8 +70,8 @@ public class StationObsCollection {
           if (null != sod) try {
             sod.close();
           } catch (IOException e) {
-          }
-        }
+      }
+    }
       }
     }
 
@@ -102,8 +102,8 @@ public class StationObsCollection {
   /**
    * Determine if any of the given station names are actually in the dataset.
    *
-   * @param stns List of station names
-   * @return true if list is empty, ie no names are in the actual station list
+   * @param stns  List of station names
+   * @return  true if list is empty, ie no names are in the actual station list
    * @throws IOException
    */
   public boolean isStationListEmpty(List<String> stns) throws IOException {
@@ -167,8 +167,8 @@ public class StationObsCollection {
    * Find the station closest to the specified point.
    * The metric is (lat-lat0)**2 + (cos(lat0)*(lon-lon0))**2
    *
-   * @param lat latitude value
-   * @param lon longitude value
+   * @param lat  latitude value
+   * @param lon  longitude value
    * @return name of station closest to the specified point
    * @throws IOException
    */
@@ -332,10 +332,11 @@ public class StationObsCollection {
     int matches;
   }
 
+
   ////////////////////////////////////////////////////////////////
   // date filter
 
-  private List<Dataset> filterDataset(DateRange range) {
+  private List<Dataset> filterDataset( DateRange range) {
     if (range == null)
       return datasetList;
 
@@ -353,7 +354,7 @@ public class StationObsCollection {
         return ds;
       if (time.equals(ds.time_end) || time.equals(ds.time_start))
         return ds;
-    }
+  }
     return null;
   }
 
@@ -375,7 +376,7 @@ public class StationObsCollection {
 
     Action act = w.getAction();
     w.header();
-    List<Dataset> need = filterDataset(range);
+    List<Dataset> need = filterDataset( range);
     for (Dataset ds : need) {
       scanStations(ds, stns, range, null, act, counter);
     }
@@ -451,11 +452,8 @@ public class StationObsCollection {
       super(vars, writer);
     }
 
-    public void header() {
-    }
-
-    public void trailer() {
-    }
+    public void header() { }
+    public void trailer() { }
 
     Action getAction() {
       return new Action() {
@@ -486,17 +484,17 @@ public class StationObsCollection {
     Action getAction() {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
-          Station s = sobs.getStation();
+          Station s= sobs.getStation();
 
           writer.print("  <metar date='");
-          writer.print(format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
+          writer.print(  format.toDateTimeStringISO( sobs.getObservationTimeAsDate()));
           writer.println("'>");
 
           writer.print("    <station name='" + s.getName() +
-              "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
-              "' longitude='" + Format.dfrac(s.getLongitude(), 3));
+                  "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
+                  "' longitude='" + Format.dfrac(s.getLongitude(), 3));
           if (!Double.isNaN(s.getAltitude()))
-            writer.print("' altitude='" + Format.dfrac(s.getAltitude(), 0));
+            writer.print("' altitude='" + Format.dfrac(s.getAltitude(),0));
           writer.println("'/>");
 
           List<String> varNames = getVarNames(vars, sod.getDataVariables());
@@ -520,11 +518,8 @@ public class StationObsCollection {
       super(stns, writer);
     }
 
-    public void header() {
-    }
-
-    public void trailer() {
-    }
+    public void header() {}
+    public void trailer() {}
 
     Action getAction() {
       return new Action() {
@@ -540,15 +535,15 @@ public class StationObsCollection {
             headerWritten = true;
           }
 
-          Station s = sobs.getStation();
+          Station s= sobs.getStation();
 
-          writer.print(format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
+          writer.print(  format.toDateTimeStringISO( sobs.getObservationTimeAsDate()));
           writer.print(',');
           writer.print(s.getName());
           writer.print(',');
-          writer.print(Format.dfrac(s.getLatitude(), 3));
+          writer.print(Format.dfrac(s.getLatitude(),3));
           writer.print(',');
-          writer.print(Format.dfrac(s.getLongitude(), 3));
+          writer.print(Format.dfrac(s.getLongitude(),3));
 
           for (String name : validVarNames) {
             writer.print(',');

@@ -178,21 +178,13 @@
   </ul>
   <h4><strong>2. Time point</strong></h4>
   <ul>
-    <li><strong>time: </strong>time as an <a href="#W3Cdate">W3C date string</a></li>
+    <li><strong>time: </strong>time as an <a href="#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
   </ul>
   <p>The  requested time point must lie within the dataset time range. The time slice/point closest to the requested time will be returned. </p>
   <p>Examples:</p>
   <ul>
     <li><strong> time=2007-03-29T12:00:00Z</strong></li>
-  </ul>
-  <h4>3. Latest Time</h4>
-  <ul>
-    <li><strong>time_latest: </strong>number </li>
-  </ul>
-  <p>The latest n time slices/points will be returned. This is mostly useful for observational datasets, forecast models may give surprising results. </p>
-  <p>Examples:</p>
-  <ul>
-    <li><strong> time_latest=3 </strong>(return latest 3 time slice/points)</li>
+    <li><strong>time=present</strong></li>
   </ul>
   <p>&nbsp;</p>
   <h2>Representation<a name="representation"></a> types</h2>
@@ -288,7 +280,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 09, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 11, 2007 
 </address>
 <p>&nbsp;
 </p>

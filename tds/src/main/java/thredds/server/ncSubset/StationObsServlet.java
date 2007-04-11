@@ -18,17 +18,13 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package thredds.servlet.ncSubset;
+package thredds.server.ncSubset;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.*;
 
-import ucar.nc2.units.DateFormatter;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 import thredds.servlet.AbstractServlet;
 import thredds.servlet.ServletUtil;
 
@@ -181,7 +177,7 @@ public class StationObsServlet extends AbstractServlet {
       if (qp.time != null)
         soc.write(qp.vars, qp.stns, qp.time, type, res.getWriter());
       else
-        soc.write(qp.vars, qp.stns, qp.getDateRange(), type, res.getWriter());
+      soc.write(qp.vars, qp.stns, qp.getDateRange(), type, res.getWriter());
 
     } else if (spatialAll) {
 

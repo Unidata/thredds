@@ -149,6 +149,9 @@ public class DataRootHandler {
    */
   private void initCatalog(String path, boolean recurse ) throws IOException {
     String catalogFullPath = contentPath + path;
+    File f = new File(catalogFullPath);
+    String s1 = f.getCanonicalPath();
+    catalogFullPath = StringUtil.replace(s1,'\\',"/");
 
     // make sure we dont already have it
       if ( staticCatalogHash.containsKey(path)) {
