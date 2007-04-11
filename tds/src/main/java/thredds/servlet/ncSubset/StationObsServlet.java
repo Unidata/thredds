@@ -67,7 +67,8 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    soc = new StationObsCollection("C:/data/metar/");
+    soc = new StationObsCollection("C:/data/metars/");
+    // soc = new StationObsCollection("C:/data/metar/");
     // soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
   }
 
@@ -148,6 +149,11 @@ public class StationObsServlet extends AbstractServlet {
 
     // time point
     qp.time = qp.parseDate(req, "time");
+    if ((qp.time != null) && (soc.filterDataset( qp.time) == null)) {
+        qp.errs.append("ERROR: This dataset does not contain the time point= "+qp.time+" \n");
+        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
 
     // last n
     // qp.time_latest = qp.parseInt(req, "time_latest");
@@ -172,7 +178,10 @@ public class StationObsServlet extends AbstractServlet {
     }
 
     if (qp.stns.size() > 0) {
-      soc.write(qp.vars, qp.stns, qp.getDateRange(), type, res.getWriter());
+      if (qp.time != null)
+        soc.write(qp.vars, qp.stns, qp.time, type, res.getWriter());
+      else
+        soc.write(qp.vars, qp.stns, qp.getDateRange(), type, res.getWriter());
 
     } else if (spatialAll) {
 
