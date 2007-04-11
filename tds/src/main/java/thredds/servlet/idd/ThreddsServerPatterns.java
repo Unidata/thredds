@@ -157,7 +157,7 @@ public class ThreddsServerPatterns {
 
     //public static final Pattern p_DEFAULT_i = Pattern.compile("DEFAULT", Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern p_DODS_i = Pattern.compile("DODS", Pattern.CASE_INSENSITIVE);
+    public static final Pattern p_DODS_i = Pattern.compile("(DODS|OPENDAP)", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern p_altimeter = Pattern.compile("(A|Q)(\\d{4}\\.?\\d?)\\s*");
 

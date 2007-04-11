@@ -195,7 +195,7 @@ public class RadarLevel2Servlet extends LdmServlet {
 
             serviceType = "HTTPServer";
             //serviceType = "";
-            serviceType = "DODS";
+            serviceType = "OPeNDAP";
             //serviceName = radarLevel2HTTPServiceName;
             //pw.println( "serviceName =" + serviceName );
             //pw.println( "urlPath =" + urlPath );
@@ -246,7 +246,7 @@ public class RadarLevel2Servlet extends LdmServlet {
                 //if (p.p_catalog_i.matcher(returns).find()) {
                 //    returns = "data";  // default
                 //}
-        //  serviceType =~ /DODS/i
+        //  serviceType =~ /OPeNDAP/i
         } else if (p.p_DODS_i.matcher(serviceType).find()) {
                 serviceName = radarLevel2DODSServiceName;
                 serviceType = radarLevel2DODSServiceType;
@@ -488,7 +488,7 @@ serviceType +"&amp;returns=" + returns + "&amp;");
     public void catalogOut(String product, String stn, PrintWriter pw, String serviceType, String serviceBase, String returns) {
         //pw.println("Station ="+ stn );
         pw.println("      <dataset name=\""+ product +"\" ID=\""+ 
-           product.substring( 12, 25 ) +"\"" );
+           product.hashCode() +"\"" );
 
         String pTime = product.substring(12,16) +"-"+ product.substring(16,18)
            +"-"+ product.substring(18,20) +"T"+ product.substring(21, 23) 
@@ -507,9 +507,14 @@ serviceType +"&amp;returns=" + returns + "&amp;");
         pw.print("        urlPath=\"");
         if (p.p_HTTPServer_i.matcher(serviceType).find()) {
             //pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
-             pw.println( stn +"/"+ pDay +"/"+ product +"\"/>" );
+             pw.println( stn +"/"+ pDay +"/"+ product +"\">" );
+             pw.println( "<date type=\"created\">"+ pTime +"</date>" );
+             pw.println( "</dataset>" );
+
         } else if (p.p_DODS_i.matcher(serviceType).find()) {
-            pw.println("serviceType="+ serviceType +"&amp;returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
+            pw.println("serviceType="+ serviceType +"&amp;returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\">");
+             pw.println( "<date type=\"created\">"+ pTime +"</date>" );
+             pw.println( "</dataset>" );
             //pw.println( "<a href=\""+ serviceBase + stn +"/"+ pDay +"\">"+
             //   product +"</a>" );
         }
