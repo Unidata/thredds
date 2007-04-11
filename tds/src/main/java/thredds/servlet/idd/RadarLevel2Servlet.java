@@ -359,6 +359,9 @@ serviceType +"&amp;returns=" + returns + "&amp;");
             } else if (dtime.equals("5day")) {
                 now.add( Calendar.HOUR, -120 );
                 dateStart = dateFormatISO.format(now.getTime());
+            } else if (dtime.equals("all")) {
+                now.add( Calendar.HOUR, -168 );
+                dateStart = dateFormatISO.format(now.getTime());
 
             //      individual data report return for set time dtime
             } else if (p.p_isodate.matcher(dtime).find()) {
@@ -485,7 +488,7 @@ serviceType +"&amp;returns=" + returns + "&amp;");
     public void catalogOut(String product, String stn, PrintWriter pw, String serviceType, String serviceBase, String returns) {
         //pw.println("Station ="+ stn );
         pw.println("      <dataset name=\""+ product +"\" ID=\""+ 
-           product.hashCode() +"\"" );
+           product.substring( 12, 25 ) +"\"" );
 
         String pTime = product.substring(12,16) +"-"+ product.substring(16,18)
            +"-"+ product.substring(18,20) +"T"+ product.substring(21, 23) 
