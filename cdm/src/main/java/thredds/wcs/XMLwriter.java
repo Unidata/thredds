@@ -228,12 +228,14 @@ public class XMLwriter {
 
     GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
-    java.util.Date[] dates = taxis.getTimeDates();
-    int n = dates.length;
-    if (useTimeRange)
-      domainElem.addContent( makeTemporalDomainRange( dates[0], dates[n-1]));
-    else
-      domainElem.addContent( makeTemporalDomain( dates));
+    if (null != taxis) {
+      java.util.Date[] dates = taxis.getTimeDates();
+      int n = dates.length;
+      if (useTimeRange)
+        domainElem.addContent( makeTemporalDomainRange( dates[0], dates[n-1]));
+      else
+        domainElem.addContent( makeTemporalDomain( dates));
+    }
     return domainElem;
   }
 

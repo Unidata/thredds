@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.15
  Features
-  * allow catalog config s to use /thredds/ as reletive path
+  * allow catalog configs to use /thredds/ as reletive path
   * DatasetSource plug-in
   * opendap: remove ascii recursive call; use DConnect2/HttpClient.
   * make SSL/Basic the default authentication
@@ -29,6 +29,7 @@ Changes in version 3.15
   
 Changes in version 3.14
  Bugs
+  * WCSwriter: deal  with case with no time coordinate. 
   * Opendap server (NcSDArray) not subsetting correctly for IOSPs that implement subset with Array views
   * InvDataset copy constructor wasnt making copies - dup metadata in InvDatasetFmrc
   * Upgrade ADN/DIF records to latest version

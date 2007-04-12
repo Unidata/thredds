@@ -29,14 +29,14 @@ public class TestWcsServer extends TestCase {
 
     showGetCapabilities(dataset);
     showDescribeCoverage(dataset, "ATssta");
-    showGetCoverage(dataset, "ATssta", "2006-01-04T23:59:59Z",null,"220,20,250,50");
+    showGetCoverage(dataset, "ATssta", "2006-01-04T23:59:59Z",null,"220,20,250,50", "netCDF3");
   }
 
   public void testFmrc() throws IOException {
     String dataset = "http://motherlode.ucar.edu:9080/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/best.ncd";
     showGetCapabilities(dataset);
     showDescribeCoverage(dataset, "Precipitable_water");
-    showGetCoverage(dataset, "Precipitable_water", "2006-08-11T18:00:00Z",null,"220,20,250,50");
+    showGetCoverage(dataset, "Precipitable_water", "2006-08-11T18:00:00Z",null,"220,20,250,50", "netCDF3");
   }
 
   public void testBbox() throws IOException {
@@ -46,6 +46,14 @@ public class TestWcsServer extends TestCase {
     showDescribeCoverage(dataset, fld);
     showGetCoverage(dataset, fld, null, null,"-125.9237889957627,67.498658,-50.43356200423729,132.87735","GeoTIFF");
     showRead(dataset+"?REQUEST=GetCoverage&VERSION=1.0.0&SERVICE=WCS&COVERAGE=Geopotential_height&CRS=EPSG:4326&RESPONSE_CRS=EPSG:4326&BBOX=-125.9237889957627,67.498658,-50.43356200423729,132.87735&WIDTH=545&HEIGHT=472&FORMAT=GeoTIFF");
+  }
+
+  public void testNorwayProblem() throws IOException {
+    String dataset = "http://localhost:8080/thredds/wcs/Cdata/problem/FORDAILY_start20061206_dump20061228.nc";
+    showGetCapabilities(dataset);
+    String fld = "temperature";
+    showDescribeCoverage(dataset, fld);
+    showGetCoverage(dataset, fld, null, null,"-10,50,10,80","NetCDF3");
   }
 
   public void eTestForEthan() throws IOException
@@ -77,14 +85,14 @@ public class TestWcsServer extends TestCase {
     // "http://localhost:8080/thredds/wcs/galeon/ocean.nc?request=GetCapabilities&version=1.0.0&service=WCS?request=GetCapabilities&version=1.0.0&service=WCS
     showGetCapabilities(server+"galeon/ocean.nc?");
     showDescribeCoverage(server+"galeon/ocean.nc?", "u_sfc");
-    showGetCoverage(server+"galeon/ocean.nc?", "u_sfc", "2005-03-17T12:00:00Z", null, "-100,20,-50,44.40");
+    showGetCoverage(server+"galeon/ocean.nc?", "u_sfc", "2005-03-17T12:00:00Z", null, "-100,20,-50,44.40", "netCDF3");
   }
 
   public void testDatasetParam() throws IOException {
      showGetCapabilities(server+"?dataset=http://localhost:8080/thredds/dodsC/testContent/testData.nc&");
      showDescribeCoverage(server+"?dataset=http://localhost:8080/thredds/dodsC/testContent/testData.nc&", "Z_sfc");
      showGetCoverage(server+"?dataset=http://localhost:8080/thredds/dodsC/testContent/testData.nc&", "Z_sfc",
-         "2003-09-25T00:00:00Z", null, "-100,20,-50,44.40");
+         "2003-09-25T00:00:00Z", null, "-100,20,-50,44.40", "netCDF3");
   }
 
   private void showGetCapabilities(String url) throws IOException {
@@ -95,13 +103,9 @@ public class TestWcsServer extends TestCase {
     showRead(url+"?request=DescribeCoverage&version=1.0.0&service=WCS&coverage="+grid);
   }
 
-  private void showGetCoverage(String url, String grid, String time, String vert, String bb) throws IOException {
-    showGetCoverage(url, grid, time, vert, bb, "NetCDF");
-  }
-
   private void showGetCoverage(String url, String grid, String time, String vert, String bb, String format) throws IOException {
     String getURL = url+"?request=GetCoverage&version=1.0.0&service=WCS&coverage="+grid;
-    boolean isNetcdf = format.equalsIgnoreCase("netcdf");
+    boolean isNetcdf = format.equalsIgnoreCase("netCDF3");
     getURL = getURL + "&format="+format;
     if (time != null)
       getURL = getURL + "&time="+time;
