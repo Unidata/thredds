@@ -182,10 +182,7 @@ public class URLDumpPane extends TextHistoryPane {
   private void openURL2(String urlString, int cmd) {
     clear();
 
-    //Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
     HttpClient httpclient = HttpClientManager.getHttpClient();
-    // httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
-
     HttpMethodBase m = null;
     if (cmd == GET)
       m = new GetMethod(urlString);

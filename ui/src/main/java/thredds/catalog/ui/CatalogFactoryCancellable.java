@@ -190,35 +190,3 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
 
 }
-
-/* Change History:
-   $Log: CatalogFactoryCancellable.java,v $
-   Revision 1.9  2006/01/20 02:08:22  caron
-   switch to using slf4j for logging facade
-
-   Revision 1.8  2005/11/18 17:47:41  caron
-   *** empty log message ***
-
-   Revision 1.7  2005/10/15 23:59:08  caron
-   no message
-
-   Revision 1.6  2005/09/30 17:34:58  caron
-   no message
-
-   Revision 1.5  2005/08/29 21:43:10  caron
-   add HTMLViewer
-   GetPut: add ActionListsner
-
-   Revision 1.4  2004/09/30 00:33:37  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/09/24 03:26:31  caron
-   merge nj22
-
-   Revision 1.2  2004/03/05 23:35:48  caron
-   rel 1.3.1 javadoc
-
-   Revision 1.1  2004/03/05 17:21:50  caron
-   1.3.1 release
-
- */

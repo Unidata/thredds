@@ -52,7 +52,6 @@ import java.io.IOException;
  */
 public class HttpClientManager {
   static private boolean debug = false;
-  static private boolean protocolRegistered = false;
   static private HttpClient _client;
   static private int timeout = 0;
 
@@ -63,14 +62,8 @@ public class HttpClientManager {
    * @param userAgent Content of User-Agent header, may be null
    */
   static public void init(CredentialsProvider provider, String userAgent) {
-
-    if (!protocolRegistered) {
-      // this allows self-signed certificates.
-      Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
-      protocolRegistered = true;
-    }
-
     initHttpClient();
+    
     if (provider != null)
       _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
 
@@ -103,13 +96,16 @@ public class HttpClientManager {
     if (_client != null) return;
     MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
     _client = new HttpClient(connectionManager);
-    HttpClientParams params = _client.getParams();
 
+    HttpClientParams params = _client.getParams();
     params.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(timeout));
     params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
     params.setParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
-    // look need default CredentialsProvider ??
+    // allow self-signed certificates
+    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
+
+    // LOOK need default CredentialsProvider ??
     // _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
 
   }

@@ -67,7 +67,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (_client != null) return;
     MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
     _client = new HttpClient(connectionManager);
-    _client.getParams().setParameter("http.socket.timeout", new Integer(15000));  // 15 sec timeout
   }
 
   private String url;
