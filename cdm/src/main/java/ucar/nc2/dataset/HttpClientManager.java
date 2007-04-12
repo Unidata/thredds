@@ -54,6 +54,7 @@ public class HttpClientManager {
   static private boolean debug = false;
   static private boolean protocolRegistered = false;
   static private HttpClient _client;
+  static private int timeout = 0;
 
   /**
    * initialize the HttpClient layer.
@@ -72,6 +73,7 @@ public class HttpClientManager {
     initHttpClient();
     if (provider != null)
       _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
+
     if (userAgent != null)
       _client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent + "/NetcdfJava/HttpClient");
     else
@@ -103,7 +105,7 @@ public class HttpClientManager {
     _client = new HttpClient(connectionManager);
     HttpClientParams params = _client.getParams();
 
-    params.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(15000));  // 15 sec timeout
+    params.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(timeout));
     params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
     params.setParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
