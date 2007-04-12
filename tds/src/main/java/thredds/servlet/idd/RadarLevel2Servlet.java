@@ -120,7 +120,7 @@ public class RadarLevel2Servlet extends LdmServlet {
 
             serviceType = ServletUtil.getParameterIgnoreCase(req, "serviceType");
             if (serviceType == null)
-                serviceType = "HTTPServer";
+                serviceType = "OPENDAP";
 
             serviceName = ServletUtil.getParameterIgnoreCase(req, "serviceName");
 
@@ -195,7 +195,7 @@ public class RadarLevel2Servlet extends LdmServlet {
 
             serviceType = "HTTPServer";
             //serviceType = "";
-            serviceType = "OPeNDAP";
+            serviceType = "OPENDAP";
             //serviceName = radarLevel2HTTPServiceName;
             //pw.println( "serviceName =" + serviceName );
             //pw.println( "urlPath =" + urlPath );
@@ -246,7 +246,7 @@ public class RadarLevel2Servlet extends LdmServlet {
                 //if (p.p_catalog_i.matcher(returns).find()) {
                 //    returns = "data";  // default
                 //}
-        //  serviceType =~ /OPeNDAP/i
+        //  serviceType =~ /OPENDAP/i
         } else if (p.p_DODS_i.matcher(serviceType).find()) {
                 serviceName = radarLevel2DODSServiceName;
                 serviceType = radarLevel2DODSServiceType;
@@ -286,7 +286,8 @@ serviceType +"&amp;returns=" + returns + "&amp;");
             }
             pw.println("    <metadata inherited=\"true\">");
             pw.println("      <dataType>Station</dataType>");
-            pw.println("      <dataFormat>" + returns + "</dataFormat>");
+            //pw.println("      <dataFormat>" + returns + "</dataFormat>");
+            pw.println("      <dataFormat>" + "NEXRAD2" + "</dataFormat>");
             pw.println("      <serviceName>" + serviceName + "</serviceName>");
             pw.println("    </metadata>");
             pw.println();
@@ -367,7 +368,7 @@ serviceType +"&amp;returns=" + returns + "&amp;");
             } else if (p.p_isodate.matcher(dtime).find()) {
                 dateStart = dateEnd = dtime;
             } else {
-                pw.println("        <p>time is invalid "+ dtime +"<p>");
+                pw.println("        <p>time is invalid "+ dtime +"</p>");
                 pw.println("    </dataset>");
                 pw.println("</catalog>");
                 return;
@@ -505,19 +506,19 @@ serviceType +"&amp;returns=" + returns + "&amp;");
         //pw.print( theTime +" " + stn + " RadarLevel2 data\"" ); 
         //pw.println( " ID=\""+ theTime.hashCode() +"\"" ); 
         pw.print("        urlPath=\"");
-        if (p.p_HTTPServer_i.matcher(serviceType).find()) {
+        //if (p.p_HTTPServer_i.matcher(serviceType).find()) {
             //pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
              pw.println( stn +"/"+ pDay +"/"+ product +"\">" );
-             pw.println( "<date type=\"created\">"+ pTime +"</date>" );
+             pw.println( "<date type=\"start of ob\">"+ pTime +"</date>" );
              pw.println( "</dataset>" );
 
-        } else if (p.p_DODS_i.matcher(serviceType).find()) {
-            pw.println("serviceType="+ serviceType +"&amp;returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\">");
-             pw.println( "<date type=\"created\">"+ pTime +"</date>" );
-             pw.println( "</dataset>" );
+        //} else if (p.p_DODS_i.matcher(serviceType).find()) {
+            //pw.println("serviceType="+ serviceType +"&amp;returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\">");
+             //pw.println( "<date type=\"start of ob\">"+ pTime +"</date>" );
+             //pw.println( "</dataset>" );
             //pw.println( "<a href=\""+ serviceBase + stn +"/"+ pDay +"\">"+
             //   product +"</a>" );
-        }
+        //}
 
     } // end catalogOut
 
