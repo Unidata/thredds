@@ -57,7 +57,7 @@ If this option is not specified, it defaults to <strong>${user_home}/.keystore</
 </ol>
 <blockquote>
   <p> See <a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/index.html#security">keytool documentation</a> for full description of managing keystores. The <a href="http://jakarta.apache.org/tomcat/tomcat-5.5-doc/ssl-howto.html">Tomcat doc</a> is quite good, also. </p>
-  </blockquote>
+</blockquote>
 <h3><strong>Installing a Certificate from a Certificate Authority</strong></h3>
 <p>The use of SSL in this way prevents a network sniffer from getting your password. A more sophisticated (and more difficult to perform) attack is the so called <em>man-in-the-middle</em> attack where someone pretends to be your server, and induces your client to send the password to it. </p>
 <p>In the above,  we used self-signed certificates, and your browser will give you a warning  each time you access a web page that uses self-signed certificates. It will allow you to choose to continue however, and so a clever enough attacker might induce you to accept their self-signed certificate. To prevent this, you can obtain a certificate signed by a <em>Certificate Authority</em> (CA). You can then install it using <a href="http://jakarta.apache.org/tomcat/tomcat-5.5-doc/ssl-howto.html#Installing%20a%20Certificate%20from%20a%20Certificate%20Authority">these instructions</a>. The browser will see that its a valid certificate, and so you will never accept self-signed certificates and you will preclude man-in-the-middle attacks.</p>
@@ -88,7 +88,7 @@ If this option is not specified, it defaults to <strong>${user_home}/.keystore</
 </pre>
 <p>You also need to make sure that your firewall is allowing those ports through. </p>
 <p>&nbsp;</p>
-<h2>TDS Remote Debugging</h2>
+<h2>TDS Remote Debugging<a name="RemoteDebugging" id="RemoteDebugging"></a></h2>
 <p>Once SSL is enabled, you can remotely debug and configure the TDS.</p>
 <p>Debugging information is available at <strong><a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>. </strong>Some features of particular interest are:</p>
 <ol>

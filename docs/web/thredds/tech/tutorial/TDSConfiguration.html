@@ -71,6 +71,7 @@ only on the server, which  is removed when the TDS sends the catalog to the clie
       <td><pre><strong>C:/casestudy/data/001/test/area/two</strong></pre></td>
     </tr>
   </table>
+  <p>&nbsp;</p>
   <h2>TDS Service elements </h2>
   <p>The TDS always uses the <em>context name</em> (eg &quot;thredds&quot;) and the <em>servlet name</em> (eg &quot;dodsC&quot;) for the service base URL. Thus you should always use the following service elements in your TDS configuration catalogs: </p>
   <p><strong>OpenDAP server</strong>: </p>
@@ -100,10 +101,11 @@ example: </p>
 <p>Since the service base is not used in looking for data roots, all three URLs will all be mapped to the same file. For example, if you had the data root</p>
 <pre>  <strong>&lt;</strong>datasetRoot<strong> </strong>path<strong>="models" </strong>location<strong>="/data/ncep/" /&gt;</strong><strong></strong></pre>
 <p>then  the file would be: </p>
-<pre><strong>  /data/ncep/aug/mydata.nc</strong></pre>
-<h2>TDS Top Catalogs</h2>
-<p>When TDS starts up, it will read the <em>top-level catalog</em> at <strong>${tomcat_home}/content/thredds/catalog.xml, </strong>and recursively read all catalogs that are linked to it through a relative <em>CatalogRef</em> element (i.e. a catalog that lives somewhere under <strong>${tomcat_home}/content/thredds/</strong>), and determine the dataset roots and other information. </p>
-<p>If you want to serve other catalogs that are not linked to the top-level catalog, then list them in <strong>${tomcat_home}/content/thredds/threddsConfig.xml,</strong> for example: </p>
+<pre><strong>  /data/ncep/aug/mydata.nc
+</strong></pre>
+<h2>TDS Root Catalogs<a name="RootCatalogs" id="RootCatalogs"></a></h2>
+<p>When TDS starts up, it will read the <em>root catalog</em> at <strong>${tomcat_home}/content/thredds/catalog.xml, </strong>and recursively read all catalogs that are linked to it through a relative <strong><em>CatalogRef</em></strong> element (i.e. a catalog that lives somewhere under <strong>${tomcat_home}/content/thredds/</strong>), and determine the dataset roots and other information. </p>
+<p>If you want to serve other catalogs that are not linked to the root catalog, then list them in <strong>${tomcat_home}/content/thredds/threddsConfig.xml,</strong> for example: </p>
 <blockquote>
   <pre>&lt;catalogRoot location=&quot;topcatalog.xml&quot; /&gt;
 &lt;catalogRoot location=&quot;idv/rt-models.1.0.xml&quot; /&gt;
@@ -156,7 +158,7 @@ example: </p>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 24, 2006
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 11, 2007
 </address>
 <p>&nbsp;
 </p>

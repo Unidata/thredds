@@ -3,20 +3,40 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Untitled Document</title>
+<title>TDS Catalogs</title>
 </head>
 
 <body>
-<h1><img src="../THREDDSlogo.jpg" height="54" width="67">Catalog Configuration </h1>
+<h1><img src="../THREDDSlogo.jpg" height="54" width="67">TDS  Catalogs</h1>
 <hr>
-<h3>Static Catalogs</h3>
-<p>These are the catalog roots and their referenced catalogs. They must live under <strong>${tomcat_home}/content/thredds</strong>. What about TDR ?? </p>
+<p>TDS is configured with <em>configuration catalogs</em> that live in the directory <strong>${tomcat_home}/content/thredds/</strong>. These usually contain some  information needed only on the server, which is removed when the TDS sends the catalog to the client. </p>
+<h3>Configuration Catalogs</h3>
+<p>The <em>default root catalog</em> is <strong>${tomcat_home}/content/thredds/catalog.xml. </strong>It may reference other configuration catalogs using the <strong>catalogRef</strong> element. These catalogs  can also contain catalogRef elements, etc. If you want to serve other catalogs that are not linked to the root catalog, then <a href="../tutorial/TDSConfiguration.html#RootCatalogs">declare them</a> in <strong>${tomcat_home}/content/thredds/threddsConfig.xml. </strong>The set of  configuration catalogs is found by traversing all the root catalogs. This is the set of <em>configuration catalogs</em>, aka <em>static catalogs</em>. </p>
+<p>The catalogRef element looks like: </p>
+<blockquote>
+  <pre><strong>&lt;catalogRef xlink:href=&quot;idd/models.xml&quot; xlink:title=&quot;NCEP Model Data&quot; name=&quot;&quot; /&gt;</strong></pre>
+</blockquote>
+<p>The <strong>xlink:href </strong>attribute names the referenced catalog; it must be reletive to the catalog it is contained in. In this example, it would be in the subdirectory <strong>idd</strong> under the directory of the catalog containing it . You can also use &quot;..&quot; to name peer directories:</p>
+<blockquote>
+  <pre><strong>&lt;catalogRef xlink:href=&quot;../idv/ncep.xml&quot; xlink:title=&quot;IDV NCEP Model Data&quot; name=&quot;&quot; /&gt;</strong></pre>
+</blockquote>
+<p>in this example, if the  catalog is <strong>${tomcat_home}/content/thredds/idd/models.xml, </strong>then the referenced catalog is <strong>${tomcat_home}/content/thredds/idv/ncep.xml</strong></p>
+<p>You can also use a relative URL that begins with <code>/</code> (a slash):</p>
+<blockquote>
+  <pre><strong>&lt;catalogRef xlink:href=&quot;/galeon/wcs/test.xml&quot; xlink:title=&quot;GALEON Test Data&quot; name=&quot;&quot; /&gt;</strong></pre>
+</blockquote>
+<p>which points to the catalog at <strong>${tomcat_home}/content/thredds/galeon/wcs/test.xml </strong>no matter what catalog it appears in. Note that the base directory is <strong>${tomcat_home}/content/thredds/</strong>, and that all configuration catalogs must live under it. </p>
+<p>&nbsp;</p>
+<h3>Dynamic Catalogs </h3>
+<p>&nbsp;</p>
 <h3>Catalog Caching</h3>
-<p>Static catalogs are cached in memory. The expires attribute is used to decide whether to reread. If no expires attrinute, the catalog is never reread. <br>
+<p>Configuration catalogs are read and cached in memory when the TDS <em>web application</em> starts up (e.g. when Tomcat starts up). The <em>expires</em> attribute can be used to decide whether to reread the catalog. If no expires attribute, the catalog is not automatically reread:</p>
+<p>&nbsp;</p>
+<p>You can also force a reread of the configuration catalogs (without having to restart TDS) through the <strong>Reinitialize</strong> command in <a href="../tutorial/RemoteManagement.html#RemoteDebugging">TDS Remote Management</a>. <br>
 </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 14, 2006
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 11, 2007 
 </address>
 <p></p>
 </body>
