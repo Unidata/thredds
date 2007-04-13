@@ -48,6 +48,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
    * Get the basic property of Radar
    * @return 0 if this is not a radial product
    */
+  public void clearDatasetMemory();
 
  // public boolean isRadial();
 
@@ -70,6 +71,10 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
 
     /** @return  data, of length getNumSweep()  by getNumRadials() by getNumGates()*/
     public float[] readAllData() throws java.io.IOException;
+
+    public void clearVariableMemory();
+
+
   }
 
   /** A sweep is 2D data using radial coordinate system (elevation, azimuth, radial distance) */
@@ -135,6 +140,9 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
 
     /** @return the index of sweep */
     public int getSweepIndex();
+
+    /** deallocated memory of sweep */
+    public void clearSweepMemory();
   }
 
   static public final class Type {
