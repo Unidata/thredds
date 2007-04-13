@@ -31,6 +31,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Make a Nids NetcdfDataset into a RadialDataset.
@@ -198,6 +199,15 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     }
   }
 
+  public void clearDatasetMemory() {
+      List  rvars = getDataVariables();
+      Iterator iter = rvars.iterator();
+      while (iter.hasNext()) {
+          RadialVariable radVar = (RadialVariable)iter.next();
+          radVar.clearVariableMemory();
+      }
+  }
+
   protected RadialVariable makeRadialVariable(VariableEnhanced varDS, RadialCoordSys gcs) {
     return new Nids2Variable(varDS, gcs);
   }
@@ -260,7 +270,9 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
       return nrays;
     }
 
-
+    public void clearVariableMemory() {
+         // doing nothing
+    }
     //////////////////////////////////////////////////////////////////////
     private class Nids2Sweep implements RadialDatasetSweep.Sweep {
       double meanElevation = Double.NaN;
@@ -426,7 +438,9 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
       public int getSweepIndex() {
         return 0;
       }
-
+      public void clearSweepMemory() {
+         // doing nothing for nids adapter
+      }
     } // Nids2Sweep class
 
   } // Nids2Variable
