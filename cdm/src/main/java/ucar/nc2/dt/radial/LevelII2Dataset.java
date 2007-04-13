@@ -31,6 +31,7 @@ import ucar.nc2.Attribute;
 import java.io.IOException;
 import java.util.List;
 import java.util.Date;
+import java.util.Iterator;
 
 
 /**
@@ -167,6 +168,15 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       parseInfo.append("*** end_datetime not Found\n");
   }
 
+  public void clearDatasetMemory() {
+      List  rvars = getDataVariables();
+      Iterator iter = rvars.iterator();
+      while (iter.hasNext()) {
+          RadialVariable radVar = (RadialVariable)iter.next();
+          radVar.clearVariableMemory();
+      }
+  }
+
   protected RadialVariable makeRadialVariable(VariableEnhanced varDS, RadialCoordSys gcs) {
     return new LevelII2Variable(varDS, gcs);
   }
@@ -226,6 +236,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         throw new IOException(e.getMessage());
       }
       return (float []) allData.get1DJavaArray(float.class);
+    }
+
+    public void clearVariableMemory() {
+        for(int i = 0; i < nsweeps; i++) {
+             if(sweep[i] != null)
+                sweep[i].clearSweepMemory();
+        }
     }
 
 
@@ -541,6 +558,11 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         return true;
       }
 
+      public void clearSweepMemory() {
+        sweepData = null;
+        aziData = null;
+        eleData = null; 
+      }
     } // LevelII2Sweep class
 
   } // LevelII2Variable
