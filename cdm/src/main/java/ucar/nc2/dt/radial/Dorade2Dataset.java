@@ -31,6 +31,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Make a Dorade 2 NetcdfDataset into a RadialDataset.
@@ -206,6 +207,15 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     this.dateUnits = dateUnits;
   }
 
+  public void clearDatasetMemory() {
+          List  rvars = getDataVariables();
+          Iterator iter = rvars.iterator();
+          while (iter.hasNext()) {
+              RadialVariable radVar = (RadialVariable)iter.next();
+              radVar.clearVariableMemory();
+          }
+  }
+
   private class Dorade2Variable extends VariableSimpleAdapter implements RadialDatasetSweep.RadialVariable {//extends VariableSimpleAdapter {
     protected RadialCoordSys radialCoordsys;
     protected VariableEnhanced ve;
@@ -254,6 +264,9 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
       return (float []) allData.get1DJavaArray(Float.TYPE);
     }
 
+    public void clearVariableMemory() {
+         // doing nothing
+    }
     //////////////////////////////////////////////////////////////////////
     private class Dorade2Sweep implements RadialDatasetSweep.Sweep {
 
@@ -382,6 +395,10 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
 
       public Date getEndingTime() {
         return endDate;
+      }
+
+      public void clearSweepMemory() {
+         // doing nothing for dorade adapter
       }
     } // Dorade2Sweep class
 
