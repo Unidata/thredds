@@ -4,8 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.19
  Features
+  * UnidataStationObs allows ISO dates
   * HttpClientManager - single place to control HTTP client usage
-  * NetcdfFileWriteable: string array writing
   * DQC improvements - select Service
   * DODSNetcdfFile accept_deflate = true
   * OpenDAP client uses HttpClient, implements full security options
@@ -15,6 +15,8 @@ Changes in version 2.2.19
  NcML
   * can specify iosp class, parameter, buffer_size
  API changes
+  * NetcdfFileWriteable, IOSPwriter.updateAttribute()
+  * NetcdfFileWriteable.writeStringData()
   * Switch to HttpRandomAccessFile (improvements in HttpClient use)
   * add ProjectionImpl.constructCopy() - deprecate clone()
   * NetcdfFile.hasRecordStructure - optimization for Netcdf-3 writing.
@@ -39,6 +41,7 @@ Changes in version 2.2.19
   * Grib2: levels 0 and 255 means no level name
   * NCdump.print was using NetcdfFileCache
  ToolsUI
+  * add some details to Viewer Tab Info button 
   * File menu has "clear HTTP state" option.
   * HttpSession deprecated, use HttpClientManager.
   * GridUI: bug in showDatasetXMLAction, rename showNcML; add showGridDatasetInfo XML

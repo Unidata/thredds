@@ -1136,6 +1136,25 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   private NetcdfDatasetInfo info = null;
 
+    /**
+   * Show debug / underlying implementation details
+   */
+  public String getDetailInfo() {
+    StringBuffer sbuff = new StringBuffer(5000);
+    sbuff.append("NetcdfDataset location= "+getLocation()+"\n");
+    sbuff.append("  title= "+getTitle()+"\n");
+    sbuff.append("  id= "+getId()+"\n");
+
+    if (orgFile == null) {
+      sbuff.append("  has no referenced NetcdfFile!\n");
+    } else {
+      sbuff.append("\nReferenced File:\n");
+      sbuff.append(orgFile.getDetailInfo());
+    }
+
+    return sbuff.toString();
+  }
+
   /**
    * Debugging: get the information from parsing
    */

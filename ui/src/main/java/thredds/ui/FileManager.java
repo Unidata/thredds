@@ -240,6 +240,14 @@ public class FileManager {
    return null;
  } */
 
+   public String chooseFilenameToSave(String defaultFilename) {
+     chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+     String result = (defaultFilename == null) ? chooseFilename() : chooseFilename(defaultFilename);
+     chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+
+     return result;
+   }
+
   /**
    * Allow user to select file, then return the filename, in canonical form,
    * always using '/', never '\'

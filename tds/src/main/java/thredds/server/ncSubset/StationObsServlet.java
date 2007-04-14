@@ -38,6 +38,7 @@ public class StationObsServlet extends AbstractServlet {
   static final String RAW = "text/plain";
   static final String XML = "application/xml";
   static final String CSV = "text/csv";
+  static final String NETCDF = "application/x-netcdf";
 
   // the first in the list is the canonical name, the others are aliases
   private static String[][] validAccept = new String[][]{
@@ -63,8 +64,8 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    // soc = new StationObsCollection("C:/data/metars/");
-    soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
+    soc = new StationObsCollection("C:/data/metars/");
+    // soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
   }
 
   public void destroy() {
@@ -77,6 +78,7 @@ public class StationObsServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       return;
     }
+    long start = System.currentTimeMillis();
 
     ServletUtil.logServerAccessSetup(req);
     ServletUtil.showRequestDetail(this, req);
@@ -175,12 +177,27 @@ public class StationObsServlet extends AbstractServlet {
       res.setContentType("text/plain");
       type = CSV;
 
+    } else if (qp.accept.contains(NETCDF)) {
+      res.setContentType(NETCDF);
+      type = NETCDF;
+      res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");      
+      File file = soc.writeNetcdf(qp.vars, qp.stns, qp.getDateRange(), qp.time);
+      ServletUtil.returnFile(this, req, res, file, NETCDF);
+
+      long took = System.currentTimeMillis() - start;
+      System.out.println("\ntotal response took = " + took + " msecs");
+
+      return;
+
     } else {
       writeErr(res, qp.errs.toString(), HttpServletResponse.SC_SERVICE_UNAVAILABLE);
       return;
     }
 
     soc.write(qp.vars, qp.stns, qp.getDateRange(), qp.time, type, res.getWriter());
+
+    long took = System.currentTimeMillis() - start;
+    System.out.println("\ntotal response took = " + took + " msecs");
   }
 
   private void writeErr(HttpServletResponse res, String s, int code) throws IOException {

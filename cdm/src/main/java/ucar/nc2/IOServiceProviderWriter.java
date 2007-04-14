@@ -53,6 +53,18 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
       throws IOException, ucar.ma2.InvalidRangeException;
 
   /**
+   * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
+   * You cannot make an attribute longer, or change the number of values.
+   * For strings: truncate if longer, zero fill if shorter.  Strings are padded to 4 byte boundaries, ok to use padding if it exists.
+   * For numerics: must have same number of values.
+   *
+   * @param v2 variable, or null for global attribute
+   * @param att replace with this value
+   * @throws IOException
+   */
+  public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException;
+
+  /**
    * Flush all data buffers to disk.
    * @throws IOException
    */

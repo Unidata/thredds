@@ -24,7 +24,9 @@ package thredds.server.ncSubset;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.nc2.dt.*;
+import ucar.nc2.dt.point.StationObsDatasetWriter;
 import ucar.nc2.VariableIF;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -36,6 +38,7 @@ import java.util.*;
 import thredds.datatype.DateRange;
 import thredds.datatype.DateType;
 import thredds.catalog.DataType;
+import thredds.servlet.ServletUtil;
 
 public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
@@ -59,6 +62,12 @@ public class StationObsCollection {
           datasetList.add(new Dataset(fileS, sod.getStartDate(), sod.getEndDate()));
           size += file.length();
           count++;
+
+          if (null == stationList)
+            stationList = new ArrayList<Station>(sod.getStations());
+
+          if (null == variableList)
+            variableList = new ArrayList<VariableSimpleIF>(sod.getDataVariables());
 
         } catch (IOException e) {
           log.error("Cant open " + fileS, e);
@@ -89,13 +98,18 @@ public class StationObsCollection {
       this.time_end = time_end;
 
       if (debug) System.out.println("scanStation open " + filename + " start= " + time_start + " end= " + time_end);
-
     }
 
     public int compareTo(Object o) {
       Dataset od = (Dataset) o;
       return time_start.compareTo(od.time_start);
     }
+  }
+
+
+  List<VariableSimpleIF> variableList;
+  private List<VariableSimpleIF> getVarList() throws IOException {
+    return variableList;
   }
 
   ///////////////////////////////////////
@@ -119,20 +133,6 @@ public class StationObsCollection {
   }
 
   private List<Station> getStationList() throws IOException {
-    if (null == stationList) {
-      String url = datasetList.get(0).filename;
-      StationObsDataset sod = null;
-      try {
-        sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, url, null, new StringBuffer());
-        if (null != sod)
-          stationList = new ArrayList(sod.getStations());
-
-      } finally {
-        if (null != sod)
-          sod.close();
-      }
-    }
-
     return stationList;
   }
 
@@ -440,23 +440,33 @@ public class StationObsCollection {
   ////////////////////////////////////////////////////////////////
   // writing
 
-  // have a date range filter
+  public File writeNetcdf(List<String> vars, List<String> stns, DateRange range, DateType time) throws IOException {
+     File file = new File("C:/temp/sobs.nc");
+     write(vars, stns, range, time, StationObsServlet.NETCDF, null);
+     return file;
+  }
+
 
   public void write(List<String> vars, List<String> stns, DateRange range, DateType time, String type, java.io.PrintWriter pw) throws IOException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
 
-    Writer w = null;
+    Writer w;
     if (type.equals(StationObsServlet.RAW)) {
       w = new WriterRaw(vars, pw);
     } else if (type.equals(StationObsServlet.XML)) {
       w = new WriterXML(vars, pw);
     } else if (type.equals(StationObsServlet.CSV)) {
       w = new WriterCSV(vars, pw);
+    } else if (type.equals(StationObsServlet.NETCDF)) {
+      w = new WriterNetcdf(vars, pw);
+    } else {
+      log.error("Unknown writer type = " + type);
+      return;
     }
 
     Action act = w.getAction();
-    w.header();
+    w.header(stns);
 
     boolean useAll = stns.size() == 0;
 
@@ -464,7 +474,6 @@ public class StationObsCollection {
       // use range, null means all
       List<Dataset> need = filterDataset(range);
       for (Dataset ds : need) {
-
         if (useAll)
           scanAll(ds, range, null, act, counter);
         else
@@ -482,7 +491,7 @@ public class StationObsCollection {
 
     w.trailer();
 
-    pw.flush();
+    if (pw != null) pw.flush();
 
     if (debug) {
       long took = System.currentTimeMillis() - start;
@@ -498,7 +507,7 @@ public class StationObsCollection {
   }
 
   abstract class Writer {
-    abstract void header();
+    abstract void header(List<String> stns);
 
     abstract Action getAction();
 
@@ -525,13 +534,72 @@ public class StationObsCollection {
   }
 
 
+  class WriterNetcdf extends Writer {
+    StationObsDatasetWriter sobsWriter;
+    List<Station> stnList;
+    List<VariableSimpleIF> varList;
+
+    WriterNetcdf(List<String> varNames, final java.io.PrintWriter writer) {
+      super(varNames, writer);
+      sobsWriter = new StationObsDatasetWriter("C:/temp/sobs.nc");
+
+      if ((varNames == null) || (varNames.size() == 0)) {
+        varList = variableList;
+      } else {
+        varList = new ArrayList<VariableSimpleIF>(vars.size());
+        for (int i = 0; i < variableList.size(); i++) {
+          VariableSimpleIF v =  variableList.get(i);
+          if (varNames.contains(v.getName()))
+            varList.add( v);
+        }
+      }
+    }
+
+    public void header(List<String> stns) {
+      try {
+
+        if (stns.size() == 0)
+          stnList = stationList;
+        else {
+          stnList = new ArrayList<Station>(stns.size());
+          getStationMap();
+
+          for (int i = 0; i < stns.size(); i++) {
+            String s = stns.get(i);
+            stnList.add(stationMap.get(s));
+          }
+        }
+
+        sobsWriter.writeHeader(stnList, varList);
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+    }
+
+    public void trailer() {
+      try {
+        sobsWriter.finish();
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+    }
+
+    Action getAction() {
+      return new Action() {
+        public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
+          sobsWriter.writeRecord(sobs, sdata);
+        }
+      };
+    }
+  }
+
   class WriterRaw extends Writer {
 
     WriterRaw(List<String> vars, final java.io.PrintWriter writer) {
       super(vars, writer);
     }
 
-    public void header() {
+    public void header(List<String> stns) {
     }
 
     public void trailer() {
@@ -554,7 +622,7 @@ public class StationObsCollection {
       super(vars, writer);
     }
 
-    public void header() {
+    public void header(List<String> stns) {
       writer.println("<?xml version='1.0' encoding='UTF-8'?>");
       writer.println("<metarCollection dataset='name'>\n");
     }
@@ -573,8 +641,8 @@ public class StationObsCollection {
           writer.println("'>");
 
           writer.print("    <station name='" + s.getName() +
-                  "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
-                  "' longitude='" + Format.dfrac(s.getLongitude(), 3));
+              "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
+              "' longitude='" + Format.dfrac(s.getLongitude(), 3));
           if (!Double.isNaN(s.getAltitude()))
             writer.print("' altitude='" + Format.dfrac(s.getAltitude(), 0));
           writer.println("'/>");
@@ -600,7 +668,7 @@ public class StationObsCollection {
       super(stns, writer);
     }
 
-    public void header() {
+    public void header(List<String> stns) {
     }
 
     public void trailer() {

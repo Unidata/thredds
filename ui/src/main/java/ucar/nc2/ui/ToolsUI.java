@@ -963,6 +963,7 @@ public class ToolsUI extends JPanel {
       cb.save();
       //if (v3Butt != null) prefs.putBoolean("nc3useRecords", v3Butt.getModel().isSelected());
       if (coordButt != null) prefs.putBoolean("coordState", coordButt.getModel().isSelected());
+      if (detailWindow != null) prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
     }
 
     void setSelectedItem(Object item) {
@@ -1436,7 +1437,6 @@ public class ToolsUI extends JPanel {
 
     void save() {
       coordSysTable.save();
-      prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
       super.save();
     }
 
@@ -1473,7 +1473,7 @@ public class ToolsUI extends JPanel {
           int pos = location.lastIndexOf(".");
           if (pos > 0)
             location = location.substring(0,pos);
-          String filename = fileChooser.chooseFilename(location+".ncml");
+          String filename = fileChooser.chooseFilenameToSave(location+".ncml");
           if (filename == null) return;
           doSave(ta.getText(), filename);
         }
@@ -1483,7 +1483,7 @@ public class ToolsUI extends JPanel {
 
       AbstractAction netcdfAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          String filename = fileChooser.chooseFilename();
+          String filename = fileChooser.chooseFilenameToSave(null);
           if (filename == null) return;
           doWriteNetCDF(ta.getText(), filename);
         }
@@ -1602,8 +1602,6 @@ public class ToolsUI extends JPanel {
     }
 
     void save() {
-      // prefs.putBeanObject(FRAME_SIZE, writeDataDialog.getBounds());
-      // prefs.putBeanObject(FRAME_SIZE, saveNcmlDialog.getBounds());
       super.save();
     }
 
@@ -1918,7 +1916,6 @@ public class ToolsUI extends JPanel {
     void save() {
       super.save();
       dsTable.save();
-      prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
       if (gridUI != null) gridUI.storePersistentData();
       if (viewerWindow != null) mainPrefs.putBeanObject(GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
       if (imageWindow != null) mainPrefs.putBeanObject(GRIDIMAGE_FRAME_SIZE, imageWindow.getBounds());
@@ -2005,7 +2002,6 @@ public class ToolsUI extends JPanel {
     void save() {
       super.save();
       dsTable.save();
-      prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
     }
 
   }
@@ -2020,7 +2016,7 @@ public class ToolsUI extends JPanel {
       dsViewer = new DatasetViewer(dbPrefs);
       add(dsViewer, BorderLayout.CENTER);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ncfile != null) {

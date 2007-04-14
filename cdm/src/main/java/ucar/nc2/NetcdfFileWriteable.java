@@ -52,7 +52,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param location name of existing file to open.
    */
   static public NetcdfFileWriteable openExisting(String location) throws IOException {
-    return openExisting( location, true);
+    return openExisting(location, true);
   }
 
   /**
@@ -69,27 +69,28 @@ public class NetcdfFileWriteable extends NetcdfFile {
   }
 
   /**
-    * Create a new Netcdf file, with fill mode true.
-    * @param location name of new file to open; if it exists, will overwrite it.
-    */
-   static public NetcdfFileWriteable createNew(String location) {
-     return createNew(location, true);
-   }
+   * Create a new Netcdf file, with fill mode true.
+   *
+   * @param location name of new file to open; if it exists, will overwrite it.
+   */
+  static public NetcdfFileWriteable createNew(String location) {
+    return createNew(location, true);
+  }
 
   /**
-    * Create a new Netcdf file, put it into define mode. Make calls to addXXX(), then
-    * when all objects are added, call create(). You cannot read or write data until create() is called.
-    *
-    * @param location name of new file to open; if it exists, will overwrite it.
-    * @param fill     if true, the data is first written with fill values.
-    *                 Leave false if you expect to write all data values, set to true if you want to be
-    *                 sure that unwritten data values have the fill value in it. (default is false)
-    */
-   static public NetcdfFileWriteable createNew(String location, boolean fill) {
-     return new NetcdfFileWriteable(location, fill);
-   }
+   * Create a new Netcdf file, put it into define mode. Make calls to addXXX(), then
+   * when all objects are added, call create(). You cannot read or write data until create() is called.
+   *
+   * @param location name of new file to open; if it exists, will overwrite it.
+   * @param fill     if true, the data is first written with fill values.
+   *                 Leave false if you expect to write all data values, set to true if you want to be
+   *                 sure that unwritten data values have the fill value in it. (default is false)
+   */
+  static public NetcdfFileWriteable createNew(String location, boolean fill) {
+    return new NetcdfFileWriteable(location, fill);
+  }
 
-   /**
+  /**
    * Create a new Netcdf file, put it into define mode.
    *
    * @deprecated use createNew(String filename, boolean fill)
@@ -289,21 +290,21 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param varName  name of Variable, must be unique with the file.
    * @param dataType type of underlying element
    * @param dims     names of Dimensions for the variable, blank seperated.
-   *    Must already have been added. Use an empty string for a scalar variable.
+   *                 Must already have been added. Use an empty string for a scalar variable.
    */
   public Variable addVariable(String varName, DataType dataType, String dims) {
     // parse the list
     ArrayList list = new ArrayList();
-    StringTokenizer stoker = new StringTokenizer( dims);
+    StringTokenizer stoker = new StringTokenizer(dims);
     while (stoker.hasMoreTokens()) {
       String tok = stoker.nextToken();
       Dimension d = rootGroup.findDimension(tok);
       if (null == d)
-        throw new IllegalArgumentException("Canat find dimension "+tok);
+        throw new IllegalArgumentException("Canat find dimension " + tok);
       list.add(d);
     }
 
-    return addVariable( varName, dataType, list);
+    return addVariable(varName, dataType, list);
   }
 
   /**
@@ -332,9 +333,9 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * The variable will be stored in the file as a CHAR variable.
    * A new dimension with name "varName_strlen" is automatically added, with length max_strlen.
    *
-   * @param varName  name of Variable, must be unique within the file.
-   * @param dims     list of Dimensions for the variable, must already have been added. Use a list of length 0
-   *                 for a scalar variable. Do not include the string length dimension.
+   * @param varName    name of Variable, must be unique within the file.
+   * @param dims       list of Dimensions for the variable, must already have been added. Use a list of length 0
+   *                   for a scalar variable. Do not include the string length dimension.
    * @param max_strlen maximum string length.
    */
   public Variable addStringVariable(String varName, List dims, int max_strlen) {
@@ -344,8 +345,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
     Variable v = new Variable(this, rootGroup, null, varName);
     v.setDataType(DataType.CHAR);
 
-    Dimension d = addDimension(varName+"_strlen", max_strlen);
-    ArrayList sdims = new ArrayList( dims);
+    Dimension d = addDimension(varName + "_strlen", max_strlen);
+    ArrayList sdims = new ArrayList(dims);
     sdims.add(d);
     dims = sdims;
     v.setDimensions(dims);
@@ -407,19 +408,33 @@ public class NetcdfFileWriteable extends NetcdfFile {
     addVariableAttribute(varName, att);
   }
 
+  /**
+   * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
+   * You cannot make an attribute longer, or change the number of values.
+   * For strings: truncate if longer, zero fill if shorter.  Strings are padded to 4 byte boundaries, ok to use padding if it exists.
+   * For numerics: must have same number of values.
+   *
+   * @param v2  variable, or null for global attribute
+   * @param att replace with this value
+   * @throws IOException
+   */
+  public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
+    spiw.updateAttribute(v2, att);
+  }
+
   /*
-   * Add an attribute of type Array to the named Variable. Must be in define mode.
-   *
-   * @param varName name of attribute. IllegalArgumentException if not valid name.
-   * @param attName name of attribute.
-   * @param value must be 1D array of double, float, int, short, char, or byte
-   * @deprecated use addVariableAttribute(String varName, String attName, Array value);
-   *
-  public void addVariableAttribute(String varName, String attName, Object value) {
-    Attribute att = new Attribute(attName);
-    att.setValueOld( value);
-    addVariableAttribute( varName, att);
-  } */
+  * Add an attribute of type Array to the named Variable. Must be in define mode.
+  *
+  * @param varName name of attribute. IllegalArgumentException if not valid name.
+  * @param attName name of attribute.
+  * @param value must be 1D array of double, float, int, short, char, or byte
+  * @deprecated use addVariableAttribute(String varName, String attName, Array value);
+  *
+ public void addVariableAttribute(String varName, String attName, Object value) {
+   Attribute att = new Attribute(attName);
+   att.setValueOld( value);
+   addVariableAttribute( varName, att);
+ } */
 
   /**
    * After you have added all of the Dimensions, Variables, and Attributes,
@@ -448,7 +463,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException
    */
   public void write(String varName, Array values) throws java.io.IOException, InvalidRangeException {
-    write(varName, new int[ values.getRank()], values);
+    write(varName, new int[values.getRank()], values);
   }
 
   /**
@@ -459,7 +474,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException
    */
   public void writeStringData(String varName, Array values) throws java.io.IOException, InvalidRangeException {
-    writeStringData(varName, new int[ values.getRank()], values);
+    writeStringData(varName, new int[values.getRank()], values);
   }
 
 
@@ -471,7 +486,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param values  write this array; must be ArrayObject of String
    * @throws IOException
    */
-  public void writeStringData(String varName, int [] origin, Array values) throws java.io.IOException, InvalidRangeException {
+  public void writeStringData(String varName, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
 
     if (values.getElementType() != String.class)
       throw new IllegalArgumentException("Must be ArrayObject of String ");
@@ -481,15 +496,15 @@ public class NetcdfFileWriteable extends NetcdfFile {
       throw new IllegalArgumentException("illegal variable name = " + varName);
 
     if (v2.getDataType() != DataType.CHAR)
-      throw new IllegalArgumentException("variable " + varName+" is not type CHAR");
+      throw new IllegalArgumentException("variable " + varName + " is not type CHAR");
     int rank = v2.getRank();
-    int strlen = v2.getShape()[rank-1];
+    int strlen = v2.getShape()[rank - 1];
 
     // turn it into an ArrayChar
-    ArrayChar cvalues =  ArrayChar.makeFromStringArray((ArrayObject) values, strlen);
+    ArrayChar cvalues = ArrayChar.makeFromStringArray((ArrayObject) values, strlen);
 
-    int[] corigin = new int[ rank];
-    for (int i=0; i<rank-1; i++)
+    int[] corigin = new int[rank];
+    for (int i = 0; i < rank - 1; i++)
       corigin[i] = origin[i];
 
     write(varName, corigin, cvalues);
@@ -504,7 +519,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param values  write this array; must be same type and rank as Variable
    * @throws IOException
    */
-  public void write(String varName, int [] origin, Array values) throws java.io.IOException, InvalidRangeException {
+  public void write(String varName, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
     if (defineMode)
       throw new UnsupportedOperationException("in define mode");
     ucar.nc2.Variable v2 = findVariable(varName);

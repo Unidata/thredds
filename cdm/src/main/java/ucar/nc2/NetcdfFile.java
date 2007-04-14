@@ -1343,7 +1343,19 @@ public class NetcdfFile {
    * Show debug / underlying implementation details
    */
   public String getDetailInfo() {
-    return (spi == null) ? "" : spi.getDetailInfo();
+    StringBuffer sbuff = new StringBuffer(5000);
+    sbuff.append("NetcdfFile location= "+getLocation()+"\n");
+    sbuff.append("  title= "+getTitle()+"\n");
+    sbuff.append("  id= "+getId()+"\n");
+    
+    if (spi == null) {
+      sbuff.append("  has no iosp!\n");
+    } else {
+      sbuff.append("  iosp= "+spi.getClass().getName()+"\n\n");
+      sbuff.append(spi.getDetailInfo());
+    }
+
+    return sbuff.toString();
   }
 
   /**

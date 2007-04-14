@@ -22,6 +22,7 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Format;
 
 import java.util.*;
 import java.io.PrintStream;
@@ -84,8 +85,11 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   protected boolean showHeaderBytes = false;
 
   private ByteArrayOutputStream bos = new ByteArrayOutputStream( 10000);
-  protected PrintStream out = new PrintStream(bos);
-  public String getDetailInfo() { return bos.toString(); }
+  private PrintStream out = new PrintStream(bos);
+  public String getDetailInfo() {
+    out.flush();
+    return bos.toString();
+  }
 
   // properties
   protected boolean useRecordStructure;
@@ -109,6 +113,10 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
+
+    double size = raf.length()/(1000.0 * 1000.0);
+    out.println(" raf="+raf.getLocation());
+    out.println("   size= "+ Format.dfrac(size,3) +" Mb");
 
     String location = raf.getLocation();
     if (!location.startsWith("http:")) {
@@ -415,6 +423,20 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
       fillRecordVariables(startRec, n);
     else
       raf.setMinLength(fileUsed);
+  }
+
+  /**
+   * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
+   * You cannot make an attribute longer, or change the number of values.
+   * For strings: truncate if longer, zero fill if shorter.  Strings are padded to 4 byte boundaries, ok to use padding if it exists.
+   * For numerics: must have same number of values.
+   *
+   * @param v2 variable, or null for fglobal attribute
+   * @param att replace with this value
+   * @throws IOException
+   */
+  public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
+     headerParser.updateAttribute(v2, att); 
   }
 
   /////////////////////////////////////////////////////////////

@@ -26,8 +26,11 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.ma2.StructureData;
+import ucar.ma2.DataType;
 
 import java.util.*;
+import java.text.ParseException;
 
 /**
  * Superclass for implementations of TypedDataset.
@@ -155,5 +158,6 @@ public abstract class TypedDatasetImpl implements TypedDataset {
       if (shortName.equals( ss)) return s;
     }
     return null;
-  }
+  }  
+
 }

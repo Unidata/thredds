@@ -23,12 +23,17 @@ package ucar.nc2.dt.point;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
+import ucar.ma2.StructureData;
+import ucar.ma2.DataType;
 
 import java.util.List;
 import java.util.Date;
 import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * Superclass for implementations of PointObsDataset.
@@ -102,5 +107,20 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
     return getData( boundingBox, start, end, null);
   }
 
+
+  protected DateFormatter formatter;
+  protected double getTime(Variable timeVar, StructureData sdata) throws ParseException {
+    if (timeVar == null) return 0.0;
+
+    if ((timeVar.getDataType() == DataType.CHAR) || (timeVar.getDataType() == DataType.STRING)) {
+      String time = sdata.getScalarString(timeVar.getShortName());
+      if (null == formatter) formatter = new DateFormatter();
+      Date date = formatter.isoDateTimeFormat(time);
+      return date.getTime() / 1000.0;
+    } else {
+      return sdata.getScalarFloat(timeVar.getShortName());
+    }
+  }
+  
 }
 
