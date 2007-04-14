@@ -134,7 +134,7 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-  <!-- OGC Web Coverage server -->
+  <!-- HTTP File server -->
   <servlet>
     <servlet-name>FileServer</servlet-name>
     <servlet-class>thredds.servlet.FileServerServlet</servlet-class>
@@ -142,10 +142,10 @@
   </servlet>
 
   <!-- Metar DQC Server -->
-  <servlet>
+  <!-- servlet>
     <servlet-name>MetarServlet</servlet-name>
     <servlet-class>thredds.servlet.idd.MetarServlet</servlet-class>
-  </servlet>
+  </servlet -->
 
   <!-- Radar DQC Server -->
   <servlet>
@@ -158,12 +158,6 @@
     <servlet-name>NetcdfServer</servlet-name>
     <servlet-class>thredds.servlet.NetcdfServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
-
-  <!-- Point Obs Server (experimental) -->
-  <servlet>
-    <servlet-name>ObsServer</servlet-name>
-    <servlet-class>thredds.servlet.StationObsCollectionServlet</servlet-class>
   </servlet>
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
@@ -300,10 +294,10 @@
   </servlet-mapping>
 
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>MetarServlet</servlet-name>
     <url-pattern>/idd/metar/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping-->
 
   <servlet-mapping>
     <servlet-name>RadarLevel2Servlet</servlet-name>
@@ -328,11 +322,6 @@
   <servlet-mapping>
     <servlet-name>NetcdfServer</servlet-name>
     <url-pattern>/ncServer/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>ObsServer</servlet-name>
-    <url-pattern>/obsServer/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

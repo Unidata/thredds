@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -41,6 +40,20 @@ import thredds.datatype.DateType;
  * @version $Revision$ $Date$
  */
 public class QueryParams {
+  static final String RAW = "text/plain";
+  static final String XML = "application/xml";
+  static final String CSV = "text/csv";
+  static final String NETCDF = "application/x-netcdf";
+
+  // the first in the list is the canonical name, the others are aliases
+  static String[][] validAccept = new String[][]{
+      {XML, "text/xml", "xml"},
+      {RAW, "raw", "ascii"},
+      {CSV, "csv"},
+      {"text/html", "html"},
+      {"application/x-netcdf", "netcdf"},
+  };
+
   public List<String> accept;
   public List<String> vars;
 

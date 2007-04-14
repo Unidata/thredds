@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -105,6 +104,51 @@ public class StationObsCollection {
       return time_start.compareTo(od.time_start);
     }
   }
+
+  /* 
+
+  private SimpleDateFormat dateFormat;
+
+  public MetarCollection( String dirLocation) {
+     dateFormat = new java.text.SimpleDateFormat("yyyyMMdd_HHmm");
+     dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    private class DatasetWrap implements Comparable {
+    String location;
+    Date start, end;
+
+    DatasetWrap( String location) {
+      this.location = location;
+      int pos0 = location.lastIndexOf("Surface_METAR_");
+      int pos1 = location.lastIndexOf(".");
+      String dateString = location.substring(pos0+14, pos1);
+      Date nominal = null;
+      try {
+        nominal = dateFormat.parse( dateString);
+      } catch (ParseException e) {
+        throw new IllegalStateException(e.getMessage());
+      }
+      Calendar c = Calendar.getInstance( TimeZone.getTimeZone("GMT"));
+      c.setTime( nominal);
+      c.add( Calendar.HOUR, -1);
+      start = c.getTime();
+      c.setTime( nominal);
+      c.add( Calendar.HOUR, 24);
+      end = c.getTime();
+      // System.out.println("  "+dateString+" = "+start+" end= "+end);
+    }
+
+    public boolean contains( Date startWant, Date endWant) {
+      if (start.after( endWant)) return false;
+      if (startWant.after( end)) return false;
+      return true;
+    }
+
+    public int compareTo(Object o) {
+      DatasetWrap dw = (DatasetWrap) o;
+      return start.compareTo( dw.start);
+    }
+  } */
 
 
   List<VariableSimpleIF> variableList;
@@ -465,10 +509,11 @@ public class StationObsCollection {
       return;
     }
 
-    Action act = w.getAction();
+    Collections.sort( stns);
     w.header(stns);
 
     boolean useAll = stns.size() == 0;
+    Action act = w.getAction();
 
     if (null == time) {
       // use range, null means all

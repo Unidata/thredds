@@ -45,8 +45,8 @@ public class TestProjections extends TestCase {
       ProjectionPoint p = proj.latLonToProj(startL);
       LatLonPoint endL = proj.projToLatLon(p);
 
-      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude())) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
-      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude())) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
     }
 
     ProjectionPointImpl startP = new ProjectionPointImpl();

@@ -25,6 +25,7 @@ import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 
 
 /**
@@ -74,6 +75,8 @@ class N3header {
   int recStart = Integer.MAX_VALUE; // where the record data starts
   private long nonRecordData = 0; // length of non-record data
   private long actualSize, calcSize;
+
+  private long globalAttsPos = 0; // global attributes start here - used for update
 
   private boolean useLongOffset = false;
 
@@ -191,6 +194,7 @@ class N3header {
       }
 
       // variable attributes
+      long varAttsPos = raf.getFilePointer();
       readAtts(var.attributes);
 
       // data type
@@ -201,8 +205,9 @@ class N3header {
       int vsize = raf.readInt();
       long begin = useLongOffset ? raf.readLong() : (long) raf.readInt();
       if (debug)
-        out.println(" name= " + name + " type=" + type + " vsize=" + vsize + " velems=" + velems + " begin= " + begin + " isRecord=" + isRecord + "\n");
-      var.setSPobject(new Vinfo(vsize, begin, isRecord));
+        out.println(" name= " + name + " type=" + type + " vsize=" + vsize + " velems=" + velems + " begin= " + begin +
+            " isRecord=" + isRecord + " attsPos= "+varAttsPos+"\n");
+      var.setSPobject(new Vinfo(vsize, begin, isRecord, varAttsPos));
 
       // track how big each record is
       if (isRecord) {
@@ -374,7 +379,12 @@ class N3header {
     byte[] b = new byte[nelems];
     raf.read(b);
     skip(nelems);
-    return new String(b);
+    return new String(b, "UTF-8"); // all strings are considered to be UTF-8 unicode.
+
+    /* LOOK remove trailing zeroes from update ??
+    int count = nelems;
+    while ((b[count] == 0) && (count > 0)) count--;
+    return new String(b, 0, count); */
   }
 
   // skip to a 4 byte boundary in the file
@@ -539,8 +549,10 @@ class N3header {
     long pos;
     if (v2 == null)
       pos = findAtt(globalAttsPos, att.getName());
-    else
-      throw new UnsupportedOperationException("Update variable attribute not implemented yet");
+    else {
+      N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
+      pos = findAtt(vinfo.attsPos, att.getName());
+    }
 
     raf.seek(pos);
     int type = raf.readInt();
@@ -601,8 +613,6 @@ class N3header {
 
     throw new IllegalArgumentException("no such attribute " + want);
   }
-
-  private long globalAttsPos = 0;
 
   private void writeAtts(List atts) throws IOException {
 
@@ -704,6 +714,7 @@ class N3header {
       vsize += padding(vsize);
 
       // variable attributes
+      long varAttsPos = raf.getFilePointer();
       writeAtts(var.getAttributes());
 
       // data type, variable size, beginning file position
@@ -714,7 +725,7 @@ class N3header {
       raf.writeInt(0); // come back to this later
 
       //if (debug) out.println(" name= "+name+" type="+type+" vsize="+vsize+" begin= "+begin+" isRecord="+isRecord+"\n");
-      var.setSPobject(new Vinfo(vsize, pos, var.isUnlimited()));
+      var.setSPobject(new Vinfo(vsize, pos, var.isUnlimited(), varAttsPos));
 
       // keep track of the record size
       if (var.isUnlimited())
@@ -724,7 +735,7 @@ class N3header {
 
   // write a string then pad to 4 byte boundary
   private void writeString(String s) throws IOException {
-    byte[] b = s.getBytes();
+    byte[] b = s.getBytes("UTF-8"); // all strings are encoded in UTF-8 Unicode.
     raf.writeInt(b.length);
     raf.write(b);
     pad(b.length, (byte) 0);
@@ -796,12 +807,24 @@ class N3header {
     int vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
     boolean isRecord; // is it a record variable?
+    long attsPos = 0; //  attributes start here - used for update
 
-    Vinfo(int vsize, long begin, boolean isRecord) {
+    Vinfo(int vsize, long begin, boolean isRecord, long attsPos) {
       this.vsize = vsize;
       this.begin = begin;
       this.isRecord = isRecord;
+      this.attsPos = attsPos;
     }
   }
+
+  /* static public void main( String args[]) {
+    System.out.println("Charset.defaultCharset() = "+Charset.defaultCharset());
+    SortedMap<String,Charset> avail = Charset.availableCharsets();
+    Iterator<Charset> iter = avail.values().iterator();
+    while (iter.hasNext()) {
+      Charset cs = iter.next();
+      System.out.println(cs+" "+cs.isRegistered());
+    }
+  } */
 
 }

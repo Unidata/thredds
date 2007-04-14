@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.19
  Features
+  * N3header: all names, attributes are assumes to be UTF-8 Unicode
   * UnidataStationObs allows ISO dates
   * HttpClientManager - single place to control HTTP client usage
   * DQC improvements - select Service

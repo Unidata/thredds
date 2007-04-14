@@ -57,7 +57,7 @@ class RegularIndexer extends Indexer {
    * @param section the wanted section of data: List of Range objects,
    *    corresponding to each Dimension, else null means all.
    * @param recSize if > 0, then size of outer stride in bytes, else ignored
-   * @throws InvalidRangeException
+   * @throws InvalidRangeException is ranges are misformed
    */
   RegularIndexer( int[] varShape, int elemSize, long startPos, List section, int recSize) throws InvalidRangeException {
     this.elemSize = elemSize;

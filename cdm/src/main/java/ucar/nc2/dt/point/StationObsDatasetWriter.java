@@ -35,7 +35,7 @@ import java.io.IOException;
 import thredds.catalog.*;
 
 /**
- * Class Description.
+ * Write StationObsDataset in Unidata Station Obs COnvention.
  *
  * @author caron
  * @version $Revision$ $Date$

@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 
 /**
- *  @deprecated (use ucar.nc2.dt.grid)
+ *  @deprecated (use ucar.nc2.dt.grid.GridDatasetInfo)
  */
 public class GridDatasetInfo {
   private GridDataset gds;

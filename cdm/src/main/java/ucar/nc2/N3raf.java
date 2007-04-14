@@ -53,7 +53,7 @@ class N3raf extends N3iosp  {
         raf.seek ( chunk.getFilePos());
         raf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
       }
-      return (dataType == DataType.BYTE) ? pa : (Object) convertByteToChar( pa);
+      return (dataType == DataType.BYTE) ? pa : (Object) convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = new short[size];
@@ -122,7 +122,7 @@ class N3raf extends N3iosp  {
         raf.seek ( chunk.getFilePos());
         for (int k=0; k<chunk.getNelems(); k++) {
           String val = (String) ii.getObjectNext();
-          if (val != null) raf.write( val.getBytes()); // ??
+          if (val != null) raf.write( val.getBytes("UTF-8")); // LOOK ??
         }
       }
       return;
@@ -176,6 +176,7 @@ class N3raf extends N3iosp  {
     * @param values write this data.
     * @param index handles skipping around in the file.
     * @param dataType dataType of the variable
+    * @throws java.io.IOException if io fails
     */
   private void writeDataFast( Array values, Indexer index, DataType dataType) throws java.io.IOException {
     //int size = index.getTotalNelems();

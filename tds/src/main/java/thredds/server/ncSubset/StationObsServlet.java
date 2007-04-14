@@ -1,6 +1,5 @@
-// $Id: NetcdfServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,23 +34,9 @@ import thredds.servlet.ServletUtil;
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class StationObsServlet extends AbstractServlet {
-  static final String RAW = "text/plain";
-  static final String XML = "application/xml";
-  static final String CSV = "text/csv";
-  static final String NETCDF = "application/x-netcdf";
-
-  // the first in the list is the canonical name, the others are aliases
-  private static String[][] validAccept = new String[][]{
-          {XML, "text/xml", "xml"},
-          {RAW, "raw", "ascii"},
-          {CSV, "csv"},
-          {"text/html", "html"},
-          {"application/x-netcdf", "netcdf"},
-  };
 
   private boolean allow = true;
   private StationObsCollection soc;
-
 
   // must end with "/"
   protected String getPath() {
@@ -60,7 +45,6 @@ public class StationObsServlet extends AbstractServlet {
 
   protected void makeDebugActions() {
   }
-
 
   public void init() throws ServletException {
     super.init();
@@ -87,7 +71,7 @@ public class StationObsServlet extends AbstractServlet {
 
     // parse the input
     QueryParams qp = new QueryParams();
-    qp.accept = qp.parseList(req, "accept", validAccept, RAW);
+    qp.accept = qp.parseList(req, "accept", QueryParams.validAccept, QueryParams.RAW);
 
     // list of variable names
     qp.vars = qp.parseList(req, "var");
@@ -165,24 +149,24 @@ public class StationObsServlet extends AbstractServlet {
 
     // choose a type
     String type;
-    if (qp.accept.contains(RAW)) {
-      res.setContentType(RAW);
-      type = RAW;
+    if (qp.accept.contains(QueryParams.RAW)) {
+      res.setContentType(QueryParams.RAW);
+      type = QueryParams.RAW;
 
-    } else if (qp.accept.contains(XML)) {
-      res.setContentType(XML);
-      type = XML;
+    } else if (qp.accept.contains(QueryParams.XML)) {
+      res.setContentType(QueryParams.XML);
+      type = QueryParams.XML;
 
-    } else if (qp.accept.contains(CSV)) {
+    } else if (qp.accept.contains(QueryParams.CSV)) {
       res.setContentType("text/plain");
-      type = CSV;
+      type = QueryParams.CSV;
 
-    } else if (qp.accept.contains(NETCDF)) {
-      res.setContentType(NETCDF);
-      type = NETCDF;
+    } else if (qp.accept.contains(QueryParams.NETCDF)) {
+      res.setContentType(QueryParams.NETCDF);
+      type = QueryParams.NETCDF;
       res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");      
       File file = soc.writeNetcdf(qp.vars, qp.stns, qp.getDateRange(), qp.time);
-      ServletUtil.returnFile(this, req, res, file, NETCDF);
+      ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);
 
       long took = System.currentTimeMillis() - start;
       System.out.println("\ntotal response took = " + took + " msecs");
@@ -208,5 +192,47 @@ public class StationObsServlet extends AbstractServlet {
       pw.close();
     }
   }
+
+  /*     private void showForm(HttpServletResponse res, ForecastModelRunInventory fmr, boolean wantXml) throws IOException {
+      String infoString;
+
+      if (wantXml) {
+        infoString = fmr.writeXML();
+
+      } else {
+        InputStream xslt = getXSLT("ncServerForm.xsl");
+        Document doc = fmr.writeDocument();
+
+        try {
+          XSLTransformer transformer = new XSLTransformer(xslt);
+          Document html = transformer.transform(doc);
+          XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+          infoString = fmt.outputString(html);
+
+        } catch (Exception e) {
+          log.error("ForecastModelRunServlet internal error", e);
+          ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
+          return;
+        }
+      }
+
+      res.setContentLength(infoString.length());
+      if (wantXml)
+        res.setContentType("text/xml; charset=iso-8859-1");
+      else
+        res.setContentType("text/html; charset=iso-8859-1");
+
+      OutputStream out = res.getOutputStream();
+      out.write(infoString.getBytes());
+      out.flush();
+
+      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, infoString.length());
+    }
+
+    static private InputStream getXSLT(String xslName) {
+      Class c = FmrcInventoryServlet.class;
+      return c.getResourceAsStream("/resources/xsl/" + xslName);
+    } */
 
 }
