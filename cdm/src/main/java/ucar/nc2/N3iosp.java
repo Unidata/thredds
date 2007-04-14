@@ -29,6 +29,9 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.CharBuffer;
+import java.nio.ByteBuffer;
 
 /**
  * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.
@@ -160,7 +163,7 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
    * @param sectionList the record range to read
    * @return an ArrayStructure, with all the data read in.
    *
-   * @throws IOException
+   * @throws IOException on error
    */
   private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, List sectionList) throws java.io.IOException {
     // has to be 1D
@@ -287,6 +290,20 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     return Array.factory( dataType.getPrimitiveClassType(), Range.getShape(sectionList), dataObject);
   } */
 
+  // convert byte array to char array, assuming UTF-8 encoding
+  static protected char[] convertByteToCharUTF( byte[] byteArray) {
+    Charset c = Charset.forName("UTF-8");
+    CharBuffer output = c.decode(ByteBuffer.wrap( byteArray));
+    return output.array();
+  }
+
+  // convert char array to byte array, assuming UTF-8 encoding
+  static protected byte[] convertCharToByteUTF( char[] from) {
+    Charset c = Charset.forName("UTF-8");
+    ByteBuffer output = c.encode(CharBuffer.wrap( from));
+    return output.array();
+  }
+
   // convert byte array to char array
   static protected char[] convertByteToChar( byte[] byteArray) {
     int size = byteArray.length;
@@ -377,7 +394,7 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
         Variable v2 = (Variable) vars.get(i);
         N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
         long begin = vinfo.begin + recnum*recsize;
-        Indexer index = new RegularIndexer( v2.getShape(), v2.getElementSize(), begin, null, -1); // LOOK special case RegularIndexer
+        Indexer index = new RegularIndexer( v2.getShape(), v2.getElementSize(), begin, null, -1); 
 
         StructureMembers.Member m = members.findMember( v2.getShortName());
         if (null == m)
@@ -442,15 +459,6 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   /////////////////////////////////////////////////////////////
 
   // fill buffer with fill value
-  /* LOOK this is wrong
-  protected void fillerup( int start, int end) throws IOException {
-    int len = end - start;
-    byte val = (byte) 0;
-    raf.seek( start);
-    for (int i=0; i<len; i++)
-      raf.write( val);
-  } */
-
   protected void fillNonRecordVariables() throws IOException {
     // run through each variable
     Iterator varIter = ncfile.getVariables().iterator();
@@ -552,9 +560,8 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
       return true;
     }
 
-    // LOOK if not exist, probably should throw an IOException ??
-
-    return false;
+    // can this happen ?
+    throw new IOException("File does not exist");
   }
 
   public void flush() throws java.io.IOException {
@@ -580,6 +587,7 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     * @param index handles skipping around in the file.
     * @param dataType dataType of the variable
     * @return primitive array with data read in
+    * @throws java.io.IOException on error
     */
   abstract protected Object readData( Indexer index, DataType dataType) throws IOException;
 
@@ -588,6 +596,7 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     * @param aa write data in this Array.
     * @param index handles skipping around in the file.
     * @param dataType dataType of the variable
+    * @throws java.io.IOException on error
     */
   abstract protected void writeData( Array aa, Indexer index, DataType dataType) throws IOException;
 

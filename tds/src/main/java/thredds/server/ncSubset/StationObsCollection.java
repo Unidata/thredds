@@ -486,7 +486,7 @@ public class StationObsCollection {
 
   public File writeNetcdf(List<String> vars, List<String> stns, DateRange range, DateType time) throws IOException {
      File file = new File("C:/temp/sobs.nc");
-     write(vars, stns, range, time, StationObsServlet.NETCDF, null);
+     write(vars, stns, range, time, QueryParams.NETCDF, null);
      return file;
   }
 
@@ -496,13 +496,13 @@ public class StationObsCollection {
     Limit counter = new Limit();
 
     Writer w;
-    if (type.equals(StationObsServlet.RAW)) {
+    if (type.equals(QueryParams.RAW)) {
       w = new WriterRaw(vars, pw);
-    } else if (type.equals(StationObsServlet.XML)) {
+    } else if (type.equals(QueryParams.XML)) {
       w = new WriterXML(vars, pw);
-    } else if (type.equals(StationObsServlet.CSV)) {
+    } else if (type.equals(QueryParams.CSV)) {
       w = new WriterCSV(vars, pw);
-    } else if (type.equals(StationObsServlet.NETCDF)) {
+    } else if (type.equals(QueryParams.NETCDF)) {
       w = new WriterNetcdf(vars, pw);
     } else {
       log.error("Unknown writer type = " + type);

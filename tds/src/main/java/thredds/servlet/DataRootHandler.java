@@ -152,6 +152,7 @@ public class DataRootHandler {
     File f = new File(catalogFullPath);
     String s1 = f.getCanonicalPath();
     catalogFullPath = StringUtil.replace(s1,'\\',"/");
+    path = catalogFullPath.substring(contentPath.length());
 
     // make sure we dont already have it
       if ( staticCatalogHash.containsKey(path)) {
