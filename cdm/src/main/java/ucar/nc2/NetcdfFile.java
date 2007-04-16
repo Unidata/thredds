@@ -280,8 +280,15 @@ public class NetcdfFile {
         uriString = file.getAbsolutePath(); */
       }
 
-      String uncompressedFileName = makeUncompressed(uriString);
-      if (uncompressedFileName != null) { // LOOK Might be safer to try this if open fails
+      String uncompressedFileName = null;
+      try {
+        uncompressedFileName = makeUncompressed(uriString);
+      } catch (IOException e) {
+        log.warn("Failed to uncompress " + uriString + "; try it as a regular file.");
+       //allow to fall through to open the "compressed" file directly - may be a misnamed suffix
+      }
+
+      if (uncompressedFileName != null) { 
         // open uncompressed file as a RandomAccessFile.
         raf = new ucar.unidata.io.RandomAccessFile(uncompressedFileName, "r", buffer_size);
 
@@ -307,7 +314,7 @@ public class NetcdfFile {
 
     // see if already decompressed, look in cache if need be
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
-    if (uncompressedFile.exists()) {
+    if (uncompressedFile.exists() && uncompressedFile.length() > 0) {
       if (debugCompress) System.out.println("found uncompressed " + uncompressedFile + " for " + filename);
       return uncompressedFile.getPath();
     }
@@ -317,57 +324,48 @@ public class NetcdfFile {
     if (!file.exists())
       return null; // bail out  */
 
-    if (suffix.equalsIgnoreCase("Z")) {
-      UncompressInputStream.uncompress(filename, new FileOutputStream(uncompressedFile));
-      if (debugCompress) System.out.println("uncompressed " + filename + " to " + uncompressedFile);
+    InputStream in = null;
+    FileOutputStream fout = new FileOutputStream(uncompressedFile);
 
-    } else if (suffix.equalsIgnoreCase("zip")) {
-      ZipInputStream zin = null;
-      FileOutputStream out = null;
-      try {
-        zin = new ZipInputStream(new FileInputStream(filename));
-        out = new FileOutputStream(uncompressedFile);
-        copy(zin, out, 100000);
-      } catch (IOException e) {
-        e.printStackTrace();
-        throw e;
-      } finally {
-        if (zin != null) zin.close();
-        if (out != null) out.close();
-      }
-      if (debugCompress) System.out.println("unzipped " + filename + " to " + uncompressedFile);
+    try {
+      if (suffix.equalsIgnoreCase("Z")) {
+        in = new UncompressInputStream(  new FileInputStream(filename));
+        copy(in, fout, 100000);
+        if (debugCompress) System.out.println("uncompressed " + filename + " to " + uncompressedFile);
 
-    } else if (suffix.equalsIgnoreCase("bz2")) {
-      CBZip2InputStream zin = null;
-      FileOutputStream out = null;
-      try {
-        zin = new CBZip2InputStream(new FileInputStream(filename), true);
-        out = new FileOutputStream(uncompressedFile);
-        copy(zin, out, 100000);
-      } catch (IOException e) {
-        e.printStackTrace();
-        throw e;
-      } finally {
-        if (zin != null) zin.close();
-        if (out != null) out.close();
-      }
-      if (debugCompress) System.out.println("unzipped " + filename + " to " + uncompressedFile);
+      } else if (suffix.equalsIgnoreCase("zip")) {
+        in = new ZipInputStream(new FileInputStream(filename));
+        copy(in, fout, 100000);
+        if (debugCompress) System.out.println("unzipped " + filename + " to " + uncompressedFile);
 
-    } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
-      GZIPInputStream zin = null;
-      FileOutputStream out = null;
-      try {
-        zin = new GZIPInputStream(new FileInputStream(filename));
-        out = new FileOutputStream(uncompressedFile);
-        copy(zin, out, 100000);
-      } catch (IOException e) {
-        e.printStackTrace();
-        throw e;
-      } finally {
-        if (zin != null) zin.close();
-        if (out != null) out.close();
+      } else if (suffix.equalsIgnoreCase("bz2")) {
+        in = new CBZip2InputStream(new FileInputStream(filename), true);
+        copy(in, fout, 100000);
+        if (debugCompress) System.out.println("unbzipped " + filename + " to " + uncompressedFile);
+
+      } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
+
+        in = new GZIPInputStream(new FileInputStream(filename));
+        copy(in, fout, 100000);
+
+        if (debugCompress) System.out.println("ungzipped " + filename + " to " + uncompressedFile);
       }
-      if (debugCompress) System.out.println("ungzipped " + filename + " to " + uncompressedFile);
+    } catch (IOException e) {
+
+      // appears we have to close before we can delete
+      if (fout != null) fout.close();
+      fout = null;
+
+      // dont leave bad files around
+      if (uncompressedFile.exists()) {
+        if (!uncompressedFile.delete())
+          log.warn("failed to delete uncompressed file (IOException)"+uncompressedFile);
+      }
+      throw e;
+
+    } finally {
+      if (in != null) in.close();
+      if (fout != null) fout.close();
     }
 
     return uncompressedFile.getPath();
@@ -435,15 +433,15 @@ public class NetcdfFile {
     if (spiObject != null)
       spi.setSpecial(spiObject);
 
-    if (log.isDebugEnabled()) 
-      log.debug("Using IOSP "+spi.getClass().getName());
+    if (log.isDebugEnabled())
+      log.debug("Using IOSP " + spi.getClass().getName());
 
     return new NetcdfFile(spi, raf, location, cancelTask);
   }
 
   // experimental - pass in the iosp
-  static public NetcdfFile open( String location, String className, int bufferSize, CancelTask cancelTask, String iospParam)
-      throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+  static public NetcdfFile open(String location, String className, int bufferSize, CancelTask cancelTask, String iospParam)
+          throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(className);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
@@ -451,7 +449,7 @@ public class NetcdfFile {
     if (iospParam != null)
       spi.setSpecial(iospParam);
 
-       // get rid of file prefix, if any
+    // get rid of file prefix, if any
     String uriString = location.trim();
     if (uriString.startsWith("file://"))
       uriString = uriString.substring(7);
@@ -1146,7 +1144,8 @@ public class NetcdfFile {
   /**
    * Find out if if it has a record Structure.
    * Optimization for Netcdf-3 files.
-   * @return  true if it has a record Structure
+   *
+   * @return true if it has a record Structure
    */
   public boolean hasRecordStructure() {
     Variable v = findVariable("record");
@@ -1344,14 +1343,14 @@ public class NetcdfFile {
    */
   public String getDetailInfo() {
     StringBuffer sbuff = new StringBuffer(5000);
-    sbuff.append("NetcdfFile location= "+getLocation()+"\n");
-    sbuff.append("  title= "+getTitle()+"\n");
-    sbuff.append("  id= "+getId()+"\n");
-    
+    sbuff.append("NetcdfFile location= " + getLocation() + "\n");
+    sbuff.append("  title= " + getTitle() + "\n");
+    sbuff.append("  id= " + getId() + "\n");
+
     if (spi == null) {
       sbuff.append("  has no iosp!\n");
     } else {
-      sbuff.append("  iosp= "+spi.getClass().getName()+"\n\n");
+      sbuff.append("  iosp= " + spi.getClass().getName() + "\n\n");
       sbuff.append(spi.getDetailInfo());
     }
 
