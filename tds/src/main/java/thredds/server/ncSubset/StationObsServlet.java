@@ -48,8 +48,8 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    soc = new StationObsCollection("C:/data/metars/");
-    // soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
+    //soc = new StationObsCollection("C:/data/metars/");
+    soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
   }
 
   public void destroy() {

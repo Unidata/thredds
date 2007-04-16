@@ -96,7 +96,7 @@ public class StationObsCollection {
       this.time_start = time_start;
       this.time_end = time_end;
 
-      if (debug) System.out.println("scanStation open " + filename + " start= " + time_start + " end= " + time_end);
+      if (debug) System.out.println("StationObsCollection open " + filename + " start= " + time_start + " end= " + time_end);
     }
 
     public int compareTo(Object o) {
@@ -484,10 +484,11 @@ public class StationObsCollection {
   ////////////////////////////////////////////////////////////////
   // writing
 
+  private File netcdfResult = new File("/data/tmp/thredds/cache/sobs.nc");  // LOOK temp kludge
+  //private File netcdfResult = new File("C:/temp/sobs.nc");
   public File writeNetcdf(List<String> vars, List<String> stns, DateRange range, DateType time) throws IOException {
-     File file = new File("C:/temp/sobs.nc");
      write(vars, stns, range, time, QueryParams.NETCDF, null);
-     return file;
+     return netcdfResult;
   }
 
 
@@ -586,7 +587,7 @@ public class StationObsCollection {
 
     WriterNetcdf(List<String> varNames, final java.io.PrintWriter writer) {
       super(varNames, writer);
-      sobsWriter = new StationObsDatasetWriter("C:/temp/sobs.nc");
+      sobsWriter = new StationObsDatasetWriter(netcdfResult.getAbsolutePath());
 
       if ((varNames == null) || (varNames.size() == 0)) {
         varList = variableList;
@@ -602,12 +603,12 @@ public class StationObsCollection {
 
     public void header(List<String> stns) {
       try {
+        getStationMap();
 
         if (stns.size() == 0)
           stnList = stationList;
         else {
           stnList = new ArrayList<Station>(stns.size());
-          getStationMap();
 
           for (int i = 0; i < stns.size(); i++) {
             String s = stns.get(i);

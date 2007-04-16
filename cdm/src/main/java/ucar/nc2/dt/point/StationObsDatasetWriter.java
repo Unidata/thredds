@@ -72,7 +72,8 @@ public class StationObsDatasetWriter {
 
   private boolean useAlt = false;
   private boolean useWmoId = false;
-  private boolean isContiguousList = false;
+
+  private boolean debug = true;
 
   public StationObsDatasetWriter(String fileOut) {
     ncfile = NetcdfFileWriteable.createNew(fileOut);
@@ -247,6 +248,7 @@ public class StationObsDatasetWriter {
     this.stnList = stnList;
     int nstns = stnList.size();
     stationMap = new HashMap( 2*nstns);
+    if (debug) System.out.println("stationMap created");
 
     // now write the station data
     ArrayDouble.D1 latArray = new ArrayDouble.D1(nstns);
@@ -338,6 +340,8 @@ public class StationObsDatasetWriter {
   private int[] originTime = new int[2];
 
   public void writeRecord(StationObsDatatype sobs, StructureData sdata) throws IOException {
+    if (debug) System.out.println("sobs= "+sobs+"; station = "+sobs.getStation());
+
     String name = sobs.getStation().getName();
     StationTracker tracker = (StationTracker) stationMap.get(name);
 

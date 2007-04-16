@@ -12,7 +12,7 @@
 <div class="head">
   <p>The NetCDF Subset Service is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
   <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
-  <p>The service interface tries to follow <a href="http://www.xml.com/pub/a/2004/08/11/rest.html">REST principles</a>. Generally we will try to follow <a href="http://earth.google.com/kml/index.html">Google/KML</a> encodings, and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a>. </p>
+  <p>The service interface tries to follow <a href="http://www.xml.com/pub/a/2004/08/11/rest.html">REST principles</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
   <h3>Status</h3>
   <p>We will be changing the existing gridded data subsetting service on motherlode to use this new interface, once it solidifies. </p>
   <p>We  have a prototype service for 7 days of metar data at <strong>http://motherlode.ucar.edu:9080/thredds/ncss/metars</strong>. Sample URLS look like:</p>
@@ -46,9 +46,9 @@
     <ul>
       <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=csv&time=2007-04-10T00:00:00Z&south=40&west=-105&north=43&east=-103"><strong>http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=csv&amp;time=2007-04-10T00:00:00Z&amp;south=40&amp;west=-105&amp;north=43&amp;east=-103</strong></a></li>
     </ul>
-    <li>Get latest data for all stations:
+    <li>Get latest data for all stations, return as netcdf file
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=ascii&time=present">http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=ascii&amp;time=present</a></strong></li>
+        <li><strong><a href="http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=netcdf&time=present">http://motherlode.ucar.edu:9080/thredds/ncss/metar?accept=netcdf&amp;time=present</a></strong></li>
       </ul>
     </li>
     <li>Get data for 1 hour starting at <strong>2007-04-10T00:00:00Z</strong> for all stations:
@@ -57,7 +57,7 @@
       </ul>
     </li>
   </ul>
-  <p>This test service does not yet have dynamic updating, robust error checking, or netCDF file writing. We will  be testing it and other solutions against larger sets of data like LEAD. </p>
+  <p>This test service does not yet have dynamic updating, robust error checking.</p>
   <p>&nbsp;  </p>
   <h2>REST Design </h2>
   <h3>1. What are the resources/URIs?</h3>
@@ -105,6 +105,34 @@
     <li>The XML, ASCII, and CSV files are intended for use only for small extractions of data, and are generally missing some or all of the metadata of the dataset. </li>
     <li>Multiple accept values can be specified, eg <strong>accept=xml,csv </strong>(comma delimited, no spaces). The server will select from that list. </li>
   </ol>
+  <p><strong>Representation types</strong></p>
+  <table width="600" border="1">
+    <tr>
+      <th width="227" scope="col">Mime Type </th>
+      <th width="357" scope="col">Synonyms</th>
+    </tr>
+    <tr>
+      <td>text/plain</td>
+      <td>raw, ascii </td>
+    </tr>
+    <tr>
+      <td>application/xml</td>
+      <td>xml</td>
+    </tr>
+    <tr>
+      <td>text/csv</td>
+      <td>csv</td>
+    </tr>
+    <tr>
+      <td>text/html</td>
+      <td>html</td>
+    </tr>
+    <tr>
+      <td>application/x-netcdf</td>
+      <td>netcdf</td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
   <h3>3. What are the Methods?</h3>
   <blockquote>
     <p>Only the GET method is allowed. </p>
@@ -119,9 +147,8 @@
     <li>501 : request requires too much server resources / data result would be too large </li>
   </ul>
   <p>&nbsp;</p>
-  <h2><strong><a name="subset"></a>Subsetting </strong></h2>
-  <p><strong>The subset is not guarenteed to be ordered.</strong></p>
-  <p>&nbsp;</p>
+  <h2><strong>Common Subsetting Parameters </strong></h2>
+  <p><strong>The following work for all dataset types: </strong></p>
   <h3><strong>A. Specify variables</strong></h3>
   <ul>
     <li><strong>var=</strong>name of variables, separated by ',' (comma).</li>
@@ -132,8 +159,7 @@
     <li><strong> </strong><strong>var=QCSurface</strong></li>
     <li><strong>var=QC,LZT,PQ</strong></li>
   </ul>
-  <p>Variable names with spaces or other illegal characters must be escaped. For station data, when  writing raw format, this parameter is ignored. </p>
-  <p>&nbsp;</p>
+  <p>Variable names with spaces or other illegal characters must be escaped. </p>
   <h3><strong>B. Specify spatial extent</strong></h3>
   <p>Latitude, longitude values are specified  in decimal degrees north and east, respectively. </p>
   <p>Use one of the following methods: </p>
@@ -147,9 +173,7 @@
       <li><strong>west</strong>: longitude west (decimal degrees) </li>
     </ul>
   </ol>
-  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong> until the east edge. Units must be degrees east, may be positive or negative, and will be taken modulo 360. Therefore, when crossing the dateline, the west edge may be greater than the east edge. </p>
-  <p>When applied to a grid in projection coordinates, the 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </p>
-  <p>Examples:</p>
+  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong> until the east edge. Units must be degrees east, may be positive or negative, and will be taken modulo 360. Therefore, when crossing the dateline, the west edge may be greater than the east edge. Examples:</p>
   <ul>
     <li><strong> </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></li>
   </ul>
@@ -163,17 +187,7 @@
   <ul>
     <li><strong> latitude</strong><strong>=17.3&amp;longitude=140.2</strong></li>
   </ul>
-  <p><strong>3. Specify station(s)</strong></p>
-  <ul>
-    <li><strong>stn=</strong>name of stations, separated by ',' (comma) </li>
-  </ul>
-  <p>This can only be used for station datasets. The list of valid stations is available from the Dataset Description. Station names with spaces or other illegal characters must be escaped. </p>
-  <p>Examples:</p>
-  <ul>
-    <li><strong> </strong><strong>stn=KDEN</strong></li>
-    <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
-    <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
-  </ul>
+  <p>&nbsp;</p>
   <h3>C. Specify time </h3>
   <p>Using one of the following methods:</p>
   <h4><strong>1. Time range</strong></h4>
@@ -201,33 +215,46 @@
     <li><strong>time=present</strong></li>
   </ul>
   <p>&nbsp;</p>
-  <h2>Representation<a name="representation"></a> types</h2>
-  <table width="600" border="1">
-    <tr>
-      <th width="227" scope="col">Mime Type </th>
-      <th width="357" scope="col">Synonyms</th>
-    </tr>
-    <tr>
-      <td>text/plain</td>
-      <td>raw, ascii </td>
-    </tr>
-    <tr>
-      <td>application/xml</td>
-      <td>xml</td>
-    </tr>
-    <tr>
-      <td>text/csv</td>
-      <td>csv</td>
-    </tr>
-    <tr>
-      <td>text/html</td>
-      <td>html</td>
-    </tr>
-    <tr>
-      <td>application/x-netcdf</td>
-      <td>netcdf</td>
-    </tr>
-  </table>
+  <h2><strong>Station Observation   Parameters </strong></h2>
+  <p>The following parameters are specific to Station Observation datasets. </p>
+  <h3><strong>B.3 Specify station(s)</strong></h3>
+  <p><strong>You may specify a list of stations instead of the lay/lon point or bounding box </strong></p>
+  <ul>
+    <li><strong>stn=</strong>name of stations, separated by ',' (comma) </li>
+  </ul>
+  <p>This can only be used for station datasets. The list of valid stations is available from the Dataset Description. Station names with spaces or other illegal characters must be escaped. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>stn=KDEN</strong></li>
+    <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
+    <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
+  </ul>
+  <h3>NetCDF File Writing:</h3>
+  <ul>
+    <li>A valid NetCDF file is returned in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>.</li>
+    <li>The specified variables(s) and their attributes are included.</li>
+  </ul>
+  <h3>Notes</h3>
+  <ul>
+    <li>When writing raw format, the <strong>var</strong> parameter is ignored, and the entire text report is returned </li>
+  </ul>
+  <p>&nbsp;</p>
+  <h2><strong>Gridded Dataset  Parameters </strong></h2>
+  <p>The following parameters are specific to Gridded datasets. </p>
+  <p>If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
+  <h3>File Writing Rules:</h3>
+  <ul>
+    <li>A valid NetCDF file is returned in CF-1 format.</li>
+    <li>The specified variables(s) and their attributes are included.</li>
+    <li>All coordinate variables for the specified variable(s) are included.</li>
+    <li>If a bounding box or time range is specified, the variable and its coordinates are subsetted. </li>
+    <li>All global attributes are included.</li>
+  </ul>
+  <p>&nbsp;</p>
+  <h3><strong>Notes</strong></h3>
+  <ul>
+    <li><strong>Specify lat/lon bounding box: </strong> the 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </li>
+  </ul>
   <p>&nbsp; </p>
   <h2>Dataset Descriptions<a name="DatasetDescription"></a> </h2>
   <p>This section still needs to be done. </p>
@@ -240,18 +267,6 @@
   </ul>
   <h3>Station Observation Dataset</h3>
   <p>A Station Observation Dataset has time series observations at named locations called stations.</p>
-  <p>&nbsp;</p>
-  <h2>Grid Dataset </h2>
-  <h3>Specify whether to add Lat and Lon coordinates</h3>
-  <p>If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
-  <h3> File Writing Rules:</h3>
-  <ul>
-    <li>A valid NetCDF file is returned in CF-1 format.</li>
-    <li>The specified variables(s) and their attributes are included.</li>
-    <li>All coordinate variables for the specified variable(s) are included.</li>
-    <li>If a bounding box or time range is specified, the variable and its coordinates are subsetted. </li>
-    <li>All global attributes are included. </li>
-  </ul>
   <p>&nbsp;</p>
   <hr>
   <div class="div4">
@@ -294,7 +309,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 11, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 16, 2007 
 </address>
 <p>&nbsp;
 </p>

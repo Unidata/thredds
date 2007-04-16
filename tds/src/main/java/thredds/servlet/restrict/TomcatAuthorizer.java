@@ -41,7 +41,7 @@ public class TomcatAuthorizer implements Authorizer {
   private boolean useSSL = false;
   private String sslPort = "8443";
 
-  private boolean debugResourceControl = true;
+  private boolean debugResourceControl = false;
 
   public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException {
     if (req.isUserInRole(role))

@@ -39,7 +39,7 @@ import java.util.Enumeration;
  * @version $Revision$ $Date$
  */
 public class CAMSAuthorizer extends TomcatAuthorizer {
-    private boolean debugResourceControl = true;
+    private boolean debugResourceControl = false;
 
     public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException {
       if (hasCAMSrole(req, role))

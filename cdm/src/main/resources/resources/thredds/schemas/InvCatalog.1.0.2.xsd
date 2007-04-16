@@ -708,7 +708,8 @@
           <xsd:enumeration value="GridFTP"/>
           <xsd:enumeration value="File"/>
           <xsd:enumeration value="NetcdfServer"/>
-          
+          <xsd:enumeration value="NetcdfSubset"/>
+
           <!-- web services -->
           <xsd:enumeration value="LAS"/>
           <xsd:enumeration value="WMS"/>
