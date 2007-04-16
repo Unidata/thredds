@@ -55,17 +55,17 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 /**
  * This reads and writes XML files to summarize the inventory for a single ForecastModelRun.
  * The underlying dataset is a GridDataset.
- *
+ * <p/>
  * Tracks unique TimeCoords (aka "valid times" aka "forecast times" aka "offset hours"), and tracks the list of
- *   variables (aka grids) that use that TimeCoord.
- *
+ * variables (aka grids) that use that TimeCoord.
+ * <p/>
  * Tracks unique VertCoords; grids have a reference to one if they are 3D.
- *
+ * <p/>
  * <pre>
  * Data Structures
  *  List VertCoord
  *    double[] values
- *
+ * <p/>
  *  List TimeCoord
  *    double[] offsetHour
  *    List Grid
@@ -81,6 +81,8 @@ public class ForecastModelRunInventory {
   public static final int OPEN_FORCE_NEW = 2;  // only open dataset and write XML new
   public static final int OPEN_XML_ONLY = 3; // only open XML, if not exist, return
 
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ForecastModelRunInventory.class);
+
   private String name;
   private ArrayList times = new ArrayList(); // list of TimeCoord
   private ArrayList vaxes = new ArrayList(); // list of VertCoord
@@ -91,10 +93,11 @@ public class ForecastModelRunInventory {
 
   private boolean debugMissing = false;
 
-  private ForecastModelRunInventory() { }
+  private ForecastModelRunInventory() {
+  }
 
   private ForecastModelRunInventory(String ncfileLocation) throws IOException {
-    this( ucar.nc2.dt.grid.GridDataset.open( ncfileLocation), null);
+    this(ucar.nc2.dt.grid.GridDataset.open(ncfileLocation), null);
   }
 
   private ForecastModelRunInventory(ucar.nc2.dt.GridDataset gds, Date runDate) {
@@ -108,11 +111,11 @@ public class ForecastModelRunInventory {
       if (runTime == null)
         runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
       if (runTime == null)
-        throw new IllegalArgumentException("File must have "+_Coordinate.ModelBaseDate+" or "+
-                _Coordinate.ModelRunDate +" attribute ");
+        throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " +
+                _Coordinate.ModelRunDate + " attribute ");
       this.runDate = DateUnit.getStandardOrISO(runTime);
       if (this.runDate == null)
-        throw new IllegalArgumentException( _Coordinate.ModelRunDate+" must be ISO date string "+runTime);
+        throw new IllegalArgumentException(_Coordinate.ModelRunDate + " must be ISO date string " + runTime);
     } else {
       this.runDate = runDate;
       DateFormatter df = new DateFormatter();
@@ -132,7 +135,7 @@ public class ForecastModelRunInventory {
       CoordinateAxis1D axis = gcs.getTimeAxis1D();
       if (axis != null) {
         TimeCoord tc = getTimeCoordinate(axis);
-        tc.vars.add( grid);
+        tc.vars.add(grid);
         grid.parent = tc;
       }
 
@@ -153,31 +156,53 @@ public class ForecastModelRunInventory {
     if (null != gds) gds.close();
   }
 
-  public void setName(String name) { this.name = name; }
-  public String getName() { return name; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-  /** Get the date of the ForecastModelRun */
-  public Date getRunDate() { return runDate; }
+  public String getName() {
+    return name;
+  }
 
-  /** Get string representation of the date of the ForecastModelRun */
-  public String getRunDateString() { return runTime; }
+  /**
+   * Get the date of the ForecastModelRun
+   */
+  public Date getRunDate() {
+    return runDate;
+  }
+
+  /**
+   * Get string representation of the date of the ForecastModelRun
+   */
+  public String getRunDateString() {
+    return runTime;
+  }
 
   /**
    * Get a list of unique TimeCoords, which contain the list of variables that all use that TimeCoord.
+   *
    * @return list of TimeCoord
    */
-  public List getTimeCoords() { return times; }
+  public List getTimeCoords() {
+    return times;
+  }
 
   /**
    * Get a list of unique VertCoords.
+   *
    * @return list of VertCoord
    */
-  public List getVertCoords() { return vaxes; }
+  public List getVertCoords() {
+    return vaxes;
+  }
 
-  public LatLonRect getBB() { return bb; }
+  public LatLonRect getBB() {
+    return bb;
+  }
 
   /**
    * Release and close the dataset, and allow CG.
+   *
    * @throws IOException
    */
   public void releaseDataset() throws IOException {
@@ -197,29 +222,30 @@ public class ForecastModelRunInventory {
 
   }
 
- public Grid findGrid( String name) {
-   for (int i = 0; i < times.size(); i++) {
-     TimeCoord tc = (TimeCoord) times.get(i);
-     List grids = tc.getGrids();
-     for (int j = 0; j < grids.size(); j++) {
-       Grid g = (Grid) grids.get(j);
-       if (g.name.equals(name))
-       return g;
-     }
-   }
-   return null;
- }
+  public Grid findGrid(String name) {
+    for (int i = 0; i < times.size(); i++) {
+      TimeCoord tc = (TimeCoord) times.get(i);
+      List grids = tc.getGrids();
+      for (int j = 0; j < grids.size(); j++) {
+        Grid g = (Grid) grids.get(j);
+        if (g.name.equals(name))
+          return g;
+      }
+    }
+    return null;
+  }
 
   //////////////////////////////////////////////////////////
 
   // Grib files are collections of 2D horizontal arrays.
   // LOOK: breaking encapsolation !!!
+
   private void getIosp() {
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
     NetcdfFile ncfile = ncd.getReferencedFile();
     while (ncfile instanceof NetcdfDataset) {
-       ncd = (NetcdfDataset) ncfile;
-       ncfile = ncd.getReferencedFile();
+      ncd = (NetcdfDataset) ncfile;
+      ncfile = ncd.getReferencedFile();
     }
     if (ncfile == null) return;
     IOServiceProvider iosp = ncfile.getIosp();
@@ -227,9 +253,10 @@ public class ForecastModelRunInventory {
     if (!(iosp instanceof GribServiceProvider)) return;
     gribIosp = (GribServiceProvider) iosp;
   }
+
   private GribServiceProvider gribIosp;
 
-  private void addMissing( Variable v, GridCoordSystem gcs, Grid grid) {
+  private void addMissing(Variable v, GridCoordSystem gcs, Grid grid) {
     if (gribIosp == null) return;
     if (gcs.getVerticalAxis() == null) return;
     int ntimes = (int) gcs.getTimeAxis().getSize();
@@ -239,18 +266,19 @@ public class ForecastModelRunInventory {
     ArrayList missing = new ArrayList();
     for (int timeIndex = 0; timeIndex < ntimes; timeIndex++) {
       for (int vertIndex = 0; vertIndex < nverts; vertIndex++)
-      try {
-        if (gribIosp.isMissingXY(v, timeIndex, vertIndex))
-          missing.add(new Missing(timeIndex, vertIndex));
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-      }
+        try {
+          if (gribIosp.isMissingXY(v, timeIndex, vertIndex))
+            missing.add(new Missing(timeIndex, vertIndex));
+        } catch (InvalidRangeException e) {
+          e.printStackTrace();
+        }
     }
     if (missing.size() > 0) {
       grid.missing = missing;
-      if (debugMissing) System.out.println("Missing "+gds.getTitle()+" "+v.getName()+" # ="+missing.size()+"/"+total);
-    } else
-      if (debugMissing) System.out.println(" None missing for "+gds.getTitle()+" "+v.getName()+" total = "+total);
+      if (debugMissing)
+        System.out.println("Missing " + gds.getTitle() + " " + v.getName() + " # =" + missing.size() + "/" + total);
+    } else if (debugMissing)
+      System.out.println(" None missing for " + gds.getTitle() + " " + v.getName() + " total = " + total);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -271,7 +299,7 @@ public class ForecastModelRunInventory {
 
     // its a new one
     times.add(want);
-    want.setId( Integer.toString(tc_seqno));
+    want.setId(Integer.toString(tc_seqno));
     tc_seqno++;
     return want;
   }
@@ -279,8 +307,8 @@ public class ForecastModelRunInventory {
   private int tc_seqno = 0;
 
   /**
-   *  Represents a list of valid times.
-   *  Tracks a list of variables that all have the same list of valid times.
+   * Represents a list of valid times.
+   * Tracks a list of variables that all have the same list of valid times.
    */
   public static class TimeCoord implements FmrcCoordSys.TimeCoord {
     private CoordinateAxis1D axis; // is null when read from XML
@@ -288,9 +316,10 @@ public class ForecastModelRunInventory {
     private String id; // unique id
     private double[] offset; // hours since runTime
 
-    TimeCoord() { }
+    TimeCoord() {
+    }
 
-    TimeCoord( int num, TimeCoord from) {
+    TimeCoord(int num, TimeCoord from) {
       this.id = Integer.toString(num);
       this.offset = from.offset;
     }
@@ -303,38 +332,62 @@ public class ForecastModelRunInventory {
       int n = (int) axis.getSize();
       offset = new double[n];
       for (int i = 0; i < axis.getSize(); i++) {
-        Date d = unit.makeDate( axis.getCoordValue(i));
-        offset[i] = getOffsetInHours( runDate, d);
+        Date d = unit.makeDate(axis.getCoordValue(i));
+        offset[i] = getOffsetInHours(runDate, d);
       }
     }
 
-    /** The list of Grid that use this TimeCoord */
-    public List getGrids() { return vars; }
+    /**
+     * The list of Grid that use this TimeCoord
+     */
+    public List getGrids() {
+      return vars;
+    }
 
-    /** A unique id for this TimeCoord */
-    public String getId() { return id; }
-    /** Set the unique id for this TimeCoord */
-    public void setId(String id) { this.id = id; }
+    /**
+     * A unique id for this TimeCoord
+     */
+    public String getId() {
+      return id;
+    }
 
-    public String getName() { return id.equals("0") ? "time" : "time"+id; }
+    /**
+     * Set the unique id for this TimeCoord
+     */
+    public void setId(String id) {
+      this.id = id;
+    }
 
-    /** The list of valid times, in units of hours since the run time */
-    public double[] getOffsetHours() { return offset; }
-    public void setOffsetHours(double[] offset) { this.offset = offset; }
+    public String getName() {
+      return id.equals("0") ? "time" : "time" + id;
+    }
 
-    /** Instances that have the same offsetHours are equal */
+    /**
+     * The list of valid times, in units of hours since the run time
+     */
+    public double[] getOffsetHours() {
+      return offset;
+    }
+
+    public void setOffsetHours(double[] offset) {
+      this.offset = offset;
+    }
+
+    /**
+     * Instances that have the same offsetHours are equal
+     */
     public boolean equalsData(TimeCoord tother) {
       if (offset.length != tother.offset.length)
         return false;
-      for (int i = 0; i < offset.length ; i++) {
-        if (!ucar.nc2.util.Misc.closeEnough( offset[i], tother.offset[i]))
+      for (int i = 0; i < offset.length; i++) {
+        if (!ucar.nc2.util.Misc.closeEnough(offset[i], tother.offset[i]))
           return false;
       }
       return true;
     }
 
-    int findIndex (double offsetHour) {
-      for (int i = 0; i<offset.length; i++)
+    int findIndex(double offsetHour) {
+      for (int i = 0; i < offset.length; i++)
         if (offset[i] == offsetHour)
           return i;
       return -1;
@@ -360,8 +413,8 @@ public class ForecastModelRunInventory {
   /**
    * A Grid variable has a name, timeCoord and optionally a Vertical Coordinate, and list of Missing.
    * The inventory is represented as:
-   *   1) if 2D, the timeCoord represents the inventory
-   *   2) if 3D, inventory = timeCoord * vertCoord - Missing
+   * 1) if 2D, the timeCoord represents the inventory
+   * 2) if 3D, inventory = timeCoord * vertCoord - Missing
    */
   public static class Grid implements Comparable {
     String name; // , sname;
@@ -369,7 +422,7 @@ public class ForecastModelRunInventory {
     VertCoord vc = null; // optional
     ArrayList missing; // array of Missing
 
-    Grid( String name) {
+    Grid(String name) {
       this.name = name;
     }
 
@@ -396,11 +449,11 @@ public class ForecastModelRunInventory {
     }
 
     public int countInventory(double hourOffset) {
-      int timeIndex = parent.findIndex( hourOffset);
+      int timeIndex = parent.findIndex(hourOffset);
       if (timeIndex < 0)
         return 0;
 
-            // otherwise, count the Missing with this time index
+      // otherwise, count the Missing with this time index
       if (missing == null)
         return getVertCoordLength();
 
@@ -408,19 +461,20 @@ public class ForecastModelRunInventory {
       for (int i = 0; i < missing.size(); i++) {
         Missing m = (Missing) missing.get(i);
         if (m.timeIndex == timeIndex)
-        count++;
+          count++;
       }
       return getVertCoordLength() - count;
     }
 
     /**
      * Get inventory as an array of vert coords, at a particular time coord = hourOffset
+     *
      * @param hourOffset : may or may not be in the list of time coords
      * @return array of vert coords. NaN = missing; -0.0 = surface.
      */
     public double[] getVertCoords(double hourOffset) {
 
-      int timeIndex = parent.findIndex( hourOffset);
+      int timeIndex = parent.findIndex(hourOffset);
       if (timeIndex < 0)
         return new double[0]; // if not in list of time coordinates, then entire inventory is missing
 
@@ -444,6 +498,7 @@ public class ForecastModelRunInventory {
 
   public static class Missing {
     int timeIndex, vertIndex;
+
     Missing(int timeIndex, int vertIndex) {
       this.timeIndex = timeIndex;
       this.vertIndex = vertIndex;
@@ -477,7 +532,7 @@ public class ForecastModelRunInventory {
 
     // its a new one
     vaxes.add(want);
-    want.setId( Integer.toString(vc_seqno));
+    want.setId(Integer.toString(vc_seqno));
     vc_seqno++;
     return want;
   }
@@ -486,8 +541,8 @@ public class ForecastModelRunInventory {
 
 
   /**
-   *  Represents a vertical coordinate.
-   *  Tracks a list of variables that all have the same list of valid times.
+   * Represents a vertical coordinate.
+   * Tracks a list of variables that all have the same list of valid times.
    */
   public static class VertCoord implements FmrcCoordSys.VertCoord, Comparable {
     CoordinateAxis1D axis; // is null when read from XML
@@ -495,7 +550,8 @@ public class ForecastModelRunInventory {
     private String id; // unique id
     double[] values1, values2;
 
-    VertCoord() { }
+    VertCoord() {
+    }
 
     VertCoord(CoordinateAxis1D axis) {
       this.axis = axis;
@@ -522,29 +578,56 @@ public class ForecastModelRunInventory {
       this.values2 = (vc.getValues2() == null) ? null : (double[]) vc.getValues2().clone();
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+      return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(String id) {
+      this.id = id;
+    }
 
-    public String getUnits() { return units; }
-    public void setUnits(String units) { this.units = units; }
+    public String getName() {
+      return name;
+    }
 
-    public double[] getValues1() { return values1; }
-    public void setValues1(double[] values) { this.values1 = values; }
+    public void setName(String name) {
+      this.name = name;
+    }
 
-    public double[] getValues2() { return values2; }
-    public void setValues2(double[] values) { this.values2 = values; }
+    public String getUnits() {
+      return units;
+    }
 
-    public int getSize() { return values1.length; }
+    public void setUnits(String units) {
+      this.units = units;
+    }
+
+    public double[] getValues1() {
+      return values1;
+    }
+
+    public void setValues1(double[] values) {
+      this.values1 = values;
+    }
+
+    public double[] getValues2() {
+      return values2;
+    }
+
+    public void setValues2(double[] values) {
+      this.values2 = values;
+    }
+
+    public int getSize() {
+      return values1.length;
+    }
 
     public boolean equalsData(VertCoord other) {
       if (values1.length != other.values1.length)
         return false;
 
-      for (int i = 0; i < values1.length ; i++) {
-        if ( !ucar.nc2.util.Misc.closeEnough(values1[i], other.values1[i]))
+      for (int i = 0; i < values1.length; i++) {
+        if (!ucar.nc2.util.Misc.closeEnough(values1[i], other.values1[i]))
           return false;
       }
 
@@ -556,8 +639,8 @@ public class ForecastModelRunInventory {
 
       if (values2.length != other.values2.length)
         return false;
-      for (int i = 0; i < values2.length ; i++) {
-        if ( !ucar.nc2.util.Misc.closeEnough(values2[i], other.values2[i]))
+      for (int i = 0; i < values2.length; i++) {
+        if (!ucar.nc2.util.Misc.closeEnough(values2[i], other.values2[i]))
           return false;
       }
 
@@ -566,27 +649,28 @@ public class ForecastModelRunInventory {
 
     public int compareTo(Object o) {
       VertCoord other = (VertCoord) o;
-      return name.compareTo( other.name);
+      return name.compareTo(other.name);
     }
   }
 
-   static public double getOffsetInHours(Date origin, Date date) {
-      double secs = date.getTime() / 1000;
-      double origin_secs = origin.getTime() / 1000;
-      double diff = secs - origin_secs;
+  static public double getOffsetInHours(Date origin, Date date) {
+    double secs = date.getTime() / 1000;
+    double origin_secs = origin.getTime() / 1000;
+    double diff = secs - origin_secs;
 
-      return diff / 3600.0;
-    }
+    return diff / 3600.0;
+  }
 
   //////////////////////////////////////////////////////////////
 
   /**
    * Write the XML representation to a local file.
+   *
    * @param filename wite to this local file
    * @throws IOException
    */
   public void writeXML(String filename) throws IOException {
-    OutputStream out = new BufferedOutputStream( new FileOutputStream( filename));
+    OutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(writeDocument(), out);
     out.close();
@@ -594,6 +678,7 @@ public class ForecastModelRunInventory {
 
   /**
    * Write the XML representaion to an OutputStream.
+   *
    * @param out write to this OutputStream
    * @throws IOException
    */
@@ -605,20 +690,22 @@ public class ForecastModelRunInventory {
   /**
    * Write the XML representation to a String.
    */
-  public String writeXML( )  {
-    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
-    return fmt.outputString( writeDocument());
+  public String writeXML() {
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    return fmt.outputString(writeDocument());
   }
 
-  /** Create the XML representation */
+  /**
+   * Create the XML representation
+   */
   public Document writeDocument() {
     Element rootElem = new Element("forecastModelRun");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("name", getName());
     rootElem.setAttribute("runTime", runTime);
 
-        // list all the vertical coords
-    Collections.sort( vaxes);
+    // list all the vertical coords
+    Collections.sort(vaxes);
     for (int i = 0; i < vaxes.size(); i++) {
       VertCoord vc = (VertCoord) vaxes.get(i);
 
@@ -632,10 +719,10 @@ public class ForecastModelRunInventory {
       StringBuffer sbuff = new StringBuffer();
       for (int j = 0; j < vc.values1.length; j++) {
         if (j > 0) sbuff.append(" ");
-        sbuff.append( Double.toString(vc.values1[j]));
+        sbuff.append(Double.toString(vc.values1[j]));
         if (vc.values2 != null) {
           sbuff.append(",");
-          sbuff.append( Double.toString(vc.values2[j]));
+          sbuff.append(Double.toString(vc.values2[j]));
         }
       }
       vcElem.addContent(sbuff.toString());
@@ -652,12 +739,12 @@ public class ForecastModelRunInventory {
       StringBuffer sbuff = new StringBuffer();
       for (int j = 0; j < tc.offset.length; j++) {
         if (j > 0) sbuff.append(" ");
-        sbuff.append( Double.toString(tc.offset[j]));
+        sbuff.append(Double.toString(tc.offset[j]));
       }
       offsetElem.addContent(sbuff.toString());
 
-      Collections.sort( tc.vars);
-      for (int j=0; j<tc.vars.size(); j++) {
+      Collections.sort(tc.vars);
+      for (int j = 0; j < tc.vars.size(); j++) {
         Grid grid = (Grid) tc.vars.get(j);
         Element varElem = new Element("variable");
         offsetElem.addContent(varElem);
@@ -686,10 +773,10 @@ public class ForecastModelRunInventory {
         rootElem.addContent(bbElem);
         LatLonPoint llpt = bb.getLowerLeftPoint();
         LatLonPoint urpt = bb.getUpperRightPoint();
-        bbElem.setAttribute("west", ucar.unidata.util.Format.dfrac( llpt.getLongitude(), 3));
-        bbElem.setAttribute("east", ucar.unidata.util.Format.dfrac( urpt.getLongitude(), 3));
-        bbElem.setAttribute("south", ucar.unidata.util.Format.dfrac( llpt.getLatitude(), 3));
-        bbElem.setAttribute("north", ucar.unidata.util.Format.dfrac( urpt.getLatitude(), 3));
+        bbElem.setAttribute("west", ucar.unidata.util.Format.dfrac(llpt.getLongitude(), 3));
+        bbElem.setAttribute("east", ucar.unidata.util.Format.dfrac(urpt.getLongitude(), 3));
+        bbElem.setAttribute("south", ucar.unidata.util.Format.dfrac(llpt.getLatitude(), 3));
+        bbElem.setAttribute("north", ucar.unidata.util.Format.dfrac(urpt.getLatitude(), 3));
       }
     }
 
@@ -698,34 +785,35 @@ public class ForecastModelRunInventory {
 
   /**
    * Construct a ForecastModelRun from its XML representation
+   *
    * @param xmlLocation location of xml - assumed to be a local file.
    * @return ForecastModelRun
    * @throws IOException
    */
   public static ForecastModelRunInventory readXML(String xmlLocation) throws IOException {
-    if (debug) System.out.println(" read from XML "+xmlLocation);
+    if (debug) System.out.println(" read from XML " + xmlLocation);
 
-    InputStream is = new BufferedInputStream( new FileInputStream( xmlLocation));
+    InputStream is = new BufferedInputStream(new FileInputStream(xmlLocation));
     org.jdom.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);
     } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e.getMessage() + " reading from XML " + xmlLocation);
     }
 
     Element rootElem = doc.getRootElement();
     ForecastModelRunInventory fmr = new ForecastModelRunInventory();
     fmr.runTime = rootElem.getAttributeValue("runTime");
 
-    DateFormatter formatter = new  DateFormatter();
+    DateFormatter formatter = new DateFormatter();
     fmr.runDate = formatter.getISODate(fmr.runTime);
 
     java.util.List vList = rootElem.getChildren("vertCoord");
-    for (int i=0; i< vList.size(); i++) {
+    for (int i = 0; i < vList.size(); i++) {
       Element vertElem = (Element) vList.get(i);
       VertCoord vc = new VertCoord();
-      fmr.vaxes.add( vc);
+      fmr.vaxes.add(vc);
       vc.id = vertElem.getAttributeValue("id");
       vc.name = vertElem.getAttributeValue("name");
       vc.units = vertElem.getAttributeValue("units");
@@ -740,24 +828,24 @@ public class ForecastModelRunInventory {
         String toke = stoke.nextToken();
         int pos = toke.indexOf(',');
         if (pos < 0)
-          vc.values1[count] = Double.parseDouble( toke);
+          vc.values1[count] = Double.parseDouble(toke);
         else {
           if (vc.values2 == null)
             vc.values2 = new double[n];
-          String val1 = toke.substring(0,pos);
-          String val2 = toke.substring(pos+1);
-          vc.values1[count] = Double.parseDouble( val1);
-          vc.values2[count] = Double.parseDouble( val2);
+          String val1 = toke.substring(0, pos);
+          String val2 = toke.substring(pos + 1);
+          vc.values1[count] = Double.parseDouble(val1);
+          vc.values2[count] = Double.parseDouble(val2);
         }
         count++;
       }
     }
 
     java.util.List tList = rootElem.getChildren("offsetHours");
-    for (int i=0; i< tList.size(); i++) {
+    for (int i = 0; i < tList.size(); i++) {
       Element timeElem = (Element) tList.get(i);
       TimeCoord tc = new TimeCoord();
-      fmr.times.add( tc);
+      fmr.times.add(tc);
       tc.id = timeElem.getAttributeValue("id");
 
       // parse the values
@@ -767,20 +855,20 @@ public class ForecastModelRunInventory {
       tc.offset = new double[n];
       int count = 0;
       while (stoke.hasMoreTokens()) {
-        tc.offset[count++] = Double.parseDouble( stoke.nextToken());
+        tc.offset[count++] = Double.parseDouble(stoke.nextToken());
       }
 
       //get the variable names
       java.util.List varList = timeElem.getChildren("variable");
-      for (int j=0; j< varList.size(); j++) {
+      for (int j = 0; j < varList.size(); j++) {
         Element vElem = (Element) varList.get(j);
-        Grid grid = new Grid( vElem.getAttributeValue("name"));
-        grid.vc = fmr.getVertCoordinate( vElem.getAttributeValue("vert_id"));
-        tc.vars.add( grid);
+        Grid grid = new Grid(vElem.getAttributeValue("name"));
+        grid.vc = fmr.getVertCoordinate(vElem.getAttributeValue("vert_id"));
+        tc.vars.add(grid);
         grid.parent = tc;
 
         java.util.List mList = vElem.getChildren("missing");
-        for (int k=0; k< mList.size(); k++) {
+        for (int k = 0; k < mList.size(); k++) {
           Element mElem = (Element) mList.get(k);
           grid.missing = new ArrayList();
 
@@ -790,21 +878,21 @@ public class ForecastModelRunInventory {
           while (stoke.hasMoreTokens()) {
             int timeIdx = Integer.parseInt(stoke.nextToken());
             int vertIdx = Integer.parseInt(stoke.nextToken());
-            grid.missing.add( new Missing(timeIdx, vertIdx)) ;
+            grid.missing.add(new Missing(timeIdx, vertIdx));
           }
         }
       }
     }
 
-          // add lat/lon bounding box
+    // add lat/lon bounding box
     Element bbElem = rootElem.getChild("horizBB");
-      if (bbElem != null) {
-        double west = Double.parseDouble( bbElem.getAttributeValue("west"));
-        double east = Double.parseDouble( bbElem.getAttributeValue("east"));
-        double north = Double.parseDouble( bbElem.getAttributeValue("north"));
-        double south = Double.parseDouble( bbElem.getAttributeValue("south"));
-        fmr.bb = new LatLonRect( new LatLonPointImpl(south, west), new LatLonPointImpl(north, east));
-      }
+    if (bbElem != null) {
+      double west = Double.parseDouble(bbElem.getAttributeValue("west"));
+      double east = Double.parseDouble(bbElem.getAttributeValue("east"));
+      double north = Double.parseDouble(bbElem.getAttributeValue("north"));
+      double south = Double.parseDouble(bbElem.getAttributeValue("south"));
+      fmr.bb = new LatLonRect(new LatLonPointImpl(south, west), new LatLonPointImpl(north, east));
+    }
 
     return fmr;
   }
@@ -814,10 +902,10 @@ public class ForecastModelRunInventory {
    * Open a GridDataset and construct a ForecastModelRun.
    * The information is serialized into am XML file at ncfileLocation.fmrInv.xml, and used if it exists.
    *
-   * @param cache use this cache (may be null)
-   * @param ncfileLocation  location of the grid dataset.
-   * @param mode one of OPEN_NORMAL, OPEN_FORCE_NEW, OPEN_XML_ONLY constants
-   * @param isFile if its a file: new File( ncfileLocation) makes sense, so we can check if its changed
+   * @param cache          use this cache (may be null)
+   * @param ncfileLocation location of the grid dataset.
+   * @param mode           one of OPEN_NORMAL, OPEN_FORCE_NEW, OPEN_XML_ONLY constants
+   * @param isFile         if its a file: new File( ncfileLocation) makes sense, so we can check if its changed
    * @return ForecastModelRun
    * @throws IOException
    */
@@ -831,23 +919,34 @@ public class ForecastModelRunInventory {
       summaryFile = cache.getCacheFile(summaryFileLocation);
       summaryFileLocation = summaryFile.getPath();
     } else {
-      summaryFile = new File( summaryFileLocation);
+      summaryFile = new File(summaryFileLocation);
     }
 
     if (!force) {
       if (summaryFile.exists()) {
 
         if (isFile) { // see if its changed
-          File ncdFile = new File( ncfileLocation);
+          File ncdFile = new File(ncfileLocation);
           if (!ncdFile.exists())
-            throw new IllegalArgumentException("File must exist = "+ncfileLocation);
+            throw new IllegalArgumentException("File must exist = " + ncfileLocation);
 
           if (xml_only || (summaryFile.lastModified() >= ncdFile.lastModified())) {
-            return readXML(summaryFileLocation);
+            try {
+              return readXML(summaryFileLocation);
+            } catch (Exception ee) {
+              log.error("Failed to read FmrcInventory " + summaryFileLocation, ee);
+              // fall through to recreating it
+            }
           }
-        } else {  // just use it
 
-          return readXML(summaryFileLocation);
+        } else {  // not a file, just use it
+
+          try {
+            return readXML(summaryFileLocation);
+          } catch (Exception ee) {
+            log.error("Failed to read FmrcInventory " + summaryFileLocation, ee);
+            // fall through to recreating it
+          }
         }
       }
 
@@ -855,7 +954,7 @@ public class ForecastModelRunInventory {
     }
 
     // otherwise, make it
-    if (debug) System.out.println(" read from dataset "+ncfileLocation+" write to XML "+summaryFileLocation);
+    if (debug) System.out.println(" read from dataset " + ncfileLocation + " write to XML " + summaryFileLocation);
     ForecastModelRunInventory fmr = new ForecastModelRunInventory(ncfileLocation);
     fmr.writeXML(summaryFileLocation);
     fmr.releaseDataset();
@@ -872,11 +971,12 @@ public class ForecastModelRunInventory {
 
 
   private static boolean debug = false, showXML = false;
+
   public static void main(String args[]) throws Exception {
     //String def = "C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1";
     // String def = "C:/data/radarMosaic/RADAR_10km_mosaic_20060807_2220.grib1";
     String def = "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1";
-    String datasetName =  (args.length < 1) ? def : args[0];
+    String datasetName = (args.length < 1) ? def : args[0];
     // ucar.nc2.util.DiskCache2 cache = new ucar.nc2.util.DiskCache2("C:/data/grib", false, -1, -1);
     // cache.setCachePathPolicy(DiskCache2.CACHEPATH_POLICY_NESTED_TRUNCATE, "RUC");
     open(null, datasetName, OPEN_FORCE_NEW, true);
