@@ -226,6 +226,9 @@ public class DiskCache2 {
   public void cleanCache(File dir, StringBuffer sbuff, boolean isRoot) {
     long now = System.currentTimeMillis();
     File[] files = dir.listFiles();
+    if (files == null) {
+      throw new IllegalStateException( "DiskCache2: not a directory or I/O error"+dir.getAbsolutePath());
+    }
 
     // check for empty directory
     if (!isRoot && (files.length == 0)) {
