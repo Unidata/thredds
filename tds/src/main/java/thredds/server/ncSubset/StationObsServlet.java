@@ -26,6 +26,12 @@ import java.io.*;
 
 import thredds.servlet.AbstractServlet;
 import thredds.servlet.ServletUtil;
+import org.jdom.transform.XSLTransformer;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Netcdf Grid subsetting.
@@ -48,8 +54,8 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    //soc = new StationObsCollection("C:/data/metars/");
-    soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
+    soc = new StationObsCollection("C:/data/metars/");
+    //soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
   }
 
   public void destroy() {
@@ -65,9 +71,16 @@ public class StationObsServlet extends AbstractServlet {
     long start = System.currentTimeMillis();
 
     ServletUtil.logServerAccessSetup(req);
-    ServletUtil.showRequestDetail(this, req);
+    System.out.println(req.getQueryString());
 
     String pathInfo = req.getPathInfo();
+
+    boolean wantXML = pathInfo.endsWith("dataset.xml");
+    boolean showForm = pathInfo.endsWith("dataset.html");
+    if (wantXML || showForm) {
+      showForm(res, wantXML);
+      return;
+    }
 
     // parse the input
     QueryParams qp = new QueryParams();
@@ -164,7 +177,7 @@ public class StationObsServlet extends AbstractServlet {
     } else if (qp.accept.contains(QueryParams.NETCDF)) {
       res.setContentType(QueryParams.NETCDF);
       type = QueryParams.NETCDF;
-      res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");      
+      res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");
       File file = soc.writeNetcdf(qp.vars, qp.stns, qp.getDateRange(), qp.time);
       ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);
 
@@ -193,46 +206,60 @@ public class StationObsServlet extends AbstractServlet {
     }
   }
 
-  /*     private void showForm(HttpServletResponse res, ForecastModelRunInventory fmr, boolean wantXml) throws IOException {
-      String infoString;
+  private void showForm(HttpServletResponse res, boolean wantXml) throws IOException {
+    String infoString;
 
-      if (wantXml) {
-        infoString = fmr.writeXML();
+    if (wantXml) {
+      Document doc = getDoc("sobsDataset.xml");
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      infoString = fmt.outputString(doc);
 
-      } else {
-        InputStream xslt = getXSLT("ncServerForm.xsl");
-        Document doc = fmr.writeDocument();
+    } else {
+      InputStream xslt = getXSLT("ncssSobs.xsl");
+      Document doc = getDoc("sobsDataset.xml");
 
-        try {
-          XSLTransformer transformer = new XSLTransformer(xslt);
-          Document html = transformer.transform(doc);
-          XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-          infoString = fmt.outputString(html);
+      try {
+        XSLTransformer transformer = new XSLTransformer(xslt);
+        Document html = transformer.transform(doc);
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+        infoString = fmt.outputString(html);
 
-        } catch (Exception e) {
-          log.error("ForecastModelRunServlet internal error", e);
-          ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
-          return;
-        }
+      } catch (Exception e) {
+        log.error("SobsServlet internal error", e);
+        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
+        return;
       }
-
-      res.setContentLength(infoString.length());
-      if (wantXml)
-        res.setContentType("text/xml; charset=iso-8859-1");
-      else
-        res.setContentType("text/html; charset=iso-8859-1");
-
-      OutputStream out = res.getOutputStream();
-      out.write(infoString.getBytes());
-      out.flush();
-
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, infoString.length());
     }
 
-    static private InputStream getXSLT(String xslName) {
-      Class c = FmrcInventoryServlet.class;
-      return c.getResourceAsStream("/resources/xsl/" + xslName);
-    } */
+    res.setContentLength(infoString.length());
+    if (wantXml)
+      res.setContentType("text/xml; charset=iso-8859-1");
+    else
+      res.setContentType("text/html; charset=iso-8859-1");
+
+    OutputStream out = res.getOutputStream();
+    out.write(infoString.getBytes());
+    out.flush();
+
+    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, infoString.length());
+  }
+
+  private InputStream getXSLT(String xslName) {
+    return getClass().getResourceAsStream("/resources/xsl/" + xslName);
+  }
+
+  private Document getDoc(String name) throws IOException {
+    java.net.URL url = getClass().getResource("/resources/xsl/" + name);
+    org.jdom.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder();
+      doc = builder.build(url);
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage() + " reading from XML " + url);
+    }
+    return doc;
+  }
+
 
 }

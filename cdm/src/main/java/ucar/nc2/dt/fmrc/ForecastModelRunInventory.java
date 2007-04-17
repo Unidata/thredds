@@ -979,6 +979,7 @@ public class ForecastModelRunInventory {
     String datasetName = (args.length < 1) ? def : args[0];
     // ucar.nc2.util.DiskCache2 cache = new ucar.nc2.util.DiskCache2("C:/data/grib", false, -1, -1);
     // cache.setCachePathPolicy(DiskCache2.CACHEPATH_POLICY_NESTED_TRUNCATE, "RUC");
-    open(null, datasetName, OPEN_FORCE_NEW, true);
+    ForecastModelRunInventory fmr = open(null, datasetName, OPEN_FORCE_NEW, true);
+    fmr.writeXML(System.out);
   }
 }

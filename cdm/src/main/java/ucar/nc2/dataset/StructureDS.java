@@ -211,4 +211,11 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   public double convertScaleOffsetMissing(double value) {
     return smProxy.convertScaleOffsetMissing( value);
   }
+
+  /** Implement Comparable */
+  public int compareTo(Object o) {
+    VariableSimpleIF vo = (VariableSimpleIF) o;
+    return getName().compareTo( vo.getName());
+  }
+  
 }

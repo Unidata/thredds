@@ -12,6 +12,7 @@
 <div class="head">
   <p>The NetCDF Subset Service is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
   <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
+  <p>Currently only HTTP Get with key-value pairs (KVP) are used. POST with XML may be added in the future. </p>
   <p>The service interface tries to follow <a href="http://www.xml.com/pub/a/2004/08/11/rest.html">REST principles</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
   <h3>Status</h3>
   <p>We will be changing the existing gridded data subsetting service on motherlode to use this new interface, once it solidifies. </p>
@@ -63,40 +64,47 @@
   <h3>1. What are the resources/URIs?</h3>
   <p>The resources are THREDDS datasets.  The resource URIs can be discovered in a <a href="../TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <em><strong>NetcdfServer</strong></em> Service type. Generally they look like: </p>
   <blockquote>
-    <p> <strong> http://servername:8080/thredds/ncServer/{path/dataset}</strong></p>
+    <p> <strong> http://servername:8080/thredds/ncss/{path/dataset}</strong></p>
   </blockquote>
   <p>Typically the user wants a <a href="#subset">subset</a> of the dataset.This is considered a <em>view</em> of a resource, rather than a separate resource: </p>
   <blockquote>
-    <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}</strong></p>
+    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}?{subset}</strong></p>
   </blockquote>
-  <p>A desired <em><a href="#representation">representation</a></em> of the resource is specified using the <strong>accept</strong>  parameter. Again, different representations are not considered separate resources. </p>
+  <p>A desired <em><a href="#representation">representation</a></em> of the resource is specified using the <strong>accept</strong>  parameter. Again, different representations are not considered separate resources. Following the <strong>Accept</strong> HTTP header, accept takes a comma delimited list of mime-types (or aliases), but does not allow wild cards (*) or q parameters. </p>
   <blockquote>
-    <p><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept={mime-type}</strong></p>
+    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;accept={mime-type}</strong></p>
   </blockquote>
   <h3><strong>2. What's the format/representation?</strong></h3>
   <p>The dataset itself has two representations: </p>
   <ul>
     <li> an XML file describing the dataset, called the <a href="DatasetDescription">Dataset Description</a>      <ul>
-        <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}</strong></li>
-        <li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?accept=application/xml</strong></li>
+        <li><strong>http://servername:8080/thredds/ncss/{path/dataset}</strong></li>
+        <li><strong>http://servername:8080/thredds/ncss/{path/dataset}?accept=application/xml</strong></li>
       </ul>
     </li>
     <li>      An HTML form to allow interactive user input:</li>
-    <ul><li><strong>http://servername:8080/thredds/ncServer/{path/dataset}?accept=text/html</strong></li>
+    <ul><li><strong>http://servername:8080/thredds/ncss/{path/dataset}?accept=text/html</strong></li>
     </ul>
   </ul>
   <p>Results of a subset request can be: </p>
   <ul>
-    <li> a netCDF binary file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=application/x-netcdf</strong></li>
+    <li> <strong>a netCDF binary file</strong>
+      <ul><li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=application/x-netcdf</strong></li>
       </ul>
     </li>
-    <li> an XML file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=application/xml</strong></li>
+    <li> <strong>an XML document
+      </strong>
+      <ul><li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=application/xml</strong></li>
       </ul>
     </li>
-    <li>an ASCII text file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=text/plain</strong></li>
-          </ul>
+    <li> <strong>ASCII text 
+      </strong>
+      <ul><li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=text/plain</strong></li>
+      </ul>
     </li>
-    <li>an Excel csv file<ul><li><strong> http://servername:8080/thredds/ncServer/{path/dataset}?{subset}&amp;accept=text/csv</strong></li>
+    <li> <strong>Excel CSV (comma separated values)
+      </strong>
+      <ul><li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=text/csv</strong></li>
       </ul>
     </li>
   </ul>

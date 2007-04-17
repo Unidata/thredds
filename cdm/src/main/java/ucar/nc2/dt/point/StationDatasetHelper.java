@@ -45,12 +45,19 @@ public class StationDatasetHelper {
       LatLonPointImpl llpt = new LatLonPointImpl();
       llpt.set( s.getLatitude(), s.getLongitude());
       rect = new LatLonRect(llpt, .001, .001);
+      System.out.println("start="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
         s =  (Station) stations.get(i);
         llpt.set( s.getLatitude(), s.getLongitude());
         rect.extend( llpt);
+        System.out.println("add="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
       }
+    }
+    if (rect.crossDateline() && rect.getWidth() > 350.0) { // call it global - less confusing
+      double lat_min = rect.getLowerLeftPoint().getLatitude();
+      double deltaLat = rect.getUpperLeftPoint().getLatitude() - lat_min;
+      rect = new LatLonRect( new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
     }
 
     return rect;

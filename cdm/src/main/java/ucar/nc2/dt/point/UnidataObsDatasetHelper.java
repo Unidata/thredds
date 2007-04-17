@@ -58,7 +58,7 @@ public class UnidataObsDatasetHelper {
     double lon_max = getAttAsDouble( ds, "geospatial_lon_max");
     double lon_min = getAttAsDouble( ds, "geospatial_lon_min");
 
-    return new LatLonRect(new LatLonPointImpl(lat_min, lon_min), new LatLonPointImpl(lat_max, lon_max));
+    return new LatLonRect(new LatLonPointImpl(lat_min, lon_min), lat_max-lat_min, lon_max-lon_min);
   }
 
   static private double getAttAsDouble( NetcdfDataset ds, String attname) {

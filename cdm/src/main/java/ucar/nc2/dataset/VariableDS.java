@@ -310,4 +310,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return result;
   }
 
+  /** Implement Comparable */
+  public int compareTo(Object o) {
+    VariableSimpleIF vo = (VariableSimpleIF) o;
+    return getName().compareTo( vo.getName());
+  }
+
 }

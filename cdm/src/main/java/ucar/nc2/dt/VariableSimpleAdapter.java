@@ -74,4 +74,10 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   public String toString() {
     return v.toString();
   }
+
+  /** Implement Comparable */  
+  public int compareTo(Object o) {
+    VariableSimpleIF vo = (VariableSimpleIF) o;
+    return getName().compareTo( vo.getName());
+  }
 }

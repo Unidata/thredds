@@ -613,6 +613,7 @@
           <xsd:enumeration value="GRIB-2"/>
           <xsd:enumeration value="HDF4"/>
           <xsd:enumeration value="HDF5"/>
+          <xsd:enumeration value="McIDAS-AREA"/>
           <xsd:enumeration value="NcML"/>
           <xsd:enumeration value="NetCDF"/>
           <xsd:enumeration value="NEXRAD2"/>
@@ -621,6 +622,7 @@
           <xsd:enumeration value="image/gif"/>
           <xsd:enumeration value="image/jpeg"/>
           <xsd:enumeration value="image/tiff"/>
+          <xsd:enumeration value="text/html"/>
           <xsd:enumeration value="text/plain"/>
           <xsd:enumeration value="text/tab-separated-values"/>
           <xsd:enumeration value="text/xml"/>
@@ -707,8 +709,7 @@
           <xsd:enumeration value="FTP"/>
           <xsd:enumeration value="GridFTP"/>
           <xsd:enumeration value="File"/>
-          <xsd:enumeration value="NetcdfServer"/>
-          <xsd:enumeration value="NetcdfSubset"/>
+          <xsd:enumeration value="NetcdfServer"/> <!-- deprecated -->
 
           <!-- web services -->
           <xsd:enumeration value="LAS"/>
@@ -716,6 +717,7 @@
           <xsd:enumeration value="WFS"/>
           <xsd:enumeration value="WCS"/>
           <xsd:enumeration value="WSDL"/>
+          <xsd:enumeration value="NetcdfSubset"/>
 
           <!--offline -->
           <xsd:enumeration value="WebForm"/>

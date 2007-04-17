@@ -388,6 +388,13 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
     public double convertScaleOffsetMissing(long value) {
       return (double) value;
     }
+
+
+    /** Implement Comparable */
+  public int compareTo(Object o) {
+    VariableSimpleIF vo = (VariableSimpleIF) o;
+    return getName().compareTo( vo.getName());
+  }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -546,4 +553,5 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
   public DataIterator getDataIterator(int bufferSize) throws IOException {
     return null;
   }
+
 }

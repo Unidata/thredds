@@ -2,6 +2,8 @@ package ucar.unidata.geoloc;
 import junit.framework.*;
 import ucar.unidata.util.Format;
 
+import java.util.Random;
+
 /** Test basic projection methods */
 
 public class TestBasic extends TestCase {
@@ -51,6 +53,18 @@ public class TestBasic extends TestCase {
     if (!debug4)
       assert(b.contains(pt));
     return b;
+  }
+
+  public void testGlobalBB() {
+    Random rand = new Random(System.currentTimeMillis());
+    int count = 0;
+    while(count++ <1000) {
+      double r = 360.*rand.nextFloat()-180;
+      LatLonRect llbb = new LatLonRect(new LatLonPointImpl(20.0, r), 20.0, 360.0);
+      double r2 = 360.*rand.nextFloat()-180;
+      LatLonPointImpl p = new LatLonPointImpl(30.0, r2);
+      assert llbb.contains(p);
+    }
   }
 
   public void testLatLonBoundingBox() {

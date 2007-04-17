@@ -207,12 +207,13 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       stations.add(bean);
       recordHelper.stnHash.put(new Integer(i), bean);
     }
-    setBoundingBox();
 
     // get min, max date LOOK
     startDate = UnidataObsDatasetHelper.getStartDate(ds);
     endDate = UnidataObsDatasetHelper.getEndDate(ds);
     boundingBox = UnidataObsDatasetHelper.getBoundingBox(ds);
+    if (null == boundingBox)
+      setBoundingBox();
 
     // kludge Robb not following spec
     if (null == startDate) {
