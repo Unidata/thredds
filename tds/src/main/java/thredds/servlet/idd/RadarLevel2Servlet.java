@@ -285,7 +285,7 @@ serviceType +"&amp;returns=" + returns + "&amp;");
                 dtime = "latest";  // default
             }
             pw.println("    <metadata inherited=\"true\">");
-            pw.println("      <dataType>Station</dataType>");
+            pw.println("      <dataType>Radial</dataType>");
             //pw.println("      <dataFormat>" + returns + "</dataFormat>");
             pw.println("      <dataFormat>" + "NEXRAD2" + "</dataFormat>");
             pw.println("      <serviceName>" + serviceName + "</serviceName>");
