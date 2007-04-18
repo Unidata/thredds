@@ -1,5 +1,5 @@
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <title>THREDDS Technical status summary</title>
@@ -109,6 +109,38 @@
   a powerful tool for third<sup></sup> party metadata augmentation, which is in 
   addition to the ability to add metadata into the Inventory Catalogs.</p>
 <hr>
+<h3><a name="20060815" id="20060815"></a>Status update 03/10/2007</h3>
+
+
+<ol>
+<li> <strong>THREDDS Data Server (TDS)</strong>: We are at stable release 3.14.
+    <br>
+<ol><li>New <strong>authorization/authentication capabilities</strong> allow servers to be configured with restricted dataset access.<br>
+      </li>
+      <li>Refactor of dataset filter interface (CrawlableDatasetFilter) simplifies new implementations<br>
+      </li>
+</ol>
+  </li><li><strong>Common Data Model</strong>:
+We are at stable release 2.2.18
+    <ol><li>Start <strong>joint development with opendap.org</strong> on OPeNDAP Java library</li>
+      <ol>
+        <li>Switch HTTP callback for ascii response to direct implementations.</li>
+        <li>Add all necessary capabilities for full authorization/authentication <br>
+        </li>
+      </ol>
+      <li>Change OPeNDAP default to accept deflated responses</li>
+      <li>Improve handling of McIDAS AREA files</li>
+      <li>Start using GRIB Java 5.1.0 and BUFR Java 1.1.0<br>
+      </li>
+</ol>
+  </li><li><strong>Ongoing work</strong>:
+      <ol><li><strong>FeatureType Meeting</strong>
+in Abingdon, UK (CCLRC Rutherford Appleton Laboratory) to look at
+harmonizing the data models used in CDM, CSML, and OGC/ISO standards.<br>
+</li></ol>
+  </li>
+</ol>
+
 <h3><a name="20060815" id="20060815"></a>Status update 08/15/2006</h3>
 <ol>
   <li> <strong>THREDDS Data Server (TDS)</strong>: We are at stable release 3.12. 
