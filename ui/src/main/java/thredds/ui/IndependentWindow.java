@@ -42,6 +42,8 @@ import javax.swing.*;
  * @version $Id: IndependentWindow.java 50 2006-07-12 16:30:06Z caron $
  */
 public class IndependentWindow extends JFrame {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IndependentWindow.class);
+
 
   /** constructor
      @param title       Window title
@@ -74,7 +76,15 @@ public class IndependentWindow extends JFrame {
   public void setComponent(Component comp ) {
     Container cp = getContentPane();
     cp.add(comp, BorderLayout.CENTER);
-    pack();
+    try {
+      pack();
+    } catch (java.lang.IllegalArgumentException e) {
+      // Ticket ID: HEM-237554
+      // I'm using IceWM window manager under Linux, and it does not support changing the icon on the top left side of the window.
+      // This crashes the whole thing. I dont think this should be a fatal exception.
+      // It would be helpful for future releases to catch this exception and let the program go ahead without the icon.
+      log.error("Possible problem setting icon (?)", e);
+    }
   }
 
   /** show the window. */

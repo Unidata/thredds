@@ -140,6 +140,11 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     _open( raf);
   }
 
+
+  public void setFill(boolean fill) {
+    this.fill = fill;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // data reading
 
@@ -325,7 +330,7 @@ abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   //////////////////////////////////////////////////////////////////////////////////////
   // create new file
 
-  protected boolean fill;
+  protected boolean fill = true;
   protected HashMap dimHash = new HashMap(50);
 
   public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill) throws IOException {

@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public interface IOServiceProviderWriter extends IOServiceProvider {
 
-    /**
+  /**
    * Create new file, populate it from the objects in ncfile.
    * @param filename name of file to create.
    * @param ncfile get dimensions, attributes, and variables from here.
@@ -39,6 +39,17 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @throws java.io.IOException
    */
   public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill) throws IOException;
+
+  /**
+   * Set the fill flag.
+   * For new files, set in the create() method. This method is to set fill for existing files that you want to write.
+   * If true, the data is first written with fill values.
+   * Leave false if you expect to write all data values, set to true if you want to be
+   * sure that unwritten data values have the fill value in it.
+   *
+   * @param fill set fill mode true or false
+   */
+  public void setFill(boolean fill);
 
   /**
    * Write data into a variable.

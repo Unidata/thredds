@@ -42,7 +42,7 @@ import java.io.IOException;
 public class NetcdfFileWriteable extends NetcdfFile {
   private HashMap varHash = new HashMap(50);
   private boolean defineMode;
-  private boolean fill = false;
+  private boolean fill = true;
   private ucar.nc2.IOServiceProviderWriter spiw;
 
   /**
@@ -149,6 +149,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    */
   public void setFill(boolean fill) {
     this.fill = fill;
+    spiw.setFill( fill);
   }
 
   ////////////////////////////////////////////
