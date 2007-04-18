@@ -1,6 +1,6 @@
 package ucar.nc2.dt.point.decode;
 
-/*  a class to contain all the patterns in the ldm  THREDDS servers
+/*  a class to contain the patterns in the Metar servers
  *
  *  Author Robb Kambic
  *  Date  3/4/07
@@ -204,8 +204,6 @@ public class MP {
     public static final Pattern snowDepth = Pattern.compile(" 4/(\\d{1,3})\\s+");
 
     public static final Pattern vertical_VIS = Pattern.compile(" VV(\\d{3})\\s+");
-
-    //public static final Pattern VIRGA = Pattern.compile(" VIRGA( DSNT)?( NE| NW| SE| SW| N| S| E| W)?\\s+");
 
     public static final Pattern maintenace = Pattern.compile(" \\$\\s+");
 

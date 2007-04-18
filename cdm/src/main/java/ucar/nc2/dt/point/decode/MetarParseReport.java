@@ -23,12 +23,14 @@ public class MetarParseReport {
     /**
      * Used to store fields values
     **/
-    private LinkedHashMap<String, String> field = new LinkedHashMap();
+    //private LinkedHashMap<String, String> field = new LinkedHashMap();
+    private LinkedHashMap field = new LinkedHashMap();
 
     /**
      * Used to store fields units
     **/
-    private HashMap<String, String> unit = new HashMap();
+    //private HashMap<String, String> unit = new HashMap();
+    private HashMap unit = new HashMap();
 
     public boolean parseReport(String input) {
 
