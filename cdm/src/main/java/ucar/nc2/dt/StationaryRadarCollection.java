@@ -33,7 +33,7 @@ public interface StationaryRadarCollection {
     public List getRadarStations(ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException;
 
     /** Find a Station by name */
-    public Station getRadarStation( String name);
+    //public Station getRadarStation( String name);
 
 
 
