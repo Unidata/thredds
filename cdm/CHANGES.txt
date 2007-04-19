@@ -26,6 +26,7 @@ Changes in version 2.2.19
   * protected NetcdfFile constructor for passing in iosp class name
   * add GridCoordSys.getLatLon()
  Bugs
+  * CoordinateAxis1D: make edge[] even when not contiguous.
   * CF parser: add _Coordinate.Axes attribute for vertical transform only if attribute not already existing. Affects the case
       where same variable is used for both coordinate system and transform.
   * FileWriter allows 0 in umlimited dimension

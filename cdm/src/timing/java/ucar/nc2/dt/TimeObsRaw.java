@@ -25,8 +25,8 @@ public class TimeObsRaw {
         // System.out.println(line);
         try {
           MetarParseReport parser = new MetarParseReport();
-          if (null == parser.parseReport( line)) {
-            if (showErrs) System.out.println("*** NULL " + line);
+          if (!parser.parseReport( line)) {
+            if (showErrs) System.out.println("*** failed on " + line);
             bad++;
           }
         } catch (Exception e) {

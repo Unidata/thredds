@@ -131,7 +131,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return Math.max( midpoint[0], midpoint[(int) getSize() -1]);
   }
 
-  /** Get the ith coordinate edge. only use this if isContiguous() is true.
+  /** Get the ith coordinate edge. Exact only if isContiguous() is true, otherwise use getBound1() and getBound2().
    *  This is the value where the underlying grid element switches
    *  from "belonging to" coordinate value i-1 to "belonging to" coordinate value i.
    *  In some grids, this may not be well defined, and so should be considered an
@@ -164,7 +164,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return (double[]) midpoint.clone();
   }
 
-  /** Get the coordinate edges as a double array; only use this if isContiguous() is true.
+  /** Get the coordinate edges as a double array.
+   * Exact only if isContiguous() is true, otherwise use getBound1() and getBound2().
    *  @return coordinate edges.
    *  @exception UnsupportedOperationException if !isNumeric()
    */
@@ -176,7 +177,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /** Get the coordinate bound1 as a double array.
-   *  bound1[i] # coordValue[i] # bound2[i], where # is < or >
+   *  bound1[i] # coordValue[i] # bound2[i], where # is < if increasing (bound1[i] < bound1[i+1])
+   *  else < if decreasing.
    *  @return coordinate bound1.
    *  @exception UnsupportedOperationException if !isNumeric()
    */
@@ -188,7 +190,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /** Get the coordinate bound1 as a double array.
-   *  bound1[i] # coordValue[i] # bound2[i], whgere # is < or >
+   *  bound1[i] # coordValue[i] # bound2[i],  where # is < if increasing (bound1[i] < bound1[i+1])
+   *  else < if decreasing.
    *  @return coordinate bound2.
    *  @exception UnsupportedOperationException if !isNumeric()
    */
@@ -525,7 +528,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
 
     // flip if needed
-    if (value1[0] > value2[0]) {
+    boolean goesUp = (n < 2) || value1[1] > value1[0];
+    boolean firstLower = value1[0] < value2[0];
+    if (goesUp != firstLower) {
       double[] temp = value1;
       value1 = value2;
       value2 = temp;
@@ -544,6 +549,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
       for(int i=1; i<n+1; i++)
         edge[i] = value2[i-1];
     } else {
+      edge = new double[n+1];
+      edge[0] = value1[0];
+      for(int i=1; i<n; i++)
+        edge[i] = (value1[i] + value2[i-1])/2;
+      edge[n] = value2[n-1];
       setContiguous(false);
     }
 
