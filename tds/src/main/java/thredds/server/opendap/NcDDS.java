@@ -42,43 +42,45 @@ public class NcDDS extends ServerDDS implements Cloneable {
   static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
   static String DODScharset = "_!~*'-\"";
 
-  private HashMap dimHash = new HashMap(50); // not copied on clone operation
+  private HashMap<String,BaseType> dimHash = new HashMap<String,BaseType>(50); // not copied on clone operation
 
-  /** Constructor */
+  /** Constructor
+   * @param name name of the dataset, at bottom of DDS
+   * @param ncfile  create DDS from this
+   */
   NcDDS( String name, NetcdfFile ncfile) {
     super( StringUtil.escape( name, ""));
 
     // get coordinate variables
     // LOOK: this should get optimized to store data once
-    Iterator iterD = ncfile.getDimensions().iterator();
-    while (iterD.hasNext()) {
-      Dimension dim = (Dimension) iterD.next();
+    for (Object o : ncfile.getDimensions()) {
+      Dimension dim = (Dimension) o;
       List cvs = dim.getCoordinateVariables();
       if (cvs.size() > 0) {
         Variable cv = (Variable) cvs.get(0); // just taking the first one
-        BaseType bt = new NcSDArray( cv, createScalarVariable(cv));
+        BaseType bt = new NcSDArray(cv, createScalarVariable(cv));
         if ((cv.getDataType() == DataType.CHAR) && (cv.getRank() > 1))
           bt = new NcSDCharArray(cv);
-        dimHash.put( dim.getName(), bt);
-        if (log.isDebugEnabled()) log.debug(" NcDDS adding coordinate variable "+cv.getName()+" for dimension "+dim.getName());
+        dimHash.put(dim.getName(), bt);
+        if (log.isDebugEnabled())
+          log.debug(" NcDDS adding coordinate variable " + cv.getName() + " for dimension " + dim.getName());
       }
     }
 
     // add variables
-    Iterator iter = ncfile.getVariables().iterator();
-    while (iter.hasNext()) {
-      Variable v = (Variable) iter.next();
+    for (Object o1 : ncfile.getVariables()) {
+      Variable v = (Variable) o1;
       BaseType bt = null;
 
       if (v.getCoordinateDimension() != null) {
-        bt = (BaseType) dimHash.get(v.getName());
+        bt = dimHash.get(v.getName());
         if (bt == null)
-          log.error("NcDDS: Variable "+v.getName()+" missing coordinate variable in hash; dataset="+name);
+          log.error("NcDDS: Variable " + v.getName() + " missing coordinate variable in hash; dataset=" + name);
       }
 
       if (bt == null)
-        bt = createVariable( v);
-      addVariable( bt);
+        bt = createVariable(v);
+      addVariable(bt);
     }
   }
 
@@ -115,9 +117,9 @@ public class NcDDS extends ServerDDS implements Cloneable {
     else if (dt == DataType.FLOAT)
       return new NcSDFloat32(v);
     else if (dt == DataType.INT)
-      return v.isUnsigned() ? (BaseType) new NcSDUInt32(v) : new NcSDInt32(v);
+      return v.isUnsigned() ? new NcSDUInt32(v) : new NcSDInt32(v);
     else if (dt == DataType.SHORT)
-      return v.isUnsigned() ? (BaseType) new NcSDUInt16(v) : new NcSDInt16(v);
+      return v.isUnsigned() ? new NcSDUInt16(v) : new NcSDInt16(v);
     else if (dt == DataType.BYTE)
       return new NcSDByte(v);
     else if (dt == DataType.CHAR)
@@ -149,7 +151,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
     if (!isGrid)
       return arr;
 
-    ArrayList list = new ArrayList();
+    ArrayList<BaseType> list = new ArrayList<BaseType>();
     list.add( arr);
     iter = v.getDimensions().iterator();
     while (iter.hasNext()) {
@@ -161,17 +163,16 @@ public class NcDDS extends ServerDDS implements Cloneable {
   }
 
   private BaseType createStructure( Structure s) {
-    ArrayList list = new ArrayList();
-    Iterator iter = s.getVariables().iterator();
-    while (iter.hasNext()) {
-      Variable nested = (Variable) iter.next();
-      list.add ( createVariable(nested));
+    ArrayList<BaseType> list = new ArrayList<BaseType>();
+    for (Object o : s.getVariables()) {
+      Variable nested = (Variable) o;
+      list.add(createVariable(nested));
     }
     return new NcSDStructure( s, list);
   }
 
   public static String escapeName(String vname) {
-    vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
+    // vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
     return StringUtil.escape(vname, NcDDS.DODScharset);
   }
 

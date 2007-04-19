@@ -137,13 +137,14 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   /**
-   * Creath the FMRC catalog, or one of its nested catalogs.
+   * Create the FMRC catalog, or one of its nested catalogs.
    * @param match which catalog, one of null, RUNS, OFFSET, FORECAST, or SCAN
    * @param orgPath
    * @param baseURI
    * @return the requested catalog
    */
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI ) {
+    logger.debug("FMRC make catalog for "+match+" "+baseURI);
     try {
       if ((match == null) || (match.length() == 0))
         return makeCatalog(baseURI);

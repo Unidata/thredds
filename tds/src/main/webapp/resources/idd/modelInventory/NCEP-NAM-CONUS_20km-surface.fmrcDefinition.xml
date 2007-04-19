@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_20km/surface/files/catalog.xml">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NAM/CONUS_20km/surface/files/catalog.xml">
   <vertCoord id="12" name="depth_below_surface" units="m">3.0</vertCoord>
-  <vertCoord id="5" name="depth_below_surface_layer" units="m">1.0,2.0 0.4,1.0 0.1,0.4 0.0,0.1</vertCoord>
+  <vertCoord id="5" name="depth_below_surface_layer" units="m">0.10000000149011612,0.0 0.4000000059604645,0.10000000149011612 1.0,0.4000000059604645 2.0,1.0</vertCoord>
   <vertCoord id="6" name="depth_below_surface_layer1" units="m">0.0,1.0</vertCoord>
   <vertCoord id="11" name="depth_below_surface_layer2" units="m">0.0,2.0</vertCoord>
   <vertCoord id="3" name="height_above_ground" units="m">1000.0 4000.0</vertCoord>
   <vertCoord id="8" name="height_above_ground1" units="m">10.0</vertCoord>
   <vertCoord id="13" name="height_above_ground2" units="m">2.0 10.0</vertCoord>
   <vertCoord id="4" name="height_above_ground3" units="m">2.0</vertCoord>
-  <vertCoord id="14" name="height_above_ground_layer" units="m">0.0,1000.0 0.0,3000.0</vertCoord>
+  <vertCoord id="14" name="height_above_ground_layer" units="m">1000.0,0.0 3000.0,0.0</vertCoord>
   <vertCoord id="18" name="height_above_ground_layer1" units="m">0.0,6000.0</vertCoord>
   <vertCoord id="0" name="pressure" units="Pa">25000.0 50000.0 70000.0 85000.0 100000.0</vertCoord>
   <vertCoord id="19" name="pressure1" units="Pa">50000.0 70000.0</vertCoord>
   <vertCoord id="17" name="pressure2" units="Pa">75000.0 80000.0 85000.0 90000.0</vertCoord>
   <vertCoord id="16" name="pressure_difference_layer" units="Pa">0.0,3000.0 3000.0,6000.0 6000.0,9000.0 9000.0,12000.0 12000.0,15000.0 15000.0,18000.0</vertCoord>
-  <vertCoord id="2" name="pressure_difference_layer1" units="Pa">0.0,9000.0 0.0,18000.0 0.0,25500.0</vertCoord>
+  <vertCoord id="2" name="pressure_difference_layer1" units="Pa">9000.0,0.0 18000.0,0.0 25500.0,0.0</vertCoord>
   <vertCoord id="7" name="pressure_difference_layer2" units="Pa">0.0,3000.0</vertCoord>
   <vertCoord id="9" name="pressure_difference_layer3" units="Pa">0.0,25500.0</vertCoord>
   <vertCoord id="1" name="pressure_difference_layer4" units="Pa">0.0,18000.0</vertCoord>
   <vertCoord id="10" name="pressure_difference_layer5" units="Pa">0.0,3000.0 3000.0,6000.0 6000.0,9000.0 9000.0,12000.0 12000.0,15000.0</vertCoord>
   <vertCoord id="15" name="pressure_layer" units="Pa">50000.0,100000.0</vertCoord>
-
   <offsetHours id="0">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</offsetHours>
-  <offsetHours id="1">0.0 12.0 24.0 36.0 48.0 60.0 72.0</offsetHours>
-  <offsetHours id="2">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0</offsetHours>
-
+  <offsetHours id="1">0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0</offsetHours>
+  <offsetHours id="2">0.0 12.0 24.0 36.0 48.0 60.0 72.0</offsetHours>
   <runSequence allUseSeq="0">
     <variable name="Absolute_vorticity" vertCoord="0" />
     <variable name="Albedo" />
@@ -66,7 +64,7 @@
     <variable name="Latent_heat_net_flux" />
     <variable name="Liquid_Volumetric_Soil_Moisture_non_frozen" vertCoord="5" />
     <variable name="Low_cloud_cover" />
-    <variable name="MSLP__Eta_Reduction" />
+    <variable name="MSLP_Eta_Reduction" />
     <variable name="Main_thermocline_depth" />
     <variable name="MaximumComposite_radar_reflectivity" />
     <variable name="Maximum_Snow_Albedo" />
@@ -102,8 +100,8 @@
     <variable name="Relative_humidity_sigma_layer" />
     <variable name="Rime_Factor" />
     <variable name="Sensible_heat_net_flux" />
-    <variable name="Snow_Cover" />
     <variable name="Snow-Free_Albedo" />
+    <variable name="Snow_Cover" />
     <variable name="Snow_depth" />
     <variable name="Soil_Porosity" />
     <variable name="Soil_moisture_content" vertCoord="11" />
@@ -139,7 +137,6 @@
     <variable name="U-component_of_wind" vertCoord="16" />
     <variable name="U-component_of_wind_height_above_ground" vertCoord="8" />
     <variable name="U-component_of_wind_hybrid" />
-    <variable name="Unknown" />
     <variable name="Upward_Long-Wave_Rad_Flux" />
     <variable name="Upward_Long-Wave_Rad_Flux_surface" />
     <variable name="Upward_Short-Wave_Rad_Flux" />
@@ -158,17 +155,16 @@
     <variable name="Wind_speed_gust" />
   </runSequence>
   <runSequence>
-    <run runHour="0.0" offsetHourSeq="1" />
-    <run runHour="6.0" offsetHourSeq="2" />
-    <run runHour="12.0" offsetHourSeq="1" />
-    <run runHour="18.0" offsetHourSeq="2" />
+    <run runHour="0.0" offsetHourSeq="2" />
+    <run runHour="6.0" offsetHourSeq="1" />
+    <run runHour="12.0" offsetHourSeq="2" />
+    <run runHour="18.0" offsetHourSeq="1" />
     <variable name="Baseflow-Groundwater_Runoff" />
     <variable name="Snow_melt" />
     <variable name="Storm_Surface_Runoff" />
   </runSequence>
-  <runSequence allUseSeq="2">
+  <runSequence allUseSeq="1">
     <variable name="Convective_precipitation" />
     <variable name="Total_precipitation" />
   </runSequence>
 </fmrcDefinition>
-

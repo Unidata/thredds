@@ -353,6 +353,7 @@ public class AggregationFmrc extends Aggregation {
 
   // we assume the variables are complete, but the time dimensions and values have to be recomputed
   protected void syncDataset(CancelTask cancelTask) throws IOException {
+    logger.debug("syncDataset ");
     buildCoords(cancelTask);
 
     // redo the aggregation dimension, makes things easier if you dont replace Dimension, just modify the length

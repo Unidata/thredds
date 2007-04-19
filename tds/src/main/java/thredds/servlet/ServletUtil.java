@@ -1254,9 +1254,8 @@ public class ServletUtil {
       Thread thread = tarray[i];
       ClassLoader loader = thread.getContextClassLoader();
       String loaderName = (loader == null) ? "Default" : loader.getClass().getName();
-      //Thread.State state = thread.getState(); // LOOK JDK 1.5
-      String state = "unknown";
-      String id = "";  // thread.getId() LOOK JDK 1.5
+      Thread.State state = thread.getState(); // LOOK JDK 1.5
+      long id = thread.getId(); // LOOK JDK 1.5
       pw.print("   "+id +" "+thread.getName() +" "+state +" "+loaderName);
       if (thread == current)
         pw.println(" **** CURRENT ***");

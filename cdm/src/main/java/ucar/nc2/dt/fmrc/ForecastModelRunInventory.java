@@ -42,6 +42,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.IOServiceProvider;
 import ucar.nc2.Variable;
+import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -972,7 +973,7 @@ public class ForecastModelRunInventory {
 
   private static boolean debug = false, showXML = false;
 
-  public static void main(String args[]) throws Exception {
+  public static void main2(String args[]) throws Exception {
     //String def = "C:/data/grib/nam/c20s/NAM_CONUS_20km_surface_20060316_1800.grib1";
     // String def = "C:/data/radarMosaic/RADAR_10km_mosaic_20060807_2220.grib1";
     String def = "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1";
@@ -982,4 +983,12 @@ public class ForecastModelRunInventory {
     ForecastModelRunInventory fmr = open(null, datasetName, OPEN_FORCE_NEW, true);
     fmr.writeXML(System.out);
   }
+
+  public static void main(String args[]) throws IOException {
+    DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 5 * 24 * 3600, 3600);
+    String url = "http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files/NAM_CONUS_12km_20070419_1800.grib2";
+    ForecastModelRunInventory fmr = ForecastModelRunInventory.open(cache, url, ForecastModelRunInventory.OPEN_NORMAL, false);
+    fmr.writeXML(System.out);
+  }
+
 }

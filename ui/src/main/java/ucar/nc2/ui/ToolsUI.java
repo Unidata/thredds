@@ -1649,10 +1649,10 @@ public class ToolsUI extends JPanel {
             catComboBox.setEditable( true);
             catSpinner = new JSpinner();
             JButton accept = new JButton("Accept");
-            JPanel catPanel = new JPanel( new FlowLayout());
-            catPanel.add(catComboBox);
-            catPanel.add(catSpinner);
-            catPanel.add(accept);
+            JPanel catPanel = new JPanel( new BorderLayout());
+            catPanel.add(catComboBox, BorderLayout.CENTER);
+            catPanel.add(catSpinner, BorderLayout.WEST);
+            catPanel.add(accept, BorderLayout.EAST);
 
             accept.addActionListener( new ActionListener() {
               public void actionPerformed(ActionEvent e) {

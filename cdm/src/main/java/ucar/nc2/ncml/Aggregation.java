@@ -116,8 +116,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false,
-    debugScan = false;
+  protected boolean debug = true, debugOpenFile = true, debugCacheDetail = true, debugSyncDetail = true, debugProxy = true,
+    debugScan = true;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
