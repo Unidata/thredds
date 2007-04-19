@@ -278,7 +278,7 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
         return subList;
       }
         
-      public ArrayList getObservations()  throws IOException {
+      public List getObservations()  throws IOException {
         return readObservations();
       }
 
