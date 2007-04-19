@@ -12,7 +12,30 @@ import java.util.Iterator;
  * @author
  * @version $Revision:  $
  */
-public interface StationaryRadarCollection extends StationCollection {
+public interface StationaryRadarCollection {
+
+    /** Get all the Stations in the collection.
+     * @return List of Station */
+    public List getRadarStations() throws IOException;
+
+    /** Get all the Stations in the collection, allow user to cancel.
+     * @param cancel allow user to cancel. Implementors should return ASAP.
+     * @return List of Station */
+    public List getRadarStations(ucar.nc2.util.CancelTask cancel) throws IOException;
+
+    /** Get all the Stations within a bounding box.
+     * @return List of Station */
+    public List getRadarStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+
+    /** Get all the Stations within a bounding box, allow user to cancel.
+     * @param cancel allow user to cancel. Implementors should return ASAP.
+     * @return List of Station */
+    public List getRadarStations(ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException;
+
+    /** Find a Station by name */
+    public Station getRadarStation( String name);
+
+
 
   /** check if the product available for all stations.
    * @return true of false */
@@ -33,57 +56,57 @@ public interface StationaryRadarCollection extends StationCollection {
  /** Get all specific data within the specified bounding box.
    * @return List of type RadialDatasetSweep data
    */
-  public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+ // public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 
   /** Get all specific data within the specified bounding box, allow user to cancel.
    * @param cancel allow user to cancel. Implementors should return ASAP.
    * @return List of type RadialDatasetSweep data
    */
-  public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException;
+ // public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException;
 
   /** Get all specific data within the specified bounding box and date range.
    * @return List of type RadialDatasetSweep data
    */
-  public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end) throws IOException;
+ // public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end) throws IOException;
 
   /** Get all specific data within the specified bounding box and date range, allow user to cancel.
    * @param cancel allow user to cancel. Implementors should return ASAP.
    * @return List of type RadialDatasetSweep data
    */
-  public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
+ // public List getData( String product, ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
 
 
   /** Get data for this Station within the specified date range.
    * @return List of getDataClass() */
-  public List getData( Station s, String product, Date start, Date end) throws IOException;
+  public List getData( Station s,  Date start, Date end) throws IOException;
 
   /** Get data for this Station within the specified date range, allow user to cancel.
    * @param cancel allow user to cancel. Implementors should return ASAP.
    * @return List of RadialDatasetSweep data
    */
-  public List getData( Station s, String product, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
+  public List getData( Station s,  Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
 
   /** Get all data for a list of Stations.
    * @return List of RadialDatasetSweep data
    */
-  public List getData(List stations, String product) throws IOException;
+  //public List getData(List stations, String product) throws IOException;
 
   /** Get all data for a list of Stations, allow user to cancel.
    * @param cancel allow user to cancel. Implementors should return ASAP.
    * @return List of RadialDatasetSweep data
    */
-  public List getData(List stations, String product, ucar.nc2.util.CancelTask cancel) throws IOException;
+ // public List getData(List stations, String product, ucar.nc2.util.CancelTask cancel) throws IOException;
 
   /** Get data for a list of Stations within the specified date range.
    * @return List of RadialDatasetSweep data
    */
-  public List getData(List stations, String product, Date start, Date end) throws IOException;
+//  public List getData(List stations, Date start, Date end) throws IOException;
 
   /** Get data for a list of Stations within the specified date range, allow user to cancel.
    * @param cancel allow user to cancel. Implementors should return ASAP.
    * @return List of RadialDatasetSweep data
    */
-  public List getData(List stations, String product, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
+ // public List getData(List stations, String product, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
 
 
 
