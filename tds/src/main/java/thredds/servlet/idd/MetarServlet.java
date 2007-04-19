@@ -306,14 +306,14 @@ public class MetarServlet extends LdmServlet {
 // main code body, no configurations below this line
 //
         //pw.println("before call to open database");
-        MetarQuery mq = new MetarQuery( "/local/ldm/data/pub/native/surface/metar", pw );
+        //MetarQuery mq = new MetarQuery( "/local/ldm/data/pub/native/surface/metar", pw );
 
         // return TimeSeries for a set of stations
         if( STNS != null ) {
             //pw.println( "<p>STNS length ="+ STNS.length +"</p>" );
             for( int i = 0; i < STNS.length; i++ )
-                mq.getTimeSeries( STNS[ i ] );
-            mq.close();
+                //mq.getTimeSeries( STNS[ i ] );
+            //mq.close();
             return;
         }
 
@@ -394,10 +394,10 @@ public class MetarServlet extends LdmServlet {
             }
             //pw.println("inside MetarQuery");
             if( y0 != null ) {
-                report = mq.getFromTime( start, STNS );
+                //report = mq.getFromTime( start, STNS );
             } else {
 		//pw.println("called mq.getFromTime( start ) = "+ start );
-                report = mq.getFromTime( start );
+                //report = mq.getFromTime( start );
                 //pw.println("report ="+ report.size() );
             }
             //return;
@@ -407,12 +407,12 @@ public class MetarServlet extends LdmServlet {
             //pw.println("dateEnd =" + dateEnd);
             Date end = dateFormatISO.parse( dateEnd);
             if( y0 != null ) {
-                mq.getTimeRange(start.getTime(), end.getTime(), STNS );
+                //mq.getTimeRange(start.getTime(), end.getTime(), STNS );
             } else {
-                mq.getTimeRange(start.getTime(), end.getTime());
+                //mq.getTimeRange(start.getTime(), end.getTime());
             }
         }
-        mq.close();
+        //mq.close();
 
         // add ending tags
 /*

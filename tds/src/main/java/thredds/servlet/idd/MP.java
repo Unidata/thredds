@@ -9,7 +9,7 @@ package thredds.servlet.idd;
 
 import java.util.regex.Pattern;
 
-public class MetarPatterns {
+public class MP {
 
     public static final Pattern N9999 = Pattern.compile(" 9999\\s+");
 
