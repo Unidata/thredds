@@ -160,13 +160,17 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     public String getLocationURI() {return dqc.getCreateFrom(); }
     public String getDescription() { return desc; }
 
-/** get all radar station.
-   * @return List of type DqcRadarStation objects */
+  /** get all radar station.
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
     public List getRadarStations() throws IOException {
         return getStations();
     }
-/** get all radar station.
-   * @return List of type DqcRadarStation objects */
+   /** get all radar station.
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
     public List getStations() {
         List sl = selStation.getStations();
         ArrayList dsl = new ArrayList();
@@ -178,24 +182,33 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
         }
         return dsl;
     }
-/** get all radar station within box.
-   * @return List of type DqcRadarStation objects */
+ /** get all radar station within box.
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
     public List getRadarStations(ucar.nc2.util.CancelTask cancel) throws IOException {
         return getStations(cancel);
     }
-/** get all radar station within box.
-   * @return List of type DqcRadarStation objects */
+
+  /** get all radar station within box.
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
     public List getStations(ucar.nc2.util.CancelTask cancel) throws IOException {
         if ((cancel != null) && cancel.isCancel()) return null;
         return getRadarStations();
     }
-/** get all radar station within box.
-   * @return List of type DqcRadarStation objects */
+ /** get all radar station within box.
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
     public List getRadarStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
          return getStations(boundingBox);
     }
-/** get all radar station within box.
-   * @return List of type DqcRadarStation objects */
+ /** get all radar station within box.
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
     public List getStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException {
         List sl = selStation.getStations();
         ArrayList dsl = new ArrayList();
@@ -213,15 +226,21 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
 
         return dsl;
     }
-/** get all radar station within box.
-   * @return List of type DqcRadarStation objects */
+
+ /** get all radar station within box.
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
+ 
     public List getRadarStations(ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException {
         if ((cancel != null) && cancel.isCancel()) return null;
         return getRadarStations(boundingBox);
     }
 
  /** get all radar station.
-   * @return List of type DqcRadarStation objects */
+   * @return List of type DqcRadarStation objects
+   * @throws IOException java io exception
+   * */
     public DqcRadarStation getRadarStation( String name) {
         return new DqcRadarStation((Station)stations.get(name));
     }
@@ -323,6 +342,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * Getting dataset for a single radar station.
      * @param stnName radar station name
      * @param absTime, is absolute time
+     * @return RadialDatasetSweep object
+     * @throws IOException java io exception
      */
     private RadialDatasetSweep queryRadarStationDataset(String stnName, Date absTime) throws IOException {
         // absTime is a member of  datasetsDateURI
@@ -342,6 +363,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * Getting URI for a single radar station.
      * @param stnName radar station name
      * @param absTime, is absolute time
+     * @return URI
+     * @throws IOException  java io exception
      */
     private URI queryRadarStationURIs(String stnName, Date absTime) throws IOException {
         // absTime is a member of  datasetsDateURI
@@ -360,6 +383,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * Getting invDataset list for a single radar station.
      * @param stnName radar station name
      * @param rTime, is relative time, such as latest, 1hour
+     * @return list of invDatasets
+     * @throws IOException java io exception
      */
     private List queryRadarStation(String stnName, String rTime) throws IOException {
         // rTime is relative time, 1hour, 6hour, etc.., and it is a member of  relTimesList
@@ -403,6 +428,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * Getting dataset list for a single radar station.
      * @param stnName radar station name
      * @param rTime, is relative time, such as latest, 1hour
+     * @return iterator
+     * @throws IOException java io exception
      */
     private Iterator queryRadarStationDatasets(String stnName, String rTime) throws IOException {
         // rTime is relative time, 1hour, 6hour, etc.., and it is a member of  relTimesList
@@ -430,6 +457,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * Getting URI list for a single radar station.
      * @param stnName radar station name
      * @param rTime, is relative time, such as latest, 1hour
+     * @return list of URIs
+     * @throws IOException java io exception
      */
     private ArrayList queryRadarStationURIs(String stnName, String rTime) throws IOException {
         // rTime is relative time, 1hour, 6hour, etc.., and it is a member of  relTimesList
@@ -456,6 +485,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     /**
      * Getting invDataset list for a single radar station.
      * @param stnName radar station name
+     * @return list of invDataset
+     * @throws IOException java io exception
      */
     private List queryRadarStation(String stnName) throws IOException {
 
@@ -496,6 +527,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     /**
      * Getting data Iterator for a single radar station.
      * @param stnName radar station name
+     * @return data iterator
+     * @throws IOException java io exception
      */
     private Iterator queryRadarStationDatasets(String stnName) throws IOException {
 
@@ -516,6 +549,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     /**
      * Getting data URI list for a single radar station.
      * @param stnName radar station name
+     * @return list of URIs
+     * @throws IOException java io exception
      */
     private ArrayList queryRadarStationURIs(String stnName) throws IOException {
         absTimeList = new ArrayList();
@@ -547,6 +582,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     /**
      * Getting data Iterator for a single radar station.
      * @param bufferSize
+     * @return data iterator
+     * @throws IOException java io exception
      */
     public DataIterator getDataIterator(int bufferSize) throws IOException {
         return null;
@@ -554,6 +591,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     /**
      * Getting data relative time list for a single radar station.
      * @param stn radar station name
+     *  @return list of relative times
+     * @throws IOException java io exception
      */
     private List queryRadarStationRTimes( String stn) throws IOException{
             return selTime.getChoices();
@@ -562,6 +601,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     /**
      * Getting data absolute time list for a single radar station.
      * @param stn radar station name
+     * @return list of times
+     * @throws IOException java io exception
      */
     private List queryRadarStationABSTimes( String stn) throws IOException{
         if(datasetsDateURI == null)
@@ -574,8 +615,10 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * @param s radar station
      * @param start, the start time
      * @param end, the end time
+     * @return list of URIs
+     * @throws IOException java io exception
      */
-    public List getDataURIs( ucar.nc2.dt.Station s, Date start, Date end) throws IOException {
+    public List getDataURIs( ucar.nc2.dt.Station s, Date start, Date end) throws java.io.IOException {
         if(absTimeList == null)
            queryRadarStationURIs(s.getName());
         ArrayList datasetsURI = new ArrayList();
@@ -586,7 +629,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
 
            if (d.getTime() >= start.getTime() && d.getTime() <= end.getTime() ) {
                 URI ui = (URI)datasetsDateURI.get(d);
-                datasetsURI.add(ui);
+                if (ui != null)
+                    datasetsURI.add(ui);
            }
         }
 
@@ -598,6 +642,7 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * @param s radar station
      * @param start, the start time
      * @param end, the end time
+     *  @return list of radialDatasetSweep
      */
     public List getData( ucar.nc2.dt.Station s, Date start, Date end) throws IOException {
         if(absTimeList == null)
@@ -624,6 +669,7 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * @param s radar station
      * @param start, the start time
      * @param end, the end time
+     *  @return list of URLs
      */
     public List getDataURIs( ucar.nc2.dt.Station s, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException {
         if(absTimeList == null)
@@ -649,6 +695,7 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * @param s radar station
      * @param start, the start time
      * @param end, the end time
+     *  @return list of radialDatasetSweep
      */
 
     public List getData( ucar.nc2.dt.Station s, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException {
@@ -680,6 +727,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
      * @param end, the end time
      * @param t, the time interval
      * @param tUnit, the time unit, such as "HOUR", "Minute"
+     * @return list of URIs
+     * @throws IOException java io exception
      */
 
     public List getDataURIs( ucar.nc2.dt.Station s, Date start, Date end, int t, String tUnit) throws IOException {
@@ -737,6 +786,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
    * @param end, the end time
    * @param t, the time interval
    * @param tUnit, the time unit, such as "HOUR", "Minute"
+   * @return list of radialDatasetSweep
+   * @throws IOException java io exception
    */
     public List getData( ucar.nc2.dt.Station s, Date start, Date end, int t, String tUnit) throws IOException {
         if(absTimeList == null)
@@ -796,21 +847,26 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
         List stns = ds.getRadarStations();
         System.out.println(" nstns= "+stns.size());
 
-        List absList;
+
 
         DqcRadarStation stn = (DqcRadarStation)(stns.get(2));
 
-        absList = stn.getRadarStationURIs("1hour");
+        List absList = stn.getRadarStationURIs("1hour");
+        assert null != absList;
         List ulist = stn.getRadarStationURIs();
+        assert null != ulist;
         List tlist = stn.getRadarStationTimes();
         int sz = tlist.size();
         Date ts = (Date)tlist.get(1);
+
         URI stURL = stn.getRadarDatasetURI( ts);
+        assert null != stURL;
         List dList = ds.getDataURIs((ucar.nc2.dt.Station)stns.get(2), (Date)tlist.get(sz-1), (Date)tlist.get(0), 12, "HOUR");
-
+        assert null != dList;
         List rList = stn.getRadarStationTimes((Date)tlist.get(3), (Date)tlist.get(0));
+        assert null != rList;
         Iterator it = stn.getRadarStationDatasets("1hour");
-
+        assert null != it;
         List data = ds.getData((DqcRadarStation)stns.get(2), (Date)tlist.get(6), (Date)tlist.get(0));
         Iterator it1 = data.iterator();
         while(it1.hasNext()) {
