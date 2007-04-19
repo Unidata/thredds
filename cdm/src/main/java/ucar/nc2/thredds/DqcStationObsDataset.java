@@ -284,7 +284,10 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
 
   private void show(String line) {
     System.out.println(line);
-    LinkedHashMap map = parser.parseReport(line);
+    if( ! parser.parseReport(line) )
+        return;
+
+    LinkedHashMap map = parser.getFields();
     Iterator ii = map.keySet().iterator();
     while (ii.hasNext()) {
       Object key = ii.next();
