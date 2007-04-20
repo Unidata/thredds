@@ -19,7 +19,7 @@ public class TestAll {
 
   public static long startTime;
 
-  // TODO all the static stuff below is also in thredds.TestAll, can we unify?
+  // TODO all the static stuff below is also in thredds.unidata.testUtil.TestAll, can we unify?
 
   // Determine how Unidata "/upc/share" directory is mounted
   // on local machine by reading system or THREDDS property.

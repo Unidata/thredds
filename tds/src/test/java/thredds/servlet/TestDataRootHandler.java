@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -22,8 +21,6 @@ import java.net.URISyntaxException;
  */
 public class TestDataRootHandler extends TestCase
 {
-//  static private org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( TestDataRootHandler.class );
 
   private String contentPath = TestAll.temporaryDataDir + "TestDataRootHandler/contentPath/";
 

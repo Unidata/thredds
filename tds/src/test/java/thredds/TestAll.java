@@ -1,15 +1,11 @@
 package thredds;
 
-import ucar.unidata.io.RandomAccessFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.List;
 
 import junit.framework.TestSuite;
-import junit.extensions.TestSetup;
 import thredds.servlet.TestDataRootHandler;
 
 /**
@@ -18,7 +14,7 @@ import thredds.servlet.TestDataRootHandler;
  */
 public class TestAll
 {
-  // TODO all the static stuff below is also in ucar.nc2.TestAll, can we unify?
+  // TODO all the static stuff below is also in ucar.nc2.unidata.testUtil.TestAll, can we unify?
 
   // Determine how Unidata "/upc/share" directory is mounted
   // on local machine by reading system or THREDDS property.
