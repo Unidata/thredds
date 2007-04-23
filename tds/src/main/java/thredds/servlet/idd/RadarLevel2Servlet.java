@@ -107,8 +107,8 @@ public class RadarLevel2Servlet extends LdmServlet {
             //}
 
             dtime = ServletUtil.getParameterIgnoreCase(req, "dtime");
-            if (dtime == null)
-                dtime = "latest";
+            //if (dtime == null)
+            //    dtime = "latest";
 
             dateStart = ServletUtil.getParameterIgnoreCase(req, "dateStart");
 
@@ -455,7 +455,7 @@ serviceType +"&amp;returns=" + returns + "&amp;");
                        File file = new File( (String)times.get( t ) );
                        ServletUtil.returnFile(this, req, res, file, null);
                     }
-                    if (dtime == null || dtime.equals("latest")) {
+                    if (dtime != null && dtime.equals("latest")) {
                         notDone = false;
                         break;
                     }
