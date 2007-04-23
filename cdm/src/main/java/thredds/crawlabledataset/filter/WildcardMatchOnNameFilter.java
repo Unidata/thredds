@@ -23,16 +23,28 @@ public class WildcardMatchOnNameFilter implements CrawlableDatasetFilter
 
   public WildcardMatchOnNameFilter( String wildcardString )
   {
+    // Keep original wildcard string.
+    this.wildcardString = wildcardString;
+
+    // Map wildcard to regular expresion.
+    String regExp = mapWildcardToRegExp( wildcardString);
+
+    // Compile regular expression pattern
+    this.pattern = java.util.regex.Pattern.compile( regExp );
+  }
+
+  private String mapWildcardToRegExp( String wildcardString )
+  {
     // Replace "." with "\.".
-    this.wildcardString = wildcardString.replaceAll( "\\.", "\\\\." );
+    wildcardString = wildcardString.replaceAll( "\\.", "\\\\." );
 
     // Replace "*" with ".*".
-    this.wildcardString = this.wildcardString.replaceAll( "\\*", ".*");
+    wildcardString = wildcardString.replaceAll( "\\*", ".*");
 
     // Replace "?" with ".?".
-    this.wildcardString = this.wildcardString.replaceAll( "\\?", ".?");
-
-    this.pattern = java.util.regex.Pattern.compile( this.wildcardString );
+    wildcardString = wildcardString.replaceAll( "\\?", ".?");
+    
+    return wildcardString;
   }
 
   public Object getConfigObject() { return wildcardString; }
