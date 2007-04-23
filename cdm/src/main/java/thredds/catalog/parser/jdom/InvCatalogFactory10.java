@@ -512,7 +512,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return datasetScan;
   }
 
-  protected CrawlableDatasetFilter readDatasetScanFilter( Element filterElem )
+  CrawlableDatasetFilter readDatasetScanFilter( Element filterElem )
   {
     CrawlableDatasetFilter filter = null;  //lastModifiedLimit
 
@@ -1774,7 +1774,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return dsElem;
   }
 
-  private Element writeDatasetScanFilter( CrawlableDatasetFilter filter )
+  Element writeDatasetScanFilter( CrawlableDatasetFilter filter )
   {
     Element filterElem = new Element( "filter", defNS );
     if ( filter.getClass().isAssignableFrom( MultiSelectorFilter.class ) )
@@ -1786,7 +1786,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         if ( curSelector.isIncluder() )
           curSelectorElem = new Element( "include", defNS );
         else
-          curSelectorElem = new Element( "excluder", defNS );
+          curSelectorElem = new Element( "exclude", defNS );
 
         CrawlableDatasetFilter curFilter = curSelector.getFilter();
         if ( curFilter instanceof WildcardMatchOnNameFilter )
