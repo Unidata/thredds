@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import junit.framework.TestSuite;
 import thredds.servlet.TestDataRootHandler;
+import thredds.catalog.TestDatasetScanBrowseMetadata;
 
 /**
  * TestSuite that runs all TDS unit tests.
@@ -14,6 +15,16 @@ import thredds.servlet.TestDataRootHandler;
  */
 public class TestAll
 {
+  public static junit.framework.Test suite()
+  {
+
+    TestSuite suite = new TestSuite();
+    suite.addTestSuite( TestDataRootHandler.class );
+    //suite.addTestSuite( TestDatasetScanBrowseMetadata.class );
+
+    return suite;
+  }
+
   // TODO all the static stuff below is also in ucar.nc2.unidata.testUtil.TestAll, can we unify?
 
   // Determine how Unidata "/upc/share" directory is mounted
@@ -103,12 +114,12 @@ public class TestAll
   /**
    * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
    */
-  public static String cdmTestDataDir = "./src/test/data/";
+  public static String cdmTestDataDir = "src/test/data/";
 
   /**
    * Temporary data directory (for writing temporary data).
    */
-  public static String temporaryDataDir = "./target/test/tmp/";
+  public static String temporaryDataDir = "target/test/tmp/";
 
   // Make sure the temp data dir is created.
   static
@@ -122,13 +133,4 @@ public class TestAll
       }
     }
   }
-
-  public static junit.framework.Test suite ( ) {
-
-    TestSuite suite= new TestSuite();
-    suite.addTestSuite( TestDataRootHandler.class);
-
-    return suite;
-  }
-
 }

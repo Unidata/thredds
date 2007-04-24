@@ -107,12 +107,12 @@ public class TestAll {
   /**
    * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
    */
-  public static String cdmTestDataDir = "./src/test/data/";
+  public static String cdmTestDataDir = "src/test/data/";
 
   /**
    * Temporary data directory (for writing temporary data).
    */
-  public static String temporaryDataDir = "./target/test/tmp/";
+  public static String temporaryDataDir = "target/test/tmp/";
 
   // Make sure the temp data dir is created.
   static {

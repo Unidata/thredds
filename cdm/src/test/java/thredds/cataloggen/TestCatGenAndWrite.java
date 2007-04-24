@@ -11,6 +11,8 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.catalog.InvService;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
+import ucar.nc2.TestAll;
+import ucar.unidata.util.TestUtil;
 
 /**
  * _more_
@@ -20,7 +22,6 @@ import thredds.catalog.InvCatalogImpl;
  */
 public class TestCatGenAndWrite extends TestCase
 {
-
   public TestCatGenAndWrite( String name )
   {
     super( name );
@@ -35,14 +36,27 @@ public class TestCatGenAndWrite extends TestCase
    */
   public void testLocalDataFiles()
   {
-    String collectionPath = "src/test/data/thredds/cataloggen/testData"; // "C:/Ethan/data/mlode";
-    String startPath = "modelNotFlat";
-    String catWriteDirPath = "target/tmpTest/TestCatGenAndWrite/testLocalDataFiles"; // "C:/Ethan/data/tmpTest";
+    // Create a data directory and some data files.
+    File tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
 
-    File catWriteDir = new File( catWriteDirPath );
+    String startPath = "dataDir";
+    File dataDir = TestUtil.addDirectory( tmpDir, startPath );
 
-    File collectionFile = new File( collectionPath );
-    CrawlableDataset collectionCrDs = new CrawlableDatasetFile( collectionFile );
+    File eta211Dir = TestUtil.addDirectory( dataDir, "eta_211" );
+    TestUtil.addFile( eta211Dir, "2004050300_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050312_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050400_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050412_eta_211.nc" );
+
+    File gfs211Dir = TestUtil.addDirectory( dataDir, "gfs_211" );
+    TestUtil.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
+
+
+    File catWriteDir = new File( tmpDir, "catWriteDir");
+    CrawlableDataset collectionCrDs = new CrawlableDatasetFile( tmpDir );
     InvService service = new InvService( "myServer", "File", collectionCrDs.getPath() + "/", null, null );
     CrawlableDatasetFilter filter = null;
     CrawlableDataset topCatCrDs = collectionCrDs.getDescendant( startPath );
@@ -72,18 +86,35 @@ public class TestCatGenAndWrite extends TestCase
     }
 
     crawlCatalogs( new File( new File( catWriteDir, startPath), "catalog.xml") );
+
+    // Delete temp directory.
+    TestUtil.deleteDirectoryAndContent( tmpDir );
   }
 
   public void testLocalDataFilesOnTds()
   {
-    String collectionPath = "src/test/data/thredds/cataloggen/testData"; // "C:/Ethan/data/mlode";
-    String startPath = "modelNotFlat";
-    String catWriteDirPath = "target/tmpTest/TestCatGenAndWrite/testLocalDataFilesOnTds"; // "C:/Ethan/data/tmpTest";
+    // Create a data directory and some data files.
+    File tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
 
-    File catWriteDir = new File( catWriteDirPath );
+    String startPath = "dataDir";
+    File dataDir = TestUtil.addDirectory( tmpDir, startPath );
 
-    File collectionFile = new File( collectionPath );
-    CrawlableDataset collectionCrDs = new CrawlableDatasetFile( collectionFile );
+    File eta211Dir = TestUtil.addDirectory( dataDir, "eta_211" );
+    TestUtil.addFile( eta211Dir, "2004050300_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050312_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050400_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050412_eta_211.nc" );
+
+    File gfs211Dir = TestUtil.addDirectory( dataDir, "gfs_211" );
+    TestUtil.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
+
+
+    File catWriteDir = new File( tmpDir, "catWriteDir" );
+    CrawlableDataset collectionCrDs = new CrawlableDatasetFile( tmpDir );
+
     InvService service = new InvService( "myServer", "OPeNDAP", "/thredds/dodsC/", null, null );
     CrawlableDatasetFilter filter = null;
     CrawlableDataset topCatCrDs = collectionCrDs.getDescendant( startPath );
@@ -113,6 +144,9 @@ public class TestCatGenAndWrite extends TestCase
     }
 
     crawlCatalogs( new File( new File( catWriteDir, startPath), "catalog.xml") );
+
+    // Delete temp directory.
+    TestUtil.deleteDirectoryAndContent( tmpDir );
   }
 
   private void crawlCatalogs( File topCatalogFile)
