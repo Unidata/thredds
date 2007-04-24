@@ -56,6 +56,7 @@ public class CoordTransBuilder {
 
     registerTransform("atmosphere_sigma_coordinate", VAtmSigma.class);
     registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", VAtmHybridSigmaPressure.class);
+    registerTransform("atmosphere_hybrid_height_coordinate", VAtmHybridHeight.class);
     registerTransform("ocean_s_coordinate", VOceanS.class);
     registerTransform("ocean_sigma_coordinate", VOceanSigma.class);
     registerTransform("explicit_field", VExplicitField.class);
