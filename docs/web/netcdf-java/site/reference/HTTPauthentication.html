@@ -9,25 +9,30 @@
 <body>
 <h1>HTTP Authentication</h1>
 <h2>Overview</h2>
-<p>The Netcdf-Java library uses the Apache <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient library</a> to access OPeNDAP datasets, and to read files served by HTTP. When dataset access must be restricted to authorized users, the server will issue an <em>HTTP authentication challenge</em>. We call these  <strong><em>restricted datasets</em></strong>. The HttpClient library handles the details of the HTTP protocol, but the application layer must be responsible for supplying the <em>credentials</em> that authenticate the user. . </p>
+<p>The Netcdf-Java library uses the Apache <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient library</a> to access OPeNDAP datasets, and to read files served by HTTP. When dataset access must be restricted to authorized users, the server will issue an <em>HTTP authentication challenge</em>. We call these  <strong><em>restricted datasets</em></strong>. The HttpClient library handles the details of the HTTP protocol, but the application layer must be responsible for supplying the <em>credentials</em> that authenticate the user. <strong>If you want to access restricted datasets with the  Netcdf-Java library, you must plug-in a <em>CredentialsProvider </em>object </strong>(see <a href="#CredentialProvider">below</a>). </p>
 <h2>Authentication</h2>
-<p><em>Authentication</em> means establishing the identity of a user. In most cases, this is done with a user name and password. A stronger way to do this is to use digital signatures, with client certificates, but generally this is a lot of work. The Netcdf-Java library supports HTTP Basic and Digest Authentication, with or without Secure Socket Layer (SSL) encryption. Its up to the server to decide which kind of HTTP authentication is needed. </p>
+<p><em>Authentication</em> means establishing the identity of a user. In most cases, this is done with a user name and password. A stronger way to do this is to use digital signatures with client certificates, but generally this is a lot of work. The Netcdf-Java library supports HTTP Basic and Digest Authentication, with or without Secure Socket Layer (SSL) encryption. Its up to the server to decide which kind of HTTP authentication is needed. </p>
 <p>If you are writing an interactive client application, you might prompt the user for the user name and password. A non-interactive application needs to have some kind of a lookup table or database to supply the information.</p>
 <h2>Authorization </h2>
 <p>Having established a user's identity, <em>authorization</em> is the process of deciding if that user has the right to access a particular dataset. Most  servers, including the THREDDS Data Server (TDS), use <em>role-based authorization</em>. When a user is logged into a particular server, access is granted based on what <em>roles</em> the user has been given by that server. The practical effect of this is that if the user doesnt have access rights to a dataset, they are not prompted to enter a different username/password. They  have to logout and login as a different user.</p>
 <h2>Sessions</h2>
-<p>Typically a user makes several or many requests to get data from a particular dataset. Some servers (like the TDS) establish a session that keeps track of a user, so that the user doesnt have to send the username/password with each request. A session is enabled by sending a <em>Session Cookie</em> between the server and client. The default behaviour of the Netcdf-Java library is to establish a different session for each  dataset accessed. This means that every time a restricted dataset is opened, the application layer will be asked for user credentials for that dataset. Once authentication and authorization is established, no further prompting is made while the dataset is open, as long as the session doesnt time out. Typicallly a session times out if there is no activity on it for some time, e.g. 30 minutes.</p>
+<p>Typically a user makes several or many requests to get data from a particular dataset. Some servers (like the TDS) establish a session that keeps track of a user, so that the user doesn't have to send the username/password with each request. A session is enabled by sending a <em>Session Cookie</em> between the server and client. The session remains established based on the rules of Cookie processing and HTTP Protection Spaces. This means that every time a restricted dataset is opened, the application layer may be asked for user credentials for that dataset. Once authentication and authorization is established, no further prompting is made while the dataset is open, as long as the session doesnt time out. Typically a session times out if there is no activity on it for some time, e.g. 30 minutes.</p>
 <p>Servers that dont use sessions or other methods may require that the username/password be sent with every request. </p>
-<h2>Plugging in a CredentialsProvider</h2>
-<p>You can take control of how credentails are found by implementing the <strong>org.apache.commons.httpclient.auth.CredentialsProvider</strong> interface. The <a href="http://www.unidata.ucar.edu/content/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a> application uses the  <strong>thredds.ui.UrlAuthenticatorDialog</strong> class to do this. It pops up a Dialog Box, similar to how FireFox and other browsers work. </p>
-<p>To use your Provider for both HTTP and OPeNDAP access: </p>
-<pre> ucar.nc2.dataset.HttpClientManager.init(<strong>CredentialsProvider</strong> provider, String userAgent);
+<h2>Plugging in a CredentialsProvider<a name="CredentialProvider"></a></h2>
+<p> In order to access restricted datasets with the Netcdf-Java library, you must plug-in a <em>CredentialsProvider</em> that implements  the <strong><a href="http://jakarta.apache.org/commons/httpclient/apidocs/index.htm">org.apache.commons.httpclient.auth.CredentialsProvider</a></strong> interface, which has one method: </p>
+<pre>   public <a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/Credentials.html" title="interface in org.apache.commons.httpclient">Credentials</a> <b>getCredentials</b>(<a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/auth/AuthScheme.html" title="interface in org.apache.commons.httpclient.auth">AuthScheme</a>&nbsp;scheme,
+                           String&nbsp;host,
+                           int&nbsp;port,
+                           boolean&nbsp;proxy)
+                           throws <a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/auth/CredentialsNotAvailableException.html" title="class in org.apache.commons.httpclient.auth">CredentialsNotAvailableException</a>
 </pre>
-<p>The userAgent should be the name of your Application, it is added to the User-Agent header, and allows we servers to track which applications are acessing it. <br>
-</p>
+<p>You can write your own, or, for GUI programs, use the <strong>thredds.ui.UrlAuthenticatorDialog</strong> class, which pops up a Dialog Box, similar to how FireFox and other browsers work. Register your <em>CredentialsProvider </em> for both HTTP and OPeNDAP access, using  <strong>ucar.nc2.dataset.HttpClientManager.init</strong>(): </p>
+<pre>    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);<br>    ucar.nc2.dataset.HttpClientManager.init(provider, <strong>userAgent</strong>);
+</pre>
+<p>The <strong>userAgent</strong> should be the name of your Application, which is added to the HTTP User-Agent header, and allows  servers to track which applications are accessing it. </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 5, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 20, 2007 
 </address>
 </body>
 </html>

@@ -116,7 +116,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = true, debugOpenFile = true, debugCacheDetail = true, debugSyncDetail = true, debugProxy = true,
+  protected boolean debug = true, debugOpenFile = true, debugCacheDetail = true, debugSyncDetail = true, debugProxy = false,
     debugScan = true;
 
   /**
@@ -1113,12 +1113,14 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile;
+      long start = System.currentTimeMillis();
+      if (debugOpenFile) System.out.println(" try to acquire " + cacheName);
       if (enhance)
         ncfile = NetcdfDatasetCache.acquire(cacheName, -1, cancelTask, spiObject, (NetcdfDatasetFactory) reader);
       else
         ncfile = NetcdfFileCache.acquire(cacheName, -1, cancelTask, spiObject, reader);
 
-      if (debugOpenFile) System.out.println(" acquire " + cacheName);
+      if (debugOpenFile) System.out.println(" acquire " + cacheName+" took "+(System.currentTimeMillis()-start));
       if ((type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL))
         cacheCoordValues(ncfile);
       return ncfile;

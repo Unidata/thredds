@@ -35,7 +35,7 @@ public abstract class GribServiceProvider implements IOServiceProvider {
   private String saveLocation;
 
   // debugging
-  static boolean debugOpen = false, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
+  static boolean debugOpen = true, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
 
   static private boolean alwaysInCache = false;
   static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
@@ -69,9 +69,14 @@ public abstract class GribServiceProvider implements IOServiceProvider {
     this.raf = raf;
     this.ncfile = ncfile;
 
+    long start = System.currentTimeMillis();
+
     int edition = (this instanceof Grib1ServiceProvider) ? 1 : 2;
     Index index = getIndex(edition, ncfile.getLocation(), cancelTask);
+
     open(index, cancelTask);
+    if (debugOpen) System.out.println(" GribServiceProvider.open " + ncfile.getLocation()+" took "+(System.currentTimeMillis()-start));
+
   }
 
   /**

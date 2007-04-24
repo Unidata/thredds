@@ -296,7 +296,7 @@ public class NetcdfFileCache {
    * @return List of NetcdfFileCache.CacheElement
    */
   static public List getCache() {
-    return new ArrayList(cache);
+    return (cache == null) ? new ArrayList() : new ArrayList(cache);
   }
 
   /**

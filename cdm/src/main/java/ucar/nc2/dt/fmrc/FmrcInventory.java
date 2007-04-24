@@ -1309,7 +1309,7 @@ public class FmrcInventory {
     */
    public static void writeDefinitionFromCatalog(String catURL, String collectionName, int maxDatasets) throws Exception {
 
-     FmrcInventory fmrCollection = makeFromCatalog( catURL, collectionName, maxDatasets);
+     FmrcInventory fmrCollection = makeFromCatalog( catURL, collectionName, maxDatasets, ForecastModelRunInventory.OPEN_NORMAL);
      System.out.println("write definition to "+fmrCollection.getDefinitionPath());
      FmrcDefinition def = new FmrcDefinition();
      def.makeFromCollectionInventory( fmrCollection);
@@ -1322,13 +1322,13 @@ public class FmrcInventory {
     * @param catURL  scan this catalog
     * @throws Exception
     */
-   public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets) throws Exception {
+   public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets, int mode) throws Exception {
 
      System.out.println("***makeFromCatalog "+catURL);
      long startTime = System.currentTimeMillis();
      FmrcInventory fmrCollection = new FmrcInventory(fmrcDefinitionPath, collectionName);
 
-     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new MyListener(fmrCollection, maxDatasets));
+     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, new MyListener(fmrCollection, maxDatasets, mode));
      crawler.crawl(catURL, null, System.out);
      fmrCollection.finish();
 
@@ -1342,11 +1342,12 @@ public class FmrcInventory {
   private static class MyListener implements CatalogCrawler.Listener {
     FmrcInventory fmrCollection;
     int maxDatasets;
-    int count;
+    int mode, count;
 
-    MyListener(FmrcInventory fmrCollection, int maxDatasets) {
+    MyListener(FmrcInventory fmrCollection, int maxDatasets, int mode) {
       this.fmrCollection = fmrCollection;
       this.maxDatasets = maxDatasets;
+      this.mode = mode;
       this.count = 0;
     }
 
@@ -1362,7 +1363,7 @@ public class FmrcInventory {
       System.out.println(" access " + access.getStandardUrlName());
       ForecastModelRunInventory fmr;
       try {
-        fmr = ForecastModelRunInventory.open(cache, access.getStandardUrlName(), ForecastModelRunInventory.OPEN_NORMAL, false);
+        fmr = ForecastModelRunInventory.open(cache, access.getStandardUrlName(), mode, false);
         if (null != fmr) {
           fmrCollection.addRun(fmr);
           fmr.releaseDataset();

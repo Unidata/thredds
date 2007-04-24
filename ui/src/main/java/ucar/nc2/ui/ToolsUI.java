@@ -1650,8 +1650,12 @@ public class ToolsUI extends JPanel {
             catSpinner = new JSpinner();
             JButton accept = new JButton("Accept");
             JPanel catPanel = new JPanel( new BorderLayout());
+            JPanel leftPanel = new JPanel();
+            leftPanel.add(new JLabel("Num datasets:"));
+            leftPanel.add(catSpinner);
+            leftPanel.add(new JLabel("Catalog URL:"));
             catPanel.add(catComboBox, BorderLayout.CENTER);
-            catPanel.add(catSpinner, BorderLayout.WEST);
+            catPanel.add(leftPanel, BorderLayout.WEST);
             catPanel.add(accept, BorderLayout.EAST);
 
             accept.addActionListener( new ActionListener() {
@@ -1759,7 +1763,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        FmrcInventory fmrCollection = FmrcInventory.makeFromCatalog( catalogURLString, catalogURLString, n);
+        FmrcInventory fmrCollection = FmrcInventory.makeFromCatalog( catalogURLString, catalogURLString, n, ForecastModelRunInventory.OPEN_FORCE_NEW);
         FmrcDefinition def = new FmrcDefinition();
         def.makeFromCollectionInventory( fmrCollection);
 
