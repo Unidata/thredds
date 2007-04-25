@@ -45,15 +45,15 @@ public class TestDqcStationaryRadarDataset {
 
         DqcStationaryRadarDataset.DqcRadarStation stn = ds.getRadarStation("KFTG");
         assert null != stns;
-        List absList2 = stn.getRadarStationURIs("1hour");
+        List absList2 = stn.getDqcRadarStationURIs("1hour");
         assert null != absList2;
-        List ulist = stn.getRadarStationURIs();
+        List ulist = stn.getDqcRadarStationURIs(null, null);
         assert null != ulist;
-        List tlist = stn.getRadarStationTimes();
+        List tlist = stn.getDqcRadarStationTimes();
         assert null != tlist;
         Date ts = (Date)tlist.get(1);
         assert null != ts;
-        URI stURL = stn.getRadarDatasetURI( ts);
+        URI stURL = stn.getDqcRadarDatasetURI( ts);
         assert null != stURL;
 
         List data = stn.getData();
@@ -71,14 +71,14 @@ public class TestDqcStationaryRadarDataset {
 
         DqcStationaryRadarDataset.DqcRadarStation stn = (DqcStationaryRadarDataset.DqcRadarStation)(stns.get(1));
         assert null != stn;
-        List absList = stn.getRadarStationURIs("1hour");
+        List absList = stn.getDqcRadarStationURIs("1hour");
         assert null != absList;
-        List ulist = stn.getRadarStationURIs();
+        List ulist = stn.getDqcRadarStationURIs(null, null);
         assert null != ulist;
-        List tlist = stn.getRadarStationTimes();
+        List tlist = stn.getDqcRadarStationTimes();
         assert null != tlist;
 
-        Iterator it = stn.getRadarStationDatasets("1hour");
+        Iterator it = stn.getDqcRadarStationDatasets("1hour");
         assert null != it;
         List data = stn.getData();
         assert null != data;
@@ -94,11 +94,11 @@ public class TestDqcStationaryRadarDataset {
 
         DqcStationaryRadarDataset.DqcRadarStation stn = ds.getRadarStation("KFTG");
         assert null != stn;
-        List tlist = stn.getRadarStationTimes();
+        List tlist = stn.getDqcRadarStationTimes();
         assert null != tlist;
         Date ts = (Date)tlist.get(1);
         assert null != ts;
-        URI stURL = stn.getRadarDatasetURI( ts);
+        URI stURL = stn.getDqcRadarDatasetURI(ts);
         assert null != stURL;
 
     }
@@ -107,14 +107,14 @@ public class TestDqcStationaryRadarDataset {
 
         DqcStationaryRadarDataset.DqcRadarStation stn = ds.getRadarStation("KFTG");
         assert null != stn;
-        List rList = stn.getRadarStationTimes();
+        List rList = stn.getDqcRadarStationTimes();
         assert null != rList;
-        List absList = stn.getRadarStationURIs((String)rList.get(1));
+        List absList = stn.getDqcRadarStationURIs((String)rList.get(1));
         assert null != absList;
-        Iterator it = stn.getRadarStationDatasets((String)rList.get(1));
+        Iterator it = stn.getDqcRadarStationDatasets((String)rList.get(1));
         assert null != it;
 
-        List subList = stn.getRadarStationTimes((Date)rList.get(3), (Date)rList.get(0));
+        List subList = stn.getDqcRadarStationTimes((Date)rList.get(3), (Date)rList.get(0));
         assert null != subList;
 
         Iterator it1 = subList.iterator();
@@ -129,11 +129,11 @@ public class TestDqcStationaryRadarDataset {
 
         DqcStationaryRadarDataset.DqcRadarStation stn = ds.getRadarStation("KFTG");
         assert null != stn;
-        List tlist = stn.getRadarStationTimes();
+        List tlist = stn.getDqcRadarStationTimes();
         assert null != tlist;
         Date ts = (Date)tlist.get(1);
 
-        URI stURL = stn.getRadarDatasetURI( ts);
+        URI stURL = stn.getDqcRadarDatasetURI( ts);
         assert null != stURL;
 
         List dList = ds.getData((ucar.nc2.dt.Station)stns.get(2), (Date)tlist.get(3), (Date)tlist.get(0));
@@ -150,9 +150,9 @@ public class TestDqcStationaryRadarDataset {
         DqcStationaryRadarDataset.DqcRadarStation stn =
                 (DqcStationaryRadarDataset.DqcRadarStation)(stns.get(2));
 
-        List tlist = stn.getRadarStationTimes();
+        List tlist = stn.getDqcRadarStationTimes();
         int sz = tlist.size();
-        List dList = ds.getData((ucar.nc2.dt.Station)stns.get(2), (Date)tlist.get(sz-1), (Date)tlist.get(0), 12, "HOUR");
+        List dList = ds.getData((ucar.nc2.dt.Station)stns.get(2), (Date)tlist.get(sz-1), (Date)tlist.get(0), 3600, 500, 500 );
 
         Iterator it1 = dList.iterator();
         while(it1.hasNext()) {
