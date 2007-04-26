@@ -69,6 +69,8 @@ public class TypedDatasetFactory {
    /**
     * Register a class that implements a TypedDatasetFactoryIF.
     * @param className name of class that implements TypedDatasetFactoryIF.
+    * @param datatype  scientific data type
+    * @throws ClassNotFoundException if loading error
     */
    static public void registerFactory( thredds.catalog.DataType datatype, String className) throws ClassNotFoundException {
      Class c = Class.forName( className);
@@ -77,7 +79,7 @@ public class TypedDatasetFactory {
 
    /**
     * Register a class that implements a Coordinate Transform.
-    * @param datatype kind of data
+    * @param datatype scientific data type
     * @param c class that implements CoordTransBuilderIF.
     */
   static public void registerFactory( thredds.catalog.DataType datatype, Class c) {

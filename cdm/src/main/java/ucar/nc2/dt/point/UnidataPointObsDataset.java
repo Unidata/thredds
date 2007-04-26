@@ -37,6 +37,8 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.util.*;
 import java.io.IOException;
 
+import thredds.catalog.DataType;
+
 /**
  * This handles point datasets in "Unidata Observation Dataset v1.0"
  *
@@ -69,6 +71,7 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Typed
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new UnidataPointObsDataset( ncd);
   }
+  
   public UnidataPointObsDataset() {}
 
 

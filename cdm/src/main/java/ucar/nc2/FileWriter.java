@@ -44,11 +44,13 @@ import java.util.*;
  */
 
 public class FileWriter {
-  static private boolean debug, debugExtend;
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     debug = debugFlags.isSet("ncfileWriter/debug");
     debugExtend = debugFlags.isSet("ncfileWriter/debugExtend");
   }
+
+  static private boolean debug, debugExtend;
+  static private long maxSize = 1000 * 1000; // Mbytes
 
   /**
     * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
@@ -57,7 +59,7 @@ public class FileWriter {
     * @param fileIn write from this NetcdfFile
     * @param fileOutName write to this local file
     * @return NetcdfFile that was written to. It remains open for reading or writing.
-    * @throws IOException
+    * @throws IOException on read or write error
     */
    public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName) throws IOException {
      return writeToFile(fileIn, fileOutName, false, 0);
@@ -71,7 +73,7 @@ public class FileWriter {
     * @param fileOutName write to this local file
     * @param fill use fill mode
     * @return NetcdfFile that was written to. It remains open for reading or writing.
-    * @throws IOException
+    * @throws IOException on read or write error
     */
    public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill) throws IOException {
      return writeToFile(fileIn, fileOutName, fill, 0);
@@ -86,8 +88,10 @@ public class FileWriter {
    * @param delay pause this amount (in milliseconds) between writing each record.
    *
    * @return NetcdfFile that was written. It remains open for reading or writing.
+   * @throws IOException on read or write error
    */
   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
+
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew( fileOutName, fill);
     if (debug) {
       System.out.println("FileWriter write "+fileIn.getLocation()+" to "+fileOutName);
@@ -187,21 +191,15 @@ public class FileWriter {
       Variable oldVar = (Variable) varlist.get(i);
       if (useRecordDimension && oldVar.isUnlimited()) continue; // skip record variables
 
-      if (debug) System.out.println("write var= "+oldVar.getName()+ " size = "+oldVar.getSize()+" type="+
-          oldVar.getDataType());
-      total += oldVar.getSize() * oldVar.getElementSize();
+      if (debug) System.out.println("write var= "+oldVar.getName()+ " size = "+oldVar.getSize()+" type="+ oldVar.getDataType());
+      long size = oldVar.getSize() * oldVar.getElementSize();
+      total += size;
 
-      Array data = oldVar.read();
-      try {
-        if (oldVar.getDataType() == DataType.STRING) {
-          data = convertToChar( ncfile.findVariable(oldVar.getName()), data);
-        }
-        if (data.getSize() > 0)  // zero when record dimension = 0
-          ncfile.write(oldVar.getName(), data);
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        throw new IOException(e.getMessage());
-      }
+      int nelems = (int) (size / maxSize);
+      if (nelems <= 1)
+        copyAll(ncfile, oldVar);
+      else
+        copySome( ncfile, oldVar, nelems);
     }
 
     // write record data
@@ -240,6 +238,47 @@ public class FileWriter {
     if (debug) System.out.println("FileWriter done total bytes = "+total);
 
     return ncfile;
+  }
+
+  private static void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
+    Array data = oldVar.read();
+    try {
+      if (oldVar.getDataType() == DataType.STRING) {
+        data = convertToChar( ncfile.findVariable( oldVar.getName()), data);
+      }
+      if (data.getSize() > 0)  // zero when record dimension = 0
+        ncfile.write(oldVar.getName(), data);
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IOException(e.getMessage());
+    }
+  }
+
+  private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, int nelems) throws IOException {
+    int[] shape = oldVar.getShape();
+    int[] origin = new int[oldVar.getRank()];
+    int size = shape[0];
+
+    for (int i=0; i<size; i+= nelems) {
+      origin[0] = i;
+      int left = size-i;
+      shape[0] = Math.min(nelems,left);
+      
+      Array data = null;
+      try {
+        data = oldVar.read(shape, origin);
+        if (oldVar.getDataType() == DataType.STRING) {
+          data = convertToChar( ncfile.findVariable( oldVar.getName()), data);
+        }
+        if (data.getSize() > 0)  // zero when record dimension = 0
+          ncfile.write(oldVar.getName(), origin, data);
+
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+        throw new IOException(e.getMessage());
+      }
+    }
   }
 
   private static Array convertToChar( Variable newVar, Array oldData) {
@@ -358,7 +397,7 @@ public class FileWriter {
    * Call this when all attributes, dimensions, and variables have been added. The data from all
    * Variables will be written to the file. You cannot add any other attributes, dimensions, or variables
    * after this call.
-   * @throws IOException
+   * @throws IOException on read or write error
    */
   public void finish() throws IOException {
     ncfile.create();
@@ -389,10 +428,9 @@ public class FileWriter {
    * <li> delay: if set and file has record dimension, delay between writing each record, for testing files that
    * are growing
    * </ol>
-   * @throws java.net.MalformedURLException
-   * @throws IOException
+   * @throws IOException on read or write error
    */
-  public static void main( String arg[]) throws java.net.MalformedURLException, IOException {
+  public static void main( String arg[]) throws IOException {
     if (arg.length < 4) {
       usage();
       System.exit(0);

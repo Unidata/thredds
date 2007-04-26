@@ -25,9 +25,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -54,10 +51,10 @@ import java.io.IOException;
  * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 public class GridDatasetInfo {
-  private GridDataset gds;
+  private ucar.nc2.dt.GridDataset gds;
   private String path;
 
-  public GridDatasetInfo(GridDataset gds, String path) {
+  public GridDatasetInfo(ucar.nc2.dt.GridDataset gds, String path) {
     this.gds = gds;
     this.path = path;
   }
@@ -81,7 +78,7 @@ public class GridDatasetInfo {
   public Document makeDocument() {
     Element rootElem = new Element("gridDataset");
     Document doc = new Document(rootElem);
-    rootElem.setAttribute("location", gds.getName());
+    rootElem.setAttribute("location", gds.getLocationURI());
     if (null != path)
       rootElem.setAttribute("path", path);
 
@@ -146,7 +143,7 @@ public class GridDatasetInfo {
     return doc;
   }
 
-  private List getCoordAxes(GridDataset gds) {
+  private List getCoordAxes(ucar.nc2.dt.GridDataset gds) {
     HashSet axesHash = new HashSet();
     List gridSets = gds.getGridsets();
     for (int i = 0; i < gridSets.size(); i++) {
@@ -162,7 +159,7 @@ public class GridDatasetInfo {
     return list;
   }
 
-  private List getCoordTransforms(GridDataset gds) {
+  private List getCoordTransforms(ucar.nc2.dt.GridDataset gds) {
     HashSet ctHash = new HashSet();
     List gridSets = gds.getGridsets();
     for (int i = 0; i < gridSets.size(); i++) {
@@ -178,7 +175,7 @@ public class GridDatasetInfo {
     return list;
   }
 
-  private List getDimensions(GridDataset gds) {
+  private List getDimensions(ucar.nc2.dt.GridDataset gds) {
     HashSet dimHash = new HashSet();
     List grids = gds.getGrids();
     for (int i = 0; i < grids.size(); i++) {

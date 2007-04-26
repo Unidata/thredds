@@ -87,6 +87,11 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
     return sbuff.toString();
   }
 
+  public thredds.catalog.DataType getScientificDataType() { 
+    return thredds.catalog.DataType.POINT;
+  }
+
+
   public Class getDataClass() {
     return PointObsDatatype.class;
   }

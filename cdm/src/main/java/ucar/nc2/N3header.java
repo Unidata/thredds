@@ -478,6 +478,7 @@ class N3header {
     ncfile.finish();
 
     // magic number
+    raf.seek(0);
     raf.write(N3header.MAGIC);
 
     // numrecs

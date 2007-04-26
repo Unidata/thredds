@@ -25,8 +25,8 @@ import ucar.nc2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dt.grid.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
@@ -86,7 +86,7 @@ public class GeoGridTable extends JPanel {
         if (wcs == null)
           wcs = new thredds.wcs.WcsDataset(gridDataset, "", false);
         String dc;
-        if (gridDataset.findGridByName(vb.getName()) != null)
+        if (gridDataset.findGridDatatype(vb.getName()) != null)
           try {
             dc = wcs.describeCoverage(vb.getName());
             infoTA.clear();
@@ -135,7 +135,7 @@ public class GeoGridTable extends JPanel {
 
   public void setDataset(NetcdfDataset ds) {
     this.ds = ds;
-    this.gridDataset = new GridDataset(ds);
+    this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds);
 
     ArrayList beanList = new ArrayList();
     java.util.List list = gridDataset.getGrids();
@@ -176,7 +176,7 @@ public class GeoGridTable extends JPanel {
       else
         return null;
     }
-    return gridDataset.findGridByName( vb.getName());
+    return gridDataset.findGridDatatype( vb.getName());
   }
 
   public class GeogridBean {

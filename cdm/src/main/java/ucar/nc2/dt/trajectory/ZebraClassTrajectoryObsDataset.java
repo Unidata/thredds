@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import thredds.catalog.DataType;
+
 /**
  * Implements TrajectoryDataset for datasets with these characteristics:
  * <ul>
@@ -135,6 +137,8 @@ public class ZebraClassTrajectoryObsDataset extends SingleTrajectoryObsDataset i
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new ZebraClassTrajectoryObsDataset( ncd);
   }
+  public DataType getScientificDataType() { return DataType.TRAJECTORY; }
+
   public ZebraClassTrajectoryObsDataset() {}
 
   public ZebraClassTrajectoryObsDataset( NetcdfDataset ncd ) throws IOException

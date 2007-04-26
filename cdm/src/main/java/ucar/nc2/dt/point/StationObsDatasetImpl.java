@@ -67,6 +67,10 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
     return sbuff.toString();
   }
 
+  public thredds.catalog.DataType getScientificDataType() {
+    return thredds.catalog.DataType.STATION;
+  }
+
   public Class getDataClass() { return StationObsDatatype.class; }
 
   public List getStations() throws IOException {

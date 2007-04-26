@@ -39,6 +39,8 @@ import ucar.ma2.StructureData;
 import java.util.*;
 import java.io.IOException;
 
+import thredds.catalog.DataType;
+
 /**
  * Handles datasets using Dapper doubley nested sequences.
  *
@@ -97,6 +99,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new DapperDataset( ncd);
   }
+
   public DapperDataset() {}
 
   /////////////////////////////////////////////////

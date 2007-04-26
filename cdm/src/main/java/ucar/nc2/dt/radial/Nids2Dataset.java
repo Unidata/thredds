@@ -27,11 +27,14 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.VariableSimpleIF;
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
+
+import thredds.catalog.*;
 
 /**
  * Make a Nids NetcdfDataset into a RadialDataset.
@@ -58,6 +61,9 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
   public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new Nids2Dataset(ncd);
   }
+
+  public thredds.catalog.DataType getScientificDataType() { return thredds.catalog.DataType.RADIAL; }
+
 
   public Nids2Dataset() {}
 

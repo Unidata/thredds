@@ -69,6 +69,7 @@ public class OldUnidataPointObsDataset extends PointObsDatasetImpl implements Ty
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new OldUnidataPointObsDataset( ncd);
   }
+
   public OldUnidataPointObsDataset() {}
 
   private RecordDatasetHelper recordHelper;

@@ -34,6 +34,8 @@ import ucar.ma2.StructureData;
 import java.io.*;
 import java.util.*;
 
+import thredds.catalog.DataType;
+
 /**
  * This handles datasets in the old metar2nc format. It identifies them by looking at the title,
  *  expecting "METAR definition", "SYNOPTIC definition", or "BUOY definition". It uses an NcML
@@ -66,6 +68,7 @@ public class OldUnidataStationObsDataset extends StationObsDatasetImpl  implemen
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new OldUnidataStationObsDataset( ncd);
   }
+  
   public OldUnidataStationObsDataset() {}
 
   private NetcdfDataset dataset;

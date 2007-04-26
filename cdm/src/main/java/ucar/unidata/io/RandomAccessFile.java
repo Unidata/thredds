@@ -51,7 +51,6 @@ import java.util.Collections;
  * @author Russ Rew
  * @author john caron
  *
- * @version $Id: RandomAccessFile.java 64 2006-07-12 22:30:50Z edavis $
  * @see DataInput
  * @see DataOutput
  * @see java.io.RandomAccessFile
@@ -386,7 +385,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
      * Make sure file is at least this long when its closed.
      * needed when not using fill mode, and not all data is written.
      *
-     * @param minLength _more_
+     * @param minLength minimum length of the file.
      */
     public void setMinLength(long minLength) {
         this.minLength = minLength;

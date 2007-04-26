@@ -39,6 +39,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
     * Constructor for in-memory "files"
     * @param location used as a name
     * @param mode the open mode
+    * @throws java.io.IOException on error
     */
   public MMapRandomAccessFile(String location, String mode ) throws IOException {
     super(location, mode, 1);
@@ -121,11 +122,3 @@ public class MMapRandomAccessFile extends RandomAccessFile {
   }
 
 }
-
-/* Change History:
-   $Log: MMapRandomAccessFile.java,v $
-   Revision 1.1  2004/10/12 02:57:06  caron
-   refactor for grib1/grib2: move common functionality up to ucar.grib
-   split GribServiceProvider
-
-*/

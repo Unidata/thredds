@@ -36,6 +36,8 @@ import ucar.ma2.StructureData;
 import java.util.*;
 import java.io.IOException;
 
+import thredds.catalog.DataType;
+
 /**
  * This handles DODS sequences that have station obs data.
  *
@@ -69,6 +71,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new SequenceObsDataset( ncd, task);
   }
+
   public SequenceObsDataset() {}
 
   private Variable latVar, lonVar, altVar, timeVar, timeNominalVar;

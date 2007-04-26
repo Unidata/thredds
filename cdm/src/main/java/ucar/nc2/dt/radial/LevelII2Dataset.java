@@ -27,11 +27,14 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import java.io.IOException;
 import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
+
+import thredds.catalog.*;
 
 
 /**
@@ -61,6 +64,9 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
   public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new LevelII2Dataset(ncd);
   }
+
+  public thredds.catalog.DataType getScientificDataType() { return thredds.catalog.DataType.RADIAL; }
+
 
   public LevelII2Dataset() {}
 

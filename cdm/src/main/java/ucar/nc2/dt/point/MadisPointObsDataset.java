@@ -26,10 +26,13 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.util.*;
+
+import thredds.catalog.*;
 
 /**
  * Class Description.
@@ -68,6 +71,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedD
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new MadisStationObsDataset( ncd);
   }
+
   public MadisPointObsDataset() {}
 
   public MadisPointObsDataset(NetcdfFile ds) throws IOException {

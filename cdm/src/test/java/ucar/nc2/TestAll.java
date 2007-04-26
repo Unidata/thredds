@@ -127,6 +127,7 @@ public class TestAll {
   }
 
   public static junit.framework.Test suite ( ) {
+    
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();

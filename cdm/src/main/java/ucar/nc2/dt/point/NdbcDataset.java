@@ -22,6 +22,7 @@
 package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
@@ -29,6 +30,8 @@ import ucar.nc2.dt.*;
 
 import java.io.*;
 import java.util.*;
+
+import thredds.catalog.*;
 
 /**
  * National Data Buoy Center data. This is a time series at a single buoy.
@@ -71,6 +74,7 @@ public class NdbcDataset extends StationObsDatasetImpl  implements TypedDatasetF
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new NdbcDataset( ncd);
   }
+  
   public NdbcDataset() {}
 
   public NdbcDataset(NetcdfFile ds) throws IOException {

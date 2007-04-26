@@ -1798,7 +1798,7 @@ public class ToolsUI extends JPanel {
       viewButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            ucar.nc2.dt.grid.GridDataset gridDataset = dsTable.getGridDataset();
+            GridDataset gridDataset = dsTable.getGridDataset();
             if (gridUI == null) makeGridUI();
             gridUI.setDataset(gridDataset);
             viewerWindow.show();
@@ -1824,11 +1824,14 @@ public class ToolsUI extends JPanel {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          ucar.nc2.dt.grid.GridDataset gridDataset = dsTable.getGridDataset();
-          if ((gridDataset != null) && (gridDataset.getParseInfo() != null)) {
-            detailTA.setText(gridDataset.getParseInfo().toString());
-            detailTA.gotoTop();
-            detailWindow.show();
+          GridDataset gridDataset = dsTable.getGridDataset();
+          if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
+            ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
+            if (gdsImpl.getParseInfo() != null) {
+              detailTA.setText(gdsImpl.getParseInfo().toString());
+              detailTA.gotoTop();
+              detailWindow.show();
+            }
           }
         }
       });
@@ -1838,7 +1841,7 @@ public class ToolsUI extends JPanel {
       wcsButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
-            ucar.nc2.dt.grid.GridDataset gridDataset = dsTable.getGridDataset();
+            GridDataset gridDataset = dsTable.getGridDataset();
             thredds.wcs.WcsDataset wcs = new thredds.wcs.WcsDataset(gridDataset, "", false);
             String gc;
             try {
@@ -2406,7 +2409,7 @@ public class ToolsUI extends JPanel {
     boolean process(Object o) {
       String filename = (String) o;
 
-      ucar.nc2.dt.grid.GridDataset gridDs = null;
+      GridDataset gridDs = null;
       try {
         gridDs = ucar.nc2.dt.grid.GridDataset.open(filename);
         java.util.List grids = gridDs.getGrids();

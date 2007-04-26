@@ -10,6 +10,8 @@ import ucar.nc2.units.SimpleUnit;
 import java.util.*;
 import java.io.IOException;
 
+import thredds.catalog.DataType;
+
 /*
 netcdf U:/testdata/trajectory/buoy/testfloat10.nc {
  dimensions:
@@ -170,6 +172,8 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new Float10TrajectoryObsDataset( ncd);
   }
+  public DataType getScientificDataType() { return DataType.TRAJECTORY; }
+
   public Float10TrajectoryObsDataset() {}
 
   public Float10TrajectoryObsDataset( NetcdfFile ncd ) throws IOException

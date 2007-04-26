@@ -9,8 +9,8 @@ import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.GridDataset;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -718,7 +718,7 @@ public class HtmlWriter
     }
 
     ///////////// Grid
-    GridDataset gds = new GridDataset( ds );
+    GridDataset gds = new ucar.nc2.dt.grid.GridDataset( ds );
 
     // look for projections
     //List gridsets = gds.getGridsets();

@@ -24,7 +24,6 @@ import thredds.catalog.*;
 import thredds.ui.*;
 import thredds.viewer.ui.Renderer;
 
-import ucar.nc2.dt.grid.*;
 import ucar.nc2.dataset.*;
 
 import thredds.viewer.ui.geoloc.NavigatedPanel;
@@ -32,6 +31,7 @@ import thredds.viewer.gis.MapBean;
 
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.util.NamedObject;
 
 import ucar.util.prefs.PreferencesExt;
@@ -884,7 +884,7 @@ public class GridUI extends JPanel {
 
       try {
         dataset = factory.openDataset( invds, true, this, errlog);
-        gridDataset = new GridDataset(dataset);
+        gridDataset = new ucar.nc2.dt.grid.GridDataset(dataset);
 
       } catch (IOException e) {
         setError("Failed to open datset: "+errlog);

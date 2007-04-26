@@ -33,7 +33,10 @@ import java.io.IOException;
  */
 public interface TypedDatasetFactoryIF {
 
-  /** Determine if this dataset belongs to you */
+  /** Determine if this dataset belongs to you
+   * @param ncd examine this NetcdfDataset to see if it belongs to this class.
+   * @return true if this class knows how to create a TypedDataset out of this NetcdfDataset.
+   */
   public boolean isMine( NetcdfDataset ncd);
 
   /**
@@ -43,7 +46,14 @@ public interface TypedDatasetFactoryIF {
    * @param task use may cancel
    * @param errlog place errors here
    * @return a subclass of TypedDataset
+   * @throws java.io.IOException on error
    */
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException;
+
+  /**
+   * What kind of cientific data type will this return?
+   * @return scientific data type
+   */
+  public thredds.catalog.DataType getScientificDataType();
 
 }

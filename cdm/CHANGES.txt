@@ -441,7 +441,9 @@ Changes from Java-Netcdf version 2.1
 
 Package ucar.nc2
 
-    Adds a "Pluggable Service Provider" layer for the actual I/O. This factors out specific code for reading HDF5 vs netCDF version 1 file formats. Also have a number of "I/O Service Providers" for non NetCDF file formats, eg GRIB, NEXRAD, etc.
+    Adds a "Pluggable Service Provider" layer for the actual I/O. This factors out specific code for reading HDF5 vs
+      netCDF version 1 file formats.
+    Also have a number of "I/O Service Providers" for non NetCDF file formats, eg GRIB, NEXRAD, etc.
 
 DataType
 
@@ -457,7 +459,8 @@ Attribute
 
 Dimension
 
-   1. Allow Dimensions that are not “shared”, i.e. are private to a Variable, for HDF5 and DODS: boolean isShared(); Only shared Dimensions appear in the NetcdfFile.getDimensions() list.
+   1. Allow Dimensions that are not “shared”, i.e. are private to a Variable, for HDF5 and DODS: boolean isShared();
+      Only shared Dimensions appear in the NetcdfFile.getDimensions() list.
    2. We need to press OpenDAP and HDF5 to add shared Dimensions to their data models.
 
 Group
@@ -469,7 +472,8 @@ Variable
    1. adds convenience methods for scalars, eg double readScalarDouble().
    2. add Structure getParent() for Variables that are inside of a Structure.
    3. read with strides
-   4. add section() method, creates a logical section of a Variable. This replaces the equivalent functionality in ucar.ma2.MultiArraySection, which is removed.
+   4. add section() method, creates a logical section of a Variable. This replaces the equivalent functionality in ucar.ma2.MultiArraySection,
+      which is removed.
 
 Sequence
 
@@ -479,8 +483,10 @@ Sequence
 
 Structure
 
-   1. A subclass of Variable, is a container for other Variables, may be nested. This handles both arrays of Structures and scalar Structures as a rank-0 array, with some convenience routines for accessing scalar Structures.
-   2. Generally, the programmer can assume that the data in a Structure are stored together, so that it is efficient to read a Structure all at once, then access the Variable data through the Arrays in the StructureData.
+   1. A subclass of Variable, is a container for other Variables, may be nested. This handles both arrays of Structures
+      and scalar Structures as a rank-0 array, with some convenience routines for accessing scalar Structures.
+   2. Generally, the programmer can assume that the data in a Structure are stored together, so that it is efficient to
+      read a Structure all at once, then access the Variable data through the Arrays in the StructureData.
 
 StructureData
 

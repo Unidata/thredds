@@ -31,8 +31,8 @@ import java.io.*;
 import java.util.*;
 
 /**
- * This handles datasets the original "Unidata Point Format".
- * @deprecated You should use UnidataStationObsDataset instead of this.
+ * This handles datasets in the original (now outdated) "Unidata Point Format".
+ * @deprecated  use UnidataStationObsDataset instead of this.
  *
  * @author John Caron
  * @version $Id: UnidataStationObsDataset2.java 51 2006-07-12 17:13:13Z caron $
@@ -50,8 +50,8 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new UnidataStationObsDataset2( ncd);
   }
-  public UnidataStationObsDataset2() {}
 
+  public UnidataStationObsDataset2() {}
 
   private Structure recordVar;
   private RecordDatasetHelper recordHelper;

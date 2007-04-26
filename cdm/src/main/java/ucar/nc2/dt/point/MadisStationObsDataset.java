@@ -22,6 +22,7 @@
 package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
@@ -29,6 +30,8 @@ import ucar.nc2.dt.*;
 
 import java.io.*;
 import java.util.*;
+
+import thredds.catalog.*;
 
 /**
  * This reads MADIS station data formatted files. It might actually be ok for any AWIPS station file ??
@@ -77,6 +80,7 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new MadisStationObsDataset( ncd);
   }
+  
   public MadisStationObsDataset() {}
 
   public MadisStationObsDataset(NetcdfFile ds) throws IOException {

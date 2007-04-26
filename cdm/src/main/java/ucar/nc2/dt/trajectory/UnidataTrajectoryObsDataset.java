@@ -19,6 +19,8 @@ import ucar.ma2.IndexIterator;
 import java.io.IOException;
 import java.util.*;
 
+import thredds.catalog.DataType;
+
 /**
  * Handle trajectory data files that follow the
  * Unidata Observation Dataset convention version 1.0.
@@ -73,6 +75,8 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  imp
   {
     return new UnidataTrajectoryObsDataset( ncd);
   }
+  public DataType getScientificDataType() { return DataType.TRAJECTORY; }
+
   public UnidataTrajectoryObsDataset() {}
 
   public UnidataTrajectoryObsDataset( NetcdfDataset ncd) throws IOException

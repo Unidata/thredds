@@ -31,6 +31,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.File;
 
 import thredds.catalog.*;
 
@@ -73,10 +74,11 @@ public class StationObsDatasetWriter {
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
-  private boolean debug = true;
+  private boolean debug = false;
 
   public StationObsDatasetWriter(String fileOut) {
     ncfile = NetcdfFileWriteable.createNew(fileOut);
+    ncfile.setFill( false);
   }
 
   public void writeHeader(List stns, List vars) throws IOException {
@@ -234,11 +236,13 @@ public class StationObsDatasetWriter {
   }
 
   private HashMap stationMap;
+
   private class StationTracker {
     int numChildren = 0;
     int lastChild = -1;
     int parent_index;
     ArrayList link = new ArrayList();
+
     StationTracker(int parent_index) {
       this.parent_index = parent_index;
     }
@@ -247,7 +251,7 @@ public class StationObsDatasetWriter {
   private void writeStationData(List stnList) throws IOException {
     this.stnList = stnList;
     int nstns = stnList.size();
-    stationMap = new HashMap( 2*nstns);
+    stationMap = new HashMap(2 * nstns);
     if (debug) System.out.println("stationMap created");
 
     // now write the station data
@@ -260,7 +264,7 @@ public class StationObsDatasetWriter {
 
     for (int i = 0; i < stnList.size(); i++) {
       Station stn = (Station) stnList.get(i);
-      stationMap.put( stn.getName(), new StationTracker(i));
+      stationMap.put(stn.getName(), new StationTracker(i));
 
       latArray.set(i, stn.getLatitude());
       lonArray.set(i, stn.getLongitude());
@@ -295,7 +299,7 @@ public class StationObsDatasetWriter {
 
     for (int i = 0; i < stnList.size(); i++) {
       Station stn = (Station) stnList.get(i);
-      StationTracker tracker = (StationTracker) stationMap.get( stn.getName());
+      StationTracker tracker = (StationTracker) stationMap.get(stn.getName());
 
 
       lastArray.set(i, tracker.lastChild);
@@ -307,12 +311,12 @@ public class StationObsDatasetWriter {
       if (tracker.link.size() > 0) {
         // construct forward link
         List nextList = tracker.link;
-        for (int j = 0; j < nextList.size()-1; j++) {
+        for (int j = 0; j < nextList.size() - 1; j++) {
           Integer curr = (Integer) nextList.get(j);
-          Integer next = (Integer) nextList.get(j+1);
+          Integer next = (Integer) nextList.get(j + 1);
           nextChildArray.set(curr.intValue(), next.intValue());
         }
-        Integer curr = (Integer) nextList.get(nextList.size()-1);
+        Integer curr = (Integer) nextList.get(nextList.size() - 1);
         nextChildArray.set(curr.intValue(), -1);
       }
     }
@@ -340,13 +344,13 @@ public class StationObsDatasetWriter {
   private int[] originTime = new int[2];
 
   public void writeRecord(StationObsDatatype sobs, StructureData sdata) throws IOException {
-    if (debug) System.out.println("sobs= "+sobs+"; station = "+sobs.getStation());
+    if (debug) System.out.println("sobs= " + sobs + "; station = " + sobs.getStation());
 
     String name = sobs.getStation().getName();
     StationTracker tracker = (StationTracker) stationMap.get(name);
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
-    ArrayStructureW  sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
+    ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
     sArray.setStructureData(sdata, 0);
 
     // date is handled specially
@@ -357,7 +361,7 @@ public class StationObsDatasetWriter {
     timeArray.set(0, dateFormatter.toDateTimeStringISO(obsDate));
     prevArray.set(0, tracker.lastChild);
     parentArray.set(0, tracker.parent_index);
-    tracker.link.add( new Integer(recno));
+    tracker.link.add(new Integer(recno));
     tracker.lastChild = recno;
     tracker.numChildren++;
 
@@ -462,7 +466,8 @@ public class StationObsDatasetWriter {
   }
 
 
-  public static void main(String args[]) throws IOException {
+  public static void main2(String args[]) throws IOException {
+    long start = System.currentTimeMillis();
 
     String location = "C:/data/metars/Surface_METAR_20070331_0000.nc";
     StringBuffer errlog = new StringBuffer();
@@ -474,10 +479,10 @@ public class StationObsDatasetWriter {
     List stns = sobs.getStations();
     ArrayList stnList = new ArrayList();
     Station s = (Station) stns.get(0);
-    stnList.add( s);
+    stnList.add(s);
 
     ArrayList varList = new ArrayList();
-    varList.add( sobs.getDataVariable("wind_speed"));
+    varList.add(sobs.getDataVariable("wind_speed"));
 
     writer.writeHeader(stnList, varList);
 
@@ -489,6 +494,57 @@ public class StationObsDatasetWriter {
     }
 
     writer.finish();
+
+    long took = System.currentTimeMillis() - start;
+    System.out.println("That took = " + took);
   }
+
+  private static void rewrite(String fileIn, String fileOut) throws IOException {
+    long start = System.currentTimeMillis();
+    StringBuffer errlog = new StringBuffer();
+    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, fileIn, null, errlog);
+
+    StationObsDatasetWriter writer = new StationObsDatasetWriter(fileOut);
+
+    List stns = sobs.getStations();
+    List vars = sobs.getDataVariables();
+
+    writer.writeHeader(stns, vars);
+
+    for (int i = 0; i < stns.size(); i++) {
+      Station s = (Station) stns.get(i);
+      DataIterator iter = sobs.getDataIterator(s);
+      while (iter.hasNext()) {
+        StationObsDatatype sobsData = (StationObsDatatype) iter.nextData();
+        StructureData data = sobsData.getData();
+        writer.writeRecord(sobsData, data);
+      }
+    }
+
+    writer.finish();
+
+    long took = System.currentTimeMillis() - start;
+    System.out.println("finished " + fileIn);
+    System.out.println("That took = " + took);
+  }
+
+  public static void main(String args[]) throws IOException {
+    long start = System.currentTimeMillis();
+
+    String tempDir = "C:/temp2/";
+    String location = "C:/data/metars/";
+    File dir = new File(location);
+    File[] files = dir.listFiles();
+    for (int i = 0; i < files.length; i++) {
+      File file = files[i];
+      if (file.getName().endsWith(".nc"))
+        rewrite(file.getAbsolutePath(), tempDir + file.getName());
+    }
+
+    long took = System.currentTimeMillis() - start;
+    System.out.println("That took = " + took);
+
+  }
+
 
 }

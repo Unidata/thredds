@@ -138,18 +138,18 @@ public class NetcdfFileWriteable extends NetcdfFile {
   }
 
   /**
-   * Set the fill flag: call before calling create().
+   * Set the fill flag: call before calling create() or doing any data writing.
    * If true, the data is first written with fill values.
    * Default is fill = false.
    * Leave false if you expect to write all data values, set to true if you want to be
    * sure that unwritten data values have the fill value in it.
    *
    * @param fill set fill mode true or false
-   * @deprecated use openExisting(String filename, boolean fill) or createNew(String filename, boolean fill)
    */
   public void setFill(boolean fill) {
     this.fill = fill;
-    spiw.setFill( fill);
+    if (spiw != null)
+      spiw.setFill( fill);
   }
 
   ////////////////////////////////////////////

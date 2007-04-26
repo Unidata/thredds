@@ -33,6 +33,9 @@ import java.io.*;
 import java.util.*;
 import java.text.ParseException;
 
+import thredds.catalog.*;
+import thredds.catalog.DataType;
+
 /**
  * This handles station datasets in "Unidata Observation Dataset v1.0"
  *

@@ -291,10 +291,12 @@ public class NetcdfFile {
       if (uncompressedFileName != null) { 
         // open uncompressed file as a RandomAccessFile.
         raf = new ucar.unidata.io.RandomAccessFile(uncompressedFileName, "r", buffer_size);
+        //raf = new ucar.unidata.io.MMapRandomAccessFile(uncompressedFileName, "r");
 
       } else {
         // normal case - not compressed
-        raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", buffer_size);
+        //raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", buffer_size);
+        raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
       }
     }
 
@@ -951,6 +953,7 @@ public class NetcdfFile {
   public NetcdfFile(String filename) throws IOException {
     this.location = filename;
     ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(filename, "r");
+    //ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.MMapRandomAccessFile(filename, "r");
     this.spi = SPFactory.getServiceProvider();
     spi.open(raf, this, null);
     finish();

@@ -53,25 +53,3 @@ public class InMemoryRandomAccessFile extends RandomAccessFile {
    }
 
 }
-
-/* Change History:
-   $Log: InMemoryRandomAccessFile.java,v $
-   Revision 1.5  2005/08/09 23:35:33  caron
-   *** empty log message ***
-
-   Revision 1.4  2005/07/25 00:07:06  caron
-   cache debugging
-
-   Revision 1.3  2005/06/28 15:16:30  caron
-   no message
-
-   Revision 1.2  2004/11/07 03:00:52  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/10/06 19:03:45  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-*/

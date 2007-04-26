@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import thredds.catalog.DataType;
+
 /**
  * Implements TrajectoryDataset for datasets with these characteristics:
  * <ul>
@@ -111,6 +113,8 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new SimpleTrajectoryObsDataset( ncd);
   }
+  public DataType getScientificDataType() { return DataType.TRAJECTORY; }
+
   public SimpleTrajectoryObsDataset() {}
 
   public SimpleTrajectoryObsDataset( NetcdfDataset ncd ) throws IOException
