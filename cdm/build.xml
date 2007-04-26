@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeJar" basedir=".">
-  <property name="release.version" value="2.2.19"/>
-  <property name="release.version.minor" value="${release.version}.14"/>
+  <property name="release.version" value="2.2.20"/>
+  <property name="release.version.minor" value="${release.version}.rc1"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>
@@ -326,7 +326,7 @@
   </target>
 
   <!-- get rid of dods stuff in visad.jar -->
-  <property name="visad.jar" value="C:/dev/cvs/lib/visad.jar"/>   <!-- checkout visad.jar from cvs -->
+  <property name="visad.jar" value="C:/dev/lib/visad/visad.jar"/>   <!-- checkout visad.jar from cvs -->
   <property name="visadNoDods.tempdir" location="C:/TEMP/visad/"/>
   <target name="makeVisadNoDods" description="remove dods from visad">
     <delete dir="${visadNoDods.tempdir}" failonerror="false"/>

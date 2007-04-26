@@ -22,6 +22,9 @@ public class TestReadandCount extends TestCase {
 
   private String griddir = TestAll.upcShareTestDataDir+"grid/netcdf/";
 
+  public void testRead1() throws Exception {
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);    
+  }
 
   public void testRead() throws Exception {
 

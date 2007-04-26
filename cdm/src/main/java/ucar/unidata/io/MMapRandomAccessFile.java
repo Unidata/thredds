@@ -32,7 +32,6 @@ import java.nio.MappedByteBuffer;
 public class MMapRandomAccessFile extends RandomAccessFile {
 
   private MappedByteBuffer source;
-  protected FileChannel channel;
   private boolean debug = false;
 
    /**
@@ -43,10 +42,11 @@ public class MMapRandomAccessFile extends RandomAccessFile {
     */
   public MMapRandomAccessFile(String location, String mode ) throws IOException {
     super(location, mode, 1);
-    channel = file.getChannel();
+    FileChannel channel = file.getChannel();
     source = channel.map( readonly ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, (long) 0, channel.size());
+    channel.close();
 
-	  bufferStart = 0;
+    bufferStart = 0;
 	  dataSize = (int) channel.size();
 	  dataEnd = channel.size();
     filePosition = 0;
@@ -67,9 +67,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
 
   public void close() throws IOException {
     if (!readonly) flush();
-    if (channel != null)
-      channel.close();
-    channel = null;
+    source = null;
   }
 
   public long length( ) {

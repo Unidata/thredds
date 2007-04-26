@@ -249,13 +249,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
         return endOfFile;
     }
 
-    // Create channel from file
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    /* Create channel from file
     public FileChannel getChannel() {
         if (file == null) {
             return null;
@@ -267,7 +261,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
             e.printStackTrace();
         }
         return file.getChannel();
-    }
+    } */
 
     /**
      * Set the position in the file for the next read or write.

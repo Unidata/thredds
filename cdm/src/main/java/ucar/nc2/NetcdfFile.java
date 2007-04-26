@@ -283,8 +283,8 @@ public class NetcdfFile {
       String uncompressedFileName = null;
       try {
         uncompressedFileName = makeUncompressed(uriString);
-      } catch (IOException e) {
-        log.warn("Failed to uncompress " + uriString + "; try it as a regular file.");
+      } catch (Exception e) {
+        log.warn("Failed to uncompress " + uriString + " err= "+e.getMessage()+"; try as a regular file.");
        //allow to fall through to open the "compressed" file directly - may be a misnamed suffix
       }
 
@@ -295,15 +295,15 @@ public class NetcdfFile {
 
       } else {
         // normal case - not compressed
-        //raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", buffer_size);
-        raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
+        raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", buffer_size);
+        //raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
       }
     }
 
     return raf;
   }
 
-  static private String makeUncompressed(String filename) throws IOException {
+  static private String makeUncompressed(String filename) throws Exception {
     int pos = filename.lastIndexOf(".");
     if (pos < 0) return null;
 
@@ -352,7 +352,7 @@ public class NetcdfFile {
 
         if (debugCompress) System.out.println("ungzipped " + filename + " to " + uncompressedFile);
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
 
       // appears we have to close before we can delete
       if (fout != null) fout.close();

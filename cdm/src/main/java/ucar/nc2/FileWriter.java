@@ -267,7 +267,7 @@ public class FileWriter {
       
       Array data = null;
       try {
-        data = oldVar.read(shape, origin);
+        data = oldVar.read(origin, shape);
         if (oldVar.getDataType() == DataType.STRING) {
           data = convertToChar( ncfile.findVariable( oldVar.getName()), data);
         }

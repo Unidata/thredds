@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmrcDefinition dataset="NCEP-RUC2-CONUS_20km-surface">
+<fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/catalog.xml">
   <vertCoord id="2" name="height_above_ground" units="m">10.0</vertCoord>
   <vertCoord id="1" name="height_above_ground1" units="m">2.0</vertCoord>
-  <vertCoord id="0" name="pressure_difference" units="Pa">25500.0</vertCoord>
-  <offsetHours id="0">0.0 1.0 2.0 3.0</offsetHours>
-  <offsetHours id="1">0.0 1.0 2.0 23.0</offsetHours>
-  <offsetHours id="2">0.0</offsetHours>
+  <vertCoord id="0" name="pressure_difference_layer" units="Pa">0.0,25500.0</vertCoord>
+  <offsetHours id="0">0.0 1.0 2.0 3.0 6.0 9.0</offsetHours>
+  <offsetHours id="1">0.0 1.0 2.0 3.0 5.0 6.0 8.0 23.0</offsetHours>
+  <offsetHours id="2">0.0 3.0 6.0</offsetHours>
   <offsetHours id="3">0.0 1.0 2.0 3.0 6.0 9.0 12.0</offsetHours>
   <offsetHours id="4">0.0 1.0 2.0 3.0 5.0 6.0 8.0 9.0 11.0 23.0</offsetHours>
   <offsetHours id="5">0.0 3.0 6.0 9.0</offsetHours>
@@ -25,7 +25,7 @@
     <variable name="Convective_inhibition_surface" />
     <variable name="Dew_point_depression_or_deficit" vertCoord="1" />
     <variable name="Dew_point_temperature" vertCoord="1" />
-    <variable name="MSLP_MAPS_System_Reduction" />    
+    <variable name="MSLP_MAPS_System_Reduction" />
     <variable name="Potential_temperature" vertCoord="1" />
     <variable name="Pressure" />
     <variable name="Pressure_tendency" />
@@ -36,7 +36,6 @@
     <variable name="Temperature" vertCoord="1" />
     <variable name="Temperature_surface" />
     <variable name="U-component_of_wind" vertCoord="2" />
-    <variable name="Unknown" />
     <variable name="V-component_of_wind" vertCoord="2" />
   </runSequence>
   <runSequence>
@@ -55,4 +54,3 @@
     <variable name="Water_equivalent_of_accumulated_snow_depth" />
   </runSequence>
 </fmrcDefinition>
-
