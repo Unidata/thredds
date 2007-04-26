@@ -104,6 +104,16 @@ public class Range {
     return result;
   }
 
+  public static String toString(List ranges) {
+    if (ranges == null) return "";
+    StringBuffer sbuff = new StringBuffer();
+    for (int i=0; i<ranges.size(); i++ ) {
+      if (i>0) sbuff.append(",");
+      sbuff.append(((Range)ranges.get(i)).length());
+    }
+    return sbuff.toString();
+  }
+
   /**
    /** Compute total number of elements represented by the section.
    * @param section List of Range objects

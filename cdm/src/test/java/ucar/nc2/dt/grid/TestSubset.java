@@ -111,9 +111,9 @@ public class TestSubset extends TestCase {
   }
 
   public void testDODS() throws Exception {
-    String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/model/NCEP/DGEX/CONUS_12km/catalog.xml";
-    String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
-    ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype(cat+dsid, null);
+    String ds = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml";
+    //String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
+    ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype("thredds:resolve:"+ds, null);
     assert !result.fatalError;
     assert result.dataType == DataType.GRID;
     assert result.tds != null;
@@ -126,7 +126,9 @@ public class TestSubset extends TestCase {
     assert null != gcs;
     assert grid.getRank() == 4;
 
-    GeoGrid grid_section = grid.subset(new Range(0, 11, 5), null, null, 3, 3, 3);
+    GeoGrid grid_section = grid.subset(new Range(0, 8, 3), null, null, 3, 3, 3);
+    int[] shape = grid_section.getShape();
+    System.out.println("grid_section.getShape= "+Range.toString( Range.factory(shape)));
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
     assert data.getShape()[0] == 3 : data.getShape()[0];
