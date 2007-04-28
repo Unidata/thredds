@@ -1044,8 +1044,8 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
             Date tsi = (Date)DateUnit.getStandardOrISO((String)tlist.get(i));
             long rti = tsi.getTime();
             long r2i = roundTo(15*60, rti/1000)*1000;
-            rbList.add( isoDateTimeFormat.format(r2i));
-            rtList.add(isoDateTimeFormat.format(rti));
+            rbList.add( isoDateTimeFormat.format(new Date(r2i)));
+            rtList.add( isoDateTimeFormat.format(tsi));
         }
 
         
