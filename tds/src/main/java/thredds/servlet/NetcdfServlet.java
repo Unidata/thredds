@@ -64,7 +64,7 @@ import org.jdom.transform.XSLTransformer;
  */
 public class NetcdfServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 diskCache = null;
-  private boolean allow = true, deleteImmediately = true;
+  private boolean allow = false, deleteImmediately = true;
   private long maxFileDownloadSize;
 
   // must end with "/"

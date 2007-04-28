@@ -75,7 +75,7 @@
 
   <!-- Project libraries needed for compile. -->
   <property name="bufr.jar" value="release/bufr-1.1.00.jar"/>
-  <property name="netcdf.jar" value="release/netcdf-2.2.19.jar"/>
+  <property name="netcdf.jar" value="release/netcdf-2.2.20.jar"/>
   <property name="grib.jar" value="release/grib-5.1.03.jar"/>
   <property name="prefs.jar" value="release/prefsAll.jar"/>
   <property name="opendap.jar" value="release/opendap-2.0.jar"/>

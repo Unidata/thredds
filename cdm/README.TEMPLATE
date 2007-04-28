@@ -41,5 +41,5 @@ or
 BUILD AND RUN FROM SOURCE
  1. get the source release (ncSrc-@VERSION@.zip)
  2. unzip into working directory
- 3. ant compileUI
+ 3. ant compileFromSource
  4. sh runSrcRelease

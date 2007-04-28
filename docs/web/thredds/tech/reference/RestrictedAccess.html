@@ -27,14 +27,14 @@
   &lt;role rolename=&quot;<strong>fieldProject</strong>&quot;/&gt;   
   &lt;role rolename=&quot;<strong>tiggeData</strong>&quot;/&gt;
 </pre>
-<p>If you only have one set of datasets that you want to restrict, you can use just the <strong>restrictedDatasetUser</strong> (ie you dont need to have multiple roles). However you must always use the name <em><strong>restrictedDatasetUser</strong></em>.</p>
+<p>If you only have one set of datasets that you want to restrict, you can use just the <strong>restrictedDatasetUser</strong> (ie you dont need to have multiple roles). However you must always use the name <em><strong>restrictedDatasetUser</strong></em>. </p>
 <p> <strong>3</strong>. Add each user who should have authorization to the <strong>tomcat-users.xml</strong> file. A user may have multiple roles, <strong>and</strong> <strong> must  always have the <em>restrictedDatasetUser</em> role</strong>, eg: </p>
 <pre>  &lt;user username=&quot;john&quot; password=&quot;dorkology&quot; roles=&quot;<strong>ccsmData,restrictedDatasetUser</strong>&quot;/&gt;
   &lt;user username=&quot;tiggeUser&quot; password=&quot;flabulate&quot; roles=&quot;<strong>tiggeData,restrictedDatasetUser</strong>&quot;/&gt;
   &lt;user username=&quot;luci&quot; password=&quot;designated&quot; roles=&quot;<strong>fieldProject,tiggeData,restrictedDatasetUser</strong>&quot;/&gt;
 </pre>
+<p>Make sure that none of these <strong>restrictedDatasetUsers</strong> have any of the &quot;secure&quot; roles such as <em>tdsConfig, manager, </em>or<em> admin</em>. (Here's <a href="../tutorial/TomcatSecurity.html#Seperate">why</a>). In this example we are storing passwords in cleartext, but you are advised to <a href="../tutorial/TomcatSecurity.html#Digest">store passwords in digest form</a>.</p>
 <p>You can also manage users and roles with the tomcat admin application, if you have<a href="http://wiki.apache.org/tomcat/HowTo#head-f50555909547d981d0e2b030323632b26047013e"> installed it</a>. </p>
-<p>In this example we are storing passwords in cleartext, but you are advised to <a href="../tutorial/TomcatSecurity.html#Digest">store  passwords in digest form</a>.</p>
 <p><strong>4</strong>. In the TDS configuration catalogs, add <strong>restrictAccess=<em>{security role}</em></strong>  attributes to the <strong>dataset</strong> or <strong>datasetScan</strong> elements. This will also restrict access to all children of those dataset. Example: </p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;catalog name=&quot;TDS Catalog&quot; xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&gt;
@@ -110,7 +110,7 @@
   </pre>
 <hr>
  <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 3, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 27, 2007 
 </address>
 <p>&nbsp; </p>
 </body>

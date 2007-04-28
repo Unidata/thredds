@@ -117,7 +117,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache( alwaysUseCache);
 
     // optimization: netcdf-3 files can only grow, not have metadata changes
-    ucar.nc2.N3iosp.setProperty( "syncExtendOnly", "true");
+    ucar.nc2.NetcdfFile.setProperty( "syncExtendOnly", "true");
 
     // persist joinNew aggregations. default every 24 hours, delete stuff older than 30 days
     String dir = ThreddsConfig.get("AggregationCache.dir", contentPath + "cacheAged/");

@@ -79,17 +79,33 @@
 
   <!-- Libraries -->
   <fileset id="compile.libraries" dir="${lib.dir}">
-    <include name="release/${bufr.jar}"/>
-    <include name="release/${grib.jar}"/>
-    <include name="release/${opendap.jar}"/>
-    <include name="external/${httpclient.jar}"/>
-    <include name="external/${jdom.jar}"/>
-    <include name="external/${logging.jar}"/>
-    <include name="release/${visadNoDods.jar}"/>
-  </fileset>
+     <include name="release/${bufr.jar}"/>
+     <include name="release/${grib.jar}"/>
+     <include name="release/${opendap.jar}"/>
+     <include name="external/${httpclient.jar}"/>
+     <include name="external/${jdom.jar}"/>
+     <include name="external/${logging.jar}"/>
+     <include name="release/${visadNoDods.jar}"/>
+   </fileset>
+
+  <fileset id="compileFromSrc.libraries" dir="${root.dir}">
+     <include name="lib/${bufr.jar}"/>
+     <include name="lib/${grib.jar}"/>
+     <include name="lib/${opendap.jar}"/>
+     <include name="lib/${httpclient.jar}"/>
+     <include name="lib/${jdom.jar}"/>
+     <include name="lib/${logging.jar}"/>
+     <include name="lib/${visadNoDods.jar}"/>
+     <include name="lib/${jgoodies.jar}"/>
+     <include name="lib/${lucene.jar}"/>
+   </fileset>
 
   <path id="compile.classpath">
     <fileset refid="compile.libraries"/>
+  </path>
+
+  <path id="compileFromSrc.classpath">
+    <fileset refid="compileFromSrc.libraries"/>
   </path>
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
@@ -104,7 +120,6 @@
     <fileset refid="compile.libraries"/>
     <fileset refid="runtime.libraries"/>
   </path>
-
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
@@ -146,7 +161,13 @@
       <src refid="sourcepath" />
       <patternset refid="sources"/>
       <classpath refid="compile.classpath"/>
+    </javac>
+  </target>
 
+  <target name="compileFromSrc" depends="init, release-settings" description="compile from source release">
+    <javac srcdir="src" destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
+           includeAntRuntime="false" source="1.4" target="1.4">
+      <classpath refid="compileFromSrc.classpath"/>
     </javac>
   </target>
 
@@ -278,9 +299,10 @@
       </filterset>
     </copy>
 
-    <copy todir="${srcZip.dir}/src" overwrite="true" preservelastmodified="true">
+    <copy todir="${srcZip.dir}/src/main/java" overwrite="true" preservelastmodified="true">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
+        <exclude name="ucar/nc2/dt2/*.java"/>
       </fileset>
       <fileset dir="${srcUI.dir}">
         <include name="**/*.java"/>
@@ -402,6 +424,7 @@
       <package name="dods.*"/>
       <package name="thredds.*"/>
       <package name="ucar.*"/>
+      <excludepackage name="ucar/nc2/dt2/*"/>      
     </javadoc>
   </target>
 

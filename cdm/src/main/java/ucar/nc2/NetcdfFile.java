@@ -188,6 +188,17 @@ public class NetcdfFile {
   }
 
   /**
+   * Set properties. Currently recognized:
+   *   "syncExtendOnly", "true" or "false" (default).  if true, can only extend file on a sync.
+   *
+   * @param name name of property
+   * @param value value of property
+   */
+  static public void setProperty( String name, String value) {
+    ucar.nc2.N3iosp.setProperty( name, value);
+  }
+
+  /**
    * Open an existing netcdf file (read only).
    *
    * @param location location of file.

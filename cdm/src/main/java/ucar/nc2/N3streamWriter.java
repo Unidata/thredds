@@ -32,7 +32,7 @@ import java.io.BufferedOutputStream;
 /**
  * @author john
  */
-public class N3streamWriter {
+class N3streamWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   private ucar.nc2.NetcdfFile ncfile;

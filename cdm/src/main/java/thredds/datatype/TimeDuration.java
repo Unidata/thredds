@@ -24,7 +24,6 @@ package thredds.datatype;
 import ucar.nc2.units.*;
 import ucar.units.ConversionException;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.util.Date;
@@ -72,9 +71,11 @@ public class TimeDuration {
 
   private boolean debug = false;
 
-  private TimeDuration( ) {};
+  private TimeDuration( ) {}
 
-  /** copy constructor */
+  /** copy constructor
+   * @param src copy this
+   */
   public TimeDuration( TimeDuration src) {
     text = src.getText();
     timeUnit = new TimeUnit( src.getTimeUnit());
@@ -119,10 +120,13 @@ public class TimeDuration {
   }
 
   /**
-   * time span as defined in the W3C XML Schema 1.0 specification
-   * @param text
-   * @return
-   * @throws java.text.ParseException
+   * A time span as defined in the W3C XML Schema 1.0 specification:
+   * "PnYnMnDTnHnMnS, where nY represents the number of years, nM the number of months, nD the number of days,
+   * 'T' is the date/time separator, nH the number of hours, nM the number of minutes and nS the number of seconds.
+   * The number of seconds can include decimal digits to arbitrary precision."
+   * @param text parse this text, format PnYnMnDTnHnMnS
+   * @return TimeDuration
+   * @throws java.text.ParseException when text is misformed
    */
   static public TimeDuration parseW3CDuration(String text) throws java.text.ParseException {
     TimeDuration td = new TimeDuration();
@@ -141,12 +145,17 @@ public class TimeDuration {
     return td;
   }
 
-  /** get the duration in natural units */
+  /** @return the duration in natural units, ie units of getTimeUnit() */
   public double getValue() {
     return timeUnit.getValue();
   }
 
-  /** get the duration in want units */
+  /**
+   * Get the time duration in a specified unit of time.
+   * @param want in these units
+   * @return the duration in units
+   * @throws ucar.units.ConversionException is specified unit is not compatible with time
+   */
   public double getValue(TimeUnit want) throws ConversionException {
     return timeUnit.convertTo(timeUnit.getValue(), want);
   }

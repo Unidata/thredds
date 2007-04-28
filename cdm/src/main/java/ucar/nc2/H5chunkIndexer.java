@@ -141,7 +141,7 @@ class H5chunkIndexer extends Indexer {
 
     if (currentDataNelemsDone == currentDataNelems) { // get new data node
       if (chunkListIter.hasNext())
-        currentDataNode = (H5header.DataBTree.DataEntry) chunkListIter.next();
+        currentDataNode = (H5header.DataBTree.DataEntry) chunkListIter.next();        N
       else
         done = true;
 

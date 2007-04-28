@@ -41,7 +41,7 @@ import java.nio.ByteBuffer;
  * @author caron
  */
 
-abstract public class N3iosp implements ucar.nc2.IOServiceProviderWriter {
+abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
 
   // Default fill values, used unless _FillValue variable attribute is set.

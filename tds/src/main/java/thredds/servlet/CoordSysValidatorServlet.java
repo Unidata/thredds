@@ -27,7 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.*;
 import java.util.List;
-import java.util.Iterator;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.FileItem;
@@ -54,7 +55,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   private DiskFileItemFactory factory;
   private File cacheDir;
   private long maxFileUploadSize;
-  boolean allow, deleteImmediately;
+  boolean allow = false, deleteImmediately = true;
 
   public void init() throws ServletException {
     super.init();
@@ -72,9 +73,8 @@ public class CoordSysValidatorServlet extends AbstractServlet {
 
     int scourSecs = ThreddsConfig.getSeconds("CdmValidatorService.scour", -1);
     int maxAgeSecs = ThreddsConfig.getSeconds("CdmValidatorService.maxAge", -1);
-    if (maxAgeSecs <= 0)
-      deleteImmediately = true;
-    else {
+    if (maxAgeSecs > 0) {
+      deleteImmediately = false;
       cdmValidateCache = new DiskCache2(cache, false, maxAgeSecs/60, scourSecs/60);
     }
 
@@ -114,6 +114,16 @@ public class CoordSysValidatorServlet extends AbstractServlet {
       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Must have a URL parameter");
       return;
+    }
+
+    // validate the uri String
+    try {
+      URI uri = new URI(urlString);
+      urlString= uri.toASCIIString(); // LOOK do we want just toString() ? Is this useful "input validation" ?
+    } catch (URISyntaxException e) {
+       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+       res.sendError(HttpServletResponse.SC_BAD_REQUEST, "URISyntaxException on URU parameter");
+       return;
     }
 
     String xml = req.getParameter("xml");
@@ -180,9 +190,9 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     ServletFileUpload upload = new ServletFileUpload(factory);
     upload.setSizeMax(maxFileUploadSize);  // maximum bytes before a FileUploadException will be thrown
 
-    List fileItems;
+    List<FileItem> fileItems;
     try {
-      fileItems = upload.parseRequest(req);
+      fileItems = (List<FileItem>) upload.parseRequest(req);
     }
     catch (FileUploadException e) {
       log.info("Validator FileUploadException", e);
@@ -194,10 +204,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     //Process the uploaded items
     String username = null;
     boolean wantXml = false;
-    Iterator iter = fileItems.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-
+    for (FileItem item : fileItems) {
       if (item.isFormField()) {
         if ("username".equals(item.getFieldName()))
           username = item.getString();
@@ -206,13 +213,10 @@ public class CoordSysValidatorServlet extends AbstractServlet {
       }
     }
 
-    iter = fileItems.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-
+    for (FileItem item : fileItems) {
       if (!item.isFormField()) {
         try {
-          processUploadedFile(req, res, (DiskFileItem) item, username, wantXml );
+          processUploadedFile(req, res, (DiskFileItem) item, username, wantXml);
           return;
         } catch (Exception e) {
           log.info("Validator processUploadedFile", e);

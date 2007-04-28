@@ -1,7 +1,8 @@
 package ucar.nc2;
 
 /**
- * A factory for opening a NetcdfFile, used by NetcdfFileCache
+ * A factory for opening a NetcdfFile.
+ * Used by NetcdfFileCache, NCML, etc. 
  *
  * @author caron
  */

@@ -55,7 +55,11 @@
      xmlValidation=&quot;false&quot; xmlNamespaceAware=&quot;false&quot;&gt;
   <strong>&lt;Realm className=&quot;org.apache.catalina.realm.MemoryRealm&quot; digest=&quot;SHA&quot; /&gt;</strong>
   ...
-&lt;/Host&gt;</pre>
+&lt;/Host&gt;
+</pre>
+<h2>Seperate<a name="Seperate"></a> User Roles For Restricted Datasets</h2>
+<p>The <em>tdsConfig, manager </em>and<em> admin</em> roles allow access to secure parts of  Tomcat and TDS. These can only be accessed using HTTPS (TLS), and so are considered secure. If you are  <a href="../reference/RestrictedAccess.html">restricting access to datasets</a>, you will also add other users who will have the <strong>restrictedDatasetUser </strong>role<strong>. <em>Do not give any of these users (including yourself!) any of the </em>tdsConfig, manager <em>or</em> admin<em> roles - keep them strictly separate.</em> </strong>This is because <strong>restrictedDatasetUser </strong>usage can also use non-HTTPS URLs, and so is vulnerable to <a href="http://en.wikipedia.org/wiki/Session_hijacking">session hijacking</a>. By keeping the roles separate, you make sure that the worst that can happen is that someone can download some scientific data they shouldn't have access to.<br>
+</p>
 <h2>Restrict Access to Tomcat  Manager Applications </h2>
 <p>The best way to secure the Tomcat manager and administration webapps is to restrict what IP addresses can access them. To do so:</p>
 <ol>
@@ -109,7 +113,7 @@ Java Security Manager</h2>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 06, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 27, 2007 
 </address>
 <p>&nbsp;</p>
 </body></html>
