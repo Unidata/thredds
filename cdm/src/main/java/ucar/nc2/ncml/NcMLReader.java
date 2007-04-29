@@ -48,7 +48,7 @@ import java.util.*;
 public class NcMLReader {
   public static final Namespace ncNS = Namespace.getNamespace("nc", XMLEntityResolver.NJ22_NAMESPACE);
   private static boolean debugURL = false, debugXML = false, showParsedXML = false;
-  private static boolean debugOpen = false, debugConstruct = false, debugCmd = false;
+  private static boolean debugOpen = false, debugConstruct = true, debugCmd = false;
   private static boolean debugAggDetail = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {

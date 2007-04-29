@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-  <aggregation dimName="record" type="forecastModelRun" forecastOffset="0" recheckEvery="0 sec">
-    <scan location="C:/data/ncmodels/" suffix=".nc" enhance="true"/>
+  <aggregation dimName="runtime" type="forecastModelRunCollection" recheckEvery="0 sec">
+    <scan location="C:/data/ncmodels/" suffix=".nc" dateFormatMark="NAM_CONUS_80km_#yyyyMMdd_HHmm" enhance="true"/>
   </aggregation>
 </netcdf>

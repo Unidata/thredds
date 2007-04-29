@@ -448,8 +448,10 @@ public class InvDatasetFmrc extends InvCatalogRef {
   private synchronized void makeFmrc() throws IOException {
     // LOOK: when is fmrc closed? what about caching
 
-    if (madeFmrc)
+    if (madeFmrc) {
+      checkIfChanged();
       return;
+    }
 
     Element ncml = getNcmlElement();
     NetcdfDataset ncd = NcMLReader.readNcML(path, ncml, null);

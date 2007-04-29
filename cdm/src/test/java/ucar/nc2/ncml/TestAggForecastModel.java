@@ -4,12 +4,15 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.io.File;
+import java.text.ParseException;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateFormatter;
 
 public class TestAggForecastModel extends TestCase {
-
+  private int nfore = 11;
   public TestAggForecastModel( String name) {
     super(name);
   }
@@ -20,10 +23,10 @@ public class TestAggForecastModel extends TestCase {
     NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
 
-    testDimensions(ncfile, 15);
+    testDimensions(ncfile, 14);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15, 122100, 12);
-    testReadData(ncfile, 15);
+    testAggCoordVar(ncfile, 14);
+    testReadData(ncfile, 14, nfore);
     testReadSlice(ncfile);
 
     ncfile.close();
@@ -35,28 +38,38 @@ public class TestAggForecastModel extends TestCase {
     String newModelsave = "C:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc.save";
     File newModelFile = new File(newModel);
     File newModelFileSave = new File(newModelsave);
-    boolean ok = newModelFile.renameTo(newModelFileSave);
-    if (!ok) throw new IOException("cant rename file");
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    if (newModelFile.exists() && !newModelFileSave.exists()) {
+      boolean ok = newModelFile.renameTo(newModelFileSave);
+      if (!ok) throw new IOException("cant rename file");
+    } else if (!newModelFile.exists() && newModelFileSave.exists()) {
+      System.out.println("already renamed");
+    } else if (!newModelFile.exists() && !newModelFileSave.exists()) {
+      throw new IOException("missing "+newModelFile.getPath());
+    } else if (newModelFile.exists() && newModelFileSave.exists()) {
+      boolean ok = newModelFile.delete();
+      if (!ok) throw new IOException("cant delete file "+newModelFile.getPath());
+    }
+
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
 
     testDimensions(ncfile, 14);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 14, 122100, 12);
-    testReadData(ncfile, 14);
+    testAggCoordVar(ncfile, 14);
+    testReadData(ncfile, 14, nfore);
     testReadSlice(ncfile);
 
     // new file arrives
-    ok = newModelFileSave.renameTo(newModelFile);
+    boolean ok = newModelFileSave.renameTo(newModelFile);
     if (!ok) throw new IOException("cant rename file");
 
     ncfile.sync();
 
     testDimensions(ncfile, 15);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15, 122100, 12);;
-    testReadData(ncfile, 15);
+    testAggCoordVar(ncfile, 15);
+    testReadData(ncfile, 15, nfore);
     testReadSlice(ncfile);
 
     ncfile.close();
@@ -70,8 +83,8 @@ public class TestAggForecastModel extends TestCase {
 
     testDimensions(ncfile, 6);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 6, 122160, 0);
-    testReadData(ncfile, 6);
+    testAggCoordVar(ncfile, 6);
+    testReadData(ncfile, 6, nfore);
     testReadSlice(ncfile);
 
     ncfile.close();
@@ -85,8 +98,8 @@ public class TestAggForecastModel extends TestCase {
 
     testDimensions(ncfile, 15);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15, 122106, 12);
-    testReadData(ncfile, 15);
+    testAggCoordVar(ncfile, 15);
+    testReadData(ncfile, 15, nfore);
     testReadSlice(ncfile);
 
     ncfile.close();
@@ -105,9 +118,9 @@ public class TestAggForecastModel extends TestCase {
     assert lonDim.getLength() == 65;
     assert !lonDim.isUnlimited();
 
-    Dimension timeDim = ncfile.findDimension("record");
+    Dimension timeDim = ncfile.findDimension("runtime");
     assert null != timeDim;
-    assert timeDim.getName().equals("record");
+    assert timeDim.getName().equals("runtime");
     assert timeDim.getLength() == nagg : timeDim.getLength();
   }
 
@@ -148,70 +161,66 @@ public class TestAggForecastModel extends TestCase {
 
   }
 
-  public void testAggCoordVar(NetcdfFile ncfile, int nagg, int start, int incr) {
-    Variable time = ncfile.findVariable("valtime");
+  public void testAggCoordVar(NetcdfFile ncfile, int nagg) {
+    Variable time = ncfile.findVariable("runtime");
     assert null != time;
-    assert time.getName().equals("valtime");
+    assert time.getName().equals("runtime");
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
-    assert time.getDataType() == DataType.DOUBLE;
+    assert time.getDataType() == DataType.STRING;
 
-    assert time.getCoordinateDimension() == null; // LOOK maybe should be ??
+    assert time.getCoordinateDimension() != null; // LOOK maybe should be ??
 
     try {
       Array data = time.read();
       assert data.getRank() == 1;
       assert data.getSize() == nagg;
       assert data.getShape()[0] == nagg;
-      assert data.getElementType() == double.class;
+      assert data.getElementType() == String.class;
 
-      int count = 0;
+      DateFormatter df = new DateFormatter();
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        assert dataI.getIntNext() == start + count*incr : dataI.getIntNext();
-        count++;
+        String d = (String) dataI.getObjectNext();
+        assert df.isoDateTimeFormat(d) != null : d;
       }
 
     } catch (IOException io) {
       io.printStackTrace();
       assert false;
+    } catch (ParseException e) {
+      e.printStackTrace();
+      assert false;
     }
 
   }
 
-  public void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
+  public void testReadData(NetcdfFile ncfile, int nagg, int nfore) throws IOException {
     Variable v = ncfile.findVariable("P_sfc");
     assert null != v;
     assert v.getName().equals("P_sfc");
-    assert v.getRank() == 3;
+    assert v.getRank() == 4;
     assert v.getShape()[0] == nagg;
-    assert v.getShape()[1] == 65;
-    assert v.getShape()[2] == 93;
+    assert v.getShape()[1] == nfore : v.getShape()[1];
+    assert v.getShape()[2] == 65;
+    assert v.getShape()[3] == 93;
     assert v.getDataType() == DataType.FLOAT;
 
     assert v.getCoordinateDimension() == null;
 
-    assert v.getDimension(0) == ncfile.findDimension("record");
-    assert v.getDimension(1) == ncfile.findDimension("y");
-    assert v.getDimension(2) == ncfile.findDimension("x");
+    assert v.getDimension(0) == ncfile.findDimension("runtime");
+    assert v.getDimension(1) == ncfile.findDimension("record");
+    assert v.getDimension(2) == ncfile.findDimension("y");
+    assert v.getDimension(3) == ncfile.findDimension("x");
 
       Array data = v.read();
-      assert data.getRank() == 3;
+      assert data.getRank() == 4;
       assert data.getShape()[0] == nagg;
-      assert data.getShape()[1] == 65;
-      assert data.getShape()[2] == 93;
+      assert data.getShape()[1] == nfore;
+      assert data.getShape()[2] == 65;
+      assert data.getShape()[3] == 93;
       assert data.getElementType() == float.class;
-
-      /* int [] shape = data.getShape();
-      Index tIndex = data.getIndex();
-      for (int i=0; i<shape[0]; i++)
-       for (int j=0; j<shape[1]; j++)
-        for (int k=0; k<shape[2]; k++) {
-          double val = data.getDouble( tIndex.set(i, j, k));
-          // System.out.println(" "+val);
-          assert TestUtils.close(val, 100*i + 10*j + k) : val;
-        }  */
 
   }
 
@@ -220,11 +229,12 @@ public class TestAggForecastModel extends TestCase {
     Variable v = ncfile.findVariable("P_sfc");
 
       Array data = v.read(origin, shape);
-      assert data.getRank() == 3;
-      assert data.getSize() == shape[0] * shape[1] * shape[2];
-      assert data.getShape()[0] == shape[0] : data.getShape()[0] +" "+shape[0];
+      assert data.getRank() == 4;
+      assert data.getSize() == shape[0] * shape[1] * shape[2] * shape[3];
+      assert data.getShape()[0] == shape[0];
       assert data.getShape()[1] == shape[1];
       assert data.getShape()[2] == shape[2];
+      assert data.getShape()[3] == shape[3];
       assert data.getElementType() == float.class;
 
       /* Index tIndex = data.getIndex();
@@ -239,10 +249,10 @@ public class TestAggForecastModel extends TestCase {
   }
 
   public void testReadSlice(NetcdfFile ncfile) throws IOException, InvalidRangeException {
-    testReadSlice( ncfile, new int[] {0, 0, 0}, new int[] {11, 3, 4} );
-    testReadSlice( ncfile, new int[] {0, 0, 0}, new int[] {2, 3, 2} );
-    testReadSlice( ncfile, new int[] {5, 0, 0}, new int[] {10, 3, 4} );
-    testReadSlice( ncfile, new int[] {10, 0, 0}, new int[] {10, 2, 3} );
+    testReadSlice( ncfile, new int[] {0, 0, 0, 0}, new int[] {14, 11, 3, 4} );
+    testReadSlice( ncfile, new int[] {0, 0, 0, 0}, new int[] {4, 2, 3, 2} );
+    testReadSlice( ncfile, new int[] {5, 0, 0, 0}, new int[] {3, 10, 3, 4} );
+    testReadSlice( ncfile, new int[] {10, 0, 0, 0}, new int[] {4, 10, 2, 3} );
    }
 }
 

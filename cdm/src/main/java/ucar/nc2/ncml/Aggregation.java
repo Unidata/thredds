@@ -116,8 +116,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
 
   protected DateFormatter formatter = new DateFormatter();
-  protected boolean debug = true, debugOpenFile = true, debugCacheDetail = true, debugSyncDetail = true, debugProxy = false,
-    debugScan = true;
+  protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false,
+    debugScan = false, debugRead = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -311,8 +311,16 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   //////////////////////////////////////////////////////////////
 
-  public boolean syncExtend() throws IOException {
-    if (!isChanged())
+  /**
+   * Check to see if its time to rescan directory, and if so, rescan and extend dataset if needed.
+   * @param force if true, always rescan even if time not expired
+   * @return
+   * @throws IOException
+   */
+  public boolean syncExtend(boolean force) throws IOException {
+    if (!force && !timeToRescan())
+      return false;
+    if (!rescan())
       return false;
 
     // only the set of datasets may have changed
@@ -334,7 +342,9 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   }
 
   public boolean sync() throws IOException {
-    if (!isChanged())
+    if (!timeToRescan())
+      return false;
+    if (!rescan())
       return false;
 
     //ncd.empty(); LOOK not emptying !!
@@ -359,13 +369,18 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * @return if theres new datasets, put new datasets into nestedDatasets
    * @throws IOException
    */
-  protected boolean isChanged() throws IOException {
-    if (getType() == Aggregation.Type.UNION)
+  protected boolean timeToRescan() {
+    if (getType() == Aggregation.Type.UNION){
+      if (debugSyncDetail) System.out.println(" *Sync not needed for Union");
       return false;
+    }
 
     // see if we need to recheck
-    if (recheck == null)
+    if (recheck == null) {
+      if (debugSyncDetail) System.out.println(" *Sync not needed, recheck is null");
       return false;
+    }
+
     Date now = new Date();
     Date lastCheckedDate = new Date(lastChecked);
     Date need = recheck.add(lastCheckedDate);
@@ -374,9 +389,14 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       return false;
     }
 
+    return true;
+  }
+
+  private boolean rescan() throws IOException  {
+
     // ok were gonna recheck
     lastChecked = System.currentTimeMillis();
-    if (debug) System.out.println(" *Sync at "+lastChecked);
+    if (debug) System.out.println(" *Sync at "+new Date());
 
     // rescan
     ArrayList newDatasets = new ArrayList();
@@ -1112,6 +1132,15 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
+      try {
+        return _acquireFile(cancelTask);
+      } catch (IOException ioe) {
+        syncExtend(true); // LOOK data has changed, how to notify the user permanently?
+        throw ioe;
+      }
+    }
+
+    private NetcdfFile _acquireFile(CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile;
       long start = System.currentTimeMillis();
       if (debugOpenFile) System.out.println(" try to acquire " + cacheName);
@@ -1160,7 +1189,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
         ncd = acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
-        if (debug) {
+        if (debugRead) {
           System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation());
           for (int i = 0; i < section.size(); i++) {
             Range range = (Range) section.get(i);

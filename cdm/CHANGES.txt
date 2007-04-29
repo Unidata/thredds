@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.20
  Bugs
+  * Aggregation: If dataset.acquire gets error, resync aggregation, but throw IOException anyway.
+  * InvDatasetFmrc: checkIfChanged when requesting a dataset.
+  * remove opendap catalog, status, systemproperties requests
+  * make opendap Content-Description: conform to spec
 
 Changes in version 2.2.19
  Features

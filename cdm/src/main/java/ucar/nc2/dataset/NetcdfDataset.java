@@ -558,7 +558,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   public boolean syncExtend() throws IOException {
     if (agg != null)
-      return agg.syncExtend();
+      return agg.syncExtend(false);
 
     // synch orgFile if it has an unlimited dimension
     if (orgFile != null) {

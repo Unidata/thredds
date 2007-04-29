@@ -48,7 +48,7 @@ public class AggregationFmrc extends Aggregation {
   }
 
   private FmrcDefinition fmrcDefinition;
-  private boolean debug = true;
+  private boolean debug = false;
   private boolean timeUnitsChange = false;
 
   public AggregationFmrc(NetcdfDataset ncd, String dimName, String recheckS) {
