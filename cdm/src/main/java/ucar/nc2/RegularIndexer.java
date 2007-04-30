@@ -210,4 +210,39 @@ class RegularIndexer extends Indexer {
     return chunk;
   }
 
+  private class FileIndex {
+    long startPos;
+    int[] shape, stride, origin, current;
+    int rank;
+
+    FileIndex( long startPos, int[] shape, int[] stride) {
+      this.startPos = startPos;
+      this.shape = shape;
+      this.stride = stride;
+      this.rank = shape.length;
+      this.current = new int[ rank];
+    }
+
+    void incr() {
+      int digit = rank-1;
+      while (digit >= 0) {
+        current[digit]++;
+        if (current[digit] < shape[digit])
+          break;                        // normal exit
+        current[digit] = 0;               // else, carry
+        digit--;
+      }
+    }
+
+    long currentPos() {
+      long value = startPos;
+      for(int ii = 0; ii < rank; ii++)
+        value += current[ii] * ((long) stride[ii]);
+      return value;
+    }
+
+  }
+
+
+
 }

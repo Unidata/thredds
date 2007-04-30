@@ -15,7 +15,7 @@ import java.text.ParseException;
  * A Collection of StationDatasets
  */
 public class StationDatasetCollection {
-  private boolean debug = true;
+  private boolean debug = false;
 
   private ArrayList sobsList = new ArrayList();
   private StationObsDataset typical = null;

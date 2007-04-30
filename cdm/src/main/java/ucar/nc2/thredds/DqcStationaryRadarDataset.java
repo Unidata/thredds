@@ -108,7 +108,7 @@ public class DqcStationaryRadarDataset extends StationaryRadarCollectionImpl {
     private SelectService.ServiceChoice service;
     private HashMap dqcStations;
    // private List avbTimesList;
-    private boolean debugQuery = true;
+    private boolean debugQuery = false;
 
     private DqcStationaryRadarDataset(String desc, QueryCapability dqc, SelectService selService, SelectService.ServiceChoice service,
         SelectStation selStation, SelectGeoRegion selRegion, SelectList selTime) {

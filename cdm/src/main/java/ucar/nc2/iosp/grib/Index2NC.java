@@ -445,7 +445,7 @@ public class Index2NC  {
 
 
 
-  // make coordinate system from a Definitioon object
+  // make coordinate system from a Definition object
   private void makeDefinedCoordSys(NetcdfFile ncfile, TableLookup lookup, FmrcCoordSys fmr) throws IOException {
     ArrayList timeCoords = new ArrayList();
     ArrayList vertCoords = new ArrayList();

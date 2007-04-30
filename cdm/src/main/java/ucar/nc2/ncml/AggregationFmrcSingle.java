@@ -55,7 +55,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   private CoordinateAxis1D timeAxis = null;
   private int max_times = 0;
   private Dataset typicalDataset = null;
-  private boolean debug = true;
+  private boolean debug = false;
 
   public AggregationFmrcSingle(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.FORECAST_MODEL_SINGLE, recheckS);

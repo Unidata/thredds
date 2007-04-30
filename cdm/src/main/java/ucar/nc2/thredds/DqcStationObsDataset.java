@@ -132,7 +132,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   private SelectGeoRegion selRegion;
   private SelectService.ServiceChoice service;
 
-  private boolean debugQuery = true;
+  private boolean debugQuery = false;
 
   private StructureMembers members;
   private MetarParseReport parser;

@@ -133,10 +133,10 @@ public class GribHorizCoordSys {
       double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
       addCoordAxis(ncfile, "lat", gdsIndex.ny, gdsIndex.La1, dy, "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
       addCoordAxis(ncfile, "lon", gdsIndex.nx, gdsIndex.Lo1, gdsIndex.dx, "degrees_east", "longitude coordinate", "longitude", AxisType.Lon);
-      add2DCoordSystem(ncfile, "latLonCoordSys", "time lat lon");
+      addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     } else {
-      computeProjection(ncfile);
+      makeProjection(ncfile);
       double[] yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDy(), "km",
               "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
       double[] xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDx(), "km",
@@ -217,7 +217,7 @@ public class GribHorizCoordSys {
     ncfile.addVariable(g, lonVar);
   }
 
-  private void computeProjection(NetcdfFile ncfile) {
+  private void makeProjection(NetcdfFile ncfile) {
     switch (lookup.getProjectionType(gdsIndex)) {
       case TableLookup.PolarStereographic:
         makePS();
@@ -253,7 +253,12 @@ public class GribHorizCoordSys {
       v.addAttribute(new Attribute("spherical_earth_radius_meters", new Double(gdsIndex.radius_spherical_earth)));
     }
 
-    // add all the gds parameters
+    addGDSparams(v);
+    ncfile.addVariable(g, v);
+  }
+
+  private void addGDSparams(Variable v) {
+        // add all the gds parameters
     java.util.Set keys = gdsIndex.params.keySet();
     ArrayList keyList = new ArrayList( keys);
     Collections.sort( keyList);
@@ -274,11 +279,9 @@ public class GribHorizCoordSys {
         }
       }
     }
-
-    ncfile.addVariable(g, v);
   }
 
-  private void add2DCoordSystem(NetcdfFile ncfile, String name, String dims) {
+  private void addCoordSystemVariable(NetcdfFile ncfile, String name, String dims) {
     Variable v = new Variable(ncfile, g, null, name);
     v.setDataType(DataType.CHAR);
     v.setDimensions(new ArrayList()); // scalar
@@ -287,6 +290,8 @@ public class GribHorizCoordSys {
     v.addAttribute(new Attribute(_Coordinate.Axes, dims));
     if (!isLatLon())
       v.addAttribute(new Attribute(_Coordinate.Transforms, getGridName()));
+
+    addGDSparams(v);
     ncfile.addVariable(g, v);
   }
 

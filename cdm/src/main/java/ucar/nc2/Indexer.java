@@ -23,12 +23,12 @@ package ucar.nc2;
 /**
  * Iterator to read/write subsets of an array.
  * <pre>
- *
+ *    int[] pa = new int[size];
  *    Indexer index;
  *    while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         raf.seek ( chunk.getFilePos());
-        raf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+        raf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
       }
    </pre>
  * @author caron
@@ -36,19 +36,21 @@ package ucar.nc2;
  */
 abstract class Indexer {
 
-  /** total number of elements in the wanted subset. */
+  /** @return total number of elements in the wanted subset. */
   abstract int getTotalNelems();
 
-  /**  size of each element in bytes. */
+  /** @return  size of each element in bytes. */
   abstract int getElemSize();
 
-  /** if theres more to do */
+  /** @return true if theres more to do */
   abstract boolean hasNext();
 
-  /** get next chunk */
+  /** @return next chunk */
   abstract Chunk next();
 
-  /** a contiguous chunk of data in the file, that is wanted for this subset. */
+  /** A contiguous chunk of data in the file, that is wanted for this subset.
+   *  Read nelems from file at filePos, store in array at indexPos.
+   */
   class Chunk {
     long filePos; // start reading here
     int nelems; // read these many elements
@@ -60,48 +62,14 @@ abstract class Indexer {
       this.indexPos = indexPos;
     }
 
-    /** where to read in the file "source position" */
+    /** @return position in file where to start reading: "source position" */
     public long getFilePos() { return filePos; }
-    /** number of elements to read/transfer */
+    /** @return number of elements to read/transfer */
     public int getNelems() { return nelems; }
-    /** where to place in the result array "destination position" */
+    /** @return where to place in the result array: "destination position" */
     public int getIndexPos() { return indexPos; }
-    /** for debugging */
+
     public String toString() { return " filePos="+filePos+" nelems="+nelems+" indexPos="+indexPos; }
   }
-
-  class FileIndex {
-    long startPos;
-    int[] shape, stride, origin, current;
-    int rank;
-
-    FileIndex( long startPos, int[] shape, int[] stride) {
-      this.startPos = startPos;
-      this.shape = shape;
-      this.stride = stride;
-      this.rank = shape.length;
-      this.current = new int[ rank];
-    }
-
-    void incr() {
-      int digit = rank-1;
-      while (digit >= 0) {
-        current[digit]++;
-        if (current[digit] < shape[digit])
-          break;                        // normal exit
-        current[digit] = 0;               // else, carry
-        digit--;
-      }
-    }
-
-    long currentPos() {
-      long value = startPos;
-      for(int ii = 0; ii < rank; ii++)
-        value += current[ii] * ((long) stride[ii]);
-      return value;
-    }
-
-  }
-
 
 }

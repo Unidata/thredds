@@ -55,7 +55,7 @@ public class Range {
     return result;
   }
 
-  /** Check rangeList has no nulls, set from shape array.  */
+  /** Check rangeList has no nulls, set from shape array. */
   public static List setDefaults( List rangeList, int[] shape) {
     try {
       // entire rangeList is null

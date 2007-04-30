@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.20
  Bugs
+  * GRIB: always check first if the index file lives in the same dir as the regular file, and use it
+  * GRIB: latlonProjection coordSys dummy Variable did noyt have the GDS params attached.
   * Aggregation: If dataset.acquire gets error, resync aggregation, but throw IOException anyway.
   * InvDatasetFmrc: checkIfChanged when requesting a dataset.
   * remove opendap catalog, status, systemproperties requests

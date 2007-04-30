@@ -20,7 +20,7 @@ public class URLExtracter {
 
   private StringBuffer textBuffer;
   private boolean wantText = false;
-  private boolean debug = true,  debugIMG = true;
+  private boolean debug = false,  debugIMG = false;
   private boolean dump = true;
 
   public URLExtracter() {

@@ -14,7 +14,7 @@ import edu.wisc.ssec.mcidas.McIDASUtil;
  * Reads station table ascii output from mcidas STNLIST command
  */
 public class StationDB {
-  static private boolean debugOpen = true, debugCall = false, debugParse = false;
+  static private boolean debugOpen = false, debugCall = false, debugParse = false;
 
   private ArrayList stations = new ArrayList();
 

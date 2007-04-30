@@ -35,7 +35,7 @@ public abstract class GribServiceProvider implements IOServiceProvider {
   private String saveLocation;
 
   // debugging
-  static boolean debugOpen = true, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
+  static boolean debugOpen = false, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
 
   static private boolean alwaysInCache = false;
   static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
@@ -109,8 +109,10 @@ public abstract class GribServiceProvider implements IOServiceProvider {
       }
 
     } else {
-      // get the index file, look in cache if need be
-      saveIndexFile = DiskCache.getFile(indexLocation, alwaysInCache);
+      // always check first if the index file lives inb the same dir as the regular file, and use it
+      saveIndexFile = new File(indexLocation);
+      if (!saveIndexFile.exists()) // look in cache if need be
+        saveIndexFile = DiskCache.getFile(indexLocation, alwaysInCache);
     }
 
     // if exist already, read it
