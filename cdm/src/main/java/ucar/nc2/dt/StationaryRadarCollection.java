@@ -39,19 +39,19 @@ public interface StationaryRadarCollection {
 
   /** check if the product available for all stations.
    * @return true of false */
-  public boolean checkStationProduct(String product);
+    public boolean checkStationProduct(String product);
 
 
   /** check if the product available for one station
    * @return true of false */
-  public boolean checkStationProduct(Station s, String product);
+    public boolean checkStationProduct(Station s, String product);
 
   /**
    * How many Data Products are available for this Station?
    * @param s station, and product requested
    * @return count or -1 if unknown.
    */
-  public List getStationDataProducts( Station s);
+    public List getStationDataProducts( Station s);
 
  /** Get all specific data within the specified bounding box.
    * @return List of type RadialDatasetSweep data
@@ -77,15 +77,51 @@ public interface StationaryRadarCollection {
 
 
   /** Get data for this Station within the specified date range.
+   * @param sName radar station  name
+   * @param start the start time
+   * @param end the end time
+   * @param interval the time interval
+   * @param preInt the time range before interval
+   * @param postInt the time range after interval
    * @return List of getDataClass() */
-  public List getData( Station s,  Date start, Date end) throws IOException;
+    public List getData( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+                       int postInt) throws IOException;
+
+  /** Get data for this Station within the specified date range.
+   * @param sName radar station  name
+   * @param start the start time
+   * @param end the end time
+   * @param interval the time interval
+   * @param preInt the time range before interval
+   * @param postInt the time range after interval
+   * @return List of getDataClass() */
+    public List getDataURIs( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+                       int postInt) throws IOException;
 
   /** Get data for this Station within the specified date range, allow user to cancel.
    * @param cancel allow user to cancel. Implementors should return ASAP.
+   * @param sName radar station  name
+   * @param start the start time
+   * @param end the end time
+   * @param interval the time interval
+   * @param preInt the time range before interval
+   * @param postInt the time range after interval
    * @return List of RadialDatasetSweep data
    */
-  public List getData( Station s,  Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException;
+    public List getData( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+                       int postInt, ucar.nc2.util.CancelTask cancel) throws IOException;
 
+  /** Get data for this Station within the specified date range.
+   * @param sName radar station  name
+   * @param start the start time
+   * @param end the end time
+   * @param interval the time interval
+   * @param preInt the time range before interval
+   * @param postInt the time range after interval
+   * @param cancel allow user to cancel. Implementors should return ASAP.
+   * @return List of getDataClass() */
+    public List getDataURIs( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+                       int postInt, ucar.nc2.util.CancelTask cancel) throws IOException;
   /** Get all data for a list of Stations.
    * @return List of RadialDatasetSweep data
    */
