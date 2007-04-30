@@ -4,6 +4,7 @@ import junit.framework.*;
 
 import java.util.*;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import thredds.catalog.*;
 import thredds.catalog.query.DqcFactory;
@@ -63,15 +64,13 @@ public class TestAll extends TestCase
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error reading DQC doc <" + dqcUrl + ">: " + e.getMessage(),
-                  false );
+      fail( "I/O error reading DQC doc <" + dqcUrl + ">: " + e.getMessage() );
       return null;
     }
 
     if ( dqc.hasFatalError() )
     {
-      assertTrue( "Fatal error with DQC doc <" + dqcUrl + ">: " + dqc.getErrorMessages(),
-                  false );
+      fail( "Fatal error with DQC doc <" + dqcUrl + ">: " + dqc.getErrorMessages() );
       return null;
     }
 
@@ -89,14 +88,16 @@ public class TestAll extends TestCase
   {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
     StringBuffer validationMsg = new StringBuffer();
+    String curSysTimeAsString = null;
     try
     {
+      curSysTimeAsString = getCurrentSystemTimeAsISO8601();
+
       InvCatalogImpl cat = catFactory.readXML( catUrl );
       boolean isValid = cat.check( validationMsg, false );
       if ( !isValid )
       {
-        assertTrue( "Invalid catalog <" + catUrl + ">:\n" + validationMsg.toString(),
-                    false );
+        fail( "Invalid catalog <" + catUrl + ">:\n" + validationMsg.toString() );
         return null;
       }
       else
@@ -109,8 +110,7 @@ public class TestAll extends TestCase
     catch ( Exception e )
     {
       e.printStackTrace();
-      assertTrue( "Exception while parsing catalog <" + catUrl + ">: " + e.getMessage(),
-                  false );
+      fail( "[" + curSysTimeAsString + "] Exception while parsing catalog <" + catUrl + ">: " + e.getMessage() );
       return null;
     }
   }
@@ -127,8 +127,7 @@ public class TestAll extends TestCase
         if ( expiresDateType.getDate().getTime() < System.currentTimeMillis() )
         {
 
-          assertTrue( "Expired catalog <" + catalogUrl + ">: " + expiresDateType.toDateTimeStringISO() + ".",
-                      false );
+          fail( "Expired catalog <" + catalogUrl + ">: " + expiresDateType.toDateTimeStringISO() + "." );
           return;
         }
       }
@@ -140,21 +139,29 @@ public class TestAll extends TestCase
     InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl );
     if ( catalog != null )
     {
-      List resolverDsList = findAllResolverDatasets( catalog.getDatasets() );
-      Map fail = new HashMap();
+      List<InvDatasetImpl> resolverDsList = findAllResolverDatasets( catalog.getDatasets() );
+      Map<String, String> failureMsgs = new HashMap<String, String>();
 
-      for ( Iterator it = resolverDsList.iterator(); it.hasNext(); )
+      for ( InvDatasetImpl curResolverDs : resolverDsList )
       {
         // Resolve the resolver dataset.
-        InvDatasetImpl curResolverDs = (InvDatasetImpl) it.next();
         InvAccess curAccess = curResolverDs.getAccess( ServiceType.RESOLVER );
         String curResDsPath = curAccess.getStandardUri().toString();
-        InvCatalogImpl curResolvedCat = openAndValidateCatalog( curResDsPath );
+        InvCatalogImpl curResolvedCat = null;
+        try
+        {
+          curResolvedCat = openAndValidateCatalog( curResDsPath );
+        }
+        catch ( AssertionFailedError e )
+        {
+          failureMsgs.put( curResDsPath, "Failed to open and validate resolver catalog: " + e.getMessage());
+          continue;
+        }
 
         List curDatasets = curResolvedCat.getDatasets();
         if ( curDatasets.size() != 1 )
         {
-          fail.put( curResDsPath, "Wrong number of datasets <" + curDatasets.size() + "> in resolved catalog <" + curResDsPath + ">." );
+          failureMsgs.put( curResDsPath, "Wrong number of datasets <" + curDatasets.size() + "> in resolved catalog <" + curResDsPath + ">." );
           continue;
         }
 
@@ -163,20 +170,22 @@ public class TestAll extends TestCase
         InvAccess curResolvedDsAccess = curResolvedDs.getAccess( ServiceType.OPENDAP );
         String curResolvedDsPath = curResolvedDsAccess.getStandardUri().toString(); 
 
+        String curSysTimeAsString = null;
         NetcdfDataset ncd;
         try
         {
+          curSysTimeAsString = getCurrentSystemTimeAsISO8601();
           ncd = NetcdfDataset.openDataset( curResolvedDsPath );
         }
         catch ( IOException e )
         {
-          fail.put( curResolvedDsPath, "I/O error opening dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
+          failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] I/O error opening dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
           continue;
         }
 
         if ( ncd == null )
         {
-          fail.put( curResolvedDsPath, "Failed to open dataset <" + curResolvedDsPath + ">." );
+          failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Failed to open dataset <" + curResolvedDsPath + ">." );
           continue;
         }
 
@@ -188,41 +197,37 @@ public class TestAll extends TestCase
         }
         catch ( IOException e )
         {
-          fail.put( curResolvedDsPath, "I/O error opening typed dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
+          failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] I/O error opening typed dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
           continue;
         }
         if ( typedDs == null )
         {
-          fail.put( curResolvedDsPath, "Failed to open typed dataset <" + curResolvedDsPath + ">." );
-          //continue;
+          failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Failed to open typed dataset <" + curResolvedDsPath + ">." );
+          continue;
         }
 
         //Date startDate = typedDs.getStartDate();
         //if ( startDate.getTime() < System.currentTimeMillis()) ...
       }
 
-      if ( !fail.isEmpty() )
+      if ( !failureMsgs.isEmpty() )
       {
         StringBuffer failMsg = new StringBuffer( "Some resolver datasets failed to open:" );
-        for ( Iterator it = fail.keySet().iterator(); it.hasNext(); )
+        for ( String curPath : failureMsgs.keySet() )
         {
-          String curPath = (String) it.next();
-          String curMsg = (String) fail.get( curPath );
+          String curMsg = failureMsgs.get( curPath );
           failMsg.append( "\n" ).append( curPath ).append( ": " ).append( curMsg );
         }
-        assertTrue( failMsg.toString(),
-                    false );
+        fail( failMsg.toString());
       }
     }
   }
 
-  public static List findAllResolverDatasets( List datasets )
+  public static List<InvDatasetImpl> findAllResolverDatasets( List<InvDatasetImpl> datasets )
   {
-    List resolverDsList = new ArrayList();
-    for ( Iterator iterator = datasets.iterator(); iterator.hasNext(); )
+    List<InvDatasetImpl> resolverDsList = new ArrayList<InvDatasetImpl>();
+    for ( InvDatasetImpl curDs : datasets )
     {
-      InvDatasetImpl curDs = (InvDatasetImpl) iterator.next();
-
       if ( !( curDs instanceof InvDatasetImpl ) ) continue;
 
       if ( curDs.hasNestedDatasets() )
@@ -236,4 +241,17 @@ public class TestAll extends TestCase
     }
     return resolverDsList;
   }
+
+  private static String getCurrentSystemTimeAsISO8601()
+  {
+    long curTime = System.currentTimeMillis();
+    Calendar cal = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
+    cal.setTimeInMillis( curTime );
+    Date curSysDate = cal.getTime();
+    SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd\'T\'HH:mm:ss.SSSz", Locale.US );
+    dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+
+    return dateFormat.format( curSysDate );
+  }
+
 }
