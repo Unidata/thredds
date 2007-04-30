@@ -141,39 +141,6 @@ public abstract class StationaryRadarCollectionImpl extends TypedDatasetImpl imp
           return 0;
     }
 
-
-
-    public List getData(Station s, Date start, Date end, CancelTask cancel) throws IOException {
-        double startTime = timeUnit.makeValue( start);
-        double endTime = timeUnit.makeValue( end);
-        ArrayList result = new ArrayList();
-        List stationObs = radarCollection.getData( s, start, end);
-
-        for (int i = 0; i < stationObs.size(); i++) {
-            RadialDatasetSweep rds =  (RadialDatasetSweep) stationObs.get(i);
-                
-            double timeValue = rds.getStartDate().getTime();
-            if ((timeValue >= startTime) && (timeValue <= endTime))
-              result.add( rds);
-            if ((cancel != null) && cancel.isCancel()) return null;
-        }
-
-        return result;
-
-    }
-
-
-
-   // public List getData(List stations, Date start, Date end) throws IOException {
-    //        return null;
-   // }
-
-
-   // public List getData(List stations, String product, Date start, Date end, ucar.nc2.util.CancelTask cancel) throws IOException {
-   //       if ((cancel != null) && cancel.isCancel()) return null;
-   //       return getData( stations, start, end);
-   // }
-
     public boolean checkStationProduct(Station s, String product) {
         return true;
     }
