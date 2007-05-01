@@ -1681,7 +1681,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     } else {
       dsElem = writeCatalogRef( ds);
-      dsElem.addContent( writeProperty( new InvProperty( "DatasetFmrc", ds.getPath() ) ) ); /// LOOK experimental
+      // dsElem.addContent( writeProperty( new InvProperty( "DatasetFmrc", ds.getPath() ) ) ); /// LOOK security hole - not used anyway, I think
     }
 
     return dsElem;
