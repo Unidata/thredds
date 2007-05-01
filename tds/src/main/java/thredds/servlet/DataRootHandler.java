@@ -143,6 +143,7 @@ public class DataRootHandler {
    * Reads a catalog, finds datasetRoot, datasetScan, datasetFmrc, NcML and restricted access datasets
    *
    * Only called by synchronized methods.
+   *
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @param recurse  if true, look for catRefs in this catalog
    * @throws IOException if reading catalog fails
@@ -152,10 +153,18 @@ public class DataRootHandler {
     File f = new File(catalogFullPath);
     String s1 = f.getCanonicalPath();
     catalogFullPath = StringUtil.replace(s1,'\\',"/");
+    
+    // Check that the catalog is under the content path directory and
+    // handle it gracefully rather than throw StringIndexOutOfBoundsException.
+    if ( ! catalogFullPath.startsWith( contentPath ))
+    {
+      log.error( "initCatalog(): Path <" + path + "> points outside of content path <" + contentPath + ">.");
+      return;
+    }
     path = catalogFullPath.substring(contentPath.length());
 
     // make sure we dont already have it
-      if ( staticCatalogHash.containsKey(path)) {
+      if ( staticCatalogHash.containsKey(path)) { // This method only called by synchronized methods.
         log.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop (skip)");
         return;
       }
@@ -192,7 +201,7 @@ public class DataRootHandler {
     initSpecialDatasets( cat.getDatasets() );
 
     // add catalog to hash tables
-    staticCatalogHash.put(path, cat);
+    staticCatalogHash.put(path, cat); // This method only called by synchronized methods.
     if (log.isDebugEnabled()) log.debug("  add static catalog=" + path);
 
     if (recurse) {
@@ -663,15 +672,14 @@ public class DataRootHandler {
   }
 
   /**
-   * Return the java.io.File represented by the CrawlableDataset to which the
+   * Return the OPeNDAP URI represented by the CrawlableDataset to which the
    * given path maps. Null is returned if the dataset does not exist, the
    * matching InvDatasetScan or DataRoot filters out the requested
-   * CrawlableDataset, the CrawlableDataset does not represent a File
-   * (i.e., it is not a CrawlableDatasetFile), or an I/O error occurs whil
-   * locating the requested dataset.
+   * CrawlableDataset, the CrawlableDataset is not a CrawlableDatasetDods,
+   * or an I/O error occurs while locating the requested dataset.
    *
    * @param path the request path.
-   * @return the requested java.io.File or null.
+   * @return the requested OPeNDAP URI or null.
    * @throws IllegalStateException if the request is not for a descendant of (or the same as) the matching DatasetRoot collection location.
    */
   public URI getCrawlableDatasetAsOpendapUri( String path ) {
@@ -818,7 +826,7 @@ public class DataRootHandler {
   /**
    * DO NOT USE, this is Ethan's attempt at designing a generic way to handle data requests.
    *
-   * Only use is in ExampleThreddsServlet.
+   * Only used is in ExampleThreddsServlet.
    *
    * @param path
    * @param dsp
@@ -892,19 +900,97 @@ public class DataRootHandler {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Request processing
+  /**
+   * Check whether the given path is a request for a catalog. Before checking,
+   * converts paths ending with "/" to end with "/catalog.xml" and converts
+   * paths ending with ".html" to end with ".xml".
+   *
+   * @param path the request path
+   * @return true if the path is a request for a catalog, false otherwise.
+   */
+  public boolean isRequestForCatalog( String path )
+  {
+    String workPath = path;
+    if ( workPath == null )
+      return false;
+    else if ( workPath.endsWith( "/" ) )
+    {
+      workPath = workPath + "catalog.xml";
+    }
+    else if ( workPath.endsWith( ".html" ) )
+    {
+      // Change ".html" to ".xml"
+      int len = workPath.length();
+      workPath = workPath.substring( 0, len - 4 ) + "xml";
+    }
+    else if ( !workPath.endsWith( ".xml" ) )
+    {
+      // Not a catalog request.
+      return false;
+    }
 
-  /* public boolean serveCatalog(HttpServlet servlet, HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-    if (processReqForStaticCatalog(servlet, req, res))
-      return true;
+    boolean hasCatalog = false;
 
-    if (processReqForDynamicCatalog(servlet, req, res))
-      return true;
+    if ( workPath.startsWith( "/" ) )
+      workPath = workPath.substring( 1 );
 
-    return false;
+    // Check for static catalog.
+    synchronized ( this )
+    {
+       if (staticCatalogHash.containsKey( workPath ) )
+         return true;
+    }
+
+    //----------------------
+    DataRootMatch match = findDataRootMatch( workPath );
+    if ( match == null )
+      return false;
+
+//    // look for the fmrc
+//    if ( match.dataRoot.fmrc != null )
+//    {
+//      return match.dataRoot.fmrc.makeCatalog( match.remaining, path, baseURI );
+//    }
+//
+//    // Check that path is allowed, ie not filtered out
+//    try
+//    {
+//      if ( getCrawlableDataset( workPath ) == null )
+//        return null;
+//    }
+//    catch ( IOException e )
+//    {
+//      log.error( "makeDynamicCatalog(): I/O error on request <" + path + ">: " + e.getMessage(), e );
+//      return null;
+//    }
+//
+//    // at this point, its gotta be a DatasetScan, not a DatasetRoot
+//    if ( match.dataRoot.scan == null )
+//    {
+//      log.warn( "makeDynamicCatalog(): No InvDatasetScan for =" + workPath + " request path= " + path );
+//      return null;
+//    }
+//
+//    InvDatasetScan dscan = match.dataRoot.scan;
+//    log.debug( "Calling makeCatalogForDirectory( " + baseURI + ", " + path + ")." );
+//    InvCatalogImpl cat = dscan.makeCatalogForDirectory( path, baseURI );
+//
+//    if ( null == cat )
+//    {
+//      log.error( "makeCatalogForDirectory failed = " + workPath );
+//    }
+//
+//    //----------------------
+//
+//    // Check for proxy dataset resolver catalog.
+//    if ( catalog == null && this.isProxyDatasetResolver( workPath ) )
+//      catalog = (InvCatalogImpl) this.getProxyDatasetResolverCatalog( workPath, baseURI );
+
+    //----------------------
+
+
+    return hasCatalog;
   }
-
 
   /**
    * This looks to see if this is a request for a catalog.

@@ -69,8 +69,7 @@ public class TestCatGenAndWrite extends TestCase
     }
     catch ( IllegalArgumentException e )
     {
-      assertTrue( "Bad argument: " + e.getMessage(),
-                  false );
+      fail( "Bad argument: " + e.getMessage() );
       return;
     }
 
@@ -80,8 +79,7 @@ public class TestCatGenAndWrite extends TestCase
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error generating and writing catalogs at and under \"" + topCatCrDs.getPath() + "\": " + e.getMessage(),
-                  false );
+      fail( "I/O error generating and writing catalogs at and under \"" + topCatCrDs.getPath() + "\": " + e.getMessage() );
       return;
     }
 
@@ -127,8 +125,7 @@ public class TestCatGenAndWrite extends TestCase
     }
     catch ( IllegalArgumentException e )
     {
-      assertTrue( "Bad argument: " + e.getMessage(),
-                  false );
+      fail( "Bad argument: " + e.getMessage() );
       return;
     }
 
@@ -138,8 +135,7 @@ public class TestCatGenAndWrite extends TestCase
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error generating and writing catalogs at and under \"" + topCatCrDs.getPath() + "\": " + e.getMessage(),
-                  false );
+      fail( "I/O error generating and writing catalogs at and under \"" + topCatCrDs.getPath() + "\": " + e.getMessage() );
       return;
     }
 
@@ -155,6 +151,7 @@ public class TestCatGenAndWrite extends TestCase
     InvCatalogImpl topCatalog = fac.readXML( topCatalogFile.toURI() );
 
     //topCatalog.g
+    // TODO actually test something
 
     
   }

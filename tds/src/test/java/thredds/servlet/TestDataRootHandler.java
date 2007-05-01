@@ -2,6 +2,9 @@ package thredds.servlet;
 
 import junit.framework.*;
 import thredds.TestAll;
+import thredds.crawlabledataset.CrawlableDatasetFilter;
+import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
+import thredds.crawlabledataset.filter.MultiSelectorFilter;
 import thredds.catalog.*;
 
 import java.io.IOException;
@@ -13,6 +16,8 @@ import java.util.ArrayList;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import ucar.unidata.util.TestUtil;
+
 /**
  * _more_
  *
@@ -22,7 +27,8 @@ import java.net.URISyntaxException;
 public class TestDataRootHandler extends TestCase
 {
 
-  private String contentPath = TestAll.temporaryDataDir + "TestDataRootHandler/contentPath/";
+  private String tmpDirPath = TestAll.temporaryDataDir + "TestDataRootHandler/";
+  private String contentPath = tmpDirPath + "contentPath/";
 
   public TestDataRootHandler( String name )
   {
@@ -36,7 +42,18 @@ public class TestDataRootHandler extends TestCase
   public void testNonexistentScanLocation()
   {
     // Create a temporary contentPath directory for this test.
-    File contentPathFile = createContentPathFile( contentPath );
+    File contentPathFile = TestUtil.createDirectory( contentPath );
+    try
+    {
+      contentPathFile = contentPathFile.getCanonicalFile();
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage());
+      return;
+    }
+    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
+    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
 
     // Create a catalog with a datasetScan that points to a non-existent location
     // and write it to contentPath/catFilename.
@@ -46,10 +63,12 @@ public class TestDataRootHandler extends TestCase
     String dsScanPath = "testNonExistLoc";
     String dsScanLocation = "content/nonExistDir";
 
-    createAndWriteConfigCatalog( catalogName, dsScanName, dsScanPath, dsScanLocation, contentPath, catFilename );
+    InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
+                                                  dsScanLocation, null, null, null );
+    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( contentPath, "/thredds" );
+    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -60,33 +79,29 @@ public class TestDataRootHandler extends TestCase
     }
     catch ( FileNotFoundException e )
     {
-      assertTrue( e.getMessage(),
-                  false );
+      fail( e.getMessage() );
       return;
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error while initializing catalog <" + catFilename + ">: " + e.getMessage(),
-                  false );
+      fail( "I/O error while initializing catalog <" + catFilename + ">: " + e.getMessage() );
       return;
     }
     catch ( IllegalArgumentException e )
     {
-      assertTrue( "IllegalArgumentException while initializing catalog <" + catFilename + ">: " + e.getMessage(),
-                  false );
+      fail( "IllegalArgumentException while initializing catalog <" + catFilename + ">: " + e.getMessage() );
       return;
     }
 
     // Check that bad dsScan wasn't added to DataRootHandler.
     if ( drh.hasDataRootMatch( dsScanPath) )
     {
-      assertTrue( "DataRootHandler has path match for DatasetScan <" + dsScanPath + ">.",
-                  false );
+      fail( "DataRootHandler has path match for DatasetScan <" + dsScanPath + ">." );
       return;
     }
 
     // Remove temporary contentPath dir and contents
-    deleteDirectoryAndContent( contentPathFile );
+    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
   /**
@@ -96,14 +111,24 @@ public class TestDataRootHandler extends TestCase
   public void testNondirectoryScanLocation()
   {
     // Create a temporary contentPath directory for this test.
-    File contentPathFile = createContentPathFile( contentPath );
+    File contentPathFile = TestUtil.createDirectory( contentPath );
+    try
+    {
+      contentPathFile = contentPathFile.getCanonicalFile();
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      return;
+    }
+    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
+    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
 
     // Create public directory in content path.
     File publicDirectoryFile = new File( contentPathFile, "public");
     if ( !publicDirectoryFile.mkdirs() )
     {
-      assertTrue( "Failed to make content path \"public\" directory <" + publicDirectoryFile.getAbsolutePath() + ">.",
-                  false );
+      fail( "Failed to make content path \"public\" directory <" + publicDirectoryFile.getAbsolutePath() + ">." );
       return;
     }
 
@@ -113,15 +138,13 @@ public class TestDataRootHandler extends TestCase
     {
       if ( ! nondirectoryFile.createNewFile())
       {
-        assertTrue( "Could not create nondirectory file <" + nondirectoryFile.getAbsolutePath() + ">.",
-                    false);
+        fail( "Could not create nondirectory file <" + nondirectoryFile.getAbsolutePath() + ">." );
         return;
       }
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error creating nondirectory file <" + nondirectoryFile.getAbsolutePath() + ">: " + e.getMessage(),
-                  false );
+      fail( "I/O error creating nondirectory file <" + nondirectoryFile.getAbsolutePath() + ">: " + e.getMessage() );
       return;
     }
 
@@ -133,10 +156,12 @@ public class TestDataRootHandler extends TestCase
     String dsScanPath = "testNonDirLoc";
     String dsScanLocation = "content/nonDirFile";
 
-    createAndWriteConfigCatalog( catalogName, dsScanName, dsScanPath, dsScanLocation, contentPath, catFilename );
+    InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
+                                                  dsScanLocation, null, null, null );
+    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( contentPath, "/thredds" );
+    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -153,27 +178,24 @@ public class TestDataRootHandler extends TestCase
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error while initializing catalog <" + catFilename + ">: " + e.getMessage(),
-                  false );
+      fail( "I/O error while initializing catalog <" + catFilename + ">: " + e.getMessage() );
       return;
     }
     catch ( IllegalArgumentException e )
     {
-      assertTrue( "IllegalArgumentException while initializing catalog <" + catFilename + ">: " + e.getMessage(),
-                  false );
+      fail( "IllegalArgumentException while initializing catalog <" + catFilename + ">: " + e.getMessage() );
       return;
     }
 
     // Check that bad dsScan wasn't added to DataRootHandler.
     if ( drh.hasDataRootMatch( dsScanPath) )
     {
-      assertTrue( "DataRootHandler has path match for DatasetScan <" + dsScanPath + ">.",
-                  false );
+      fail( "DataRootHandler has path match for DatasetScan <" + dsScanPath + ">." );
       return;
     }
 
     // Remove temporary contentPath dir and contents
-    deleteDirectoryAndContent( contentPathFile );
+    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
   /**
@@ -184,14 +206,24 @@ public class TestDataRootHandler extends TestCase
   public void testScanLocationContainOnlyAtomicDatasets()
   {
     // Create a temporary contentPath directory for this test.
-    File contentPathFile = createContentPathFile( contentPath );
+    File contentPathFile = TestUtil.createDirectory( contentPath );
+    try
+    {
+      contentPathFile = contentPathFile.getCanonicalFile();
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      return;
+    }
+    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
+    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
 
     // Create public data directory in content path.
     File publicDataDir = new File( contentPathFile, "public/dataDir");
     if ( ! publicDataDir.mkdirs() )
     {
-      assertTrue( "Failed to make content path public data directory <" + publicDataDir.getAbsolutePath() + ">.",
-                  false );
+      fail( "Failed to make content path public data directory <" + publicDataDir.getAbsolutePath() + ">." );
       return;
     }
 
@@ -208,15 +240,13 @@ public class TestDataRootHandler extends TestCase
       {
         if ( ! curFile.createNewFile() )
         {
-          assertTrue( "Could not create data file <" + curFile.getAbsolutePath() + ">.",
-                      false );
+          fail( "Could not create data file <" + curFile.getAbsolutePath() + ">." );
           return;
         }
       }
       catch ( IOException e )
       {
-        assertTrue( "I/O error creating data file <" + curFile.getAbsolutePath() + ">: " + e.getMessage(),
-                    false );
+        fail( "I/O error creating data file <" + curFile.getAbsolutePath() + ">: " + e.getMessage() );
         return;
       }
     }
@@ -229,10 +259,12 @@ public class TestDataRootHandler extends TestCase
     String dsScanPath = "testScanLocationContainOnlyAtomicDatasets";
     String dsScanLocation = "content/dataDir";
 
-    createAndWriteConfigCatalog( catalogName, dsScanName, dsScanPath, dsScanLocation, contentPath, catFilename );
+    InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
+                                                  dsScanLocation, null, null, null );
+    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( contentPath, "/thredds" );
+    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -243,28 +275,24 @@ public class TestDataRootHandler extends TestCase
     }
     catch ( FileNotFoundException e )
     {
-      assertTrue( e.getMessage(),
-                  false );
+      fail( e.getMessage() );
       return;
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error while initializing catalog <" + catFilename + ">: " + e.getMessage(),
-                  false );
+      fail( "I/O error while initializing catalog <" + catFilename + ">: " + e.getMessage() );
       return;
     }
     catch ( IllegalArgumentException e )
     {
-      assertTrue( "IllegalArgumentException while initializing catalog <" + catFilename + ">: " + e.getMessage(),
-                  false );
+      fail( "IllegalArgumentException while initializing catalog <" + catFilename + ">: " + e.getMessage() );
       return;
     }
 
     // Check that dsScan was added to DataRootHandler.
     if ( ! drh.hasDataRootMatch( dsScanPath) )
     {
-      assertTrue( "DataRootHandler has no path match for DatasetScan <" + dsScanPath + ">.",
-                  false );
+      fail( "DataRootHandler has no path match for DatasetScan <" + dsScanPath + ">." );
       return;
     }
     
@@ -277,8 +305,7 @@ public class TestDataRootHandler extends TestCase
     }
     catch ( URISyntaxException e )
     {
-      assertTrue( "DataRootHandler has no path match for DatasetScan <" + dsScanPath + ">: " + e.getMessage(),
-                  false );
+      fail( "DataRootHandler has no path match for DatasetScan <" + dsScanPath + ">: " + e.getMessage() );
       return;
     }
     InvCatalogImpl cat = (InvCatalogImpl) drh.getCatalog( path, uri );
@@ -286,8 +313,7 @@ public class TestDataRootHandler extends TestCase
     InvDatasetImpl topDs = (InvDatasetImpl) cat.getDatasets().get(0);
     if ( topDs.getDatasets().size() != dataFileNames.size())
     {
-      assertTrue( "Number of datasets in generated catalog <" + topDs.getDatasets().size() + "> not as expected <" + dataFileNames.size() + ">.",
-                  false );
+      fail( "Number of datasets in generated catalog <" + topDs.getDatasets().size() + "> not as expected <" + dataFileNames.size() + ">." );
       return;
     }
     boolean ok = true;
@@ -304,113 +330,167 @@ public class TestDataRootHandler extends TestCase
     {
       buf.setLength( buf.lastIndexOf( ","));
       buf.append( ").");
-      assertTrue( buf.toString(), false );
+      fail( buf.toString() );
       return;
     }
 
     // Remove temporary contentPath dir and contents
-    deleteDirectoryAndContent( contentPathFile );
+    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
-  private File createContentPathFile( String contentPath )
+  /**
+   * Test behavior when a catalogRef@xlink:href, using ".." directory path
+   * segments, points to a catalog outside of the content directory.
+   */
+  public void testCatRefOutOfContentDirUsingDotDotDirs()
   {
-    File contentPathFile = new File( contentPath );
-    if ( contentPathFile.exists() )
+    // Create a temporary contentPath directory for this test.
+    File tmpDir = TestUtil.createDirectory( tmpDirPath );
+    File contentPathFile = TestUtil.createDirectory( contentPath );
+    try
     {
-      System.out.println( "**Deleting temporary content path <" + contentPath + "> from previous run." );
-      if ( !deleteDirectoryAndContent( contentPathFile ) )
-      {
-        assertTrue( "Unable to delete already existing temporary content path directory <" + contentPathFile.getAbsolutePath() + ">.",
-                    false );
-        return null;
-      }
+      contentPathFile = contentPathFile.getCanonicalFile();
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      return;
+    }
+    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
+    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/');
+
+
+    File publicDataDir = TestUtil.addDirectory( contentPathFile, "public/dataDir" );
+    File dataFileNc = TestUtil.addFile( publicDataDir, "data.nc");
+    File dataFileGrib1 = TestUtil.addFile( publicDataDir, "data.grib1");
+    File dataFileGrib2 = TestUtil.addFile( publicDataDir, "data.grib2");
+
+    String mainCatFilename = "catalog.xml";
+
+    // Write <tmp>/content/catalog.xml containing a datasetScan to the nc data
+    // and a catalogRef to "mine.xml" (i.e., <tmp>/content/mine.xml).
+    InvCatalogImpl mainCat = createConfigCatalog( "Main catalog", "netCDF Data", "ncData",
+                                                   publicDataDir.getAbsolutePath(),
+                                                   "*.nc", "mine", "mine.xml" );
+    writeConfigCatalog( mainCat, new File( contentPathFile, mainCatFilename) );
+
+    // Write <tmp>/content/mine.xml which contains a datasetScan to the grib1 data
+    // and a catalogRef to "../catalog.xml (i.e., <tmp>/catalog.xml).
+    InvCatalogImpl notAllowedRefCat = createConfigCatalog( "Cat that contains reference to a catalog outside the content directory",
+                                                           "GRIB1 Data", "grib1Data",
+                                                           publicDataDir.getAbsolutePath(),
+                                                           "*.grib1", "noGoodCat", "../catalog.xml" );
+    writeConfigCatalog( notAllowedRefCat, new File( contentPathFile, "mine.xml") );
+
+    // Write <tmp>/catalog.xml which contains a datasetScan to the grib2 data.
+    InvCatalogImpl outsideContentDirCat = createConfigCatalog( "Catalog outside of content directory",
+                                                          "GRIB2 Data", "grib2Data",
+                                                          publicDataDir.getAbsolutePath(),
+                                                          "*.grib2", null, null );
+    writeConfigCatalog( outsideContentDirCat, new File( tmpDir, "catalog.xml") );
+
+    // Call DataRootHandler.init() to point to contentPath directory
+    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    DataRootHandler drh = DataRootHandler.getInstance();
+
+    // Call DataRootHandler.initCatalog() on the config catalog
+    try
+    {
+      drh.reinit();
+      drh.initCatalog( mainCatFilename );
+    }
+    catch ( FileNotFoundException e )
+    {
+      fail( e.getMessage() );
+      return;
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error while initializing catalog <" + mainCatFilename + ">: " + e.getMessage() );
+      return;
+    }
+    catch ( IllegalArgumentException e )
+    {
+      fail( "IllegalArgumentException while initializing catalog <" + mainCatFilename + ">: " + e.getMessage() );
+      return;
+    }
+    catch ( StringIndexOutOfBoundsException e )
+    {
+      fail( "Failed to initialized catalog <" + mainCatFilename + ">: " + e.getMessage());
+      return;
     }
 
-    if ( !contentPathFile.mkdirs() )
+    if ( drh.hasDataRootMatch( "../catalog.xml") )
     {
-      assertTrue( "Failed to make content path directory <" + contentPathFile.getAbsolutePath() + ">.",
-                  false );
-      return null;
+      fail( "DataRootHandler has match for \"../catalog.xml\" which is outside content directory.");
+      return;
     }
-    return contentPathFile;
+
+    // Remove temporary contentPath dir and contents
+    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
-  private void createAndWriteConfigCatalog( String catalogName, String dsScanName, String dsScanPath, String dsScanLocation, String contentPath, String catFilename )
+  private InvCatalogImpl createConfigCatalog( String catalogName,
+                                              String dsScanName,
+                                              String dsScanPath,
+                                              String dsScanLocation,
+                                              String filterWildcardString,
+                                              String catRefTitle, String catRefHref )
   {
-    InvCatalogImpl configCat = new InvCatalogImpl( catalogName, "1.0.1", null );
+    // Create empty catalog.
+    InvCatalogImpl configCat = new InvCatalogImpl( null, "1.0.1", null );
 
-    InvService myService = new InvService( "ncdods", ServiceType.DODS.toString(),
+    // Add OPeNDAP service to catalog.
+    InvService myService = new InvService( "ncdods", ServiceType.OPENDAP.toString(),
                                            "/thredds/dodsC/", null, null );
     configCat.addService( myService );
 
-    // Create the test datasetScan that points to nonexistent location.
-    InvDatasetScan dsScan = new InvDatasetScan( null, dsScanName, dsScanPath,
-                                                dsScanLocation, null, null, null, null, null,
-                                                true, null, null, null, null );
+    // Create top level dataset and add to catalog.
+    InvDatasetImpl topDs = new InvDatasetImpl( null, catalogName );
+    configCat.addDataset( topDs );
+
+    // Add service as inherited metadata to top level dataset.
     ThreddsMetadata tm = new ThreddsMetadata( false );
     tm.setServiceName( myService.getName() );
-    InvMetadata md = new InvMetadata( dsScan, null, XMLEntityResolver.CATALOG_NAMESPACE_10, "", true, true, null, tm );
+    InvMetadata md = new InvMetadata( topDs, null, XMLEntityResolver.CATALOG_NAMESPACE_10, "", true, true, null, tm );
     ThreddsMetadata tm2 = new ThreddsMetadata( false );
     tm2.addMetadata( md );
-    dsScan.setLocalMetadata( tm2 );
+    topDs.setLocalMetadata( tm2 );
 
-    configCat.addDataset( dsScan );
+    // Create the test datasetScan that points to nonexistent location.
+    CrawlableDatasetFilter filter = null;
+    if ( filterWildcardString != null && ! filterWildcardString.equals( "") )
+      filter = new MultiSelectorFilter( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( filterWildcardString ), true, true, false ) );
+
+    InvDatasetScan dsScan = new InvDatasetScan( topDs, dsScanName, dsScanPath,
+                                                dsScanLocation, null, null, filter, null, null,
+                                                true, null, null, null, null );
+
+    topDs.addDataset( dsScan );
+
+    if ( catRefTitle != null && catRefHref != null )
+    {
+      InvCatalogRef catRef = new InvCatalogRef( topDs, catRefTitle, catRefHref );
+      topDs.addDataset( catRef );
+    }
 
     configCat.finish();
+    return configCat;
+  }
 
-    // Write the config catalog into the contentPath directory
-    String configCatPath = contentPath + catFilename;
-
+  private void writeConfigCatalog( InvCatalogImpl catalog, File configCatFile )
+  {
+    // Write the config catalog
     try
     {
-      FileOutputStream fos = new FileOutputStream( configCatPath );
-      InvCatalogFactory.getDefaultFactory( false ).writeXML( configCat, fos, true );
+      FileOutputStream fos = new FileOutputStream( configCatFile );
+      InvCatalogFactory.getDefaultFactory( false ).writeXML( catalog, fos, true );
       fos.close();
     }
     catch ( IOException e )
     {
-      assertTrue( "I/O error writing config catalog <" + configCatPath + ">: " + e.getMessage(),
-                  false );
+      fail( "I/O error writing config catalog <" + configCatFile.getPath() + ">: " + e.getMessage() );
     }
   }
 
-  /**
-   * Delete the given directory including any files or directories contained in the directory.
-   *
-   * @param directory the directory to remove
-   * @return true if and only if the file or directory is successfully deleted; false otherwise.
-   */
-  private boolean deleteDirectoryAndContent( File directory )
-  {
-    if ( ! directory.exists() ) return false;
-    if ( ! directory.isDirectory() ) return false;
-
-    boolean removeAll = true;
-
-    File[] files = directory.listFiles();
-    for ( int i = 0; i < files.length; i++ )
-    {
-      File curFile = files[i];
-      if ( curFile.isDirectory() )
-      {
-        removeAll &= deleteDirectoryAndContent( curFile);
-      }
-      else
-      {
-        if ( ! curFile.delete())
-        {
-          System.out.println( "**Failed to delete file <" + curFile.getAbsolutePath() + ">" );
-          removeAll = false;
-        }
-      }
-    }
-
-    if ( ! directory.delete() )
-    {
-      System.out.println( "**Failed to delete directory <" + directory.getAbsolutePath() + ">" );
-      removeAll = false;
-    }
-
-    return removeAll;
-  }
 }
