@@ -32,12 +32,14 @@ public class TestDqcStationaryRadarDataset extends TestCase {
         } catch (java.io.IOException e) {
                 throw new IOException( e.getMessage()+"\n");
         }
-        System.out.println(" errs= "+errlog);
 
         stns = ds.getStations();
         assert null != stns;
         //System.out.println(" nstns= "+stns.size());
-
+        if(errlog.length() > 0)
+             System.out.println(" errs= "+errlog);
+        else
+            System.out.println("success\n");
     }
 
     public void testDqcRadarStation() throws IOException {
@@ -48,8 +50,17 @@ public class TestDqcStationaryRadarDataset extends TestCase {
         assert null != stns;
         List absList2 = stn.getDqcRadarStationURIs("1hour");
         assert null != absList2;
-       // List ulist = stn.getDqcRadarStationURIs(null, null, 0, 0, 0, 0);
-       // assert null != ulist;
+        long now = System.currentTimeMillis();
+        long yday0 = now - (36*60*60*1000);
+        long yday1 = now - (30*60*60*1000);
+        Date ts0 = new Date(yday0);
+        Date ts1 = new Date(yday1);
+        absList2 = stn.getDqcRadarStationTimes(ts0, ts1);
+        assert null != absList2;
+        List ulist = stn.getDqcRadarStationURIs(ts0, ts1, 0, 0, 0, 0);
+        assert null != ulist;
+        ulist = stn.getDqcRadarStationURIs(ts0, ts1, 3600, 0, 0, 0);
+        assert null != ulist;
         List tlist = stn.getDqcRadarStationTimes();
         assert null != tlist;
         Date ts = (Date) DateUnit.getStandardOrISO((String)tlist.get(1));
