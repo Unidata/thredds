@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 /** A collection of data at unconnected radar station.
  * User can subset by stations, bounding box and by date range.
@@ -84,7 +85,7 @@ public interface StationaryRadarCollection {
    * @param preInt the time range before interval
    * @param postInt the time range after interval
    * @return List of getDataClass() */
-    public List getData( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+    public ArrayList getData( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
                        int postInt) throws IOException;
 
   /** Get data for this Station within the specified date range.
@@ -95,7 +96,7 @@ public interface StationaryRadarCollection {
    * @param preInt the time range before interval
    * @param postInt the time range after interval
    * @return List of getDataClass() */
-    public List getDataURIs( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+    public ArrayList getDataURIs( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
                        int postInt) throws IOException;
 
   /** Get data for this Station within the specified date range, allow user to cancel.
@@ -108,7 +109,7 @@ public interface StationaryRadarCollection {
    * @param postInt the time range after interval
    * @return List of RadialDatasetSweep data
    */
-    public List getData( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+    public ArrayList getData( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
                        int postInt, ucar.nc2.util.CancelTask cancel) throws IOException;
 
   /** Get data for this Station within the specified date range.
@@ -120,7 +121,7 @@ public interface StationaryRadarCollection {
    * @param postInt the time range after interval
    * @param cancel allow user to cancel. Implementors should return ASAP.
    * @return List of getDataClass() */
-    public List getDataURIs( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
+    public ArrayList getDataURIs( String sName,  Date start, Date end, int interval, int roundTo, int preInt,
                        int postInt, ucar.nc2.util.CancelTask cancel) throws IOException;
   /** Get all data for a list of Stations.
    * @return List of RadialDatasetSweep data
