@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threddsConfig>
 
-  <!-- examples 
+  <catalogRoot>topcatalog.xml</catalogRoot>
 
-  <catalogRoot>tempCatalog.xml</catalogRoot>
-  <catalogRoot>idd/catalog.xml</catalogRoot>
-  <catalogRoot>catgen/subdir/enhancedCatalog-1.0.xml</catalogRoot>
+  <catalogRoot>idv/models.xml</catalogRoot>
+  <catalogRoot>idv/latestModels.xml</catalogRoot>
+  <catalogRoot>idv/rt-models.1.0.xml</catalogRoot>
+  <catalogRoot>idv/rt-models.xml</catalogRoot>
+
+  <catalogRoot>cataloggen/catalogs/idv-rt-models.InvCat1.0.xml</catalogRoot>
+  <catalogRoot>cataloggen/catalogs/idv-rt-models.xml</catalogRoot>
+  <catalogRoot>cataloggen/catalogs/uniModelsInvCat1.0en.xml</catalogRoot>
+
+  <catalogRoot>casestudies/catalog.xml</catalogRoot>
+  <catalogRoot>casestudies/vgeeCatalog.xml</catalogRoot>
+  <catalogRoot>casestudies/ccs034Catalog.xml</catalogRoot>
+  <catalogRoot>casestudies/ccs039Catalog.xml</catalogRoot>
+  <catalogRoot>casestudies/july18_2002cat.xml</catalogRoot>
+
+  <!-- Get rid of "casestudy" someday. Check first for usage. [2007-04-27 erd] -->
+  <catalogRoot>casestudy/vgeeCatalog.1.0.xml</catalogRoot>
+  <catalogRoot>casestudy/ccs034Catalog.1.0.xml</catalogRoot>
+  <catalogRoot>casestudy/ccs039Catalog.xml</catalogRoot>
+  <catalogRoot>casestudy/july18_2002cat.1.0.xml</catalogRoot>
 
   <NetcdfFileCache>
-    <minFiles>200</minFiles>
-    <maxFiles>400</maxFiles>
+    <minFiles>100</minFiles>
+    <maxFiles>200</maxFiles>
     <scour>10 min</scour>
   </NetcdfFileCache>
 
@@ -27,7 +44,7 @@
 
   <CdmValidatorService>
     <allow>true</allow>
-    <dir>/temp/vcache/</dir>
+    <dir>/data/tmp/thredds/cdmValidateCache/</dir>
     <maxFileUploadSize>1 Gb</maxFileUploadSize>
     <scour>24 hours</scour>
     <maxAge>30 days</maxAge>
@@ -35,50 +52,49 @@
 
   <NetcdfSubsetService>
     <allow>true</allow>
-    <dir>/temp/ncache/</dir>
+    <dir>/data/tmp/thredds/ncSubsetCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </NetcdfSubsetService>
 
   <WCS>
     <allow>true</allow>
-    <dir>/temp/ncache/</dir>
+    <dir>/data/tmp/thredds/wcsCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </WCS>
 
-  <Viewer>my.package.MyViewer</Viewer>
+  <!-- Viewer>my.package.MyViewer</Viewer -->
 
   <FmrcInventory>
     <openType>XML_ONLY</openType>
   </FmrcInventory>
 
-  <nj22Config>
+  <!-- nj22Config
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
     <coordSysBuilder convention="foo" class="test.Foo"/>
     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
     <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
     <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
     <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
-  </nj22Config>
+  </nj22Config -->
 
   <DiskCache>
-    <alwaysUse>true</alwaysUse>
-    <dir>/temp/cache/</dir>
+    <alwaysUse>false</alwaysUse>
+    <dir>/data/tmp/thredds/cache/</dir>
     <scour>1 hour</scour>
-    <maxSize>10 Gb</maxSize>
+    <maxSize>1 Gb</maxSize>
   </DiskCache>
 
   <GribIndexing>
     <setExtendIndex>false</setExtendIndex>
+    <alwaysUseCache>false</alwaysUseCache>
   </GribIndexing>
 
   <AggregationCache>
-    <dir>/temp/acache/</dir>
+    <dir>/data/tmp/thredds/aggcache/</dir>
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
   </AggregationCache>
-
-   end examples -->
 
 </threddsConfig>

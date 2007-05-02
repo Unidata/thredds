@@ -35,6 +35,14 @@
         <name vocabulary="DIF">UCAR/UNIDATA</name>
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
       </publisher>
+      <creator>
+        <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS) National Center for Environmental Prediction (NCEP)</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
+      </creator>
+      <publisher>
+        <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
       <timeCoverage>
         <end>present</end>
         <duration>7 days</duration>
@@ -57,12 +65,12 @@
           </documentation>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" >
           <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-GFS-Alaska_191km.fmrcDefinition.xml" recheckEvery="15 min">
             <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/" suffix=".grib1" dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Alaska_191km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Alaska_191km.fmrcDefinition.xml" />
      </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-CONUS_80km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/CONUS_80km">
@@ -79,7 +87,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/" suffix=".grib1" dateFormatMark="GFS_CONUS_80km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_80km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_80km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-CONUS_95km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/CONUS_95km">
@@ -96,7 +104,7 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/" suffix=".grib1" dateFormatMark="GFS_CONUS_95km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_95km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_95km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-CONUS_191km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/CONUS_191km">
@@ -113,7 +121,7 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/" suffix=".grib1" dateFormatMark="GFS_CONUS_191km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_191km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_191km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Global_0p5deg" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Global_0p5deg">
@@ -131,7 +139,7 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/" suffix=".grib2" dateFormatMark="GFS_Global_0p5deg_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/" suffix=".grib2" fmrcDefinition="NCEP-GFS-Global_0p5deg.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/" suffix=".grib2" fmrcDefinition="NCEP-GFS-Global_0p5deg.fmrcDefinition.xml" />
 
       </datasetFmrc>
 
@@ -149,7 +157,7 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib1" dateFormatMark="GFS_Global_onedeg_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Global_onedeg.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Global_onedeg.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Global_2p5deg" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Global_2p5deg">
@@ -166,7 +174,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib1" dateFormatMark="GFS_Global_2p5deg_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Global_2p5deg.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Global_2p5deg.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Hawaii_160km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Hawaii_160km">
@@ -183,7 +191,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/" suffix=".grib1" dateFormatMark="GFS_Hawaii_160km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Hawaii_160km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Hawaii_160km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-N_Hemispheric_381km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/N_Hemisphere_381km">
@@ -200,7 +208,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/" suffix=".grib1" dateFormatMark="GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Puerto_Rico_191km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Puerto_Rico_191km">
@@ -217,7 +225,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/" suffix=".grib1" dateFormatMark="GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml" />
       </datasetFmrc>
 
     </dataset>
@@ -243,7 +251,7 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/" suffix=".grib2" dateFormatMark="NAM_Alaska_11km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-Alaska_11km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-Alaska_11km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-NAM-Alaska_22km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Alaska_22km">
@@ -261,7 +269,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/" suffix=".grib1" dateFormatMark="NAM_Alaska_22km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_22km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_22km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <dataset name="NCEP-NAM-Alaska_45km">
@@ -280,7 +288,7 @@
               <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1" dateFormatMark="NAM_Alaska_45km_noaaport_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml" />
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-Alaska_45km-conduit" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Alaska_45km/conduit">
@@ -297,7 +305,7 @@
               <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib1" dateFormatMark="NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml" />
          </datasetFmrc>
       </dataset>
 
@@ -315,7 +323,7 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/" suffix=".grib1" dateFormatMark="NAM_Alaska_95km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_95km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_95km.fmrcDefinition.xml" />
 
       </datasetFmrc>
 
@@ -331,10 +339,10 @@
 
         <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
           <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_12km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" dateFormatMark="NAM_CONUS_12km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+            <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" dateFormatMark="NAM_CONUS_12km_#yyyyMMdd_HHmm" subdirs="false" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_12km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_12km.fmrcDefinition.xml" />
      </datasetFmrc>
 
       <dataset name="NCEP-NAM-CONUS_20km">
@@ -344,6 +352,7 @@
 
         <datasetFmrc name="NCEP-NAM-CONUS_20km-surface" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/surface">
           <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">
               Model runs are made at 00Z, 06Z, 12Z, and 18Z, with analysis and forecasts every 3 hours out to 84 hours.
               Vertical = surface, height above ground, layers, and 1000 to 150 hPa pressure levels.
@@ -351,10 +360,10 @@
           </metadata>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
             <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/" suffix=".grib1" dateFormatMark="NAM_CONUS_20km_surface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+              <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/" suffix=".grib2" dateFormatMark="NAM_CONUS_20km_surface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml" />
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-CONUS_20km-selectsurface" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/selectsurface" >
@@ -369,7 +378,7 @@
               <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib1" dateFormatMark="NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml"olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml" />
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-CONUS_20km-noaaport" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/noaaport">
@@ -384,7 +393,7 @@
               <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/" suffix=".grib1" dateFormatMark="NAM_CONUS_20km_noaaport_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml" />
         </datasetFmrc>
       </dataset>
 
@@ -421,7 +430,7 @@
               <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib1" dateFormatMark="NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml" />
         </datasetFmrc>
 
       </dataset>
@@ -440,7 +449,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/" suffix=".grib1" dateFormatMark="NAM_CONUS_80km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_80km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_80km.fmrcDefinition.xml" />
 
       </datasetFmrc>
 
@@ -458,7 +467,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib1" dateFormatMark="NAM_Polar_90km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml" />
       </datasetFmrc>
     </dataset>
 
@@ -488,7 +497,7 @@
               <scan  location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/" suffix=".grib2" dateFormatMark="RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml" />
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-RUC2-CONUS_20km-pressure" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/pressure">
@@ -503,7 +512,7 @@
               <scan  location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/" suffix=".grib2" dateFormatMark="RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml" />
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-RUC2-CONUS_20km-hybrid" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/hybrid">
@@ -518,7 +527,7 @@
               <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/" suffix=".grib2" dateFormatMark="RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml" olderThan="5 min"/>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml" />
         </datasetFmrc>
       </dataset>
 
@@ -536,7 +545,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/" suffix=".grib1" dateFormatMark="RUC2_CONUS_40km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/" suffix=".grib1" fmrcDefinition="NCEP-RUC2-CONUS_40km.fmrcDefinition.xml"olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/" suffix=".grib1" fmrcDefinition="NCEP-RUC2-CONUS_40km.fmrcDefinition.xml"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-RUC-CONUS_80km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC/CONUS_80km">
@@ -553,7 +562,7 @@
             <scan location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/" suffix=".grib1" dateFormatMark="RUC_CONUS_80km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-RUC-CONUS_80km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-RUC-CONUS_80km.fmrcDefinition.xml" />
       </datasetFmrc>
 
     </dataset>
@@ -576,12 +585,12 @@
           <dataFormat>GRIB-2</dataFormat>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
           <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml" recheckEvery="15 min">
             <scan location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2" dateFormatMark="DGEX_CONUS_12km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-DGEX-Alaska_12km" harvest="true" path="fmrc/NCEP/DGEX/Alaska_12km" collectionType="ForecastModelRuns" >
@@ -598,7 +607,7 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2" dateFormatMark="DGEX_Alaska_12km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-Alaska_12km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-Alaska_12km.fmrcDefinition.xml" />
       </datasetFmrc>
 
     </dataset>
@@ -622,11 +631,14 @@
             <scan  location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/" suffix=".grib2" dateFormatMark="NDFD_CONUS_5km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/" suffix=".grib2" fmrcDefinition="NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" olderThan="5 min"/>
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/" suffix=".grib2" fmrcDefinition="NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" />
       </datasetFmrc>
 
     </dataset>
 
+    <catalogRef xlink:href="allModels.TDS-nc.xml" xlink:title="Selected model data converted to netCDF (gribtonc)" name="" />
   </dataset>
+
+
 </catalog>
 

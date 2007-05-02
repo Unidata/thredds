@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - Station Data" version="1.0.1">
   <service name="latest" serviceType="Resolver" base="" />
-  <service name="DqcServer" serviceType="QueryCapability" base="/thredds/ldm/" />
+  <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/" />
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
@@ -22,6 +22,7 @@
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
       </publisher>
     </metadata>
+
     <datasetScan name="Metar Station Data" collectionType="TimeSeries" harvest="true" ID="NWS/METAR" path="station/metar" location="/data/ldm/pub/decoded/netcdf/surface/metar/">
       <metadata inherited="true">
         <documentation type="summary">Metars: hourly surface weather observations</documentation>
@@ -75,7 +76,7 @@
           <variable name="wind_speed" vocabulary_name="wind_speed" units="m/s">Wind Speed</variable>
         </variables>
       </metadata>
-      <access urlPath="MetarDQC.xml" serviceName="DqcServer" dataFormat="NetCDF" />
+      <access urlPath="metars" serviceName="ncss" />
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true" />
       <filter>
         <include wildcard="*.nc" atomic="true" collection="false" />
@@ -88,6 +89,7 @@
       <addDatasetSize />
       <addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_metar.nc$" startTimeSubstitutionPattern="$1-$2-$3T00:00:00" duration="1 day" />
     </datasetScan>
+
     <dataset name="NOAA Profiler Network">
       <metadata inherited="true">
         <documentation type="summary">The NOAA Profiler Network (NPN), consisting of 35 unmanned Doppler Radar sites located in 18 central US states and Alaska, provides vertical wind profile data. Some of the sites are also equipped with RASS temperature profilers.</documentation>
