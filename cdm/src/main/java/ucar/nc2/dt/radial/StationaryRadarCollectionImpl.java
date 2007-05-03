@@ -1,10 +1,8 @@
 package ucar.nc2.dt.radial;
 
 
-import ucar.nc2.dt.point.PointObsDatasetImpl;
-import ucar.nc2.dt.StationaryRadarCollection;
+import ucar.nc2.dt.StationRadarCollection;
 import ucar.nc2.dt.Station;
-import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.TypedDatasetImpl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.DateUnit;
@@ -14,7 +12,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Date;
 import java.io.IOException;
 
 
@@ -25,9 +22,9 @@ import java.io.IOException;
  * Time: 1:28:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class StationaryRadarCollectionImpl extends TypedDatasetImpl implements StationaryRadarCollection {
+public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implements StationRadarCollection {
 
-    private StationaryRadarCollection radarCollection;
+    private StationRadarCollection radarCollection;
     protected HashMap stations;
     protected HashMap relTimesList;
     protected HashMap absTimesList;
@@ -37,7 +34,7 @@ public abstract class StationaryRadarCollectionImpl extends TypedDatasetImpl imp
       super();
     }
 
-    public StationaryRadarCollectionImpl( StationaryRadarCollection radarDataset) {
+    public StationaryRadarCollectionImpl( StationRadarCollection radarDataset) {
       this.radarCollection = radarDataset;
     }
         /* if (location.startsWith("thredds:")) { // LOOK need to distinguish between a DQC and a Catalog !!
