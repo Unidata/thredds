@@ -5,6 +5,8 @@ import thredds.catalog.query.Station;
 import java.io.IOException;
 import java.util.List;
 
+import ucar.unidata.util.Product;
+
 
 /** A collection of data at unconnected radar station.
  * User can subset by stations, bounding box and by date range.
@@ -30,18 +32,18 @@ public interface StationRadarCollection {
 
   /** check if the product available for all stations.
    * @return true of false */
-    public boolean checkStationProduct(String product);
+    public boolean checkStationProduct(Product product);
 
 
   /** check if the product available for one station
    * @return true of false */
-    public boolean checkStationProduct(Station s, String product);
+    public boolean checkStationProduct(String sName, Product product);
 
   /**
    * How many Data Products are available for this Station?
-   * @param s station, and product requested
+   * @param sName station name
    * @return count or -1 if unknown.
    */
-    public List getStationDataProducts( Station s);
+    public int getStationProductCount( String sName);
 
 }
