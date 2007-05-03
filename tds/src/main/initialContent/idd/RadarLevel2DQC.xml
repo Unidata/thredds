@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryCapability 
+ xmlns="http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3"
+ name="Radar Level2 Radar" version="0.3">
+
+  <query base="/thredds/idd/radarLevel2?" />
+
+  <selectService id="servicetype" title="Servicetype" required="false">
+    <serviceType title="XML" dataFormatType="text/xml">HTTPServer</serviceType>
+    <serviceType title="XML" dataFormatType="text/xml">DODS</serviceType>
+  </selectService>
+
+  <selectStation id="stn" title="Stations:" multiple="true" required="true">
+
+        	<station name="ANCHORAGE/Bethel AK" value="KABC">
+            		<location latitude="60.78" longitude="-161.87"/>
+		</station>
+        	<station name="ABERDEEN/Aberdeen SD" value="KABR">
+            		<location latitude="45.45" longitude="-98.4"/>
+		</station>
+        	<station name="ALBUQUERQUE/Albuquerque NM" value="KABX">
+            		<location latitude="35.13" longitude="-106.82"/>
+		</station>
+        	<station name="JUNEAU/Sitka AK" value="KACG">
+            		<location latitude="56.85" longitude="-135.52"/>
+		</station>
+        	<station name="FAIRBANKS/Nome AK" value="KAEC">
+            		<location latitude="64.5" longitude="-165.28"/>
+		</station>
+        	<station name="ANCHORAGE/Nikiski AK" value="KAHG">
+            		<location latitude="60.72" longitude="-151.35"/>
+		</station>
+        	<station name="ANCHORAGE/Middleton_Island AK" value="KAIH">
+            		<location latitude="59.45" longitude="-146.3"/>
+		</station>
+        	<station name="ANCHORAGE/King_Salmon AK" value="KAKC">
+            		<location latitude="58.67" longitude="-156.62"/>
+		</station>
+        	<station name="WAKEFIELD/Wakefield VA" value="KAKQ">
+            		<location latitude="36.98" longitude="-77"/>
+		</station>
+        	<station name="AMARILLO/Amarillo TX" value="KAMA">
+            		<location latitude="35.23" longitude="-101.7"/>
+		</station>
+        	<station name="MIAMI/Miami FL" value="KAMX">
+            		<location latitude="25.6" longitude="-80.4"/>
+		</station>
+        	<station name="FAIRBANKS/Pedro_Dome AK" value="KAPD">
+            		<location latitude="65.03" longitude="-147.5"/>
+		</station>
+        	<station name="NORTH_CENTRAL_LOWER_MICHIGAN MI" value="KAPX">
+            		<location latitude="44.9" longitude="-84.72"/>
+		</station>
+        	<station name="LA_CROSSE/La_Crosse WI" value="KARX">
+            		<location latitude="43.82" longitude="-91.18"/>
+		</station>
+        	<station name="SEATTLE/TACOMA/Camano_Island WA" value="KATX">
+            		<location latitude="48.18" longitude="-122.48"/>
+		</station>
+        	<station name="SACRAMENTO/Oro_Dam_Blvd_West CA" value="KBBX">
+            		<location latitude="39.48" longitude="-121.62"/>
+		</station>
+        	<station name="BINGHAMTON/Binghamton NY" value="KBGM">
+            		<location latitude="42.18" longitude="-75.98"/>
+		</station>
+        	<station name="EUREKA/Humboldt_County CA" value="KBHX">
+            		<location latitude="40.48" longitude="-124.28"/>
+		</station>
+        	<station name="BISMARCK/Bismarck ND" value="KBIS">
+            		<location latitude="46.77" longitude="-100.75"/>
+		</station>
+        	<station name="BILLINGS/Yellowstone_County MT" value="KBLX">
+            		<location latitude="45.85" longitude="-108.6"/>
+		</station>
+        	<station name="BIRMINGHAM/Alabaster AL" value="KBMX">
+            		<location latitude="33.17" longitude="-86.77"/>
+		</station>
+        	<station name="BOSTON/Taunton MA" value="KBOX">
+            		<location latitude="41.95" longitude="-71.13"/>
+		</station>
+        	<station name="BROWNSVILLE/Brownsville TX" value="KBRO">
+            		<location latitude="25.9" longitude="-97.42"/>
+		</station>
+        	<station name="BUFFALO/Cheektowaga NY" value="KBUF">
+            		<location latitude="42.93" longitude="-78.73"/>
+		</station>
+        	<station name="MIAMI/Boca_Chica_Key FL" value="KBYX">
+            		<location latitude="24.58" longitude="-81.7"/>
+		</station>
+        	<station name="COLUMBIA/Columbia SC" value="KCAE">
+            		<location latitude="33.93" longitude="-81.12"/>
+		</station>
+        	<station name="PORTLAND/Houlton ME" value="KCBW">
+            		<location latitude="46.03" longitude="-67.8"/>
+		</station>
+        	<station name="BOISE/Ada_County ID" value="KCBX">
+            		<location latitude="43.48" longitude="-116.23"/>
+		</station>
+        	<station name="CENTRAL_PENNSYLVANIA/Rush PA" value="KCCX">
+            		<location latitude="40.92" longitude="-78"/>
+		</station>
+        	<station name="CLEVELAND/Cleveland OH" value="KCLE">
+            		<location latitude="41.4" longitude="-81.85"/>
+		</station>
+        	<station name="CHARLESTON/Grays SC" value="KCLX">
+            		<location latitude="32.65" longitude="-81.03"/>
+		</station>
+        	<station name="CORPUS_CHRISTI/Corpus_Christ TX" value="KCRP">
+            		<location latitude="27.78" longitude="-97.5"/>
+		</station>
+        	<station name="BURLINGTON/Colchester VT" value="KCXX">
+            		<location latitude="44.5" longitude="-73.17"/>
+		</station>
+        	<station name="CHEYENNE/Cheyenne WY" value="KCYS">
+            		<location latitude="41.15" longitude="-104.8"/>
+		</station>
+        	<station name="SACRAMENTO/Sacramento CA" value="KDAX">
+            		<location latitude="38.5" longitude="-121.67"/>
+		</station>
+        	<station name="DODGE_CITY/Dodge_City KS" value="KDDC">
+            		<location latitude="37.75" longitude="-99.97"/>
+		</station>
+        	<station name="AUSTIN/SAN_ANTONIO/US_Hwy_90 TX" value="KDFX">
+            		<location latitude="29.27" longitude="-100.27"/>
+		</station>
+        	<station name="PHILADELPHIA/Manchester NJ" value="KDIX">
+            		<location latitude="39.93" longitude="-74.4"/>
+		</station>
+        	<station name="DULUTH/Duluth MN" value="KDLH">
+            		<location latitude="46.83" longitude="-92.2"/>
+		</station>
+        	<station name="DES_MOINES/Johnston IA" value="KDMX">
+            		<location latitude="41.72" longitude="-93.72"/>
+		</station>
+        	<station name="WAKEFIELD/Ellendale_State_Fo DE" value="KDOX">
+            		<location latitude="38.82" longitude="-75.43"/>
+		</station>
+        	<station name="DETROIT/White_Lake MI" value="KDTX">
+            		<location latitude="42.68" longitude="-83.47"/>
+		</station>
+        	<station name="QUAD_CITIES/Davenport IA" value="KDVN">
+            		<location latitude="41.6" longitude="-90.57"/>
+		</station>
+        	<station name="SAN_ANGELO/Shackelford_Count TX" value="KDYX">
+            		<location latitude="32.53" longitude="-99.25"/>
+		</station>
+        	<station name="KANSAS_CITY/PLEASANT_HILL/Pl MO" value="KEAX">
+            		<location latitude="38.8" longitude="-94.25"/>
+		</station>
+        	<station name="TUCSON/Pima_County AZ" value="KEMX">
+            		<location latitude="31.88" longitude="-110.62"/>
+		</station>
+        	<station name="ALBANY/East_Berne NY" value="KENX">
+            		<location latitude="42.58" longitude="-74.05"/>
+		</station>
+        	<station name="BIRMINGHAM/Fort_Rucker AL" value="KEOX">
+            		<location latitude="31.45" longitude="-85.45"/>
+		</station>
+        	<station name="EL_PASO/Santa_Teresa TX" value="KEPZ">
+            		<location latitude="31.87" longitude="-106.68"/>
+		</station>
+        	<station name="LAS_VEGAS/Nelson NV" value="KESX">
+            		<location latitude="35.7" longitude="-114.88"/>
+		</station>
+        	<station name="TALLAHASSEE/Eglin_AFB FL" value="KEVX">
+            		<location latitude="30.55" longitude="-85.92"/>
+		</station>
+        	<station name="AUSTIN/SAN_ANTONIO/New_Braun TX" value="KEWX">
+            		<location latitude="29.7" longitude="-98.02"/>
+		</station>
+        	<station name="LAS_VEGAS/Edwards_AFB CA" value="KEYX">
+            		<location latitude="35.08" longitude="-117.55"/>
+		</station>
+        	<station name="ROANOKE/Floyd_County VA" value="KFCX">
+            		<location latitude="37.02" longitude="-80.27"/>
+		</station>
+        	<station name="OKLAHOMA_CITY/Altus_AFB OK" value="KFDR">
+            		<location latitude="34.35" longitude="-98.97"/>
+		</station>
+        	<station name="ALBUQUERQUE/State_Rd_89 NM" value="KFDX">
+            		<location latitude="34.63" longitude="-103.62"/>
+		</station>
+        	<station name="ATLANTA/Peachtree_City GA" value="KFFC">
+            		<location latitude="33.35" longitude="-84.55"/>
+		</station>
+        	<station name="SIOUX_FALLS/Sioux_Falls SD" value="KFSD">
+            		<location latitude="43.58" longitude="-96.72"/>
+		</station>
+        	<station name="FLAGSTAFF/Coconino AZ" value="KFSX">
+            		<location latitude="34.57" longitude="-111.18"/>
+		</station>
+        	<station name="DENVER/BOULDER/Denver CO" value="KFTG">
+            		<location latitude="39.78" longitude="-104.53"/>
+		</station>
+        	<station name="DALLAS/FORT_WORTH/Fort_Worth TX" value="KFWS">
+            		<location latitude="32.57" longitude="-97.3"/>
+		</station>
+        	<station name="GLASGOW/Glasgow MT" value="KGGW">
+            		<location latitude="48.2" longitude="-106.62"/>
+		</station>
+        	<station name="GRAND_JUNCTION/Mesa CO" value="KGJX">
+            		<location latitude="39.05" longitude="-108.2"/>
+		</station>
+        	<station name="GOODLAND/Goodland KS" value="KGLD">
+            		<location latitude="39.37" longitude="-101.7"/>
+		</station>
+        	<station name="GREEN_BAY/Ashwaubenon WI" value="KGRB">
+            		<location latitude="44.48" longitude="-88.1"/>
+		</station>
+        	<station name="DALLAS/FORT_WORTH/Ft_Hood TX" value="KGRK">
+            		<location latitude="30.72" longitude="-97.37"/>
+		</station>
+        	<station name="GRAND_RAPIDS/Grand_Rapids MI" value="KGRR">
+            		<location latitude="42.88" longitude="-85.53"/>
+		</station>
+        	<station name="GREENVILLE/SPARTANBURG/Greer SC" value="KGSP">
+            		<location latitude="34.88" longitude="-82.22"/>
+		</station>
+        	<station name="GUAM/Barrigada_Communication GU" value="KGUA">
+            		<location latitude="13.45" longitude="144.8"/>
+		</station>
+        	<station name="MEMPHIS/MS_Hwy_8_and_US_Hwy_27 MS" value="KGWX">
+            		<location latitude="33.88" longitude="-88.32"/>
+		</station>
+        	<station name="PORTLAND/Gray ME" value="KGYX">
+            		<location latitude="43.88" longitude="-70.25"/>
+		</station>
+        	<station name="EL_PASO/White_Sands_Missile NM" value="KHDX">
+            		<location latitude="33.07" longitude="-106.12"/>
+		</station>
+        	<station name="HOUSTON/GALVESTON/Dickinson TX" value="KHGX">
+            		<location latitude="29.47" longitude="-95.07"/>
+		</station>
+        	<station name="HONOLULU/Kauai HI" value="KHKI">
+            		<location latitude="21.88" longitude="-159.55"/>
+		</station>
+        	<station name="HONOLULU/Kohala HI" value="KHKM">
+            		<location latitude="20.12" longitude="-155.77"/>
+		</station>
+        	<station name="HONOLULU/Molokai HI" value="KHMO">
+            		<location latitude="21.12" longitude="-157.17"/>
+		</station>
+        	<station name="SAN_JOAQUIN_VALLEY/Hanford CA" value="KHNX">
+            		<location latitude="36.3" longitude="-119.62"/>
+		</station>
+        	<station name="PADUCAH/US_Hwy_41_N KY" value="KHPX">
+            		<location latitude="36.73" longitude="-87.28"/>
+		</station>
+        	<station name="BIRMINGHAM/Northeastern_AL AL" value="KHTX">
+            		<location latitude="34.92" longitude="-86.08"/>
+		</station>
+        	<station name="HONOLULU/Hawaii HI" value="KHWA">
+            		<location latitude="19.08" longitude="-155.57"/>
+		</station>
+        	<station name="WICHITA/Wichita KS" value="KICT">
+            		<location latitude="37.65" longitude="-97.43"/>
+		</station>
+        	<station name="SALT_LAKE_CITY/Cedar_City UT" value="KICX">
+            		<location latitude="37.58" longitude="-112.85"/>
+		</station>
+        	<station name="CINCINNATI/Wilmington OH" value="KILN">
+            		<location latitude="39.42" longitude="-83.82"/>
+		</station>
+        	<station name="CENTRAL_ILLINOIS/Lincoln IL" value="KILX">
+            		<location latitude="40.15" longitude="-89.33"/>
+		</station>
+        	<station name="INDIANAPOLIS/Indianapolis IN" value="KIND">
+            		<location latitude="39.7" longitude="-86.27"/>
+		</station>
+        	<station name="TULSA/Inola OK" value="KINX">
+            		<location latitude="36.17" longitude="-95.55"/>
+		</station>
+        	<station name="PHOENIX/Mesa AZ" value="KIWA">
+            		<location latitude="33.28" longitude="-111.67"/>
+		</station>
+        	<station name="NORTHERN_INDIANA/North_Webst IN" value="KIWX">
+            		<location latitude="41.35" longitude="-85.7"/>
+		</station>
+        	<station name="JACKSON/Jackson MS" value="KJAN">
+            		<location latitude="32.32" longitude="-90.07"/>
+		</station>
+        	<station name="JACKSONVILLE/Jacksonville FL" value="KJAX">
+            		<location latitude="30.48" longitude="-81.7"/>
+		</station>
+        	<station name="ATLANTA/State_Hwy_96 GA" value="KJGX">
+            		<location latitude="32.67" longitude="-83.35"/>
+		</station>
+        	<station name="JACKSON/Noctor KY" value="KJKL">
+            		<location latitude="37.58" longitude="-83.3"/>
+		</station>
+        	<station name="SAN_JUAN/Cayey PR" value="KJUA">
+            		<location latitude="18.1" longitude="-66.07"/>
+		</station>
+        	<station name="LUBBOCK/Lubbock TX" value="KLBB">
+            		<location latitude="33.65" longitude="-101.8"/>
+		</station>
+        	<station name="LAKE_CHARLES/Lake_Charles LA" value="KLCH">
+            		<location latitude="30.12" longitude="-93.2"/>
+		</station>
+        	<station name="NEW_ORLEANS/BATON_ROUGE/Slid LA" value="KLIX">
+            		<location latitude="30.33" longitude="-89.82"/>
+		</station>
+        	<station name="NORTH_PLATTE/Thedford NE" value="KLNX">
+            		<location latitude="41.95" longitude="-100.57"/>
+		</station>
+        	<station name="CHICAGO/Romeoville IL" value="KLOT">
+            		<location latitude="41.6" longitude="-88.08"/>
+		</station>
+        	<station name="ELKO/Lander_County NV" value="KLRX">
+            		<location latitude="40.73" longitude="-116.8"/>
+		</station>
+        	<station name="ST._LOUIS/St_Charles MO" value="KLSX">
+            		<location latitude="38.68" longitude="-90.67"/>
+		</station>
+        	<station name="WILMINGTON/Shallotte NC" value="KLTX">
+            		<location latitude="33.98" longitude="-78.42"/>
+		</station>
+        	<station name="LOUISVILLE/Fort_Knox KY" value="KLVX">
+            		<location latitude="37.97" longitude="-85.93"/>
+		</station>
+        	<station name="BALTIMORE/WASH/Sterling MD" value="KLWX">
+            		<location latitude="38.97" longitude="-77.47"/>
+		</station>
+        	<station name="LITTLE_ROCK/N_Little_Rock AR" value="KLZK">
+            		<location latitude="34.83" longitude="-92.25"/>
+		</station>
+        	<station name="MIDLAND/ODESSA/Midland TX" value="KMAF">
+            		<location latitude="31.93" longitude="-102.18"/>
+		</station>
+        	<station name="MEDFORD/Jackson_County OR" value="KMAX">
+            		<location latitude="42.07" longitude="-122.72"/>
+		</station>
+        	<station name="BISMARCK/McHenry_County ND" value="KMBX">
+            		<location latitude="48.38" longitude="-100.85"/>
+		</station>
+        	<station name="MOREHEAD_CITY/Newport NC" value="KMHX">
+            		<location latitude="34.77" longitude="-76.87"/>
+		</station>
+        	<station name="MILWAUKEE/Dousman WI" value="KMKX">
+            		<location latitude="42.97" longitude="-88.55"/>
+		</station>
+        	<station name="MELBOURNE/Melbourne FL" value="KMLB">
+            		<location latitude="28.1" longitude="-80.65"/>
+		</station>
+        	<station name="MOBILE/Mobile AL" value="KMOB">
+            		<location latitude="30.67" longitude="-88.23"/>
+		</station>
+        	<station name="MINNEAPOLIS/Chanhassen MN" value="KMPX">
+            		<location latitude="44.83" longitude="-93.55"/>
+		</station>
+        	<station name="MARQUETTE/Marquette MI" value="KMQT">
+            		<location latitude="46.52" longitude="-87.53"/>
+		</station>
+        	<station name="KNOXVILLE/TRI-CITIES/Morrist TN" value="KMRX">
+            		<location latitude="36.17" longitude="-83.4"/>
+		</station>
+        	<station name="MISSOULA/Missoula_County MT" value="KMSX">
+            		<location latitude="47.03" longitude="-113.98"/>
+		</station>
+        	<station name="SALT_LAKE_CITY/Elder_County UT" value="KMTX">
+            		<location latitude="41.25" longitude="-112.43"/>
+		</station>
+        	<station name="SAN_FRANCISCO_BAY_AREA/Santa CA" value="KMUX">
+            		<location latitude="37.15" longitude="-121.88"/>
+		</station>
+        	<station name="EASTERN_NORTH_DAKOTA/Mayvill ND" value="KMVX">
+            		<location latitude="47.52" longitude="-97.32"/>
+		</station>
+        	<station name="BIRMINGHAM/Maxwell_AFB AL" value="KMXX">
+            		<location latitude="32.53" longitude="-85.78"/>
+		</station>
+        	<station name="SAN_DIEGO/San_Diego CA" value="KNKX">
+            		<location latitude="32.92" longitude="-117.03"/>
+		</station>
+        	<station name="MEMPHIS/Millington TN" value="KNQA">
+            		<location latitude="35.33" longitude="-89.87"/>
+		</station>
+        	<station name="OMAHA/Valley NE" value="KOAX">
+            		<location latitude="41.32" longitude="-96.37"/>
+		</station>
+        	<station name="NASHVILLE/Old_Hickory TN" value="KOHX">
+            		<location latitude="36.23" longitude="-86.55"/>
+		</station>
+        	<station name="NEW_YORK_CITY/Upton NY" value="KOKX">
+            		<location latitude="40.85" longitude="-72.85"/>
+		</station>
+        	<station name="SPOKANE/Spokane WA" value="KOTX">
+            		<location latitude="47.67" longitude="-117.62"/>
+		</station>
+        	<station name="PADUCAH/Paducah KY" value="KPAH">
+            		<location latitude="37.07" longitude="-88.77"/>
+		</station>
+        	<station name="PITTSBURGH/Coraopolis PA" value="KPBZ">
+            		<location latitude="40.52" longitude="-80.22"/>
+		</station>
+        	<station name="PENDLETON/Pendleton OR" value="KPDT">
+            		<location latitude="45.68" longitude="-118.85"/>
+		</station>
+        	<station name="LAKE_CHARLES/Fort_Polk LA" value="KPOE">
+            		<location latitude="31.15" longitude="-92.97"/>
+		</station>
+        	<station name="PUEBLO/Pueblo_County CO" value="KPUX">
+            		<location latitude="38.45" longitude="-104.17"/>
+		</station>
+        	<station name="RALEIGH/DURHAM/Clayton NC" value="KRAX">
+            		<location latitude="35.65" longitude="-78.48"/>
+		</station>
+        	<station name="RENO/Washoe_County NV" value="KRGX">
+            		<location latitude="39.75" longitude="-119.45"/>
+		</station>
+        	<station name="RIVERTON/Riverton WY" value="KRIW">
+            		<location latitude="43.05" longitude="-108.47"/>
+		</station>
+        	<station name="CHARLESTON/Ruthdale WV" value="KRLX">
+            		<location latitude="38.3" longitude="-81.72"/>
+		</station>
+        	<station name="PORTLAND/Scappoose OR" value="KRTX">
+            		<location latitude="45.7" longitude="-122.95"/>
+		</station>
+        	<station name="POCATELLO/IDAHO_FALLS/Spring ID" value="KSFX">
+            		<location latitude="43.1" longitude="-112.68"/>
+		</station>
+        	<station name="SPRINGFIELD/Springfield MO" value="KSGF">
+            		<location latitude="37.23" longitude="-93.4"/>
+		</station>
+        	<station name="SHREVEPORT/Shreveport LA" value="KSHV">
+            		<location latitude="32.45" longitude="-93.83"/>
+		</station>
+        	<station name="SAN_ANGELO/San_Angelo TX" value="KSJT">
+            		<location latitude="31.37" longitude="-100.48"/>
+		</station>
+        	<station name="SAN_DIEGO/Orange_County CA" value="KSOX">
+            		<location latitude="33.82" longitude="-117.63"/>
+		</station>
+        	<station name="TULSA/Western_Arkansas AR" value="KSRX">
+            		<location latitude="35.28" longitude="-94.35"/>
+		</station>
+        	<station name="TAMPA_BAY_AREA/Ruskin FL" value="KTBW">
+            		<location latitude="27.7" longitude="-82.4"/>
+		</station>
+        	<station name="GREAT_FALLS/Great_Falls MT" value="KTFX">
+            		<location latitude="47.45" longitude="-111.38"/>
+		</station>
+        	<station name="TALLAHASSEE/Tallahassee FL" value="KTLH">
+            		<location latitude="30.38" longitude="-84.32"/>
+		</station>
+        	<station name="OKLAHOMA_CITY/Norman OK" value="KTLX">
+            		<location latitude="35.32" longitude="-97.27"/>
+		</station>
+        	<station name="TOPEKA/Alma KS" value="KTWX">
+            		<location latitude="38.98" longitude="-96.22"/>
+		</station>
+        	<station name="MONTAGUE/Fort_Drum NY" value="KTYX">
+            		<location latitude="43.76" longitude="-75.76"/>
+		</station>
+        	<station name="RAPID_CITY/New_Underwood SD" value="KUDX">
+            		<location latitude="44.12" longitude="-102.82"/>
+		</station>
+        	<station name="HASTINGS/Webster_County NE" value="KUEX">
+            		<location latitude="40.32" longitude="-98.43"/>
+		</station>
+        	<station name="TALLAHASSEE/State Rd" value="KVAX">
+            		<location latitude="30.55" longitude="-83.00"/>
+		</station>
+        	<station name="LOS_ANGELES/Orcutt_Oil_Field CA" value="KVBX">
+            		<location latitude="34.83" longitude="-120.38"/>
+		</station>
+        	<station name="OKLAHOMA_CITY/Kegelman_Aux_F OK" value="KVNX">
+            		<location latitude="36.73" longitude="-98.12"/>
+		</station>
+        	<station name="LOS_ANGELES/Ventura_County CA" value="KVTX">
+            		<location latitude="34.4" longitude="-119.17"/>
+		</station>
+        	<station name="PHOENIX/Yuma AZ" value="KYUX">
+            		<location latitude="32.48" longitude="-114.65"/>
+		</station>
+
+	    </selectStation>
+
+
+	    <selectList id="dtime" title="Times:">
+                <choice name="Latest" value="latest"/>
+                <choice name="Last hour" value="1hour"/>
+                <choice name="Last 6 hours" value="6hour"/>
+                <choice name="Last 12 hours" value="12hour"/>
+                <choice name="Last day" value="1day"/>
+                <choice name="Last 2 days" value="2day"/>
+                <choice name="Last 3 days" value="3day"/>
+                <choice name="All" value="all"/>
+	    </selectList >
+
+
+</queryCapability>
