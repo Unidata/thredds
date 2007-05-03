@@ -8,6 +8,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.util.Product;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -137,27 +138,5 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
         return result;
 
     }
-
-    public int getStationDataCount( Station s) {
-          return 0;
-    }
-
-    public boolean checkStationProduct(Station s, String product) {
-        return true;
-    }
-
-     public boolean checkStationProduct(String product) {
-         return true;
-     }
-
-
-     public List getStationDataProducts( Station s) {
-         return null;
-     }
-
-
-
-
-
 
 }
