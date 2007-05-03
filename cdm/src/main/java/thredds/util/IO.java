@@ -26,8 +26,12 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 import java.net.*;
 import java.util.zip.DeflaterOutputStream;
+import java.util.zip.Deflater;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.Inflater;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Input/Output utilities.
@@ -533,22 +537,44 @@ public class IO {
     }
   }
 
-  static public void main3( String[] args) throws IOException {
-    String filenameOut = "C:/temp/tempFile3.compress";
+  static public void mainDeflate( String[] args) throws IOException {
+    String filenameOut = "C:/temp/tempFile.compress";
 
     FileOutputStream fout = new FileOutputStream(filenameOut);
     DeflaterOutputStream dout = new DeflaterOutputStream(fout);
-    BufferedOutputStream bout = new BufferedOutputStream(dout, 100 * 1000);
-    DataOutputStream out = new DataOutputStream(dout);
+    BufferedOutputStream bout = new BufferedOutputStream(dout, 1000); // 3X performance by having this !!
+    DataOutputStream out = new DataOutputStream(bout);
 
+    Random r = new Random();
     long start = System.currentTimeMillis();
-    for (int i=0; i<(100*1000);i++) {
-      out.writeFloat((float) i);
+    for (int i=0; i<(1000*1000);i++) {
+      out.writeFloat(r.nextFloat());
     }
     fout.close();
     double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" that took = "+took+"sec");
+    System.out.println(" that took = "+took+" sec");
+  }
 
+  static public void main( String[] args) throws IOException {
+    String filename = "C:/temp/tempFile.compress";
+
+    FileInputStream fin = new FileInputStream(filename);
+    InflaterInputStream din = new InflaterInputStream(fin);
+    BufferedInputStream bin = new BufferedInputStream(din, 1000);
+    DataInputStream in = new DataInputStream(din);
+
+    long start = System.currentTimeMillis();
+    float total = 0.0f;
+    try {
+      while (true) {
+        total += in.readFloat();
+      }
+    } catch (EOFException e) {
+      System.out.println("total="+total);
+    }
+    fin.close();
+    double took = .001 * (System.currentTimeMillis() - start);
+    System.out.println(" that took = "+took+" sec");
   }
 
   static public void main2( String[] args) throws IOException {
@@ -583,7 +609,7 @@ public class IO {
   }
 
   // how many files can be opened ??
-  static public void main( String[] args) {
+  static public void mainn( String[] args) {
     long start = System.currentTimeMillis();
     ArrayList fileList = new ArrayList();
     ArrayList rafList = new ArrayList();

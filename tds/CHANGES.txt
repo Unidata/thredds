@@ -17,6 +17,7 @@ Changes in version 3.15
     - Add LogicalFilterComposer for AND-ing, OR-ing, and NOT-ing CrawlableDatasetFilters
     - Refactor MultiSelectorFilter so that Selector is an inner class.
  Bugs
+  * DODS: Deflate must be bufferred
   * remove "DatasetFmrc", ds.getPath() on DatasetFmrc CatalogRefs.
   * InvDatasetFmrc: replace " " with "_" in dataset name, so URLS are valid.
   * opendap look for encoded chars in the CE (eg %20)

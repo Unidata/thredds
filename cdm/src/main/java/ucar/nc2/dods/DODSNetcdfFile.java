@@ -64,15 +64,23 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     DConnect2.setAllowSessions(b);
   }
 
-  static private boolean accept_deflate = true;
+  static private boolean accept_compress = true;
 
   /**
-   * Set whether to allow messages to be compressed (deflated).
-   *
-   * @param b true or false. default is false.
+   * Set whether to allow messages to be compressed.
+   * @param b true or false.
+   * @deprecated use setAllowCompression
    */
   static public void setAllowDeflate(boolean b) {
-    accept_deflate = b;
+    accept_compress = b;
+  }
+
+  /**
+   * Set whether to allow messages to be compressed.
+   * @param b true or false.
+   */
+  static public void setAllowCompression(boolean b) {
+    accept_compress = b;
   }
 
   /**
@@ -162,7 +170,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     if (debugServerCall) System.out.println("DConnect to = <" + urlName + ">");
-    dodsConnection = new DConnect2(urlName, accept_deflate);
+    dodsConnection = new DConnect2(urlName, accept_compress);
     if (cancelTask != null && cancelTask.isCancel()) return;
 
     // fetch the DDS and DAS
@@ -235,7 +243,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (0 <= (pos = urlName.indexOf('?'))) {
       String datasetName = urlName.substring(0, pos);
       if (debugServerCall) System.out.println(" reconnect to = <" + datasetName + ">");
-      dodsConnection = new DConnect2(datasetName, accept_deflate);
+      dodsConnection = new DConnect2(datasetName, accept_compress);
 
       // parse the CE for projections
       String CE = urlName.substring(pos + 1);

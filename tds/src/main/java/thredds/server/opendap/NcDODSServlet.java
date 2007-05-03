@@ -345,7 +345,8 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
     } catch (FileNotFoundException fne) {
       throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, "Cant find " + reqPath);
     } catch (Throwable e) {
-      throw new DAP2Exception(DAP2Exception.UNDEFINED_ERROR, e.getMessage());
+      log.error("Error ", e);
+      throw new DAP2Exception(DAP2Exception.UNDEFINED_ERROR, "Server Error on dataset "+reqPath);
     }
 
     if (null == ncd) return null;
