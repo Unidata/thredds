@@ -1,11 +1,10 @@
 
 package ucar.nc2.dt;
 
+import thredds.catalog.query.Station;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+
 
 /** A collection of data at unconnected radar station.
  * User can subset by stations, bounding box and by date range.
