@@ -28,15 +28,22 @@ public class Product {
         return this.name;
     }
 
+    public void setID(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean equals(Object oo) {
 
         if ( !(oo instanceof Product)) {
             return false;
         }
-        if (this == oo) {
-            return true;
-        }
-        return false;
+        Product that = (Product) oo;
+
+        return this.id.equals(that.id);
     }
 
 }
