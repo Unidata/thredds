@@ -1,9 +1,9 @@
 package ucar.nc2.dt.radial;
 
 
-import ucar.nc2.dt.StationRadarCollection;
-import ucar.nc2.dt.Station;
+import thredds.catalog.query.Station;
 import ucar.nc2.dt.TypedDatasetImpl;
+import ucar.nc2.dt.StationRadarCollection;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonRect;
@@ -12,6 +12,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import java.io.IOException;
 
 
@@ -48,13 +49,13 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
 
       return ucar.nc2.thredds.DqcStationObsDataset.factory( null, dqc);
     } */
-    
+
     private LatLonRect rect;
     public LatLonRect getBoundingBox() {
         if (rect == null) {
           List stations = null;
           try {
-            stations = radarCollection.getRadarStations();
+            stations = radarCollection.getStations();
           } catch (IOException e) {
             return null;
           }
@@ -63,12 +64,12 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
 
           Station s =  (Station) stations.get(0);
           LatLonPointImpl llpt = new LatLonPointImpl();
-          llpt.set( s.getLatitude(), s.getLongitude());
+          llpt.set( s.getLocation().getLatitude(), s.getLocation().getLongitude());
           rect = new LatLonRect(llpt, .001, .001);
 
           for (int i = 1; i < stations.size(); i++) {
             s =  (Station) stations.get(i);
-            llpt.set( s.getLatitude(), s.getLongitude());
+            llpt.set( s.getLocation().getLatitude(), s.getLocation().getLongitude());
             rect.extend( llpt);
           }
         }
@@ -79,10 +80,10 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
     public List getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
         LatLonPointImpl latlonPt = new LatLonPointImpl();
         ArrayList result = new ArrayList();
-        List stationC = radarCollection.getRadarStations();
+        List stationC = radarCollection.getStations();
         for (int i = 0; i < stationC.size(); i++) {
           Station s =  (Station) stationC.get(i);
-          latlonPt.set( s.getLatitude(), s.getLongitude());
+          latlonPt.set( s.getLocation().getLatitude(), s.getLocation().getLongitude());
           if (boundingBox.contains( latlonPt))
             result.add( s);
           if ((cancel != null) && cancel.isCancel()) return null;
@@ -94,7 +95,7 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
         if (stations == null) {
           List stationC = null;
           try {
-            stationC = radarCollection.getRadarStations();
+            stationC = radarCollection.getStations();
           } catch (IOException e) {
             return null;
           }
@@ -113,20 +114,23 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
          return null;
      }
 
-
+      /** Get all the Stations in the collection, allow user to cancel.
+     * @param cancel allow user to cancel. Implementors should return ASAP.
+     * @return List of Station */
 
     public List getStations( CancelTask cancel) throws IOException {
          if ((cancel != null) && cancel.isCancel()) return null;
          return  getStations( );
      }
-
+     /** Get all the Stations within a bounding box.
+     * @return List of Station */
     public List getStations( LatLonRect boundingBox)throws IOException {
         LatLonPointImpl latlonPt = new LatLonPointImpl();
         ArrayList result = new ArrayList();
-        List stationC = radarCollection.getRadarStations();
+        List stationC = radarCollection.getStations();
         for (int i = 0; i < stationC.size(); i++) {
           Station s =  (Station) stationC.get(i);
-          latlonPt.set( s.getLatitude(), s.getLongitude());
+          latlonPt.set( s.getLocation().getLatitude(), s.getLocation().getLongitude());
           if (boundingBox.contains( latlonPt))
             result.add( s);
         }
@@ -150,7 +154,6 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
      public List getStationDataProducts( Station s) {
          return null;
      }
-
 
 
 
