@@ -117,7 +117,7 @@ public final class GribIndexer {
                continue;
            }
            //System.out.println( "In directory "+ dir );
-           dl.createNewFile();
+           dl.createNewFile(); // create a lock while indexing dir
           
            checkDirs( d );
 
@@ -177,6 +177,11 @@ public final class GribIndexer {
             // skip grib files that have the same size as in the Gbx
             if( grib.length() == lengthGbx( args[ 1 ] ) )
                return;
+            // skip indexes that have a length of 0, most likely there is a index problem
+            if( gbx.length() == 0 ) {
+               System.out.println( "ERROR "+ args[ 1 ] +" has length zero" );
+               return;
+            }
         }
 
         if( grib.getName().endsWith( "grib1" )) {
@@ -286,7 +291,7 @@ public final class GribIndexer {
 
     /**
      * main.
-     * @param args empty
+     * @param args can be clear and the GribIndexer.conf file 
      * @throws IOException
      */
     // process command line switches
