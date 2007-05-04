@@ -18,7 +18,6 @@ public class TestAll
 
     TestSuite suite = new TestSuite();
     suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
-    //suite.addTestSuite( thredds.catalog.TestDatasetScanBrowseMetadata.class );
 
     return suite;
   }
