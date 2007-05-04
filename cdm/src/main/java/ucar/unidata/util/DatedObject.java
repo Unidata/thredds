@@ -1,5 +1,5 @@
 /*
- * $Id: DatedObject.java,v 1.1 2007/05/03 22:21:35 jeffmc Exp $
+ * $Id: DatedObject.java,v 1.2 2007/05/04 17:08:09 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,10 +25,15 @@
 
 
 
+
 package ucar.unidata.util;
 
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+
 
 
 /**
@@ -37,10 +42,10 @@ import java.util.Date;
 
 public class DatedObject implements DatedThing {
 
-    /** The date         */
+    /** The date */
     private Date date;
 
-    /** The object        */
+    /** The object */
     private Object object;
 
     /**
@@ -63,6 +68,36 @@ public class DatedObject implements DatedThing {
         this.date   = date;
         this.object = object;
     }
+
+    /**
+     * Sort the given list of DatedThing-s
+     *
+     * @param datedThings list to sort
+     * @param ascending sort order
+     *
+     * @return sorted list
+     */
+    public static List sort(List datedThings, final boolean ascending) {
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                DatedThing a1     = (DatedThing) o1;
+                DatedThing a2     = (DatedThing) o2;
+                int        result = a1.getDate().compareTo(a2.getDate());
+                if ( !ascending) {
+                    result = -result;
+                }
+                return result;
+            }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+
+        Object[] array = datedThings.toArray();
+        Arrays.sort(array, comp);
+        return Arrays.asList(array);
+    }
+
 
     /**
      * Set the Date property.
@@ -101,6 +136,18 @@ public class DatedObject implements DatedThing {
     }
 
 
+    /**
+     * to string
+     *
+     * @return to string
+     */
+    public String toString() {
+        if (object != null) {
+            return date + " " + object;
+        } else {
+            return date.toString();
+        }
+    }
 
 }
 

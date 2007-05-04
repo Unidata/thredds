@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.4 2007/05/03 22:23:17 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.5 2007/05/04 17:08:09 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,8 +19,6 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
-
 
 
 
@@ -77,17 +75,17 @@ public class DateSelection {
     private int endMode = TIMEMODE_FIXED;
 
 
-    /** The start fixed time  in seconds */
+    /** The start fixed time  in milliseconds */
     private long startFixedTime = Long.MAX_VALUE;
 
-    /** The end fixed time  in seconds */
+    /** The end fixed time  in milliseconds */
     private long endFixedTime = Long.MAX_VALUE;
 
     /** Start offset */
-    private double startOffset = 0.0;
+    private double startOffset = 0;
 
     /** End offset */
-    private double endOffset = 0.0;
+    private double endOffset = 0;
 
     /** The range before before the interval mark */
     private double preRange = Double.NaN;
@@ -98,8 +96,8 @@ public class DateSelection {
     /** Interval time */
     private double interval = Double.NaN;
 
-    /** Minutes to round to */
-    private double roundTo = 0.0;
+    /** milliseconds to round to */
+    private double roundTo = 0;
 
     /** The total count of times we want */
     private int count = Integer.MAX_VALUE;
@@ -110,7 +108,6 @@ public class DateSelection {
 
     /** This can hold a set of absolute times. If non-null then these times override any of the query information */
     private List times;
-
 
 
     /**
@@ -129,7 +126,7 @@ public class DateSelection {
         this.endFixedTime   = endTime.getTime();
         startMode           = TIMEMODE_FIXED;
         endMode             = TIMEMODE_FIXED;
-        interval            = 0.0;
+        interval            = 0;
     }
 
 
@@ -161,17 +158,185 @@ public class DateSelection {
 
 
     /**
-     * Apply this date seelction query to the list of DatedThing-s
+     * Apply this date selection query to the list of DatedThing-s
      *
-     * @param datedObjects input list of DatedThing-s
+     * @param datedThings input list of DatedThing-s
      *
      * @return The filtered list
      */
-    public List apply(List datedObjects) {
-        //TBD
-        return datedObjects;
+    public List apply(List datedThings) {
+
+        datedThings = DatedObject.sort(datedThings, false);
+
+        List    result      = new ArrayList();
+        Date[]  range       = getRange();
+
+        long    startTime   = range[0].getTime();
+        long    endTime     = range[1].getTime();
+        boolean hasInterval = hasInterval();
+
+        //Get the interval ranges to use
+        double beforeRange = getPreRangeToUse();
+        double afterRange  = getPostRangeToUse();
+
+        System.err.println("range:" + range[0] + " -- " + range[1]);
+
+        double[] ticks = null;
+        if (hasInterval) {
+            double base = round(endTime);
+            System.err.println("base:" + new Date((long) base));
+            ticks = computeTicks(endTime, startTime, base, interval);
+            if (ticks == null) {
+                return result;
+            }
+            for (int i = 0; i < ticks.length; i++) {
+                System.err.println("Interval " + i + ": "
+                                   + new Date((long) (ticks[i]
+                                       - beforeRange)) + " -- "
+                                           + new Date((long) (ticks[i]))
+                                           + " -- "
+                                           + new Date((long) (ticks[i]
+                                               + afterRange)));
+            }
+        }
+
+
+        int totalThings = 0;
+        //        List[] intervalList = new List[ticks.length];
+        DatedThing[] closest         = null;
+        double[]     minDistance     = null;
+        int          currentInterval = 0;
+
+        if (ticks != null) {
+            closest         = new DatedThing[ticks.length];
+            minDistance     = new double[ticks.length];
+            currentInterval = ticks.length - 1;
+        }
+
+
+        //Remember, we're going backwards in time
+        for (int i = 0; i < datedThings.size(); i++) {
+            //Have we maxed out?
+            if (totalThings >= count) {
+                break;
+            }
+
+            DatedThing datedThing = (DatedThing) datedThings.get(i);
+            long       time       = datedThing.getDate().getTime();
+
+            //Check the time range bounds
+            if (time > endTime) {
+                System.err.println("after range:" + datedThing);
+                continue;
+            }
+            //We're done
+            if (time < startTime) {
+                System.err.println("before range:" + datedThing);
+                break;
+            }
+
+
+            //If no interval then just add it
+            if ( !hasInterval) {
+                result.add(datedThing);
+                totalThings++;
+                continue;
+            }
+
+            while ((currentInterval >= 0)
+                    && (ticks[currentInterval] - beforeRange > time)) {
+                currentInterval--;
+            }
+
+            //Done
+            if (currentInterval < 0) {
+                break;
+            }
+
+
+            boolean thingInInterval = ((time
+                                        >= (ticks[currentInterval]
+                                            - beforeRange)) && (time
+                                                <= (ticks[currentInterval]
+                                                    + afterRange)));
+
+            if ( !thingInInterval) {
+                System.err.println("Not in interval:" + datedThing);
+                continue;
+            }
+
+            double distance = Math.abs(time - ticks[currentInterval]);
+            if ((closest[currentInterval] == null)
+                    || (distance < minDistance[currentInterval])) {
+                if (closest[currentInterval] == null) {
+                    totalThings++;
+                }
+                closest[currentInterval]     = datedThing;
+                minDistance[currentInterval] = distance;
+            }
+
+            //            if(intervalList[currentInterval]==null) {
+            //                intervalList[currentInterval] = new ArrayList();
+            //            }
+            //intervalList[currentInterval].add(datedThing);
+
+        }
+
+
+        //If we had intervals then add them in
+        if (closest != null) {
+            for (int i = 0; i < closest.length - 1; i++) {
+                if (closest[i] != null) {
+                    result.add(closest[i]);
+                }
+            }
+        }
+
+        return result;
+
 
     }
+
+
+
+    /**
+     * Compute the tick mark values based on the input.  Cut-and-pasted from Misc
+     *
+     * @param high  highest value of range
+     * @param low   low value of range
+     * @param base  base value for centering ticks
+     * @param interval  interval between ticks
+     *
+     * @return  array of computed tick values
+     */
+    private static double[] computeTicks(double high, double low,
+                                         double base, double interval) {
+        double[] vals = null;
+
+        //        System.err.println ("ticks:" + high + " " + low +" " + base + " " + interval);
+
+
+        // compute nlo and nhi, for low and high contour values in the box
+        long nlo = Math.round((Math.ceil((low - base) / Math.abs(interval))));
+        long nhi = Math.round((Math.floor((high - base)
+                                          / Math.abs(interval))));
+
+        // how many contour lines are needed.
+        int numc = (int) (nhi - nlo) + 1;
+        if (numc < 1) {
+            return vals;
+        }
+
+        vals = new double[numc];
+
+        for (int i = 0; i < numc; i++) {
+            vals[i] = base + (nlo + i) * interval;
+        }
+
+        return vals;
+    }
+
+
 
 
     /**
@@ -180,8 +345,44 @@ public class DateSelection {
      * @return time range
      */
     public Date[] getRange() {
-        //TBD
-        return new Date[] {};
+        double now   = (double) (System.currentTimeMillis());
+        double start = 0;
+        double end   = 0;
+
+        if (startMode == TIMEMODE_CURRENT) {
+            start = now;
+        } else if (startMode == TIMEMODE_FIXED) {
+            start = startFixedTime;
+        }
+
+        if (endMode == TIMEMODE_CURRENT) {
+            end = now;
+        } else if (endMode == TIMEMODE_FIXED) {
+            end = endFixedTime;
+        }
+
+
+        if (startMode != TIMEMODE_RELATIVE) {
+            start += startOffset;
+        }
+
+        if (endMode != TIMEMODE_RELATIVE) {
+            end += endOffset;
+        }
+
+        if (startMode == TIMEMODE_RELATIVE) {
+            start = end + startOffset;
+        }
+
+        if (endMode == TIMEMODE_RELATIVE) {
+            end = start + endOffset;
+        }
+
+
+        Date startDate = new Date((long) start);
+        Date endDate   = new Date((long) end);
+
+        return new Date[] { startDate, endDate };
     }
 
 
@@ -189,12 +390,12 @@ public class DateSelection {
     /**
      * Utility to round the given seconds
      *
-     * @param seconds time to round
+     * @param milliSeconds time to round
      *
      * @return Rounded value
      */
-    private double round(double seconds) {
-        return roundTo(roundTo, seconds);
+    private double round(double milliSeconds) {
+        return roundTo(roundTo, milliSeconds);
     }
 
 
@@ -203,16 +404,23 @@ public class DateSelection {
      *
      *
      * @param roundTo round to
-     * @param seconds time to round
+     * @param milliSeconds time to round
      *
      * @return Rounded value
      */
-    public static double roundTo(double roundTo, double seconds) {
-        int roundToSeconds = (int) (roundTo * 60);
-        if (roundToSeconds == 0) {
-            return seconds;
+    public static double roundTo(double roundTo, double milliSeconds) {
+        double seconds   = milliSeconds / 1000;
+        double rtseconds = roundTo / 1000;
+
+        if (true) {
+            return 1000 * (seconds - ((int) seconds) % rtseconds);
         }
-        return seconds - ((int) seconds) % roundToSeconds;
+
+        int roundToMilliSeconds = (int) (roundTo);
+        if (roundToMilliSeconds == 0) {
+            return milliSeconds;
+        }
+        return milliSeconds - ((int) milliSeconds) % roundToMilliSeconds;
     }
 
 
@@ -226,9 +434,9 @@ public class DateSelection {
         return null;
         /*
         List       dateTimes    = new ArrayList();
-        long       now = (long) (System.currentTimeMillis() / 1000.0);
-        double     startSeconds = 0.0;
-        double     endSeconds   = 0.0;
+        double       now = (double) (System.currentTimeMillis() / 1000);
+        double     startSeconds = 0;
+        double     endSeconds   = 0;
         double[][] dataTimeSet  = null;
 
         //        System.err.println ("makeTimeSet");
@@ -356,6 +564,34 @@ public class DateSelection {
 
 
     /**
+     * Do we have an interval defined
+     *
+     * @return Have interval defined
+     */
+    public boolean hasInterval() {
+        return interval > 0;
+    }
+
+    /**
+     * Do we have a pre range defined
+     *
+     * @return Is pre-range defined
+     */
+    public boolean hasPreRange() {
+        return preRange == preRange;
+    }
+
+    /**
+     * Do we have a post range defined
+     *
+     * @return Is post-range defined
+     */
+    public boolean hasPostRange() {
+        return postRange == postRange;
+    }
+
+
+    /**
      * Set the Interval property.
      *
      * @param value The new value for Interval
@@ -447,6 +683,7 @@ public class DateSelection {
      */
     public void setStartFixedTime(Date d) {
         startFixedTime = d.getTime();
+        startMode      = TIMEMODE_FIXED;
     }
 
 
@@ -457,6 +694,7 @@ public class DateSelection {
      */
     public void setEndFixedTime(Date d) {
         endFixedTime = d.getTime();
+        endMode      = TIMEMODE_FIXED;
     }
 
     /**
@@ -484,9 +722,6 @@ public class DateSelection {
      *  @return The StartFixedTime
      */
     public long getStartFixedTime() {
-        if (startFixedTime == Long.MAX_VALUE) {
-            startFixedTime = System.currentTimeMillis();
-        }
         return startFixedTime;
     }
 
@@ -505,11 +740,21 @@ public class DateSelection {
      *  @return The EndFixedTime
      */
     public long getEndFixedTime() {
-        if (endFixedTime == Long.MAX_VALUE) {
-            endFixedTime = System.currentTimeMillis();
-        }
         return endFixedTime;
     }
+
+
+    /**
+     * A utility method to set the pre and post range symmetrically.
+     * Each are set with half of the given value
+     *
+     * @param value interval range
+     */
+    public void setIntervalRange(double value) {
+        setPreRange(value / 2);
+        setPostRange(value / 2);
+    }
+
 
     /**
      * Set the PreRange property.
@@ -519,6 +764,33 @@ public class DateSelection {
     public void setPreRange(double value) {
         preRange = value;
     }
+
+
+    /**
+     * Get the pre interval range to use. If we have a preRange then return that, else,
+     * return half of the interval.
+     *
+     * @return The pre range to use
+     */
+    public double getPreRangeToUse() {
+        return (hasPreRange()
+                ? preRange
+                : interval / 2);
+    }
+
+
+    /**
+     * Get the post interval range to use. If we have a postRange then return that, else,
+     * return half of the interval.
+     *
+     * @return The post range to use
+     */
+    public double getPostRangeToUse() {
+        return (hasPostRange()
+                ? postRange
+                : interval / 2);
+    }
+
 
     /**
      * Get the PreRange property.
@@ -666,7 +938,78 @@ public class DateSelection {
 
     }
 
+    /**
+     * utility to convert a given number of hours to milliseconds
+     *
+     * @param hour hours
+     *
+     * @return milliseconds
+     */
+    public static long hourToMillis(long hour) {
+        return minuteToMillis(hour*60);
+    }
 
+    /**
+     * utility to convert a given number of minutes to milliseconds
+     *
+     * @param minute minutes
+     *
+     * @return milliseconds
+     */
+    public static long minuteToMillis(long minute) {
+        return minute * 60 * 1000;
+    }
+
+
+    /**
+     * test
+     *
+     * @param msg msg to print out
+     */
+    private void testRange(String msg) {
+        Date[] range = getRange();
+        if (msg != null) {
+            System.err.println(msg);
+        }
+        System.err.println(range[0] + " --  " + range[1]);
+    }
+
+    /**
+     * test main
+     *
+     * @param args cmd line args
+     */
+    public static void main(String[] args) {
+        DateSelection dateSelection = new DateSelection();
+        List          dates         = new ArrayList();
+        long          now           = System.currentTimeMillis();
+        for (int i = 0; i < 20; i++) {
+            dates.add(new DatedObject(new Date(now + minuteToMillis(20)
+                    - i * 10 * 60 * 1000)));
+        }
+
+        dateSelection.setEndMode(TIMEMODE_FIXED);
+        dateSelection.setEndFixedTime(now);
+
+        //Go 2 hours before start
+        dateSelection.setStartMode(TIMEMODE_RELATIVE);
+        dateSelection.setStartOffset(hourToMillis(-2));
+
+        //15 minute interval
+        dateSelection.setRoundTo(hourToMillis(12));
+
+        dateSelection.setInterval(minuteToMillis(15));
+        dateSelection.setIntervalRange(minuteToMillis(6));
+
+
+        dates = dateSelection.apply(dates);
+        System.err.println("result:" + dates);
+
+
+
+
+
+    }
 
 }
 
