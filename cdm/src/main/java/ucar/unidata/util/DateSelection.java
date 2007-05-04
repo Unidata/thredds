@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.5 2007/05/04 17:08:09 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.6 2007/05/04 22:39:56 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -409,18 +409,10 @@ public class DateSelection {
      * @return Rounded value
      */
     public static double roundTo(double roundTo, double milliSeconds) {
+        if(roundTo == 0) return milliSeconds;
         double seconds   = milliSeconds / 1000;
-        double rtseconds = roundTo / 1000;
-
-        if (true) {
-            return 1000 * (seconds - ((int) seconds) % rtseconds);
-        }
-
-        int roundToMilliSeconds = (int) (roundTo);
-        if (roundToMilliSeconds == 0) {
-            return milliSeconds;
-        }
-        return milliSeconds - ((int) milliSeconds) % roundToMilliSeconds;
+        double rtSeconds = roundTo / 1000;
+        return 1000 * (seconds - ((int) seconds) % rtSeconds);
     }
 
 
