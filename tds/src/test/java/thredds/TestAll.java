@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import junit.framework.TestSuite;
-import thredds.servlet.TestDataRootHandler;
-import thredds.catalog.TestDatasetScanBrowseMetadata;
 
 /**
  * TestSuite that runs all TDS unit tests.
@@ -19,8 +17,8 @@ public class TestAll
   {
 
     TestSuite suite = new TestSuite();
-    suite.addTestSuite( TestDataRootHandler.class );
-    //suite.addTestSuite( TestDatasetScanBrowseMetadata.class );
+    suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
+    //suite.addTestSuite( thredds.catalog.TestDatasetScanBrowseMetadata.class );
 
     return suite;
   }
