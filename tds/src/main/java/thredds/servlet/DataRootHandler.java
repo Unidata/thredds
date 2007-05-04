@@ -27,6 +27,7 @@ import thredds.util.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.datatype.DateType;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.DateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -124,7 +125,7 @@ public class DataRootHandler {
 
     DatasetHandler.reinit(); // NcML datasets
 
-    log.info("\n**************************************\n**************************************\nCatalog reinit ");
+    log.info("\n**************************************\n**************************************\nCatalog reinit\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
   }
 
   /**
@@ -135,7 +136,7 @@ public class DataRootHandler {
    * @throws IOException if reading catalog fails
    */
   public synchronized void initCatalog(String path) throws IOException {
-    log.info("\n**************************************\nCatalog init "+path);
+    log.info("\n**************************************\nCatalog init "+path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
     initCatalog(path, true);
   }
 
