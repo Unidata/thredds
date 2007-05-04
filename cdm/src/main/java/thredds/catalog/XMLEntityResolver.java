@@ -255,6 +255,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
     if (externalSchemas == null) { externalSchemas =
       XMLEntityResolver.CATALOG_NAMESPACE_10 + " " + "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd" +" "+
       XMLEntityResolver.NJ22_NAMESPACE + " " + "http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd" +" " +
+      XMLEntityResolver.DQC_NAMESPACE_04 + " " + "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.4.xsd" +" " +
       XMLEntityResolver.DQC_NAMESPACE_03 + " " + "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd" +" " +
       XMLEntityResolver.DQC_NAMESPACE_02 + " " + "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.2.xsd" +" " +
       XMLEntityResolver.CATALOG_NAMESPACE_06 + " " + "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.xsd";

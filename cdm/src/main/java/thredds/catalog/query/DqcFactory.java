@@ -22,7 +22,6 @@
 package thredds.catalog.query;
 
 import thredds.catalog.XMLEntityResolver;
-import thredds.util.net.HttpIO;
 import thredds.util.IO;
 
 import org.jdom.input.SAXBuilder;
@@ -68,7 +67,8 @@ public class DqcFactory {
   private SAXBuilder builder; // JAXP parser
   private DqcConvertIF defaultConverter;
 
-  private HashMap versionHash = new HashMap(10);
+  private HashMap versionToNamespaceHash = new HashMap(10);
+  private HashMap namespaceToDqcConverterHash = new HashMap(10);   // HashMap<String, DqcConvertIF>
   private StringBuffer warnMessages, errMessages, fatalMessages;
 
 
@@ -92,17 +92,17 @@ public class DqcFactory {
     try {
       Class fac2 = Class.forName("thredds.catalog.parser.jdom.DqcConvert2");
       Object fac2o = fac2.newInstance();
-      registerConverter(XMLEntityResolver.DQC_NAMESPACE_02, (DqcConvertIF) fac2o);
+      registerConverter( "0.2", XMLEntityResolver.DQC_NAMESPACE_02, (DqcConvertIF) fac2o);
+
 
       Class fac3 = Class.forName("thredds.catalog.parser.jdom.DqcConvert3");
       Object fac3o = fac3.newInstance();
-      defaultConverter = (DqcConvertIF) fac3o;
-      registerConverter(XMLEntityResolver.DQC_NAMESPACE_03, (DqcConvertIF) fac3o);
+      registerConverter( "0.3", XMLEntityResolver.DQC_NAMESPACE_03, (DqcConvertIF) fac3o);
 
       Class fac4 = Class.forName("thredds.catalog.parser.jdom.DqcConvert4");
       Object fac4o = fac4.newInstance();
       defaultConverter = (DqcConvertIF) fac4o;
-      registerConverter(XMLEntityResolver.DQC_NAMESPACE_04, (DqcConvertIF) fac4o);
+      registerConverter( "0.4", XMLEntityResolver.DQC_NAMESPACE_04, (DqcConvertIF) fac4o);
 
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("DqcFactory: no implementing class found: " + e.getMessage());
@@ -113,8 +113,9 @@ public class DqcFactory {
     }
   }
 
-  private void registerConverter(String namespace, DqcConvertIF converter) {
-    versionHash.put(namespace, converter);
+  private void registerConverter(String version, String namespace, DqcConvertIF converter) {
+    namespaceToDqcConverterHash.put(namespace, converter);
+    versionToNamespaceHash.put( version, namespace );
     // converter.setCatalogFactory( this);
   }
 
@@ -130,6 +131,25 @@ public class DqcFactory {
     warnMessages.append(err);
   }
 
+  public QueryCapability readXML( String docAsString, URI uri ) throws IOException
+  {
+    // get ready for XML parsing
+    warnMessages.setLength( 0 );
+    errMessages.setLength( 0 );
+    fatalMessages.setLength( 0 );
+
+    Document doc = null;
+    try
+    {
+      doc = builder.build( new StringReader( docAsString ) );
+    }
+    catch ( JDOMException e )
+    {
+      fatalMessages.append( e.getMessage() ); // makes it invalid
+    }
+
+    return readXML( doc, uri );
+  }
 
   /**
    * Create an QueryCapability from an XML document at a named URL.
@@ -273,7 +293,7 @@ public class DqcFactory {
     // decide on converter based on namespace
     Element root = doc.getRootElement();
     String namespace = root.getNamespaceURI();
-    DqcConvertIF fac = (DqcConvertIF) versionHash.get(namespace);
+    DqcConvertIF fac = (DqcConvertIF) namespaceToDqcConverterHash.get(namespace);
     if (fac == null) {
       fac = defaultConverter; // LOOK
       if (debugVersion)
@@ -313,7 +333,13 @@ public class DqcFactory {
    * @throws IOException on an error.
    */
   public void writeXML(QueryCapability dqc, OutputStream os) throws IOException {
-    defaultConverter.writeXML(dqc, os);
+    String ns = (String) versionToNamespaceHash.get( dqc.getVersion() );
+    DqcConvertIF fac = (DqcConvertIF) namespaceToDqcConverterHash.get( ns );
+
+    if ( fac == null )
+      fac = defaultConverter;
+
+    fac.writeXML( dqc, os );
   }
 
   /**

@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 
 import java.util.Properties;
 
+import thredds.catalog.InvCatalogImpl;
+
 /**
  * _more_
  *
@@ -17,9 +19,6 @@ public class TestTdsPingMotherlode extends TestCase
   private String targetTomcatUrl;
   private String targetTdsUrl;
 
-  private String tdsConfigUser;
-  private String tdsConfigWord;
-
   public TestTdsPingMotherlode( String name )
   {
     super( name );
@@ -28,9 +27,7 @@ public class TestTdsPingMotherlode extends TestCase
   protected void setUp()
   {
     Properties env = System.getProperties();
-    host = env.getProperty( "thredds.tds.site", host );
-    tdsConfigUser = env.getProperty( "thredds.tds.config.user" );
-    tdsConfigWord = env.getProperty( "thredds.tds.config.password" );
+    host = env.getProperty( "thredds.tds.server", host );
 
     targetTomcatUrl = "http://" + host;
     targetTdsUrl = "http://" + host + "/thredds";
@@ -81,9 +78,12 @@ public class TestTdsPingMotherlode extends TestCase
     TestAll.openAndValidateCatalog( targetTdsUrl + "/cataloggen/catalogs/uniModelsInvCat1.0en.xml" );
   }
 
-  public void testVgeeCatalog()
+  public void testCasestudiesCatalogs()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudy/vgeeCatalog.1.0.xml" );
+    InvCatalogImpl cat = TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/catalog.xml" );
+    //TestAll.findAllCatRefs( cat.getDataset().getDatasets() );
+    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/vgeeCatalog.xml" );
+
   }
 
   public void testAllNcModelsCatalog()

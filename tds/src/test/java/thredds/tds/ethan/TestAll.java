@@ -35,7 +35,7 @@ public class TestAll extends TestCase
     String tdsTestLevel = env.getProperty( "thredds.tds.test.level" );
 
     if ( tdsTestLevel.equalsIgnoreCase( "PING") )
-      suite.addTestSuite( thredds.tds.ethan.TestTdsPing.class );
+      suite.addTestSuite( thredds.tds.ethan.TestTdsIddPing.class );
     else if ( tdsTestLevel.equalsIgnoreCase( "PING-mlode") )
       suite.addTestSuite( thredds.tds.ethan.TestTdsPingMotherlode.class);
     else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL") )
@@ -77,14 +77,27 @@ public class TestAll extends TestCase
     String errMsg = dqc.getErrorMessages();
     if ( errMsg != null && errMsg.length() > 0)
     {
-      System.out.println( "Error message reading DQC doc <" + dqcUrl + ">:" );
-      System.out.println( errMsg );
+      fail( "Error message reading DQC doc <" + dqcUrl + ">:\n" + errMsg );
+      return null;
     }
 
     return dqc;
   }
 
   public static InvCatalogImpl openAndValidateCatalog( String catUrl )
+  {
+    StringBuffer log = new StringBuffer();
+    InvCatalogImpl cat = openAndValidateCatalogForChaining( catUrl, log );
+    if ( cat == null )
+    {
+      fail( log.toString() );
+      return null;
+    }
+
+    return cat;
+  }
+
+  public static InvCatalogImpl openAndValidateCatalogForChaining( String catUrl, StringBuffer log )
   {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
     StringBuffer validationMsg = new StringBuffer();
@@ -97,7 +110,7 @@ public class TestAll extends TestCase
       boolean isValid = cat.check( validationMsg, false );
       if ( !isValid )
       {
-        fail( "Invalid catalog <" + catUrl + ">:\n" + validationMsg.toString() );
+        log.append( "Invalid catalog <" ).append( catUrl ).append( ">:\n" ).append( validationMsg.toString() );
         return null;
       }
       else
@@ -109,8 +122,7 @@ public class TestAll extends TestCase
     }
     catch ( Exception e )
     {
-      e.printStackTrace();
-      fail( "[" + curSysTimeAsString + "] Exception while parsing catalog <" + catUrl + ">: " + e.getMessage() );
+      log.append( "[" ).append( curSysTimeAsString ).append( "] Exception while parsing catalog <" ).append( catUrl ).append( ">: " ).append( e.getMessage() );
       return null;
     }
   }
@@ -223,13 +235,25 @@ public class TestAll extends TestCase
     }
   }
 
-  public static List<InvDatasetImpl> findAllResolverDatasets( List<InvDatasetImpl> datasets )
+  public static boolean openValidateAndCrawlCatRefCatalogs( String catalogUrl )
+  {
+    StringBuffer log = new StringBuffer();
+    InvCatalogImpl cat = openAndValidateCatalogForChaining( catalogUrl, log );
+    if ( cat == null )
+    {
+      fail( "Could not open or validate catalog <" + catalogUrl + ">: " + log.toString() );
+      return false;
+    }
+    List<InvDatasetImpl> catRefList = findAllCatRefs( cat.getDatasets() );
+
+    return true;
+  }
+
+  private static List<InvDatasetImpl> findAllResolverDatasets( List<InvDatasetImpl> datasets )
   {
     List<InvDatasetImpl> resolverDsList = new ArrayList<InvDatasetImpl>();
     for ( InvDatasetImpl curDs : datasets )
     {
-      if ( !( curDs instanceof InvDatasetImpl ) ) continue;
-
       if ( curDs.hasNestedDatasets() )
       {
         resolverDsList.addAll( findAllResolverDatasets( curDs.getDatasets() ) );
@@ -240,6 +264,35 @@ public class TestAll extends TestCase
       }
     }
     return resolverDsList;
+  }
+
+  /**
+   * Find all catalogRef elements in a catalog.
+   * @param datasets
+   * @return
+   */
+  private static List<InvDatasetImpl> findAllCatRefs( List<InvDatasetImpl> datasets )
+  {
+    List<InvDatasetImpl> catRefList = new ArrayList<InvDatasetImpl>();
+    for ( InvDatasetImpl curDs : datasets )
+    {
+      if ( curDs instanceof InvCatalogRef &&
+           ! ( curDs instanceof InvDatasetScan ||
+               curDs instanceof InvDatasetFmrc ) )
+      {
+        catRefList.add( curDs );
+        continue;
+      }
+      if ( ! ( curDs instanceof InvCatalogRef ) ) continue;
+      if ( curDs instanceof InvDatasetScan ) continue;
+      if ( curDs instanceof InvDatasetFmrc ) continue;
+
+      if ( curDs.hasNestedDatasets() )
+      {
+        catRefList.addAll( findAllCatRefs( curDs.getDatasets() ) );
+      }
+    }
+    return catRefList;
   }
 
   private static String getCurrentSystemTimeAsISO8601()

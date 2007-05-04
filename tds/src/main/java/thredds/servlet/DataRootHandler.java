@@ -907,6 +907,7 @@ public class DataRootHandler {
    *
    * @param path the request path
    * @return true if the path is a request for a catalog, false otherwise.
+   * @deprecated actually, this is experimental
    */
   public boolean isRequestForCatalog( String path )
   {

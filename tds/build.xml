@@ -638,32 +638,49 @@
     <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/unit-test/index.html for details."/>
   </target>
 
-  <!--target name="test-TDS-ping-motherlode-8080" depends="compile, test-setup" description="run ping on motherlode:8080 TDS"-->
-  <target name="test-TDS-ping-motherlode-8080" description="run ping on motherlode:8080 TDS">
-    <mkdir dir="${test.reports.dir}/ping-mlode-8080"/>
+  <!-- Used by TeamCity to test motherlode:8080 every hour -->
+  <target name="test-TDS-ping-motherlode-8080" description="ping TDS on motherlode:8080">
+    <antcall target="test-TDS">
+      <param name="test-TDS.name" value="ping-motherlode-8080" />
+      <param name="test-TDS.server" value="motherlode.ucar.edu:8080" />
+      <param name="test-TDS.level" value="PING-mlode" />
+    </antcall>
+  </target>
+
+  <target name="test-TDS-ping-motherlode-9080" description="ping TDS on motherlode:9080">
+    <antcall target="test-TDS">
+      <param name="test-TDS.name" value="ping-motherlode-9080" />
+      <param name="test-TDS.server" value="motherlode.ucar.edu:9080" />
+      <param name="test-TDS.level" value="PING-mlode" />
+    </antcall>
+  </target>
+
+  <target name="test-TDS" description="test a TDS">
+    <mkdir dir="${test.reports.dir}/${test-TDS.name}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
-      <jvmarg value="-Dthredds.tds.test.level=PING-mlode"/>
+      <jvmarg value="-Dthredds.tds.server=${test-TDS.server}"/>
+      <jvmarg value="-Dthredds.tds.test.level=${test-TDS.level}"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.reports.dir}/ping-mlode-8080" name="thredds.tds.ethan.TestAll"/>
+      <test todir="${test.reports.dir}/${test-TDS.name}" name="thredds.tds.ethan.TestAll"/>
     </junit>
 
     <!-- #Generate test reports -->
-    <junitreport todir="${test.reports.dir}/ping-mlode-8080">
-      <fileset dir="${test.reports.dir}/ping-mlode-8080">
+    <junitreport todir="${test.reports.dir}/${test-TDS.name}">
+      <fileset dir="${test.reports.dir}/${test-TDS.name}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${test.reports.dir}/ping-mlode-8080"/>
+      <report format="frames" todir="${test.reports.dir}/${test-TDS.name}"/>
     </junitreport>
     <!-- create temporary file indicating these tests failed -->
     <!-- #Test case bypass trick -->
-    <echo message="last build failed tests" file="${test.reports.dir}/ping-mlode-8080/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/ping-mlode-8080/index.html for details.</fail>
+    <echo message="last build failed tests" file="${test.reports.dir}/${test-TDS.name}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${test-TDS.name}/index.html for details.</fail>
     <!-- Remove test failed file, as these tests succeeded -->
-    <delete file="${test.reports.dir}/ping-mlode-8080/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/ping-mlode-8080/index.html for details."/>
+    <delete file="${test.reports.dir}/${test-TDS.name}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${test-TDS.name}/index.html for details."/>
   </target>
 
 </project>
