@@ -69,6 +69,8 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   public void init() throws javax.servlet.ServletException {
     super.init();
 
+    allowDeflate = false; // LOOK: use gzip at Tomcat
+
     try {
       ServletUtil.initDebugging(this); // read debug flags
       ServletUtil.initLogging(this);
