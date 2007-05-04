@@ -583,6 +583,8 @@
   <property name="test.data.dir" location="${root.dir}/src/test/data"/>
   <property name="test.classes.dir" location="${build.dir}/test/classes"/>
   <property name="test.reports.dir" location="${build.dir}/test/reports"/>
+
+  <property name="cdm.test.classes.dir" location="${root.dir}/../cdm/target/build/test/classes" />
   
   <path id="test.classpath">
     <path refid="compile.classpath"/>
@@ -591,6 +593,7 @@
     <fileset dir="${lib.dir}" includes="${httpunit.jar}"/>
     <pathelement location="${build.classes.dir}"/>
     <pathelement location="${test.classes.dir}"/>
+    <pathelement location="${cdm.test.classes.dir}"/>
   </path>
 
   <target name="test-setup" description="compile and setup for tests">
