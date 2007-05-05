@@ -211,18 +211,22 @@ public final class GribIndexer {
     *
     */
    private void grib1check( File grib, File gbx, String[] args ) {
+       // args 0  grib name, args 1 grib index name
 
        try {
            if( gbx.exists() ) {
                 System.out.println( "IndexExtending "+ grib.getName() +" "+ 
                     Calendar.getInstance().getTime().toString() );
                 Grib1IndexExtender.main( args ); 
-                ForecastModelRunInventory.main( args );
+                //ForecastModelRunInventory.main( args );
+                ForecastModelRunInventory.open(null, args[ 0 ], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
            } else {  // create index
                 System.out.println( "Indexing "+ grib.getName() +" "+ 
                     Calendar.getInstance().getTime().toString() );
                 Grib1Indexer.main( args ); 
-                ForecastModelRunInventory.main( args );
+                //ForecastModelRunInventory.main( args );
+                ForecastModelRunInventory.open(null, args[ 0 ], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+
            }
        } catch( Exception e ) {
            System.out.println( "Caught Exception doing index or inventory" );
@@ -242,12 +246,14 @@ public final class GribIndexer {
                 System.out.println( "IndexExtending "+ grib.getName() +" "+ 
                     Calendar.getInstance().getTime().toString() );
                 Grib2IndexExtender.main( args ); 
-                ForecastModelRunInventory.main( args );
+                //ForecastModelRunInventory.main( args );
+                ForecastModelRunInventory.open(null, args[ 0 ], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
            } else {  // create index
                 System.out.println( "Indexing "+ grib.getName() +" "+ 
                     Calendar.getInstance().getTime().toString() );
                 Grib2Indexer.main( args ); 
-                ForecastModelRunInventory.main( args );
+                //ForecastModelRunInventory.main( args );
+                ForecastModelRunInventory.open(null, args[ 0 ], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
            }
        } catch( Exception e ) {
            System.out.println( "Caught Exception doing index or inventory" );
