@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.6 2007/05/04 22:39:56 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.7 2007/05/07 17:35:26 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -183,9 +183,12 @@ public class DateSelection {
 
         double[] ticks = null;
         if (hasInterval) {
-            double base = round(endTime);
+            //Pad the times with the interval so we handle the edge cases
+            double tickStartTime = startTime-interval;
+            double tickEndTime = endTime+interval;
+            double base = round(tickEndTime);
             System.err.println("base:" + new Date((long) base));
-            ticks = computeTicks(endTime, startTime, base, interval);
+            ticks = computeTicks(tickEndTime, tickStartTime, base, interval);
             if (ticks == null) {
                 return result;
             }
