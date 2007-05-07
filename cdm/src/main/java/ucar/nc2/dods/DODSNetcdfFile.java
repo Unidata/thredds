@@ -64,7 +64,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     DConnect2.setAllowSessions(b);
   }
 
-  static private boolean accept_compress = true;
+  static private boolean accept_compress = false;
 
   /**
    * Set whether to allow messages to be compressed.

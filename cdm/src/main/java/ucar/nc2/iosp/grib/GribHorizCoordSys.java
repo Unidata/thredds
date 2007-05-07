@@ -338,11 +338,16 @@ public class GribHorizCoordSys {
   private void makePS() {
     double scale = .933;
 
+    double latOrigin = 90.0;
+    String s = (String) gdsIndex.params.get("NpProj");
+    if (s != null && !s.equalsIgnoreCase("true"))
+      latOrigin = -90.0;
+
     // Why the scale factor?. accordining to GRIB docs:
     // "Grid lengths are in units of meters, at the 60 degree latitude circle nearest to the pole"
     // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
     // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
-    proj = new Stereographic(90.0, gdsIndex.LoV, scale);
+    proj = new Stereographic(latOrigin, gdsIndex.LoV, scale);
 
     // we have to project in order to find the origin
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(gdsIndex.La1, gdsIndex.Lo1));
@@ -359,8 +364,7 @@ public class GribHorizCoordSys {
     attributes.add(new Attribute("grid_mapping_name", "polar_stereographic"));
     attributes.add(new Attribute("longitude_of_projection_origin", new Double(gdsIndex.LoV)));
     attributes.add(new Attribute("scale_factor_at_projection_origin", new Double(scale)));
-    //attributes.add( new Attribute("false_easting", new Double(startx)));
-    //attributes.add( new Attribute("false_northing", new Double(starty)));
+    attributes.add( new Attribute("latitude_of_projection_origin", new Double(latOrigin)));
   }
 
   // Mercator

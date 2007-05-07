@@ -75,12 +75,12 @@ public class TestTDSdataset implements Runnable {
       // dataset = "C:/data/ncmodels/NAM_CONUS_80km_20051208_0000.nc";
       // dataset = "C:/data/grib/gfs/conus80/GFS_CONUS_80km_20060321_0000.grib1";
       // dataset = "http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/GFS/CONUS_80km/files/GFS_CONUS_80km_20070503_1200.grib1";
-      dataset = "http://motherlode.ucar.edu:8080/thredds/dodsC/modelsNc/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20070501_1200.nc";
+      dataset = "http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20070501_1200.nc";
       //String dataset = "http://www.gomoos.org/cgi-bin/dods/nph-dods/buoy/dods/A01/A01.accelerometer.historical.nc";
       //dataset="dods://dataportal.ucar.edu:9191/dods/cam3_aquaplanet/run1";  // prob GRADS
       //dataset= "http://ingrid.ldeo.columbia.edu/SOURCES/.CAC/dods";
 
-      DODSNetcdfFile.setAllowCompression(false);
+      DODSNetcdfFile.setAllowCompression(true);
       int n = 1;
       TestTDSdataset[] ta = new TestTDSdataset[n];
       for (int i=0; i<n; i++)

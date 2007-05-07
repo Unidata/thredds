@@ -60,8 +60,13 @@
               </td>
 
               <td>
-                <h3>Choose Bounding Box, Point or Station List:</h3>
-                <h4>Bounding Box (decimal degrees):</h4>
+                <h3>Choose Spatial Subset:</h3>               
+                <input type="radio" name="spatial" value="all" checked="checked"> <b>All</b></input>
+                <br/>
+                
+                <input type="radio" name="spatial" value="bb"> 
+                
+                <b>Bounding Box (decimal degrees):</b>
                 <blockquote>
                   West Longitude:
                   <input type="text" name="west" size="14" value="{stationObsDataset/LatLonBox/west}"/>
@@ -76,9 +81,11 @@
                   <input type="text" name="south" size="12" value="{stationObsDataset/LatLonBox/south}"/>
                   <br/>
                 </blockquote>
+                 </input>
                 <br/>
 
-                <h4>Point (decimal degrees):</h4>
+                  <input type="radio" name="spatial" value="point"> 
+                 <b>Point (decimal degrees):</b>
                 <blockquote>
                   Latitude:
                   <input type="text" name="lat" size="14"/>
@@ -87,32 +94,41 @@
                   <input type="text" name="lon" size="14"/>
                   <br/>
                 </blockquote>
+                 </input>
                 <br/>
 
-                <h4>Station List (comma separated)</h4>
+                 <input type="radio" name="spatial" value="stns"> 
+                <b>Station List (comma separated)</b>
                 <blockquote>
                   <input type="text" name="stn" size="30"/>
                   <br/>
                 </blockquote>
+                   </input>
                 <br/>
-
-                <h3>Choose Time Range or Time Point:</h3>
-                <h4>Time Range:</h4>
+                  
+                <h3>Choose Time Subset:</h3>
+                <input type="radio" name="temporal" value="all" checked="checked"> <b>All</b></input>
+                 <br/>
+                <input type="radio" name="temporal" value="range"> 
+                <b>Time Range:</b>
                 <blockquote>
                   Starting:
-                  <input type="text" name="time_start" size="12" value="{stationObsDataset/TimeSpan/begin}"/>
+                  <input type="text" name="time_start" size="20" value="{stationObsDataset/TimeSpan/begin}"/>
                   <br/>
                   Ending:
-                  <input type="text" name="time_end" size="12" value="{stationObsDataset/TimeSpan/end} "/>
+                  <input type="text" name="time_end" size="20" value="{stationObsDataset/TimeSpan/end} "/>
                   <br/>
                 </blockquote>
+                  </input>
 
-                <h4>Time Point:</h4>
+                 <input type="radio" name="temporal" value="point"> 
+                 <b>Time Point:</b>
                 <blockquote>
                   Time:
-                  <input type="text" name="time" size="12" value="{stationObsDataset/TimeSpan/begin}"/>
+                  <input type="text" name="time" size="20" value="{stationObsDataset/TimeSpan/begin}"/>
                   <br/>
                 </blockquote>
+                   </input>
                 <br/>
 
                 <h3>Choose Output Format:</h3>

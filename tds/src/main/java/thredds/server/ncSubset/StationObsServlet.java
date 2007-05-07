@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
 
 import thredds.servlet.AbstractServlet;
 import thredds.servlet.ServletUtil;
@@ -54,8 +55,8 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    //soc = new StationObsCollection("C:/data/metars/");
-    soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
+    soc = new StationObsCollection("C:/data/metars/");
+    //soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
   }
 
   public void destroy() {
@@ -92,69 +93,87 @@ public class StationObsServlet extends AbstractServlet {
       qp.vars = null;
 
     // spatial subsetting
+    String spatial = ServletUtil.getParameterIgnoreCase(req, "spatial");
+    boolean spatialNotSpecified = (spatial == null);
+    boolean hasBB = false, hasStns = false, hasLatlonPoint = false;
 
     // bounding box
-    qp.north = qp.parseLat(req, "north");
-    qp.south = qp.parseLat(req, "south");
-    qp.east = qp.parseDouble(req, "east");
-    qp.west = qp.parseDouble(req, "west");
-    boolean hasBB = qp.hasValidBB();
-    if (qp.fatal) {
-      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
+    if (spatialNotSpecified || spatial.equalsIgnoreCase("bb")) {
+      qp.north = qp.parseLat(req, "north");
+      qp.south = qp.parseLat(req, "south");
+      qp.east = qp.parseDouble(req, "east");
+      qp.west = qp.parseDouble(req, "west");
+      hasBB = qp.hasValidBB();
+      if (qp.fatal) {
+        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+      if (hasBB) {
+        qp.stns = soc.getStationNames(qp.getBB());
+        if (qp.stns.size() == 0) {
+          qp.errs.append("ERROR: Bounding Box contains no stations\n");
+          writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
+        }
+      }
     }
 
     // stations
-    qp.stns = qp.parseList(req, "stn");
-    boolean hasStns = qp.stns.size() > 0;
-    if (hasStns && soc.isStationListEmpty(qp.stns)) {
-      qp.errs.append("ERROR: No valid stations specified\n");
-      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
-    }
-
-    if (!hasStns && hasBB) {
-      qp.stns = soc.getStationNames(qp.getBB());
-      if (qp.stns.size() == 0) {
-        qp.errs.append("ERROR: Bounding Box contains no stations\n");
+    if (!hasBB && (spatialNotSpecified || spatial.equalsIgnoreCase("stns"))) {
+      qp.stns = qp.parseList(req, "stn");
+      hasStns = qp.stns.size() > 0;
+      if (hasStns && soc.isStationListEmpty(qp.stns)) {
+        qp.errs.append("ERROR: No valid stations specified\n");
         writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
     }
 
-    boolean useAll = false;
-    if (!hasStns && !hasBB) {
-      // does it have a lat/lon point
+    // lat/lon point
+    if (!hasBB &&!hasStns && (spatialNotSpecified || spatial.equalsIgnoreCase("point"))) {
       qp.lat = qp.parseLat(req, "lat");
       qp.lon = qp.parseLon(req, "lon");
 
-      if (qp.hasValidPoint()) {
-        qp.stns.add(soc.findClosestStation(qp.lat, qp.lon));
+      hasLatlonPoint = qp.hasValidPoint();
+      if (hasLatlonPoint) {
+        qp.stns = new ArrayList<String>();
+        qp.stns.add( soc.findClosestStation(qp.lat, qp.lon));
       } else if (qp.fatal) {
         writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
-      } else {
-        useAll = true;
       }
     }
 
+    boolean useAll = !hasBB && !hasStns && !hasLatlonPoint;
+
     // time range
-    qp.time_start = qp.parseDate(req, "time_start");
-    qp.time_end = qp.parseDate(req, "time_end");
-    qp.time_duration = qp.parseW3CDuration(req, "time_duration");
+    String temporal = ServletUtil.getParameterIgnoreCase(req, "temporal");
+    boolean timeNotSpecified = (temporal == null);
+    boolean hasRange = false, hasTimePoint = false;
+
+    // time range
+    if (timeNotSpecified || temporal.equalsIgnoreCase("range")) {
+      qp.time_start = qp.parseDate(req, "time_start");
+      qp.time_end = qp.parseDate(req, "time_end");
+      qp.time_duration = qp.parseW3CDuration(req, "time_duration");
+      hasRange = (qp.getDateRange() != null);
+    }
 
     // time point
-    qp.time = qp.parseDate(req, "time");
-    if ((qp.time != null) && (soc.filterDataset(qp.time) == null)) {
-      qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
-      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return;
+    if (timeNotSpecified || temporal.equalsIgnoreCase("point")) {
+      qp.time = qp.parseDate(req, "time");
+      if ((qp.time != null) && (soc.filterDataset(qp.time) == null)) {
+        qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
+        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+      hasTimePoint = (qp.time != null);
     }
 
     // last n
     // qp.time_latest = qp.parseInt(req, "time_latest");
 
-    if (useAll && (qp.getDateRange() == null) && (qp.time == null)) {
+    if (useAll && !hasRange && !hasTimePoint) {
       qp.errs.append("ERROR: You must subset by space or time\n");
       writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return;
