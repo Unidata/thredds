@@ -159,10 +159,13 @@ public class DataRootHandler {
     // handle it gracefully rather than throw StringIndexOutOfBoundsException.
     if ( ! catalogFullPath.startsWith( contentPath ))
     {
-      log.error( "initCatalog(): Path <" + path + "> points outside of content path <" + contentPath + ">.");
+      log.error( "initCatalog(): Path <" + path + "> points outside of content path <" + contentPath + "> (skip).");
       return;
     }
-    path = catalogFullPath.substring(contentPath.length());
+    if ( path.matches( "\\.{1,2}/.*" ) || path.matches( ".*/\\.{1,2}/.*"))
+    {
+      path = catalogFullPath.substring( contentPath.length() );
+    }
 
     // make sure we dont already have it
       if ( staticCatalogHash.containsKey(path)) { // This method only called by synchronized methods.

@@ -344,9 +344,9 @@ public class TestDataRootHandler extends TestCase
    */
   public void testCatRefOutOfContentDirUsingDotDotDirs()
   {
-    // Create a temporary contentPath directory for this test.
+    // Create a temporary directory and a child content directory for this test.
     File tmpDir = TestUtil.createDirectory( tmpDirPath );
-    File contentPathFile = TestUtil.createDirectory( contentPath );
+    File contentPathFile = TestUtil.createDirectory( contentPath ); // child of tmpDir
     try
     {
       contentPathFile = contentPathFile.getCanonicalFile();
@@ -420,10 +420,131 @@ public class TestDataRootHandler extends TestCase
       return;
     }
 
-    if ( drh.hasDataRootMatch( "../catalog.xml") )
+    // Make sure DRH does not have "../catalog.xml".
+    String dotDotPath = "../catalog.xml";
+    InvCatalogImpl dotDotCatalog = (InvCatalogImpl) drh.getCatalog( dotDotPath, new File( "" ).toURI() );
+    assertTrue( "DRH has catalog for non-canonical path <" + dotDotPath + "> which is outside of content directory.",
+                dotDotCatalog == null );
+
+//    if ( drh.hasDataRootMatch( "../catalog.xml") )
+//    {
+//      fail( "DataRootHandler has match for \"../catalog.xml\" which is outside content directory.");
+//      return;
+//    }
+
+    // Remove temporary contentPath dir and contents
+    TestUtil.deleteDirectoryAndContent( contentPathFile );
+  }
+
+  /**
+   * Test canonicalization of paths to remove "./" and "../" directories.
+   */
+  public void testInitCatalogWithDotDotInPath()
+  {
+    // Create a temporary directory and in that a content directory and in that a subdirectory.
+    File tmpDir = TestUtil.createDirectory( tmpDirPath );
+    File contentPathFile = TestUtil.createDirectory( contentPath ); // child of tmpDir
+    String subDirName = "aSubDir";
+    File subDir = TestUtil.addDirectory( contentPathFile, subDirName );
+    try
     {
-      fail( "DataRootHandler has match for \"../catalog.xml\" which is outside content directory.");
+      contentPathFile = contentPathFile.getCanonicalFile();
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
       return;
+    }
+    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
+    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/');
+
+
+    String cat1Filename = "catalog1.xml";
+    String path1 = cat1Filename;
+    String cat2Filename = "catalog2.xml";
+    String path2 = subDirName + "/../" + cat2Filename;
+
+    // Write <tmp>/content/catalog1.xml, just an empty dataset.
+    InvCatalogImpl catalog1 = createConfigCatalog( "catalog 1", null, null, null,
+                                                   null, null, null );
+    writeConfigCatalog( catalog1, new File( contentPathFile, cat1Filename) );
+
+    // Write <tmp>/content/catalog1.xml, just an empty dataset.
+    InvCatalogImpl catalog2 = createConfigCatalog( "catalog 2", null, null, null,
+                                                   null, null, null );
+    writeConfigCatalog( catalog2, new File( contentPathFile, cat2Filename) );
+
+    // Call DataRootHandler.init() to point to contentPath directory
+    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    DataRootHandler drh = DataRootHandler.getInstance();
+
+    // Call DataRootHandler.initCatalog() on the config catalog
+    try
+    {
+      drh.reinit();
+      drh.initCatalog( path1 );
+      drh.initCatalog( path2 );
+    }
+    catch ( FileNotFoundException e )
+    {
+      fail( e.getMessage() );
+      return;
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error while initializing catalog <" + cat1Filename + ">: " + e.getMessage() );
+      return;
+    }
+    catch ( IllegalArgumentException e )
+    {
+      fail( "IllegalArgumentException while initializing catalog <" + cat1Filename + ">: " + e.getMessage() );
+      return;
+    }
+    catch ( StringIndexOutOfBoundsException e )
+    {
+      fail( "Failed to initialized catalog <" + cat1Filename + ">: " + e.getMessage());
+      return;
+    }
+
+
+    StringBuffer checkMsg = new StringBuffer();
+
+    // Make sure DRH has "catalog1.xml".
+    InvCatalogImpl cat1 = (InvCatalogImpl) drh.getCatalog( path1, new File( "" ).toURI() );
+    if ( cat1 == null )
+    {
+      fail( "Catalog1 <" + path1 + "> not found by DataRootHandler." );
+      return;
+    }
+    assertTrue( "Catalog1 <" + path1 + "> not valid: " + checkMsg.toString(),
+                cat1.check( checkMsg ) );
+    if ( checkMsg.length() > 0 )
+    {
+      System.out.println( "Catalog1 <" + path1 + "> valid but had message: " + checkMsg.toString() );
+      checkMsg = new StringBuffer();
+    }
+
+    // Make sure DRH does not have "aSubDir/../catalog2.xml".
+    InvCatalogImpl cat2WithDotDot = (InvCatalogImpl) drh.getCatalog( path2, new File( "" ).toURI() );
+    if ( cat2WithDotDot != null )
+    {
+      fail( "Catalog2 with bad-path (contains \"../\" directory) <" + path2 + "> found by DataRootHandler." );
+      return;
+    }
+
+    // Make sure DRH has "catalog2.xml".
+    InvCatalogImpl cat2 = (InvCatalogImpl) drh.getCatalog( cat2Filename, new File( "" ).toURI() );
+    if ( cat2 == null )
+    {
+      fail( "Catalog2 with good-path <" + cat2Filename + "> not found by DataRootHandler." );
+      return;
+    }
+    assertTrue( "Catalog2 with good-path <" + cat2Filename + "> not valid: " + checkMsg.toString(),
+                cat2.check( checkMsg ) );
+    if ( checkMsg.length() > 0 )
+    {
+      System.out.println( "Catalog2 with good-path <" + cat2Filename + "> valid but had message: " + checkMsg.toString() );
+      checkMsg = new StringBuffer();
     }
 
     // Remove temporary contentPath dir and contents
@@ -457,17 +578,21 @@ public class TestDataRootHandler extends TestCase
     tm2.addMetadata( md );
     topDs.setLocalMetadata( tm2 );
 
-    // Create the test datasetScan that points to nonexistent location.
-    CrawlableDatasetFilter filter = null;
-    if ( filterWildcardString != null && ! filterWildcardString.equals( "") )
-      filter = new MultiSelectorFilter( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( filterWildcardString ), true, true, false ) );
+    // Create the test datasetScan.
+    if ( dsScanName != null && dsScanPath != null && dsScanLocation != null )
+    {
+      CrawlableDatasetFilter filter = null;
+      if ( filterWildcardString != null && ! filterWildcardString.equals( "") )
+        filter = new MultiSelectorFilter( new MultiSelectorFilter.Selector( new WildcardMatchOnNameFilter( filterWildcardString ), true, true, false ) );
 
-    InvDatasetScan dsScan = new InvDatasetScan( topDs, dsScanName, dsScanPath,
-                                                dsScanLocation, null, null, filter, null, null,
-                                                true, null, null, null, null );
+      InvDatasetScan dsScan = new InvDatasetScan( topDs, dsScanName, dsScanPath,
+                                                  dsScanLocation, null, null, filter, null, null,
+                                                  true, null, null, null, null );
 
-    topDs.addDataset( dsScan );
+      topDs.addDataset( dsScan );
+    }
 
+    // Create the test catalogRef.
     if ( catRefTitle != null && catRefHref != null )
     {
       InvCatalogRef catRef = new InvCatalogRef( topDs, catRefTitle, catRefHref );
