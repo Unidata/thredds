@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.7 2007/05/07 17:35:26 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.10 2007/05/08 23:07:27 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -23,6 +23,7 @@
 
 
 
+
 package ucar.unidata.util;
 
 
@@ -37,6 +38,10 @@ import java.util.List;
  */
 
 public class DateSelection {
+
+    /** _more_          */
+    public boolean debug = false;
+
 
     /*
       The time modes determine how we define the start and end time.
@@ -158,6 +163,23 @@ public class DateSelection {
 
 
     /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double[] getIntervalTicks() {
+        Date[] range         = getRange();
+        long   startTime     = range[0].getTime();
+        long   endTime       = range[1].getTime();
+        double tickStartTime = startTime - interval;
+        double tickEndTime   = endTime + interval;
+        double base          = round(tickEndTime);
+        //        System.err.println("base:" + new Date((long) base));
+        return computeTicks(tickEndTime, tickStartTime, base, interval);
+    }
+
+
+    /**
      * Apply this date selection query to the list of DatedThing-s
      *
      * @param datedThings input list of DatedThing-s
@@ -179,27 +201,25 @@ public class DateSelection {
         double beforeRange = getPreRangeToUse();
         double afterRange  = getPostRangeToUse();
 
-        System.err.println("range:" + range[0] + " -- " + range[1]);
+        if (debug) {
+            System.err.println("range:" + range[0] + " -- " + range[1]);
+        }
 
         double[] ticks = null;
         if (hasInterval) {
             //Pad the times with the interval so we handle the edge cases
-            double tickStartTime = startTime-interval;
-            double tickEndTime = endTime+interval;
-            double base = round(tickEndTime);
-            System.err.println("base:" + new Date((long) base));
-            ticks = computeTicks(tickEndTime, tickStartTime, base, interval);
+            ticks = getIntervalTicks();
             if (ticks == null) {
                 return result;
             }
             for (int i = 0; i < ticks.length; i++) {
-                System.err.println("Interval " + i + ": "
-                                   + new Date((long) (ticks[i]
-                                       - beforeRange)) + " -- "
-                                           + new Date((long) (ticks[i]))
-                                           + " -- "
-                                           + new Date((long) (ticks[i]
-                                               + afterRange)));
+                if (debug) {
+                    System.err.println(
+                        "Interval " + i + ": "
+                        + new Date((long) (ticks[i] - beforeRange)) + " -- "
+                        + new Date((long) (ticks[i])) + " -- "
+                        + new Date((long) (ticks[i] + afterRange)));
+                }
             }
         }
 
@@ -229,12 +249,16 @@ public class DateSelection {
 
             //Check the time range bounds
             if (time > endTime) {
-                System.err.println("after range:" + datedThing);
+                if (debug) {
+                    System.err.println("after range:" + datedThing);
+                }
                 continue;
             }
             //We're done
             if (time < startTime) {
-                System.err.println("before range:" + datedThing);
+                if (debug) {
+                    System.err.println("before range:" + datedThing);
+                }
                 break;
             }
 
@@ -264,7 +288,9 @@ public class DateSelection {
                                                     + afterRange)));
 
             if ( !thingInInterval) {
-                System.err.println("Not in interval:" + datedThing);
+                if (debug) {
+                    System.err.println("Not in interval:" + datedThing);
+                }
                 continue;
             }
 
@@ -412,7 +438,9 @@ public class DateSelection {
      * @return Rounded value
      */
     public static double roundTo(double roundTo, double milliSeconds) {
-        if(roundTo == 0) return milliSeconds;
+        if (roundTo == 0) {
+            return milliSeconds;
+        }
         double seconds   = milliSeconds / 1000;
         double rtSeconds = roundTo / 1000;
         return 1000 * (seconds - ((int) seconds) % rtSeconds);
@@ -940,8 +968,8 @@ public class DateSelection {
      *
      * @return milliseconds
      */
-    public static long hourToMillis(long hour) {
-        return minuteToMillis(hour*60);
+    public static long hoursToMillis(long hour) {
+        return minutesToMillis(hour * 60);
     }
 
     /**
@@ -951,7 +979,7 @@ public class DateSelection {
      *
      * @return milliseconds
      */
-    public static long minuteToMillis(long minute) {
+    public static long minutesToMillis(long minute) {
         return minute * 60 * 1000;
     }
 
@@ -979,7 +1007,7 @@ public class DateSelection {
         List          dates         = new ArrayList();
         long          now           = System.currentTimeMillis();
         for (int i = 0; i < 20; i++) {
-            dates.add(new DatedObject(new Date(now + minuteToMillis(20)
+            dates.add(new DatedObject(new Date(now + minutesToMillis(20)
                     - i * 10 * 60 * 1000)));
         }
 
@@ -988,13 +1016,13 @@ public class DateSelection {
 
         //Go 2 hours before start
         dateSelection.setStartMode(TIMEMODE_RELATIVE);
-        dateSelection.setStartOffset(hourToMillis(-2));
+        dateSelection.setStartOffset(hoursToMillis(-2));
 
         //15 minute interval
-        dateSelection.setRoundTo(hourToMillis(12));
+        dateSelection.setRoundTo(hoursToMillis(12));
 
-        dateSelection.setInterval(minuteToMillis(15));
-        dateSelection.setIntervalRange(minuteToMillis(6));
+        dateSelection.setInterval(minutesToMillis(15));
+        dateSelection.setIntervalRange(minutesToMillis(6));
 
 
         dates = dateSelection.apply(dates);
