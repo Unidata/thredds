@@ -484,15 +484,14 @@ public class StationObsCollection {
   ////////////////////////////////////////////////////////////////
   // writing
 
-  private File netcdfResult = new File("/data/tmp/thredds/cache/sobs.nc");  // LOOK temp kludge
   //private File netcdfResult = new File("C:/temp/sobs.nc");
   public File writeNetcdf(List<String> vars, List<String> stns, DateRange range, DateType time) throws IOException {
-     write(vars, stns, range, time, QueryParams.NETCDF, null);
-     return netcdfResult;
+     WriterNetcdf w = (WriterNetcdf) write(vars, stns, range, time, QueryParams.NETCDF, null);
+     return w.netcdfResult;
   }
 
 
-  public void write(List<String> vars, List<String> stns, DateRange range, DateType time, String type, java.io.PrintWriter pw) throws IOException {
+  public Writer write(List<String> vars, List<String> stns, DateRange range, DateType time, String type, java.io.PrintWriter pw) throws IOException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
 
@@ -507,7 +506,7 @@ public class StationObsCollection {
       w = new WriterNetcdf(vars, pw);
     } else {
       log.error("Unknown writer type = " + type);
-      return;
+      return null;
     }
 
     Collections.sort( stns);
@@ -550,6 +549,8 @@ public class StationObsCollection {
         System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
       }
     }
+
+    return w;
   }
 
   abstract class Writer {
@@ -581,12 +582,15 @@ public class StationObsCollection {
 
 
   class WriterNetcdf extends Writer {
+    File netcdfResult;
     StationObsDatasetWriter sobsWriter;
     List<Station> stnList;
     List<VariableSimpleIF> varList;
 
-    WriterNetcdf(List<String> varNames, final java.io.PrintWriter writer) {
+    WriterNetcdf(List<String> varNames, final java.io.PrintWriter writer) throws IOException {
       super(varNames, writer);
+
+      netcdfResult = File.createTempFile("ncss",".nc");    
       sobsWriter = new StationObsDatasetWriter(netcdfResult.getAbsolutePath());
 
       if ((varNames == null) || (varNames.size() == 0)) {

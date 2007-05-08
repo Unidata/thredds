@@ -103,6 +103,8 @@ public class StationObsDatasetWriter {
   private void createGlobalAttributes() {
     ncfile.addGlobalAttribute("Conventions", "Unidata Observation Dataset v1.0");
     ncfile.addGlobalAttribute("cdm_datatype", "Station");
+    ncfile.addGlobalAttribute("title", "Metars");
+    ncfile.addGlobalAttribute("desc", "Extracted by THREDDS/Netcdf Subset Service");
     /* ncfile.addGlobalAttribute("observationDimension", recordDimName);
     ncfile.addGlobalAttribute("stationDimension", stationDimName);
     ncfile.addGlobalAttribute("latitude_coordinate", latName);

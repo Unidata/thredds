@@ -1,6 +1,5 @@
-// $Id: GridDatasetInfo.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.util.Parameter;
 
 import org.jdom.output.XMLOutputter;
@@ -43,13 +41,9 @@ import java.io.IOException;
 import thredds.catalog.DataType;
 
 /**
- * A helper class to GridDataset; creates a GridDataset XML document.
- * This is a candidate for the XML representation of the Grid SDT.
- *
- * ForecastModelRunInventory.makeDocument is currently being used in NetcdfServer.
+ * A helper class to StationObsDataset; creates XML documents.
  *
  * @author caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 public class StationObsDatasetInfo {
   private StationObsDataset sobs;
@@ -61,22 +55,63 @@ public class StationObsDatasetInfo {
   }
 
   /**
-   * Write the information as an XML document
+   * Write stationObsDataset XML document
    */
-  public String writeXML() {
+  public String writeStationObsDatasetXML() {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    return fmt.outputString(makeDocument());
+    return fmt.outputString(makeStationObsDatasetDocument());
   }
 
-  public void writeXML(OutputStream os) throws IOException {
+  public void writeStationObsDatasetXML(OutputStream os) throws IOException {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(makeDocument(), os);
+    fmt.output(makeStationObsDatasetDocument(), os);
+  }
+
+  /**
+   * Write stationCollection XML document
+   */
+  public String writeStationCollectionXML() throws IOException {
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    return fmt.outputString(makeStationCollectionDocument());
+  }
+
+  public void writeStationCollectionXML(OutputStream os) throws IOException {
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(makeStationCollectionDocument(), os);
   }
 
   /**
    * Create an XML document from this info
    */
-  public Document makeDocument() {
+  public Document makeStationCollectionDocument() throws IOException {
+    Element rootElem = new Element("stationCollection");
+    Document doc = new Document(rootElem);
+
+    List stns = sobs.getStations();
+    System.out.println("nstns = "+stns.size());
+    for (int i = 0; i < stns.size(); i++) {
+      Station s = (Station) stns.get(i);
+      Element sElem = new Element("station");
+      sElem.setAttribute("name",s.getName());
+      if (s.getWmoId() != null)
+        sElem.setAttribute("wmo_id",s.getWmoId());
+      if (s.getDescription() != null)
+        sElem.addContent(new Element("description").addContent(s.getDescription()));
+
+      sElem.addContent(new Element("longitude").addContent( ucar.unidata.util.Format.d(s.getLongitude(), 6)));
+      sElem.addContent(new Element("latitide").addContent( ucar.unidata.util.Format.d(s.getLatitude(), 6)));
+      if (!Double.isNaN(s.getAltitude()))
+        sElem.addContent(new Element("altitude").addContent( ucar.unidata.util.Format.d(s.getAltitude(), 6)));
+      rootElem.addContent(sElem);
+    }
+
+    return doc;
+  }
+
+  /**
+   * Create an XML document from this info
+   */
+  public Document makeStationObsDatasetDocument() {
     Element rootElem = new Element("stationObsDataset");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", sobs.getLocationURI());
@@ -269,8 +304,8 @@ public class StationObsDatasetInfo {
     //info.writeXML(fos2);
     //fos2.close();
 
-    String infoString = info.writeXML();
-    System.out.println(infoString);
+    info.writeStationObsDatasetXML(System.out);
+    //info.writeStationCollectionXML(System.out);
   }
 
 }

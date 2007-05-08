@@ -74,11 +74,11 @@
                   East Longitude:
                   <input type="text" name="east" size="14" value="{stationObsDataset/LatLonBox/east}"/>
                   <br/>
-                  North Latitude:
-                  <input type="text" name="north" size="12" value="{stationObsDataset/LatLonBox/north}"/>
-                  <br/>
                   South Latitude:
                   <input type="text" name="south" size="12" value="{stationObsDataset/LatLonBox/south}"/>
+                  <br/>
+                  North Latitude:
+                  <input type="text" name="north" size="12" value="{stationObsDataset/LatLonBox/north}"/>
                   <br/>
                 </blockquote>
                  </input>

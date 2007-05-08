@@ -231,9 +231,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       endDate = timeUnit.makeDate( maxTimeValue);
     }
 
-    title = ds.findAttValueIgnoreCase(null, "title", "Station Data from NWS");
-    desc = ds.findAttValueIgnoreCase(null, "description", "Station Data from NWS distributed through the Unidata IDD realtime datastream. " +
-        "Decoded into netCDF files by metar2nc (new)");
+    title = ds.findAttValueIgnoreCase(null, "title", "");
+    desc = ds.findAttValueIgnoreCase(null, "description", "");
   }
 
   protected void setTimeUnits() {

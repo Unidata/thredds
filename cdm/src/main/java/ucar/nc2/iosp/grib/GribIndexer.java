@@ -229,6 +229,7 @@ public final class GribIndexer {
 
            }
        } catch( Exception e ) {
+           e.printStackTrace();
            System.out.println( "Caught Exception doing index or inventory" );
            return;
        }
@@ -256,6 +257,7 @@ public final class GribIndexer {
                 ForecastModelRunInventory.open(null, args[ 0 ], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
            }
        } catch( Exception e ) {
+           e.printStackTrace();
            System.out.println( "Caught Exception doing index or inventory" );
            return;
        }

@@ -145,6 +145,8 @@ public class StationObsServlet extends AbstractServlet {
     }
 
     boolean useAll = !hasBB && !hasStns && !hasLatlonPoint;
+    if (useAll)
+      qp.stns = new ArrayList<String>(); // empty list denotes all
 
     // time range
     String temporal = ServletUtil.getParameterIgnoreCase(req, "temporal");
@@ -199,6 +201,7 @@ public class StationObsServlet extends AbstractServlet {
       res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");
       File file = soc.writeNetcdf(qp.vars, qp.stns, qp.getDateRange(), qp.time);
       ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);
+      file.delete();
 
       long took = System.currentTimeMillis() - start;
       System.out.println("\ntotal response took = " + took + " msecs");
