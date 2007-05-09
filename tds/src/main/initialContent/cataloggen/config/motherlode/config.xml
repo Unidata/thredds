@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<preferences EXTERNAL_XML_VERSION='1.0'>
+  <root type='user'>
+    <map>
+      <beanCollection key='config' class='thredds.cataloggen.servlet.CatGenTimerTask'>
+        <bean configDocName='catGenConfig.ModelsInvCat0.6-IDV.xml' delayInMinutes='2' name='ModelsInvCat0.6-IDV' periodInMinutes='60' resultFileName='idv-rt-models.xml' />
+        <bean configDocName='catGenConfig.ModelsInvCat1.0en.xml' delayInMinutes='3' name='ModelsInvCat1.0en' periodInMinutes='60' resultFileName='uniModelsInvCat1.0en.xml' />
+        <bean name='ModelsInvCat1.0-IDV' configDocName='catGenConfig.ModelsInvCat1.0-IDV.xml'
+              resultFileName='idv-rt-models.InvCat1.0.xml'
+              delayInMinutes='1' periodInMinutes='60' />
+      </beanCollection>
+    </map>
+  </root>
+</preferences>
