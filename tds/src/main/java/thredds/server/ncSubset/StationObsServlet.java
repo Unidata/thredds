@@ -55,12 +55,13 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    soc = new StationObsCollection("C:/data/metars/");
-    //soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/");
+    //soc = new StationObsCollection("C:/data/metars/", false);
+    soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/", true);
   }
 
   public void destroy() {
     super.destroy();
+    soc.close();
   }
 
 
@@ -198,7 +199,6 @@ public class StationObsServlet extends AbstractServlet {
 
     } else if (qp.accept.contains(QueryParams.NETCDF)) {
       res.setContentType(QueryParams.NETCDF);
-      type = QueryParams.NETCDF;
       res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");
       File file = soc.writeNetcdf(qp.vars, qp.stns, qp.getDateRange(), qp.time);
       ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);
