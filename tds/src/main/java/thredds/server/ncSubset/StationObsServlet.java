@@ -47,7 +47,7 @@ public class StationObsServlet extends AbstractServlet {
 
   // must end with "/"
   protected String getPath() {
-    return "ncSubsetService/";
+    return "ncss/";
   }
 
   protected void makeDebugActions() {
@@ -78,8 +78,9 @@ public class StationObsServlet extends AbstractServlet {
 
     boolean wantXML = pathInfo.endsWith("dataset.xml");
     boolean showForm = pathInfo.endsWith("dataset.html");
-    if (wantXML || showForm) {
-      showForm(res, wantXML);
+    boolean wantStationXML = pathInfo.endsWith("stations.xml");
+    if (wantXML || showForm || wantStationXML) {
+      showForm(res, wantXML, wantStationXML);
       return;
     }
 
@@ -131,8 +132,8 @@ public class StationObsServlet extends AbstractServlet {
 
     // lat/lon point
     if (!hasBB &&!hasStns && (spatialNotSpecified || spatial.equalsIgnoreCase("point"))) {
-      qp.lat = qp.parseLat(req, "lat");
-      qp.lon = qp.parseLon(req, "lon");
+      qp.lat = qp.parseLat(req, "latitude");
+      qp.lon = qp.parseLon(req, "longitude");
 
       hasLatlonPoint = qp.hasValidPoint();
       if (hasLatlonPoint) {
@@ -228,13 +229,18 @@ public class StationObsServlet extends AbstractServlet {
     }
   }
 
-  private void showForm(HttpServletResponse res, boolean wantXml) throws IOException {
+  private void showForm(HttpServletResponse res, boolean wantXml, boolean wantStationXml) throws IOException {
     String infoString;
 
     if (wantXml) {
-      Document doc = getDoc("sobsDataset.xml");
+      Document doc = soc.getDoc();
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       infoString = fmt.outputString(doc);
+
+    } else if (wantStationXml) {
+        Document doc = soc.getStationDoc();
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+        infoString = fmt.outputString(doc);
 
     } else {
       InputStream xslt = getXSLT("ncssSobs.xsl");
@@ -255,7 +261,7 @@ public class StationObsServlet extends AbstractServlet {
     }
 
     res.setContentLength(infoString.length());
-    if (wantXml)
+    if (wantXml || wantStationXml)
       res.setContentType("text/xml; charset=iso-8859-1");
     else
       res.setContentType("text/html; charset=iso-8859-1");

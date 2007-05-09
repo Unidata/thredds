@@ -173,6 +173,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
   // other namespaces
   static public final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
+  static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
 
   static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 

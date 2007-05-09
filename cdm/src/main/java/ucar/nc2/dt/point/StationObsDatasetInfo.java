@@ -35,8 +35,11 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.File;
 
 import thredds.catalog.DataType;
 
@@ -300,12 +303,17 @@ public class StationObsDatasetInfo {
 
     StationObsDataset ncd = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, url, null, new StringBuffer());
     StationObsDatasetInfo info = new StationObsDatasetInfo(ncd, null);
-    //FileOutputStream fos2 = new FileOutputStream("C:/TEMP/gridInfo.xml");
+    FileOutputStream fos2 = new FileOutputStream("C:/TEMP/stationCollection.xml");
+    GZIPOutputStream zout =  new GZIPOutputStream( fos2);
     //info.writeXML(fos2);
     //fos2.close();
 
     info.writeStationObsDatasetXML(System.out);
-    //info.writeStationCollectionXML(System.out);
+    info.writeStationCollectionXML(zout);
+
+    zout.close();
+    File f = new File("C:/TEMP/stationCollection.xml");
+    System.out.println(" size="+f.length());
   }
 
 }

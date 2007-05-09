@@ -35,7 +35,7 @@ import ucar.unidata.util.StringUtil;
  * @version $Revision$ $Date$
  */
 public class TestMotherlodeInventory {
-    static String server = "http://motherlode.ucar.edu:9080/";
+    static String server = "http://motherlode.ucar.edu:8080/";
     static String pathStart = "/thredds/modelInventory/fmrc/NCEP/";
     static String[] invPaths = {
       "DGEX/CONUS_12km/",
@@ -61,7 +61,6 @@ public class TestMotherlodeInventory {
       "NAM/CONUS_20km/surface/",
       "NAM/CONUS_20km/selectsurface/",
       "NAM/CONUS_20km/noaaport/",
-      "NAM/CONUS_40km/noaaport/",
       "NAM/CONUS_40km/conduit/",
       "NAM/CONUS_80km/",
       "NAM/Polar_90km/",
@@ -77,6 +76,7 @@ public class TestMotherlodeInventory {
 
   public static void main(String args[]) {
     String outputDir = "R:/testdata/motherlode/grid/inv/";
+    System.out.println("Copy inventory files to "+outputDir);
     for (int i = 0; i < invPaths.length; i++) {
       String invPath = invPaths[i];
       String name = StringUtil.replace(invPath,'/',"-");

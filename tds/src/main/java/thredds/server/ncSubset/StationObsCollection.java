@@ -24,6 +24,7 @@ import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.StationObsDatasetWriter;
+import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.VariableIF;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateFormatter;
@@ -37,7 +38,10 @@ import java.util.*;
 import thredds.datatype.DateRange;
 import thredds.datatype.DateType;
 import thredds.catalog.DataType;
+import thredds.catalog.XMLEntityResolver;
 import thredds.servlet.ServletUtil;
+import org.jdom.Document;
+import org.jdom.Element;
 
 public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
@@ -45,9 +49,11 @@ public class StationObsCollection {
   private static long timeToScan = 0;
 
   private ArrayList<Dataset> datasetList = new ArrayList<Dataset>();
+  private Date start, end;
 
   public StationObsCollection(String dirName) {
 
+    // LOOK - when to update the dataset list, dates ??
     double size = 0.0;
     int count = 0;
     File dir = new File(dirName);
@@ -82,8 +88,60 @@ public class StationObsCollection {
     // assume alpha sort = date sort
     Collections.sort(datasetList);
 
+    // get collection date range
+    int n = datasetList.size();
+    start = datasetList.get(0).time_start;
+    end  = datasetList.get(n-1).time_end;
+
     if (debug)
       System.out.println("Reading directory " + dirName + " # files = " + count + " total file sizes = " + size / 1000 / 1000 + " Mb");
+  }
+
+  public Document getDoc() throws IOException {
+    StationObsDataset sod = null;
+    Dataset ds = datasetList.get(0);
+    try {
+      if (debug) System.out.println("getDoc open " + ds.filename);
+      sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ds.filename, null, new StringBuffer());
+      StationObsDatasetInfo info = new StationObsDatasetInfo(sod, null);
+      Document doc = info.makeStationObsDatasetDocument();
+      Element root = doc.getRootElement();
+
+      // fix the time range
+      Element timeSpan = root.getChild("TimeSpan");
+      timeSpan.removeContent();
+      DateFormatter format = new DateFormatter();
+      timeSpan.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
+      timeSpan.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
+
+      // add pointer to the station list XML
+      Element stnList = new Element("stationList");
+      stnList.setAttribute("title","Available Stations", XMLEntityResolver.xlinkNS);
+      stnList.setAttribute("href","/thredds/ncss/metars/stations.xml", XMLEntityResolver.xlinkNS);
+      root.addContent(stnList);
+
+      return doc;
+
+    } finally {
+      if (null != sod)
+        sod.close();
+    }
+  }
+
+  public Document getStationDoc() throws IOException {
+    StationObsDataset sod = null;
+    Dataset ds = datasetList.get(0);
+    try {
+      if (debug) System.out.println("getStationDoc open " + ds.filename);
+      sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ds.filename, null, new StringBuffer());
+      StationObsDatasetInfo info = new StationObsDatasetInfo(sod, null);
+      Document doc = info.makeStationCollectionDocument();
+      return doc;
+
+    } finally {
+      if (null != sod)
+        sod.close();
+    }
   }
 
   private class Dataset implements Comparable {
