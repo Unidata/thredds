@@ -22,6 +22,8 @@ package ucar.nc2;
 
 /**
  * Iterator to read/write subsets of an array.
+ * <p>
+ * Example for Integers:
  * <pre>
  *    int[] pa = new int[size];
  *    Indexer index;
@@ -30,13 +32,21 @@ package ucar.nc2;
         raf.seek ( chunk.getFilePos());
         raf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
       }
+
+      IndexIterator ii = values.getIndexIterator();
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next(); // LOOK not using chunk.getIndexPos()
+        raf.seek ( chunk.getFilePos());
+        for (int k=0; k<chunk.getNelems(); k++)
+          raf.writeInt( ii.getIntNext());
+      }
+
    </pre>
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 abstract class Indexer {
 
-  /** @return total number of elements in the wanted subset. */
+  /** @return total number of elements in the wanted subset. */ // LOOK change to long ??
   abstract int getTotalNelems();
 
   /** @return  size of each element in bytes. */
@@ -50,6 +60,7 @@ abstract class Indexer {
 
   /** A contiguous chunk of data in the file, that is wanted for this subset.
    *  Read nelems from file at filePos, store in array at indexPos.
+   *  (or) Write nelems to file at filePos, from array at indexPos.
    */
   class Chunk {
     long filePos; // start reading here
@@ -62,11 +73,11 @@ abstract class Indexer {
       this.indexPos = indexPos;
     }
 
-    /** @return position in file where to start reading: "source position" */
+    /** @return position in file where to read or write: "file position" */
     public long getFilePos() { return filePos; }
-    /** @return number of elements to read/transfer */
+    /** @return number of elements to transfer (Note: elements, not bytes) */
     public int getNelems() { return nelems; }
-    /** @return where to place in the result array: "destination position" */
+    /** @return position in the memory array: "memory position" */
     public int getIndexPos() { return indexPos; }
 
     public String toString() { return " filePos="+filePos+" nelems="+nelems+" indexPos="+indexPos; }

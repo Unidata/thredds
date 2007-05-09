@@ -25,13 +25,8 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.net.*;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.Deflater;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.Inflater;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * Input/Output utilities.
@@ -41,6 +36,7 @@ import java.util.Random;
  */
 public class IO {
 
+  static private int default_file_buffersize = 9200;
   static private int default_socket_buffersize = 64000;
   static boolean showStackTrace = true;
   static boolean debug = false, showResponse = false;
@@ -49,10 +45,10 @@ public class IO {
    * copy all bytes from in to out.
    * @param in InputStream
    * @param out OutputStream
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void copy(InputStream in, OutputStream out) throws IOException {
-      byte[] buffer = new byte[9000];
+      byte[] buffer = new byte[default_file_buffersize];
       while (true) {
         int bytesRead = in.read(buffer);
         if (bytesRead == -1) break;
@@ -65,7 +61,7 @@ public class IO {
    * @param in InputStream
    * @param out OutputStream
    * @param bufferSize : internal buffer size.
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void copyB(InputStream in, OutputStream out, int bufferSize) throws IOException {
     byte[] buffer = new byte[bufferSize];
@@ -81,10 +77,10 @@ public class IO {
    * @param in InputStream
    * @param out OutputStream
    * @param n number of bytes to copy
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void copy(InputStream in, OutputStream out, int n) throws IOException {
-      byte[] buffer = new byte[9000];
+      byte[] buffer = new byte[default_file_buffersize];
       int count = 0;
       while (true) {
         int bytesRead = in.read(buffer);
@@ -100,9 +96,10 @@ public class IO {
    * with any error messages  put in the return String.
    * @param is the inputStream to read from.
    * @return String holding the contents, or an error message.
+   * @throws java.io.IOException on io error
    */
   static public String readContents( InputStream is) throws IOException {
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
+    ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
     thredds.util.IO.copy(is, bout);
     return bout.toString();
   }
@@ -112,9 +109,10 @@ public class IO {
    * with any error messages  put in the return String.
    * @param is the inputStream to read from.
    * @return  byte[] holding the contents, or an error message.
+   * @throws java.io.IOException on io error
    */
   static public byte[] readContentsToByteArray( InputStream is) throws IOException {
-    ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
+    ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
     thredds.util.IO.copy(is, bout);
     return bout.toByteArray();
   }
@@ -123,6 +121,7 @@ public class IO {
    * Wite the contents from the String to a Stream,
    * @param contents String holding the contents.
    * @param os write to this OutputStream
+   * @throws java.io.IOException on io error
    */
   static public void writeContents( String contents, OutputStream os) throws IOException {
     ByteArrayInputStream bin = new ByteArrayInputStream( contents.getBytes());
@@ -136,7 +135,7 @@ public class IO {
     * copy one file to another.
     * @param fileInName copy from this file, which must exist.
     * @param fileOutName copy to this file, which is overrwritten if already exists.
-    * @throws IOException
+    * @throws java.io.IOException on io error
     */
   static public void copyFile(String fileInName, String fileOutName) throws IOException {
     InputStream in = null;
@@ -155,7 +154,7 @@ public class IO {
     * copy one file to another.
     * @param fileIn copy from this file, which must exist.
     * @param fileOut copy to this file, which is overrwritten if already exists.
-    * @throws IOException
+    * @throws java.io.IOException on io error
     */
   static public void copyFile(File fileIn, File fileOut) throws IOException {
     InputStream in = null;
@@ -174,10 +173,10 @@ public class IO {
    * copy file to output stream
    * @param fileInName open this file
    * @param out  copy here
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void copyFile(String fileInName, OutputStream out) throws IOException {
-    copyFileB( new File( fileInName), out, 20000);
+    copyFileB( new File( fileInName), out, default_file_buffersize);
   }
 
   /**
@@ -185,7 +184,7 @@ public class IO {
    * @param fileIn copy this file
    * @param out  copy to this stream
    * @param bufferSize  internal buffer size.
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void copyFileB(File fileIn, OutputStream out, int bufferSize) throws IOException {
     InputStream in = null;
@@ -204,7 +203,8 @@ public class IO {
    * @param length number of bytes to copy
    * @param out copy to this stream
    * @param buffer use this buffer.
-   * @throws IOException
+   * @return number of bytes copied
+   * @throws java.io.IOException on io error
    */
   static public long copyRafB(ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out, byte[] buffer) throws IOException {
     int bufferSize = buffer.length;
@@ -224,7 +224,7 @@ public class IO {
    * Copy an entire directory tree.
    * @param fromDirName from this directory (do nothing if not exist)
    * @param toDirName to this directory (will create if not exist)
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void copyDirTree(String fromDirName, String toDirName) throws IOException {
     File fromDir = new File(fromDirName);
@@ -249,6 +249,7 @@ public class IO {
    * with any error messages  put in the return String.
    * @param filename the file to read from.
    * @return  byte[] holding the contents, or an error message.
+   * @throws java.io.IOException on io error
    */
   static public byte[] readFileToByteArray( String filename) throws IOException {
     InputStream in = null;
@@ -266,6 +267,7 @@ public class IO {
    * with any error messages  put in the return String.
    * @param filename the URL to read from.
    * @return String holding the contents, or an error message.
+   * @throws java.io.IOException on io error
    */
   static public String readFile( String filename) throws IOException {
     InputStream in = null;
@@ -282,6 +284,7 @@ public class IO {
    * Write contents to a file
    * @param contents String holding the contents
    * @param file  write to this file (overwrite if exists)
+   * @throws java.io.IOException on io error
    */
   static public void writeToFile( String contents, File file) throws IOException {
     OutputStream out = null;
@@ -300,6 +303,7 @@ public class IO {
    * Write contents to a file
    * @param contents String holding the contents
    * @param fileOutName  write to this file (overwrite if exists)
+   * @throws java.io.IOException on io error
    */
   static public void writeToFile(String contents, String fileOutName) throws IOException {
     writeToFile( contents, new File(fileOutName ));
@@ -310,7 +314,7 @@ public class IO {
    *
    * @param in          copy from here
    * @param fileOutName open this file (overwrite) and copy to it.
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void writeToFile(InputStream in, String fileOutName) throws IOException {
     OutputStream out = null;
@@ -332,10 +336,10 @@ public class IO {
    * @param urlString copy the contents of this URL
    * @param out copy to this stream
    * @param bufferSize internal buffer size.
-   * @throws IOException
+   * @throws java.io.IOException on io error
    */
   static public void copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
-    URL url = null;
+    URL url;
     java.io.InputStream is = null;
     try {
       url =  new URL( urlString);
@@ -376,7 +380,7 @@ public class IO {
    * @return status or error message.
    */
   static public String  readURLtoFile( String urlString, File file) {
-    OutputStream out = null;
+    OutputStream out;
     try {
       out = new BufferedOutputStream( new FileOutputStream( file));
     } catch (IOException e) {
@@ -537,64 +541,7 @@ public class IO {
     }
   }
 
-  static public void mainDeflate( String[] args) throws IOException {
-    String filenameOut = "C:/temp/tempFile.compress";
-
-    FileOutputStream fout = new FileOutputStream(filenameOut);
-    DeflaterOutputStream dout = new DeflaterOutputStream(fout);
-    BufferedOutputStream bout = new BufferedOutputStream(dout, 1000); // 3X performance by having this !!
-    DataOutputStream out = new DataOutputStream(bout);
-
-    Random r = new Random();
-    long start = System.currentTimeMillis();
-    for (int i=0; i<(1000*1000);i++) {
-      out.writeFloat(r.nextFloat());
-    }
-    fout.close();
-    double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" that took = "+took+" sec");
-  }
-
-  static public void main( String[] args) throws IOException {
-    String filename = "C:/temp/tempFile.compress";
-
-    FileInputStream fin = new FileInputStream(filename);
-    InflaterInputStream din = new InflaterInputStream(fin);
-    BufferedInputStream bin = new BufferedInputStream(din, 1000);
-    DataInputStream in = new DataInputStream(din);
-
-    long start = System.currentTimeMillis();
-    float total = 0.0f;
-    try {
-      while (true) {
-        total += in.readFloat();
-      }
-    } catch (EOFException e) {
-      System.out.println("total="+total);
-    }
-    fin.close();
-    double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" that took = "+took+" sec");
-  }
-
-  static public void main2( String[] args) throws IOException {
-    String filenameIn = "C:/temp/tempFile2";
-    String filenameOut = "C:/temp/tempFile2.compress2";
-
-    FileInputStream fin = new FileInputStream(filenameIn);
-    FileOutputStream fout = new FileOutputStream(filenameOut);
-    BufferedOutputStream bout = new BufferedOutputStream(fout, 10 * 1000);
-    DeflaterOutputStream out = new DeflaterOutputStream(fout);
-
-    long start = System.currentTimeMillis();
-    copyB(fin, out, 10 * 1000);
-    double took = .001 * (System.currentTimeMillis() - start);
-    System.out.println(" that took = "+took+"sec");
-
-    fin.close();
-    fout.close();
-  }
-
+  // read URL to File
   static public void main4( String[] args) {
     String url = "http://whoopee:8080/thredds/dodsC/test/2005052412_NAM.wmo.dods?Best_4-layer_lifted_index";
     String filenameOut = "C:/temp/tempFile4.compress";

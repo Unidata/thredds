@@ -246,8 +246,8 @@ public class Range {
     for (int i=0; i<section.size(); i++) {
       Range r = (Range) section.get(i);
       if (r == null) continue;
-      if (r.last() > shape[i])
-        return "Illegal range for dimension "+i+": requested "+r.last()+" > max "+shape[i];
+      if (r.last() >= shape[i])
+        return "Illegal range for dimension "+i+": requested "+r.last()+" >= max "+shape[i];
     }
 
     return null;
