@@ -8,9 +8,13 @@
   <catalogRoot>idv/rt-models.1.0.xml</catalogRoot>
   <catalogRoot>idv/rt-models.xml</catalogRoot>
 
+  <!-- Don't need these since idv/rt-models.*xml are links to them.
   <catalogRoot>cataloggen/catalogs/idv-rt-models.InvCat1.0.xml</catalogRoot>
   <catalogRoot>cataloggen/catalogs/idv-rt-models.xml</catalogRoot>
+  -->
+  <!-- Don't need this since the CatGenServlet handles these requests.
   <catalogRoot>cataloggen/catalogs/uniModelsInvCat1.0en.xml</catalogRoot>
+  -->
 
   <catalogRoot>casestudies/catalog.xml</catalogRoot>
   <catalogRoot>casestudies/vgeeCatalog.xml</catalogRoot>
