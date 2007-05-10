@@ -1,5 +1,5 @@
 /*
- * $Id: DateUtil.java,v 1.2 2007/05/10 11:03:58 jeffmc Exp $
+ * $Id: DateUtil.java,v 1.3 2007/05/10 11:57:21 jeffmc Exp $
  * 
  * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -163,7 +163,7 @@ public class DateUtil {
      *
      * @return milliseconds
      */
-    public static long hoursToMillis(long hour) {
+    public static long hoursToMillis(double hour) {
         return minutesToMillis(hour * 60);
     }
 
@@ -182,12 +182,12 @@ public class DateUtil {
     /**
      * utility to convert a given number of minutes to milliseconds
      *
-     * @param minute minutes
+     * @param minutes minutes
      *
      * @return milliseconds
      */
-    public static long minutesToMillis(long minute) {
-        return minute * 60 * 1000;
+    public static long minutesToMillis(double minutes) {
+        return (long)(minutes * 60 * 1000);
     }
 
 

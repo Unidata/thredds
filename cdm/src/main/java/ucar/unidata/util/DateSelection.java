@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.10 2007/05/08 23:07:27 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.12 2007/05/10 11:57:21 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -127,8 +127,10 @@ public class DateSelection {
      * @param endTime end time
      */
     public DateSelection(Date startTime, Date endTime) {
-        this.startFixedTime = startTime.getTime();
-        this.endFixedTime   = endTime.getTime();
+        if(startTime!=null)
+            this.startFixedTime = startTime.getTime();
+        if(endTime!=null)
+            this.endFixedTime   = endTime.getTime();
         startMode           = TIMEMODE_FIXED;
         endMode             = TIMEMODE_FIXED;
         interval            = 0;
@@ -961,28 +963,6 @@ public class DateSelection {
 
     }
 
-    /**
-     * utility to convert a given number of hours to milliseconds
-     *
-     * @param hour hours
-     *
-     * @return milliseconds
-     */
-    public static long hoursToMillis(long hour) {
-        return minutesToMillis(hour * 60);
-    }
-
-    /**
-     * utility to convert a given number of minutes to milliseconds
-     *
-     * @param minute minutes
-     *
-     * @return milliseconds
-     */
-    public static long minutesToMillis(long minute) {
-        return minute * 60 * 1000;
-    }
-
 
     /**
      * test
@@ -1007,7 +987,7 @@ public class DateSelection {
         List          dates         = new ArrayList();
         long          now           = System.currentTimeMillis();
         for (int i = 0; i < 20; i++) {
-            dates.add(new DatedObject(new Date(now + minutesToMillis(20)
+            dates.add(new DatedObject(new Date(now + DateUtil.minutesToMillis(20)
                     - i * 10 * 60 * 1000)));
         }
 
@@ -1016,13 +996,13 @@ public class DateSelection {
 
         //Go 2 hours before start
         dateSelection.setStartMode(TIMEMODE_RELATIVE);
-        dateSelection.setStartOffset(hoursToMillis(-2));
+        dateSelection.setStartOffset(DateUtil.hoursToMillis(-2));
 
         //15 minute interval
-        dateSelection.setRoundTo(hoursToMillis(12));
+        dateSelection.setRoundTo(DateUtil.hoursToMillis(12));
 
-        dateSelection.setInterval(minutesToMillis(15));
-        dateSelection.setIntervalRange(minutesToMillis(6));
+        dateSelection.setInterval(DateUtil.minutesToMillis(15));
+        dateSelection.setIntervalRange(DateUtil.minutesToMillis(6));
 
 
         dates = dateSelection.apply(dates);
