@@ -1,5 +1,5 @@
 /*
- * $Id: DatedObject.java,v 1.2 2007/05/04 17:08:09 jeffmc Exp $
+ * $Id: DatedObject.java,v 1.4 2007/05/11 13:56:46 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 
 
@@ -97,6 +98,33 @@ public class DatedObject implements DatedThing {
         Arrays.sort(array, comp);
         return Arrays.asList(array);
     }
+
+    /**
+     * equals method
+     *
+     * @param o object to check
+     *
+     * @return equals
+     */
+    public boolean equals(Object o) {
+        if ( !(o instanceof DatedObject)) {
+            return false;
+        }
+        DatedObject that = (DatedObject) o;
+        if ( !this.date.equals(that.date)) {
+            return false;
+        }
+        if (this.object == null) {
+            return that.object == null;
+        }
+        if (that.object == null) {
+            return this.object == null;
+        }
+        return this.object.equals(that.object);
+    }
+
+
+
 
 
     /**

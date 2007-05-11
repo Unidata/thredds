@@ -1,24 +1,25 @@
 /*
- * $Id: DateUtil.java,v 1.3 2007/05/10 11:57:21 jeffmc Exp $
- * 
+ * $Id: DateUtil.java,v 1.5 2007/05/11 13:56:31 jeffmc Exp $
+ *
  * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 package ucar.unidata.util;
 
@@ -33,21 +34,51 @@ import java.util.TimeZone;
 
 
 /**
- * _more_
+ * A set of date oriented utilities
  *
- * @author edavis
+ * @author edavis and the IDV development team
  * @since May 4, 2007 1:01:53 PM
  */
 public class DateUtil {
 
-    /** _more_          */
+    /** milliseconds in  a second      */
+    public static final long MILLIS_SECOND = 1000;
+
+
+    /** milliseconds in  a minute */
+    public static final long MILLIS_MINUTE = 1000 * 60;
+
+    /** milliseconds in an hour  */
+    public static final long MILLIS_HOUR = 1000 * 60 * 60;
+
+    /** milliseconds in  a day */
+    public static final long MILLIS_DAY = MILLIS_HOUR * 24;
+
+    /** milliseconds in  a week */
+    public static final long MILLIS_WEEK = MILLIS_DAY * 7;
+
+    /** milliseconds in  a month   (approximately)   */
+    public static final long MILLIS_MONTH = MILLIS_DAY * 30;
+
+    /** milliseconds in  a year (approximately)*/
+    public static final long MILLIS_YEAR = MILLIS_DAY * 365;
+
+    /** milliseconds in  a decade (approximately)*/
+    public static final long MILLIS_DECADE = MILLIS_YEAR * 10;
+
+    /** milliseconds in  a century (approximately)*/
+    public static final long MILLIS_CENTURY = MILLIS_DECADE * 10;
+
+
+
+    /** logger */
     private static org.slf4j.Logger log =
         org.slf4j.LoggerFactory.getLogger(DateUtil.class);
 
     /**
-     * _more_
+     * format current time
      *
-     * @return _more_
+     * @return current time formatted
      */
     public static String getCurrentSystemTimeAsISO8601() {
         return getTimeAsISO8601(System.currentTimeMillis());
@@ -55,11 +86,11 @@ public class DateUtil {
 
 
     /**
-     * _more_
+     * format time
      *
-     * @param time _more_
+     * @param time time
      *
-     * @return _more_
+     * @return formatted time
      */
     public static String getTimeAsISO8601(long time) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
@@ -75,23 +106,23 @@ public class DateUtil {
     static class DateFormatHandler {
         // Available date format handlers.
 
-        /** _more_          */
+        /** _more_ */
         public final static DateFormatHandler ISO_DATE =
             new DateFormatHandler("yyyy-MM-dd");
 
-        /** _more_          */
+        /** _more_ */
         public final static DateFormatHandler ISO_TIME =
             new DateFormatHandler("HH:mm:ss.SSSz");
 
-        /** _more_          */
+        /** _more_ */
         public final static DateFormatHandler ISO_DATE_TIME =
             new DateFormatHandler("yyyy-MM-dd\'T\'HH:mm:ssz");
 
-        /** _more_          */
+        /** _more_ */
         public final static DateFormatHandler ISO_DATE_TIME_MILLIS =
             new DateFormatHandler("yyyy-MM-dd\'T\'HH:mm:ss.SSSz");
 
-        /** _more_          */
+        /** _more_ */
         private String dateTimeFormatString = null;
 
         /**
@@ -187,7 +218,7 @@ public class DateUtil {
      * @return milliseconds
      */
     public static long minutesToMillis(double minutes) {
-        return (long)(minutes * 60 * 1000);
+        return (long) (minutes * 60 * 1000);
     }
 
 

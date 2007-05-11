@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.12 2007/05/10 11:57:21 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.13 2007/05/11 13:56:31 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -24,6 +24,7 @@
 
 
 
+
 package ucar.unidata.util;
 
 
@@ -39,7 +40,7 @@ import java.util.List;
 
 public class DateSelection {
 
-    /** _more_          */
+    /** _more_ */
     public boolean debug = false;
 
 
@@ -127,13 +128,15 @@ public class DateSelection {
      * @param endTime end time
      */
     public DateSelection(Date startTime, Date endTime) {
-        if(startTime!=null)
+        if (startTime != null) {
             this.startFixedTime = startTime.getTime();
-        if(endTime!=null)
-            this.endFixedTime   = endTime.getTime();
-        startMode           = TIMEMODE_FIXED;
-        endMode             = TIMEMODE_FIXED;
-        interval            = 0;
+        }
+        if (endTime != null) {
+            this.endFixedTime = endTime.getTime();
+        }
+        startMode = TIMEMODE_FIXED;
+        endMode   = TIMEMODE_FIXED;
+        interval  = 0;
     }
 
 
@@ -987,8 +990,8 @@ public class DateSelection {
         List          dates         = new ArrayList();
         long          now           = System.currentTimeMillis();
         for (int i = 0; i < 20; i++) {
-            dates.add(new DatedObject(new Date(now + DateUtil.minutesToMillis(20)
-                    - i * 10 * 60 * 1000)));
+            dates.add(new DatedObject(new Date(now
+                    + DateUtil.minutesToMillis(20) - i * 10 * 60 * 1000)));
         }
 
         dateSelection.setEndMode(TIMEMODE_FIXED);

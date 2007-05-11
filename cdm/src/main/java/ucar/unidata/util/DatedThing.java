@@ -1,5 +1,5 @@
 /*
- * $Id: DatedThing.java,v 1.1 2007/05/03 22:21:35 jeffmc Exp $
+ * $Id: DatedThing.java,v 1.2 2007/05/11 13:56:47 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 
 
