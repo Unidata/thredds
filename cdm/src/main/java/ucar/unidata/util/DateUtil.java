@@ -1,5 +1,5 @@
 /*
- * $Id: DateUtil.java,v 1.5 2007/05/11 13:56:31 jeffmc Exp $
+ * $Id: DateUtil.java,v 1.7 2007/05/11 19:19:41 jeffmc Exp $
  *
  * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -41,9 +41,11 @@ import java.util.TimeZone;
  */
 public class DateUtil {
 
+    /** milliseconds in  a millisecond   */
+    public static final long MILLIS = 1;
+
     /** milliseconds in  a second      */
     public static final long MILLIS_SECOND = 1000;
-
 
     /** milliseconds in  a minute */
     public static final long MILLIS_MINUTE = 1000 * 60;
