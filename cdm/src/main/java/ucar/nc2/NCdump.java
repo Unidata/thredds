@@ -371,7 +371,7 @@ public class NCdump {
       section = v.getRanges(); // all
 
      // Check section has no nulls, set from shape array. 
-    Range.setDefaults( section, v.getShape());
+    Range.setDefaults( section, v.shape);
 
     fullSelection.addAll(section);
 

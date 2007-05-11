@@ -86,7 +86,11 @@ public class Variable implements VariableIF {
     * @return int array whose length is the rank of this
     * and whose values equal the length of that Dimension.
     */
-  public int[] getShape() { return (int []) shape.clone(); }
+  public int[] getShape() {
+    int[] result = new int[shape.length];  // optimization over clone()
+    System.arraycopy(shape, 0, result, 0, shape.length);
+    return result;
+  }
 
   /**
    * Get the total number of elements in the Variable.

@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 3.15
+ Bugs
+  * WCS, NetcdfServer: dont show stack trace on 404 error, or user input
+
+Changes in version 3.15
  Features
   * CoordsSysValidatorServlet: default allow = false, deleteImmediately = true
   * if reading FmrcInventory (fmrInc.xml) fails, recreate it.

@@ -99,7 +99,7 @@ public class StructurePseudo extends Structure {
       return _read();
 
     if (debugRecord) System.out.println(" read psuedo records "+ section.get(0));
-    String err = Range.checkInRange( section, getShape());
+    String err = Range.checkInRange( section, shape);
     if (err != null) throw new InvalidRangeException( err);
     Range r = (Range) section.get(0);
 

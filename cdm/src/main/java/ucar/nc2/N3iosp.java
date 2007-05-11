@@ -155,7 +155,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    RegularIndexer index = new RegularIndexer( v2.getShape(), v2.getElementSize(), vinfo.begin, sectionList, v2.isUnlimited() ? recsize : -1);
+    RegularIndexer index = new RegularIndexer( v2.shape, v2.getElementSize(), vinfo.begin, sectionList, v2.isUnlimited() ? recsize : -1);
     Object data = readData( index, dataType);
     return Array.factory( dataType.getPrimitiveClassType(), index.getWantShape(), data);
   }
@@ -224,11 +224,10 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     DataType dataType = v2.getDataType();
 
     // construct the full shape for use by RegularIndexer
-    int[] varShape = v2.getShape();
     int[] fullShape = new int[ v2.getRank()+1];
     fullShape[0] = numrecs;
     for (int i=0; i<v2.getRank(); i++ ) {
-      fullShape[i+1] = varShape[i];
+      fullShape[i+1] = v2.shape[i];
     }
 
     Indexer index = new RegularIndexer( fullShape, v2.getElementSize(), vinfo.begin, sectionList, recsize);
@@ -376,7 +375,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
       writeRecordData( (Structure) v2, sectionList, values);
 
     } else {
-      Indexer index = new RegularIndexer( v2.getShape(), v2.getElementSize(), vinfo.begin, sectionList, v2.isUnlimited() ? recsize : -1);
+      Indexer index = new RegularIndexer( v2.shape, v2.getElementSize(), vinfo.begin, sectionList, v2.isUnlimited() ? recsize : -1);
       writeData( values, index, dataType);
     }
   }
@@ -399,7 +398,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
         Variable v2 = (Variable) vars.get(i);
         N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
         long begin = vinfo.begin + recnum*recsize;
-        Indexer index = new RegularIndexer( v2.getShape(), v2.getElementSize(), begin, null, -1); 
+        Indexer index = new RegularIndexer( v2.shape, v2.getElementSize(), begin, null, -1); 
 
         StructureMembers.Member m = members.findMember( v2.getShortName());
         if (null == m)
@@ -499,7 +498,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
 
   private Array makeConstantArray( Variable v) {
     Class classType = v.getDataType().getPrimitiveClassType();
-    int [] shape = v.getShape();
+    //int [] shape = v.getShape();
     Attribute att = v.findAttribute("_FillValue");
 
     Object storage = null;
@@ -534,7 +533,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
       storage = storageP;
     }
 
-    return Array.factoryConstant( classType, shape, storage);
+    return Array.factoryConstant( classType, v.shape, storage);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

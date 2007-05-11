@@ -108,11 +108,11 @@ public class GribHorizCoordSys {
     return gdsIndex.ny;
   }
 
-  double getDx() {
+  private double getDxInKm() {
     return gdsIndex.dx * .001;
   }
 
-  double getDy() {
+  private double getDyInKm() {
     return gdsIndex.dy * .001;
   }
 
@@ -132,14 +132,22 @@ public class GribHorizCoordSys {
     if (isLatLon) {
       double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
       addCoordAxis(ncfile, "lat", gdsIndex.ny, gdsIndex.La1, dy, "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
+
+      /* problem with negetive dx - illegal ??   fixed in grib library
+      double Lo2 = gdsIndex.readDouble("Lo2");
+      if ((gdsIndex.dx < 0) && !Double.isNaN(Lo2)) {
+        while (Lo2 < gdsIndex.Lo1)
+          Lo2 += 360.0;
+        gdsIndex.dx = (Lo2 - gdsIndex.Lo1)/gdsIndex.nx;        
+      } */
       addCoordAxis(ncfile, "lon", gdsIndex.nx, gdsIndex.Lo1, gdsIndex.dx, "degrees_east", "longitude coordinate", "longitude", AxisType.Lon);
       addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     } else {
       makeProjection(ncfile);
-      double[] yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDy(), "km",
+      double[] yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDyInKm(), "km",
               "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
-      double[] xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDx(), "km",
+      double[] xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDxInKm(), "km",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
       if (GribServiceProvider.addLatLon) addLatLon2D(ncfile, xData, yData);
       //add2DCoordSystem(ncfile, "projectionCoordSys", "time y x"); // LOOK is this needed?
@@ -315,8 +323,8 @@ public class GribHorizCoordSys {
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
       System.out.println("   end at proj coord " + endPP);
 
-      double endx = startx + getNx() * getDx();
-      double endy = starty + getNy() * getDy();
+      double endx = startx + getNx() * getDxInKm();
+      double endy = starty + getNy() * getDyInKm();
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
 
@@ -398,8 +406,8 @@ public class GribHorizCoordSys {
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
       System.out.println("   end at proj coord " + endPP);
 
-      double endx = startx + getNx() * getDx();
-      double endy = starty + getNy() * getDy();
+      double endx = startx + getNx() * getDxInKm();
+      double endy = starty + getNy() * getDyInKm();
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
   }
@@ -461,8 +469,8 @@ public class GribHorizCoordSys {
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
       System.out.println("   end at proj coord " + endPP);
 
-      double endx = startx + getNx() * getDx();
-      double endy = starty + getNy() * getDy();
+      double endx = startx + getNx() * getDxInKm();
+      double endy = starty + getNy() * getDyInKm();
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
   }

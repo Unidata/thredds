@@ -778,7 +778,7 @@ class N3header {
   }
 
 
-  boolean synchNumrecs() throws IOException {
+  synchronized boolean synchNumrecs() throws IOException {
     // check number of records in the header
 
     // gotta bypass the RAF buffer

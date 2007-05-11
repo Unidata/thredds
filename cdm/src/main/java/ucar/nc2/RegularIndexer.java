@@ -72,7 +72,8 @@ class RegularIndexer extends Indexer {
     for (int ii = 0; ii < varRank; ii++) wantStride[ii] = 1;
 
     if (section == null) {
-      wantShape = (int[]) varShape.clone(); // all ranges
+      wantShape = new int[varShape.length];  // optimization over clone()
+      System.arraycopy(varShape, 0, wantShape, 0, varShape.length);
 
     } else {
       // check ranges are valid
@@ -113,7 +114,8 @@ class RegularIndexer extends Indexer {
     }
 
     // merge contiguous inner dimensions for efficiency
-    int[] mergeShape = (int []) wantShape.clone(); // cant munge wantShape
+    int[] mergeShape = new int[wantShape.length];  // cant munge wantShape : optimization over clone()
+    System.arraycopy(wantShape, 0, mergeShape, 0, wantShape.length);
     int rank = varRank;
     int lastDim = isRecord ? 2 : 1; // cant merge record dimension
     while ((rank > lastDim) && (varShape[rank-1] == wantShape[rank-1]) && (wantStride[rank-2] == 1)) {

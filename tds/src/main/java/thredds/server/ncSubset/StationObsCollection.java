@@ -27,6 +27,7 @@ import ucar.nc2.dt.point.StationObsDatasetWriter;
 import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.VariableIF;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -95,6 +96,10 @@ public class StationObsCollection {
     //stationList = null;
     //variableList = null;
 
+    Calendar c = Calendar.getInstance(); // contains current startup time
+    c.add(Calendar.HOUR, -6); // 6 hours ago
+    Date lastModOkDate = c.getTime();
+
     ArrayList<Dataset> newList = new ArrayList<Dataset>();
 
     StringBuffer sbuff = new StringBuffer();
@@ -105,10 +110,15 @@ public class StationObsCollection {
     for (File file : files) {
       String fileS = file.getAbsolutePath();
       if (fileS.endsWith(".nc")) {
+
+        File f = new File(fileS);
+        Date lastMod = new Date(f.lastModified());
+        boolean mayChange = isRealtime && lastMod.after(lastModOkDate);
+
         StationObsDataset sod = null;
         try {
           sod = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, fileS, null, sbuff);
-          newList.add(new Dataset(fileS, sod.getStartDate(), sod.getEndDate()));
+          newList.add(new Dataset(fileS, sod.getStartDate(), sod.getEndDate(), mayChange));
           size += file.length();
           count++;
 
@@ -154,14 +164,35 @@ public class StationObsCollection {
     String filename;
     Date time_start;
     Date time_end;
+    boolean mayChange;
 
-    Dataset(String filename, Date time_start, Date time_end) {
+    Dataset(String filename, Date time_start, Date time_end, boolean mayChange) {
       this.filename = filename;
       this.time_start = time_start;
       this.time_end = time_end;
+      this.mayChange = mayChange;
 
       if (debug)
         System.out.println("StationObsCollection open " + filename + " start= " + time_start + " end= " + time_end);
+    }
+
+    StationObsDataset get() throws IOException {
+
+      StringBuffer sbuff = new StringBuffer();
+
+      StationObsDataset sod = null;
+      if (debug) System.out.println("StationObsDataset open " + filename);
+      sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, filename, null, sbuff);
+      if (null == sod) {
+        log.info("Cant open " + filename + "; " + sbuff);
+        return null;
+      }
+
+      if (mayChange) {
+        NetcdfFile ncfile = sod.getNetcdfFile();
+        ncfile.syncExtend();
+      }
+      return sod;
     }
 
     public int compareTo(Object o) {
@@ -785,8 +816,8 @@ public class StationObsCollection {
           writer.println("'>");
 
           writer.print("    <station name='" + s.getName() +
-              "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
-              "' longitude='" + Format.dfrac(s.getLongitude(), 3));
+                  "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
+                  "' longitude='" + Format.dfrac(s.getLongitude(), 3));
           if (!Double.isNaN(s.getAltitude()))
             writer.print("' altitude='" + Format.dfrac(s.getAltitude(), 0));
           writer.println("'/>");

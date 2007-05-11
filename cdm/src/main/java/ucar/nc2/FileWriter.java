@@ -282,7 +282,7 @@ public class FileWriter {
   }
 
   private static Array convertToChar( Variable newVar, Array oldData) {
-    ArrayChar newData = (ArrayChar) Array.factory(DataType.CHAR, newVar.getShape());
+    ArrayChar newData = (ArrayChar) Array.factory(DataType.CHAR, newVar.shape);
     Index ima = newData.getIndex();
     IndexIterator ii = oldData.getIndexIterator();
     while (ii.hasNext()) {

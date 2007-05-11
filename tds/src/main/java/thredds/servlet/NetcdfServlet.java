@@ -371,6 +371,15 @@ public class NetcdfServlet extends AbstractServlet {
         ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
+
+    } catch ( FileNotFoundException e) {
+        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
+
+    } catch ( IOException ioe) {
+        ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Request");
+
     } finally {
       if (null != fmr)
         try {

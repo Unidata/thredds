@@ -4,8 +4,11 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.20
  Bugs
+  * GRIB: write index / open existing index giving different params for projection (gdsIndex.param hashmap)
+  * GRIB: thinned lat/lon grids get dx wrong if lo2<lo2 (cross the seam)
+  * UnidataStationObsDataset : synchExtend if recno > numrecs; try to deal with updating datasets
   * Range.checkInRange wasnt properly checking last index in range
-  * Grib not handling polar stereographic when latOrigin = -90.0 (south pole)
+  * GRIB: not handling polar stereographic when latOrigin = -90.0 (south pole)
   * DODS: Inflate must be bufferred; default compress = false
   * GRIB: always check first if the index file lives in the same dir as the regular file, and use it
   * GRIB: latlonProjection coordSys dummy Variable did noyt have the GDS params attached.

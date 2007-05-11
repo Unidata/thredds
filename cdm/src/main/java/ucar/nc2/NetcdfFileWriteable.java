@@ -499,7 +499,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (v2.getDataType() != DataType.CHAR)
       throw new IllegalArgumentException("variable " + varName + " is not type CHAR");
     int rank = v2.getRank();
-    int strlen = v2.getShape()[rank - 1];
+    int strlen = v2.shape[rank-1];
 
     // turn it into an ArrayChar
     ArrayChar cvalues = ArrayChar.makeFromStringArray((ArrayObject) values, strlen);

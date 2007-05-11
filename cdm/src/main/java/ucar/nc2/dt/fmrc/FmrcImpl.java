@@ -248,7 +248,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     HashMap runMap = new HashMap(); // key = run Date, value = List<Invenory>
     HashMap timeMap = new HashMap(); // key = forecast Date, value = List<Invenory>
     HashMap offsetMap = new HashMap(); // key = offset Double, value = List<Invenory>
-    ArrayList bestList = new ArrayList();  // best List<Invenory>  */
+    ArrayList bestList = new ArrayList();  // best List<Inventory>  */
 
     Gridset(CoordinateAxis timeAxis, ucar.nc2.dt.GridCoordSystem gcs ) {
       this.gcs = gcs;
@@ -781,6 +781,8 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
     //test("C:/dev/thredds/cdm/src/test/data/ncml/AggFmrcGrib.xml", "time");
     test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcGribRunseq.xml", "time");
+    //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcNomads.xml", "time");
+    //test("C:/data/ral/fmrc.ncml", "time");
   }
 
 }

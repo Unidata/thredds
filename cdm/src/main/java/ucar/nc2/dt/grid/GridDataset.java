@@ -1,6 +1,5 @@
-// $Id: GridDataset.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -44,7 +43,7 @@ import thredds.datatype.DateRange;
  * Example:
  *
  * <pre>
-    GridDataset gridDs = GridDataset.factory (uriString);
+    GridDataset gridDs = GridDataset.open (uriString);
     List grids = gridDs.getGrids();
     for (int i=0; i&lt;grids.size(); i++) {
       GeoGrid grid = (Geogrid) grids.get(i);
@@ -52,7 +51,6 @@ import thredds.datatype.DateRange;
    </pre>
  *
  * @author caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class GridDataset implements ucar.nc2.dt.GridDataset {

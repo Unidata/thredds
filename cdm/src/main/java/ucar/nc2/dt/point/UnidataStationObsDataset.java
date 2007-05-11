@@ -292,6 +292,9 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
           if (debugRead) {
             System.out.println(name + " try to read at record " + recno);
           }
+          if (recno > getDataCount()) {
+            ncfile.syncExtend();  // LOOK kludge?
+          }
           StructureData sdata = recordVar.readStructure(recno);
           if (isContiguousList) {
             if (nextRecord++ > end)

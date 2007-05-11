@@ -151,7 +151,13 @@ public class WCSServlet extends AbstractServlet {
         String time = ServletUtil.getParameterIgnoreCase(req, "TIME");
         String vertical = ServletUtil.getParameterIgnoreCase(req, "Vertical");
         String format = ServletUtil.getParameterIgnoreCase(req, "FORMAT");
-        GetCoverageRequest r = new GetCoverageRequest( coverage, bbox, time, vertical, format);
+        GetCoverageRequest r;
+        try {
+          r = new GetCoverageRequest( coverage, bbox, time, vertical, format);
+        } catch (Exception e) {
+          makeServiceException(res, "InvalidParameterValue", "query="+req.getQueryString());
+          return;
+        }
 
         if ((r.getFormat() == null) || (r.getFormat() == GetCoverageRequest.Format.NONE)) {
           makeServiceException(res, "InvalidFormat", "Invalid Format = " + format);
@@ -223,7 +229,10 @@ public class WCSServlet extends AbstractServlet {
     ps.println("</ServiceExceptionReport>");
 
     ps.flush();
-    log.info("makeServiceException", t);
+    if (t instanceof FileNotFoundException)
+      log.info("makeServiceException", t.getMessage()); // dont clutter up log files
+    else
+      log.info("makeServiceException", t);
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1); // LOOK, actual return is 200 = OK !
   }
 

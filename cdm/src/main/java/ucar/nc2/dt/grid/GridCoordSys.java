@@ -797,7 +797,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   private CoordinateAxis1DTime[] timeAxisForRun;
 
   private CoordinateAxis1DTime makeTimeAxisForRun(int run_index) {
-    VariableDS section = null;
+    VariableDS section;
     try {
       section = (VariableDS) tAxis.slice(0, run_index);
       return new CoordinateAxis1DTime(section, null);

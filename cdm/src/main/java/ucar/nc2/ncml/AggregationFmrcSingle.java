@@ -26,6 +26,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -181,15 +182,18 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       // create the dataset wrapping this run, each is 1 runtime coordinate of the outer aggregation
       NetcdfDataset ncd = new NetcdfDataset();
       ncd.setLocation("Run"+runDateS);
+      DateFormatter format = new DateFormatter();
+      if (debugScan) System.out.println("Run" + format.toDateTimeString(runDate));
+
       AggregationExisting agg = new AggregationExisting(ncd, timeAxis.getName(), null); // LOOK: dim name, existing vs new ??
       for (int i = 0; i < runDatasets.size(); i++) {
         Dataset dataset = (Dataset) runDatasets.get(i);
         agg.addDataset( dataset);
+        if (debugScan) System.out.println("  adding Forecast " + format.toDateTimeString(dataset.coordValueDate)+" "+dataset.getLocation());
       }
       ncd.setAggregation( agg);
       agg.finish( cancelTask);
 
-      if (debugScan) System.out.println("  adding Run" + runDateS);
       nestedDatasets.add( new OpenDataset(ncd, runDate, runDateS));
     }
 

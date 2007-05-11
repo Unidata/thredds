@@ -67,8 +67,11 @@ public class Index implements Cloneable {
   }
 
   /** constructor for subclasses only. */
-  protected Index( int[] shape) {
-    this.shape = (int []) shape.clone();
+  protected Index( int[] _shape) {
+
+    this.shape = new int[_shape.length];  // optimization over clone
+    System.arraycopy(_shape, 0, this.shape, 0, _shape.length);
+
     rank = shape.length;
     current = new int[rank];
     stride = new int[rank];
@@ -77,9 +80,13 @@ public class Index implements Cloneable {
   }
 
   /** constructor for subclasses only. */
-  protected Index( int[] shape, int[] stride) {
-    this.shape = (int []) shape.clone();
-    this.stride = (int []) stride.clone();
+  protected Index( int[] _shape, int[] _stride) {
+    this.shape = new int[_shape.length];  // optimization over clone
+    System.arraycopy(_shape, 0, this.shape, 0, _shape.length);
+
+    this.stride = new int[_stride.length];  // optimization over clone
+    System.arraycopy(_stride, 0, this.stride, 0, _stride.length);
+
     rank = shape.length;
     current = new int[rank];
     size = computeSize( shape);
@@ -309,7 +316,11 @@ public class Index implements Cloneable {
   public int getRank() { return rank; }
 
   /** Get the shape: length of array in each dimension. */
-  public int [] getShape() { return (int []) shape.clone(); }
+  public int [] getShape() {
+    int[] result = new int[shape.length];  // optimization over clone
+    System.arraycopy(shape, 0, result, 0, shape.length);
+    return result; 
+  }
 
   /** Get the current element's index as an int [] LOOK why not ?
   public int [] getCurrentIndex() { return (int []) current.clone(); } */
