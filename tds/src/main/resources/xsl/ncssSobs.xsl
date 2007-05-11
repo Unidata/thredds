@@ -88,10 +88,10 @@
                  <b>Point (decimal degrees):</b>
                 <blockquote>
                   Latitude:
-                  <input type="text" name="lat" size="14"/>
+                  <input type="text" name="latitude" size="14"/>
                   <br/>
                   Longitude:
-                  <input type="text" name="lon" size="14"/>
+                  <input type="text" name="longitude" size="14"/>
                   <br/>
                 </blockquote>
                  </input>

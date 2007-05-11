@@ -780,9 +780,9 @@ public class FmrcImpl implements ForecastModelRunCollection {
     //test("R:/testdata/fmrc/NAMfmrc.nc", "valtime");
 
     //test("C:/dev/thredds/cdm/src/test/data/ncml/AggFmrcGrib.xml", "time");
-    test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcGribRunseq.xml", "time");
+    //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcGribRunseq.xml", "time");
     //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcNomads.xml", "time");
-    //test("C:/data/ral/fmrc.ncml", "time");
+    test("C:/data/ral/fmrc.ncml", "time");
   }
 
 }

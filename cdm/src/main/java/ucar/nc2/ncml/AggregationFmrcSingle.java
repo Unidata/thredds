@@ -34,6 +34,8 @@ import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.unidata.util.StringUtil;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
+import ucar.ma2.DataType;
+import ucar.ma2.MAMath;
 
 import java.io.IOException;
 import java.util.*;
@@ -223,7 +225,8 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     ncDataset.addDimension(null, innerDim);
 
     int[] shape = new int[] { runs.size(), max_times};
-    Array timeCoordVals = Array.factory(timeAxis.getDataType(), shape);
+    Array timeCoordVals = Array.factory(DataType.DOUBLE, shape);
+    MAMath.setDouble(timeCoordVals, Double.NaN); // anything not set is missing
     Index ima = timeCoordVals.getIndex();
 
     // loop over the runs, calculate the offset for each dataset
@@ -249,6 +252,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     NcMLReader.transferVariableAttributes(timeAxis, vagg);
     vagg.addAttribute(new Attribute("units", units));
     vagg.addAttribute(new Attribute("long_name", desc));
+    vagg.addAttribute(new ucar.nc2.Attribute("missing_value", new Double(Double.NaN)));
 
     ncDataset.removeVariable(null, vagg.getName());
     ncDataset.addVariable(null, vagg);

@@ -123,7 +123,7 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${bufr.jar} ${grib.jar} ${visadNoDods.jar} ${jdom.jar} ${httpclient.jar} ${http-logging.jar} ${opendap.jar} ${http-codec.jar} ${http-logging.jar} ${jpeg2000.jar} ${jgoodies.jar} ${resourcesOptional.jar}"/>
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${bufr.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
             value="lib/${opendap.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${jgoodies.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
 
