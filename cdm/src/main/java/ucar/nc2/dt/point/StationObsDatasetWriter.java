@@ -23,6 +23,7 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.dt.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
@@ -30,8 +31,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.*;
-import java.io.IOException;
-import java.io.File;
+import java.io.*;
 
 import thredds.catalog.*;
 
@@ -79,6 +79,10 @@ public class StationObsDatasetWriter {
   public StationObsDatasetWriter(String fileOut) {
     ncfile = NetcdfFileWriteable.createNew(fileOut);
     ncfile.setFill( false);
+  }
+
+  public void setLength(long size) {
+    ncfile.setLength( size);
   }
 
   public void writeHeader(List stns, List vars) throws IOException {
@@ -503,14 +507,20 @@ public class StationObsDatasetWriter {
 
   private static void rewrite(String fileIn, String fileOut) throws IOException {
     long start = System.currentTimeMillis();
-    StringBuffer errlog = new StringBuffer();
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, fileIn, null, errlog);
 
-    StationObsDatasetWriter writer = new StationObsDatasetWriter(fileOut);
+    // do it in memory for speed
+    NetcdfFile ncfile = NetcdfFile.openInMemory(fileIn);
+    NetcdfDataset ncd = new NetcdfDataset( ncfile);
+
+    StringBuffer errlog = new StringBuffer();
+    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ncd, null, errlog);
 
     List stns = sobs.getStations();
     List vars = sobs.getDataVariables();
 
+    StationObsDatasetWriter writer = new StationObsDatasetWriter(fileOut);
+    File f = new File( fileIn);
+    writer.setLength(f.length());
     writer.writeHeader(stns, vars);
 
     for (int i = 0; i < stns.size(); i++) {
@@ -526,21 +536,26 @@ public class StationObsDatasetWriter {
     writer.finish();
 
     long took = System.currentTimeMillis() - start;
-    System.out.println("finished " + fileIn);
-    System.out.println("That took = " + took);
+    System.out.println("Rewrite " + fileIn+" to "+fileOut+ " took = " + took);
   }
 
   public static void main(String args[]) throws IOException {
     long start = System.currentTimeMillis();
+    String toLocation = "C:/temp2/";
+    String fromLocation = "C:/data/metars/";
 
-    String tempDir = "C:/temp2/";
-    String location = "C:/data/metars/";
-    File dir = new File(location);
+    if (args.length > 1) {
+      fromLocation = args[0];
+      toLocation = args[1];
+    }
+    System.out.println("Rewrite .nc files from "+fromLocation+" to "+toLocation);
+    
+    File dir = new File(fromLocation);
     File[] files = dir.listFiles();
     for (int i = 0; i < files.length; i++) {
       File file = files[i];
       if (file.getName().endsWith(".nc"))
-        rewrite(file.getAbsolutePath(), tempDir + file.getName());
+        rewrite(file.getAbsolutePath(), toLocation + file.getName());
     }
 
     long took = System.currentTimeMillis() - start;

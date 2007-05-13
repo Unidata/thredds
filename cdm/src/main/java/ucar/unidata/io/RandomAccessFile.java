@@ -182,6 +182,11 @@ public class RandomAccessFile implements DataInput, DataOutput {
         }
     }
 
+  /**
+   * Allow access to the underlying java.io.RandomAccessFile.
+   * WARNING! BROKEN ENCAPSOLATION, DO NOT USE. May change implementation in the future.
+   * @return the underlying java.io.RandomAccessFile.
+   */
     public java.io.RandomAccessFile getRandomAccessFile() {
         return this.file;
     }
@@ -511,7 +516,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
         file.seek(pos);
         int n = file.read(b, offset, len);
-        if (debugAccess) System.out.println(" read_ "+location+" = "+len+" bytes at "+pos+"; got = "+n);
+        if (debugAccess) System.out.println(" read_ "+location+" = "+len+" bytes at "+pos+"; block = "+(pos/buffer.length));
 
         if (extendMode && (n < len)) {
             //System.out.println(" read_ = "+len+" at "+pos+"; got = "+n);

@@ -1,0 +1,8 @@
+5/12/2007 JC mlode: remove NetcdfServer service from idd/allModels.TDS-nc.xml.
+   This is not (yet) valid on netcdf files, and generates an exception in catalina.out (no return in threddsServlet.log).
+
+5/12/2007 JC mlode: Exception in thread "Timer-18" java.lang.IllegalStateException: DiskCache2: not a directory or I/O error
+        dir= /opt/tomcatfmrcInventory
+        at ucar.nc2.util.DiskCache2.cleanCache(DiskCache2.java:230)
+        at ucar.nc2.util.DiskCache2$CacheScourTask.run(DiskCache2.java:268)
+FmrcInventory starts up a DiskCache2, for clients; remove scouring, so it doesnt affect server.

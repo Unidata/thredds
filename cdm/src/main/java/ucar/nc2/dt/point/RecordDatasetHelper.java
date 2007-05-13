@@ -377,7 +377,7 @@ public class RecordDatasetHelper {
      * Constructor for the case where you keep track of the station, time of each record, but the data reading is deferred.
      * @param station data is for this Station
      * @param obsTime observation time
-     * @param nomTime nominal time
+     * @param nomTime nominal time (may be NaN)
      * @param recno data is at this record number
      */
     protected RecordStationObs( Station station, double obsTime, double nomTime, int recno) {
@@ -419,15 +419,28 @@ public class RecordDatasetHelper {
     /**
      * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
      * @param station data is for this Station
+     * @param obsTime observation time
+     * @param nomTime nominal time (may be NaN)
+     * @param sdata the structure data
+     */
+    protected RecordStationObs(Station station, double obsTime, double nomTime, StructureData sdata) {
+      this.station = station;
+      this.location = station;
+      this.obsTime = obsTime;
+      this.nomTime = nomTime;
+      this.sdata = sdata;
+    }
+
+    /**
+     * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
+     * @param station data is for this Station
      * @param sdata the structure data
      */
     protected RecordStationObs(Station station, StructureData sdata) {
       this.station = station;
       this.location = station;
       this.sdata = sdata;
-
       StructureMembers members = sdata.getStructureMembers();
-
       obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
       nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
     }

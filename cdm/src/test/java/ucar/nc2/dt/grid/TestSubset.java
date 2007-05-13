@@ -114,6 +114,7 @@ public class TestSubset extends TestCase {
     String ds = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml";
     //String dsid = "#NCEP/DGEX/CONUS_12km/latest.xml";
     ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype("thredds:resolve:"+ds, null);
+    System.out.println("result errlog= "+result.errLog);
     assert !result.fatalError;
     assert result.dataType == DataType.GRID;
     assert result.tds != null;
@@ -126,13 +127,13 @@ public class TestSubset extends TestCase {
     assert null != gcs;
     assert grid.getRank() == 4;
 
-    GeoGrid grid_section = grid.subset(new Range(0, 8, 3), null, null, 3, 3, 3);
+    GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
     int[] shape = grid_section.getShape();
     System.out.println("grid_section.getShape= "+Range.toString( Range.factory(shape)));
 
     Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-    assert data.getShape()[0] == 3 : data.getShape()[0];
-    assert data.getShape()[1] == 2 : data.getShape()[1];
+    assert data.getShape()[0] == shape[0] : data.getShape()[0];
+    assert data.getShape()[1] == shape[1] : data.getShape()[1];
     assert data.getShape()[2] == 101 : data.getShape()[2];
     assert data.getShape()[3] == 164 : data.getShape()[3];
 

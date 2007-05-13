@@ -62,7 +62,7 @@ public class DiskCache2 {
    * @param root the root directory of the cache. Must be writeable.
    * @param reletiveToHome if the root directory is reletive to the cache home directory.
    * @param persistMinutes how old a file should be before deleting.
-   * @param scourEveryMinutes how often to run the scour process. If < 0, dont scour.
+   * @param scourEveryMinutes how often to run the scour process. If <= 0, dont scour.
    */
   public DiskCache2(String root, boolean reletiveToHome, int persistMinutes, int scourEveryMinutes) {
     this.persistMinutes = persistMinutes;
@@ -227,7 +227,7 @@ public class DiskCache2 {
     long now = System.currentTimeMillis();
     File[] files = dir.listFiles();
     if (files == null) {
-      throw new IllegalStateException( "DiskCache2: not a directory or I/O error"+dir.getAbsolutePath());
+      throw new IllegalStateException( "DiskCache2: not a directory or I/O error on dir="+dir.getAbsolutePath());
     }
 
     // check for empty directory

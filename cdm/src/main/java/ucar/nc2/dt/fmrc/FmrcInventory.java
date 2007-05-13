@@ -1376,7 +1376,7 @@ public class FmrcInventory {
     }
   }
 
-  private static DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 5 * 24 * 3600, 3600);
+  private static DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 0, -1); // dont scour - messes up the TDS!
   private static String fmrcDefinitionPath = cache.getRootDirectory()+"/defs/";
 
   private static String[] catalogs  = {

@@ -47,7 +47,7 @@ import org.jdom.Element;
 
 public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
-  private static boolean debug = true;
+  private static boolean debug = true, debugDetail = false;
   private static long timeToScan = 0;
 
   private String dirName;
@@ -86,6 +86,8 @@ public class StationObsCollection {
       init();
     }
   }
+
+  public String getName() { return dirName; }
 
   ////////////////////////////////////////////
   // keep track of the available datasets LOOK should be configurable
@@ -305,8 +307,10 @@ public class StationObsCollection {
     for (int i = 0; i < stations.size(); i++) {
       Station s = (Station) stations.get(i);
       latlonPt.set(s.getLatitude(), s.getLongitude());
-      if (boundingBox.contains(latlonPt))
+      if (boundingBox.contains(latlonPt)) {
         result.add(s.getName());
+        // boundingBox.contains(latlonPt);   debugging
+      }
     }
     return result;
   }
@@ -400,6 +404,8 @@ public class StationObsCollection {
           log.warn("Cant find station " + s);
           continue;
         }
+        if (debugDetail) System.out.println("stn " + s.getName());
+
 
         DataIterator iter = sod.getDataIterator(s);
         while (iter.hasNext()) {

@@ -51,6 +51,9 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    */
   public void setFill(boolean fill);
 
+  /** Experimental */
+  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill, long size) throws IOException;
+
   /**
    * Write data into a variable.
    * @param v2 variable to write; must already exist.

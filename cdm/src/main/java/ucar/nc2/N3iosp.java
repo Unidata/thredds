@@ -333,6 +333,10 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   protected HashMap dimHash = new HashMap(50);
 
   public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill) throws IOException {
+    create(filename, ncfile, fill, 0);
+  }
+
+  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill, long size) throws IOException {
     this.ncfile = ncfile;
     this.fill = fill;
     this.readonly = false;
@@ -342,6 +346,11 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
 
     raf = new ucar.unidata.io.RandomAccessFile(filename, "rw");
     raf.order(RandomAccessFile.BIG_ENDIAN);
+
+    if (size > 0) {
+     java.io.RandomAccessFile myRaf = raf.getRandomAccessFile();
+      myRaf.setLength( size);
+    }
 
     headerParser = new N3header();
     headerParser.create(raf, ncfile, fill, null);

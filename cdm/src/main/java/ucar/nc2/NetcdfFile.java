@@ -404,6 +404,21 @@ public class NetcdfFile {
     return open(raf, location, null, null);
   }
 
+  /**
+   * Read a netcdf file into memory. All reads are then done from memory.
+   * @param location location of CDM file, used as the name.
+   * @return a NetcdfFile, which is completely in memory
+   * @throws IOException if error reading file
+   */
+  public static NetcdfFile openInMemory(String location) throws IOException {
+    File file = new File(location);
+    ByteArrayOutputStream bos = new ByteArrayOutputStream( (int) file.length());
+    InputStream in = new BufferedInputStream( new FileInputStream( location));
+    thredds.util.IO.copy(in, bos);
+    return openInMemory(location, bos.toByteArray());
+  }
+
+
   private static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
           Object spiObject) throws IOException {
 

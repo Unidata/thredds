@@ -43,6 +43,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   private HashMap varHash = new HashMap(50);
   private boolean defineMode;
   private boolean fill = true;
+  private long size = -1;
   private ucar.nc2.IOServiceProviderWriter spiw;
 
   /**
@@ -150,6 +151,15 @@ public class NetcdfFileWriteable extends NetcdfFile {
     this.fill = fill;
     if (spiw != null)
       spiw.setFill( fill);
+  }
+
+  /**
+   * Preallocate the file size, for efficiency.
+   * Must call before create() to have any affect.
+   * @param size
+   */
+  public void setLength(long size) {
+    this.size = size;
   }
 
   ////////////////////////////////////////////
@@ -448,7 +458,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
     spi = SPFactory.getServiceProvider();
     spiw = (ucar.nc2.IOServiceProviderWriter) spi;
-    spiw.create(location, this, fill);
+    spiw.create(location, this, fill, size);
 
     defineMode = false;
   }

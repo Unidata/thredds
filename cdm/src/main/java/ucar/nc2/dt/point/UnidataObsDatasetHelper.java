@@ -1,9 +1,6 @@
 package ucar.nc2.dt.point;
 
-import ucar.nc2.Variable;
-import ucar.nc2.Dimension;
-import ucar.nc2.Attribute;
-import ucar.nc2.Structure;
+import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
@@ -134,7 +131,7 @@ public class UnidataObsDatasetHelper {
     return result;
   }
 
-  static public Dimension findDimension(NetcdfDataset ds, String name) {
+  static public Dimension findDimension(NetcdfFile ds, String name) {
     Dimension result = ds.findDimension(name);
     if (result == null) {
       String aname = ds.findAttValueIgnoreCase(null, name+"Dimension", null);

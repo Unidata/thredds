@@ -3,7 +3,14 @@ Version @VERSION@
 Build Date = @BUILDTIME@
 
 Changes in version 2.2.20
+ Feature
+   * speedup UnidataStationObsDataset for ncss - optimize fetch by station 
+ API
+  * Add NetcdfFile.openInMemory( filename) - read file completely into memory.
+  * Add NetcdfFileWriteable.setLength( size) - preallocate file size, for efficiency
+  * StationObsDatasetWriter - use memory files, set output size, to rewrite into canonical form.
  Bugs
+  * FmrcInventory: starts a DiskCache scouring task; dont do that.
   * GRIB: write index / open existing index giving different params for projection (gdsIndex.param hashmap)
   * GRIB: thinned lat/lon grids get dx wrong if lo2<lo2 (cross the seam)
   * UnidataStationObsDataset : synchExtend if recno > numrecs; try to deal with updating datasets

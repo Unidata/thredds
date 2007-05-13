@@ -43,7 +43,7 @@ import org.jdom.input.SAXBuilder;
 public class StationObsServlet extends AbstractServlet {
 
   private boolean allow = true;
-  private StationObsCollection soc;
+  private StationObsCollection soc, socOrg, socRewrite;
 
   // must end with "/"
   protected String getPath() {
@@ -55,8 +55,10 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
-    //soc = new StationObsCollection("C:/data/metars/", false);
-    soc = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/", true);
+    //socRewrite = new StationObsCollection("C:/temp2/", false);
+    //socOrg = new StationObsCollection("C:/data/metars/", false);
+    //socOrg = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/", true);
+    socOrg = new StationObsCollection("/opt/tomcat/content/thredds/public/stn/", false);
   }
 
   public void destroy() {
@@ -76,6 +78,8 @@ public class StationObsServlet extends AbstractServlet {
     System.out.println(req.getQueryString());
 
     String pathInfo = req.getPathInfo();
+    soc = (pathInfo.startsWith("/rewrite/")) ? socRewrite : socOrg;
+    System.out.println("Using soc= "+soc.getName()+" for path= "+pathInfo);
 
     boolean wantXML = pathInfo.endsWith("dataset.xml");
     boolean showForm = pathInfo.endsWith("dataset.html");

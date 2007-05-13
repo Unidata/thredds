@@ -1,6 +1,5 @@
-// $Id:DatatypeIterator.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,13 +23,11 @@ import ucar.ma2.*;
 import ucar.nc2.Structure;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * An abstract implementation for iterating over datatypes, such as PointObsDatatype, etc.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public abstract class DatatypeIterator implements DataIterator {
 
@@ -65,24 +62,3 @@ public abstract class DatatypeIterator implements DataIterator {
   }
 
 }
-
-/* Change History:
-   $Log: DatatypeIterator.java,v $
-   Revision 1.4  2006/06/06 16:07:13  caron
-   *** empty log message ***
-
-   Revision 1.3  2006/05/08 02:47:33  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.2  2006/02/13 19:51:30  caron
-   javadoc
-
-   Revision 1.1  2005/05/15 23:06:52  caron
-   add fast iterator over Structures, Datatypes
-   add convertScalarDouble to StructureData
-
-*/

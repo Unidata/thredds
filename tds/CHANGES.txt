@@ -2,8 +2,9 @@ CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
-Changes in version 3.15
+Changes in version 3.16
  Bugs
+  * speedup UnidataStationObsDataset for ncss
   * FmrcSingle: forecast time must be type double with NaNs for missing values
   * WCS, NetcdfServer: dont show stack trace on 404 error, or user input
 
