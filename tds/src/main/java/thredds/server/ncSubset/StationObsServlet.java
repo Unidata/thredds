@@ -35,10 +35,9 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 /**
- * Netcdf Grid subsetting.
+ * Netcdf StationObs subsetting.
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class StationObsServlet extends AbstractServlet {
 
@@ -248,7 +247,7 @@ public class StationObsServlet extends AbstractServlet {
 
     } else {
       InputStream xslt = getXSLT("ncssSobs.xsl");
-      Document doc = getDoc("sobsDataset.xml");
+      Document doc = soc.getDoc();
 
       try {
         XSLTransformer transformer = new XSLTransformer(xslt);

@@ -38,22 +38,35 @@ public class DateRange {
   private TimeDuration duration, resolution;
   private boolean invalid, useStart, useEnd, useDuration, useResolution;
 
-  public DateRange() throws Exception {
+  /** default Constructor
+   * @throws java.text.ParseException artifact, cant happen
+   */
+  public DateRange() throws ParseException {
       this( null, new DateType(false, new Date()), new TimeDuration("1 day"), new TimeDuration("15 min"));
   }
 
+  /**
+   * Create Date Range from a start and end date
+   * @param start start of range
+   * @param end end of range
+   */
   public DateRange(Date start, Date end) {
     this( new DateType(false, start), new DateType(false, end), null, null);
   }
 
+  /**
+   * Create DateRange from another DateRange, with a different units ofr the Resolution.
+   * @param range sopy start and end from here
+   * @param units make resolution using new TimeDuration( units)
+   * @throws Exception is units are not valid time units
+   */
   public DateRange(DateRange range, String units) throws Exception {
-    this( new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null,
-        new TimeDuration( units));
+    this( new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null, new TimeDuration( units));
   }
 
   /**
    * Encapsolates a range of dates, using DateType start/end, and/or a TimeDuration.
-   *  A DateRange can be specified in any of the following ways:
+   * A DateRange can be specified in any of the following ways:
     <ol>
      <li> a start date and end date
      <li> a start date and duration
@@ -206,7 +219,9 @@ public class DateRange {
     }
   }
   
-  /** Extend this date range by the given one, if needed */
+  /** Extend this date range by the given one, if needed.
+   * @param dr given DateRange
+   **/
   public void extend( DateRange dr) {
     if (dr.getStart().getDate().before( start.getDate()))
       setStart( dr.getStart());
@@ -240,7 +255,8 @@ public class DateRange {
   public boolean useResolution() { return useResolution; }
 
   /**
-   * Return true if start equals end date, so date range is a point.
+   * Return true if start date equals end date, so date range is a point.
+   * @return true if start = end
    */
   public boolean isPoint() {
     return start.equals( end);

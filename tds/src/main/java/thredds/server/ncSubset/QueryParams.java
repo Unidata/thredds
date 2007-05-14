@@ -24,9 +24,13 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import thredds.servlet.ServletUtil;
 import thredds.datatype.DateRange;
@@ -64,6 +68,8 @@ public class QueryParams {
   public DateType time_start, time_end, time;
   public TimeDuration time_duration;
   public int time_latest;
+
+  public String type;
 
   public StringBuffer errs = new StringBuffer();
   public boolean fatal;
@@ -262,5 +268,137 @@ public class QueryParams {
   DateRange getDateRange() {
     return hasValidDateRange() ? new DateRange(time_start, time_end, time_duration, null) : null;
   }
+
+  /* boolean parseQuery(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    accept = parseList(req, "accept", QueryParams.validAccept, QueryParams.RAW);
+
+    // list of variable names
+    vars = parseList(req, "var");
+    if (vars.isEmpty())
+      vars = null;
+
+    // spatial subsetting
+    String spatial = ServletUtil.getParameterIgnoreCase(req, "spatial");
+    boolean spatialNotSpecified = (spatial == null);
+    boolean hasBB = false, hasStns = false, hasLatlonPoint = false;
+
+    // bounding box
+    if (spatialNotSpecified || spatial.equalsIgnoreCase("bb")) {
+      north = parseLat(req, "north");
+      south = parseLat(req, "south");
+      east = parseDouble(req, "east");
+      west = parseDouble(req, "west");
+      hasBB = hasValidBB();
+      if (fatal) {
+        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return false;
+      }
+      if (hasBB) {
+        stns = soc.getStationNames(getBB());
+        if (stns.size() == 0) {
+          errs.append("ERROR: Bounding Box contains no stations\n");
+          writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return false;
+        }
+      }
+    }
+
+    // stations
+    if (!hasBB && (spatialNotSpecified || spatial.equalsIgnoreCase("stns"))) {
+      stns = parseList(req, "stn");
+      hasStns = stns.size() > 0;
+      if (hasStns && soc.isStationListEmpty(stns)) {
+        errs.append("ERROR: No valid stations specified\n");
+        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return false;
+      }
+    }
+
+    // lat/lon point
+    if (!hasBB &&!hasStns && (spatialNotSpecified || spatial.equalsIgnoreCase("point"))) {
+      lat = parseLat(req, "latitude");
+      lon = parseLon(req, "longitude");
+
+      hasLatlonPoint = hasValidPoint();
+      if (hasLatlonPoint) {
+        stns = new ArrayList<String>();
+        stns.add( soc.findClosestStation(lat, lon));
+      } else if (fatal) {
+        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return false;
+      }
+    }
+
+    boolean useAll = !hasBB && !hasStns && !hasLatlonPoint;
+    if (useAll)
+      stns = new ArrayList<String>(); // empty list denotes all
+
+    // time range
+    String temporal = ServletUtil.getParameterIgnoreCase(req, "temporal");
+    boolean timeNotSpecified = (temporal == null);
+    boolean hasRange = false, hasTimePoint = false;
+
+    // time range
+    if (timeNotSpecified || temporal.equalsIgnoreCase("range")) {
+      time_start = parseDate(req, "time_start");
+      time_end = parseDate(req, "time_end");
+      time_duration = parseW3CDuration(req, "time_duration");
+      hasRange = (getDateRange() != null);
+    }
+
+    // time point
+    if (timeNotSpecified || temporal.equalsIgnoreCase("point")) {
+      time = parseDate(req, "time");
+      if ((time != null) && (soc.filterDataset(time) == null)) {
+        errs.append("ERROR: This dataset does not contain the time point= " + time + " \n");
+        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return false;
+      }
+      hasTimePoint = (time != null);
+    }
+
+    // last n
+    // time_latest = parseInt(req, "time_latest");
+
+    if (useAll && !hasRange && !hasTimePoint) {
+      errs.append("ERROR: You must subset by space or time\n");
+      writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return false;
+    }
+
+    // choose a type
+    if (accept.contains(QueryParams.RAW)) {
+      res.setContentType(QueryParams.RAW);
+      type = QueryParams.RAW;
+
+    } else if (accept.contains(QueryParams.XML)) {
+      res.setContentType(QueryParams.XML);
+      type = QueryParams.XML;
+
+    } else if (accept.contains(QueryParams.CSV)) {
+      res.setContentType("text/plain");
+      type = QueryParams.CSV;
+
+    } else if (accept.contains(QueryParams.NETCDF)) {
+      res.setContentType(QueryParams.NETCDF);
+      type = QueryParams.NETCDF;
+
+    } else {
+      writeErr(res, errs.toString(), HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+      return false;
+    }
+
+    return true;
+  }     */
+
+  private void writeErr(HttpServletResponse res, String s, int code) throws IOException {
+    res.setStatus(code);
+    if (s.length() > 0) {
+      PrintWriter pw = res.getWriter();
+      pw.print(s);
+      pw.close();
+    }
+  }
+
 }
 
