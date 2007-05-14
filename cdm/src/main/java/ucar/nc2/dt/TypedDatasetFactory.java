@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,10 +28,9 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import thredds.catalog.DataType;
 
 /**
- * Class Description.
+ * Manager of factories for TypedDatasets.
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class TypedDatasetFactory {
 
@@ -78,9 +76,9 @@ public class TypedDatasetFactory {
    }
 
    /**
-    * Register a class that implements a Coordinate Transform.
+    * Register a class that implements a TypedDatasetFactoryIF.
     * @param datatype scientific data type
-    * @param c class that implements CoordTransBuilderIF.
+    * @param c class that implements TypedDatasetFactoryIF.
     */
   static public void registerFactory( thredds.catalog.DataType datatype, Class c) {
     if (!(TypedDatasetFactoryIF.class.isAssignableFrom( c)))
@@ -119,7 +117,8 @@ public class TypedDatasetFactory {
   /**
    * Open a dataset as a TypedDataset.
    *
-   * @param datatype may be null, which means search all factories
+   * @param datatype open this kind of Typed Dataset; may be null, which means search all factories.
+   *   If datatype is not null, only return correct TypedDataset (eg PointObsDataset for DataType.POINT).
    * @param location URL or file location of the dataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
