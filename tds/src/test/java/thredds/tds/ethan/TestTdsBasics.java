@@ -38,7 +38,7 @@ public class TestTdsBasics extends TestCase
   {
     StringBuffer msg = new StringBuffer();
 
-    boolean pass = TestAll.openAndValidateCatalogTree( catalogUrl, msg );
+    boolean pass = TestAll.openAndValidateCatalogTree( catalogUrl, msg, true );
     assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
                 pass );
 
@@ -52,7 +52,7 @@ public class TestTdsBasics extends TestCase
   {
     StringBuffer msg = new StringBuffer();
 
-    boolean pass = TestAll.openAndValidateCatalogOneLevelDeep( catalogUrl, msg );
+    boolean pass = TestAll.openAndValidateCatalogOneLevelDeep( catalogUrl, msg, false );
     assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
                 pass );
 

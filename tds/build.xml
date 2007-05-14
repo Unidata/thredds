@@ -650,11 +650,19 @@
     </antcall>
   </target>
 
+  <target name="test-TDS-crawl-motherlode-8080" description="crawl TDS on motherlode:8080">
+    <antcall target="test-TDS">
+      <param name="test-TDS.name" value="crawl-motherlode-8080" />
+      <param name="test-TDS.server" value="motherlode.ucar.edu:8080" />
+      <param name="test-TDS.level" value="crawl-catalog" />
+    </antcall>
+  </target>
+
   <target name="test-TDS-ping-motherlode-9080" description="ping TDS on motherlode:9080">
     <antcall target="test-TDS">
       <param name="test-TDS.name" value="ping-motherlode-9080" />
       <param name="test-TDS.server" value="motherlode.ucar.edu:9080" />
-      <param name="test-TDS.level" value="PING-mlode" />
+      <param name="test-TDS.level" value="ping-mlode" />
     </antcall>
   </target>
 
@@ -663,6 +671,14 @@
       <param name="test-TDS.name" value="ping-overlode-8080" />
       <param name="test-TDS.server" value="thredds.cise-nsf.gov:8080" />
       <param name="test-TDS.level" value="ping-idd" />
+    </antcall>
+  </target>
+
+  <target name="test-TDS-crawl-overlode-8080" description="crawl TDS on overlode:8080">
+    <antcall target="test-TDS">
+      <param name="test-TDS.name" value="crawl-overlode-8080" />
+      <param name="test-TDS.server" value="thredds.cise-nsf.gov:8080" />
+      <param name="test-TDS.level" value="crawl-catalog" />
     </antcall>
   </target>
 

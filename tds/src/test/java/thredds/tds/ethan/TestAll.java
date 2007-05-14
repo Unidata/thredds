@@ -6,6 +6,8 @@ import java.util.*;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
@@ -43,22 +45,25 @@ public class TestAll extends TestCase
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       suite.addTestSuite( TestTdsPingMotherlode.class );
     }
-    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-mlode" ) )
+    else if ( tdsTestLevel.equalsIgnoreCase( "ping-idd" ) )
+    {
+      suite.addTestSuite( thredds.tds.ethan.TestTdsIddPing.class );
+    }
+    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalog" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
-      suite.addTest( new TestTdsBasics( "testCrawlCatalog" ) );
-      suite.addTest( new TestTdsBasics( "testCrawlCatalogOpenOneDatasetInEachCollection" ) );
+      suite.addTestSuite( TestTdsCrawl.class );
+      
+      //suite.addTest( new TestTdsBasics( "testCrawlCatalog" ) );
+      //suite.addTest( new TestTdsBasics( "testCrawlCatalogOpenOneDatasetInEachCollection" ) );
+
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-topcatalog" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       System.setProperty( "thredds.tds.test.catalog", "topcatalog.xml" );
       suite.addTest( new TestTdsBasics( "testCrawlCatalogOneLevelDeep" ) );
-    }
-    else if ( tdsTestLevel.equalsIgnoreCase( "ping-idd" ) )
-    {
-      suite.addTestSuite( thredds.tds.ethan.TestTdsIddPing.class );
     }
 //    else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL-mlode" ) )
 //      // ToDo Need to implement this one.
@@ -116,30 +121,49 @@ public class TestAll extends TestCase
     return cat;
   }
 
-  public static boolean openAndValidateCatalogTree( String catUrl, StringBuffer log )
+  public static boolean openAndValidateCatalogTree( String catUrl, StringBuffer log, boolean onlyRelativeUrls )
   {
     InvCatalogImpl cat = openAndValidateCatalogForChaining( catUrl, log );
     if ( cat == null )
       return false;
 
     boolean ok = true;
-    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets() );
+    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), onlyRelativeUrls );
     for ( InvCatalogRef catRef : catRefList )
     {
-      ok &= openAndValidateCatalogTree( catRef.getURI().toString(), log);
+      if ( onlyRelativeUrls )
+      {
+        URI uri = null;
+        String href = ( (InvCatalogRef) catRef ).getXlinkHref();
+        String title = ( (InvCatalogRef) catRef ).getName();
+        try
+        {
+          uri = new URI( href );
+        }
+        catch ( URISyntaxException e )
+        {
+          log.append( "\nBad catalogRef <" ).append( title ).append( ">: " ).append( href );
+          continue;
+        }
+        if ( uri.isAbsolute())
+        {
+          continue;
+        }
+      }
+      ok &= openAndValidateCatalogTree( catRef.getURI().toString(), log, onlyRelativeUrls);
     }
 
     return ok;
   }
 
-  public static boolean openAndValidateCatalogOneLevelDeep( String catUrl, StringBuffer log )
+  public static boolean openAndValidateCatalogOneLevelDeep( String catUrl, StringBuffer log, boolean onlyRelativeUrls )
   {
     InvCatalogImpl cat = openAndValidateCatalogForChaining( catUrl, log );
     if ( cat == null )
       return false;
 
     boolean ok = true;
-    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets() );
+    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), onlyRelativeUrls );
     for ( InvCatalogRef catRef : catRefList )
     {
       InvCatalogImpl cat2 = openAndValidateCatalogForChaining( catRef.getURI().toString(), log );
@@ -364,7 +388,7 @@ public class TestAll extends TestCase
    * @param datasets
    * @return
    */
-  private static List<InvCatalogRef> findAllCatRefs( List<InvDatasetImpl> datasets )
+  private static List<InvCatalogRef> findAllCatRefs( List<InvDatasetImpl> datasets, boolean onlyRelativeUrls )
   {
     List<InvCatalogRef> catRefList = new ArrayList<InvCatalogRef>();
     for ( InvDatasetImpl curDs : datasets )
@@ -380,7 +404,7 @@ public class TestAll extends TestCase
 
       if ( curDs.hasNestedDatasets() )
       {
-        catRefList.addAll( findAllCatRefs( curDs.getDatasets() ) );
+        catRefList.addAll( findAllCatRefs( curDs.getDatasets(), onlyRelativeUrls ) );
       }
     }
     return catRefList;

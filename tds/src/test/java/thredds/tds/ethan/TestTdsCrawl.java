@@ -35,7 +35,7 @@ public class TestTdsCrawl extends TestCase
     StringBuffer msg = new StringBuffer();
 
     assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
-                TestAll.openAndValidateCatalogTree( catalogUrl, msg ) );
+                TestAll.openAndValidateCatalogTree( catalogUrl, msg, true ) );
 
     if ( msg.length() > 0 )
     {
