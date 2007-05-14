@@ -1,7 +1,6 @@
 
 package ucar.nc2.dt;
 
-import thredds.catalog.query.Station;
 import java.io.IOException;
 import java.util.List;
 
@@ -11,8 +10,7 @@ import ucar.unidata.util.Product;
 /** A collection of data at unconnected radar station.
  * User can subset by stations, bounding box and by date range.
  * Underlying data can be of any type, but all points have the same type.
- * @author
- * @version $Revision:  $
+ * @author  yuan
  */
 public interface StationRadarCollection {
 

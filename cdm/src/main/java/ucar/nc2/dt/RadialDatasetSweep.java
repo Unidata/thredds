@@ -1,8 +1,5 @@
 package ucar.nc2.dt;
 
-import ucar.ma2.Array;
-import ucar.nc2.VariableSimpleIF;
-
 import java.io.IOException;
 import java.util.Date;
 
@@ -39,14 +36,13 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
   public ucar.nc2.units.DateUnit getTimeUnits();
 
   /**
-   * Get the basic property of Radar
-   * @return 1 if this is a station radar
+   * Stationary versus moving radar.
+   * @return true if this is stationary.
   */
   public boolean isStationary();
 
   /**
-   * Get the basic property of Radar
-   * @return 0 if this is not a radial product
+   * Remove cached data, if any.
    */
   public void clearDatasetMemory();
 
@@ -62,6 +58,9 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
    * @return List of type RadialDatasetSweep.RadialVariable */
   public java.util.List getDataVariables();
 
+  /**
+   * A data Variable with radial geometry.
+   */
   public interface RadialVariable extends ucar.nc2.VariableSimpleIF {
     /** @return the number of sweeps for this Variable */
     public int getNumSweeps();
@@ -145,6 +144,9 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
     public void clearSweepMemory();
   }
 
+  /**
+   * A Type of RadialSweep.
+   */
   static public final class Type {
     private static java.util.ArrayList members = new java.util.ArrayList(20);
 
