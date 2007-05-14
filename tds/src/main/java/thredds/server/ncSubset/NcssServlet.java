@@ -84,7 +84,7 @@ public class NcssServlet extends AbstractServlet {
 
     // parse the input
     QueryParams qp = new QueryParams();
-    qp.parseQuery(req, res);
+    //qp.parseQuery(req, res);
 
     soc.write(qp.vars, qp.stns, qp.getDateRange(), qp.time, qp.type, res.getWriter());
 
