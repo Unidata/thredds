@@ -658,12 +658,20 @@
     </antcall>
   </target>
 
+  <target name="test-TDS-ping-overlode-8080" description="ping TDS on overlode:8080">
+    <antcall target="test-TDS">
+      <param name="test-TDS.name" value="ping-overlode-8080" />
+      <param name="test-TDS.server" value="thredds.cise-nsf.gov:8080" />
+      <param name="test-TDS.level" value="ping-idd" />
+    </antcall>
+  </target>
+
   <target name="test-TDS" description="test a TDS">
     <mkdir dir="${test.reports.dir}/${test-TDS.name}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
-      <jvmarg value="-Dthredds.tds.server=${test-TDS.server}"/>
+      <jvmarg value="-Dthredds.tds.test.server=${test-TDS.server}"/>
       <jvmarg value="-Dthredds.tds.test.level=${test-TDS.level}"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>

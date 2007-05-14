@@ -8,7 +8,7 @@ import junit.framework.TestCase;
  * @author edavis
  * @since Nov 30, 2006 11:13:36 AM
  */
-public class TestTdsCrawl extends TestCase
+public class TestTdsBasics extends TestCase
 {
 
   private String host = "motherlode.ucar.edu:8080";
@@ -16,7 +16,7 @@ public class TestTdsCrawl extends TestCase
 
   private String catalogUrl;
 
-  public TestTdsCrawl( String name )
+  public TestTdsBasics( String name )
   {
     super( name );
   }
@@ -26,16 +26,35 @@ public class TestTdsCrawl extends TestCase
     host = System.getProperty( "thredds.tds.test.server", host );
     catalog = System.getProperty( "thredds.tds.test.catalog", catalog );
 
-    //targetTdsUrl = "http://" + host + "/thredds/";
     catalogUrl = "http://" + host + "/thredds/" + catalog;
+  }
+
+  public void testPingCatalog()
+  {
+    TestAll.openAndValidateCatalog( catalogUrl );
   }
 
   public void testCrawlCatalog()
   {
     StringBuffer msg = new StringBuffer();
 
+    boolean pass = TestAll.openAndValidateCatalogTree( catalogUrl, msg );
     assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
-                TestAll.openAndValidateCatalogTree( catalogUrl, msg ) );
+                pass );
+
+    if ( msg.length() > 0 )
+    {
+      System.out.println( msg.toString() );
+    }
+  }
+
+  public void testCrawlCatalogOneLevelDeep()
+  {
+    StringBuffer msg = new StringBuffer();
+
+    boolean pass = TestAll.openAndValidateCatalogOneLevelDeep( catalogUrl, msg );
+    assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
+                pass );
 
     if ( msg.length() > 0 )
     {
@@ -48,8 +67,9 @@ public class TestTdsCrawl extends TestCase
 
     StringBuffer msg = new StringBuffer();
 
+    boolean pass = TestAll.crawlCatalogOpenRandomDataset( catalogUrl, msg );
     assertTrue( "Failed to open dataset(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
-                TestAll.crawlCatalogOpenRandomDataset( catalogUrl, msg ) );
+                pass );
 
     if ( msg.length() > 0 )
     {

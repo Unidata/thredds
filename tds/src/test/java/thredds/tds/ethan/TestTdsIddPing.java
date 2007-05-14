@@ -22,11 +22,7 @@ public class TestTdsIddPing extends TestCase
 {
 
   private String host = "motherlode.ucar.edu:8080";
-  private String targetTomcatUrl;
   private String targetTdsUrl;
-
-  private String tdsConfigUser;
-  private String tdsConfigWord;
 
   public TestTdsIddPing( String name )
   {
@@ -35,26 +31,23 @@ public class TestTdsIddPing extends TestCase
 
   protected void setUp()
   {
-    Properties env = System.getProperties();
-    host = env.getProperty( "thredds.tds.site", host );
+    host = System.getProperty( "thredds.tds.test.server", host );
 
-    targetTomcatUrl = "http://" + host + "/";
     targetTdsUrl = "http://" + host + "/thredds/";
   }
 
   public void testMainCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/catalog.xml" );
+    String catUrl = targetTdsUrl + "catalog.xml";
+    System.out.println( "validate catalog: " + catUrl );
+    TestAll.openAndValidateCatalog( catUrl );
   }
 
   public void testModelsCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/idd/models.xml" );
-  }
-
-  public void testAllNcModelsCatalog()
-  {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/idd/allModels.TDS-nc.xml" );
+    String catUrl = targetTdsUrl + "idd/models.xml";
+    System.out.println( "validate catalog: " + catUrl );
+    TestAll.openAndValidateCatalog( catUrl );
   }
 
 }
