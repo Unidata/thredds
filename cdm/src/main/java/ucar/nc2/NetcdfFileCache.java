@@ -349,10 +349,9 @@ public class NetcdfFileCache {
   }
 
   /**
-   * Public as an artifact.
    * This tracks the elements in the cache.
    */
-  static public class CacheElement implements Comparable {
+  static class CacheElement implements Comparable {
     public String cacheName;
     public NetcdfFile ncfile;
     public boolean isLocked = true;

@@ -498,6 +498,11 @@ public class NetcdfFile {
   // name pattern matching
   static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\(\\)\\+]*");
 
+  /**
+   * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
+   * @param name test this.
+   * @return  true if valid name.
+   */
   static public boolean isValidNetcdfObjectName(String name) {
     Matcher m = objectNamePattern.matcher(name);
     return m.matches();

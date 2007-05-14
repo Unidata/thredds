@@ -36,12 +36,12 @@ public class StructurePseudo extends Structure {
   private ArrayList orgVariables =  new ArrayList();
   private boolean debugRecord = false;
 
-  /* Make a Structure out of all Variables with the named dimension as their outermost dimension.
+  /** Make a Structure out of all Variables with the named dimension as their outermost dimension.
    *
    * @param ncfile part of this file
    * @param group part of this group
    * @param shortName short name of this Structure
-   * @param dimName name of existing dimension
+   * @param dim the existing dimension
    */
   public StructurePseudo( NetcdfFile ncfile, Group group, String shortName, Dimension dim) {
     super (ncfile, group, null, shortName); // cant do this for nested structures

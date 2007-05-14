@@ -122,6 +122,11 @@ public class Dimension implements Comparable {
     return writeCDL( false);
   }
 
+  /**
+   * Dimensions with the same name are equal.
+   * @param o compare to this Dimension
+   * @return 0, 1, or -1
+   */
   public int compareTo(Object o) {
     Dimension odim = (Dimension) o;
     return name.compareTo(odim.getName());

@@ -1,6 +1,9 @@
 package IO;
 
 import java.io.*;
+import java.nio.channels.*;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.HttpURLConnection;
@@ -29,10 +32,10 @@ import java.util.Date;
  */
 
 public class TimeCopy {
-  static boolean debug = false;
+  static boolean debug = true;
 
   static public void main(String args[]) throws IOException {
-    copyURL("http://localhost:8080/thredds/netcdf/dd/NAM_CONUS_80km_20070501_1200.nc?v,u,RH", "C:/temp/netcdf.nc", 10000);
+    //copyURL("http://localhost:8080/thredds/netcdf/dd/NAM_CONUS_80km_20070501_1200.nc?v,u,RH", "C:/temp/netcdf.nc", 10000);
 
     /* readURL( "http://localhost:8080/thredds/fileServer/bigOle/copyOut", 10000);
     readURL( "http://localhost:8080/thredds/fileServer/bigOle/copyOut2", 20000);
@@ -102,6 +105,25 @@ public class TimeCopy {
      copy (buffer) took = 84.703 sec; rate = 23.248581773963142Mb/sec
      copy (no buffer) took = 87.98400000000001 sec; rate = 22.38162190852882Mb/sec
      copy (buffer) took = 86.5 sec; rate = 22.765602566473987Mb/sec */
+
+    /*
+     *  copyFileNIO(1000 kb chunk) took = 177.282 sec; rate = 11.107865558827179Mb/sec
+     *  copyFileNIO(1000 kb chunk) took = 218.234 sec; rate = 9.023454741241054Mb/sec
+     *  copyFileNIO(1000 kb chunk) took = 150.468 sec; rate = 13.087331671850492Mb/sec
+     *  prealloc
+     *  copyFileNIO(1000 kb chunk) took = 218.26500000000001 sec; rate = 9.022173147320917Mb/sec
+     *  copyFileNIO(1000 kb chunk) took = 218.26500000000001 sec; rate = 9.022173147320917Mb/sec
+     *  copyFileNIO(10 kb chunk) took = 117.422 sec; rate = 16.770491236735875Mb/sec
+     *  copyFileNIO(20 kb chunk) took = 123.85900000000001 sec; rate = 15.898922339111408Mb/sec
+     *  copyFileNIO(9 kb chunk) took = 128.187 sec; rate = 15.362124255969793Mb/sec
+     *  copy (buffer) took = 106.125 sec; rate = 18.555709041224972Mb/sec
+     *  copyFileNIO(100 kb chunk) took = 203.687 sec; rate = 9.667895457245676Mb/sec
+     *  copy (buffer) took = 146.766 sec; rate = 13.417444244579809Mb/sec
+     *  copyFileNIO(1 kb chunk) took = 167.937 sec; rate = 11.725972370591352Mb/sec
+     */
+    copyFileNIO("C:/data/hdf5/IASI.h5", "C:/temp/nio", 1);
+    //copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut4", true);
+    
   }
 
   static public void copyFile(String filenameIn, String filenameOut, boolean buffer) throws IOException {
@@ -128,6 +150,44 @@ public class TimeCopy {
     double rate = lenIn / took / (1000 * 1000);
     String name = buffer ? "buffer" : "no buffer";
     System.out.println(" copy (" + name + ") took = " + took + " sec; rate = " + rate + "Mb/sec");
+  }
+
+  static public void copyFileNIO(String filenameIn, String filenameOut, long kbchunks) throws IOException {
+
+    FileInputStream in = new FileInputStream(filenameIn);
+    FileChannel inChannel = in.getChannel();
+
+    FileOutputStream out = new FileOutputStream(filenameOut);
+    FileChannel outChannel = out.getChannel();
+
+    long size = inChannel.size();
+    //outChannel.position(size-2);
+    //outChannel.write(ByteBuffer.allocate(1));
+    //outChannel.position(0);
+
+    if (debug) System.out.println("read " + filenameIn + " len = " + size+" out starts at="+outChannel.position());
+
+    long start = System.currentTimeMillis();
+    long done = 0;
+    while (done < size) {
+      long need = Math.min(kbchunks * 1000, size-done);
+      done += inChannel.transferTo(done, need, outChannel);
+    }
+
+    outChannel.close();
+    inChannel.close();
+
+    double took = .001 * (System.currentTimeMillis() - start);
+    if (debug) System.out.println(" write file= " + filenameOut + " len = " + size);
+
+    double rate = size / took / (1000 * 1000);
+    System.out.println(" copyFileNIO("+kbchunks+" kb chunk) took = " + took + " sec; rate = " + rate + "Mb/sec");
+  }
+
+  static public void testNIO(String filenameIn, String filenameOut, long kbchunks) throws IOException {
+
+    ByteBuffer bb = ByteBuffer.allocate(8*1000);
+    FloatBuffer fb = bb.asFloatBuffer();
   }
 
   static public void readFile(String filenameIn, int bufferSize) throws IOException {

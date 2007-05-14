@@ -177,7 +177,6 @@ public class Structure extends Variable {
   /**
    * Make the StructureMembers object corresponding to this Structure.
    */
-  private StructureMembers smembers;
   public StructureMembers makeStructureMembers() {
     if (smembers == null) {
       smembers = new StructureMembers( getName());
@@ -193,6 +192,7 @@ public class Structure extends Variable {
     }
     return smembers;
   }
+  private StructureMembers smembers;
 
   /**
    * Get the size of one element of the Structure.
