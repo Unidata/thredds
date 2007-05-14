@@ -24,6 +24,7 @@ package thredds.server.opendap;
 import ucar.nc2.*;
 import ucar.nc2.dods.*;
 import ucar.unidata.util.StringUtil;
+import ucar.ma2.DataType;
 
 import java.util.Iterator;
 import java.util.HashMap;
@@ -146,17 +147,28 @@ public class NcDAS extends opendap.dap.DAS {
     // add attribute table for this variable
     while (iter.hasNext()) {
       Attribute att = (Attribute) iter.next();
+      int dods_type = DODSNetcdfFile.convertToDODSType( att.getDataType(), false);
 
       try {
         String attName = NcDDS.escapeName(att.getName());
         if (att.isString()) {
           String value = escapeAttributeStringValues(att.getStringValue());
-          table.appendAttribute(attName, DODSNetcdfFile.convertToDODSType( att.getDataType(), false),
-             "\""+value+"\"");
+          table.appendAttribute(attName, dods_type, "\""+value+"\"");
+
         } else {
+          // cant send signed bytes
+          if (att.getDataType() == DataType.BYTE) {
+            boolean signed = false;
+            for (int i=0; i< att.getLength(); i++) {
+              if (att.getNumericValue(i).byteValue() < 0)
+                signed = true;
+            }
+            if (signed) // promote to signed short
+              dods_type = opendap.dap.Attribute.INT16;
+          }
+
           for (int i=0; i< att.getLength(); i++)
-            table.appendAttribute( attName, DODSNetcdfFile.convertToDODSType( att.getDataType(), false),
-              att.getNumericValue(i).toString());
+            table.appendAttribute( attName, dods_type, att.getNumericValue(i).toString());
         }
         count++;
 
