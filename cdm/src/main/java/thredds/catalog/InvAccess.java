@@ -69,6 +69,12 @@ abstract public class InvAccess {
     return wrap( uri.toString());
   }
 
+  /**
+   * Construct the standard THREDDS access URI for this dataset access method,
+   * resolve if the URI is relative.
+   *
+   * @return the standard fully resolved THREDDS access URI for this dataset access method, or null if error.
+   */
   public URI getStandardUri() {
     try {
       InvCatalog cat = dataset.getParentCatalog();
