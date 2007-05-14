@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,17 +18,13 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id: Parameter.java 64 2006-07-12 22:30:50Z edavis $
-
 package ucar.unidata.util;
 
-
 /**
- * A parameter has a name and a
- * value that is String, a double, or an array of doubles.
+ * A parameter has a name and a value that is String, a double, or an array of doubles.
+ * A substitute for ucar.nc2.Attribute, to prevent dependencies of the ucar.unidata packages on ucar.nc2.
  *
  * @author caron
- * @version $Revision: 64 $ $Date: 2006-07-12 16:30:50 -0600 (Wed, 12 Jul 2006) $
  */
 
 public class Parameter {
@@ -48,16 +44,15 @@ public class Parameter {
     /**
      * Get the name of this Parameter.
      *
-     * @return _more_
+     * @return name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * True if value is a String ?
-     *
-     * @return _more_
+     * True if value is a String.
+     * @return if its String valued
      */
     public boolean isString() {
         return isString;
@@ -89,29 +84,26 @@ public class Parameter {
     }
 
     /**
-     * _more_
-     *
-     * @param i _more_
-     *
-     * @return _more_
+     * Get the ith numeric value.
+     * @param i index
+     * @return ith numeric value
      */
     public double getNumericValue(int i) {
         return valueD[i];
     }
 
     /**
-     * _more_
-     *
-     * @return _more_
+     * Get the number of values.
+     * @return the number of values.
      */
     public int getLength() {
         return valueD.length;
     }
 
     /**
-     * _more_
-     *
-     * @return _more_
+     * Get array of numeric values as doubles.
+     * Do not modify unless you own this object!
+     * @return array of numeric values.
      */
     public double[] getNumericValues() {
         return valueD;
@@ -119,10 +111,8 @@ public class Parameter {
 
     /**
      * Instances which have same content are equal.
-     *
-     * @param oo _more_
-     *
-     * @return _more_
+     * @param oo compare to this Parameter.
+     * @return true if equal.
      */
     public boolean equals(Object oo) {
         if (this == oo) {
@@ -136,8 +126,7 @@ public class Parameter {
 
     /**
      * Override Object.hashCode() to implement equals.
-     *
-     * @return _more_
+     * @return haschcode
      */
     public int hashCode() {
         if (hashCode == 0) {
@@ -156,13 +145,11 @@ public class Parameter {
         return hashCode;
     }
 
-    /** _more_ */
     private volatile int hashCode = 0;
 
     /**
      * String representation
-     *
-     * @return _more_
+     * @return nice String
      */
     public String toString() {
         StringBuffer buff = new StringBuffer();
@@ -186,10 +173,10 @@ public class Parameter {
     ///////////////////////////////////////////////////////////////////////////////
 
     /**
-     * _more_
+     * Copy constructir, with new name.
      *
-     * @param name _more_
-     * @param from _more_
+     * @param name name of new Parameter.
+     * @param from copy values from here.
      */
     public Parameter(String name, Parameter from) {
         this.name     = name;
@@ -201,8 +188,8 @@ public class Parameter {
     /**
      * Create a String-valued param.
      *
-     * @param name _more_
-     * @param val _more_
+     * @param name name of new Parameter.
+     * @param val value of Parameter
      */
     public Parameter(String name, String val) {
         this.name     = name;
@@ -213,8 +200,8 @@ public class Parameter {
     /**
      *  Create a scalar double-valued param.
      *
-     * @param name _more_
-     * @param value _more_
+     * @param name name of new Parameter.
+     * @param value value of Parameter
      */
     public Parameter(String name, double value) {
         this.name = name;
@@ -225,8 +212,8 @@ public class Parameter {
     /**
      *  Create a array double-valued param.
      *
-     * @param name _more_
-     * @param value _more_
+     * @param name name of new Parameter.
+     * @param value value of Parameter
      */
     public Parameter(String name, double[] value) {
         this.name = name;
@@ -234,49 +221,3 @@ public class Parameter {
     }
 
 }
-
-/*
- *  Change History:
- *  $Log: Parameter.java,v $
- *  Revision 1.7  2006/05/05 19:19:36  jeffmc
- *  Refactor some of the tabbedpane border methods.
- *  Also, since I ran jindent on everything to test may as well caheck it all in
- *
- *  Revision 1.6  2005/03/10 18:40:08  jeffmc
- *  jindent and javadoc
- *
- *  Revision 1.5  2005/01/20 21:21:00  caron
- *  javadoc cleanup
- *
- *  Revision 1.4  2004/12/22 13:28:17  dmurray
- *  Jindent.  somebody else should fix the _more_'s.
- *
- *  Revision 1.3  2004/12/07 01:51:56  caron
- *  make parameter names CF compliant.
- *
- *  Revision 1.2  2004/12/03 04:46:28  caron
- *  no message
- *
- *  Revision 1.1  2004/09/22 21:16:41  caron
- *  add Parameter.java
- *
- *  Revision 1.6  2004/09/09 22:47:39  caron
- *  station updates
- *
- *  Revision 1.5  2004/08/19 20:48:55  edavis
- *  Make public a number of methods for building an Parameter.
- *
- *  Revision 1.4  2004/08/16 20:53:44  caron
- *  2.2 alpha (2)
- *
- *  Revision 1.3  2004/07/12 23:40:16  caron
- *  2.2 alpha 1.0 checkin
- *
- *  Revision 1.2  2004/07/06 19:28:08  caron
- *  pre-alpha checkin
- *
- *  Revision 1.1.1.1  2003/12/04 21:05:27  caron
- *  checkin 2.2
- *
- */
-

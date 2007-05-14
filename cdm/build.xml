@@ -157,7 +157,7 @@
 
   <target name="compile" depends="init, release-settings" description="library compile">
     <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
-           includeAntRuntime="false" source="1.4" target="1.4">
+           includeAntRuntime="false" source="1.5" target="1.5">
       <src refid="sourcepath" />
       <patternset refid="sources"/>
       <classpath refid="compile.classpath"/>
@@ -386,7 +386,7 @@
   <target name="javadoc" description="make the javadocs">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc Doctitle="NetCDF-Java 2.2 API" Use="true" Windowtitle="NetCDF-Java 2.2 API"
-             maxmemory="256m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.4">
+             maxmemory="256m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.5">
       <classpath refid="compile.classpath"/>
 
       <package name="thredds.catalog"/>
@@ -397,7 +397,7 @@
       <!--package name="ucar.nc2.dataset.conv"/ -->
       <!-- package name="ucar.nc2.geotiff"/ -->
       <package name="ucar.nc2.dt"/>
-      <package name="ucar.nc2.dt.grid"/>
+      <!-- package name="ucar.nc2.dt.grid"/ -->
       <!-- package name="ucar.nc2.dt.image"/ -->
       <!-- package name="ucar.nc2.dt.radial"/-->
       <!-- package name="ucar.nc2.dt.point"/-->

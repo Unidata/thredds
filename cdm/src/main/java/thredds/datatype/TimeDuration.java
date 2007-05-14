@@ -1,6 +1,5 @@
-// $Id: TimeDuration.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -30,13 +29,13 @@ import java.util.Date;
 
 /**
  * Implements the thredds "duration" XML element type: specifies a length of time.
- * This is really the same as a ucar.nc2.units.TimeUnit, but it allows xsd:duration syntax as well as udunits syntax. It
- * also keeps track if the text is empty.
+ * This is really the same as a ucar.nc2.units.TimeUnit, but it allows xsd:duration syntax as well as udunits syntax.
+ * It also keeps track if the text is empty.
  *
  * A duration can be one of the following:
  <ol>
    <li> a valid udunits string compatible with "secs"
-   <li> NOT DONE YET an xsd:duration type specified in the following form "PnYnMnDTnHnMnS" where:
+   <li> an xsd:duration type specified in the following form "PnYnMnDTnHnMnS" where:
     <ul>
     <li>P indicates the period (required)
     <li>nY indicates the number of years
@@ -51,7 +50,6 @@ import java.util.Date;
  *
  * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
  * @author john caron
- * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 
 
@@ -73,7 +71,8 @@ public class TimeDuration {
 
   private TimeDuration( ) {}
 
-  /** copy constructor
+  /**
+   * Copy constructor.
    * @param src copy this
    */
   public TimeDuration( TimeDuration src) {
@@ -82,11 +81,21 @@ public class TimeDuration {
     isBlank = src.isBlank();
   }
 
+  /**
+   * Construct from a TimeUnit.
+   * @param timeUnit copy this
+   */
   public TimeDuration( TimeUnit timeUnit) {
     this.timeUnit = timeUnit;
     this.text = timeUnit.toString();
   }
 
+  /**
+   * Construct from 1) udunit time unit string, 2) xsd:duration syntax, 3) blank string.
+   *
+   * @param text parse this text.
+   * @throws java.text.ParseException if invalid text.
+   */
   public TimeDuration(String text) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
     this.text = text;
@@ -160,38 +169,43 @@ public class TimeDuration {
     return timeUnit.convertTo(timeUnit.getValue(), want);
   }
 
-  /** get the duration in seconds */
+  /** Get the duration in seconds */
   public double getValueInSeconds() {
     return timeUnit.getValueInSeconds();
   }
 
-  /** set the duration in seconds */
+  /** Set the duration in seconds */
   public void setValueInSeconds( double secs) {
     timeUnit.setValueInSeconds( secs);
     text = null;
   }
 
-
+  /** If this is a blank string */
   public boolean isBlank() {
     return isBlank;
   }
 
+  /** Get the corresponding time unit */
   public TimeUnit getTimeUnit() {
     return timeUnit;
   }
 
+  /** Get the String text */
   public String getText() {
     return text == null ? timeUnit.toString() : text;
   }
 
+  /** Nice String */
   public String toString() {
     return getText();
   }
 
+  /** Override to be consistent with equals */
   public int hashCode() {
-    return isBlank() ? 0 : timeUnit.hashCode();
+    return isBlank() ? 0 : (int) getValueInSeconds();
   }
 
+  /** TimeDurations with same value in seconds are equals */
   public boolean equals(Object o) {
     if (this == o)
       return true;
