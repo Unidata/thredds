@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
+ * Manager for Coordinate Transforms.
  * @author john caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
@@ -111,6 +112,15 @@ public class CoordTransBuilder {
     }
   }
 
+  /**
+   * Make a CoordinateTransform object from the paramaters in a Coordinate Transform Variable, using an intrinsic or
+   * registered CoordTransBuilder.
+   * @param ds enclosing dataset
+   * @param ctv the Coordinate Transform Variable - container for the transform parameters
+   * @param parseInfo pass back information about the parsing.
+   * @param errInfo pass back error information.
+   * @return CoordinateTransform, or null if failure.
+   */
   static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv, StringBuffer parseInfo, StringBuffer errInfo) {
     // standard name
     String transform_name = ds.findAttValueIgnoreCase(ctv, "transform_name", null);

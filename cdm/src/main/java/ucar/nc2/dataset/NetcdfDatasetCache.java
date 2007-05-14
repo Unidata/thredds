@@ -364,11 +364,10 @@ public class NetcdfDatasetCache {
   }
 
   /**
-   * Public as an artifact.
    * This tracks the elements in the cache.
    * Do not modify.
    */
-  static public class CacheElement implements Comparable {
+  static class CacheElement implements Comparable {
     public String cacheName;
     public NetcdfDataset ncd;
     public NetcdfDatasetFactory factory;

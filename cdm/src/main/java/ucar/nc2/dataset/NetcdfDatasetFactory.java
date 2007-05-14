@@ -21,7 +21,7 @@
 package ucar.nc2.dataset;
 
 /**
- * Used by NetcdfDatasetCache
+ * 	A factory for opening a NetcdfDataset.
  * @author john caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
@@ -34,7 +34,7 @@ public interface NetcdfDatasetFactory {
    * @param  cancelTask allow task to be cancelled; may be null.
    * @param  spiObject sent to iosp.setSpecial() if not null
    * @return a valid NetcdfDataset
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error
    */
   public NetcdfDataset openDataset(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException;
 }
