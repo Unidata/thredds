@@ -32,10 +32,12 @@ public class TestTdsCrawl extends TestCase
 
   public void testCrawlCatalog()
   {
+    System.out.println( "Running testCrawlCatalog() on " + catalogUrl );
     StringBuffer msg = new StringBuffer();
 
+    boolean pass = TestAll.openAndValidateCatalogTree( catalogUrl, msg, true );
     assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
-                TestAll.openAndValidateCatalogTree( catalogUrl, msg, true ) );
+                pass );
 
     if ( msg.length() > 0 )
     {
@@ -45,11 +47,13 @@ public class TestTdsCrawl extends TestCase
 
   public void testCrawlCatalogOpenOneDatasetInEachCollection()
   {
+    System.out.println( "Running testCrawlCatalogOpenOneDatasetInEachCollection() on " + catalogUrl );
 
     StringBuffer msg = new StringBuffer();
 
+    boolean pass = TestAll.crawlCatalogOpenRandomDataset( catalogUrl, msg );
     assertTrue( "Failed to open dataset(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
-                TestAll.crawlCatalogOpenRandomDataset( catalogUrl, msg ) );
+                pass );
 
     if ( msg.length() > 0 )
     {

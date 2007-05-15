@@ -49,15 +49,17 @@ public class TestAll extends TestCase
     {
       suite.addTestSuite( thredds.tds.ethan.TestTdsIddPing.class );
     }
-    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalog" ) )
+    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogAnd1Ds" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
       suite.addTestSuite( TestTdsCrawl.class );
-      
-      //suite.addTest( new TestTdsBasics( "testCrawlCatalog" ) );
-      //suite.addTest( new TestTdsBasics( "testCrawlCatalogOpenOneDatasetInEachCollection" ) );
-
+    }
+    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalog" ) )
+    {
+      //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
+      //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
+      suite.addTest( new TestTdsBasics( "testCrawlCatalog" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-topcatalog" ) )
     {
