@@ -75,6 +75,16 @@ public class StationObsCollection {
     }
   }
 
+  public void manage() {
+      timer = new Timer("StationObsCollection.Rescan");
+      Calendar c = Calendar.getInstance(); // contains current startup time
+      c.add(Calendar.HOUR, 24); // start tommorrow
+      c.add(Calendar.HOUR, 1); // at 1 AM
+      c.add(Calendar.MINUTE, 0);
+      c.add(Calendar.SECOND, 0);
+      timer.schedule(new ReinitTask(), c.getTime(), (long) 1000 * 60 * 60 * 24); // repeat once a day
+  }
+
   public void close() {
     if (timer != null)
       timer.cancel();

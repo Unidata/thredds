@@ -109,7 +109,7 @@ public class Structure extends Variable {
   }
 
   /** Set the list of member variables. */
-  public void setMemberVariables( ArrayList vars) {
+  public void setMemberVariables( ArrayList<Variable> vars) {
     members = new ArrayList();
     memberNames = new ArrayList();
     memberHash = new HashMap(2*vars.size());

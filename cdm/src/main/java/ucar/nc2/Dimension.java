@@ -1,6 +1,5 @@
-// $Id:Dimension.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,14 +33,13 @@ import java.util.List;
  * Unlimited Dimension can grow.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class Dimension implements Comparable {
   static public Dimension UNLIMITED = new Dimension( "**", 0, true, true, false); // gets reset when file is read or written
   static public Dimension UNKNOWN = new Dimension( "*", -1, true, false, true); // for Sequences
 
-  protected ArrayList coordVars = new ArrayList();
+  protected ArrayList<Variable> coordVars = new ArrayList<Variable>();
   protected boolean isUnlimited = false;
   protected boolean isVariableLength = false;
   protected boolean isShared = true; // shared means its in a group dimension list.
@@ -52,21 +50,25 @@ public class Dimension implements Comparable {
    * Returns the name of this Dimension; may be null.
    * A Dimension with a null name is called "anonymous" and must be private.
    * Dimension names are unique within a Group.
+   * @return name of Dimension
    */
   public String getName() { return name; }
 
   /**
    * Get the length of the Dimension.
+   * @return length of Dimension
    */
   public int getLength() { return length; }
 
   /**
    * If unlimited, then the length can increase; otherwise it is immutable.
+   * @return if its an "unlimited" Dimension
    */
   public boolean isUnlimited() { return isUnlimited; }
 
   /**
    * If variable length, then the length is unknown until the data is read.
+   * @return if its a "variable length" Dimension.
    */
   public boolean isVariableLength() { return isVariableLength; }
 
@@ -74,6 +76,7 @@ public class Dimension implements Comparable {
    * If this Dimension is shared, or is private to a Variable.
    * All Dimensions in NetcdfFile.getDimensions() or Group.getDimensions() are shared.
    * Dimensions in the Variable.getDimensions() may be shared or private.
+   * @return if its a "shared" Dimension.
    */
   public boolean isShared() { return isShared; }
 
@@ -85,12 +88,13 @@ public class Dimension implements Comparable {
    * @return List of Variable
    * @see Variable#getCoordinateDimension
    */
-  public List getCoordinateVariables() { return coordVars; }
+  public List<Variable> getCoordinateVariables() { return coordVars; }
 
   /**
    * Instances which have same contents are equal.
    * Careful!! this is not object identity !!
    */
+  @Override
   public boolean equals(Object oo) {
     if (this == oo) return true;
     if ( !(oo instanceof Dimension)) return false;
@@ -103,6 +107,7 @@ public class Dimension implements Comparable {
   }
 
   /** Override Object.hashCode() to implement equals. */
+  @Override
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
@@ -118,6 +123,7 @@ public class Dimension implements Comparable {
   private volatile int hashCode = 0;
 
   /** String representation. */
+  @Override
   public String toString() {
     return writeCDL( false);
   }
@@ -132,7 +138,10 @@ public class Dimension implements Comparable {
     return name.compareTo(odim.getName());
   }
 
-  /** String representation. */
+  /** String representation.
+   * @param strict if true, write in strict adherence to CDL definition.
+   * @return CDL representation.
+   */
   public String writeCDL(boolean strict) {
     StringBuffer buff = new StringBuffer();
     buff.append("   "+getName());
@@ -175,8 +184,11 @@ public class Dimension implements Comparable {
     this.isVariableLength = isVariableLength;
   }
 
-  /** Copy Constructor
-   used to make global dimensions */
+  /**
+   * Copy Constructor. used to make global dimensions
+   * @param name name must be unique within group. Can be null only if not shared.
+   * @param from copy all other fields from here.
+   */
   public Dimension(String name, Dimension from) {
     this.name = name;
     this.length = from.length;
@@ -187,10 +199,12 @@ public class Dimension implements Comparable {
   }
 
   /** Add a coordinate variable or coordinate variable alias.
-   * Remove previous if matches full name. */
+   * Remove previous if matches full name.
+   * @param v list this as a Coordinate Varibale for this Dimension
+   */
   public void addCoordinateVariable( Variable v) {
     for (int i = 0; i < coordVars.size(); i++) {
-      Variable cv = (Variable) coordVars.get(i);
+      Variable cv = coordVars.get(i);
       if (v.getName().equals(cv.getName())) {
         coordVars.remove(cv);
         break;
@@ -198,27 +212,37 @@ public class Dimension implements Comparable {
     }
     coordVars.add(v);
   }
-  /** Set whether this is unlimited, meaning length can increase. */
+  /** Set whether this is unlimited, meaning length can increase.
+   * @param b true if unlimited
+   */
   public void setUnlimited( boolean b) {
     isUnlimited = b;
     hashCode = 0;
   }
-  /** Set whether the length is variable. */
+  /** Set whether the length is variable.
+   * @param b true if variable length
+   */
   public void setVariableLength( boolean b) {
     isVariableLength = b;
     hashCode = 0;
   }
-  /** Set whether this is shared. */
+  /** Set whether this is shared.
+   * @param b true if shared
+   */
   public void setShared( boolean b) {
     isShared = b;
     hashCode = 0;
   }
-  /** Set the Dimension length. */
+  /** Set the Dimension length.
+   * @param n length of Dimension
+   */
   public void setLength( int n) {
     this.length = n;
     hashCode = 0;
   }
-  /** rename */
+  /** rename
+   * @param name new name of Dimension.
+   */
   public void setName( String name) {
     this.name = name;
     hashCode = 0;

@@ -1,6 +1,5 @@
-// $Id:NetcdfFile.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,8 +31,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.regex.*;
 import java.net.URL;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.io.*;
 
 /**
@@ -72,15 +69,13 @@ import java.io.*;
  * </ol>
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class NetcdfFile {
-  //static private org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(NetcdfFile.class);
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
   static private int default_buffersize = 8092;
-  static private ArrayList registeredProviders = new ArrayList();
+  static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
   static private boolean debugSPI = false, debugCompress = false;
   static boolean debugStructureIterator = false;
 
@@ -168,6 +163,7 @@ public class NetcdfFile {
 
   /**
    * debugging
+   * @param debugFlag debug flags
    */
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugSPI = debugFlag.isSet("NetcdfFile/debugSPI");
@@ -182,6 +178,7 @@ public class NetcdfFile {
 
   /**
    * debugging
+   * @param printStream write to this stream.
    */
   static public void setDebugOutputStream(PrintStream printStream) {
     H5header.setDebugOutputStream(printStream);
@@ -202,6 +199,8 @@ public class NetcdfFile {
    * Open an existing netcdf file (read only).
    *
    * @param location location of file.
+   * @return the NetcdfFile.
+   * @throws java.io.IOException if error
    */
   public static NetcdfFile open(String location) throws IOException {
     return open(location, null);
@@ -213,7 +212,7 @@ public class NetcdfFile {
    * @param location   location of the file.
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfFile object, or null if cant find IOServiceProver
-   * @throws IOException
+   * @throws IOException if error
    */
   static public NetcdfFile open(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return open(location, -1, cancelTask);
@@ -222,10 +221,11 @@ public class NetcdfFile {
   /**
    * Open an existing file (read only), with option of cancelling, setting the RandomAccessFile buffer size for efficiency.
    *
+   * @param location location of file.
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.
    * @return NetcdfFile object, or null if cant find IOServiceProver
-   * @throws IOException
+   * @throws IOException if error
    */
   static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return open(location, buffer_size, cancelTask, null);
@@ -251,7 +251,7 @@ public class NetcdfFile {
    * @param cancelTask  allow task to be cancelled; may be null.
    * @param spiObject   sent to iosp.setSpecial() if not null
    * @return NetcdfFile object, or null if cant find IOServiceProver
-   * @throws IOException
+   * @throws IOException if error
    */
   static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
@@ -398,6 +398,8 @@ public class NetcdfFile {
    *
    * @param location location of file, used as the name.
    * @param data     in-memory netcdf file
+   * @return memory-resident NetcdfFile
+   * @throws java.io.IOException if error
    */
   public static NetcdfFile openInMemory(String location, byte[] data) throws IOException {
     ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(location, data);
@@ -434,8 +436,7 @@ public class NetcdfFile {
 
     } else {
       // look for registered providers
-      for (int i = 0; i < registeredProviders.size(); i++) {
-        IOServiceProvider registeredSpi = (IOServiceProvider) registeredProviders.get(i);
+      for (IOServiceProvider registeredSpi : registeredProviders) {
         if (debugSPI) System.out.println(" try iosp = " + registeredSpi.getClass().getName());
 
         if (registeredSpi.isValidFile(raf)) {
@@ -509,7 +510,8 @@ public class NetcdfFile {
   }
 
   /**
-   * Valid Netcdf Object name as a egular expression.
+   * Valid Netcdf Object name as a regular expression.
+   * @return regular expression pattern describing valid Netcdf Object names.
    */
   static public String getValidNetcdfObjectNamePattern() {
     return objectNamePattern.pattern();
@@ -528,6 +530,8 @@ public class NetcdfFile {
    * <li>leading character: if alpha or underscore, ok; if digit, prepend "N"; otherwise discard
    * <li>other characters: if space, change to underscore; other delete.
    * </ol>
+   * @param name convert this name
+   * @return converted name
    */
   static public String createValidNetcdfObjectName(String name) {
     StringBuffer sb = new StringBuffer(name);
@@ -572,12 +576,13 @@ public class NetcdfFile {
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
-  protected ArrayList variables;
-  protected ArrayList dimensions;
-  protected ArrayList gattributes;
+  protected ArrayList<Variable> variables;
+  protected ArrayList<Dimension> dimensions;
+  protected ArrayList<Attribute> gattributes;
 
   /**
    * is the dataset already closed?
+   * @return true if closed
    */
   public synchronized boolean isClosed() {
     return isClosed;
@@ -586,6 +591,7 @@ public class NetcdfFile {
   /**
    * Close all resources (files, sockets, etc) associated with this file.
    * If the underlying file was acquired, it will be released, otherwise closed.
+   * @throws java.io.IOException if error closing
    */
   public synchronized void close() throws java.io.IOException {
     if (getCacheState() == 1) {
@@ -601,7 +607,6 @@ public class NetcdfFile {
 
   /**
    * Get the cache state.
-   *
    * @return 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
    */
   public int getCacheState() {
@@ -610,13 +615,15 @@ public class NetcdfFile {
 
   /**
    * Used by NetcdfFileCache.
+   * @param cacheState 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
    */
   protected void setCacheState(int cacheState) {
     this.cacheState = cacheState;
   }
 
   /**
-   * Get the name used in the cache, if any
+   * Get the name used in the cache, if any.
+   * @return name in the cache.
    */
   public String getCacheName() {
     return cacheName;
@@ -624,13 +631,15 @@ public class NetcdfFile {
 
   /**
    * Used by NetcdfFileCache. Do not use.
+   * @param cacheName name in the cache, should be unique for this NetcdfFile. Usually the location.
    */
   protected void setCacheName(String cacheName) {
     this.cacheName = cacheName;
   }
 
   /**
-   * Get the dataset location. This is a URL, or a file pathname.
+   * Get the NetcdfFile location. This is a URL, or a file pathname.
+   * @return location URL or file pathname.
    */
   public String getLocation() {
     return location;
@@ -638,6 +647,7 @@ public class NetcdfFile {
 
   /**
    * Get the globally unique dataset identifier
+   * @return id, or null if none.
    */
   public String getId() {
     return id;
@@ -645,6 +655,7 @@ public class NetcdfFile {
 
   /**
    * Get the human-readable title.
+   * @return title, or null if none.
    */
   public String getTitle() {
     return title;
@@ -652,6 +663,7 @@ public class NetcdfFile {
 
   /**
    * Get the root group.
+   * @return root group
    */
   public Group getRootGroup() {
     return rootGroup;
@@ -664,8 +676,8 @@ public class NetcdfFile {
    *
    * @return List of type Variable.
    */
-  public java.util.List getVariables() {
-    return new ArrayList(variables);
+  public java.util.List<Variable> getVariables() {
+    return new ArrayList<Variable>(variables);
   }
 
   /**
@@ -677,8 +689,7 @@ public class NetcdfFile {
   public Variable findTopVariable(String name) {
     if (name == null) return null;
 
-    for (int i = 0; i < variables.size(); i++) {
-      Variable v = (Variable) variables.get(i);
+    for (Variable v : variables) {
       if (name.equals(v.getName()))
         return v;
     }
@@ -735,8 +746,8 @@ public class NetcdfFile {
    *
    * @return List of type Dimension.
    */
-  public List getDimensions() {
-    return new ArrayList(dimensions);
+  public List<Dimension> getDimensions() {
+    return new ArrayList<Dimension>(dimensions);
   }
 
   /**
@@ -746,8 +757,7 @@ public class NetcdfFile {
    * @return the dimension, or null if not found
    */
   public Dimension findDimension(String name) {
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension d = (Dimension) dimensions.get(i);
+    for (Dimension d : dimensions) {
       if (name.equals(d.getName()))
         return d;
     }
@@ -756,22 +766,19 @@ public class NetcdfFile {
 
   /**
    * Return true if this file has an unlimited (record) dimension.
+   * @return if this file has an unlimited Dimension(s)
    */
   public boolean hasUnlimitedDimension() {
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension d = (Dimension) dimensions.get(i);
-      if (d.isUnlimited()) return true;
-    }
-    return false;
+    return getUnlimitedDimension() != null;
   }
 
   /**
    * Return the unlimited (record) dimension, or null if not exist.
    * If there are multiple unlimited dimensions, it will return the first one.
+   * @return the unlimited Dimension, or null if none.
    */
   public Dimension getUnlimitedDimension() {
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension d = (Dimension) dimensions.get(i);
+    for (Dimension d : dimensions) {
       if (d.isUnlimited()) return d;
     }
     return null;
@@ -784,8 +791,8 @@ public class NetcdfFile {
    *
    * @return List of type Attribute
    */
-  public java.util.List getGlobalAttributes() {
-    return new ArrayList(gattributes);
+  public java.util.List<Attribute> getGlobalAttributes() {
+    return new ArrayList<Attribute>(gattributes);
   }
 
   /**
@@ -795,8 +802,7 @@ public class NetcdfFile {
    * @return the attribute, or null if not found
    */
   public Attribute findGlobalAttribute(String name) {
-    for (int i = 0; i < gattributes.size(); i++) {
-      Attribute a = (Attribute) gattributes.get(i);
+    for (Attribute a : gattributes) {
       if (name.equals(a.getName()))
         return a;
     }
@@ -810,8 +816,7 @@ public class NetcdfFile {
    * @return the attribute, or null if not found
    */
   public Attribute findGlobalAttributeIgnoreCase(String name) {
-    for (int i = 0; i < gattributes.size(); i++) {
-      Attribute a = (Attribute) gattributes.get(i);
+    for (Attribute a : gattributes) {
       if (name.equalsIgnoreCase(a.getName()))
         return a;
     }
@@ -863,13 +868,12 @@ public class NetcdfFile {
    *
    * @param variables List of type Variable
    * @return List of Array, one for each Variable in the input.
-   * @throws IOException
+   * @throws IOException if read error
    */
-  public java.util.List readArrays(java.util.List variables) throws IOException {
-    java.util.List result = new java.util.ArrayList();
-    for (int i = 0; i < variables.size(); i++) {
-      result.add(((Variable) variables.get(i)).read());
-    }
+  public java.util.List<Array> readArrays(java.util.List<Variable> variables) throws IOException {
+    java.util.List<Array> result = new java.util.ArrayList<Array>();
+    for (Variable variable : variables)
+      result.add(variable.read());
     return result;
   }
 
@@ -880,8 +884,8 @@ public class NetcdfFile {
    * @param variableSection the constraint expression. This must start with a top variable.
    * @param flatten         if true and its a member of a Structure, remove the surrounding StructureData.
    * @return Array data read.
-   * @throws IOException
-   * @throws InvalidRangeException
+   * @throws IOException if error
+   * @throws InvalidRangeException if variableSection is invalid
    * @see NCdump#parseVariableSection for syntax of constraint expression
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
@@ -935,10 +939,12 @@ public class NetcdfFile {
   }
 
   /**
-   * Write the NcML representation: dont show coodinate values, use getPathName() for the uri attribute.
+   * Write the NcML representation: dont show coodinate values
    *
    * @param os : write to this Output Stream.
-   * @throws IOException
+   * @param uri use this for the uri attribute; if null use getLocation(). // ??
+   * @throws IOException if error
+   * @see NCdump#writeNcML
    */
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
     NCdump.writeNcML(this, os, false, uri);
@@ -951,7 +957,7 @@ public class NetcdfFile {
    * All previous object references (variables, dimensions, etc) remain valid.
    *
    * @return true if file was extended.
-   * @throws IOException
+   * @throws IOException if error
    */
   public boolean syncExtend() throws IOException {
     if (spi != null)
@@ -965,7 +971,7 @@ public class NetcdfFile {
    * DO NOT USE THIS ROUTINE YET - NOT FULLY TESTED
    *
    * @return true if file was changed.
-   * @throws IOException
+   * @throws IOException if error
    */
   public boolean sync() throws IOException {
     if (spi != null)
@@ -978,8 +984,9 @@ public class NetcdfFile {
 
   /**
    * This is can only be used for local netcdf-3 files.
-   *
+   * @param filename location
    * @deprecated use NetcdfFile.open( location) or NetcdfFileCache.acquire( location)
+   * @throws java.io.IOException if error
    */
   public NetcdfFile(String filename) throws IOException {
     this.location = filename;
@@ -992,8 +999,9 @@ public class NetcdfFile {
 
   /**
    * This is can only be used for netcdf-3 files served over HTTP
-   *
+   * @param url HTTP URL location
    * @deprecated use NetcdfFile.open( http:location) or NetcdfFileCache.acquire( http:location)
+   * @throws java.io.IOException if error
    */
   public NetcdfFile(URL url) throws IOException {
     this.location = url.toString();
@@ -1004,24 +1012,24 @@ public class NetcdfFile {
   }
 
   /**
-   * Open an existing netcdf file (read only), using the specified iosp
-   * @param location location of file. This is a URL string, or a local pathname.
-   * @throws IOException
-   */
-
-  /**
    * Open an existing netcdf file (read only), using the specified iosp.
+   * The ClassLoader for this class is used.
    *
    * @param iospClassName the name of the class implementing IOServiceProvider
    * @param iospParam     parameter to pass to the IOSP
    * @param location      location of file. This is a URL string, or a local pathname.
+   * @param buffer_size   use this buffer size on the RandomAccessFile
    * @param cancelTask    allow user to cancel
-   * @throws IOException if error
+   * @throws ClassNotFoundException if the iospClassName cannot be found
+   * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
+   * @throws InstantiationException if the class cannot be instatiated, eg if it has no nullary constructor
+   * @throws IOException if I/O error
+   * @see ucar.unidata.io.RandomAccessFile
    */
   protected NetcdfFile(String iospClassName, String iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
           throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
+    Class iospClass = getClass().getClassLoader().loadClass(iospClassName);
     this.spi = (IOServiceProvider) iospClass.newInstance();
     if (debugSPI) System.out.println("NetcdfFile uses iosp = " + spi.getClass().getName());
     this.spi.setSpecial(iospParam);
@@ -1047,7 +1055,10 @@ public class NetcdfFile {
    * Open an existing netcdf file (read only).
    *
    * @param location location of file. This is a URL string, or a local pathname.
-   * @throws IOException
+   * @param spi use this IOServiceProvider instance
+   * @param raf read from this RandomAccessFile
+   * @param cancelTask    allow user to cancel
+   * @throws IOException if I/O error
    */
   protected NetcdfFile(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
@@ -1079,6 +1090,7 @@ public class NetcdfFile {
   /**
    * Copy constructor: used by NetcdfDataset.
    * Shares the iosp.
+   * @param ncfile copy from here
    */
   protected NetcdfFile(NetcdfFile ncfile) {
     this.location = ncfile.getLocation();
@@ -1088,15 +1100,19 @@ public class NetcdfFile {
   }
 
   /**
-   * Add a group attribute. If group is null, use root group
+   * Add an attribute to a group.
+   * @param parent add to this group. If group is null, use root group
+   * @param att add this attribute
    */
-  public void addAttribute(Group g, Attribute att) {
-    if (g == null) g = rootGroup;
-    g.addAttribute(att);
+  public void addAttribute(Group parent, Attribute att) {
+    if (parent == null) parent = rootGroup;
+    parent.addAttribute(att);
   }
 
   /**
-   * Add a group to the parent group. If parent is null, use root group
+   * Add a group to the parent group.
+   * @param parent add to this group. If group is null, use root group
+   * @param g add this group
    */
   public void addGroup(Group parent, Group g) {
     if (parent == null) parent = rootGroup;
@@ -1104,16 +1120,19 @@ public class NetcdfFile {
   }
 
   /**
-   * Add a shared Dimension to a Group. If group is null, use root group
+   * Add a shared Dimension to a Group.
+   * @param parent add to this group. If group is null, use root group
+   * @param d add this Dimension
    */
-  public void addDimension(Group g, Dimension d) {
-    if (g == null) g = rootGroup;
-    g.addDimension(d);
+  public void addDimension(Group parent, Dimension d) {
+    if (parent == null) parent = rootGroup;
+    parent.addDimension(d);
   }
 
   /**
-   * Remove a shared Dimension from a Group by name. If group is null, use root group.
-   *
+   * Remove a shared Dimension from a Group by name.
+   * @param g remove from this group. If group is null, use root group
+   * @param dimName name of Dimension to remove.
    * @return true if found and removed.
    */
   public boolean removeDimension(Group g, String dimName) {
@@ -1122,7 +1141,9 @@ public class NetcdfFile {
   }
 
   /**
-   * Add a Variable to the given group. If group is null, use root group
+   * Add a Variable to the given group.
+   * @param g add to this group. If group is null, use root group
+   * @param v add this Variable
    */
   public void addVariable(Group g, Variable v) {
     if (g == null) g = rootGroup;
@@ -1130,8 +1151,9 @@ public class NetcdfFile {
   }
 
   /**
-   * Remove a Variable from the given group by name. If group is null, use root group.
-   *
+   * Remove a Variable from the given group by name.
+   * @param g remove from this group. If group is null, use root group
+   * @param varName name of variable to remove.
    * @return true is variable found and removed
    */
   public boolean removeVariable(Group g, String varName) {
@@ -1141,6 +1163,8 @@ public class NetcdfFile {
 
   /**
    * Add a variable attribute.
+   * @param v add to this Variable.
+   * @param att add this attribute
    */
   public void addVariableAttribute(Variable v, Attribute att) {
     v.addAttribute(att);
@@ -1148,6 +1172,8 @@ public class NetcdfFile {
 
   /**
    * Add a Variable to the given structure.
+   * @param s add to this Structure
+   * @param v add this Variable.
    */
   public void addMemberVariable(Structure s, Variable v) {
     if (v != null) s.addMemberVariable(v);
@@ -1198,20 +1224,25 @@ public class NetcdfFile {
 
   /**
    * Replace the group's list of variables. For copy construction.
+   * @param g replace all the variables in this Group
+   * @param vlist replace with this list of variables.
    */
-  protected void replaceGroupVariables(Group g, ArrayList vlist) {
+  protected void replaceGroupVariables(Group g, ArrayList<Variable> vlist) {
     g.variables = vlist;
   }
 
   /**
    * Replace the structure's list of variables. For copy construction.
+   * @param s replace all the variables in this Structure
+   * @param vlist replace with this list of variables.
    */
-  protected void replaceStructureMembers(Structure s, ArrayList vlist) {
+  protected void replaceStructureMembers(Structure s, ArrayList<Variable> vlist) {
     s.setMemberVariables(vlist);
   }
 
   /**
    * Set the globally unique dataset identifier.
+   * @param id the id
    */
   public void setId(String id) {
     this.id = id;
@@ -1219,6 +1250,7 @@ public class NetcdfFile {
 
   /**
    * Set the dataset "human readable" title.
+   * @param title the title
    */
   public void setTitle(String title) {
     this.title = title;
@@ -1226,6 +1258,7 @@ public class NetcdfFile {
 
   /**
    * Set the location, a URL or local filename.
+   * @param location the location
    */
   public void setLocation(String location) {
     this.location = location;
@@ -1270,9 +1303,9 @@ public class NetcdfFile {
    * It also looks for coordinate variables.
    */
   public void finish() {
-    variables = new ArrayList();
-    gattributes = new ArrayList();
-    dimensions = new ArrayList();
+    variables = new ArrayList<Variable>();
+    gattributes = new ArrayList<Attribute>();
+    dimensions = new ArrayList<Dimension>();
     finishGroup(rootGroup);
   }
 
@@ -1281,9 +1314,9 @@ public class NetcdfFile {
    * Used for rereading the file on a sync().
    */
   public void empty() {
-    variables = new ArrayList();
-    gattributes = new ArrayList();
-    dimensions = new ArrayList();
+    variables = new ArrayList<Variable>();
+    gattributes = new ArrayList<Attribute>();
+    dimensions = new ArrayList<Dimension>();
     rootGroup = null; // dorky - need this for following call
     rootGroup = new Group(this, null, "");
     addedRecordStructure = false;
@@ -1292,26 +1325,17 @@ public class NetcdfFile {
   private void finishGroup(Group g) {
 
     variables.addAll(g.variables);
-    for (int i = 0; i < g.variables.size(); i++) {
-      Variable v = (Variable) g.variables.get(i);
+    for (Variable v : g.variables) {
       v.calcIsCoordinateVariable();
-      /* if (v.getName().equals("Time") && !v.isCoordinateAxis) {
-        System.out.println("hah ");
-        v.calcIsCoordinateVariable();
-      } */
     }
 
-    for (int i = 0; i < g.attributes.size(); i++) {
-      Attribute oldAtt = (Attribute) g.attributes.get(i);
+    for (Attribute oldAtt : g.attributes) {
       String newName = makeFullNameWithString(g, oldAtt.getName());
-      // newName = createValidNetcdfObjectName( newName);    // LOOK why are we doing this ???
-      //System.out.println("  add att="+newName);
       gattributes.add(new Attribute(newName, oldAtt));
     }
 
     // LOOK this wont match the variables' dimensions if there are groups
-    for (int i = 0; i < g.dimensions.size(); i++) {
-      Dimension oldDim = (Dimension) g.dimensions.get(i);
+    for (Dimension oldDim : g.dimensions) {
       if (oldDim.isShared()) {
         if (g == rootGroup) {
           dimensions.add(oldDim);
@@ -1322,9 +1346,8 @@ public class NetcdfFile {
       }
     }
 
-    List groups = g.getGroups();
-    for (int i = 0; i < groups.size(); i++) {
-      Group nested = (Group) groups.get(i);
+    List<Group> groups = g.getGroups();
+    for (Group nested : groups) {
       finishGroup(nested);
     }
   }
@@ -1391,15 +1414,16 @@ public class NetcdfFile {
     return sbuff.toString();
   }
 
-  /**
+  /*
    * Is this a Netcdf-3 file ?
-   */
+   *
   public boolean isNetcdf3FileFormat() {
     return (spi != null) && (spi instanceof N3iosp);
-  }
+  } */
 
   /**
-   * Experimental - do not use
+   * Experimental - DO NOT USE!!!
+   * @return the IOSP for this NetcdfFile
    */
   public IOServiceProvider getIosp() {
     return spi;
@@ -1415,9 +1439,6 @@ public class NetcdfFile {
     }
   }
 
-  /**
-   * debug
-   */
   public static void main(String[] arg) throws Exception {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
 

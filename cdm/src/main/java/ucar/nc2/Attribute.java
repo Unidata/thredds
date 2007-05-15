@@ -1,6 +1,5 @@
-// $Id:Attribute.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,11 +24,10 @@ import ucar.ma2.*;
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
  * The value can be a one dimensional array of Strings or numeric values.
- *
+ * <p/>
  * Attributes are considered immutable : do not change them after they have been constructed.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class Attribute {
@@ -41,90 +39,132 @@ public class Attribute {
 
   /**
    * Get the name of this Attribute.
-   *  Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
+   * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
+   *
+   * @return name
    */
-  public String getName() { return name; }
+  public String getName() {
+    return name;
+  }
 
   /**
    * Get the data type of the Attribute value.
+   *
+   * @return DataType
    */
-  public DataType getDataType() { return dataType; }
+  public DataType getDataType() {
+    return dataType;
+  }
 
-  /** True if value is a String or String[]. */
-  public boolean isString() { return dataType == DataType.STRING; }
+  /**
+   * True if value is a String or String[].
+   *
+   * @return if its a String.
+   */
+  public boolean isString() {
+    return dataType == DataType.STRING;
+  }
 
-  /** True if value is an array (getLength() > 1) */
-  public boolean isArray() { return (getLength() > 1); }
+  /**
+   * True if value is an array (getLength() > 1)
+   *
+   * @return if its an array.
+   */
+  public boolean isArray() {
+    return (getLength() > 1);
+  }
 
   /**
    * Get the length of the array of values; = 1 if scaler.
+   *
+   * @return number of elementss in the array.
    */
-  public int getLength() { return nelems; }
+  public int getLength() {
+    return nelems;
+  }
 
   /**
    * Get the value as an Array.
+   *
    * @return Array of values.
    */
-  public Array getValues() { return values; }
+  public Array getValues() {
+    return values;
+  }
 
   /**
    * Retrieve String value; only call if isString() is true.
+   *
    * @return String if this is a String valued attribute, else null.
    * @see Attribute#isString
    */
-  public String getStringValue(){ return getStringValue(0); }
+  public String getStringValue() {
+    return getStringValue(0);
+  }
 
-   /**
-   * Retrieve String value; only call if isString() is true.
-   * @return String if this is a String valued attribute, else null.
+  /**
+   * Retrieve ith String value; only call if isString() is true.
+   *
+   * @param index which index
+   * @return ith String value (if this is a String valued attribute and index in range), else null.
    * @see Attribute#isString
    */
   public String getStringValue(int index) {
     if (!isString() || (index < 0) || (index >= nelems))
       return null;
-    return (String) values.getObject( ima.set0(index));
+    return (String) values.getObject(ima.set0(index));
   }
 
   /**
    * Retrieve numeric value.
    * Equivalent to <code>getNumericValue(0)</code>
+   *
    * @return the first element of the value array, or null if its a String.
    */
-  public Number getNumericValue(){ return getNumericValue(0); }
-
+  public Number getNumericValue() {
+    return getNumericValue(0);
+  }
 
   /// these deal with array-valued attributes
 
   /**
    * Retrieve a numeric value by index. If its a String, it will try to parse it as a double.
+   *
    * @param index the index into the value array.
    * @return Number <code>value[index]</code>, or null if its a non-parsable String or
-   *  the index is out of range.
+   *         the index is out of range.
    */
   public Number getNumericValue(int index) {
     if (isString() || (index < 0) || (index >= nelems))
       return null;
 
     if (dataType == DataType.STRING) {
-      try {  return new Double( getStringValue(index)); }
-      catch (NumberFormatException e) { return null; }
+      try {
+        return new Double(getStringValue(index));
+      }
+      catch (NumberFormatException e) {
+        return null;
+      }
     }
 
     if (dataType == DataType.BYTE)
-      return new Byte( values.getByte( ima.set0(index)));
+      return values.getByte(ima.set0(index));
     else if (dataType == DataType.SHORT)
-      return new Short( values.getShort( ima.set0(index)));
+      return values.getShort(ima.set0(index));
     else if (dataType == DataType.INT)
-      return new Integer( values.getInt( ima.set0(index)));
+      return values.getInt(ima.set0(index));
     else if (dataType == DataType.FLOAT)
-      return new Float( values.getFloat( ima.set0(index)));
+      return values.getFloat(ima.set0(index));
     else if (dataType == DataType.DOUBLE)
-      return new Double( values.getDouble( ima.set0(index)));
+      return values.getDouble(ima.set0(index));
 
     return null;
   }
 
-  /** Instances which have same content are equal. */
+  /**
+   * Instances which have same content are equal.
+   */
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if ((o == null) || !(o instanceof Attribute)) return false;
@@ -136,7 +176,7 @@ public class Attribute {
     if (!dataType.equals(attribute.dataType)) return false;
 
     if (values != null) {
-      for (int i=0; i<getLength(); i++) {
+      for (int i = 0; i < getLength(); i++) {
         int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
         int r2 = attribute.isString() ? attribute.getStringValue(i).hashCode() : attribute.getNumericValue(i).hashCode();
         if (r1 != r2) return false;
@@ -146,35 +186,42 @@ public class Attribute {
     return true;
   }
 
-  /** Override Object.hashCode() to implement equals. */
+  /**
+   * Override Object.hashCode() to implement equals.
+   */
+  @Override
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
-      result = 37*result + getName().hashCode();
-      result = 37*result + getDataType().hashCode();
-      for (int i=0; i<getLength(); i++) {
+      result = 37 * result + getName().hashCode();
+      result = 37 * result + getDataType().hashCode();
+      for (int i = 0; i < getLength(); i++) {
         int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
-        result = 37*result + h;
-      } 
+        result = 37 * result + h;
+      }
       hashCode = result;
     }
     return hashCode;
   }
+
   private volatile int hashCode = 0;
 
-  /** String representation */
+  /**
+   * String representation
+   */
+  @Override
   public String toString() {
     StringBuffer buff = new StringBuffer();
     buff.append(getName());
     if (isString()) {
       buff.append(" = ");
-      for (int i=0; i<getLength(); i++) {
+      for (int i = 0; i < getLength(); i++) {
         if (i != 0) buff.append(", ");
         buff.append("\"").append(getStringValue(i)).append("\"");
       }
     } else {
       buff.append(" = ");
-      for (int i=0; i<getLength(); i++) {
+      for (int i = 0; i < getLength(); i++) {
         if (i != 0) buff.append(", ");
         buff.append(getNumericValue(i));
         if (dataType == DataType.FLOAT)
@@ -190,28 +237,43 @@ public class Attribute {
 
 
   ///////////////////////////////////////////////////////////////////////////////
-    // for subclasses
-  protected Attribute() {}
-
-  /** Constructor. Must also set value */
-  public Attribute( String name) {
-    this( name, true);
+  // for subclasses
+  protected Attribute() {
   }
 
-  /** Constructor. Must also set value */
-  public Attribute( String name, boolean validate) {
+  /**
+   * Constructor. Must also set value
+   *
+   * @param name name of Attribute
+   */
+  public Attribute(String name) {
+    this(name, true);
+  }
+
+  /**
+   * Constructor. Must also set value
+   *
+   * @param name     name of Attribute
+   * @param validate whther to validate the name.
+   */
+  public Attribute(String name, boolean validate) {
     this.name = name;
     if (validate) validate(name);
   }
 
-  private void validate( String name) {
+  private void validate(String name) {
     if (!NetcdfFile.isValidNetcdfObjectName(name))
-      throw new IllegalArgumentException("Illegal Netcdf Object Name = '"+name+"', should be "+
-          NetcdfFile.getValidNetcdfObjectNamePattern());
+      throw new IllegalArgumentException("Illegal Netcdf Object Name = '" + name + "', should be " +
+              NetcdfFile.getValidNetcdfObjectNamePattern());
   }
 
-  /** Copy constructor */
-  public Attribute( String name, Attribute from) {
+  /**
+   * Copy constructor
+   *
+   * @param name name of Attribute
+   * @param from copy value from here.
+   */
+  public Attribute(String name, Attribute from) {
     this.name = name;
     //validate(name);
     this.dataType = from.dataType;
@@ -222,89 +284,108 @@ public class Attribute {
 
   /**
    * Create a String-valued Attribute.
+   *
+   * @param name name of Attribute
+   * @param val  value of Attribute
    */
-  public Attribute( String name, String val) {
+  public Attribute(String name, String val) {
     this.name = name;
     //validate(name);
-    setStringValue( val);
+    setStringValue(val);
   }
 
   /**
    * Create a scalar numeric-valued Attribute.
+   *
+   * @param name name of Attribute
+   * @param val  value of Attribute
    */
-  public Attribute( String name, Number val) {
+  public Attribute(String name, Number val) {
     this.name = name;
     validate(name);
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass());
-    Array vala = Array.factory( dt.getPrimitiveClassType(), shape);
+    Array vala = Array.factory(dt.getPrimitiveClassType(), shape);
     Index ima = vala.getIndex();
-    vala.setDouble( ima.set0(0), val.doubleValue());
-    setValues( vala);
+    vala.setDouble(ima.set0(0), val.doubleValue());
+    setValues(vala);
   }
 
   /**
    * Construct attribute with list of values.
-   * @param name name of attribute
+   *
+   * @param name   name of attribute
    * @param values array of values.
    */
-  public Attribute( String name, Array values) {
+  public Attribute(String name, Array values) {
     this.name = name;
     //validate(name);
-    setValues( values);
+    setValues(values);
   }
 
   /**
    * Set the name of the Attribute.
+   *
+   * @param name name of Attribute
    */
-  public void setName( String name) {
+  public void setName(String name) {
     this.name = name;
     //validate(name);
   }
 
   /**
    * Create an Attribute with a String or a 1-dimensional array of primitives.
+   *
+   * @param val value of Attribute
    * @deprecated use setValues( Array val)
    */
-  protected void setValueOld( Object val) {
+  protected void setValueOld(Object val) {
     if (val instanceof String)
-      setStringValue( (String) val);
+      setStringValue((String) val);
     else {
-      int n = java.lang.reflect.Array.getLength( val);
-      int[] shape = new int[] {n};
+      int n = java.lang.reflect.Array.getLength(val);
+      int[] shape = new int[]{n};
       Class elemType = val.getClass().getComponentType();
-      Array vala = Array.factory( elemType, shape, val);
-      setValues( vala);
+      Array vala = Array.factory(elemType, shape, val);
+      setValues(vala);
     }
     hashCode = 0;
   }
 
-  /** set the value as a String, trimming trailing zeroes */
-  public void setStringValue( String val) {
-       // get rid of trailing zeroes
+  /**
+   * set the value as a String, trimming trailing zeroes
+   *
+   * @param val value of Attribute
+   */
+  public void setStringValue(String val) {
+    // get rid of trailing zeroes
     int len = val.length();
-    while ((len > 0) && (val.charAt( len-1) == 0))
+    while ((len > 0) && (val.charAt(len - 1) == 0))
       len--;
 
     if (len != val.length())
       val = val.substring(0, len);
-    values = Array.factory(String.class, new int[] {1});
-    values.setObject( values.getIndex(), val);
-    setValues( values);
+    values = Array.factory(String.class, new int[]{1});
+    values.setObject(values.getIndex(), val);
+    setValues(values);
   }
 
-  /** set the values from an Array */
-  public void setValues( Array arr) {
-    if (DataType.getType( arr.getElementType()) == null)
-      throw new IllegalArgumentException("Cant set Attribute with type "+arr.getElementType());
+  /**
+   * set the values from an Array
+   *
+   * @param arr value of Attribute
+   */
+  public void setValues(Array arr) {
+    if (DataType.getType(arr.getElementType()) == null)
+      throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
 
     if (arr.getElementType() == char.class) { // turn CHAR into STRING
       ArrayChar carr = (ArrayChar) arr;
       arr = carr.make1DStringArray();
     }
     if (arr.getRank() != 1)
-      arr = arr.reshape(new int[] { (int) arr.getSize() } ); // make sure 1D
+      arr = arr.reshape(new int[]{(int) arr.getSize()}); // make sure 1D
 
     this.values = arr;
     this.nelems = (int) arr.getSize();
@@ -316,20 +397,21 @@ public class Attribute {
   /**
    * A copy constructor using a ucar.unidata.util.Parameter.
    * Need to do this so ucar.unidata.geoloc package doesnt depend on ucar.nc2 library
+   *
    * @param param copy info from here.
    */
-  public Attribute( ucar.unidata.util.Parameter param) {
+  public Attribute(ucar.unidata.util.Parameter param) {
     this.name = param.getName();
     validate(name);
 
     if (param.isString()) {
-      setStringValue( param.getStringValue());
-      
+      setStringValue(param.getStringValue());
+
     } else {
       double[] values = param.getNumericValues();
       int n = values.length;
-      Array vala = Array.factory( DataType.DOUBLE.getPrimitiveClassType(), new int[] {n}, values);
-      setValues( vala);
+      Array vala = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{n}, values);
+      setValues(vala);
     }
   }
 

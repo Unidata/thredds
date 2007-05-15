@@ -120,10 +120,18 @@ public class TimeCopy {
      *  copyFileNIO(100 kb chunk) took = 203.687 sec; rate = 9.667895457245676Mb/sec
      *  copy (buffer) took = 146.766 sec; rate = 13.417444244579809Mb/sec
      *  copyFileNIO(1 kb chunk) took = 167.937 sec; rate = 11.725972370591352Mb/sec
+     *
+     * bert
+     *  copyFileNIO(10 kb chunk) took = 185.266 sec; rate = 10.629174387097471Mb/sec
+        copy (buffer) took = 130.828 sec; rate = 15.052011969914696Mb/sec
+        copyFileNIO(10 kb chunk) took = 296.363 sec; rate = 6.644637225294655Mb/sec
+        copy (buffer) took = 84.73400000000001 sec; rate = 23.24007626218519Mb/sec
+        copy (buffer) took = 107.459 sec; rate = 18.325357782968386Mb/sec
+        copyFileNIO(10 kb chunk) took = 115.798 sec; rate = 17.005687680270817Mb/sec
      */
-    copyFileNIO("C:/data/hdf5/IASI.h5", "C:/temp/nio", 1);
-    //copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut4", true);
-    
+    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/iostream", true);
+    copyFileNIO("C:/data/hdf5/IASI.h5", "C:/temp/nio", 10);
+
   }
 
   static public void copyFile(String filenameIn, String filenameOut, boolean buffer) throws IOException {

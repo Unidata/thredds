@@ -1,6 +1,5 @@
-// $Id:Group.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,31 +31,36 @@ import java.io.PrintStream;
  * There is always at least one Group in a dataset, the root Group, whose name is the empty string.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class Group {
   protected NetcdfFile ncfile;
   protected Group parent;
   protected String name;
   protected String shortName;
-  protected ArrayList variables = new ArrayList();
-  protected ArrayList dimensions = new ArrayList();
-  protected ArrayList groups = new ArrayList();
-  protected ArrayList attributes = new ArrayList();
+  protected ArrayList<Variable> variables = new ArrayList<Variable>();
+  protected ArrayList<Dimension> dimensions = new ArrayList<Dimension>();
+  protected ArrayList<Group> groups = new ArrayList<Group>();
+  protected ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
-   /** Get the full name, starting from the root Group. */
+   /** Get the full name, starting from the root Group.
+    * @return group full name
+    */
   public String getName() { return name; }
 
-   /** Get the "short" name, unique within its parent Group. */
+   /** Get the "short" name, unique within its parent Group.
+    * @return group short name
+    */
   public String getShortName() { return shortName; }
 
-   /** Get its parent Group, or null if its the root group. */
+   /** Get its parent Group, or null if its the root group.
+    * @return parent Group
+    */
   public Group getParentGroup() { return parent; }
 
   /** Get the Variables contained directly in this group.
    * @return List of type Variable; may be empty, not null.
    */
-  public java.util.List getVariables() { return new ArrayList(variables); }
+  public java.util.List<Variable> getVariables() { return new ArrayList<Variable>(variables); }
 
   /**
    * Find the Variable with the specified (short) name in this group.
@@ -66,8 +70,7 @@ public class Group {
   public Variable findVariable(String shortName) {
     if (shortName == null) return null;
 
-    for (int i=0; i<variables.size(); i++) {
-      Variable v = (Variable) variables.get(i);
+    for (Variable v : variables) {
       if (shortName.equals(v.getShortName()))
         return v;
     }
@@ -91,7 +94,7 @@ public class Group {
   /** Get the Groups contained directly in this Group.
    * @return List of type Group; may be empty, not null.
    */
-  public java.util.List getGroups() { return new ArrayList(groups); }
+  public java.util.List<Group> getGroups() { return new ArrayList<Group>(groups); }
 
   /**
    * Retrieve the Group with the specified (short) name.
@@ -101,10 +104,9 @@ public class Group {
   public Group findGroup(String shortName) {
     if ( shortName == null) return null;
 
-    for (int i=0; i<groups.size(); i++) {
-      Group g = (Group) groups.get(i);
-      if (shortName.equals(g.getShortName()))
-        return g;
+    for (Group group : groups) {
+      if (shortName.equals(group.getShortName()))
+        return group;
     }
 
     return null;
@@ -114,7 +116,7 @@ public class Group {
    * Get the Dimensions contained directly in this group.
    * @return List of type Dimension; may be empty, not null.
    */
-  public java.util.List getDimensions() { return new ArrayList( dimensions); }
+  public java.util.List<Dimension> getDimensions() { return new ArrayList<Dimension>( dimensions); }
 
   /**
    * Retrieve a Dimension using its (short) name. If it doesnt exist in this group,
@@ -138,8 +140,7 @@ public class Group {
    * @return the Dimension, or null if not found
    */
   public Dimension findDimensionLocal(String name) {
-    for (int i=0; i<dimensions.size(); i++) {
-      Dimension d = (Dimension) dimensions.get(i);
+    for (Dimension d : dimensions) {
       if (name.equals(d.getName()))
         return d;
     }
@@ -154,7 +155,7 @@ public class Group {
   */
  public boolean removeDimension(String dimName) {
    for (int i=0; i<dimensions.size(); i++) {
-     Dimension d = (Dimension) dimensions.get(i);
+     Dimension d = dimensions.get(i);
      if (dimName.equals(d.getName())) {
        dimensions.remove(d);
        return true;
@@ -170,7 +171,7 @@ public class Group {
   */
  public boolean removeVariable(String varName) {
    for (int i=0; i<variables.size(); i++) {
-     Variable v = (Variable) variables.get(i);
+     Variable v = variables.get(i);
      if (varName.equals(v.getShortName())) {
        variables.remove(v);
        return true;
@@ -183,7 +184,7 @@ public class Group {
    * Get the set of attributes contained directly in this Group.
    * @return List of type Attribute; may be empty, not null.
    */
-  public java.util.List getAttributes() { return new ArrayList(attributes); }
+  public java.util.List<Attribute> getAttributes() { return new ArrayList<Attribute>(attributes); }
 
   /**
    * Find an Attribute in this Group by its name.
@@ -192,8 +193,7 @@ public class Group {
    * @return the attribute, or null if not found
    */
   public Attribute findAttribute(String name) {
-    for (int i=0; i<attributes.size(); i++) {
-      Attribute a = (Attribute) attributes.get(i);
+    for (Attribute a : attributes) {
       if (name.equals(a.getName()))
         return a;
     }
@@ -207,8 +207,7 @@ public class Group {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
-    for (int i=0; i<attributes.size(); i++) {
-      Attribute a = (Attribute) attributes.get(i);
+    for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getName()))
         return a;
     }
@@ -217,15 +216,16 @@ public class Group {
 
   //////////////////////////////////////////////////////////////////////////////////////
 
-  /** Get String with name and attributes. Used in short descriptions like tooltips. */
+  /** Get String with name and attributes. Used in short descriptions like tooltips.
+   * @return name and attributes String.
+   */
   public String getNameAndAttributes() {
     StringBuffer sbuff = new StringBuffer();
     sbuff.append("Group ");
     sbuff.append(getShortName());
     sbuff.append("\n");
-    for (int i=0; i<attributes.size(); i++) {
-      Attribute att = (Attribute) attributes.get(i);
-      sbuff.append("  "+getShortName()+":");
+    for (Attribute att : attributes) {
+      sbuff.append("  " + getShortName() + ":");
       sbuff.append(att.toString());
       sbuff.append(";");
       sbuff.append("\n");
@@ -245,41 +245,41 @@ public class Group {
 
     if (hasD)
       out.print(indent+" dimensions:\n");
-    for (int i=0; i<dimensions.size(); i++) {
-      Dimension myd = (Dimension) dimensions.get(i);
-      out.print(indent+myd.writeCDL(strict));
-      out.print(indent+"\n");
+    for (Dimension myd : dimensions) {
+      out.print(indent + myd.writeCDL(strict));
+      out.print(indent + "\n");
     }
 
     if (hasV)
       out.print(indent+" variables:\n");
-    for (int i=0; i<variables.size(); i++) {
-      Variable v = (Variable) variables.get(i);
-      out.print( v.writeCDL(indent+"   ", false, strict));
+    for (Variable v : variables) {
+      out.print(v.writeCDL(indent + "   ", false, strict));
     }
 
-    for (int i=0; i<groups.size(); i++) {
-      Group g = (Group) groups.get(i);
-      out.print("\n "+indent+"Group "+g.getShortName()+" {\n");
-      g.toString( out, indent+"  ");
-      out.print(indent+" }\n");
+    for (Group g : groups) {
+      out.print("\n " + indent + "Group " + g.getShortName() + " {\n");
+      g.toString(out, indent + "  ");
+      out.print(indent + " }\n");
     }
 
     if (hasA && (hasD || hasV || hasG))
       out.print("\n");
-    for (int i=0; i<attributes.size(); i++) {
-      Attribute att = (Attribute) attributes.get(i);
-      out.print(indent+" "+getShortName()+":");
+    for (Attribute att : attributes) {
+      out.print(indent + " " + getShortName() + ":");
       out.print(att.toString());
       out.print(";");
-      if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // "+att.getDataType());
+      if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // " + att.getDataType());
       out.print("\n");
     }
   }
 
 
   //////////////////////////////////////////////////////////////////////////////////////
-  /** Constructor */
+  /** Constructor
+   * @param ncfile NetcdfFile owns this Group
+   * @param parent parent of Group. If null, this is the root Group.
+   * @param shortName short name of Group.
+   */
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
     this.ncfile = ncfile;
     this.parent = parent == null ? ncfile.getRootGroup() : parent ;
@@ -287,15 +287,19 @@ public class Group {
     this.name = (parent == null) ? shortName : parent.getName() + "/" + shortName;
   }
 
-  /** Set the Group name */
+  /** Set the Group short name
+   * @param name short name.
+   */
   public void setName( String name) {
     this.name = name;
   }
 
-  /**  Add new Attribute; replace old if has same name. */
+  /**  Add new Attribute; replace old if has same name.
+   * @param att add this Attribute.
+   */
   public void addAttribute(Attribute att) {
     for (int i=0; i<attributes.size(); i++) {
-      Attribute a = (Attribute) attributes.get(i);
+      Attribute a = attributes.get(i);
       if (att.getName().equals(a.getName())) {
         attributes.set(i, att); // replace
         return;
@@ -304,18 +308,24 @@ public class Group {
     attributes.add( att);
   }
 
-  /** Add a shared Dimension */
+  /** Add a shared Dimension
+   * @param d add this Dimension
+   */
   public void addDimension( Dimension d) {
     dimensions.add( d);
   }
 
-  /** Add a nested Group */
+  /** Add a nested Group
+   * @param g add this Group.
+   */
   public void addGroup( Group g) {
     groups.add( g);
     g.parent = this;
   }
 
-  /** Add a Variable */
+  /** Add a Variable
+   * @param v add this Variable.
+   */
   public void addVariable( Variable v) {
     if (v == null) return;
     variables.add( v);
@@ -323,20 +333,24 @@ public class Group {
   }
 
   /** Remove an Attribute : uses the attribute hashCode to find it.
-   * @return true if was found and removed */
+   * @param a remove this Attribute.
+   * @return true if was found and removed
+   */
   public boolean remove( Attribute a) {
     if (a == null) return false;
     return attributes.remove( a);
   }
 
   /** Remove an Dimension : uses the dimension hashCode to find it.
+   * @param d remove this Dimension.
    * @return true if was found and removed */
   public boolean remove( Dimension d) {
     if (d == null) return false;
     return dimensions.remove( d);
   }
 
-  /** Remove an Attribute : uses the attribute hashCode to find it.
+  /** Remove an Attribute : uses the Group hashCode to find it.
+   * @param g remove this Group.
    * @return true if was found and removed */
   public boolean remove( Group g) {
     if (g == null) return false;
@@ -344,6 +358,7 @@ public class Group {
   }
 
   /** Remove a Variable : uses the variable hashCode to find it.
+   * @param v remove this Variable.
    * @return true if was found and removed */
   public boolean remove( Variable v) {
     if (v == null) return false;
@@ -353,6 +368,7 @@ public class Group {
   /**
    * Instances which have same content are equal.
    */
+  @Override
   public boolean equals(Object oo) {
     if (this == oo) return true;
     if ( !(oo instanceof Variable)) return false;
@@ -360,6 +376,7 @@ public class Group {
   }
 
   /** Override Object.hashCode() to implement equals. */
+  @Override
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
