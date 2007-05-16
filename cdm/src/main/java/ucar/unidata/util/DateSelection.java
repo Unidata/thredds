@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.13 2007/05/11 13:56:31 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.16 2007/05/16 12:50:37 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,7 +25,10 @@
 
 
 
+
+
 package ucar.unidata.util;
+
 
 
 import java.util.ArrayList;
@@ -40,7 +43,7 @@ import java.util.List;
 
 public class DateSelection {
 
-    /** _more_ */
+    /** debug flag */
     public boolean debug = false;
 
 
@@ -63,16 +66,16 @@ public class DateSelection {
 
     /** Mode for constructing set */
     public static int[] TIMEMODES = { TIMEMODE_FIXED, TIMEMODE_CURRENT,
-                                      TIMEMODE_RELATIVE, TIMEMODE_DATA };
+                                      TIMEMODE_RELATIVE };
 
     /** Mode for constructing set */
     public static String[] STARTMODELABELS = { "Fixed", "Current Time (Now)",
-            "Relative to End Time", "From Data" };
+            "Relative to End Time  " };
 
     /** Mode for constructing set */
     public static String[] ENDMODELABELS = { "Fixed", "Current Time (Now)",
-                                             "Relative to Start Time",
-                                             "From Data" };
+                                             "Relative to Start Time" };
+
 
     /** Start mode */
     private int startMode = TIMEMODE_FIXED;
@@ -168,9 +171,9 @@ public class DateSelection {
 
 
     /**
-     * _more_
+     * Generate an array of times for the interval
      *
-     * @return _more_
+     * @return intervals
      */
     public double[] getIntervalTicks() {
         Date[] range         = getRange();
@@ -413,11 +416,17 @@ public class DateSelection {
         }
 
 
+
         Date startDate = new Date((long) start);
         Date endDate   = new Date((long) end);
 
         return new Date[] { startDate, endDate };
     }
+
+
+
+
+
 
 
 
@@ -1016,6 +1025,26 @@ public class DateSelection {
 
 
     }
+
+    /**
+     * tostring
+     *
+     * @return tostring
+     */
+    public String toString() {
+        return " startMode      =" + startMode + "\n" + " endMode        ="
+               + this.endMode + "\n" + " startFixedTime ="
+               + this.startFixedTime + "\n" + " endFixedTime   ="
+               + this.endFixedTime + "\n" + " startOffset    ="
+               + this.startOffset + "\n" + " endOffset      ="
+               + this.endOffset + "\n" + " postRange      =" + this.postRange
+               + "\n" + " preRange       =" + this.preRange + "\n"
+               + " interval       =" + this.interval + "\n"
+               + " roundTo        =" + this.roundTo + "\n"
+               + " count          =" + count + "\n";
+
+    }
+
 
 }
 
