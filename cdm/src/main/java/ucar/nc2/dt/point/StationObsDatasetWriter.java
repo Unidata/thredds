@@ -505,7 +505,7 @@ public class StationObsDatasetWriter {
     System.out.println("That took = " + took);
   }
 
-  private static void rewrite(String fileIn, String fileOut) throws IOException {
+  public static void rewrite(String fileIn, String fileOut) throws IOException {
     long start = System.currentTimeMillis();
 
     // do it in memory for speed

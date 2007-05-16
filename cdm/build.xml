@@ -125,7 +125,7 @@
   <property name="Class-Path"
             value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${bufr.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${opendap.jar};lib/${bufr.jar};lib/${grib.jar};lib/${jdom.jar};lib/${httpclient.jar};lib/${http-codec.jar};lib/${http-logging.jar};lib/${jpeg2000.jar};lib/${logging.jar};lib/${jgoodies.jar};lib/${resourcesOptional.jar};lib/${visadNoDods.jar}"/>
+            value="lib/${bufr.jar}:lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${logging.jar}:lib/${jgoodies.jar}:lib/${resourcesOptional.jar}:lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -157,7 +157,7 @@
 
   <target name="compile" depends="init, release-settings" description="library compile">
     <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
-           includeAntRuntime="false" source="1.4" target="1.4">
+           includeAntRuntime="false" source="1.5" target="1.5">
       <src refid="sourcepath" />
       <patternset refid="sources"/>
       <classpath refid="compile.classpath"/>
@@ -166,7 +166,7 @@
 
   <target name="compileFromSrc" depends="init, release-settings" description="compile from source release">
     <javac srcdir="src" destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
-           includeAntRuntime="false" source="1.4" target="1.4">
+           includeAntRuntime="false" source="1.5" target="1.5">
       <classpath refid="compileFromSrc.classpath"/>
     </javac>
   </target>
@@ -280,7 +280,7 @@
   <!-- source release -->
   <property name="srcRelease" value="ncSrc-${release.version}.zip"/>
   <property name="srcZip.dir" location="${build.dir}/srcZip"/>
-  <target name="makeSrc" description="create source release">
+  <target name="makeSrc" depends="init" description="create source release">
     <copy todir="${srcZip.dir}" overwrite="true" preservelastmodified="true">
       <fileset file="${build.dir}/README"/>
       <fileset file="${build.dir}/CHANGES"/>
@@ -418,7 +418,7 @@
   <target name="javadocAll" description="make all javadocs">
     <mkdir dir="${javadocAll.dir}"/>
     <javadoc Doctitle="NetCDF-Java 2.2 API" Use="true" Windowtitle="NetCDF-Java 2.2 API"
-             maxmemory="256m" sourcepathref="sourcepath" destdir="${javadocAll.dir}" protected="true" source="1.4">
+             maxmemory="256m" sourcepathref="sourcepath" destdir="${javadocAll.dir}" protected="true" source="1.5">
       <classpath refid="compile.classpath"/>
       <classpath refid="compileUI.classpath"/>
       <package name="dods.*"/>
@@ -463,7 +463,7 @@
     <pathconvert property="sourcepath.prop" refid="sourcepath" targetos="windows"/>
     <echo>sourcepath=${sourcepath.prop}</echo>
 
-    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.4" target="1.4">
+    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.5" target="1.5">
       <src refid="sourcepathUI"/>
 
       <patternset refid="sources"/>
@@ -717,7 +717,7 @@
     <!-- debugging path -->
     <property name="test.classpath" refid="test.classpath"/>
     <echo>test.classpath=${test.classpath}</echo>
-    <javac destdir="${test.dir}/classes" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.4" target="1.4">
+    <javac destdir="${test.dir}/classes" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.5" target="1.5">
       <src refid="test.sourcepath"/>
       <patternset refid="sources"/>
       <classpath refid="test.classpath"/>

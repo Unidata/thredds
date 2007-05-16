@@ -27,12 +27,15 @@ import java.util.ArrayList;
 
 import thredds.servlet.AbstractServlet;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.DebugHandler;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.nc2.NetcdfFileCache;
+import ucar.nc2.dataset.NetcdfDatasetCache;
 
 /**
  * Netcdf StationObs subsetting.
@@ -42,7 +45,7 @@ import org.jdom.input.SAXBuilder;
 public class StationObsServlet extends AbstractServlet {
 
   private boolean allow = true;
-  private StationObsCollection soc, socOrg, socRewrite;
+  private StationObsCollection soc;
 
   // must end with "/"
   protected String getPath() {
@@ -50,6 +53,19 @@ public class StationObsServlet extends AbstractServlet {
   }
 
   protected void makeDebugActions() {
+    DebugHandler debugHandler = DebugHandler.get("NetcdfSubsetServer");
+    DebugHandler.Action act;
+
+    act = new DebugHandler.Action("showMetarFiles", "Show Metar Files") {
+      public void doAction(DebugHandler.Event e) {
+        e.pw.println("Metar Files\n");
+        ArrayList<StationObsCollection.Dataset> list = soc.getDatasets();
+        for (StationObsCollection.Dataset ds : list) {
+          e.pw.println(" " + ds);
+        }
+      }
+    };
+    debugHandler.addAction(act);
   }
 
   public void init() throws ServletException {
@@ -57,14 +73,14 @@ public class StationObsServlet extends AbstractServlet {
     //socRewrite = new StationObsCollection("C:/temp2/", false);
     //socOrg = new StationObsCollection("C:/data/metars/", false);
     //socOrg = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/", true);
-    socOrg = new StationObsCollection("/opt/tomcat/content/thredds/public/stn/", false);
+    soc = new StationObsCollection("/opt/tomcat/content/thredds/public/stn/", "/data/ldm/pub/decoded/netcdf/surface/metar/");
+    //soc = new StationObsCollection("C:/temp2/", "C:/data/metars/");
   }
 
   public void destroy() {
     super.destroy();
     soc.close();
   }
-
 
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     if (!allow) {
@@ -77,8 +93,7 @@ public class StationObsServlet extends AbstractServlet {
     System.out.println(req.getQueryString());
 
     String pathInfo = req.getPathInfo();
-    soc = (pathInfo.startsWith("/rewrite/")) ? socRewrite : socOrg;
-    System.out.println("Using soc= "+soc.getName()+" for path= "+pathInfo);
+    //System.out.println("Using soc= "+soc.getName()+" for path= "+pathInfo);
 
     boolean wantXML = pathInfo.endsWith("dataset.xml");
     boolean showForm = pathInfo.endsWith("dataset.html");

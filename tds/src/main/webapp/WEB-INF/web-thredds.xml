@@ -84,6 +84,7 @@
   <servlet>
     <servlet-name>NetcdfSubsetService</servlet-name>
     <servlet-class>thredds.server.ncSubset.StationObsServlet</servlet-class>
+    <load-on-startup>5</load-on-startup>
   </servlet>
 
   <!-- data services -->
