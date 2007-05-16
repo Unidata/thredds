@@ -45,27 +45,40 @@ public class TestAll extends TestCase
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       suite.addTestSuite( TestTdsPingMotherlode.class );
     }
-    else if ( tdsTestLevel.equalsIgnoreCase( "ping-idd" ) )
+    else if ( tdsTestLevel.equalsIgnoreCase( "ping-catalogs" ) )
     {
-      suite.addTestSuite( thredds.tds.ethan.TestTdsIddPing.class );
+      //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
+      //System.setProperty( "thredds.tds.test.catalogs", "catalog.xml" );
+      suite.addTest( new TestTdsBasics( "testPingCatalogs" ) );
     }
-    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogAnd1Ds" ) )
+    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs" ) )
+    {
+      //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
+      //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
+      suite.addTest( new TestTdsBasics( "testCrawlCatalogs" ) );
+    }
+    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs-and1DsPerCollection" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
       suite.addTestSuite( TestTdsCrawl.class );
     }
-    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalog" ) )
+    else if ( tdsTestLevel.equalsIgnoreCase( "ping-idd" ) )
+    {
+      System.setProperty( "thredds.tds.test.catalogs", "catalog.xml,idd/models.xml" );
+      suite.addTest( new TestTdsBasics( "testPingCatalogs" ) );
+    }
+    else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs-oneLevelDeep" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
-      suite.addTest( new TestTdsBasics( "testCrawlCatalog" ) );
+      suite.addTest( new TestTdsBasics( "testCrawlCatalogsOneLevelDeep" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-topcatalog" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       System.setProperty( "thredds.tds.test.catalog", "topcatalog.xml" );
-      suite.addTest( new TestTdsBasics( "testCrawlCatalogOneLevelDeep" ) );
+      suite.addTest( new TestTdsBasics( "testCrawlCatalogsOneLevelDeep" ) );
     }
 //    else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL-mlode" ) )
 //      // ToDo Need to implement this one.
@@ -110,27 +123,50 @@ public class TestAll extends TestCase
     return dqc;
   }
 
-  public static InvCatalogImpl openAndValidateCatalog( String catUrl )
+  public static InvCatalogImpl openAndValidateCatalog( String catUrl, StringBuffer log, boolean logToStdOut )
   {
-    StringBuffer log = new StringBuffer();
-    InvCatalogImpl cat = openAndValidateCatalogForChaining( catUrl, log );
-    if ( cat == null )
+    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
+    StringBuffer validationMsg = new StringBuffer();
+    StringBuffer tmpMsg = new StringBuffer();
+    String curSysTimeAsString = null;
+    try
     {
-      fail( log.toString() );
+      curSysTimeAsString = DateUtil.getCurrentSystemTimeAsISO8601();
+
+      InvCatalogImpl cat = catFactory.readXML( catUrl );
+      boolean isValid = cat.check( validationMsg, false );
+      if ( !isValid )
+      {
+        tmpMsg.append( "Invalid catalog <" ).append( catUrl ).append( ">." ).append( validationMsg.length() > 0 ? " Validation messages:\n" + validationMsg.toString() : "" );
+        if ( logToStdOut ) System.out.println( tmpMsg.toString() );
+        log.append( log.length() > 0 ? "\n" : "").append( tmpMsg );
+        return null;
+      }
+      else
+      {
+        tmpMsg.append( "Valid catalog <" ).append( catUrl ).append( ">." ).append( validationMsg.length() > 0 ? " Validation messages:\n" + validationMsg.toString() : "" );
+        if ( logToStdOut ) System.out.println( tmpMsg.toString() );
+        log.append( log.length() > 0 ? "\n" : "" ).append( tmpMsg );
+        return cat;
+      }
+    }
+    catch ( Exception e )
+    {
+      tmpMsg.append( "[" ).append( curSysTimeAsString ).append( "] Exception while parsing catalog <" ).append( catUrl ).append( ">: " ).append( e.getMessage() );
+      if ( logToStdOut ) System.out.println( tmpMsg.toString() );
+      log.append( log.length() > 0 ? "\n" : "" ).append( tmpMsg );
       return null;
     }
-
-    return cat;
   }
 
   public static boolean openAndValidateCatalogTree( String catUrl, StringBuffer log, boolean onlyRelativeUrls )
   {
-    InvCatalogImpl cat = openAndValidateCatalogForChaining( catUrl, log );
+    InvCatalogImpl cat = openAndValidateCatalog( catUrl, log, true );
     if ( cat == null )
       return false;
 
     boolean ok = true;
-    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), onlyRelativeUrls );
+    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), log, onlyRelativeUrls );
     for ( InvCatalogRef catRef : catRefList )
     {
       if ( onlyRelativeUrls )
@@ -144,7 +180,7 @@ public class TestAll extends TestCase
         }
         catch ( URISyntaxException e )
         {
-          log.append( "\nBad catalogRef <" ).append( title ).append( ">: " ).append( href );
+          log.append( log.length() > 0 ? "\n" : "" ).append( "Bad catalogRef <" ).append( title ).append( ">: " ).append( href );
           continue;
         }
         if ( uri.isAbsolute())
@@ -160,67 +196,41 @@ public class TestAll extends TestCase
 
   public static boolean openAndValidateCatalogOneLevelDeep( String catUrl, StringBuffer log, boolean onlyRelativeUrls )
   {
-    InvCatalogImpl cat = openAndValidateCatalogForChaining( catUrl, log );
+    InvCatalogImpl cat = openAndValidateCatalog( catUrl, log, true );
     if ( cat == null )
       return false;
 
     boolean ok = true;
-    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), onlyRelativeUrls );
+    List<InvCatalogRef> catRefList = findAllCatRefs( cat.getDatasets(), log, onlyRelativeUrls );
     for ( InvCatalogRef catRef : catRefList )
     {
-      InvCatalogImpl cat2 = openAndValidateCatalogForChaining( catRef.getURI().toString(), log );
+      InvCatalogImpl cat2 = openAndValidateCatalog( catRef.getURI().toString(), log, true );
       ok &= cat2 != null;
     }
 
     return ok;
   }
 
-  public static InvCatalogImpl openAndValidateCatalogForChaining( String catUrl, StringBuffer log )
+  public static InvCatalogImpl openValidateAndCheckExpires( String catalogUrl, StringBuffer log )
   {
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
-    StringBuffer validationMsg = new StringBuffer();
-    String curSysTimeAsString = null;
-    try
+    InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl, log, false );
+    if ( catalog == null )
     {
-      curSysTimeAsString = DateUtil.getCurrentSystemTimeAsISO8601();
-
-      InvCatalogImpl cat = catFactory.readXML( catUrl );
-      boolean isValid = cat.check( validationMsg, false );
-      if ( !isValid )
-      {
-        log.append( "Invalid catalog <" ).append( catUrl ).append( ">:\n" ).append( validationMsg.toString() );
-        return null;
-      }
-      else
-      {
-        String tmpMsg = "Valid catalog <" + catUrl + ">." + ( validationMsg.length() > 0 ? "" : " Validation messages:\n" + validationMsg.toString() );
-        System.out.println( tmpMsg );
-        return cat;
-      }
-    }
-    catch ( Exception e )
-    {
-      log.append( "[" ).append( curSysTimeAsString ).append( "] Exception while parsing catalog <" ).append( catUrl ).append( ">: " ).append( e.getMessage() );
       return null;
     }
-  }
 
-  public static void openValidateAndCheckExpires( String catalogUrl )
-  {
-    InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl );
-    if ( catalog != null )
+    // Check if the catalog has expired.
+    DateType expiresDateType = catalog.getExpires();
+    if ( expiresDateType != null )
     {
-      // Check if the catalog has expired.
-      DateType expiresDateType = catalog.getExpires();
-      if ( expiresDateType != null )
+      if ( expiresDateType.getDate().getTime() < System.currentTimeMillis() )
       {
-        if ( expiresDateType.getDate().getTime() < System.currentTimeMillis() )
-        {
-          fail( "Expired catalog <" + catalogUrl + ">: " + expiresDateType.toDateTimeStringISO() + "." );
-          return;
-        }
+        log.append( log.length() > 0 ? "\n" : "" ).append( "Expired catalog <" ).append( catalogUrl ).append( ">: " ).append( expiresDateType.toDateTimeStringISO() ).append( "." );
+        return null;
       }
     }
+
+    return catalog;
   }
 
   public static void openValidateAndCheckAllLatestModelsInCatalogTree( String catalogUrl )
@@ -264,14 +274,11 @@ public class TestAll extends TestCase
     // Resolve the resolver dataset.
     InvAccess curAccess = ds.getAccess( ServiceType.RESOLVER );
     String curResDsPath = curAccess.getStandardUri().toString();
-    InvCatalogImpl curResolvedCat = null;
-    try
+    StringBuffer buf = new StringBuffer();
+    InvCatalogImpl curResolvedCat = openAndValidateCatalog( curResDsPath, buf, false );
+    if ( curResolvedCat == null )
     {
-      curResolvedCat = openAndValidateCatalog( curResDsPath );
-    }
-    catch ( AssertionFailedError e )
-    {
-      failureMsgs.put( curResDsPath, "Failed to open and validate resolver catalog: " + e.getMessage() );
+      failureMsgs.put( curResDsPath, "Failed to open and validate resolver catalog: " + buf.toString() );
       return false;
     }
 
@@ -307,7 +314,7 @@ public class TestAll extends TestCase
     }
 
     // Open the dataset as a CDM Scientific Datatype.
-    StringBuffer buf = new StringBuffer();
+    buf = new StringBuffer();
     TypedDataset typedDs;
     try
     {
@@ -369,11 +376,11 @@ public class TestAll extends TestCase
 
     if ( crawlMsg.length() > 0 )
     {
-      log.append( "Message from catalog crawling:" ).append( "\n  " ).append( crawlMsg );
+      log.append( log.length() > 0 ? "\n" : "" ).append( "Message from catalog crawling:" ).append( "\n  " ).append( crawlMsg );
     }
     if ( ! failureMsgs.isEmpty() )
     {
-      log.append( "Failed to open some datasets:" );
+      log.append( log.length() > 0 ? "\n" : "" ).append( "Failed to open some datasets:" );
       for ( String curPath : failureMsgs.keySet() )
       {
         String curMsg = failureMsgs.get( curPath );
@@ -386,11 +393,14 @@ public class TestAll extends TestCase
   }
 
   /**
-   * Find all catalogRef elements in a catalog.
-   * @param datasets
-   * @return
+   * Find all catalogRef elements in a dataset list.
+   *
+   * @param datasets the list of datasets from which to find all the catalogRefs
+   * @param log StringBuffer into which any messages will be written
+   * @param onlyRelativeUrls only include catalogRefs with relative HREF URLs if true, otherwise include all catalogRef datasets
+   * @return the list of catalogRef datasets
    */
-  private static List<InvCatalogRef> findAllCatRefs( List<InvDatasetImpl> datasets, boolean onlyRelativeUrls )
+  private static List<InvCatalogRef> findAllCatRefs( List<InvDatasetImpl> datasets, StringBuffer log, boolean onlyRelativeUrls )
   {
     List<InvCatalogRef> catRefList = new ArrayList<InvCatalogRef>();
     for ( InvDatasetImpl curDs : datasets )
@@ -400,13 +410,28 @@ public class TestAll extends TestCase
 
       if ( curDs instanceof InvCatalogRef )
       {
-        catRefList.add( (InvCatalogRef) curDs );
+        InvCatalogRef catRef = (InvCatalogRef) curDs;
+        String name = catRef.getName();
+        String href = catRef.getXlinkHref();
+        URI uri;
+        try
+        {
+          uri = new URI( href);
+        }
+        catch ( URISyntaxException e )
+        {
+          log.append( log.length() > 0 ? "\n" : "" ).append( "***WARN - CatalogRef with bad HREF <" ).append( name ).append( " - " ).append( href ).append( "> " );
+          continue;
+        }
+        if ( uri.isAbsolute()) continue;
+
+        catRefList.add( catRef );
         continue;
       }
 
       if ( curDs.hasNestedDatasets() )
       {
-        catRefList.addAll( findAllCatRefs( curDs.getDatasets(), onlyRelativeUrls ) );
+        catRefList.addAll( findAllCatRefs( curDs.getDatasets(), log, onlyRelativeUrls ) );
       }
     }
     return catRefList;

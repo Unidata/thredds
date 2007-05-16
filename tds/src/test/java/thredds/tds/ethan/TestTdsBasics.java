@@ -11,10 +11,12 @@ import junit.framework.TestCase;
 public class TestTdsBasics extends TestCase
 {
 
-  private String host = "motherlode.ucar.edu:8080";
-  private String catalog = "catalog.xml";
+  private boolean showDebug = false;
 
-  private String catalogUrl;
+  private String host = "motherlode.ucar.edu:8080";
+  private String[] catalogList;
+
+  private String targetTdsUrl;
 
   public TestTdsBasics( String name )
   {
@@ -23,23 +25,27 @@ public class TestTdsBasics extends TestCase
 
   protected void setUp()
   {
+    showDebug = Boolean.parseBoolean( System.getProperty( "thredds.tds.test.showDebug", "false" ) );
     host = System.getProperty( "thredds.tds.test.server", host );
-    catalog = System.getProperty( "thredds.tds.test.catalog", catalog );
+    String catalogListString = System.getProperty( "thredds.tds.test.catalogs", null );
+    if ( catalogListString == null )
+      catalogListString = System.getProperty( "thredds.tds.test.catalog", "catalog.xml" );
+    catalogList = catalogListString.split( ",");
 
-    catalogUrl = "http://" + host + "/thredds/" + catalog;
+
+    targetTdsUrl = "http://" + host + "/thredds/";
   }
 
-  public void testPingCatalog()
+  public void testPingCatalogs()
   {
-    TestAll.openAndValidateCatalog( catalogUrl );
-  }
-
-  public void testCrawlCatalog()
-  {
+    boolean pass = true;
     StringBuffer msg = new StringBuffer();
 
-    boolean pass = TestAll.openAndValidateCatalogTree( catalogUrl, msg, true );
-    assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= null != TestAll.openAndValidateCatalog( targetTdsUrl + catalogList[i], msg, showDebug);
+    }
+    assertTrue( "Ping failed on catalog(s): " + msg.toString(),
                 pass );
 
     if ( msg.length() > 0 )
@@ -48,12 +54,16 @@ public class TestTdsBasics extends TestCase
     }
   }
 
-  public void testCrawlCatalogOneLevelDeep()
+  public void testCrawlCatalogs()
   {
+    boolean pass = true;
     StringBuffer msg = new StringBuffer();
 
-    boolean pass = TestAll.openAndValidateCatalogOneLevelDeep( catalogUrl, msg, false );
-    assertTrue( "Invalid catalog(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= TestAll.openAndValidateCatalogTree( targetTdsUrl + catalogList[i], msg, true );
+    }
+    assertTrue( "Invalid catalog(s): " + msg.toString(),
                 pass );
 
     if ( msg.length() > 0 )
@@ -62,13 +72,36 @@ public class TestTdsBasics extends TestCase
     }
   }
 
-  public void testCrawlCatalogOpenOneDatasetInEachCollection()
+  public void testCrawlCatalogsOneLevelDeep()
   {
-
+    boolean pass = true;
     StringBuffer msg = new StringBuffer();
 
-    boolean pass = TestAll.crawlCatalogOpenRandomDataset( catalogUrl, msg );
-    assertTrue( "Failed to open dataset(s) under catalog <" + catalogUrl + ">: " + msg.toString(),
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= TestAll.openAndValidateCatalogOneLevelDeep( targetTdsUrl + catalogList[i], msg, false );
+    }
+
+    assertTrue( "Invalid catalog(s): " + msg.toString(),
+                pass );
+
+    if ( msg.length() > 0 )
+    {
+      System.out.println( msg.toString() );
+    }
+  }
+
+  public void testCrawlCatalogsOpenOneDatasetInEachCollection()
+  {
+    boolean pass = true;
+    StringBuffer msg = new StringBuffer();
+
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], msg );
+    }
+
+    assertTrue( "Failed to open dataset(s): " + msg.toString(),
                 pass );
 
     if ( msg.length() > 0 )

@@ -35,18 +35,38 @@ public class TestTdsPingMotherlode extends TestCase
 
   public void testMainCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/catalog.xml" );
-    // Todo Crawl this catalog and check some datasets.
+    String catUrl = targetTdsUrl + "/catalog.xml";
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
   }
 
   public void testTopCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/topcatalog.xml" );
+    String catUrl = targetTdsUrl + "/topcatalog.xml";
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
   }
 
   public void testIdvModelsCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/idv/models.xml" );
+    String catUrl = targetTdsUrl + "/idv/models.xml";
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
   }
 
   public void testIdvLatestModelsCatalog()
@@ -56,32 +76,84 @@ public class TestTdsPingMotherlode extends TestCase
 
   public void testIdvRtModels10Catalog()
   {
-    TestAll.openValidateAndCheckExpires( targetTdsUrl + "/idv/rt-models.1.0.xml" );
+    String catUrl = targetTdsUrl + "/idv/rt-models.1.0.xml";
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openValidateAndCheckExpires( catUrl, msg );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
+
+    if ( msg.length() > 0 ) System.out.println( msg.toString() );
   }
 
   public void testIdvRtModels06Catalog()
   {
-    TestAll.openValidateAndCheckExpires( targetTdsUrl + "/idv/rt-models.xml" );
+    String catUrl = targetTdsUrl + "/idv/rt-models.xml";
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openValidateAndCheckExpires( catUrl, msg );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
+
+    if ( msg.length() > 0 ) System.out.println( msg.toString() );
   }
 
   public void testCatGenCdpCatalog()
   {
-    TestAll.openValidateAndCheckExpires( targetTdsUrl + "/cataloggen/catalogs/uniModelsInvCat1.0en.xml" );
+    String catUrl = targetTdsUrl + "/cataloggen/catalogs/uniModelsInvCat1.0en.xml";
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openValidateAndCheckExpires( catUrl, msg );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
+
+    if ( msg.length() > 0 ) System.out.println( msg.toString() );
   }
 
   public void testCasestudiesCatalogs()
   {
-    InvCatalogImpl cat = TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/catalog.xml" );
-    // ToDo crawl the catalog and check some datasets.
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/ccs034Catalog.xml" );
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/ccs039Catalog.xml" );
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/july18_2002cat.xml" );
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/casestudies/vgeeCatalog.xml" );
+    // ToDo crawl rather than ping the catalog(s) and check some datasets.
+
+    String [] catUrls = {
+            targetTdsUrl + "/casestudies/catalog.xml",
+            targetTdsUrl + "/casestudies/ccs034Catalog.xml",
+            targetTdsUrl + "/casestudies/ccs039Catalog.xml",
+            targetTdsUrl + "/casestudies/july18_2002cat.xml",
+            targetTdsUrl + "/casestudies/vgeeCatalog.xml"
+    };
+
+    boolean pass = true;
+    StringBuffer msg = new StringBuffer();
+
+    for ( int i = 0; i < catUrls.length; i++ )
+    {
+      pass &= null != TestAll.openAndValidateCatalog( catUrls[i], msg, false );
+    }
+    assertTrue( "Invalid catalog(s): " + msg.toString(),
+                pass );
+
+    if ( msg.length() > 0 )
+    {
+      System.out.println( msg.toString() );
+    }
   }
 
   public void testAllNcModelsCatalog()
   {
-    TestAll.openAndValidateCatalog( targetTdsUrl + "/idd/allModels.TDS-nc.xml" );
+    String catUrl = targetTdsUrl + "/idd/allModels.TDS-nc.xml";
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
   }
 
   public void testDqcServletCatalog()

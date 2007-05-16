@@ -40,14 +40,26 @@ public class TestTdsIddPing extends TestCase
   {
     String catUrl = targetTdsUrl + "catalog.xml";
     System.out.println( "validate catalog: " + catUrl );
-    TestAll.openAndValidateCatalog( catUrl );
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    if ( catalog == null )
+    {
+      fail( msg.toString());
+    }
   }
 
   public void testModelsCatalog()
   {
     String catUrl = targetTdsUrl + "idd/models.xml";
     System.out.println( "validate catalog: " + catUrl );
-    TestAll.openAndValidateCatalog( catUrl );
+
+    StringBuffer msg = new StringBuffer();
+    InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
+    if ( catalog == null )
+    {
+      fail( msg.toString() );
+    }
   }
 
 }
