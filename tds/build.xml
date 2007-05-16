@@ -644,70 +644,69 @@
   <!-- Used by TeamCity to test motherlode:8080 every hour -->
   <target name="test-TDS-ping-motherlode-8080" description="ping TDS on motherlode:8080">
     <antcall target="test-TDS">
-      <param name="test-TDS.name" value="ping-motherlode-8080" />
-      <param name="test-TDS.server" value="motherlode.ucar.edu:8080" />
-      <param name="test-TDS.level" value="PING-mlode" />
+      <param name="thredds.tds.test.id" value="ping-motherlode-8080" />
+      <param name="thredds.tds.test.server" value="motherlode.ucar.edu:8080" />
+      <param name="thredds.tds.test.level" value="ping-mlode" />
     </antcall>
   </target>
 
   <target name="test-TDS-crawl-motherlode-8080" description="crawl TDS on motherlode:8080">
     <antcall target="test-TDS">
-      <param name="test-TDS.name" value="crawl-motherlode-8080" />
-      <param name="test-TDS.server" value="motherlode.ucar.edu:8080" />
-      <param name="test-TDS.level" value="crawl-catalog" />
+      <param name="thredds.tds.test.id" value="crawl-motherlode-8080" />
+      <param name="thredds.tds.test.server" value="motherlode.ucar.edu:8080" />
+      <param name="thredds.tds.test.level" value="crawl-catalogs" />
     </antcall>
   </target>
 
   <target name="test-TDS-ping-motherlode-9080" description="ping TDS on motherlode:9080">
     <antcall target="test-TDS">
-      <param name="test-TDS.name" value="ping-motherlode-9080" />
-      <param name="test-TDS.server" value="motherlode.ucar.edu:9080" />
-      <param name="test-TDS.level" value="ping-mlode" />
+      <param name="thredds.tds.test.id" value="ping-motherlode-9080" />
+      <param name="thredds.tds.test.server" value="motherlode.ucar.edu:9080" />
+      <param name="thredds.tds.test.level" value="ping-mlode" />
     </antcall>
   </target>
 
   <target name="test-TDS-ping-overlode-8080" description="ping TDS on overlode:8080">
     <antcall target="test-TDS">
-      <param name="test-TDS.name" value="ping-overlode-8080" />
-      <param name="test-TDS.server" value="thredds.cise-nsf.gov:8080" />
-      <param name="test-TDS.level" value="ping-idd" />
+      <param name="thredds.tds.test.id" value="ping-overlode-8080" />
+      <param name="thredds.tds.test.server" value="thredds.cise-nsf.gov:8080" />
+      <param name="thredds.tds.test.level" value="ping-idd" />
     </antcall>
   </target>
 
   <target name="test-TDS-crawl-overlode-8080" description="crawl TDS on overlode:8080">
     <antcall target="test-TDS">
-      <param name="test-TDS.name" value="crawl-overlode-8080" />
-      <param name="test-TDS.server" value="thredds.cise-nsf.gov:8080" />
-      <param name="test-TDS.level" value="crawl-catalog" />
+      <param name="thredds.tds.test.id" value="crawl-overlode-8080" />
+      <param name="thredds.tds.test.server" value="thredds.cise-nsf.gov:8080" />
+      <param name="thredds.tds.test.level" value="crawl-catalogs"  />
     </antcall>
   </target>
 
+  <!-- Make sure to set the "thredds.tds.test.id" property. -->
   <target name="test-TDS" description="test a TDS">
-    <mkdir dir="${test.reports.dir}/${test-TDS.name}"/>
+    <mkdir dir="${test.reports.dir}/${thredds.tds.test.id}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
-      <jvmarg value="-Dthredds.tds.test.server=${test-TDS.server}"/>
-      <jvmarg value="-Dthredds.tds.test.level=${test-TDS.level}"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.reports.dir}/${test-TDS.name}" name="thredds.tds.ethan.TestAll"/>
+      <test todir="${test.reports.dir}/${thredds.tds.test.id}" name="thredds.tds.ethan.TestAll"/>
     </junit>
 
     <!-- #Generate test reports -->
-    <junitreport todir="${test.reports.dir}/${test-TDS.name}">
-      <fileset dir="${test.reports.dir}/${test-TDS.name}">
+    <junitreport todir="${test.reports.dir}/${thredds.tds.test.id}">
+      <fileset dir="${test.reports.dir}/${thredds.tds.test.id}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${test.reports.dir}/${test-TDS.name}"/>
+      <report format="frames" todir="${test.reports.dir}/${thredds.tds.test.id}"/>
     </junitreport>
     <!-- create temporary file indicating these tests failed -->
     <!-- #Test case bypass trick -->
-    <echo message="last build failed tests" file="${test.reports.dir}/${test-TDS.name}/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${test-TDS.name}/index.html for details.</fail>
+    <echo message="last build failed tests" file="${test.reports.dir}/${thredds.tds.test.id}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${thredds.tds.test.id}/index.html for details.</fail>
     <!-- Remove test failed file, as these tests succeeded -->
-    <delete file="${test.reports.dir}/${test-TDS.name}/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${test-TDS.name}/index.html for details."/>
+    <delete file="${test.reports.dir}/${thredds.tds.test.id}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${thredds.tds.test.id}/index.html for details."/>
   </target>
 
 </project>

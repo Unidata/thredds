@@ -28,16 +28,11 @@ import ucar.unidata.util.DateUtil;
  */
 public class TestAll extends TestCase
 {
-  public TestAll( String name )
-  {
-    super( name );
-  }
-
   public static Test suite()
   {
     TestSuite suite = new TestSuite();
 
-    String tdsTestLevel = System.getProperty( "thredds.tds.test.level", "ping-mlode" );
+    String tdsTestLevel = System.getProperty( "thredds.tds.test.level", "ping-catalogs" );
     System.out.println( "Test level: " + tdsTestLevel );
 
     if ( tdsTestLevel.equalsIgnoreCase( "ping-mlode" ) )
@@ -49,13 +44,13 @@ public class TestAll extends TestCase
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       //System.setProperty( "thredds.tds.test.catalogs", "catalog.xml" );
-      suite.addTest( new TestTdsBasics( "testPingCatalogs" ) );
+      suite.addTest( new TestAll( "testPingCatalogs" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
-      suite.addTest( new TestTdsBasics( "testCrawlCatalogs" ) );
+      suite.addTest( new TestAll( "testCrawlCatalogs" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs-and1DsPerCollection" ) )
     {
@@ -66,32 +61,128 @@ public class TestAll extends TestCase
     else if ( tdsTestLevel.equalsIgnoreCase( "ping-idd" ) )
     {
       System.setProperty( "thredds.tds.test.catalogs", "catalog.xml,idd/models.xml" );
-      suite.addTest( new TestTdsBasics( "testPingCatalogs" ) );
+      suite.addTest( new TestAll( "testPingCatalogs" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs-oneLevelDeep" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
-      suite.addTest( new TestTdsBasics( "testCrawlCatalogsOneLevelDeep" ) );
+      suite.addTest( new TestAll( "testCrawlCatalogsOneLevelDeep" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-topcatalog" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
       System.setProperty( "thredds.tds.test.catalog", "topcatalog.xml" );
-      suite.addTest( new TestTdsBasics( "testCrawlCatalogsOneLevelDeep" ) );
+      suite.addTest( new TestAll( "testCrawlCatalogsOneLevelDeep" ) );
     }
-//    else if ( tdsTestLevel.equalsIgnoreCase( "CRAWL-mlode" ) )
-//      // ToDo Need to implement this one.
-//      suite.addTestSuite( thredds.tds.ethan.TestTdsCrawlMotherlode.class );
     else
     {
       suite.addTestSuite( thredds.tds.ethan.TestTdsPingMotherlode.class );
-      // suite.addTestSuite( thredds.tds.ethan.TestTdsCrawlMotherlode.class );
     }
 
 
     return suite;
   }
+
+  private boolean showDebug = false;
+
+  private String host = "motherlode.ucar.edu:8080";
+  private String[] catalogList;
+
+  private String targetTdsUrl;
+
+  public TestAll( String name )
+  {
+    super( name );
+  }
+
+  protected void setUp()
+  {
+    host = System.getProperty( "thredds.tds.test.server", host );
+    targetTdsUrl = "http://" + host + "/thredds/";
+
+    showDebug = Boolean.parseBoolean( System.getProperty( "thredds.tds.test.showDebug", "false" ) );
+
+    String catalogListString = System.getProperty( "thredds.tds.test.catalogs", null );
+    if ( catalogListString == null )
+      catalogListString = System.getProperty( "thredds.tds.test.catalog", "catalog.xml" );
+    catalogList = catalogListString.split( "," );
+  }
+
+  public void testPingCatalogs()
+  {
+    boolean pass = true;
+    StringBuffer msg = new StringBuffer();
+
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= null != TestAll.openAndValidateCatalog( targetTdsUrl + catalogList[i], msg, showDebug );
+    }
+    assertTrue( "Ping failed on catalog(s): " + msg.toString(),
+                pass );
+
+    if ( msg.length() > 0 )
+    {
+      System.out.println( msg.toString() );
+    }
+  }
+
+  public void testCrawlCatalogs()
+  {
+    boolean pass = true;
+    StringBuffer msg = new StringBuffer();
+
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= TestAll.openAndValidateCatalogTree( targetTdsUrl + catalogList[i], msg, true );
+    }
+    assertTrue( "Invalid catalog(s): " + msg.toString(),
+                pass );
+
+    if ( msg.length() > 0 )
+    {
+      System.out.println( msg.toString() );
+    }
+  }
+
+  public void testCrawlCatalogsOneLevelDeep()
+  {
+    boolean pass = true;
+    StringBuffer msg = new StringBuffer();
+
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= TestAll.openAndValidateCatalogOneLevelDeep( targetTdsUrl + catalogList[i], msg, false );
+    }
+
+    assertTrue( "Invalid catalog(s): " + msg.toString(),
+                pass );
+
+    if ( msg.length() > 0 )
+    {
+      System.out.println( msg.toString() );
+    }
+  }
+
+  public void testCrawlCatalogsOpenOneDatasetInEachCollection()
+  {
+    boolean pass = true;
+    StringBuffer msg = new StringBuffer();
+
+    for ( int i = 0; i < catalogList.length; i++ )
+    {
+      pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], msg );
+    }
+
+    assertTrue( "Failed to open dataset(s): " + msg.toString(),
+                pass );
+
+    if ( msg.length() > 0 )
+    {
+      System.out.println( msg.toString() );
+    }
+  }
+
 
   public static QueryCapability openAndValidateDqcDoc( String dqcUrl )
   {
