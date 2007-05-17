@@ -682,14 +682,31 @@
     </antcall>
   </target>
 
-  <!-- Make sure to set the "thredds.tds.test.id" property. -->
+  <!-- Make sure to set the following properties:
+       1) "thredds.tds.test.id"
+       2) "thredds.tds.test.server"
+       3) "thredds.tds.test.level"
+       4) "thredds.tds.test.catalogs" -->
   <target name="test-TDS" description="test a TDS">
+    <!-- Set default values for properties. -->
+    <property name="thredds.tds.test.id" value="test-TDS" />
+    <property name="thredds.tds.test.server" value="motherlode.ucar.edu:8080" />
+    <property name="thredds.tds.test.level" value="ping-catalogs" />
+    <property name="thredds.tds.test.catalogs" value="catalog.xml" />
+    <!-- Print the property values. -->
+    <echo>thredds.tds.test.id=${thredds.tds.test.id}</echo>
+    <echo>thredds.tds.test.server=${thredds.tds.test.server}</echo>
+    <echo>thredds.tds.test.level=${thredds.tds.test.level}</echo>
+    <echo>thredds.tds.test.catalogs=${thredds.tds.test.catalogs}</echo>
+    <echo>[OR maybe : thredds.tds.test.catalog=${thredds.tds.test.catalog}]</echo>
+    
     <mkdir dir="${test.reports.dir}/${thredds.tds.test.id}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
       <jvmarg value="-Dthredds.tds.test.server=${thredds.tds.test.server}"/>
       <jvmarg value="-Dthredds.tds.test.level=${thredds.tds.test.level}"/>
+      <jvmarg value="-Dthredds.tds.test.catalogs=${thredds.tds.test.catalogs}"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
       <test todir="${test.reports.dir}/${thredds.tds.test.id}" name="thredds.tds.ethan.TestAll"/>
