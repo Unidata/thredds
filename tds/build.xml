@@ -683,7 +683,7 @@
     <antcall target="test-TDS">
       <param name="thredds.tds.test.id" value="crawlLimitedCat1Ds-mlode-8080" />
       <!--param name="thredds.tds.test.level" value="crawl-catalogs-and1DsPerCollection"  /-->
-      <param name="thredds.tds.test.level" value="ping-catalogs"  />
+      <param name="thredds.tds.test.level" value="crawl-catalogs"  />
       <param name="thredds.tds.test.catalogs" value="idd/models.xml,catalog/nexrad/composite/catalog.xml,catalog/nexrad/composite2/catalog.xml,catalog/nexrad/level3/N0R/VNX/catalog.xml,catalog/nexrad/level2/KFTG/catalog.xml" />
     </antcall>
   </target>
