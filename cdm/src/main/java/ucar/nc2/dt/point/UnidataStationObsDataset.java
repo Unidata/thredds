@@ -44,6 +44,7 @@ import thredds.catalog.DataType;
  */
 
 public class UnidataStationObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationObsDataset.class);
 
   static public boolean isValidFile(NetcdfFile ds) {
     if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()) &&
@@ -294,11 +295,11 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 
       while (recno >= 0) {
         try {
-          if (debugRead) {
-            System.out.println(name + " try to read at record " + recno);
-          }
+          // deal with files that are updating
           if (recno > getDataCount()) {
+            int n = getDataCount();
             ncfile.syncExtend();  // LOOK kludge?
+            log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
           }
           StructureData sdata = recordVar.readStructure(recno);
           if (isContiguousList) {
@@ -314,11 +315,11 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
           recno = nextRecord;
 
         } catch (ucar.ma2.InvalidRangeException e) {
-          e.printStackTrace();
+          log.error("UnidataStationObsDataset.readObservation recno=" + recno, e);
           throw new IOException(e.getMessage());
 
         } catch (ParseException e) {
-          e.printStackTrace();
+          log.error("UnidataStationObsDataset.readObservation recno=" + recno, e);
           throw new IOException(e.getMessage());
         }
       }
@@ -341,10 +342,12 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       double startTime, endTime;
       boolean hasDateRange;
 
-      StationIterator() { }
+      StationIterator() {
+      }
+
       StationIterator(Date start, Date end) {
-        startTime = timeUnit.makeValue( start);
-        endTime = timeUnit.makeValue( end);
+        startTime = timeUnit.makeValue(start);
+        endTime = timeUnit.makeValue(end);
         hasDateRange = true;
       }
 
@@ -363,7 +366,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
         }
         if (hasDateRange) {
           double timeValue = sobs.getObservationTime();
-          if ((timeValue < startTime) ||(timeValue > endTime))
+          if ((timeValue < startTime) || (timeValue > endTime))
             return nextData();
         }
         return sobs;
@@ -373,6 +376,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
         try {
           return nextData();
         } catch (IOException e) {
+          log.error("UnidataStationObsDataset.StationIterator.next recno=" + nextRecno, e);
           throw new IllegalStateException(e.getMessage()); // not really an illegal state...
         }
       }
@@ -385,6 +389,13 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 
   protected RecordDatasetHelper.RecordStationObs makeObs(int recno, boolean storeData) throws IOException {
     try {
+      // deal with files that are updating
+      if (recno > getDataCount()) {
+        int n = getDataCount();
+        ncfile.syncExtend();  // LOOK kludge?
+        log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
+      }
+
       StructureData sdata = recordVar.readStructure(recno);
 
       // find the station
@@ -409,11 +420,11 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
         return recordHelper.new RecordStationObs(station, obsTime, nomTime, recno);
 
     } catch (ucar.ma2.InvalidRangeException e) {
-      e.printStackTrace();
+      log.error("UnidataStationObsDataset.makeObs recno=" + recno, e);
       throw new IOException(e.getMessage());
 
     } catch (ParseException e) {
-      e.printStackTrace();
+      log.error("UnidataStationObsDataset.makeObs recno=" + recno, e);
       throw new IOException(e.getMessage());
     }
   }

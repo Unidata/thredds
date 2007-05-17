@@ -27,6 +27,7 @@ import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.FileFilter;
 import java.util.List;
 import java.util.Date;
 import java.util.ArrayList;
@@ -40,183 +41,73 @@ import java.util.ArrayList;
  */
 public class CollectionManager {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionManager.class);
+  private ArrayList<MyFile> scanList = new ArrayList<MyFile>(); // current set of DirectoryScan for scan elements
+  private Date latest = null;
+  private String dirName;
 
-
-  private ArrayList scanList = new ArrayList(); // current set of DirectoryScan for scan elements
-  private TimeUnit recheck; // how often to recheck
-  private long lastChecked; // last time checked
-  private boolean wasChanged = true; // something changed since last aggCache file was written
-  private boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
-
-  private DateFormatter formatter = new DateFormatter();
-
-  private String dirName, dateFormatMark;
-  private String runMatcher, forecastMatcher, offsetMatcher; // scan2
-  private boolean wantSubdirs = true;
-
-  // filters
-  private String suffix;
-  private java.util.regex.Pattern regexpPattern = null;
-  private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
-
-  public CollectionManager(String dirName, String suffix, String regexpPatternString, boolean wantSubdirs, String olderS) {
+  public CollectionManager(String dirName, FileFilter ff, String dateFormatString) {
     this.dirName = dirName;
-    this.suffix = suffix;
-    if (null != regexpPatternString)
-      this.regexpPattern = java.util.regex.Pattern.compile(regexpPatternString);
-
-    this.wantSubdirs = wantSubdirs;
-
-    if (olderS != null) {
-      try {
-        TimeUnit tu = new TimeUnit(olderS);
-        this.olderThan_msecs = (long) (1000 * tu.getValueInSeconds());
-      } catch (Exception e) {
-        logger.error("Invalid time unit for olderThan = {}", olderS);
-      }
+    File dir = new File(dirName);
+    File[] files = dir.listFiles(ff);
+    for (File f : files) {
+      Date d = thredds.util.DateFromString.getDateUsingSimpleDateFormat(f.getName(), dateFormatString);
+      add(f, d);
     }
   }
 
-  /**
-   * Recursively crawl directories, add matching MyFile files to result List
-   *
-   * @param result     add MyFile objects to this list
-   * @param cancelTask user can cancel
-   */
-  public void scanDirectory(List<MyFile> result, CancelTask cancelTask) {
-    scanDirectory(dirName, new Date().getTime(), result, cancelTask);
+  public String toString() { return dirName; }
+
+  
+  public List<MyFile> getList() {
+    return scanList;
   }
 
-  private void scanDirectory(String dirName, long now, List<MyFile> result, CancelTask cancelTask) {
-    File allDir = new File(dirName);
-    if (!allDir.exists()) {
-      String tmpMsg = "Non-existent scan location <" + dirName + ">.";
-      logger.error("scanDirectory(): " + tmpMsg);
-      throw new IllegalArgumentException(tmpMsg);
-    }
-    File[] allFiles = allDir.listFiles();
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      String location = f.getAbsolutePath();
-
-      if (f.isDirectory()) {
-        if (wantSubdirs) scanDirectory(location, now, result, cancelTask);
-
-      } else if (accept(location)) {
-        // dont allow recently modified
-        if (olderThan_msecs > 0) {
-          long lastModified = f.lastModified();
-          if (now - lastModified < olderThan_msecs)
-            continue;
-        }
-
-        // add to result
-        result.add(new MyFile(this, f));
-      }
-
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return;
-    }
+  public Date getLatest() {
+    return latest;
   }
 
-  protected boolean accept(String location) {
-    if (null != regexpPattern) {
-      java.util.regex.Matcher matcher = regexpPattern.matcher(location);
-      return matcher.matches();
-    }
-
-    return (suffix == null) || location.endsWith(suffix);
+  public void add(File file, Date d) {
+    scanList.add(new MyFile(file, d));
+    if ((latest == null) || d.after(latest))
+      latest = d;
   }
 
-  private boolean debug, debugSyncDetail;
-  // check if recheckEvery time has passed
-
-  /**
-   * Rescan if recheckEvery time has passed
-   *
-   * @return if theres new datasets, put new datasets into nestedDatasets
-   * @throws IOException
-   */
-  protected boolean timeToRescan() {
-    // see if we need to recheck
-    if (recheck == null) {
-      if (debugSyncDetail) System.out.println(" *Sync not needed, recheck is null");
-      return false;
-    }
-
-    Date now = new Date();
-    Date lastCheckedDate = new Date(lastChecked);
-    Date need = recheck.add(lastCheckedDate);
-    if (now.before(need)) {
-      if (debug) System.out.println(" *Sync not needed, last= " + lastCheckedDate + " now = " + now);
-      return false;
-    }
-
-    return true;
+  public boolean remove(MyFile file) {
+    return scanList.remove(file);
   }
 
-  /* private boolean rescan() throws IOException {
+  public MyFile find(File file) {
+    int index = scanList.indexOf(file);
+    return (index >= 0) ?  scanList.get(index) : null;
+  }
 
-    // ok were gonna recheck
-    lastChecked = System.currentTimeMillis();
-    if (debug) System.out.println(" *Sync at " + new Date());
-
-    // rescan
-    ArrayList newDatasets = new ArrayList();
-    scan(newDatasets, null);
-
-    // replace with previous datasets if they exist
-    boolean changed = false;
-    for (int i = 0; i < newDatasets.size(); i++) {
-      Dataset newDataset = (Dataset) newDatasets.get(i);
-      int index = nestedDatasets.indexOf(newDataset); // equal if location is equal
-      if (index >= 0) {
-        newDatasets.set(i, nestedDatasets.get(index));
-        if (debugSyncDetail) System.out.println("  sync using old Dataset= " + newDataset.location);
-      } else {
-        changed = true;
-        if (debugSyncDetail) System.out.println("  sync found new Dataset= " + newDataset.location);
-      }
+  public List<MyFile> after( Date date) {
+    ArrayList<MyFile> result = new ArrayList<MyFile>();
+    for (MyFile f : scanList) {
+      if (f.date.after(date))
+        result.add(f);
     }
-
-    if (!changed) { // check for deletions
-      for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset oldDataset = (Dataset) nestedDatasets.get(i);
-        if ((newDatasets.indexOf(oldDataset) < 0) && (explicitDatasets.indexOf(oldDataset) < 0)) {
-          changed = true;
-          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + oldDataset.location);
-        }
-      }
-    }
-
-    if (!changed) return false;
-
-    // recreate the list of datasets
-    nestedDatasets = new ArrayList();
-    nestedDatasets.addAll(explicitDatasets);
-    nestedDatasets.addAll(newDatasets);
-
-    return true;
-  }  */
+    return result;
+  }
 
   /**
    * Encapsolate a file that was scanned.
-   * Created in scanDirectory()
    */
-  public class MyFile {
-    CollectionManager dir;
-    File file;
+  public class MyFile implements Comparable {
+    public File file;
+    public Date date;
 
-    Date dateCoord; // will have both or neither
-    String dateCoordS;
-
-    Date runDate; // fmrcHourly only
-    Double offset;
-
-    MyFile(CollectionManager dir, File file) {
-      this.dir = dir;
+    MyFile(File file, Date d) {
+      this.date = d;
       this.file = file;
     }
+
+    public int compareTo(Object o) {
+      MyFile om = (MyFile) o;
+      return date.compareTo( om.date);
+    }
+
+    public String toString() { return file.getAbsolutePath(); }
   }
 
 

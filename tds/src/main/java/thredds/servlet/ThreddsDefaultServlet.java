@@ -49,7 +49,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   protected String getPath() { return ""; }
 
   protected String getContextName() { return "THREDDS Data Server"; }
-  protected String getDocsPath() { return "docs/"; }
+  protected String getDocsPath() { return "http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html"; }
+  //protected String getDocsPath() { return "docs/"; }
 
   protected String getUserCssPath() { return "upc.css"; }
 

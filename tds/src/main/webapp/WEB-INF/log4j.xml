@@ -24,7 +24,7 @@
     </layout>
   </appender>
 
-  <!-- keep track of Cache messages in a seperatefile. runs once a day -->
+  <!-- keep track of Cache messages in a seperate file. -->
   <appender name="cacheLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${logdir}/cache.log"/>
     <param name="MaxFileSize" value="100KB"/>

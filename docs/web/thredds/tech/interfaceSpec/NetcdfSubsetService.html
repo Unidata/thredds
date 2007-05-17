@@ -7,24 +7,37 @@
 </head>
 
 <body>
-<h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service (Experimental) </h1>
+<h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service (Prototype) </h1>
 <hr>
 <div class="head">
+  <h3>Please note that the API described here is still a prototype, and subject to change. </h3>
+  <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em></p>
+  <h2>Overview</h2>
   <p>The NetCDF Subset Service is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
   <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
-  <p>Currently only HTTP Get with key-value pairs (KVP) are used. POST with XML may be added in the future. </p>
+  <p>Currently only HTTP GET with key-value pairs (KVP) are used. POST with XML may be added in the future. </p>
   <p>The service interface tries to follow <a href="#REST">REST design</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
   <h3>Metar Subset Service </h3>
-  <p>We  have a prototype service for 7 days of metar data at <strong>http://motherlode.ucar.edu:8080/thredds/ncss/metars</strong>. Sample URLS look like:</p>
+  <p>We  have a prototype service for IDD METAR data at <strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html">http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html</a></strong>. Sample URLS look like:</p>
   <ul>
-    <li>All data at the station ACK, in raw fomat:
+    <li>Current metar reading for station CAG, in XML fomat:
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?stn=ACK">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=raw&amp;stn=ACK</a></strong> </li>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=CAG&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;stn=CAG&amp;time=present</a></strong></li>
       </ul>
     </li>
-    <li>All data from the station closest to lat, lon = (40, -105) in XML:
+    <li>All data in last 24 hours for station CAG, in CSV fomat:
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&latitude=40&longitude=-105">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;latitude=40&amp;longitude=-105</a></strong></li>
+        <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&stn=CAG&time_end=present&time_duration=PT24H"><strong>http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&amp;stn=CAG&amp;time_end=present&amp;time_duration=<strong>PT24H </strong></strong></a></li>
+      </ul>
+    </li>
+    <li>All available data at the station ACK, in raw format:
+          <ul>
+            <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=raw&stn=ACK">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=raw&amp;stn=ACK</a></strong> </li>
+          </ul>
+    </li>
+    <li>Current metar reading from the station closest to lat, lon = (40, -105) in XML:
+      <ul>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&latitude=40&longitude=-105&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;latitude=40&amp;longitude=-105</a><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=CAG&time=present">&amp;time=present</a></strong></li>
       </ul>
     </li>
     <li>All data within latitude [40,43] and longitude [-105, -103], in CSV format: 
@@ -34,37 +47,29 @@
     </li>
     <li>Only return the fields named <em>wind_speed</em> and <em>wind_from_direction</em> in XML:
       <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=KBRX&var=wind_speed,wind_from_direction">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;stn=KBRX&amp;var=wind_speed,wind_from_direction</a> </strong></li>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=JYG&var=wind_speed,wind_from_direction&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;stn=JYG&amp;var=wind_speed,wind_from_direction</a><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=CAG&time=present">&amp;time=present</a> </strong></li>
       </ul>
     </li>
-    <li>Get data in the last 12 hours, for a given station:
+    <li>Get data in the last 12 hours, for a list of stations:
       <ul>
-        <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&stn=ACK&time_end=present&time_duration=-PT12H"><strong>http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&amp;stn=ACK&amp;time_end=present&amp;time_duration=-PT12H </strong></a></li>
+        <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&stn=CAG,HDN,EGE&time_end=present&time_duration=PT12H"><strong>http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&amp;stn=CAG,HDN,EGE&amp;time_end=present&amp;time_duration=PT12H </strong></a></li>
       </ul>
     </li>
-    <li>Get data closest to  <strong>2007-04-10T00:00:00Z</strong>, for stations within latitude [40,43] and longitude [-105, -103], in CSV format: </li>
-    <ul>
-      <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metar?accept=csv&time=2007-04-10T00:00:00Z&south=40&west=-105&north=43&east=-103"><strong>http://motherlode.ucar.edu:8080/thredds/ncss/metar?accept=csv&amp;time=2007-04-10T00:00:00Z&amp;south=40&amp;west=-105&amp;north=43&amp;east=-103</strong></a></li>
-    </ul>
-    <li>Get latest data for all stations, return as netcdf file
+    <li>Get latest data for all stations, return as netcCDF file
       <ul>
         <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metar?accept=netcdf&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metar?accept=netcdf&amp;time=present</a></strong></li>
-      </ul>
-    </li>
-    <li>Get data for 1 hour starting at <strong>2007-04-10T00:00:00Z</strong> for all stations:
-      <ul>
-        <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metar?accept=text/plain&time_start=2007-04-10T00:00:00Z&time_duration=PT1H"><strong>http://motherlode.ucar.edu:8080/thredds/ncss/metar?<strong>accept=text/plain&amp;time_start=2007-04-10T00:00:00Z</strong>&amp;time_duration=PT1H</strong></a></li>
       </ul>
     </li>
   </ul>
   <p>Other interesting URLs for the metar service: </p>
   <ul>
-    <li>An <a href="http://localhost:8080/thredds/ncss/metars/dataset.html">HTML form</a> for interactive input</li>
-    <li>The <a href="http://localhost:8080/thredds/ncss/metars/dataset.xml">dataset XML</a> document</li>
-    <li>The <a href="http://localhost:8080/thredds/ncss/metars/stations.xml">station List XML</a> document </li>
+    <li>An <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html">HTML form</a> for interactive input</li>
+    <li>The <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml">dataset XML</a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
+    <li>The <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml">station List XML</a> document (<a href="metars/stations.xml">offline</a> example) </li>
+    <li>Example <a href="metars/metarSubset.nc">netCDF file output</a>  in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>. (The file format uses double linked lists to associate the observations with the station.)</li>
   </ul>
   <h3>Gridded Subset Service </h3>
-  <p>We will be changing the existing gridded data subsetting service on motherlode to use this new interface.. </p>
+  <p>We will be changing the existing gridded data subsetting service on motherlode to use this new interface.</p>
   <p>&nbsp;</p>
   <h2><strong>Common Subsetting Parameters </strong></h2>
   <p><strong>The following work for all dataset types: </strong></p>
@@ -169,30 +174,25 @@
     <li>If a bounding box or time range is specified, the variable and its coordinates are subsetted. </li>
     <li>All global attributes are included.</li>
   </ul>
-  <p>&nbsp;</p>
   <h3><strong>Notes</strong></h3>
   <ul>
     <li><strong>Specify lat/lon bounding box: </strong> the 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </li>
   </ul>
-  <p>&nbsp; </p>
   <h2>Dataset Descriptions<a name="DatasetDescription"></a> </h2>
-  <p>Each dataset has a feature type, with its own XML format (?) These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. </p>
+  <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
   <h3>Station Observation Dataset</h3>
-  <p>A Station Observation Dataset has time series observations at named locations called stations. </p>
-  <p>The dataset is described by a stationObsDataset document, which in turn points to the list of valid stations   in a seperate stationCollection document.</p>
+  <p>A Station Observation Dataset is a collection of time series of observations at named locations called <em>stations</em>. </p>
+  <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document.</p>
   <ul>
-    <li>Example <a href="http://localhost:8080/thredds/ncss/metars/dataset.xml">stationObsDataset XML</a> document</li>
-    <li>Example <a href="http://localhost:8080/thredds/ncss/metars/stations.xml">station List XML</a> document </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml">dataset XML</a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml">station List XML</a> document (<a href="metars/stations.xml">offline</a> example) </li>
   </ul>
-  <p>&nbsp;</p>
   <h3>Grid Dataset</h3>
   <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. </p>
   <ul>
     <li> Can make a netcdf subset </li>
     <li>Can get an XML or ascii file: specify a single variable at a single point. Optionally specify a vertical level and time point. </li>
   </ul>
-  <h3>&nbsp;</h3>
-  <p>&nbsp;</p>
   <hr>
   <div class="div4">
     <h2>Reference</h2>
@@ -233,7 +233,7 @@
   <hr>
   <h2><a name="REST"></a>REST Design </h2>
   <h3>1. What are the resources/URIs?</h3>
-  <p>The resources are THREDDS datasets. The resource URIs can be discovered in a <a href="../TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <em><strong>NetcdfServer</strong></em> Service type. Generally they look like: </p>
+  <p>The resources are THREDDS datasets. The resource URIs can be discovered in a <a href="../TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <strong>NetcdfSubset</strong> Service type. Generally these resource URLs look like: </p>
   <blockquote>
     <p> <strong> http://servername:8080/thredds/ncss/{path/dataset}</strong></p>
   </blockquote>
@@ -327,8 +327,7 @@
     <li>404 : unknown resource</li>
     <li>501 : request requires too much server resources / data result would be too large </li>
   </ul>
-  <p>&nbsp;</p>
-  <h2>Resources:</h2>
+  <h3>REST Resources:</h3>
   <ul>
     <li><a href="http://www.xml.com/pub/a/2004/08/11/rest.html">Implementing REST Web Services: Best Practices and Guidelines
     </a></li>
@@ -337,7 +336,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 08, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 17, 2007 
 </address>
 <p>&nbsp;
 </p>

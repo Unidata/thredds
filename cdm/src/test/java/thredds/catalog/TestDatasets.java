@@ -57,4 +57,14 @@ public class TestDatasets extends TestCase {
 
   }
 
+  public void testFullName() {
+    InvCatalogImpl cat = TestCatalogAll.openAbsolute("http://lead.unidata.ucar.edu:8080/thredds/idd/obsData.xml", true);
+
+    InvDataset ds = cat.findDatasetByID("NWS/RASS/1hour");
+    assert (ds != null) : "cant find dataset";
+
+    System.out.println(" fullName= "+ds.getFullName());
+    System.out.println(" name= "+ds.getName());
+  }
+
 }

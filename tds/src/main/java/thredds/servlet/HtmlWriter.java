@@ -367,7 +367,8 @@ public class HtmlWriter
     sb.append( "<HR size=\"1\" noshade=\"noshade\">" );
 
     sb.append( "<h3>" ).append( this.contextVersion );
-    sb.append( " <a href='").append(this.contextPath).append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
+    //sb.append( " <a href='").append(this.contextPath).append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
+    sb.append( " <a href='").append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
     sb.append( "</body>\r\n" );
     sb.append( "</html>\r\n" );
 
@@ -467,7 +468,8 @@ public class HtmlWriter
     sb.append( "<HR size=\"1\" noshade=\"noshade\">" );
 
     sb.append( "<h3>" ).append( this.contextVersion );
-    sb.append( " <a href='" ).append( contextPath ).append( "/").append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
+    //sb.append( " <a href='" ).append( contextPath ).append( "/").append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
+    sb.append( " <a href='" ).append(this.docsPath).append("'> Documentation</a></h3>\r\n" );
     sb.append( "</body>\r\n" );
     sb.append( "</html>\r\n" );
 
@@ -751,7 +753,8 @@ public class HtmlWriter
     sb.append( "<HR size=\"1\" noshade=\"noshade\">" );
 
     sb.append( "<h3>" ).append( this.contextVersion );
-    sb.append( " <a href='" ).append( contextPath ).append( "/" ).append( this.docsPath ).append( "'> Documentation</a></h3>\r\n" );
+    //sb.append( " <a href='" ).append( contextPath ).append( "/" ).append( this.docsPath ).append( "'> Documentation</a></h3>\r\n" );
+    sb.append( " <a href='" ).append( this.docsPath ).append( "'> Documentation</a></h3>\r\n" );
     sb.append( "</body>\r\n" );
     sb.append( "</html>\r\n" );
 

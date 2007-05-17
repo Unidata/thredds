@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 3.16
+ Features
+  * Documentation link on catalog.html pages points to unidata web site.
+  * Default is allow=false for CdmValidator, WCS, NetcdfSubset.
  Bugs
   * DODS NcDAS : promote signed byte attributes to short
   * speedup UnidataStationObsDataset for ncss

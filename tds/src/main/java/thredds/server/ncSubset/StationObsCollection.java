@@ -28,6 +28,7 @@ import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.VariableIF;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Attribute;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -46,6 +47,8 @@ import org.jdom.Element;
 
 public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
+  static private org.slf4j.Logger cacheLogger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+
   private static boolean debug = true, debugDetail = false;
   private static long timeToScan = 0;
 
@@ -73,6 +76,7 @@ public class StationObsCollection {
       c.set(Calendar.SECOND, 0);
       timer.schedule(new ReinitTask(), 1000 * 5); // do in 5 secs
       timer.schedule(new ReinitTask(), c.getTime(), (long) 1000 * 60 * 60 * 24); // repeat once a day
+      cacheLogger.info("StationObsCollection timer set to run at " + c.getTime());
     }
   }
 
@@ -100,7 +104,7 @@ public class StationObsCollection {
 
   private class ReinitTask extends TimerTask {
     public void run() {
-      log.info("StationObsCollection.reinit at " + format.toDateTimeString(new Date()));
+      cacheLogger.info("StationObsCollection.reinit at " + format.toDateTimeString(new Date()));
       init();
     }
   }
@@ -115,20 +119,24 @@ public class StationObsCollection {
 
   ////////////////////////////////////////////
   // keep track of the available datasets LOOK should be configurable
+  private String dateFormatString = "yyyyMMdd_HHmm";
+  private FileFilter ff = new org.apache.commons.io.filefilter.SuffixFileFilter(".nc");
 
   private void init() {
-    makeArchiveFiles(realtimeDir, archiveDir);
+    CollectionManager archive = new CollectionManager( archiveDir, ff, dateFormatString);
+    CollectionManager realtime = new CollectionManager( realtimeDir, ff, dateFormatString);
 
+    makeArchiveFiles(archive, realtime);
     try {
       lock.writeLock().lock(); // wait till no readers
 
-      // cloase all open datasets
+      // close all open datasets
       closeDatasets();
 
       // create new list
       ArrayList<Dataset> newList = new ArrayList<Dataset>();
-      initArchive(archiveDir, newList);
-      initRealtime(realtimeDir, newList);
+      initArchive(archive, newList);
+      initRealtime(archive, realtime, newList);
       Collections.sort(newList);
 
       // make this one the operational one
@@ -144,138 +152,115 @@ public class StationObsCollection {
     datasetDesc = null; // mostly to create new time range
   }
 
-  // the archive files - these have been rewritten for efficiency, and dont change in realtime
-  private void makeArchiveFiles(String realtimeDir, String archiveDir) {
-    File dir = new File(archiveDir);
-    File[] archiveFiles = dir.listFiles();
-    ArrayList<String> archiveList = new ArrayList<String>();
-    for (File f : archiveFiles)
-      if (f.getName().endsWith(".nc"))
-        archiveList.add(f.getName());
+  // make new archive files
+  private void makeArchiveFiles(CollectionManager archive, CollectionManager realtime) {
 
-    dir = new File(realtimeDir);
-    File[] realtimeFiles = dir.listFiles();
-    ArrayList<String> realtimeList = new ArrayList<String>();
-    for (File f : realtimeFiles) {
-      if (f.getName().endsWith(".nc") && !archiveList.contains(f.getName()))
-        realtimeList.add(f.getName());
-    }
-
+    // the set of files in realtime collection that come after the archive files
+    List<CollectionManager.MyFile> realtimeList = realtime.after( archive.getLatest());
     if (realtimeList.size() < 2)
       return;
 
+    // leave latest one alone
     int n = realtimeList.size();
     Collections.sort(realtimeList);
     realtimeList.remove(n - 1);
 
-    for (String filename : realtimeList) {
+    // for the rest, convert to a more efficient format
+    for (CollectionManager.MyFile myfile : realtimeList) {
+      String filename = myfile.file.getName();
       String fileIn = realtimeDir + "/" + filename;
       String fileOut = archiveDir + "/" + filename;
 
       try {
+        cacheLogger.info("StationObsCollection: write " + fileIn + " to archive " + fileOut);
         StationObsDatasetWriter.rewrite(fileIn, fileOut);
-        log.info("StationObsCollection: write " + fileIn + " to archive " + fileOut);
+        archive.add(new File(fileOut), myfile.date);
       } catch (IOException e) {
-        log.error("StationObsCollection: write failed (" + fileIn + " to archive " + fileOut + ")", e);
+        cacheLogger.error("StationObsCollection: write failed (" + fileIn + " to archive " + fileOut + ")", e);
       }
     }
-
   }
 
-
-  // the archive files - these have been rewritten for efficiency, and dont change in realtime
-  private void initArchive(String dirName, ArrayList<Dataset> newList) {
+  // read archive files - these have been rewritten for efficiency, and dont change in realtime
+  private void initArchive(CollectionManager archive, ArrayList<Dataset> newList) {
     // LOOK can these change ?
     stationList = null;
     variableList = null;
 
     Calendar c = Calendar.getInstance(); // contains current startup time
-    c.add(Calendar.HOUR, -7 * 24); // 7 days ago
-    Date lastModOkDate = c.getTime();
+    c.add(Calendar.HOUR, -8 * 24); // 7 or 8 days ago
+    Date firstDate = c.getTime();
+    cacheLogger.info("StationObsCollection: delete files before " + firstDate);
 
     int count = 0;
     long size = 0;
 
     // each one becomes a Dataset and added to the list
-    File dir = new File(dirName);
-    File[] files = dir.listFiles();
-    for (File file : files) {
-      String fileS = file.getAbsolutePath();
-      if (fileS.endsWith(".nc")) {
+    ArrayList<CollectionManager.MyFile> list = new ArrayList<CollectionManager.MyFile>(archive.getList());
+    for (CollectionManager.MyFile myfile : list) {
+      // delete old files
+      if (myfile.date.before(firstDate)) {
+        myfile.file.delete();
+        boolean ok = archive.remove(myfile);
+        cacheLogger.info("StationObsCollection: Deleted archive file " + myfile+" ok= "+ok);
+        continue;
+      }
 
-        // delete old files
-        Date lastModified = new Date(file.lastModified());
-        if (lastModified.before(lastModOkDate)) {
-          file.delete();
-          log.info("StationObsCollection: Deleted archive file " + file);
-          continue;
-        }
+      // otherwise, add an sobsDataset
+      try {
+        Dataset ds = new Dataset(myfile.file, false);
+        newList.add(ds);
+        count++;
+        size += myfile.file.length();
 
-        try {
-          Dataset ds = new Dataset(file, false);
-          newList.add(ds);
-          count++;
-          size += file.length();
+        if (null == stationList)
+          stationList = new ArrayList<Station>(ds.sod.getStations());
 
-          if (null == stationList)
-            stationList = new ArrayList<Station>(ds.sod.getStations());
+        if (null == variableList)
+          variableList = new ArrayList<VariableSimpleIF>(ds.sod.getDataVariables());
 
-          if (null == variableList)
-            variableList = new ArrayList<VariableSimpleIF>(ds.sod.getDataVariables());
-
-        } catch (IOException e) {
-          log.error("Cant open " + fileS, e);
-        }
+      } catch (IOException e) {
+        cacheLogger.error("Cant open " + myfile, e);
       }
     }
 
     size = size / 1000 / 1000;
 
-    if (debug)
-      System.out.println("Reading directory " + dirName + " # files = " + count + " size= " + size + " Mb");
+    cacheLogger.info("Reading directory " + archive + " # files = " + count + " size= " + size + " Mb");
   }
 
   // the archive files - these have been rewritten for efficiency, and dont change in realtime
-  private void initRealtime(String dirName, ArrayList<Dataset> newList) {
+  private void initRealtime(CollectionManager archive, CollectionManager realtime, ArrayList<Dataset> newList) {
     long size = 0;
     int count = 0;
 
-    File dir = new File(dirName);
-    File[] files = dir.listFiles();
-    if (files == null) {
-      log.error("Not a directory " + dirName);
+    List<CollectionManager.MyFile> realtimeList = realtime.after( archive.getLatest());
+    if (realtimeList.size() == 0)
       return;
-    }
-    if (files.length == 0) {
-      log.error("Empty directory " + dirName);
-      return;
-    }
 
-    for (File file : files) {
-      String fileS = file.getName();
-      if (fileS.endsWith(".nc") && !contains(fileS, newList)) {
-        try {
-          Dataset ds = new Dataset(file, true);
-          newList.add(ds);
-          size += file.length();
-          count++;
-        } catch (IOException e) {
-          log.error("Cant open " + file, e);
-        }
+    // each one becomes a Dataset and added to the list
+    for (CollectionManager.MyFile myfile : realtimeList) {
+      try {
+        Dataset ds = new Dataset(myfile.file, true);
+        newList.add(ds);
+        count++;
+        size += myfile.file.length();
+
+
+        if (null == stationList)
+          stationList = new ArrayList<Station>(ds.sod.getStations());
+
+        if (null == variableList)
+          variableList = new ArrayList<VariableSimpleIF>(ds.sod.getDataVariables());
+        
+      } catch (IOException e) {
+        cacheLogger.error("Cant open " + myfile, e);
       }
     }
+
     size = size / 1000 / 1000;
 
-    if (debug)
-      System.out.println("Reading realtime directory " + dirName + " # files = " + count + " total file sizes = " + size + " Mb");
-  }
-
-  private boolean contains(String name, ArrayList<Dataset> dsList) {
-    for (Dataset ds : dsList) {
-      if (ds.name.equals(name))
-        return true;
-    }
-    return false;
+    cacheLogger.info("Reading realtime directory " + realtime + " # files = " + count + " total file sizes = " + size + " Mb");
   }
 
   class Dataset implements Comparable {
@@ -774,21 +759,21 @@ public class StationObsCollection {
 
     abstract void trailer();
 
-    List<String> vars;
+    List<String> varNames;
     java.io.PrintWriter writer;
     DateFormatter format = new DateFormatter();
 
-    Writer(List<String> vars, final java.io.PrintWriter writer) {
-      this.vars = vars;
+    Writer(List<String> varNames, final java.io.PrintWriter writer) {
+      this.varNames = varNames;
       this.writer = writer;
     }
 
-    List<String> getVarNames(List<String> vars, List dataVariables) {
-      List<String> result = new ArrayList<String>();
+    List<VariableIF> getVars(List<String> varNames, List dataVariables) {
+      List<VariableIF> result = new ArrayList<VariableIF>();
       for (Object dataVariable : dataVariables) {
         VariableIF v = (VariableIF) dataVariable;
-        if ((vars == null) || vars.contains(v.getName()))
-          result.add(v.getName());
+        if ((varNames == null) || varNames.contains(v.getName()))
+          result.add(v);
       }
       return result;
     }
@@ -810,7 +795,7 @@ public class StationObsCollection {
       if ((varNames == null) || (varNames.size() == 0)) {
         varList = variableList;
       } else {
-        varList = new ArrayList<VariableSimpleIF>(vars.size());
+        varList = new ArrayList<VariableSimpleIF>(varNames.size());
         for (VariableSimpleIF v : variableList) {
           if (varNames.contains(v.getName()))
             varList.add(v);
@@ -907,12 +892,23 @@ public class StationObsCollection {
                   "' longitude='" + Format.dfrac(s.getLongitude(), 3));
           if (!Double.isNaN(s.getAltitude()))
             writer.print("' altitude='" + Format.dfrac(s.getAltitude(), 0));
-          writer.println("'/>");
+          if (s.getDescription() != null) {
+            writer.println("'>");
+            writer.print(s.getDescription());
+            writer.println("</station>");
+          } else {
+            writer.println("'/>");
+          }
 
-          List<String> varNames = getVarNames(vars, sod.getDataVariables());
-          for (String name : varNames) {
-            writer.print("    <data name='" + name + "'>");
-            Array sdataArray = sdata.getArray(name);
+
+          List<VariableIF> vars = getVars(varNames, sod.getDataVariables());
+          for (VariableIF var : vars) {
+            Attribute unitAtt = var.findAttribute("units");
+            writer.print("    <data name='" + var.getName());
+            if (unitAtt != null)
+              writer.print("' units='" + unitAtt.getStringValue());
+            writer.print("'>");
+            Array sdataArray = sdata.getArray(var.getName());
             writer.println(sdataArray.toString() + "</data>");
           }
           writer.println("  </metar>");
@@ -923,7 +919,7 @@ public class StationObsCollection {
 
   class WriterCSV extends Writer {
     boolean headerWritten = false;
-    List<String> validVarNames;
+    List<VariableIF> validVars;
 
     WriterCSV(List<String> stns, final java.io.PrintWriter writer) {
       super(stns, writer);
@@ -940,10 +936,10 @@ public class StationObsCollection {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
           if (!headerWritten) {
             writer.print("time,station,latitude,longitude");
-            validVarNames = getVarNames(vars, sod.getDataVariables());
-            for (String name : validVarNames) {
+            validVars = getVars(varNames, sod.getDataVariables());
+            for (VariableIF var : validVars) {
               writer.print(",");
-              writer.print(name);
+              writer.print(var.getName());
             }
             writer.println();
             headerWritten = true;
@@ -959,9 +955,9 @@ public class StationObsCollection {
           writer.print(',');
           writer.print(Format.dfrac(s.getLongitude(), 3));
 
-          for (String name : validVarNames) {
+          for (VariableIF var : validVars) {
             writer.print(',');
-            Array sdataArray = sdata.getArray(name);
+            Array sdataArray = sdata.getArray(var.getName());
             writer.print(sdataArray.toString());
           }
           writer.println();

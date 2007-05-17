@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="3.16"/>
-  <property name="release.version.minor" value="${release.version}.rc6"/>
+  <property name="release.version.minor" value="${release.version}.0"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -123,13 +123,9 @@
       <include name="${prefs.jar}"/>
       <include name="${visadNoDods.jar}"/>
 
-      <include name="${bloat.jar}"/>
-      <include name="${db4o-db4ounit.jar}"/>
-      <include name="${db4o-java5.jar}"/>
-      <include name="${db4o-nqopt.jar}"/>
-
       <include name="${cas.jar}"/>
       <include name="${fileupload.jar}"/>
+      <include name="${commons-io.jar}"/>
       <!-- include name="${gnu-regexp.jar}"/ -->
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
@@ -140,7 +136,6 @@
   <fileset id="runtime.libraries" dir="${lib.dir}">
     <patternset id="runtime.libs">
       <include name="${threddsResources.jar}" />
-      <include name="${commons-io.jar}"/>
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
       <include name="${jpeg2000.jar}"/>

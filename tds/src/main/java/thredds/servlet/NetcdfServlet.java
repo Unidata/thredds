@@ -85,7 +85,7 @@ public class NetcdfServlet extends AbstractServlet {
     <maxFileDownloadSize>1 Gb</maxFileDownloadSize>
   </NetcdfSubsetService> */
 
-    allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true);
+    allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
     maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("NetcdfSubsetService.dir", contentPath + "/cache");
     File cacheDir = new File(cache);

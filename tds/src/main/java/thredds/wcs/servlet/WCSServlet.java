@@ -18,7 +18,7 @@ import ucar.nc2.util.DiskCache2;
  */
 public class WCSServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 diskCache = null;
-  private boolean allow = true, deleteImmediately = true;
+  private boolean allow = false, deleteImmediately = true;
   private long maxFileDownloadSize;
 
   // must end with "/"
@@ -28,7 +28,7 @@ public class WCSServlet extends AbstractServlet {
   public void init() throws ServletException {
     super.init();
 
-    allow = ThreddsConfig.getBoolean("WCS.allow", true);
+    allow = ThreddsConfig.getBoolean("WCS.allow", false);
     maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("WCS.dir", contentPath + "/wcache");
     File cacheDir = new File(cache);

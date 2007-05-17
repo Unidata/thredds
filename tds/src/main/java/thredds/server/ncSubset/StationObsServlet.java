@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import thredds.servlet.AbstractServlet;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DebugHandler;
+import thredds.servlet.ThreddsConfig;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
@@ -44,7 +45,7 @@ import ucar.nc2.dataset.NetcdfDatasetCache;
  */
 public class StationObsServlet extends AbstractServlet {
 
-  private boolean allow = true;
+  private boolean allow = false;
   private StationObsCollection soc;
 
   // must end with "/"
@@ -70,6 +71,10 @@ public class StationObsServlet extends AbstractServlet {
 
   public void init() throws ServletException {
     super.init();
+
+    allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
+    if (!allow) return;
+
     //socRewrite = new StationObsCollection("C:/temp2/", false);
     //socOrg = new StationObsCollection("C:/data/metars/", false);
     //socOrg = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/", true);
@@ -79,7 +84,8 @@ public class StationObsServlet extends AbstractServlet {
 
   public void destroy() {
     super.destroy();
-    soc.close();
+    if (null != soc)
+      soc.close();
   }
 
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

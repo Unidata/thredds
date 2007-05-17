@@ -67,7 +67,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   </CdmValidatorService>
   */
 
-    allow = ThreddsConfig.getBoolean("CdmValidatorService.allow", true);
+    allow = ThreddsConfig.getBoolean("CdmValidatorService.allow", false);
     maxFileUploadSize = ThreddsConfig.getBytes("CdmValidatorService.maxFileUploadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("CdmValidatorService.dir", contentPath);
 
