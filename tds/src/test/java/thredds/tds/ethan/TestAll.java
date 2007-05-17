@@ -49,14 +49,14 @@ public class TestAll extends TestCase
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
-      //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
+      //System.setProperty( "thredds.tds.test.catalogs", "catalog.xml" );
       suite.addTest( new TestAll( "testCrawlCatalogs" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs-and1DsPerCollection" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
-      //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
-      suite.addTestSuite( TestTdsCrawl.class );
+      //System.setProperty( "thredds.tds.test.catalogs", "catalog.xml" );
+      suite.addTest( new TestAll( "testCrawlCatalogsOpenOneDatasetInEachCollection" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "ping-idd" ) )
     {
@@ -66,13 +66,13 @@ public class TestAll extends TestCase
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-catalogs-oneLevelDeep" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
-      //System.setProperty( "thredds.tds.test.catalog", "catalog.xml" );
+      //System.setProperty( "thredds.tds.test.catalogs", "catalog.xml" );
       suite.addTest( new TestAll( "testCrawlCatalogsOneLevelDeep" ) );
     }
     else if ( tdsTestLevel.equalsIgnoreCase( "crawl-topcatalog" ) )
     {
       //System.setProperty( "thredds.tds.test.server", "motherlode.ucar.edu:8080" );
-      System.setProperty( "thredds.tds.test.catalog", "topcatalog.xml" );
+      System.setProperty( "thredds.tds.test.catalogs", "topcatalog.xml" );
       suite.addTest( new TestAll( "testCrawlCatalogsOneLevelDeep" ) );
     }
     else
