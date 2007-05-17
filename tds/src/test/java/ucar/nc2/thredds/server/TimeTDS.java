@@ -53,7 +53,7 @@ public class TimeTDS {
         extractDatasetInfo(dd, System.out);
       }
     };
-    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, listener);
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL, true, listener);
 
     long start = System.currentTimeMillis();
     crawler.crawl(catUrl, null, System.out);
@@ -63,9 +63,9 @@ public class TimeTDS {
 
   // breadth first
   void extractDatasetInfo(InvDataset dd, PrintStream out) {
-    System.out.println(" -dataset= " + dd.getName());
+    System.out.println(" -dataset= " + dd.getFullName());
 
-    ThreddsDataFactory.Result tdata = null;
+    /* ThreddsDataFactory.Result tdata = null;
     try {
       try {
         tdata = tdf.openDatatype(dd, null);
@@ -97,12 +97,13 @@ public class TimeTDS {
         if ((tdata != null) && (tdata.tds != null)) tdata.tds.close();
       } catch (IOException ioe) {
       }
-    }
+    } */
   }
 
   public static void main(String args[]) {
 
-    new TimeTDS("http://localhost:8080/thredds/catalog.xml");
+    // new TimeTDS("http://localhost:8080/thredds/catalog.xml");
+    new TimeTDS("http://lead.unidata.ucar.edu:8080/thredds/idd/obsData.xml");
   }
 
 }
