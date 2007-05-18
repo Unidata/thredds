@@ -158,7 +158,8 @@ public class CatalogCrawler {
    */
   public void crawlDataset(InvDataset ds, CancelTask task, PrintStream out) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
-    boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && (ds.findProperty("DatasetScan") != null);
+    boolean isDataScan = ds.findProperty("DatasetScan") != null;
+    boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && isDataScan;
 
     if (isCatRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
@@ -174,7 +175,11 @@ public class CatalogCrawler {
       java.util.List dlist = ds.getDatasets();
       if (isCatRef) {
         InvCatalogRef catref = (InvCatalogRef) ds;
-        listen.getDataset(catref.getProxyDataset()); // wait till a catref is read, so all metadata is there !
+        if (isDataScan) {
+          listen.getDataset(catref); // wait till a catref is read, so all metadata is there !
+        } else {
+          listen.getDataset(catref.getProxyDataset()); // wait till a catref is read, so all metadata is there !
+        }
       }
 
       for (int i = 0; i < dlist.size(); i++) {
