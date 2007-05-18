@@ -168,16 +168,14 @@ public class CatalogCrawler {
       countCatrefs++;
     }
 
-    if (!isCatRef || skipScanChildren) listen.getDataset(ds);
+    if (!isCatRef || skipScanChildren || isDataScan) listen.getDataset(ds);
 
     // recurse - depth first
     if (!skipScanChildren) {
       java.util.List dlist = ds.getDatasets();
       if (isCatRef) {
         InvCatalogRef catref = (InvCatalogRef) ds;
-        if (isDataScan) {
-          listen.getDataset(catref); // wait till a catref is read, so all metadata is there !
-        } else {
+        if (!isDataScan) {
           listen.getDataset(catref.getProxyDataset()); // wait till a catref is read, so all metadata is there !
         }
       }
@@ -190,7 +188,7 @@ public class CatalogCrawler {
       }
     }
 
-    if (ds instanceof InvCatalogRef) {
+    if (isCatRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
       catref.release();
     }
