@@ -636,6 +636,22 @@
     <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/unit-test/index.html for details."/>
   </target>
 
+  <!-- Sampling of TDS IDD catalogs. -->
+  <property name="tdsCat" value="catalog.xml" />
+  <property name="tdsIddCat-models" value="idd/models.xml" />
+  <property name="tdsIddCat-metar" value="catalog/station/metar/catalog.xml" />
+  <property name="tdsIddCat-radComp1" value="catalog/nexrad/composite/catalog.xml" />
+  <property name="tdsIddCat-radComp2" value="catalog/nexrad/composite2/catalog.xml" />
+  <property name="tdsIddCat-radLevel2" value="catalog/nexrad/level2/KFTG/catalog.xml" />
+  <property name="tdsIddCat-radLevel3" value="catalog/nexrad/level3/N0R/VNX/catalog.xml" />
+  <property name="tdsIddCat-profWind1hr" value="catalog/station/profiler/wind/1hr/catalog.xml" />
+  <property name="tdsIddCat-profRASS1hr" value="catalog/station/profiler/RASS/1hr/catalog.xml" />
+  <property name="tdsIddCat-soundings" value="catalog/station/soundings/catalog.xml" />
+  <property name="tdsIddCat-satellite" value="catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml" />
+
+  <property name="tdsIddCat-full" value="${tdsCat},${tdsIddCat-models}" />
+  <property name="tdsIddCat-fullSample" value="${tdsIddCat-models},${tdsIddCat-metar},${tdsIddCat-radComp1},${tdsIddCat-radComp2},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-soundings},${tdsIddCat-satellites}" />
+
   <!-- Used by TeamCity to test motherlode:8080 every hour -->
   <target name="test-TDS-ping-motherlode-8080" description="ping TDS on motherlode:8080">
     <antcall target="test-TDS">
@@ -658,7 +674,7 @@
       <param name="thredds.tds.test.id" value="crawl-motherlode-8080" />
       <param name="thredds.tds.test.server" value="motherlode.ucar.edu:8080" />
       <param name="thredds.tds.test.level" value="crawl-catalogs" />
-      <param name="thredds.tds.test.catalogs" value="idd/models.xml" />
+      <param name="thredds.tds.test.catalogs" value="${tdsIddCat-models}" />
     </antcall>
   </target>
 
@@ -675,7 +691,7 @@
       <param name="thredds.tds.test.id" value="crawl-overlode-8080" />
       <param name="thredds.tds.test.server" value="thredds.cise-nsf.gov:8080" />
       <param name="thredds.tds.test.level" value="crawl-catalogs"  />
-      <param name="thredds.tds.test.catalogs" value="idd/models.xml" />
+      <param name="thredds.tds.test.catalogs" value="${tdsIddCat-models}" />
     </antcall>
   </target>
 
@@ -683,7 +699,7 @@
     <antcall target="test-TDS">
       <param name="thredds.tds.test.id" value="crawlLimitedCat1Ds-mlode-8080" />
       <param name="thredds.tds.test.level" value="crawl-catalogs-and1DsPerCollection"  />
-      <param name="thredds.tds.test.catalogs" value="idd/models.xml,catalog/nexrad/composite/catalog.xml,catalog/nexrad/composite2/catalog.xml,catalog/nexrad/level3/N0R/VNX/catalog.xml,catalog/nexrad/level2/KFTG/catalog.xml" />
+      <param name="thredds.tds.test.catalogs" value="${tdsIddCat-fullSample}" />
     </antcall>
   </target>
 

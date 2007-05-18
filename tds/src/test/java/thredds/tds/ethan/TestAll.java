@@ -174,7 +174,7 @@ public class TestAll extends TestCase
       pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], msg );
     }
 
-    assertTrue( "Failed to open dataset(s): " + msg.toString(),
+    assertTrue( "Failed to open dataset(s):\n" + msg.toString(),
                 pass );
 
     if ( msg.length() > 0 )
@@ -460,27 +460,30 @@ public class TestAll extends TestCase
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     PrintStream out = new PrintStream( os );
-    crawler.crawl( catalogUrl, null, out );
+    int numDs = crawler.crawl( catalogUrl, null, out );
     out.close();
     String crawlMsg = os.toString();
 
+    log.append( log.length() > 0 ? "\n\n" : "")
+       .append( "Crawled and opened datasets <" ).append( numDs ).append( "> in catalog <" ).append( catalogUrl ).append( ">." );
 
-    if ( crawlMsg.length() > 0 )
-    {
-      log.append( log.length() > 0 ? "\n" : "" ).append( "Message from catalog crawling:" ).append( "\n  " ).append( crawlMsg );
-    }
+    boolean pass = true;
     if ( ! failureMsgs.isEmpty() )
     {
-      log.append( log.length() > 0 ? "\n" : "" ).append( "Failed to open some datasets:" );
+      log.append( "\n" ).append( "Failed to open some datasets:" );
       for ( String curPath : failureMsgs.keySet() )
       {
         String curMsg = failureMsgs.get( curPath );
         log.append( "\n  " ).append( curPath ).append( ": " ).append( curMsg );
       }
-      return false;
+      pass = false;
+    }
+    if ( crawlMsg.length() > 0 )
+    {
+      log.append( "\n" ).append( "Message from catalog crawling:" ).append( "\n  " ).append( crawlMsg );
     }
 
-    return true;
+    return pass;
   }
 
   /**
