@@ -34,7 +34,8 @@ which URLs will point to the data in those directories.<br>
 
 <ol>
 
-<li>The <strong>path</strong> attribute on the <strong>datasetScan</strong> element is the part of the URL that identifies this datasetScan and is used to map dataset URLs to a location.</li><li>The <strong>location</strong>  attribute on the <strong>datasetScan</strong> element gives the location of the dataset collection on the local file system. </li>
+<li>The <strong>path</strong> attribute on the <strong>datasetScan</strong> element is the part of the URL that identifies this datasetScan and is used to map dataset URLs to a location.<br>
+</li><li>The <strong>location</strong>  attribute on the <strong>datasetScan</strong> element gives the location of the dataset collection on the local file system. </li>
 </ol>
 
 
@@ -83,7 +84,10 @@ which URLs will point to the data in those directories.<br>
 <ol>
 
 <li>Files are turned into datasets, subdirectories are turned into nested catalogRef elements.</li><li>All the catalog URLs are relative. If the original catalog URL is <strong>http://server:8080/thredds/catalog.xml </strong>then the first catalogRef xlink:href value of "/thredds/catalog/ncep/catalog.xml" resolves to<strong> http://server:8080/thredds/catalog/ncep/catalog.xml</strong>. From that catalog, the catalogRef xlink:href value of "GFS/catalog.xml" resolves to <b>http://server:8080/thredds/catalog/ncep/GFS/catalog.xml</b>.</li><li>The dataset access URLs are built from the service base attribute and the dataset urlPath attribute (see the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html#constructingURLs">THREDDS URL construction</a> documentation). So the dataset URLs from the above catalog would be <strong>http://server:8080/thredds/dodsC/ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1</strong>.<strong> </strong>You don't have to worry about these URLs, as they are all generated for you. </li>
-<li>Each datasetScan element must reference a service element (whether directly, as above, or inherited).</li>
+<li>Each datasetScan element must reference a service element (whether directly, as above, or inherited).</li><li>Because the TDS uses the set of all given path values to map URLs to
+datasets, each path value MUST be unique across all config catalogs on
+a given TDS installation.</li>
+
 </ol>[Workshop: <a href="#sample1">Sample config catalog 1</a>.]<br>
 
 

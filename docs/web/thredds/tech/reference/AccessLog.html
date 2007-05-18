@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>TDS - Setup Access Logging</title><meta content="Ethan Davis" name="author"></head><body>
+<h1>Setup Access Logging</h1>
+<br>
+<hr size="2" width="100%">
+<p>To setup access logging, edit the Tomcat server configuration file, <strong>${tomcat_home}/conf/server.xml</strong> and uncomment the <strong>AccessLogValve</strong>:<br>
+</p>
+<pre>        &lt;Valve className="org.apache.catalina.valves.AccessLogValve"<br>                 directory="logs"  prefix="localhost_access_log." suffix=".txt"<br>                 pattern="common" resolveHosts="false"/&gt;<br></pre>
+<p>By default the log files are created in the <strong>${tomcat_home}/logs</strong> directory and roll over to a new file at midnight.<br>
+</p>
+<p>The log messages can be written in either of two standard web access
+log formats by setting the pattern attribute to "common" or "combined".
+Other log formats can be specified with the pattern attribute. <br>
+</p>
+<p>More information on the AccessLogValve and the pattern attribute can be found on the <a href="http://tomcat.apache.org/tomcat-5.5-doc/config/valve.html">Tomcat Valve Configuration Reference</a>.<br>
+</p>
+<h2>Other log formats</h2>
+We extend the "common" and "combined" patterns by appending the response time for each request:<br>
+<ul>
+  <li>common: <code>pattern="common"</code></li>
+  <li>common plus response time: <code>pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b %D"</code></li>
+  <li>combined: <code>pattern="combined"</code><br>
+  </li>
+  <li><code></code>combined plus response time: <code>pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"</code></li>
+</ul>
+<h2>Performance<br>
+</h2>
+<p>The <strong>FastCommonAccessLogValve</strong> has better performance than the <strong>AccessLogValve</strong>. So, if you are running a production system, you might consider switching to the <strong>FastCommonAccessLogValve</strong>. The main restriction is that only the "common" and "combined" log formats can be used.<br>
+</p>
+<pre>        &lt;Valve className="org.apache.catalina.valves.FastCommonAccessLogValve"<br>                 directory="logs"  prefix="localhost_access_log." suffix=".txt"<br>                 pattern="common" resolveHosts="false"/&gt;<br></pre>
+<br>
+<hr size="2" width="100%">
+<p><br>
+</p>
+</body></html>
