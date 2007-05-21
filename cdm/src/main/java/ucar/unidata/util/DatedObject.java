@@ -1,5 +1,5 @@
 /*
- * $Id: DatedObject.java,v 1.4 2007/05/11 13:56:46 jeffmc Exp $
+ * $Id: DatedObject.java,v 1.5 2007/05/21 19:19:01 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -27,7 +27,11 @@
 
 
 
+
 package ucar.unidata.util;
+
+
+import java.util.ArrayList;
 
 
 import java.util.Arrays;
@@ -69,6 +73,36 @@ public class DatedObject implements DatedThing {
         this.date   = date;
         this.object = object;
     }
+
+
+    /**
+     * Select and return the DatedThings taht have dates between the two given dates.
+     *
+     * @param startDate  Start date
+     * @param endDate End date
+     * @param datedThings DatedThing-s to look at
+     *
+     * @return List of DatedThing-s that are between the given dates
+     */
+    public static List select(Date startDate, Date endDate, List datedThings) {
+        if (startDate.getTime() > endDate.getTime()) {
+            Date tmp = startDate;
+            startDate = endDate;
+            endDate = tmp;
+        }
+        long t1       = startDate.getTime();
+        long t2       = endDate.getTime();
+        List selected = new ArrayList();
+        for (int i = 0; i < datedThings.size(); i++) {
+            DatedThing datedThing = (DatedThing) datedThings.get(i);
+            long       time       = datedThing.getDate().getTime();
+            if ((time >= t1) && (time <= t2)) {
+                selected.add(datedThing);
+            }
+        }
+        return selected;
+    }
+
 
     /**
      * Sort the given list of DatedThing-s
