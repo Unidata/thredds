@@ -195,7 +195,7 @@ public class Dimension implements Comparable {
     this.isUnlimited = from.isUnlimited;
     this.isVariableLength = from.isVariableLength;
     this.isShared = from.isShared;
-    this.coordVars = from.coordVars;
+    this.coordVars = new ArrayList(from.coordVars);
   }
 
   /** Add a coordinate variable or coordinate variable alias.

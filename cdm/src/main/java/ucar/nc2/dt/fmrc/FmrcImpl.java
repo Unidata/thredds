@@ -438,7 +438,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     Iterator iterAtt = src.getAttributes().iterator();
     while (iterAtt.hasNext()) {
       ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();
-       target.addAttribute(a);
+      target.addAttribute(a);
     }
     String oldHistory = org_ncd.findAttValueIgnoreCase(null, "history", null);
     String newHistory = "Synthetic dataset from TDS fmrc ("+type+") aggregation, original data from "+org_ncd.getLocation();
@@ -453,7 +453,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     Iterator iterDim = src.getDimensions().iterator();
     while (iterDim.hasNext()) {
       Dimension d = (Dimension) iterDim.next();
-      target.addDimension( d);
+      target.addDimension( new Dimension(d.getName(), d));
     }
 
     // take each gridset seperately
@@ -485,7 +485,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     while (iterVar.hasNext()) {
       VariableDS v = (VariableDS) iterVar.next();
       if ((null == gridHash.get(v.getName()) && !coordSet.contains(v.getName())))
-        target.addVariable(v); // reparent
+        target.addVariable( new Variable(v)); // reparent
     }
 
     newds.finish();
