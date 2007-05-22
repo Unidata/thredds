@@ -29,14 +29,13 @@ import thredds.servlet.AbstractServlet;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DebugHandler;
 import thredds.servlet.ThreddsConfig;
+import thredds.datatype.DateRange;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 
 /**
  * Netcdf StationObs subsetting.
@@ -47,10 +46,11 @@ public class StationObsServlet extends AbstractServlet {
 
   private boolean allow = false;
   private StationObsCollection soc;
+  private boolean debug = false;
 
   // must end with "/"
   protected String getPath() {
-    return "ncss/";
+    return "ncss/metars/";
   }
 
   protected void makeDebugActions() {
@@ -96,10 +96,10 @@ public class StationObsServlet extends AbstractServlet {
     long start = System.currentTimeMillis();
 
     ServletUtil.logServerAccessSetup(req);
-    System.out.println(req.getQueryString());
+    if (debug) System.out.println(req.getQueryString());
 
     String pathInfo = req.getPathInfo();
-    //System.out.println("Using soc= "+soc.getName()+" for path= "+pathInfo);
+    if (pathInfo == null) pathInfo = "";
 
     boolean wantXML = pathInfo.endsWith("dataset.xml");
     boolean showForm = pathInfo.endsWith("dataset.html");
@@ -111,146 +111,80 @@ public class StationObsServlet extends AbstractServlet {
 
     // parse the input
     QueryParams qp = new QueryParams();
-    qp.accept = qp.parseList(req, "accept", QueryParams.validAccept, QueryParams.RAW);
+    if (!qp.parseQuery(req, res, new String[]{QueryParams.RAW, QueryParams.CSV, QueryParams.XML, QueryParams.NETCDF}))
+      return; // has sent the error message
 
-    // list of variable names
-    qp.vars = qp.parseList(req, "var");
-    if (qp.vars.isEmpty())
-      qp.vars = null;
-
-    // spatial subsetting
-    String spatial = ServletUtil.getParameterIgnoreCase(req, "spatial");
-    boolean spatialNotSpecified = (spatial == null);
-    boolean hasBB = false, hasStns = false, hasLatlonPoint = false;
-
-    // bounding box
-    if (spatialNotSpecified || spatial.equalsIgnoreCase("bb")) {
-      qp.north = qp.parseLat(req, "north");
-      qp.south = qp.parseLat(req, "south");
-      qp.east = qp.parseDouble(req, "east");
-      qp.west = qp.parseDouble(req, "west");
-      hasBB = qp.hasValidBB();
-      if (qp.fatal) {
-        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
-      }
-      if (hasBB) {
-        qp.stns = soc.getStationNames(qp.getBB());
-        if (qp.stns.size() == 0) {
-          qp.errs.append("ERROR: Bounding Box contains no stations\n");
-          writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-          return;
-        }
-      }
-    }
-
-    // stations
-    if (!hasBB && (spatialNotSpecified || spatial.equalsIgnoreCase("stns"))) {
-      qp.stns = qp.parseList(req, "stn");
-      hasStns = qp.stns.size() > 0;
-      if (hasStns && soc.isStationListEmpty(qp.stns)) {
-        qp.errs.append("ERROR: No valid stations specified\n");
-        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+    if (qp.hasBB) {
+      qp.stns = soc.getStationNames(qp.getBB());
+      if (qp.stns.size() == 0) {
+        qp.errs.append("ERROR: Bounding Box contains no stations\n");
+        qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
     }
 
-    // lat/lon point
-    if (!hasBB &&!hasStns && (spatialNotSpecified || spatial.equalsIgnoreCase("point"))) {
-      qp.lat = qp.parseLat(req, "latitude");
-      qp.lon = qp.parseLon(req, "longitude");
-
-      hasLatlonPoint = qp.hasValidPoint();
-      if (hasLatlonPoint) {
-        qp.stns = new ArrayList<String>();
-        qp.stns.add( soc.findClosestStation(qp.lat, qp.lon));
-      } else if (qp.fatal) {
-        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
-      }
-    }
-
-    boolean useAll = !hasBB && !hasStns && !hasLatlonPoint;
-    if (useAll)
-      qp.stns = new ArrayList<String>(); // empty list denotes all
-
-    // time range
-    String temporal = ServletUtil.getParameterIgnoreCase(req, "temporal");
-    boolean timeNotSpecified = (temporal == null);
-    boolean hasRange = false, hasTimePoint = false;
-
-    // time range
-    if (timeNotSpecified || temporal.equalsIgnoreCase("range")) {
-      qp.time_start = qp.parseDate(req, "time_start");
-      qp.time_end = qp.parseDate(req, "time_end");
-      qp.time_duration = qp.parseW3CDuration(req, "time_duration");
-      hasRange = (qp.getDateRange() != null);
-    }
-
-    // time point
-    if (timeNotSpecified || temporal.equalsIgnoreCase("point")) {
-      qp.time = qp.parseDate(req, "time");
-      if ((qp.time != null) && (soc.filterDataset(qp.time) == null)) {
-        qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
-        writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return;
-      }
-      hasTimePoint = (qp.time != null);
-    }
-
-    // last n
-    // qp.time_latest = qp.parseInt(req, "time_latest");
-
-    if (useAll && !hasRange && !hasTimePoint) {
-      qp.errs.append("ERROR: You must subset by space or time\n");
-      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+    if (qp.hasStns && soc.isStationListEmpty(qp.stns)) {
+      qp.errs.append("ERROR: No valid stations specified\n");
+      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 
-    // choose a type
-    String type;
-    if (qp.accept.contains(QueryParams.RAW)) {
-      res.setContentType(QueryParams.RAW);
-      type = QueryParams.RAW;
+    if (qp.hasLatlonPoint) {
+      qp.stns = new ArrayList<String>();
+      qp.stns.add(soc.findClosestStation(qp.lat, qp.lon));
+    } else if (qp.fatal) {
+      qp.errs.append("ERROR: No valid stations specified\n");
+      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
-    } else if (qp.accept.contains(QueryParams.XML)) {
-      res.setContentType(QueryParams.XML);
-      type = QueryParams.XML;
+    boolean useAllStations = (!qp.hasBB && !qp.hasStns && !qp.hasLatlonPoint);
+    if (useAllStations)
+      qp.stns = new ArrayList<String>(); // empty list denotes all
 
-    } else if (qp.accept.contains(QueryParams.CSV)) {
-      res.setContentType("text/plain");
-      type = QueryParams.CSV;
+    if (qp.hasTimePoint && (soc.filterDataset(qp.time) == null)) {
+      qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
+      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
-    } else if (qp.accept.contains(QueryParams.NETCDF)) {
-      res.setContentType(QueryParams.NETCDF);
+    if (qp.hasDateRange) {
+      DateRange dr = qp.getDateRange();
+      if (!soc.intersect(dr)) {
+        qp.errs.append("ERROR: This dataset does not contain the time range= " + qp.time + " \n");
+        qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+    }
+
+    boolean useAllTimes = (!qp.hasTimePoint && !qp.hasDateRange);
+    if (useAllStations && useAllTimes) {
+      qp.errs.append("ERROR: You must subset by space or time\n");
+      qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
+
+    // set content type
+    String contentType = qp.acceptType;
+    if (qp.acceptType.equals(QueryParams.CSV))
+      contentType = "text/plain"; // LOOK why
+    res.setContentType(contentType);
+
+    if (qp.accept.contains(QueryParams.NETCDF)) {
       res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");
-      File file = soc.writeNetcdf(qp.vars, qp.stns, qp.getDateRange(), qp.time);
+      File file = soc.writeNetcdf(qp);
       ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);
       file.delete();
 
       long took = System.currentTimeMillis() - start;
       System.out.println("\ntotal response took = " + took + " msecs");
-
-      return;
-
-    } else {
-      writeErr(res, qp.errs.toString(), HttpServletResponse.SC_SERVICE_UNAVAILABLE);
       return;
     }
 
-    soc.write(qp.vars, qp.stns, qp.getDateRange(), qp.time, type, res.getWriter());
+    soc.write(qp, res.getWriter());
 
     long took = System.currentTimeMillis() - start;
     System.out.println("\ntotal response took = " + took + " msecs");
-  }
-
-  private void writeErr(HttpServletResponse res, String s, int code) throws IOException {
-    res.setStatus(code);
-    if (s.length() > 0) {
-      PrintWriter pw = res.getWriter();
-      pw.print(s);
-      pw.close();
-    }
   }
 
   private void showForm(HttpServletResponse res, boolean wantXml, boolean wantStationXml) throws IOException {
@@ -262,9 +196,9 @@ public class StationObsServlet extends AbstractServlet {
       infoString = fmt.outputString(doc);
 
     } else if (wantStationXml) {
-        Document doc = soc.getStationDoc();
-        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-        infoString = fmt.outputString(doc);
+      Document doc = soc.getStationDoc();
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      infoString = fmt.outputString(doc);
 
     } else {
       InputStream xslt = getXSLT("ncssSobs.xsl");
@@ -300,18 +234,5 @@ public class StationObsServlet extends AbstractServlet {
   private InputStream getXSLT(String xslName) {
     return getClass().getResourceAsStream("/resources/xsl/" + xslName);
   }
-
-  private Document getDoc(String name) throws IOException {
-    java.net.URL url = getClass().getResource("/resources/xsl/" + name);
-    org.jdom.Document doc;
-    try {
-      SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(url);
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage() + " reading from XML " + url);
-    }
-    return doc;
-  }
-
 
 }

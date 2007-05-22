@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -49,6 +48,11 @@ public class AggregationExisting extends Aggregation {
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super( ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);
+  }
+
+  // for AggregationExistingOne
+  protected AggregationExisting(NetcdfDataset ncd, String dimName, Aggregation.Type type, String recheckS) {
+    super( ncd, dimName, type, recheckS);
   }
 
   protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {

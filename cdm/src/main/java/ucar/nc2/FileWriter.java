@@ -27,20 +27,20 @@ import java.util.*;
 
 /**
  * Copy a NetcdfFile to a Netcdf-3 local file. This allows you, for example, to create a "view" of another
- *  NetcdfFile using NcML, and/or to write a remote or OpenDAP file into a local netcdf file.
- *  All metadata and data is copied out of the NetcdfFile and into the NetcdfFileWritable.
- *
- * <p>
+ * NetcdfFile using NcML, and/or to write a remote or OpenDAP file into a local netcdf file.
+ * All metadata and data is copied out of the NetcdfFile and into the NetcdfFileWritable.
+ * <p/>
+ * <p/>
  * The fileIn may be an NcML file which has a referenced dataset in the location URL, the underlying data
- *  (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
- *  then the new file is filled with fill values, like ncgen.
- *
+ * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
+ * then the new file is filled with fill values, like ncgen.
+ * <p/>
  * <p> Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
- *   what gets written to the file.
+ * what gets written to the file.
  *
- * @see ucar.nc2.NetcdfFile
  * @author caron
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
+ * @see ucar.nc2.NetcdfFile
  */
 
 public class FileWriter {
@@ -50,57 +50,56 @@ public class FileWriter {
   }
 
   static private boolean debug, debugExtend;
-  static private long maxSize = 1000 * 1000; // Mbytes
+  static private long maxSize = 1000 * 1000; // 1 MByte
 
   /**
-    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
-    * Cannot do groups, etc, until we get a Netcdf-4 file format.
-    *
-    * @param fileIn write from this NetcdfFile
-    * @param fileOutName write to this local file
-    * @return NetcdfFile that was written to. It remains open for reading or writing.
-    * @throws IOException on read or write error
-    */
-   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName) throws IOException {
-     return writeToFile(fileIn, fileOutName, false, 0);
-   }
+   * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
+   * Cannot do groups, etc, until we get a Netcdf-4 file format.
+   *
+   * @param fileIn      write from this NetcdfFile
+   * @param fileOutName write to this local file
+   * @return NetcdfFile that was written to. It remains open for reading or writing.
+   * @throws IOException on read or write error
+   */
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName) throws IOException {
+    return writeToFile(fileIn, fileOutName, false, 0);
+  }
 
   /**
-    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
-    * Cannot do groups, etc, until we get a Netcdf-4 file format.
-    *
-    * @param fileIn write from this NetcdfFile
-    * @param fileOutName write to this local file
-    * @param fill use fill mode
-    * @return NetcdfFile that was written to. It remains open for reading or writing.
-    * @throws IOException on read or write error
-    */
-   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill) throws IOException {
-     return writeToFile(fileIn, fileOutName, fill, 0);
-   }
+   * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
+   * Cannot do groups, etc, until we get a Netcdf-4 file format.
+   *
+   * @param fileIn      write from this NetcdfFile
+   * @param fileOutName write to this local file
+   * @param fill        use fill mode
+   * @return NetcdfFile that was written to. It remains open for reading or writing.
+   * @throws IOException on read or write error
+   */
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill) throws IOException {
+    return writeToFile(fileIn, fileOutName, fill, 0);
+  }
 
-   /**
+  /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
    *
-   * @param fileIn write from this NetcdfFile
+   * @param fileIn      write from this NetcdfFile
    * @param fileOutName write to this local file
-   * @param fill use fill mode
-   * @param delay pause this amount (in milliseconds) between writing each record.
-   *
+   * @param fill        use fill mode
+   * @param delay       if > 0, pause this amount (in milliseconds) between writing each record. (for testing)
    * @return NetcdfFile that was written. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
 
-    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew( fileOutName, fill);
+    NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
     if (debug) {
-      System.out.println("FileWriter write "+fileIn.getLocation()+" to "+fileOutName);
-      System.out.println("File In = "+fileIn);
+      System.out.println("FileWriter write " + fileIn.getLocation() + " to " + fileOutName);
+      System.out.println("File In = " + fileIn);
     }
 
     // global attributes
     List glist = fileIn.getGlobalAttributes();
-    for (int i=0; i<glist.size(); i++) {
+    for (int i = 0; i < glist.size(); i++) {
       Attribute att = (Attribute) glist.get(i);
 
       if (att.isArray())
@@ -109,7 +108,7 @@ public class FileWriter {
         ncfile.addGlobalAttribute(att.getName(), att.getStringValue());
       else
         ncfile.addGlobalAttribute(att.getName(), att.getNumericValue());
-      if (debug) System.out.println("add gatt= "+att);
+      if (debug) System.out.println("add gatt= " + att);
     }
 
     // copy dimensions LOOK anon dimensions
@@ -118,22 +117,22 @@ public class FileWriter {
     while (iter.hasNext()) {
       Dimension oldD = (Dimension) iter.next();
       Dimension newD = ncfile.addDimension(oldD.getName(), oldD.isUnlimited() ? -1 : oldD.getLength(),
-          oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
-      dimHash.put( newD.getName(), newD);
-      if (debug) System.out.println("add dim= "+newD);
-   }
+              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+      dimHash.put(newD.getName(), newD);
+      if (debug) System.out.println("add dim= " + newD);
+    }
 
     // Variables
     List varlist = fileIn.getVariables();
-    for (int i=0; i<varlist.size(); i++) {
+    for (int i = 0; i < varlist.size(); i++) {
       Variable oldVar = (Variable) varlist.get(i);
 
       // copy dimensions LOOK what about anon dimensions
       ArrayList dims = new ArrayList();
       List dimvList = oldVar.getDimensions();
-      for (int j=0; j< dimvList.size(); j++) {
+      for (int j = 0; j < dimvList.size(); j++) {
         Dimension oldD = (Dimension) dimvList.get(j);
-        dims.add( dimHash.get( oldD.getName()));
+        dims.add(dimHash.get(oldD.getName()));
       }
 
       DataType newType = oldVar.getDataType();
@@ -144,26 +143,26 @@ public class FileWriter {
         IndexIterator ii = data.getIndexIterator();
         int max_len = 0;
         while (ii.hasNext()) {
-          String s =  (String) ii.getObjectNext();
-          max_len = Math.max( max_len, s.length());
+          String s = (String) ii.getObjectNext();
+          max_len = Math.max(max_len, s.length());
         }
 
         // add last dimension
-        Dimension newD = ncfile.addDimension(oldVar.getName()+"_strlen", max_len);
-        dims.add( newD);
+        Dimension newD = ncfile.addDimension(oldVar.getName() + "_strlen", max_len);
+        dims.add(newD);
 
         newType = DataType.CHAR;
       }
 
-      ncfile.addVariable( oldVar.getName(), newType, dims);
-      if (debug) System.out.println("add var= "+oldVar.getName());
+      ncfile.addVariable(oldVar.getName(), newType, dims);
+      if (debug) System.out.println("add var= " + oldVar.getName());
 
-          // attributes
+      // attributes
       List attList = oldVar.getAttributes();
-      for (int j=0; j<attList.size(); j++) {
+      for (int j = 0; j < attList.size(); j++) {
         Attribute att = (Attribute) attList.get(j);
         if (att.isArray())
-         ncfile.addVariableAttribute(oldVar.getName(), att.getName(), att.getValues());
+          ncfile.addVariableAttribute(oldVar.getName(), att.getName(), att.getValues());
         else if (att.isString())
           ncfile.addVariableAttribute(oldVar.getName(), att.getName(), att.getStringValue());
         else
@@ -175,23 +174,46 @@ public class FileWriter {
     // create the file
     ncfile.create();
     if (debug)
-      System.out.println("File Out= "+ncfile.toString());
+      System.out.println("File Out= " + ncfile.toString());
 
-   // see if it has a record dimension we can use
+    // see if it has a record dimension we can use
     if (fileIn.hasUnlimitedDimension()) {
       fileIn.addRecordStructure();
       ncfile.addRecordStructure();
     }
-   boolean useRecordDimension = fileIn.hasRecordStructure() && ncfile.hasRecordStructure();
+    boolean useRecordDimension = fileIn.hasRecordStructure() && ncfile.hasRecordStructure();
+    Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
 
+    long total = copyVarData( ncfile, varlist, recordVar, delay);
+    ncfile.flush();
+    if (debug) System.out.println("FileWriter done total bytes = " + total);
+
+    return ncfile;
+  }
+
+  /**
+   * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
+   * When theres a record variable, mush more efficient to use it.
+   *
+   * @param ncfile write tot this file
+   * @param varlist list of varibles, with data in them
+   * @param recordVar the record variable from the original file, or null means dont use record variables
+   * @param delay delay between writing records, for testing
+   * @return total number of bytes written
+   * @throws IOException if I/O error
+   */
+  private static long copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
+    boolean useRecordDimension = (recordVar != null);
 
     // write non-record data
     long total = 0;
-    for (int i=0; i<varlist.size(); i++) {
-      Variable oldVar = (Variable) varlist.get(i);
-      if (useRecordDimension && oldVar.isUnlimited()) continue; // skip record variables
+    for (Variable oldVar : varlist) {
+      if (useRecordDimension && oldVar.isUnlimited())
+        continue; // skip record variables
 
-      if (debug) System.out.println("write var= "+oldVar.getName()+ " size = "+oldVar.getSize()+" type="+ oldVar.getDataType());
+      if (debug)
+        System.out.println("write var= " + oldVar.getName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
+
       long size = oldVar.getSize() * oldVar.getElementSize();
       total += size;
 
@@ -199,52 +221,46 @@ public class FileWriter {
       if (nelems <= 1)
         copyAll(ncfile, oldVar);
       else
-        copySome( ncfile, oldVar, nelems);
+        copySome(ncfile, oldVar, nelems);
     }
 
     // write record data
     if (useRecordDimension) {
-      int [] origin = new int[] {0};
-      int [] size = new int[] {1};
+      int[] origin = new int[]{0};
+      int[] size = new int[]{1};
 
-      Structure recordVar = (Structure) fileIn.findVariable("record");
       int nrecs = (int) recordVar.getSize();
       int sdataSize = recordVar.getElementSize();
 
-      for (int count=0; count<nrecs; count++) {
+      for (int count = 0; count < nrecs; count++) {
         origin[0] = count;
         try {
-          Array recordData = recordVar.read( origin, size);
-          ncfile.write("record", origin, recordData);
-          if (debugExtend) System.out.println("write record var; size = "+sdataSize+" recno="+count);
-         } catch (InvalidRangeException e) {
+          Array recordData = recordVar.read(origin, size);
+          ncfile.write("record", origin, recordData);  // rather magic here - only writes the ones in ncfile !!
+          if (debugExtend) System.out.println("write record var; size = " + sdataSize + " recno=" + count);
+        } catch (InvalidRangeException e) {
           e.printStackTrace();
           break;
         }
         total += sdataSize;
 
-        if (delay != 0) {
+        if (delay > 0) {
           ncfile.flush();
           try {
-            Thread.sleep( delay);
+            Thread.sleep(delay);
           } catch (InterruptedException e) {
           }
         }
       }
-
     }
-
-    ncfile.flush();
-    if (debug) System.out.println("FileWriter done total bytes = "+total);
-
-    return ncfile;
+    return total;
   }
 
   private static void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
     Array data = oldVar.read();
     try {
       if (oldVar.getDataType() == DataType.STRING) {
-        data = convertToChar( ncfile.findVariable( oldVar.getName()), data);
+        data = convertToChar(ncfile.findVariable(oldVar.getName()), data);
       }
       if (data.getSize() > 0)  // zero when record dimension = 0
         ncfile.write(oldVar.getName(), data);
@@ -260,16 +276,16 @@ public class FileWriter {
     int[] origin = new int[oldVar.getRank()];
     int size = shape[0];
 
-    for (int i=0; i<size; i+= nelems) {
+    for (int i = 0; i < size; i += nelems) {
       origin[0] = i;
-      int left = size-i;
-      shape[0] = Math.min(nelems,left);
-      
+      int left = size - i;
+      shape[0] = Math.min(nelems, left);
+
       Array data = null;
       try {
         data = oldVar.read(origin, shape);
         if (oldVar.getDataType() == DataType.STRING) {
-          data = convertToChar( ncfile.findVariable( oldVar.getName()), data);
+          data = convertToChar(ncfile.findVariable(oldVar.getName()), data);
         }
         if (data.getSize() > 0)  // zero when record dimension = 0
           ncfile.write(oldVar.getName(), origin, data);
@@ -281,13 +297,13 @@ public class FileWriter {
     }
   }
 
-  private static Array convertToChar( Variable newVar, Array oldData) {
+  private static Array convertToChar(Variable newVar, Array oldData) {
     ArrayChar newData = (ArrayChar) Array.factory(DataType.CHAR, newVar.shape);
     Index ima = newData.getIndex();
     IndexIterator ii = oldData.getIndexIterator();
     while (ii.hasNext()) {
-      String s =  (String) ii.getObjectNext();
-      int[] c = ii.getCurrentCounter(); 
+      String s = (String) ii.getObjectNext();
+      int[] c = ii.getCurrentCounter();
       for (int i = 0; i < c.length; i++)
         ima.setDim(i, c[i]);
       newData.setString(ima, s);
@@ -297,26 +313,30 @@ public class FileWriter {
 
   //////////////////////////////////////////////////////////////////////////////////////
   private NetcdfFileWriteable ncfile;
-  private HashMap dimHash = new HashMap();
-  private ArrayList varList = new ArrayList();
+  private HashMap<String, Dimension> dimHash = new HashMap<String, Dimension>();
+  private ArrayList<Variable> varList = new ArrayList();
 
   /**
    * For writing parts of a NetcdfFile to a new Netcdf-3 local file.
    * To copy all the contents, the static method FileWriter.writeToFile() is preferred.
    * These are mostly convenience methods on top of NetcdfFileWriteable.
+   *
    * @param fileOutName file name to write to.
-   * @param fill use fill mode or not
+   * @param fill        use fill mode or not
    */
   public FileWriter(String fileOutName, boolean fill) {
-    ncfile = NetcdfFileWriteable.createNew( fileOutName, fill);
+    ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
   }
+
+  public NetcdfFileWriteable getNetcdf() { return ncfile; }
 
   /**
    * Write a global attribute to the file.
+   *
    * @param att take attribute name, value, from here
    */
-  public void writeGlobalAttribute( Attribute att) {
-    if (att.isArray())
+  public void writeGlobalAttribute(Attribute att) {
+    if (att.isArray()) // why rewrite them ??
       ncfile.addGlobalAttribute(att.getName(), att.getValues());
     else if (att.isString())
       ncfile.addGlobalAttribute(att.getName(), att.getStringValue());
@@ -326,10 +346,11 @@ public class FileWriter {
 
   /**
    * Write a Variable attribute to the file.
+   *
    * @param varName name of variable to attach attribute to
-   * @param att take attribute name, value, from here
+   * @param att     take attribute name, value, from here
    */
-  public void writeAttribute( String varName, Attribute att) {
+  public void writeAttribute(String varName, Attribute att) {
     if (att.isArray())
       ncfile.addVariableAttribute(varName, att.getName(), att.getValues());
     else if (att.isString())
@@ -340,80 +361,85 @@ public class FileWriter {
 
   /**
    * Add a Dimension to the file
+   *
    * @param dim copy this dimension
    */
-  public void writeDimension( Dimension dim) {
+  public Dimension writeDimension(Dimension dim) {
     Dimension newDim = ncfile.addDimension(dim.getName(), dim.isUnlimited() ? -1 : dim.getLength(),
-        dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
-    dimHash.put( newDim.getName(), newDim);
-    if (debug) System.out.println("write dim= "+newDim);
+            dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
+    dimHash.put(newDim.getName(), newDim);
+    if (debug) System.out.println("write dim= " + newDim);
+    return newDim;
   }
 
 
-   /**
-   * Add a Variable to the file. The data is also copied when finish() is called.
-   * @param oldVar copy this Variable (not the data)
+  /**
+   * Add a Variable to the file. The data is copied when finish() is called.
+   * The variable's Dimensions are added for you, if not already been added.
+   * @param oldVar copy this Variable to new file.
    */
-   public void writeVariable( Variable oldVar) {
+  public void writeVariable(Variable oldVar) {
 
-    Dimension[] dims = new Dimension[ oldVar.getRank()];
+    Dimension[] dims = new Dimension[oldVar.getRank()];
     List dimvList = oldVar.getDimensions();
-    for (int j=0; j< dimvList.size(); j++) {
+    for (int j = 0; j < dimvList.size(); j++) {
       Dimension oldD = (Dimension) dimvList.get(j);
-      dims[j] = (Dimension) dimHash.get(oldD.getName());
-      if (null == dims[j]) throw new IllegalArgumentException("Dimension must be added first = "+oldD);
+      Dimension newD = dimHash.get(oldD.getName());
+      if (null == newD) {
+        newD = writeDimension(oldD);
+        dimHash.put(newD.getName(), newD);
+      }
+      dims[j] = newD;
     }
 
-    ncfile.addVariable( oldVar.getName(), oldVar.getDataType(), dims);
-    varList.add( oldVar);
-    if (debug) System.out.println("write var= "+oldVar);
+    ncfile.addVariable(oldVar.getName(), oldVar.getDataType(), dims);
+    varList.add(oldVar);
+    if (debug) System.out.println("write var= " + oldVar);
 
     List attList = oldVar.getAttributes();
-    for (int j=0; j<attList.size(); j++)
+    for (int j = 0; j < attList.size(); j++)
       writeAttribute(oldVar.getName(), (Attribute) attList.get(j));
   }
 
   /**
-   * Add a list of Variables to the file. The data is also copied when finish() is called.
+   * Add a list of Variables to the file. The data is copied when finish() is called.
+   * The Variables' Dimensions are added for you, if not already been added.
    * @param varList list of Variable
    */
-  public void writeVariables( List varList) {
-
+  public void writeVariables(List varList) {
     for (int i = 0; i < varList.size(); i++) {
       Variable v = (Variable) varList.get(i);
-
-      List dimvList = v.getDimensions();
-      for (int j=0; j< dimvList.size(); j++) {
-        Dimension oldD = (Dimension) dimvList.get(j);
-        if (null == dimHash.get(oldD.getName()))
-          writeDimension( oldD);
-      }
-
       writeVariable(v);
     }
+  }
+
+  private Structure recordVar = null;
+
+  /**
+   * Read record data from here (when finish is called). Typically much more efficient.
+   * LOOK: Not sure if this allows subsetting, use with caution!!
+   * @param recordVar the record Variable.
+   */
+  public void setRecordVariable(Structure recordVar) {
+    this.recordVar = recordVar;
   }
 
   /**
    * Call this when all attributes, dimensions, and variables have been added. The data from all
    * Variables will be written to the file. You cannot add any other attributes, dimensions, or variables
    * after this call.
+   *
    * @throws IOException on read or write error
    */
   public void finish() throws IOException {
     ncfile.create();
 
-    for (int i=0; i<varList.size(); i++) {
-      Variable oldVar = (Variable) varList.get(i);
-
-      Array data = oldVar.read(); // LOOK: read all in one gulp!!
-      try {
-        ncfile.write(oldVar.getName(), data);
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-      }
-    }
+    long total = copyVarData( ncfile, varList, recordVar, 0);
     ncfile.close();
+    if (debug) System.out.println("FileWriter finish total bytes = " + total);
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static void usage() {
     System.out.println("usage: ucar.nc2.FileWriter -in <fileIn> -out <fileOut> [-delay <millisecs>]");
@@ -428,9 +454,11 @@ public class FileWriter {
    * <li> delay: if set and file has record dimension, delay between writing each record, for testing files that
    * are growing
    * </ol>
+   *
+   * @param arg -in fileIn -out fileOut [-delay millisecs]
    * @throws IOException on read or write error
    */
-  public static void main( String arg[]) throws IOException {
+  public static void main(String arg[]) throws IOException {
     if (arg.length < 4) {
       usage();
       System.exit(0);
@@ -440,9 +468,9 @@ public class FileWriter {
     int delay = 0;
     for (int i = 0; i < arg.length; i++) {
       String s = arg[i];
-      if (s.equalsIgnoreCase("-in")) datasetIn = arg[i+1];
-      if (s.equalsIgnoreCase("-out")) datasetOut = arg[i+1];
-      if (s.equalsIgnoreCase("-delay")) delay = Integer.parseInt(arg[i+1]);
+      if (s.equalsIgnoreCase("-in")) datasetIn = arg[i + 1];
+      if (s.equalsIgnoreCase("-out")) datasetOut = arg[i + 1];
+      if (s.equalsIgnoreCase("-delay")) delay = Integer.parseInt(arg[i + 1]);
     }
     if ((datasetIn == null) || (datasetOut == null)) {
       usage();
@@ -451,10 +479,10 @@ public class FileWriter {
 
     debugExtend = true;
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
-    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile( ncfileIn, datasetOut, false, delay);
+    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, delay);
     ncfileIn.close();
     ncfileOut.close();
-    System.out.println("NetcdfFile = "+ncfileOut);
+    System.out.println("NetcdfFile written = " + ncfileOut);
   }
 
 }

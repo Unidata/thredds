@@ -659,6 +659,21 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   /**
+   * Given a lat,lon point, find the x,y index in the coordinate system.
+   *
+   * @param lat latitude position.
+   * @param lon longitude position.
+   * @param result  put result in here, may be null
+   * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
+   */
+  public int[] findXYindexFromLatLon(double lat, double lon, int[] result) {
+    Projection dataProjection = getProjection();
+    ProjectionPoint pp = dataProjection.latLonToProj( new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
+
+    return findXYindexFromCoord(pp.getX(), pp.getY(), result);
+  }
+
+  /**
    * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
    *
    * @deprecated use findXYindexFromCoord
@@ -869,6 +884,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return mapArea;
   }
 
+  /**
+   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices
+   * @param xindex  x index
+   * @param yindex  y index
+   * @return lat/lon coordinate of the midpoint of the cell
+   */
   public LatLonPoint getLatLon(int xindex, int yindex) {
     double x, y;
 
@@ -958,7 +979,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    *
    * @deprecated use getRangesFromLatRect.
    */
-  public List getLatLonBoundingBox(LatLonRect rect) {
+  public List getLatLonBoundingBox(LatLonRect rect) throws InvalidRangeException {
     return getRangesFromLatLonRect(rect);
   }
 
@@ -969,8 +990,14 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    *
    * @return list of 2 Range objects, first y then x.
    */
-  public List getRangesFromLatLonRect(LatLonRect rect) {
+  public List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
+
+    // first clip the request rectangle to the bounding box of the grid
+    LatLonRect bb = getLatLonBoundingBox();
+    rect = bb.intersect( rect);
+    if (null == rect)
+      throw new InvalidRangeException("Request Bounding box does not intersect Grid");
 
     LatLonPointImpl llpt = rect.getLowerLeftPoint();
     LatLonPointImpl urpt = rect.getUpperRightPoint();
@@ -1010,12 +1037,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       int maxyIndex = yaxis1.findCoordElementBounded(maxy);
 
       ArrayList list = new ArrayList();
-      try {
-        list.add(new Range(Math.min(minyIndex, maxyIndex), Math.max(minyIndex, maxyIndex)));
-        list.add(new Range(Math.min(minxIndex, maxxIndex), Math.max(minxIndex, maxxIndex)));
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-      }
+      list.add(new Range(Math.min(minyIndex, maxyIndex), Math.max(minyIndex, maxyIndex)));
+      list.add(new Range(Math.min(minxIndex, maxxIndex), Math.max(minxIndex, maxxIndex)));
       return list;
 
     } else if ((xaxis instanceof CoordinateAxis2D) && (yaxis instanceof CoordinateAxis2D) && isLatLon()) {
@@ -1052,13 +1075,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         maxj = -1;
       }
 
-      ArrayList list = new ArrayList();
-      try {
+      ArrayList<Range> list = new ArrayList<Range>();
         list.add(new Range(minj, maxj));
         list.add(new Range(mini, maxi));
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-      }
       return list;
 
     } else {

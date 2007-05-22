@@ -33,8 +33,8 @@
         <hr/>
         <h1>NetCDF Subset Service</h1>
         <h2>Station Dataset:
-          <xsl:value-of select="stationObsDataset/@location"/>
-        </h2>
+          <xsl:value-of select="stationObsDataset/@location"/></h2>
+        <em><a href="dataset.xml">Dataset Description</a></em>
         <hr/>
 
         <form method="GET" action="{stationObsDataset/attribute::location}">
@@ -43,7 +43,8 @@
               <td>
 
                 <h3>Select Variable(s):</h3>
-
+                <input type="radio" name="variables" value="all" checked="checked"> <b>All</b></input><br/>
+                <input type="radio" name="variables" value="some"> <b>Only:</b></input>
                 <blockquote>
                   <xsl:for-each select="stationObsDataset/variable">
                     <input type="checkbox" name="var" value="{@name}"/>
@@ -52,53 +53,49 @@
 
                   </xsl:for-each>
                 </blockquote>
-
-                <blockquote></blockquote>
-                <input type="submit" value="Submit"/>
-                <input type="reset" value="Reset"/>
-
               </td>
 
               <td>
                 <h3>Choose Spatial Subset:</h3>               
                 <input type="radio" name="spatial" value="all" checked="checked"> <b>All</b></input>
-                <br/>
-                
-                <input type="radio" name="spatial" value="bb"> 
-                
+                <br/>               
+                <input type="radio" name="spatial" value="bb">               
                 <b>Bounding Box (decimal degrees):</b>
-                <blockquote>
-                  West Longitude:
-                  <input type="text" name="west" size="14" value="{stationObsDataset/LatLonBox/west}"/>
-                  <br/>
-                  East Longitude:
-                  <input type="text" name="east" size="14" value="{stationObsDataset/LatLonBox/east}"/>
-                  <br/>
-                  South Latitude:
-                  <input type="text" name="south" size="12" value="{stationObsDataset/LatLonBox/south}"/>
-                  <br/>
-                  North Latitude:
-                  <input type="text" name="north" size="12" value="{stationObsDataset/LatLonBox/north}"/>
-                  <br/>
-                </blockquote>
+                  <blockquote>
+                    <blockquote>                   
+                      <p>North</p>
+                      <p><input type="text" name="north" size="10" value="{stationObsDataset/LatLonBox/north}"/></p>
+                    </blockquote>
+                  </blockquote>                  
+                  West
+                  <input type="text" name="west" size="10" value="{stationObsDataset/LatLonBox/west}"/>
+                  <input type="text" name="east" size="10" value="{stationObsDataset/LatLonBox/east}"/> East                
+                      <blockquote>
+                        <blockquote>
+                          <p>              
+                            <input type="text" name="south" size="10" value="{stationObsDataset/LatLonBox/south}"/>
+                          </p>
+                          <p>South</p>
+                        </blockquote>
+                      </blockquote>                  
                  </input>
                 <br/>
 
                   <input type="radio" name="spatial" value="point"> 
-                 <b>Point (decimal degrees):</b>
+                   <b> Closest  to this location  (decimal degrees):</b>
                 <blockquote>
                   Latitude:
-                  <input type="text" name="latitude" size="14"/>
+                  <input type="text" name="latitude" size="10"/>
                   <br/>
                   Longitude:
-                  <input type="text" name="longitude" size="14"/>
+                  <input type="text" name="longitude" size="10"/>
                   <br/>
                 </blockquote>
                  </input>
                 <br/>
 
                  <input type="radio" name="spatial" value="stns"> 
-                <b>Station List (comma separated)</b>
+                <b>Station List (comma separated, no spaces)</b>
                 <blockquote>
                   <input type="text" name="stn" size="30"/>
                   <br/>
@@ -116,13 +113,13 @@
                   <input type="text" name="time_start" size="20" value="{stationObsDataset/TimeSpan/begin}"/>
                   <br/>
                   Ending:
-                  <input type="text" name="time_end" size="20" value="{stationObsDataset/TimeSpan/end} "/>
+                  <input type="text" name="time_end" size="20" value="{stationObsDataset/TimeSpan/end}"/>
                   <br/>
                 </blockquote>
                   </input>
 
                  <input type="radio" name="temporal" value="point"> 
-                 <b>Time Point:</b>
+                 <b>Specific Time (closest):</b>
                 <blockquote>
                   Time:
                   <input type="text" name="time" size="20" value="{stationObsDataset/TimeSpan/begin}"/>
@@ -148,11 +145,17 @@
               </td>
             </tr>
           </table>
+          <div align="center">
+          <table width="600" border="0">
+            <tr align="center">
+              <input type="submit" value="Submit"/>
+              <input type="reset" value="Reset"/>       
+            </tr>
+          </table>
+            </div>
         </form>
         <hr/>
         <h3><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService.html">NetCDF Subset Service Documentation</a></h3>
-        
-
       </body>
     </html>
 

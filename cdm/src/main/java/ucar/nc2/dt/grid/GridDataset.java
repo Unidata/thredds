@@ -25,6 +25,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
@@ -55,7 +56,7 @@ import thredds.datatype.DateRange;
 
 public class GridDataset implements ucar.nc2.dt.GridDataset {
   private NetcdfDataset ds;
-  private ArrayList grids = new ArrayList();  // GeoGrid
+  private ArrayList<GeoGrid> grids = new ArrayList<GeoGrid>();  // GeoGrid
   private HashMap gridsetHash = new HashMap();
 
   /**
@@ -187,7 +188,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     return llbbMax;
   }
 
-  public List getGlobalAttributes() {
+  public List<Attribute> getGlobalAttributes() {
     return ds.getGlobalAttributes();
   }
 

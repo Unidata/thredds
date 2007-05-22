@@ -22,13 +22,14 @@ package thredds.server.ncSubset;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -38,12 +39,11 @@ import thredds.datatype.TimeDuration;
 import thredds.datatype.DateType;
 
 /**
- * Class Description.
+ * Query parameter parsing for Netcdf Subset Service
  *
  * @author caron
- * @version $Revision$ $Date$
  */
-public class QueryParams {
+class QueryParams {
   static final String RAW = "text/plain";
   static final String XML = "application/xml";
   static final String CSV = "text/csv";
@@ -51,28 +51,169 @@ public class QueryParams {
 
   // the first in the list is the canonical name, the others are aliases
   static String[][] validAccept = new String[][]{
-      {XML, "text/xml", "xml"},
-      {RAW, "raw", "ascii"},
-      {CSV, "csv"},
-      {"text/html", "html"},
-      {"application/x-netcdf", "netcdf"},
+          {XML, "text/xml", "xml"},
+          {RAW, "raw", "ascii"},
+          {CSV, "csv"},
+          {"text/html", "html"},
+          {"application/x-netcdf", "netcdf"},
   };
 
+  public String queryString;
   public List<String> accept;
+  public String acceptType; // choose one of the accept
+
+  public boolean wantAllVariables;
   public List<String> vars;
 
+  // spatial subsetting
+  public boolean hasBB = false, hasStns = false, hasLatlonPoint = false; // only one is true
   public double north, south, east, west;
   public double lat, lon;
-  public List<String> stns;
+  public List<String> stns; // for stationObs, empty list means all
 
+  public boolean hasVerticalCoord = false;
+  public double vertCoord;
+
+  // temporal subsetting
+  public boolean hasDateRange = false, hasTimePoint = false; // only one is true
   public DateType time_start, time_end, time;
   public TimeDuration time_duration;
   public int time_latest;
 
-  public String type;
-
+  // track errors
   public StringBuffer errs = new StringBuffer();
   public boolean fatal;
+
+  public String toString() {
+    StringBuffer sbuff = new StringBuffer();
+    sbuff.append("queryString= " + queryString + "\n\n");
+    sbuff.append("parsed=\n ");
+    if (hasBB)
+      sbuff.append("bb=" + getBB().toString2() + ";");
+    else if (hasLatlonPoint)
+      sbuff.append("lat/lon=" + getPoint() + ";");
+    else if (hasStns) {
+      boolean first = true;
+      sbuff.append("stns=");
+      for (String stnName : stns) {
+        if (!first) sbuff.append(",");
+        sbuff.append(stnName);
+        first = false;
+      }
+      sbuff.append(";");
+    } else {
+      sbuff.append("spatial=all;");
+    }
+    sbuff.append("\n ");
+
+    if (hasTimePoint)
+      sbuff.append("time=" + time + ";");
+    else if (hasDateRange) {
+      sbuff.append("timeRange=" + getDateRange() + ";");
+    } else {
+      sbuff.append("temporal=all;");
+    }
+    sbuff.append("\n ");
+
+    if (wantAllVariables)
+      sbuff.append("vars=all;");
+    else {
+      boolean first = true;
+      sbuff.append("vars=");
+      for (String varName : vars) {
+        if (!first) sbuff.append(",");
+        sbuff.append(varName);
+        first = false;
+      }
+      sbuff.append(";");
+    }
+    sbuff.append("\n ");
+
+    return sbuff.toString();
+  }
+
+  /**
+   * Parse request
+   *
+   * @param req      HTTP request
+   * @param res      HTTP response
+   * @param acceptOK array of acceptable acept types, in order. First one is default
+   * @return true if params are ok
+   * @throws java.io.IOException if I/O error
+   */
+  public boolean parseQuery(HttpServletRequest req, HttpServletResponse res, String[] acceptOK) throws IOException {
+    queryString = req.getQueryString();
+
+    accept = parseList(req, "accept", QueryParams.validAccept, acceptOK[0]);
+    for (String ok : acceptOK) {
+      if (accept.contains(ok)) {
+        acceptType = ok;
+      }
+    }
+
+    // list of variable names
+    String variables = ServletUtil.getParameterIgnoreCase(req, "variables");
+    wantAllVariables = (variables != null) && (variables.equals("all"));
+    if (!wantAllVariables) {
+      vars = parseList(req, "var");
+      if (vars.isEmpty()) {
+        vars = null;
+        wantAllVariables = true;
+      }
+    }
+
+    // spatial subsetting
+    String spatial = ServletUtil.getParameterIgnoreCase(req, "spatial");
+    boolean spatialNotSpecified = (spatial == null);
+
+    // bounding box
+    if (spatialNotSpecified || spatial.equalsIgnoreCase("bb")) {
+      north = parseLat(req, "north");
+      south = parseLat(req, "south");
+      east = parseDouble(req, "east");
+      west = parseDouble(req, "west");
+      hasBB = hasValidBB();
+    }
+
+    // stations
+    if (!hasBB && (spatialNotSpecified || spatial.equalsIgnoreCase("stns"))) {
+      stns = parseList(req, "stn");
+      hasStns = stns.size() > 0;
+    }
+
+    // lat/lon point
+    if (!hasBB && !hasStns && (spatialNotSpecified || spatial.equalsIgnoreCase("point"))) {
+      lat = parseLat(req, "latitude");
+      lon = parseLon(req, "longitude");
+      hasLatlonPoint = hasValidPoint();
+    }
+
+    // time range
+    String temporal = ServletUtil.getParameterIgnoreCase(req, "temporal");
+    boolean timeNotSpecified = (temporal == null);
+
+    // time range
+    if (timeNotSpecified || temporal.equalsIgnoreCase("range")) {
+      time_start = parseDate(req, "time_start");
+      time_end = parseDate(req, "time_end");
+      time_duration = parseW3CDuration(req, "time_duration");
+      hasDateRange = hasValidDateRange();
+    }
+
+    // time point
+    if (timeNotSpecified || temporal.equalsIgnoreCase("point")) {
+      time = parseDate(req, "time");
+      hasTimePoint = (time != null);
+    }
+
+    if (fatal) {
+      writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+      return false;
+    }
+
+    return true;
+  }
+
 
   public DateType parseDate(HttpServletRequest req, String key) {
     String s = ServletUtil.getParameterIgnoreCase(req, key);
@@ -141,6 +282,13 @@ public class QueryParams {
     return lon;
   }
 
+  /**
+   * parse KVP for key=value or key=value,value,...
+   *
+   * @param req HTTP request
+   * @param key key to look for
+   * @return list of values, may be empty
+   */
   public List<String> parseList(HttpServletRequest req, String key) {
     ArrayList<String> result = new ArrayList<String>();
 
@@ -165,6 +313,16 @@ public class QueryParams {
     return result;
   }
 
+  /**
+   * Used for accept
+   * parse KVP for key=value or key=value,value,...
+   *
+   * @param req      HTTP request
+   * @param key      key to look for
+   * @param valids   list of valid keywords
+   * @param defValue default value
+   * @return list of values, use default if not otherwise specified
+   */
   public List<String> parseList(HttpServletRequest req, String key, String[][] valids, String defValue) {
     ArrayList<String> result = new ArrayList<String>();
 
@@ -188,9 +346,8 @@ public class QueryParams {
       }
     }
 
-    if (result.size() == 0) {
-      if (defValue == null) fatal = true;
-      else result.add(defValue);
+    if ((result.size() == 0) && (defValue != null)) {
+      result.add(defValue);
     }
 
     return result;
@@ -211,6 +368,11 @@ public class QueryParams {
     return false;
   }
 
+  /**
+   * Determine if a valid lat/lon bounding box was specified
+   *
+   * @return true if there is a valid BB, false if not. If an invalid BB, set fatal=true, with error message in errs.
+   */
   boolean hasValidBB() {
     // no bb
     if (Double.isNaN(north) && Double.isNaN(south) && Double.isNaN(east) && Double.isNaN(west))
@@ -223,6 +385,17 @@ public class QueryParams {
       return false;
     }
 
+    if (north < south) {
+      errs.append("Bounding Box must have north > south\n");
+      fatal = true;
+      return false;
+    }
+
+    if (east < west) {
+      errs.append("Bounding Box must have east > west; if crossing 180 meridion, use east boundary > 180\n");
+      fatal = true;
+      return false;
+    }
 
     return true;
   }
@@ -231,6 +404,15 @@ public class QueryParams {
     return new LatLonRect(new LatLonPointImpl(south, west), new LatLonPointImpl(north, east));
   }
 
+  LatLonPoint getPoint() {
+    return new LatLonPointImpl(lat, lon);
+  }
+
+  /**
+   * Determine if a valid lat/lon point was specified
+   *
+   * @return true if there is a valid point, false if not. If an invalid point, set fatal=true, with error message in errs.
+   */
   boolean hasValidPoint() {
     // no point
     if (Double.isNaN(lat) && Double.isNaN(lon))
@@ -245,6 +427,11 @@ public class QueryParams {
     return true;
   }
 
+  /**
+   * Determine if a valid date range was specified
+   *
+   * @return true if there is a valid date range, false if not. If an invalid date range, append error message in errs.
+   */
   boolean hasValidDateRange() {
     // no range
     if ((null == time_start) && (null == time_end) && (null == time_duration))
@@ -266,132 +453,11 @@ public class QueryParams {
   }
 
   DateRange getDateRange() {
-    return hasValidDateRange() ? new DateRange(time_start, time_end, time_duration, null) : null;
+    return hasDateRange ? new DateRange(time_start, time_end, time_duration, null) : null;
   }
 
-  /* boolean parseQuery(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    accept = parseList(req, "accept", QueryParams.validAccept, QueryParams.RAW);
-
-    // list of variable names
-    vars = parseList(req, "var");
-    if (vars.isEmpty())
-      vars = null;
-
-    // spatial subsetting
-    String spatial = ServletUtil.getParameterIgnoreCase(req, "spatial");
-    boolean spatialNotSpecified = (spatial == null);
-    boolean hasBB = false, hasStns = false, hasLatlonPoint = false;
-
-    // bounding box
-    if (spatialNotSpecified || spatial.equalsIgnoreCase("bb")) {
-      north = parseLat(req, "north");
-      south = parseLat(req, "south");
-      east = parseDouble(req, "east");
-      west = parseDouble(req, "west");
-      hasBB = hasValidBB();
-      if (fatal) {
-        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return false;
-      }
-      if (hasBB) {
-        stns = soc.getStationNames(getBB());
-        if (stns.size() == 0) {
-          errs.append("ERROR: Bounding Box contains no stations\n");
-          writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-          return false;
-        }
-      }
-    }
-
-    // stations
-    if (!hasBB && (spatialNotSpecified || spatial.equalsIgnoreCase("stns"))) {
-      stns = parseList(req, "stn");
-      hasStns = stns.size() > 0;
-      if (hasStns && soc.isStationListEmpty(stns)) {
-        errs.append("ERROR: No valid stations specified\n");
-        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return false;
-      }
-    }
-
-    // lat/lon point
-    if (!hasBB &&!hasStns && (spatialNotSpecified || spatial.equalsIgnoreCase("point"))) {
-      lat = parseLat(req, "latitude");
-      lon = parseLon(req, "longitude");
-
-      hasLatlonPoint = hasValidPoint();
-      if (hasLatlonPoint) {
-        stns = new ArrayList<String>();
-        stns.add( soc.findClosestStation(lat, lon));
-      } else if (fatal) {
-        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return false;
-      }
-    }
-
-    boolean useAll = !hasBB && !hasStns && !hasLatlonPoint;
-    if (useAll)
-      stns = new ArrayList<String>(); // empty list denotes all
-
-    // time range
-    String temporal = ServletUtil.getParameterIgnoreCase(req, "temporal");
-    boolean timeNotSpecified = (temporal == null);
-    boolean hasRange = false, hasTimePoint = false;
-
-    // time range
-    if (timeNotSpecified || temporal.equalsIgnoreCase("range")) {
-      time_start = parseDate(req, "time_start");
-      time_end = parseDate(req, "time_end");
-      time_duration = parseW3CDuration(req, "time_duration");
-      hasRange = (getDateRange() != null);
-    }
-
-    // time point
-    if (timeNotSpecified || temporal.equalsIgnoreCase("point")) {
-      time = parseDate(req, "time");
-      if ((time != null) && (soc.filterDataset(time) == null)) {
-        errs.append("ERROR: This dataset does not contain the time point= " + time + " \n");
-        writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-        return false;
-      }
-      hasTimePoint = (time != null);
-    }
-
-    // last n
-    // time_latest = parseInt(req, "time_latest");
-
-    if (useAll && !hasRange && !hasTimePoint) {
-      errs.append("ERROR: You must subset by space or time\n");
-      writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
-      return false;
-    }
-
-    // choose a type
-    if (accept.contains(QueryParams.RAW)) {
-      res.setContentType(QueryParams.RAW);
-      type = QueryParams.RAW;
-
-    } else if (accept.contains(QueryParams.XML)) {
-      res.setContentType(QueryParams.XML);
-      type = QueryParams.XML;
-
-    } else if (accept.contains(QueryParams.CSV)) {
-      res.setContentType("text/plain");
-      type = QueryParams.CSV;
-
-    } else if (accept.contains(QueryParams.NETCDF)) {
-      res.setContentType(QueryParams.NETCDF);
-      type = QueryParams.NETCDF;
-
-    } else {
-      writeErr(res, errs.toString(), HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-      return false;
-    }
-
-    return true;
-  }     */
-
-  private void writeErr(HttpServletResponse res, String s, int code) throws IOException {
+  void writeErr(HttpServletResponse res, String s, int code) throws IOException {
+    ServletUtil.logServerAccess(code, 0);
     res.setStatus(code);
     if (s.length() > 0) {
       PrintWriter pw = res.getWriter();

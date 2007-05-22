@@ -1,3 +1,6 @@
+5/22/2007 JC mlode:idd/radars.xml
+  add nexrad composite 1km, as both an aggregation and a DaatsetScan
+
 5/12/2007 JC mlode: remove NetcdfServer service from idd/allModels.TDS-nc.xml.
    This is not (yet) valid on netcdf files, and generates an exception in catalina.out (no return in threddsServlet.log).
 

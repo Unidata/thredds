@@ -1,6 +1,5 @@
-// $Id:VariableSimpleIF.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,32 +27,34 @@ import java.util.List;
  * A "Simple" Variable, that allows non-netcdf implementations of typed datasets.
  * @see ucar.nc2.dt.TypedDataset
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public interface VariableSimpleIF extends Comparable {
-  /** The full name of the data Variable */
+  /** @return full name of the data Variable */
   public String getName();
-  /** The short name of the data Variable */
+  /** @return short name of the data Variable */
   public String getShortName();
-  /** Text description of the Variable */
+  /** @return Text description of the Variable */
   public String getDescription();
-  /* Units of the Variable. These should be udunits compatible if possible */
+  /* @return Units of the Variable. These should be udunits compatible if possible */
   public String getUnitsString();
 
-  /** Variable rank */
+  /** @return Variable rank */
   public int getRank();
-  /** Variable shape */
+  /** @return Variable shape */
   public int[] getShape();
-  /** Variable dimensions */
-  public List getDimensions();
-  /** Variable data type */
+  /** @return List of ucar.nc2.Dimension */
+  public List<Dimension> getDimensions();
+  /** @return Variable's data type */
   public DataType getDataType();
 
   /** Attributes for the variable.
    * @return List of type ucar.nc2.Attribute */
-  public List getAttributes();
+  public List<Attribute> getAttributes();
 
-  /** Return the attribute for the variable with the given name, ignoring case. */
+  /**
+   * @param name attribute name
+   * @return the attribute for the variable with the given name, ignoring case.
+   */
   public ucar.nc2.Attribute findAttributeIgnoreCase( String name );
 
   public double convertScaleOffsetMissing(byte value);

@@ -180,14 +180,16 @@ public class DateType {
   public int hashCode() {
     if (isBlank()) return 0;
     if (isPresent()) return 1;
-    else if (text != null) return text.hashCode();
-    else if (date != null) return date.hashCode();
-    else return 0;
+    return date.hashCode();
   }
-   public boolean equals(Object o) {
+  
+  public boolean equals(Object o) {
      if (this == o) return true;
      if (!(o instanceof DateType)) return false;
-     return o.hashCode() == this.hashCode();
+     DateType oo = (DateType) o;
+     if (isPresent() && oo.isPresent()) return true;
+     if (isBlank() && oo.isBlank()) return true;
+     return oo.getDate().equals(getDate());
   }
 
   private Calendar cal = null;

@@ -151,7 +151,7 @@ public interface GridDatatype {
    * @param y_index if < 0, get all of y dim; if valid index, fix slice to that value.
    * @param x_index if < 0, get all of x dim; if valid index, fix slice to that value.
    *
-   * @return data[t,z,y,x], eliminating missing or fixed dimension.
+   * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
    */
   public Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
 

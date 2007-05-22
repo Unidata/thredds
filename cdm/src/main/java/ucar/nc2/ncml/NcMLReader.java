@@ -954,7 +954,10 @@ public class NcMLReader {
     if (type.equals("joinExisting")) {
       agg = new AggregationExisting(newds, dimName, recheck);
 
-    } else if (type.equals("joinNew")) {
+    } else if (type.equals("joinExistingOne")) {
+      agg = new AggregationExistingOne(newds, dimName, recheck);
+
+     } else if (type.equals("joinNew")) {
       agg = new AggregationNew(newds, dimName, recheck);
 
     } else if (type.equals("union")) {

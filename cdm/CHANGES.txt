@@ -2,6 +2,12 @@ CHANGES for Netcdf-Java library
 Version @VERSION@
 Build Date = @BUILDTIME@
 
+Changes in version 2.2.21
+ Features
+  * NcML: new type: JoinExistingOne has one coordinate per file, with coordValue specified from filename
+ Bugs
+  * DODSNetcdfFile: check for _Coordinate.Axes and coordinates attributes (bug allowed null)
+
 Changes in version 2.2.20
  Feature
    * speedup UnidataStationObsDataset for ncss - optimize fetch by station 

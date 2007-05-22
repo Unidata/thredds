@@ -25,10 +25,8 @@ import ucar.ma2.Array;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.StationObsDatasetWriter;
 import ucar.nc2.dt.point.StationObsDatasetInfo;
-import ucar.nc2.VariableIF;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Attribute;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -70,8 +68,9 @@ public class StationObsCollection {
     if (isRealtime) { // LOOK what if not realtime ??
       timer = new Timer("StationObsCollection.Rescan");
       Calendar c = Calendar.getInstance(); // contains current startup time
-      c.add(Calendar.HOUR, 24); // start tommorrow
-      c.set(Calendar.HOUR, 1); // at 1 AM
+      c.setTimeZone(TimeZone.getDefault()); // local time
+      c.add(Calendar.HOUR_OF_DAY, 24); // start tommorrow
+      c.set(Calendar.HOUR_OF_DAY, 1); // at 1 AM
       c.set(Calendar.MINUTE, 0);
       c.set(Calendar.SECOND, 0);
       timer.schedule(new ReinitTask(), 1000 * 5); // do in 5 secs
@@ -172,9 +171,12 @@ public class StationObsCollection {
       String fileOut = archiveDir + "/" + filename;
 
       try {
+        long start = System.currentTimeMillis();
         cacheLogger.info("StationObsCollection: write " + fileIn + " to archive " + fileOut);
         StationObsDatasetWriter.rewrite(fileIn, fileOut);
         archive.add(new File(fileOut), myfile.date);
+        long took = System.currentTimeMillis() - start;
+        cacheLogger.info("  that took= " + (took/1000)+" secs");
       } catch (IOException e) {
         cacheLogger.error("StationObsCollection: write failed (" + fileIn + " to archive " + fileOut + ")", e);
       }
@@ -328,7 +330,7 @@ public class StationObsCollection {
     Element root = doc.getRootElement();
 
     // fix the location
-    root.setAttribute("location", "/thredds/ncss/metar");
+    root.setAttribute("location", "/thredds/ncss/metars"); // LOOK
 
     // fix the time range
     Element timeSpan = root.getChild("TimeSpan");
@@ -371,6 +373,10 @@ public class StationObsCollection {
       if (map.get(stn) != null) return false;
     }
     return true;
+  }
+
+  public boolean intersect(DateRange dr) throws IOException {
+    return dr.intersect(start, end);
   }
 
   private List<Station> getStationList() throws IOException {
@@ -441,6 +447,7 @@ public class StationObsCollection {
   ////////////////////////////////////////////////////////
   // scanning
 
+  // scan all data in the file, records that pass the dateRange and predicate match are acted on
   private void scanAll(Dataset ds, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
     StringBuffer sbuff = new StringBuffer();
     StationObsDataset sod = ds.get();
@@ -473,6 +480,8 @@ public class StationObsCollection {
 
   }
 
+  // scan data for the list of stations, in order
+  // records that pass the dateRange and predicate match are acted on
   private void scanStations(Dataset ds, List<String> stns, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
     StringBuffer sbuff = new StringBuffer();
 
@@ -517,6 +526,9 @@ public class StationObsCollection {
 
   }
 
+  // scan all data in the file, first eliminate any that dont pass the predicate
+  // for each station, track the closest record to the given time
+  // then act on those
   private void scanAll(Dataset ds, DateType time, Predicate p, Action a, Limit limit) throws IOException {
     StringBuffer sbuff = new StringBuffer();
 
@@ -576,9 +588,12 @@ public class StationObsCollection {
       this.sobs = sobs;
       this.timeDiff = timeDiff;
     }
-  }
+  }                                  
 
 
+  // scan data for the list of stations, in order
+  // eliminate records  that dont pass the predicate
+  // for each station, track the closest record to the given time, then act on those
   private void scanStations(Dataset ds, List<String> stns, DateType time, Predicate p, Action a, Limit limit) throws IOException {
     StringBuffer sbuff = new StringBuffer();
 
@@ -660,15 +675,18 @@ public class StationObsCollection {
     return result;
   }
 
-  Dataset filterDataset(DateType time) {
-    if (time.isPresent())
+  Dataset filterDataset(DateType want) {
+    if (want.isPresent())
       return datasetList.get(datasetList.size() - 1);
 
+    Date time = want.getDate();
     for (Dataset ds : datasetList) {
-      if (time.before(ds.time_end) && time.after(ds.time_start))
+      if (time.before(ds.time_end) && time.after(ds.time_start)) {
         return ds;
-      if (time.equals(ds.time_end) || time.equals(ds.time_start))
+      }
+      if (time.equals(ds.time_end) || time.equals(ds.time_start)) {
         return ds;
+      }
     }
     return null;
   }
@@ -678,25 +696,30 @@ public class StationObsCollection {
 
   //private File netcdfResult = new File("C:/temp/sobs.nc");
 
-  public File writeNetcdf(List<String> vars, List<String> stns, DateRange range, DateType time) throws IOException {
-    WriterNetcdf w = (WriterNetcdf) write(vars, stns, range, time, QueryParams.NETCDF, null);
+  public File writeNetcdf(QueryParams qp) throws IOException {
+    WriterNetcdf w = (WriterNetcdf) write(qp, null);
     return w.netcdfResult;
   }
 
-
-  public Writer write(List<String> vars, List<String> stns, DateRange range, DateType time, String type, java.io.PrintWriter pw) throws IOException {
+  public Writer write(QueryParams qp, java.io.PrintWriter pw) throws IOException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
 
+    List<String> vars = qp.vars;
+    List<String> stns = qp.stns;
+    DateRange range = qp.getDateRange();
+    DateType time = qp.time;
+    String type = qp.acceptType;
+
     Writer w;
     if (type.equals(QueryParams.RAW)) {
-      w = new WriterRaw(vars, pw);
+      w = new WriterRaw(qp, vars, pw);
     } else if (type.equals(QueryParams.XML)) {
-      w = new WriterXML(vars, pw);
+      w = new WriterXML(qp, vars, pw);
     } else if (type.equals(QueryParams.CSV)) {
-      w = new WriterCSV(vars, pw);
+      w = new WriterCSV(qp, vars, pw);
     } else if (type.equals(QueryParams.NETCDF)) {
-      w = new WriterNetcdf(vars, pw);
+      w = new WriterNetcdf(qp, vars, pw);
     } else {
       log.error("Unknown writer type = " + type);
       return null;
@@ -722,11 +745,11 @@ public class StationObsCollection {
 
       } else {
         // match specific time point
-        Dataset need = filterDataset(time);
+        Dataset ds = filterDataset(time);
         if (useAll)
-          scanAll(need, time, null, act, counter);
+          scanAll(ds, time, null, act, counter);
         else
-          scanStations(need, stns, time, null, act, counter);
+          scanStations(ds, stns, time, null, act, counter);
       }
 
     } finally {
@@ -754,24 +777,24 @@ public class StationObsCollection {
 
   abstract class Writer {
     abstract void header(List<String> stns);
-
     abstract Action getAction();
-
     abstract void trailer();
 
+    QueryParams qp;
     List<String> varNames;
     java.io.PrintWriter writer;
     DateFormatter format = new DateFormatter();
+    int count = 0;
 
-    Writer(List<String> varNames, final java.io.PrintWriter writer) {
+    Writer(QueryParams qp, List<String> varNames, final java.io.PrintWriter writer) {
+      this.qp = qp;
       this.varNames = varNames;
       this.writer = writer;
     }
 
-    List<VariableIF> getVars(List<String> varNames, List dataVariables) {
-      List<VariableIF> result = new ArrayList<VariableIF>();
-      for (Object dataVariable : dataVariables) {
-        VariableIF v = (VariableIF) dataVariable;
+    List<VariableSimpleIF> getVars(List<String> varNames, List<VariableSimpleIF> dataVariables) {
+      List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>();
+      for (VariableSimpleIF v : dataVariables) {
         if ((varNames == null) || varNames.contains(v.getName()))
           result.add(v);
       }
@@ -786,8 +809,8 @@ public class StationObsCollection {
     List<Station> stnList;
     List<VariableSimpleIF> varList;
 
-    WriterNetcdf(List<String> varNames, final java.io.PrintWriter writer) throws IOException {
-      super(varNames, writer);
+    WriterNetcdf(QueryParams qp, List<String> varNames, final java.io.PrintWriter writer) throws IOException {
+      super(qp, varNames, writer);
 
       netcdfResult = File.createTempFile("ncss", ".nc");
       sobsWriter = new StationObsDatasetWriter(netcdfResult.getAbsolutePath());
@@ -835,6 +858,7 @@ public class StationObsCollection {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
           sobsWriter.writeRecord(sobs, sdata);
+          count++;
         }
       };
     }
@@ -842,8 +866,8 @@ public class StationObsCollection {
 
   class WriterRaw extends Writer {
 
-    WriterRaw(List<String> vars, final java.io.PrintWriter writer) {
-      super(vars, writer);
+    WriterRaw(QueryParams qp, List<String> vars, final java.io.PrintWriter writer) {
+      super(qp, vars, writer);
     }
 
     public void header(List<String> stns) {
@@ -857,16 +881,16 @@ public class StationObsCollection {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
           String report = sdata.getScalarString("report");
           writer.println(report);
+          count++;
         }
       };
     }
   }
 
-
   class WriterXML extends Writer {
 
-    WriterXML(List<String> vars, final java.io.PrintWriter writer) {
-      super(vars, writer);
+    WriterXML(QueryParams qp, List<String> vars, final java.io.PrintWriter writer) {
+      super(qp, vars, writer);
     }
 
     public void header(List<String> stns) {
@@ -900,18 +924,17 @@ public class StationObsCollection {
             writer.println("'/>");
           }
 
-
-          List<VariableIF> vars = getVars(varNames, sod.getDataVariables());
-          for (VariableIF var : vars) {
-            Attribute unitAtt = var.findAttribute("units");
+          List<VariableSimpleIF> vars = getVars(varNames, sod.getDataVariables());
+          for (VariableSimpleIF var : vars) {
             writer.print("    <data name='" + var.getName());
-            if (unitAtt != null)
-              writer.print("' units='" + unitAtt.getStringValue());
+            if (var.getUnitsString() != null)
+              writer.print("' units='" + var.getUnitsString());
             writer.print("'>");
             Array sdataArray = sdata.getArray(var.getName());
             writer.println(sdataArray.toString() + "</data>");
           }
           writer.println("  </metar>");
+          count++;
         }
       };
     }
@@ -919,10 +942,10 @@ public class StationObsCollection {
 
   class WriterCSV extends Writer {
     boolean headerWritten = false;
-    List<VariableIF> validVars;
+    List<VariableSimpleIF> validVars;
 
-    WriterCSV(List<String> stns, final java.io.PrintWriter writer) {
-      super(stns, writer);
+    WriterCSV(QueryParams qp, List<String> stns, final java.io.PrintWriter writer) {
+      super(qp, stns, writer);
     }
 
     public void header(List<String> stns) {
@@ -935,11 +958,13 @@ public class StationObsCollection {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
           if (!headerWritten) {
-            writer.print("time,station,latitude,longitude");
+            writer.print("time,station,latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
             validVars = getVars(varNames, sod.getDataVariables());
-            for (VariableIF var : validVars) {
+            for (VariableSimpleIF var : validVars) {
               writer.print(",");
               writer.print(var.getName());
+              if (var.getUnitsString()!=null)
+                writer.print("[unit=\""+var.getUnitsString()+"\"]");
             }
             writer.println();
             headerWritten = true;
@@ -955,222 +980,17 @@ public class StationObsCollection {
           writer.print(',');
           writer.print(Format.dfrac(s.getLongitude(), 3));
 
-          for (VariableIF var : validVars) {
+          for (VariableSimpleIF var : validVars) {
             writer.print(',');
             Array sdataArray = sdata.getArray(var.getName());
             writer.print(sdataArray.toString());
           }
           writer.println();
+          count++;
         }
       };
     }
   }
-
-  ///////////////////////////////////////////////////////////
-
-  /* public void timeNetcdf() throws IOException {
-
-    Limit limit = new Limit();
-    Predicate p = new Predicate() {
-      public boolean match(StructureData sdata) {
-        return (sdata.getScalarFloat("wind_peak_speed") > 10);
-      }
-    };
-    Action act = new Action() {
-      public void act(StructureData sdata) {
-      }
-    };
-
-    long start = System.currentTimeMillis();
-    for (int i = 0; i < fileList.size(); i++) {
-      String s = fileList.get(i);
-      scanAll(s, p, act, limit);
-    }
-
-    long took = System.currentTimeMillis() - start;
-    double mps = 1000 * limit.count / took;
-    System.out.println("\nscanAllNetcdf successfully read " + limit.count + " records; found " + limit.matches + " matches");
-    System.out.println("that took = " + took + " msecs; messages/sec = " + mps);
-
-    timeToScan = took;
-  }
-
-  public void timeNetcdfStation() throws IOException {
-
-    Limit limit = new Limit();
-    Predicate p = new Predicate() {
-      public boolean match(StructureData sdata) {
-        return true;
-      }
-    };
-    Action act = new Action() {
-      public void act(StructureData sdata) {
-      }
-    };
-
-    long start = System.currentTimeMillis();
-    List<String> stns = new ArrayList<String>();
-    stns.add("ACK");
-
-    for (int i = 0; i < fileList.size(); i++) {
-      String s = fileList.get(i);
-      scanStations(s, stns, p, act, limit);
-    }
-
-    long took = System.currentTimeMillis() - start;
-    double mps = 1000 * limit.count / took;
-    System.out.println("\ntimeNetcdfStation successfully read " + limit.count + " records; found " + limit.matches + " matches");
-    System.out.println("that took = " + took + " msecs; obs/sec= " + mps);
-  }
-
-  private static DataOutputStream xout;
-
-  public void writeXML() throws IOException {
-    xout = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("C:/temp/temp2.xml"), 10000));
-    xout.writeBytes("<?xml version='1.0' encoding='UTF-8'?>\n");
-    xout.writeBytes("<metarCollection dataset='name'>\n");
-
-    Limit limit = new Limit();
-    Predicate p = new Predicate() {
-      public boolean match(StructureData sdata) {
-        return (sdata.getScalarFloat("wind_peak_speed") > 10);
-      }
-    };
-
-    Action act = new Action() {
-      public void act(StructureData sdata) throws IOException {
-        xout.writeBytes("  <metar>\n");
-        for (Iterator iter = sdata.getMembers().iterator(); iter.hasNext();) {
-          StructureMembers.Member m = (StructureMembers.Member) iter.next();
-          xout.writeBytes("    <data name='" + m.getName() + "'>");
-
-          Array sdataArray = sdata.getArray(m);
-          // System.out.println(m.getName()+" "+m.getDataType()+" "+sdataArray.toString());
-          xout.writeBytes(sdataArray.toString() + "</data>\n");
-        }
-
-        xout.writeBytes("  </metar>\n");
-      }
-    };
-
-    long start = System.currentTimeMillis();
-
-    for (int i = 0; i < fileList.size(); i++) {
-      String s = fileList.get(i);
-      scanAll(s, p, act, limit);
-    }
-
-    xout.writeBytes("</metarCollection>\n");
-    xout.close();
-
-    long took = System.currentTimeMillis() - start;
-    System.out.println("\nscanAllNetcdf  read " + limit.count + " records; match and write " + limit.matches + " XML records");
-    System.out.println("that took = " + took + " msecs");
-
-    long writeTime = took - timeToScan;
-    double mps = 1000 * limit.matches / writeTime;
-    System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
-  }
-
-  private BufferedOutputStream fout;
-
-  public void writeRaw() throws IOException {
-    fout = new BufferedOutputStream(new FileOutputStream("C:/temp/raw.txt"), 10000);
-
-    Limit limit = new Limit();
-    Predicate p = new Predicate() {
-      public boolean match(StructureData sdata) {
-        return (sdata.getScalarFloat("wind_peak_speed") > 10);
-      }
-    };
-
-    Action act = new Action() {
-      public void act(StructureData sdata) throws IOException {
-        String report = sdata.getScalarString("report");
-        fout.write(report.getBytes());
-        fout.write((int) '\n');
-      }
-    };
-
-    long start = System.currentTimeMillis();
-
-    for (int i = 0; i < fileList.size(); i++) {
-      String s = fileList.get(i);
-      scanAll(s, p, act, limit);
-    }
-
-    fout.close();
-
-    long took = System.currentTimeMillis() - start;
-    System.out.println("\nscanAllNetcdf  read " + limit.count + " records; match and write " + limit.matches + " raw records");
-    System.out.println("that took = " + took + " msecs");
-
-    long writeTime = took - timeToScan;
-    double mps = 1000 * limit.matches / writeTime;
-    System.out.println("  writeTime = " + writeTime + " msecs; write messages/sec = " + mps);
-  }
-
-  /* public static void  addData(StructureData sdata) {
-
-   Element elem = new Element("metar");
-   for (Iterator iter = sdata.getMembers().iterator(); iter.hasNext();) {
-     StructureMembers.Member m = (StructureMembers.Member) iter.next();
-     Element dataElem = new Element("data");
-     dataElem.setAttribute("name", m.getName());
-     elem.addContent(dataElem);
-
-     Array sdataArray = sdata.getArray(m);
-     // System.out.println(m.getName()+" "+m.getDataType()+" "+sdataArray.toString());
-     dataElem.addContent(sdataArray.toString());
-   }
-
-   rootElem.addContent(elem);
- } */
-  /*
-
- private SimpleDateFormat dateFormat;
-
- public MetarCollection( String dirLocation) {
-    dateFormat = new java.text.SimpleDateFormat("yyyyMMdd_HHmm");
-    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-   private class DatasetWrap implements Comparable {
-   String location;
-   Date start, end;
-
-   DatasetWrap( String location) {
-     this.location = location;
-     int pos0 = location.lastIndexOf("Surface_METAR_");
-     int pos1 = location.lastIndexOf(".");
-     String dateString = location.substring(pos0+14, pos1);
-     Date nominal = null;
-     try {
-       nominal = dateFormat.parse( dateString);
-     } catch (ParseException e) {
-       throw new IllegalStateException(e.getMessage());
-     }
-     Calendar c = Calendar.getInstance( TimeZone.getTimeZone("GMT"));
-     c.setTime( nominal);
-     c.add( Calendar.HOUR, -1);
-     start = c.getTime();
-     c.setTime( nominal);
-     c.add( Calendar.HOUR, 24);
-     end = c.getTime();
-     // System.out.println("  "+dateString+" = "+start+" end= "+end);
-   }
-
-   public boolean contains( Date startWant, Date endWant) {
-     if (start.after( endWant)) return false;
-     if (startWant.after( end)) return false;
-     return true;
-   }
-
-   public int compareTo(Object o) {
-     DatasetWrap dw = (DatasetWrap) o;
-     return start.compareTo( dw.start);
-   }
- } */
-
 
   static public void main(String args[]) throws IOException {
     //getFiles("R:/testdata/station/ldm/metar/");

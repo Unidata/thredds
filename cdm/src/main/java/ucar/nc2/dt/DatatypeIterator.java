@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public abstract class DatatypeIterator implements DataIterator {
 
-  protected abstract Object makeDatatypeWithData( int recnum, StructureData sdata);
+  protected abstract Object makeDatatypeWithData( int recnum, StructureData sdata) throws IOException;
 
   private Structure.Iterator structIter;
   private int recnum = 0;
@@ -54,7 +54,11 @@ public abstract class DatatypeIterator implements DataIterator {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return makeDatatypeWithData( recnum++, sdata);
+    try {
+      return makeDatatypeWithData( recnum++, sdata);
+    } catch (IOException e) {
+      throw new RuntimeException(e.getMessage());
+    }
   }
 
   public void remove() {

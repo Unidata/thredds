@@ -48,7 +48,7 @@ import java.io.IOException;
  * @version $Revision: 68 $ $Date: 2006-07-13 00:08:20Z $
  */
 
-public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
+public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype, Comparable {
 
   private GridDataset dataset;
   private GridCoordSys gcs;
@@ -553,7 +553,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @param x_stride use this stride on the x coordinate (1 means all)
    *
    * @return subsetted GeoGrid
-   * @throws InvalidRangeException
+   * @throws InvalidRangeException if bbox does not intersect GeoGrid
    */
   public GeoGrid subset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException  {
 
@@ -715,4 +715,8 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return buf.toString();
   }
 
+  public int compareTo(Object o) {
+    GeoGrid g = (GeoGrid) o;
+    return getName().compareTo(g.getName());
+  }
 }

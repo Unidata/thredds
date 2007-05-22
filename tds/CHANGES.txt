@@ -7,6 +7,7 @@ Changes in version 3.16
   * Documentation link on catalog.html pages points to unidata web site.
   * Default is allow=false for CdmValidator, WCS, NetcdfSubset.
  Bugs
+  * ncss/metars: reinit at 1 am local time
   * DODS NcDAS : promote signed byte attributes to short
   * speedup UnidataStationObsDataset for ncss
   * FmrcSingle: forecast time must be type double with NaNs for missing values

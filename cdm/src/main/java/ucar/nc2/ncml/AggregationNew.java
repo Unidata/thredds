@@ -65,7 +65,7 @@ public class AggregationNew extends Aggregation {
       coordType = getCoordinateType();
       joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
       ncDataset.addVariable(null, joinAggCoord);
-    } else {
+    } else { // LOOK what is this ? probably left over from when we parsed NcML before aggregation element
       coordType = joinAggCoord.getDataType();
       joinAggCoord.setDimensions(dimName); // reset its dimension
       if (!isNew) joinAggCoord.setCachedData(null, false); // get rid of any cached data, since its now wrong

@@ -763,10 +763,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     // this is the case where its (probably) a Grid, and so _Coordinate.Axes has been assigned, but if
-    // theres alaso a coordinates attribute, need to add that info
+    // theres also a coordinates attribute, need to add that info
     Attribute axes = v.findAttribute("coordinates");
     Attribute _axes = v.findAttribute(_Coordinate.Axes);
-    if ((null != axes) && (null != axes)) {
+    if ((null != axes) && (null != _axes)) {
       v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue()+" "+_axes.getStringValue()));
     }
   }

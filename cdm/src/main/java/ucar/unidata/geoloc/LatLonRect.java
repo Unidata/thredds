@@ -403,6 +403,32 @@ public class LatLonRect {
     extend(r.getUpperRightPoint());
   }
 
+  /**
+   * Create the instersection of this LatLon with the given one
+   * @param clip intersect with this
+   * @return intersection, or null if there is no intersection
+   */
+  public LatLonRect intersect( LatLonRect clip) {
+    double latMin = Math.max(getLatMin(), clip.getLatMin());
+    double latMax = Math.min(getLatMax(), clip.getLatMax());
+
+    // lon as always is a pain
+    double min1 = getLonMin();
+    double min2 = LatLonPointImpl.lonNormal(clip.getLonMin(), getCenterLon());
+    double lonMin = Math.max(min1, min2);
+
+    double max1 = getLonMax();
+    double max2 = LatLonPointImpl.lonNormal(clip.getLonMax(), getCenterLon());
+    double lonMax = Math.min(max1, max2);
+
+    double deltaLat = latMax-latMin;
+    double deltaLon = lonMax - lonMin;
+    if ((deltaLon < 0) || (deltaLat < 0))
+      return null;
+    return new LatLonRect(new LatLonPointImpl(latMin, lonMin), deltaLat, deltaLon);
+
+  }
+
 
   /**
    * Return a String representation of this object.

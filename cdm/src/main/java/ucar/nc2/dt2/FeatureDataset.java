@@ -47,7 +47,7 @@ public interface FeatureDataset {
    * system variables, etc.
    * The shape of this VariableSimpleIF does not necessarily match the 
    * @return List of type VariableSimpleIF */
-  public List getDataVariables();
+  public List<VariableSimpleIF> getDataVariables();
 
   /** Get the named data Variable.
    * @param shortName of data Variable.

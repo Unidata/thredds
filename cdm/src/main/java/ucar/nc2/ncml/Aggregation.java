@@ -575,7 +575,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
 
     // the case of the agg coordinate var for joinExisting or joinNew
-    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
+    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask);
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType();
@@ -637,7 +637,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       return read( mainv, cancelTask);
 
     // the case of the agg coordinate var for joinExisting or joinNew
-    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
+    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask, section);
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType();
@@ -712,7 +712,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     if (vnested.coordValue != null) {
 
       // joinNew, fmrc only can have 1 coord
-      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         if (dtype == DataType.STRING) {
           result.setObjectNext(vnested.coordValue);
         } else {
@@ -749,7 +749,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       if (nestedJoinRange == null) {  // all data
         varData = vnested.read(aggCoord, cancelTask);
 
-      } else if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      } else if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         varData = vnested.read(aggCoord, cancelTask, innerSection);
       } else {
         nestedSection.set(0, nestedJoinRange);
@@ -816,7 +816,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     for (int i = 0; i < fileList.size(); i++) {
       MyFile myf = (MyFile) fileList.get(i);
       String location = myf.file.getAbsolutePath();
-      String coordValue = (type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
+      String coordValue = (type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
       Dataset ds = makeDataset(location, location, null, coordValue, myf.dir.enhance, null);
       ds.coordValueDate = myf.dateCoord;
       result.add( ds);
@@ -1009,7 +1009,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       this.enhance = enhance;
       this.reader = (reader != null) ? reader : new PolymorphicReader();
 
-      if (type == Type.JOIN_NEW) {
+      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE)) {
         this.ncoord = 1;
       } else if (ncoordS != null) {
         try {
@@ -1019,7 +1019,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
         }
       }
 
-      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         if (coordValueS == null) {
           int pos = this.location.lastIndexOf("/");
           this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
@@ -1283,8 +1283,9 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   public static class Type {
-    private static ArrayList members = new ArrayList(20);
+    private static ArrayList<Type> members = new ArrayList<Type>(20);
 
+    public final static Type JOIN_EXISTING_ONE = new Type("joinExistingOne");
     public final static Type JOIN_EXISTING = new Type("joinExisting");
     public final static Type JOIN_NEW = new Type("joinNew");
     public final static Type UNION = new Type("union");
@@ -1312,7 +1313,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     public static Type getType(String name) {
       if (name == null) return null;
       for (int i = 0; i < members.size(); i++) {
-        Type m = (Type) members.get(i);
+        Type m = members.get(i);
         if (m.name.equalsIgnoreCase(name))
           return m;
       }

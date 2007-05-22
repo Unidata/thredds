@@ -412,6 +412,8 @@ public class InvCatalogImpl extends InvCatalog {
     return isValid;
   }
 
+  public String getLog() { return log.toString(); }
+
   /**
    * Debugging: dump entire data structure.
    * @return String representation.

@@ -98,6 +98,7 @@ public class GridDatasetInfo {
 
     // grids
     List grids = gds.getGrids();
+    Collections.sort(grids);
     for (int i = 0; i < grids.size(); i++) {
       GeoGrid grid = (GeoGrid) grids.get(i);
       rootElem.addContent(writeGrid(grid));
@@ -124,7 +125,7 @@ public class GridDatasetInfo {
       rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
-    // add lat/lon bounding box
+        // add lat/lon bounding box
     LatLonRect bb = gds.getBoundingBox();
     if (bb != null)
       rootElem.addContent( writeBoundingBox( bb));
@@ -134,12 +135,18 @@ public class GridDatasetInfo {
     Date end  = gds.getEndDate();
     if ((start != null) && (end != null)) {
       DateFormatter format = new DateFormatter();
-      Element dateRange = new Element("dateRange");
-      dateRange.setAttribute("startDate", format.toDateTimeStringISO(start));
-      dateRange.setAttribute("endDate", format.toDateTimeStringISO(end));
+      Element dateRange = new Element("TimeSpan");
+      dateRange.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
+      dateRange.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
       rootElem.addContent( dateRange);
     }
 
+    // add accept list
+    Element elem = new Element("AcceptList");
+    elem.addContent(new Element("accept").addContent("xml"));
+    elem.addContent(new Element("accept").addContent("csv"));
+    elem.addContent(new Element("accept").addContent("netcdf"));
+    rootElem.addContent(elem);
     return doc;
   }
 

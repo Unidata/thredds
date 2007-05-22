@@ -211,6 +211,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    */
   public java.util.Date[] getTimeDates() { return timeDates; }
 
+  public java.util.Date getTimeDate(int idx) { return timeDates[idx]; }
+
   public DateRange getDateRange() {
     return new DateRange(timeDates[0], timeDates[timeDates.length - 1]);
   }

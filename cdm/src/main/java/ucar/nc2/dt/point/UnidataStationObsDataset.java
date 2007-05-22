@@ -258,7 +258,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
     ArrayList allData = new ArrayList();
     int n = getDataCount();
     for (int i = 0; i < n; i++) {
-      StationObsDatatype obs = makeObs(i, false);
+      StationObsDatatype obs = makeObs(i, false, null);
       if (obs != null)
         allData.add(obs);
       if ((cancel != null) && cancel.isCancel())
@@ -356,7 +356,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       }
 
       public Object nextData() throws IOException {
-        RecordDatasetHelper.RecordStationObs sobs = makeObs(nextRecno, true);
+        RecordDatasetHelper.RecordStationObs sobs = makeObs(nextRecno, true, null);
         if (isContiguousList) {
           nextRecno++;
           if (nextRecno > last)
@@ -387,7 +387,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
     }
   }
 
-  protected RecordDatasetHelper.RecordStationObs makeObs(int recno, boolean storeData) throws IOException {
+  protected RecordDatasetHelper.RecordStationObs makeObs(int recno, boolean storeData, StructureData sdata) throws IOException {
     try {
       // deal with files that are updating
       if (recno > getDataCount()) {
@@ -396,7 +396,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
         log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
       }
 
-      StructureData sdata = recordVar.readStructure(recno);
+      if (null == sdata)
+        sdata = recordVar.readStructure(recno);
 
       // find the station
       int stationIndex = sdata.getScalarInt(stationIndexVar.getShortName());
@@ -442,8 +443,9 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
   }
 
   private class StationDatatypeIterator extends DatatypeIterator {
-    protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
-      return recordHelper.new RecordStationObs(recnum, sdata);
+
+    protected Object makeDatatypeWithData(int recnum, StructureData sdata) throws IOException {
+      return makeObs(recnum, true, sdata);
     }
 
     StationDatatypeIterator(Structure struct, int bufferSize) {

@@ -251,7 +251,7 @@ public class DataRootHandler {
 
     }
     catch (Throwable t) {
-      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage(), t);
+      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage()+"\n log="+cat.getLog(), t);
       return null;
     }
     finally {

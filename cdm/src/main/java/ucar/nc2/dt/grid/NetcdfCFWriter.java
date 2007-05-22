@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,6 +25,7 @@ import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.nc2.*;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
@@ -36,58 +36,54 @@ import ucar.ma2.DataType;
 import ucar.ma2.Array;
 
 import java.io.IOException;
-import java.io.File;
 import java.util.*;
+import java.text.ParseException;
+
+import thredds.datatype.DateRange;
 
 /**
- * @author john
+ * @author caron
  */
 public class NetcdfCFWriter {
 
-  private NetcdfFile makeFile(String location, GridDataset gds, List gridList,
-                              LatLonRect llbb,
-                              boolean hasTime, double time_start, double time_end,
-                              boolean addLatLon,
-                              int stride_xy, int stride_z, int stride_time) throws IOException, InvalidRangeException {
+  public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+          LatLonRect llbb, DateRange range,
+          boolean addLatLon,
+          int stride_xy, int stride_z, int stride_time) throws IOException, InvalidRangeException {
 
 
-    NetcdfFileWriteable result = NetcdfFileWriteable.createNew(location, false);
+    FileWriter writer = new FileWriter(location, false);
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
     // global attributes
-    List glist = ncd.getGlobalAttributes();
-    for (int i = 0; i < glist.size(); i++) {
-      Attribute att = (Attribute) glist.get(i);
+    for (Attribute att : gds.getGlobalAttributes())
+      writer.writeGlobalAttribute(att);
 
-      if (att.isArray())
-        result.addGlobalAttribute(att.getName(), att.getValues());
-      else if (att.isString())
-        result.addGlobalAttribute(att.getName(), att.getStringValue());
-      else
-        result.addGlobalAttribute(att.getName(), att.getNumericValue());
-    }
+    writer.writeGlobalAttribute(new Attribute("Conventions", "CF-1.0"));
+    writer.writeGlobalAttribute(new Attribute("History",
+            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
+                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
 
-    result.addGlobalAttribute("Conventions", "CF-1.0");
-    result.addGlobalAttribute(new Attribute("History", "GridDatatype extracted from dataset " + ncd.getLocation()));
+    ArrayList<Variable> varList = new ArrayList<Variable>();
+    ArrayList<String> varNameList = new ArrayList<String>();
+    ArrayList<CoordinateAxis> axisList = new ArrayList<CoordinateAxis>();
 
-    ArrayList varList = new ArrayList();
-    ArrayList varNameList = new ArrayList();
-
-    for (int i = 0; i < gridList.size(); i++) {
-
-      String gridName = (String) gridList.get(i);
+    // add each desired Grid to the new file
+    for (String gridName : gridList) {
       if (varNameList.contains(gridName))
         continue;
+
       varNameList.add(gridName);
 
       GridDatatype grid = gds.findGridDatatype(gridName);
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
 
+      // make subset if needed
       Range timeRange = null;
-      if (hasTime) {
-        CoordinateAxis1D timeAxis = gcsOrg.getTimeAxis1D();
-        int startIndex = timeAxis.findCoordElement(time_start);
-        int endIndex = timeAxis.findCoordElement(time_end);
+      if (range != null) {
+        CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
+        int startIndex = timeAxis.findTimeIndexFromDate(range.getStart().getDate());
+        int endIndex = timeAxis.findTimeIndexFromDate(range.getEnd().getDate());
         timeRange = new Range(startIndex, endIndex);
       }
 
@@ -98,17 +94,19 @@ public class NetcdfCFWriter {
       Variable gridV = (Variable) grid.getVariable();
       varList.add(gridV);
 
+      // add coordinate axes
       GridCoordSystem gcs = grid.getCoordinateSystem();
-      List axes = gcs.getCoordinateAxes();
+      List<CoordinateAxis> axes = gcs.getCoordinateAxes();
       for (int j = 0; j < axes.size(); j++) {
-        Variable axis = (Variable) axes.get(j);
+        CoordinateAxis axis = axes.get(j);
         if (!varNameList.contains(axis.getName())) {
           varNameList.add(axis.getName());
-          varList.add(axis);
+          varList.add(axis); // LOOK dont we have to subset these ??
+          axisList.add(axis);
         }
       }
 
-      // looking for coordinate transform variables
+      // add coordinate transform variables
       List ctList = gcs.getCoordinateTransforms();
       for (int j = 0; j < ctList.size(); j++) {
         CoordinateTransform ct = (CoordinateTransform) ctList.get(j);
@@ -119,6 +117,7 @@ public class NetcdfCFWriter {
         }
       }
 
+      // optionaal lat/lon
       if (addLatLon) {
         Projection proj = gcs.getProjection();
         if ((null != proj) && !(proj instanceof LatLonProjection)) {
@@ -127,34 +126,62 @@ public class NetcdfCFWriter {
         }
       }
     }
+    writer.writeVariables(varList);
 
-    // add dimensions, variables 
-    HashMap dimHash = new HashMap();
-    for (int i = 0; i < varList.size(); i++) {
-      Variable v = (Variable) varList.get(i);
+    // now add CF annotataions as needed - dont change original ncd or gds
+    NetcdfFileWriteable ncfile = writer.getNetcdf();
+    Group root = ncfile.getRootGroup();
+    for (String gridName : gridList) {
+      GridDatatype grid = gds.findGridDatatype(gridName);
+      Variable newV = root.findVariable(gridName);
 
-      List dimvList = v.getDimensions();
-      for (int j = 0; j < dimvList.size(); j++) {
-        Dimension dim = (Dimension) dimvList.get(j);
-        if (null == dimHash.get(dim.getName())) {
-          Dimension newDim = result.addDimension(dim.getName(), dim.isUnlimited() ? -1 : dim.getLength(),
-              dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
-          dimHash.put(newDim.getName(), newDim);
-        }
+      // annotate Variable for CF
+      StringBuffer sbuff = new StringBuffer();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      List axes = gcs.getCoordinateAxes();
+      for (int j = 0; j < axes.size(); j++) {
+        Variable axis = (Variable) axes.get(j);
+        sbuff.append(axis.getName() + " ");
       }
+      if (addLatLon)
+        sbuff.append("lat lon");
+      newV.addAttribute(new Attribute("coordinates", sbuff.toString()));
 
-      Variable newvar = result.addVariable(v.getName(), v.getDataType(), v.getDimensionsString());
-      List attList = v.getAttributes();
-      for (int j = 0; j < attList.size(); j++)
-        result.addVariableAttribute(v.getName(), (Attribute) attList.get(j));
+      // looking for coordinate transform variables
+      List ctList = gcs.getCoordinateTransforms();
+      for (int j = 0; j < ctList.size(); j++) {
+        CoordinateTransform ct = (CoordinateTransform) ctList.get(j);
+        Variable v = ncd.findVariable(ct.getName());
+        if (ct.getTransformType() == TransformType.Projection)
+          newV.addAttribute(new Attribute("grid_mapping", v.getName()));
+      }
     }
 
-    result.finish();
-    return result;
+    for (CoordinateAxis axis : axisList) {
+      Variable newV = root.findVariable(axis.getName());
+      if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
+        if (null != axis.getPositive())
+          newV.addAttribute(new Attribute("positive", axis.getPositive()));
+      }
+      if (axis.getAxisType() == AxisType.Lat) {
+        newV.addAttribute(new Attribute("units", "degrees_north"));
+        newV.addAttribute(new Attribute("standard_name", "latitude"));
+      }
+      if (axis.getAxisType() == AxisType.Lon) {
+        newV.addAttribute(new Attribute("units", "degrees_east"));
+        newV.addAttribute(new Attribute("standard_name", "longitude"));
+      }
+
+      // newV.addAttribute(new Attribute(_Coordinate.AxisType, axis.getAxisType().toString())); // cheating
+    }
+
+    // LOOK not dealing with crossing the seam
+
+    writer.finish(); // this writes the data to the new file.
   }
 
-  private void addLatLon2D (NetcdfFile ncfile, List varList, Projection  proj,
-                            CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
+  private void addLatLon2D(NetcdfFile ncfile, List<Variable> varList, Projection proj,
+          CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
 
     double[] xData = (double[]) xaxis.read().get1DJavaArray(double.class);
     double[] yData = (double[]) yaxis.read().get1DJavaArray(double.class);
@@ -200,4 +227,31 @@ public class NetcdfCFWriter {
     varList.add(latVar);
     varList.add(lonVar);
   }
+
+  public static void main(String args[]) throws IOException, InvalidRangeException, ParseException {
+    String fileIn = "C:/data/ncmodels/NAM_CONUS_80km_20051206_0000.nc";
+    String fileOut = "C:/temp3/cf3.nc";
+
+    ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
+
+    NetcdfCFWriter writer = new NetcdfCFWriter();
+
+    List<String> gridList = new ArrayList<String>();
+    gridList.add("RH");
+    gridList.add("T");
+
+    DateFormatter format = new DateFormatter();
+    Date start = format.isoDateTimeFormat("2005-12-06T18:00:00Z");
+    Date end = format.isoDateTimeFormat("2005-12-07T18:00:00Z");
+
+    writer.makeFile(fileOut, gds, gridList,
+          new LatLonRect(new LatLonPointImpl(37,-109), 400, 7),
+          new DateRange(start,end),
+          true,
+          1, 1, 1);
+
+  }
+
+
 }
+

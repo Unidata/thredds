@@ -182,10 +182,10 @@
   <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
   <h3>Station Observation Dataset</h3>
   <p>A Station Observation Dataset is a collection of time series of observations at named locations called <em>stations</em>. </p>
-  <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document.</p>
+  <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document. The stationCollection document can be quite large, and caching on the client (eg using the <em>If-Modified-Since</em> header) is an important optimization. </p>
   <ul>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml">dataset XML</a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml">station List XML</a> document (<a href="metars/stations.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml"><em><strong>stationObsDataset</strong></em></a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml"><strong>stationCollection</strong></a> document (<a href="metars/stations.xml">offline</a> example) </li>
   </ul>
   <h3>Grid Dataset</h3>
   <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. </p>

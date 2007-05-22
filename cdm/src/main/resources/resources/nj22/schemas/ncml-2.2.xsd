@@ -184,11 +184,11 @@
 
       <xsd:attribute name="type" type="AggregationType" use="required"/>
       <xsd:attribute name="dimName" type="xsd:token" />
+      <xsd:attribute name="recheckEvery" type="xsd:string" />
 
       <!-- fmrc only  -->
       <xsd:attribute name="fmrcDefinition" type="xsd:string" />
       <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
-      <xsd:attribute name="recheckEvery" type="xsd:string" />
 
       <!-- deprecated  -->
       <xsd:attribute name="forecastDate" type="xsd:string" />
@@ -206,6 +206,7 @@
       <xsd:enumeration value="forecastModelRunSingleCollection"/>
       <xsd:enumeration value="forecastModelRun"/>  <!-- deprecated  -->
       <xsd:enumeration value="joinExisting"/>
+      <xsd:enumeration value="joinExistingOne"/>
       <xsd:enumeration value="joinNew"/>
       <xsd:enumeration value="union"/>
     </xsd:restriction>

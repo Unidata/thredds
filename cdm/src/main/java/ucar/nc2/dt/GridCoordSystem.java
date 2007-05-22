@@ -23,6 +23,8 @@ package ucar.nc2.dt;
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateUnit;
+import ucar.ma2.InvalidRangeException;
+import ucar.unidata.geoloc.LatLonPoint;
 
 import java.util.Date;
 import java.util.List;
@@ -187,11 +189,10 @@ public interface GridCoordSystem {
    * @param llbb a lat/lon bounding box.
    * @return list of 2 Range objects, first y then x.
    */
-  public java.util.List getRangesFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb);
+  public java.util.List getRangesFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
 
   /**
    * Given a point in x,y coordinate space, find the x,y indices.
-   * Not implemented yet for 2D.
    *
    * @param x_coord position in x coordinate space, ie, units of getXHorizAxis().
    * @param y_coord position in y coordinate space, ie, units of getYHorizAxis().
@@ -199,6 +200,26 @@ public interface GridCoordSystem {
    * @return int[2], 0=x, 1=y indices of the point. These will be -1 if out of range.
    */
   public int[] findXYindexFromCoord(double x_coord, double y_coord, int[] result);
+
+  /**
+   * Given a lat,lon point, find the x,y index of the containing grid point.
+   *
+   * @param lat latitude position.
+   * @param lon longitude position.
+   * @param result  put result in here, may be null
+   * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
+   */
+  public int[] findXYindexFromLatLon(double lat, double lon, int[] result) ;
+
+  /**
+   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices.
+   *
+   * @param xindex  x index
+   * @param yindex  y index
+   * @return lat/lon coordinate of the midpoint of the cell
+   */
+  public LatLonPoint getLatLon(int xindex, int yindex);
+
 
   // vertical
 
