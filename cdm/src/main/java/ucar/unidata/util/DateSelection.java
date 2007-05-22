@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.17 2007/05/21 22:56:20 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.18 2007/05/22 23:33:11 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -114,8 +114,9 @@ public class DateSelection {
     private double roundTo = 0;
 
     /** The total count of times we want */
-    private int count = Integer.MAX_VALUE;
+    private int count = MAX_COUNT;
 
+    public static final int MAX_COUNT = Integer.MAX_VALUE;
     /** How many times do we choose within a given interval range */
     private int numTimesInRange = 1;
 

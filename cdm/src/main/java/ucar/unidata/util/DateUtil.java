@@ -1,5 +1,5 @@
 /*
- * $Id: DateUtil.java,v 1.7 2007/05/11 19:19:41 jeffmc Exp $
+ * $Id: DateUtil.java,v 1.10 2007/05/22 23:33:26 jeffmc Exp $
  *
  * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,8 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
+
 
 
 package ucar.unidata.util;
@@ -41,16 +43,16 @@ import java.util.TimeZone;
  */
 public class DateUtil {
 
-    /** milliseconds in  a millisecond   */
+    /** milliseconds in  a millisecond */
     public static final long MILLIS = 1;
 
-    /** milliseconds in  a second      */
+    /** milliseconds in  a second */
     public static final long MILLIS_SECOND = 1000;
 
     /** milliseconds in  a minute */
     public static final long MILLIS_MINUTE = 1000 * 60;
 
-    /** milliseconds in an hour  */
+    /** milliseconds in an hour */
     public static final long MILLIS_HOUR = 1000 * 60 * 60;
 
     /** milliseconds in  a day */
@@ -59,17 +61,20 @@ public class DateUtil {
     /** milliseconds in  a week */
     public static final long MILLIS_WEEK = MILLIS_DAY * 7;
 
-    /** milliseconds in  a month   (approximately)   */
+    /** milliseconds in  a month   (approximately) */
     public static final long MILLIS_MONTH = MILLIS_DAY * 30;
 
-    /** milliseconds in  a year (approximately)*/
+    /** milliseconds in  a year (approximately) */
     public static final long MILLIS_YEAR = MILLIS_DAY * 365;
 
-    /** milliseconds in  a decade (approximately)*/
+    /** milliseconds in  a decade (approximately) */
     public static final long MILLIS_DECADE = MILLIS_YEAR * 10;
 
-    /** milliseconds in  a century (approximately)*/
+    /** milliseconds in  a century (approximately) */
     public static final long MILLIS_CENTURY = MILLIS_DECADE * 10;
+
+    /** milliseconds in  a century (approximately) */
+    public static final long MILLIS_MILLENIUM = MILLIS_CENTURY * 10;
 
 
 
@@ -185,6 +190,19 @@ public class DateUtil {
 
             return (dateString);
         }
+    }
+
+
+
+    /**
+     * utility to convert a given number of days to milliseconds
+     *
+     * @param days days
+     *
+     * @return milliseconds
+     */
+    public static long daysToMillis(double days) {
+        return hoursToMillis(days * 24);
     }
 
 
