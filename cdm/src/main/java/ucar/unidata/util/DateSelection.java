@@ -1,5 +1,5 @@
 /*
- * $Id: DateSelection.java,v 1.16 2007/05/16 12:50:37 jeffmc Exp $
+ * $Id: DateSelection.java,v 1.17 2007/05/21 22:56:20 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,8 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
+
 
 
 
@@ -96,6 +98,9 @@ public class DateSelection {
     /** End offset */
     private double endOffset = 0;
 
+    /** The skip factor */
+    private int skip = 0;
+
     /** The range before before the interval mark */
     private double preRange = Double.NaN;
 
@@ -159,6 +164,7 @@ public class DateSelection {
         this.startOffset    = that.startOffset;
         this.endOffset      = that.endOffset;
 
+        this.skip           = that.skip;
 
         this.postRange      = that.postRange;
         this.preRange       = that.preRange;
@@ -244,12 +250,22 @@ public class DateSelection {
             currentInterval = ticks.length - 1;
         }
 
-
         //Remember, we're going backwards in time
+        int skipCnt = 0;
         for (int i = 0; i < datedThings.size(); i++) {
             //Have we maxed out?
-            if (totalThings >= count) {
-                break;
+            //TODO: take into account skip
+            if (hasInterval) {
+                if (totalThings >= count) {
+                    if (skip > 0) {
+                        if (totalThings / (skip + 1) >= count) {
+                            break;
+
+                        }
+                    } else {
+                        break;
+                    }
+                }
             }
 
             DatedThing datedThing = (DatedThing) datedThings.get(i);
@@ -273,10 +289,23 @@ public class DateSelection {
 
             //If no interval then just add it
             if ( !hasInterval) {
-                result.add(datedThing);
-                totalThings++;
+                if (skip == 0) {
+                    result.add(datedThing);
+                } else {
+                    if (skipCnt == 0) {
+                        result.add(datedThing);
+                    }
+                    skipCnt++;
+                    if (skipCnt >= skip + 1) {
+                        skipCnt = 0;
+                    }
+                }
+                if (result.size() >= count) {
+                    break;
+                }
                 continue;
             }
+
 
             while ((currentInterval >= 0)
                     && (ticks[currentInterval] - beforeRange > time)) {
@@ -322,9 +351,22 @@ public class DateSelection {
 
         //If we had intervals then add them in
         if (closest != null) {
-            for (int i = 0; i < closest.length - 1; i++) {
-                if (closest[i] != null) {
-                    result.add(closest[i]);
+            skipCnt = 0;
+            for (int i = closest.length - 1; i >= 0; i--) {
+                DatedThing datedThing = closest[i];
+                if (datedThing == null) {
+                    continue;
+                }
+                if (skip == 0) {
+                    result.add(datedThing);
+                } else {
+                    if (skipCnt == 0) {
+                        result.add(datedThing);
+                    }
+                    skipCnt++;
+                    if (skipCnt >= skip + 1) {
+                        skipCnt = 0;
+                    }
                 }
             }
         }
@@ -868,6 +910,16 @@ public class DateSelection {
     }
 
     /**
+     * Does this date selection have a valid count
+     *
+     * @return has a  count
+     */
+    public boolean hasCount() {
+        return count != Integer.MAX_VALUE;
+    }
+
+
+    /**
      * Get the Count property.
      *
      * @return The Count
@@ -933,6 +985,7 @@ public class DateSelection {
                ^ new Double(this.endFixedTime).hashCode()
                ^ new Double(this.startOffset).hashCode()
                ^ new Double(this.endOffset).hashCode()
+               ^ new Double(this.skip).hashCode()
                ^ new Double(this.postRange).hashCode()
                ^ new Double(this.preRange).hashCode()
                ^ new Double(this.interval).hashCode()
@@ -966,6 +1019,7 @@ public class DateSelection {
                && (this.endFixedTime == that.endFixedTime)
                && (this.startOffset == that.startOffset)
                && (this.endOffset == that.endOffset)
+               && (this.skip == that.skip)
                && (this.postRange == that.postRange)
                && (this.preRange == that.preRange)
                && (this.interval == that.interval)
@@ -974,6 +1028,27 @@ public class DateSelection {
                && (this.count == that.count);
 
     }
+
+    /**
+     * Set the Skip property.
+     *
+     * @param value The new value for Skip
+     */
+    public void setSkip(int value) {
+        skip = value;
+    }
+
+    /**
+     * Get the Skip property.
+     *
+     * @return The Skip
+     */
+    public int getSkip() {
+        return skip;
+    }
+
+
+
 
 
     /**
