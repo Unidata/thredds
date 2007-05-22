@@ -1,0 +1,547 @@
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/D1.das
+Attributes {
+    _location {
+        String Description "String describing general location (southern ocean,oregon coast, etc.) of drifter deployment.";
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/Drifters.das
+Attributes {
+    Facility {
+        String PrincipleInvestigator "Mark Abbott", "Ph.D";
+        String DataCenter "COAS Environmental Computer Facility";
+        String DrifterType "MetOcean WOCE/OCM";
+    }
+    Drifter_ID {
+        String Description "String value used to uniquely identify each drifter instrument.";
+    }
+    Date_Sampled {
+        String Description "A Date and time string";
+        String Timezone "GMT";
+    }
+    Latitude {
+        String Description "Latitude as recorded by ARGOS system";
+        String units "degrees_north";
+    }
+    Longitude {
+        String Description "Longitude as recorded by ARGOS system";
+        String units "degrees_east";
+    }
+    SST {
+        String Description "Sea Surface Temperature";
+        String units "degrees Celsius";
+    }
+    Ed_490 {
+        String Description "Downwelling Irradiance Sensor at 490nm";
+        Float32 Wavelength 490;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Lu_412 {
+        String Description "Upwelling Radiance Sensor at 412nm";
+        Float32 Wavelength 412;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Lu_443 {
+        String Description "Upwelling Radiance Sensor at 443nm";
+        Float32 Wavelength 443;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Lu_490 {
+        String Description "Upwelling Radiance Sensorat at 490nm";
+        Float32 Wavelength 490;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Lu_510 {
+        String Description "Upwelling Radiance Sensor at 510nm";
+        Float32 Wavelength 510;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Lu_555 {
+        String Description "Upwelling Radiance Sensor at 555nm";
+        Float32 Wavelength 555;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Lu_670 {
+        String Description "Upwelling Radiance Sensor at 670nm";
+        Float32 Wavelength 670;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Lu_683 {
+        String Description "Upwelling Radiance Sensor at 683nm";
+        Float32 Wavelength 683;
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    CHL {
+        String Description "Chlorophyl Concentration";
+        String units "milligrams per cubic meter";
+    }
+    FLH {
+        String Description "Fluoresence Line Height";
+        String units "microwatts per square cm per nanometer per steradian";
+    }
+    Region {
+        String Description "Short description of study area (ex: Oregon, California, Southern Ocean, etc.)";
+    }
+    Decimal_Day {
+        String Description "The time of the mesurement in a decimal format, useful for plots, starts on January 1st 1993 or January 1st 2000.";
+    }
+    Calibration_File {
+        String Description "Path to the file on our file server of the calibration file for the drifter.";
+    }
+    Drifter_Type {
+        String Description "Type of drifter.";
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/EOSDB.das
+Attributes {
+    Facility {
+        String PrincipleInvestigator "Mark Abbott";
+        String DataCenter "COAS Environmental Computer Facility";
+    }
+    LON {
+        String units "degrees_east";
+        String modulo " ";
+        String point_spacing "even";
+    }
+    LAT {
+        String units "degrees_north";
+        String point_spacing "even";
+    }
+    TIME {
+        String units "days since 1700-01-01 00:00:00";
+        String time_origin "1-JAN-1700";
+        String point_spacing "uneven";
+        String edges "TIMEedges";
+    }
+    TIMEedges {
+        String edges " ";
+    }
+    SST {
+        Float64 missing_value -9.9999998e+33;
+        Float64 _FillValue -9.9999998e+33;
+        String long_name "Sea Surface Temperature";
+        String history "From all_coads_grid";
+        String units "deg C";
+    }
+    NC_GLOBAL {
+        String history "FERRET V4.11 (debug/no GUI) 19-Nov-95FERRET V4.20 (debug/no GUI) 12-Mar-96";
+        String title "COADS Surface Marine Observations (1854-1993)";
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/NestedSeq.das
+Attributes {
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/NestedSeq2.das
+Attributes {
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/OverideExample.das
+Attributes {
+    GeneralInfo {
+        String Author "Nathan", "Potter";
+        String Facility "Oregon State University", "College of Oceanic and Atmospheric Sciences";
+        String Example "This dataset is a simple example of how to use a .ovr file", "in the INFO directory to override the default .info service output", "of the OPeNDAP servlet.";
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/Sat_Images.das
+Attributes {
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/SimpleDrdsExample.das
+Attributes {
+    Facility {
+        String PrincipleInvestigator "Mark Abbott", "Ph.D";
+        String DataCenter "COAS Environmental Computer Facility";
+        String DrifterType "MetOcean WOCE/OCM";
+    }
+    Drifters {
+        battery {
+            String Description "Battery Voltage (VBAT)";
+            String units "volts";
+        }
+        checksum {
+            String Description "Low 8 bits of the sum of the specified bytes in ARGOS transmission. (Checksum)";
+            String units "unknown";
+        }
+        data_age {
+            String Description "Optical Sensor Data Age: Elapsed time between sample time and time of delivery to ARGOS system. (DA)";
+            String units "minutes";
+        }
+        ed490 {
+            String Description "Downwelling Irradiance Sensor at 490nm";
+            Float32 Wavelength 490;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        ed490_stdev {
+            String Description "Standard deviation of Downwelling Irradiance Sensor at 490nm";
+            Float32 Wavelength 490;
+            String units "counts";
+        }
+        instrument_id {
+            String Description "String value used to uniquely identify each drifter instrument.";
+        }
+        flag_argos {
+        }
+        flag_gps {
+        }
+        flag_optical {
+        }
+        flag_sampling {
+        }
+        flag_tracking {
+        }
+        gpshour {
+            String Description "GPS Acquisition Time: Hour of day of GPS fix. (GPSHour)";
+            String units "hour";
+        }
+        gpslat {
+            String Description "GPS Latitiude (Lat)";
+            String units "degrees_north";
+        }
+        gpslon {
+            String Description "GPS Longitude (Lon)";
+            String units "degrees_east";
+        }
+        latitude {
+            String Description "Latitude as recorded by ARGOS system";
+            String units "degrees_north";
+        }
+        location {
+            String Description "String describing general location (southern ocean,oregon coast, etc.) of drifter deployment.";
+        }
+        longitude {
+            String Description "Longitude as recorded by ARGOS system";
+            String units "degrees_east";
+        }
+        lu412 {
+            String Description "Upwelling Radiance Sensor at 412nm";
+            Float32 Wavelength 412;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        lu412_stdev {
+            String Description "Standard deviation of Upwelling Radiance Sensor at 412nm";
+            Float32 Wavelength 412;
+            String units "counts";
+        }
+        lu443 {
+            String Description "Upwelling Radiance Sensor at 443nm";
+            Float32 Wavelength 443;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        lu443_stdev {
+            String Description "Standard deviation of Upwelling Radiance Sensor at 443nm";
+            Float32 Wavelength 443;
+            String units "counts";
+        }
+        lu490 {
+            String Description "Upwelling Radiance Sensorat at 490nm";
+            Float32 Wavelength 490;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        lu490_stdev {
+            String Description "Standard deviation of Upwelling Radiance Sensor at 490nm";
+            Float32 Wavelength 490;
+            String units "counts";
+        }
+        lu510 {
+            String Description "Upwelling Radiance Sensor at 510nm";
+            Float32 Wavelength 510;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        lu510_stdev {
+            String Description "Standard deviation of Upwelling Radiance Sensor at 510nm";
+            Float32 Wavelength 510;
+            String units "counts";
+        }
+        lu555 {
+            String Description "Upwelling Radiance Sensor at 555nm";
+            Float32 Wavelength 555;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        lu555_stdev {
+            String Description "Standard deviation of Upwelling Radiance Sensor at 555nm";
+            Float32 Wavelength 555;
+            String units "counts";
+        }
+        lu670 {
+            String Description "Upwelling Radiance Sensor at 670nm";
+            Float32 Wavelength 670;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        lu670_stdev {
+            String Description "Standard deviation of Upwelling Radiance Sensor at 670nm";
+            Float32 Wavelength 670;
+            String units "counts";
+        }
+        lu683 {
+            String Description "Upwelling Radiance Sensor at 683nm";
+            Float32 Wavelength 683;
+            String units "microwatts per square cm per nanometer per steradian";
+        }
+        lu683_stdev {
+            String Description "Standard deviation of Upwelling Radiance Sensor at 683nm";
+            Float32 Wavelength 683;
+            String units "counts";
+        }
+        max_depth {
+            String Description "Maximum Depth Voltage reading from the previous 10.5 minute period. (MDV)";
+            String units "volts";
+        }
+        night_len {
+            String Description "Length of the previous night (LNL)";
+            String units "minutes";
+        }
+        nsamp {
+            String Description "Message ID: Always set to 3 for GPS data Message";
+            String units "unknown";
+        }
+        numaves {
+            String Description "Number of samples in OCM data (NAve)";
+            String units "unknown";
+        }
+        press_volts {
+            String Description "Pressure sensor voltage at surface as determined by the surface check function. (SV)";
+            String units "volts";
+        }
+        rellat1hr {
+            String Description "Relative Latitude: Change in latitude in the last hour as determined by the GPS subsystem (Rlat1)";
+            String units "degrees_north";
+        }
+        rellat2hr {
+            String Description "Relative Latitude: Change in latitude in the last 2 hours as determined by the GPS subsystem (Rlat2)";
+            String units "degrees_north";
+        }
+        rellon1hr {
+            String Description "Relative Longitude: Change in longitude in the last hour as determined by the GPS subsystem (Rlon1)";
+            String units "degrees_east";
+        }
+        rellon2hr {
+            String Description "Relative Longitude: Change in longitude in the last 2 hours as determined by the GPS subsystem (Rlon2)";
+            String units "degrees_east";
+        }
+        sst {
+            String Description "Sea Surface Temperature (SST)";
+            String units "Degrees C";
+        }
+        sub_wait {
+            String Description "Average time that bouy software waited for bouy to come to surface before measuring irradiance. (ASW)";
+            String units "minutes";
+        }
+        surf_volts {
+            String Description "Averaged amplified pressure sensor voltage as measured during the surface check function. (AV)";
+            String units "volts";
+        }
+        surface_average {
+            String Description "Average duration of time that the bouy remained on the surface during the surface check function. (AST)";
+            String units "minutes";
+        }
+        surface_percent {
+            String Description "Percentage of time that the bouy was on the surface during the surface check function. (PTOS)";
+            String units "percentage";
+        }
+        time {
+            String Description "Time data sample was received by ARGOS system";
+            String units "Decimal days since Jan 1, 1993 (01/01/1993)";
+        }
+        ttff {
+            String Description "Time between GPS power on and first fix: Time To First Fix (TTFF)";
+            String units "Decimal days since Jan 1, 1993 (01/01/1993)";
+        }
+        maxgps {
+            String Description "Strongest GPS Signal Level (dB0)";
+            String units "dB";
+        }
+        rellat3hr {
+            String Description "Relative Latitude: Change in latitude in the last 3 hours as determined by the GPS subsystem (Rlat3)";
+            String units "degrees_north";
+        }
+        rellon3hr {
+            String Description "Relative Longitude: Change in longitude in the last 3 hours as determined by the GPS subsystem (Rlon3)";
+            String units "degrees_east";
+        }
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/b31.das
+Attributes {
+    b31 {
+        class {
+            String long_name "class is dismissed";
+        }
+        text {
+            String long_name "textually yours";
+        }
+        foo {
+            String long_name "It is beyond all recognition";
+            String short_name "foobar";
+        }
+    }
+    b32 {
+        String billy "Bob is my real name";
+        String Robert "Really wants to be called Billy";
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/b31a.das
+Attributes {
+    class {
+        String long_name "class";
+    }
+    text {
+        String long_name "text";
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/ingrid.das
+Attributes {
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/nestedDAS.das
+Attributes {
+    humans {
+        String position "There are too many humans.";
+        String offer "Here are a few...";
+    }
+    b31 {
+        class {
+            String long_name "class is dismissed";
+            String short_name "cid", "kid", "bid", "did";
+            text {
+                String long_name "textually yours";
+                String short_name "ty";
+            }
+        }
+        foo {
+            String long_name "It is beyond all recognition";
+            String short_name "foobar";
+            String SS_number "304-66-9876";
+        }
+    }
+    b32 {
+        String billy "Bob is my real name";
+        String Robert "Really wants to be called Billy";
+    }
+}
+
+================================================
+http://dods.coas.oregonstate.edu:8080/dods/dts/parserBug0001.das
+Attributes {
+    HDF_GLOBAL {
+        UInt32 dsp_SubImageId 0;
+        String dsp_SubImageName "N/A";
+        Int32 dsp_ModificationDate 20020123;
+        Int32 dsp_ModificationTime 103233;
+        Int32 dsp_SubImageFlag 64;
+        String dsp_SubImageTitle "Ingested by SCRIPP";
+        Int32 dsp_StartDate 19940121;
+        Float64 dsp_StartTime 85533.2;
+        Int32 dsp_SizeX 6144;
+        Int32 dsp_SizeY 6144;
+        Int32 dsp_OffsetX 0;
+        Int32 dsp_RecordLength 12288;
+        Byte dsp_DataOrganization 64;
+        Byte dsp_NumberOfBands 1;
+        String dsp_ing_tiros_ourid "NO11****C\\224\\2705>B\\217\\";
+        UInt32 dsp_ing_tiros_numscn 25619;
+        UInt32 dsp_ing_tiros_idsat 1792;
+        UInt32 dsp_ing_tiros_iddata 768;
+        UInt32 dsp_ing_tiros_year 24064;
+        UInt32 dsp_ing_tiros_daysmp 5376;
+        Int32 dsp_ing_tiros_milsec 558950913;
+        Int32 dsp_ing_tiros_slope -261895163, -252425723, -1976964865, 284058612, -1596567820;
+        Int32 dsp_ing_tiros_intcpt -1371074049, 1024075775, 1058495488, 1080756269, 13141549;
+        UInt32 dsp_ing_tiros_tabadr 256, 512, 768;
+        UInt32 dsp_ing_tiros_cnlins 256;
+        UInt32 dsp_ing_tiros_cncols 256;
+        UInt32 dsp_ing_tiros_czncs 8;
+        UInt32 dsp_ing_tiros_line 256;
+        UInt32 dsp_ing_tiros_icol 0;
+        String dsp_ing_tiros_date0 "14-DEC-10 21:12:01\\030";
+        String dsp_ing_tiros_time0 "21:12:01\\030";
+        UInt32 dsp_ing_tiros_label 12576, 12594, 13369;
+        UInt32 dsp_ing_tiros_nxtblk 1280;
+        UInt32 dsp_ing_tiros_datblk 1280;
+        UInt32 dsp_ing_tiros_itape 256;
+        UInt32 dsp_ing_tiros_cbias 0;
+        UInt32 dsp_ing_tiros_ccoeff 0;
+        Int32 dsp_ing_tiros_pastim 558950913;
+        UInt32 dsp_ing_tiros_passcn 3840;
+        UInt32 dsp_ing_tiros_lostct 0;
+        UInt32 dsp_ing_tiros_lost 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+        UInt32 dsp_ing_tiros_ndrll 1280;
+        UInt32 dsp_ing_tiros_ndrrec 3840, 5376, 6912, 8448, 9984, 0, 0, 0, 0, 0;
+        UInt32 dsp_ing_tiros_ndrlat 34334, 32542, 30750, 28958, 26910, 0, 0, 0, 0, 0;
+        UInt32 dsp_ing_tiros_ndrlon 40934, 39654, 38118, 36838, 35302, 0, 0, 0, 0, 0;
+        UInt32 dsp_ing_tiros_chncnt 1280;
+        UInt32 dsp_ing_tiros_chndsq 8, 8, 8, 8, 8;
+        UInt32 dsp_ing_tiros_czncs2 4;
+        UInt32 dsp_ing_tiros_wrdsiz 512;
+        UInt32 dsp_ing_tiros_nchbas 256;
+        UInt32 dsp_ing_tiros_nchlst 1280;
+        Float64 dsp_ing_tiros_rpmclc 0;
+        UInt32 dsp_ing_tiros_numpix 8;
+        UInt32 dsp_ing_tiros_scnden 256;
+        UInt32 dsp_ing_tiros_eltden 256;
+        UInt32 dsp_ing_tiros_orbtno 14443;
+        Int32 dsp_ing_tiros_slope2 -261895163, -252425723, -1976964865, 284058612, -1596567820;
+        Int32 dsp_ing_tiros_intcp2 -1371074049, 1024075775, 1058495488, 1080756269, 13141549;
+        Float64 dsp_ing_tiros_prtemp 1.37522e-06;
+        Float64 dsp_ing_tiros_timerr 3.2259e+17;
+        UInt32 dsp_ing_tiros_timstn 8279;
+        String dsp_nav_xsatid "NO11\\005\\002";
+        Byte dsp_nav_xsatty 5;
+        Byte dsp_nav_xproty 2;
+        Byte dsp_nav_xmapsl 0;
+        Byte dsp_nav_xtmpch 4;
+        Float64 dsp_nav_ximgdy 94021;
+        Float64 dsp_nav_ximgtm 85529.2;
+        Float64 dsp_nav_xorbit 27448;
+        Float64 dsp_nav_ximgcv 71.1722, 0, 4.8278, 0, 177.89, 0, -97.8897, 0;
+        Float64 dsp_nav_earth_linoff 0;
+        Float64 dsp_nav_earth_pixoff 0;
+        Float64 dsp_nav_earth_scnstr 1;
+        Float64 dsp_nav_earth_scnstp 6144;
+        Float64 dsp_nav_earth_pixstr 1;
+        Float64 dsp_nav_earth_pixstp 6144;
+        Float64 dsp_nav_earth_latorg 0;
+        Float64 dsp_nav_earth_lonorg 0;
+        Float64 dsp_nav_earth_orgrot 0;
+        Float64 dsp_nav_earth_lattop 0;
+        Float64 dsp_nav_earth_latbot 0;
+        Float64 dsp_nav_earth_latcen 38;
+        Float64 dsp_nav_earth_loncen -70;
+        Float64 dsp_nav_earth_height 66.3444;
+        Float64 dsp_nav_earth_width 84.2205;
+        Float64 dsp_nav_earth_level 1;
+        Float64 dsp_nav_earth_xspace 5.99902;
+        Float64 dsp_nav_earth_yspace 5.99902;
+        String dsp_nav_earth_rev " 0.1";
+        Float64 dsp_nav_earth_dflag 0;
+        Float64 dsp_nav_earth_toplat 71.1722;
+        Float64 dsp_nav_earth_botlat 4.8278;
+        Float64 dsp_nav_earth_leflon -112.11;
+        Float64 dsp_nav_earth_ritlon -27.8897;
+        Float64 dsp_nav_earth_numpix 6144;
+        Float64 dsp_nav_earth_numras 6144;
+        Float64 dsp_nav_earth_magxx 1;
+        Float64 dsp_nav_earth_magyy 1;
+        Int32 dsp_hgt_llnval 19;
+        Int32 dsp_hgt_lltime 32079183;
+        Float64 dsp_hgt_llvect 857.174, 1.14191, 856.231, 1.09043, 855.259, 1.03895, 854.268, 0.987463, 853.267, 0.935972, 852.264, 0.884477, 851.269, 0.83298, 850.292, 0.78148, 849.343, 0.729979, 848.431, 0.678476, 847.567, 0.626972, 846.76, 0.575468, 846.02, 0.523963, 845.354, 0.472459, 844.771, 0.420956, 844.279, 0.369454, 843.884, 0.317954, 843.593, 0.266456, 843.409, 0.214961, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+        String history "\\001PATHNLC Dec 15 22:36:22 2000 PATHNLC t,3,269.16,0.125,0.,0.01,271.16,308.16,,,,1,,,2,,,3,,,,,,4,,,,,,,2.,,35.,0.1,5,,,,,,,2.,,35.,0.15,55.,80.,0.005,20,,,-2,6.,t,,,,,,,,,,16,,3.5 allb=0 nlsst=1 in=/data/sbaker/ingested/CH_A/94021085533.N11@INGEST@ in1=/data/sbaker/reynold/oi.9403.mean out=/data/sbaker/nlc/i94021085533.FMG@0\\012\\004PATHNLC  NLSST Temp calculation date: April 10, 1996\\012\\001OISST Jul  5 14:06:49 1995 OISST /usr2/sue/oi/sst/oi.comp.bias.1994,/usr5/sue/old/sue/oi/oi.94,-3.,0.15,/usr5/sue/old/sue/oi/oi.1994.dates,f\\012\\004OISST 02 94 01 09 94 01 15  7        458\\012\\001STATS Jul  5 14:10:28 1995 STATS minpix=1 maxpix=255 in=/usr3/gacsst/gacmask/oi.9402 \\011  audit=t, callim=f, cal=f, cloud=f \\011  outm=/usr3/gacsst/gacmask/oi.9403.mean\\012\\001OISST Jul  5 14:06:49 1995 OISST /usr2/sue/oi/sst/oi.comp.bias.1994,/usr5/sue/old/sue/oi/oi.94,-3.,0.15,/usr5/sue/old/sue/oi/oi.1994.dates,f\\012\\004OISST 03 94 01 16 94 01 22  7        458\\012\\002STATS /usr3/gacsst/gacmask/oi.9403\\012\\001OISST Jul  5 14:06:49 1995 OISST /usr2/sue/oi/sst/oi.comp.bias.1994,/usr5/sue/old/sue/oi/oi.94,-3.,0.15,/usr5/sue/old/sue/oi/oi.1994.dates,f\\012\\004OISST 03 94 01 16 94 01 22  7        458\\012\\002STATS /usr3/gacsst/gacmask/oi.9403\\012\\001OISST Jul  5 14:06:49 1995 OISST /usr2/sue/oi/sst/oi.comp.bias.1994,/usr5/sue/old/sue/oi/oi.94,-3.,0.15,/usr5/sue/old/sue/oi/oi.1994.dates,f\\012\\004OISST 04 94 01 23 94 01 29  7        458\\012\\002STATS /usr3/gacsst/gacmask/oi.9404\\012\\002PATHNLC /data/sbaker/reynold/oi.9403.mean\\012\\004PATHNLC  45d coeffs used (1) =    2.074   0.879   0.145  -1.357   0.000\\012\\004PATHNLC  45d coeffs used (2) =    2.064   0.919   0.082   0.519   0.000\\012\\004PATHNLC  45d coeffs used (3) =    0.000   0.000   0.000   0.000   0.000\\012\\004PATHNLC  GETOZONE I     0.0900    0.0000\\012\\001REMAP Dec 20 21:41:10 2000 REMAP in=/coral/sbaker/remaps/sst_8rmore/file_uZ.FMG out=/coral/sbaker/remaps/sst_8rmore/i94021085533.nwa16\\012\\004REMAP Output image pixel, line size =    6144,    6144\\012\\004REMAP Grid spacing (X,Y) = (        6.00,        6.00), Projection Code=     1\\012\\004REMAP center lon,lat,dlon,dlat =       -70.00       38.00        0.01        0.01\\012\\001merge_sb Jan 16 13:48:40 2002 merge_sb in=(file=/RAID/sbaker/sst_16d/tmpfil, filecheck=/RAID/sbaker/sst_16d/i94021085533.msk16) val=-99 valcheck=4 tag=-99 out=(file1=/RAID/sbaker/sst_16d/i94021085533.nwa16_d)\\012\\001merge_sb Jan 23 10:32:25 2002 merge_sb in=(file=/RAID/sbaker/sst_16d/i94021085533.nwa16_d, filecheck=/RAID/sbaker/bslines/i94021085533.nwa16) val=0 valcheck=0 tag=0 out=(file1=/RAID2/sbaker/nwa1024d/dsp_data/i94021085533.tmp_m2)\\012\\001merge_sb Jan 23 10:32:33 2002 merge_sb in=(file=/RAID2/sbaker/nwa1024d/dsp_data
