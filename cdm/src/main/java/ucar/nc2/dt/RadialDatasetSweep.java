@@ -114,12 +114,18 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
     /** @return the elevation of the ith radial, in degrees */
     public float getElevation(int radial)  throws java.io.IOException;
 
+    /** @return all elevation in the sweep */
+    public float[] getElevation()  throws java.io.IOException;
+
     /** @return the average elevation of all the radials in the sweep, in degrees.
      * Only valid if getType() == TYPE_ */
     public float getMeanElevation();
 
     /** @return the azimuth of the ith radial, in degrees */
     public float getAzimuth(int radial) throws java.io.IOException;
+
+    /** @return all azimuth in the sweep */
+    public float[] getAzimuth() throws java.io.IOException;
 
     /** @return the average azimuth of all the radials in the sweep, in degrees.
      * Only valid if getType() == TYPE_ */
