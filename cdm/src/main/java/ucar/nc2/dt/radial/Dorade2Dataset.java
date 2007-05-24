@@ -370,8 +370,16 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         return elev[ray];
       }
 
+      public float[] getElevation() {// degrees from horisontal earth tangent, towards zenith
+        return elev;
+      }
+
       public float getAzimuth(int ray) { // degrees clockwise from true North
         return aziv[ray];
+      }
+
+      public float[] getAzimuth() { // degrees clockwise from true North
+        return aziv;
       }
 
       public float getTime() {
