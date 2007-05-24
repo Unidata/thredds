@@ -378,10 +378,22 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         return data.getFloat(index.set(ray));
       }
 
+      public float[] getElevation() throws IOException {
+        Array data = radialCoordsys.getElevationAxisDataCached();
+
+        return (float []) data.get1DJavaArray(float.class);
+      }
+
       public float getAzimuth(int ray) throws IOException {
         Array data = radialCoordsys.getAzimuthAxisDataCached();
         Index index = data.getIndex();
         return data.getFloat(index.set(ray));
+      }
+
+      public float[] getAzimuth() throws IOException {
+        Array data = radialCoordsys.getAzimuthAxisDataCached();
+
+        return (float []) data.get1DJavaArray(float.class);
       }
 
       public float getRadialDistance(int gate) throws IOException {
