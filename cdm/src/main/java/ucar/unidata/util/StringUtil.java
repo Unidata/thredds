@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-// $Id: StringUtil.java,v 1.49 2007/01/09 20:07:45 dmurray Exp $
+// $Id: StringUtil.java,v 1.52 2007/06/01 16:58:07 jeffmc Exp $
 
 
 package ucar.unidata.util;
@@ -36,8 +36,8 @@ import java.util.regex.*;
 
 /**
  * String utilities
- * @author John Caron
- * @version $Id: StringUtil.java,v 1.49 2007/01/09 20:07:45 dmurray Exp $
+ * @author Unidata developers
+ * @version $Id: StringUtil.java,v 1.52 2007/06/01 16:58:07 jeffmc Exp $
  */
 
 public class StringUtil {
@@ -48,7 +48,7 @@ public class StringUtil {
     /** Ordinal names for images */
     public static final String[] ordinalNames = {
         "Latest", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh",
-        "Eight", "Ninth", "Tenth"
+        "Eighth", "Ninth", "Tenth"
     };
 
 
@@ -447,56 +447,72 @@ public class StringUtil {
         return sb.toString();
     }
 
-  /**
-   * Remove any char not alphanumeric or in okChars.
-   * @param x filter this string
-   * @param okChars these are ok.
-   * @return filtered string.
-   */
-  static public String filter(String x, String okChars) {
-      boolean ok = true;
-      for (int pos = 0; pos < x.length(); pos++) {
-          char c = x.charAt(pos);
-          if ( !(Character.isLetterOrDigit(c)
-                  || (0 <= okChars.indexOf(c)))) {
-              ok = false;
-              break;
-          }
-      }
-      if (ok) {
-          return x;
-      }
-
-      // gotta do it
-      StringBuffer sb = new StringBuffer(x.length());
-      for (int pos = 0; pos < x.length(); pos++) {
-          char c = x.charAt(pos);
-          if (Character.isLetterOrDigit(c) || (0 <= okChars.indexOf(c))) {
-              sb.append(c);
-          }
-      }
-
-      return sb.toString();
-  }
-
-  /**
-   * Remove all but printable 7bit ascii
-   * @param s filter this string
-   * @return filtered string.
-   */
-  static public String filter7bits(String s) {
-      byte[] b = s.getBytes();
-      byte[] bo = new byte[b.length];
-      int count = 0;
-      for (int i = 0; i < s.length(); i++) {
-        if ((b[i]<128) && (b[i]>31) || (b[i] == '\n' || b[i] == '\t'))
-          bo[count++] = b[i];
-      }
-
-      return new String(bo, 0, count);
-  }
+    /**
+     * Convert the given color to is string hex representation
+     *
+     * @param c color
+     *
+     * @return hex represenation
+     */
+    public static String toHexString(java.awt.Color c) {
+        return "#" + padRight(Integer.toHexString(c.getRed()), 2, "0")
+               + padRight(Integer.toHexString(c.getGreen()), 2, "0")
+               + padRight(Integer.toHexString(c.getBlue()), 2, "0");
+    }
 
 
+
+   /**
+     * Remove all but printable 7bit ascii
+     * @param s filter this string
+     * @return filtered string.
+     */
+    static public String filter7bits(String s) {
+        byte[] b     = s.getBytes();
+        byte[] bo    = new byte[b.length];
+        int    count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if ((b[i] < 128) && (b[i] > 31)
+                    || ((b[i] == '\n') || (b[i] == '\t'))) {
+                bo[count++] = b[i];
+            }
+        }
+
+        return new String(bo, 0, count);
+    }
+
+
+    /**
+     * Remove any char not alphanumeric or in okChars.
+     * @param x filter this string
+     * @param okChars these are ok.
+     * @return filtered string.
+     */
+    static public String filter(String x, String okChars) {
+        boolean ok = true;
+        for (int pos = 0; pos < x.length(); pos++) {
+            char c = x.charAt(pos);
+            if ( !(Character.isLetterOrDigit(c)
+                    || (0 <= okChars.indexOf(c)))) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) {
+            return x;
+        }
+
+        // gotta do it
+        StringBuffer sb = new StringBuffer(x.length());
+        for (int pos = 0; pos < x.length(); pos++) {
+            char c = x.charAt(pos);
+            if (Character.isLetterOrDigit(c) || (0 <= okChars.indexOf(c))) {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
 
     /**
      * Replace any char not alphanumeric or in allowChars by replaceChar.
@@ -1920,6 +1936,26 @@ public class StringUtil {
     }
 
     /**
+     * Method for debugging.
+     *
+     * @param args  arguments
+     *
+     * @throws Exception some problem
+     */
+    public static void main(String[] args) throws Exception {
+        System.err.println(toHexString(java.awt.Color.red));
+
+
+
+
+        //        String s = IOUtil.readContents(args[0], "");
+        //        System.out.println(stripTags(s));
+
+    }
+
+
+
+    /**
      * test
      *
      * @param args args
@@ -2089,7 +2125,7 @@ public class StringUtil {
      *
      * @param subject subject to prefix
      *
-     * @return "an" for vowels, "a" for consanants
+     * @return "an" for vowels, "a" for consonants
      */
     public static String getAnOrA(String subject) {
         String s = subject.toLowerCase();
