@@ -145,7 +145,9 @@ public final class GribIndexer {
                     checkDirs( child );
                 // skip index *gbx and inventory *xml files
                 } else if( children[ i ].endsWith( "gbx" ) ||
-                    children[ i ].endsWith( "xml" )) {
+                    children[ i ].endsWith( "xml" ) ||
+                    children[ i ].endsWith( "tmp" )  || //index in creation process
+                    children[ i ].length() == 0 ) { // zero length file, ugh...
                     continue;
                 } else {
                     checkIndex( dir, child );
@@ -230,7 +232,7 @@ public final class GribIndexer {
            }
        } catch( Exception e ) {
            e.printStackTrace();
-           System.out.println( "Caught Exception doing index or inventory" );
+           System.out.println( "Caught Exception doing index or inventory for "+ grib.getName() );
            return;
        }
 
@@ -258,7 +260,7 @@ public final class GribIndexer {
            }
        } catch( Exception e ) {
            e.printStackTrace();
-           System.out.println( "Caught Exception doing index or inventory" );
+           System.out.println( "Caught Exception doing index or inventory for "+ grib.getName() );
            return;
        }
 
