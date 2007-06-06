@@ -6,7 +6,7 @@ package ucar.nc2.dt;
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
-public interface Station extends EarthLocation {
+public interface Station extends EarthLocation, Comparable {
   /** Station name. Must be unique within the collection */
   public String getName();
   /** Station description */

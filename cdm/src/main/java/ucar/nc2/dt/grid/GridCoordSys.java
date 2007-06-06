@@ -903,7 +903,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
     if (horizYaxis instanceof CoordinateAxis1D) {
       CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizYaxis;
-      y = horiz1D.getCoordValue(xindex);
+      y = horiz1D.getCoordValue(yindex);
     } else {
       CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizYaxis;
       y = horiz2D.getCoordValue(xindex, yindex);

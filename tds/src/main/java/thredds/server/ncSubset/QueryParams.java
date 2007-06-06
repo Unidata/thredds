@@ -137,7 +137,7 @@ class QueryParams {
    *
    * @param req      HTTP request
    * @param res      HTTP response
-   * @param acceptOK array of acceptable acept types, in order. First one is default
+   * @param acceptOK array of acceptable accept types, in order. First one is default
    * @return true if params are ok
    * @throws java.io.IOException if I/O error
    */
@@ -149,6 +149,10 @@ class QueryParams {
       if (accept.contains(ok)) {
         acceptType = ok;
       }
+    }
+    if (acceptType == null) {
+      fatal = true;
+      errs.append("Accept parameter not supported ="+accept);
     }
 
     // list of variable names
@@ -206,6 +210,10 @@ class QueryParams {
       hasTimePoint = (time != null);
     }
 
+    // vertical coordinate
+    vertCoord = parseDouble(req, "vertCoord");
+    hasVerticalCoord = !Double.isNaN(vertCoord);
+
     if (fatal) {
       writeErr(res, errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
       return false;
@@ -241,7 +249,7 @@ class QueryParams {
 
   public double parseDouble(HttpServletRequest req, String key) {
     String s = ServletUtil.getParameterIgnoreCase(req, key);
-    if (s != null) {
+    if ((s != null) && (s.trim().length() > 0)) {
       try {
         return Double.parseDouble(s);
       } catch (NumberFormatException e) {

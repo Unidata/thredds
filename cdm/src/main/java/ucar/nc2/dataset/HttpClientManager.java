@@ -72,6 +72,13 @@ public class HttpClientManager {
     else
       _client.getParams().setParameter(HttpMethodParams.USER_AGENT, "NetcdfJava/HttpClient");
 
+    // nick.bower@metoceanengineers.com
+    String proxyHost = System.getProperty("http.proxyHost");
+    String proxyPort = System.getProperty("http.proxyPort");
+    if ((proxyHost != null) && (proxyPort != null)) {
+        _client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
+    }
+
     setHttpClient(_client);
   }
 

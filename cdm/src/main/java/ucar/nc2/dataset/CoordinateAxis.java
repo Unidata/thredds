@@ -315,6 +315,11 @@ public class CoordinateAxis extends VariableDS implements Comparable {
   }
   private volatile int hashCode = 0;
 
+  /**
+   * Use the name to sort on
+   * @param o the other CoordinateAxis
+   * @return -1,0,1
+   */
   public int compareTo(Object o) {
     CoordinateAxis oaxis = (CoordinateAxis) o;
     return getName().compareTo(oaxis.getName());

@@ -99,8 +99,6 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       throw new IllegalStateException("Missing latitude variable");
     if (lonVar == null)
       throw new IllegalStateException("Missing longitude coordinate variable");
-    if (altVar == null)
-      throw new IllegalStateException("Missing altitude coordinate variable");
     if (timeVar == null)
       throw new IllegalStateException("Missing time coordinate variable");
 
@@ -196,7 +194,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 
     Array latArray = latVar.read();
     Array lonArray = lonVar.read();
-    Array elevArray = altVar.read();
+    Array elevArray = (altVar != null) ? altVar.read() : null;
     Array firstRecordArray = (isForwardLinkedList || isContiguousList) ? firstVar.read() : lastVar.read();
 
     Array numChildrenArray = null;
@@ -231,7 +229,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       UnidataStationImpl bean = new UnidataStationImpl(stationName, stationDesc,
               latArray.getFloat(ima),
               lonArray.getFloat(ima),
-              elevArray.getFloat(ima),
+              (altVar != null) ? elevArray.getFloat(ima) : Double.NaN,
               firstRecordArray.getInt(ima),
               (numChildrenVar != null) ? numChildrenArray.getInt(ima) : -1
       );

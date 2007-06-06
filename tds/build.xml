@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="3.16"/>
-  <property name="release.version.minor" value="${release.version}.02"/>
+  <property name="release.version.minor" value="${release.version}.06"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -76,7 +76,7 @@
   <!-- Project libraries needed for compile. -->
   <property name="bufr.jar" value="release/bufr-1.1.00.jar"/>
   <property name="netcdf.jar" value="release/netcdf-2.2.21.jar"/>
-  <property name="grib.jar" value="release/grib-5.1.03.jar"/>
+  <property name="grib.jar" value="release/grib-5.1.04.jar"/>
   <property name="prefs.jar" value="release/prefsAll.jar"/>
   <property name="opendap.jar" value="release/opendap-2.0.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>

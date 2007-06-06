@@ -18,7 +18,9 @@ public class StationDB {
 
   private ArrayList stations = new ArrayList();
 
-  /** Reads station table ascii output from mcidas STNLIST command */
+  /**
+   * Reads station table ascii output from mcidas STNLIST command
+   */
   public StationDB(String urlString) throws IOException {
     long start = System.currentTimeMillis();
 
@@ -26,15 +28,15 @@ public class StationDB {
     if (urlString.startsWith("http:")) {
       URL url = new URL(urlString);
       ios = url.openStream();
-      if (debugOpen) System.out.println("opened URL "+urlString);
-    } else  if (urlString.startsWith("resource:")) {
+      if (debugOpen) System.out.println("opened URL " + urlString);
+    } else if (urlString.startsWith("resource:")) {
       ClassLoader cl = getClass().getClassLoader();
-      ios = cl.getResourceAsStream( urlString.substring(9));
-      if (debugOpen) System.out.println("opened resource "+urlString);
+      ios = cl.getResourceAsStream(urlString.substring(9));
+      if (debugOpen) System.out.println("opened resource " + urlString);
     } else {
       ios = new FileInputStream(urlString);
-      if (debugOpen) System.out.println("opened file "+urlString);
-     }
+      if (debugOpen) System.out.println("opened file " + urlString);
+    }
 
     // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
@@ -47,17 +49,17 @@ public class StationDB {
       if (line == null) break;
       if (line.length() < 85) break;
 
-      String idn = line.substring(0,5);
-      String id = line.substring(6,10);
-      String name = line.substring(13,33);
-      String type = line.substring(34,51);
-      String state = line.substring(52,54);
-      String country = line.substring(55,57);
-      String latS = line.substring(58,68);
-      String lonS = line.substring(69,79);
-      String elevS = line.substring(80,85);
+      String idn = line.substring(0, 5);
+      String id = line.substring(6, 10);
+      String name = line.substring(13, 33);
+      String type = line.substring(34, 51);
+      String state = line.substring(52, 54);
+      String country = line.substring(55, 57);
+      String latS = line.substring(58, 68);
+      String lonS = line.substring(69, 79);
+      String elevS = line.substring(80, 85);
       Station s = new Station(idn, id, name, type, state, country, latS, lonS, elevS);
-      stations.add( s);
+      stations.add(s);
 
       if (debugParse) System.out.println(s);
       count++;
@@ -68,37 +70,39 @@ public class StationDB {
 
     if (debugCall) {
       long took = System.currentTimeMillis() - start;
-      System.out.println(" read "+urlString+" count="+stations.size()+" took="+took+" msec ");
+      System.out.println(" read " + urlString + " count=" + stations.size() + " took=" + took + " msec ");
     }
   }
 
-  /** Reads station info by making a call to ADDE server: very slow!!! */
+  /**
+   * Reads station info by making a call to ADDE server: very slow!!!
+   */
   StationDB(String location, CancelTask cancel) throws IOException {
     HashMap hashStations = new HashMap(5000);
 
     try {
-      if (debugOpen) System.out.println("Call ADDE Server "+location);
+      if (debugOpen) System.out.println("Call ADDE Server " + location);
       long start = System.currentTimeMillis();
-      AddePointDataReader reader = AddeStationObsDataset.callAdde( location+"&num=all&param=ID LAT LON ZS"); // LOOK
+      AddePointDataReader reader = AddeStationObsDataset.callAdde(location + "&num=all&param=ID LAT LON ZS"); // LOOK
       long took = System.currentTimeMillis() - start;
-      if (debugOpen) System.out.println(" time = "+took);
+      if (debugOpen) System.out.println(" time = " + took);
 
-      int [][] stationData = reader.getData();
+      int[][] stationData = reader.getData();
       int nparams = stationData.length;
       int nstations = stationData[0].length;
-      System.out.println(" nparams= "+nparams+" nstations=" + nstations);
-      System.out.println(" size= "+(nparams * nstations * 4)+" bytes");
+      System.out.println(" nparams= " + nparams + " nstations=" + nstations);
+      System.out.println(" size= " + (nparams * nstations * 4) + " bytes");
 
-      int[] scales  = reader.getScales();
-      double[] scaleFactor = new double[ scales.length];
+      int[] scales = reader.getScales();
+      double[] scaleFactor = new double[scales.length];
       for (int i = 0; i < nparams; i++) {
-        scaleFactor[i] = (scales[i] == 0) ? 1.0 : 1.0/Math.pow(10.0, (double) scales[i]);
+        scaleFactor[i] = (scales[i] == 0) ? 1.0 : 1.0 / Math.pow(10.0, (double) scales[i]);
       }
 
       if ((cancel != null) && cancel.isCancel()) return;
 
       int last = 0;
-      for (int i=0; i<nstations; i++) {
+      for (int i = 0; i < nstations; i++) {
         String stnId = McIDASUtil.intBitsToString(stationData[0][i]);
         if (!hashStations.containsKey(stnId)) {
           last = i;
@@ -109,13 +113,13 @@ public class StationDB {
         }
         if ((cancel != null) && cancel.isCancel()) return;
       }
-      if (debugCall) System.out.println(" hashStations count= "+hashStations.size()+" last = "+last);
-      List stationList = new ArrayList( hashStations.keySet());
-      Collections.sort( stationList);
+      if (debugCall) System.out.println(" hashStations count= " + hashStations.size() + " last = " + last);
+      List stationList = new ArrayList(hashStations.keySet());
+      Collections.sort(stationList);
       stations = new ArrayList();
       for (int i = 0; i < stationList.size(); i++) {
-        String id =  (String) stationList.get(i);
-        stations.add( hashStations.get( id));
+        String id = (String) stationList.get(i);
+        stations.add(hashStations.get(id));
         if ((cancel != null) && cancel.isCancel()) return;
       }
 
@@ -133,9 +137,10 @@ public class StationDB {
     String idn, id, name, type, state, country, desc;
     double lat, lon, elev;
 
-    Station( String idn, String id, String name, String type, String state, String country, String latS,
-             String lonS, String elevS) {
-      if (debugParse) System.out.println("-"+idn+"-"+id+"-"+name+"-"+type+"-"+state+"-"+country+"-"+latS+"-"+lonS+"-"+elevS);
+    Station(String idn, String id, String name, String type, String state, String country, String latS,
+            String lonS, String elevS) {
+      if (debugParse)
+        System.out.println("-" + idn + "-" + id + "-" + name + "-" + type + "-" + state + "-" + country + "-" + latS + "-" + lonS + "-" + elevS);
 
       this.idn = idn.trim();
       this.id = id.trim();
@@ -143,34 +148,34 @@ public class StationDB {
       this.type = type;
       this.state = state.trim();
       this.country = country.trim();
-      this.lat = parseDegree( latS);
-      this.lon = -1.0 * parseDegree( lonS); // LOOK : degrees west ?? !!
+      this.lat = parseDegree(latS);
+      this.lon = -1.0 * parseDegree(lonS); // LOOK : degrees west ?? !!
 
       if (this.state.length() > 0)
-        desc = this.name +", "+this.state+", "+this.country;
+        desc = this.name + ", " + this.state + ", " + this.country;
       else
-        desc = this.name +", "+this.country;
+        desc = this.name + ", " + this.country;
 
       try {
-        elev = Double.parseDouble( elevS);
+        elev = Double.parseDouble(elevS);
       } catch (NumberFormatException e) {
         e.printStackTrace();
       }
     }
 
-    private double parseDegree( String s) {
-      String degS = s.substring(0,4);
-      String minS = s.substring(5,7);
-      String secS = s.substring(8,10);
+    private double parseDegree(String s) {
+      String degS = s.substring(0, 4);
+      String minS = s.substring(5, 7);
+      String secS = s.substring(8, 10);
 
       try {
-        double deg = Double.parseDouble( degS);
-        double min = Double.parseDouble( minS);
-        double sec = Double.parseDouble( secS);
+        double deg = Double.parseDouble(degS);
+        double min = Double.parseDouble(minS);
+        double sec = Double.parseDouble(secS);
         if (deg < 0)
-          return deg - min/60 - sec/3600;
+          return deg - min / 60 - sec / 3600;
         else
-          return deg + min/60 + sec/3600;
+          return deg + min / 60 + sec / 3600;
       } catch (NumberFormatException e) {
         e.printStackTrace();
       }
@@ -186,7 +191,7 @@ public class StationDB {
     }
 
     public String toString() {
-      return idn+" "+id+" "+name+" "+type+" "+state+" "+country+" "+lat+" "+lon+" "+elev;
+      return idn + " " + id + " " + name + " " + type + " " + state + " " + country + " " + lat + " " + lon + " " + elev;
     }
 
     public String getName() {
@@ -212,21 +217,27 @@ public class StationDB {
     public double getAltitude() {
       return elev;
     }
+
+    public int compareTo(Object o) {
+      Station so = (Station) o;
+      return name.compareTo(so.getName());
+    }
   }
 
   static String testName = "C:/data/station/adde/STNDB.TXT";
   //static String testName = "M:/temp/STNDB.TXT";
   static String testName2 = "http://localhost:8080/test/STNDB.TXT";
-  static public void main( String[] args) throws IOException {
+
+  static public void main(String[] args) throws IOException {
     long start = System.currentTimeMillis();
     StationDB stnDB = new StationDB(testName);
     long took = System.currentTimeMillis() - start;
     List list = stnDB.getStations();
     double sum = 0.0;
     for (int i = 0; i < list.size(); i++) {
-      Station s =  (Station) list.get(i);
+      Station s = (Station) list.get(i);
       sum += s.getLatitude();
     }
-    System.out.println(" read "+testName+" count="+list.size()+" took="+took+" msec "+" sum= "+sum);
+    System.out.println(" read " + testName + " count=" + list.size() + " took=" + took + " msec " + " sum= " + sum);
   }
 }

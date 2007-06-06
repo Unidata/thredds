@@ -52,41 +52,58 @@ public class RestrictedDatasetServlet extends HttpServlet {
     if (authName != null) {
       Class authClass;
       try {
-        authClass = Class.forName( authName);
+        authClass = Class.forName(authName);
       } catch (ClassNotFoundException e) {
-        throw new ServletException("Cant find class "+authName, e);
+        throw new ServletException("Cant find class " + authName, e);
       }
 
       Authorizer authObject;
       try {
         authObject = (Authorizer) authClass.newInstance();
+
+        String roleSourceName = getInitParameter("RoleSource");
+        if (roleSourceName != null) {
+          try {
+            Class clazz = Class.forName(roleSourceName);
+            RoleSource rs = (RoleSource) clazz.newInstance();
+            authObject.setRoleSource(rs);
+          } catch (ClassNotFoundException e) {
+            log.error("Failed to instantiate " + roleSourceName, e);
+            throw new ServletException("Failed to instantiate " + roleSourceName, e);
+          }
+        } else {
+
+          String roleDBfile = getInitParameter("RoleDatabase");
+          if (roleDBfile != null) {
+            RoleDatabase db;
+            try {
+              db = new RoleDatabase(roleDBfile);
+              authObject.setRoleSource(db);
+            } catch (IOException e) {
+              log.error("Failed to read in RoleDatabase " + roleDBfile, e);
+              throw new ServletException("Failed to read in RoleDatabase " + roleDBfile, e);
+            }
+          }
+        }
+
       } catch (InstantiationException e) {
-        throw new ServletException("Cant instantiate class "+authName, e);
+        log.error("Cant instantiate class " + authName, e);
+        throw new ServletException("Cant instantiate class " + authName, e);
       } catch (IllegalAccessException e) {
-        throw new ServletException("Cant access class "+authName, e);
+        log.error("Cant access class " + authName, e);
+        throw new ServletException("Cant access class " + authName, e);
       }
 
-      authObject.init( this);
+      authObject.init(this);
       handler = authObject;
     }
 
-    String roleDBfile = getInitParameter("RoleDatabase");
-    if (roleDBfile != null) {
-      RoleDatabase db;
-      try {
-        db = new RoleDatabase(roleDBfile);
-        handler.setRoleSource( db);
-      } catch (IOException e) {
-        log.error("Failed to read in RoleDatabase "+roleDBfile, e);
-        throw new ServletException("Failed to read in RoleDatabase "+roleDBfile, e);
-      }
-    }
     initOK = true;
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     // ServletUtil.logServerAccessSetup( req );
-    if (debugResourceControl) System.out.println("RestrictedDatasetServlet = "+ ServletUtil.getRequest(req));    
+    if (debugResourceControl) System.out.println("RestrictedDatasetServlet = " + ServletUtil.getRequest(req));
     handler.doGet(req, res);
   }
 

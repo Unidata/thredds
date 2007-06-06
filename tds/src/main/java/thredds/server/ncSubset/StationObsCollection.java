@@ -23,7 +23,7 @@ package thredds.server.ncSubset;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.nc2.dt.*;
-import ucar.nc2.dt.point.StationObsDatasetWriter;
+import ucar.nc2.dt.point.WriterStationObsDataset;
 import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
@@ -173,7 +173,7 @@ public class StationObsCollection {
       try {
         long start = System.currentTimeMillis();
         cacheLogger.info("StationObsCollection: write " + fileIn + " to archive " + fileOut);
-        StationObsDatasetWriter.rewrite(fileIn, fileOut);
+        WriterStationObsDataset.rewrite(fileIn, fileOut);
         archive.add(new File(fileOut), myfile.date);
         long took = System.currentTimeMillis() - start;
         cacheLogger.info("  that took= " + (took/1000)+" secs");
@@ -316,6 +316,7 @@ public class StationObsCollection {
   ////////////////////////////////////////////////////
   // Dataset Description
 
+  private String datasetName = "/thredds/ncss/metars";
   private Document datasetDesc;
 
   public Document getDoc() throws IOException {
@@ -330,7 +331,7 @@ public class StationObsCollection {
     Element root = doc.getRootElement();
 
     // fix the location
-    root.setAttribute("location", "/thredds/ncss/metars"); // LOOK
+    root.setAttribute("location", datasetName); // LOOK
 
     // fix the time range
     Element timeSpan = root.getChild("TimeSpan");
@@ -805,7 +806,7 @@ public class StationObsCollection {
 
   class WriterNetcdf extends Writer {
     File netcdfResult;
-    StationObsDatasetWriter sobsWriter;
+    WriterStationObsDataset sobsWriter;
     List<Station> stnList;
     List<VariableSimpleIF> varList;
 
@@ -813,7 +814,7 @@ public class StationObsCollection {
       super(qp, varNames, writer);
 
       netcdfResult = File.createTempFile("ncss", ".nc");
-      sobsWriter = new StationObsDatasetWriter(netcdfResult.getAbsolutePath());
+      sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(),"Extracted data from Unidata/TDS Metar dataset");
 
       if ((varNames == null) || (varNames.size() == 0)) {
         varList = variableList;
@@ -895,7 +896,7 @@ public class StationObsCollection {
 
     public void header(List<String> stns) {
       writer.println("<?xml version='1.0' encoding='UTF-8'?>");
-      writer.println("<metarCollection dataset='name'>\n");
+      writer.println("<metarCollection dataset='"+datasetName+"'>\n");
     }
 
     public void trailer() {

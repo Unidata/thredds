@@ -1326,7 +1326,7 @@ public class NetcdfFile {
 
     variables.addAll(g.variables);
     for (Variable v : g.variables) {
-      v.calcIsCoordinateVariable();
+       v.calcIsCoordinateVariable();
     }
 
     for (Attribute oldAtt : g.attributes) {

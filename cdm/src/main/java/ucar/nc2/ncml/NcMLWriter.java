@@ -418,7 +418,7 @@ public class NcMLWriter {
     }
 
     if (var.isMetadata() || (var == aggCoord))
-      varElem.addContent( writeValues( var, ncNS));
+      varElem.addContent( writeValues( var, ncNS, true));
 
     if (isStructure) {
       Structure s = (Structure) var;
@@ -442,7 +442,7 @@ public class NcMLWriter {
     return makeVariable(var);
   } */
 
-  public static Element writeValues( VariableEnhanced v, Namespace ns) {
+  public static Element writeValues( VariableEnhanced v, Namespace ns, boolean allowRegular) {
     Element elem = new Element("values", ns);
 
     StringBuffer buff = new StringBuffer();
@@ -469,7 +469,7 @@ public class NcMLWriter {
 
     } else {
        //check to see if regular
-      if ((a.getRank() == 1) && (a.getSize() > 2)) {
+      if (allowRegular && (a.getRank() == 1) && (a.getSize() > 2)) {
         Index ima = a.getIndex();
         double start = a.getDouble( ima.set(0));
         double incr = a.getDouble( ima.set(1)) - start;

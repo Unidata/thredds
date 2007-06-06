@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 3.16
  Features
+  * Netcdf Subset for Metars, Grids, Grids as Points
+  * Write any GridDataset as CF compliant netCDF file.
+  * Write UnidataStationObsDataset netCDF files.
   * Documentation link on catalog.html pages points to unidata web site.
   * Default is allow=false for CdmValidator, WCS, NetcdfSubset.
  Bugs

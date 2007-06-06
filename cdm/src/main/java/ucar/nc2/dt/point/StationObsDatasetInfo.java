@@ -230,7 +230,7 @@ public class StationObsDatasetInfo {
     }
 
     if (axis.getRank() < 2)
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null));
+      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true));
 
     return varElem;
   }

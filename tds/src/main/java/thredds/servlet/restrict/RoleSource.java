@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,7 +24,6 @@ package thredds.servlet.restrict;
  * This tells whether a user has the named role.
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public interface RoleSource {
    public boolean hasRole(String username, String role);

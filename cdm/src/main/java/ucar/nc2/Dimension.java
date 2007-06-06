@@ -202,7 +202,7 @@ public class Dimension implements Comparable {
    * Remove previous if matches full name.
    * @param v list this as a Coordinate Varibale for this Dimension
    */
-  public void addCoordinateVariable( Variable v) {
+  synchronized public void addCoordinateVariable( Variable v) {
     for (int i = 0; i < coordVars.size(); i++) {
       Variable cv = coordVars.get(i);
       if (v.getName().equals(cv.getName())) {

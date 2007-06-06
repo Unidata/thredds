@@ -957,6 +957,11 @@ public class QueryChooser extends JPanel {
     public double getAltitude() {
       return s.getLocation().getElevation();
     }
+
+    public int compareTo(Object o) {
+      Station so = (Station) o;
+      return getName().compareTo( so.getName());
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////

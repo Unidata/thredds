@@ -277,6 +277,11 @@ public class PointObsViewer extends JPanel {
     public double getAltitude() {
       return pobs.getLocation().getAltitude();
     }
+
+    public int compareTo(Object o) {
+      Station so = (Station) o;
+      return getName().compareTo( so.getName());
+    }
   }
 
 }

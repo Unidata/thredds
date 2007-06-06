@@ -170,7 +170,7 @@ public class StationObsServlet extends AbstractServlet {
       contentType = "text/plain"; // LOOK why
     res.setContentType(contentType);
 
-    if (qp.accept.contains(QueryParams.NETCDF)) {
+    if (qp.acceptType.equals(QueryParams.NETCDF)) {
       res.setHeader("Content-Disposition", "attachment; filename=metarSubset.nc");
       File file = soc.writeNetcdf(qp);
       ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);

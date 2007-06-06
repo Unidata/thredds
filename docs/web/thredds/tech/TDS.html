@@ -20,7 +20,7 @@
   <li>An integrated server provides <a href="http://www.opendap.org/">OPeNDAP</a> access to any CDM dataset. OPeNDAP is a widely used, subsetting data access method extending the HTTP protocol. </li>
   <li>An integrated server provides bulk file access through the HTTP protocol. </li>
   <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wcs">OpenGIS Consortium (OGC) Web Coverage Service (WCS</a>) protocol for any &quot;gridded&quot; dataset whose coordinate system information is complete. </li>
-  <li>An integrated <a href="interfaceSpec/NetcdfSubsetService.html">NetCDF Subset Service</a>  allows subsetting of THREDDS  datasets,   using earth coordinates (such as lat/lon bounding boxes and date ranges) and returns netCDF binary files . <em><strong>This is a prototype, please do not rely on the APIs until announced as ready for use</strong></em>. </li>
+  <li>An integrated <a href="interfaceSpec/NetcdfSubsetService.html">NetCDF Subset Service</a>  allows subsetting of THREDDS  datasets,   using earth coordinates (such as lat/lon bounding boxes and date ranges) and returns netCDF binary files, XML or CSV ascii. <em><strong>This is a prototype, please do not rely on the APIs until announced as ready for use</strong></em>. </li>
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java, and is contained in a single war file, which allows very easy installation into the open-source <a href="http://jakarta.apache.org/tomcat/">Tomcat</a> web server. Configuration is made as simple and as automatic as possible, and we have made the server as secure as possible. The library is freely available and the source code is released under the GNU 
 <a href="http://www.gnu.org/copyleft/lesser.html">Lesser General Public License</a> (LGPL).</p>
@@ -40,10 +40,12 @@
 <ul>
   <li><a href="tutorial/index.html">TDS Administration Tutorial</a></li>
   <li><a href="reference/index.html">TDS Reference Documentation</a></li>
-  <li><a href="interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a> (experimental)</li>
-  <li><a href="interfaceSpec/TopQueries.html">Top Queries</a> (working draft) </li>
-</ul>
-<ul>
+  <li><a href="interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a> (experimental)
+    <ul>
+      <li>Station Subset Service</li>
+      <li><a href="interfaceSpec/GridDataSubsetService.html">Gridded Data Subset Service</a></li>
+    </ul>
+    </li>
   <li><a href="http://www.unidata.ucar.edu/publications/factsheets/2007AMSsheets/threddsFactSheet-1.doc">Fact sheet</a> (Word doc)</li>
   <li><a href="TechSummary.htm">THREDDS Technical summary</a></li>
 </ul>
@@ -67,7 +69,7 @@
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 08, 2007 
+<img src="images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 31, 2007 
 </address>
 <p align="center">&nbsp;</p>
 <p>&nbsp;</p>

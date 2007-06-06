@@ -495,8 +495,8 @@ public class GridController {
     if (gridDataset == null) return "";
     try {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      GridDatasetInfo info = new GridDatasetInfo((ucar.nc2.dt.grid.GridDataset) gridDataset, "path");
-      info.writeXML( bos);
+      GridDatasetInfo info = new GridDatasetInfo(gridDataset, "path");
+      info.writeXML( info.makeDatasetDescription(), bos);
       return bos.toString();
     } catch (IOException ioe) {}
     return "";

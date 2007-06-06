@@ -205,6 +205,13 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
   }
 
+  public CoordinateAxis1DTime( CoordinateAxis1DTime org, Date[] timeDates) {
+    super( org);
+    this.timeDates = timeDates;
+    this.dateUnit = org.dateUnit;
+  }
+
+
   /**
    * Get the list of times as Dates.
    * @return array of java.util.Date, or null.
@@ -251,15 +258,37 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return index - 1;
   }
 
+  /**
+   * See if the given Date appears is a coordinate
+   * @param date test this
+   * @return true if equals a coordinate
+   */
+  public boolean hasTime( Date date) {
+    for (int i = 0; i < timeDates.length; i++) {
+      Date timeDate = timeDates[i];
+      if (date.equals(timeDate))
+        return true;
+    }
+    return false;
+  }
+
+
   // override to keep section a CoordinateAxis1DTime
   public Variable section(List section) throws InvalidRangeException {
-    Variable vs = null;
-    try {
-      vs = new CoordinateAxis1DTime(this, null);
-    } catch (IOException e) {
-      e.printStackTrace();  // cant happen - haha
+    
+    // create the timeDate array
+    Range r = (Range) section.get(0);
+    Date[] timeDatesSection = new Date[r.length()];
+    Range.Iterator iter = r.getIterator();
+    int count = 0;
+    while (iter.hasNext()) {
+       int index = iter.next();
+       timeDatesSection[count++] = timeDates[index];
     }
+
+    CoordinateAxis1DTime vs = new CoordinateAxis1DTime(this, timeDatesSection);
     makeSection(vs, section);
+
     return vs;
   }
 }

@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Untitled Document</title>
+<title>PLiggable Authentocation</title>
 </head>
 
 <body>
@@ -24,12 +24,20 @@
 <pre><strong>2)</strong> &lt;init-param&gt;
     &lt;param-name&gt;<strong>Authorizer</strong>&lt;/param-name&gt;
     &lt;param-value&gt;<strong>thredds.servlet.restrict.CASAuthorizer</strong>&lt;/param-value&gt;
-   &lt;/init-param&gt;</pre>
-<pre><strong>3)</strong> &lt;init-param&gt;
+   &lt;/init-param&gt;
+</pre>
+<div>
+  <pre><strong>3)</strong> &lt;init-param&gt;
+      &lt;param-name&gt;<strong>RoleSource</strong>&lt;/param-name&gt;
+      &lt;param-value&gt;<strong>cisl.tds.restrict.RoleSource</strong>&lt;/param-value&gt;
+    &lt;/init-param&gt;
+
+<strong>4)</strong> &lt;init-param&gt;
     &lt;param-name&gt;<strong>RoleDatabase</strong>&lt;/param-name&gt;
     &lt;param-value&gt;<strong>C:/Program Files (x86)/Apache Software Foundation/apache-tomcat-5.5.20/conf/tomcat-users.xml</strong>&lt;/param-value&gt;
    &lt;/init-param&gt;</pre>
-<pre><strong>4)</strong> &lt;init-param&gt;
+</div>
+<pre><strong>5)</strong> &lt;init-param&gt;
     &lt;param-name&gt;edu.yale.its.tp.cas.client.filter.loginUrl&lt;/param-name&gt;
     &lt;param-value&gt;https://localhost:8443/cas/login&lt;/param-value&gt;
    &lt;/init-param&gt;
@@ -41,19 +49,23 @@
      &lt;param-name&gt;edu.yale.its.tp.cas.client.filter.serverName&lt;/param-name&gt;
      &lt;param-value&gt;localhost:8080&lt;/param-value&gt;
    &lt;/init-param&gt;</pre>
-<pre><strong>5)</strong> &lt;load-on-startup&gt;2&lt;/load-on-startup&gt;
+<pre><strong>6)</strong> &lt;load-on-startup&gt;2&lt;/load-on-startup&gt;
 &lt;/servlet&gt;</pre>
 <ol>
   <li>The <strong>RestrictedDataset</strong> servlet, implemented by <strong>thredds.servlet.restrict.RestrictedDatasetServlet</strong></li>
   <li>This is where you plug in your own Authorizer class, which implements <strong>thredds.servlet.restrict.Authorizer </strong>(see below).</li>
-  <li>If you have multiple sets of datasets to restrict, you may want to pass in a <strong><em>RoleDatabase</em></strong> XML file (see below). </li>
+  <li>You may plug in your own implementation of <strong>thredds.servlet.restrict.RoleSource</strong>, by naming the class here. (see below). </li>
+  <li>A special kind of RoleSource is  a <strong><em>RoleDatabase</em></strong> XML file (see below). Use a RoleSource or RoleDatabase (not both). </li>
   <li>These are any parameters needed to initialize your code. This example has actual parameters used by the CAS 2.1 code. </li>
   <li>Loading on startup ensures that any errors are immediately seen, otherwise, the servlet is not loaded until first accessed. </li>
 </ol>
 <h2>The <strong>thredds.servlet.restrict.Authorizer</strong> interface</h2>
-<pre>public interface <strong>Authorizer</strong> {<br>  <br>  public void <strong>init</strong>(HttpServlet servlet) throws ServletException;<br>  
-  public void <strong>setRoleDatabase</strong>( RoleDatabase db);</pre>
-<pre>  public boolean <strong>authorize</strong>(HttpServletRequest req, HttpServletResponse res, String role) throws IOException, ServletException;</pre>
+<p>You must implement this interface: </p>
+<pre>public interface <strong>Authorizer</strong> {<br>  <br>  public void <strong>init</strong>(HttpServlet servlet) throws ServletException;
+
+  public void <strong>setRoleSource</strong>( thredds.servlet.restrict.RoleSource roleSource);<br>  
+  public boolean <strong>authorize</strong>(HttpServletRequest req, HttpServletResponse res, String role) throws IOException, ServletException;</pre>
+
 <pre>  public void <strong>doGet</strong>(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException;
 }</pre>
 <p>1. The <strong>init</strong> method allows you to initialize your Authorizer with the servlet parameters, for example:</p>
@@ -62,18 +74,20 @@
    casValidate = servlet.getInitParameter( &quot;edu.yale.its.tp.cas.client.filter.validateUrl&quot;);
 
    ...</pre>
-<p> 2. If you have multiple sets of datasets to restrict, we say you are using <em><strong>role-based authentication</strong></em>. You may use your own mechanism, or you can piggyback on the existing one, by  passing in a <strong><em>RoleDatabase</em></strong>, and a <strong>thredds.servlet.restrict.RoleDatabase</strong> object is created and passed into your Authorizer<strong>. </strong>Your Authorizer is responsible for using it correctly, by calling<strong> RoleDatabase.hasRole( String username, String role)</strong> at the appropriate places. In the above example, we are using the <strong>tomcat-users.xml</strong> file, however you can create your own if you prefer. We use only the <em>user</em> elements, and only the <em>username</em> and <em>roles</em> attribute (not the password). For example a minimal file would look like: </p>
+<p> 2. If you have multiple sets of datasets to restrict, access to each set is controlled by a <em><strong>role</strong></em>, and users are assigned to one or more roles. This is called <em><strong>role-based authentication</strong></em>. You may pass in your own implemention of <em><strong>thredds.servlet.restrict.RoleSource,</strong></em> and your Authorizer is responsible for using it correctly, by calling<strong> RoleSource.hasRole( String username, String role)</strong> at the appropriate places.</p>
+<p>You can also piggyback on the existing <strong>thredds.servlet.restrict.RoleDatabase</strong> implementation of RoleSource, which reads an  XML file that describes the users and roles. You specify the name of the XML file in the web.xml. In the above example, we are using the <strong>tomcat-users.xml</strong> file, however you can create your own if you prefer. We use only the <em>user</em> elements, and only the <em>username</em> and <em>roles</em> attribute (not the password). For example a minimal file would look like: </p>
 <pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br>&lt;root&gt;
   &lt;user <strong>username</strong>=&quot;ccsmData&quot; <strong>roles</strong>=&quot;ccsmData, restrictedDatasetUser&quot;/&gt;
   &lt;user <strong>username</strong>=&quot;fieldProject&quot; <strong>roles</strong>=&quot;fieldProject, restrictedDatasetUser&quot;/&gt;
   &lt;user <strong>username</strong>=&quot;tiggeData&quot; <strong>roles</strong>=&quot;tiggeData, restrictedDatasetUser&quot;/&gt;
 &lt;/root&gt;
 </pre>
-<p>Where the root element can be named anything. If you have only one set of datasets to restrict, you dont need role-based authentication. Then authorization would depend only on (in this example) being authorized by CAS. <strong>If you are using CAS and role-based authentication, you must use the same username in the RoleDatabase as in the CAS authorization</strong>. </p>
+<p>where the root element can be named anything. If you have only one set of datasets to restrict, you dont need role-based authentication. Then authorization would depend only (in this example) on being authorized by CAS. <strong>If you are using CAS and role-based authentication, you must use the same username in the RoleDatabase as in the CAS authorization</strong>. </p>
 <p>3. The main routine that you must implement is <strong>Authorizer.authorize</strong>(HttpServletRequest req, HttpServletResponse res, String role). It is called when a restricted dataset is being accessed. Typically when the user has not established credentials, you do a redirect and return false. Return true if the user authenticates properly. See <strong>thredds.servlet.restrict.CASAuthorizer</strong> as an example.</p>
 <p>4. You can optionally use the  <strong>thredds.servlet.restrict.RestrictedDatasetServlet</strong> to do some of the work, by implementing this method. See <strong>thredds.servlet.restrict.TomcatAuthorizer</strong> as an example. Make it a no-op method otherwise. <br>
 </p>
 <p> You should add your code to the exploded thredds $<strong>{tomcat_home}/webapps/thredds/WEB-INF/lib</strong> as a jar file, or to the <strong>$<strong>{tomcat_home}/webapps/thredds/WEB-INF/lib/</strong>classes</strong> directory as class files. Remember that these directories are overwritten when you upgrade to a new verssion of the thredds.war file. </p>
+<hr>
 <h2>Notes on using CAMS</h2>
 <p>1. We assume you already have a CAMS server running. Follow the directions to install the Cams Servlet Filter Web Agent (not the Cams Tomcat 5 Web Agent, which does not work with Tomcat 5.5).</p>
 <p>2. Add the CAMS servlet filter to  $<strong>{tomcat_home}/webapps/thredds/WEB-INF/web.xml</strong>. This example uses version 2.1.13: </p>
@@ -108,7 +122,7 @@
 <pre>  &lt;!-- default restricted access uses DIGEST, but not HTTPS --&gt;<br>  &lt;security-constraint&gt;<br>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restricted access datasets&lt;/web-resource-name&gt;<br>      &lt;url-pattern&gt;<strong>/restrictedAccess/*</strong>&lt;/url-pattern&gt;<br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br>    &lt;auth-constraint&gt;<br>      &lt;role-name&gt;restrictedDatasetUser&lt;/role-name&gt;<br>    &lt;/auth-constraint&gt;<br>  &lt;/security-constraint&gt;</pre>
 <hr>
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 05, 2007
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 06, 2007
 </address>
 <p>&nbsp; </p>
 </body>

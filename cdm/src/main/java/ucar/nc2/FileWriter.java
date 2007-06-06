@@ -49,7 +49,7 @@ public class FileWriter {
     debugExtend = debugFlags.isSet("ncfileWriter/debugExtend");
   }
 
-  static private boolean debug, debugExtend;
+  static private boolean debug = true, debugExtend;
   static private long maxSize = 1000 * 1000; // 1 MByte
 
   /**

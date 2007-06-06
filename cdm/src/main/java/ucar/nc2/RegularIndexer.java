@@ -87,7 +87,8 @@ class RegularIndexer extends Indexer {
           wantShape[ii] = varShape[ii]; // all in this range
 
         } else {
-          if (r.last() >= varShape[ii]) throw new InvalidRangeException("Bad range for dimension "+ii+" = "+r.last());
+          if (r.last() >= varShape[ii])
+            throw new InvalidRangeException("Bad range for dimension "+ii+" = "+r.last());
           wantOrigin[ii] = r.first();
           wantShape[ii] = r.length();
           wantStride[ii] = r.stride();

@@ -11,7 +11,7 @@ import java.util.*;
 public interface GridDataset extends ucar.nc2.dt.TypedDataset {
 
   /** get the list of GridDatatype objects contained in this dataset. */
-  public List getGrids();
+  public List<GridDatatype> getGrids();
 
   /** find the named GridDatatype. */
   public GridDatatype findGridDatatype( String name);
@@ -21,7 +21,7 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
    *   have the same GridCoordSystem.
    * @return List of type GridDataset.Gridset
    */
-  public List getGridsets();
+  public List<Gridset> getGridsets();
 
 
   /**
@@ -29,7 +29,7 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
    */
   public interface Gridset {
     /** Get list of GridDatatype objects */
-    public List getGrids();
+    public List<GridDatatype> getGrids();
 
     /** all the GridDatatype in this set use this GridCoordSystem */
     public ucar.nc2.dt.GridCoordSystem getGeoCoordSystem();
