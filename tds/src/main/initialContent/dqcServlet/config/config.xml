@@ -4,10 +4,10 @@
     <map>
       <beanCollection key='config' class='thredds.dqc.server.DqcServletConfigItem'>
 
-        <bean name='latestModel'
-          description='Provide Access to Latest Model Runs -- Test setup of DQC servlet.'
+        <!--bean name='latestModel'
+          description='Provide Access to Latest Model Runs - Test setup of DQC servlet.'
           handlerClassName='thredds.dqc.server.LatestModel'
-          handlerConfigFileName='configDqcHandler.latestModel.xml' />
+          handlerConfigFileName='configDqcHandler.latestModel.xml' /-->
 
         <!--bean name='jplQuikScat' description='Handle JPL QuikSCAT DQC requests.'
           handlerName='thredds.dqc.server.jplQuikSCAT.JplQuikSCAT'
