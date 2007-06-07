@@ -1,47 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threddsConfig>
 
-  <!--
-  The <catalogRoot> element:
-  For catalogs you don't want visible from the /thredds/catalog.xml chain
-  of catalogs, you can use catalogRoot elements. Each catalog root config
-  catalog is crawled and used in configuring the TDS.
+  <catalogRoot>topcatalog.xml</catalogRoot>
+
+  <catalogRoot>idv/models.xml</catalogRoot>
+  <catalogRoot>idv/latestModels.xml</catalogRoot>
+  <catalogRoot>idv/rt-models.1.0.xml</catalogRoot>
+  <catalogRoot>idv/rt-models.xml</catalogRoot>
+
+  <!-- Don't need these since idv/rt-models.*xml are links to them.
+  <catalogRoot>cataloggen/catalogs/idv-rt-models.InvCat1.0.xml</catalogRoot>
+  <catalogRoot>cataloggen/catalogs/idv-rt-models.xml</catalogRoot>
   -->
-  <!-- E.g.,
-  <catalogRoot>myExtraCatalog.xml</catalogRoot>
-  <catalogRoot>myOtherExtraCatalog.xml</catalogRoot>
+  <!-- Don't need this since the CatGenServlet handles these requests.
+  <catalogRoot>cataloggen/catalogs/uniModelsInvCat1.0en.xml</catalogRoot>
   -->
 
-  <!--
-  The <NetcdfFileCache> element:
-  -->
+  <catalogRoot>casestudies/catalog.xml</catalogRoot>
+  <catalogRoot>casestudies/vgeeCatalog.xml</catalogRoot>
+  <catalogRoot>casestudies/ccs034Catalog.xml</catalogRoot>
+  <catalogRoot>casestudies/ccs039Catalog.xml</catalogRoot>
+  <catalogRoot>casestudies/july18_2002cat.xml</catalogRoot>
+
+  <!-- Get rid of "casestudy" someday. Check first for usage. [2007-04-27 erd] -->
+  <catalogRoot>casestudy/vgeeCatalog.1.0.xml</catalogRoot>
+  <catalogRoot>casestudy/ccs034Catalog.1.0.xml</catalogRoot>
+  <catalogRoot>casestudy/ccs039Catalog.xml</catalogRoot>
+  <catalogRoot>casestudy/july18_2002cat.1.0.xml</catalogRoot>
+
   <NetcdfFileCache>
     <minFiles>100</minFiles>
     <maxFiles>200</maxFiles>
     <scour>10 min</scour>
   </NetcdfFileCache>
 
-  <!--
-  The <NetcdfDatasetCache> element:
-  -->
   <NetcdfDatasetCache>
     <minFiles>100</minFiles>
     <maxFiles>200</maxFiles>
     <scour>10 min</scour>
   </NetcdfDatasetCache>
 
-  <!--
-  The <HTTPFileCache> element:
-  -->
   <HTTPFileCache>
     <minFiles>25</minFiles>
     <maxFiles>40</maxFiles>
     <scour>10 min</scour>
   </HTTPFileCache>
 
-  <!--
-  The <CdmValidatorService> element:
-  -->
   <CdmValidatorService>
     <allow>true</allow>
     <dir>/data/tmp/thredds/cdmValidateCache/</dir>
@@ -50,9 +54,6 @@
     <maxAge>30 days</maxAge>
   </CdmValidatorService>
 
-  <!--
-  The <NetcdfSubsetService> element:
-  -->
   <NetcdfSubsetService>
     <allow>true</allow>
     <dir>/data/tmp/thredds/ncSubsetCache/</dir>
@@ -60,9 +61,6 @@
     <maxAge>30 min</maxAge>
   </NetcdfSubsetService>
 
-  <!--
-  The <WCS> element:
-  -->
   <WCS>
     <allow>true</allow>
     <dir>/data/tmp/thredds/wcsCache/</dir>
@@ -70,21 +68,12 @@
     <maxAge>30 min</maxAge>
   </WCS>
 
-  <!--
-  The <Viewer> element:
-  -->
   <!-- Viewer>my.package.MyViewer</Viewer -->
 
-  <!--
-  The <FmrcInventory> element:
-  -->
   <FmrcInventory>
     <openType>XML_ONLY</openType>
   </FmrcInventory>
 
-  <!--
-  The <nj22Config> element:
-  -->
   <!-- nj22Config
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
     <coordSysBuilder convention="foo" class="test.Foo"/>
@@ -94,9 +83,6 @@
     <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
   </nj22Config -->
 
-  <!--
-  The <DiskCache> element:
-  -->
   <DiskCache>
     <alwaysUse>false</alwaysUse>
     <dir>/data/tmp/thredds/cache/</dir>
@@ -104,17 +90,11 @@
     <maxSize>1 Gb</maxSize>
   </DiskCache>
 
-  <!--
-  The <GribIndexing> element:
-  -->
   <GribIndexing>
     <setExtendIndex>false</setExtendIndex>
     <alwaysUseCache>false</alwaysUseCache>
   </GribIndexing>
 
-  <!--
-  The <AggregationCache> element:
-  -->
   <AggregationCache>
     <dir>/data/tmp/thredds/aggcache/</dir>
     <scour>24 hours</scour>
