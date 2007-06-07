@@ -642,8 +642,7 @@
   <property name="tdsIddCat-metar" value="catalog/station/metar/catalog.xml" />
   <property name="tdsIddCat-radCompNws" value="catalog/nexrad/composite/nws/catalog.xml" />
   <property name="tdsIddCat-radCompUniGini" value="catalog/nexrad/composite/gini/catalog.xml" />
-  <property name="tdsIddCat-radCompUniGrib6km" value="catalog/nexrad/composite/6km/catalog.xml" />
-  <property name="tdsIddCat-radCompUniGrib1km" value="catalog/nexrad/composite/1km/catalog.xml" />
+  <property name="tdsIddCat-radCompUniGrib1km" value="catalog/nexrad/composite/1km/files/catalog.xml" />
   <property name="tdsIddCat-radLevel2" value="catalog/nexrad/level2/KFTG/catalog.xml" />
   <property name="tdsIddCat-radLevel3" value="catalog/nexrad/level3/N0R/VNX/catalog.xml" />
   <property name="tdsIddCat-profWind1hr" value="catalog/station/profiler/wind/1hr/catalog.xml" />
@@ -652,7 +651,7 @@
   <property name="tdsIddCat-satellite" value="catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml" />
 
   <property name="tdsIddCat-full" value="${tdsCat},${tdsIddCat-models}" />
-  <property name="tdsIddCat-fullSample" value="${tdsIddCat-models},${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGini},${tdsIddCat-radCompUniGrib6km},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-soundings},${tdsIddCat-satellite}" />
+  <property name="tdsIddCat-fullSample" value="${tdsIddCat-models},${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGini},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-soundings},${tdsIddCat-satellite}" />
 
   <!-- Used by TeamCity to test motherlode:8080 every hour -->
   <target name="test-TDS-ping-motherlode-8080" description="ping TDS on motherlode:8080">
