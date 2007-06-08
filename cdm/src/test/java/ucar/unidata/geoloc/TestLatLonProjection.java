@@ -47,4 +47,37 @@ public class TestLatLonProjection extends TestCase {
     runCenter( 110.45454545454547);
   }
 
+  public LatLonRect testIntersection(LatLonRect bbox, LatLonRect bbox2) {
+    System.out.println("\n     bbox= "+ bbox.toString2());
+    System.out.println("    bbox2= "+bbox2.toString2());
+    LatLonRect result = bbox.intersect(bbox2);
+    System.out.println("intersect= "+(result == null ? "null" : result.toString2()));
+    //System.out.println("intersect= "+bbox2.intersect(bbox).toString2());
+    if (result != null)
+      assert bbox.intersect(bbox2).equals(bbox2.intersect(bbox));
+    return result;
+  }
+
+  public void testIntersection() {
+    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+    LatLonRect bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
+    assert testIntersection( bbox, bbox2) != null;
+
+    bbox = new LatLonRect(new LatLonPointImpl(-90.0, -100.0), 90.0, 300.0);
+    bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
+    assert testIntersection( bbox, bbox2) != null;
+
+    bbox2 = new LatLonRect(new LatLonPointImpl(10, -180.0), 120.0, 300.0);
+    assert testIntersection( bbox, bbox2) == null;
+
+    bbox = new LatLonRect(new LatLonPointImpl(-90.0, -100.0), 90.0, 200.0);
+    bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, 120.0), 120.0, 300.0);
+    assert testIntersection( bbox, bbox2) != null;
+
+    bbox = new LatLonRect(new LatLonPointImpl(-90.0, -100.0), 90.0, 200.0);
+    bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, -220.0), 120.0, 140.0);
+    assert testIntersection( bbox, bbox2) != null;
+
+  }
+
 }

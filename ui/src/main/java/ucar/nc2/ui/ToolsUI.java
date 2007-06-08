@@ -2062,7 +2062,7 @@ public class ToolsUI extends JPanel {
             }
         }
       };
-      BAMutil.setActionProperties(syncAction, null, "Sync", false, 'D', -1);
+      BAMutil.setActionProperties(syncAction, null, "SyncExtend", false, 'D', -1);
       BAMutil.addActionToContainer(buttPanel, syncAction);
     }
 

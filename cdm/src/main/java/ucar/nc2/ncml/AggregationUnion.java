@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,46 +28,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class Description.
+ * Aggregation on datasets to be simply combined - aka "union".
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class AggregationUnion extends Aggregation {
-  private ArrayList unionDatasets = new ArrayList(); // List<NetcdfDataset>
+  private List<NetcdfDataset> unionDatasets = new ArrayList<NetcdfDataset>();
 
   public AggregationUnion(NetcdfDataset ncd, String dimName, String recheckS) {
-    super( ncd, dimName, Aggregation.Type.UNION, recheckS);
+    super(ncd, dimName, Aggregation.Type.UNION, recheckS);
   }
 
+  @Override
   protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
   }
 
   /**
    * Add a nested union dataset, which has been opened externally
+   *
+   * @param ds add this dataset
    */
-  public void addDatasetUnion(NetcdfDataset ds) {
+  public void addUnionDataset(NetcdfDataset ds) {
     unionDatasets.add(ds);
   }
 
-
-  public List getUnionDatasets() {
+  /**
+   * Get the list of NetcdfDataset that are part of this union
+   * @return List<NetcdfDataset> in the union
+   */
+  public List<NetcdfDataset> getUnionDatasets() {
     return unionDatasets;
   }
 
-    /**
+  /**
    * Release all resources associated with the aggregation
-   *
-   * @throws IOException
+   * @throws IOException if close fails
    */
   public void close() throws IOException {
-
-    for (int i = 0; i < unionDatasets.size(); i++) {
-      NetcdfDataset ds = (NetcdfDataset) unionDatasets.get(i);
+    for (NetcdfDataset ds : unionDatasets)
       ds.close();
-    }
-
     super.close();
   }
 }

@@ -27,15 +27,13 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.unidata.util.StringUtil;
-import ucar.ma2.Array;
-import ucar.ma2.Index;
-import ucar.ma2.DataType;
-import ucar.ma2.MAMath;
+import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -49,11 +47,12 @@ import thredds.util.DateFromString;
  * @author caron
  */
 public class AggregationFmrcSingle extends AggregationFmrc {
-  private ArrayList scanFmrcList = new ArrayList(); // current set of DirectoryScan for scanFmrc elements
   private Calendar cal = new GregorianCalendar(); // for date computations
+  private List<DirectoryScan> scanFmrcList = new ArrayList<DirectoryScan>(); // current set of DirectoryScan for scanFmrc elements
+  private List<MyFile> currentFiles;  // current set of MyFile in the aggregation
 
-  private HashMap runHash = new HashMap(); // Hash<Date, List>
-  private ArrayList runs; // List<Date>
+  private Map<Date,List<Dataset>> runHash = new HashMap<Date,List<Dataset>>();
+  private List<Date> runs; // list of run dates
 
   private CoordinateAxis1D timeAxis = null;
   private int max_times = 0;
@@ -71,33 +70,73 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     isDate = true;
   }
 
+  @Override
+  protected boolean rescan() throws IOException  {
+
+    // ok were gonna recheck
+    lastChecked = System.currentTimeMillis();
+    if (debug) System.out.println(" *Sync at "+new Date());
+
+        // scan the directories
+    List<MyFile> fileList = new ArrayList<MyFile>();
+    for (DirectoryScan dir : scanFmrcList) {
+      dir.scanDirectory(fileList, null);
+    }
+
+    // did any change ??
+    boolean changed = fileList.size() != currentFiles.size();
+    if (!changed) { // check for additions
+      for (MyFile newFile : fileList) {
+        if (currentFiles.indexOf(newFile) < 0) {
+          changed = true;
+          if (debugSyncDetail) System.out.println("  rescan found new file= "+newFile.file.getPath());
+          break;
+        }
+      }
+    }
+
+    if (!changed) { // check for deletions
+      for (MyFile oldFile : currentFiles) {
+        if (fileList.indexOf(oldFile) < 0) {
+          changed = true;
+          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= "+oldFile.file.getPath());
+          break;
+        }
+      }
+    }
+
+    if (changed)
+      scanFmrc(null);
+
+    return changed;
+  }
+
   protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
     GridDataset typicalGds = scanFmrc(cancelTask);
     if (typicalGds == null) return;
     buildDataset( typicalDataset, typicalGds, cancelTask);
   }
 
-  protected GridDataset scanFmrc(CancelTask cancelTask) throws IOException {
-    // scan the directories
-    ArrayList fileList = new ArrayList();
-    for (int i = 0; i < scanFmrcList.size(); i++) {
-      DirectoryScan dir = (DirectoryScan) scanFmrcList.get(i);
-      dir.scanDirectory( fileList, cancelTask);
+  private GridDataset scanFmrc(CancelTask cancelTask) throws IOException {
 
+    // scan the directories
+    currentFiles = new ArrayList<MyFile>();
+    for (DirectoryScan dir : scanFmrcList) {
+      dir.scanDirectory(currentFiles, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
     }
 
     // find the runtime, forecast time coordinates, put in list
-    for (int i = 0; i < fileList.size(); i++) {
-      MyFile myf = (MyFile) fileList.get(i);
-      String location = StringUtil.replace( myf.file.getAbsolutePath(), '\\', "/");
+    runHash = new HashMap<Date,List<Dataset>>();
+    for (MyFile myf : currentFiles) {
+      String location = StringUtil.replace(myf.file.getAbsolutePath(), '\\', "/");
 
       // parse for rundate
       if (myf.dir.runMatcher != null) {
         myf.runDate = DateFromString.getDateUsingDemarkatedMatch(location, myf.dir.runMatcher, '#');
         if (null == myf.runDate) {
-          logger.error("Cant extract rundate from =" + location+" using format "+myf.dir.runMatcher);
+          logger.error("Cant extract rundate from =" + location + " using format " + myf.dir.runMatcher);
           continue;
         }
       }
@@ -106,7 +145,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       if (myf.dir.forecastMatcher != null) {
         myf.dateCoord = DateFromString.getDateUsingDemarkatedMatch(location, myf.dir.forecastMatcher, '#');
         if (null == myf.dateCoord) {
-          logger.error("Cant extract forecast date from =" + location+" using format "+myf.dir.forecastMatcher);
+          logger.error("Cant extract forecast date from =" + location + " using format " + myf.dir.forecastMatcher);
           continue;
         }
         myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
@@ -116,7 +155,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       if (myf.dir.offsetMatcher != null) {
         myf.offset = DateFromString.getHourUsingDemarkatedMatch(location, myf.dir.offsetMatcher, '#');
         if (null == myf.offset) {
-          logger.error("Cant extract forecast offset from =" + location+" using format "+myf.dir.offsetMatcher);
+          logger.error("Cant extract forecast offset from =" + location + " using format " + myf.dir.offsetMatcher);
           continue;
         }
         myf.dateCoord = addHour(myf.runDate, myf.offset.doubleValue());
@@ -129,14 +168,15 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       ds.ncoord = 1;
 
       // add to list for given run date
-      List runDatasets = (List) runHash.get( myf.runDate);
+      List<Dataset> runDatasets = runHash.get(myf.runDate);
       if (runDatasets == null) {
-        runDatasets = new ArrayList();
-        runHash.put( myf.runDate, runDatasets);
+        runDatasets = new ArrayList<Dataset>();
+        runHash.put(myf.runDate, runDatasets);
       }
-      if (debugScan) System.out.println("  adding " + myf.file.getAbsolutePath() + " forecast date= " + myf.dateCoordS +"("+myf.dateCoord+")"
-              + " run date= " + formatter.toDateTimeStringISO(myf.runDate));
-      runDatasets.add( ds);
+      if (debugScan)
+        System.out.println("  adding " + myf.file.getAbsolutePath() + " forecast date= " + myf.dateCoordS + "(" + myf.dateCoord + ")"
+                + " run date= " + formatter.toDateTimeStringISO(myf.runDate));
+      runDatasets.add(ds);
       if (typicalDataset == null)
         typicalDataset = ds;
     }
@@ -162,14 +202,16 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       throw new IllegalStateException("No time variable");
 
     // loop over the runs; each becomes a nested dataset
-    runs = new ArrayList( runHash.keySet());
+    max_times = 0;
+    nestedDatasets = new ArrayList<Dataset>();
+    runs = new ArrayList<Date>( runHash.keySet());
     Collections.sort(runs);
     Iterator iter = runs.iterator();
     while (iter.hasNext()) {
       Date runDate = (Date) iter.next();
       String runDateS = formatter.toDateTimeStringISO(runDate);
 
-      List runDatasets = (List) runHash.get( runDate);
+      List<Dataset> runDatasets = runHash.get( runDate);
       max_times = Math.max( max_times, runDatasets.size());
 
       // within each list, sort the datasets by time coordinate
@@ -189,7 +231,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
       AggregationExisting agg = new AggregationExisting(ncd, timeAxis.getName(), null); // LOOK: dim name, existing vs new ??
       for (int i = 0; i < runDatasets.size(); i++) {
-        Dataset dataset = (Dataset) runDatasets.get(i);
+        Dataset dataset = runDatasets.get(i);
         agg.addDataset( dataset);
         if (debugScan) System.out.println("  adding Forecast " + format.toDateTimeString(dataset.coordValueDate)+" "+dataset.getLocation());
       }
@@ -217,7 +259,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
      return typicalDataset;
   }
 
-  // for the case that we dont have a fmrcDefinition
+  // for the case that we dont have a fmrcDefinition.
   protected void makeTimeCoordinate(GridDataset gds, CancelTask cancelTask) throws IOException {
     String innerDimName = timeAxis.getName();
     Dimension innerDim = new Dimension(innerDimName, max_times, true);
@@ -232,12 +274,12 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     // loop over the runs, calculate the offset for each dataset
     Date baseDate = null;
     for (int i = 0; i < runs.size(); i++) {
-      Date runDate = (Date) runs.get(i);
+      Date runDate = runs.get(i);
       if (baseDate == null) baseDate = runDate;
 
-      List runDatasets = (List) runHash.get( runDate);
+      List<Dataset> runDatasets = runHash.get( runDate);
       for (int j = 0; j < runDatasets.size(); j++) {
-        Dataset dataset = (Dataset) runDatasets.get(j);
+        Dataset dataset = runDatasets.get(j);
         double offset = ForecastModelRunInventory.getOffsetInHours(baseDate, dataset.coordValueDate);
         timeCoordVals.setDouble(ima.set(i, j), offset);
       }
@@ -247,18 +289,62 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     String dims = dimName + " " + innerDimName;
     String units = "hours since "+ formatter.toDateTimeStringISO(baseDate);
     String desc = "calculated forecast date from AggregationFmrcSingle processing";
-    VariableDS vagg = new VariableDS(ncDataset, null, null, innerDimName, timeAxis.getDataType(), dims, units, desc);
+    VariableDS vagg = new VariableDS(ncDataset, null, null, innerDimName, DataType.DOUBLE, dims, units, desc);
     vagg.setCachedData(timeCoordVals, false);
     NcMLReader.transferVariableAttributes(timeAxis, vagg);
     vagg.addAttribute(new Attribute("units", units));
     vagg.addAttribute(new Attribute("long_name", desc));
-    vagg.addAttribute(new ucar.nc2.Attribute("missing_value", new Double(Double.NaN)));
+    vagg.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
 
-    ncDataset.removeVariable(null, vagg.getName());
-    ncDataset.addVariable(null, vagg);
+    //ncDataset.removeVariable(null, vagg.getName());
+    ncDataset.addCoordinateAxis(vagg);
 
     if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + innerDimName);
   }
+
+  // the timeAxis will be 2D, and there's only one
+  protected void readTimeCoordinates( VariableDS timeAxis, CancelTask cancelTask) throws IOException {
+
+    // redo the time dimension, makes things easier if you dont replace Dimension, just modify the length
+    String dimName = timeAxis.getName();
+    Dimension timeDim = ncDataset.findDimension(dimName);
+    timeDim.setLength( max_times);
+
+    // reset all variables using this dimension
+    List vars = ncDataset.getVariables();
+    for (int i = 0; i < vars.size(); i++) {
+      VariableDS var = (VariableDS) vars.get(i);
+      if (var.findDimensionIndex(dimName) >= 0)  {
+        var.setDimensions( var.getDimensionsString());   // recalc the shape if needed
+        var.setCachedData(null, false); // get rid of any cached data, since its now wrong
+      }
+    }
+
+    // create the data array for the time coordinate
+    int[] shape = new int[] { runs.size(), max_times};
+    Array timeCoordVals = Array.factory(DataType.DOUBLE, shape);
+    MAMath.setDouble(timeCoordVals, Double.NaN); // anything not set is missing
+    Index ima = timeCoordVals.getIndex();
+
+    // loop over the runs, calculate the offset for each dataset
+    Date baseDate = null;
+    for (int i = 0; i < runs.size(); i++) {
+      Date runDate = runs.get(i);
+      if (baseDate == null) baseDate = runDate;
+
+      List<Dataset> runDatasets = runHash.get( runDate);
+      for (int j = 0; j < runDatasets.size(); j++) {
+        Dataset dataset = runDatasets.get(j);
+        double offset = ForecastModelRunInventory.getOffsetInHours(baseDate, dataset.coordValueDate);
+        timeCoordVals.setDouble(ima.set(i, j), offset);
+      }
+    }
+    timeAxis.setCachedData(timeCoordVals, true);
+
+    String units = "hours since "+ formatter.toDateTimeStringISO(baseDate);
+    timeAxis.addAttribute(new Attribute("units", units));    
+  }
+
 
 
   /* protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {

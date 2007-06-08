@@ -266,17 +266,18 @@ public class TestSubset extends TestCase {
   }
 
   private void testLatLonSubset(GeoGrid grid, LatLonRect bbox, int[] shape) throws Exception {
-    LatLonProjection llproj = new LatLonProjection();
-    ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
-    System.out.println("\n constrain bbox= "+prect[0]);
+    //LatLonProjection llproj = new LatLonProjection();
+    //ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
+    System.out.println("\n     grid bbox= "+grid.getCoordinateSystem().getLatLonBoundingBox().toString2());
+    System.out.println(" constrain bbox= "+bbox.toString2());
 
     GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
     GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
     assert null != gcs2;
     assert grid_section.getRank() == 2;
 
-    ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
-    System.out.println(" resulting bbox= "+subset_prect);
+    //ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
+    System.out.println(" resulting bbox= "+gcs2.getLatLonBoundingBox().toString2());
 
     Array data = grid_section.readDataSlice(0, 0, -1, -1);
     assert data != null;

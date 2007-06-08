@@ -68,6 +68,8 @@ public class FmrcImpl implements ForecastModelRunCollection {
   private List<Date> forecasts;  // List of all possible forecast Date
   private List<Double> offsets;  // List of all possible offset Double
 
+  private boolean debugSync = false;
+
   public FmrcImpl(String filename) throws IOException {
     this(ucar.nc2.dataset.NetcdfDatasetCache.acquire(filename, null));
   }
@@ -85,8 +87,10 @@ public class FmrcImpl implements ForecastModelRunCollection {
    */
   public boolean sync() throws IOException {
     boolean changed = ncd_2dtime.syncExtend();
-    if (changed)
+    if (changed) {
+      if (debugSync) System.out.println("sync Fmrc "+ncd_2dtime.getLocation());
       init(ncd_2dtime);
+    }
     return changed;
   }
 
@@ -791,54 +795,6 @@ public class FmrcImpl implements ForecastModelRunCollection {
     FmrcImpl fmrc = new FmrcImpl(location);
 
     System.out.println("Fmrc for dataset= " + location);
-/*      DateFormatter df = new DateFormatter();
-      List dates = fmrc.getRunDates();
-
-    System.out.println("\nRun Dates= " + dates.size());
-    for (int i = 0; i < dates.size(); i++) {
-      Date date = (Date) dates.get(i);
-      System.out.print(" " + df.toDateTimeString(date) + " (");
-      List<Inventory> list = fmrc.runMapAll.get(date);
-      for (int j = 0; j < list.size(); j++) {
-        Inventory inv = list.get(j);
-        System.out.print(" " + inv.hourOffset);
-      }
-      System.out.println(")");
-    }
-
-    dates = fmrc.getForecastDates();
-    System.out.println("\nForecast Dates= " + dates.size());
-    for (int i = 0; i < dates.size(); i++) {
-      Date date = (Date) dates.get(i);
-      System.out.print(" " + df.toDateTimeString(date) + " (");
-      List<Inventory> list = fmrc.timeMapAll.get(date);
-      for (int j = 0; j < list.size(); j++) {
-        Inventory inv = list.get(j);
-        System.out.print(" " + inv.run + "/" + inv.hourOffset);
-      }
-      System.out.println(")");
-    }
-
-    List hours = fmrc.getForecastOffsets();
-    System.out.println("\nForecast Hours= " + hours.size());
-    for (int i = 0; i < hours.size(); i++) {
-      Double hour = (Double) hours.get(i);
-      List<Inventory> offsetList = fmrc.offsetMapAll.get(hour);
-      System.out.print(" " + hour + ": (");
-      for (int j = 0; j < offsetList.size(); j++) {
-        Inventory inv = offsetList.get(j);
-        if (j > 0) System.out.print(", ");
-        System.out.print(df.toDateTimeStringISO(inv.runTime));
-      }
-      System.out.println(")");
-    }
-
-    List best = fmrc.bestListAll;
-    System.out.println("\nBest Forecast = " + best.size());
-    for (int i = 0; i < best.size(); i++) {
-      Inventory inv = (Inventory) best.get(i);
-      System.out.println(" " + df.toDateTimeStringISO(inv.forecastTime) + " (run=" + df.toDateTimeStringISO(inv.runTime) + ") offset=" + inv.hourOffset);
-    }    */
 
     NetcdfDataset fmrcd = fmrc.getFmrcDataset();
     Variable time = fmrcd.findVariable(timeVarName);
@@ -851,14 +807,41 @@ public class FmrcImpl implements ForecastModelRunCollection {
     }
   }
 
-  public static void main(String args[]) throws IOException {
+  static void testSync(String location, String timeVarName) throws IOException, InterruptedException {
+    FmrcImpl fmrc = new FmrcImpl(location);
+    System.out.println("Fmrc for dataset= " + location);
+
+    NetcdfDataset fmrcd = fmrc.getFmrcDataset();
+    Variable time = fmrcd.findVariable(timeVarName);
+    Array data = time.read();
+    NCdump.printArray(data, "2D time", System.out, null);
+
+    for (Gridset gridset : fmrc.gridsets) {
+      System.out.println("===========================");
+      gridset.dump();
+    }
+
+    boolean changed = fmrc.sync();
+
+    if (changed) {
+      System.out.println("========== Sync =================");
+      data = time.read();
+      NCdump.printArray(data, "2D time", System.out, null);
+      for (Gridset gridset : fmrc.gridsets) {
+        System.out.println("===========================");
+        gridset.dump();
+      }
+    }
+  }
+
+  public static void main(String args[]) throws Exception {
     //test("R:/testdata/fmrc/NAMfmrc.nc", "valtime");
 
     //test("C:/dev/thredds/cdm/src/test/data/ncml/AggFmrcGrib.xml", "time");
     //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcGribRunseq.xml", "time");
     //test("C:/dev/thredds/cdm/src/test/data/ncml/aggFmrcNomads.xml", "time");
-    //test("C:/data/ral/fmrc.ncml", "time");
-    test("C:/data/grib/gfs/puerto/fmrc.ncml", "time");
+    testSync("C:/data/ral/fmrc.ncml", "time");
+    //test("C:/data/grib/gfs/puerto/fmrc.ncml", "time");
   }
 
 }

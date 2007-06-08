@@ -368,7 +368,7 @@ public class AggregationFmrc extends Aggregation {
     if (true) { // LOOK detect if we have the info
       ArrayObject.D1 runData = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {nruns});
       for (int j = 0; j < nestedDatasets.size(); j++) {
-        Dataset dataset = (Dataset) nestedDatasets.get(j);
+        Dataset dataset = nestedDatasets.get(j);
         runData.set(j, dataset.getCoordValueString());
       }
       runtimeCoord.setCachedData(runData, true);
@@ -414,7 +414,7 @@ public class AggregationFmrc extends Aggregation {
     DatasetProxyReader typicalDatasetProxy = new DatasetProxyReader(typicalDataset);
 
     // reset all aggregation variables
-    ArrayList timeAxes = new ArrayList();
+    List<CoordinateAxis> timeAxes = new ArrayList<CoordinateAxis>();
     List vars = ncDataset.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       VariableDS var = (VariableDS) vars.get(i);
@@ -422,13 +422,13 @@ public class AggregationFmrc extends Aggregation {
       if (var instanceof CoordinateAxis) {
         CoordinateAxis axis = (CoordinateAxis) var;
         if (axis.getAxisType() == AxisType.Time)
-          timeAxes.add( var);
+          timeAxes.add( axis);
 
         if (fmrcDefinition != null) // skip time coordinates when we have a fmrcDefinition, since they were already done
           continue;
       }
 
-      if ((var.getRank() > 0) && var.getDimension(0).getName().equals(dimName)) {
+      if ((var.getRank() > 0) && var.getDimension(0).getName().equals(dimName) && (var != runtimeCoord)) {
         var.setDimensions( var.getDimensionsString()); // reset dimension
         var.setCachedData(null, false); // get rid of any cached data, since its now wrong
 
@@ -455,8 +455,8 @@ public class AggregationFmrc extends Aggregation {
 
   }
 
-  private void readTimeCoordinates( VariableDS timeAxis, CancelTask cancelTask) throws IOException {
-    ArrayList dateList = new ArrayList(); // List<java.util.Date[]>
+  protected void readTimeCoordinates( VariableDS timeAxis, CancelTask cancelTask) throws IOException {
+    List<Date[]> dateList = new ArrayList<Date[]>();
     int maxTimes = 0;
     String units = null;
 
@@ -464,7 +464,7 @@ public class AggregationFmrc extends Aggregation {
       Dataset dataset;
       NetcdfDataset ncfile = null;
       try {
-        dataset = (Dataset) nestedDatasets.get(i);
+        dataset = nestedDatasets.get(i);
         ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
         VariableDS v = (VariableDS) ncfile.findVariable( timeAxis.getName());
         if (v == null) {

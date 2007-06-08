@@ -36,23 +36,23 @@ import thredds.util.DateFromString;
 
 /**
  * Implement NcML Aggregation.
- *
+ * <p/>
  * <h2>Implementation Notes</h2>
  * <h3>Caching</h3>
  * <ul>
- *  <li>Case 1. Explicit list / Scan static directories (recheck=null)
- *   <ul>
- *    <li>A. AggCaching - keep track of ncoords, coordValues for joinExisting. Read on open, write on close.
- *      Could skip scan if cache exists.
- *    <li>B. NetcdfFileCache - write on close if changed (only first time). On sync, recheck = null means wont be reread.
- *   </ul>
- *  <li>Case 2. Scan dynamic directories (recheck non-null)
- *   <ul>
- *    <li>A. AggCaching - keep track of ncoords, coordValues for joinExisting. Read on open, write on close.
- *      Could skip scan if cache exists, and recheck time not expired.
- *    <li>B. NetcdfFileCache - write on close if changed. On sync, if recheck time, then rescan.
- *   </ul>
- *  </ul>
+ * <li>Case 1. Explicit list / Scan static directories (recheck=null)
+ * <ul>
+ * <li>A. AggCaching - keep track of ncoords, coordValues for joinExisting. Read on open, write on close.
+ * Could skip scan if cache exists.
+ * <li>B. NetcdfFileCache - write on close if changed (only first time). On sync, recheck = null means wont be reread.
+ * </ul>
+ * <li>Case 2. Scan dynamic directories (recheck non-null)
+ * <ul>
+ * <li>A. AggCaching - keep track of ncoords, coordValues for joinExisting. Read on open, write on close.
+ * Could skip scan if cache exists, and recheck time not expired.
+ * <li>B. NetcdfFileCache - write on close if changed. On sync, if recheck time, then rescan.
+ * </ul>
+ * </ul>
  * <h3>Aggregation Coordinate Variable (aggCoord) Processing</h3>
  * Construction:
  * <ol>
@@ -68,6 +68,7 @@ import thredds.util.DateFromString;
  * <li> If not, the coordinate value(s) is cached when the dataset is opened.
  * <li> agg.read() uses those if they exist, else reads and caches.
  * </ol>
+ *
  * @author caron
  * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */
@@ -92,7 +93,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     else if (mode.equalsIgnoreCase("penultimate"))
       typicalDatasetMode = TYPICAL_DATASET_PENULTIMATE;
     else
-      logger.error("Unknown setTypicalDatasetMode= "+mode);
+      logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -100,16 +101,16 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected NetcdfDataset ncDataset; // the aggregation belongs to this dataset
   protected String dimName; // the aggregation dimension name
   protected Type type; // the aggregation type
-  protected ArrayList nestedDatasets; // working set of Aggregation.Dataset
+  protected List<Dataset> nestedDatasets; // working set of Aggregation.Dataset
   private int totalCoords = 0;  // the aggregation dimension size
   protected Object spiObject;
 
   // explicit
-  private ArrayList vars = new ArrayList(); // variable names (String)
-  protected ArrayList explicitDatasets = new ArrayList(); // explicitly created Dataset objects from netcdf elements
+  private List<String> vars = new ArrayList<String>(); // variable names (String)
+  protected List<Dataset> explicitDatasets = new ArrayList<Dataset>(); // explicitly created Dataset objects from netcdf elements
 
   // scan
-  protected ArrayList scanList = new ArrayList(); // current set of DirectoryScan for scan elements
+  protected List<DirectoryScan> scanList = new ArrayList<DirectoryScan>(); // current set of DirectoryScan for scan elements
   protected TimeUnit recheck; // how often to recheck
   protected long lastChecked; // last time checked
   protected boolean wasChanged = true; // something changed since last aggCache file was written
@@ -117,7 +118,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   protected DateFormatter formatter = new DateFormatter();
   protected boolean debug = false, debugOpenFile = false, debugCacheDetail = false, debugSyncDetail = false, debugProxy = false,
-    debugScan = false, debugRead = false;
+          debugScan = false, debugRead = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -125,7 +126,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
    *
    * @param ncd      Aggregation belongs to this NetcdfDataset
    * @param dimName  the aggregation dimension name
-   * @param type the Aggregation.Type
+   * @param type     the Aggregation.Type
    * @param recheckS how often to check if files have changes
    */
   protected Aggregation(NetcdfDataset ncd, String dimName, Type type, String recheckS) {
@@ -166,13 +167,14 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   /**
    * Add a scan elemnt
    *
-   * @param dirName scan this directory
-   * @param suffix  filter on this suffix (may be null)
-   * @param regexpPatternString  include if full name matches this regular expression (may be null)
-   * @param dateFormatMark create dates from the filename (may be null)
-   * @param enhance should files bne enhanced?
-   * @param olderThan files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
-   * @throws IOException
+   * @param dirName             scan this directory
+   * @param suffix              filter on this suffix (may be null)
+   * @param regexpPatternString include if full name matches this regular expression (may be null)
+   * @param dateFormatMark      create dates from the filename (may be null)
+   * @param enhance             should files bne enhanced?
+   * @param subdirs             equals "false" if should not descend into subdirectories
+   * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
+   * @throws IOException if I/O error
    */
   public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhance, String subdirs, String olderThan) throws IOException {
     DirectoryScan d = new DirectoryScan(dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
@@ -183,7 +185,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Add a name from a variableAgg element
-   * @param varName
+   *
+   * @param varName name of variable to add
    */
   public void addVariable(String varName) {
     vars.add(varName);
@@ -197,7 +200,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     return totalCoords;
   }
 
-  public List getNestedDatasets() {
+  public List<Dataset> getNestedDatasets() {
     return nestedDatasets;
   }
 
@@ -220,7 +223,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * What is the data type of the aggregation coordinate ?
    */
   public DataType getCoordinateType() {
-    Dataset first = (Dataset) nestedDatasets.get(0);
+    Dataset first = nestedDatasets.get(0);
     return first.isStringValued ? DataType.STRING : DataType.DOUBLE;
   }
 
@@ -233,19 +236,22 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     persist();
 
     for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset ds = (Dataset) nestedDatasets.get(i);
+      Dataset ds = nestedDatasets.get(i);
       ds.close();
     }
   }
 
   /**
    * Overriden in AggregationExisting
+   *
    * @throws IOException
    */
-  public void persist() throws IOException { }
+  public void persist() throws IOException {
+  }
 
   // read info from the persistent XML file, if it exists; overridden in AggregationExisting
-  protected void persistRead() { }
+  protected void persistRead() {
+  }
 
   /**
    * Is the named variable an "aggregation variable" ?
@@ -264,13 +270,14 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // all elements are processed, finish construction
+
   public void finish(CancelTask cancelTask) throws IOException {
-    nestedDatasets = new ArrayList();
+    nestedDatasets = new ArrayList<Dataset>();
 
     // LOOK fix from Michael Godin 3/14/06 - need to test
-    //nestedDatasets.addAll(explicitDatasets);
+    // nestedDatasets.addAll(explicitDatasets);
     for (int i = 0; i < explicitDatasets.size(); i++) {
-      Dataset dataset = (Dataset) explicitDatasets.get(i);
+      Dataset dataset = explicitDatasets.get(i);
       if (dataset.checkOK(cancelTask))
         nestedDatasets.add(dataset);
     }
@@ -297,14 +304,14 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected void buildCoords(CancelTask cancelTask) throws IOException {
     if ((type == Type.FORECAST_MODEL) || (type == Type.FORECAST_MODEL_COLLECTION)) {
       for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset nested = (Dataset) nestedDatasets.get(i);
+        Dataset nested = nestedDatasets.get(i);
         nested.ncoord = 1;
       }
     }
 
     totalCoords = 0;
     for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset nested = (Dataset) nestedDatasets.get(i);
+      Dataset nested = nestedDatasets.get(i);
       totalCoords += nested.setStartEnd(totalCoords, cancelTask);
     }
   }
@@ -313,22 +320,33 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Check to see if its time to rescan directory, and if so, rescan and extend dataset if needed.
+   *
    * @param force if true, always rescan even if time not expired
    * @return
    * @throws IOException
    */
-  public boolean syncExtend(boolean force) throws IOException {
+  public synchronized boolean syncExtend(boolean force) throws IOException {
     if (!force && !timeToRescan())
       return false;
     if (!rescan())
       return false;
 
     // only the set of datasets may have changed
-    if (getType() == Aggregation.Type.FORECAST_MODEL_COLLECTION) {
+    if ((getType() == Aggregation.Type.FORECAST_MODEL_COLLECTION) || (getType() == Aggregation.Type.FORECAST_MODEL_SINGLE)) {
       //ucar.unidata.io.RandomAccessFile.setDebugAccess( true);
       syncDataset(null);
       //ucar.unidata.io.RandomAccessFile.setDebugAccess( false);
-    }
+
+    } /*else if (getType() == Aggregation.Type.FORECAST_MODEL_SINGLE) {
+      ncDataset.empty(); 
+      buildDataset(false, null);
+      ncDataset.finish();
+      if (ncDataset.isEnhanced()) { // force recreation of the coordinate systems
+        ncDataset.setCoordSysWereAdded(false);
+        ncDataset.enhance();
+        ncDataset.finish();
+      }
+    } */
 
     /* if (getType() == Aggregation.Type.JOIN_NEW)
       resetNewDimension();
@@ -341,7 +359,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected void syncDataset(CancelTask cancelTask) throws IOException {
   }
 
-  public boolean sync() throws IOException {
+  public synchronized boolean sync() throws IOException {
     if (!timeToRescan())
       return false;
     if (!rescan())
@@ -354,7 +372,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     buildDataset(false, null);
     ncDataset.finish();
     if (ncDataset.isEnhanced()) { // force recreation of the  coordinate systems
-      ncDataset.setCoordSysWereAdded( false);
+      ncDataset.setCoordSysWereAdded(false);
       ncDataset.enhance();
       ncDataset.finish();
     }
@@ -366,11 +384,12 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Rescan if recheckEvery time has passed
+   *
    * @return if theres new datasets, put new datasets into nestedDatasets
    * @throws IOException
    */
   protected boolean timeToRescan() {
-    if (getType() == Aggregation.Type.UNION){
+    if (getType() == Aggregation.Type.UNION) {
       if (debugSyncDetail) System.out.println(" *Sync not needed for Union");
       return false;
     }
@@ -385,43 +404,44 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     Date lastCheckedDate = new Date(lastChecked);
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
-      if (debug) System.out.println(" *Sync not needed, last= "+lastCheckedDate+" now = "+now);
+      if (debug) System.out.println(" *Sync not needed, last= " + lastCheckedDate + " now = " + now);
       return false;
     }
 
     return true;
   }
 
-  private boolean rescan() throws IOException  {
+  // protected by synch
+  protected boolean rescan() throws IOException {
 
     // ok were gonna recheck
     lastChecked = System.currentTimeMillis();
-    if (debug) System.out.println(" *Sync at "+new Date());
+    if (debug) System.out.println(" *Sync at " + new Date());
 
     // rescan
-    ArrayList newDatasets = new ArrayList();
+    List<Dataset> newDatasets = new ArrayList<Dataset>();
     scan(newDatasets, null);
 
     // replace with previous datasets if they exist
     boolean changed = false;
     for (int i = 0; i < newDatasets.size(); i++) {
-      Dataset newDataset = (Dataset) newDatasets.get(i);
+      Dataset newDataset = newDatasets.get(i);
       int index = nestedDatasets.indexOf(newDataset); // equal if location is equal
       if (index >= 0) {
         newDatasets.set(i, nestedDatasets.get(index));
-        if (debugSyncDetail) System.out.println("  sync using old Dataset= "+newDataset.location);
+        if (debugSyncDetail) System.out.println("  sync using old Dataset= " + newDataset.location);
       } else {
         changed = true;
-        if (debugSyncDetail) System.out.println("  sync found new Dataset= "+newDataset.location);
+        if (debugSyncDetail) System.out.println("  sync found new Dataset= " + newDataset.location);
       }
     }
 
     if (!changed) { // check for deletions
       for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset oldDataset = (Dataset) nestedDatasets.get(i);
+        Dataset oldDataset = nestedDatasets.get(i);
         if ((newDatasets.indexOf(oldDataset) < 0) && (explicitDatasets.indexOf(oldDataset) < 0)) {
           changed = true;
-          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= "+oldDataset.location);
+          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + oldDataset.location);
         }
       }
     }
@@ -429,7 +449,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     if (!changed) return false;
 
     // recreate the list of datasets
-    nestedDatasets = new ArrayList();
+    nestedDatasets = new ArrayList<Dataset>();
     nestedDatasets.addAll(explicitDatasets);
     nestedDatasets.addAll(newDatasets);
 
@@ -502,6 +522,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
+   *
    * @throws FileNotFoundException if there are no datasets
    */
   protected Dataset getTypicalDataset() throws IOException {
@@ -511,13 +532,13 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     int select;
     if (typicalDatasetMode == TYPICAL_DATASET_LATEST)
-      select = n-1;
+      select = n - 1;
     else if (typicalDatasetMode == TYPICAL_DATASET_PENULTIMATE)
-      select = (n < 2) ? 0 : n-2;
+      select = (n < 2) ? 0 : n - 2;
     else // random is default
       select = (n < 2) ? 0 : new Random().nextInt(n);
 
-    return (Dataset) nestedDatasets.get(select);
+    return nestedDatasets.get(select);
   }
 
   protected void makeProxies(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
@@ -528,21 +549,21 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     for (int i = 0; i < allVars.size(); i++) {
       VariableDS vs = (VariableDS) allVars.get(i);
       if (vs.getProxyReader() != null) {
-        if (debugProxy) System.out.println(" debugProxy: hasProxyReader "+vs.getNameAndDimensions());
+        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + vs.getNameAndDimensions());
         continue; // dont mess with agg variables
       }
 
       if (vs.isCaching()) {  // cache the small ones
         if (!vs.hasCachedData()) {
           vs.read();
-          if (debugProxy) System.out.println(" debugProxy: cached "+vs.getNameAndDimensions());
+          if (debugProxy) System.out.println(" debugProxy: cached " + vs.getNameAndDimensions());
         } else {
-          if (debugProxy) System.out.println(" debugProxy: already cached "+vs.getNameAndDimensions());
+          if (debugProxy) System.out.println(" debugProxy: already cached " + vs.getNameAndDimensions());
         }
 
       } else if (null == vs.getProxyReader()) { // put proxy on the rest
         vs.setProxyReader(proxy);
-        if (debugProxy) System.out.println(" debugProxy: proxy on "+vs.getNameAndDimensions());
+        if (debugProxy) System.out.println(" debugProxy: proxy on " + vs.getNameAndDimensions());
       }
     }
   }
@@ -578,7 +599,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask);
 
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType();
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK why getOriginalDataType() ?
     int destPos = 0;
 
@@ -632,15 +653,15 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
    */
   public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
     // If its full sized, then use full read, so that data gets cached.
-    long size = Range.computeSize( section);
+    long size = Range.computeSize(section);
     if (size == mainv.getSize())
-      return read( mainv, cancelTask);
+      return read(mainv, cancelTask);
 
     // the case of the agg coordinate var for joinExisting or joinNew
     if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask, section);
 
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType();
+    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array sectionData = Array.factory(dtype, Range.getShape(section));
     int destPos = 0;
 
@@ -648,7 +669,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     List nestedSection = new ArrayList(section); // copy
     List innerSection = section.subList(1, section.size());
 
-    if (debug) System.out.println("   agg wants range=" + mainv.getName()+"("+joinRange+")");
+    if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
 
     Iterator iter = nestedDatasets.iterator();
     while (iter.hasNext()) {
@@ -749,7 +770,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       if (nestedJoinRange == null) {  // all data
         varData = vnested.read(aggCoord, cancelTask);
 
-      } else if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      } else
+      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         varData = vnested.read(aggCoord, cancelTask, innerSection);
       } else {
         nestedSection.set(0, nestedJoinRange);
@@ -771,24 +793,20 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
    *
    * @param result     add to this List objects of type Aggregation.Dataset
    * @param cancelTask allow user to cancel
-   * @throws IOException
+   * @throws IOException if io error
    */
-  protected void scan(List result, CancelTask cancelTask) throws IOException {
+  protected void scan(List<Dataset> result, CancelTask cancelTask) throws IOException {
 
     // Directories are scanned recursively, by calling File.listFiles().
-    ArrayList fileList = new ArrayList();
-    for (int i = 0; i < scanList.size(); i++) {
-      DirectoryScan dir = (DirectoryScan) scanList.get(i);
-      dir.scanDirectory( fileList, cancelTask);
-
+    List<MyFile> fileList = new ArrayList<MyFile>();
+    for (DirectoryScan dir : scanList) {
+      dir.scanDirectory(fileList, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return;
     }
 
     // extract date if possible, before sorting
-    for (int i = 0; i < fileList.size(); i++) {
-      MyFile myf = (MyFile) fileList.get(i);
-
+    for (MyFile myf : fileList) {
       // optionally parse for date
       if (null != myf.dir.dateFormatMark) {
         String filename = myf.file.getName();
@@ -813,13 +831,12 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     });
 
     // now add the ordered list of Datasets to the result List
-    for (int i = 0; i < fileList.size(); i++) {
-      MyFile myf = (MyFile) fileList.get(i);
+    for (MyFile myf : fileList) {
       String location = myf.file.getAbsolutePath();
       String coordValue = (type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
       Dataset ds = makeDataset(location, location, null, coordValue, myf.dir.enhance, null);
       ds.coordValueDate = myf.dateCoord;
-      result.add( ds);
+      result.add(ds);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return;
@@ -861,7 +878,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       this.dirName = dirName;
       this.suffix = suffix;
       if (null != regexpPatternString)
-        this.regexpPattern = java.util.regex.Pattern.compile( regexpPatternString );
+        this.regexpPattern = java.util.regex.Pattern.compile(regexpPatternString);
 
       this.dateFormatMark = dateFormatMark;
       if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
@@ -883,7 +900,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     DirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS,
             String runMatcher, String forecastMatcher, String offsetMatcher) {
-      this( dirName, suffix, regexpPatternString, null, "true", subdirsS, olderS);
+      this(dirName, suffix, regexpPatternString, null, "true", subdirsS, olderS);
 
       this.runMatcher = runMatcher;
       this.forecastMatcher = forecastMatcher;
@@ -892,20 +909,20 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     /**
      * Recursively crawl directories, add matching MyFile files to result List
-     * @param result         add MyFile objects to this list
-     * @param cancelTask     user can cancel
+     *
+     * @param result     add MyFile objects to this list
+     * @param cancelTask user can cancel
      */
-    protected void scanDirectory(List result, CancelTask cancelTask) {
-      scanDirectory( dirName, new Date().getTime(), result, cancelTask);
+    protected void scanDirectory(List<MyFile> result, CancelTask cancelTask) {
+      scanDirectory(dirName, new Date().getTime(), result, cancelTask);
     }
 
-    protected void scanDirectory(String dirName, long now, List result, CancelTask cancelTask) {
-      File allDir = new File( dirName);
-      if ( ! allDir.exists())
-      {
+    protected void scanDirectory(String dirName, long now, List<MyFile> result, CancelTask cancelTask) {
+      File allDir = new File(dirName);
+      if (!allDir.exists()) {
         String tmpMsg = "Non-existent scan location <" + dirName + "> for aggregation <" + ncDataset.getLocation() + ">.";
-        logger.error( "scanDirectory(): " + tmpMsg);
-        throw new IllegalArgumentException( tmpMsg);
+        logger.error("scanDirectory(): " + tmpMsg);
+        throw new IllegalArgumentException(tmpMsg);
       }
       File[] allFiles = allDir.listFiles();
       for (int i = 0; i < allFiles.length; i++) {
@@ -932,9 +949,9 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
-    protected boolean accept( String location ) {
+    protected boolean accept(String location) {
       if (null != regexpPattern) {
-        java.util.regex.Matcher matcher = regexpPattern.matcher( location );
+        java.util.regex.Matcher matcher = regexpPattern.matcher(location);
         return matcher.matches();
       }
 
@@ -960,6 +977,18 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     MyFile(DirectoryScan dir, File file) {
       this.dir = dir;
       this.file = file;
+    }
+
+    // MyFile with the same file are equal
+    public boolean equals(Object oo) {
+      if (this == oo) return true;
+      if (!(oo instanceof MyFile)) return false;
+      MyFile other = (MyFile) oo;
+      return file.equals(other.file);
+    }
+
+    public int hashCode() {
+      return file.hashCode();
     }
   }
 
@@ -1040,12 +1069,16 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
-    /** Get the coordinate value(s) as a String for this Dataset */
+    /**
+     * Get the coordinate value(s) as a String for this Dataset
+     */
     public String getCoordValueString() {
       return coordValue;
     }
 
-    /** Get the coordinate value as a Date for this Dataset; may be null */
+    /**
+     * Get the coordinate value as a Date for this Dataset; may be null
+     */
     public Date getCoordValueDate() {
       return coordValueDate;
     }
@@ -1076,7 +1109,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     /**
      * Set the starting and ending index into the aggregation dimension
-     * @param aggStart starting index
+     *
+     * @param aggStart   starting index
      * @param cancelTask allow to bail out
      * @return number of coordinates in this dataset
      * @throws IOException
@@ -1092,6 +1126,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
      * <p> wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd.
      * if this overlaps, set the Range required for the nested dataset.
      * note this should handle strides ok.
+     *
      * @param totalRange desired range, reletive to aggregated dimension.
      * @return desired Range or null if theres nothing wanted from this datase.
      * @throws InvalidRangeException
@@ -1115,9 +1150,9 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
     protected boolean isNeeded(Range totalRange) {
-       int wantStart = totalRange.first();
-       int wantStop = totalRange.last() + 1; // Range has last inclusive, we use last exclusive
-       return isNeeded(wantStart, wantStop);
+      int wantStart = totalRange.first();
+      int wantStop = totalRange.last() + 1; // Range has last inclusive, we use last exclusive
+      return isNeeded(wantStart, wantStop);
     }
 
     // wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd
@@ -1149,13 +1184,14 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       else
         ncfile = NetcdfFileCache.acquire(cacheName, -1, cancelTask, spiObject, reader);
 
-      if (debugOpenFile) System.out.println(" acquire " + cacheName+" took "+(System.currentTimeMillis()-start));
+      if (debugOpenFile) System.out.println(" acquire " + cacheName + " took " + (System.currentTimeMillis() - start));
       if ((type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL))
         cacheCoordValues(ncfile);
       return ncfile;
     }
 
-    protected void close() throws IOException { }
+    protected void close() throws IOException {
+    }
 
     private void cacheCoordValues(NetcdfFile ncfile) throws IOException {
       if (coordValue != null) return;
@@ -1206,7 +1242,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
         Range want = (Range) section.get(0);
         if (fullRange.last() < want.last()) {
           Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
-          section = new ArrayList( section); // make a copy
+          section = new ArrayList(section); // make a copy
           section.set(0, limitRange);
         }
 
@@ -1217,6 +1253,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
+    // Datasets with the same locations are equal
     public boolean equals(Object oo) {
       if (this == oo) return true;
       if (!(oo instanceof Dataset)) return false;
@@ -1252,16 +1289,17 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   protected class DatasetProxyReader implements ProxyReader {
     Dataset dataset;
-    DatasetProxyReader( Dataset dataset) {
+
+    DatasetProxyReader(Dataset dataset) {
       this.dataset = dataset;
     }
 
-    public Array read(Variable mainV, CancelTask cancelTask) throws IOException{
+    public Array read(Variable mainV, CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile = null;
       try {
-        ncfile = dataset.acquireFile( cancelTask);
+        ncfile = dataset.acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
-        Variable proxyV = ncfile.findVariable( mainV.getName());
+        Variable proxyV = ncfile.findVariable(mainV.getName());
         return proxyV.read();
       } finally {
         if (ncfile != null) ncfile.close();
@@ -1271,8 +1309,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     public Array read(Variable mainV, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
       NetcdfFile ncfile = null;
       try {
-        ncfile = dataset.acquireFile( cancelTask);
-        Variable proxyV = ncfile.findVariable( mainV.getName());
+        ncfile = dataset.acquireFile(cancelTask);
+        Variable proxyV = ncfile.findVariable(mainV.getName());
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
       } finally {

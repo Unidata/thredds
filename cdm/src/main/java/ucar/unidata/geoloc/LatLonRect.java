@@ -411,24 +411,39 @@ public class LatLonRect {
   public LatLonRect intersect( LatLonRect clip) {
     double latMin = Math.max(getLatMin(), clip.getLatMin());
     double latMax = Math.min(getLatMax(), clip.getLatMax());
-
-    // lon as always is a pain
-    double min1 = getLonMin();
-    double min2 = LatLonPointImpl.lonNormal(clip.getLonMin(), getCenterLon());
-    double lonMin = Math.max(min1, min2);
-
-    double max1 = getLonMax();
-    double max2 = LatLonPointImpl.lonNormal(clip.getLonMax(), getCenterLon());
-    double lonMax = Math.min(max1, max2);
-
     double deltaLat = latMax-latMin;
-    double deltaLon = lonMax - lonMin;
-    if ((deltaLon < 0) || (deltaLat < 0))
+    if (deltaLat < 0)
       return null;
-    return new LatLonRect(new LatLonPointImpl(latMin, lonMin), deltaLat, deltaLon);
 
+    // lon as always is a pain : if not intersection, try +/- 360
+    double lon1min = getLonMin();
+    double lon1max = getLonMax();
+    double lon2min = clip.getLonMin();
+    double lon2max = clip.getLonMax();
+    if (!intersect(lon1min, lon1max, lon2min, lon2max)) {
+       lon2min = clip.getLonMin() + 360;
+       lon2max = clip.getLonMax() + 360;
+       if (!intersect(lon1min, lon1max, lon2min, lon2max)) {
+         lon2min = clip.getLonMin() - 360;
+         lon2max = clip.getLonMax() - 360;
+       }
+    }
+
+    // we did our best to find an intersection
+    double lonMin = Math.max(lon1min, lon2min);
+    double lonMax = Math.min(lon1max, lon2max);
+    double deltaLon = lonMax - lonMin;
+    if (deltaLon < 0)
+      return null;
+
+    return new LatLonRect(new LatLonPointImpl(latMin, lonMin), deltaLat, deltaLon);
   }
 
+  private boolean intersect( double min1, double max1, double min2, double max2) {
+    double min = Math.max(min1, min2);
+    double max = Math.min(max1, max2);
+    return min < max;
+  }
 
   /**
    * Return a String representation of this object.

@@ -175,9 +175,9 @@ public class NcMLWriter {
       aggElem.addContent(e);
     }
 
-    List dsList = agg.getNestedDatasets();
+    List<Aggregation.Dataset> dsList = agg.getNestedDatasets();
     for (int i = 0; i < dsList.size(); i++) {
-      Aggregation.Dataset ds = (Aggregation.Dataset) dsList.get(i);
+      Aggregation.Dataset ds = dsList.get(i);
       Element e = new Element("netcdf", ncNS);
       e.setAttribute("location", ds.getLocation());
       //if (type == Aggregation.Type.JOIN_EXISTING)
@@ -188,15 +188,14 @@ public class NcMLWriter {
     }
 
     if (agg.getType() == Aggregation.Type.UNION) {
-      List unionList = ((AggregationUnion)agg).getUnionDatasets();
+      List<NetcdfDataset> unionList = ((AggregationUnion)agg).getUnionDatasets();
       for (int i = 0; i < unionList.size(); i++) {
-        NetcdfDataset ds = (NetcdfDataset) unionList.get(i);
+        NetcdfDataset ds = unionList.get(i);
         Element e = new Element("netcdf", ncNS);
         e.setAttribute("location", ds.getLocation());
         aggElem.addContent(e);
       }
     }
-
 
     return aggElem;
   }

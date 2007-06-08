@@ -136,8 +136,12 @@ public class CoordSysTable extends JPanel {
           IndexIterator ii = data.getIndexIterator();
           while (ii.hasNext()) {
             double val = ii.getDoubleNext();
-            Date date = du.makeDate(val);
-            infoTA.appendLine(" " + format.toDateTimeString(date));
+            if (Double.isNaN(val)) {
+              infoTA.appendLine(" N/A");             
+            } else {
+              Date date = du.makeDate(val);
+              infoTA.appendLine(" " + format.toDateTimeString(date));
+            }
           }
         } catch (Exception ex) {
           infoTA.appendLine(ex.getMessage());

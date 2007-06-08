@@ -1044,7 +1044,7 @@ public class NcMLReader {
 
       if (agg.getType() == Aggregation.Type.UNION) {
         NetcdfDataset unionDs = readNcML(ncmlLocation, location, netcdfElemNested, cancelTask);
-        ((AggregationUnion) agg).addDatasetUnion(unionDs);
+        ((AggregationUnion) agg).addUnionDataset(unionDs);
         transferDataset(unionDs, newds, null);
       } else {
         String ncoords = netcdfElemNested.getAttributeValue("ncoords");

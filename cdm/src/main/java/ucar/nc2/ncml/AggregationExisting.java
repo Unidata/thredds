@@ -146,7 +146,7 @@ public class AggregationExisting extends Aggregation {
       out.print(">\n");
 
       for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset dataset = (Dataset) nestedDatasets.get(i);
+        Dataset dataset = nestedDatasets.get(i);
         out.print("  <netcdf location='" + dataset.getLocation() + "' ");
         out.print("ncoords='" + dataset.getNcoords(null) + "' ");
 
@@ -215,7 +215,7 @@ public class AggregationExisting extends Aggregation {
     // find a dataset in the nestedDatasets by location
   private Dataset findDataset(String location) {
     for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset ds = (Dataset) nestedDatasets.get(i);
+      Dataset ds = nestedDatasets.get(i);
       if (location.equals(ds.getLocation()))
         return ds;
     }
