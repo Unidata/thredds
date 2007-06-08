@@ -1,5 +1,5 @@
 CHANGES for Netcdf-Java library
-Version @VERSION@
+Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 2.2.21
@@ -16,6 +16,8 @@ Changes in version 2.2.21
   * FmrcImpl: make threadsafe
   * FmrcImpl: reparenting "non-grid" variables was making them into Variable, not VariableDS
   * DODSNetcdfFile: check for _Coordinate.Axes and coordinates attributes (bug allowed null)
+ Libraries
+  * grib-5.1.04.jar
 
 Changes in version 2.2.20
  Feature

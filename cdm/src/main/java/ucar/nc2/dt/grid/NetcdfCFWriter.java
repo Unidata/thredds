@@ -42,10 +42,28 @@ import java.text.ParseException;
 import thredds.datatype.DateRange;
 
 /**
+ * Write a CF compliant Netcdf-3 file from any gridded dataset. The datasets can optionally be subsetted by a lat/lon
+ * bounding box and/or a time range.
+ *
  * @author caron
  */
 public class NetcdfCFWriter {
 
+  /**
+   * Write a CF compliant Netcdf-3 file from any gridded dataset.
+   *
+   * @param location write to this location on disk
+   * @param gds A gridded dataset
+   * @param gridList the list of grid names to be written, must not be empty.
+   * @param llbb optional lat/lon bounding box
+   * @param range optional time range
+   * @param addLatLon should 2D lat/lon variables be added, if its a projection coordainte system?
+   * @param stride_xy not implemented yet
+   * @param stride_z not implemented yet
+   * @param stride_time not implemented yet
+   * @throws IOException if write or read error
+   * @throws InvalidRangeException if subset is illegal
+   */
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
           LatLonRect llbb, DateRange range,
           boolean addLatLon,
