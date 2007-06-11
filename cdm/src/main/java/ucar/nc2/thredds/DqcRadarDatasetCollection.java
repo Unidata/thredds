@@ -6,6 +6,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.DateSelectionInfo;
 import ucar.unidata.util.Product;
+import ucar.unidata.util.DateSelection;
+import ucar.unidata.util.DatedThing;
 
 import thredds.catalog.*;
 import thredds.catalog.query.*;
@@ -270,13 +272,13 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
      */
     public URI getRadarDatasetURI(String stnName, Date absTime) throws IOException {
         // absTime is a member of  datasetsDateURI
-        InvDataset idata =  queryRadarStation(stnName, absTime);
-        List dsets = idata.getDatasets();
+        InvDataset invdata =  queryRadarStation(stnName, absTime);
+      /*  List dsets = idata.getDatasets();
         int siz = dsets.size();
         if(siz != 1)
             return null;
 
-        InvDataset invdata = (InvDataset)dsets.get(0);
+        InvDataset invdata = (InvDataset)dsets.get(0);     */
         List acess = invdata.getAccess();
         InvAccess ia = (InvAccess)acess.get(0);
         URI ui = ia.getStandardUri();
@@ -327,112 +329,12 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
         List datasets = catalog.getDatasets();
 
         InvDataset idata = (InvDataset)datasets.get(0);
+        ArrayList dsets = (ArrayList)idata.getDatasets();
 
-        return idata;
+        InvDataset tdata = (InvDataset)dsets.get(0);
+        return tdata;
     }
 
-    /**
-     * Getting invDataset list for a single radar station.
-     * @param stnName radar station name
-     * @param rTime is relative time, such as latest, 1hour
-     * @return list of invDatasets
-     * @throws IOException java io exception
-     */
-    private List queryRadarStation(String stnName, String rTime) throws IOException {
-        // rTime is relative time, 1hour, 6hour, etc.., and it is a member of  relTimesList
-        if( relTimesList.get(rTime) == null ) {
-            throw new IOException("Invalid time selected: " + rTime + "\n");
-        }
-
-        // construct a query like this:
-        // http://motherlode.ucar.edu:9080/thredds/idd/radarLevel2?returns=catalog&stn=KFTG&dtime=latest
-        StringBuffer queryb = new StringBuffer();
-
-        queryb.append( dqc.getQuery().getUriResolved().toString());
-        queryb.append("serviceType=OPENDAP");
-        queryb.append("&stn="+stnName);
-        queryb.append("&dtime="+rTime);
-
-
-        URI catalogURI;
-
-        try {
-          catalogURI =  new URI(queryb.toString());
-        } catch (java.net.URISyntaxException e) {
-          throw new IOException( "** MalformedURLException on URL <"+">\n"+e.getMessage()+"\n");
-        }
-
-        InvCatalogFactory factory = new InvCatalogFactory("default", false);
-
-        InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML( catalogURI);
-
-        StringBuffer buff = new StringBuffer();
-        if (!catalog.check( buff)) {
-          throw new IOException("Invalid catalog <"+ catalogURI+">\n"+buff.toString());
-        }
-
-        List datasets = catalog.getDatasets();
-
-        return datasets;
-    }
-
-    /**
-     * Getting dataset list for a single radar station.
-     * @param stnName radar station name
-     * @param rTime is relative time, such as latest, 1hour
-     * @return iterator
-     * @throws IOException java io exception
-     */
-    private Iterator getRadarStationDatasets(String stnName, String rTime) throws IOException {
-        // rTime is relative time, 1hour, 6hour, etc.., and it is a member of  relTimesList
-
-        List datasets = queryRadarStation(stnName, rTime);
-
-       // for (int i = 0; i< datasets.size(); i++) {
-        ArrayList datasetList = new ArrayList();
-
-        InvDataset idata = (InvDataset) datasets.get(0);
-        //    List ddate = idata.getDates();
-        List dsets = idata.getDatasets();
-        for (int i = 0; i< dsets.size(); i++) {
-            InvDataset tdata = (InvDataset)dsets.get(i);
-            ThreddsDataFactory tdFactory = new ThreddsDataFactory();
-            ThreddsDataFactory.Result result;
-            result = tdFactory.openDatatype(tdata, null);
-            datasetList.add(result.tds);
-        }
-
-        return datasetList.iterator();
-    }
-
-    /**
-     * Getting URI list for a single radar station.
-     * @param stnName radar station name
-     * @param rTime is relative time, such as latest, 1hour
-     * @return list of URIs
-     * @throws IOException java io exception
-     */
-    public ArrayList getRadarStationURIs(String stnName, String rTime) throws IOException {
-        // rTime is relative time, 1hour, 6hour, etc.., and it is a member of  relTimesList
-
-        List datasets = queryRadarStation(stnName, rTime);
-
-        ArrayList datasetsURI = new ArrayList();
-
-        InvDataset idata = (InvDataset) datasets.get(0);
-        //    List ddate = idata.getDates();
-        List dsets = idata.getDatasets();
-        for (int i = 0; i< dsets.size(); i++) {
-            InvDataset tdata = (InvDataset)dsets.get(i);
-            List acess = tdata.getAccess();
-            InvAccess ia = (InvAccess)acess.get(0);
-            URI d = ia.getStandardUri();
-            datasetsURI.add(d);
-        }
-
-
-        return datasetsURI;
-    }
 
     /**
      * Getting invDataset list for a single radar station.
@@ -480,10 +382,10 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
         //    List ddate = idata.getDates();
 
         ArrayList dsets = (ArrayList)idata.getDatasets();
-        ArrayList datasetsURI = new ArrayList();
-        HashMap invDatasets = new HashMap();
-        HashMap datasetsDateURI = new HashMap();
+
         ArrayList absTimeList = new ArrayList();
+        ArrayList dURIList = new ArrayList();
+        ArrayList dInvList = new ArrayList();
 
         for (int i = 0; i< dsets.size(); i++) {
             InvDataset tdata = (InvDataset)dsets.get(i);
@@ -491,18 +393,19 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
             List dates = tdata.getDates();
             InvAccess ia = (InvAccess)acess.get(0);
             URI d = ia.getStandardUri();
-            datasetsDateURI.put(dates.get(0).toString(), d);
+
             absTimeList.add(dates.get(0).toString());
-            invDatasets.put(dates.get(0).toString(), tdata);
+            dURIList.add(new DatasetURIInfo(d, dates.get(0).toString()));
+            dInvList.add(new InvDatasetInfo(tdata, dates.get(0).toString()));
         }
 
-        DqcRadarDatasetInfo dri = new DqcRadarDatasetInfo(absTimeList, datasetsDateURI, invDatasets);
+        DqcRadarDatasetInfo dri = new DqcRadarDatasetInfo(absTimeList, dURIList, dInvList);
 
         return dri;
     }
 
     /**
-     * Getting data Iterator for a single radar station.
+     * Getting data for a single radar station.
      * @param stnName radar station name
      * @param start of the time
      * @param end of the time
@@ -512,14 +415,14 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
      public ArrayList getRadarStationURIs(String stnName, Date start, Date end ) throws IOException {
 
         DqcRadarDatasetInfo dri = queryRadarStation(stnName, start,  end );
-        HashMap uMap = dri.getDatasetURIList();
-        ArrayList klist = dri.getTimeList();
-        int size = uMap.size();
+        ArrayList uList = dri.getURIList();
+
+        int size = uList.size();
         ArrayList datasetsURI =  new ArrayList();
 
         for(int i = 0; i < size; i++) {
-            String t = (String)klist.get(i);
-            datasetsURI.add(uMap.get(t));
+            DatasetURIInfo du = (DatasetURIInfo)uList.get(i);
+            datasetsURI.add(du.uri);
         }
 
         return datasetsURI;
@@ -533,18 +436,17 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return dataset list
      * @throws IOException java io exception
      */
-    private ArrayList getRadarStationDatasets(String stnName, Date start, Date end) throws IOException {
+    public ArrayList getRadarStationDatasets(String stnName, Date start, Date end) throws IOException {
 
         ArrayList datasetList = new ArrayList();
 
         DqcRadarDatasetInfo dri = queryRadarStation(stnName, start, end);
-        ArrayList klist = dri.getTimeList();
-        HashMap invDatasetList = dri.getInvDatasetList();
-        int size = invDatasetList.size();
+        ArrayList iList = dri.getInvList();      
+        int size = iList.size();
 
         for (int i = 0; i< size; i++) {
-            String t = (String)klist.get(i);
-            InvDataset tdata = (InvDataset)invDatasetList.get(t);
+            InvDatasetInfo iv = (InvDatasetInfo)iList.get(i);
+            InvDataset tdata = iv.inv;
             ThreddsDataFactory tdFactory = new ThreddsDataFactory();
             ThreddsDataFactory.Result result;
             result = tdFactory.openDatatype(tdata, null);
@@ -599,7 +501,7 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
      * @param dateInfo the date selection information
      * @return list of URIs
      */
-    public ArrayList getDataURIs( String sName, DateSelectionInfo dateInfo) throws IOException {
+    public ArrayList getDataURIs( String sName, DateSelection dateInfo) throws IOException {
 
         return getDataURIs( sName, dateInfo, null);
     }
@@ -611,7 +513,7 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return list of radialDatasetSweep
      */
 
-    public ArrayList getData( String sName, DateSelectionInfo dateInfo) throws IOException {
+    public ArrayList getData( String sName, DateSelection dateInfo) throws IOException {
 
         return getData( sName, dateInfo, null);
     }
@@ -619,286 +521,58 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
     /**
      * Getting data for a single radar station, with time range.
      * @param sName radar station name
-     * @param dateInfo the date time selection information
+     * @param dateSelect the date time selection information
      * @return list of radialDatasetSweep
      */
-    public ArrayList getData( String sName, DateSelectionInfo dateInfo, ucar.nc2.util.CancelTask cancel) throws IOException {
 
-        if(dateInfo.interval == 0) {
-           return getRadarStationDatasets(sName, dateInfo.start, dateInfo.end );
-        }
-
-        DqcRadarDatasetInfo dri = queryRadarStation(sName, dateInfo.start,  dateInfo.end);
-
-        // create a list to hold URIs
+    public ArrayList getData( String sName, DateSelection dateSelect, ucar.nc2.util.CancelTask cancel) throws IOException {
+        if ((cancel != null) && cancel.isCancel())
+            return null;
+        DqcRadarDatasetInfo dri = queryRadarStation(sName, dateSelect.getStartFixedDate(), dateSelect.getEndFixedDate());
         ArrayList datasetList = new ArrayList();
-        int size = dri.absTimeList.size();
-        long [] tList = new long[size];
-        for ( int i = 0; i<  size; i++ )
-        {
-            Date d = (Date)DateUnit.getStandardOrISO((String)dri.absTimeList.get(i));
-            tList[i] = d.getTime() ;
+
+        List datasetINVs = dateSelect.apply(dri.getInvList()) ;
+
+        Iterator it = datasetINVs.iterator();
+        while(it.hasNext()) {
+            InvDatasetInfo ifo = (InvDatasetInfo)it.next();
+            InvDataset tdata  = ifo.inv;
+            ThreddsDataFactory tdFactory = new ThreddsDataFactory();
+            ThreddsDataFactory.Result result;
+            result = tdFactory.openDatatype(tdata, null);
+            datasetList.add(result.tds);
+            if ((cancel != null) && cancel.isCancel())
+                return null;
         }
-
-        // in time order
-        Arrays.sort(tList);
-
-        // get the interval list of time
-        ArrayList ivlList = getTimeIntervalList(dri.absTimeList, dateInfo.interval, dateInfo.roundTo);
-        int sz = ivlList.size();
-        //
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(DateUnit.getStandardOrISO((String)ivlList.get(0)));
-                if(dateInfo.start == null) {
-            dateInfo.start = cal.getTime();
-        }
-        if(dateInfo.end == null){
-            cal.setTime(DateUnit.getStandardOrISO((String)ivlList.get(sz-1)));
-            dateInfo.end = cal.getTime();
-        }
-        Date nextStart = cal.getTime();  // same as start
-        // for the first select
-        Date preNextStart = dateInfo.start;
-        cal.setTime(nextStart);
-        cal.add(Calendar.SECOND, dateInfo.postInt);
-        Date postNextStart = cal.getTime();
-
-        long [] stList = new long[size];
-        stList[0] = nextStart.getTime();
-        long timeInd = 0;
-        long deltTime = (dateInfo.postInt >= dateInfo.preInt)? dateInfo.postInt*1000 : dateInfo.preInt*1000;
-        int j = 0;
-        for (int i = 0; i < size; i++ )
-        {
-           long d =  tList[i];
-
-           if (d  >= preNextStart.getTime() && d  <= postNextStart.getTime() ) {
-                int l = 0;
-                if( Math.abs(d - nextStart.getTime()) <= deltTime ){
-                    deltTime = Math.abs(d - nextStart.getTime());
-                    timeInd = d;
-                }
-           }
-
-           if( d > postNextStart.getTime()) {
-                j++;
-                if( timeInd != 0) {
-                    cal.setTimeInMillis(timeInd);
-                    Date dd = cal.getTime();
-                    InvDataset tdata  = (InvDataset)dri.invDatasets.get(getISOTime(dd));
-                    ThreddsDataFactory tdFactory = new ThreddsDataFactory();
-                    ThreddsDataFactory.Result result;
-                    result = tdFactory.openDatatype(tdata, null);
-                    datasetList.add(result.tds);
-                    if ((cancel != null) && cancel.isCancel())
-                        return null;
-                }
-                timeInd = 0; //reset init value
-                deltTime = (dateInfo.postInt >= dateInfo.preInt)? dateInfo.postInt*1000 : dateInfo.preInt*1000;
-
-                cal.setTime(DateUnit.getStandardOrISO((String)ivlList.get(j)));
-                nextStart = cal.getTime();
-
-                //cal.setTime(nextStart);
-                cal.add(Calendar.SECOND, dateInfo.postInt);
-                postNextStart = cal.getTime();
-                //
-                cal.setTime(nextStart);
-                cal.add(Calendar.SECOND, (0 - dateInfo.preInt));
-                preNextStart = cal.getTime();
-                tList[j] = nextStart.getTime();
-                if( nextStart.getTime() >= dateInfo.end.getTime()) {
-                    nextStart = dateInfo.end;
-
-                    postNextStart = dateInfo.end;
-                    //
-                    cal.setTime(dateInfo.end);
-                    cal.add(Calendar.SECOND, (0- dateInfo.preInt));
-                    preNextStart = cal.getTime();
-                }
-                else if(postNextStart.getTime() >= dateInfo.end.getTime() ) {
-                    postNextStart = dateInfo.end;
-                }
-           }
-
-        }
-
 
         return datasetList;
 
     }
 
-   /**
-   * Getting data for a single radar station, with time range and interval.
-   * @param sName radar station  name
-   * @param dateInfo the date information of selection
-   * @return list of radialDatasetSweep
-   * @throws IOException java io exception
-   */
-
-    public ArrayList getDataURIs( String sName, DateSelectionInfo dateInfo, ucar.nc2.util.CancelTask cancel) throws IOException {
-        if(dateInfo.interval == 0) {
-           return getRadarStationURIs(sName, dateInfo.start, dateInfo.end );
-        }
 
 
-        DqcRadarDatasetInfo dri = queryRadarStation(sName, dateInfo.start,  dateInfo.end);
+    public ArrayList getDataURIs( String sName, DateSelection dateSelect, ucar.nc2.util.CancelTask cancel) throws IOException {
+        if ((cancel != null) && cancel.isCancel())
+                        return null;
+        DqcRadarDatasetInfo dri = queryRadarStation(sName, dateSelect.getStartFixedDate(), dateSelect.getEndFixedDate());
 
         // create a list to hold URIs
-        ArrayList datasetsURI = new ArrayList();
-        int size = dri.absTimeList.size();
-        long [] tList = new long[size];
-        for ( int i = 0; i<  size; i++ )
-        {
-            Date d = (Date)DateUnit.getStandardOrISO((String)dri.absTimeList.get(i));
-            tList[i] = d.getTime() ;
-        }
+        List datasetsURIs = dateSelect.apply(dri.getURIList()) ;
+        ArrayList uriList = new ArrayList();
 
-        // in time order
-        Arrays.sort(tList);
-
-        // get the interval list of time
-        ArrayList ivlList = getTimeIntervalList(dri.absTimeList, dateInfo.interval, dateInfo.roundTo);
-        int sz = ivlList.size();
-        //
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(DateUnit.getStandardOrISO((String)ivlList.get(0)));
-        if(dateInfo.start == null) {
-            dateInfo.start = cal.getTime();
-        }
-        if(dateInfo.end == null){
-            cal.setTime(DateUnit.getStandardOrISO((String)ivlList.get(sz-1)));
-            dateInfo.end = cal.getTime();
-        }
-        Date nextStart = dateInfo.start;  // same as start
-        // for the first select
-        Date preNextStart = nextStart;
-        cal.setTime(nextStart);
-        cal.add(Calendar.SECOND, dateInfo.postInt);
-        Date postNextStart = cal.getTime();
-
-        long [] stList = new long[size];
-        stList[0] = nextStart.getTime();
-        long timeInd = 0;
-        long deltTime = (dateInfo.postInt >= dateInfo.preInt)? dateInfo.postInt*1000 : dateInfo.preInt*1000;
-        int j = 0;
-        for (int i = 0; i < size; i++ )
-        {
-           long d =  tList[i];
-
-           if (d  >= preNextStart.getTime() && d  <= postNextStart.getTime() ) {
-                int l = 0;
-                if( Math.abs(d - nextStart.getTime()) <= deltTime ){
-                    deltTime = Math.abs(d - nextStart.getTime());
-                    timeInd = d;
-                }
-           }
-
-           if( d > postNextStart.getTime()) {
-                j++;
-                if( timeInd != 0) {
-                   cal.setTimeInMillis(timeInd);
-                   Date dd = cal.getTime();
-                   URI ui = (URI)dri.datasetsDateURI.get(getISOTime(dd));
-                   datasetsURI.add(ui);
-                   if ((cancel != null) && cancel.isCancel())
-                      return null;
-                }
-                timeInd = 0; //reset init value
-                deltTime = (dateInfo.postInt >= dateInfo.preInt)? dateInfo.postInt*1000 : dateInfo.preInt*1000;
-
-                cal.setTime(DateUnit.getStandardOrISO((String)ivlList.get(j)));
-                nextStart = cal.getTime();
-
-                //cal.setTime(nextStart);
-                cal.add(Calendar.SECOND, dateInfo.postInt);
-                postNextStart = cal.getTime();
-                //
-                cal.setTime(nextStart);
-                cal.add(Calendar.SECOND, (0 - dateInfo.preInt));
-                preNextStart = cal.getTime();
-                tList[j] = nextStart.getTime();
-                if( nextStart.getTime() >= dateInfo.end.getTime()) {
-                    nextStart = dateInfo.end;
-
-                    postNextStart = dateInfo.end;
-                    //
-                    cal.setTime(dateInfo.end);
-                    cal.add(Calendar.SECOND, (0- dateInfo.preInt));
-                    preNextStart = cal.getTime();
-                }
-                else if(postNextStart.getTime() >= dateInfo.end.getTime() ) {
-                    postNextStart = dateInfo.end;
-                }
-           }
-
+        Iterator it = datasetsURIs.iterator();
+        while(it.hasNext()) {
+            DatasetURIInfo ufo = (DatasetURIInfo)it.next();
+            URI u  = ufo.uri;
+            uriList.add(u);
+            if ((cancel != null) && cancel.isCancel())
+                return null;
         }
 
 
-        return datasetsURI;
+        return uriList;
     }
-    /**
-     * Getting data URI for a single radar station, with time range and interval.
-     * @param timeList is the list of time to be parsed
-     * @param interval the interval time
-     * @param roundTo the round to time
-     * @return list of times
-     * @throws IOException java io exception
-     */
-    public  ArrayList getTimeIntervalList( ArrayList timeList, int interval, int roundTo) throws IOException {
 
-        // create a list to hold URIs
-
-        ArrayList intervalList = new ArrayList();
-        int size = timeList.size();
-        long [] tList = new long[size];
-        for ( int i = 0; i<  size; i++ )
-        {
-            Date d = (Date)DateUnit.getStandardOrISO((String)timeList.get(i));
-            tList[i] = d.getTime() ;
-        }
-
-        // in time order
-        Arrays.sort(tList);
-        //
-        if(interval == 0 && roundTo == 0) {
-             for ( int i = 0; i<  size; i++ )
-            {
-                Date d = new Date(tList[i]);
-                intervalList.add(getISOTime(d));
-
-            }
-            return intervalList;
-        }
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis((long)tList[0]);
-        Date start = cal.getTime();
-        cal.setTimeInMillis((long)tList[size-1]);
-        Date end = cal.getTime();
-
-        cal.setTime(start);
-        intervalList.add(getISOTime(start));
-
-        // same as start
-        Date nextStart = cal.getTime();
-
-        while ( nextStart.getTime() < (end.getTime() - interval*1000) )
-        {
-            cal.setTime(nextStart);
-            cal.add(Calendar.SECOND, interval);
-            long rti = cal.getTimeInMillis();
-            long r2i = roundTo(roundTo, rti/1000)*1000;
-            cal.setTimeInMillis(r2i);
-            nextStart = cal.getTime();
-            intervalList.add(getISOTime(nextStart));
-        }
-
-        // add the last one of the list
-        intervalList.add(getISOTime(end));
-
-        return intervalList;
-    }
 
     public String getISOTime(Date d){
         java.text.SimpleDateFormat isoDateTimeFormat;
@@ -923,54 +597,109 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
         return seconds - ((int) seconds) % roundToSeconds;
     }
 
+
+    public class DatasetURIInfo implements DatedThing {
+        private URI uri = null;
+        private String t = null;
+        private Date date = null;
+        
+        public DatasetURIInfo(URI u, String t) {
+            this.uri = u;
+            this.t = t;
+        }
+
+        public Date getDate() {
+            if( date == null)
+                this.date = DateUnit.getStandardOrISO((String)this.t);
+            return  date;
+        }
+
+    }
+
+
+    public class InvDatasetInfo implements DatedThing {
+        private InvDataset inv = null;
+        private String t = null;
+        private Date date = null;
+
+        public InvDatasetInfo(InvDataset u, String t) {
+            this.inv = u;
+            this.t = t;
+        }
+
+        public Date getDate() {
+            if( date == null)
+                this.date = DateUnit.getStandardOrISO((String)this.t);
+            return  date;
+        }
+
+    }
+
+
     public class DqcRadarDatasetInfo {
-      private ArrayList absTimeList;
-      private HashMap datasetsDateURI;
-      private HashMap invDatasets;
+        private ArrayList absTimeList;
+        private ArrayList datasetInfoList;
+        private ArrayList invDatasetList;
 
-      public DqcRadarDatasetInfo(ArrayList absTimeList, HashMap datasetsDateURI, HashMap invDatasets) {
+        public DqcRadarDatasetInfo( ) {}
+
+        public DqcRadarDatasetInfo(ArrayList absTimeList, ArrayList datasetInfoList, ArrayList invDatasetList) {
           this.absTimeList =  absTimeList;
-          this.datasetsDateURI = datasetsDateURI;
-          this.invDatasets = invDatasets;
-      }
+          this.datasetInfoList = datasetInfoList;
+          this.invDatasetList = invDatasetList;
+        }
 
-      public ArrayList getTimeList(){
-          return  absTimeList;
-      }
+        public ArrayList getTimeList() {
+          return this.absTimeList;
+        }
 
-      public HashMap getDatasetURIList(){
-          return  datasetsDateURI;
-      }
+        public ArrayList getURIList() {
+          return this.datasetInfoList;
+        }
 
-      public HashMap getInvDatasetList(){
-          return  invDatasets;
-      }
+        public ArrayList getInvList() {
+            return this.invDatasetList;
+        }
+
+
     }
 
     public static void main(String args[]) throws IOException {
         StringBuffer errlog = new StringBuffer();
-        String dqc_location = "http://motherlode.ucar.edu:9080/thredds/idd/radarLevel2";
+        String dqc_location = "http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2";
         DqcRadarDatasetCollection ds = factory("test", dqc_location, errlog);
         System.out.println(" errs= "+errlog);
 
         List stns = ds.getStations();
         System.out.println(" nstns= "+stns.size());
 
-
-
         Station stn = (Station)(stns.get(2));
 
        // List ulist = stn.getRadarStationURIs();
        // assert null != ulist;
-        Date ts1 = DateUnit.getStandardOrISO("2007-04-29T12:12:00");
-        Date ts2 = DateUnit.getStandardOrISO("2007-04-29T23:12:00");
+        Date ts1 = DateUnit.getStandardOrISO("2007-06-9T12:12:00");
+        Date ts2 = DateUnit.getStandardOrISO("2007-06-9T23:12:00");
 
         List tlist = ds.getRadarStationTimes(stn.getValue(), ts1, ts2);
         int sz = tlist.size();
-        assert 0 != sz;
         Date ts0 = DateUnit.getStandardOrISO((String)tlist.get(1));
+        RadialDatasetSweep rds = ds.getRadarDataset(stn.getValue(), ts0);
         URI stURL = ds.getRadarDatasetURI(stn.getValue(), ts0);
         assert null != stURL;
+        assert 0 != sz;
+        DateSelection dateS = new DateSelection(ts1, ts2);
+        dateS.setInterval((double)3600*1000);
+        dateS.setRoundTo((double)3600*1000);
+        dateS.setPreRange((double)500*1000);
+        dateS.setPostRange((double)500*1000);
+
+        List jList = ds.getDataURIs("KABX", dateS );
+
+        assert null != jList;
+        List mList = ds.getData("KABX", dateS, null);
+        assert null != mList;
+
+
 
         //Date ts0 = DateFromString.getDateUsingCompleteDateFormat((String)tlist.get(1),"yyyy-MM-dd'T'HH:mm:ss");
         Date ts = DateUnit.getStandardOrISO((String)tlist.get(1));
@@ -979,33 +708,7 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
         isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         String st = isoDateTimeFormat.format(ts);
 
-        ArrayList rtList = new ArrayList();
-        ArrayList rbList = new ArrayList();
-      //  ArrayList al = getTimeIntervalList((ArrayList)tlist, 3600, 60*60);
-        for(int i= 0; i< tlist.size(); i++) {
-            Date tsi = (Date)DateUnit.getStandardOrISO((String)tlist.get(i));
-            long rti = tsi.getTime();
-            long r2i = roundTo(15*60, rti/1000)*1000;
-            rbList.add( isoDateTimeFormat.format(new Date(r2i)));
-            rtList.add( isoDateTimeFormat.format(tsi));
-        }
-
-
-        sz = tlist.size();
-
-        ArrayList iList = ds.getDataURIs("KABX", new DateSelectionInfo(ts1, ts2, 3600, 60*60, 500, 500) );
-        assert null != iList;
-        ArrayList dList = ds.getData("KABX", new DateSelectionInfo(ts1, ts2, 3600, 60*60, 500, 500));
-        assert null != dList;
-
-
-
-        /* List data = ds.getData((DqcRadarStation)stns.get(2), ts1, ts2);
-        Iterator it1 = data.iterator();
-        while(it1.hasNext()) {
-            RadialDatasetSweep rds = (RadialDatasetSweep)it1.next();
-            assert null != rds;
-        }  */
+  
      }
 
 }
