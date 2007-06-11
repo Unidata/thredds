@@ -88,8 +88,8 @@ public class TestReadandCount extends TestCase {
     doOne(TestAll.upcShareTestDataDir + "grid/grib/grib2/data/","ndfd.wmo", 1, -1, -1, -1);
 
       // radar mosaic
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_national.grib", 1, -1, -1, -1);
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, -1, -1, -1);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_national.grib", 1, 1, 3, 0);
+    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, 1, 3, 0);
 
     // redo grib files, forcing new index
     GribServiceProvider.forceNewIndex = true;
@@ -150,7 +150,9 @@ public class TestReadandCount extends TestCase {
 
    public static void main( String arg[]) throws Exception {
      // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
-     new TestReadandCount("dummy").testRead();  // missing TSLB
+     //new TestReadandCount("dummy").testRead();  // missing TSLB
+     doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, -1, -1, -1);
+
   }
 
 }

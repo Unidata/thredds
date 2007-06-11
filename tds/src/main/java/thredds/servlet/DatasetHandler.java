@@ -192,7 +192,8 @@ public class DatasetHandler {
     NetcdfDataset ncd;
     if (ncfile instanceof NetcdfDataset) {
       ncd = (NetcdfDataset) ncfile;
-      ncd.enhance();
+      if (!ncd.isEnhanced())
+        ncd.enhance();
     } else {
       ncd = new NetcdfDataset(ncfile, true);
     }

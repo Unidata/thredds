@@ -459,9 +459,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Set whether Coordinate System metadata has been added.
+   * If false, empty coordSys, coordAxes, coordTransforms
    */
   public void setCoordSysWereAdded(boolean coordSysWereAdded) {
     this.coordSysWereAdded = coordSysWereAdded;
+    if (!coordSysWereAdded) {
+      coordSys = new ArrayList();
+      coordAxes = new ArrayList();
+      coordTransforms = new ArrayList();
+    }
   }
 
   /**

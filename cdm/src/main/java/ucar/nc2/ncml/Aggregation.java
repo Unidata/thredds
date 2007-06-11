@@ -317,6 +317,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   }
 
   //////////////////////////////////////////////////////////////
+  // LOOK: this whole sync stuff is crap, not tested, only works sometimes !!!!
 
   /**
    * Check to see if its time to rescan directory, and if so, rescan and extend dataset if needed.

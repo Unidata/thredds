@@ -8,6 +8,7 @@ Changes in version 2.2.21
  API
   * LatLonRect.intersect()
  Bugs
+  * NetcdfDataset.setCoordSysWereAdded(false) : empty coordinate systems so they can be rebuilt correctly
   * FmrcSingle aggregation not correctly handling chaning datasets
   * GridCoordSys.getRangesFromLatLonRect(LatLonRect rect): first clip the request rectangle to the bounding box of the grid
   * Dimension.addCoordinateVariable: synchronize, for FmrcImpl concurrent access
@@ -29,6 +30,7 @@ Changes in version 2.2.20
   * Add NetcdfFileWriteable.setLength( size) - preallocate file size, for efficiency
   * StationObsDatasetWriter - use memory files, set output size, to rewrite into canonical form.
  Bugs
+  * WRF : Mercator, not TransverseMercator
   * FmrcInventory: starts a DiskCache scouring task; dont do that.
   * GRIB: write index / open existing index giving different params for projection (gdsIndex.param hashmap)
   * GRIB: thinned lat/lon grids get dx wrong if lo2<lo2 (cross the seam)

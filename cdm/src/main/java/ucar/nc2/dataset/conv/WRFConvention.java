@@ -1,6 +1,5 @@
-// $Id:WRFConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -41,7 +40,6 @@ import java.util.*;
  *  we cant properly georeference them.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class WRFConvention extends CoordSysBuilder {
@@ -64,6 +62,32 @@ public class WRFConvention extends CoordSysBuilder {
   public WRFConvention() {
     this.conventionName = "WRF";
   }
+
+  /* Implementation notes
+
+    There are 2 WRFs : NMM ("Non-hydrostatic Mesoscale Model" developed at NOAA/NCEP) and
+    1) NMM ("Non-hydrostatic Mesoscale Model" developed at NOAA/NCEP)
+      GRIDTYPE="E"
+      DYN_OPT = 4
+
+      This is a staggered grid that requires special processing.
+
+    2) ARW ("Advanced Research WRF", developed at MMM)
+      GRIDTYPE="C"
+      DYN_OPT = 2
+      DX, DY grid spaceing in meters (must be equal)
+
+      the Arakawa C staggered grid (see ARW 2.2 p 3-17)
+      the + are the "non-staggered" grid:
+      
+      + V + V + V +
+      U T U T U T U
+      + V + V + V +
+      U T U T U T U
+      + V + V + V +
+      U T U T U T U
+      + V + V + V +
+   */
 
   /* ARW Users Guide p 3-19
   <pre>
@@ -163,8 +187,10 @@ orientation of the grid). This should be set equal to the center longitude in mo
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
         case 3:
-          proj = new TransverseMercator(centralLat, centralLon, 1.0);
-          projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
+          proj = new Mercator(standardLat, standardLon, standardLat); // thanks to Robert Scmunk
+          projCT = new ProjectionCT("Mercator", "FGDC", proj);
+          // proj = new TransverseMercator(standardLat, standardLon, 1.0);
+          //projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
           break;
         default:
           parseInfo.append("ERROR: unknown projection type = "+projType);
