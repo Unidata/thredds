@@ -62,6 +62,13 @@ class IFDEntry implements Comparable {
     return this;
   }
 
+  public IFDEntry setValue(int n, int d, int f) {
+    this.value = new int[3];
+    this.value[0] = n;
+    this.value[1] = d;
+    this.value[2] = f;
+    return this;
+  }
   public IFDEntry setValue( int[] v) {
     this.count = v.length;
     value = (int[]) v.clone();
