@@ -9,6 +9,7 @@ import java.io.IOException;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.util.DateSelectionInfo;
+import ucar.unidata.util.DateSelection;
 import junit.framework.TestCase;
 
 
@@ -21,7 +22,7 @@ import junit.framework.TestCase;
  */
 public class TestDqcStationaryRadarDataset extends TestCase {
     StringBuffer errlog = new StringBuffer();
-    String dqc_location = "http://motherlode.ucar.edu:9080/thredds/idd/radarLevel2";
+    String dqc_location = "http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2";
     DqcRadarDatasetCollection ds;
     List stns;
 
@@ -54,11 +55,17 @@ public class TestDqcStationaryRadarDataset extends TestCase {
         long yday1 = now - (30*60*60*1000);
         Date ts0 = new Date(yday0);
         Date ts1 = new Date(yday1);
+        DateSelection dateS = new DateSelection(ts0, ts1);
+        dateS.setInterval((double)3600*0);
+        dateS.setRoundTo((double)3600*0);
+        dateS.setPreRange((double)500*0);
+        dateS.setPostRange((double)500*0);
         List absList2 = ds.getRadarStationTimes(stn.getValue(), ts0, ts1);
         assert null != absList2;
-        List ulist = ds.getDataURIs(stn.getValue(),new DateSelectionInfo(ts0, ts1, 0, 0, 0, 0));
+        List ulist = ds.getDataURIs(stn.getValue(), dateS);
         assert null != ulist;
-        ulist = ds.getDataURIs(stn.getValue(), new DateSelectionInfo(ts0, ts1, 3600, 0, 0, 0));
+        dateS.setInterval((double)3600*1000);
+        ulist = ds.getDataURIs(stn.getValue(), dateS);
         assert null != ulist;
         List tlist = ds.getRadarStationTimes(stn.getValue(), null, null);
         assert null != tlist;
@@ -76,20 +83,31 @@ public class TestDqcStationaryRadarDataset extends TestCase {
 
         Station stn = (thredds.catalog.query.Station)(stns.get(1));
         assert null != stn;
-
-        List ulist = ds.getDataURIs(stn.getValue(), new DateSelectionInfo(null, null, 3600, 60*60, 500, 500) );
+        DateSelection dateS = new DateSelection();
+        dateS.setInterval((double)3600*1000);
+        dateS.setRoundTo((double)3600*1000);
+        dateS.setPreRange((double)500*1000);
+        dateS.setPostRange((double)500*1000);
+        List ulist = ds.getDataURIs(stn.getValue(), dateS );
         assert null != ulist;
         List tlist = ds.getRadarStationTimes(stn.getValue(), null, null);
         assert null != tlist;
-        List data = ds.getDataURIs(stn.getValue(), new DateSelectionInfo(null, null, 3600, 60*60, 500, 500) );
+        List data = ds.getDataURIs(stn.getValue(), dateS );
         assert null != data;
-        List data1 = ds.getDataURIs(stn.getValue(), new DateSelectionInfo(null, null, 3600, 60*60, 200, 200) );
+        dateS.setPreRange((double)200*1000);
+        dateS.setPostRange((double)200*1000);
+        List data1 = ds.getDataURIs(stn.getValue(), dateS );
         assert null != data1;
-        List data2 = ds.getDataURIs(stn.getValue(), new DateSelectionInfo(null, null, 3600, 60*60, 200, 0) );
+        dateS.setPostRange((double)200*0);
+        List data2 = ds.getDataURIs(stn.getValue(), dateS );
         assert null != data2;
-        List data3 = ds.getDataURIs(stn.getValue(), new DateSelectionInfo(null, null, 3600, 60*60, 0, 200) );
+        dateS.setPreRange((double)200*0);
+        dateS.setPostRange((double)200*1000);
+        List data3 = ds.getDataURIs(stn.getValue(), dateS );
         assert null != data3;
-        List data4 = ds.getDataURIs(stn.getValue(), new DateSelectionInfo(null, null, 3600, 60*60, 100, 100) );
+        dateS.setPreRange((double)100*1000);
+        dateS.setPostRange((double)100*1000);
+        List data4 = ds.getDataURIs(stn.getValue(), dateS );
         assert null != data4;
 
     }
@@ -134,7 +152,12 @@ public class TestDqcStationaryRadarDataset extends TestCase {
         long yday1 = now - (24*60*60*1000);
         ts0 = new Date(yday0);
         ts1 = new Date(yday1);
-        List data = ds.getData(stn.getValue(), new DateSelectionInfo(ts0, ts1, 3600, 60*60, 500, 500) );
+        DateSelection dateS = new DateSelection(ts0, ts1);
+        dateS.setInterval((double)3600*1000);
+        dateS.setRoundTo((double)3600*1000);
+        dateS.setPreRange((double)500*1000);
+        dateS.setPostRange((double)500*1000);
+        List data = ds.getData(stn.getValue(), dateS);
         assert null != data;
         Iterator it = data.iterator();
 
@@ -161,7 +184,12 @@ public class TestDqcStationaryRadarDataset extends TestCase {
         assert null != stURL;
         Date tsn = DateUnit.getStandardOrISO((String)tlist.get(0));
         Date ts1 = DateUnit.getStandardOrISO((String)tlist.get(sz-1));
-        List dList = ds.getDataURIs("KABX", new DateSelectionInfo(ts1, tsn, 3600, 60*60, 500, 500) );
+        DateSelection dateS = new DateSelection(ts1, tsn);
+        dateS.setInterval((double)3600*1000);
+        dateS.setRoundTo((double)3600*1000);
+        dateS.setPreRange((double)500*1000);
+        dateS.setPostRange((double)500*1000);
+        List dList = ds.getDataURIs("KABX", dateS );
         Iterator it = dList.iterator();
         while(it.hasNext()) {
             URI result = (URI)it.next();
