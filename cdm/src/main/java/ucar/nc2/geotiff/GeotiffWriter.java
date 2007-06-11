@@ -320,7 +320,7 @@ public class GeotiffWriter {
 
     } else {
       // standard tags for SampleFormat ( see TIFF spec, section 19)
-      geotiff.addTag( new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue( 32)); // 32 bits per sample
+      geotiff.addTag( new IFDEntry(Tag.BitsPerSample, FieldType.SHORT).setValue( 8, 8, 8)); // 32 bits per sample
       geotiff.addTag( new IFDEntry(Tag.SampleFormat, FieldType.SHORT).setValue( 3)); // Sample Format
       geotiff.addTag( new IFDEntry(Tag.SamplesPerPixel, FieldType.SHORT).setValue( 1));
       MAMath.MinMax dataMinMax = grid.getMinMaxSkipMissingData( data);
