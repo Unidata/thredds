@@ -111,11 +111,11 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
         return (Station) stations.get(name);
     }
 
-     public List getStations( )throws IOException {
-         return null;
+    public List getStations( )throws IOException {
+          return radarCollection.getStations();
      }
 
-      /** Get all the Stations in the collection, allow user to cancel.
+    /** Get all the Stations in the collection, allow user to cancel.
      * @param cancel allow user to cancel. Implementors should return ASAP.
      * @return List of Station */
 
@@ -123,7 +123,8 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
          if ((cancel != null) && cancel.isCancel()) return null;
          return  getStations( );
      }
-     /** Get all the Stations within a bounding box.
+
+    /** Get all the Stations within a bounding box.
      * @return List of Station */
     public List getStations( LatLonRect boundingBox)throws IOException {
         LatLonPointImpl latlonPt = new LatLonPointImpl();
