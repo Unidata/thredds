@@ -174,7 +174,8 @@ public class TestAll extends TestCase
       pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], msg );
     }
 
-    assertTrue( "Failed to open dataset(s):\n" + msg.toString(),
+    assertTrue( "Failed to open dataset(s):\n========================================\n" +
+                msg.toString() + "\n========================================\n",
                 pass );
 
     if ( msg.length() > 0 )
