@@ -36,6 +36,9 @@ import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.ncml.AggregationFmrc;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import thredds.catalog.InvDatasetScan;
+import thredds.catalog.InvCatalog;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetImpl;
 
 /**
  * THREDDS default servlet - handles everything not explicitly mapped.
@@ -138,6 +141,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
     DataRootHandler.init(contentPath, contextPath);
     catHandler = DataRootHandler.getInstance();
+    catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
     initCatalogs();
 
     catHandler.makeDebugActions();
@@ -182,14 +186,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     ArrayList catList = new ArrayList();
     catList.add("catalog.xml"); // always first
     getExtraCatalogs(catList);
-    for (int i = 0; i < catList.size(); i++) {
-      String catFilename = (String) catList.get(i);
-      try {
-        catHandler.initCatalog(catFilename);
-      } catch (Throwable e) {
-        log.error( "Error initializing catalog "+catFilename+"; "+e.getMessage(), e);
-      }
-    }
+    catHandler.initCatalogs( catList);
   }
 
   private void getExtraCatalogs(List extraList) {
@@ -837,6 +834,38 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       DiskCache.cleanCache(maxBytes, sbuff); // 1 Gbyte
       sbuff.append("----------------------\n");
       cacheLog.info(sbuff.toString());
+    }
+  }
+
+  private class RestrictedAccessConfigListener implements DataRootHandler.ConfigListener
+  {
+    volatile boolean initializing;
+
+    public RestrictedAccessConfigListener()
+    {
+      initializing = false;
+    }
+
+    public void configStart()
+    {
+      this.initializing = true;
+    }
+
+    public void configEnd()
+    {
+      this.initializing = false;
+    }
+
+    public void configCatalog( InvCatalog catalog )
+    {
+      return;
+    }
+
+    public void configDataset( InvDataset dataset )
+    {
+      // check for resource control
+      if ( dataset.getRestrictAccess() != null )
+        DatasetHandler.putResourceControl( (InvDatasetImpl) dataset );
     }
   }
 }

@@ -104,6 +104,8 @@ public class DataRootHandler {
   //  PathMatcher is "effectively immutable"; use volatile for visibilty
   private volatile PathMatcher pathMatcher = new PathMatcher(); // collection of DataRoot objects
 
+  private List<ConfigListener> configListeners = new ArrayList<ConfigListener>();
+
   /**
    * Constructor.
    * @param contentPath all catalogs are reletive to this file path, eg {tomcat_home}/content/thredds
@@ -115,10 +117,31 @@ public class DataRootHandler {
     this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
   }
 
+  boolean registerConfigListener( ConfigListener cl )
+  {
+    if ( cl == null ) return false;
+    if ( configListeners.contains( cl )) return false;
+    return configListeners.add( cl);
+  }
+
+  boolean unregisterConfigListener( ConfigListener cl )
+  {
+    if ( cl == null ) return false;
+    return configListeners.remove( cl);
+  }
+
+  // @TODO Should pull the init construction of hashes and such out of synchronization and only synchronize the change over to the constructed hashes. (How would that work with ConfigListeners?)
+  // @TODO This method is synchronized seperately from actual initialization which means that requests in between the two calls will fail.
   /**
    * Reinitialize lists of static catalogs, data roots, dataset Ids.
    */
   synchronized void reinit() {
+    // Notify listeners of start of initialization.
+    isReinit = true;
+    for ( ConfigListener cl : configListeners)
+      cl.configStart();
+
+    // Empty all config catalog information.
     staticCatalogHash = new HashMap<String,InvCatalogImpl>();
     pathMatcher = new PathMatcher();
     idHash = new HashSet<String>();
@@ -126,6 +149,31 @@ public class DataRootHandler {
     DatasetHandler.reinit(); // NcML datasets
 
     log.info("\n**************************************\n**************************************\nCatalog reinit\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+  }
+  volatile boolean isReinit = false;
+
+  synchronized void initCatalogs( List<String> configCatalogNames )
+  {
+    // Notify listeners of start of initialization if not reinit (in which case it is already done).
+    if ( ! isReinit )
+      for ( ConfigListener cl : configListeners )
+        cl.configStart();
+    isReinit = false;
+
+    for ( String catName : configCatalogNames)
+    {
+      try
+      {
+        initCatalog( catName );
+      }
+      catch ( Throwable e )
+      {
+        log.error( "Error initializing catalog " + catName + "; " + e.getMessage(), e );
+      }
+    }
+
+    for ( ConfigListener cl : configListeners )
+      cl.configEnd();
   }
 
   /**
@@ -179,6 +227,10 @@ public class DataRootHandler {
       log.warn( "initCatalog(): failed to read catalog <" + catalogFullPath + ">." );
       return;
     }
+
+    // Notify listeners of config catalog.
+    for ( ConfigListener cl : configListeners )
+      cl.configCatalog( cat);
 
     // look for datasetRoots
     Iterator roots = cat.getDatasetRoots().iterator();
@@ -287,6 +339,11 @@ public class DataRootHandler {
         }
       }
 
+      // Notify listeners of config datasets.
+      for ( ConfigListener cl : configListeners )
+        cl.configDataset( invDataset );
+
+
       if (invDataset instanceof InvDatasetScan) {
         InvDatasetScan ds = (InvDatasetScan) invDataset;
         InvService service = ds.getServiceDefault();
@@ -305,10 +362,11 @@ public class DataRootHandler {
         DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
       }
 
-      // check for resource control
-      if (invDataset.getRestrictAccess() != null) {
-        DatasetHandler.putResourceControl(invDataset);
-      }
+// Move this to RestrictedAccessConfigListener
+//      // check for resource control
+//      if (invDataset.getRestrictAccess() != null) {
+//        DatasetHandler.putResourceControl(invDataset);
+//      }
 
       if (!(invDataset instanceof InvCatalogRef)) {
         // recurse
@@ -1526,5 +1584,46 @@ public class DataRootHandler {
     debugHandler.addAction( act); */
   }
 
+  /**
+   * To recieve notice of TDS configuration events, implement this interface
+   * and use the DataRootHandler.registerConfigListener() method to register
+   * an instance with a DataRootHandler instance.
+   *
+   * Configuration events include start and end of configuration, inclusion
+   * of a catalog in configuration, and finding a dataset in configuration.
+   *
+   * Concurrency issues:<br>
+   * 1) As this is a servlet framework, requests that configuration be reinitialized
+   * may occur concurrently with requests for the information the listener is
+   * keeping. Be careful not to allow access to the information during
+   * configuration.<br>
+   * 2) The longer the configuration process, the more time there is to have
+   * a concurrency issue come up. So, try to keep responses to these events
+   * fairly light weight.
+   */
+  public interface ConfigListener
+  {
+    /**
+     * Recieve notification that configuration has started.
+     */
+    public void configStart();
+
+    /**
+     * Recieve notification that configuration has completed.
+     */
+    public void configEnd();
+
+    /**
+     * Recieve notification on the inclusion of a configuration catalog.
+     * @param catalog the catalog being included in configuration.
+     */
+    public void configCatalog( InvCatalog catalog );
+
+    /**
+     * Recieve notification that configuration has found a dataset.
+     * @param dataset the dataset found during configuration.
+     */
+    public void configDataset( InvDataset dataset );
+  }
 }
 
