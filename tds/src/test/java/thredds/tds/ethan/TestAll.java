@@ -84,7 +84,8 @@ public class TestAll extends TestCase
     return suite;
   }
 
-  private boolean showDebug = false;
+  private boolean showDebug;
+  private boolean verbose;
 
   private String host = "motherlode.ucar.edu:8080";
   private String[] catalogList;
@@ -102,6 +103,7 @@ public class TestAll extends TestCase
     targetTdsUrl = "http://" + host + "/thredds/";
 
     showDebug = Boolean.parseBoolean( System.getProperty( "thredds.tds.test.showDebug", "false" ) );
+    verbose = Boolean.parseBoolean( System.getProperty( "thredds.tds.test.verbose", "false" ) );
 
     String catalogListString = System.getProperty( "thredds.tds.test.catalogs", null );
     if ( catalogListString == null )
@@ -167,20 +169,20 @@ public class TestAll extends TestCase
   public void testCrawlCatalogsOpenOneDatasetInEachCollection()
   {
     boolean pass = true;
-    StringBuffer msg = new StringBuffer();
+    StringBuffer log = new StringBuffer();
 
     for ( int i = 0; i < catalogList.length; i++ )
     {
-      pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], msg );
+      pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], log, verbose );
     }
 
     assertTrue( "Failed to open dataset(s):\n========================================\n" +
-                msg.toString() + "\n========================================\n",
+                log.toString() + "\n========================================\n",
                 pass );
 
-    if ( msg.length() > 0 )
+    if ( log.length() > 0 )
     {
-      System.out.println( msg.toString() );
+      System.out.println( log.toString() );
     }
   }
 
@@ -429,7 +431,7 @@ public class TestAll extends TestCase
     return true;
   }
 
-  public static boolean crawlCatalogOpenRandomDataset( String catalogUrl, StringBuffer log )
+  public static boolean crawlCatalogOpenRandomDataset( String catalogUrl, StringBuffer log, boolean verbose )
   {
     final ThreddsDataFactory threddsDataFactory = new ThreddsDataFactory();
     final Map<String, String> failureMsgs = new HashMap<String, String>();
@@ -471,17 +473,19 @@ public class TestAll extends TestCase
     boolean pass = true;
     if ( ! failureMsgs.isEmpty() )
     {
-      log.append( "\n" ).append( "Failed to open some datasets:" );
+      log.append( "\nFailed to open some datasets:" );
       for ( String curPath : failureMsgs.keySet() )
       {
         String curMsg = failureMsgs.get( curPath );
         log.append( "\n  " ).append( curPath ).append( ": " ).append( curMsg );
       }
+
       pass = false;
     }
-    if ( crawlMsg.length() > 0 )
+
+    if ( verbose && crawlMsg.length() > 0 )
     {
-      log.append( "\n" ).append( "Message from catalog crawling:" ).append( "\n  " ).append( crawlMsg );
+      log.append( "\n\nMessage from catalog crawling:\n" ).append( crawlMsg );
     }
 
     return pass;
