@@ -6,8 +6,12 @@ Changes in version 2.2.21
  Features
   * NcML: new type: JoinExistingOne has one coordinate per file, with coordValue specified from filename
  API
+  * static CoordinateAxis1DTime.factory, constructors made private
   * LatLonRect.intersect()
  Bugs
+  * NetcddfFileWriter.addLatLonCoordinates bug
+  * FileWriter can handle String values variables by converting to char
+  * CoordinateAxis1DTime handles char time coordinates by converting to String.
   * NetcdfDataset.setCoordSysWereAdded(false) : empty coordinate systems so they can be rebuilt correctly
   * FmrcSingle aggregation not correctly handling chaning datasets
   * GridCoordSys.getRangesFromLatLonRect(LatLonRect rect): first clip the request rectangle to the bounding box of the grid

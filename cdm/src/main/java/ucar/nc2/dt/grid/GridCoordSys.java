@@ -260,7 +260,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
           if (t instanceof CoordinateAxis1DTime)
             timeTaxis = (CoordinateAxis1DTime) t;
           else {
-            timeTaxis = new CoordinateAxis1DTime(t, sbuff);
+            timeTaxis = CoordinateAxis1DTime.factory(t, sbuff);
           }
 
           tAxis = timeTaxis;
@@ -289,7 +289,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         if (rtAxis instanceof CoordinateAxis1DTime)
           runTimeAxis = (CoordinateAxis1DTime) rtAxis;
         else
-          runTimeAxis = new CoordinateAxis1DTime(rtAxis, sbuff);
+          runTimeAxis = CoordinateAxis1DTime.factory(rtAxis, sbuff);
 
         coordAxes.add(runTimeAxis);
 
@@ -815,7 +815,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     VariableDS section;
     try {
       section = (VariableDS) tAxis.slice(0, run_index);
-      return new CoordinateAxis1DTime(section, null);
+      return CoordinateAxis1DTime.factory(section, null);
     } catch (InvalidRangeException e) {
       e.printStackTrace();
     } catch (IOException e) {

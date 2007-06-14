@@ -471,7 +471,7 @@ public class AggregationFmrc extends Aggregation {
           logger.warn("readTimeCoordinates: variable = "+timeAxis.getName()+" not found in file "+dataset.getLocation());
           return;
         }
-        CoordinateAxis1DTime timeCoordVar = new CoordinateAxis1DTime( v, null);
+        CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory( v, null);
         java.util.Date[] dates = timeCoordVar.getTimeDates();
         maxTimes = Math.max( maxTimes, dates.length);
         dateList.add( dates);

@@ -261,7 +261,9 @@ public class GridDatasetInfo {
       varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
-    varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, false));
+    Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, false);
+    values.setAttribute("npts", Long.toString(axis.getSize()));
+    varElem.addContent(values);
 
     return varElem;
   }
@@ -379,8 +381,11 @@ public class GridDatasetInfo {
       varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
-    if (axis.getRank() < 2)
-      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true));
+    if (axis.getRank() == 1) {
+      Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true);
+      //values.setAttribute("npts", Long.toString(axis.getSize()));
+      varElem.addContent(values);
+    }
 
     return varElem;
   }

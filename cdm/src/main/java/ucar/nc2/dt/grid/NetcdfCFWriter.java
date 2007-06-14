@@ -135,7 +135,7 @@ public class NetcdfCFWriter {
         }
       }
 
-      // optionaal lat/lon
+      // optional lat/lon
       if (addLatLon) {
         Projection proj = gcs.getProjection();
         if ((null != proj) && !(proj instanceof LatLonProjection)) {
@@ -146,7 +146,7 @@ public class NetcdfCFWriter {
     }
     writer.writeVariables(varList);
 
-    // now add CF annotataions as needed - dont change original ncd or gds
+    // now add CF annotations as needed - dont change original ncd or gds
     NetcdfFileWriteable ncfile = writer.getNetcdf();
     Group root = ncfile.getRootGroup();
     for (String gridName : gridList) {
@@ -204,9 +204,13 @@ public class NetcdfCFWriter {
     double[] xData = (double[]) xaxis.read().get1DJavaArray(double.class);
     double[] yData = (double[]) yaxis.read().get1DJavaArray(double.class);
 
+    List<Dimension> dims = new ArrayList<Dimension>();
+    dims.add(yaxis.getDimension(0));
+    dims.add(xaxis.getDimension(0));
+
     Variable latVar = new Variable(ncfile, null, null, "lat");
     latVar.setDataType(DataType.DOUBLE);
-    latVar.setDimensions("y x");
+    latVar.setDimensions(dims);
     latVar.addAttribute(new Attribute("units", "degrees_north"));
     latVar.addAttribute(new Attribute("long_name", "latitude coordinate"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
@@ -214,7 +218,7 @@ public class NetcdfCFWriter {
 
     Variable lonVar = new Variable(ncfile, null, null, "lon");
     lonVar.setDataType(DataType.DOUBLE);
-    lonVar.setDimensions("y x");
+    lonVar.setDimensions(dims);
     lonVar.addAttribute(new Attribute("units", "degrees_east"));
     lonVar.addAttribute(new Attribute("long_name", "longitude coordinate"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));

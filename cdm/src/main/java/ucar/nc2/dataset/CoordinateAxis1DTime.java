@@ -27,6 +27,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
+import ucar.nc2.Attribute;
 import ucar.ma2.*;
 
 import java.util.ArrayList;
@@ -50,32 +51,71 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private Date[] timeDates;
   private DateUnit dateUnit;
 
+  static public CoordinateAxis1DTime factory(VariableDS org, StringBuffer errMessages) throws IOException {
+    if (org.getDataType() == DataType.CHAR) {
+      return new CoordinateAxis1DTime( org, errMessages, org.getDimension(0).getName());
+    }
+
+    return new CoordinateAxis1DTime( org, errMessages);
+  }
+
   /**
-   * Constructor.
+   * Constructor for CHAR variables, turn into String
    *
    * @param org the underlying Variable
    * @param errMessages put error messages here; may be null
    * @throws IOException
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
-  public CoordinateAxis1DTime( VariableDS org, StringBuffer errMessages) throws IOException {
+  private CoordinateAxis1DTime( VariableDS org, StringBuffer errMessages, String dims) throws IOException {
+    // NetcdfDataset ds, Group group, String shortName,  DataType dataType, String dims, String units, String desc
+    super( null, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription() );
+
+    List atts = org.getAttributes();
+    for (int i = 0; i < atts.size(); i++) {
+      Attribute att = (Attribute) atts.get(i);
+      addAttribute(att);
+    }
+
+    named = new ArrayList(); // declared in CoordinateAxis1D superclass
+
+    int ncoords = (int) org.getSize();
+    int rank = org.getRank();
+    int strlen = org.getShape()[rank-1];
+    ncoords /= strlen;
+
+    timeDates = new Date[ncoords];
+
+    ArrayChar data = (ArrayChar) org.read();
+    ArrayChar.StringIterator ii = data.getStringIterator();
+    ArrayObject.D1 sdata = new ArrayObject.D1(String.class, ncoords);
+
+    DateFormatter formatter = new DateFormatter();
+    for (int i=0; i<ncoords; i++) {
+      String coordValue = ii.next();
+      Date d = DateUnit.getStandardOrISO( coordValue);
+      if (d == null) {
+        if (errMessages != null)
+          errMessages.append("DateUnit cannot parse String= "+coordValue+"\n");
+        else
+          System.out.println("DateUnit cannot parse String= "+coordValue+"\n");
+
+        throw new IllegalArgumentException();
+      } else {
+        sdata.set(i, coordValue);
+        named.add(new NamedAnything(formatter.toDateTimeString(d), "date/time"));
+        timeDates[i] = d;
+      }
+    }
+    setCachedData( sdata, true);
+  }
+
+  private CoordinateAxis1DTime( VariableDS org, StringBuffer errMessages) throws IOException {
     super( org);
 
     named = new ArrayList(); // declared in CoordinateAxis1D superclass
 
     int ncoords = (int) org.getSize();
-
-    // deal with type char- basically make it into a string
-    if (org.getDataType() == DataType.CHAR) {
-      int rank = org.getRank();
-      int strlen = org.getShape()[rank-1];
-      ncoords /= strlen;
-
-      /* setDataType( DataType.STRING);
-      List dims = org.getDimensions();
-      dims.remove( dims.size()-1); // remove the last one.
-      setDimensions(dims); */
-    }
     timeDates = new Date[ncoords];
 
     // see if it has a valid udunits unit
@@ -156,29 +196,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       return;
     }
 
-    // otherwise, see if its a CHAR, and if we can parse the values as an ISO date
-    if (org.getDataType() == DataType.CHAR) {
-      ArrayChar data = (ArrayChar) org.read();
-      ArrayChar.StringIterator ii = data.getStringIterator();
-      DateFormatter formatter = new DateFormatter();
-      for (int i=0; i<ncoords; i++) {
-        String coordValue = ii.next();
-        Date d = DateUnit.getStandardOrISO( coordValue);
-        if (d == null) {
-          if (errMessages != null)
-            errMessages.append("DateUnit cannot parse String= "+coordValue+"\n");
-          else
-            System.out.println("DateUnit cannot parse String= "+coordValue+"\n");
-
-          throw new IllegalArgumentException();
-        } else {
-          named.add(new NamedAnything(formatter.toDateTimeString(d), "date/time"));
-          timeDates[i] = d;
-        }
-      }
-      return;
-    }
-
     // hack something in here so it doesnt fail
 
     // if in time unit, use CF convention "since 1-1-1 0:0:0"
@@ -205,7 +222,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
   }
 
-  public CoordinateAxis1DTime( CoordinateAxis1DTime org, Date[] timeDates) {
+  private CoordinateAxis1DTime( CoordinateAxis1DTime org, Date[] timeDates) {
     super( org);
     this.timeDates = timeDates;
     this.dateUnit = org.dateUnit;
@@ -271,6 +288,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
     return false;
   }
+
+
+  //public boolean isRegular() {
+  //  return false;
+  //}
 
 
   // override to keep section a CoordinateAxis1DTime

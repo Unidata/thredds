@@ -55,11 +55,13 @@
                 <xsl:for-each select="gridForm/timeSet">
 
                   <xsl:if test="time">
+                    <xsl:if test="time/values/@npts &lt; 100">
                     <strong>Variables with available Times: </strong>
                     <xsl:value-of select="time/values"/>
                     <xsl:for-each select="time/attribute[@name='units']">
                       <em> <xsl:value-of select="@value"/> </em>
                     </xsl:for-each>
+                      </xsl:if>
                   </xsl:if>
 
                   <blockquote>

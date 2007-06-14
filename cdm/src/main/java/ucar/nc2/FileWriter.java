@@ -48,8 +48,9 @@ public class FileWriter {
     debug = debugFlags.isSet("ncfileWriter/debug");
     debugExtend = debugFlags.isSet("ncfileWriter/debugExtend");
   }
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
 
-  static private boolean debug = true, debugExtend;
+  static private boolean debug = false, debugWrite = false, debugExtend;
   static private long maxSize = 1000 * 1000; // 1 MByte
 
   /**
@@ -281,14 +282,16 @@ public class FileWriter {
       int left = size - i;
       shape[0] = Math.min(nelems, left);
 
-      Array data = null;
+      Array data;
       try {
         data = oldVar.read(origin, shape);
         if (oldVar.getDataType() == DataType.STRING) {
           data = convertToChar(ncfile.findVariable(oldVar.getName()), data);
         }
-        if (data.getSize() > 0)  // zero when record dimension = 0
+        if (data.getSize() > 0)  {// zero when record dimension = 0
           ncfile.write(oldVar.getName(), origin, data);
+          if (debugWrite) System.out.println("write "+data.getSize()+" bytes");
+        }
 
       } catch (InvalidRangeException e) {
         e.printStackTrace();
@@ -392,7 +395,26 @@ public class FileWriter {
       dims[j] = newD;
     }
 
-    ncfile.addVariable(oldVar.getName(), oldVar.getDataType(), dims);
+    if (oldVar.getDataType() == DataType.STRING) {
+      try {
+        // need to get the maximum string length
+        int max_strlen = 0;
+        ArrayObject data = (ArrayObject) oldVar.read();
+        IndexIterator ii = data.getIndexIterator();
+        while (ii.hasNext()) {
+          String s = (String) ii.next();
+          max_strlen = Math.max(max_strlen, s.length());
+        }
+
+        ncfile.addStringVariable(oldVar.getName(), Arrays.asList(dims), max_strlen);
+      } catch (IOException ioe) {
+        log.error("Error reading String variable "+oldVar, ioe);
+        return;
+      }
+    } else
+      ncfile.addVariable(oldVar.getName(), oldVar.getDataType(), dims);
+
+
     varList.add(oldVar);
     if (debug) System.out.println("write var= " + oldVar);
 
