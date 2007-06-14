@@ -1599,7 +1599,9 @@ public class DataRootHandler {
    * configuration.<br>
    * 2) The longer the configuration process, the more time there is to have
    * a concurrency issue come up. So, try to keep responses to these events
-   * fairly light weight.
+   * fairly light weight. Or build new configuration information and synchronize
+   * and switch only when the already built config information is being switched
+   * with the existing config information.
    */
   public interface ConfigListener
   {
