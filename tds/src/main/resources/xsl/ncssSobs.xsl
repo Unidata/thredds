@@ -155,7 +155,7 @@
             </div>
         </form>
         <hr/>
-        <h3><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService.html">NetCDF Subset Service Documentation</a></h3>
+        <h3><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/StationDataSubsetService.html">NetCDF Subset Service Documentation</a></h3>
       </body>
     </html>
 

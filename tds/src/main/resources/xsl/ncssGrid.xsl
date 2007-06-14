@@ -133,6 +133,12 @@
                   </blockquote>
                 </input>
                 <br/>
+                  <b>Horizontal Stride:</b>
+                  <blockquote>
+                    <input type="text" name="horizStride" size="5"/>
+                    <br/>
+                  </blockquote>
+                <br/>
                 <strong>Add Lat/Lon to file</strong><br/>
                 <input type="checkbox" name="addLatLon" value="true"/>Add Lat/Lon variables <br/>
               </td>

@@ -23,15 +23,15 @@
   </ul>
   <p>Currently vertical coordinate selection is not supported; all vertical levels are returned. </p>
   <h3>NetCDF Subset Service for Grid as Point Datasets </h3>
-  <p>Gridded Datasets may be thought of as a collection of point data, with location at the center of each grid cell. The <em><strong>Grid as Point</strong></em> service requires selection of a single cell using lat/lon coordinates, then subsetting by Time,  Variable, and vertical level is possible. Either an XML or CSV (Comma Seperated Values in ASCII) document is returned. Example HTML form: </p>
+  <p>Gridded Datasets may be thought of as a collection of point data, with location at the center of each grid cell. The <em><strong>Grid as Point</strong></em> service requires selection of a single cell using lat/lon coordinates, then subsetting by Time,  Variable, and vertical level is possible. Either an XML, CSV (Comma Seperated Values in ASCII) document or a NetCDF files in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Point Observation</a> format is returned. Example HTML form: </p>
   <ul>
     <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html">http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html</a></li>
   </ul>
-  <p>The next version will allow returns of NetCDF files in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Point Observation</a> format.</p>
   <p>Also see:</p>
   <ul>
     <li><a href="NetcdfSubsetService.html">NetCDF Subset Service</a> </li>
   </ul>
+  <p>&nbsp;</p>
   <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
   <h3><strong>A. Specify subset type</strong></h3>
   <ul>
@@ -77,6 +77,12 @@
   <ul>
     <li><strong> latitude</strong><strong>=17.3&amp;longitude=-140.2</strong></li>
   </ul>
+  <p><strong>3. Specify horizontal stride (<em>Grid</em> Subsetting only)</strong></p>
+  <p>You can optionally take only every nth point in both the x and y dimensions. </p>
+  <p>Example:</p>
+  <ul>
+    <li><strong> horizStride=3 </strong>(take every 3rd point in both x and y) </li>
+  </ul>
   <h3>D. Specify time<a name="temporal"></a> </h3>
   <p>Use one of the following methods for both <em>Grid</em> and <em>Grid as Point</em> Subsetting: </p>
   <h4><strong>1. Time range</strong></h4>
@@ -84,7 +90,7 @@
   <ul>
     <li><strong>time_start</strong>: starting time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
     <li><strong>time_end</strong>: ending time  as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
-    <li><strong>time_duration</strong>: length of time as an <a href="#ISOdate">W3C</a><a href="NetcdfSubsetService.html#W3Cduration"> time duration</a> </li>
+    <li><strong>time_duration</strong>: length of time as an <a href="NetcdfSubsetService.html#W3Cduration">W3C time duration</a> </li>
   </ul>
   <p>The intersection of the requested time range with the dataset time range will be returned. </p>
   <p>Examples:</p>
@@ -148,13 +154,17 @@
     <pre>time,lat[unit="degrees_north"],lon[unit="degrees_east"],vertCoord[unit="hPa"],Absolute_vorticity[unit="1/s"],Relative_humidity[unit="%"]
 2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,850.0,1.0700001E-4,87.0  </pre>
   </blockquote>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> vertCoord=850</strong></li>
+  </ul>
   <p>&nbsp;</p>
   <h3>F. Specify the return format<a name="accept"></a></h3>
   <ul>
     <li>For <em>Grid</em> Subsetting, only <strong>accept=netcdf</strong> is supported. </li>
-    <li>For <em>Grid as Point</em> subsetting, only <strong>accept=xml</strong> or <strong>accept=csv</strong> is currently supported. </li>
+    <li>For <em>Grid as Point</em> subsetting, <strong>accept=xml</strong> or <strong>accept=csv</strong> or <strong>accept=netcdf </strong>are  supported. </li>
   </ul>
-  <h3><strong>G. Addding Lat/Lon arrays to the file </strong></h3>
+  <h3><strong>G. Adding Lat/Lon arrays to the file </strong></h3>
   <p>For <em>Grid</em> Subsetting: If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
   <p>&nbsp;</p>
   <h2>NetCDF File Writing Rules</h2>
@@ -169,7 +179,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 31, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 13, 2007 
 </address>
 <p>&nbsp;
 </p>

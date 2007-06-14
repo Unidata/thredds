@@ -71,6 +71,8 @@ class QueryParams {
   public double lat, lon;
   public List<String> stns; // for stationObs, empty list means all
 
+  public int horizStride, vertStride, timeStride; // 0 = none
+
   public boolean hasVerticalCoord = false;
   public double vertCoord;
 
@@ -191,6 +193,11 @@ class QueryParams {
       lon = parseLon(req, "longitude");
       hasLatlonPoint = hasValidPoint();
     }
+
+    // strides
+    horizStride = parseInt(req, "horizStride");
+    vertStride = parseInt(req, "vertStride");
+    timeStride = parseInt(req, "timeStride");
 
     // time range
     String temporal = ServletUtil.getParameterIgnoreCase(req, "temporal");

@@ -334,49 +334,10 @@ public class GridServlet extends AbstractServlet {
         }
       }
 
-      // look for strides LOOK not implemented
-      boolean hasStride = false;
-      int stride_xy = -1;
-      String s = ServletUtil.getParameterIgnoreCase(req, "stride_xy");
-      if (s != null) {
-        try {
-          stride_xy = Integer.parseInt(s);
-          hasStride = true;
-        } catch (NumberFormatException e) {
-          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
-          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_xy must have valid integer argument");
-          return;
-        }
-      }
-      int stride_z = -1;
-      s = ServletUtil.getParameterIgnoreCase(req, "stride_z");
-      if (s != null) {
-        try {
-          stride_z = Integer.parseInt(s);
-          hasStride = true;
-        } catch (NumberFormatException e) {
-          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
-          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_z must have valid integer argument");
-          return;
-        }
-      }
-      int stride_time = -1;
-      s = ServletUtil.getParameterIgnoreCase(req, "stride_time");
-      if (s != null) {
-        try {
-          stride_time = Integer.parseInt(s);
-          hasStride = true;
-        } catch (NumberFormatException e) {
-          ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
-          res.sendError(HttpServletResponse.SC_BAD_REQUEST, "stride_time must have valid integer argument");
-          return;
-        }
-      }
-
       boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
 
       try {
-        sendFile(req, res, gds, qp, hasBB, addLatLon, stride_xy, stride_z, stride_time);
+        sendFile(req, res, gds, qp, hasBB, addLatLon);
       } catch (InvalidRangeException e) {
         ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
@@ -397,8 +358,7 @@ public class GridServlet extends AbstractServlet {
   }
 
   private void sendFile(HttpServletRequest req, HttpServletResponse res, GridDataset gds, QueryParams qp,
-          boolean useBB, boolean addLatLon,
-          int stride_xy, int stride_z, int stride_time) throws IOException, InvalidRangeException {
+          boolean useBB, boolean addLatLon) throws IOException, InvalidRangeException {
 
 
     String filename = req.getRequestURI();
@@ -421,7 +381,7 @@ public class GridServlet extends AbstractServlet {
       writer.makeFile(cacheFilename, gds, qp.vars,
               useBB ? qp.getBB() : null,
               qp.hasDateRange ? qp.getDateRange() : null,
-              addLatLon, stride_xy, stride_z, stride_time); // this line not used
+              addLatLon, qp.horizStride, qp.vertStride, qp.timeStride);
 
     } catch (IOException ioe) {
       log.error("Writing to " + cacheFilename, ioe);

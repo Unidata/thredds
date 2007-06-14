@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service (Prototype) </h1>
+<h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service</h1>
 <hr>
 <div class="head">
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
@@ -15,88 +15,24 @@
   <h3><strong>Contents:</strong></h3>
   <ol>
     <li>      <a href="#Overview">Overview</a></li>
-    <li>      <a href="#Common">Common Subsetting Parameters</a>
-      <ul>
-        <li><a href="variables">Variables</a></li>
-        <li><a href="spatial">Spatial extent</a></li>
-        <li><a href="temporal">Temporal extent</a> </li>
-        <li><a href="accept">Return type</a></li>
-      </ul>
-    </li>
-    <li>      <a href="#Station">Station Observation Parameters</a></li>
-    <li>      <a href="#Grid">Gridded Dataset Parameters</a></li>
+    <li>      <a href="#Common">Subsetting Parameters</a></li>
     <li><a href="#DatasetDescription">Dataset Descriptions</a></li>
     <li><a href="#Reference">Reference</a></li>
-    <li><a href="REST">REST Design</a> </li>
+    <li><a href="#REST">REST Design</a> </li>
   </ol>
   <h2><a name="Overview"></a>Overview</h2>
   <p>The NetCDF Subset Service is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
   <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
   <p>Currently only HTTP GET with key-value pairs (KVP) are used. POST with XML may be added in the future. </p>
   <p>The service interface tries to follow <a href="#REST">REST design</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
-  <h3>Metar Subset Service </h3>
-  <p>We  have a prototype service for IDD METAR data at <strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html">http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html</a></strong>. Sample URLS look like:</p>
+  <p>See:</p>
   <ul>
-    <li>Current metar reading for station CAG, in XML fomat:
-      <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=CAG&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;stn=CAG&amp;time=present</a></strong></li>
-      </ul>
-    </li>
-    <li>All data in last 24 hours for station CAG, in CSV fomat:
-      <ul>
-        <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&stn=CAG&time_end=present&time_duration=PT24H"><strong>http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&amp;stn=CAG&amp;time_end=present&amp;time_duration=<strong>PT24H </strong></strong></a></li>
-      </ul>
-    </li>
-    <li>All available data at the station ACK, in raw format:
-          <ul>
-            <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=raw&stn=ACK">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=raw&amp;stn=ACK</a></strong> </li>
-          </ul>
-    </li>
-    <li>Current metar reading from the station closest to lat, lon = (40, -105) in XML:
-      <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&latitude=40&longitude=-105&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;latitude=40&amp;longitude=-105</a><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=CAG&time=present">&amp;time=present</a></strong></li>
-      </ul>
-    </li>
-    <li>All data within latitude [40,43] and longitude [-105, -103], in CSV format: 
-      <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&south=40&west=-105&north=43&east=-103">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&amp;south=40&amp;west=-105&amp;north=43&amp;east=-103</a></strong></li>
-      </ul>
-    </li>
-    <li>Only return the fields named <em>wind_speed</em> and <em>wind_from_direction</em> in XML:
-      <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=JYG&var=wind_speed,wind_from_direction&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&amp;stn=JYG&amp;var=wind_speed,wind_from_direction</a><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=xml&stn=CAG&time=present">&amp;time=present</a> </strong></li>
-      </ul>
-    </li>
-    <li>Get data in the last 12 hours, for a list of stations:
-      <ul>
-        <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&stn=CAG,HDN,EGE&time_end=present&time_duration=PT12H"><strong>http://motherlode.ucar.edu:8080/thredds/ncss/metars?accept=csv&amp;stn=CAG,HDN,EGE&amp;time_end=present&amp;time_duration=PT12H </strong></a></li>
-      </ul>
-    </li>
-    <li>Get latest data for all stations, return as netcCDF file
-      <ul>
-        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metar?accept=netcdf&time=present">http://motherlode.ucar.edu:8080/thredds/ncss/metar?accept=netcdf&amp;time=present</a></strong></li>
-      </ul>
-    </li>
+    <li><a href="StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
+    <li><a href="GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
   </ul>
-  <p>Other interesting URLs for the metar service: </p>
-  <ul>
-    <li>An <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html">HTML form</a> for interactive input</li>
-    <li>The <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml">dataset XML</a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
-    <li>The <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml">station List XML</a> document (<a href="metars/stations.xml">offline</a> example) </li>
-    <li>Example <a href="metars/metarSubset.nc">netCDF file output</a>  in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>. (The file format uses double linked lists to associate the observations with the station.)</li>
-  </ul>
-  <h3>Gridded Subset Service </h3>
-  <p>TDS 3.16.04 implements a new version of the NetCDF subsetting service for Gridded datasets, and for Grids as Point datasets.</p>
-  <p>Examples:</p>
-  <ul>
-    <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd/dataset.html">http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd/dataset.html</a></li>
-    <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd/pointDataset.html">http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd/pointDataset.html</a></li>
-  </ul>
-  <p>Gridded data is only available as NetCDF files. Gridded as Point is only available as CSV and XML. </p>
   <p>&nbsp;</p>
-  <h2><strong><a name="Common"></a>Common Subsetting Parameters </strong></h2>
-  <p><strong>The following are applicable to all Dataset types: </strong></p>
-  <h3><strong>A. Specify variables<a name="variables"></a></strong></h3>
+  <h2><strong><a name="Common"></a> Subsetting Parameters (summary) </strong></h2>
+  <h3><strong>A. Specify variables</strong></h3>
   <ul>
     <li><strong>var=</strong>name of variables, separated by ',' (comma).</li>
   </ul>
@@ -108,9 +44,8 @@
     <li><strong>var=T&amp;var=Pressure&amp;var=RH </strong>(allowed, but comma seperated names are preferred) </li>
   </ul>
   <p>Variable names with spaces or other illegal characters must be escaped. </p>
-  <h3><strong>B. Specify spatial<a name="spatial"></a> extent</strong></h3>
+  <h3><strong>B. Specify spatial extent</strong></h3>
   <p>Latitude, longitude values are specified  in decimal degrees north and east, respectively. </p>
-  <p>Use one of the following methods: </p>
   <h4><strong>1. Specify lat/lon bounding box</strong></h4>
   <p>Specify all of these parameters  (order does not matter): </p>
   <ol>
@@ -135,6 +70,17 @@
   <ul>
     <li><strong> latitude</strong><strong>=17.3&amp;longitude=140.2</strong></li>
   </ul>
+  <p><strong>3. Specify station list </strong></p>
+  <ul>
+    <li><strong>stn=</strong>name of stations, separated by ',' (comma) </li>
+  </ul>
+  <p>This can only be used for station datasets. The list of valid stations is available from the Dataset Description. Station names with spaces or other illegal characters must be escaped. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>stn=KDEN</strong></li>
+    <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
+    <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
+  </ul>
   <h3>C. Specify time<a name="temporal"></a> </h3>
   <p>Use one of the following methods:</p>
   <h4><strong>1. Time range</strong></h4>
@@ -142,7 +88,7 @@
   <ul>
     <li><strong>time_start</strong>: starting time as an <a href="#W3Cdate">W3Cate string</a> or &quot;present&quot; </li>
     <li><strong>time_end</strong>: ending time  as an <a href="#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
-    <li><strong>time_duration</strong>: length of time as an <a href="#ISOdate">W3C</a><a href="#W3Cduration"> time duration</a> </li>
+    <li><strong>time_duration</strong>: length of time as an <a href="#W3Cduration">W3C time duration</a> </li>
   </ul>
   <p>The intersection of the requested time range with the dataset time range will be returned. </p>
   <p>Examples:</p>
@@ -207,52 +153,20 @@
   </table>
   <p>The list of actual return formats  depends on the dataset, and can be found in the Dataset Description Document.</p>
   <p>&nbsp;</p>
-  <h2><strong><a name="Station"></a>Station Observation   Parameters </strong></h2>
-  <p>The following parameters are specific to Station Observation datasets. </p>
-  <h3><strong>E. Specify station(s)</strong></h3>
-  <p><strong>You may specify a list of stations instead of the lat/lon point or bounding box </strong></p>
+  <h3><strong>E. Specify the vertical coordinate</strong></h3>
+  <p>For <em>Grid as Point</em> only , you may specify the vertical coordinate. The vertical slice closest to the requested coordinate will be returned. The possible vertical coordinates are shown in the Dataset Descriptor document. If you specify multiple variables with different vertical coordinates, ambiguous results are possible, and you are advised not to use the service in this way. If you do, the following rules are used:</p>
+  <ol>
+    <li>Variables are examined in order they appear in the query, and the vertical coordinate for the first variable that has one is used.</li>
+    <li>The service loops through the levels of that vertical coordinate, and for each variable looks for the closest value <em><strong>(ignoring units!!)</strong></em> </li>
+    <li>If the value is outside the range for that variable, a missing value (NaN) is used. </li>
+  </ol>
+  <p>Example:</p>
   <ul>
-    <li><strong>stn=</strong>name of stations, separated by ',' (comma) </li>
+    <li><strong> vertCoord=850</strong></li>
   </ul>
-  <p>This can only be used for station datasets. The list of valid stations is available from the Dataset Description. Station names with spaces or other illegal characters must be escaped. </p>
-  <p>Examples:</p>
-  <ul>
-    <li><strong> </strong><strong>stn=KDEN</strong></li>
-    <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
-    <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
-  </ul>
-  <h3>NetCDF File Writing:</h3>
-  <ul>
-    <li>A valid NetCDF file is returned in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>. Test </li>
-    <li>The specified variables(s) and their attributes are included.</li>
-  </ul>
-  <h3>Notes</h3>
-  <ul>
-    <li>When writing raw format, the <strong>var</strong> parameter is ignored, and the entire text report is returned</li>
-  </ul>
-  <p>&nbsp;</p>
-  <h2><strong><a name="Grid"></a>Gridded Dataset  Parameters </strong></h2>
-  <p>The following is specific to Gridded datasets. </p>
-  <h3>To subset in the vertical:</h3>
-  <ul>
-    <li><strong>varName(level)</strong></li>
-    <li><strong> varName(level_start : level_end)</strong></li>
-  </ul>
-  <p>Currently you cant do that with the HTML form. </p>
-  <h3><strong>Addding Lat/Lon arrays to the file </strong></h3>
+  <h3><strong>F. Addding Lat/Lon arrays to the file </strong></h3>
   <p>If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
-  <h3>NetCDF File Writing Rules:</h3>
-  <ul>
-    <li>A valid NetCDF file is returned in CF-1 format.</li>
-    <li>The specified variables(s) and their attributes are included.</li>
-    <li>All coordinate variables for the specified variable(s) are included.</li>
-    <li>If a bounding box or time range is specified, the variable and its coordinates are subsetted. </li>
-    <li>All global attributes are included.</li>
-  </ul>
-  <h3><strong>Notes</strong></h3>
-  <ul>
-    <li><strong>Specify lat/lon bounding box: </strong> the 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </li>
-  </ul>
+  <p><strong>T</strong>he 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </p>
   <p>&nbsp;</p>
   <h2>Dataset Descriptions<a name="DatasetDescription"></a> </h2>
   <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
@@ -265,10 +179,6 @@
   </ul>
   <h3>Grid Dataset</h3>
   <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. </p>
-  <ul>
-    <li> Can make a netcdf subset </li>
-    <li>Can get an XML or ascii file: specify a single variable at a single point. Optionally specify a vertical level and time point. </li>
-  </ul>
   <hr>
   <div class="div4">
     <h2><a name="Reference"></a>Reference</h2>
@@ -325,7 +235,7 @@
   <h3><strong>2. What's the format/representation?</strong></h3>
   <p>The dataset itself has two representations: </p>
   <ul>
-    <li> an XML file describing the dataset, called the <a href="DatasetDescription">Dataset Description</a>
+    <li> an XML file describing the dataset, called the <a href="#DatasetDescription">Dataset Description</a>
         <ul>
           <li><strong>http://servername:8080/thredds/ncss/{path/dataset}/dataset.xml</strong></li>
         </ul>
@@ -413,7 +323,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 28, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 13, 2007 
 </address>
 <p>&nbsp;
 </p>

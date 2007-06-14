@@ -58,7 +58,7 @@ public class NetcdfCFWriter {
    * @param llbb optional lat/lon bounding box
    * @param range optional time range
    * @param addLatLon should 2D lat/lon variables be added, if its a projection coordainte system?
-   * @param stride_xy not implemented yet
+   * @param horizStride x,y stride
    * @param stride_z not implemented yet
    * @param stride_time not implemented yet
    * @throws IOException if write or read error
@@ -67,7 +67,7 @@ public class NetcdfCFWriter {
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
           LatLonRect llbb, DateRange range,
           boolean addLatLon,
-          int stride_xy, int stride_z, int stride_time) throws IOException, InvalidRangeException {
+          int horizStride, int stride_z, int stride_time) throws IOException, InvalidRangeException {
 
 
     FileWriter writer = new FileWriter(location, false);
@@ -105,8 +105,8 @@ public class NetcdfCFWriter {
         timeRange = new Range(startIndex, endIndex);
       }
 
-      if ((llbb != null) || (null != timeRange)) {
-        grid = grid.makeSubset(timeRange, null, llbb, 1, 1, 1);
+      if ((llbb != null) || (null != timeRange) || (horizStride > 1)) {
+        grid = grid.makeSubset(timeRange, null, llbb, 1, horizStride, horizStride);
       }
 
       Variable gridV = (Variable) grid.getVariable();
