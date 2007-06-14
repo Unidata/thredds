@@ -690,7 +690,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     debugHandler = DebugHandler.get("catalogs");
      act = new DebugHandler.Action("reinit", "Reinitialize") {
       public void doAction(DebugHandler.Event e) {
-          catHandler.reinit();
+          // TODO The calls to reinit() and initCatalogs() are synchronized but should be atomic.
+          // TODO Should change this to build config data structure and synch only when replacing the old with the new structure.          catHandler.reinit();
           ThreddsConfig.readConfig(log);
           initCatalogs();
           e.pw.println( "reinit ok");
