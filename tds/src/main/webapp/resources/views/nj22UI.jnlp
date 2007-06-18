@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart">
-  
+
   <information>
     <title>NetCDF 2.2 Tools UI</title>
     <vendor>Unidata</vendor>
@@ -15,25 +15,26 @@
   </security>
 
   <resources>
-      <j2se version="1.5+" max-heap-size="512m"/>
-      <jar href="netcdfUI.jar"/>
-      <jar href="bufr.jar"/>
-      <jar href="codec.jar"/>
-      <jar href="gnu-regexp.jar"/>
-      <jar href="grib.jar"/>
-      <jar href="httpclient.jar"/>
-      <jar href="httplogging.jar"/>
-      <jar href="jdom.jar"/>
-      <jar href="jpeg2000.jar"/>
-      <jar href="logging.jar"/>
-      <jar href="opendap.jar"/>
-      <jar href="prefs.jar"/>
-      <jar href="resourcesOptional.jar"/>
-      <jar href="visadNoDods.jar"/>
-      <jar href="xml-apis.jar"/>
-      <jar href="xercesImpl.jar"/>
+    <j2se version="1.5+" max-heap-size="512m"/>
+    <jar href="netcdfUI.jar"/>
+    <jar href="bufr.jar"/>
+    <jar href="codec.jar"/>
+    <jar href="gnu-regexp.jar"/>
+    <jar href="grib.jar"/>
+    <jar href="httpclient.jar"/>
+    <jar href="httplogging.jar"/>
+    <jar href="jdom.jar"/>
+    <jar href="jgoodies.jar"/>
+    <jar href="jpeg2000.jar"/>
+    <jar href="logging.jar"/>
+    <jar href="opendap.jar"/>
+    <jar href="resourcesOptional.jar"/>
+    <jar href="visadNoDods.jar"/>
+    <jar href="xml-apis.jar"/>
+    <jar href="xercesImpl.jar"/>
 
-      <property name="javax.xml.parsers.DocumentBuilderFactory" value="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
+    <property name="javax.xml.parsers.DocumentBuilderFactory"
+              value="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
   </resources>
 
 
