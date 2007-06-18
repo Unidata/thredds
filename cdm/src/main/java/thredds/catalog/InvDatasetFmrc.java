@@ -84,6 +84,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   public String getPath() { return path; }
+  public boolean isRunsOnly() { return runsOnly; }
   public InvDatasetScan getRawFileScan()
   {
     if ( ! madeDatasets )
@@ -446,7 +447,6 @@ public class InvDatasetFmrc extends InvCatalogRef {
   }
 
   private synchronized void makeFmrc() throws IOException {
-    // LOOK: when is fmrc closed? what about caching
 
     if (madeFmrc) {
       checkIfChanged();
@@ -455,6 +455,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     Element ncml = getNcmlElement();
     NetcdfDataset ncd = NcMLReader.readNcML(path, ncml, null);
+    ncd.setCacheState(3); // LOOK: this dataset never gets closed
+
     fmrc = new FmrcImpl( ncd);
     madeFmrc = true;
   }

@@ -166,6 +166,13 @@ public class GridServlet extends AbstractServlet {
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
       }
 
+      // make sure some variables requested
+      if ((qp.vars == null) || (qp.vars.size() == 0)){
+          qp.errs.append("No Grid variables selected\n");
+          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
+      }
+
       // make sure all requested variables exist
       if (qp.vars != null) {
         int count = 0;
@@ -298,6 +305,13 @@ public class GridServlet extends AbstractServlet {
       } catch (Exception e) {
         ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
+      }
+
+      // make sure some variables requested
+      if ((qp.vars == null) || (qp.vars.size() == 0)){
+          qp.errs.append("No Grid variables selected\n");
+          qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
       }
 
       // make sure all requested variables exist

@@ -518,8 +518,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return null;
   }
 
-     /** Used by NetcdfDatasetCache. */
-  protected void setCacheState(int cacheState) { super.setCacheState( cacheState); }
+     /** Used by NetcdfDatasetCache, InvFmrc. */
+  public void setCacheState(int cacheState) { super.setCacheState( cacheState); }
 
    /** Used by NetcdfDatasetCache.  */
   protected void setCacheName(String cacheName) { super.setCacheName( cacheName); }

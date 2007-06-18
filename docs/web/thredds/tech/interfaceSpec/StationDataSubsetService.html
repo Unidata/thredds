@@ -11,13 +11,9 @@
 <hr>
 <div class="head">
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
-  <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em></p>
-  <h2><a name="Overview"></a>Overview</h2>
-  <p>The NetCDF Subset Service is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
-  <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
-  <p>Currently only HTTP GET with key-value pairs (KVP) are used. POST with XML may be added in the future. </p>
-  <p>The service interface tries to follow <a href="#REST">REST design</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
-  <h3>Metar Subset Service </h3>
+  <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em>Overview</p>
+  <p>See <a href="NetcdfSubsetService.html">NetCDF Subset Service</a> for an overview.</p>
+  <h2>Metar Subset Service </h2>
   <p>We  have a prototype service for IDD METAR data at <strong><a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html">http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.html</a></strong>. Sample URLS look like:</p>
   <ul>
     <li>Current metar reading for station CAG, in XML fomat:
@@ -67,10 +63,6 @@
     <li>The <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml">dataset XML</a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
     <li>The <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml">station List XML</a> document (<a href="metars/stations.xml">offline</a> example) </li>
     <li>Example <a href="metars/metarSubset.nc">netCDF file output</a>  in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>. (The file format uses double linked lists to associate the observations with the station.)</li>
-  </ul>
-  <p>Also see:</p>
-  <ul>
-    <li><a href="NetcdfSubsetService.html">NetCDF Subset Service</a> </li>
   </ul>
   <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
   <h3><strong>A. Specify variables<a name="variables"></a></strong></h3>
@@ -124,7 +116,6 @@
     <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
     <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
   </ul>
-  <p>&nbsp;</p>
   <h3>C. Specify time<a name="temporal"></a> </h3>
   <p>Use one of the following methods:</p>
   <h4><strong>1. Time range</strong></h4>
@@ -199,7 +190,7 @@
   <p>&nbsp;</p>
   <h2>NetCDF File Writing Rules</h2>
   <ul>
-    <li>A valid NetCDF file is returned in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>. Test </li>
+    <li>A valid NetCDF file is returned in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>. </li>
     <li>The specified variables(s) and their attributes are included.</li>
   </ul>
   <h3>Notes</h3>
@@ -221,7 +212,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 13, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2007 
 </address>
 <p>&nbsp;
 </p>

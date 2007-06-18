@@ -15,7 +15,7 @@
   </security>
 
   <resources>
-      <j2se version="1.4+" max-heap-size="512m"/>
+      <j2se version="1.5+" max-heap-size="512m"/>
       <jar href="netcdfUI.jar"/>
       <jar href="bufr.jar"/>
       <jar href="codec.jar"/>
@@ -26,6 +26,7 @@
       <jar href="jdom.jar"/>
       <jar href="jpeg2000.jar"/>
       <jar href="logging.jar"/>
+      <jar href="opendap.jar"/>
       <jar href="prefs.jar"/>
       <jar href="resourcesOptional.jar"/>
       <jar href="visadNoDods.jar"/>

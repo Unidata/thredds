@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service</h1>
+<h1><img src="../THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service Reference </h1>
 <hr>
 <div class="head">
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
@@ -15,17 +15,17 @@
   <h3><strong>Contents:</strong></h3>
   <ol>
     <li>      <a href="#Overview">Overview</a></li>
-    <li>      <a href="#Common">Subsetting Parameters</a></li>
+    <li>      <a href="#Common">Subsetting Parameters (summary)</a></li>
     <li><a href="#DatasetDescription">Dataset Descriptions</a></li>
     <li><a href="#Reference">Reference</a></li>
     <li><a href="#REST">REST Design</a> </li>
   </ol>
   <h2><a name="Overview"></a>Overview</h2>
   <p>The NetCDF Subset Service is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets.</a> The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
+  <p>A Dataset is described by a <a href="#DatasetDescription">Dataset Description</a> XML document, which describes the dataset in enough detail to enable a programmatic client to form valid data requests. </p>
   <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
-  <p>Currently only HTTP GET with key-value pairs (KVP) are used. POST with XML may be added in the future. </p>
-  <p>The service interface tries to follow <a href="#REST">REST design</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
-  <p>See:</p>
+  <p>The NetCDF Subset Service uses HTTP GET with key-value pairs (KVP). The service interface tries to follow <a href="#REST">REST design</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
+  <p>Currently both Grids and Station data can be used with this service. See:</p>
   <ul>
     <li><a href="StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
     <li><a href="GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
@@ -81,6 +81,13 @@
     <li><strong>stn=KDEN,KPAL,SDOL</strong></li>
     <li><strong>stn=KDEN&amp;stn=KPAL&amp;stn=SDOL</strong></li>
   </ul>
+  <p><strong>4. Specify horizontal stride (<em>Grid</em> Subsetting only)</strong></p>
+  <p>You can optionally take only every nth point (both the x and y dimensions). </p>
+  <p>Example:</p>
+  <ul>
+    <li><strong> horizStride=3 </strong>(take every 3rd point in both x and y)</li>
+  </ul>
+  <p>&nbsp;</p>
   <h3>C. Specify time<a name="temporal"></a> </h3>
   <p>Use one of the following methods:</p>
   <h4><strong>1. Time range</strong></h4>
@@ -174,11 +181,14 @@
   <p>A Station Observation Dataset is a collection of time series of observations at named locations called <em>stations</em>. </p>
   <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document. The stationCollection document can be quite large, and caching on the client (eg using the <em>If-Modified-Since</em> header) is an important optimization. </p>
   <ul>
-    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml"><em><strong>stationObsDataset</strong></em></a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/dataset.xml"><strong>stationObsDataset</strong></a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
     <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/metars/stations.xml"><strong>stationCollection</strong></a> document (<a href="metars/stations.xml">offline</a> example) </li>
   </ul>
   <h3>Grid Dataset</h3>
-  <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. </p>
+  <p>A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical and time coordinates. Grid data points next to each other in index space are next to each other in coordinate space. </p>
+  <ul>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/GFS/CONUS_80km/NCEP-GFS-CONUS_80km_best.ncd/dataset.xml"><strong>gridDataset</strong></a> document (<a href="grids/gridDataset.xml">offline</a> example) </li>
+  </ul>
   <hr>
   <div class="div4">
     <h2><a name="Reference"></a>Reference</h2>
@@ -323,7 +333,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 13, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2007 
 </address>
 <p>&nbsp;
 </p>

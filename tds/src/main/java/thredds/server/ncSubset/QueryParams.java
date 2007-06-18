@@ -268,7 +268,7 @@ class QueryParams {
 
   public int parseInt(HttpServletRequest req, String key) {
     String s = ServletUtil.getParameterIgnoreCase(req, key);
-    if (s != null) {
+    if ((s != null) && (s.trim().length() > 0)) {
       try {
         return Integer.parseInt(s);
       } catch (NumberFormatException e) {

@@ -1677,6 +1677,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       dsElem = new Element( "datasetFmrc", defNS );
       dsElem.setAttribute( "name", ds.getName() );
       dsElem.setAttribute( "path", ds.getPath() );
+      if (ds.isRunsOnly())
+        dsElem.setAttribute( "runsOnly", "true" );
       writeDatasetInfo( ds, dsElem, false, true );
 
     } else {

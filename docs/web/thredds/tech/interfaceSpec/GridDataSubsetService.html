@@ -12,24 +12,17 @@
 <div class="head">
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
   <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em></p>
-  <h2><a name="Overview"></a>Overview</h2>
-  <p>The <a href="../TDS.html">THREDDS Data Server</a> <em><strong>NetCDF Subset Service</strong></em> is a web service for subsetting  <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html#ScientifFeatureTypes">CDM scientific datasets. </a>The subsetting is specified using  earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but  not resampled or reprojected, and preserve the  resolution and accuracy of the original dataset. </p>
-  <p>The NetCDF Subset Service may return netCDF binary files (using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0</a> when possible), XML, or ASCII, depending on the request and the dataset. </p>
-  <p>Currently only HTTP GET with key-value pairs (KVP) is used. The service interface tries to follow <a href="NetcdfSubsetService.html#REST">REST design</a>, as well as <a href="http://earth.google.com/kml/index.html">Google/KML</a> and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable. </p>
-  <h3>NetCDF Subset Service for Gridded Datasets </h3>
+  <p>See <a href="NetcdfSubsetService.html">NetCDF Subset Service</a> for an overview.</p>
+  <h2>NetCDF Subset Service for Gridded Datasets </h2>
   <p>Gridded Datasets may be subset by Lat/Lon bounding box, Time,  and Variable, and  a netCDF file using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0 Conventions</a> is returned. Example HTML form: </p>
   <ul>
     <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.html">http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.html</a></li>
   </ul>
   <p>Currently vertical coordinate selection is not supported; all vertical levels are returned. </p>
-  <h3>NetCDF Subset Service for Grid as Point Datasets </h3>
+  <h2>NetCDF Subset Service for Grid as Point Datasets </h2>
   <p>Gridded Datasets may be thought of as a collection of point data, with location at the center of each grid cell. The <em><strong>Grid as Point</strong></em> service requires selection of a single cell using lat/lon coordinates, then subsetting by Time,  Variable, and vertical level is possible. Either an XML, CSV (Comma Seperated Values in ASCII) document or a NetCDF files in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Point Observation</a> format is returned. Example HTML form: </p>
   <ul>
     <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html">http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html</a></li>
-  </ul>
-  <p>Also see:</p>
-  <ul>
-    <li><a href="NetcdfSubsetService.html">NetCDF Subset Service</a> </li>
   </ul>
   <p>&nbsp;</p>
   <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
@@ -179,7 +172,7 @@
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 13, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2007 
 </address>
 <p>&nbsp;
 </p>
