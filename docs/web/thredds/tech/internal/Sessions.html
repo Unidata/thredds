@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<table width="100%">
+  <tbody>
+    <tr>
+      <td align="left" height="95" width="95"><img src="../../unidataLogo.gif" height="93" width="95"> </td>
+      <td align="left" valign="top" width="701"><table width="303">
+          <tbody>
+            <tr>
+              <td align="left" height="22" valign="top" width="295"><h3><strong>Thredds Data Server</strong></h3></td>
+            </tr>
+          </tbody>
+      </table></td>
+    </tr>
+  </tbody>
+</table>
+<div class="head">
+  <h1>TDS Sessions </h1>
+  <address>
+  last update: Dec 6, 2005 
+  </address>
+  <hr>
+  <h2>Design 1</h2>
+  <h3>From nj22 Client </h3>
+  <ul>
+    <li>nj22 Client using DConnect passes the header <strong>X-Accept-Session=&quot;true&quot;</strong></li>
+    <li>TDS knows that a session will be accepted, so it creates the session with 30 minute timeout, opens and caches the dataset in the session, and passes back a JSESSIONID cookie</li>
+    <li>nj22/DConnect passes back that JSESSIONID for the life of the DConnect object, which corresponds to the nj22 open/close methods. </li>
+    <li><em><strong>When close is called, can a message be sent to server? </strong></em></li>
+  </ul>
+  <h3>From  Client who ignores cookies </h3>
+  <ul>
+    <li>Initial request does not have the <strong>X-Accept-Session=&quot;true&quot;</strong>header</li>
+    <li>TDS creates the session <strong><em>with a 30-second timeou</em>t</strong>, opens but does not cache the dataset in the session, and passes back a JSESSIONID cookie</li>
+    <li>Client ignores cookie, makes requests without them.</li>
+    <li>TDS aquires/releases the dataset for each request. Declined sessions timeout after 30 seconds.</li>
+    <li><em><strong>TDS could only attempt sessions only for DDS/DDX requests</strong></em>. Not sure how costly session creation is. Each request creates a session object that needs to be timed out. </li>
+  </ul>
+  <h3>From Browser or client that returns cookies </h3>
+  <ul>
+    <li>Initial request does not have the  <strong>X-Accept-Session=&quot;true&quot;</strong>header</li>
+    <li>TDS  creates a session with a 30-second timeout, opens and does not cache the dataset in the session, and passes back a JSESSIONID cookie</li>
+    <li>Browser passes back the JSESSIONID for the subsequent requests.</li>
+    <li>When TDS sees the session cookie on the second request, it opens and  caches the dataset in the session, and changes timeout to 30 minutes. Note the possibility that the dataset may have changed between the 2 requests. </li>
+    <li><em><strong> Could assume browsers are stateless, and not establish sessions.</strong></em></li>
+  </ul>
+  <h3><strong>Problem with ASCII requests </strong></h3>
+  <ul>
+    <li>An ascii request causes the server to make a call to itself through DConnect. This internal call should not create a session, so sessions should be turned off in DConnect in the server.</li>
+    <li><em><strong>The server could be redesigned to not call itself.</strong></em></li>
+  </ul>
+  <h3>Timeout scenario</h3>
+  <ul>
+    <li>When a session times out, the dataset is released and the session deleted.</li>
+    <li>If a late request comes in, it will have an old JSESSIONID. Could restablish a session; however the dataset might have changed. </li>
+    <li><em><strong>Could add header Last-Modified. client should check this and decide what to do.</strong></em></li>
+    <li><em><strong>Could add header X-Last-Extended. client should check this and decide what to do.</strong></em></li>
+  </ul>
+  <hr width="100%">
+  <h2>Design 2</h2>
+  <p>Only establish sessions when client sends <strong>X-Accept-Session=&quot;true&quot;</strong> header </p>
+  <h3>Optional Last-XXX headers</h3>
+  <ul>
+    <li>By default, all the Last-XXX headers are set to the last-modified date of the file, or equivalent.</li>
+    <li>If a dataset is extended, <strong>X-Last-Extended </strong>is updated. Extension means  the previous metadata is still valid, eg the unlimited dimension can grow, and attributes or variables can be added. </li>
+    <li>If a dataset changes in a way that makes the old metadata invalid, the  <strong>X-Last-Modified-Invalid</strong> header is updated. </li>
+    <li>If there is any change at all to the dataset, including data, the  <strong>Last-Modified</strong> header is updated. </li>
+  </ul>
+  <h3>From Session-enabled Client </h3>
+  <ul>
+    <li>SE Client passes the header <strong>X-Accept-Session=&quot;true&quot;</strong></li>
+    <li>TDS knows that a session will be accepted, so it creates a session with 30 minute timeout, opens and caches the dataset in the session, and passes back a JSESSIONID cookie. </li>
+    <li>SE Client passes back that JSESSIONID for the life of the session. In nj22, this is bracketed by the open/close methods. <em><strong>When close is called, can a message be sent to server? </strong></em></li>
+    <li>When a session closes or times out, the dataset is released and the session deleted.</li>
+    <li>If a late request comes in, it will have an old JSESSIONID. A session is re-established, however the dataset might have changed. The client can detect this by examining the Last-XXX  headers. </li>
+    <li> During the life of the session, a best effort is made to keep the dataset from changing in a way that invalidates the previous metadata. If it does change, the <strong>X-Last-Modified-Invalid</strong> header is updated. The <strong>X-Last-Extended </strong>header may change often, however. </li>
+  </ul>
+  <h3>From Session-ignorent Client </h3>
+  <ul>
+    <li>Initial request does not have the <strong>X-Accept-Session=&quot;true&quot;</strong>header</li>
+    <li>TDS aquires/releases the dataset for each request. </li>
+    <li>The dataset may change between requests. Client can examine the   Last-XXX headers.. </li>
+  </ul>
+</div>
+<hr width="100%">
+<p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a> &nbsp;</span></i></p>
+<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../../thredds.jpg" height="79" width="95"><br>
+</p>
+</body>
+</html>

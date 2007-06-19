@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Motherlode TDS - Switching Dev to Live</title>
+  <link rel="stylesheet" href="/thredds/upc.css" type="text/css">
+</head>
+<body>
+
+
+<table width="100%">
+    <tbody><tr>
+        <td align="left" height="95" width="95"><img src="../../unidataLogo.gif" height="93" width="95"> </td>
+        <td align="left" valign="top" width="701">
+            <table width="303">
+                <tbody><tr>
+                  <td align="left" height="22" valign="top" width="295"><h3><strong>Thredds Data Server</strong></h3></td>
+                </tr>
+            </tbody></table>
+        </td>
+    </tr>
+</tbody></table>
+
+<div class="head">
+  <h1>Motherlode TDS: Switching Dev to Live</h1>
+  <address>
+  last update: 19 June 2007
+  </address>
+  <hr>
+
+<h2>Running Tests</h2>
+<p>There are a number of tests that can be run before doing the switch.</p>
+<h3>Comparing Dev to Live</h3>
+<ul>
+      <li><strong>thredds.TestCompareTwoCatalogs.java </strong>compares one of these catalogs between dev and live. Edit &quot;test/data/thredds/testCompareTwoCatalogs.config.xml&quot; to choose which one: </li>
+    <ol>
+      <li>/thredds/catalog.xml</li>
+      <li>/thredds/topcatalog.xml</li>
+      <li>/thredds/idv/rt-models.1.0.xml </li>
+      <ul>
+        <li>By hand look at the DQC latest stuff
+      </ul>
+      <li>Test a dynamic catalog, such as /thredds/idd/nexrad/level3/NVW/YUX/20060315/catalog.xml (MODIFY the date as needed)</li>
+    </ol>
+    <li>thredds/test/src <strong>thredds.TestServerSite.java </strong></li>
+</ul>
+<h3>Stress Test</h3>
+<ul>
+  <li><strong>ucar.nc2.thredds.server.TestTDS</strong> : starts up several threads to access the NCEP models through opendap </li>
+  <li><strong>ucar.nc2.thredds.server.TestIDVdatasets</strong>: open all datasets in http://motherlode.ucar.edu:9080/thredds/idv/rt-models.1.0.xml<br>
+</li>
+  </ul>
+<h2>The Switch</h2>
+<p> The dev Tomcat server on Motherlode uses the link <strong>/opt/tomcat9</strong> and the live uses link
+  <strong>/opt/tomcat</strong>. Because both dev and live may use the same tomcat version,
+the switch must be done in a manner to preserve the versions. Usually dev points
+to <strong>/opt/jakarta-tomcat-$version-dev</strong> directory and live point to <strong>/opt/jakarta-tomcat-$version</strong> directory .
+<p>The dev Tomcat server is using ports 9080/9443/9005 and the live Tomcat
+server is using ports 8080/8443/8005. Switching the dev and live servers is done
+by shutting both servers down, changing the ports they each use and some of
+utility scripts in the bin directory.</p>
+<h4>Save copy of development server (optional)</h4>
+<ol>
+  <li><strong>cd</strong> /opt</li>
+  <li><strong>sudo</strong> su root</li>
+  <li> <strong>mkdir</strong> tomcat-save</li>
+  <li> <strong>rcp</strong> -r tomcat9/* tomcat-save</li>
+  <li><strong>cd</strong> tomcat-save</li>
+  <li><strong>chown</strong> -R tomcat * </li>
+  <li><strong>chgrp</strong> -R tomcat * </li>
+</ol>
+<h4>Get development server ready to switch </h4>
+<ol><li>Become the tomcat user
+      <ol>
+        <li><strong>sudo</strong> su - tomcat</li>
+      </ol>
+  </li>
+  <li>Make sure everything is ready on dev (<strong>/opt/tomcat9/</strong>)
+      <ol>
+        <li>Make a clean release</li>
+        <li>Delete any cruft </li>
+      </ol>
+  </li>
+  <li>Shutdown server:
+      <ol>
+        <li>/opt/tomcat9/bin/<strong>shutdown</strong>.sh</li>
+      </ol>
+    </li>
+  <li>Modify  bin files:
+    <ol>
+      <li><strong>perl -i.bak -pne 's#tomcat9#tomcat#g'</strong> /opt/tomcat9/bin/*.sh</li>
+      <li>In /opt/tomcat9/bin/<strong>startup.sh </strong>change<strong> JAVA_OPTS=&quot;-Xmx2080m -Xms512m -server&quot;</strong></li>
+      </ol>
+  </li>
+  <li>Edit <strong>/opt/tomcat9/conf/server.xml</strong>
+    <ol>
+      <li>change 9080 to 8080 (1 place) </li>
+      <li>change 9005 to 8005 (1 place) </li>
+      <li>change 9443 to 8443 (2 places)</li>
+      <li>Check the server.xml to see if any changes were made to the &quot;IP filter&quot; Valve, eg: </li>
+    </ol>
+    <pre>&lt;!-- Define the top level container in our container hierarchy --&gt;
+&lt;Engine name=&quot;Catalina&quot; defaultHost=&quot;localhost&quot; debug=&quot;0&quot;&gt;
+ &lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; deny=&quot;18.83.0.150,69.25.71.12&quot; /&gt; </pre>
+    </li>
+  <li>Copy things we want to save onto new server
+    <ol>
+      <li>Check if<strong> /opt/tomcat/conf/tomcat-users.xml </strong>has been changed, copy or merge to tomcat9 </li>
+      <li>Check if <strong>/opt/tomcat/conf/keystore-tomcat</strong> has been changed, copy or merge to tomcat9</li>
+      <li>Check if <strong>/opt/tomcat/content/thredds/threddsConfig.xml</strong> has been changed, copy or merge to tomcat9</li>
+    </ol>
+    </li>
+  <li>Modify hardcoded URLs in content, changing 9080 to 8080</li>
+  <ol>
+    <li><strong>perl -i.bak -pne 's#9080#8080#g'</strong> /opt/tomcat9/content/thredds/dqcServlet/config/*.xml</li>
+    <li><strong>perl -i.bak -pne 's#9080#8080#g'</strong> /opt/tomcat9/content/thredds/cataloggen/config/*.xml</li>
+    </ol>
+  <li>Remove logs:<ol><li><strong>rm </strong>/opt/tomcat9/logs/*</li>
+      <li><strong>rm </strong>/opt/tomcat9/content/thredds/logs/*</li>
+      </ol>
+  </li>
+  </ol>
+  <h4>Do the switch </h4>
+  <ol>
+    <li>Shutdown the live server
+      <ol>
+        <li>/opt/tomcat/bin/<strong>shutdown</strong>.sh</li>
+      </ol>
+    </li>
+    <li>Save access logs
+        <ol>
+          <li>cp <strong>/opt/tomcat/logs/access*.log</strong> <strong>/data/thredds/logs</strong></li>
+        </ol>
+    </li>
+    <li>Remove logs (optional):
+            <ol>
+              <li><strong>rm </strong>/opt/tomcat/logs/*</li>
+              <li><strong>rm </strong>/opt/tomcat/content/thredds/logs/*</li>
+            </ol>
+    </li>
+    <li>Become the root user
+      <ol>
+        <li><strong>su </strong> root</li>
+        <li><strong>cd </strong> /opt</li>
+      </ol>
+    </li>
+    <li>Remove links:
+      <ol>
+        <li><strong>rm </strong>/opt/tomcat</li>
+        <li><strong>rm </strong>/opt/tomcat9</li>
+      </ol>
+    </li>
+    <li>Move old code base, eg:
+      <ol>
+        <li> mv apache-tomcat-6.0.10.dev apache-tomcat-6.0.10.live</li>
+        <li>mv <strong>tomcat-save</strong> apache-tomcat-6.0.10.dev</li>
+      </ol>
+    </li>
+    <li>Create tomcat and tomcat9 links:
+      <ol>
+        <li> ln -s apache-tomcat-6.0.10.live <strong>tomcat</strong></li>
+        <li> ln -s apache-tomcat-6.0.10.dev <strong>tomcat9</strong></li>
+      </ol>
+    </li>
+    <p>At this point tomcat points to the new server and tomcat9 point to the dev server</p>
+    <li>Become the tomcat user, and startup
+      <ol>
+        <li><strong>su - </strong>tomcat</li>
+        <li>/opt/tomcat/bin/<strong>startup</strong>.sh</li>
+      </ol>
+    </li>
+    <li>Run tests <br>
+</li>
+  </ol>
+</div>
+<hr width="100%">
+<p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a> </span></i></p>
+<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../../thredds.jpg" height="79" width="95"><br>
+</p>
+</body></html>
