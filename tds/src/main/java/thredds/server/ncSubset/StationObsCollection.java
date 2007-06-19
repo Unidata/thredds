@@ -103,7 +103,7 @@ public class StationObsCollection {
 
   private class ReinitTask extends TimerTask {
     public void run() {
-      cacheLogger.info("StationObsCollection.reinit at " + format.toDateTimeString(new Date()));
+      cacheLogger.info("StationObsCollection.reinit to "+archiveDir+" from " +realtimeDir+" at " + format.toDateTimeString(new Date()));
       init();
     }
   }
