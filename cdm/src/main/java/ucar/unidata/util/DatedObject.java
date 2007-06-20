@@ -1,5 +1,5 @@
 /*
- * $Id: DatedObject.java,v 1.5 2007/05/21 19:19:01 jeffmc Exp $
+ * $Id: DatedObject.java,v 1.7 2007/05/25 13:42:42 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -105,6 +105,21 @@ public class DatedObject implements DatedThing {
 
 
     /**
+     * A utility method that takes a list of dates and returns a list of DatedObjects
+     *
+     * @param dates List of dates to wrap
+     * @return A list of DatedObjects
+     */
+    public static List wrap(List dates) {
+        List result = new ArrayList();
+        for(int i=0;i<dates.size();i++) {
+            result.add(new DatedObject((Date)dates.get(i)));
+        }
+        return result;
+    }
+
+
+    /**
      * Sort the given list of DatedThing-s
      *
      * @param datedThings list to sort
@@ -205,9 +220,9 @@ public class DatedObject implements DatedThing {
      */
     public String toString() {
         if (object != null) {
-            return date + " " + object;
+            return "" + object;
         } else {
-            return date.toString();
+            return "";
         }
     }
 
