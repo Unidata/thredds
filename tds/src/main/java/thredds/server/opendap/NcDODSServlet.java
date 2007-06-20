@@ -236,6 +236,12 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
           log.debug(ServletUtil.showRequestDetail(this, req));
       }
 
+      if (path == null) {
+        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        return;
+      }
+
       if (baseURI == null) { // first time, set baseURI
         URI reqURI = ServletUtil.getRequestURI(req);
         baseURI = reqURI.resolve("/thredds/dodsC/");

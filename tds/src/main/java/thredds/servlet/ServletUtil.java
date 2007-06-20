@@ -604,8 +604,8 @@ public class ServletUtil {
   {
     // No file, nothing to view
     if (file == null) {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
-      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 
@@ -613,6 +613,13 @@ public class ServletUtil {
     if (!file.exists()) {
       ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+
+    // not a directory
+    if (!file.isFile()) {
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, 0 );
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 

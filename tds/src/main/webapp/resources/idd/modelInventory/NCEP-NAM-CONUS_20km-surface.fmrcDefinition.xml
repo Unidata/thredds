@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmrcDefinition dataset="http://motherlode.ucar.edu:9080/thredds/catalog/fmrc/NCEP/NAM/CONUS_20km/surface/files/catalog.xml">
   <vertCoord id="12" name="depth_below_surface" units="m">3.0</vertCoord>
-  <vertCoord id="5" name="depth_below_surface_layer" units="m">0.10000000149011612,0.0 0.4000000059604645,0.10000000149011612 1.0,0.4000000059604645 2.0,1.0</vertCoord>
+  <vertCoord id="5" name="depth_below_surface_layer" units="m">0.1,0.0 0.4,0.1 1.0,0.4 2.0,1.0</vertCoord>
   <vertCoord id="6" name="depth_below_surface_layer1" units="m">0.0,1.0</vertCoord>
   <vertCoord id="11" name="depth_below_surface_layer2" units="m">0.0,2.0</vertCoord>
   <vertCoord id="3" name="height_above_ground" units="m">1000.0 4000.0</vertCoord>
@@ -65,7 +65,6 @@
     <variable name="Liquid_Volumetric_Soil_Moisture_non_frozen" vertCoord="5" />
     <variable name="Low_cloud_cover" />
     <variable name="MSLP_Eta_Reduction" />
-    <variable name="Main_thermocline_depth" />
     <variable name="MaximumComposite_radar_reflectivity" />
     <variable name="Maximum_Snow_Albedo" />
     <variable name="Medium_cloud_cover" />
@@ -122,6 +121,7 @@
     <variable name="Temperature_hybrid" />
     <variable name="Temperature_parameter_in_canopy_conductance" />
     <variable name="Temperature_pressure" vertCoord="17" />
+    <variable name="Temperature_sigma" />
     <variable name="Temperature_surface" />
     <variable name="Total_Column-Integrated_Cloud_Ice" />
     <variable name="Total_Column-Integrated_Cloud_Water" />
@@ -151,6 +151,7 @@
     <variable name="Visibility" />
     <variable name="Volumetric_Soil_Moisture_Content" vertCoord="5" />
     <variable name="Water_equivalent_of_accumulated_snow_depth" />
+    <variable name="Water_temperature" />
     <variable name="Wilting_Point" />
     <variable name="Wind_speed_gust" />
   </runSequence>

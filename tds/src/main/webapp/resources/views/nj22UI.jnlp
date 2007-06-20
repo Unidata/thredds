@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart">
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev">
 
   <information>
     <title>NetCDF 2.2 Tools UI</title>
     <vendor>Unidata</vendor>
-    <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/index.html"/>
+    <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-devNTestI/index.html"/>
     <description kind="short">GUI interface to netCDF 2.2</description>
     <icon href="nc.gif"/>
     <offline-allowed/>

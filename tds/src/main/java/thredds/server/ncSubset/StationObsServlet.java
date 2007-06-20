@@ -76,9 +76,12 @@ public class StationObsServlet extends AbstractServlet {
     String metarDir = ThreddsConfig.get("NetcdfSubsetService.metarDataDir", "/opt/tomcat/content/thredds/public/stn/");
     if (!allow) return;
 
-    //socRewrite = new StationObsCollection("C:/temp2/", false);
-    //socOrg = new StationObsCollection("C:/data/metars/", false);
-    //socOrg = new StationObsCollection("/data/ldm/pub/decoded/netcdf/surface/metar/", true);
+    File dir = new File(metarDir);
+    if (!dir.exists()) {
+      allow = false;
+      return;
+    }
+
     soc = new StationObsCollection(metarDir, "/data/ldm/pub/decoded/netcdf/surface/metar/");
     //soc = new StationObsCollection("C:/temp2/", "C:/data/metars/");
   }
