@@ -24,15 +24,14 @@
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java, and is contained in a single war file, which allows very easy installation into the open-source <a href="http://jakarta.apache.org/tomcat/">Tomcat</a> web server. Configuration is made as simple and as automatic as possible, and we have made the server as secure as possible. The library is freely available and the source code is released under the GNU 
 <a href="http://www.gnu.org/copyleft/lesser.html">Lesser General Public License</a> (LGPL).</p>
+<p>Much of the realtime data available over the Unidata <a href="http://www.unidata.ucar.edu/software/idd/index.html">Internet Data Distribution</a> (IDD) is available through a THREDDS Data Server hosted at Unidata on <a href="http://motherlode.ucar.edu:8080/thredds/">motherlode.ucar.edu</a>. You are welcome to browse and access these meteorological datasets.</p>
 <h2>System Requirements</h2>
 <ul>
-  <li><a href="http://java.sun.com/">Java</a> 1.4 or above, we recommend the latest version of Java 1.5. (TDS 3.15 and above requires Java 1.5+) </li>
-  <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.0 or above, we recommend the latest version of Tomcat 5.5 (Tomcat 5.5  requires Java 1.5)</li>
+  <li><a href="http://java.sun.com/">Java</a> 1.5 or above, we recommend the latest version of Java 1.6. </li>
+  <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6.0 </li>
 </ul>
 <h2>Download</h2>
-<ul>
-  <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.14/thredds.war">Download</a> the latest stable version (3.14). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.14/CHANGES.txt">Change Log</a>. </li>
-  <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.16/thredds.war">Download</a> the next version release candidate (3.16). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.16/CHANGES.txt">Change Log</a>. </li>
+<ul><li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.16/thredds.war">Download</a> the latest stable  (3.16). <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.16/CHANGES.txt">Change Log</a>. </li>
   <li>The TDS uses the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java library</a> </li>
   <li>Source code is available on request to known collaborators. </li>
 </ul>
@@ -42,10 +41,10 @@
   <li><a href="reference/index.html">TDS Reference Documentation</a></li>
   <li><a href="interfaceSpec/NetcdfSubsetService.html">Netcdf Subset Service</a> (experimental)
     <ul>
-      <li>Station Subset Service</li>
+      <li><a href="interfaceSpec/StationDataSubsetService.html">Station Subset Service</a></li>
       <li><a href="interfaceSpec/GridDataSubsetService.html">Gridded Data Subset Service</a></li>
     </ul>
-    </li>
+  </li>
   <li><a href="http://www.unidata.ucar.edu/publications/factsheets/2007AMSsheets/threddsFactSheet-1.doc">Fact sheet</a> (Word doc)</li>
   <li><a href="TechSummary.htm">THREDDS Technical summary</a></li>
 </ul>
@@ -69,7 +68,7 @@
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 31, 2007 
+<img src="images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 20, 2007 
 </address>
 <p align="center">&nbsp;</p>
 <p>&nbsp;</p>

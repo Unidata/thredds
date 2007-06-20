@@ -1,6 +1,11 @@
+6/20/2007
+ add idd/rtmodels.xml (chiz WRF models), but dont link into catalog until we can deal with moving horiz domain
+ add metar aggregation : rewriting files into ${tomcat}/content/thredds/public/stn/
+ change NetcdfService to NetcdfSubset everywhere
+
 5/22/2007 JC mlode and modev:idd/radars.xml
   add nexrad composite 1km, as both an aggregation and a DatasetScan.
-  rearrange servies, clean up a bit.
+  rearrange services, clean up a bit.
 
 5/12/2007 JC mlode: remove NetcdfServer service from idd/allModels.TDS-nc.xml.
    This is not (yet) valid on netcdf files, and generates an exception in catalina.out (no return in threddsServlet.log).
