@@ -24,7 +24,7 @@
 <div class="head">
   <h1>Motherlode TDS: Switching Dev to Live</h1>
   <address>
-  last update: 19 June 2007
+  last update: 21 June 2007
   </address>
   <hr>
 <p> The dev Tomcat server on Motherlode uses the link <strong>/opt/tomcat9</strong> and the live uses link
@@ -75,7 +75,9 @@ one: </li>
   <li><strong>ucar.nc2.thredds.server.TestIDVdatasets</strong>: open all datasets in http://motherlode.ucar.edu:9080/thredds/idv/rt-models.1.0.xml<br>
 </li>
   </ul>
-<h2>The Switch</h2><h3>Save current development server configuration</h3>
+<h2>The Switch</h2>
+
+<h3>Save current development server configuration</h3>
 
 <p>Depending on if you want to stay with the same Tomcat version,
 either make a copy of the entire Tomcat installation directory or make
@@ -127,13 +129,11 @@ copy of the file the link references).
     <ol>
       <li><code>chown -hR tomcat:tomcat *</code></li>
     </ol>
-    <li>Compare with current development server for differences, e.g.,
-      <ol>
-        <li>Configure to use ports 9080/9443/9005</li>
-        <li>In bin/<strong>startup.sh </strong>set<strong> JAVA_OPTS="-Xmx2090m -Xms512m -server"</strong> [see Note <a href="SwitchDevToLive.html#Why_Differentiate_8080_from_9080_with">below</a> on the <code>-Xmx </code>option]</li>
-      </ol>
-    </li>
-
+    <li>Setup new installation as dev server<br>
+</li>
+    <ol>
+      <li>Compare with current development server to find differences, especially in files <code>conf/server.xml</code> and <code>bin/*.sh</code></li>  
+    </ol>
   </ol> 
 </ol>
 
@@ -315,8 +315,10 @@ the JAVA_OPTS environment variable as follows:<code></code>
  
 
 </div>
+
 <hr width="100%">
 <p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a> </span></i></p>
+
 <p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../../thredds.jpg" height="79" width="95"><br>
 </p>
 
