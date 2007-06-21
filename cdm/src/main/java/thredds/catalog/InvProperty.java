@@ -51,6 +51,13 @@ public class InvProperty {
    */
   public String getValue() { return value; }
 
+    /**
+     * Set the value of the property.
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     /** string representation */
   public String toString() {
     return "<"+name+"> <"+value+">";
