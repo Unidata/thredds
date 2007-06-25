@@ -23,12 +23,9 @@ package thredds.server.ncSubset;
 import ucar.ma2.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.WriterStationObsDataset;
-import ucar.nc2.dt.point.WriterProfilerObsDataset;
+import ucar.nc2.dt.point.WriterProfileObsDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.Group;
-import ucar.nc2.Structure;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -430,7 +427,7 @@ public class GridPointWriter {
 
   class WriterNetcdfProfiler extends Writer {
     File netcdfResult;
-    WriterProfilerObsDataset pobsWriter;
+    WriterProfileObsDataset pobsWriter;
     List<VariableSimpleIF> varList;
     int nprofilers;
     String altVarName;
@@ -442,7 +439,7 @@ public class GridPointWriter {
 
       netcdfResult = File.createTempFile("ncss", ".nc");
 
-      pobsWriter = new WriterProfilerObsDataset(netcdfResult.getAbsolutePath(),
+      pobsWriter = new WriterProfileObsDataset(netcdfResult.getAbsolutePath(),
               "Extract Profiler data from Grid file "+ gds.getLocationURI());
 
       NetcdfDataset ncfile = (NetcdfDataset) gds.getNetcdfFile(); // fake-arino

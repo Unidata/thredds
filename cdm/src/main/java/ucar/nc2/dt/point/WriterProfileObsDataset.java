@@ -37,14 +37,14 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Write ProfilerObsDataset in Unidata Station Obs COnvention.
+ * Write ProfileObsDataset in Unidata Station Obs COnvention.
  *
  * @author caron
  */
-public class WriterProfilerObsDataset {
+public class WriterProfileObsDataset {
   private static final String recordDimName = "record";
   private static final String stationDimName = "station";
-  private static final String profilerDimName = "profiler";
+  private static final String profileDimName = "profile";
   private static final String latName = "latitude";
   private static final String lonName = "longitude";
   private static final String altName = "altitude";
@@ -53,16 +53,16 @@ public class WriterProfilerObsDataset {
   private static final String descName = "station_description";
   private static final String wmoName = "wmo_id";
 
-  private static final String firstProfilerName = "firstProfiler";
-  private static final String nextProfilerName = "nextProfiler";
-  private static final String numProfilerName = "numProfilers";
+  private static final String firstProfileName = "firstProfile";
+  private static final String nextProfileName = "nextProfile";
+  private static final String numProfilesName = "numProfiles";
   private static final String numProfilesTotalName = "numProfilesTotal";
 
   private static final String firstObsName = "firstChild";
   private static final String numObsName = "numChildren";
   private static final String nextObsName = "nextChild";
   private static final String parentStationIndex = "station_index";
-  private static final String parentProfilerIndex = "profiler_index";
+  private static final String parentProfileIndex = "profile_index";
   // private static final String timeStrLenDim = "time_strlen";
 
 
@@ -75,20 +75,20 @@ public class WriterProfilerObsDataset {
   private Set<Dimension> dimSet = new HashSet<Dimension>();
   private List<Dimension> recordDims = new ArrayList<Dimension>();
   private List<Dimension> stationDims = new ArrayList<Dimension>();
-  private List<Dimension> profilerDims = new ArrayList<Dimension>();
+  private List<Dimension> profileDims = new ArrayList<Dimension>();
   private List<Station> stnList;
   private Date minDate = null;
   private Date maxDate = null;
 
-  private int nprofilers;
-  private int profilerIndex = 0;
+  private int nprofiles;
+  private int profileIndex = 0;
 
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
   private boolean debug = false;
 
-  public WriterProfilerObsDataset(String fileOut, String title) {
+  public WriterProfileObsDataset(String fileOut, String title) {
     ncfile = NetcdfFileWriteable.createNew(fileOut);
     ncfile.setFill( false);
     this.title = title;
@@ -98,10 +98,10 @@ public class WriterProfilerObsDataset {
     ncfile.setLength( size);
   }
 
-  public void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, int nprofilers, String altVarName) throws IOException {
+  public void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, int nprofiles, String altVarName) throws IOException {
     createGlobalAttributes();
     createStations(stns);
-    createProfilers(nprofilers);
+    createProfiles(nprofiles);
 
     // dummys, update in finish()
     ncfile.addGlobalAttribute("zaxis_coordinate", altVarName);
@@ -121,7 +121,7 @@ public class WriterProfilerObsDataset {
 
   private void createGlobalAttributes() {
     ncfile.addGlobalAttribute("Conventions", "Unidata Observation Dataset v1.0");
-    ncfile.addGlobalAttribute("cdm_datatype", "Profiler");
+    ncfile.addGlobalAttribute("cdm_datatype", "Profile");
     ncfile.addGlobalAttribute("title", title);
     ncfile.addGlobalAttribute("desc", "Extracted by THREDDS/Netcdf Subset Service");
     /* ncfile.addGlobalAttribute("observationDimension", recordDimName);
@@ -194,38 +194,38 @@ public class WriterProfilerObsDataset {
       ncfile.addVariableAttribute(v, new Attribute("long_name", "station WMO id"));
     }
 
-    v = ncfile.addVariable(numProfilerName, DataType.INT, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "number of profilers in linked list for this station"));
+    v = ncfile.addVariable(numProfilesName, DataType.INT, stationDimName);
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "number of profiles in linked list for this station"));
 
-    v = ncfile.addVariable(firstProfilerName, DataType.INT, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of first profiler in linked list for this station"));
+    v = ncfile.addVariable(firstProfileName, DataType.INT, stationDimName);
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of first profile in linked list for this station"));
   }
 
-  private void createProfilers(int nprofilers) throws IOException {
-    this.nprofilers = nprofilers;
+  private void createProfiles(int nprofiles) throws IOException {
+    this.nprofiles = nprofiles;
 
     // add the dimensions
-    Dimension profilerDim = ncfile.addDimension(profilerDimName, nprofilers);
-    profilerDims.add(profilerDim);
+    Dimension profileDim = ncfile.addDimension(profileDimName, nprofiles);
+    profileDims.add(profileDim);
 
-    Variable v = ncfile.addVariable(numObsName, DataType.INT, profilerDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "number of children in linked list for this profiler"));
+    Variable v = ncfile.addVariable(numObsName, DataType.INT, profileDimName);
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "number of children in linked list for this profile"));
 
     v = ncfile.addVariable(numProfilesTotalName, DataType.INT, "");
     ncfile.addVariableAttribute(v, new Attribute("long_name", "number of valid profiles"));
 
-    v = ncfile.addVariable(firstObsName, DataType.INT, profilerDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of first obs in linked list for this profiler"));
+    v = ncfile.addVariable(firstObsName, DataType.INT, profileDimName);
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of first obs in linked list for this profile"));
 
     // time variable
-    Variable timeVar = ncfile.addStringVariable(timeName, profilerDims, 20);
+    Variable timeVar = ncfile.addStringVariable(timeName, profileDims, 20);
     ncfile.addVariableAttribute(timeVar, new Attribute("long_name", "ISO-8601 Date - time of observation"));
 
-    v = ncfile.addVariable(parentStationIndex, DataType.INT, profilerDimName);
+    v = ncfile.addVariable(parentStationIndex, DataType.INT, profileDimName);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "index of parent station"));
 
-    v = ncfile.addVariable(nextProfilerName, DataType.INT, profilerDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of next profiler in linked list for this station"));
+    v = ncfile.addVariable(nextProfileName, DataType.INT, profileDimName);
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of next profile in linked list for this station"));
   }
 
 
@@ -237,11 +237,11 @@ public class WriterProfilerObsDataset {
     ncfile.addVariableAttribute(heightVar, new Attribute("long_name", "height of observation"));
     ncfile.addVariableAttribute(heightVar, new Attribute("units", altUnits));  */
 
-    Variable v = ncfile.addVariable(parentProfilerIndex, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of parent profiler"));
+    Variable v = ncfile.addVariable(parentProfileIndex, DataType.INT, recordDimName);
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "index of parent profile"));
 
     v = ncfile.addVariable(nextObsName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of next obs in linked list for this profiler"));
+    ncfile.addVariableAttribute(v, new Attribute("long_name", "record number of next obs in linked list for this profile"));
 
 
     // find all dimensions needed by the data variables
@@ -281,21 +281,21 @@ public class WriterProfilerObsDataset {
     int lastChild = -1;
     int parent_index;
     List<Integer> link = new ArrayList<Integer>(); // profile index
-    HashMap<Date, ProfilerTracker> profilerMap;
+    HashMap<Date, ProfileTracker> profileMap;
 
     StationTracker(int parent_index) {
       this.parent_index = parent_index;
-      this.profilerMap = new HashMap<Date, ProfilerTracker>();
+      this.profileMap = new HashMap<Date, ProfileTracker>();
     }
   }
 
-  private class ProfilerTracker {
+  private class ProfileTracker {
     int numChildren = 0;
     int lastChild = -1;
     int parent_index;
     List<Integer> link = new ArrayList<Integer>(); // obs index
 
-    ProfilerTracker(int parent_index) {
+    ProfileTracker(int parent_index) {
       this.parent_index = parent_index;
     }
   }
@@ -344,7 +344,7 @@ public class WriterProfilerObsDataset {
   private void writeDataFinish() throws IOException {
     // finish global variables
     ArrayInt.D0 totalArray = new ArrayInt.D0();
-    totalArray.set(profilerIndex);
+    totalArray.set(profileIndex);
     try {
       ncfile.write(numProfilesTotalName, totalArray);
     } catch (InvalidRangeException e) {
@@ -354,18 +354,18 @@ public class WriterProfilerObsDataset {
 
     // finish the station data
     int nstns = stnList.size();
-    ArrayInt.D1 firstProfilerArray = new ArrayInt.D1(nstns);
-    ArrayInt.D1 numProfilerArray = new ArrayInt.D1(nstns);
-    ArrayInt.D1 nextProfilerArray = new ArrayInt.D1(nprofilers);
+    ArrayInt.D1 firstProfileArray = new ArrayInt.D1(nstns);
+    ArrayInt.D1 numProfileArray = new ArrayInt.D1(nstns);
+    ArrayInt.D1 nextProfileArray = new ArrayInt.D1(nprofiles);
 
     for (int i = 0; i < stnList.size(); i++) {
       Station stn = stnList.get(i);
       StationTracker tracker = stationMap.get(stn.getName());
 
-      numProfilerArray.set(i, tracker.numChildren);
+      numProfileArray.set(i, tracker.numChildren);
 
       int first = (tracker.link.size() > 0) ? tracker.link.get(0) : -1;
-      firstProfilerArray.set(i, first);
+      firstProfileArray.set(i, first);
 
       if (tracker.link.size() > 0) {
         // construct forward link
@@ -373,35 +373,35 @@ public class WriterProfilerObsDataset {
         for (int j = 0; j < nextList.size() - 1; j++) {
           Integer curr = nextList.get(j);
           Integer next = nextList.get(j + 1);
-          nextProfilerArray.set(curr, next);
+          nextProfileArray.set(curr, next);
         }
         Integer curr = nextList.get(nextList.size() - 1);
-        nextProfilerArray.set(curr, -1);
+        nextProfileArray.set(curr, -1);
       }
     }
 
     try {
-      ncfile.write(firstProfilerName, firstProfilerArray);
-      ncfile.write(numProfilerName, numProfilerArray);
-      ncfile.write(nextProfilerName, nextProfilerArray);
+      ncfile.write(firstProfileName, firstProfileArray);
+      ncfile.write(numProfilesName, numProfileArray);
+      ncfile.write(nextProfileName, nextProfileArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
       throw new IllegalStateException(e);
     }
 
-    // finish the profiler data
+    // finish the profile data
     ArrayInt.D1 nextObsArray = new ArrayInt.D1(recno);
-    ArrayInt.D1 firstObsArray = new ArrayInt.D1(nprofilers);
-    ArrayInt.D1 numObsArray = new ArrayInt.D1(nprofilers);
+    ArrayInt.D1 firstObsArray = new ArrayInt.D1(nprofiles);
+    ArrayInt.D1 numObsArray = new ArrayInt.D1(nprofiles);
 
     for (int i = 0; i < stnList.size(); i++) {
       Station stn = stnList.get(i);
       StationTracker stnTracker = stationMap.get(stn.getName());
 
-      Set<Date> dates = stnTracker.profilerMap.keySet();
+      Set<Date> dates = stnTracker.profileMap.keySet();
       for (Date date : dates) {
-        ProfilerTracker proTracker = stnTracker.profilerMap.get(date);
+        ProfileTracker proTracker = stnTracker.profileMap.get(date);
         int trackerIndex = proTracker.parent_index;
         numObsArray.set(trackerIndex, proTracker.numChildren);
 
@@ -452,18 +452,18 @@ public class WriterProfilerObsDataset {
 
   public void writeRecord(String stnName, Date obsDate, StructureData sdata) throws IOException {
     StationTracker stnTracker = stationMap.get(stnName);
-    ProfilerTracker proTracker = stnTracker.profilerMap.get(obsDate);
+    ProfileTracker proTracker = stnTracker.profileMap.get(obsDate);
 
     if (proTracker == null) {
-      proTracker = new ProfilerTracker(profilerIndex);
-      stnTracker.profilerMap.put( obsDate, proTracker);
+      proTracker = new ProfileTracker(profileIndex);
+      stnTracker.profileMap.put( obsDate, proTracker);
 
-      stnTracker.link.add(profilerIndex);
-      stnTracker.lastChild = profilerIndex;
+      stnTracker.link.add(profileIndex);
+      stnTracker.lastChild = profileIndex;
       stnTracker.numChildren++;
 
       try {
-        originTime[0] = profilerIndex; // 2d index
+        originTime[0] = profileIndex; // 2d index
         timeArray.set(0, dateFormatter.toDateTimeStringISO(obsDate));
         parentArray.set(0, stnTracker.parent_index);
         ncfile.writeStringData(timeName, originTime, timeArray);
@@ -473,7 +473,7 @@ public class WriterProfilerObsDataset {
         throw new IllegalStateException(e);
       }
 
-      profilerIndex++;
+      profileIndex++;
     }
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
@@ -496,7 +496,7 @@ public class WriterProfilerObsDataset {
     originTime[0] = recno; // 2d index
     try {
       ncfile.write("record", origin, sArray);
-      ncfile.write(parentProfilerIndex, originTime, parentArray);
+      ncfile.write(parentProfileIndex, originTime, parentArray);
     } catch (InvalidRangeException e) {
       e.printStackTrace();
       throw new IllegalStateException(e);
@@ -579,7 +579,7 @@ public class WriterProfilerObsDataset {
     Collections.sort(stnList);
 
     // create the writer
-    WriterProfilerObsDataset writer = new WriterProfilerObsDataset(location+".out", "rewrite "+location);
+    WriterProfileObsDataset writer = new WriterProfileObsDataset(location+".out", "rewrite "+location);
     writer.writeHeader(stnList, varList, nrecs, "prMan");
 
     // extract records

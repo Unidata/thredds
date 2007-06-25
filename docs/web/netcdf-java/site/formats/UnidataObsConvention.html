@@ -7,10 +7,8 @@
 </head>
 
 <body>
-<h1>Unidata  Observation Dataset Conventions</h1>
-<p><em>John Caron, Ethan Davis, Robb Kambic</em></p>
-<p><em>last updated Jan 18, 2007 </em></p>
-<p>This document describes a <a href="http://www.unidata.ucar.edu/content/software/netcdf/conventions.html">Convention for NetCDF (version 3) files</a> for writing Point, Trajectory, and Station observation data. It  uses the <a href="DataDiscoveryAttConvention.html">NetCDF Attribute Convention for Dataset Discovery.</a> Files that follow this conventions can be read by the NetCDF-Java library and the <a href="http://www.unidata.ucar.edu/software/idv/">IDV</a> into    the Point, Trajectory, and Station data types of the <a href="http://www.unidata.ucar.edu/software/netcdf/CDM/index.html">Common Data Model</a>.</p>
+<h1><img src="../netcdfBig.gif" width="100" height="55">Unidata  Observation Dataset Conventions</h1>
+<p>This document describes a <a href="http://www.unidata.ucar.edu/content/software/netcdf/conventions.html">Convention for NetCDF (version 3) files</a> for writing Point, Trajectory, Profile, and Station observation data. It  uses the <a href="DataDiscoveryAttConvention.html">NetCDF Attribute Convention for Dataset Discovery.</a> Files that follow this conventions can be read by the NetCDF-Java library and the <a href="http://www.unidata.ucar.edu/software/idv/">IDV</a> into    the Point, Trajectory, Profile and Station data types of the <a href="http://www.unidata.ucar.edu/software/netcdf/CDM/index.html">Common Data Model</a>.</p>
 <p>Also see: </p>
 <ul>
   <li><a href="RecordsInNetcdf3.html">Using Records in NetCDF-3 files</a></li>
@@ -18,9 +16,9 @@
   <li><a href="http://www.unidata.ucar.edu/content/software/udunits/index.html">udunits</a> scientific unit package </li>
 </ul>
 <h2>Definitions</h2>
-<h3>Point, Trajectory, and Station   Observation datasets</h3>
+<h3>Point, Trajectory, Station   and Profile Observation datasets</h3>
 
-<p>An <strong><em>observation</em></strong> is a  collection of measurements at one time and location.  A<em><strong> Point Observation dataset</strong></em> contains observations which are not necessarily related in space or time.  A <em><strong> trajectory </strong></em> is a collection of observations which are  connected along a one dimensional track in space, with time increasing monotonically along the track. A <em><strong> Trajectory Observation dataset</strong></em> contains one or more trajectories. A <em><strong>Station Observation dataset</strong></em> contains time series of observations at named locations called <em><strong>stations</strong></em>. </p>
+<p>An <strong><em>observation</em></strong> is a  collection of measurements at one time and location.  A<em><strong> Point Observation dataset</strong></em> contains observations which are not necessarily related in space or time.  A <em><strong>Station Observation dataset</strong></em> contains time series of observations at named locations called <em><strong>stations</strong></em>. A <em><strong> trajectory </strong></em> is a collection of observations which are  connected along a one dimensional track in space, with time increasing monotonically along the track. A <em><strong> Trajectory Observation dataset</strong></em> contains one or more trajectories. A <em><strong> profile </strong></em> is a kind of trajectory in which the observations have the same x,y location, and different z coordinates, and time may change or be the same for all observations in the profile. A <em><strong> Profile Observation dataset</strong></em> contains one or more profiles.</p>
 <h3>Grouping Variables into Structures</h3>
 <p>A <em><strong>Structure</strong></em> is a NetCDF Variable that contains other Variables, like a <strong>struct</strong> in C. Structures are a new part of NetCDF, introduced in the NetCDF-Java library, version 2.2 as part of the Common Data Model, and also implemented in the <a href="http://www.unidata.ucar.edu/content/software/netcdf/netcdf-4/index.html">NetCDF-4</a> library. </p>
 <p>NetCDF version 3 files can have only one real Structure, namely the <strong><em>record Structure</em></strong> that contains all of the  Variables in the file that use the record (unlimited) dimension. (see <a href="RecordsInNetcdf3.html">Using Records in NetCDF-3 files</a> for a full explanation). However we can also abstractly create a <strong><em>pseudo-Structure</em></strong>, which is a Structure that contains  all the Variables in a  file which have the same outer dimension (the first dimension in C and Java, the last dimension in Fortran). For example, the variables </p>
@@ -124,9 +122,22 @@
 <p>The latitude, longitude, altitude, and time variables must either have the observation dimension as their only dimension, or be a scalar variable, in which case their scalar value applies to all the observations.</p>
 <p>It must have a global attribute</p>
 <pre><strong> :cdm_datatype = &quot;Point&quot;; </strong></pre>
-<p>The latitude, longitude,  altitude, and time variables must all be observation variables, i.e. have the observation dimension as their outer dimension.</p>
-<p>Example CDL. <br>
+<p>The latitude, longitude,  altitude, and time variables must all be observation variables, i.e. have the observation dimension as their outer dimension.<br>
 </p>
+<h2>Station Observation datasets</h2>
+<p>A station observation dataset must have a global attribute</p>
+<pre><strong> :cdm_datatype = &quot;Station&quot;; </strong></pre>
+<p>A station observation dataset needs another group of variables to describe the station information. Use the global attribute</p>
+<pre><strong>  :stationDimension = &quot;dimName&quot;;</strong></pre>
+<p>to name the station dimension. If there is no such attribute, then there must be a dimension named <strong>station</strong>.</p>
+<p>All Variables with the station dimension.as their outer dimension are  <em><strong>station Variables</strong></em>, containing information about the stations. The latitude, longitude, and altitude variables must all be station variables, i.e. have the station dimension as their outer dimension. In addition, there must exist a <strong>station id</strong> variable and optionally a <strong>station description</strong> variable. The station ids must be unique within the file. These can be identified in two ways:</p>
+<p>Station variables explicitly named <strong>station_id</strong> and <strong>station_description</strong>.</p>
+<ol><li>Global attributes <strong>station_id_variable</strong>, and <strong>station_description_variable</strong> whose values are the names of the station id and station description variables.</li>
+</ol>
+<p>The station dimension will likely never be unlimited, so you may need to guess the maximum stations you need, for instance if you are creating the file from streaming data. In this case, set a variable called <strong>number_stations</strong> (or name it through a global attribute <strong>number_stations_variable</strong>) to the number of stations actually used. If that variable is not present, it will be assumed that all stations are valid. </p>
+<p>The observations must be associated with their corresponding station using linked lists, contiguous lists, or multidimensional structures. </p>
+<p><a href="metar.cdl.txt">Example Station CDL</a></p>
+<p><a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/sample_data/Surface_METAR_20060701_0000.nc">Example METAR station file (45 Mb)</a> </p>
 <h2>Trajectory Observation datasets </h2>
 <p>If there is only one trajectory in the file, then a Trajectory dataset follows the same rules above as a Point dataset, except that it must have the global attribute</p>
 <pre><strong> :cdm_datatype = &quot;Trajectory&quot;; </strong></pre>
@@ -144,29 +155,31 @@
 <ul>
   <li><a href="TrajectoryCDL.txt">One Trajectory, using CF-1 Conventions </a></li>
 </ul>
-<h2>Station Observation datasets</h2>
-<p>A station observation dataset must have a global attribute</p>
-<pre><strong> :cdm_datatype = &quot;Station&quot;; </strong></pre>
-<p>A station observation dataset needs another group of variables to describe the station information. Use the global attribute</p>
-<pre><strong>  :stationDimension = &quot;dimName&quot;;</strong></pre>
-<p>to name the station dimension. If there is no such attribute, then there must be a dimension named <strong>station</strong>.</p>
-<p>All Variables with the station dimension.as their outer dimension are  <em><strong>station Variables</strong></em>, containing information about the stations. The latitude, longitude, and altitude variables must all be station variables, i.e. have the station dimension as their outer dimension. In addition, there must exist a <strong>station id</strong> variable and optionally a <strong>station description</strong> variable. The station ids must be unique within the file. These can be identified in two ways:</p>
-<ol>
-  <li>Station variables explicitly named <strong>station_id</strong> and <strong>station_description</strong>.</li>
-  <li>Global attributes <strong>station_id_variable</strong>, and <strong>station_description_variable</strong> whose values are the names of the station id and station description variables.</li>
-</ol>
-<p>The station dimension will likely never be unlimited, so you may need to guess the maximum stations you need, for instance if you are creating the file from streaming data. In this case, set a variable called <strong>number_stations</strong> (or name it through a global attribute <strong>number_stations_variable</strong>) to the number of stations actually used. If that variable is not present, it will be assumed that all stations are valid. </p>
-<p>The observations must be associated with their corresponding station using linked lists, contiguous lists, or multidimensional structures. </p>
-<p><a href="metar.cdl.txt">Example Station CDL</a></p>
-<p><a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/sample_data/Surface_METAR_20060701_0000.nc">Example METAR station file (45 Mb)</a> </p>
+<p> </p>
+<h2>Profile Observation datasets </h2>
+<p>If there is only one profile in the file, then a Profile dataset follows the same rules above as a Point dataset, except that it must have the global attribute</p>
+<pre><strong> :cdm_datatype = &quot;Profile&quot;; </strong></pre>
+<p>If there are multiple profiles in the same file, then the profiles are identified through the <strong> profile dimension. </strong>Use the global attribute</p>
+<pre><strong>  :profileDimension = &quot;dimName&quot;;</strong></pre>
+<p>to name the profile dimension. If there is no such attribute, then there must be a dimension named <strong>profile</strong>.</p>
+<p>All Variables with the profile dimension.as their outer dimension are considered profile Variables, containing information about the profile. The number of profiles in the file will then be the length of the profile dimension. </p>
+<p><strong>If the profiles are at different locations</strong>, then the latitude and longitude variables must be profile variables. The altitude variable must be an observation variable (has the observation dimension as its outer dimension). The time variable may be a profile or an observation variable, corresponding to whether the time varies along the profile or not. </p>
+<p><strong>If the profiles can be grouped into time series at the same location(s) </strong>then you can use a station dimension to group them into &quot;stations&quot;. Use a dimension named <strong>station</strong> (or the global attribute<strong> stationDimension = &quot;dimName&quot; </strong>to name the station dimension). Create station variables <strong>station_id</strong>, <strong>latitude</strong>, and <strong>longitude, </strong>and optionally <strong>station_description. </strong> The altitude variable must be an observation variable (has the observation dimension as its outer dimension). The time variable may be a profile or an observation variable, corresponding to whether the time varies along the profile or not. </p>
+<p> There must also exist profile variables named <strong>profile_id</strong>  and optionally <strong>profile_description</strong> (or global attributes <strong>profile_id</strong>, and <strong>profile_description</strong> whose values are the names of the profile id and profile description variables). The profile ids must be unique within the file. </p>
+<p>The observations must be associated with their corresponding profile using linked lists, contiguous lists, or multidimensional structures. </p>
+<p><strong>Example:</strong></p>
+<ul>
+  <li><a href="examples/TrajectoryCDL.txt">Profiler-ncss.cdl</a></li>
+  <li><a href="examples/Profiler-ncss.nc">Profiler-ncss.nc</a></li>
+</ul>
 <hr>
 <h2>Changes: </h2>
 <ul>
   <li>Oct 25, 2006: Altitude Variable is optional </li>
-  <li>Jan 18, 2008: clarify indexes are zero-based </li>
+  <li>Jan 18, 2008: clarify indexes are zero-based</li>
+  <li>June 20, 2007: add Profile Observation dataset </li>
 </ul>
 <hr>
-<p>&nbsp;</p>
-<p><em>comments to <a href="mailto:caron@unidata.ucar.edu">John Caron</a>  </em></p>
+<p><a href="NetcdfUsers.htm"><img src="../nc.gif" width="64" height="64" border="0"></a> <em>This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 20, 2007 </em></p>
 </body>
 </html>

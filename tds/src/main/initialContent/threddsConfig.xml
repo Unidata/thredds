@@ -43,7 +43,7 @@
   The <CdmValidatorService> element:
   -->
   <CdmValidatorService>
-    <allow>true</allow>
+    <allow>false</allow>
     <dir>/data/tmp/thredds/cdmValidateCache/</dir>
     <maxFileUploadSize>1 Gb</maxFileUploadSize>
     <scour>24 hours</scour>
@@ -54,7 +54,7 @@
   The <NetcdfSubsetService> element:
   -->
   <NetcdfSubsetService>
-    <allow>true</allow>
+    <allow>false</allow>
     <dir>/data/tmp/thredds/ncSubsetCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
@@ -64,7 +64,7 @@
   The <WCS> element:
   -->
   <WCS>
-    <allow>true</allow>
+    <allow>false</allow>
     <dir>/data/tmp/thredds/wcsCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
@@ -96,13 +96,13 @@
 
   <!--
   The <DiskCache> element:
-  -->
+
   <DiskCache>
     <alwaysUse>false</alwaysUse>
     <dir>/data/tmp/thredds/cache/</dir>
     <scour>1 hour</scour>
     <maxSize>1 Gb</maxSize>
-  </DiskCache>
+  </DiskCache>    -->
 
   <!--
   The <GribIndexing> element:
@@ -114,11 +114,11 @@
 
   <!--
   The <AggregationCache> element:
-  -->
+
   <AggregationCache>
     <dir>/data/tmp/thredds/aggcache/</dir>
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
-  </AggregationCache>
+  </AggregationCache>     -->
 
 </threddsConfig>

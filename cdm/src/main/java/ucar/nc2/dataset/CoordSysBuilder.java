@@ -625,6 +625,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         if (dataAxesList.size() < 2)
           continue;
 
+        for (int j = 0; j < dataAxesList.size(); j++) {
+          Variable v = (Variable) dataAxesList.get(j);
+          if (!(v instanceof CoordinateAxis))
+            System.out.println("BAD");
+        }
+
         VariableEnhanced ve = (VariableEnhanced) vp.v;
         String csName = CoordinateSystem.makeName(dataAxesList);
         CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
@@ -1078,8 +1084,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess( vname); // LOOK: full vs short name
-          if ((ap != null) && !axesList.contains(ap.v))
+          if ((ap != null) && !axesList.contains(ap.v)) {
             axesList.add( ap.v);
+          }
         }
       } else if (coordinates != null) { // CF partial listing of axes
         StringTokenizer stoker = new StringTokenizer( coordinates);

@@ -11,6 +11,7 @@
     <content url="file://$MODULE_DIR$/../tds">
       <sourceFolder url="file://$MODULE_DIR$/../tds/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../tds/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../tds/src/test/java/ucar/nc2/sleepycat" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -67,42 +68,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/bloat-1.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/db4o-6.0-java5.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/db4o-6.0-nqopt.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/db4o-6.0-db4ounit.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/tomcat-5.5.20_servlet-api.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -115,7 +80,7 @@
     <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../tds/target/war2" />
     <setting name="EXPLODED_ENABLED" value="true" />
     <setting name="JAR_URL" value="file://$MODULE_DIR$/../tds/target/thredds.war" />
-    <setting name="JAR_ENABLED" value="true" />
+    <setting name="JAR_ENABLED" value="false" />
     <setting name="SYNC_EXPLODED_DIR" value="true" />
     <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
     <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
@@ -126,39 +91,10 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/classes" />
     </containerElement>
-    <containerElement type="module" name="javadap">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/classes" />
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="0" />
-      <attribute name="URI" value="/WEB-INF/classes" />
-      <url>file://$MODULE_DIR$/../../grib/resources</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/gnu-getopt-1.0.6.jar" />
-      <url>jar://$MODULE_DIR$/../../java-dap/lib/gnu-getopt-1.0.6.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/gnu-regexp-1.1.4.jar" />
-      <url>jar://$MODULE_DIR$/../../java-dap/lib/gnu-regexp-1.1.4.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/sljc.jar" />
-      <url>jar://$MODULE_DIR$/../../java-dap/lib/sljc.jar!/</url>
-    </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/classes" />
       <url>file://$MODULE_DIR$/../cdm/src/main/resources</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/bloat-1.0.jar" />
-      <url>jar://$MODULE_DIR$/../lib/external/bloat-1.0.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
@@ -189,26 +125,6 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
       <url>jar://$MODULE_DIR$/../lib/external/commons-logging-1.1.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/db4o-6.0-db4ounit.jar" />
-      <url>jar://$MODULE_DIR$/../lib/external/db4o-6.0-db4ounit.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/db4o-6.0-java5.jar" />
-      <url>jar://$MODULE_DIR$/../lib/external/db4o-6.0-java5.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/db4o-6.0-nqopt.jar" />
-      <url>jar://$MODULE_DIR$/../lib/external/db4o-6.0-nqopt.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="0" />
-      <attribute name="URI" value="&lt;N/A&gt;" />
-      <url>jar://$MODULE_DIR$/../lib/external/gnu-regexp-1.1.4.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="0" />
@@ -246,22 +162,17 @@
       <url>jar://$MODULE_DIR$/../lib/release/bufr-1.1.00.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/grib-5.1.00.jar" />
-      <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.00.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/grib-5.1.02.jar" />
-      <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.02.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/javadap-2.0.jar" />
-      <url>jar://$MODULE_DIR$/../lib/release/javadap-2.0.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
       <attribute name="method" value="0" />
+      <attribute name="URI" value="&lt;N/A&gt;" />
+      <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.03.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/grib-5.1.04.jar" />
+      <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.04.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/opendap-2.0.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/opendap-2.0.jar!/</url>
     </containerElement>
