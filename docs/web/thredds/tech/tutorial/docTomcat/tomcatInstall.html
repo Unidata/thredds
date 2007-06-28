@@ -1,92 +1,100 @@
-<html>
-<head>
-<title>Tomcat Installation</title>
-
-</head>
-
-<body>
-<p>
-
-Apache Tomcat is the servlet container that is used in the official Reference 
-Implementation for the Java Servlet and JavaServer Pages technologies. The Java 
-Servlet and JavaServer Pages specifications are developed by Sun under the Java 
-Community Process. The THREDDS Data Server runs inside this environment and it
-depends on Tomcat to provide the necessary data interactions and security
-measures. To make this environment secure, a user tomcat needs to be created 
-with limited permissions. 
-
-<p>
-Also, if Tomcat is going to be accessible from a public network then a firewall
-should be installed in the initial setup. There is another separate section on
-installing other security measures for remote management that we recommend too.
-
-<p>
-To create a secure environment, there is a set of steps that need to be done 
-as root and a set of steps for user tomcat. It is important that tomcat doesn't 
-get more permissions then is necessary, so the steps should be followed closely
-because it is easy to expand the permissions.
-
-<h2>Steps done as root</h2>
-
-<p>
-The following steps can be skipped if one wants to do a trial install of the 
-Tomcat/TDS installation. But be warned, if these steps are not done and the
-TDS server is opened to the whole internet there is the possibility that a 
-security break-in can occur. Actually, it is better to present these steps to
-your system administrator so they are implemented in a manner that is consistent
-with your network environment. Some of the configurations are complex and it's 
-easy to make a mistake, so the administrator's route is  recommended.
-<p>
-<h2> Create unprivileged user tomcat</h2>
-<p>
-
-By default, Tomcat runs on port 8080 and therefore does not require root to run.
-Its important not to run as root. Create a special user, e.g. named "tomcat", 
-which owns everything under ${tomcat_home}, and change to that user to run 
-Tomcat. This special user will need read/write access to ${tomcat_home} and 
-its subdirectories, and read access to your data directories. Don't give the 
-tomcat user any rights in any other directories. If your operating system 
-allows it (e.g. Unix, Linux), you might also not allow the tomcat user to log 
-in directly. You would log in as yourself, then switch to being the 
-tomcat user using the sudo command. One should create a tomcat group and then
-use the 
-<a href="http://linux.about.com/od/commands/l/blcmdl8_adduser.htm">adduser</a>
- command to make the user tomcat.
-<pre>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>Tomcat Installation</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Unix)">
+	<META NAME="CREATED" CONTENT="20070628;12545200">
+	<META NAME="CHANGEDBY" CONTENT="Robb Kambic">
+	<META NAME="CHANGED" CONTENT="20070628;16195800">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<H2 ALIGN=CENTER>Tomcat Installation</H2>
+<P>Apache Tomcat is the servlet container that is used in the
+official Reference Implementation for the Java Servlet and JavaServer
+Pages technologies. The Java Servlet and JavaServer Pages
+specifications are developed by Sun under the Java Community Process.
+The THREDDS Data Server runs inside this environment and it depends
+on Tomcat to provide the necessary data interactions and security
+measures. To make this environment secure, a user tomcat needs to be
+created with limited permissions. 
+</P>
+<P>Also, if Tomcat is going to be accessible from a public network
+then a firewall should be installed in the initial setup. There is
+another separate section on installing other security measures for
+remote management that we recommend too. 
+</P>
+<P>To create a secure environment, there is a set of steps that need
+to be done as root and a set of steps for user tomcat. It is
+important that tomcat doesn't get more permissions then is necessary,
+so the steps should be followed closely because it is easy to expand
+the permissions. 
+</P>
+<H2>Steps done as root</H2>
+<P>The following steps can be skipped if one wants to do a trial
+install of the Tomcat/TDS installation. But be warned, if these steps
+are not done and the TDS server is opened to the whole internet there
+is the possibility that a security break-in can occur. Actually, it
+is better to present these steps to your system administrator so they
+are implemented in a manner that is consistent with your network
+environment. Some of the configurations are complex and it's easy to
+make a mistake, so the administrator's route is recommended. 
+</P>
+<H2>Create unprivileged user tomcat</H2>
+<P>By default, Tomcat runs on port 8080 and therefore does not
+require root to run. Its important not to run as root. Create a
+special user, e.g. named &quot;tomcat&quot;, which owns everything
+under ${tomcat_home}, and change to that user to run Tomcat. This
+special user will need read/write access to ${tomcat_home} and its
+subdirectories, and read access to your data directories. Don't give
+the tomcat user any rights in any other directories. If your
+operating system allows it (e.g. Unix, Linux), you might also not
+allow the tomcat user to log in directly. You would log in as
+yourself, then switch to being the tomcat user using the <A HREF="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch09_:_Linux_Users_and_Sudo">sudo</A>
+command. One should create a tomcat group and then use the <A HREF="http://linux.about.com/od/commands/l/blcmdl8_adduser.htm">adduser</A>
+command to make the user tomcat. 
+</P>
+<PRE>
 % group -c tomcat
 % adduser tomcat -u 49 -d /opt/tomcat -g tomcat -p &lt;passwd&gt;
 % mkdir /opt/tomcat
 % chown tomcat:tomcat /opt/tomcat
-
-</pre>
-<h2> Use a Firewall</h2>
-<p>
-
-Unless you are on a private network, you need a firewall. A firewall restricts 
-who is allowed to access network ports. Make the default setting to disallow 
-all accesses, then enable just the ones that are needed.
-
-<p>
-    <li> Port 8080 should have unrestricted access.
-<p>
-    <li> If you are allowing remote management, you must also open up port 8443. (recommended)
-<p>
-    <li> Tomcat also uses port 8005 to enable shutdown. However, shutdown can only
-      be run from the same machine as Tomcat is running. As long as 
-      untrusted users aren't running on your server machine, you shouldn't 
-      have to worry about this port being open. However, you might want to 
-      restrict public access to it so hackers aren't tempted.
-<p>
-    <li> If you are also using Tomcat in conjunction with another web server like 
-      Apache to handle servlet/JSP requests, you need to allow that server 
-      access to port 8009, but typically that can be restricted to accesses on 
-      the same machine or at least on your subnet. If you are running Tomcat 
-      only standalone (e.g. only running the THREDDS data server) then disable 
-      port 8009 in ${tomcat_home}/conf/server.xml file.
-<p>
-<pre>
-Firewall file: /etc/sysconfig/iptables
+</PRE><H2>
+Use a Firewall</H2>
+<P>Unless you are on a private network, you need a firewall. A
+firewall restricts who is allowed to access network ports. Make the
+default setting to disallow all accesses, then enable just the ones
+that are needed. 
+</P>
+<UL>
+	<LI><P>Port 8080 should have unrestricted access. 
+	</P>
+</UL>
+<UL>
+	<LI><P>If you are allowing remote management, you must also open up
+	port 8443. (recommended) 
+	</P>
+</UL>
+<UL>
+	<LI><P>Tomcat also uses port 8005 to enable shutdown. However,
+	shutdown can only be run from the same machine as Tomcat is running.
+	As long as untrusted users aren't running on your server machine,
+	you shouldn't have to worry about this port being open. However, you
+	might want to restrict public access to it so hackers aren't
+	tempted. 
+	</P>
+</UL>
+<UL>
+	<LI><P>If you are also using Tomcat in conjunction with another web
+	server like Apache to handle servlet/JSP requests, you need to allow
+	that server access to port 8009, but typically that can be
+	restricted to accesses on the same machine or at least on your
+	subnet. If you are running Tomcat only standalone (e.g. only running
+	the THREDDS data server) then disable port 8009 in
+	${tomcat_home}/conf/server.xml file. 
+	</P>
+</UL>
+<PRE>Firewall file: /etc/sysconfig/iptables
 
 
 *filter
@@ -131,118 +139,100 @@ Firewall file: /etc/sysconfig/iptables
 -A OUTPUT -d 127.0.0.1 -j ACCEPT
 -A OUTPUT -m state --state NEW -p tcp -j ACCEPT
 -A OUTPUT -m state --state NEW -p udp -j ACCEPT
-COMMIT
-</pre>
-<h2> Resources</h2>
-<p>
-
-<a href="http://www.physics.umd.edu/pnce/user-docs/Linux/firewall.html">Linux Firewall Tips</a>
-<p>
-<a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">HOWTO Firewall</a>
-<p>
-<h2>Steps done as user tomcat</h2>
-
-<p>
-<pre>
-
+COMMIT</PRE><H2>
+Resources</H2>
+<P><A HREF="http://www.physics.umd.edu/pnce/user-docs/Linux/firewall.html">Linux
+Firewall Tips</A> 
+</P>
+<P><A HREF="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">HOWTO
+Firewall</A> 
+</P>
+<H2> Get the tomcat Distribution</H2>
+<PRE>
 - Go to where you want to install the apache-tomcat distribution
-% cd ~tomcat
+% cd /opt
 
-- Get tomcat5 distribution ie apache-tomcat-5.5.17.tar.gz from: 
-	<a href="http://tomcat.apache.org">Apache Tomcat</a>
-
+- Get tomcat5 distribution ie apache-tomcat-6.0.13.tar.gz from: 
+        <A HREF="http://tomcat.apache.org/">Apache Tomcat</A></PRE><P>
+<BR><BR>
+</P>
+<P>- Create directory and change ownership/permissions</P>
+<P>% mkdir apache-tomcat-6.0.13</P>
+<P>% chown tomcat:tomcat apache-tomcat-6.0.13</P>
+<P>% chmod 775 apache-tomcat-6.0.13</P>
+<P>% ln -s apache-tomcat-6.0.13 tomcat</P>
+<H2>Steps done as user tomcat</H2>
+<PRE>
 - Unpack distribution  
-% tar xzvf apache-tomcat-5.5.17.tar.gz
+% tar xzvf apache-tomcat-6.013.tar.gz
 
-<!--
-- Make link from distribution directory to runtime
-% ln -s apache-tomcat-5.5.17 runtime
-//-->
+
 
 - Distribution directories should look like:
-% ls apache-tomcat-5.5.17
+% ls apache-tomcat-6.0.13
 logs/           NOTICE          server/
 conf/           RUNNING.txt     RELEASE-NOTES
 bin/            work/           common/
 webapps/        LICENSE         shared/
 
-- Go to bin directory and save the original Tomcat scripts in dist
-% cd apache-tomcat-5.5.17/bin
-% mkdir dist
-% cp *sh dist
+- Go to bin directory  
+% cd apache-tomcat-6.0.13/bin
+ 
+% edit catalina.sh
 
-
-- Tomcat is managed by the above scripts, but the scripts need to be configured
-to make the environment consistent and to give greater control over the 
-variables.  At this time, there are only three variables that need to be
-configured: CATALINA_HOME, JAVA_HOME, and JAVA_OPTS. These variables need to be
-inserted into all the scripts: startup.sh shutdown.sh ...
-
-% edit *.sh
-
-- enter the following environment variables into all the commands. 
+- enter the following environment variables. 
 #   CATALINA_HOME   Points at your ${tomcat-home} directory.
 #   JAVA_HOME       Must point at your Java Development Kit installation.
-#   JAVA_OPTS       Java runtime options used when the "start",
+#   JAVA_OPTS       Java runtime options used when the &quot;start&quot;,
 #
 
-This is a sample how the scripts should look like using the sample settings. 
+ 
 #!/bin/sh
 # -----------------------------------------------------------------------------
-# Start Script for the CATALINA Server
+# Start/Stop Script for the CATALINA Server
 #
-# $Id: startup.sh 385888 2006-03-14 21:04:40Z keith $
+# $Id: catalina.sh 385888 2006-03-14 21:04:40Z keith $
 # -----------------------------------------------------------------------------
 
-CATALINA_HOME="/opt/tomcat/apache-tomcat-5.5.17"
+CATALINA_HOME=&quot;/opt/tomcat&quot;
 export CATALINA_HOME
-JAVA_HOME="/opt/jdk1.5.0_07"
+JAVA_HOME=&quot;/opt/jdk1.6.0&quot;
 export JAVA_HOME
-JAVA_OPTS"-Xmx2048m -Xms512m -server"
+JAVA_OPTS&quot;-Xmx2048m -Xms512m -server&quot;
 export JAVA_OPTS
 
 ...
-...
-</pre>
-<p>
-
-<h2>Testing your installation</h2>
-
-<p>
-
-At this point there should be a basic tomcat installation. To test it, start
-it, check the logs, use a browser, and then stop it.
-
-<pre>
-
+...</PRE><H2>
+Testing your installation</H2>
+<P>At this point there should be a basic tomcat installation. To test
+it, start it, check the logs, use a browser, and then stop it. 
+</P>
+<PRE>
 - To start tomcat
-% cd /opt/tomcat/apache-tomcat-5.5.17/bin 
+% cd /opt/tomcat/bin 
 % ./startup.sh
 
 - To check the logs
-% cd /opt/tomcat/apache-tomcat-5.5.17/logs 
+% cd /opt/tomcat/logs 
 % less catalina.out
-	The following line should appear if started ok.
-		INFO: Starting service Catalina
+        The following line should appear if started ok.
+                INFO: Starting service Catalina
 
   Another check is to see if a browser can find tomcat
-	http://localhost:8080 
-	should see:
-		If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!
+        http://localhost:8080 
+        should see:
+                If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!
 
 - To shut tomcat down
-% cd /opt/tomcat/apache-tomcat-5.5.17/bin 
+% cd /opt/tomcat/bin 
 % ./shutdown.sh
 
 - Remove the logs files, they have a tendency to get large.
-% cd /opt/tomcat/apache-tomcat-5.5.17/logs 
+% cd /opt/tomcat/logs 
 % rm *
 
 Your installation is now ready to install the THREDDS Data Server (TDS) that
 will be discussed in it's own section.
-	
-</pre>
-
-<p>
-</body>
-</html>
+        </PRE>
+</BODY>
+</HTML>
