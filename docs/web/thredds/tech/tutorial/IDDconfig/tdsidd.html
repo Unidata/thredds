@@ -1,57 +1,16 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-<head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
-  <title></title>
-  <meta name="GENERATOR" content="OpenOffice.org 2.0  (Unix)">
-  <meta name="AUTHOR" content="Robb Kambic">
-  <meta name="CREATED" content="20070423;13145900">
-  <meta name="CHANGEDBY" content="Robb Kambic">
-  <meta name="CHANGED" content="20070430;11160800">
-  <meta name="ProgId" content="Word.Document">
-  <meta name="Originator" content="Microsoft Word 10">
-<!--[if gte mso 9]><xml>
- <o:DocumentProperties>
-  <o:Author> </o:Author>
-  <o:Template>Normal</o:Template>
-  <o:LastAuthor> </o:LastAuthor>
-  <o:Revision>7</o:Revision>
-  <o:TotalTime>2918</o:TotalTime>
-  <o:Created>2007-04-27T15:30:00Z</o:Created>
-  <o:LastSaved>2007-04-29T16:08:00Z</o:LastSaved>
-  <o:Pages>1</o:Pages>
-  <o:Words>1201</o:Words>
-  <o:Characters>6852</o:Characters>
-  <o:Company>Unidata/UCAR</o:Company>
-  <o:Lines>57</o:Lines>
-  <o:Paragraphs>16</o:Paragraphs>
-  <o:CharactersWithSpaces>8037</o:CharactersWithSpaces>
-  <o:Version>10.6735</o:Version>
- </o:DocumentProperties>
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <w:WordDocument>
-  <w:SpellingState>Clean</w:SpellingState>
-  <w:GrammarState>Clean</w:GrammarState>
-  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
- </w:WordDocument>
-</xml><![endif]--><!--[if gte mso 10]>
-<style>
- /* Style Definitions */
- table.MsoNormalTable
-	{mso-style-name:"Table Normal";
-	mso-tstyle-rowband-size:0;
-	mso-tstyle-colband-size:0;
-	mso-style-noshow:yes;
-	mso-style-parent:"";
-	mso-padding-alt:0in 5.4pt 0in 5.4pt;
-	mso-para-margin:0in;
-	mso-para-margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	font-size:10.0pt;
-	font-family:"Times New Roman";}
-</style>
-<![endif]-->
-  <style>
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Unix)">
+	<META NAME="AUTHOR" CONTENT="Robb Kambic">
+	<META NAME="CREATED" CONTENT="20070423;13145900">
+	<META NAME="CHANGEDBY" CONTENT="Robb Kambic">
+	<META NAME="CHANGED" CONTENT="20070627;16342900">
+	<META NAME="ProgId" CONTENT="Word.Document">
+	<META NAME="Originator" CONTENT="Microsoft Word 10">
+	<STYLE>
 	<!--
 		H1 { color: #000000 }
 		P { color: #000000 }
@@ -61,164 +20,157 @@
 		A:link { color: #0000ff }
 		A:visited { color: #0000ff }
 	-->
-	</style>
-</head>
-<body dir="ltr" lang="en-US" link="#0000ff" text="#000000"
- vlink="#0000ff">
-<h1 align="center">TDS configuration to server the IDD Data</h1>
-<p style="margin-bottom: 0.17in;"><font size="5"><b>What is the IDD?</b></font></p>
-<p>Unidata has built a community-oriented network that delivers many
-types of data over the internet called the <b>Internet Data
-Distribution system</b> (<a
- href="http://www.unidata.ucar.edu/software/idd"><b>IDD</b></a>).
-The IDD system has been a driving force in the development of the
-TDS, our aim is to be able to distribute all the IDD data. The <a
- href="http://www.unidata.ucar.edu/software/data">data</a>
-ranges from model data to different types of text reports, radar
-images, satellite images, etc. &nbsp;Click <a
- href="http://motherlode.ucar.edu:8080/thredds/catalog.html">here
-</a>to see Unidata's current running IDD/TDS server.</p>
-<p>Since the TDS uses <a
- href="http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html">catalogs</a>
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" LINK="#0000ff" VLINK="#0000ff" DIR="LTR">
+<H1 ALIGN=CENTER>TDS/IDD Configuration</H1>
+<P STYLE="margin-bottom: 0.17in"><FONT SIZE=5><B>What is the IDD?</B></FONT></P>
+<P>Unidata has built a community-oriented network  to deliver data
+over the internet called the <B>Internet Data Distribution system</B>
+(<A HREF="http://www.unidata.ucar.edu/software/idd"><B>IDD</B></A>).
+The <A HREF="realtime_idd.gif">IDD </A>system has been a driving
+force in the development of the TDS, our aim is to distribute all the
+IDD data. The <A HREF="http://www.unidata.ucar.edu/software/data">data</A>
+ranges from model data to text reports, radar images, satellite
+images, etc. &nbsp;Click <A HREF="http://motherlode.ucar.edu:8080/thredds/catalog.html">here
+</A>to see Unidata's current running TDS/IDD server.</P>
+<P>Since the TDS uses <A HREF="http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html">catalogs</A>
 to make the data available, the THREDDS's group has developed a set
 of catalogs specifically for the IDD data so others could set up
-their own TDS/IDD server easily. Here is a sample <a
- href="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml">catalog</a>
-&nbsp;that created the NDFD web page in the Unidata's IDD/TDS server.
-See if you can find the NDFD catalog on the Unidata's TDS/IDD
-server. The main criteria of using the IDD catalogs is that the data
-has to be in predetermined data directories because all TDS
-catalogs contain location elements where the data resides on the
-disk. There are TDS/IDD configurations available that will set these
-directories structures in place automatically.&nbsp; </p>
-<p><font size="5"><b>The TDS/IDD server configuration has 4 parts:</b></font></p>
-<p>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>configure the
-TDS to use the IDD catalogs</b></p>
-<p>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>configure the
-IDD/LDM to make the predetermined data directory structures</b></p>
-<p>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>manage IDD
-datasets</b></p>
-<p>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>performance
-enhancements by Grib Indexing</b></p>
-<h2>TDS IDD catalog configuration</h2>
-<p>At this point, it is assumed one has installed the TDS and it's
-running correctly. If not, see the installation instructions
-<a
- href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/index.html">here</a>.
-The IDD catalog configuration is easy because it
-only requires changing the catalog.xml to the IDD catalog. The IDD
+their own TDS/IDD server easily. Here is a sample <A HREF="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml">catalog</A>
+&nbsp;that created the NDFD web page in the Unidata's TDS/IDD server.
+See if you can find the NDFD catalog on the Unidata's TDS/IDD server.
+The main criteria of using the TDS/IDD catalogs is that the data has
+to be in predetermined data directories because all TDS catalogs
+contain location elements where the data resides on the disk. Don't
+be alarmed, there are TDS/IDD configurations available later in the
+document that will set these directories structures in place
+automatically.&nbsp; 
+</P>
+<P><FONT SIZE=5><B>The TDS/IDD server configuration has 4 parts:</B></FONT></P>
+<P>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <B>configure the
+TDS to use the IDD catalogs</B></P>
+<P>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <B>configure the
+IDD/LDM to make the predetermined data directory structures</B></P>
+<P>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <B>manage IDD
+datasets</B></P>
+<P>-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <B>performance
+enhancements by GRIB Indexing</B></P>
+<H2>TDS/IDD catalog configuration</H2>
+<P>At this point, it's assumed one has installed the TDS and it's
+running correctly. If not, see the installation instructions <A HREF="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/index.html">here</A>.
+The IDD catalog configuration is easy because it only requires
+changing the default TDS catalog.xml to the IDD catalog. The IDD
 catalog references all the other IDD catalogs so one change gets all
-the other IDD datasets. </p>
-<p>This is the IDD <a
- href="http://motherlode.ucar.edu:8080/thredds/catalog.xml">catalog</a>
-that is included in the TDS distribution. </p>
-<pre style="margin-bottom: 0.2in;"><b>The detailed instructions are:</b>
+the other IDD catalogs. 
+</P>
+<P>This is the IDD <A HREF="http://motherlode.ucar.edu:8080/thredds/catalog.xml">catalog</A>
+that is included in the TDS distribution. 
+</P>
+<PRE STYLE="margin-bottom: 0.2in"><B>The detailed instructions are:</B>
 Change to location of the TDS catalog.xml
 % cd ${tomcat_home}/content/thredds
 Save the default catalog (catalog.xml)
 % mv catalog.xml catalog.dist
 Get the TDS/IDD catalog from the distribution
-% cp idd/catalog.xml .</pre>
-<p><b>One can restart the TDS from the manager page</b></p>
-<p><b>or</b></p>
-<p><b>As user tomcat, stop and start tomcat. </b>
-</p>
-<pre style="margin-bottom: 0.2in;">% cd ${tomcat_home}/bin<br>% ./shutdown.sh<br>% ./startup.sh</pre>
-<h2>&nbsp;</h2>
-<h2>IDD/LDM configurations </h2>
-<p>At this point, it is assumed that one has installed the <a
- href="http://www.unidata.ucar.edu/software/ldm">LDM
-</a>software correctly and it is receiving data from the IDD.&nbsp;
-The LDM will receive/manage the data files by using specific
-configurations and utilities files that are available by downloading
-the <a href="http://motherlode.ucar.edu:9080/thredds/tdsidd.zip">tdsidd.zip</a>
-file. In the LDM home directory, unzip the tdsidd.zip file.<br>
-</p>
-<p>The specialized LDM pqact files that have been
-developed by THREDDS's to create the correct directory structures
-and dataset names should now be in the LDM <span
- style="font-weight: bold;">etc</span> directory. The pqact &nbsp;files
-are: </p>
-<pre style="margin-bottom: 0.2in;"><span
- style="text-decoration: underline; font-weight: bold;">pqact.thredds</span>&nbsp;&nbsp;       // create directories for model, text type products, plus others<br><span
- style="text-decoration: underline; font-weight: bold;">pqact.threddsradar</span>    // create directories for level II and III radar data<br><span
- style="text-decoration: underline;"><span style="font-weight: bold;">pqact.threddsconduit</span> </span> // create directories for high resolution model data<br><br>Edit the pqact.thredds file:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Comment out the pqact entries that contain line "PIPE&nbsp; decoders" because they require <br>      the installation of the <a
- href="http://www.unidata.ucar.edu/software/decoders/">decoders</a> package. If one wants to receive these files the <br>      decoder package must be installed and the binaries place in the LDM <b>decoders </b>directory.<br>     &nbsp;To comment out an entry, put a <b>#</b> as the first character in all the entry lines.</pre>
-<p>Edit the <b>ldmd.conf</b> file by adding the following 3 lines added
-around the other exec lines in the file: </p>
-<pre style="margin-bottom: 0.2in;"><b>exec</b>&nbsp;&nbsp;&nbsp; <b>"pqact -f ANY-CONDUIT-NNEXRAD-CRAFT etc/pqact.thredds"</b>
-<b>exec</b>&nbsp;&nbsp;&nbsp; <b>"pqact -f NNEXRAD|CRAFT etc/pqact.threddsradar"</b>
-<b>exec</b>&nbsp;&nbsp;&nbsp; <b>"pqact -f CONDUIT|SPARE etc/pqact.threddsconduit"</b>
-<span style="text-decoration: underline;"></span><a href="dccraft_move"></a></pre>
-<p>Once the LDM has been configured, restart the LDM so the new
-pqact files take affect. </p>
-<pre style="margin-bottom: 0.2in;"><b>stopping</b> <b>and starting needs to be done as user ldm</b>
+% cp idd/catalog.xml .</PRE><P>
+<B>One can restart the TDS from the manager page</B></P>
+<P><B>or</B></P>
+<P><B>As user tomcat, stop and start tomcat. </B>
+</P>
+<PRE STYLE="margin-bottom: 0.2in">% cd ${tomcat_home}/bin
+% ./shutdown.sh
+% ./startup.sh</PRE><H2>
+&nbsp;</H2>
+<H2>IDD/LDM configurations 
+</H2>
+<P>At this point, it is assumed that one has installed the <A HREF="http://www.unidata.ucar.edu/software/ldm">LDM
+</A>software and it is receiving data from the IDD.&nbsp; The LDM
+will receive/manage the data files by using specific configurations
+and utilities files that are available by downloading the <A HREF="http://motherlode.ucar.edu:8080/thredds/tdsidd.zip">tdsidd.zip</A>
+file. In the LDM home directory, unzip the tdsidd.zip file.</P>
+<P>The specialized LDM pqact files that have been developed by
+THREDDS's to create the correct directory structures and dataset
+names are now be in the LDM <B>etc</B> directory. The pqact &nbsp;files
+are: 
+</P>
+<PRE STYLE="margin-bottom: 0.2in"><B><U>pqact.thredds</U></B>       // create directories for model, text type products, plus others
+<B><U>pqact.threddsradar</U></B>    // create directories for level II and III radar data
+<U><B>pqact.threddsconduit</B> </U> // create directories for high resolution model data
+Edit the pqact.thredds file:
+ Comment out the pqact entries that contain the line &quot;PIPE decoders&quot; because they require 
+      the installation of the <A HREF="http://www.unidata.ucar.edu/software/decoders/">decoders</A> package. If one wants to receive these files the 
+      decoder package must be installed and the binaries place in the LDM <B>decoders </B>directory.
+     To comment out an entry, put a <B>#</B> as the first character in all the entry lines.</PRE><P>
+Edit the <B>ldmd.conf</B> file by adding the following 3 lines added
+around the other exec lines in the file: 
+</P>
+<PRE STYLE="margin-bottom: 0.2in"><B>exec</B> <B>&quot;pqact -f ANY-CONDUIT-NNEXRAD-CRAFT etc/pqact.thredds&quot;</B>
+<B>exec</B> <B>&quot;pqact -f NNEXRAD|CRAFT etc/pqact.threddsradar&quot;</B>
+<B>exec</B> <B>&quot;pqact -f CONDUIT|SPARE etc/pqact.threddsconduit&quot;</B></PRE><P>
+Once the LDM has been configured, restart the LDM so the new pqact
+files take affect. 
+</P>
+<PRE STYLE="margin-bottom: 0.2in"><B>stopping</B> <B>and starting needs to be done as user ldm</B>
 % ldmadmin stop
 % ldmadmin start
-% ldmadmin watch&nbsp;&nbsp; // used to check the log files</pre>
-<h2>Managing the IDD datasets</h2>
-<p>The realtime IDD datasets arrive constantly, usually at the rate
+% ldmadmin watch // used to check the log files</PRE><H2>
+Managing the IDD datasets</H2>
+<P>The realtime IDD datasets arrive constantly, usually at the rate
 of 1-25 per second. If the data was not deleted in a timely manner,
-the LDM data partition would fill up in a matter of hours/days. A ball park figure
-for the amount of disk space needed to store the IDD data is 500-750 gigabytes for a 7 day period.</p>
-<h3>Removing datasets</h3>
-<p>There is a script that runs once a day removing files older than the
-number of days specified in its configuration file. The script is
-&nbsp;managFilesDirs.pl and it has a configuration file
-manageFilesDirs.conf, both were downloaded in the zip file. Both files
-contain documentation in the header explaining
-the usage. The manageFilesDirs.pl is &nbsp;located in
-the ~ldm/util directory and it takes about 1-2 hours to manage a large
-directory structure.
-The manageFilesDirs.conf file resides in the ~ldm/etc directory and if
-one has the standard TDS/IDD
-installation, no modifications need to be done to the
-manageFilesDirs.conf.. By entering the manageFilesDirs script in
-crontab, one can regulate the number of
-files to retain and to keep the the LDM data directory at constant
-usage level without worry.&nbsp; <br>
-</p>
-<p>Here is an example LDM crontab entry to run the manageFilesDir.pl:</p>
-<p><b># files/dirs managing script</b></p>
-<p>30 21 * * * util/manageFilesDirs.pl -f
-/local/ldm/etc/manageFilesDirs.conf &gt;
-/data/ldm/logs/manageFilesDirs.log 2&gt;/dev/null</p>
-<p><font size="5"><b>Performance Enhancements by Grib Indexing</b></font></p>
-<p>Since the IDD distributes GRIB files and the TDS requires a Grib
+the LDM data partition would fill up in a matter of hours/days. A
+ball park figure for the amount of disk space needed to store the IDD
+data is 500-750 gigabytes for a 7 day period.</P>
+<H3>Removing datasets</H3>
+<P>There is a script that runs once a day removing files older than
+the number of days specified in its configuration file. The script
+managFilesDirs.pl and its  configuration file manageFilesDirs.conf,
+both were downloaded in the zip file.  These files contain
+documentation in the header explaining their usage. The
+manageFilesDirs.pl is located in the ~ldm/util directory and it takes
+about 1-2 hours to manage a large directory structure. The
+manageFilesDirs.conf file resides in the ~ldm/etc directory and
+doesn't need any modifications. By entering the manageFilesDirs
+script in crontab, one can regulate the number of files to retain and
+to keep the the LDM data directory at constant usage level without
+worry. 
+</P>
+<P>Here is an example LDM crontab entry to run the manageFilesDir.pl:</P>
+<P><B># files/dirs managing script</B></P>
+<P>30 21 * * * util/manageFilesDirs.pl -f etc/manageFilesDirs.conf &gt;
+/data/ldm/logs/manageFilesDirs.log 2&gt;/dev/null</P>
+<P><FONT SIZE=5><B>Performance Enhancements by Grib Indexing</B></FONT></P>
+<P>Since the IDD distributes GRIB files and the TDS requires a Grib
 Index to exist before it can open the files, there is a script to
-pre-index the files to speed up the access time.&nbsp; To pre-index
-the files, the GribInndexer.pl is used with the configuration
-GribIndexer.conf file, both were downloaded in the tdsidd.zip file. If
-the standard TDS/IDD setup configuration was implemented,
-no changes are needed to the GribIndexer, only a LDM crontab entry
-needs to be made.</p>
-<p>Here is an example LDM crontab entry to run the GribIndexer.pl</p>
-<p><b># GribIndexer script</b></p>
-<p>0,10,20,30,40,50 * * * * util/GribIndexer.pl -f
-/local/ldm/etc/GribIndexer.conf &gt; /data/ldm/logs/GribIndexer.log
-2&gt;/dev/null</p>
-<p>The script runs ever 10 minutes making sure the Grib Indexes are
-current and it also creates the log file <b>GribIndexer.log </b>for
-status. The scripts locks the directories so if 2 indexers are
-running at the same time they don't step on each other. It is
-possible that a lock file can be left intact wrongly, so there is a
-<b>-c flag </b>that will clear all the locks in the directories. </p>
-<p><big>Non Standard Configurations</big></p>
-<p>The script assumes that tomcat is installed at /<b>opt/tomcat</b> or
-a <b>-t flag</b> is needed with the tomcat location. Also it
-assumes that the version of Java is obtained from the unix<b> which</b>
-command or an -<b>j flag </b>is required with the java location. It
-also assumes that the configuration file <b>GribIndexer.conf</b> is
-located in the LDM<b> etc</b> directory or a <b>-f flag </b>is needed
-with the configuration file location.<br>
-</p>
-<p><big>Non Standard Sample</big> <br>
-</p>
-<p>% util/GribIndexer.pl&nbsp; -t /local/tomcat&nbsp; -j
-/opt/jdk1.5.0_08/bin/java&nbsp; -f&nbsp; /home/ldm/etc/GribIndexer.conf<br>
-</p>
-<p><br>
-</p>
-<p> </p>
-</body>
-</html>
+pre-index the files to speed up the access time. The GribInndexer.pl
+is used with the configuration GribIndexer.conf file, both were
+downloaded in the tdsidd.zip file. If the standard TDS/IDD setup
+configuration was implemented only a LDM crontab entry needs to be
+made.</P>
+<P>Here is an example LDM crontab entry to run the GribIndexer.pl</P>
+<P><B># GribIndexer script</B></P>
+<P>0,10,20,30,40,50 * * * * util/GribIndexer.pl -f
+etc/GribIndexer.conf &gt; /data/ldm/logs/GribIndexer.log 2&gt;/dev/null</P>
+<P>The GribIndexer.pl runs ever 10 minutes making sure the Grib
+Indexes are current and it also creates the log file <B>GribIndexer.log
+</B>for status.  GribIndexer.pl locks the directories so if 2
+indexers are running at the same time they don't step on each other.
+It's possible that a lock file can be left intact wrongly, so there
+is a <B>-c flag </B>that will clear all the locks in the directories.
+</P>
+<P><FONT SIZE=4>Non Standard Configurations</FONT></P>
+<P>The script assumes that tomcat is installed at /<B>opt/tomcat</B>
+or a <B>-t flag</B> is needed with the tomcat location. Also it
+assumes that the version of Java is obtained from the unix <B>which</B>
+command or an -<B>j flag </B>is required with the java location. It
+also assumes that the configuration file <B>GribIndexer.conf</B> is
+located in the LDM <B>etc</B> directory or a <B>-f flag </B>is needed
+with the configuration file location.</P>
+<P><FONT SIZE=4>Non Standard Sample</FONT> 
+</P>
+<P>% util/GribIndexer.pl -t /local/tomcat -j
+/opt/jdk1.5.0_08/bin/java -f /home/ldm/etc/GribIndexer.conf  [-c]</P>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>
