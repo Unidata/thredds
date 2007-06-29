@@ -34,6 +34,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.util.*;
 import ucar.nc2.units.*;
+import ucar.units.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
@@ -469,7 +470,7 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent evt) {
         if (aboutWindow == null)
           aboutWindow = new AboutWindow();
-        aboutWindow.setVisible( true);
+        aboutWindow.setVisible(true);
       }
     };
     BAMutil.setActionProperties(aboutAction, null, "About", false, 'A', 0);
@@ -601,6 +602,7 @@ public class ToolsUI extends JPanel {
   //////////////////////////////////////////////////////////////////////////////////
 
   // jump to the appropriate tab based on datatype of InvDataset
+
   private void setThreddsDatatype(thredds.catalog.InvDataset invDataset, boolean wantsViewer) {
     if (invDataset == null) return;
 
@@ -668,7 +670,7 @@ public class ToolsUI extends JPanel {
 
     if (threddsData.dataType == thredds.catalog.DataType.GRID) {
       makeComponent("Grids");
-      gridPanel.setDataset( (NetcdfDataset) threddsData.tds.getNetcdfFile());
+      gridPanel.setDataset((NetcdfDataset) threddsData.tds.getNetcdfFile());
       tabbedPane.setSelectedComponent(gridPanel);
 
     } else if (threddsData.dataType == thredds.catalog.DataType.IMAGE) {
@@ -678,17 +680,17 @@ public class ToolsUI extends JPanel {
 
     } else if (threddsData.dataType == thredds.catalog.DataType.RADIAL) {
       makeComponent("Radial");
-      radialPanel.setDataset( (RadialDatasetSweep) threddsData.tds);
+      radialPanel.setDataset((RadialDatasetSweep) threddsData.tds);
       tabbedPane.setSelectedComponent(radialPanel);
 
     } else if (threddsData.dataType == thredds.catalog.DataType.POINT) {
       makeComponent("PointObs");
-      pointObsPanel.setPointObsDataset( (PointObsDataset) threddsData.tds);
+      pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(pointObsPanel);
 
     } else if (threddsData.dataType == thredds.catalog.DataType.STATION) {
       makeComponent("StationObs");
-      stationObsPanel.setStationObsDataset( (StationObsDataset) threddsData.tds);
+      stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(stationObsPanel);
 
     }
@@ -729,7 +731,7 @@ public class ToolsUI extends JPanel {
   // LOOK put in background task ??
   private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
     try {
-      NetcdfDataset ncd = NetcdfDataset.openDataset( location, addCoords, task);
+      NetcdfDataset ncd = NetcdfDataset.openDataset(location, addCoords, task);
 
       /* if (addCoords)
         ncd = NetcdfDatasetCache.acquire(location, task);
@@ -835,6 +837,7 @@ public class ToolsUI extends JPanel {
 
   // abstract superclass
   // subclasses must implement process()
+
   private abstract class OpPanel extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta;
@@ -862,7 +865,8 @@ public class ToolsUI extends JPanel {
       cb.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
-            if (debugCB) System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " whne=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
+            if (debugCB)
+              System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " whne=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
             doit(cb.getSelectedItem());
             lastEvent = e.getWhen();
           }
@@ -1105,6 +1109,7 @@ public class ToolsUI extends JPanel {
     } */
   }
 
+
   /* private class WcsPanel extends OpPanel {
     private boolean ready = true;
     private StopButton stopButton;
@@ -1139,6 +1144,7 @@ public class ToolsUI extends JPanel {
     }
   } */
 
+
   private class UnitsPanel extends JPanel {
     PreferencesExt prefs;
     JSplitPane split;
@@ -1162,6 +1168,7 @@ public class ToolsUI extends JPanel {
       unitDataset.save();
     }
   }
+
 
   private class UnitDatasetCheck extends OpPanel {
     UnitDatasetCheck(PreferencesExt p) {
@@ -1187,10 +1194,14 @@ public class ToolsUI extends JPanel {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
               sb.append(" unit convert = " + su.toString());
+              if (su.isUnknownUnit())
+                sb.append(" UNKNOWN UNIT");
+
             } catch (Exception ioe) {
               sb.append(" unit convert failed ");
               sb.insert(0, "**** Fail ");
             }
+
           ta.appendLine(sb.toString());
         }
 
@@ -1240,6 +1251,9 @@ public class ToolsUI extends JPanel {
         ta.setText("toString()=" + su.toString() + "\n");
         ta.appendLine("getCanonicalString()=" + su.getUnit().getCanonicalString());
         ta.appendLine("class = " + su.getUnit().getClass().getName());
+        if (su.isUnknownUnit())
+          ta.appendLine("UNKNOWN UNIT");
+
         return true;
 
       } catch (Exception e) {
@@ -1314,7 +1328,7 @@ public class ToolsUI extends JPanel {
         }
       }
 
-      Date d = DateUnit.getStandardOrISO( command);
+      Date d = DateUnit.getStandardOrISO(command);
       if (d == null)
         ta.appendLine("\nDateUnit.getStandardOrISO = false");
       else
@@ -1355,7 +1369,7 @@ public class ToolsUI extends JPanel {
       defAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
       defButt = BAMutil.addActionToContainer(buttPanel, defAction);
 
-      defComboBox = new JComboBox( FmrcDefinition.fmrcDefinitionFiles);
+      defComboBox = new JComboBox(FmrcDefinition.fmrcDefinitionFiles);
       defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
       defWindow.setLocationRelativeTo(defButt);
 
@@ -1394,8 +1408,11 @@ public class ToolsUI extends JPanel {
       boolean err = false;
 
       // close previous file
-      try { if (ds != null) ds.close(); }
-      catch (IOException ioe) { }
+      try {
+        if (ds != null) ds.close();
+      }
+      catch (IOException ioe) {
+      }
 
       Object spiObject = null;
       if (useDefinition) {
@@ -1472,8 +1489,8 @@ public class ToolsUI extends JPanel {
           if (location == null) location = "test";
           int pos = location.lastIndexOf(".");
           if (pos > 0)
-            location = location.substring(0,pos);
-          String filename = fileChooser.chooseFilenameToSave(location+".ncml");
+            location = location.substring(0, pos);
+          String filename = fileChooser.chooseFilenameToSave(location + ".ncml");
           if (filename == null) return;
           doSave(ta.getText(), filename);
         }
@@ -1626,8 +1643,8 @@ public class ToolsUI extends JPanel {
           defButt.setToolTipText(tooltip);
           if (useDefinition) {
             if (null == defComboBox) {
-              defComboBox = new JComboBox( FmrcDefinition.fmrcDefinitionFiles);
-              defComboBox.setEditable( true);
+              defComboBox = new JComboBox(FmrcDefinition.fmrcDefinitionFiles);
+              defComboBox.setEditable(true);
               defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
               defWindow.setLocationRelativeTo(defButt);
               defWindow.setLocation(0, 100);
@@ -1646,10 +1663,10 @@ public class ToolsUI extends JPanel {
         public void actionPerformed(ActionEvent e) {
           if (null == catComboBox) {
             catComboBox = new JComboBox();
-            catComboBox.setEditable( true);
+            catComboBox.setEditable(true);
             catSpinner = new JSpinner();
             JButton accept = new JButton("Accept");
-            JPanel catPanel = new JPanel( new BorderLayout());
+            JPanel catPanel = new JPanel(new BorderLayout());
             JPanel leftPanel = new JPanel();
             leftPanel.add(new JLabel("Num datasets:"));
             leftPanel.add(catSpinner);
@@ -1658,9 +1675,9 @@ public class ToolsUI extends JPanel {
             catPanel.add(leftPanel, BorderLayout.WEST);
             catPanel.add(accept, BorderLayout.EAST);
 
-            accept.addActionListener( new ActionListener() {
+            accept.addActionListener(new ActionListener() {
               public void actionPerformed(ActionEvent e) {
-                defineFromCatalog( (String) catComboBox.getSelectedItem(), catSpinner.getValue());
+                defineFromCatalog((String) catComboBox.getSelectedItem(), catSpinner.getValue());
               }
             });
             catWindow = new IndependentWindow("Catalogs", null, catPanel);
@@ -1681,7 +1698,7 @@ public class ToolsUI extends JPanel {
           if (file.exists()) {
             file.delete();
             JOptionPane.showMessageDialog(null, "Index deleted, reopen= " + currentFile);
-            process( currentFile);
+            process(currentFile);
           }
         }
       };
@@ -1715,7 +1732,7 @@ public class ToolsUI extends JPanel {
           if (currentDef != null) {
             FmrcDefinition fmrc_def = new FmrcDefinition();
             fmrc_def.readDefinitionXML(currentDef);
-            System.out.println( "Read Definition file = " + currentDef);
+            System.out.println("Read Definition file = " + currentDef);
             spiObject = fmrc_def;
             NetcdfDataset ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
             gds = new ucar.nc2.dt.grid.GridDataset(ds);
@@ -1734,7 +1751,7 @@ public class ToolsUI extends JPanel {
         }
 
         ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(gds, null);
-        fmrInv.writeXML( bos);
+        fmrInv.writeXML(bos);
         ta.setText(bos.toString());
         ta.gotoTop();
 
@@ -1763,11 +1780,11 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        FmrcInventory fmrCollection = FmrcInventory.makeFromCatalog( catalogURLString, catalogURLString, n, ForecastModelRunInventory.OPEN_FORCE_NEW);
+        FmrcInventory fmrCollection = FmrcInventory.makeFromCatalog(catalogURLString, catalogURLString, n, ForecastModelRunInventory.OPEN_FORCE_NEW);
         FmrcDefinition def = new FmrcDefinition();
-        def.makeFromCollectionInventory( fmrCollection);
+        def.makeFromCollectionInventory(fmrCollection);
 
-        def.writeDefinitionXML( bos);
+        def.writeDefinitionXML(bos);
         ta.setText(bos.toString());
         ta.gotoTop();
 
@@ -1861,23 +1878,23 @@ public class ToolsUI extends JPanel {
     }
 
     private void makeGridUI() {
-       // a little tricky to get the parent right for GridUI
-       viewerWindow = new IndependentWindow("Grid Viewer", BAMutil.getImage("netcdfUI"));
+      // a little tricky to get the parent right for GridUI
+      viewerWindow = new IndependentWindow("Grid Viewer", BAMutil.getImage("netcdfUI"));
 
-       gridUI = new GridUI((PreferencesExt) prefs.node("GridUI"), viewerWindow, fileChooser, 800);
-       gridUI.addMapBean(new thredds.viewer.gis.worldmap.WorldMapBean());
-       gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
-       gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
+      gridUI = new GridUI((PreferencesExt) prefs.node("GridUI"), viewerWindow, fileChooser, 800);
+      gridUI.addMapBean(new thredds.viewer.gis.worldmap.WorldMapBean());
+      gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
+      gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
 
-       viewerWindow.setComponent(gridUI);
-       viewerWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
-     }
+      viewerWindow.setComponent(gridUI);
+      viewerWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
+    }
 
     private void makeImageWindow() {
-       imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("netcdfUI"));
-       imageViewer = new ImageViewPanel(null);
-       imageWindow.setComponent(imageViewer);
-       imageWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
+      imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("netcdfUI"));
+      imageViewer = new ImageViewPanel(null);
+      imageWindow.setComponent(imageViewer);
+      imageWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
     }
 
     boolean process(Object o) {
@@ -1972,7 +1989,7 @@ public class ToolsUI extends JPanel {
         //ucar.nc2.dt.radial.RadialDatasetSweepFactory fac = new ucar.nc2.dt.radial.RadialDatasetSweepFactory();
         //RadialDatasetSweep rds = fac.open(newds);
         StringBuffer errlog = new StringBuffer();
-        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( thredds.catalog.DataType.RADIAL, newds, null, errlog);
+        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(thredds.catalog.DataType.RADIAL, newds, null, errlog);
         if (rds == null) {
           JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + errlog.toString());
           err = true;
@@ -2160,7 +2177,7 @@ public class ToolsUI extends JPanel {
       try {
         pobsDataset = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, location, null, log);
         if (pobsDataset == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location+": "+log);
+          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
         }
 
@@ -2241,7 +2258,7 @@ public class ToolsUI extends JPanel {
       try {
         sobsDataset = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, log);
         if (sobsDataset == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location+": "+log);
+          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
         }
 
@@ -2323,7 +2340,7 @@ public class ToolsUI extends JPanel {
         StringBuffer errlog = new StringBuffer();
         ds = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
         if (ds == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location+": "+errlog);
+          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + errlog);
           return false;
         }
 
@@ -2533,6 +2550,7 @@ public class ToolsUI extends JPanel {
 
   ///////////////////////////////////////////////////////////////////////////////
   // Dynamic proxy for Debug
+
   private class DebugProxyHandler implements java.lang.reflect.InvocationHandler {
     public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
       if (method.getName().equals("toString"))
@@ -2690,6 +2708,7 @@ public class ToolsUI extends JPanel {
   }
 
   static boolean isCacheInit = false;
+
   static private void initCaches() {
     NetcdfFileCache.init(50, 70, 20 * 60);
     NetcdfDatasetCache.init(20, 40, 20 * 60);
@@ -2742,7 +2761,7 @@ public class ToolsUI extends JPanel {
       sm.addEventListener(new SocketMessage.EventListener() {
         public void setMessage(SocketMessage.Event event) {
           wantDataset = event.getMessage();
-          if (debugListen)System.out.println(" got message= '" + wantDataset);
+          if (debugListen) System.out.println(" got message= '" + wantDataset);
           setDataset();
         }
       });
@@ -2752,23 +2771,23 @@ public class ToolsUI extends JPanel {
     // look for run line arguments
     boolean configRead = false;
     for (int i = 0; i < args.length; i++) {
-      if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length-1)) {
-        String runtimeConfig = args[i+1];
+      if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
+        String runtimeConfig = args[i + 1];
         i++;
         try {
           StringBuffer errlog = new StringBuffer();
-          FileInputStream fis = new FileInputStream( runtimeConfig);
-          ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);
+          FileInputStream fis = new FileInputStream(runtimeConfig);
+          ucar.nc2.util.RuntimeConfigParser.read(fis, errlog);
           configRead = true;
-          System.out.println( errlog);
+          System.out.println(errlog);
         } catch (IOException ioe) {
-          System.out.println( "Error reading "+runtimeConfig+"="+ioe.getMessage());
+          System.out.println("Error reading " + runtimeConfig + "=" + ioe.getMessage());
         }
       }
     }
 
     if (!configRead) {
-      String filename =  ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+      String filename = ucar.util.prefs.XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
       File f = new File(filename);
       if (f.exists()) {
         try {
@@ -2798,8 +2817,8 @@ public class ToolsUI extends JPanel {
     // initCaches();
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
-    Aggregation.setPersistenceCache( new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
-    DqcFactory.setPersistenceCache( new DiskCache2("/.unidata/dqc", true, 60 * 24 * 365, 60));
+    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
+    DqcFactory.setPersistenceCache(new DiskCache2("/.unidata/dqc", true, 60 * 24 * 365, 60));
 
     // test
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
@@ -2835,7 +2854,7 @@ public class ToolsUI extends JPanel {
     // use HTTPClient
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
     ucar.nc2.dataset.HttpClientManager.init(provider, "ToolsUI");
-    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( false);
+    ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(false);
 
     // load protocol for ADDE URLs
     URLStreamHandlerFactory.install();

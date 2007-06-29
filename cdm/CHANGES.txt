@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.21
  Features
+  * Grib: handle Gaussian Lat/Lon correctly
   * NcML: new type: JoinExistingOne has one coordinate per file, with coordValue specified from filename
  API
   * static CoordinateAxis1DTime.factory, constructors made private

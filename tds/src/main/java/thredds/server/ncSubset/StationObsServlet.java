@@ -73,17 +73,21 @@ public class StationObsServlet extends AbstractServlet {
     super.init();
 
     allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
-    String metarDir = ThreddsConfig.get("NetcdfSubsetService.metarDataDir", "/opt/tomcat/content/thredds/public/stn/");
     if (!allow) return;
 
+    String metarDir = ThreddsConfig.get("NetcdfSubsetService.metarDataDir", "/opt/tomcat/content/thredds/public/stn/");
     File dir = new File(metarDir);
     if (!dir.exists()) {
       allow = false;
       return;
     }
 
-    soc = new StationObsCollection(metarDir, "/data/ldm/pub/decoded/netcdf/surface/metar/");
-    //soc = new StationObsCollection("C:/temp2/", "C:/data/metars/");
+    String metarRawDir = ThreddsConfig.get("NetcdfSubsetService.metarRawDir", "/data/ldm/pub/decoded/netcdf/surface/metar/");
+    File rawDir = new File(metarRawDir);
+    if (!rawDir.exists()) {
+      metarRawDir = null;
+    }
+    soc = new StationObsCollection(metarDir, metarRawDir);
   }
 
   public void destroy() {
@@ -97,6 +101,11 @@ public class StationObsServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       return;
     }
+    if (!soc.isReady()) {
+      res.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Service Temporarily Unavailable");
+      return;
+    }
+
     long start = System.currentTimeMillis();
 
     ServletUtil.logServerAccessSetup(req);

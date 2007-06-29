@@ -47,7 +47,7 @@ public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
   static private org.slf4j.Logger cacheLogger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
-  private static boolean debug = true, debugDetail = false;
+  private static boolean debug = true, debugDetail = true;
   private static long timeToScan = 0;
 
   private String archiveDir, realtimeDir;
@@ -55,7 +55,7 @@ public class StationObsCollection {
   private List<VariableSimpleIF> variableList;
   private DateFormatter format = new DateFormatter();
 
-  private boolean isRealtime;
+  private boolean isRealtime, isReady;
   private Date start, end;
   private Timer timer;
   private ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -65,7 +65,7 @@ public class StationObsCollection {
     this.realtimeDir = realtimeDir;
     this.isRealtime = (realtimeDir != null);
 
-    if (isRealtime) { // LOOK what if not realtime ??
+    if (isRealtime) {
       timer = new Timer("StationObsCollection.Rescan");
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.setTimeZone(TimeZone.getDefault()); // local time
@@ -76,6 +76,9 @@ public class StationObsCollection {
       timer.schedule(new ReinitTask(), 1000 * 5); // do in 5 secs
       timer.schedule(new ReinitTask(), c.getTime(), (long) 1000 * 60 * 60 * 24); // repeat once a day
       cacheLogger.info("StationObsCollection timer set to run at " + c.getTime());
+    } else {
+      initArchiveOnly();
+      isReady = true;
     }
   }
 
@@ -112,9 +115,53 @@ public class StationObsCollection {
     return archiveDir + "/" + realtimeDir;
   }
 
+  public boolean isReady() { return isReady; }
+
   public ArrayList<Dataset> getDatasets() {
     return datasetList;
   }
+
+  // read archive files - these have been rewritten for efficiency, and dont change in realtime
+  private void initArchiveOnly() {
+    CollectionManager archive = new CollectionManager( archiveDir, ff, dateFormatString);
+    datasetList = new ArrayList<Dataset>();
+    stationList = null;
+    variableList = null;
+
+    int count = 0;
+    long size = 0;
+
+    // each one becomes a Dataset and added to the list
+    ArrayList<CollectionManager.MyFile> list = new ArrayList<CollectionManager.MyFile>(archive.getList());
+    for (CollectionManager.MyFile myfile : list) {
+
+      // otherwise, add an sobsDataset
+      try {
+        Dataset ds = new Dataset(myfile.file, false);
+        datasetList.add(ds);
+        count++;
+        size += myfile.file.length();
+
+        if (null == stationList)
+          stationList = new ArrayList<Station>(ds.sod.getStations());
+
+        if (null == variableList)
+          variableList = new ArrayList<VariableSimpleIF>(ds.sod.getDataVariables());
+
+      } catch (IOException e) {
+        cacheLogger.error("Cant open " + myfile, e);
+      }
+    }
+
+    Collections.sort(datasetList);
+    int n = datasetList.size();
+    start = datasetList.get(0).time_start;
+    end = datasetList.get(n - 1).time_end;
+
+    size = size / 1000 / 1000;
+    cacheLogger.info("Reading directory " + archive + " # files = " + count + " size= " + size + " Mb");
+  }
+
 
   ////////////////////////////////////////////
   // keep track of the available datasets LOOK should be configurable
@@ -149,6 +196,7 @@ public class StationObsCollection {
     }
 
     datasetDesc = null; // mostly to create new time range
+    isReady = true;
   }
 
   // make new archive files

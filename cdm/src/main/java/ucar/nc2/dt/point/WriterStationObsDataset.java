@@ -332,6 +332,10 @@ public class WriterStationObsDataset {
       throw new IllegalStateException(e);
     }
 
+    // if there is no data
+    if (minDate == null) minDate = new Date();
+    if (maxDate == null) maxDate = new Date();
+    
     ncfile.updateAttribute(null, new Attribute("time_coverage_start", dateFormatter.toDateTimeStringISO(minDate)));
     ncfile.updateAttribute(null, new Attribute("time_coverage_end", dateFormatter.toDateTimeStringISO(maxDate)));
   }

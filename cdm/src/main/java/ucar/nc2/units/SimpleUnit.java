@@ -193,7 +193,7 @@ public class SimpleUnit {
     return uu.toString();
   }
 
-  /** Get underlying ucar.unit.Unit. */
+  /** Get underlying ucar.units.Unit. */
   public Unit getUnit() { return uu; }
 
     /** Convert given value of this unit to the new unit. */
@@ -220,6 +220,25 @@ public class SimpleUnit {
     }
 
     return uu.isCompatible( uuWant);
+  }
+
+
+  /**
+   * Is this an instance of an UnknownUnit?
+   *
+   * @return true if an instance of an UnknownUnit
+   */
+  public boolean isUnknownUnit() {
+    ucar.units.Unit uu = getUnit();
+    if (uu instanceof ucar.units.UnknownUnit)
+      return true;
+    if (uu instanceof ucar.units.ScaledUnit) {
+      ucar.units.ScaledUnit scu = (ucar.units.ScaledUnit) uu;
+      Unit u = scu.getUnit();
+      if (u instanceof ucar.units.UnknownUnit)
+        return true;
+    }
+    return false;
   }
 
   /**

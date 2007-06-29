@@ -80,4 +80,9 @@ public class StationImpl extends EarthLocationImpl implements Station, Comparabl
     StationImpl so = (StationImpl) o;
     return name.compareTo( so.getName());
   }
+
+  public String toString() {
+    return "name="+name+" desc="+desc+" "+super.toString(); 
+  }
+
 }

@@ -31,6 +31,7 @@ import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.GaussianLatitudes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,13 +39,13 @@ import java.util.Collections;
 
 /**
  * A horizontal coordinate system created from a Grib2GridDefinitionSection.
- *
- *         <p/>
- *         <p> Note on "false_easting" and "fale_northing" projection parameters:
- *         <ul><li>false_easting(northing) = The value added to all x (y) values in the rectangular coordinates for a map projection.
- *         This value frequently is assigned to eliminate negative numbers.
- *         Expressed in the unit of measure identified in Planar Coordinate Units.
- *         <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
+ * <p/>
+ * <p/>
+ * <p> Note on "false_easting" and "fale_northing" projection parameters:
+ * <ul><li>false_easting(northing) = The value added to all x (y) values in the rectangular coordinates for a map projection.
+ * This value frequently is assigned to eliminate negative numbers.
+ * Expressed in the unit of measure identified in Planar Coordinate Units.
+ * <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
  *
  * @author caron
  * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
@@ -55,7 +56,7 @@ public class GribHorizCoordSys {
   private Group g;
 
   private String grid_name, shape_name, id;
-  private boolean isLatLon = true;
+  private boolean isLatLon = true, isGaussian = false;
   HashMap varHash = new HashMap(200); // GribVariables that have this GribHorizCoordSys
   HashMap productHash = new HashMap(100); // List of GribVariable, sorted by product desc
   HashMap vcsHash = new HashMap(30); // GribVertCoordSys
@@ -77,10 +78,18 @@ public class GribHorizCoordSys {
     id = (g == null) ? grid_name : g.getName();
 
     if (isLatLon && (lookup.getProjectionType(gdsIndex) == TableLookup.GaussianLatLon)) {
-        // hack-a-whack
-      gdsIndex.dy = 2 * gdsIndex.La1 / gdsIndex.ny;
-      gdsIndex.nx = 800;
-      gdsIndex.dx = 360.0/gdsIndex.nx;
+      isGaussian = true;
+      double np = 90.0;
+      String nps = (String) gdsIndex.params.get("Np"); // # lats between pole and equator  (octet 26/27)
+      if (null != nps) {
+        np = Double.parseDouble(nps);
+      }
+      gdsIndex.dy = np; // fake - need to get actual gaussian calculation here
+
+      // hack-a-whack : who is this for ???
+      // gdsIndex.dy = 2 * gdsIndex.La1 / gdsIndex.ny;
+      //gdsIndex.nx = 800;
+      //gdsIndex.dx = 360.0/gdsIndex.nx;
     }
   }
 
@@ -131,15 +140,11 @@ public class GribHorizCoordSys {
 
     if (isLatLon) {
       double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
-      addCoordAxis(ncfile, "lat", gdsIndex.ny, gdsIndex.La1, dy, "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
+      if (isGaussian)
+        addGaussianLatAxis(ncfile, "lat", "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
+      else
+        addCoordAxis(ncfile, "lat", gdsIndex.ny, gdsIndex.La1, dy, "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
 
-      /* problem with negetive dx - illegal ??   fixed in grib library
-      double Lo2 = gdsIndex.readDouble("Lo2");
-      if ((gdsIndex.dx < 0) && !Double.isNaN(Lo2)) {
-        while (Lo2 < gdsIndex.Lo1)
-          Lo2 += 360.0;
-        gdsIndex.dx = (Lo2 - gdsIndex.Lo1)/gdsIndex.nx;        
-      } */
       addCoordAxis(ncfile, "lon", gdsIndex.nx, gdsIndex.Lo1, gdsIndex.dx, "degrees_east", "longitude coordinate", "longitude", AxisType.Lon);
       addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
@@ -155,7 +160,7 @@ public class GribHorizCoordSys {
   }
 
   private double[] addCoordAxis(NetcdfFile ncfile, String name, int n, double start, double incr, String units,
-                                String desc, String standard_name, AxisType axis) {
+          String desc, String standard_name, AxisType axis) {
 
     // ncfile.addDimension(g, new Dimension(name, n, true));
 
@@ -168,7 +173,7 @@ public class GribHorizCoordSys {
     for (int i = 0; i < n; i++) {
       data[i] = start + incr * i;
     }
-    Array dataArray = Array.factory(DataType.DOUBLE.getClassType(), new int []{n}, data);
+    Array dataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{n}, data);
     v.setCachedData(dataArray, false);
 
     v.addAttribute(new Attribute("units", units));
@@ -180,6 +185,74 @@ public class GribHorizCoordSys {
     ncfile.addVariable(g, v);
     return data;
   }
+
+  private double[] addGaussianLatAxis(NetcdfFile ncfile, String name, String units,
+          String desc, String standard_name, AxisType axis) {
+
+    double np = gdsIndex.readDouble("NumberParallels");
+    if (Double.isNaN(np)) 
+      np = gdsIndex.readDouble("Np");
+    if (Double.isNaN(np))
+      throw new IllegalArgumentException("Gaussian LAt/Lon grid must have NumberParallels parameter");
+    double startLat = gdsIndex.La1;
+    double endLat = gdsIndex.readDouble("La2");
+
+    int nlats = (int) (2 * np);
+    GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
+
+    int bestStartIndex = 0, bestEndIndex = 0;
+    double bestStartDiff = Double.MAX_VALUE;
+    double bestEndDiff = Double.MAX_VALUE;
+    for (int i=0; i<nlats; i++) {
+      double diff = Math.abs(gaussLats.latd[i] - startLat);
+      if (diff < bestStartDiff) {
+        bestStartDiff = diff;
+        bestStartIndex = i;
+      }
+      diff = Math.abs(gaussLats.latd[i] - endLat);
+      if (diff < bestEndDiff) {
+        bestEndDiff = diff;
+        bestEndIndex = i;
+      }
+    }
+    assert Math.abs(bestEndIndex - bestStartIndex + 1) == gdsIndex.ny;
+    boolean goesUp = bestEndIndex > bestStartIndex;
+
+    Variable v = new Variable(ncfile, g, null, name);
+    v.setDataType(DataType.DOUBLE);
+    v.setDimensions(name);
+
+    // create the data
+    int n = gdsIndex.ny;
+    int useIndex = bestStartIndex;
+    double[] data = new double[n];
+    double[] gaussw = new double[n];
+    for (int i = 0; i < n; i++) {
+      data[i] = gaussLats.latd[useIndex];
+      gaussw[i] = gaussLats.gaussw[useIndex];
+      if (goesUp) useIndex++; else useIndex--;
+    }
+    Array dataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{n}, data);
+    v.setCachedData(dataArray, false);
+
+    v.addAttribute(new Attribute("units", units));
+    v.addAttribute(new Attribute("long_name", desc));
+    v.addAttribute(new Attribute("standard_name", standard_name));
+    v.addAttribute(new Attribute("weights", "gaussw"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, axis.toString()));
+    ncfile.addVariable(g, v);
+
+    v = new Variable(ncfile, g, null, "gaussw");
+    v.setDataType(DataType.DOUBLE);
+    v.setDimensions(name);
+    v.addAttribute(new Attribute("long_name", "gaussian weights (unnormalized)"));
+    dataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{n}, gaussw);
+    v.setCachedData(dataArray, false);
+    ncfile.addVariable(g, v);
+
+    return data;
+  }
+
 
   private void addLatLon2D(NetcdfFile ncfile, double[] xData, double[] yData) {
 
@@ -215,10 +288,10 @@ public class GribHorizCoordSys {
         lonData[i * nx + j] = latlonPoint.getLongitude();
       }
     }
-    Array latDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int []{ny, nx}, latData);
+    Array latDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{ny, nx}, latData);
     latVar.setCachedData(latDataArray, false);
 
-    Array lonDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int []{ny, nx}, lonData);
+    Array lonDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{ny, nx}, lonData);
     lonVar.setCachedData(lonDataArray, false);
 
     ncfile.addVariable(g, latVar);
@@ -266,13 +339,13 @@ public class GribHorizCoordSys {
   }
 
   private void addGDSparams(Variable v) {
-        // add all the gds parameters
+    // add all the gds parameters
     java.util.Set keys = gdsIndex.params.keySet();
-    ArrayList keyList = new ArrayList( keys);
-    Collections.sort( keyList);
+    ArrayList keyList = new ArrayList(keys);
+    Collections.sort(keyList);
     for (int i = 0; i < keyList.size(); i++) {
       String key = (String) keyList.get(i);
-      String name = NetcdfFile.createValidNetcdfObjectName("GRIB_param_"+key);
+      String name = NetcdfFile.createValidNetcdfObjectName("GRIB_param_" + key);
 
       String vals = (String) gdsIndex.params.get(key);
       try {
@@ -372,7 +445,7 @@ public class GribHorizCoordSys {
     attributes.add(new Attribute("grid_mapping_name", "polar_stereographic"));
     attributes.add(new Attribute("longitude_of_projection_origin", new Double(gdsIndex.LoV)));
     attributes.add(new Attribute("scale_factor_at_projection_origin", new Double(scale)));
-    attributes.add( new Attribute("latitude_of_projection_origin", new Double(latOrigin)));
+    attributes.add(new Attribute("latitude_of_projection_origin", new Double(latOrigin)));
   }
 
   // Mercator
@@ -426,8 +499,8 @@ public class GribHorizCoordSys {
     double minor_axis = gdsIndex.readDouble("minor_axis_earth"); // km
 
     // Nr = altitude of camera from center, in units of radius
-    double nr = gdsIndex.readDouble("Nr")  * 1e-6 ;
-    double apparentDiameter = 2 * Math.sqrt((nr-1)/(nr+1)); // apparent diameter, units of radius (see Snyder p 173)
+    double nr = gdsIndex.readDouble("Nr") * 1e-6;
+    double apparentDiameter = 2 * Math.sqrt((nr - 1) / (nr + 1)); // apparent diameter, units of radius (see Snyder p 173)
 
     // app diameter kmeters / app diameter grid lengths = m per grid length
     double gridLengthX = major_axis * apparentDiameter / dx;
@@ -450,7 +523,7 @@ public class GribHorizCoordSys {
 
     } else { // "space view perspective"
 
-      double height = (nr - 1.0)  * radius;  // height = the height of the observing camera in km
+      double height = (nr - 1.0) * radius;  // height = the height of the observing camera in km
       proj = new VerticalPerspectiveView(Lat0, Lon0, radius, height);
 
       attributes.add(new Attribute("grid_mapping_name", "vertical_perspective"));
