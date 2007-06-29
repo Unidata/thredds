@@ -94,10 +94,12 @@ public class ExampleThreddsServlet extends HttpServlet
     InvDatasetScan.setCatalogServletName( "");
     DataRootHandler.init( contentPath, ServletUtil.getContextPath( this ) );
     dataRootHandler = DataRootHandler.getInstance();
+    List<String> cats = new ArrayList<String>();
+    cats.add( "catalog.xml");
+    cats.add( "extraCatalog.xml");
     try
     {
-      dataRootHandler.initCatalog( "catalog.xml" );
-      dataRootHandler.initCatalog( "extraCatalog.xml" );
+      dataRootHandler.initCatalogs( cats );
     }
     catch ( Throwable e )
     {

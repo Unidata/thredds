@@ -117,14 +117,14 @@ public class DataRootHandler {
     this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
   }
 
-  boolean registerConfigListener( ConfigListener cl )
+  public boolean registerConfigListener( ConfigListener cl )
   {
     if ( cl == null ) return false;
     if ( configListeners.contains( cl )) return false;
     return configListeners.add( cl);
   }
 
-  boolean unregisterConfigListener( ConfigListener cl )
+  public boolean unregisterConfigListener( ConfigListener cl )
   {
     if ( cl == null ) return false;
     return configListeners.remove( cl);
@@ -135,7 +135,7 @@ public class DataRootHandler {
   /**
    * Reinitialize lists of static catalogs, data roots, dataset Ids.
    */
-  synchronized void reinit() {
+  public synchronized void reinit() {
     // Notify listeners of start of initialization.
     isReinit = true;
     for ( ConfigListener cl : configListeners)
@@ -152,7 +152,7 @@ public class DataRootHandler {
   }
   volatile boolean isReinit = false;
 
-  synchronized void initCatalogs( List<String> configCatalogNames )
+  public synchronized void initCatalogs( List<String> configCatalogNames )
   {
     // Notify listeners of start of initialization if not reinit (in which case it is already done).
     if ( ! isReinit )
@@ -183,7 +183,7 @@ public class DataRootHandler {
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @throws IOException if reading catalog fails
    */
-  public synchronized void initCatalog(String path) throws IOException {
+  synchronized void initCatalog(String path) throws IOException {
     log.info("\n**************************************\nCatalog init "+path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
     initCatalog(path, true);
   }

@@ -258,6 +258,7 @@ public class TestDataRootHandler extends TestCase
     String dsScanName = "Test scan location containing only atomicadDatasets";
     String dsScanPath = "testScanLocationContainOnlyAtomicDatasets";
     String dsScanLocation = "content/dataDir";
+    String catReqPath = dsScanPath + "/" + catFilename;
 
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
@@ -297,18 +298,17 @@ public class TestDataRootHandler extends TestCase
     }
     
     // Read in catalog and check that it contains expected datasets.
-    String path = "testScanLocationContainOnlyAtomicDatasets/catalog.xml";
     URI uri = null;
     try
     {
-      uri = new URI( path );
+      uri = new URI( catReqPath );
     }
     catch ( URISyntaxException e )
     {
       fail( "DataRootHandler has no path match for DatasetScan <" + dsScanPath + ">: " + e.getMessage() );
       return;
     }
-    InvCatalogImpl cat = (InvCatalogImpl) drh.getCatalog( path, uri );
+    InvCatalogImpl cat = (InvCatalogImpl) drh.getCatalog( catReqPath, uri );
 
     InvDatasetImpl topDs = (InvDatasetImpl) cat.getDatasets().get(0);
     if ( topDs.getDatasets().size() != dataFileNames.size())
@@ -333,6 +333,149 @@ public class TestDataRootHandler extends TestCase
       fail( buf.toString() );
       return;
     }
+
+    // Remove temporary contentPath dir and contents
+    TestUtil.deleteDirectoryAndContent( contentPathFile );
+  }
+  /**
+   * Test behavior when dataset with name containing a plus sign ("+") is
+   * found under a datasetScan@location.
+   */
+  public void testScanLocationContainsDatasetWithPlusSignInName()
+  {
+    // Create a temporary contentPath directory for this test.
+    File contentPathFile = TestUtil.createDirectory( contentPath );
+    try
+    {
+      contentPathFile = contentPathFile.getCanonicalFile();
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      return;
+    }
+    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
+    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
+
+    // Create public data directory in content path.
+    File publicDataDir = new File( contentPathFile, "public/dataDir");
+    if ( ! publicDataDir.mkdirs() )
+    {
+      fail( "Failed to make content path public data directory <" + publicDataDir.getAbsolutePath() + ">." );
+      return;
+    }
+
+    // Create some data files in data directory
+    List<String> dataFileNames = new ArrayList<String>();
+    dataFileNames.add( "file1.nc");
+    dataFileNames.add( "file2.nc");
+    dataFileNames.add( "file3.nc");
+    dataFileNames.add( "file3+.nc");
+    dataFileNames.add( "file4.nc");
+    for ( String curName : dataFileNames )
+    {
+      File curFile = new File( publicDataDir, curName );
+      try
+      {
+        if ( ! curFile.createNewFile() )
+        {
+          fail( "Could not create data file <" + curFile.getAbsolutePath() + ">." );
+          return;
+        }
+      }
+      catch ( IOException e )
+      {
+        fail( "I/O error creating data file <" + curFile.getAbsolutePath() + ">: " + e.getMessage() );
+        return;
+      }
+    }
+
+    // Create a catalog with a datasetScan whose location contains an atomic dataset
+    // with a plus sign ("+") in its name. Write the catalog to contentPath/catFilename.
+    String catFilename = "catalog.xml";
+    String catalogName = "Test TDS Config Catalog where scan location contains an atomic dataset with a plus sign in its name.";
+    String dsScanName = "Test scan location containing an atomic dataset with plus sign in name";
+    String dsScanPath = "testScanLocationContainsDatasetWithPlusSignInName";
+    String dsScanLocation = "content/dataDir";
+    String catReqPath = dsScanPath + "/" + catFilename;
+
+    InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
+                                                  dsScanLocation, null, null, null );
+    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
+
+    // Call DataRootHandler.init() to point to contentPath directory
+    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    DataRootHandler drh = DataRootHandler.getInstance();
+
+    // Call DataRootHandler.initCatalog() on the config catalog
+    try
+    {
+      drh.reinit();
+      drh.initCatalog( catFilename );
+    }
+    catch ( FileNotFoundException e )
+    {
+      fail( e.getMessage() );
+      return;
+    }
+    catch ( IOException e )
+    {
+      fail( "I/O error while initializing catalog <" + catFilename + ">: " + e.getMessage() );
+      return;
+    }
+    catch ( IllegalArgumentException e )
+    {
+      fail( "IllegalArgumentException while initializing catalog <" + catFilename + ">: " + e.getMessage() );
+      return;
+    }
+
+    // Check that dsScan was added to DataRootHandler.
+    if ( ! drh.hasDataRootMatch( dsScanPath) )
+    {
+      fail( "DataRootHandler has no path match for DatasetScan <" + dsScanPath + ">." );
+      return;
+    }
+
+    // Read in catalog and check that it contains expected datasets.
+    URI uri = null;
+    try
+    {
+      uri = new URI( catReqPath );
+    }
+    catch ( URISyntaxException e )
+    {
+      fail( "DataRootHandler has no path match for DatasetScan <" + dsScanPath + ">: " + e.getMessage() );
+      return;
+    }
+    InvCatalogImpl cat = (InvCatalogImpl) drh.getCatalog( catReqPath, uri );
+
+    InvDatasetImpl topDs = (InvDatasetImpl) cat.getDatasets().get(0);
+    if ( topDs.getDatasets().size() != dataFileNames.size())
+    {
+      fail( "Number of datasets in generated catalog <" + topDs.getDatasets().size() + "> not as expected <" + dataFileNames.size() + ">." );
+      return;
+    }
+    boolean ok = true;
+    StringBuffer buf = new StringBuffer( "Generated catalog does not contain all the expected datasets (");
+    for ( String curName : dataFileNames )
+    {
+      if ( topDs.findDatasetByName( curName) == null )
+      {
+        ok = false;
+        buf.append( curName).append( ", ");
+      }
+    }
+    if ( ! ok )
+    {
+      buf.setLength( buf.lastIndexOf( ","));
+      buf.append( ").");
+      fail( buf.toString() );
+      return;
+    }
+
+    // Now test with HTML view
+    HtmlWriter.init( "/thredds", "TDS", "ver", "docs/", "upc.css", "thredds.jpg", "thredds", "unidataLogo.jpg", "Unidata", "folder.gif", "folder");
+    String catAsHtmlString = HtmlWriter.getInstance().convertCatalogToHtml( cat, true);
 
     // Remove temporary contentPath dir and contents
     TestUtil.deleteDirectoryAndContent( contentPathFile );

@@ -419,7 +419,7 @@ public class HtmlWriter
    *
    * @param cat catalog to write
    */
-  private String convertCatalogToHtml( InvCatalogImpl cat, boolean isLocalCatalog )
+  String convertCatalogToHtml( InvCatalogImpl cat, boolean isLocalCatalog )
   {
     StringBuffer sb = new StringBuffer( 10000 );
 
