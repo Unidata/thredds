@@ -19,6 +19,7 @@ public class TestGeoloc {
     suite.addTest(new TestSuite(TestLatLonProjection.class)); // */
 
     suite.addTest(new TestSuite(TestVertical.class));
+    //suite.addTest(new TestSuite(TestBB.class));
     //suite.addTest(new TestSuite(TestTiming.class));
     return suite;
   }

@@ -42,7 +42,7 @@ public final class ServiceType {
     public final static ServiceType FTP = new ServiceType("FTP");
     public final static ServiceType GRIDFTP = new ServiceType("GridFTP");
     public final static ServiceType FILE = new ServiceType("File");
-    public final static ServiceType NetcdfServer = new ServiceType("NetcdfServer"); 
+    public final static ServiceType NetcdfServer = new ServiceType("NetcdfServer"); // deprecated
     public final static ServiceType NetcdfSubset = new ServiceType("NetcdfSubset"); 
 
     public final static ServiceType LAS = new ServiceType("LAS");

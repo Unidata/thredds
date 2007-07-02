@@ -4,13 +4,14 @@ Build Date = @BUILDTIME@
 
 Changes in version 2.2.21
  Features
+  * VerticalPerspectiveView: projection overrides latlon2projBB, use in GeoGrid to calculate ranges
   * Grib: handle Gaussian Lat/Lon correctly
   * NcML: new type: JoinExistingOne has one coordinate per file, with coordValue specified from filename
  API
   * static CoordinateAxis1DTime.factory, constructors made private
   * LatLonRect.intersect()
  Bugs
-  * NetcddfFileWriter.addLatLonCoordinates bug
+  * NetcdfFileWriter.addLatLonCoordinates bug
   * FileWriter can handle String values variables by converting to char
   * CoordinateAxis1DTime handles char time coordinates by converting to String.
   * NetcdfDataset.setCoordSysWereAdded(false) : empty coordinate systems so they can be rebuilt correctly
@@ -44,7 +45,7 @@ Changes in version 2.2.20
   * GRIB: not handling polar stereographic when latOrigin = -90.0 (south pole)
   * DODS: Inflate must be bufferred; default compress = false
   * GRIB: always check first if the index file lives in the same dir as the regular file, and use it
-  * GRIB: latlonProjection coordSys dummy Variable did noyt have the GDS params attached.
+  * GRIB: latlonProjection coordSys dummy Variable did not have the GDS params attached.
   * Aggregation: If dataset.acquire gets error, resync aggregation, but throw IOException anyway.
   * InvDatasetFmrc: checkIfChanged when requesting a dataset.
   * remove opendap catalog, status, systemproperties requests

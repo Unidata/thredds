@@ -3,6 +3,7 @@ package ucar.nc2.dt.grid;
 import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.NCdump;
 import ucar.nc2.TestAll;
@@ -231,7 +232,7 @@ public class TestSubset extends TestCase {
 
   public void test3D() throws Exception {
     // GridDataset dataset = GridDataset.open("thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml");
-    GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/NCEP-NAM-CONUS_12km_best.ncd");
+    GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/NCEP-NAM-CONUS_12km_best.ncd");
 
     GeoGrid grid = dataset.findGridByName("Relative_humidity");
     assert null != grid;
@@ -397,6 +398,34 @@ public class TestSubset extends TestCase {
     GeoGrid subset = grid.subset( timeRange, new Range( bestZIndex, bestZIndex ), null, null );
     Array yxData = subset.readYXData( 0, 0 );
     NCdump.printArray(yxData, "xyData", System.out, null);
+
+    dataset.close();
+  }
+
+   public void testBBSubsetVP() throws Exception {
+    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
+    GridDataset dataset = GridDataset.open(filename);
+    GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    System.out.println("original bbox= "+gcs.getBoundingBox());
+    System.out.println("lat/lon bbox= "+gcs.getLatLonBoundingBox());
+
+    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect( new LatLonPointImpl(), 20.0, 40.0);
+    System.out.println("subset lat/lon bbox= "+llbb_subset);
+
+    GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+
+    System.out.println("result lat/lon bbox= "+gcs2.getLatLonBoundingBox());
+    System.out.println("result bbox= "+gcs2.getBoundingBox());
+
+    ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
+    System.out.println("projection mapArea= "+pr);
+    assert(pr.equals(gcs2.getBoundingBox()));
 
     dataset.close();
   }

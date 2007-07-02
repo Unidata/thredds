@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1 align="left"><img src="unidataLogo.png" width="75" height="75" align="middle"><strong>THREDDS</strong></h1>
+<hr>
+<h3><a name="20070702" id="20070702"></a>Status update 07/02/2007</h3>
+<ol>
+  <li> <strong>THREDDS Data Server (TDS)</strong>: Current release is 3.16.
+      <ol>
+        <li>The <a href="interfaceSpec/NetcdfSubsetService.html"><strong>NetCDF Subset Service</strong></a> is an experimental <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST</a> web service for subsetting CDM scientific datasets. The subsetting is specified using earth coordinates, such as lat/lon bounding boxes and date ranges, rather than index ranges that refer to the underlying data arrays. The data arrays are subsetted but not resampled or reprojected, and preserve the resolution and accuracy of the original dataset.</li>
+        <li>New authorization/authentication capabilities allow servers to be configured with <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/RestrictedAccess.html"><strong>restricted dataset access</strong></a>. </li>
+        <ul>
+          <li>Can use CAS, CAMS or other <strong><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/PluggableRestrictedAccess.html">pluggable authorization</a></strong> </li>
+        </ul>
+        <li><strong><a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">Forecast Model Run Collections</a> : </strong>Automatically create 1D subsets of 2D time datasets. (<a href="http://motherlode.ucar.edu:8080/thredds/catalogServices?catalog=http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km/catalog.xml">Example</a>) </li>
+        <li><strong><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html">Runtime configuration</a></strong> completed, allows users to configure, load classes at runtime.</li>
+        <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/DatasetSource.html"><strong>Dataset Source</strong></a> plugin: allows users to create custom and virtual datasets.</li>
+        <li>Refactor of <strong>dataset filter</strong> interface (CrawlableDatasetFilter) simplifies new implementations</li>
+        <li>TDS <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/index.html"><strong>Tutorial</strong></a> will be updated for next Unidata workshop. </li>
+        <li><strong>OPeNDAP</strong> server: direct implementation of ascii ascii response (not recursive call) </li>
+      </ol>
+  </li>
+  <br>
+  <li><strong>Common Data Model</strong>: Current release is 2.2.20, last stable release using Java 1.4.
+      <ol>
+        <li>J<strong>oint development with opendap.org</strong> 
+          <ul>
+              <li><a href="http://www.unidata.ucar.edu/proposals/2007128SDCI/index.html">Proposal</a> accepted to <strong>merge OPeNDAP/netCDF</strong> library with netCDF-4 library</li>
+              <li>Add all necessary capabilities for <strong><a href="http://www.unidata.ucar.edu/staff/caron/presentations/OpendapSecurity.ppt">HTTP</a></strong> <a href="http://www.unidata.ucar.edu/staff/caron/presentations/OpendapSecurity.ppt"><strong>authentication</strong></a> in OPeNDAP Java library</li>
+          </ul>
+        </li>
+        <li><strong>Radial Datatype Collections</strong> now can be visualizeed in the IDV</li>
+        <li>Starting to handle <strong>McIDAS AREA files</strong> : McIdasAreaProjections, prototype IOSP. </li>
+        <li>NcML
+            <ul>
+              <li><strong>Specify IOSP</strong> class, parameter, buffer_size. </li>
+              <li><strong><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">New aggregation types</a></strong>: ForecastModelRunCollection, ForecastModelRunSingleCollection, JoinExistingOne.</li>
+            </ul>
+        </li>
+        <li><strong><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">Runtime configuration</a></strong> completed, allows users to configure, load classes at runtime. </li>
+        <li> <strong>GRIB files</strong></li>
+        <ul>
+          <li>can now handle thin grids, gaussian grids </li>
+          <li> vertical coordinates with multiple values, considered as bounds.</li>
+        </ul>
+        <li>Allow <strong>bzip2</strong> compression. </li>
+        <li>Netcdf <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html"><strong>Tutorial</strong></a> will be updated for next Unidata workshop. </li>
+      </ol>
+  </li>
+  <br>
+  <li><strong>International Standards</strong>:
+      <ul>
+        <li><strong>FeatureType Meeting</strong> in Abingdon, UK (CCLRC Rutherford Appleton Laboratory, British Atmospheric Data Center) to look at harmonizing the data models used in CDM, CSML, and OGC/ISO standards.</li>
+      </ul>
+  </li>
+</ol>
+<hr WIDTH="100%">
+<address>
+<img src="images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
+</address>
+<p><br>
+</p>
+</body>
+</html>

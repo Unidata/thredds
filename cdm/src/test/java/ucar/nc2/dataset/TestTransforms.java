@@ -502,4 +502,43 @@ public class TestTransforms extends TestCase {
     ncd.close();
   }
 
+  public void testVerticalPerspective() throws IOException, InvalidRangeException {
+    String filename = TestAll.upcShareTestDataDir + "grid/transforms/Eumetsat.VerticalPerspective.grb";
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
+    VariableDS lev = (VariableDS) ncd.findVariable("Space_View_Perspective_or_Orthographic");
+    assert lev != null;
+    System.out.println(" dump of ctv = \n"+lev);
+
+    VariableDS v = (VariableDS) ncd.findVariable("Pixel_scene_type");
+    assert v != null;
+
+    List cList = v.getCoordinateSystems();
+    assert cList != null;
+    assert cList.size() == 1;
+    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
+
+    List pList = new ArrayList();
+    List tList = csys.getCoordinateTransforms();
+    assert tList != null;
+    for (int i = 0; i < tList.size(); i++) {
+      CoordinateTransform ct = (CoordinateTransform) tList.get(i);
+      if (ct.getTransformType() == TransformType.Projection)
+        pList.add( ct);
+    }
+    assert pList.size() == 1;
+    CoordinateTransform ct = (CoordinateTransform) pList.get(0);
+    assert ct.getTransformType() == TransformType.Projection;
+    assert ct instanceof ProjectionCT;
+
+    ProjectionCT vct = (ProjectionCT) ct;
+    Projection proj = vct.getProjection();
+    assert proj != null;
+    assert proj instanceof VerticalPerspectiveView : proj.getClass().getName();
+
+    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
+    System.out.println(" dump of equivilent ctv = \n"+ctv);
+
+    ncd.close();
+  }
+
 }

@@ -21,6 +21,23 @@ public class TestDodsServer extends TestCase {
     super(name);
   }
 
+  String dataset = "http://localhost:8080/thredds/dodsC/gribCollection/NAM_CONUS_20km_surface_20060315_1800.grib1";
+  public void testGrid() {
+    String grid = dataset + ".ascii?Visibility[0:1:0][0:1:0][0:1:0]";
+    System.out.println(" request= "+grid);
+    String result = thredds.util.IO.readURLcontents(grid);
+    System.out.println(" result= "+result);
+    assert result.indexOf("Error") < 0;  // not an error message
+  }
+
+  public void testGridArray() {
+    String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+    System.out.println(" request= "+array);
+    String result = thredds.util.IO.readURLcontents(array);
+    System.out.println(" result= "+result);
+    assert result.indexOf("Error") < 0;  // not an error message
+  }
+
   public void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTDSAll.open(null);
 

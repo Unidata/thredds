@@ -26,7 +26,7 @@ public class TestLatLonProjection extends TestCase {
       Format.formatDouble(LatLonPoint.lonNormal( lon, center), 8, 5));
   } */
 
-  void runCenter(double center) {
+  void runCenter() {
     LatLonPointImpl ptL = new LatLonPointImpl(-73.79, 0.0);
     double xinc = 22.5;
     double yinc = 20.0;
@@ -43,8 +43,29 @@ public class TestLatLonProjection extends TestCase {
     }
   }
 
+  void runCenter(double center) {
+    LatLonPointImpl ptL = new LatLonPointImpl(0.0, 0.0);
+    double xinc = 22.5;
+    double yinc = 20.0;
+    for (double lon = 0.0; lon < 380.0; lon += xinc) {
+      ptL.setLongitude(center+lon);
+      LatLonRect llbb = new LatLonRect(ptL, yinc, xinc);
+
+      ProjectionRect ma2 = p.latLonToProjBB(llbb);
+      LatLonRect p2 = p.projToLatLonBB(ma2);
+
+      assert llbb.equals( p2) : llbb + " => " + ma2 + " => " + p2;
+
+      System.out.println(llbb + " => " + p2);
+    }
+  }
+
   public void testLatLonToProjBB() {
+    runCenter();
     runCenter( 110.45454545454547);
+    runCenter( -110.45454545454547);
+    runCenter( 0.0);
+    runCenter( 420.0);
   }
 
   public LatLonRect testIntersection(LatLonRect bbox, LatLonRect bbox2) {

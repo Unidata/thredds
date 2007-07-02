@@ -26,6 +26,7 @@ import ucar.nc2.util.NamedObject;
 import ucar.nc2.units.*;
 
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
 import ucar.units.ConversionException;
@@ -993,24 +994,36 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   public List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
 
-    // first clip the request rectangle to the bounding box of the grid
-    LatLonRect bb = getLatLonBoundingBox();
-    rect = bb.intersect( rect);
-    if (null == rect)
-      throw new InvalidRangeException("Request Bounding box does not intersect Grid");
-
-    LatLonPointImpl llpt = rect.getLowerLeftPoint();
-    LatLonPointImpl urpt = rect.getUpperRightPoint();
-    LatLonPointImpl lrpt = rect.getLowerRightPoint();
-    LatLonPointImpl ulpt = rect.getUpperLeftPoint();
+    ProjectionImpl proj = getProjection();
+    if (proj != null && !(proj instanceof VerticalPerspectiveView)) { // LOOK kludge - how to do this generrally ??
+      // first clip the request rectangle to the bounding box of the grid
+      LatLonRect bb = getLatLonBoundingBox();
+      rect = bb.intersect( rect);
+      if (null == rect)
+        throw new InvalidRangeException("Request Bounding box does not intersect Grid");
+    }
 
     if (isLatLon()) {
+
+      LatLonPointImpl llpt = rect.getLowerLeftPoint();
+      LatLonPointImpl urpt = rect.getUpperRightPoint();
+      LatLonPointImpl lrpt = rect.getLowerRightPoint();
+      LatLonPointImpl ulpt = rect.getUpperLeftPoint();
+
       minx = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
       miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
       maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
       maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
 
     } else {
+      ProjectionRect prect = getProjection().latLonToProjBB(rect); // allow VerticalPerspectiveView to override
+      minx = prect.getMinPoint().getX();
+      miny = prect.getMinPoint().getY();
+      maxx = prect.getMaxPoint().getX();
+      maxy = prect.getMaxPoint().getY();
+
+      /*
+      see ProjectionImpl.latLonToProjBB2()
       Projection dataProjection = getProjection();
       ProjectionPoint ll = dataProjection.latLonToProj(llpt, new ProjectionPointImpl());
       ProjectionPoint ur = dataProjection.latLonToProj(urpt, new ProjectionPointImpl());
@@ -1020,7 +1033,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       minx = Math.min(ll.getX(), ul.getX());
       miny = Math.min(ll.getY(), lr.getY());
       maxx = Math.max(ur.getX(), lr.getX());
-      maxy = Math.max(ul.getY(), ur.getY());
+      maxy = Math.max(ul.getY(), ur.getY()); */
     }
 
     CoordinateAxis xaxis = getXHorizAxis();
@@ -1036,7 +1049,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       int maxxIndex = xaxis1.findCoordElementBounded(maxx);
       int maxyIndex = yaxis1.findCoordElementBounded(maxy);
 
-      ArrayList list = new ArrayList();
+      List<Range> list = new ArrayList<Range>();
       list.add(new Range(Math.min(minyIndex, maxyIndex), Math.max(minyIndex, maxyIndex)));
       list.add(new Range(Math.min(minxIndex, maxxIndex), Math.max(minxIndex, maxxIndex)));
       return list;

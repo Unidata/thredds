@@ -120,6 +120,28 @@ public class CoordSysTable extends JPanel {
         infoWindow.showIfNotIconified();
       }
     });
+    axisPopup.addAction("Show Value Differences", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
+        infoTA.clear();
+        try {
+          if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
+            CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
+            double[] mids = axis1D.getCoordValues();
+            for (int i=0; i<mids.length-1;i++)
+              mids[i] = mids[i+1] - mids[i];
+            mids[mids.length-1] = 0.0;
+
+            printArray("midpoint differences=", mids);
+          }
+        } catch (Exception e1) {
+          infoTA.appendLine(e1.getMessage());
+        }
+        infoTA.gotoTop();
+        infoWindow.showIfNotIconified();
+      }
+    });
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
