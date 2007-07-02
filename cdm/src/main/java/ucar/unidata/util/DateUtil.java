@@ -95,6 +95,19 @@ public class DateUtil {
     /**
      * format time
      *
+     * @param date date
+     *
+     * @return formatted time
+     */
+    public static String getTimeAsISO8601(Date date) {
+        return getTimeAsISO8601(date.getTime());
+    }
+
+
+
+    /**
+     * format time
+     *
      * @param time time
      *
      * @return formatted time
