@@ -1,5 +1,5 @@
 /*
- * $Id: DatedObject.java,v 1.7 2007/05/25 13:42:42 jeffmc Exp $
+ * $Id: DatedObject.java,v 1.8 2007/07/03 12:38:36 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -114,6 +114,20 @@ public class DatedObject implements DatedThing {
         List result = new ArrayList();
         for(int i=0;i<dates.size();i++) {
             result.add(new DatedObject((Date)dates.get(i)));
+        }
+        return result;
+    }
+
+    /**
+     * A utility method that takes a list of DatedThing-s and returns a list of Date-s
+     *
+     * @param datedThings List of dates to unwrap
+     * @return A list of Dates
+     */
+    public static List unwrap(List datedThings) {
+        List result = new ArrayList();
+        for(int i=0;i<datedThings.size();i++) {
+            result.add(((DatedThing)datedThings.get(i)).getDate());
         }
         return result;
     }
