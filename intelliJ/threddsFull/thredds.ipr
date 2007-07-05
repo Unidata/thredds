@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="4" relativePaths="false">
+<project version="4" relativePaths="true">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
   </component>
@@ -317,7 +317,7 @@
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
-    <output url="file://C:/Ethan/code/threddsFullDev/target/classes" />
+    <output url="file://$PROJECT_DIR$/../../../target/classes" />
   </component>
   <component name="ProjectRunConfigurationManager" />
   <component name="RmicSettings">
