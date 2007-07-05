@@ -3,11 +3,11 @@
   <component name="AppServerSpecificValidatorsManager" />
   <component name="ModuleRootManager" />
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../../tds/target/classes" />
+    <output url="file://$MODULE_DIR$/../../tds/target/classes" />
     <exclude-output />
     <exploded url="file://$MODULE_DIR$/../../tds/target/war" />
     <exclude-exploded />
-    <output-test url="file://$MODULE_DIR$/../../../tds/target/test/classes" />
+    <output-test url="file://$MODULE_DIR$/../../tds/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../tds">
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/test/java" isTestSource="true" />
