@@ -1,6 +1,5 @@
-// $Id:VariableIF.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,15 +19,15 @@
  */
 package ucar.nc2;
 
-import java.util.List;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 
 /**
  * The public interface to a Variable.
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-public interface VariableIF {
+public interface VariableIF extends VariableSimpleIF {
     public java.lang.String getName();
     public java.lang.String getShortName();
     public void getNameAndDimensions(java.lang.StringBuffer result, boolean useFullName, boolean strict);
@@ -42,34 +41,41 @@ public interface VariableIF {
     public int getElementSize();
     public int[] getShape();
 
-    public java.util.List getDimensions();
+    public java.util.List<Dimension> getDimensions();
     public ucar.nc2.Dimension getDimension(int index);
     public int findDimensionIndex(java.lang.String dimName);
-    public List getDimensionsAll();
-    public Dimension getCoordinateDimension();
 
-    public java.util.List getAttributes();
+    public java.util.List<Attribute> getAttributes();
     public ucar.nc2.Attribute findAttribute(java.lang.String attName);
     public ucar.nc2.Attribute findAttributeIgnoreCase(java.lang.String attName);
 
     public ucar.nc2.Group getParentGroup();
-    // public boolean isSection();
-    public ucar.nc2.Variable section(java.util.List ranges) throws ucar.ma2.InvalidRangeException;
-    public java.util.List getRanges();
+    public ucar.nc2.Variable section(java.util.List<Range> ranges) throws ucar.ma2.InvalidRangeException;
+    public Section getShapeAsSection();
+    public java.util.List<Range> getRanges();
 
     public ucar.ma2.Array read(int[] origin, int[] shape) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     public ucar.ma2.Array read(java.lang.String rangeSpec) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-    public ucar.ma2.Array read(java.util.List ranges) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    //public ucar.ma2.Array read(java.util.List<Range> ranges) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    public ucar.ma2.Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
     public ucar.ma2.Array read() throws java.io.IOException;
+
+    public boolean isCoordinateVariable();
     public boolean isMemberOfStructure();
     public boolean isVariableLength();
     public boolean isMetadata();
     public ucar.nc2.Structure getParentStructure();
 
-    public ucar.ma2.Array readAllStructuresSpec(java.lang.String rangeSpec, boolean flatten)
-       throws java.io.IOException, ucar.ma2.InvalidRangeException;
-    public ucar.ma2.Array readAllStructures(java.util.List ranges, boolean flatten)
-       throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    public String getDescription();
+    public String getUnitsString();
+
+    // use only if isMemberOfStructure
+    public java.util.List<Dimension> getDimensionsAll();
+    public ucar.ma2.Array readAllStructuresSpec(java.lang.String rangeSpec, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    //public ucar.ma2.Array readAllStructures(java.util.List<Range> ranges, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    public ucar.ma2.Array readAllStructures(ucar.ma2.Section section, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+
+    // use only if isScalar()
     public byte readScalarByte() throws java.io.IOException;
     public short readScalarShort() throws java.io.IOException;
     public int readScalarInt() throws java.io.IOException;
@@ -80,5 +86,4 @@ public interface VariableIF {
 
     // debug
     public java.lang.String toStringDebug();
-
 }

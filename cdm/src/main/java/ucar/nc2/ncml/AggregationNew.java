@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,6 +22,7 @@ package ucar.nc2.ncml;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
@@ -32,7 +32,6 @@ import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * JoinNew Aggregation.
@@ -50,7 +49,7 @@ public class AggregationNew extends Aggregation {
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(null);
-    NcMLReader.transferDataset(typical, ncDataset, isNew ? null : new MyReplaceVariableCheck());
+    DatasetConstructor.transferDataset(typical, ncDataset, isNew ? null : new MyReplaceVariableCheck());
 
     // create aggregation dimension
     String dimName = getDimensionName();
@@ -70,7 +69,7 @@ public class AggregationNew extends Aggregation {
       joinAggCoord.setDimensions(dimName); // reset its dimension
       if (!isNew) joinAggCoord.setCachedData(null, false); // get rid of any cached data, since its now wrong
     }
-    joinAggCoord.setProxyReader(this);
+    joinAggCoord.setProxyReader2(this);
 
     if (isDate()) {
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
@@ -78,29 +77,27 @@ public class AggregationNew extends Aggregation {
 
     // now we can create all the aggNew variables
     // use only named variables
-    List vars = getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      String varname = (String) vars.get(i);
-      Variable v = ncDataset.getRootGroup().findVariable(varname);
-      if (v == null) {
+    for (String varname : getVariables()) {
+      Variable aggVar = ncDataset.getRootGroup().findVariable(varname);
+      if (aggVar == null) {
         logger.error(ncDataset.getLocation() + " aggNewDimension cant find variable " + varname);
         continue;
       }
 
       // construct new variable, replace old one
-      VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
-              dimName + " " + v.getDimensionsString(), null, null);
-      vagg.setProxyReader(this);
-      NcMLReader.transferVariableAttributes(v, vagg);
+      VariableDS vagg = new VariableDS(ncDataset, null, null, aggVar.getShortName(), aggVar.getDataType(),
+          dimName + " " + aggVar.getDimensionsString(), null, null);
+      vagg.setProxyReader2(this);
+      DatasetConstructor.transferVariableAttributes(aggVar, vagg);
 
       // _CoordinateAxes if it exists must be modified
-      Attribute att = vagg.findAttribute(_Coordinate.Axes.toString());
-      if (att!= null) {
-        String axes = dimName +" "+ att.getStringValue();
-        vagg.addAttribute(new Attribute(_Coordinate.Axes.toString(), axes));
+      Attribute att = vagg.findAttribute(_Coordinate.Axes);
+      if (att != null) {
+        String axes = dimName + " " + att.getStringValue();
+        vagg.addAttribute(new Attribute(_Coordinate.Axes, axes));
       }
 
-      ncDataset.removeVariable(null, v.getShortName());
+      ncDataset.removeVariable(null, aggVar.getShortName());
       ncDataset.addVariable(null, vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;

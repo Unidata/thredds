@@ -49,78 +49,69 @@ public class FmrcReport {
     }
 
     StringBuffer sbuff = new StringBuffer();
-    ArrayList errs = new ArrayList();
+    List<ErrMessage> errs = new ArrayList<ErrMessage>();
 
-    List runSequences = fmrc.getRunSequences();
-    for (int i = 0; i < runSequences.size(); i++) {
-      FmrcInventory.RunSeq haveSeq = (FmrcInventory.RunSeq) runSequences.get(i);
-
-      List vars = haveSeq.getVariables();
-      for (int j = 0; j < vars.size(); j++) {
-        FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
+    for (FmrcInventory.RunSeq haveSeq : fmrc.getRunSequences()) {
+      List<FmrcInventory.UberGrid> vars = haveSeq.getVariables();
+      for (FmrcInventory.UberGrid uv : vars) {
         String sname = uv.getName();
         FmrcDefinition.Grid g = def.findGridByName(sname);
         if (g == null) {
-          errs.add( new ErrMessage(new Date(0), uv.name, "Extra Variable (not in definition)", ""));
+          errs.add(new ErrMessage(new Date(0), uv.name, "Extra Variable (not in definition)", ""));
           continue;
         }
         if (debug) System.out.println(uv.name);
 
-        for (int k = 0; k < uv.runs.size(); k++) {
-          FmrcInventory.RunExpected rune = (FmrcInventory.RunExpected) uv.runs.get(k);
+        for (FmrcInventory.RunExpected rune : uv.runs) {
           ForecastModelRunInventory.TimeCoord haveTc = rune.run.tc;
           ForecastModelRunInventory.TimeCoord wantTc = rune.expected;
 
-          if (debug) System.out.println(" "+rune.run.runTime);
+          if (debug) System.out.println(" " + rune.run.runTime);
 
           if (rune.expected == null) {
-            errs.add( new ErrMessage(rune.run.runTime, uv.name, "Extra Variable (not in definition)", ""));
+            errs.add(new ErrMessage(rune.run.runTime, uv.name, "Extra Variable (not in definition)", ""));
             continue;
           }
 
           sbuff.setLength(0);
           if (showMissing && findMissing(haveTc.getOffsetHours(), wantTc.getOffsetHours(), sbuff))
-            errs.add( new ErrMessage(rune.run.runTime, uv.name, "Missing All Grids at Offset hour:", sbuff.toString()));
+            errs.add(new ErrMessage(rune.run.runTime, uv.name, "Missing All Grids at Offset hour:", sbuff.toString()));
 
           sbuff.setLength(0);
           if (findMissing(wantTc.getOffsetHours(), haveTc.getOffsetHours(), sbuff))
-            errs.add( new ErrMessage(rune.run.runTime, uv.name, "Extra Grid at Offset hour:", sbuff.toString()));
+            errs.add(new ErrMessage(rune.run.runTime, uv.name, "Extra Grid at Offset hour:", sbuff.toString()));
 
           // ForecastModelRun.VertCoord haveVc =  rune.grid.vc;
 
-          if (showMissing)  {
+          if (showMissing) {
             sbuff.setLength(0);
             boolean haveErrs = false;
-            double[] offsets = haveTc.getOffsetHours();
-            for (int l = 0; l < offsets.length; l++) {
-              double offset = offsets[l];
-              double[] wantVc = normalize( rune.expectedGrid.getVertCoords(offset));
-              double[] haveVc = normalize( rune.grid.getVertCoords(offset));
+            for (double offset : haveTc.getOffsetHours()) {
+              double[] wantVc = normalize(rune.expectedGrid.getVertCoords(offset));
+              double[] haveVc = normalize(rune.grid.getVertCoords(offset));
               if (findMissing(haveVc, wantVc, sbuff)) {
                 haveErrs = true;
-                sbuff.append("("+offset+") ");
+                sbuff.append("(").append(offset).append(") ");
               }
             }
             if (haveErrs)
-              errs.add( new ErrMessage(rune.run.runTime, uv.name, "Missing Some Grids:", sbuff.toString()));
+              errs.add(new ErrMessage(rune.run.runTime, uv.name, "Missing Some Grids:", sbuff.toString()));
           }
 
           sbuff.setLength(0);
           boolean haveErrs = false;
-          double[] offsets = haveTc.getOffsetHours();
-          for (int l = 0; l < offsets.length; l++) {
-            double offset = offsets[l];
-            if (debug) System.out.println("  "+offset);
+          for (double offset : haveTc.getOffsetHours()) {
+            if (debug) System.out.println("  " + offset);
 
-            double[] wantVc = normalize( rune.expectedGrid.getVertCoords(offset));
-            double[] haveVc = normalize( rune.grid.getVertCoords(offset));
+            double[] wantVc = normalize(rune.expectedGrid.getVertCoords(offset));
+            double[] haveVc = normalize(rune.grid.getVertCoords(offset));
             if (findMissing(wantVc, haveVc, sbuff)) {
               haveErrs = true;
-              sbuff.append("("+offset+") ");
+              sbuff.append("(").append(offset).append(") ");
             }
           }
           if (haveErrs)
-            errs.add( new ErrMessage(rune.run.runTime, uv.name, "Extra Grids:", sbuff.toString()));
+            errs.add(new ErrMessage(rune.run.runTime, uv.name, "Extra Grids:", sbuff.toString()));
 
         }
       }
@@ -131,21 +122,19 @@ public class FmrcReport {
     String currentType = null;
     DateFormatter formatter = new  DateFormatter();
 
-    for (int i = 0; i < errs.size(); i++) {
-      ErrMessage err = (ErrMessage) errs.get(i);
-
+    for (ErrMessage err : errs) {
       if (err.runDate != currentDate) {
         if (currentDate != null) out.println();
-        out.println(" Run "+formatter.toDateTimeString(err.runDate));
+        out.println(" Run " + formatter.toDateTimeString(err.runDate));
         currentDate = err.runDate;
         currentType = null;
       }
 
       if (!err.type.equals(currentType)) {
-        out.println("  "+err.type);
+        out.println("  " + err.type);
         currentType = err.type;
       }
-      out.println("   "+err.varName+": "+err.message);
+      out.println("   " + err.varName + ": " + err.message);
     }
     out.println();
   }
@@ -191,7 +180,7 @@ public class FmrcReport {
         countStandard++;
 
       } else if (standard[countStandard] < test[countTest]) {
-        sbuff.append(" "+standard[countStandard]);
+        sbuff.append(" ").append(standard[countStandard]);
         errs = true;
         countStandard++;
 
@@ -201,7 +190,7 @@ public class FmrcReport {
     }
 
     while (countStandard < standard.length) {
-      sbuff.append(" "+standard[countStandard]);
+      sbuff.append(" ").append(standard[countStandard]);
       errs = true;
       countStandard++;
     }

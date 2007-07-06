@@ -37,7 +37,7 @@ public class TimeRecords {
   static void doOne(String filename, boolean isTrajectory) throws IOException {
     System.out.println("\nTime " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     readColumns(ncfile);
     readRows(ncfile);
     if (isTrajectory)

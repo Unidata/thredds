@@ -22,7 +22,7 @@ import java.net.URL;
  * @author caron
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
-public abstract class GribServiceProvider implements IOServiceProvider {
+public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
   protected StringBuffer parseInfo = new StringBuffer();

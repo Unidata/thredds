@@ -1,6 +1,5 @@
-// $Id:TableParser.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,7 +28,6 @@ import java.net.URL;
  * Utility class to read and parse a fixed length table.
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class TableParser {
 
@@ -39,7 +37,7 @@ public class TableParser {
    * @param urlString starts with http, read URL contenets, else read file.
    * @see #readTable(InputStream ios, String format, int maxLines)
    */
-  static public ArrayList readTable(String urlString, String format, int maxLines) throws IOException, NumberFormatException {
+  static public List<Record> readTable(String urlString, String format, int maxLines) throws IOException, NumberFormatException {
 
     InputStream ios;
     if (urlString.startsWith("http:")) {
@@ -60,11 +58,11 @@ public class TableParser {
    * @param format describe format of each line.
    * @param maxLines maximum number of lines to parse, set to < 0 to read all
    * @return List of TableParser.Record
-   * @throws IOException
-   * @throws NumberFormatException
+   * @throws IOException on read error
+   * @throws NumberFormatException  on parse number error
    */
-  static public ArrayList readTable(InputStream ios, String format, int maxLines) throws IOException, NumberFormatException {
-    ArrayList fields = new ArrayList();
+  static public List<Record> readTable(InputStream ios, String format, int maxLines) throws IOException, NumberFormatException {
+    List<Field> fields = new ArrayList<Field>();
 
     int start = 0;
     StringTokenizer stoker = new StringTokenizer( format, " ,");
@@ -82,7 +80,7 @@ public class TableParser {
       start = end+1;
     }
 
-    ArrayList records = new ArrayList();
+    List<Record> records = new ArrayList<Record>();
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
     int count = 0;
@@ -134,17 +132,20 @@ public class TableParser {
    * A set of values for one line.
    */
   static public class Record {
-    private ArrayList values = new ArrayList();
+    private List<Object> values = new ArrayList<Object>();
 
     Record( String line, List fields) {
-      Iterator iter = fields.iterator();
-      while (iter.hasNext()) {
-        Field f =  (Field) iter.next();
-        values.add( f.parse( line));
+      for (Object field : fields) {
+        Field f = (Field) field;
+        values.add(f.parse(line));
       }
     }
 
-    /** get the kth value of this record. Will be a String, Double, or Integer. */
+    /**
+     * Get the kth value of this record. Will be a String, Double, or Integer. 
+     * @param k which one
+     * @return object
+     */
     public Object get(int k) { return values.get(k); }
   }
 

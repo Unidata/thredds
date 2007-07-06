@@ -360,7 +360,7 @@ public class GeoGridTable extends JPanel {
       this.axis = v;
 
       setName( v.getName());
-      setCoordVar( v.getCoordinateDimension() != null);
+      setCoordVar( v.isCoordinateVariable());
       setDescription( v.getDescription());
       setUnits( v.getUnitsString());
 

@@ -1,6 +1,5 @@
-// $Id: TestScaleOffsetMissing.java 70 2006-07-13 15:16:05Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -51,7 +50,7 @@ public class TestScaleOffsetMissing extends TestCase {
     v.addAttribute( new Attribute("units", "meters"));
     assert v.getUnitsString().equals("meters");
 
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     Structure s = (Structure) ncfile.findVariable("record");
     assert (s != null);
 
@@ -65,7 +64,7 @@ public class TestScaleOffsetMissing extends TestCase {
     assert null != m;
     assert m.getUnitsString().equals("meters");
 
-    double dval = sdata.convertScalarDouble( m);
+    double dval = sdata.getScalarDouble( m);
     assert dval == -999.0;
 
     int count = 0;
@@ -76,7 +75,7 @@ public class TestScaleOffsetMissing extends TestCase {
       assert m.getUnitsString().equals("meters");
 
       assert null != m;
-      dval = sdata.convertScalarDouble( m);
+      dval = sdata.getScalarDouble( m.getName());
       double expect = (count == 0) ? -999.0 : 13.0;
       assert dval == expect : dval + "!="+ expect ;
       count++;
@@ -96,14 +95,14 @@ public class TestScaleOffsetMissing extends TestCase {
     float val = data.getFloat( ima);
     assert Float.isNaN(val) : val;
 
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     Structure s = (Structure) ncfile.findVariable("record");
     assert (s != null);
 
     StructureData sdata = s.readStructure(0);
     StructureMembers.Member m = sdata.findMember("testScale");
     assert null != m;
-    float dval = sdata.convertScalarFloat( m);
+    float dval = sdata.getScalarFloat( m);
     assert Float.isNaN(dval) : dval;
 
     int count = 0;
@@ -113,7 +112,7 @@ public class TestScaleOffsetMissing extends TestCase {
       m = sdata.findMember("testScale");
       assert null != m;
 
-      dval = sdata.convertScalarFloat( m);
+      dval = sdata.getScalarFloat( m);
       if (count == 0)
         assert Float.isNaN(dval) : dval;
       else
@@ -134,7 +133,7 @@ public class TestScaleOffsetMissing extends TestCase {
     v.addAttribute( new Attribute("units", "meters"));
     assert v.getUnitsString().equals("meters");
 
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     Structure s = (Structure) ncfile.findVariable("record");
     assert (s != null);
 

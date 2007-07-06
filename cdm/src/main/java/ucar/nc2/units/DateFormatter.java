@@ -1,6 +1,5 @@
-// $Id: DateFormatter.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ import java.util.Date;
  * Use one of these in each thread for thread safety.
  *
  * @author caron
- * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 public class DateFormatter {
 
@@ -155,7 +153,10 @@ public class DateFormatter {
     return toDateOnlyString( date);
   }
 
-  /** date only format= yyyy-MM-dd */
+  /** date only format= yyyy-MM-dd
+   * @param date format this date
+   * @return date formatted as date only
+   */
   public String toDateOnlyString( Date date) {
     dateOnlyFormat();
     return dateOnlyFormat.format( date);
@@ -168,7 +169,10 @@ public class DateFormatter {
      return toDateTimeString(date);
    }
 
-  /** "standard date format" = yyyy-MM-dd HH:mm:ssZ */
+  /** "standard date format" = yyyy-MM-dd HH:mm:ssZ
+   * @param date format this date
+   * @return date formatted as date/time
+   */
   public String toDateTimeString( Date date) {
     stdDateTimeFormat();
     return stdDateTimeFormat.format( date) +"Z";
@@ -181,7 +185,10 @@ public class DateFormatter {
      return toDateTimeStringISO(date);
    }
 
-  /** "ISO date format" = yyyy-MM-dd'T'HH:mm:ssZ */
+  /** "ISO date format" = yyyy-MM-dd'T'HH:mm:ssZ
+   *  @param date format this date
+   * @return date formatted as ISO date string
+   */
   public String toDateTimeStringISO( Date date) {
     isoDateTimeFormat();
     return isoDateTimeFormat.format( date) +"Z";

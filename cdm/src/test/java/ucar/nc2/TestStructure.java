@@ -16,8 +16,8 @@ public class TestStructure extends TestCase {
 
   NetcdfFile ncfile;
   protected void setUp() throws Exception {
-    ncfile = TestNC2.openFile("testWriteRecord.nc");
-    ncfile.addRecordStructure();
+    ncfile = TestLocalNC2.openFile("testWriteRecord.nc");
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
   protected void tearDown() throws Exception {
     ncfile.close();
@@ -171,7 +171,7 @@ public class TestStructure extends TestCase {
     checkValues( data.slice(0, 0), 0); // check the values are right
     checkValues( data.slice(0, 1), 1); // check the values are right
 
-    data = rh.readAllStructures((List)null, true);
+    data = rh.readAllStructures(null, true);
     assert data instanceof ArrayInt.D3;
     checkValues( data.slice(0, 0), 0); // check the values are right
     checkValues( data.slice(0, 1), 1); // check the values are right
@@ -189,7 +189,7 @@ public class TestStructure extends TestCase {
 
   public void readBothWays(String filename) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(filename);
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     //System.out.println(ncfile);
     ncfile.close();
 
@@ -199,9 +199,9 @@ public class TestStructure extends TestCase {
   }
 
   public void testReadBothWaysV3mode() throws IOException {
-    readBothWays(TestAll.upcShareTestDataDir+"grid/netcdf/mm5/n040.nc");
-    readBothWays( TestAll.cdmTestDataDir +"testWriteRecord.nc");
-    readBothWays(TestAll.upcShareTestDataDir+"station/ldm-old/2004061915_metar.nc");
+    //readBothWays(TestAll.upcShareTestDataDir+"grid/netcdf/mm5/n040.nc");
+    readBothWays( TestLocal.cdmTestDataDir +"testWriteRecord.nc");
+    //readBothWays(TestAll.upcShareTestDataDir+"station/ldm-old/2004061915_metar.nc");
 
     System.out.println("*** testReadBothWaysV3mode ok");
   }

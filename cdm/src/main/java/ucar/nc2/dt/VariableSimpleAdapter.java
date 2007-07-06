@@ -1,6 +1,5 @@
-// $Id:VariableSimpleAdapter.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,7 +21,8 @@ package ucar.nc2.dt;
 
 import ucar.ma2.DataType;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.Dimension;
+import ucar.nc2.Attribute;
 
 import java.util.List;
 
@@ -30,7 +30,6 @@ import java.util.List;
 /**
  * Adapt a VariableSimpleIF into another VariableSimpleIF, so it can be subclassed.
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class VariableSimpleAdapter implements VariableSimpleIF {
@@ -49,13 +48,13 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
 
   public int getRank() {  return v.getRank(); }
   public int[] getShape() { return v.getShape(); }
-  public List getDimensions() { return v.getDimensions(); }
-  public List getAttributes() { return v.getAttributes(); }
+  public List<Dimension> getDimensions() { return v.getDimensions(); }
+  public List<Attribute> getAttributes() { return v.getAttributes(); }
   public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
     return v.findAttributeIgnoreCase(attName);
   }
 
-  public double convertScaleOffsetMissing(byte value) {
+ /* public double convertScaleOffsetMissing(byte value) {
     return v.convertScaleOffsetMissing( value);
   }
   public double convertScaleOffsetMissing(short value) {
@@ -69,15 +68,16 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   }
   public double convertScaleOffsetMissing(double value) {
     return v.convertScaleOffsetMissing( value);
-  }
+  }  */
 
   public String toString() {
     return v.toString();
   }
 
-  /** Implement Comparable */  
-  public int compareTo(Object o) {
-    VariableSimpleIF vo = (VariableSimpleIF) o;
-    return getName().compareTo( vo.getName());
+  /**
+   * Sort by name
+   */
+  public int compareTo(VariableSimpleIF o) {
+    return getName().compareTo(o.getName());
   }
 }

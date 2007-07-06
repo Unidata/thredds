@@ -1,6 +1,5 @@
-// $Id:NetcdfDatasetInfo.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,6 +24,7 @@ import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.Variable;
 import ucar.unidata.util.Parameter;
 
 import org.jdom.*;
@@ -52,11 +52,17 @@ public class NetcdfDatasetInfo {
     this.ds = ds;
   }
 
-  /** Detailed information when the coordinate systems were parsed */
+  /**
+   * Detailed information when the coordinate systems were parsed
+   * @return StringBuffer containing parsing info
+   */
   public StringBuffer getParseInfo( ) {
     return parseInfo;
   }
-  /** Specific advice to a user about problems with the coordinate information in the file. */
+  /**
+   * Specific advice to a user about problems with the coordinate information in the file.
+   * @return StringBuffer containing advice to a user about problems with the coordinate information in the file.
+   */
   public StringBuffer getUserAdvice( ) {
     return userAdvice;
   }
@@ -70,22 +76,26 @@ public class NetcdfDatasetInfo {
 
   void setCoordSysBuilderName( String coordSysBuilderName) { this.coordSysBuilderName = coordSysBuilderName; }
 
-  /** Get the name of the COordSysBuilder that parses this file. */
+  /**
+   * Get the name of the CoordSysBuilder that parses this file.
+   * @return the name of the CoordSysBuilder that parses this file.
+   */
   public String getCoordSysBuilderName( ) { return coordSysBuilderName; }
 
-  /** Write the information as an XML document */
+  /** Write the information as an XML document
+   * @return String contining netcdfDatasetInfo XML
+   */
   public String writeXML( )  {
     XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
     return fmt.outputString( makeDocument());
   }
 
   public GridCoordSys getGridCoordSys(VariableEnhanced ve) {
-    List csList = ve.getCoordinateSystems();
-    for (int i = 0; i < csList.size(); i++) {
-      CoordinateSystem cs = (CoordinateSystem) csList.get(i);
-      if (GridCoordSys.isGridCoordSys( null, cs)) {
-        GridCoordSys gcs = new GridCoordSys( cs, null);
-        if (gcs.isComplete( ve))
+    List<CoordinateSystem> csList = ve.getCoordinateSystems();
+    for (CoordinateSystem cs : csList) {
+      if (GridCoordSys.isGridCoordSys(null, cs)) {
+        GridCoordSys gcs = new GridCoordSys(cs, null);
+        if (gcs.isComplete(ve))
           return gcs;
       }
     }
@@ -97,7 +107,9 @@ public class NetcdfDatasetInfo {
     fmt.output( makeDocument(), os);
   }
 
-  /** Create an XML document from this info */
+  /** Create an XML document from this info
+   * @return netcdfDatasetInfo XML document
+   */
   public Document makeDocument() {
     Element rootElem = new Element("netcdfDatasetInfo");
     Document doc = new Document(rootElem);
@@ -108,10 +120,9 @@ public class NetcdfDatasetInfo {
     int nDataVariables = 0;
     int nOtherVariables = 0;
 
-    List axes = ds.getCoordinateAxes();
+    List<CoordinateAxis> axes = ds.getCoordinateAxes();
     int nCoordAxes = axes.size();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis =  (CoordinateAxis) axes.get(i);
+    for (CoordinateAxis axis : axes) {
       Element axisElem = new Element("axis");
       rootElem.addContent(axisElem);
 
@@ -126,22 +137,21 @@ public class NetcdfDatasetInfo {
       if (axis instanceof CoordinateAxis1D) {
         CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
         if (axis1D.isRegular())
-          axisElem.setAttribute("regular",  ucar.unidata.util.Format.d( axis1D.getIncrement(), 5));
+          axisElem.setAttribute("regular", ucar.unidata.util.Format.d(axis1D.getIncrement(), 5));
       }
     }
 
-    List csList = ds.getCoordinateSystems();
-    for (int i = 0; i < csList.size(); i++) {
-      CoordinateSystem cs =  (CoordinateSystem) csList.get(i);
+    List<CoordinateSystem> csList = ds.getCoordinateSystems();
+    for (CoordinateSystem cs : csList) {
       Element csElem;
-      if (GridCoordSys.isGridCoordSys( null, cs)) {
-        GridCoordSys gcs = new GridCoordSys( cs, null);
+      if (GridCoordSys.isGridCoordSys(null, cs)) {
+        GridCoordSys gcs = new GridCoordSys(cs, null);
         csElem = new Element("gridCoordSystem");
         csElem.setAttribute("name", cs.getName());
         csElem.setAttribute("horizX", gcs.getXHorizAxis().getName());
         csElem.setAttribute("horizY", gcs.getYHorizAxis().getName());
         if (gcs.hasVerticalAxis())
-           csElem.setAttribute("vertical", gcs.getVerticalAxis().getName());
+          csElem.setAttribute("vertical", gcs.getVerticalAxis().getName());
         if (gcs.hasTimeAxis())
           csElem.setAttribute("time", cs.getTaxis().getName());
       } else {
@@ -149,9 +159,8 @@ public class NetcdfDatasetInfo {
         csElem.setAttribute("name", cs.getName());
       }
 
-      List coordTransforms = cs.getCoordinateTransforms();
-      for (int j = 0; j < coordTransforms.size(); j++) {
-        CoordinateTransform ct =  (CoordinateTransform) coordTransforms.get(j);
+      List<CoordinateTransform> coordTransforms = cs.getCoordinateTransforms();
+      for (CoordinateTransform ct : coordTransforms) {
         Element ctElem = new Element("coordTransform");
         csElem.addContent(ctElem);
         ctElem.setAttribute("name", ct.getName());
@@ -161,17 +170,15 @@ public class NetcdfDatasetInfo {
       rootElem.addContent(csElem);
     }
 
-    List coordTransforms = ds.getCoordinateTransforms();
-    for (int i = 0; i < coordTransforms.size(); i++) {
-      CoordinateTransform ct =  (CoordinateTransform) coordTransforms.get(i);
+    List<CoordinateTransform> coordTransforms = ds.getCoordinateTransforms();
+    for (CoordinateTransform ct : coordTransforms) {
       Element ctElem = new Element("coordTransform");
       rootElem.addContent(ctElem);
 
       ctElem.setAttribute("name", ct.getName());
       ctElem.setAttribute("type", ct.getTransformType().toString());
-      List params = ct.getParameters();
-      for (int j = 0; j < params.size(); j++) {
-        Parameter pp = (Parameter) params.get(j);
+      List<Parameter> params = ct.getParameters();
+      for (Parameter pp : params) {
         Element ppElem = new Element("param");
         ctElem.addContent(ppElem);
         ppElem.setAttribute("name", pp.getName());
@@ -179,9 +186,8 @@ public class NetcdfDatasetInfo {
       }
     }
 
-    List vars = ds.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      VariableEnhanced ve =  (VariableEnhanced) vars.get(i);
+    for (Variable var : ds.getVariables()) {
+      VariableEnhanced ve = (VariableEnhanced) var;
       if (ve instanceof CoordinateAxis) continue;
       GridCoordSys gcs = getGridCoordSys(ve);
       if (null != gcs) {
@@ -199,9 +205,8 @@ public class NetcdfDatasetInfo {
       }
     }
 
-    vars = ds.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      VariableEnhanced ve =  (VariableEnhanced) vars.get(i);
+    for (Variable var : ds.getVariables()) {
+      VariableEnhanced ve =  (VariableEnhanced) var;
       if (ve instanceof CoordinateAxis) continue;
       GridCoordSys gcs = getGridCoordSys(ve);
       if (null == gcs) {

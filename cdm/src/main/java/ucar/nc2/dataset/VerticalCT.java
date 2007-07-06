@@ -1,6 +1,5 @@
-// $Id:VerticalCT.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,7 +31,6 @@ import ucar.nc2.Dimension;
  * delegated to a class implementing ucar.unidata.geoloc.vertical.VerticalTransform;
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class VerticalCT extends CoordinateTransform {
@@ -64,27 +62,45 @@ public class VerticalCT extends CoordinateTransform {
     this.vt = from.getVerticalTransform();
   }
 
-  /** get the Vertical Transform type */
+  /**
+   * get the Vertical Transform type
+   * @return the Vertical Transform Type
+    */
   public VerticalCT.Type getVerticalTransformType() { return type; }
 
-  /** get the Vertical Transform function */
+  /**
+   * get the Vertical Transform function - actually does the calculations.
+   * @return the Vertical Transform function
+   */
   public VerticalTransform getVerticalTransform() { return vt; }
 
-  /** get the Vertical Transform function */
-  public CoordTransBuilderIF getBuilder() { return builder; }
-
-  /** set the Vertical Transform function */
+ /** set the Vertical Transform function
+  * @param vt the VerticalTransform
+  */
   public void setVerticalTransform(VerticalTransform vt ) { this.vt = vt; }
 
-  /** use the builder to make the Vertical Transform function */
+  /**
+   * Use the builder to make the Vertical Transform function
+   *
+   * @param ds containing dataset
+   * @param timeDim time Dimension
+   * @return VerticalTransform
+   * @see CoordTransBuilderIF#makeMathTransform
+   */
   public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
     this.vt = builder.makeMathTransform(ds, timeDim, this);
     return this.vt;
   }
 
+  /** get the CoordTransBuilderIF
+   * @return builder
+   */
+  public CoordTransBuilderIF getBuilder() { return builder; }
+
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // inner class VerticalCT.Type
-  private static java.util.HashMap hash = new java.util.HashMap(10);
+  private static java.util.Map<String,Type> hash = new java.util.HashMap<String,Type>(10);
 
   /**
    * Enumeration of known Vertical transformations.
@@ -105,7 +121,9 @@ public class VerticalCT extends CoordinateTransform {
 
     private String name;
 
-    /** Constructor */
+    /** Constructor
+     * @param s name of Type
+     */
     public Type(String s) {
       this.name = s;
       hash.put( s, this);
@@ -113,12 +131,12 @@ public class VerticalCT extends CoordinateTransform {
 
     /**
      * Find the VerticalCT.Type that matches this name.
-     * @param name
+     * @param name find this name
      * @return VerticalCT.Type or null if no match.
      */
     public static Type getType(String name) {
       if (name == null) return null;
-      return (Type) hash.get( name);
+      return hash.get( name);
     }
     public String toString() { return name; }
   }

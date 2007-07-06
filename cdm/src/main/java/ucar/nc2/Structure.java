@@ -1,6 +1,5 @@
-// $Id:Structure.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,17 +36,22 @@ import java.io.IOException;
  *  Arrays in the StructureData.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class Structure extends Variable {
-  private static int defaultBufferSize = 500 * 1000; // bytes
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
+  private static int defaultBufferSize = 500 * 1000; // 500K bytes
 
-  protected HashMap memberHash = new HashMap(); // Variable
-  protected ArrayList members = new ArrayList(); // Variable
-  protected ArrayList memberNames = new ArrayList(); // String
+  protected List<Variable> members = new ArrayList<Variable>();
+  protected List<String> memberNames = new ArrayList<String>(); // String
 
-  /** Constructor */
+  /** Constructor
+   *
+   * @param ncfile    the containing NetcdfFile.
+   * @param group     the containing group; if null, use rootGroup
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+   */
   public Structure( NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     super (ncfile, group, parent, shortName);
     this.dataType = DataType.STRUCTURE;
@@ -55,28 +59,32 @@ public class Structure extends Variable {
   }
 
 
-  /** copy constructor;
+  /** Copy constructor.
    * @param from  copy from this
    * @param reparent : if true, reparent the members. if so, cant use 'from' anymore
    */
   protected Structure( Structure from, boolean reparent) {
     super( from);
 
-    members = new ArrayList(from.members);
-    memberNames = new ArrayList(from.memberNames);
+    members = new ArrayList<Variable>(from.members);
+    memberNames = new ArrayList<String>(from.memberNames);
 
     if (reparent) {
-      for (int i=0; i<members.size(); i++) {
-        Variable v = (Variable) members.get(i);
-        v.setParentStructure( this);
+      for (Variable v : members) {
+        v.setParentStructure(this);
       }
     }
   }
 
+  // for section and slice
+  @Override
+  protected Variable copy() {
+    return new Structure(this, false); // dont need to reparent
+  }
+
   protected int calcStructureSize() {
     int structureSize = 0;
-    for (int i = 0; i < members.size(); i++) {
-      Variable member = (Variable) members.get(i);
+    for (Variable member : members) {
       structureSize += member.getSize() * member.getElementSize();
     }
     return structureSize;
@@ -93,49 +101,61 @@ public class Structure extends Variable {
     this.cache.cachingSet = true;
   }
 
-  /** Override so it returns a Structure */
-  public Variable section(List section) throws InvalidRangeException  {
-    Variable vs = new Structure( this, false);  // LOOK ??
-    makeSection( vs, section);
-    return vs;
-  }
-
-  /** Add a member variable */
+  /** Add a member variable
+   * @param v add this variable as a member of this structure
+   */
   public void addMemberVariable( Variable v) {
+    if (isImmutable()) throw new IllegalStateException("Cant modify");
     members.add( v);
     memberNames.add( v.getShortName());
-    memberHash.put(  v.getShortName(), v);
+    //smembers = null;
     v.setParentStructure( this);
   }
 
-  /** Set the list of member variables. */
+  /** Set the list of member variables.
+   * @param vars this is the list of member variables
+   */
   public void setMemberVariables( ArrayList<Variable> vars) {
-    members = new ArrayList();
-    memberNames = new ArrayList();
-    memberHash = new HashMap(2*vars.size());
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      members.add( v);
-      memberNames.add( v.getShortName());
-      memberHash.put(  v.getShortName(), v);
+    if (isImmutable()) throw new IllegalStateException("Cant modify");
+    members = new ArrayList<Variable>();
+    memberNames = new ArrayList<String>();
+    //smembers = null;
+    for (Variable v : vars) {
+      members.add(v);
+      memberNames.add(v.getShortName());
     }
   }
 
-  /** Remove a Variable : uses the variable hashCode to find it.
-   * @return true if was found and removed */
+  /** Remove a Variable : uses the Variable name to find it.
+   * @param v remove this variable as a member of this structure
+   * @return true if was found and removed
+   */
   public boolean removeMemberVariable( Variable v) {
+    if (isImmutable()) throw new IllegalStateException("Cant modify");
     if (v == null) return false;
-    memberNames.remove( v.getShortName());
-    return members.remove( v);
+    //smembers = null;
+    java.util.Iterator<Variable> iter = members.iterator();
+    while (iter.hasNext()) {
+      Variable mv =  iter.next();
+      if (mv.getShortName().equals(v.getShortName())) {
+        iter.remove();
+        memberNames.remove( v.getShortName());
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Replace a Variable with another that has the same name : uses the variable name to find it.
    * If old Var is not found, just add the new one
+   * @param newVar add this variable as a member of this structure
    * @return true if was found and replaced */
   public boolean replaceMemberVariable( Variable newVar) {
+    if (isImmutable()) throw new IllegalStateException("Cant modify");
+    //smembers = null;
     boolean found = false;
     for (int i = 0; i < members.size(); i++) {
-      Variable v = (Variable) members.get(i);
+      Variable v =  members.get(i);
       if (v.getShortName().equals( newVar.getShortName())) {
         members.set( i, newVar);
         found = true;
@@ -148,56 +168,73 @@ public class Structure extends Variable {
   }
 
   /** Set the parent group of this Structure, and all member variables. */
+  @Override
   public void setParentGroup(Group group) {
+    if (isImmutable()) throw new IllegalStateException("Cant modify");
     super.setParentGroup(group);
-    for (int i=0; i<members.size(); i++) {
-      Variable v = (Variable) members.get(i);
-      v.setParentGroup( group);
+    for (Variable v : members) {
+      v.setParentGroup(group);
     }
- }
+  }
+
+  @Override
+  public Variable setImmutable() {
+    members = Collections.unmodifiableList(members);
+    memberNames = Collections.unmodifiableList(memberNames);
+    for (Variable m : members)
+      m.setImmutable();
+
+    super.setImmutable();
+    return this;
+  }
 
   /** Get the variables contained directly in this Structure.
    * @return List of type Variable.
    */
-  public java.util.List getVariables() { return members; }
+  public java.util.List<Variable> getVariables() { return isImmutable() ?  members : new ArrayList<Variable>(members); }
 
   /** Get the (short) names of the variables contained directly in this Structure.
    * @return List of type String.
    */
-  public java.util.List getVariableNames() { return memberNames; }
+  public java.util.List<String> getVariableNames() { return isImmutable() ? memberNames : new ArrayList<String>(memberNames); }
 
   /**
-   * Find the Variable member with the specified (short) name, or null if not found.
+   * Find the Variable member with the specified (short) name.
+   * @param shortName name of the member variable.
+   * @return the Variable member with the specified (short) name, or null if not found.
    */
   public Variable findVariable(String shortName) {
     if (shortName == null) return null;
-    return (Variable) memberHash.get( shortName);
+    for( Variable v : members) {
+      if (shortName.equals(v.getShortName()))
+        return v;
+    }
+    return null;
   }
 
   /**
-   * Make the StructureMembers object corresponding to this Structure.
+   * @return the StructureMembers object corresponding to this Structure.
    */
   public StructureMembers makeStructureMembers() {
-    if (smembers == null) {
-      smembers = new StructureMembers( getName());
-      java.util.Iterator viter = getVariables().iterator();
-      while (viter.hasNext()) {
-        Variable v2 = (Variable) viter.next();
+    //if (smembers == null) {
+      StructureMembers smembers = new StructureMembers( getName());
+      for (Variable v2 : getVariables()) {
         StructureMembers.Member m = new StructureMembers.Member( v2.getShortName(), v2.getDescription(),
             v2.getUnitsString(), v2.getDataType(), v2.getShape());
         if (v2 instanceof Structure)
           m.setStructureMembers( ((Structure)v2).makeStructureMembers());
         smembers.addMember( m);
       }
-    }
+    //}
     return smembers;
   }
-  private StructureMembers smembers;
+  //protected StructureMembers smembers = null;
 
   /**
    * Get the size of one element of the Structure.
    * @return size (in bytes)
    */
+  @Override
   public int getElementSize() {
     if (elementSize == -1) calcElementSize();
     return elementSize;
@@ -205,8 +242,7 @@ public class Structure extends Variable {
 
   protected void calcElementSize() {
     int total = 0;
-    for (int i=0; i<members.size(); i++) {
-      Variable v = (Variable) members.get(i);
+    for (Variable v : members) {
       total += v.getElementSize() * v.getSize();
     }
     elementSize = total;
@@ -215,6 +251,8 @@ public class Structure extends Variable {
   /**
    * Use this when this is a scalar Structure. Its the same as read(), but it extracts the single
    * StructureData out of the Array.
+   * @return StructureData for a scalar
+   * @throws java.io.IOException on read error
    */
   public StructureData readStructure() throws IOException {
     if (getRank() != 0) throw new java.lang.UnsupportedOperationException("not a scalar structure");
@@ -226,7 +264,10 @@ public class Structure extends Variable {
   /**
    * Use this when this is a one dimensional array of Structures. This will read only the ith structure,
    * and return the data as a StructureData object.
+   * @param index index into 1D array
    * @return ith StructureData
+   * @throws java.io.IOException on read error
+   * @throws ucar.ma2.InvalidRangeException if index out of range
    */
   public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
     if (getRank() > 1) throw new java.lang.UnsupportedOperationException("not a vector structure");
@@ -239,7 +280,11 @@ public class Structure extends Variable {
 
   /**
    * Use this when this is a one dimensional array of Structures.
+   * @param start start at this index
+   * @param count return this many StructureData
    * @return start - start + count-1 StructureData records in an ArrayStructure
+   * @throws java.io.IOException on read error
+   * @throws ucar.ma2.InvalidRangeException if start, count out of range
    */
   public ArrayStructure readStructure(int start, int count) throws IOException, ucar.ma2.InvalidRangeException {
     if (getRank() != 1) throw new java.lang.UnsupportedOperationException("not a vector structure");
@@ -309,10 +354,12 @@ public class Structure extends Variable {
         System.out.println("Iterator structureSize= "+structureSize+" readAtaTime= "+readAtaTime);
     }
 
-    /** Return true if more records are available */
+    /** @return true if more records are available */
     public boolean hasNext() { return count < recnum; }
 
-    /** Get next StructureData record. Do not keep references to it. */
+    /** @return next StructureData record. Do not keep references to it.
+     * @throws java.io.IOException on read error
+     */
     public StructureData next() throws IOException {
       if (count >= readStart)
         readNext();
@@ -329,7 +376,10 @@ public class Structure extends Variable {
         if (NetcdfFile.debugStructureIterator)
           System.out.println("readNext "+count+" "+readStart);
 
-      } catch (InvalidRangeException e) { } // cant happen
+      } catch (InvalidRangeException e) {
+        log.error("Structure.Iterator.readNext() ",e);
+        throw new IllegalStateException("Structure.Iterator.readNext() ",e);
+      } // cant happen
       readStart += need;
       readCount = 0;
     }
@@ -337,15 +387,16 @@ public class Structure extends Variable {
 
   ////////////////////////////////////////////
 
-  /** Get String with name and attributes. Used in short descriptions like tooltips. */
+  /** Get String with name and attributes. Used in short descriptions like tooltips.
+   * @return  name and attributes String
+   */
   public String getNameAndAttributes() {
     StringBuffer sbuff = new StringBuffer();
     sbuff.append("Structure ");
     getNameAndDimensions(sbuff, false, false);
     sbuff.append("\n");
-    for (int i=0; i<attributes.size(); i++) {
-      Attribute att = (Attribute) attributes.get(i);
-      sbuff.append("  "+getShortName()+":");
+    for (Attribute att : attributes) {
+      sbuff.append("  ").append(getShortName()).append(":");
       sbuff.append(att.toString());
       sbuff.append(";");
       sbuff.append("\n");
@@ -354,10 +405,12 @@ public class Structure extends Variable {
   }
 
   /** String representation of Structure and nested variables. */
+  @Override
   public String toString() {
     return writeCDL("   ", false, false);
   }
 
+  @Override
   public String writeCDL(String space, boolean useFullName, boolean strict) {
     StringBuffer buf = new StringBuffer();
     buf.setLength(0);
@@ -367,8 +420,7 @@ public class Structure extends Variable {
     buf.append(" {\n");
 
     String nestedSpace = "  "+space;
-    for (int i=0; i<members.size(); i++) {
-      Variable v = (Variable) members.get(i);
+    for (Variable v : members) {
       buf.append(v.writeCDL(nestedSpace, useFullName, strict));
     }
 
@@ -379,15 +431,14 @@ public class Structure extends Variable {
     buf.append(extraInfo());
     buf.append("\n");
 
-    java.util.Iterator iter = getAttributes().iterator();
-    while (iter.hasNext()) {
+    for (Attribute att : getAttributes()) {
       buf.append(nestedSpace);
       if (strict) buf.append(getShortName());
       buf.append("  :");
-      Attribute att = (Attribute) iter.next();
       buf.append(att.toString());
       buf.append(";");
-      if (!strict && (att.getDataType() != DataType.STRING)) buf.append(" // "+att.getDataType());
+      if (!strict && (att.getDataType() != DataType.STRING))
+        buf.append(" // ").append(att.getDataType());
       buf.append("\n");
     }
 

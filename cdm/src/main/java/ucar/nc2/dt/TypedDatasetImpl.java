@@ -1,6 +1,5 @@
-// $Id:TypedDatasetImpl.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,28 +22,24 @@ package ucar.nc2.dt;
 
 import ucar.nc2.*;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.ma2.StructureData;
-import ucar.ma2.DataType;
 
 import java.util.*;
-import java.text.ParseException;
 
 /**
  * Superclass for implementations of TypedDataset.
  *
  * @author John Caron
- * @version $Id:TypedDatasetImpl.java 51 2006-07-12 17:13:13Z caron $
  */
 
 public abstract class TypedDatasetImpl implements TypedDataset {
-  protected NetcdfFile ncfile;
+  protected NetcdfDataset ncfile;
   protected String title, desc, location;
   protected Date startDate, endDate;
   protected LatLonRect boundingBox;
-  protected ArrayList dataVariables = new ArrayList(); // VariableSimpleIF
+  protected List<VariableSimpleIF> dataVariables = new ArrayList<VariableSimpleIF>(); // VariableSimpleIF
   protected StringBuffer parseInfo = new StringBuffer();
 
   /** No-arg constuctor */
@@ -62,8 +57,10 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     this.location = location;
   }
 
-  /** Construtor when theres a NetcdfFile underneath */
-  public TypedDatasetImpl(NetcdfFile ncfile) {
+  /** Construtor when theres a NetcdfFile underneath
+   * @param ncfile adapt this NetcdfDataset
+   */
+  public TypedDatasetImpl(NetcdfDataset ncfile) {
     this.ncfile = ncfile;
     this.location = ncfile.getLocation();
 
@@ -97,8 +94,8 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   public String getTitle() { return title; }
   public String getDescription() { return desc; }
   public String getLocationURI() {return location; }
-  public List getGlobalAttributes() {
-    if (ncfile == null) return new ArrayList();
+  public List<Attribute> getGlobalAttributes() {
+    if (ncfile == null) return new ArrayList<Attribute>();
     return ncfile.getGlobalAttributes();
   }
 
@@ -115,29 +112,27 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     DateFormatter formatter = new DateFormatter();
     StringBuffer sbuff = new StringBuffer();
 
-    sbuff.append("  location= "+getLocationURI()+"\n");
-    sbuff.append("  title= "+getTitle()+"\n");
-    sbuff.append("  desc= "+getDescription()+"\n");
-    sbuff.append("  start= "+formatter.toDateTimeString( getStartDate())+"\n");
-    sbuff.append("  end  = "+formatter.toDateTimeString( getEndDate())+"\n");
-    sbuff.append("  bb   = "+getBoundingBox()+"\n");
-    sbuff.append("  bb   = "+getBoundingBox().toString2()+"\n");
+    sbuff.append("  location= ").append(getLocationURI()).append("\n");
+    sbuff.append("  title= ").append(getTitle()).append("\n");
+    sbuff.append("  desc= ").append(getDescription()).append("\n");
+    sbuff.append("  start= ").append(formatter.toDateTimeString(getStartDate())).append("\n");
+    sbuff.append("  end  = ").append(formatter.toDateTimeString(getEndDate())).append("\n");
+    sbuff.append("  bb   = ").append(getBoundingBox()).append("\n");
+    sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
 
-    sbuff.append("  has netcdf = "+(getNetcdfFile() != null)+"\n");
-    List ga = getGlobalAttributes();
+    sbuff.append("  has netcdf = ").append(getNetcdfFile() != null).append("\n");
+    List<Attribute> ga = getGlobalAttributes();
     if (ga.size() > 0) {
       sbuff.append("  Attributes\n");
-      for (int i = 0; i < ga.size(); i++) {
-        Attribute a = (Attribute) ga.get(i);
-         sbuff.append("    "+a+"\n");
+      for (Attribute a : ga) {
+        sbuff.append("    ").append(a).append("\n");
       }
     }
 
-    List vars = getDataVariables();
-    sbuff.append("  Variables ("+vars.size()+")\n");
-    for (int i = 0; i < vars.size(); i++) {
-      VariableSimpleIF v = (VariableSimpleIF) vars.get(i);
-      sbuff.append("    name='"+v.getShortName()+"' desc='"+v.getDescription()+"' units='"+v.getUnitsString()+"' type="+v.getDataType()+"\n");
+    List<VariableSimpleIF> vars = getDataVariables();
+    sbuff.append("  Variables (").append(vars.size()).append(")\n");
+    for (VariableSimpleIF v : vars) {
+      sbuff.append("    name='").append(v.getShortName()).append("' desc='").append(v.getDescription()).append("' units='").append(v.getUnitsString()).append("' type=").append(v.getDataType()).append("\n");
     }
 
     sbuff.append("\nparseInfo=\n");
@@ -151,12 +146,11 @@ public abstract class TypedDatasetImpl implements TypedDataset {
   public Date getEndDate() { return endDate; }
   public LatLonRect getBoundingBox() { return boundingBox; }
 
-  public List getDataVariables() {return dataVariables; }
+  public List<VariableSimpleIF> getDataVariables() {return dataVariables; }
   public VariableSimpleIF getDataVariable( String shortName) {
-    for (int i = 0; i < dataVariables.size(); i++) {
-      VariableSimpleIF s = (VariableSimpleIF) dataVariables.get(i);
+    for (VariableSimpleIF s : dataVariables) {
       String ss = s.getShortName();
-      if (shortName.equals( ss)) return s;
+      if (shortName.equals(ss)) return s;
     }
     return null;
   }  

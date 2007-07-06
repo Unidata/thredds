@@ -1,6 +1,5 @@
-// $Id: Index4D.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,7 +24,6 @@ package ucar.ma2;
  *
  * @see Index
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class Index4D extends Index {
 
@@ -68,34 +66,13 @@ public class Index4D extends Index {
     current[1] = curr1;
     current[2] = curr2;
     current[3] = curr3;
-    return (int []) current.clone();
+    return current.clone();
   }
 
   public int currentElement() {
     return offset + curr0*stride0 + curr1*stride1 + curr2*stride2 +
         + curr3*stride3;
   }
-
-  /* public int element(int [] index) {
-    int val0 = index[0];
-    if (val0 < 0 || val0 >= shape0)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val1 = index[1];
-    if (val1 < 0 || val1 >= shape1)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val2 = index[2];
-    if (val2 < 0 || val2 >= shape2)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val3 = index[3];
-    if (val3 < 0 || val3 >= shape3)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    return offset + val0*stride0 + val1*stride1 + val2*stride2
-        + val3*stride3;
-  } */
 
   protected int incr() {
     if (++curr3 >= shape3) {

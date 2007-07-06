@@ -83,7 +83,7 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
   
   public MadisStationObsDataset() {}
 
-  public MadisStationObsDataset(NetcdfFile ds) throws IOException {
+  public MadisStationObsDataset(NetcdfDataset ds) throws IOException {
     super(ds);
 
     // dork around with the variable names

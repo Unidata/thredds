@@ -1,6 +1,5 @@
-// $Id: DodsV.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,9 +25,9 @@ import opendap.dap.parser.ParseException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
+import java.util.List;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -58,7 +57,6 @@ import ucar.ma2.DataType;
     * DSequence: values = Vector (rows) containing Vector (fields)
   *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
 */
 
 class DodsV implements Comparable {
@@ -68,6 +66,8 @@ class DodsV implements Comparable {
   /**
    * Parse the DDS, creating a tree of DodsV objects. The root node is only a container, ie it has no BaseType.
    * The Darray object (which has the dimension info) becomes a field of the DodsV, rather than being in the tree.
+   * @param dds the DDS to parse
+   * @return the root dodsV object
    */
   static DodsV parseDDS(DDS dds) {
     DodsV root = new DodsV(null, null);
@@ -134,6 +134,9 @@ class DodsV implements Comparable {
   /**
    * Parse the DDS, creating a tree of DodsV objects. The root node is only a container, ie it has no BaseType.
    * The Darray object (which has the dimension info) becomes a field of the DodsV, rather than being in the tree.
+   * @param dds the DataDDS to parse
+   * @return the root DodsV object
+   * @throws opendap.dap.NoSuchVariableException if DataDDS contains a Variable not in the DDS
    */
   static DodsV parseDataDDS(DataDDS dds) throws NoSuchVariableException {
     DodsV root = new DodsV(null, null);
@@ -155,6 +158,7 @@ class DodsV implements Comparable {
    *
    * @param parent of the tree
    * @param children list of BaseType
+   * @throws opendap.dap.NoSuchVariableException if children and parent are inconsistent
    */
   static private void parseDataVariables(DodsV parent, Enumeration children) throws NoSuchVariableException {
     while (children.hasMoreElements()) {
@@ -244,11 +248,11 @@ class DodsV implements Comparable {
   DodsV parent;
   BaseType bt;
   BaseType elemType; // different for DGrid
-  ArrayList children = new ArrayList(); // DodsV objects
+  List<DodsV> children = new ArrayList<DodsV>(); // DodsV objects
   DArray darray; // if its an array
-  ArrayList dimensions = new ArrayList();
-  ArrayList dimensionsAll = new ArrayList();
-  ArrayList attributes = new ArrayList();
+  List<DArrayDimension> dimensions = new ArrayList<DArrayDimension>();
+  List<DArrayDimension> dimensionsAll = new ArrayList<DArrayDimension>();
+  List<DODSAttribute> attributes = new ArrayList<DODSAttribute>();
 
   Array data; // preload
   boolean isDone; // nc var has been made
@@ -268,18 +272,16 @@ class DodsV implements Comparable {
     out.print(space+"DodsV.show "+getName()+" "+getType());
     out.print("(");
     int count = 0;
-    for (int i = 0; i < dimensionsAll.size(); i++) {
-      DArrayDimension dim = (DArrayDimension) dimensionsAll.get(i);
-      String name = dim.getName() == null ? "" : dim.getName()+"=";
+    for (DArrayDimension dim : dimensionsAll) {
+      String name = dim.getName() == null ? "" : dim.getName() + "=";
       if (count > 0) out.print(",");
-      out.print( name+dim.getSize());
+      out.print(name + dim.getSize());
       count++;
     }
     out.println(")");
 
-    for (int i = 0; i < children.size(); i++) {
-      DodsV dodsV = (DodsV) children.get(i);
-      dodsV.show(out, space+"  ");
+    for (DodsV dodsV : children) {
+      dodsV.show(out, space + "  ");
     }
   }
 
@@ -295,7 +297,7 @@ class DodsV implements Comparable {
   int[] getShape() {
     int[] shape = new int[dimensions.size()];
     for (int i = 0; i < dimensions.size(); i++) {
-      DArrayDimension dim = (DArrayDimension) dimensions.get(i);
+      DArrayDimension dim = dimensions.get(i);
       shape[i] = dim.getSize();
     }
     return shape;
@@ -310,7 +312,7 @@ class DodsV implements Comparable {
 
     int[] shape = new int[dimensionsAll.size()];
     for (int i = 0; i < dimensionsAll.size(); i++) {
-      DArrayDimension dim = (DArrayDimension) dimensionsAll.get(i);
+      DArrayDimension dim = dimensionsAll.get(i);
       shape[i] = dim.getSize();
     }
     return shape;
@@ -319,7 +321,7 @@ class DodsV implements Comparable {
   void addAttribute (DODSAttribute att) { attributes.add( att); }
 
   void makeAllDimensions () {
-    dimensionsAll = new ArrayList();
+    dimensionsAll = new ArrayList<DArrayDimension>();
     if (parent != null)
       dimensionsAll.addAll( parent.dimensionsAll);
     dimensionsAll.addAll( dimensions);
@@ -338,8 +340,7 @@ class DodsV implements Comparable {
   // assign depth first sequence number
   private int nextInSequence = 0;
   private void assignSequence(DodsV root) {
-    for (int i = 0; i < children.size(); i++) {
-      DodsV nested = (DodsV)  children.get(i);
+    for (DodsV nested : children) {
       nested.assignSequence(root);
       nested.seq = root.nextInSequence;
       nextInSequence++;
@@ -350,8 +351,8 @@ class DodsV implements Comparable {
    * Parse the DAS, assign attribute tables to the DodsV objects.
    * Nested attribute tables are supposed to follow the tree we construct with dodsV, so its
    * easy to assign to correct dodsV.
-   * @param das
-   * @throws IOException
+   * @param das parse this DAS
+   * @throws IOException on io error
    */
   void parseDAS(DAS das) throws IOException {
     Enumeration tableNames = das.getNames();
@@ -428,8 +429,7 @@ class DodsV implements Comparable {
    * @return child that matches if found, else null
    */
   DodsV findDodsV(String name, boolean useDone) {
-    for (int i = 0; i < children.size(); i++) {
-      DodsV dodsV = (DodsV) children.get(i);
+    for (DodsV dodsV : children) {
       if (useDone && dodsV.isDone) continue; // LOOK useDone ??
       if ((name == null) || (dodsV == null) || (dodsV.bt == null)) {
         logger.warn("Corrupted structure");
@@ -442,8 +442,7 @@ class DodsV implements Comparable {
   }
 
   DodsV findByNetcdfShortName(String ncname) {
-    for (int i = 0; i < children.size(); i++) {
-      DodsV child = (DodsV) children.get(i);
+    for (DodsV child : children) {
       if (ncname.equals(child.getNetcdfShortName()))
         return child;
     }
@@ -451,15 +450,13 @@ class DodsV implements Comparable {
   }
 
   DodsV findByDodsShortName(String dodsname) {
-    for (int i = 0; i < children.size(); i++) {
-      DodsV child = (DodsV) children.get(i);
+    for (DodsV child : children) {
       if (dodsname.equals(child.getName()))
         return child;
     }
 
-    for (int i = 0; i < children.size(); i++) {
-      DodsV child = (DodsV) children.get(i);
-      DodsV d = child.findByDodsShortName( dodsname);
+    for (DodsV child : children) {
+      DodsV d = child.findByDodsShortName(dodsname);
       if (null != d) return d;
     }
 
@@ -495,7 +492,7 @@ class DodsV implements Comparable {
     return dodsV;
   }
 
-  private static void doit(String urlName) throws IOException, MalformedURLException, DAP2Exception, ParseException {
+  private static void doit(String urlName) throws IOException, DAP2Exception, ParseException {
     System.out.println("DODSV read ="+urlName);
     DConnect dodsConnection = new DConnect(urlName, true);
 

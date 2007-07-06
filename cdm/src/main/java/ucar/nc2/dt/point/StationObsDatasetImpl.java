@@ -24,6 +24,7 @@ package ucar.nc2.dt.point;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.*;
@@ -54,7 +55,7 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
     stationHelper = new StationDatasetHelper( this);
   }
 
-  public StationObsDatasetImpl(NetcdfFile ncfile) {
+  public StationObsDatasetImpl(NetcdfDataset ncfile) {
     super( ncfile);
     stationHelper = new StationDatasetHelper( this);
   }

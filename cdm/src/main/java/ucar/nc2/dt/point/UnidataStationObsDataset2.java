@@ -57,7 +57,7 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
   private RecordDatasetHelper recordHelper;
   private boolean debugRead = false;
 
-  public UnidataStationObsDataset2(NetcdfFile ds) throws IOException {
+  public UnidataStationObsDataset2(NetcdfDataset ds) throws IOException {
     super(ds);
 
     title = "Station Data from NWS";

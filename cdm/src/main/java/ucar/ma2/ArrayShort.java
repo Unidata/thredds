@@ -1,6 +1,5 @@
-// $Id:ArrayShort.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ package ucar.ma2;
  *
  * @see Array
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ArrayShort extends Array {
 
@@ -185,10 +183,10 @@ public class ArrayShort extends Array {
     storage[indexCalc.element(index)] = (short) value;
   } */
   public short getShort(Index i) {
-    return (short) storage[i.currentElement()];
+    return storage[i.currentElement()];
   }
   public void setShort(Index i, short value) {
-    storage[i.currentElement()] = (short) value;
+    storage[i.currentElement()] = value;
   }
 
   /* byte
@@ -235,7 +233,7 @@ public class ArrayShort extends Array {
   public void setObject(int [] index, Object value) {
     storage[indexCalc.element(index)] = ((Number)value).shortValue();
   } */
-  public Object getObject(Index i) { return new Short(storage[i.currentElement()]); }
+  public Object getObject(Index i) { return storage[i.currentElement()]; }
   public void setObject(Index i, Object value) { storage[i.currentElement()] = ((Number)value).shortValue(); }
 
     // package private : mostly for iterators
@@ -251,8 +249,8 @@ public class ArrayShort extends Array {
   int getInt(int index) { return (int) storage[index]; }
   void setInt(int index, int value) { storage[index] = (short) value;}
 
-  short getShort(int index) { return (short) storage[index]; }
-  void setShort(int index, short value) { storage[index] = (short) value; }
+  short getShort(int index) { return storage[index]; }
+  void setShort(int index, short value) { storage[index] = value; }
 
   byte getByte(int index) { return (byte) storage[index]; }
   void setByte(int index, byte value) {storage[index] = (short) value;}
@@ -263,7 +261,7 @@ public class ArrayShort extends Array {
   boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
   void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return new Short( getShort( index)); }
+  Object getObject(int index) { return getShort(index); }
   void setObject(int index, Object value) { storage[index] = ((Number)value).shortValue(); }
 
   /** Concrete implementation of Array specialized for shorts, rank 0. */

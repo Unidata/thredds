@@ -25,6 +25,7 @@ import ucar.unidata.util.Format;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 
 import java.util.*;
 import java.text.*;
@@ -32,6 +33,8 @@ import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
 class H5header {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
+
   // debugging
   static private boolean debug1 = false , debugDetail = false, debugPos = false, debugHeap = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false;
@@ -1962,8 +1965,8 @@ class H5header {
     v.setCaching(false);
     if (debug1) debugOut.println("makeAttribute "+attName+" for "+forWho+"; vinfo= "+vinfo);
 
-    Attribute att = new Attribute(attName);
-    att.setValues( v.read());
+    Attribute att = new Attribute(attName, v.read());
+    //att.setValues( v.read());
 
     return att;
   }
@@ -2120,7 +2123,7 @@ class H5header {
       dim = combinedDim;
     }
 
-
+    try {
     // do this in V3mode
     if ((mdt.type == 3) && v3mode) { // string - gotta add string dimensions
       if (dim == null) // scalar string member variable
@@ -2145,6 +2148,9 @@ class H5header {
     } else {
       if (dim == null) dim = new int[0]; // scaler
       v.setDimensionsAnonymous(dim);
+    }
+    } catch (InvalidRangeException ee) {
+      log.error("Cant happen "+ee);
     }
 
     DataType dt = vinfo.getNCDataType();

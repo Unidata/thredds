@@ -61,7 +61,7 @@ public class TestNcmlAggDirDateFormat extends TestCase {
     assert time.getShape()[0] == 12;
     assert time.getDataType() == DataType.STRING;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     Array data = time.read();
     assert data.getRank() == 1;

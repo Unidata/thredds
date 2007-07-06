@@ -26,15 +26,14 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.util.List;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.JDOMException;
 import org.jdom.Element;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.util.xml.RuntimeConfigParser;
 
 /**
  * Read and process the threddsConfig.xml file
@@ -121,7 +120,7 @@ public class ThreddsConfig {
     Element elem = rootElem.getChild("nj22Config");
     if (elem != null) {
       StringBuffer errlog = new StringBuffer();
-      ucar.nc2.util.RuntimeConfigParser.read( elem, errlog);
+      RuntimeConfigParser.read( elem, errlog);
       if (errlog.length() > 0)
         log.warn(errlog.toString());
     }

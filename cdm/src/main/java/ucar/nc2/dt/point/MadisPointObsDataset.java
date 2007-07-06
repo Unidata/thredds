@@ -74,7 +74,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedD
 
   public MadisPointObsDataset() {}
 
-  public MadisPointObsDataset(NetcdfFile ds) throws IOException {
+  public MadisPointObsDataset(NetcdfDataset ds) throws IOException {
     super(ds);
 
     // dork around with the variable names

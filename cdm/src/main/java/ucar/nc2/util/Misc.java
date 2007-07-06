@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,12 +24,11 @@ package ucar.nc2.util;
  * Class Description.
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class Misc {
 
   private static boolean show = false;
-  private static double maxAbsoluteError = 1.0e-6;
+  //private static double maxAbsoluteError = 1.0e-6;
   private static double maxReletiveError = 1.0e-6;
 
   /*  http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm

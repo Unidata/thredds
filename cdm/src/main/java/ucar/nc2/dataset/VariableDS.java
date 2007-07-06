@@ -1,6 +1,5 @@
-// $Id: VariableDS.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,22 +24,45 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
- * An "enhanced" Variable.
- * @author John Caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
+ * An wrapper around a Variable, creating an "enhanced" Variable.
+ * The original Variable is used for the I/O.
+ * LOOK: Is the original Variable untouched?
+ * There are several distinct uses:
+ *   1) "enhanced mode" : handle scale/offset/missing values; this can change DataType and data values
+ *   2) container for coordinate system information
+ *   3) NcML modifications to underlying Variable
+ * @author caron
+ * @see EnhanceScaleMissing
  */
 
 public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   private EnhancementsImpl proxy;
   private EnhanceScaleMissingImpl smProxy;
   private boolean isEnhanced;
-  private DataType orgDataType;
-  private ProxyReader proxyReader = null;
 
-  /** Constructor when theres no underlying variable.  */
+  protected Variable orgVar; // wrap this Variable
+  private DataType orgDataType; // keep seperate for the case where there is no ioVar.
+  private ProxyReader2 proxyReader2 = null;
+
+  /**
+   * Constructor when there's no underlying variable.
+   * You must also set the values by doing one of:<ol>
+   * <li>set the values with setCachedData()
+   * <li>set a proxy reader with setProxyReader()
+   * </ol>
+   * Otherwise, it is assumed to have constant values (using the fill value)
+   *
+   * @param ds the containing dataset
+   * @param group the containing group
+   * @param parentStructure the containing Structure (may be null)
+   * @param shortName the (short) name
+   * @param dataType the data type
+   * @param dims list of dimension names, these must already exist in the Group; empty String = scalar
+   * @param units String value of units, may be null
+   * @param desc  String value of description, may be null
+   */
   public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName,
       DataType dataType, String dims, String units, String desc) {
 
@@ -48,6 +70,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     setDataType(dataType);
     setDimensions( dims);
     this.orgDataType = dataType;
+
+    if (dataType == DataType.STRUCTURE)
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+shortName);
 
     if (units != null)
       addAttribute( new Attribute("units", units));
@@ -59,17 +84,25 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   /**
-   * Wrap the given Variable, making it into an enhanced one.
-   * @param ncVar the original Variable to wrap.
+   * Wrap the given Variable, making it into a VariableDS.
+   * @param g logical container, if null use ioVar's group
+   * @param orgVar the original Variable to wrap.
+   * @param enhance if true, handle scale/offset/missing values; this can change DataType and data values. You can also call enhance() later.
    */
-  public VariableDS( Group g, Variable ncVar, boolean enhance) {
-    super(ncVar);
-    if (g != null) this.group = g; // otherwise super() sets group
-    this.orgDataType = ncVar.getDataType();
+  public VariableDS( Group g, Variable orgVar, boolean enhance) {
+    super(orgVar);
 
-    if (ncVar instanceof VariableDS) {
-      VariableDS ncVarDS = (VariableDS) ncVar;
-      this.proxyReader = ncVarDS.proxyReader;
+    if (orgVar instanceof Structure)
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+
+    this.orgVar = orgVar;
+    this.orgDataType = orgVar.getDataType();
+
+    if (g != null) this.group = g; // otherwise super() sets group; this affects the long name.
+
+    if (orgVar instanceof VariableDS) {
+      VariableDS ncVarDS = (VariableDS) orgVar;
+      this.proxyReader2 = ncVarDS.proxyReader2;
     }
 
     this.proxy = new EnhancementsImpl( this);
@@ -80,23 +113,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     }
   }
 
-  /* public void setDimensions(String dimString) {
-    super.setDimensions(dimString);
-    if (orgVar != null) orgVar.setDimensions(dimString);
-  } */
-
-  // override to keep section a VariableDS
-  public Variable section(List section) throws InvalidRangeException  {
-    Variable vs = new VariableDS( this.group, this, isEnhanced);
-    makeSection( vs, section);
-    return vs;
-  }
-
-  // override to keep slice a VariableDS
-  public Variable slice(int dim, int value) throws InvalidRangeException {
-    Variable vs = new VariableDS( this.group, this, isEnhanced);
-    makeSlice(vs, dim, value);
-    return vs;
+  // for section and slice
+  @Override
+  protected Variable copy() {
+    return new VariableDS(null, this, false); // dont need to enhance
   }
 
   /** recalc any enhancement info */
@@ -107,6 +127,17 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     this.isEnhanced = true;
   }
 
+  /** If this Variable has been "enhanced", ie processed for scale/offset/missing value
+   * @return if enhanced
+   */
+  public boolean isEnhanced() { return isEnhanced; }
+
+  public boolean isCoordinateVariable() {
+    return (this instanceof CoordinateAxis) || super.isCoordinateVariable();
+  }
+
+  // Enhancements interface
+
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
     proxy.addCoordinateSystem( p0);
   }
@@ -115,23 +146,12 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     proxy.removeCoordinateSystem( p0);
   }
 
-  public java.util.List getCoordinateSystems() {
+  public java.util.List<CoordinateSystem> getCoordinateSystems() {
     return proxy.getCoordinateSystems();
   }
 
   public java.lang.String getDescription() {
     return proxy.getDescription();
-  }
-
-  ucar.nc2.Variable getOriginalVariable() {
-    return orgVar; // proxy.getOriginalVariable();
-  }
-
-  /**
-   * When this wraps another Variable, get the original Variable's DataType.
-   */
-  public DataType getOriginalDataType() {
-    return orgDataType;
   }
 
   public java.lang.String getUnitsString() {
@@ -142,10 +162,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     proxy.setUnitsString(units);
   }
 
-  /** @deprecated use getUnitsString()*/
-  public java.lang.String getUnitString() {
-    return getUnitsString();
-  }
+  // EnhanceScaleMissing interface
 
   public double getValidMax() {
     return smProxy.getValidMax();
@@ -207,15 +224,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     smProxy.setUseNaNs( useNaNs);
   }
 
-  /** Set the proxy reader. */
-  public void setProxyReader( ProxyReader agg) {this.proxyReader = agg; }
-
-  /** Get the proxy reader, or null. */
-  public ProxyReader getProxyReader() { return this.proxyReader; }
-
-  /** If this Variable has been "enhanced", ie processed for scale/offset/missing value */
-  public boolean isEnhanced() { return isEnhanced; }
-
   /**
    * Convert data if hasScaleOffset, using scale and offset.
    * Also if useNaNs = true, return NaN if value is missing data.
@@ -238,14 +246,53 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return smProxy.convertScaleOffsetMissing( value);
   }
 
+  /*
+   * A VariableDS usually wraps another Variable.
+   * @return original Variable or null
+   */
+  public ucar.nc2.Variable getOriginalVariable() {
+    return orgVar;
+  }
+
+  /**
+   * Set the Variable to wrap. Used by NcML explicit mode.
+   * @param orgVar original Variable, must not be a Structure
+   */
+  public void setOriginalVariable(ucar.nc2.Variable orgVar) {
+    if (orgVar instanceof Structure)
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+    this.orgVar = orgVar;
+  }
+
+  /**
+   * When this wraps another Variable, get the original Variable's DataType.
+   * @return original Variable's DataType
+   */
+  public DataType getOriginalDataType() {
+    return orgDataType;
+  }
+
+  /** Set the proxy reader.
+   * @param proxyReader2 set to this
+   */
+  public void setProxyReader2( ProxyReader2 proxyReader2) {
+    this.proxyReader2 = proxyReader2;
+  }
+
+  /** Get the proxy reader, or null.
+   * @return return the proxy reader, if any
+   */
+  public ProxyReader2 getProxyReader2() { return this.proxyReader2; }
+
   // regular Variables.
+  @Override
   protected Array _read() throws IOException {
     Array result;
 
     if (hasCachedData())
       result = super._read();
-    else if (proxyReader != null)
-      result = proxyReader.read( (orgVar != null) ? orgVar : this, null);
+    else if (proxyReader2 != null)
+      result = proxyReader2.read( this, null);
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
@@ -258,6 +305,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     else if (smProxy.hasMissing() && smProxy.getUseNaNs())
       result = smProxy.convertMissing( result);
 
+    // LOOK - could try to cache modified array
     /* if (isCaching()) {
       cache.data = result;
       if (debugCaching) System.out.println("cacheDS "+getName());
@@ -268,18 +316,19 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   // section of regular Variable
-  protected Array _read(java.util.List section) throws IOException, InvalidRangeException  {
+  @Override
+  protected Array _read(Section section) throws IOException, InvalidRangeException  {
     Array result;
     
     if (hasCachedData())
       result = super._read(section);
-    else if (proxyReader != null)
-      result = proxyReader.read( (orgVar != null) ? orgVar : this, null, section);
+    else if (proxyReader2 != null)
+      result = proxyReader2.read( this, section, null);
     else if (orgVar != null)
       result = orgVar.read(section);
-    else { // return fill value in a "constant array"
+    else  { // return fill value in a "constant array"
       Object data = smProxy.getFillValue( getDataType());
-      return Array.factoryConstant( dataType.getPrimitiveClassType(), Range.getShape(section), data);
+      return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
     if (smProxy.hasScaleOffset())
@@ -291,14 +340,15 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   // structure-member Variables.
-  protected Array _readMemberData(java.util.List section, boolean flatten) throws IOException, InvalidRangeException  {
+  @Override
+  protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException  {
     Array result;
     //if (agg != null)
     //  result = agg.readMemberData( this, null);
     //else
-    if (orgVar != null)
-      result = orgVar.readAllStructures(section, flatten);
-    else
+    /* if (ioVar != null)
+      result = ioVar.readAllStructures(section, flatten);
+    else */
       result = super._readMemberData(section, flatten);
 
     // LOOK should do recursively
@@ -310,10 +360,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return result;
   }
 
-  /** Implement Comparable */
-  public int compareTo(Object o) {
-    VariableSimpleIF vo = (VariableSimpleIF) o;
-    return getName().compareTo( vo.getName());
-  }
+  //////////////////////////////////////////////////////////
+  // deprecated
 
+    /** @deprecated use getUnitsString()
+     * @return getUnitsString()
+     */
+  public java.lang.String getUnitString() {
+    return getUnitsString();
+  }
 }

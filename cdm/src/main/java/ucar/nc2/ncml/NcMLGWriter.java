@@ -1,6 +1,5 @@
-// $Id:NcMLGWriter.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,6 +24,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.*;
+import ucar.unidata.util.Parameter;
 
 import org.jdom.*;
 import org.jdom.output.XMLOutputter;
@@ -39,8 +39,8 @@ import thredds.catalog.XMLEntityResolver;
  * Helper class to write NcML-G.
  *
  * @see ucar.nc2.NetcdfFile
+ * @see "http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/"
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 public class NcMLGWriter {
@@ -54,7 +54,7 @@ public class NcMLGWriter {
    * @param os write to this OutputStream
    * @param showCoords show 1D coordinate values
    * @param uri use this uri, if null use getLocation()
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void writeXML(NetcdfDataset ncd, OutputStream os, boolean showCoords, String uri) throws IOException {
 
@@ -91,32 +91,24 @@ public class NcMLGWriter {
     }
 
         // dimensions
-    Iterator dims = ncd.getDimensions().iterator();
-    while ( dims.hasNext()) {
-      Dimension dim = (Dimension) dims.next();
-      rootElem.addContent( makeDim( dim));
+    for (Dimension dim : ncd.getDimensions()) {
+      rootElem.addContent(makeDim(dim));
     }
 
-        // attributes
-    Iterator atts = ncd.getGlobalAttributes().iterator();
-    while ( atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      rootElem.addContent( makeAttribute( att, "attribute"));
+    // attributes
+    for (Attribute att : ncd.getGlobalAttributes()) {
+      rootElem.addContent(makeAttribute(att, "attribute"));
     }
 
-        // coordinate axes
-    Iterator vars = ncd.getVariables().iterator();
-    while ( vars.hasNext()) {
-      VariableDS var = (VariableDS) vars.next();
+    // coordinate axes
+    for (Variable var : ncd.getVariables()) {
       if (var instanceof CoordinateAxis)
-        rootElem.addContent( makeCoordinateAxis( (CoordinateAxis)var, showCoords));
+        rootElem.addContent(makeCoordinateAxis((CoordinateAxis) var, showCoords));
     }
-         // regular variables
-    vars = ncd.getVariables().iterator();
-    while ( vars.hasNext()) {
-      VariableDS var = (VariableDS) vars.next();
+    // regular variables
+    for (Variable var : ncd.getVariables()) {
       if (!(var instanceof CoordinateAxis))
-        rootElem.addContent( makeVariable( var));
+        rootElem.addContent(makeVariable( (VariableDS) var));
     }
 
     ///////////////////////////////////////////////////////////
@@ -186,43 +178,25 @@ public class NcMLGWriter {
     } */
 
     // coordinate systems
-    List csys2 = ncd.getCoordinateSystems();
-    for (int i=0; i<csys2.size(); i++) {
-      rootElem.addContent( makeCoordSys( (CoordinateSystem) csys2.get(i)));
+    for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
+      rootElem.addContent(makeCoordSys(cs));
     }
 
-      // look for coordinate transforms, ref systems
-    ArrayList coordTrans = new ArrayList();
-    // ArrayList refSys = new ArrayList();
-    List csys = ncd.getCoordinateSystems();
-    for (int i=0; i<csys.size(); i++) {
-      CoordinateSystem cs = (CoordinateSystem) csys.get(i);
-      List ctList = cs.getCoordinateTransforms();
+    // look for coordinate transforms, ref systems
+    List<CoordinateTransform> coordTrans = new ArrayList<CoordinateTransform>();
+    for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
+      List<CoordinateTransform> ctList = cs.getCoordinateTransforms();
       if (ctList != null) {
-        for (int j=0; j<ctList.size(); j++) {
-          CoordinateTransform ct = (CoordinateTransform) ctList.get(j);
-          if (!coordTrans.contains( ct))
+        for (CoordinateTransform ct : ctList) {
+          if (!coordTrans.contains(ct))
             coordTrans.add(ct);
-          /* ReferenceSystem rs = ct.getReferenceSystem();
-          if ((rs != null) & !refSys.contains( rs))
-            refSys.add(rs); */
         }
       }
     }
 
-      // coordinate transforms
-    for (int i=0; i<coordTrans.size(); i++)
-      rootElem.addContent( makeCoordTransform( (CoordinateTransform) coordTrans.get(i)));
-
-       /* reference systems
-    for (int i=0; i<refSys.size(); i++)
-      rootElem.addContent( makeReferenceSys( (ReferenceSystem) refSys.get(i))); */
-
-    /* do common reference systems
-    for (int i=0; i<commonRS.size(); i++) {
-      ReferenceSystem rs = (ReferenceSystem) commonRS.get(i);
-      rootElem.addContent( makeReferenceSys( rs, commonHRS));
-    } */
+    // coordinate transforms
+    for (CoordinateTransform coordTran : coordTrans)
+      rootElem.addContent(makeCoordTransform(coordTran));
 
     return doc;
   }
@@ -301,10 +275,8 @@ public class NcMLGWriter {
     varElem.setAttribute("type", dt.toString());
 
         // attributes
-    Iterator atts = var.getAttributes().iterator();
-    while ( atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      varElem.addContent( makeAttribute( att, "attribute"));
+    for (Attribute att : var.getAttributes()) {
+      varElem.addContent(makeAttribute(att, "attribute"));
     }
 
     if (var.isMetadata() || (showCoords && var.getRank() <= 1))
@@ -342,33 +314,20 @@ public class NcMLGWriter {
     Element csElem = new Element("coordinateSystem", ncNS);
     csElem.setAttribute("name", cs.getName());
 
-    /* ReferenceSystem rs = cs.getReferenceSystem();
-    if (rs != null) {
-      if (commonRS.contains( rs)) {
-        Element rsElem = new Element("referenceSystemRef", ncNS);
-        rsElem.setAttribute("ref", rs.getId());
-        csElem.addContent( rsElem);
-      } else {
-        csElem.addContent( makeReferenceSys(rs, commonHRS));
-      }
-    } */
-
-    List axes = cs.getCoordinateAxes();
-    for (int i=0; i<axes.size(); i++) {
+    for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       Element axisElem = new Element("coordinateAxisRef", ncNS);
-      axisElem.setAttribute("ref", ((VariableDS)axes.get(i)).getName());
-      csElem.addContent( axisElem);
+      axisElem.setAttribute("ref", axis.getName());
+      csElem.addContent(axisElem);
     }
 
-    List transforms = cs.getCoordinateTransforms();
+    List<CoordinateTransform> transforms = cs.getCoordinateTransforms();
     if (transforms != null)
-    for (int i=0; i<transforms.size(); i++) {
-      CoordinateTransform ct = (CoordinateTransform) transforms.get(i);
-      if (ct == null) continue;
-      Element tElem = new Element("coordinateTransformRef", ncNS);
-      tElem.setAttribute("ref", ct.getName());
-      csElem.addContent( tElem);
-    }
+      for (CoordinateTransform ct : transforms) {
+        if (ct == null) continue;
+        Element tElem = new Element("coordinateTransformRef", ncNS);
+        tElem.setAttribute("ref", ct.getName());
+        csElem.addContent(tElem);
+      }
     return csElem;
   }
 
@@ -376,15 +335,12 @@ public class NcMLGWriter {
     Element elem = new Element("coordinateTransform", ncNS);
     elem.setAttribute("name", coordTransform.getName());
     elem.setAttribute("authority", coordTransform.getAuthority());
-    //if (coordTransform.getReferenceSystem() != null)
-    //  elem.setAttribute("referenceCoordinateSystem", coordTransform.getReferenceSystem().getName());
     if (coordTransform.getTransformType() != null)
       elem.setAttribute("transformType", coordTransform.getTransformType().toString());
 
-    ArrayList params = coordTransform.getParameters();
-    for (int i=0; i<params.size(); i++) {
-      ucar.unidata.util.Parameter att = (ucar.unidata.util.Parameter) params.get(i);
-      elem.addContent( makeAttribute(att, "parameter"));
+    List<Parameter> params = coordTransform.getParameters();
+    for (Parameter p : params) {
+      elem.addContent(makeAttribute(p, "parameter"));
     }
     return elem;
   }
@@ -434,10 +390,8 @@ public class NcMLGWriter {
       varElem.setAttribute("type", dt.toString());
 
         // attributes
-    Iterator atts = var.getAttributes().iterator();
-    while ( atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      varElem.addContent( makeAttribute( att, "attribute"));
+    for (Attribute att : var.getAttributes()) {
+      varElem.addContent(makeAttribute(att, "attribute"));
     }
 
     if (var.isMetadata())
@@ -474,7 +428,7 @@ public class NcMLGWriter {
       ArrayChar dataC = (ArrayChar) a;
       for (int i=0; i<dataC.getShape()[0]; i++) {
         if (i > 0) buff.append(" ");
-        buff.append( "\""+dataC.getString(i)+"\"");
+        buff.append("\"").append(dataC.getString(i)).append("\"");
       }
       elem.setText(buff.toString());
     } else {

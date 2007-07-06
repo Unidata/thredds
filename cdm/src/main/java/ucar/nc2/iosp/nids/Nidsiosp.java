@@ -1,6 +1,5 @@
-// $Id:Nidsiosp.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -38,7 +37,7 @@ import java.nio.ByteBuffer;
  *  see   concrete class
  */
 
-public class Nidsiosp implements ucar.nc2.IOServiceProvider {
+public class Nidsiosp extends AbstractIOServiceProvider {
 
     protected boolean readonly;
     private ucar.nc2.NetcdfFile ncfile;
@@ -55,8 +54,6 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
 
     protected boolean debug = false, debugSize = false, debugSPIO = false;
     protected boolean showHeaderBytes = false;
-
-    public void setSpecial( Object special) {}
 
     public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
@@ -1725,12 +1722,6 @@ public class Nidsiosp implements ucar.nc2.IOServiceProvider {
     myRaf.close();
   }
 
-  public boolean syncExtend() { return false; }
-  public boolean sync() { return false; }
-
-  /** Debug info for this object. */
-  public String toStringDebug(Object o) { return null; }
-  public String getDetailInfo() { return ""; }
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     String fileIn = "/home/yuanho/NIDS/N0R_20041102_2111";

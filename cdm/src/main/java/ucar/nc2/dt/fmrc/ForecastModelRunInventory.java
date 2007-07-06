@@ -85,8 +85,8 @@ public class ForecastModelRunInventory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ForecastModelRunInventory.class);
 
   private String name;
-  private ArrayList times = new ArrayList(); // list of TimeCoord
-  private ArrayList vaxes = new ArrayList(); // list of VertCoord
+  private List<TimeCoord> times = new ArrayList<TimeCoord>(); // list of TimeCoord
+  private List<VertCoord> vaxes = new ArrayList<VertCoord>(); // list of VertCoord
   private Date runDate; // date of the run
   private String runTime; // string representation of the date of the run
   private GridDataset gds; // underlying dataset - may be null if read from XML
@@ -125,9 +125,7 @@ public class ForecastModelRunInventory {
     getIosp();
 
     // add each variable
-    List vars = gds.getGrids();
-    for (int i = 0; i < vars.size(); i++) {
-      GridDatatype gg = (GridDatatype) vars.get(i);
+    for (GridDatatype gg : gds.getGrids()) {
       GridCoordSystem gcs = gg.getCoordinateSystem();
       Grid grid = new Grid(gg.getName());
       addMissing((Variable) gg.getVariable(), gcs, grid);
@@ -167,6 +165,7 @@ public class ForecastModelRunInventory {
 
   /**
    * Get the date of the ForecastModelRun
+   * @return the date of the ForecastModelRun
    */
   public Date getRunDate() {
     return runDate;
@@ -174,6 +173,7 @@ public class ForecastModelRunInventory {
 
   /**
    * Get string representation of the date of the ForecastModelRun
+   * @return string representation of the date of the ForecastModelRun
    */
   public String getRunDateString() {
     return runTime;
@@ -184,7 +184,7 @@ public class ForecastModelRunInventory {
    *
    * @return list of TimeCoord
    */
-  public List getTimeCoords() {
+  public List<TimeCoord> getTimeCoords() {
     return times;
   }
 
@@ -193,7 +193,7 @@ public class ForecastModelRunInventory {
    *
    * @return list of VertCoord
    */
-  public List getVertCoords() {
+  public List<VertCoord> getVertCoords() {
     return vaxes;
   }
 
@@ -204,31 +204,27 @@ public class ForecastModelRunInventory {
   /**
    * Release and close the dataset, and allow CG.
    *
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void releaseDataset() throws IOException {
     if (gds == null)
       return;
 
     gds.close();
-    for (int i = 0; i < times.size(); i++) {
-      TimeCoord tc = (TimeCoord) times.get(i);
+    for (TimeCoord tc : times) {
       tc.axis = null;  // allow GC
     }
 
-    for (int i = 0; i < vaxes.size(); i++) {
-      VertCoord vc = (VertCoord) vaxes.get(i);
+    for (VertCoord vc : vaxes) {
       vc.axis = null;  // allow GC
     }
 
   }
 
   public Grid findGrid(String name) {
-    for (int i = 0; i < times.size(); i++) {
-      TimeCoord tc = (TimeCoord) times.get(i);
-      List grids = tc.getGrids();
-      for (int j = 0; j < grids.size(); j++) {
-        Grid g = (Grid) grids.get(j);
+    for (TimeCoord tc : times) {
+      List<Grid> grids = tc.getGrids();
+      for (Grid g : grids) {
         if (g.name.equals(name))
           return g;
       }
@@ -264,7 +260,7 @@ public class ForecastModelRunInventory {
     int nverts = (int) gcs.getVerticalAxis().getSize();
     int total = ntimes * nverts;
 
-    ArrayList missing = new ArrayList();
+    List<Missing> missing = new ArrayList<Missing>();
     for (int timeIndex = 0; timeIndex < ntimes; timeIndex++) {
       for (int vertIndex = 0; vertIndex < nverts; vertIndex++)
         try {
@@ -285,15 +281,13 @@ public class ForecastModelRunInventory {
   /////////////////////////////////////////////////////////////////////////
 
   private TimeCoord getTimeCoordinate(CoordinateAxis1D axis) {
-    for (int i = 0; i < times.size(); i++) {
-      TimeCoord tc = (TimeCoord) times.get(i);
+    for (TimeCoord tc : times) {
       if ((tc.axis != null) && (tc.axis == axis))
         return tc;
     }
 
     TimeCoord want = new TimeCoord(runDate, axis);
-    for (int i = 0; i < times.size(); i++) {
-      TimeCoord tc = (TimeCoord) times.get(i);
+    for (TimeCoord tc : times) {
       if ((tc.equalsData(want)))
         return tc;
     }
@@ -313,7 +307,7 @@ public class ForecastModelRunInventory {
    */
   public static class TimeCoord implements FmrcCoordSys.TimeCoord {
     private CoordinateAxis1D axis; // is null when read from XML
-    private ArrayList vars = new ArrayList();  // list of Grid
+    private List<Grid> vars = new ArrayList<Grid>();  // list of Grid
     private String id; // unique id
     private double[] offset; // hours since runTime
 
@@ -340,13 +334,15 @@ public class ForecastModelRunInventory {
 
     /**
      * The list of Grid that use this TimeCoord
+     * @return list of Grid that use this TimeCoord
      */
-    public List getGrids() {
+    public List<Grid> getGrids() {
       return vars;
     }
 
     /**
      * A unique id for this TimeCoord
+     * @return unique id for this TimeCoord
      */
     public String getId() {
       return id;
@@ -354,6 +350,7 @@ public class ForecastModelRunInventory {
 
     /**
      * Set the unique id for this TimeCoord
+     * @param id id for this TimeCoord
      */
     public void setId(String id) {
       this.id = id;
@@ -376,6 +373,8 @@ public class ForecastModelRunInventory {
 
     /**
      * Instances that have the same offsetHours are equal
+     * @param tother compare this TomCoord's data
+     * @return true if data is equal
      */
     public boolean equalsData(TimeCoord tother) {
       if (offset.length != tother.offset.length)
@@ -421,7 +420,7 @@ public class ForecastModelRunInventory {
     String name; // , sname;
     TimeCoord parent = null;
     VertCoord vc = null; // optional
-    ArrayList missing; // array of Missing
+    List<Missing> missing;
 
     Grid(String name) {
       this.name = name;
@@ -459,8 +458,7 @@ public class ForecastModelRunInventory {
         return getVertCoordLength();
 
       int count = 0;
-      for (int i = 0; i < missing.size(); i++) {
-        Missing m = (Missing) missing.get(i);
+      for (Missing m : missing) {
         if (m.timeIndex == timeIndex)
           count++;
       }
@@ -485,10 +483,9 @@ public class ForecastModelRunInventory {
         return result;
       }
 
-      double[] result = (double[]) vc.getValues1().clone();
+      double[] result = vc.getValues1().clone();
       if (null != missing) {
-        for (int i = 0; i < missing.size(); i++) {
-          Missing m = (Missing) missing.get(i);
+        for (Missing m : missing) {
           if (m.timeIndex == timeIndex)
             result[m.vertIndex] = Double.NaN;
         }
@@ -511,8 +508,7 @@ public class ForecastModelRunInventory {
   private VertCoord getVertCoordinate(String vert_id) {
     if (vert_id == null)
       return null;
-    for (int i = 0; i < vaxes.size(); i++) {
-      VertCoord vc = (VertCoord) vaxes.get(i);
+    for (VertCoord vc : vaxes) {
       if ((vc.id.equals(vert_id)))
         return vc;
     }
@@ -520,14 +516,12 @@ public class ForecastModelRunInventory {
   }
 
   private VertCoord getVertCoordinate(CoordinateAxis1D axis) {
-    for (int i = 0; i < vaxes.size(); i++) {
-      VertCoord vc = (VertCoord) vaxes.get(i);
+    for (VertCoord vc : vaxes) {
       if ((vc.axis != null) && (vc.axis == axis)) return vc;
     }
 
     VertCoord want = new VertCoord(axis);
-    for (int i = 0; i < vaxes.size(); i++) {
-      VertCoord vc = (VertCoord) vaxes.get(i);
+    for (VertCoord vc : vaxes) {
       if ((vc.equalsData(want))) return vc;
     }
 
@@ -575,8 +569,8 @@ public class ForecastModelRunInventory {
       this.name = vc.getName();
       this.units = vc.getUnits();
       this.id = vc.getId();
-      this.values1 = (double[]) vc.getValues1().clone();
-      this.values2 = (vc.getValues2() == null) ? null : (double[]) vc.getValues2().clone();
+      this.values1 = vc.getValues1().clone();
+      this.values2 = (vc.getValues2() == null) ? null : vc.getValues2().clone();
     }
 
     public String getId() {
@@ -668,7 +662,7 @@ public class ForecastModelRunInventory {
    * Write the XML representation to a local file.
    *
    * @param filename wite to this local file
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void writeXML(String filename) throws IOException {
     OutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
@@ -681,7 +675,7 @@ public class ForecastModelRunInventory {
    * Write the XML representaion to an OutputStream.
    *
    * @param out write to this OutputStream
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void writeXML(OutputStream out) throws IOException {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
@@ -690,6 +684,7 @@ public class ForecastModelRunInventory {
 
   /**
    * Write the XML representation to a String.
+   * @return the XML representation to a String.
    */
   public String writeXML() {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
@@ -698,6 +693,7 @@ public class ForecastModelRunInventory {
 
   /**
    * Create the XML representation
+   * @return the XML representation as a Document
    */
   public Document writeDocument() {
     Element rootElem = new Element("forecastModelRun");
@@ -707,9 +703,7 @@ public class ForecastModelRunInventory {
 
     // list all the vertical coords
     Collections.sort(vaxes);
-    for (int i = 0; i < vaxes.size(); i++) {
-      VertCoord vc = (VertCoord) vaxes.get(i);
-
+    for (VertCoord vc : vaxes) {
       Element vcElem = new Element("vertCoord");
       rootElem.addContent(vcElem);
       vcElem.setAttribute("id", vc.id);
@@ -730,9 +724,7 @@ public class ForecastModelRunInventory {
     }
 
     // list all the offset hours
-    for (int i = 0; i < times.size(); i++) {
-      TimeCoord tc = (TimeCoord) times.get(i);
-
+    for (TimeCoord tc : times) {
       Element offsetElem = new Element("offsetHours");
       rootElem.addContent(offsetElem);
       offsetElem.setAttribute("id", tc.id);
@@ -745,8 +737,7 @@ public class ForecastModelRunInventory {
       offsetElem.addContent(sbuff.toString());
 
       Collections.sort(tc.vars);
-      for (int j = 0; j < tc.vars.size(); j++) {
-        Grid grid = (Grid) tc.vars.get(j);
+      for (Grid grid : tc.vars) {
         Element varElem = new Element("variable");
         offsetElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
@@ -758,7 +749,7 @@ public class ForecastModelRunInventory {
           varElem.addContent(missingElem);
           sbuff.setLength(0);
           for (int k = 0; k < grid.missing.size(); k++) {
-            Missing m = (Missing) grid.missing.get(k);
+            Missing m = grid.missing.get(k);
             if (k > 0) sbuff.append(" ");
             sbuff.append(m.timeIndex);
             sbuff.append(",");
@@ -789,7 +780,7 @@ public class ForecastModelRunInventory {
    *
    * @param xmlLocation location of xml - assumed to be a local file.
    * @return ForecastModelRun
-   * @throws IOException
+   * @throws IOException on io error
    */
   public static ForecastModelRunInventory readXML(String xmlLocation) throws IOException {
     if (debug) System.out.println(" read from XML " + xmlLocation);
@@ -871,7 +862,7 @@ public class ForecastModelRunInventory {
         java.util.List mList = vElem.getChildren("missing");
         for (int k = 0; k < mList.size(); k++) {
           Element mElem = (Element) mList.get(k);
-          grid.missing = new ArrayList();
+          grid.missing = new ArrayList<Missing>();
 
           // parse the values
           values = mElem.getText();
@@ -908,7 +899,7 @@ public class ForecastModelRunInventory {
    * @param mode           one of OPEN_NORMAL, OPEN_FORCE_NEW, OPEN_XML_ONLY constants
    * @param isFile         if its a file: new File( ncfileLocation) makes sense, so we can check if its changed
    * @return ForecastModelRun
-   * @throws IOException
+   * @throws IOException on io error
    */
   public static ForecastModelRunInventory open(ucar.nc2.util.DiskCache2 cache, String ncfileLocation, int mode, boolean isFile) throws IOException {
     boolean force = (mode == OPEN_FORCE_NEW);

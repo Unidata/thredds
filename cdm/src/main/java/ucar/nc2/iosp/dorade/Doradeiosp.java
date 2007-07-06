@@ -37,7 +37,7 @@ import java.util.*;
  *  see   concrete class
  */
 
-public class Doradeiosp implements ucar.nc2.IOServiceProvider {
+public class Doradeiosp extends AbstractIOServiceProvider {
 
   protected boolean readonly;
   private ucar.nc2.NetcdfFile ncfile;
@@ -329,12 +329,6 @@ public class Doradeiosp implements ucar.nc2.IOServiceProvider {
     myRaf.close();
   }
 
-  public boolean syncExtend() { return false; }
-  public boolean sync() { return false; }
-
-  /** Debug info for this object. */
-  public String toStringDebug(Object o) { return null; }
-  public String getDetailInfo() { return ""; }
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     String fileIn = "/home/yuanho/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";

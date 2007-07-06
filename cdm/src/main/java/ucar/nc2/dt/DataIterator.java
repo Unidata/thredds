@@ -1,6 +1,5 @@
-// $Id: DataIterator.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,16 +22,16 @@ package ucar.nc2.dt;
 
 /**
  * Just like java.util.Iterator, but may throw IOException on nextData() call.
- *  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public interface DataIterator extends java.util.Iterator {
 
   /** true if another "DataType" object is available */
   public boolean hasNext();
 
-  /** Returns the next "DataType" object */
+  /** Returns the next "DataType" object
+   * @return the next "DataType" object
+   */
   public Object nextData() throws java.io.IOException;
 
   /** Returns the next "DataType" object.

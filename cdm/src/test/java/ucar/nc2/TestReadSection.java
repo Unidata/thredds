@@ -15,7 +15,7 @@ public class TestReadSection extends TestCase {
   }
 
   public void testReadVariableSection() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));
@@ -62,7 +62,7 @@ public class TestReadSection extends TestCase {
     while (s1.hasNext()) {
       double d1 = s1.getDoubleNext();
       double d2 = s2.getDoubleNext();
-      assert TestAll.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
+      assert TestLocal.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
       count++;
     }
 
@@ -72,7 +72,7 @@ public class TestReadSection extends TestCase {
 
 
   public void testReadVariableSection2() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));
@@ -126,7 +126,7 @@ public class TestReadSection extends TestCase {
     while (s1.hasNext()) {
       double d1 = s1.getDoubleNext();
       double d2 = s2.getDoubleNext();
-      assert TestAll.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
+      assert TestLocal.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
       count++;
     }
 

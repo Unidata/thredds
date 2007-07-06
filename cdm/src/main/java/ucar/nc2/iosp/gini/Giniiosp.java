@@ -22,6 +22,7 @@ package ucar.nc2.iosp.gini;
 
 import ucar.ma2.*;
 import ucar.nc2.Variable;
+import ucar.nc2.AbstractIOServiceProvider;
 
 import java.io.*;
 import java.awt.image.*;
@@ -37,7 +38,7 @@ import java.util.zip.DataFormatException;
  *  see   concrete class
  */
 
-public class Giniiosp implements ucar.nc2.IOServiceProvider {
+public class Giniiosp extends AbstractIOServiceProvider {
 
   protected boolean readonly;
   private ucar.nc2.NetcdfFile ncfile;
@@ -53,8 +54,6 @@ public class Giniiosp implements ucar.nc2.IOServiceProvider {
 
   protected boolean debug = false, debugSize = false, debugSPIO = false;
   protected boolean showHeaderBytes = false;
-
-  public void setSpecial( Object special) {}
 
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
@@ -384,9 +383,6 @@ public class Giniiosp implements ucar.nc2.IOServiceProvider {
     myRaf.close();
   }
 
-  public boolean syncExtend() { return false; }
-  public boolean sync() { return false; }
-
   public short convertunsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
   }
@@ -407,9 +403,6 @@ public class Giniiosp implements ucar.nc2.IOServiceProvider {
 
      }
 
-  /** Debug info for this object. */
-  public String toStringDebug(Object o) { return null; }
-  public String getDetailInfo() { return ""; }
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed

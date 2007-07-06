@@ -1,6 +1,5 @@
-// $Id:StructurePseudo.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -30,10 +29,9 @@ import java.io.IOException;
  * Make a collection of variables with the same outer dimension into a fake Structure.
  * Its fake because the variables are not stored contiguously.
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class StructurePseudo extends Structure {
-  private ArrayList orgVariables =  new ArrayList();
+  private List<Variable> orgVariables =  new ArrayList<Variable>();
   private boolean debugRecord = false;
 
   /** Make a Structure out of all Variables with the named dimension as their outermost dimension.
@@ -52,21 +50,20 @@ public class StructurePseudo extends Structure {
       group = ncfile.getRootGroup();
 
     // find all variables in this group that has this as the outer dimension
-    List vars = group.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable orgV = (Variable) vars.get(i);
+    List<Variable> vars = group.getVariables();
+    for (Variable orgV : vars) {
       Dimension dim0 = orgV.getDimension(0);
       if ((dim0 != null) && dim0.equals(dim)) {
         Variable memberV = new Variable(ncfile, group, this, orgV.getName());
-        memberV.setDataType( orgV.getDataType());
-        memberV.setSPobject( orgV.getSPobject()); // ??
-        memberV.attributes.addAll( orgV.getAttributes());
+        memberV.setDataType(orgV.getDataType());
+        memberV.setSPobject(orgV.getSPobject()); // ??
+        memberV.attributes.addAll(orgV.getAttributes());
 
-        ArrayList dims = (ArrayList) orgV.getDimensions();
+        List<Dimension> dims = new ArrayList<Dimension>(orgV.dimensions);
         dims.remove(0); //remove outer dimension
-        memberV.setDimensions( dims);
+        memberV.setDimensions(dims);
 
-        addMemberVariable( memberV);
+        addMemberVariable(memberV);
         orgVariables.add(orgV);
       }
     }
@@ -74,45 +71,48 @@ public class StructurePseudo extends Structure {
     calcElementSize();
   }
 
-    ///////////////
+  ///////////////
   // internal reads: all other calls go through these.
   // subclasses must override, so that NetcdfDataset wrapping will work.
 
+  @Override
   protected Array _read() throws IOException {
     if (debugRecord) System.out.println(" read all psuedo records ");
     StructureMembers smembers = makeStructureMembers();
     ArrayStructureMA asma = new ArrayStructureMA( smembers, getShape());
 
-    for (int i = 0; i < orgVariables.size(); i++) {
-      Variable v = (Variable) orgVariables.get(i);
+    for (Variable v : orgVariables) {
       Array data = v.read();
-      StructureMembers.Member m = smembers.findMember( v.getName());
-      m.setDataObject( data);
+      StructureMembers.Member m = smembers.findMember(v.getName());
+      m.setDataObject(data);
     }
 
     return asma;
   }
 
   // section of non-structure-member Variable
-  protected Array _read(List section) throws IOException, InvalidRangeException  {
+  @Override
+  protected Array _read(Section section) throws IOException, InvalidRangeException  {
     if (null == section)
       return _read();
 
-    if (debugRecord) System.out.println(" read psuedo records "+ section.get(0));
-    String err = Range.checkInRange( section, shape);
-    if (err != null) throw new InvalidRangeException( err);
-    Range r = (Range) section.get(0);
+    if (debugRecord) System.out.println(" read psuedo records "+ section.getRange(0));
+
+    String err = section.checkInRange(getShape());
+    if (err != null)
+      throw new InvalidRangeException(err);
+
+    Range r = section.getRange(0);
 
     StructureMembers smembers = makeStructureMembers();
     ArrayStructureMA asma = new ArrayStructureMA( smembers, getShape());
 
-    for (int i = 0; i < orgVariables.size(); i++) {
-      Variable v = (Variable) orgVariables.get(i);
-      ArrayList vsection = (ArrayList) v.getSectionRanges();
-      vsection.set( 0, r);
-      Array data = v.read( vsection);
-      StructureMembers.Member m = smembers.findMember( v.getName());
-      m.setDataObject( data);
+    for (Variable v : orgVariables) {
+      List<Range> vsection =  v.getRanges();
+      vsection.set(0, r);
+      Array data = v.read(vsection);
+      StructureMembers.Member m = smembers.findMember(v.getName());
+      m.setDataObject(data);
     }
 
     return asma;

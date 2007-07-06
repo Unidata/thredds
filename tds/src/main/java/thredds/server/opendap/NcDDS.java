@@ -72,7 +72,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
       Variable v = (Variable) o1;
       BaseType bt = null;
 
-      if (v.getCoordinateDimension() != null) {
+      if (v.isCoordinateVariable()) {
         bt = dimHash.get(v.getName());
         if (bt == null)
           log.error("NcDDS: Variable " + v.getName() + " missing coordinate variable in hash; dataset=" + name);

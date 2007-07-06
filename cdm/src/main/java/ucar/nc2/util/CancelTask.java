@@ -1,6 +1,5 @@
-// $Id:CancelTask.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,14 +24,17 @@ package ucar.nc2.util;
  *  and you want to allow the user to cancel it.
  *
  * @author jcaron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 public interface CancelTask {
 
-  /** Called routine should check often during the task and cancel the task if it returns true. */
+  /** Called routine should check often during the task and cancel the task if it returns true.
+   * @return true if task was cancelled
+   */
   public boolean isCancel();
 
-  /** Called routine got an error, so it sets a message for calling program to show to user. */
+  /** Called routine got an error, so it sets a message for calling program to show to user.
+   * @param msg message to show user
+   */
   public void setError(String msg);
 }

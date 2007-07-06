@@ -1,6 +1,5 @@
-// $Id: Aggregation.java 69 2006-07-13 00:12:58Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -70,9 +69,8 @@ import thredds.util.DateFromString;
  * </ol>
  *
  * @author caron
- * @version $Revision: 69 $ $Date: 2006-07-13 00:12:58Z $
  */
-public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
+public abstract class Aggregation implements ProxyReader2 {
   static protected int TYPICAL_DATASET_RANDOM = 0;
   static protected int TYPICAL_DATASET_LATEST = 1;
   static protected int TYPICAL_DATASET_PENULTIMATE = 2;
@@ -214,13 +212,15 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Get the list of aggregation variables: variables whose data spans multiple files.
+   * @return the list of aggregation variable names
    */
-  public List getVariables() {
+  public List<String> getVariables() {
     return vars;
   }
 
   /**
    * What is the data type of the aggregation coordinate ?
+   * @return the data type of the aggregation coordinate
    */
   public DataType getCoordinateType() {
     Dataset first = nestedDatasets.get(0);
@@ -229,22 +229,18 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Release all resources associated with the aggregation
-   *
-   * @throws IOException
+   * @throws IOException on error
    */
   public void close() throws IOException {
     persist();
-
-    for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset ds = nestedDatasets.get(i);
+    for (Dataset ds : nestedDatasets) {
       ds.close();
     }
   }
 
   /**
-   * Overriden in AggregationExisting
-   *
-   * @throws IOException
+   * Allow information to be make persistent. Overridden in AggregationExisting
+   * @throws IOException on error
    */
   public void persist() throws IOException {
   }
@@ -256,11 +252,11 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   /**
    * Is the named variable an "aggregation variable" ?
    *
-   * @param name
+   * @param name variable name
+   * @return true if the named variable is an aggregation variable
    */
   private boolean isAggVariable(String name) {
-    for (int i = 0; i < vars.size(); i++) {
-      String vname = (String) vars.get(i);
+    for (String vname : vars) {
       if (vname.equals(name))
         return true;
     }
@@ -276,8 +272,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     // LOOK fix from Michael Godin 3/14/06 - need to test
     // nestedDatasets.addAll(explicitDatasets);
-    for (int i = 0; i < explicitDatasets.size(); i++) {
-      Dataset dataset = explicitDatasets.get(i);
+    for (Dataset dataset : explicitDatasets) {
       if (dataset.checkOK(cancelTask))
         nestedDatasets.add(dataset);
     }
@@ -302,16 +297,14 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
   protected abstract void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException;
 
   protected void buildCoords(CancelTask cancelTask) throws IOException {
-    if ((type == Type.FORECAST_MODEL) || (type == Type.FORECAST_MODEL_COLLECTION)) {
-      for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset nested = nestedDatasets.get(i);
+    if (type == Type.FORECAST_MODEL_COLLECTION) {
+      for (Dataset nested : nestedDatasets) {
         nested.ncoord = 1;
       }
     }
 
     totalCoords = 0;
-    for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset nested = nestedDatasets.get(i);
+    for (Dataset nested : nestedDatasets) {
       totalCoords += nested.setStartEnd(totalCoords, cancelTask);
     }
   }
@@ -323,8 +316,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * Check to see if its time to rescan directory, and if so, rescan and extend dataset if needed.
    *
    * @param force if true, always rescan even if time not expired
-   * @return
-   * @throws IOException
+   * @return true if directory was rescanned and dataset may have been updated
+   * @throws IOException on io error
    */
   public synchronized boolean syncExtend(boolean force) throws IOException {
     if (!force && !timeToRescan())
@@ -385,9 +378,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Rescan if recheckEvery time has passed
-   *
    * @return if theres new datasets, put new datasets into nestedDatasets
-   * @throws IOException
    */
   protected boolean timeToRescan() {
     if (getType() == Aggregation.Type.UNION) {
@@ -438,8 +429,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
     if (!changed) { // check for deletions
-      for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset oldDataset = nestedDatasets.get(i);
+      for (Dataset oldDataset : nestedDatasets) {
         if ((newDatasets.indexOf(oldDataset) < 0) && (explicitDatasets.indexOf(oldDataset) < 0)) {
           changed = true;
           if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + oldDataset.location);
@@ -523,7 +513,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
-   *
+   * @return a typical Dataset
    * @throws FileNotFoundException if there are no datasets
    */
   protected Dataset getTypicalDataset() throws IOException {
@@ -546,25 +536,25 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     // all normal variables must use a proxy to lock the file
     DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
-    List allVars = newds.getVariables();
-    for (int i = 0; i < allVars.size(); i++) {
-      VariableDS vs = (VariableDS) allVars.get(i);
-      if (vs.getProxyReader() != null) {
-        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + vs.getNameAndDimensions());
+    List<Variable> allVars = newds.getVariables();
+    for (Variable v : allVars) {
+      VariableEnhanced ve = (VariableEnhanced) v; // need this for getProxyReader2()
+      if (ve.getProxyReader2() != null) {
+        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + ve.getName());
         continue; // dont mess with agg variables
       }
 
-      if (vs.isCaching()) {  // cache the small ones
-        if (!vs.hasCachedData()) {
-          vs.read();
-          if (debugProxy) System.out.println(" debugProxy: cached " + vs.getNameAndDimensions());
+      if (v.isCaching()) {  // cache the small ones
+        if (!v.hasCachedData()) {
+          ve.read();
+          if (debugProxy) System.out.println(" debugProxy: cached " + ve.getName());
         } else {
-          if (debugProxy) System.out.println(" debugProxy: already cached " + vs.getNameAndDimensions());
+          if (debugProxy) System.out.println(" debugProxy: already cached " + ve.getName());
         }
 
-      } else if (null == vs.getProxyReader()) { // put proxy on the rest
-        vs.setProxyReader(proxy);
-        if (debugProxy) System.out.println(" debugProxy: proxy on " + vs.getNameAndDimensions());
+      } else if (null == ve.getProxyReader2()) { // put proxy on the rest
+        ve.setProxyReader2(proxy);
+        if (debugProxy) System.out.println(" debugProxy: proxy on " + ve.getName());
       }
     }
   }
@@ -604,9 +594,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK why getOriginalDataType() ?
     int destPos = 0;
 
-    Iterator iter = nestedDatasets.iterator();
-    while (iter.hasNext()) {
-      Dataset vnested = (Dataset) iter.next();
+    for (Dataset vnested : nestedDatasets) {
       Array varData = vnested.read(mainv, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -623,9 +611,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     Array allData = Array.factory(dtype, aggCoord.getShape());
     IndexIterator result = allData.getIndexIterator();
 
-    Iterator iter = nestedDatasets.iterator();
-    while (iter.hasNext()) {
-      Dataset vnested = (Dataset) iter.next();
+    for (Dataset vnested : nestedDatasets) {
 
       try {
         readAggCoord(aggCoord, cancelTask, vnested, dtype, result, null, null, null);
@@ -652,29 +638,28 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
    * @return the data array section
    * @throws IOException
    */
-  public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     // If its full sized, then use full read, so that data gets cached.
-    long size = Range.computeSize(section);
+    long size = section.computeSize();
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
     // the case of the agg coordinate var for joinExisting or joinNew
     if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
-      return readAggCoord(mainv, cancelTask, section);
+      return readAggCoord(mainv, section, cancelTask);
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
-    Array sectionData = Array.factory(dtype, Range.getShape(section));
+    Array sectionData = Array.factory(dtype, section.getShape());
     int destPos = 0;
 
-    Range joinRange = (Range) section.get(0);
-    List nestedSection = new ArrayList(section); // copy
-    List innerSection = section.subList(1, section.size());
+    List<Range> ranges = section.getRanges();
+    Range joinRange = section.getRange(0);
+    List<Range> nestedSection = new ArrayList<Range>(ranges); // get copy
+    List<Range> innerSection = ranges.subList(1, ranges.size());
 
     if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
 
-    Iterator iter = nestedDatasets.iterator();
-    while (iter.hasNext()) {
-      Dataset nested = (Dataset) iter.next();
+    for (Dataset nested : nestedDatasets) {
       Range nestedJoinRange = nested.getNestedJoinRange(joinRange);
       if (nestedJoinRange == null)
         continue;
@@ -699,18 +684,17 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     return sectionData;
   }
 
-  protected Array readAggCoord(Variable aggCoord, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+  protected Array readAggCoord(Variable aggCoord, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     DataType dtype = aggCoord.getDataType();
-    Array allData = Array.factory(dtype, Range.getShape(section));
+    Array allData = Array.factory(dtype, section.getShape());
     IndexIterator result = allData.getIndexIterator();
 
-    Range joinRange = (Range) section.get(0);
-    List nestedSection = new ArrayList(section); // copy
-    List innerSection = section.subList(1, section.size());
+    List<Range> ranges = section.getRanges();
+    Range joinRange = section.getRange(0);
+    List<Range> nestedSection = new ArrayList<Range>(ranges); // get copy
+    List<Range> innerSection = ranges.subList(1, ranges.size());
 
-    Iterator iter = nestedDatasets.iterator();
-    while (iter.hasNext()) {
-      Dataset vnested = (Dataset) iter.next();
+    for (Dataset vnested : nestedDatasets) {
       Range nestedJoinRange = vnested.getNestedJoinRange(joinRange);
       if (nestedJoinRange == null)
         continue;
@@ -728,7 +712,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
   // handle the case of cached agg coordinate variables
   private void readAggCoord(Variable aggCoord, CancelTask cancelTask, Dataset vnested, DataType dtype, IndexIterator result,
-          Range nestedJoinRange, List nestedSection, List innerSection) throws IOException, InvalidRangeException {
+          Range nestedJoinRange, List<Range> nestedSection, List<Range> innerSection) throws IOException, InvalidRangeException {
 
     // we have the coordinates as a String
     if (vnested.coordValue != null) {
@@ -820,10 +804,8 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
 
     // Sort by date if it exists, else filename.
-    Collections.sort(fileList, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        MyFile mf1 = (MyFile) o1;
-        MyFile mf2 = (MyFile) o2;
+    Collections.sort(fileList, new Comparator<MyFile>() {
+      public int compare(MyFile mf1, MyFile mf2) {
         if (isDate)
           return mf1.dateCoord.compareTo(mf2.dateCoord);
         else
@@ -925,9 +907,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
         logger.error("scanDirectory(): " + tmpMsg);
         throw new IllegalArgumentException(tmpMsg);
       }
-      File[] allFiles = allDir.listFiles();
-      for (int i = 0; i < allFiles.length; i++) {
-        File f = allFiles[i];
+      for (File f : allDir.listFiles()) {
         String location = f.getAbsolutePath();
 
         if (f.isDirectory()) {
@@ -1015,6 +995,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     /**
      * For subclasses.
+     * @param location location attribute on the netcdf element
      */
     protected Dataset(String location) {
       this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
@@ -1072,6 +1053,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     /**
      * Get the coordinate value(s) as a String for this Dataset
+     * @return the coordinate value(s) as a String
      */
     public String getCoordValueString() {
       return coordValue;
@@ -1079,6 +1061,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     /**
      * Get the coordinate value as a Date for this Dataset; may be null
+     * @return the coordinate value as a Date, or null
      */
     public Date getCoordValueDate() {
       return coordValueDate;
@@ -1086,6 +1069,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
     /**
      * Get the location of this Dataset
+     * @return the location of this Dataset
      */
     public String getLocation() {
       return location;
@@ -1094,6 +1078,9 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     /**
      * Get number of coordinates in this Dataset.
      * If not already set, open the file and get it from the aggregation dimension.
+     * @param cancelTask allow cancellation
+     * @return number of coordinates in this Dataset.
+     * @throws java.io.IOException if io error
      */
     public int getNcoords(CancelTask cancelTask) throws IOException {
       if (ncoord <= 0) {
@@ -1114,7 +1101,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
      * @param aggStart   starting index
      * @param cancelTask allow to bail out
      * @return number of coordinates in this dataset
-     * @throws IOException
+     * @throws IOException if io error
      */
     private int setStartEnd(int aggStart, CancelTask cancelTask) throws IOException {
       this.aggStart = aggStart;
@@ -1130,7 +1117,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
      *
      * @param totalRange desired range, reletive to aggregated dimension.
      * @return desired Range or null if theres nothing wanted from this datase.
-     * @throws InvalidRangeException
+     * @throws InvalidRangeException if invalid range request
      */
     private Range getNestedJoinRange(Range totalRange) throws InvalidRangeException {
       int wantStart = totalRange.first();
@@ -1186,7 +1173,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
         ncfile = NetcdfFileCache.acquire(cacheName, -1, cancelTask, spiObject, reader);
 
       if (debugOpenFile) System.out.println(" acquire " + cacheName + " took " + (System.currentTimeMillis() - start));
-      if ((type == Type.JOIN_EXISTING) || (type == Type.FORECAST_MODEL))
+      if (type == Type.JOIN_EXISTING)
         cacheCoordValues(ncfile);
       return ncfile;
     }
@@ -1220,18 +1207,17 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
-    protected Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
+
         if (debugRead) {
           System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation());
-          for (int i = 0; i < section.size(); i++) {
-            Range range = (Range) section.get(i);
+          for (Range range : section)
             System.out.print(" " + range + ":");
-          }
           System.out.println("");
         }
 
@@ -1239,11 +1225,11 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
 
         // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
         // so we need to read only what is there
-        Range fullRange = (Range) v.getRanges().get(0);
-        Range want = (Range) section.get(0);
+        Range fullRange = v.getRanges().get(0);
+        Range want = section.get(0);
         if (fullRange.last() < want.last()) {
           Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
-          section = new ArrayList(section); // make a copy
+          section = new ArrayList<Range>(section); // make a copy
           section.set(0, limitRange);
         }
 
@@ -1288,7 +1274,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
     }
   }
 
-  protected class DatasetProxyReader implements ProxyReader {
+  protected class DatasetProxyReader implements ProxyReader2 {
     Dataset dataset;
 
     DatasetProxyReader(Dataset dataset) {
@@ -1307,7 +1293,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
       }
     }
 
-    public Array read(Variable mainV, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    public Array read(Variable mainV, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
@@ -1351,8 +1337,7 @@ public abstract class Aggregation implements ucar.nc2.dataset.ProxyReader {
      */
     public static Type getType(String name) {
       if (name == null) return null;
-      for (int i = 0; i < members.size(); i++) {
-        Type m = members.get(i);
+      for (Type m : members) {
         if (m.name.equalsIgnoreCase(name))
           return m;
       }

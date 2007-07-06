@@ -1,6 +1,5 @@
-// $Id:GridCoordSystem.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,15 +20,10 @@
 package ucar.nc2.dt;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.DateUnit;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.geoloc.LatLonPoint;
 
-import java.util.Date;
 import java.util.List;
-
-import thredds.datatype.DateRange;
 
 /**
  * A Coordinate System for gridded data. Assume:
@@ -43,7 +37,6 @@ import thredds.datatype.DateRange;
  * <p/>
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public interface GridCoordSystem {
@@ -55,6 +48,7 @@ public interface GridCoordSystem {
 
   /**
    * The name of the Grid Coordinate System, consisting of the list of coordinate axes, seperated by blanks.
+   * @return  name of the Grid Coordinate System
    */
   public String getName();
 
@@ -74,6 +68,7 @@ public interface GridCoordSystem {
 
   /**
    * True if all axes are 1 dimensional.
+   * @return true if all axes are 1 dimensional.
    */
   public boolean isProductSet();
 
@@ -178,6 +173,7 @@ public interface GridCoordSystem {
 
   /**
    * True if both X and Y axes are 1 dimensional and are regularly spaced.
+   * @return true if both X and Y axes are 1 dimensional and are regularly spaced.
    */
   public boolean isRegularSpatial();
 
@@ -188,6 +184,7 @@ public interface GridCoordSystem {
    *
    * @param llbb a lat/lon bounding box.
    * @return list of 2 Range objects, first y then x.
+   * @throws ucar.ma2.InvalidRangeException if llbb generates bad ranges
    */
   public java.util.List getRangesFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
 
@@ -225,6 +222,7 @@ public interface GridCoordSystem {
 
   /**
    * True if increasing z coordinate values means "up" in altitude
+   * @return true if increasing z coordinate values means "up" in altitude
    */
   public boolean isZPositive();
 
@@ -238,11 +236,13 @@ public interface GridCoordSystem {
    
   /**
    * True if there is a Time Axis.
+   * @return true if there is a Time Axis.
    */
   public boolean hasTimeAxis();
 
   /**
    * True if there is a Time Axis and it is 1D.
+   * @return true if there is a Time Axis and it is 1D.
    */
   public boolean hasTimeAxis1D();
 

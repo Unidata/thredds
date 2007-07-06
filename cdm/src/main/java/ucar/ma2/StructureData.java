@@ -1,6 +1,5 @@
-// $Id:StructureData.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -36,7 +35,6 @@ import java.util.List;
   </pre>
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 abstract public class StructureData {
@@ -63,28 +61,29 @@ abstract public class StructureData {
   }
 
   /**
-   * Get name of Structure
+   * @return name of Structure
    */
   public String getName() {
     return members.getName();
   }
 
   /**
-   * Get StructureMembers object
+   * @return StructureMembers object
    */
   public StructureMembers getStructureMembers() {
     return members;
   }
 
   /**
-   * Get List of StructureMembers.Member
+   * @return List of StructureMembers.Member
    */
-  public List getMembers() {
+  public List<StructureMembers.Member> getMembers() {
     return members.getMembers();
   }
 
   /**
-   * Get StructureMembers.Member by index
+   * @param index which member
+   * @return StructureMembers.Member by index
    */
   public StructureMembers.Member getMember(int index) {
     return members.getMember(index);
@@ -93,18 +92,13 @@ abstract public class StructureData {
   /**
    * Find a member by its name.
    *
+   * @param memberName find member with this name
    * @return StructureMembers.Member matching the name, or null if not found
    */
   public StructureMembers.Member findMember(String memberName) {
     return members.findMember(memberName);
   }
 
-  /**
-   * @deprecated use getArray(String memberName), or getArray(StructureMembers.Member m)
-   */
-  public Array findMemberArray(String memberName) {
-   return getArray(memberName);
-  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,9 +111,10 @@ abstract public class StructureData {
   abstract public Array getArray(StructureMembers.Member m);
 
   /**
-   * Get member data array of any type as an Array.
+   * Get  member data array of any type as an Array.
    * For more efficiency, use getArray(StructureMembers.Member m).
    * @param memberName name of member Variable.
+   * @return member data array of any type as an Array.
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public Array getArray(String memberName) {
@@ -138,22 +133,22 @@ abstract public class StructureData {
     //boolean isScalar = m.isScalar();
 
     if (dataType == DataType.DOUBLE) {
-        return new Double( getScalarDouble( m));
+        return getScalarDouble(m);
 
     } else if (dataType == DataType.FLOAT) {
-      return new Float( getScalarFloat( m));
+      return getScalarFloat(m);
 
     } else if (dataType == DataType.BYTE) {
-      return new Byte( getScalarByte( m));
+      return getScalarByte(m);
 
     } else if (dataType == DataType.SHORT) {
-      return new Short( getScalarShort( m));
+      return getScalarShort(m);
 
     } else if (dataType == DataType.INT) {
-      return new Integer( getScalarInt( m));
+      return getScalarInt(m);
 
     } else if (dataType == DataType.LONG) {
-      return new Long( getScalarLong( m));
+      return getScalarLong(m);
 
     } else if (dataType == DataType.CHAR) {
       return getScalarString( m);
@@ -168,26 +163,21 @@ abstract public class StructureData {
      throw new RuntimeException("Dont have implemenation for "+dataType);
   }
 
-  /**
-   * @deprecated use getScalarObject(m)
-   */
-  public Object getObject(StructureMembers.Member m) {
-    return getScalarObject( m);
-  }
-
-  /**
+  /*
    * Get scalar value as a float, with conversion as needed. Underlying type must be convertible to float.
+   * Does not handle scale/offset
    * @param m member Variable.
    * @throws ForbiddenConversionException if not convertible to float.
-   */
-  abstract public float convertScalarFloat(StructureMembers.Member m);
+   *
+  abstract public float convertScalarFloat(StructureMembers.Member m); */
 
-  /**
+  /*
    * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
+   * Does not handle scale/offset
    * @param m member Variable.
    * @throws ForbiddenConversionException if not convertible to double.
-   */
-  abstract public double convertScalarDouble(StructureMembers.Member m);
+   *
+  abstract public double convertScalarDouble(StructureMembers.Member m); */
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -196,6 +186,7 @@ abstract public class StructureData {
    * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
+   * @return scalar value as a double
    */
   public double getScalarDouble(String memberName) {
     Array data = getArray(memberName);
@@ -210,13 +201,6 @@ abstract public class StructureData {
   abstract public double getScalarDouble(StructureMembers.Member m);
 
   /**
-   * @deprecated use getJavaArrayDouble(m)
-   */
-  public double[] getArrayDouble(StructureMembers.Member m) {
-    return getJavaArrayDouble(m);
-  }
-
-  /**
    * Get java double array for a member of type double.
    * @param m get data from this StructureMembers.Member. Must be of type double.
    * @return 1D java array of doubles
@@ -229,6 +213,7 @@ abstract public class StructureData {
    * Get float value. Underlying type must be convertible to float.
    * For more efficiency, use getScalarFloat(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
+   * @return scalar float value
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public float getScalarFloat(String memberName) {
@@ -250,19 +235,13 @@ abstract public class StructureData {
    */
   abstract public float[] getJavaArrayFloat(StructureMembers.Member m);
 
-  /**
-   * @deprecated use getJavaArrayFloat(m)
-   */
-  public float[] getArrayFloat(StructureMembers.Member m) {
-    return getJavaArrayFloat(m);
-  }
-
   /////
 
   /**
    * Get byte value. Underlying type must be convertible to byte.
    * For more efficiency, use getScalarByte(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
+   * @return scalar byte value
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public byte getScalarByte(String memberName) {
@@ -284,18 +263,12 @@ abstract public class StructureData {
    */
   abstract public byte[] getJavaArrayByte(StructureMembers.Member m);
 
-  /**
-   * @deprecated use getJavaArrayByte(m)
-   */
-  public byte[] getArrayByte(StructureMembers.Member m) {
-    return getJavaArrayByte(m);
-  }
-
   /////
   /**
    * Get int value. Underlying type must be convertible to int.
    * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
+   * @return scalar int value
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public int getScalarInt(String memberName) {
@@ -317,18 +290,12 @@ abstract public class StructureData {
    */
   abstract public int[] getJavaArrayInt(StructureMembers.Member m);
 
-  /**
-   * @deprecated use getJavaArrayInt(m)
-   */
-    public int[] getArrayInt(StructureMembers.Member m) {
-    return getJavaArrayInt(m);
-  }
-
   /////
   /**
    * Get short value. Underlying type must be convertible to short.
    * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
+   * @return scalar short value
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public short getScalarShort(String memberName) {
@@ -350,18 +317,12 @@ abstract public class StructureData {
    */
   abstract public short[] getJavaArrayShort(StructureMembers.Member m);
 
-  /**
-   * @deprecated use getJavaArrayShort(m)
-   */
-  public short[] getArrayShort(StructureMembers.Member m) {
-    return getJavaArrayShort(m);
-  }
-
   /////
   /**
    * Get long value. Underlying type must be convertible to long.
    * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
+   * @return scalar long value
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public long getScalarLong(String memberName) {
@@ -383,18 +344,12 @@ abstract public class StructureData {
    */
   abstract public long[] getJavaArrayLong(StructureMembers.Member m);
 
-  /**
-   * @deprecated use getJavaArrayLong(m)
-   */
-  public long[] getArrayLong(StructureMembers.Member m) {
-    return getJavaArrayLong(m);
-  }
-
 /////
   /**
    * Get char value. Underlying type must be convertible to char.
    * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
+   * @return scalar char value
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public char getScalarChar(String memberName) {
@@ -416,19 +371,13 @@ abstract public class StructureData {
    */
   abstract public char[] getJavaArrayChar(StructureMembers.Member m);
 
-  /**
-   * @deprecated use getJavaArrayChar(m)
-   */
-  public char[] getArrayChar(StructureMembers.Member m) {
-    return getJavaArrayChar(m);
-  }
-
   /////
 
   /**
    * Get String value, from rank 0 String or rank 1 char member array.
    * For more efficiency, use getScalarString(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
+   * @return scalar String value
    * @throws IllegalArgumentException if name is not legal member name.
    */
   public String getScalarString(String memberName) {
@@ -440,6 +389,7 @@ abstract public class StructureData {
   /**
    * Get String value, from rank 0 String or rank 1 char member array.
    * @param m get data from this StructureMembers.Member. Must be of type char or String.
+   * @return scalar String value
    */
   abstract public String getScalarString(StructureMembers.Member m);
 
@@ -454,6 +404,7 @@ abstract public class StructureData {
     * Get member data of type Structure.
     * For more efficiency, use getScalarStructure(StructureMembers.Member m) if possible.
     * @param memberName name of member Variable.
+    * @return scalar StructureData value
     * @throws IllegalArgumentException if name is not legal member name.
     */
   public StructureData getScalarStructure(String memberName) {
@@ -475,5 +426,74 @@ abstract public class StructureData {
    * @return ArrayStructure
    */
   abstract public ArrayStructure getArrayStructure(StructureMembers.Member m);
-  
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  // deprecated
+
+
+  /**
+   * @deprecated use getArray(String memberName), or getArray(StructureMembers.Member m)
+   */
+  public Array findMemberArray(String memberName) {
+   return getArray(memberName);
+  }
+
+    /**
+   * @deprecated use getScalarObject(m)
+   */
+  public Object getObject(StructureMembers.Member m) {
+    return getScalarObject( m);
+  }
+
+  /**
+   * @deprecated use getJavaArrayDouble(m)
+   */
+  public double[] getArrayDouble(StructureMembers.Member m) {
+    return getJavaArrayDouble(m);
+  }
+
+  /**
+   * @deprecated use getJavaArrayFloat(m)
+   */
+  public float[] getArrayFloat(StructureMembers.Member m) {
+    return getJavaArrayFloat(m);
+  }
+
+   /**
+   * @deprecated use getJavaArrayByte(m)
+   */
+  public byte[] getArrayByte(StructureMembers.Member m) {
+    return getJavaArrayByte(m);
+  }
+
+  /**
+   * @deprecated use getJavaArrayInt(m)
+   */
+    public int[] getArrayInt(StructureMembers.Member m) {
+    return getJavaArrayInt(m);
+  }
+
+    /**
+   * @deprecated use getJavaArrayShort(m)
+   */
+  public short[] getArrayShort(StructureMembers.Member m) {
+    return getJavaArrayShort(m);
+  }
+
+    /**
+   * @deprecated use getJavaArrayLong(m)
+   */
+  public long[] getArrayLong(StructureMembers.Member m) {
+    return getJavaArrayLong(m);
+  }
+
+  /**
+   * @deprecated use getJavaArrayChar(m)
+   */
+  public char[] getArrayChar(StructureMembers.Member m) {
+    return getJavaArrayChar(m);
+  }
+
+
 }

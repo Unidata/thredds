@@ -1,6 +1,5 @@
-// $Id:CoordinateAxis2D.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,9 +20,11 @@
 package ucar.nc2.dataset;
 
 import ucar.ma2.*;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A 2-dimensional numeric Coordinate Axis. Must be invertible meaning, roughly, that
@@ -31,27 +32,21 @@ import java.util.ArrayList;
  *
  * @see CoordinateAxis#factory
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class CoordinateAxis2D extends CoordinateAxis {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
 
   /** create a 2D coordinate axis from an existing Variable */
   public CoordinateAxis2D( VariableDS vds) {
     super( vds);
   }
 
-  /** create a 2D coordinate axis from NcML attributes.
-  public CoordinateAxis2D( NetcdfDataset ds, String name, String type, String shapeS, String units,
-      String positive, String boundaryRef) {
-    super( ds, name, type, shapeS, units, positive, boundaryRef);
+  // for section and slice
+  @Override
+  protected Variable copy() {
+    return new CoordinateAxis2D(this); 
   }
-
-  // for subclasses
-  protected CoordinateAxis2D(NetcdfDataset dataset, Group group, Structure parentStructure, String shortName) {
-    super(dataset, group, parentStructure, shortName);
-  } */
-
 
   /** Get the coordinate value at the i, j index.
    *  @param i index 0
@@ -65,9 +60,13 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
   private ArrayDouble.D2 midpoint = null;
   private void doRead() {
-    Array data = null;
-    try { data = read(); }
-    catch (IOException ioe) { } // ??
+    Array data;
+    try {
+      data = read();
+    } catch (IOException ioe) {
+      log.error("Error reading coordinate values " + ioe);
+      throw new IllegalStateException(ioe);
+    }
 
     data = data.reduce();
     if (data.getRank() != 2)
@@ -76,7 +75,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     midpoint = (ArrayDouble.D2) Array.factory(double.class, data.getShape(), data.get1DJavaArray( double.class) );
   }
 
-  /** Get the coordinate values as a 1D double array.
+  /** Get the coordinate values as a 1D double array, in canonical order.
    *  @return coordinate values
    *  @exception UnsupportedOperationException if !isNumeric()
    */
@@ -92,15 +91,13 @@ public class CoordinateAxis2D extends CoordinateAxis {
    * @param r1 the section on the first index
    * @param r2 the section on the second index
    * @return a section of this CoordinateAxis2D
-   * @throws InvalidRangeException
+   * @throws InvalidRangeException if specified Ranges are invalid
    */
   public CoordinateAxis2D section(Range r1, Range r2) throws InvalidRangeException {
-    CoordinateAxis2D vs = new CoordinateAxis2D( this);
-    ArrayList section = new ArrayList();
+    List<Range> section = new ArrayList<Range>();
     section.add(r1);
     section.add(r2);
-    makeSection( vs, section);
-    return vs;
+    return (CoordinateAxis2D) section( section);
   }
 
   public ArrayDouble.D2 getMidpoints() {

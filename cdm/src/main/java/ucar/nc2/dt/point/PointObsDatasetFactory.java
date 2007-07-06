@@ -24,6 +24,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.adde.AddeStationObsDataset;
+import ucar.nc2.NetcdfFile;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
 import thredds.catalog.query.DqcFactory;
@@ -78,7 +79,7 @@ public class PointObsDatasetFactory {
     NetcdfDataset ncfile = NetcdfDatasetCache.acquire( location, task);
 
     // add record variable if there is one.
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     if (UnidataStationObsDataset.isValidFile( ncfile))
       return new UnidataStationObsDataset( ncfile);

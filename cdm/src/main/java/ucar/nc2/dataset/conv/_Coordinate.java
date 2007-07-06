@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,12 +21,11 @@
 package ucar.nc2.dataset.conv;
 
 /**
- * Class Description.
+ * Constants for _Coordinate Conventions.
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
-public interface _Coordinate {
+public class _Coordinate {
   static public final String AliasForDimension = "_CoordinateAliasForDimension";
   static public final String Axes = "_CoordinateAxes";
   static public final String AxisType = "_CoordinateAxisType";
@@ -40,4 +38,7 @@ public interface _Coordinate {
   static public final String TransformType = "_CoordinateTransformType";
   static public final String ZisLayer = "_CoordinateZisLayer";
   static public final String ZisPositive = "_CoordinateZisPositive";
+
+  // class not interface, per Bloch item 17
+  private _Coordinate() {}; // disable instantiation
 }

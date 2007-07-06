@@ -135,7 +135,7 @@ public class TestAggForecastModel extends TestCase {
     assert lat.getDataType() == DataType.DOUBLE;
 
     assert !lat.isUnlimited();
-    assert lat.getCoordinateDimension().equals(ncfile.findDimension("y"));
+    assert lat.getDimension(0).equals(ncfile.findDimension("y"));
 
     Attribute att = lat.findAttribute("units");
     assert null != att;
@@ -170,7 +170,7 @@ public class TestAggForecastModel extends TestCase {
     assert time.getShape()[0] == nagg;
     assert time.getDataType() == DataType.STRING;
 
-    assert time.getCoordinateDimension() != null; // LOOK maybe should be ??
+    assert time.isCoordinateVariable();
 
     try {
       Array data = time.read();
@@ -207,7 +207,7 @@ public class TestAggForecastModel extends TestCase {
     assert v.getShape()[3] == 93;
     assert v.getDataType() == DataType.FLOAT;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
 
     assert v.getDimension(0) == ncfile.findDimension("runtime");
     assert v.getDimension(1) == ncfile.findDimension("record");

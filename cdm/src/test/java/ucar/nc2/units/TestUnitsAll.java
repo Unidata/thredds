@@ -20,7 +20,7 @@ public class TestUnitsAll {
     suite.addTest(new TestSuite(TestDate.class));
 
     suite.addTest(new TestSuite(TestSimpleUnits.class));
-    suite.addTest(new TestSuite(TestTimeUnits.class));
+    //suite.addTest(new TestSuite(TestTimeUnits.class));
     suite.addTest(new TestSuite(TestDateUnits.class));
 
     return suite;

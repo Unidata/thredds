@@ -77,7 +77,7 @@ public class NdbcDataset extends StationObsDatasetImpl  implements TypedDatasetF
   
   public NdbcDataset() {}
 
-  public NdbcDataset(NetcdfFile ds) throws IOException {
+  public NdbcDataset(NetcdfDataset ds) throws IOException {
     super(ds);
 
     recordHelper = new RecordDatasetHelper(ds, "time", null, dataVariables);

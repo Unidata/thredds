@@ -22,6 +22,8 @@ package ucar.nc2;
 import ucar.ma2.DataType;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
 import java.io.PrintStream;
 
 /**
@@ -29,6 +31,7 @@ import java.io.PrintStream;
  * The Groups in a Dataset form a hierarchical tree, like directories on a disk.
  * A Group has a name and optionally a set of Attributes.
  * There is always at least one Group in a dataset, the root Group, whose name is the empty string.
+ * <p> Immutable if setImmutable() was called.
  *
  * @author caron
  */
@@ -37,10 +40,11 @@ public class Group {
   protected Group parent;
   protected String name;
   protected String shortName;
-  protected ArrayList<Variable> variables = new ArrayList<Variable>();
-  protected ArrayList<Dimension> dimensions = new ArrayList<Dimension>();
-  protected ArrayList<Group> groups = new ArrayList<Group>();
-  protected ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+  protected List<Variable> variables = new ArrayList<Variable>();
+  protected List<Dimension> dimensions = new ArrayList<Dimension>();
+  protected List<Group> groups = new ArrayList<Group>();
+  protected List<Attribute> attributes = new ArrayList<Attribute>();
+  private boolean immutable = false;
 
    /** Get the full name, starting from the root Group.
     * @return group full name
@@ -60,7 +64,7 @@ public class Group {
   /** Get the Variables contained directly in this group.
    * @return List of type Variable; may be empty, not null.
    */
-  public java.util.List<Variable> getVariables() { return new ArrayList<Variable>(variables); }
+  public java.util.List<Variable> getVariables() { return variables; }
 
   /**
    * Find the Variable with the specified (short) name in this group.
@@ -94,7 +98,7 @@ public class Group {
   /** Get the Groups contained directly in this Group.
    * @return List of type Group; may be empty, not null.
    */
-  public java.util.List<Group> getGroups() { return new ArrayList<Group>(groups); }
+  public java.util.List<Group> getGroups() { return groups; }
 
   /**
    * Retrieve the Group with the specified (short) name.
@@ -116,7 +120,7 @@ public class Group {
    * Get the Dimensions contained directly in this group.
    * @return List of type Dimension; may be empty, not null.
    */
-  public java.util.List<Dimension> getDimensions() { return new ArrayList<Dimension>( dimensions); }
+  public java.util.List<Dimension> getDimensions() { return dimensions; }
 
   /**
    * Retrieve a Dimension using its (short) name. If it doesnt exist in this group,
@@ -149,42 +153,10 @@ public class Group {
   }
 
   /**
-  * remove a Dimension using its name, in this group only
-  * @param dimName Dimension name.
-  * @return true if dimension found and removed
-  */
- public boolean removeDimension(String dimName) {
-   for (int i=0; i<dimensions.size(); i++) {
-     Dimension d = dimensions.get(i);
-     if (dimName.equals(d.getName())) {
-       dimensions.remove(d);
-       return true;
-     }
-   }
-   return false;
- }
-
- /**
-  * remove a Variable using its (short) name, in this group only
-  * @param varName Variable name.
-  * @return true if Variable found and removed
-  */
- public boolean removeVariable(String varName) {
-   for (int i=0; i<variables.size(); i++) {
-     Variable v = variables.get(i);
-     if (varName.equals(v.getShortName())) {
-       variables.remove(v);
-       return true;
-     }
-   }
-   return false;
- }
-
-  /**
    * Get the set of attributes contained directly in this Group.
    * @return List of type Attribute; may be empty, not null.
    */
-  public java.util.List<Attribute> getAttributes() { return new ArrayList<Attribute>(attributes); }
+  public java.util.List<Attribute> getAttributes() { return attributes; }
 
   /**
    * Find an Attribute in this Group by its name.
@@ -225,7 +197,7 @@ public class Group {
     sbuff.append(getShortName());
     sbuff.append("\n");
     for (Attribute att : attributes) {
-      sbuff.append("  " + getShortName() + ":");
+      sbuff.append("  ").append(getShortName()).append(":");
       sbuff.append(att.toString());
       sbuff.append(";");
       sbuff.append("\n");
@@ -291,13 +263,16 @@ public class Group {
    * @param name short name.
    */
   public void setName( String name) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     this.name = name;
   }
 
-  /**  Add new Attribute; replace old if has same name.
+  /**
+   * Add new Attribute; replace old if has same name.
    * @param att add this Attribute.
    */
   public void addAttribute(Attribute att) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     for (int i=0; i<attributes.size(); i++) {
       Attribute a = attributes.get(i);
       if (att.getName().equals(a.getName())) {
@@ -312,6 +287,11 @@ public class Group {
    * @param d add this Dimension
    */
   public void addDimension( Dimension d) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
+    if (findDimension(d.getName()) != null)
+      throw new IllegalArgumentException("Variable name (" + d.getName() + ") must be unique within Group " + getName());
+
     dimensions.add( d);
   }
 
@@ -319,17 +299,27 @@ public class Group {
    * @param g add this Group.
    */
   public void addGroup( Group g) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
+    if (findGroup(g.getName()) != null)
+      throw new IllegalArgumentException("Variable name (" + g.getName() + ") must be unique within Group " + getName());
+
     groups.add( g);
-    g.parent = this;
+    g.parent = this; // groups are a tree - only one parent
   }
 
   /** Add a Variable
    * @param v add this Variable.
    */
   public void addVariable( Variable v) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     if (v == null) return;
+
+    if (findVariable(v.getShortName()) != null)
+      throw new IllegalArgumentException("Variable name (" + v.getShortName() + ") must be unique within Group " + getName());
+
     variables.add( v);
-    v.setParentGroup( this);
+    v.setParentGroup( this); // variable can only be in one group
   }
 
   /** Remove an Attribute : uses the attribute hashCode to find it.
@@ -337,42 +327,94 @@ public class Group {
    * @return true if was found and removed
    */
   public boolean remove( Attribute a) {
-    if (a == null) return false;
-    return attributes.remove( a);
+    if (immutable) throw new IllegalStateException("Cant modify");
+    return a != null && attributes.remove(a);
   }
 
   /** Remove an Dimension : uses the dimension hashCode to find it.
    * @param d remove this Dimension.
    * @return true if was found and removed */
   public boolean remove( Dimension d) {
-    if (d == null) return false;
-    return dimensions.remove( d);
+    if (immutable) throw new IllegalStateException("Cant modify");
+    return d != null && dimensions.remove(d);
   }
 
   /** Remove an Attribute : uses the Group hashCode to find it.
    * @param g remove this Group.
    * @return true if was found and removed */
   public boolean remove( Group g) {
-    if (g == null) return false;
-    return groups.remove( g);
+    if (immutable) throw new IllegalStateException("Cant modify");
+    return g != null && groups.remove(g);
   }
 
   /** Remove a Variable : uses the variable hashCode to find it.
    * @param v remove this Variable.
    * @return true if was found and removed */
   public boolean remove( Variable v) {
-    if (v == null) return false;
-    return variables.remove( v);
+    if (immutable) throw new IllegalStateException("Cant modify");
+    return v != null && variables.remove(v);
+  }
+
+    /**
+  * remove a Dimension using its name, in this group only
+  * @param dimName Dimension name.
+  * @return true if dimension found and removed
+  */
+ public boolean removeDimension(String dimName) {
+   if (immutable) throw new IllegalStateException("Cant modify");
+   for (int i=0; i<dimensions.size(); i++) {
+     Dimension d = dimensions.get(i);
+     if (dimName.equals(d.getName())) {
+       dimensions.remove(d);
+       return true;
+     }
+   }
+   return false;
+ }
+
+ /**
+  * remove a Variable using its (short) name, in this group only
+  * @param varName Variable name.
+  * @return true if Variable found and removed
+  */
+ public boolean removeVariable(String varName) {
+   if (immutable) throw new IllegalStateException("Cant modify");
+   for (int i=0; i<variables.size(); i++) {
+     Variable v = variables.get(i);
+     if (varName.equals(v.getShortName())) {
+       variables.remove(v);
+       return true;
+     }
+   }
+   return false;
+ }
+
+  /**
+   * Make this immutable.
+   * @return this
+   */
+  public Group setImmutable() {
+    immutable = true;
+    variables = Collections.unmodifiableList(variables);
+    dimensions = Collections.unmodifiableList(dimensions);
+    groups = Collections.unmodifiableList(groups);
+    attributes = Collections.unmodifiableList(attributes);
+    return this;
   }
 
   /**
-   * Instances which have same content are equal.
+   * Instances which have same name and parent are equal.
    */
   @Override
   public boolean equals(Object oo) {
     if (this == oo) return true;
-    if ( !(oo instanceof Variable)) return false;
-    return hashCode() == oo.hashCode();
+    if ( !(oo instanceof Group)) return false;
+    Group og = (Group) oo;
+    if (!getName().equals(og.getName()))
+      return false;
+    if ((getParentGroup() != null) && !getParentGroup().equals(og.getParentGroup()))
+      return false;
+    return true;
   }
 
   /** Override Object.hashCode() to implement equals. */

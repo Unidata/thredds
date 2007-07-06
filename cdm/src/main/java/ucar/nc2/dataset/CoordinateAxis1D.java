@@ -1,6 +1,5 @@
-// $Id:CoordinateAxis1D.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -43,14 +42,15 @@ import java.util.List;
  *
  * @see CoordinateAxis#factory
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class CoordinateAxis1D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
 
-  /** create a 1D coordinate axis from an existing Variable */
+  /** Create a 1D coordinate axis from an existing Variable
+   * @param vds wrap this VariableDS, which is not changed.
+   */
   public CoordinateAxis1D(VariableDS vds) {
     super( vds);
     setIsLayer();
@@ -76,23 +76,24 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * Create a new CoordinateAxis1D as a section of this CoordinateAxis1D.
    * @param r the section range
    * @return a new CoordinateAxis1D as a section of this CoordinateAxis1D
-   * @throws InvalidRangeException
+   * @throws InvalidRangeException if IllegalRange
    */
   public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    ArrayList section = new ArrayList();
+    List<Range> section = new ArrayList<Range>();
     section.add(r);
     return (CoordinateAxis1D) section(section);
   }
 
-    // override to keep section a CoordinateAxis1D
-  public Variable section(List section) throws InvalidRangeException  {
-    Variable vs = new CoordinateAxis1D( this);
-    makeSection( vs, section);
-    return vs;
+   // for section and slice
+  @Override
+  protected Variable copy() {
+    return new CoordinateAxis1D(this);
   }
 
   /** The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
    *  If numeric, this will return a String representation of the coordinate.
+   * @param index which one ?
+   * @return the ith coordinate value as a String
    */
   public String getCoordName(int index) {
     if (!wasRead) doRead();
@@ -161,7 +162,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValues() on non-numeric");
     if (!wasRead) doRead();
-    return (double[]) midpoint.clone();
+    return midpoint.clone();
   }
 
   /** Get the coordinate edges as a double array.
@@ -173,7 +174,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdges() on non-numeric");
     if (!wasRead) doRead();
-    return (double[]) edge.clone();
+    return edge.clone();
   }
 
   /** Get the coordinate bound1 as a double array.
@@ -186,7 +187,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
     if (!wasRead) doRead();
-    return (double[]) bound1.clone();
+    return bound1.clone();
   }
 
   /** Get the coordinate bound1 as a double array.
@@ -199,7 +200,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
        throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
     if (!wasRead) doRead();
-    return (double[]) bound2.clone();
+    return bound2.clone();
   }
 
 
@@ -364,12 +365,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private boolean isRegular = false;
   private double start, increment;
 
-  /** Get Starting value if isRegular() */
+  /** @return Starting value if isRegular() */
   public double getStart() {
     calcIsRegular();
     return start;
   }
-  /** Get Increment value if isRegular() */
+  /** @return Increment value if isRegular() */
   public double getIncrement() {
     calcIsRegular();
     return increment;
@@ -377,9 +378,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
 
   private boolean isLayer = false;
-  /** If coordinate lies between a layer, or is at a point. */
+  /**
+   * Caution: many datasets do not explicitly specify this info, this is often a guess; default is false.
+   * @return true if coordinate lies between a layer, or false if its at a point.
+   */
   public boolean isLayer() { return isLayer; }
-  /** If coordinate lies between a layer, or is at a point. */
+  /** Set if coordinate lies between a layer, or is at a point.
+   * @param isLayer true if coordinate lies between a layer, or false if its at a point
+   */
   public void setLayer(boolean isLayer) { this.isLayer = isLayer; }
 
   private void setIsLayer() {
@@ -389,8 +395,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /**
-   * If evenly spaced.
-   * Then value(i) = <i>getStart()</i> + i * <i>getIncrement()</i>.
+   * If true, then value(i) = <i>getStart()</i> + i * <i>getIncrement()</i>.
+   * @return if evenly spaced.
    */
   public boolean isRegular() {
     calcIsRegular();
@@ -452,7 +458,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
     Array data;
     try {
       data = read();
-    } catch (IOException ioe) { return; }
+    } catch (IOException ioe) {
+      log.error("Error reading string coordinate values ", ioe);
+      throw new IllegalStateException(ioe);
+    }
 
     names = new String[ (int) data.getSize()];
     IndexIterator ii = data.getIndexIterator();
@@ -465,7 +474,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
     ArrayChar data;
     try {
       data = (ArrayChar) read();
-    } catch (IOException ioe) { return; }
+    } catch (IOException ioe) {
+      log.error("Error reading char coordinate values ", ioe);
+      throw new IllegalStateException(ioe);
+    }
     ArrayChar.StringIterator iter = data.getStringIterator();
     names = new String[ iter.getNumElems()];
     while (iter.hasNext())
@@ -480,9 +492,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
     Array data;
     try {
       data = read();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return;
+    } catch (IOException ioe) {
+      log.error("Error reading coordinate values ",ioe);
+      throw new IllegalStateException(ioe);
     }
 
     IndexIterator iter = data.getIndexIterator();
@@ -598,9 +610,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   ////////////////////////////////////////////////////////////////////
-  protected ArrayList named;
+  protected ArrayList<NamedAnything> named;
   private void makeNames() {
-    named = new ArrayList();
+    named = new ArrayList<NamedAnything>();
     int n = (int) getSize();
     for (int i = 0; i < n; i++)
       named.add(new NamedAnything(getCoordName(i), getUnitsString()));
@@ -618,14 +630,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /**
-   * Get the index corresponding to the name.
-   * @param name
+   * Get the index corresponding to the name. Reverse of getCoordName(i)
+   * @param name getCoordName(i)
    * @return index, or -1 if not found
    */
   public int getIndex(String name) {
     if (named == null) makeNames();
     for (int i = 0; i < named.size(); i++) {
-      NamedAnything level = (NamedAnything) named.get(i);
+      NamedAnything level = named.get(i);
       if (level.getName().trim().equals(name)) return i;
     }
     return -1;

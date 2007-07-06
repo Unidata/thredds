@@ -1,6 +1,5 @@
-// $Id:DiskCache2.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.PrintStream;
 import java.util.*;
+import java.net.URLDecoder;
 
 /**
  * Manages a place on disk to persistently cache files, which are deleted when the last modified date exceeds a certain time.
@@ -42,7 +42,6 @@ import java.util.*;
  * <li>  to the current working directory
  * </ol>
  * @author jcaron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class DiskCache2 {
   public static int CACHEPATH_POLICY_ONE_DIRECTORY = 0;
@@ -98,7 +97,9 @@ public class DiskCache2 {
       timer.cancel();
   }
 
-  /** Optionally set a logger. Each time a scour is done, a messsage is written to it. */
+  /** Optionally set a logger. Each time a scour is done, a messsage is written to it.
+   * @param cacheLog use this logger
+   */
   public void setLogger(org.slf4j.Logger cacheLog) {
     this.cacheLog = cacheLog;
   }
@@ -122,6 +123,7 @@ public class DiskCache2 {
 
   /**
    * Get the cache root directory.
+   * @return the cache root directory.
    */
    public String getRootDirectory() { return root; }
 
@@ -148,8 +150,13 @@ public class DiskCache2 {
   }
 
   /**
-   * CACHEPATH_POLICY_ONE_DIRECTORY (default) : replace "/" with "-", so all files are in one directory.
-   * CACHEPATH_POLICY_NESTED_DIRECTORY: cache files are in nested directories under the root.
+   * Set the cache path policy
+   * @param cachePathPolicy one of:
+   *   CACHEPATH_POLICY_ONE_DIRECTORY (default) : replace "/" with "-", so all files are in one directory.
+   *   CACHEPATH_POLICY_NESTED_DIRECTORY: cache files are in nested directories under the root.
+   *   CACHEPATH_POLICY_NESTED_TRUNCATE: eliminate leading directories
+   *
+   * @param cachePathPolicyParam for CACHEPATH_POLICY_NESTED_TRUNCATE, eliminat this string
    */
   public void setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) {
     this.cachePathPolicy = cachePathPolicy;
@@ -207,21 +214,23 @@ public class DiskCache2 {
     pw.println("Size   LastModified       Filename");
     File dir = new File(root);
     File[] files = dir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
+    for (File file : files) {
       String org = null;
       try {
-        org = java.net.URLDecoder.decode(file.getName(), "UTF8");
+        org = URLDecoder.decode(file.getName(), "UTF8");
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
       }
 
-      pw.println(" "+file.length() + " " + new Date(file.lastModified())+" "+org);
+      pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
     }
   }
 
   /**
    * Remove any files or directories whose last modified time greater than persistMinutes
+   * @param dir clean starting here
+   * @param sbuff status messages here, may be null
+   * @param isRoot delete empty directories, bit not root directory
    */
   public void cleanCache(File dir, StringBuffer sbuff, boolean isRoot) {
     long now = System.currentTimeMillis();
@@ -237,14 +246,13 @@ public class DiskCache2 {
       if (duration > persistMinutes) {
         dir.delete();
         if (sbuff != null)
-          sbuff.append(" deleted "+dir.getPath()+" last= "+new Date(dir.lastModified()) + "\n");
+          sbuff.append(" deleted ").append(dir.getPath()).append(" last= ").append(new Date(dir.lastModified())).append("\n");
       }
       return;
     }
 
     // check for expired files
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
+    for (File file : files) {
       if (file.isDirectory()) {
         cleanCache(file, sbuff, false);
       } else {
@@ -253,7 +261,7 @@ public class DiskCache2 {
         if (duration > persistMinutes) {
           file.delete();
           if (sbuff != null)
-            sbuff.append(" deleted "+file.getPath()+" last= "+new Date(file.lastModified()) + "\n");
+            sbuff.append(" deleted ").append(file.getPath()).append(" last= ").append(new Date(file.lastModified())).append("\n");
         }
       }
     }
@@ -264,7 +272,7 @@ public class DiskCache2 {
 
     public void run() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("CacheScourTask on"+ root+"\n");
+      sbuff.append("CacheScourTask on").append(root).append("\n");
       cleanCache( new File(root), sbuff, true);
       sbuff.append("----------------------\n");
       if (cacheLog != null) cacheLog.info(sbuff.toString());
@@ -283,7 +291,7 @@ public class DiskCache2 {
       String enc = java.net.URLEncoder.encode(filename, "UTF8");
       System.out.println(" original=" + java.net.URLDecoder.decode(enc, "UTF8"));
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace(); 
     }
   }
 

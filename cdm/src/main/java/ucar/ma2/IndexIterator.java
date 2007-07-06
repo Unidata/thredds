@@ -1,6 +1,5 @@
-// $Id:IndexIterator.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,10 +34,9 @@ package ucar.ma2;
     }
     </pre>
 
-    Note that logical order may not be physical order.
+    Note that canonical order may not be physical order.
 
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public interface IndexIterator  {

@@ -2,9 +2,6 @@ package ucar.nc2.units;
 
 import junit.framework.*;
 
-import ucar.units.Unit;
-import ucar.nc2.TestAll;
-
 public class TestSimpleUnits extends TestCase  {
 
   public TestSimpleUnits( String name) {

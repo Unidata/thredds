@@ -15,7 +15,7 @@ public class TestReadSlice extends TestCase {
   }
 
   public void testReadSlice1() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));
@@ -58,7 +58,7 @@ public class TestReadSlice extends TestCase {
   }
 
   public void testReadSlice2() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));
@@ -101,7 +101,7 @@ public class TestReadSlice extends TestCase {
   }
 
   public void testReadSliceCompose() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
 
     Variable temp = null;
     assert(null != (temp = ncfile.findVariable("temperature")));

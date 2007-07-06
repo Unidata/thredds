@@ -1,6 +1,5 @@
-// $Id:ArraySequence.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,8 +19,6 @@
  */
 package ucar.ma2;
 
-import java.util.List;
-
 /**
  * Handles nested sequences: a 1D array of variable length 1D arrays of StructureData.
  * Uses same technique as ArrayStructureMA for the inner fields; data storage is in member arrays.
@@ -37,7 +34,6 @@ import java.util.List;
  </pre>
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ArraySequence extends ArrayStructure {
   private int[] sequenceLen;
@@ -107,23 +103,21 @@ public class ArraySequence extends ArrayStructure {
       sdata[i] = new StructureDataA( this, sequenceOffset[i]);
 
     // make the member arrays
-    List memberList = members.getMembers();
-    for (int j = 0; j < memberList.size(); j++) {
-      StructureMembers.Member m = (StructureMembers.Member) memberList.get(j);
+    for (StructureMembers.Member m : members.getMembers()) {
       int[] mShape = m.getShape();
-      int[] shape = new int[mShape.length+1];
+      int[] shape = new int[mShape.length + 1];
       shape[0] = total;
       for (int i = 0; i < mShape.length; i++)
-        shape[i+1] = mShape[i];
+        shape[i + 1] = mShape[i];
 
       // LOOK not doing nested structures
       Array data = Array.factory(m.getDataType(), shape);
-      m.setDataObject( data);
+      m.setDataObject(data);
     }
   }
 
   /**
-   * Get the total number of Structures over all the nested sequences.
+   * @return the total number of Structures over all the nested sequences.
    */
   public int getTotalNumberOfStructures() { return total; }
 

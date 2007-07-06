@@ -1,4 +1,3 @@
-// $Id:TransformType.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,12 +24,11 @@ package ucar.nc2.dataset;
  * Type-safe enumeration of netCDF Dataset TransformType.
  *
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class TransformType {
 
-  private static java.util.HashMap hash = new java.util.HashMap(10);
+  private static java.util.Map<String,TransformType> hash = new java.util.HashMap<String,TransformType>(10);
 
   public final static TransformType Projection = new TransformType("Projection");
   public final static TransformType Vertical = new TransformType("Vertical");
@@ -43,12 +41,12 @@ public class TransformType {
 
   /**
    * Find the AxisType that matches this name.
-   * @param name
+   * @param name find this name
    * @return AxisType or null if no match.
    */
   public static TransformType getType(String name) {
     if (name == null) return null;
-    return (TransformType) hash.get( name);
+    return hash.get( name);
   }
 
   /**

@@ -1,3 +1,22 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package ucar.nc2.dt.fmrc;
 
 import ucar.nc2.units.DateFormatter;
@@ -56,7 +75,6 @@ import thredds.catalog.ServiceType;
  * </pre>
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class FmrcInventory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInventory.class);
@@ -72,33 +90,33 @@ public class FmrcInventory {
 
   private String name; // name of ForecastModelRunCollection
 
-  // list of unique ForecastModelRun.TimeCoord
+  // list of unique ForecastModelRunInventory.TimeCoord
   private int tc_seqno = 0;
-  private ArrayList timeCoords = new ArrayList();
+  private List<ForecastModelRunInventory.TimeCoord> timeCoords = new ArrayList<ForecastModelRunInventory.TimeCoord>();
 
-  // list of unique ForecastModelRun.VertCoord
+  // list of unique ForecastModelRunInventory.VertCoord
   private int vc_seqno = 0;
-  private ArrayList vertCoords = new ArrayList();
+  private List<ForecastModelRunInventory.VertCoord> vertCoords = new ArrayList<ForecastModelRunInventory.VertCoord>();
 
   // list of all unique RunSeq objects
   private int run_seqno = 0;
-  private ArrayList runSequences = new ArrayList();
+  private List<RunSeq> runSequences = new ArrayList<RunSeq>();
 
   // the variables
-  private HashMap uvHash = new HashMap(); // hash of UberGrid
-  private ArrayList varList;              // sorted list of UberGrid
+  private Map<String,UberGrid> uvHash = new HashMap<String,UberGrid>(); // hash of UberGrid
+  private List<UberGrid> varList;              // sorted list of UberGrid
 
   // all run times
-  private HashSet runTimeHash = new HashSet();
-  private List runTimeList;                // sorted list of Date : all run times
+  private Set<Date> runTimeHash = new HashSet<Date>();
+  private List<Date> runTimeList;                // sorted list of Date : all run times
 
   // all offsets
-  private HashSet offsetHash = new HashSet();
-  private List offsetList;                // sorted list of Double : all offset hours
+  private Set<Double> offsetHash = new HashSet<Double>();
+  private List<Double> offsetList;                // sorted list of Double : all offset hours
 
   // all forecast times
-  private HashSet forecastTimeHash = new HashSet();
-  private List forecastTimeList;          // sorted list of Date : all forecast times
+  private Set<Date> forecastTimeHash = new HashSet<Date>();
+  private List<Date> forecastTimeList;          // sorted list of Date : all forecast times
 
   // optional definition, describes what is expected
   private String fmrcDefinitionDir;
@@ -115,7 +133,7 @@ public class FmrcInventory {
    *
    * @param fmrcDefinitionDir put optional definition file in this directory
    * @param name name for the collection, the definition file = name + ".fmrcDefinition.xml";
-   * @throws IOException
+   * @throws IOException on io error
    */
   FmrcInventory(String fmrcDefinitionDir, String name) throws IOException {
     this.fmrcDefinitionDir = fmrcDefinitionDir;
@@ -142,9 +160,9 @@ public class FmrcInventory {
     }
     return "./" + name + ".fmrcDefinition.xml";
   }
-  public ArrayList getTimeCoords() { return timeCoords; }
-  public ArrayList getRunSequences() { return runSequences; }
-  public ArrayList getVertCoords() { return vertCoords; }
+  public List<ForecastModelRunInventory.TimeCoord> getTimeCoords() { return timeCoords; }
+  public List<RunSeq> getRunSequences() { return runSequences; }
+  public List<ForecastModelRunInventory.VertCoord> getVertCoords() { return vertCoords; }
 
   public String getSuffixFilter() {
     return (definition == null) ? null  : definition.getSuffixFilter();
@@ -161,6 +179,7 @@ public class FmrcInventory {
 
   /**
    * Add a ForecastModelRun to the collection.
+   * @param fmr add this ForecastModelRun to the collection
    */
   void addRun(ForecastModelRunInventory fmr) {
     if (debug) System.out.println(" Adding ForecastModelRun "+fmr.getRunDateString());
@@ -169,47 +188,41 @@ public class FmrcInventory {
     runTimeHash.add( fmr.getRunDate());
 
     // add each time coord, variable
-    List timeCoords = fmr.getTimeCoords();
-    for (int i = 0; i < timeCoords.size(); i++) {
-      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
-
+    for (ForecastModelRunInventory.TimeCoord tc : fmr.getTimeCoords()) {
       // Construct list of unique TimeCoords. Reset their id so they are unique.
       // Note that after this, we ignore the nested variables.
-      ForecastModelRunInventory.TimeCoord tcUse = findTime( tc);
+      ForecastModelRunInventory.TimeCoord tcUse = findTime(tc);
       if (tcUse == null) {
-        this.timeCoords.add( tc);
+        this.timeCoords.add(tc);
         tcUse = tc;
-        tc.setId( Integer.toString(tc_seqno));
+        tc.setId(Integer.toString(tc_seqno));
         tc_seqno++;
       }
 
       // create a Run object, encapsolating this ForecastModelRun
       Run run = new Run(fmr.getRunDate(), tcUse);
-      double[] offsets = tcUse.getOffsetHours();
-      for (int j = 0; j < offsets.length; j++) {
-        Date fcDate = addHour(fmr.getRunDate(), offsets[j]);
-        Inventory inv = new Inventory(fmr.getRunDate(), fcDate, offsets[j]);
-        run.invList.add( inv);
-        forecastTimeHash.add( fcDate); // track all forecast times
-        offsetHash.add( new Double(offsets[j])); // track all offset hours
+      for (double offset : tcUse.getOffsetHours()) {
+        Date fcDate = addHour(fmr.getRunDate(), offset);
+        Inventory inv = new Inventory(fmr.getRunDate(), fcDate, offset);
+        run.invList.add(inv);
+        forecastTimeHash.add(fcDate); // track all forecast times
+        offsetHash.add(offset); // track all offset hours
       }
 
       // Construct list of Variables across all runs in the collection.
-      List varList = tc.getGrids();
-      for (int j = 0; j < varList.size(); j++) {
-        ForecastModelRunInventory.Grid grid = (ForecastModelRunInventory.Grid) varList.get(j);
-        UberGrid uv = (UberGrid) uvHash.get(grid.name);
+      for (ForecastModelRunInventory.Grid grid :  tc.getGrids()) {
+        UberGrid uv = uvHash.get(grid.name);
         if (uv == null) {
           // we may not have this variable in the definition
-          if ((definition != null) && (null == definition.findSeqForVariable( grid.name))) {
-            log.warn("FmrcCollection Definition "+name+" does not contain variable "+grid.name);
+          if ((definition != null) && (null == definition.findSeqForVariable(grid.name))) {
+            log.warn("FmrcCollection Definition " + name + " does not contain variable " + grid.name);
             continue; // skip it
-          }  else {
+          } else {
             uv = new UberGrid(grid.name);
             uvHash.put(grid.name, uv);
           }
         }
-        uv.addRun( run, grid);
+        uv.addRun(run, grid);
       }
     }
   }
@@ -217,33 +230,31 @@ public class FmrcInventory {
   // call after adding all runs
   void finish() {
     // create the overall list of variables
-    varList = new ArrayList(uvHash.values());
+    varList = new ArrayList<UberGrid>(uvHash.values());
     Collections.sort(varList);
 
     // create the overall list of run times
-    runTimeList = Arrays.asList(runTimeHash.toArray());
+    runTimeList = Arrays.asList((Date[]) runTimeHash.toArray());
     Collections.sort(runTimeList);
 
     // create the overall list of forecast times
-    forecastTimeList = Arrays.asList(forecastTimeHash.toArray());
+    forecastTimeList = Arrays.asList((Date[]) forecastTimeHash.toArray());
     Collections.sort(forecastTimeList);
 
     // create the overall list of offsets
-    offsetList = Arrays.asList(offsetHash.toArray());
+    offsetList = Arrays.asList((Double[]) offsetHash.toArray());
     Collections.sort(offsetList);
 
     // finish the variables, assign to a RunSeq
-    for (int i = 0; i < varList.size(); i++) {
-      UberGrid uv = (UberGrid) varList.get(i);
+    for (UberGrid uv : varList) {
       uv.finish();
       uv.seq = findRunSequence(uv.runs); // assign to a unique RunSeq
-      uv.seq.addVariable( uv); // add to list of vars for that RunSeq
+      uv.seq.addVariable(uv); // add to list of vars for that RunSeq
     }
   }
 
   private UberGrid findVar(String varName) {
-    for (int i = 0; i < varList.size(); i++) {
-      UberGrid uv = (UberGrid) varList.get(i);
+    for (UberGrid uv : varList) {
       if (uv.name.equals(varName))
         return uv;
     }
@@ -327,13 +338,13 @@ public class FmrcInventory {
   // another abstraction of ForecastModelRun
   static class Run implements Comparable {
     ForecastModelRunInventory.TimeCoord tc;
-    ArrayList invList; // list of Inventory
+    List<Inventory> invList; // list of Inventory
     Date runTime;
 
     Run(Date runTime, ForecastModelRunInventory.TimeCoord tc) {
       this.runTime = runTime;
       this.tc = tc;
-      invList = new ArrayList();
+      invList = new ArrayList<Inventory>();
     }
 
     public int compareTo(Object o) {
@@ -341,13 +352,13 @@ public class FmrcInventory {
       return runTime.compareTo(other.runTime);
     }
 
-        /** Instances that have the same offsetHours are equal */
+        // Instances that have the same offsetHours are equal
     public boolean equalsData(Run orun) {
       if (invList.size() != orun.invList.size())
         return false;
       for (int i = 0; i < invList.size() ; i++) {
-        Inventory inv = (Inventory) invList.get(i);
-        Inventory oinv = (Inventory) orun.invList.get(i);
+        Inventory inv = invList.get(i);
+        Inventory oinv = orun.invList.get(i);
         if (inv.hourOffset != oinv.hourOffset)
           return false;
       }
@@ -360,7 +371,7 @@ public class FmrcInventory {
 
       double[] result = new double[ invList.size()];
       for (int i = 0; i < invList.size(); i++) {
-        Inventory inv = (Inventory) invList.get(i);
+        Inventory inv = invList.get(i);
         result[i] = inv.hourOffset;
       }
       return result;
@@ -371,15 +382,13 @@ public class FmrcInventory {
   /** Represents a sequence of Run, each run has a particular TimeCoord.
    * keep track of all the Variables with the same RunSeq */
   class RunSeq {
-    ArrayList runs; // list of Run
-    ArrayList vars = new ArrayList(); // list of UberGrid
+    List<Run> runs; // list of Run
+    List<UberGrid> vars = new ArrayList<UberGrid>(); // list of UberGrid
     String name;
 
-    /** list of RunExpected */
-    RunSeq(ArrayList runs) {
-      this.runs = new ArrayList();
-      for (int i = 0; i < runs.size(); i++) {
-        RunExpected rune = (RunExpected) runs.get(i);
+    RunSeq(List<RunExpected> runs) {
+      this.runs = new ArrayList<Run>();
+      for (RunExpected rune : runs) {
         this.runs.add(rune.run);
       }
       name = "RunSeq" + run_seqno;
@@ -391,29 +400,27 @@ public class FmrcInventory {
      * @param oruns list of RunExpected
      * @return true if it has an equivilent set of runs.
      */
-    boolean equalsData(ArrayList oruns) {
+    boolean equalsData(List<RunExpected> oruns) {
       if (runs.size() != oruns.size()) return false;
       for (int i = 0; i < runs.size(); i++) {
-        Run run = (Run) runs.get(i);
-        RunExpected orune = (RunExpected) oruns.get(i);
+        Run run = runs.get(i);
+        RunExpected orune = oruns.get(i);
         if (!run.runTime.equals(orune.run.runTime)) return false;
         if (!run.equalsData(orune.run)) return false;
       }
       return true;
     }
 
-    /** keep track of all the Variables with the this RunSeq */
+    // keep track of all the Variables with the this RunSeq
     void addVariable( UberGrid uv) { vars.add( uv); }
 
-    ArrayList getVariables() {
+    List<UberGrid> getVariables() {
       return vars;
     }
   }
 
-  /** list of RunExpected */
-  private RunSeq findRunSequence(ArrayList runs) {
-    for (int i = 0; i < runSequences.size(); i++) {
-      RunSeq seq = (RunSeq) runSequences.get(i);
+  private RunSeq findRunSequence(List<RunExpected> runs) {
+    for (RunSeq seq : runSequences) {
       if (seq.equalsData(runs)) return seq;
     }
     RunSeq seq = new RunSeq(runs);
@@ -422,8 +429,7 @@ public class FmrcInventory {
   }
 
   private ForecastModelRunInventory.TimeCoord findTime(ForecastModelRunInventory.TimeCoord want) {
-    for (int i = 0; i < timeCoords.size(); i++) {
-      ForecastModelRunInventory.TimeCoord  tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
+    for (ForecastModelRunInventory.TimeCoord tc : timeCoords) {
       if (want.equalsData(tc))
         return tc;
     }
@@ -431,8 +437,7 @@ public class FmrcInventory {
   }
 
   private ForecastModelRunInventory.VertCoord findVertCoord(ForecastModelRunInventory.VertCoord want) {
-    for (int i = 0; i < vertCoords.size(); i++) {
-      ForecastModelRunInventory.VertCoord  vc = (ForecastModelRunInventory.VertCoord) vertCoords.get(i);
+    for (ForecastModelRunInventory.VertCoord vc : vertCoords) {
       if (want.equalsData(vc))
         return vc;
     }
@@ -444,7 +449,7 @@ public class FmrcInventory {
   // The collection across runs of one variable
   class UberGrid implements Comparable {
     String name;
-    ArrayList runs = new ArrayList();  // List of RunExpected
+    List<RunExpected> runs = new ArrayList<RunExpected>();  // List of RunExpected
     ForecastModelRunInventory.VertCoord vertCoordUnion = null;
     int countInv, countExpected;
 
@@ -469,11 +474,10 @@ public class FmrcInventory {
 
       // now we can generate the list of possible forecast hours
       if (rune.expected != null) {
-        double[] offsets = rune.expected.getOffsetHours();
-        for (int i = 0; i < offsets.length; i++) {
-          Date fcDate = addHour(run.runTime, offsets[i]);
-          forecastTimeHash.add( fcDate); // track all forecast times
-          offsetHash.add( new Double(offsets[i])); // track all offset hours
+        for (double offset : rune.expected.getOffsetHours()) {
+          Date fcDate = addHour(run.runTime, offset);
+          forecastTimeHash.add(fcDate); // track all forecast times
+          offsetHash.add(offset); // track all offset hours
         }
       }
     }
@@ -482,16 +486,15 @@ public class FmrcInventory {
       Collections.sort( runs);
 
       // run over all vertCoords and construct the union
-      ArrayList extendList = new ArrayList();
+      List<ForecastModelRunInventory.VertCoord> extendList = new ArrayList<ForecastModelRunInventory.VertCoord>();
       ForecastModelRunInventory.VertCoord vc_union = null;
-      for (int i = 0; i < runs.size(); i++) {
-        RunExpected rune = (RunExpected) runs.get(i);
+      for (RunExpected rune : runs) {
         ForecastModelRunInventory.VertCoord vc = rune.grid.vc;
         if (vc == null) continue;
         if (vc_union == null)
           vc_union = new ForecastModelRunInventory.VertCoord(vc);
         else if (!vc_union.equalsData(vc))
-          extendList.add( vc);
+          extendList.add(vc);
       }
 
       if (vc_union != null) {
@@ -515,23 +518,22 @@ public class FmrcInventory {
      * Sort the values and recreate the double[] values array.
      * @param vcList list of VertCoord, may be empty
      */
-    public void normalize(ForecastModelRunInventory.VertCoord result, List vcList) {
+    public void normalize(ForecastModelRunInventory.VertCoord result, List<ForecastModelRunInventory.VertCoord> vcList) {
       // get all values into a HashSet of LevelCoord
-      HashSet valueSet = new HashSet();
+      Set<LevelCoord> valueSet = new HashSet<LevelCoord>();
       addValues( valueSet, result.getValues1(), result.getValues2());
-      for (int i = 0; i < vcList.size(); i++) {
-        ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) vcList.get(i);
-        addValues( valueSet, vc.getValues1(), vc.getValues2());
+      for (ForecastModelRunInventory.VertCoord vc : vcList) {
+        addValues(valueSet, vc.getValues1(), vc.getValues2());
       }
 
       // now create a sorted list, transfer to values array
-      List valueList = Arrays.asList( valueSet.toArray());
+      List<LevelCoord> valueList = Arrays.asList( (LevelCoord[]) valueSet.toArray());
       Collections.sort( valueList);
       double[] values1 = new double[valueList.size()];
       double[] values2 = new double[valueList.size()];
       boolean has_values2 = false;
       for (int i = 0; i < valueList.size(); i++) {
-        LevelCoord lc = (LevelCoord) valueList.get(i);
+        LevelCoord lc = valueList.get(i);
         values1[i] = lc.value1;
         values2[i] = lc.value2;
         if (lc.value2 != 0.0)
@@ -542,7 +544,7 @@ public class FmrcInventory {
         result.setValues2(values2);
     }
 
-    private void addValues(HashSet valueSet, double[] values1, double[] values2) {
+    private void addValues(Set<LevelCoord> valueSet, double[] values1, double[] values2) {
       for (int i = 0; i < values1.length; i++) {
         double val2 = (values2 == null) ? 0.0 : values2[i];
         valueSet.add( new LevelCoord(values1[i], val2));
@@ -555,9 +557,8 @@ public class FmrcInventory {
     }
 
     RunExpected findRun(Date runTime) {
-      for (int i = 0; i < runs.size(); i++) {
-        RunExpected rune = (RunExpected) runs.get(i);
-        if (runTime.equals( rune.run.runTime))
+      for (RunExpected rune : runs) {
+        if (runTime.equals(rune.run.runTime))
           return rune;
       }
       return null;
@@ -838,8 +839,7 @@ public class FmrcInventory {
       countOffsetInv = new short[nruns][noffsets];
       expectedOffset = new short[nruns][noffsets];
 
-      for (int i = 0; i < varList.size(); i++) {
-        UberGrid uv = (UberGrid) varList.get(i);
+      for (UberGrid uv : varList) {
         addInventory(uv);
       }
 
@@ -860,14 +860,13 @@ public class FmrcInventory {
       uv.countExpected = 0;
 
       for (int runIndex = 0; runIndex < runTimeList.size(); runIndex++) {
-        Date runTime = (Date) runTimeList.get(runIndex);
+        Date runTime = runTimeList.get(runIndex);
         RunExpected rune = uv.findRun( runTime);
         if (rune == null)
           continue;
 
         for (int offsetIndex = 0; offsetIndex < offsetList.size(); offsetIndex++) {
-          Double offset = (Double) offsetList.get(offsetIndex);
-          double hourOffset = offset.doubleValue();
+          double hourOffset = offsetList.get(offsetIndex);
           int invCount = rune.countInventory(hourOffset);
           int expectedCount = rune.countExpected(hourOffset);
 
@@ -924,7 +923,7 @@ public class FmrcInventory {
 
     int findRunIndex(Date runTime) {
       for (int i = 0; i < runTimeList.size(); i++) {
-        Date d = (Date) runTimeList.get(i);
+        Date d = runTimeList.get(i);
         if (d.equals(runTime))
           return i;
       }
@@ -933,7 +932,7 @@ public class FmrcInventory {
 
     int findForecastIndex(Date forecastTime) {
       for (int i = 0; i < forecastTimeList.size(); i++) {
-        Date d = (Date) forecastTimeList.get(i);
+        Date d = forecastTimeList.get(i);
         if (d.equals(forecastTime))
           return i;
       }
@@ -942,8 +941,7 @@ public class FmrcInventory {
 
     int findOffsetIndex(double offsetHour) {
       for (int i = 0; i < offsetList.size(); i++) {
-        Double h = (Double) offsetList.get(i);
-        if (offsetHour == h.doubleValue())
+        if (offsetHour ==  offsetList.get(i))
           return i;
       }
       return -1;
@@ -1029,16 +1027,14 @@ public class FmrcInventory {
     rootElem.setAttribute("dataset", name);
 
         // list all the offset hours
-    for (int k = 0; k < offsetList.size(); k++) {
+    for (Double offset : offsetList) {
       Element offsetElem = new Element("offsetTime");
       rootElem.addContent(offsetElem);
-      Double offset = (Double) offsetList.get(k);
       offsetElem.setAttribute("hours", offset.toString());
     }
 
     // list all the variables
-    for (int i = 0; i < varList.size(); i++) {
-      UberGrid uv = (UberGrid) varList.get(i);
+    for (UberGrid uv : varList) {
       Element varElem = new Element("variable");
       rootElem.addContent(varElem);
       varElem.setAttribute("name", uv.name);
@@ -1050,7 +1046,7 @@ public class FmrcInventory {
     for (int i = runTimeList.size() - 1; i >= 0; i--) {
       Element runElem = new Element("run");
       rootElem.addContent(runElem);
-      Date runTime = (Date) runTimeList.get(i);
+      Date runTime = runTimeList.get(i);
       runElem.setAttribute("date", dateFormat.format(runTime));
 
       addCountPercent(tmAll.countTotalRunInv[i], tmAll.expectedTotalRun[i], runElem, true);
@@ -1058,7 +1054,7 @@ public class FmrcInventory {
       for (int k = 0; k < offsetList.size(); k++) {
         Element offsetElem = new Element("offset");
         runElem.addContent(offsetElem);
-        Double offset = (Double) offsetList.get(k);
+        Double offset = offsetList.get(k);
         offsetElem.setAttribute("hours", offset.toString());
 
         addCountPercent(tmAll.countOffsetInv[i][k], tmAll.expectedOffset[i][k], offsetElem, false);
@@ -1070,7 +1066,7 @@ public class FmrcInventory {
       Element fcElem = new Element("forecastTime");
       rootElem.addContent(fcElem);
 
-      Date ftime = (Date) forecastTimeList.get(k);
+      Date ftime = forecastTimeList.get(k);
       fcElem.setAttribute("date", dateFormat.format(ftime));
 
       // list all the forecasts
@@ -1113,7 +1109,7 @@ public class FmrcInventory {
     for (int k = 0; k < offsetList.size(); k++) {
       Element offsetElem = new Element("offsetTime");
       rootElem.addContent(offsetElem);
-      Double offset = (Double) offsetList.get(k);
+      Double offset = offsetList.get(k);
       offsetElem.setAttribute("hour", offset.toString());
     }
 
@@ -1121,15 +1117,14 @@ public class FmrcInventory {
     for (int i = runTimeList.size() - 1; i >= 0; i--) {
       Element runElem = new Element("run");
       rootElem.addContent(runElem);
-      Date runTime = (Date) runTimeList.get(i);
+      Date runTime = runTimeList.get(i);
       runElem.setAttribute("date", dateFormat.format(runTime));
 
       RunExpected rune = uv.findRun( runTime);
 
-      for (int k = 0; k < offsetList.size(); k++) {
+      for (Double offset : offsetList) {
         Element offsetElem = new Element("offset");
         runElem.addContent(offsetElem);
-        Double offset = (Double) offsetList.get(k);
         double hourOffset = offset.doubleValue();
         offsetElem.setAttribute("hour", offset.toString());
 
@@ -1144,7 +1139,7 @@ public class FmrcInventory {
       Element fcElem = new Element("forecastTime");
       rootElem.addContent(fcElem);
 
-      Date forecastTime = (Date) forecastTimeList.get(k);
+      Date forecastTime = forecastTimeList.get(k);
       fcElem.setAttribute("date", dateFormat.format(forecastTime));
 
       // list all the forecasts
@@ -1152,7 +1147,7 @@ public class FmrcInventory {
         Element rtElem = new Element("runTime");
         fcElem.addContent(rtElem);
 
-        Date runTime = (Date) runTimeList.get(j);
+        Date runTime = runTimeList.get(j);
 
         RunExpected rune = uv.findRun(runTime);
         double hourOffset = getOffsetHour(runTime, forecastTime);
@@ -1173,31 +1168,29 @@ public class FmrcInventory {
     double hour = Double.parseDouble( offsetHour);
 
     StringBuffer sbuff = new StringBuffer();
-    sbuff.append("Inventory for "+varName+" for offset hour= "+offsetHour+"\n");
+    sbuff.append("Inventory for ").append(varName).append(" for offset hour= ").append(offsetHour).append("\n");
 
-    for (int i = 0; i < uv.runs.size(); i++) {
-      RunExpected rune = (RunExpected) uv.runs.get(i);
+    for (RunExpected rune : uv.runs) {
       double[] vcoords = rune.grid.getVertCoords(hour);
       sbuff.append(" Run ");
       sbuff.append(formatter.toDateTimeString(rune.run.runTime));
       sbuff.append(": ");
       for (int j = 0; j < vcoords.length; j++) {
-        if (j>0) sbuff.append(",");
+        if (j > 0) sbuff.append(",");
         sbuff.append(vcoords[j]);
       }
       sbuff.append("\n");
     }
 
-    sbuff.append("\nExpected for "+varName+" for offset hour= "+offsetHour+"\n");
+    sbuff.append("\nExpected for ").append(varName).append(" for offset hour= ").append(offsetHour).append("\n");
 
-    for (int i = 0; i < uv.runs.size(); i++) {
-      RunExpected rune = (RunExpected) uv.runs.get(i);
+    for (RunExpected rune : uv.runs) {
       double[] vcoords = rune.expectedGrid.getVertCoords(hour);
       sbuff.append(" Run ");
       sbuff.append(formatter.toDateTimeString(rune.run.runTime));
       sbuff.append(": ");
       for (int j = 0; j < vcoords.length; j++) {
-        if (j>0) sbuff.append(",");
+        if (j > 0) sbuff.append(",");
         sbuff.append(vcoords[j]);
       }
       sbuff.append("\n");
@@ -1234,7 +1227,7 @@ public class FmrcInventory {
    * @param suffix filter on this suffix
    * @param mode one of the ForecastModelRun.OPEN_ modes
    * @return ForecastModelRunCollection or null if no files exist
-   * @throws Exception
+   * @throws Exception on bad
    */
   public static FmrcInventory make(String fmrcDefinitionPath, String collectionName,
           ucar.nc2.util.DiskCache2 fmr_cache, String dirName, String suffix, int mode) throws Exception {
@@ -1251,14 +1244,13 @@ public class FmrcInventory {
         if (null == files)
       return null;
 
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
+    for (File file : files) {
       if (!file.getPath().endsWith(suffix))
         continue;
 
       ForecastModelRunInventory fmr = ForecastModelRunInventory.open(fmr_cache, file.getPath(), mode, true);
       if (null != fmr)
-        fmrCollection.addRun( fmr);
+        fmrCollection.addRun(fmr);
     }
 
     fmrCollection.finish();
@@ -1305,7 +1297,7 @@ public class FmrcInventory {
   /**
     * Create a ForecastModelRun Collection from the datasets in a catalog.
     * @param catURL  scan this catalog
-    * @throws Exception
+    * @throws Exception on bad
     */
    public static void writeDefinitionFromCatalog(String catURL, String collectionName, int maxDatasets) throws Exception {
 
@@ -1320,7 +1312,7 @@ public class FmrcInventory {
   /**
     * Create a ForecastModelRun Collection from the datasets in a catalog.
     * @param catURL  scan this catalog
-    * @throws Exception
+    * @throws Exception on bad
     */
    public static FmrcInventory makeFromCatalog(String catURL, String collectionName, int maxDatasets, int mode) throws Exception {
 

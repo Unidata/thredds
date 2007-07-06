@@ -1,6 +1,5 @@
-// $Id:ArrayFloat.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ package ucar.ma2;
  *
  * @see Array
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ArrayFloat extends Array {
   /** package private. use Array.factory() */
@@ -179,7 +177,7 @@ public class ArrayFloat extends Array {
   }
 
   public Object getObject(Index i) {
-    return new Float(storage[i.currentElement()]);
+    return storage[i.currentElement()];
   }
   public void setObject(Index i, Object value) {
     storage[i.currentElement()] = ((Number)value).floatValue();
@@ -210,7 +208,7 @@ public class ArrayFloat extends Array {
   boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
   void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return new Float( getFloat( index)); }
+  Object getObject(int index) { return getFloat(index); }
   void setObject(int index, Object value) { storage[index] = ((Number)value).floatValue(); }
 
   /** Concrete implementation of Array specialized for floats, rank 0. */

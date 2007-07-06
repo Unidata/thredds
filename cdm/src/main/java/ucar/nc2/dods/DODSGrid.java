@@ -1,6 +1,5 @@
-// $Id: DODSGrid.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,19 +28,18 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * A DODS-netCDF Grid..
+ * A DODS Grid.
  * A Grid has a Variable and associated coordinate variables, called maps.
  *
  * @see ucar.nc2.Variable
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
 public class DODSGrid extends DODSVariable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSGrid.class);
 
   DODSGrid( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DodsV dodsV) throws IOException {
-    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
+    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName), dodsV);
 
     this.dodsShortName = dodsShortName;
 
@@ -52,7 +50,7 @@ public class DODSGrid extends DODSVariable {
     // so we just map the netcdf grid variable to the dods grid.array
     this.dodsShortName = shortName + "." + array.bt.getName(); */
 
-    ArrayList dims = new ArrayList();
+    List<Dimension> dims = new ArrayList<Dimension>();
     StringBuffer sbuff = new StringBuffer();
     for (int i = 1; i < dodsV.children.size(); i++) {
       DodsV map = (DodsV) dodsV.children.get(i);
@@ -62,7 +60,7 @@ public class DODSGrid extends DODSVariable {
         logger.warn("DODSGrid cant find dimension = <"+name+">");
       else  {
         dims.add( dim);
-        sbuff.append(name+" ");
+        sbuff.append(name).append(" ");
       }
     }
 
@@ -75,6 +73,16 @@ public class DODSGrid extends DODSVariable {
 
     DODSAttribute att = new DODSAttribute(_Coordinate.Axes, sbuff.toString());
     this.addAttribute( att);
+  }
+
+    // for section, slice
+  @Override
+  protected Variable copy() {
+    return new DODSGrid(this);
+  }
+
+  private DODSGrid(DODSGrid from) {
+    super(from);
   }
 
   /* private void connectMaps(Group parentGroup, List maps) {

@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -45,7 +44,6 @@ import thredds.datatype.DateRange;
  * May use udunit dates, or ISO Strings.
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private Date[] timeDates;
@@ -64,7 +62,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    *
    * @param org the underlying Variable
    * @param errMessages put error messages here; may be null
-   * @throws IOException
+   * @param dims list of dimensions
+   * @throws IOException on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
   private CoordinateAxis1DTime( VariableDS org, StringBuffer errMessages, String dims) throws IOException {
@@ -156,9 +155,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
           count2++;
         }
         // here we have to decouple from the original variable
-        orgVar = null;
-        isSlice = false;
-        isSection = false;
         cache = new Cache();
         setCachedData( shortData, true);
 
@@ -228,6 +224,12 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     this.dateUnit = org.dateUnit;
   }
 
+     // for section and slice
+  @Override
+  protected Variable copy() {
+    return new CoordinateAxis1DTime(this, getTimeDates()); 
+  }
+
 
   /**
    * Get the list of times as Dates.
@@ -281,36 +283,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @return true if equals a coordinate
    */
   public boolean hasTime( Date date) {
-    for (int i = 0; i < timeDates.length; i++) {
-      Date timeDate = timeDates[i];
+    for (Date timeDate : timeDates) {
       if (date.equals(timeDate))
         return true;
     }
     return false;
   }
 
-
-  //public boolean isRegular() {
-  //  return false;
-  //}
-
-
-  // override to keep section a CoordinateAxis1DTime
-  public Variable section(List section) throws InvalidRangeException {
-    
-    // create the timeDate array
-    Range r = (Range) section.get(0);
-    Date[] timeDatesSection = new Date[r.length()];
-    Range.Iterator iter = r.getIterator();
-    int count = 0;
-    while (iter.hasNext()) {
-       int index = iter.next();
-       timeDatesSection[count++] = timeDates[index];
-    }
-
-    CoordinateAxis1DTime vs = new CoordinateAxis1DTime(this, timeDatesSection);
-    makeSection(vs, section);
-
-    return vs;
-  }
 }

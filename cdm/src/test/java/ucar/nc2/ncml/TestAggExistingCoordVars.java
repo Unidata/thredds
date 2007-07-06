@@ -34,7 +34,7 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getShape()[0] == 59;
     assert time.getDataType() == DataType.INT;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     try {
       Array data = time.read();
@@ -74,7 +74,7 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.DOUBLE;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     double[] result = new double[] {12, 13, 14};
     try {
@@ -119,7 +119,7 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getShape()[0] == 59;
     assert time.getDataType() == DataType.INT;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     try {
       Array data = time.read();
@@ -155,7 +155,7 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.DOUBLE;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     double[] result = new double[] {1.1496816E9, 1.1496852E9, 1.1496888E9  };
     try {

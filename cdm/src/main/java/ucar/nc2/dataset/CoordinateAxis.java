@@ -1,6 +1,5 @@
-// $Id:CoordinateAxis.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,8 +34,9 @@ import java.io.IOException;
  *  where D is a product set of dimensions (aka <i>index space</i>), and S is the set of reals (R) or Strings.
  * </pre>
  *
- * If its element type is char, this it is a string-valued Coordinate Axis of rank-1,
- * where the outermost dimension is considered the string length: v(i, j, .. strlen);
+ * If its element type is char, it is considered a string-valued Coordinate Axis and rank is reduced by one,
+ *   since the outermost dimension is considered the string length: v(i, j, .., strlen).
+ * If its element type is String, it is a string-valued Coordinate Axis.
  * Otherwise it is numeric-valued, and <i>isNumeric()</i> is true.
  * <p>
  * The one-dimensional case F(i) -> R is the common case which affords important optimizations.
@@ -47,12 +47,14 @@ import java.io.IOException;
  * A CoordinateAxis is optionally marked as georeferencing with an AxisType. It should have
  * a units string and optionally a description string.
  *
+ * A Structure cannot be a CoordinateAxis, although members of Structures can.
+ *
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
- * @see "NCML documentation"
+ * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html"
  */
 
-public class CoordinateAxis extends VariableDS implements Comparable {
+public class CoordinateAxis extends VariableDS {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
 
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
@@ -65,7 +67,7 @@ public class CoordinateAxis extends VariableDS implements Comparable {
   /** Create a coordinate axis from an existing Variable.
    * @param dataset the containing dataset
    * @param vds an existing Variable in dataset.
-   * @return CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis.
+   * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
    */
   static public CoordinateAxis factory(NetcdfDataset dataset, VariableDS vds){
     if ((vds.getRank() == 1) ||
@@ -77,58 +79,17 @@ public class CoordinateAxis extends VariableDS implements Comparable {
       return new CoordinateAxis( vds);
   }
 
-    /************
-    Create a coordinate axis from NcML attributes.
-    * @param ds the containing dataset.
-    * @param name axis name.
-    * @param type data type, must match nc2.DataType.
-    * @param shapeS list of dimensions
-    * @param units units of coordinates, preferably udunit compatible.
-    * @return CoordinateAxis or CoordinateAxis1D
-    *
-  static public CoordinateAxis factory( NetcdfDataset ds, String name, String type, String shapeS, String units) {
-    return factory( ds, name, type, shapeS, units, null, null);
-  } */
-
-
-  /** Create a coordinate axis from NcML attributes.
-    * @param ds the containing dataset.
-    * @param group the containing group; if null, use rootGroup
-    * @param shortName axis short name.
-    * @param type data type, must match nc2.DataType.
-    * @param shapeS list of dimensions
-    * @param units units of coordinates, preferably udunit compatible.
-    * @param positive "true" if its a z axis with positive = up, else "false"
-    * @param boundaryRef name of variable name used as boundaries of this coordinate.
-    *
-  static public CoordinateAxis factory( NetcdfDataset ds, Group group, String shortName, DataType type,
-      String shapeS, String units, String positive, String boundaryRef) {
-
-    int dims = 0;
-    StringTokenizer stoke = new StringTokenizer( shapeS);
-    while (stoke.hasMoreTokens()) dims++;
-
-    if ((dims == 1) || (dims == 2 && type == DataType.CHAR))
-      return new CoordinateAxis( ds, group, shortName, type, shapeS, units, positive, boundaryRef);
-    else
-      return new CoordinateAxis1D( ds, group, shortName, type, shapeS, units, positive, boundaryRef);
-  } */
-
-  /* for subclasses
-  protected CoordinateAxis(NetcdfDataset dataset, Group group, Structure parentStructure, String shortName) {
-    super(dataset, group, parentStructure, shortName);
-  } */
-
-
   /** Create a coordinate axis from an existing Variable.
-   * @param vds an existing Variable in dataset.
+   * @param vds an existing Variable
    */
    protected CoordinateAxis(Variable vds) {
-    super( null, vds, true);
+    super( null, vds, true); // LOOK always in the root group, always enhance
 
     if (vds instanceof CoordinateAxis) {
       CoordinateAxis axis = (CoordinateAxis) vds;
       this.axisType = axis.axisType;
+      this.boundaryRef = axis.boundaryRef;
+      this.isContiguous = axis.isContiguous;
       this.positive = axis.positive;
     }
   }
@@ -146,11 +107,18 @@ public class CoordinateAxis extends VariableDS implements Comparable {
     super( ds, group, null, shortName, dataType, dims, units, desc);
   }
 
-    // for subclasses
+    // for section and slice
+  @Override
+  protected Variable copy() {
+    return new CoordinateAxis(this);
+  }
 
-  /** Get type of axis, or null if none. */
+  /** @return type of axis, or null if none. */
   public AxisType getAxisType() { return axisType; }
-  /** Set type of axis, or null if none. Default is none. */
+
+  /** Set type of axis, or null if none. Default is none.
+   * @param axisType set to this value
+   */
   public void setAxisType(AxisType axisType) { this.axisType = axisType; }
 
   public String getUnitsString() {
@@ -158,16 +126,23 @@ public class CoordinateAxis extends VariableDS implements Comparable {
     return units == null ? "" : units;
   }
 
-  /** If the CoordAxis is numeric or string valued. */
+  /** @return true if the CoordAxis is numeric, false if its string valued ("nominal"). */
   public boolean isNumeric() {
     return (getDataType() != DataType.CHAR) &&
         (getDataType() != DataType.STRING) &&
         (getDataType() != DataType.STRUCTURE);
   }
 
-  /** If the edges are contiguous or disjoint. Assumed true unless set otherwise. */
+  /**
+   * If the edges are contiguous or disjoint
+   * Caution: many datasets do not explicitly specify this info, this is often a guess; default is true.
+   * @return true if the edges are contiguous or false if disjoint. Assumed true unless set otherwise.
+   */
   public boolean isContiguous() { return isContiguous; }
-  /** Set if the edges are contiguous or disjoint. */
+
+  /** Set if the edges are contiguous or disjoint.
+   * @param isContiguous true if the adjacent edges touch
+   */
   public void setContiguous(boolean isContiguous) { this.isContiguous = isContiguous; }
 
   /** Get the direction of increasing values, used only for vertical Axes.
@@ -176,71 +151,58 @@ public class CoordinateAxis extends VariableDS implements Comparable {
   public String getPositive() { return positive; }
 
   /** Set the direction of increasing values, used only for vertical Axes.
-   *  Set to POSITIVE_UP, POSITIVE_DOWN, or null if you dont know..
+   *  @param positive POSITIVE_UP, POSITIVE_DOWN, or null if you dont know..
    */
   public void setPositive( String positive) { this.positive = positive; }
 
-
-  /**  Get the name of this coordinate axis' boundary variable, or null if none. */
+  /**  The name of this coordinate axis' boundary variable
+   * @return the name of this coordinate axis' boundary variable, or null if none.
+   */
   public String getBoundaryRef() { return boundaryRef; }
 
   /** Set a reference to a boundary variable.
-   *  Must be name of boundary coordinate variable.
+   *  @param  boundaryRef the name of a boundary coordinate variable in the same dataset.
    */
   public void setBoundaryRef (String boundaryRef) { this.boundaryRef = boundaryRef; }
 
 
-  /* //////////////////////////////////////////////////////////////////////////////
-  private CoordinateAxis aux = null;
-  private boolean isAuxiliary = false;
-
-  /** Auxiliary information, eg edge or
-  public void setAuxilaryAxis(CoordinateAxis aux) {
-    this.aux = aux;
-    aux.setIsAuxilary(true);
-  }
-  /** experimental; in NUWGConvention
-  public boolean isAuxilary() { return isAuxiliary; }
-
-  /** Set if it is an auxiliary axis.
-  void setIsAuxilary(boolean isAuxiliary) { this.isAuxiliary = isAuxiliary; } */
-
   ////////////////////////////////
-  protected boolean cacheOK() { return true; } // always cache
 
   private MAMath.MinMax minmax = null;
   private void init() {
     try {
       Array data = read();
       minmax = MAMath.getMinMax(data);
-    } catch (IOException ioe) { /* what ?? */ }
+    } catch (IOException ioe) {
+      log.error("Error reading coordinate values ",ioe);
+      throw new IllegalStateException(ioe);
+    }
   }
 
-  /** Get the maximum coordinate value */
+  /** @return the minimum coordinate value */
   public double getMinValue() {
     if (minmax == null) init();
     return minmax.min;
   }
 
-  /** Get the minimum coordinate value */
+  /** @return the maximum coordinate value */
   public double getMaxValue() {
     if (minmax == null) init();
     return minmax.max;
   }
 
-
   //////////////////////
-  /** formatted string representation */
+  /** @return formatted string representation */
   public String getInfo() {
     StringBuffer buf = new StringBuffer(200);
     buf.append(getName());
     Format.tab(buf, 15, true);
-    buf.append(getSize()+"");
+    buf.append(getSize()).append("");
     Format.tab(buf, 20, true);
     buf.append(getUnitsString());
     if (axisType != null) {
       Format.tab(buf, 40, true);
-      buf.append("type="+axisType.toString());
+      buf.append("type=").append(axisType.toString());
     }
     Format.tab(buf, 52, true);
     buf.append(getDescription());
@@ -315,12 +277,4 @@ public class CoordinateAxis extends VariableDS implements Comparable {
   }
   private volatile int hashCode = 0;
 
-  /**
-   * Use the name to sort on
-   * @param o the other CoordinateAxis
-   * @return -1,0,1
-   */
-  public int compareTo(Object o) {
-    CoordinateAxis oaxis = (CoordinateAxis) o;
-    return getName().compareTo(oaxis.getName());
-  }}
+}

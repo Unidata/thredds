@@ -28,23 +28,24 @@ import java.util.List;
  * When a Dimension is shared, it has a unique name within its Group.
  * It may have a coordinate Variable, which gives each index a coordinate value.
  * A private Dimension cannot have a coordinate Variable, so use shared dimensions with coordinates when possible.
+ * The Dimension length must be > 0, except for an unlimited dimension which may have length = 0, and a vlen
+ * Dimension has length = -1.
  *
- * <p> Dimensions are considered immutable : do not change them after they have been constructed. Only the
- * Unlimited Dimension can grow.
+ *
+ * <p> Immutable if setImmutable() was called, except for an Unlimited Dimension, whose size can change.
  *
  * @author caron
  */
 
 public class Dimension implements Comparable {
-  static public Dimension UNLIMITED = new Dimension( "**", 0, true, true, false); // gets reset when file is read or written
-  static public Dimension UNKNOWN = new Dimension( "*", -1, true, false, true); // for Sequences
+  static public Dimension VLEN = new Dimension( "*", -1, true, false, true).setImmutable(); // for Sequences
 
-  protected ArrayList<Variable> coordVars = new ArrayList<Variable>();
-  protected boolean isUnlimited = false;
-  protected boolean isVariableLength = false;
-  protected boolean isShared = true; // shared means its in a group dimension list.
-  protected String name;
-  protected int length;
+  private boolean isUnlimited = false;
+  private boolean isVariableLength = false;
+  private boolean isShared = true; // shared means its in a group dimension list.
+  private String name;
+  private int length;
+  private boolean immutable = false;
 
   /**
    * Returns the name of this Dimension; may be null.
@@ -81,18 +82,9 @@ public class Dimension implements Comparable {
   public boolean isShared() { return isShared; }
 
   /**
-   * Get the coordinate variables or coordinate variable aliases if the dimension has any, else return an empty list.
-   * A coordinate variable has this as its single dimension, and names this Dimensions's the coordinates.
-   * A coordinate variable alias is the same as a coordinate variable, but its name must match the dimension name.
-   * If numeric, coordinate axis must be strictly monotonically increasing or decreasing.
-   * @return List of Variable
-   * @see Variable#getCoordinateDimension
-   */
-  public List<Variable> getCoordinateVariables() { return coordVars; }
-
-  /**
    * Instances which have same contents are equal.
    * Careful!! this is not object identity !!
+   * LOOK need Group ??
    */
   @Override
   public boolean equals(Object oo) {
@@ -144,15 +136,15 @@ public class Dimension implements Comparable {
    */
   public String writeCDL(boolean strict) {
     StringBuffer buff = new StringBuffer();
-    buff.append("   "+getName());
+    buff.append("   ").append(getName());
     if (isUnlimited())
-      buff.append(" = UNLIMITED;   // ("+getLength()+" currently)");
+      buff.append(" = UNLIMITED;   // (").append(getLength()).append(" currently)");
     else if (isVariableLength())
       buff.append(" = UNKNOWN;" );
     else
-      buff.append(" = "+getLength() +";");
-    if (!strict && (getCoordinateVariables().size() > 0))
-      buff.append("   // (has coord.var)");
+      buff.append(" = ").append(getLength()).append(";");
+    /* if (!strict && (getCoordinateVariables().size() > 0))
+      buff.append("   // (has coord.var)"); */
     return buff.toString();
   }
 
@@ -164,8 +156,8 @@ public class Dimension implements Comparable {
    */
   public Dimension(String name, int length, boolean isShared) {
     this.name = name;
-    this.length = length;
     this.isShared = isShared;
+    setLength(length);
   }
 
   /**
@@ -178,10 +170,10 @@ public class Dimension implements Comparable {
    */
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
     this.name = name;
-    this.length = length;
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
+    setLength(length);
   }
 
   /**
@@ -195,48 +187,48 @@ public class Dimension implements Comparable {
     this.isUnlimited = from.isUnlimited;
     this.isVariableLength = from.isVariableLength;
     this.isShared = from.isShared;
-    this.coordVars = new ArrayList(from.coordVars);
+    this.coordVars = new ArrayList<Variable>(from.coordVars);
   }
 
-  /** Add a coordinate variable or coordinate variable alias.
-   * Remove previous if matches full name.
-   * @param v list this as a Coordinate Varibale for this Dimension
-   */
-  synchronized public void addCoordinateVariable( Variable v) {
-    for (int i = 0; i < coordVars.size(); i++) {
-      Variable cv = coordVars.get(i);
-      if (v.getName().equals(cv.getName())) {
-        coordVars.remove(cv);
-        break;
-      }
-    }
-    coordVars.add(v);
-  }
+  ///////////////////////////////////////////////////////////
+  // the following make this mutable
+
   /** Set whether this is unlimited, meaning length can increase.
    * @param b true if unlimited
    */
   public void setUnlimited( boolean b) {
-    isUnlimited = b;
-    hashCode = 0;
+    if (immutable) throw new IllegalStateException("Cant modify");
+    this.isUnlimited = b;
+    setLength(this.length); // check legal
   }
   /** Set whether the length is variable.
    * @param b true if variable length
    */
   public void setVariableLength( boolean b) {
-    isVariableLength = b;
-    hashCode = 0;
+    if (immutable) throw new IllegalStateException("Cant modify");
+    this.isVariableLength = b;
+    setLength(this.length); // check legal
   }
   /** Set whether this is shared.
    * @param b true if shared
    */
   public void setShared( boolean b) {
-    isShared = b;
+    if (immutable) throw new IllegalStateException("Cant modify");
+    this.isShared = b;
     hashCode = 0;
   }
   /** Set the Dimension length.
    * @param n length of Dimension
    */
   public void setLength( int n) {
+    if (immutable && !isUnlimited) throw new IllegalStateException("Cant modify");
+    if (isVariableLength) {
+      if (n != -1) throw new IllegalArgumentException("VariableLength Dimension length ="+n);
+    } else if (isUnlimited) {
+        if (n < 0) throw new IllegalArgumentException("Unlimited Dimension length ="+n);
+     } else {
+      if (n < 1) throw new IllegalArgumentException("Dimension length ="+n);
+    }
     this.length = n;
     hashCode = 0;
   }
@@ -244,8 +236,49 @@ public class Dimension implements Comparable {
    * @param name new name of Dimension.
    */
   public void setName( String name) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     this.name = name;
     hashCode = 0;
   }
 
+  /**
+   * Make this immutable.
+   * @return this
+   */
+  public Dimension setImmutable() {
+    immutable = true;
+    //coordVars = Collections.unmodifiableList(coordVars);
+    return this;
+  }
+
+  //////////////////////////////////////////////////////////////////////
+  // deprecated
+  private List<Variable> coordVars = null; // new ArrayList<Variable>();
+
+  /** Add a coordinate variable or coordinate variable alias.
+   * Remove previous if matches full name.
+   * @param v list this as a Coordinate Varibale for this Dimension
+   * @deprecated - do not use
+   */
+  synchronized public void addCoordinateVariable( Variable v) {
+    /* if (immutable) throw new IllegalStateException("Cant modify");
+    for (int i = 0; i < coordVars.size(); i++) {
+      Variable cv = coordVars.get(i);
+      if (v.getName().equals(cv.getName())) {
+        coordVars.remove(cv);
+        break;
+      }
+    }
+    coordVars.add(v); */
+  }
+
+  /**
+   * Get the coordinate variables or coordinate variable aliases if the dimension has any, else return an empty list.
+   * A coordinate variable has this as its single dimension, and names this Dimensions's the coordinates.
+   * A coordinate variable alias is the same as a coordinate variable, but its name must match the dimension name.
+   * If numeric, coordinate axis must be strictly monotonically increasing or decreasing.
+   * @return List of Variable
+   * @deprecated - do not use
+   */
+  public List<Variable> getCoordinateVariables() { return coordVars; }
 }

@@ -1,6 +1,5 @@
-// $Id:MAMath.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,12 +24,13 @@ package ucar.ma2;
  *
  * @see Index
  * @author @caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class MAMath {
 
   /** Add elements of two arrays together, allocating the result array.
    *  The result type and the operation type are taken from the type of a.
+   * @param a add values from here
+   * @param b add values from here
    * @return result = a + b
    * @exception IllegalArgumentException a and b are not conformable
    * @exception UnsupportedOperationException dont support this data type yet
@@ -319,6 +319,7 @@ public class MAMath {
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
+      if (Double.isNaN(val)) continue;
       if (val < min)
         min = val;
     }
@@ -330,18 +331,25 @@ public class MAMath {
     double max = -Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
+      if (Double.isNaN(val)) continue;
       if (val > max)
         max = val;
     }
     return max;
   }
 
+  /**
+   * Find min and max value in this array, getting values as doubles. Skip Double.NaN.
+   * @param a the array.
+   * @return MinMax
+   */
   public static MAMath.MinMax getMinMax( Array a) {
     IndexIterator iter = a.getIndexIterator();
     double max = -Double.MAX_VALUE;
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
+      if (Double.isNaN(val)) continue;
       if (val > max)
         max = val;
       if (val < min)

@@ -82,7 +82,7 @@ public class TestNcMLRenameVar extends TestCase {
     assert lat.getDataType() == DataType.FLOAT;
 
     assert !lat.isUnlimited();
-    assert lat.getCoordinateDimension() == ncfile.findDimension("lat");
+    assert lat.getDimension(0) == ncfile.findDimension("lat");
 
     Attribute att = lat.findAttribute("units");
     assert null != att;
@@ -120,7 +120,7 @@ public class TestNcMLRenameVar extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.INT;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
     assert v.isUnlimited();
 
     assert v.getDimension(0) == ncfile.findDimension("time");

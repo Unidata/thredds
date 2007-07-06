@@ -1,6 +1,5 @@
-// $Id:FileWriter.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -39,7 +38,6 @@ import java.util.*;
  * what gets written to the file.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see ucar.nc2.NetcdfFile
  */
 
@@ -99,10 +97,8 @@ public class FileWriter {
     }
 
     // global attributes
-    List glist = fileIn.getGlobalAttributes();
-    for (int i = 0; i < glist.size(); i++) {
-      Attribute att = (Attribute) glist.get(i);
-
+    List<Attribute> glist = fileIn.getGlobalAttributes();
+    for (Attribute att : glist) {
       if (att.isArray())
         ncfile.addGlobalAttribute(att.getName(), att.getValues());
       else if (att.isString())
@@ -113,26 +109,21 @@ public class FileWriter {
     }
 
     // copy dimensions LOOK anon dimensions
-    HashMap dimHash = new HashMap();
-    Iterator iter = fileIn.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension oldD = (Dimension) iter.next();
+    Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
+    for (Dimension oldD : fileIn.getDimensions()) {
       Dimension newD = ncfile.addDimension(oldD.getName(), oldD.isUnlimited() ? -1 : oldD.getLength(),
-              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+          oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
       dimHash.put(newD.getName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
 
     // Variables
-    List varlist = fileIn.getVariables();
-    for (int i = 0; i < varlist.size(); i++) {
-      Variable oldVar = (Variable) varlist.get(i);
-
+    List<Variable> varlist = fileIn.getVariables();
+    for (Variable oldVar : varlist) {
       // copy dimensions LOOK what about anon dimensions
-      ArrayList dims = new ArrayList();
-      List dimvList = oldVar.getDimensions();
-      for (int j = 0; j < dimvList.size(); j++) {
-        Dimension oldD = (Dimension) dimvList.get(j);
+      List<Dimension> dims = new ArrayList<Dimension>();
+      List<Dimension> dimvList = oldVar.getDimensions();
+      for (Dimension oldD : dimvList) {
         dims.add(dimHash.get(oldD.getName()));
       }
 
@@ -159,9 +150,8 @@ public class FileWriter {
       if (debug) System.out.println("add var= " + oldVar.getName());
 
       // attributes
-      List attList = oldVar.getAttributes();
-      for (int j = 0; j < attList.size(); j++) {
-        Attribute att = (Attribute) attList.get(j);
+      List<Attribute> attList = oldVar.getAttributes();
+      for (Attribute att : attList) {
         if (att.isArray())
           ncfile.addVariableAttribute(oldVar.getName(), att.getName(), att.getValues());
         else if (att.isString())
@@ -179,8 +169,8 @@ public class FileWriter {
 
     // see if it has a record dimension we can use
     if (fileIn.hasUnlimitedDimension()) {
-      fileIn.addRecordStructure();
-      ncfile.addRecordStructure();
+      fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
     boolean useRecordDimension = fileIn.hasRecordStructure() && ncfile.hasRecordStructure();
     Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
@@ -317,7 +307,7 @@ public class FileWriter {
   //////////////////////////////////////////////////////////////////////////////////////
   private NetcdfFileWriteable ncfile;
   private HashMap<String, Dimension> dimHash = new HashMap<String, Dimension>();
-  private ArrayList<Variable> varList = new ArrayList();
+  private List<Variable> varList = new ArrayList<Variable>();
 
   /**
    * For writing parts of a NetcdfFile to a new Netcdf-3 local file.
@@ -366,6 +356,7 @@ public class FileWriter {
    * Add a Dimension to the file
    *
    * @param dim copy this dimension
+   * @return the new Dimension
    */
   public Dimension writeDimension(Dimension dim) {
     Dimension newDim = ncfile.addDimension(dim.getName(), dim.isUnlimited() ? -1 : dim.getLength(),
@@ -384,9 +375,9 @@ public class FileWriter {
   public void writeVariable(Variable oldVar) {
 
     Dimension[] dims = new Dimension[oldVar.getRank()];
-    List dimvList = oldVar.getDimensions();
+    List<Dimension> dimvList = oldVar.getDimensions();
     for (int j = 0; j < dimvList.size(); j++) {
-      Dimension oldD = (Dimension) dimvList.get(j);
+      Dimension oldD = dimvList.get(j);
       Dimension newD = dimHash.get(oldD.getName());
       if (null == newD) {
         newD = writeDimension(oldD);
@@ -418,9 +409,9 @@ public class FileWriter {
     varList.add(oldVar);
     if (debug) System.out.println("write var= " + oldVar);
 
-    List attList = oldVar.getAttributes();
-    for (int j = 0; j < attList.size(); j++)
-      writeAttribute(oldVar.getName(), (Attribute) attList.get(j));
+    List<Attribute> attList = oldVar.getAttributes();
+    for (Attribute anAttList : attList)
+      writeAttribute(oldVar.getName(), anAttList);
   }
 
   /**
@@ -428,9 +419,8 @@ public class FileWriter {
    * The Variables' Dimensions are added for you, if not already been added.
    * @param varList list of Variable
    */
-  public void writeVariables(List varList) {
-    for (int i = 0; i < varList.size(); i++) {
-      Variable v = (Variable) varList.get(i);
+  public void writeVariables(List<Variable> varList) {
+    for (Variable v : varList) {
       writeVariable(v);
     }
   }
@@ -500,7 +490,8 @@ public class FileWriter {
     }
 
     debugExtend = true;
-    NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
+    // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);  LOOK was
+    NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
     NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, delay);
     ncfileIn.close();
     ncfileOut.close();

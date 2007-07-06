@@ -4,13 +4,8 @@ import junit.framework.*;
 import java.io.*;
 
 /**
- * Simple example to print contents of an existing netCDF file of
- * unknown structure, much like ncdump.  A difference is the nesting of
- * multidimensional array data is represented by nested brackets, so the
- * output is not legal CDL that can be used as input for ncgen.
- *
- * @author: Russ Rew
- * @version: $Id: TestLongOffset.java 51 2006-07-12 17:13:13Z caron $ */
+ * test reading a ncfile with long offsets "large format".
+ */
 
 public class TestLongOffset extends TestCase  {
 
@@ -30,15 +25,15 @@ public class TestLongOffset extends TestCase  {
   }
 
   public void testReadLongOffset() throws IOException {
-    NetcdfFile ncfile = TestNC2.openFile( "LongOffset.nc");
-    ncfile.addRecordStructure();
+    NetcdfFile ncfile = TestLocalNC2.openFile( "LongOffset.nc");
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     NCdump.print(ncfile, "-vall", out, null);
     ncfile.close();
   }
 
   public void testReadLongOffsetV3mode() throws IOException {
-    NetcdfFile ncfile = TestNC2.openFile( "LongOffset.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile( "LongOffset.nc");
 
     NCdump.print(ncfile, "-vall", out, null);
     ncfile.close();

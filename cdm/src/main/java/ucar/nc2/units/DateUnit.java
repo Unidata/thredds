@@ -1,6 +1,5 @@
-// $Id:DateUnit.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,7 +32,6 @@ import java.util.StringTokenizer;
  * It tracks the value, the base time unit, and the date origin seperately.
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 public class DateUnit extends SimpleUnit {
@@ -141,11 +139,13 @@ public class DateUnit extends SimpleUnit {
 
   /**
    * For udunit dates, get the time unit only, as a String, eg "secs" or "days"
+   * @return  time unit as a string
    */
   public String getTimeUnitString() { return timeUnitString; }
    /**
    * For udunit dates, get the time unit.
-   */
+    * @return time unit
+    */
    public TimeUnit getTimeUnit() { return timeUnit; }
 
   /** Get the equivilent java.util.Date.
@@ -200,6 +200,7 @@ public class DateUnit extends SimpleUnit {
 
   /**
    * The udunits string, but no value, ie its a base unit.
+   * @return the udunits base string
    */
   public String getUnitsString() {
     return udunitString;

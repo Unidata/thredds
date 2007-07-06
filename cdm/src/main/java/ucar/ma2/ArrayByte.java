@@ -1,6 +1,5 @@
-// $Id:ArrayByte.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ package ucar.ma2;
  *
  * @see Array
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ArrayByte extends Array {
 
@@ -201,10 +199,10 @@ public class ArrayByte extends Array {
     storage[indexCalc.element(index)] = (byte) value;
   } */
   public byte getByte(Index i) {
-    return (byte) storage[i.currentElement()];
+    return storage[i.currentElement()];
   }
   public void setByte(Index i, byte value) {
-    storage[i.currentElement()] = (byte) value;
+    storage[i.currentElement()] = value;
   }
 
   /* char
@@ -237,7 +235,7 @@ public class ArrayByte extends Array {
   public void setObject(int [] index, Object value) {
     storage[indexCalc.element(index)] = ((Number)value).byteValue();
   } */
-  public Object getObject(Index i) { return new Byte(storage[i.currentElement()]); }
+  public Object getObject(Index i) { return storage[i.currentElement()]; }
   public void setObject(Index i, Object value) { storage[i.currentElement()] = ((Number)value).byteValue(); }
 
     // package private : mostly for iterators
@@ -256,8 +254,8 @@ public class ArrayByte extends Array {
   short getShort(int index) { return (short) storage[index]; }
   void setShort(int index, short value) { storage[index] = (byte) value; }
 
-  byte getByte(int index) { return (byte) storage[index]; }
-  void setByte(int index, byte value) {storage[index] = (byte) value;}
+  byte getByte(int index) { return storage[index]; }
+  void setByte(int index, byte value) {storage[index] = value;}
 
   char getChar(int index) { return (char) storage[index];}
   void setChar(int index, char value) { storage[index] = (byte) value; }
@@ -265,7 +263,7 @@ public class ArrayByte extends Array {
   boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
   void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return new Byte( getByte( index)); }
+  Object getObject(int index) { return getByte(index); }
   void setObject(int index, Object value) { storage[index] = ((Number)value).byteValue(); }
 
   /** Concrete implementation of Array specialized for byte, rank 0. */

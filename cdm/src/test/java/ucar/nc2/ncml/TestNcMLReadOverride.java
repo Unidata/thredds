@@ -56,7 +56,7 @@ public class TestNcMLReadOverride extends TestCase {
     assert v.getDataType() == DataType.DOUBLE;
 
     assert v.isUnlimited();
-    assert v.getCoordinateDimension() == ncfile.findDimension("time");
+    assert v.getDimension(0) == ncfile.findDimension("time");
 
     Attribute att = v.findAttribute("units");
     assert null != att;
@@ -98,7 +98,7 @@ public class TestNcMLReadOverride extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.DOUBLE;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
     assert v.isUnlimited();
 
     assert v.getDimension(0) == ncfile.findDimension("time");

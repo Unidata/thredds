@@ -1,6 +1,5 @@
-// $Id:N3header.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,7 +24,6 @@ import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
 
 
 /**
@@ -33,7 +31,6 @@ import java.nio.charset.Charset;
  * This is used by N3iosp.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 class N3header {
@@ -66,7 +63,7 @@ class N3header {
   private ucar.unidata.io.RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
   private PrintStream out = System.out;
-  private ArrayList uvars = new ArrayList(); // vars that have the unlimited dimension
+  private List<Variable> uvars = new ArrayList<Variable>(); // vars that have the unlimited dimension
   private Dimension udim; // the unlimited dimension
 
   int numrecs = 0; // number of records written
@@ -74,13 +71,8 @@ class N3header {
   int dataStart = Integer.MAX_VALUE; // where the data starts
   int recStart = Integer.MAX_VALUE; // where the record data starts
   private long nonRecordData = 0; // length of non-record data
-  private long actualSize, calcSize;
 
   private long globalAttsPos = 0; // global attributes start here - used for update
-
-  private boolean useLongOffset = false;
-
-  private Structure recordStructure = null;
 
 
   /**
@@ -89,7 +81,7 @@ class N3header {
    * @param raf    read from this file
    * @param ncfile fill this NetcdfFile object (originally empty)
    * @param out    optional for debug message, may be null
-   * @throws IOException
+   * @throws IOException on read error
    */
   void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, PrintStream out) throws IOException {
     this.raf = raf;
@@ -98,7 +90,7 @@ class N3header {
       out = System.out;
     this.out = out;
 
-    actualSize = raf.length();
+    long actualSize = raf.length();
 
     // netcdf magic number
     long pos = 0;
@@ -110,7 +102,7 @@ class N3header {
         throw new IOException("Not a netCDF file");
     if ((b[3] != 1) && (b[3] != 2))
       throw new IOException("Not a netCDF file");
-    useLongOffset = (b[3] == 2);
+    boolean useLongOffset = (b[3] == 2);
 
     // number of records
     numrecs = raf.readInt();
@@ -120,7 +112,7 @@ class N3header {
     int numdims = 0;
     int magic = raf.readInt();
     if (magic == 0) {
-      magic = raf.readInt(); // skip 32 bits
+      raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_DIM)
         throw new IOException("Misformed netCDF file - dim magic number wrong");
@@ -152,7 +144,7 @@ class N3header {
     int nvars = 0;
     magic = raf.readInt();
     if (magic == 0) {
-      magic = raf.readInt(); // skip 32 bits
+      raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_VAR)
         throw new IOException("Misformed netCDF file  - var magic number wrong");
@@ -170,10 +162,10 @@ class N3header {
       int velems = 1;
       boolean isRecord = false;
       int rank = raf.readInt();
-      ArrayList dims = new ArrayList();
+      List<Dimension> dims = new ArrayList<Dimension>();
       for (int j = 0; j < rank; j++) {
         int dimIndex = raf.readInt();
-        Dimension dim = (Dimension) ncfile.rootGroup.dimensions.get(dimIndex); // note relies on ordering
+        Dimension dim = ncfile.rootGroup.dimensions.get(dimIndex); // note relies on ordering
         if (dim.isUnlimited()) {
           isRecord = true;
           uvars.add(var); // track record variables
@@ -187,7 +179,7 @@ class N3header {
       if (debug) {
         out.print("---name=<" + name + "> dims = [");
         for (int j = 0; j < rank; j++) {
-          Dimension dim = (Dimension) dims.get(j);
+          Dimension dim = dims.get(j);
           out.print(dim.getName() + " ");
         }
         out.println("]");
@@ -242,7 +234,7 @@ class N3header {
 
     // check for truncated files
     // theres a "wart" that allows a file to be up to 3 bytes smaller than you expect.
-    calcSize = dataStart + nonRecordData + recsize * numrecs;
+    long calcSize = dataStart + nonRecordData + recsize * numrecs;
     if (calcSize > actualSize + 3) {
       if (disallowFileTruncation)
         throw new IOException("File is truncated calculated size= " + calcSize + " actual = " + actualSize);
@@ -253,18 +245,17 @@ class N3header {
     }
 
     // finish
-    ncfile.finish();
+    // ncfile.finish();
   }
 
   boolean addRecordStructure() {
 
     // create record structure
     if (uvars.size() > 0) {
-      recordStructure = new Structure(ncfile, ncfile.rootGroup, null, "record");
-      recordStructure.setDimensions(udim.getName());
-      for (int i = 0; i < uvars.size(); i++) {
-        Variable v = (Variable) uvars.get(i);
-        ArrayList dims = (ArrayList) v.getDimensions();
+      Structure recordStructure = new Structure(ncfile, ncfile.rootGroup, null, "record");
+      recordStructure.setDimensions( udim.getName());
+      for (Variable v : uvars) {
+        List<Dimension> dims = v.getDimensions();
         dims.remove(0); //remove record dimension
         Variable recordV = new Variable(ncfile, ncfile.rootGroup, recordStructure, v.getShortName());
         recordV.setDataType(v.getDataType());
@@ -276,7 +267,6 @@ class N3header {
       }
 
       ncfile.addVariable(ncfile.rootGroup, recordStructure);
-      ncfile.finish();
       return true;
     }
 
@@ -284,11 +274,11 @@ class N3header {
   }
 
 
-  private int readAtts(ArrayList atts) throws IOException {
+  private int readAtts(List<Attribute> atts) throws IOException {
     int natts = 0;
     int magic = raf.readInt();
     if (magic == 0) {
-      magic = raf.readInt(); // skip 32 bits
+      raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_ATT)
         throw new IOException("Misformed netCDF file  - att magic number wrong");
@@ -300,14 +290,13 @@ class N3header {
       if (debugPos) out.println("***att " + i + " pos= " + raf.getFilePointer());
       String name = readString();
       int type = raf.readInt();
-      Attribute att = new Attribute(name, false); // no validateion !!
-      atts.add(att);
+      Attribute att;
 
       if (type == 2) {
         if (debugPos) out.println(" begin read String val pos= " + raf.getFilePointer());
         String val = readString();
         if (debugPos) out.println(" end read String val pos= " + raf.getFilePointer());
-        att.setStringValue(val);
+        att = new Attribute(name, val); // no validation !!
 
       } else {
         if (debugPos) out.println(" begin read val pos= " + raf.getFilePointer());
@@ -321,11 +310,13 @@ class N3header {
         for (int j = 0; j < nelems; j++)
           nbytes += readAttributeValue(dtype, ii);
 
-        att.setValues(arr);
+        att = new Attribute(name, arr); // no validation !!
 
         skip(nbytes);
         if (debugPos) out.println(" end read val pos= " + raf.getFilePointer());
       }
+
+      atts.add(att);
       if (debug) out.println("  " + att.toString() + "\n");
     }
 
@@ -455,27 +446,22 @@ class N3header {
     throw new IllegalStateException("unknown DataType == " + dt);
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private boolean fill;
-  private HashMap dimHash = new HashMap(50);
-
   /**
    * Write the header out, based on ncfile structures.
    *
-   * @param raf
-   * @param ncfile
-   * @param fill
-   * @param out
-   * @throws IOException
+   * @param raf write to this <Dimension>
+   * @param ncfile the header of this NetcdfFile
+   * @param fill use fill or not
+   * @param out debugging output
+   * @throws IOException on write error
    */
   void create(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, boolean fill, PrintStream out) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
-    this.fill = fill;
     if (out != null) this.out = out;
 
-    // make sure ncfile structures were finished
-    ncfile.finish();
+    // make sure ncfile structures were finished LOOK assume done
+    // ncfile.finish();
 
     // magic number
     raf.seek(0);
@@ -507,7 +493,7 @@ class N3header {
     writeAtts(ncfile.getGlobalAttributes());
 
     // variables
-    List vars = ncfile.getVariables();
+    List<Variable> vars = ncfile.getVariables();
     writeVars(vars);
 
     // now calculate where things go
@@ -515,9 +501,8 @@ class N3header {
     int pos = dataStart;
 
     // non-record variable starting positions
-    for (int i = 0; i < vars.size(); i++) {
-      Variable var = (Variable) vars.get(i);
-      N3header.Vinfo vinfo = (N3header.Vinfo) var.getSPobject();
+    for (Variable var : vars) {
+      Vinfo vinfo = (Vinfo) var.getSPobject();
       if (!vinfo.isRecord) {
         raf.seek(vinfo.begin);
         raf.writeInt(pos);
@@ -531,9 +516,8 @@ class N3header {
     recStart = pos; // record variables start here
 
     // record variable starting positions
-    for (int i = 0; i < vars.size(); i++) {
-      Variable var = (Variable) vars.get(i);
-      N3header.Vinfo vinfo = (N3header.Vinfo) var.getSPobject();
+    for (Variable var : vars) {
+      Vinfo vinfo = (Vinfo) var.getSPobject();
       if (vinfo.isRecord) {
         raf.seek(vinfo.begin);
         raf.writeInt(pos);
@@ -615,7 +599,7 @@ class N3header {
     throw new IllegalArgumentException("no such attribute " + want);
   }
 
-  private void writeAtts(List atts) throws IOException {
+  private void writeAtts(List<Attribute> atts) throws IOException {
 
     int n = atts.size();
     if (n == 0) {
@@ -628,7 +612,7 @@ class N3header {
 
     for (int i = 0; i < n; i++) {
       if (debugPos) out.println("***att " + i + " pos= " + raf.getFilePointer());
-      Attribute att = (Attribute) atts.get(i);
+      Attribute att = atts.get(i);
 
       writeString(att.getName());
       int type = getType(att.getDataType());
@@ -702,10 +686,9 @@ class N3header {
 
       // dimensions
       int vsize = var.getDataType().getSize();
-      List dims = var.getDimensions();
+      List<Dimension> dims = var.getDimensions();
       raf.writeInt(dims.size());
-      for (int j = 0; j < dims.size(); j++) {
-        Dimension dim = (Dimension) dims.get(j);
+      for (Dimension dim : dims) {
         int dimIndex = findDimensionIndex(ncfile, dim);
         raf.writeInt(dimIndex);
 
@@ -766,17 +749,7 @@ class N3header {
 
   void setNumrecs(int n) throws IOException {
     this.numrecs = n;
-
-    // set it in the unlimited dimension
-    udim.setLength(n);
-
-    // set it in all of the record variables
-    for (Iterator i = uvars.iterator(); i.hasNext();) {
-      Variable v = (Variable) i.next();
-      v.setDimensions(v.getDimensions());
-    }
   }
-
 
   synchronized boolean synchNumrecs() throws IOException {
     // check number of records in the header
@@ -793,10 +766,9 @@ class N3header {
     udim.setLength(this.numrecs);
 
     // set it in all of the record variables
-    for (Iterator i = uvars.iterator(); i.hasNext();) {
-      Variable v = (Variable) i.next();
-      v.setDimensions(v.getDimensions());
-      v.setCachedData(null, false);
+    for (Variable uvar : uvars) {
+      uvar.resetShape();
+      uvar.setCachedData(null, false);
     }
 
     return true;

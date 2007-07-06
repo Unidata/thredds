@@ -1,6 +1,6 @@
 // $Id:IOServiceProvider.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,15 +20,15 @@
  */
 package ucar.nc2;
 
+import ucar.ma2.Range;
+
 import java.io.IOException;
-import java.util.List;
 
 /**
  * This is the service provider interface for the low-level I/O access classes (read only).
  * This is only used by service implementors.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public interface IOServiceProvider {
 
@@ -36,6 +36,7 @@ public interface IOServiceProvider {
     * Check if this is a valid file for this IOServiceProvider.
     * @param raf RandomAccessFile
     * @return true if valid.
+    * @throws java.io.IOException if read error
     */
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException;
 
@@ -43,8 +44,8 @@ public interface IOServiceProvider {
    * Open existing file, and populate ncfile with it.
    * @param raf the file to work on, it has already passed the isValidFile() test.
    * @param ncfile add objects to this NetcdfFile
-   * @param cancelTask used to monito user cancellation; may be null.
-   * @throws IOException
+   * @param cancelTask used to monitor user cancellation; may be null.
+   * @throws IOException if read error
    */
   public void open(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
                    ucar.nc2.util.CancelTask cancelTask) throws IOException;
@@ -56,51 +57,63 @@ public interface IOServiceProvider {
    * @param v2 a top-level Variable
    * @param section List of type Range specifying the section of data to read.
    *   There must be a Range for each Dimension in the variable, in order.
-   *   Note: no nulls.
+   *   Note: no nulls allowed. IOSP may not modify.
    * @return the requested data in a memory-resident Array
-   * @throws java.io.IOException
-   * @throws ucar.ma2.InvalidRangeException
+   * @throws java.io.IOException if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
    * @see ucar.ma2.Range
    */
-  public ucar.ma2.Array readData(ucar.nc2.Variable v2, java.util.List section)
+  public ucar.ma2.Array readData(ucar.nc2.Variable v2, java.util.List<Range> section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
-   * Read data from a Variable that is nested in one or more Structures. If there are no Structures in the file,
-   *   this will never be called. Return an Array of the same type as the Variable and the requested shape. The shape
-   *   must be an accumulation of all the shapes of the Structures containing the variable.
+   * Read data from a Variable that is nested in one or more Structures.
+   * Return an Array of the same type as the Variable and the requested shape. The shape
+   * must be an accumulation of all the shapes of the Structures containing the variable.
+   * If there are no Structures in the NetcdfFile, this will never be called, and may return UnsupportdOperationException 
    *
    * <p> v2.getParent() is called to get the containing Structures.
    *
    * @param v2 a nested Variable.
    * @param section List of type Range specifying the section of data to read. There must be a Range for each
    *  Dimension in each parent, as well as in the Variable itself. Must be in order from outer to inner.
-   *   Note: no nulls.
+   *   Note: no nulls. IOSP may not modify.
    * @return the requested data in a memory-resident Array
+   * @throws java.io.IOException if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
+  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List<Range> section)
          throws IOException, ucar.ma2.InvalidRangeException;
 
   /**
    * Close the file.
    * It is the IOServiceProvider's job to close the file (even though it didnt open it),
    * and to free any other resources it has used.
-   * @throws IOException
+   * @throws IOException if read error
    */
   public void close() throws IOException;
 
   /** Extend the file if needed in a way that is compatible with the current metadata.
    *  For example, if the unlimited dimension has grown.
-   * @return true if file was exteneed.
-   * @throws IOException
+   * @return true if file was extended.
+   * @throws IOException if read error
    */
   public boolean syncExtend() throws IOException;
 
   /** Check if file has changed, and reread metadata if needed.
    * @return true if file was changed.
-   * @throws IOException
+   * @throws IOException if read error
    */
   public boolean sync() throws IOException;
+
+  /**
+   * A way to communicate arbitrary information to an iosp.
+   * @param message opaque message.
+   * @return opaque return, may be null.
+   */
+  public Object sendIospMessage( Object message);
+
+  // LOOK can we replace these 3 : ??
 
   /**
    * A way to communicate arbitrary information to an iosp.
@@ -109,10 +122,15 @@ public interface IOServiceProvider {
    */
   public void setSpecial( Object special);
 
-  /** Debug info for this object. */
+  /** Debug info for this object.
+   * @param o which object
+   * @return debug info for this object
+   */
   public String toStringDebug(Object o);
 
-  /** Show debug / underlying implementation details */
+  /** Show debug / underlying implementation details
+   * @return debug info
+   */
   public String getDetailInfo();
 
 }

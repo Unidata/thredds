@@ -269,7 +269,7 @@ public class Index2NC {
             dl.remove( 0 );
         } else if( p.dimension != 1 ) {
              if( levelStructure == null ) {
-                 levelsDim = new Dimension("levels", Dimension.UNKNOWN.getLength(), true, false, true);
+                 levelsDim = new Dimension("levels", Dimension.VLEN.getLength(), true, false, true);
                  ncfile.addDimension( null, levelsDim );
                  levelStructure = new Structure(ncfile, ncfile.getRootGroup(), recordStructure, "level");
                  levelStructure.setDimensions( levelsDim.getName());

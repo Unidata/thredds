@@ -1,6 +1,5 @@
-// $Id:IOServiceProviderWriter.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,6 +19,8 @@
  */
 package ucar.nc2;
 
+import ucar.ma2.Range;
+
 import java.io.IOException;
 
 /**
@@ -27,7 +28,6 @@ import java.io.IOException;
  * This is only used by service implementors.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public interface IOServiceProviderWriter extends IOServiceProvider {
 
@@ -36,9 +36,10 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param filename name of file to create.
    * @param ncfile get dimensions, attributes, and variables from here.
    * @param fill if true, write fill value into all variables.
-   * @throws java.io.IOException
+   * @param size if set to > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous storage.
+   * @throws java.io.IOException if I/O error
    */
-  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill) throws IOException;
+  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill, long size) throws IOException;
 
   /**
    * Set the fill flag.
@@ -51,9 +52,6 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    */
   public void setFill(boolean fill);
 
-  /** Experimental */
-  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill, long size) throws IOException;
-
   /**
    * Write data into a variable.
    * @param v2 variable to write; must already exist.
@@ -61,9 +59,10 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * There must be a Range for each Dimension in the variable, in order.
    * The shape must match the shape of values.
    * @param values data to write. The shape must match the shape of Range list.
-   * @throws IOException
+   * @throws IOException if I/O error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public void writeData(ucar.nc2.Variable v2, java.util.List section, ucar.ma2.Array values)
+  public void writeData(ucar.nc2.Variable v2, java.util.List<Range> section, ucar.ma2.Array values)
       throws IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -74,13 +73,13 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    *
    * @param v2 variable, or null for global attribute
    * @param att replace with this value
-   * @throws IOException
+   * @throws IOException if I/O error
    */
   public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException;
 
   /**
    * Flush all data buffers to disk.
-   * @throws IOException
+   * @throws IOException if I/O error
    */
   public void flush() throws IOException;
 

@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,8 +25,8 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -158,7 +157,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
           logger.error("Cant extract forecast offset from =" + location + " using format " + myf.dir.offsetMatcher);
           continue;
         }
-        myf.dateCoord = addHour(myf.runDate, myf.offset.doubleValue());
+        myf.dateCoord = addHour(myf.runDate, myf.offset);
         myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
       }
 
@@ -189,9 +188,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
 
     // find the one time axis
-    List grids = gds.getGrids();
-    for (int i = 0; i < grids.size(); i++) {
-      GridDatatype grid = (GridDatatype) grids.get(i);
+    for (GridDatatype grid : gds.getGrids()) {
       GridCoordSystem gcc = grid.getCoordinateSystem();
       timeAxis = gcc.getTimeAxis1D();
       if (null != timeAxis)
@@ -206,39 +203,35 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     nestedDatasets = new ArrayList<Dataset>();
     runs = new ArrayList<Date>( runHash.keySet());
     Collections.sort(runs);
-    Iterator iter = runs.iterator();
-    while (iter.hasNext()) {
-      Date runDate = (Date) iter.next();
+    for (Date runDate : runs) {
       String runDateS = formatter.toDateTimeStringISO(runDate);
 
-      List<Dataset> runDatasets = runHash.get( runDate);
-      max_times = Math.max( max_times, runDatasets.size());
+      List<Dataset> runDatasets = runHash.get(runDate);
+      max_times = Math.max(max_times, runDatasets.size());
 
       // within each list, sort the datasets by time coordinate
-      Collections.sort(runDatasets, new Comparator() {
-        public int compare(Object o1, Object o2) {
-          Dataset mf1 = (Dataset) o1;
-          Dataset mf2 = (Dataset) o2;
-          return mf1.coordValueDate.compareTo(mf2.coordValueDate);
+      Collections.sort(runDatasets, new Comparator<Dataset>() {
+        public int compare(Dataset ds1, Dataset ds2) {
+          return ds1.coordValueDate.compareTo(ds2.coordValueDate);
         }
       });
 
       // create the dataset wrapping this run, each is 1 runtime coordinate of the outer aggregation
       NetcdfDataset ncd = new NetcdfDataset();
-      ncd.setLocation("Run"+runDateS);
+      ncd.setLocation("Run" + runDateS);
       DateFormatter format = new DateFormatter();
       if (debugScan) System.out.println("Run" + format.toDateTimeString(runDate));
 
       AggregationExisting agg = new AggregationExisting(ncd, timeAxis.getName(), null); // LOOK: dim name, existing vs new ??
-      for (int i = 0; i < runDatasets.size(); i++) {
-        Dataset dataset = runDatasets.get(i);
-        agg.addDataset( dataset);
-        if (debugScan) System.out.println("  adding Forecast " + format.toDateTimeString(dataset.coordValueDate)+" "+dataset.getLocation());
+      for (Dataset dataset : runDatasets) {
+        agg.addDataset(dataset);
+        if (debugScan)
+          System.out.println("  adding Forecast " + format.toDateTimeString(dataset.coordValueDate) + " " + dataset.getLocation());
       }
-      ncd.setAggregation( agg);
-      agg.finish( cancelTask);
+      ncd.setAggregation(agg);
+      agg.finish(cancelTask);
 
-      nestedDatasets.add( new OpenDataset(ncd, runDate, runDateS));
+      nestedDatasets.add(new OpenDataset(ncd, runDate, runDateS));
     }
 
     return gds;
@@ -291,7 +284,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     String desc = "calculated forecast date from AggregationFmrcSingle processing";
     VariableDS vagg = new VariableDS(ncDataset, null, null, innerDimName, DataType.DOUBLE, dims, units, desc);
     vagg.setCachedData(timeCoordVals, false);
-    NcMLReader.transferVariableAttributes(timeAxis, vagg);
+    DatasetConstructor.transferVariableAttributes(timeAxis, vagg);
     vagg.addAttribute(new Attribute("units", units));
     vagg.addAttribute(new Attribute("long_name", desc));
     vagg.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
@@ -311,12 +304,11 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     timeDim.setLength( max_times);
 
     // reset all variables using this dimension
-    List vars = ncDataset.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      VariableDS var = (VariableDS) vars.get(i);
-      if (var.findDimensionIndex(dimName) >= 0)  {
-        var.setDimensions( var.getDimensionsString());   // recalc the shape if needed
-        var.setCachedData(null, false); // get rid of any cached data, since its now wrong
+    List<Variable> vars = ncDataset.getVariables();
+    for (Variable v : vars) {
+      if (v.findDimensionIndex(dimName) >= 0) {
+        v.setDimensions(v.getDimensionsString());   // recalc the shape if needed
+        v.setCachedData(null, false); // get rid of any cached data, since its now wrong
       }
     }
 
@@ -544,6 +536,9 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     /**
      * Dataset constructor with an opened NetcdfFile.
      * Used in nested aggregations like scanFmrc.
+     * @param openFile  already opened file
+     * @param coordValueDate has this coordinate as a date
+     * @param coordValue has this coordinate as a String
      */
     protected OpenDataset(NetcdfFile openFile, Date coordValueDate, String coordValue) {
       super(openFile.getLocation());

@@ -13,7 +13,7 @@ import java.util.List;
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
-public class AddeServiceProvider implements IOServiceProvider {
+public class AddeServiceProvider extends AbstractIOServiceProvider {
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
     return false;
   }

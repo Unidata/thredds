@@ -41,7 +41,7 @@ import java.text.ParseException;
  *
  * @author caron
  */
-public class UspLightning3 implements IOServiceProvider {
+public class UspLightning3  extends AbstractIOServiceProvider {
 
   private static final String MAGIC = "USPLN-LIGHTNING";
 
@@ -346,26 +346,6 @@ public class UspLightning3 implements IOServiceProvider {
 
   public void close() throws IOException {
     raf.close();
-  }
-
-  public boolean syncExtend() throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public boolean sync() throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public void setSpecial(Object special) {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String toStringDebug(Object o) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String getDetailInfo() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException, InvalidRangeException {

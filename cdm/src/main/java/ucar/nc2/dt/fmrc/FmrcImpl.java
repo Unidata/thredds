@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -39,7 +38,6 @@ import java.io.IOException;
  * Assume all grids have the same runTime dimension.
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class FmrcImpl implements ForecastModelRunCollection {
   static private final String BEST = "best";
@@ -160,10 +158,8 @@ public class FmrcImpl implements ForecastModelRunCollection {
         CoordinateAxis1DTime timeCoordRun = gridset.gcs.getTimeAxisForRun(run);
         Date[] forecastDates = timeCoordRun.getTimeDates();
 
-        for (int time = 0; time < forecastDates.length; time++) {
-          Date forecastDate = forecastDates[time];
+        for (Date forecastDate : forecastDates) {
           forecastSet.add(forecastDate);
-
           double hourOffset = getOffsetHour(runDate, forecastDate);
           offsetSet.add(hourOffset);
         }
@@ -262,13 +258,12 @@ public class FmrcImpl implements ForecastModelRunCollection {
       timeDimName = timeAxis.getDimension(1).getName();
     }
 
-    String makeDimensions(List dims) {
+    String makeDimensions(List<Dimension> dims) {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append(timeDimName);
-      for (int i = 0; i < dims.size(); i++) {
-        Dimension d = (Dimension) dims.get(i);
+      for (Dimension d : dims) {
         if (d.getName().equals(runtimeDimName) || d.getName().equals(timeDimName)) continue;
-        sbuff.append(" " + d.getName());
+        sbuff.append(" ").append(d.getName());
       }
       return sbuff.toString();
     }
@@ -485,7 +480,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
   public NetcdfDataset getBestTimeSeries() {
     return createDataset(new InventoryGetter() {
-      public List get(Gridset gridset) {
+      public List<Inventory> get(Gridset gridset) {
         //return (gridset == null) ? bestListAll : gridset.bestList;
         return gridset.bestList;
       }
@@ -505,9 +500,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     Group target = newds.getRootGroup();
 
     // global attributes
-    Iterator iterAtt = src.getAttributes().iterator();
-    while (iterAtt.hasNext()) {
-      ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();
+    for (Attribute a : src.getAttributes()) {
       target.addAttribute(a);
     }
     String oldHistory = ncd_2dtime.findAttValueIgnoreCase(null, "history", null);
@@ -532,14 +525,12 @@ public class FmrcImpl implements ForecastModelRunCollection {
       addTime3Coordinates(newds, gridset, invList, type);
       Subsetter subs = new Subsetter(invList);
 
-      List grids = gridset.gridList;
-      for (int j = 0; j < grids.size(); j++) {
-        GridDatatype grid = (GridDatatype) grids.get(j);
+      for (GridDatatype grid : gridset.gridList) {
         Variable orgVar = ncd_2dtime.findVariable(grid.getName());
 
         VariableDS v = new VariableDS(target, orgVar, false);
         v.setDimensions(gridset.makeDimensions(v.getDimensions()));
-        v.setProxyReader(subs);
+        v.setProxyReader2(subs);
         v.remove(v.findAttribute(_Coordinate.Axes));
         v.remove(v.findAttribute("coordinates"));
         //v.addAttribute(new Attribute("coordinates", grid.getGridCoordSystem().getName()));
@@ -548,9 +539,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     }
 
     // any non-grid variables
-    Iterator iterVar = src.getVariables().iterator();
-    while (iterVar.hasNext()) {
-      VariableDS v = (VariableDS) iterVar.next();
+    for (Variable v : src.getVariables()) {
       if ((null == gridHash.get(v.getName()) && !coordSet.contains(v.getName())))
         target.addVariable(new VariableDS(newds.getRootGroup(), v, false)); // reparent LOOK fishy !!!!
     }
@@ -575,7 +564,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     // make the time coordinate variable data
     ArrayDouble.D1 offsetData = new ArrayDouble.D1(n);
     for (int i = 0; i < n; i++) {
-      Inventory inv = (Inventory) invList.get(i);
+      Inventory inv = invList.get(i);
       double offsetHour = getOffsetHour(baseDate, useRun ? inv.runTime : inv.forecastTime);
       offsetData.set(i, offsetHour);
     }
@@ -594,7 +583,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     // add the runtime coordinate
     ArrayObject.D1 runData = new ArrayObject.D1(String.class, n);
     for (int i = 0; i < n; i++) {
-      Inventory inv = (Inventory) invList.get(i);
+      Inventory inv = invList.get(i);
       runData.set(i, formatter.toDateTimeStringISO(inv.runTime));
     }
     desc = "model run dates for coordinate = " + dimName;
@@ -700,7 +689,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
   /////////////////////////////
   // assumes any Variable coming here has one time dimension, and orgVar has 2
 
-  private class Subsetter implements ucar.nc2.dataset.ProxyReader {
+  private class Subsetter implements ProxyReader2 {
     List<Inventory> invList;
 
     Subsetter(List<Inventory> invList) {
@@ -723,9 +712,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       List<Range> section = orgVar.getRanges();
 
       // loop over inventory
-      for (int i = 0; i < invList.size(); i++) {
-        Inventory inv = invList.get(i);
-
+      for (Inventory inv : invList) {
         Array varData;
         try {
           section.set(0, new Range(inv.run, inv.run));
@@ -747,19 +734,19 @@ public class FmrcImpl implements ForecastModelRunCollection {
       return allData;
     }
 
-    public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+    public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       // If its full sized, then use full read, so that data gets cached. LOOK probably doesnt work, since mainv == orgVar
-      long size = Range.computeSize(section);
+      long size = section.computeSize();
       if (size == mainv.getSize())
         return read(mainv, cancelTask);
 
       Variable orgVar = ncd_2dtime.findVariable(mainv.getName());
 
-      Array sectionData = Array.factory(mainv.getDataType(), Range.getShape(section));
+      Array sectionData = Array.factory(mainv.getDataType(), section.getShape());
       int destPos = 0;
 
-      Range timeRange = (Range) section.get(0);
-      List<Range> allSection = new ArrayList<Range>(section); // copy
+      Range timeRange = section.getRange(0);
+      List<Range> allSection = new ArrayList<Range>(section.getRanges()); // copy
       allSection.add(0, null); // need 1 more.
 
       Range.Iterator iter = timeRange.getIterator();

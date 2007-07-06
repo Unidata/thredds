@@ -21,6 +21,7 @@
 package ucar.nc2.dt;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
 
 import ucar.nc2.dataset.NetcdfDataset;
@@ -34,7 +35,7 @@ import thredds.catalog.DataType;
  */
 public class TypedDatasetFactory {
 
-  static private ArrayList transformList = new ArrayList();
+  static private List<Factory> transformList = new ArrayList<Factory>();
   static private boolean userMode = false;
 
   // search in the order added
@@ -123,6 +124,7 @@ public class TypedDatasetFactory {
    * @param task user may cancel
    * @param errlog place errors here, may not be null
    * @return a subclass of TypedDataset
+   * @throws java.io.IOException on io error
    */
   static public TypedDataset open( thredds.catalog.DataType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     // special processing for thredds: datasets
@@ -145,16 +147,16 @@ public class TypedDatasetFactory {
    * @param task user may cancel
    * @param errlog place errors here, may not be null
    * @return a subclass of TypedDataset, or null if cant find
+   * @throws java.io.IOException on io error
    */
   static public TypedDataset open( thredds.catalog.DataType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
 
     // look for a Factory that claims this dataset
     Class useClass = null;
-    for (int i = 0; i < transformList.size(); i++) {
-      Factory fac = (Factory) transformList.get(i);
+    for (Factory fac : transformList) {
       if ((datatype != null) && (datatype != fac.datatype)) continue;
 
-      if (fac.instance.isMine( ncd)) {
+      if (fac.instance.isMine(ncd)) {
         useClass = fac.c;
         break;
       }
@@ -180,7 +182,7 @@ public class TypedDatasetFactory {
           return gds;
       }
 
-      errlog.append("**Failed to find Datatype Factory for= "+ncd.getLocation()+" datatype= "+datatype+"\n");
+      errlog.append("**Failed to find Datatype Factory for= ").append(ncd.getLocation()).append(" datatype= ").append(datatype).append("\n");
       return null;
     }
 
@@ -189,12 +191,12 @@ public class TypedDatasetFactory {
     try {
       builder = (TypedDatasetFactoryIF) useClass.newInstance();
     } catch (InstantiationException e) {
-      errlog.append(e.getMessage()+"\n");
+      errlog.append(e.getMessage()).append("\n");
     } catch (IllegalAccessException e) {
-      errlog.append(e.getMessage()+"\n");
+      errlog.append(e.getMessage()).append("\n");
     }
     if (null == builder) {
-      errlog.append("**Error on TypedDatasetFactory object from class= "+useClass.getName()+"\n");
+      errlog.append("**Error on TypedDatasetFactory object from class= ").append(useClass.getName()).append("\n");
       return null;
     }
 

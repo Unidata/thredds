@@ -1,6 +1,5 @@
-// $Id:CoordinateTransform.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,6 +20,7 @@
 package ucar.nc2.dataset;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ucar.unidata.util.Parameter;
 
@@ -29,7 +29,6 @@ import ucar.unidata.util.Parameter;
  * "reference" CoordinateSystem, such as lat, lon.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class CoordinateTransform implements Comparable {
@@ -37,7 +36,7 @@ public class CoordinateTransform implements Comparable {
   protected String name, authority;
   protected TransformType transformType = null;
 
-  protected ArrayList params; // type ProjectionParameter
+  protected List<Parameter> params;
   protected String id;
 
   /**
@@ -51,11 +50,12 @@ public class CoordinateTransform implements Comparable {
     this.name = name;
     this.authority = authority;
     this.transformType = transformType;
-    this.params = new ArrayList();
+    this.params = new ArrayList<Parameter>();
   }
 
   /**
    * add a parameter
+   * @param param add this Parameter
    */
   public void addParameter(Parameter param) {
     params.add(param);
@@ -63,6 +63,7 @@ public class CoordinateTransform implements Comparable {
 
   /**
    * get the name
+   * @return the name
    */
   public String getName() {
     return name;
@@ -70,6 +71,7 @@ public class CoordinateTransform implements Comparable {
 
   /**
    * get the naming authority
+   * @return the naming authority
    */
   public String getAuthority() {
     return authority;
@@ -77,6 +79,7 @@ public class CoordinateTransform implements Comparable {
 
   /**
    * get the transform type
+   * @return the transform type
    */
   public TransformType getTransformType() {
     return transformType;
@@ -84,8 +87,9 @@ public class CoordinateTransform implements Comparable {
 
   /**
    * get list of ProjectionParameter objects.
+   * @return list of ProjectionParameter objects.
    */
-  public ArrayList getParameters() {
+  public List<Parameter> getParameters() {
     return params;
   }
 
@@ -97,8 +101,7 @@ public class CoordinateTransform implements Comparable {
    * @return the Attribute, or null if not found
    */
   public Parameter findParameterIgnoreCase(String name) {
-    for (int i = 0; i < params.size(); i++) {
-      Parameter a = (Parameter) params.get(i);
+    for (Parameter a : params) {
       if (name.equalsIgnoreCase(a.getName()))
         return a;
     }
@@ -117,12 +120,12 @@ public class CoordinateTransform implements Comparable {
     if (!getAuthority().equals(o.getAuthority())) return false;
     if (!(getTransformType() == o.getTransformType())) return false;
 
-    ArrayList oparams = o.getParameters();
+    List<Parameter> oparams = o.getParameters();
     if (params.size() != oparams.size()) return false;
 
     for (int i = 0; i < params.size(); i++) {
-      Parameter att = (Parameter) params.get(i);
-      Parameter oatt = (Parameter) oparams.get(i);
+      Parameter att =  params.get(i);
+      Parameter oatt = oparams.get(i);
       if (!att.getName().equals(oatt.getName())) return false;
       //if (!att.getValue().equals(oatt.getValue())) return false;
     }
@@ -138,8 +141,7 @@ public class CoordinateTransform implements Comparable {
       result = 37 * result + getName().hashCode();
       result = 37 * result + getAuthority().hashCode();
       result = 37 * result + getTransformType().hashCode();
-      for (int i = 0; i < params.size(); i++) {
-        Parameter att = (Parameter) params.get(i);
+      for (Parameter att : params) {
         result = 37 * result + att.getName().hashCode();
         //result = 37*result + att.getValue().hashCode();
       }

@@ -29,6 +29,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.StructureDS;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -88,9 +89,9 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       return new DapperStationDataset( ds);
   }
 
-  static private Structure getWrappingParent( NetcdfDataset ds, Variable v) {
+  static private StructureDS getWrappingParent( NetcdfDataset ds, Variable v) {
     String name = v.getParentStructure().getName();
-    return(Structure) ds.findVariable(name);
+    return (StructureDS) ds.findVariable(name);
   }
 
   /////////////////////////////////////////////////
@@ -105,7 +106,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   /////////////////////////////////////////////////
   protected DODSNetcdfFile dodsFile;
   protected Variable latVar, lonVar, altVar, timeVar;
-  protected Structure innerSequence, outerSequence;
+  protected StructureDS innerSequence, outerSequence;
   protected boolean isProfile = false, fatal = false;
 
   public DapperDataset(NetcdfDataset ds) throws IOException {
@@ -307,9 +308,9 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     int n = (int) as.getSize();
     for (int i=0; i<n; i++) {
       StructureData sdata = as.getStructureData(i);
-      double lat = sdata.convertScalarDouble(latMember);
-      double lon = sdata.convertScalarDouble(lonMember);
-      double alt = sdata.convertScalarDouble(altMember);
+      double lat = outerSequence.convertScalarDouble(sdata, latMember); // sdata.convertScalarDouble(latMember);
+      double lon = outerSequence.convertScalarDouble(sdata, lonMember); // sdata.convertScalarDouble(lonMember);
+      double alt = outerSequence.convertScalarDouble(sdata, altMember); // sdata.convertScalarDouble(altMember);
       int id = sdata.getScalarInt(idMember);
 
       StationImpl s = new StationImpl(Integer.toString(id), "Station"+i,lat, lon, alt);
@@ -337,7 +338,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     ArrayList stationData = new ArrayList(n);
     for (int i=0; i<n; i++) {
       StructureData sdata = asInner.getStructureData(i);
-      double obsTime = sdata.convertScalarDouble(timeMember);
+      double obsTime = outerSequence.convertScalarDouble(sdata, timeMember); // sdata.convertScalarDouble(timeMember);
       stationData.add( new SeqStationObs(s, obsTime, sdata));
     }
     return stationData;
@@ -367,18 +368,18 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       this.recno = recno;
       this.sdata = sdata;
 
-      double lat = sdata.convertScalarDouble(latMember);
-      double lon = sdata.convertScalarDouble(lonMember);
+      double lat = outerSequence.convertScalarDouble(sdata, latMember); // sdata.convertScalarDouble(latMember);
+      double lon = outerSequence.convertScalarDouble(sdata, lonMember); // sdata.convertScalarDouble(lonMember);
       StructureData inner = sdata.getScalarStructure(innerMember);
 
       double alt = 0.0;
 
       if (isProfile) {
-        obsTime = sdata.convertScalarDouble(timeMember);
-        alt = inner.convertScalarDouble(altMember);
+        obsTime = outerSequence.convertScalarDouble(sdata, timeMember); // sdata.convertScalarDouble(timeMember);
+        alt = innerSequence.convertScalarDouble(inner, altMember); // inner.convertScalarDouble(altMember);
       } else {
-        obsTime = inner.convertScalarDouble(timeMember);
-        alt = sdata.convertScalarDouble(altMember);
+        obsTime = innerSequence.convertScalarDouble(inner, timeMember); // inner.convertScalarDouble(timeMember);
+        alt = outerSequence.convertScalarDouble(sdata, altMember); // sdata.convertScalarDouble(altMember);
       }
 
       nomTime = obsTime;

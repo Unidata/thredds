@@ -1,6 +1,5 @@
-// $Id:EnhancementsImpl.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,12 +26,11 @@ import java.util.*;
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 class EnhancementsImpl implements Enhancements {
   private Variable forVar;
   private String desc, units;
-  private ArrayList coordSys = new ArrayList();
+  private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
 
   /**
    * Constructor when there's no underlying, existing Variable.
@@ -61,7 +59,7 @@ class EnhancementsImpl implements Enhancements {
    * Normally this is empty unless you use ucar.nc2.dataset.NetcdfDataset.
    * @return list of type ucar.nc2.dataset.CoordinateSystem; may be empty not null.
    */
-  public List getCoordinateSystems() {return coordSys; }
+  public List<CoordinateSystem> getCoordinateSystems() {return coordSys; }
 
   /** Add a CoordinateSystem to the dataset. */
   public void addCoordinateSystem( CoordinateSystem cs){
@@ -72,10 +70,9 @@ class EnhancementsImpl implements Enhancements {
     coordSys.remove( p0);
   }
 
-  /** Get the original variable */
-  public Variable getOriginalVariable() { return forVar; }
-
-  /** Set the Description for this Variable. */
+  /** Set the Description for this Variable.
+   * @param desc description
+   */
   public void setDescription(String desc) { this.desc = desc; }
 
   /** Get the description of the Variable.
@@ -110,15 +107,18 @@ class EnhancementsImpl implements Enhancements {
     return (desc == null) ? "" : desc;
   }
 
-  /** Set the Unit String for this Variable. Default is to use the "units" attribute. */
+  /** Set the Unit String for this Variable. Default is to use the "units" attribute.
+   * @param units  unit string
+   */
   public void setUnitsString( String units) { this.units = units; }
 
-  /** Get the Unit String for the Variable, or null if none. */
+  /**
+   * Get the Unit String for the Variable. May be set explicitly, else look for attribute "units".
+   * @return the Unit String for the Variable, or null if none.
+   */
   public String getUnitsString() {
     if ((units == null) && (forVar != null)) {
-      Attribute att = forVar.findAttributeIgnoreCase( "units");
-      if ((att != null) && att.isString())
-        return att.getStringValue().trim();
+      return forVar.getUnitsString();
     }
     return units;
   }

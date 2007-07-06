@@ -1,6 +1,5 @@
-// $Id:Index0D.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,7 +24,6 @@ package ucar.ma2;
  *
  * @see Index
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class Index0D extends Index {
 
@@ -37,10 +35,6 @@ public class Index0D extends Index {
   public int currentElement() {
     return offset;
   }
-
-  /* public int element(int [] index) {
-    return offset;
-  } */
 
   protected int incr() {
     return offset;

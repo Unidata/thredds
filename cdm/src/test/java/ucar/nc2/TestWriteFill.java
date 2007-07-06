@@ -22,13 +22,13 @@ public class TestWriteFill  extends TestCase {
   }
 
   public void testCreateWithFill() throws IOException {
-    String filename = TestAll.cdmTestDataDir +"testWriteFill.nc";
+    String filename = TestLocal.cdmTestDataDir +"testWriteFill.nc";
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true);
 
     // define dimensions
     Dimension latDim = ncfile.addDimension("lat", 6);
     Dimension lonDim = ncfile.addDimension("lon", 12);
-    Dimension timeDim = ncfile.addDimension("time", -1, true, true, false);
+    Dimension timeDim = ncfile.addDimension("time", 0, true, true, false);
 
     ArrayList dims = new ArrayList();
     dims.add( latDim);

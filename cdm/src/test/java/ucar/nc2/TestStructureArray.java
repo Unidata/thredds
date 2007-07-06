@@ -16,8 +16,8 @@ public class TestStructureArray extends TestCase {
 
   NetcdfFile ncfile;
   protected void setUp() throws Exception {
-    ncfile = TestNC2.open(TestAll.cdmTestDataDir +"testStructures.nc");
-    ncfile.addRecordStructure();
+    ncfile = TestLocalNC2.open(TestLocal.cdmTestDataDir +"testStructures.nc");
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
   protected void tearDown() throws Exception {
     ncfile.close();

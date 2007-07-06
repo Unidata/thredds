@@ -1,6 +1,5 @@
-// $Id:DebugFlags.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,14 +25,19 @@ package ucar.nc2.util;
  * Allows decoupling of packages.
  *
  * @author John Caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public interface DebugFlags {
 
-  /** Test if named debug flag is set. */
+  /** Test if named debug flag is set.
+   * @param flagName name of flag
+   * @return true if named flag is set true
+   */
   public boolean isSet(String flagName);
 
-  /** Set named debug flag. */
+  /** Set named debug flag.
+   * @param flagName set this flag
+   * @param value set to this value
+   */
   public void set(String flagName, boolean value);
 
 }

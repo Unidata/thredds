@@ -89,7 +89,7 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
 
-      if (v.getCoordinateDimension() != null) // data variables only
+      if (v.isCoordinateVariable()) // data variables only
         continue;
 
       ArrayInt.D1 data = getTimeCoordinateData( v);

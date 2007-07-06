@@ -1,6 +1,5 @@
-// $Id:CoordTransBuilder.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,10 +34,10 @@ import java.util.ArrayList;
 /**
  * Manager for Coordinate Transforms.
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class CoordTransBuilder {
-  static private ArrayList transformList = new ArrayList();
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransBuilder.class);
+  static private List<Transform> transformList = new ArrayList<Transform>();
   static private boolean userMode = false;
 
   // search in the order added
@@ -97,6 +96,7 @@ public class CoordTransBuilder {
     * Register a class that implements a Coordinate Transform.
     * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
     * @param className name of class that implements CoordTransBuilderIF.
+    * @throws ClassNotFoundException if Class.forName( className) fails
     */
    static public void registerTransform( String transformName, String className) throws ClassNotFoundException {
      Class c = Class.forName( className);
@@ -134,7 +134,7 @@ public class CoordTransBuilder {
       transform_name = ds.findAttValueIgnoreCase(ctv, "standard_name", null);
 
     if (null == transform_name) {
-      parseInfo.append("**Failed to find Coordinate Transform name from Variable= "+ctv+"\n");
+      parseInfo.append("**Failed to find Coordinate Transform name from Variable= ").append(ctv).append("\n");
       return null;
     }
 
@@ -142,15 +142,14 @@ public class CoordTransBuilder {
 
     // do we have a transform registered for this ?
     Class builderClass = null;
-    for (int i = 0; i < transformList.size(); i++) {
-      Transform transform = (Transform) transformList.get(i);
+    for (Transform transform : transformList) {
       if (transform.transName.equals(transform_name)) {
         builderClass = transform.transClass;
         break;
       }
     }
     if (null == builderClass) {
-      parseInfo.append("**Failed to find CoordTransBuilder name= "+transform_name+" from Variable= "+ctv+"\n");
+      parseInfo.append("**Failed to find CoordTransBuilder name= ").append(transform_name).append(" from Variable= ").append(ctv).append("\n");
       return null;
     }
 
@@ -159,10 +158,12 @@ public class CoordTransBuilder {
     try {
       builder = (CoordTransBuilderIF) builderClass.newInstance();
     } catch (InstantiationException e) {
+      log.error("Cant instantiate "+builderClass.getName(), e);
     } catch (IllegalAccessException e) {
+      log.error("Cant access "+builderClass.getName(), e);
     }
-    if (null == builder) { // cant happen
-      parseInfo.append("**Failed to build CoordTransBuilder object from class= "+builderClass.getName()+" for Variable= "+ctv+"\n");
+    if (null == builder) { // cant happen - because this was tested in registerTransform()
+      parseInfo.append("**Failed to build CoordTransBuilder object from class= ").append(builderClass.getName()).append(" for Variable= ").append(ctv).append("\n");
       return null;
     }
 
@@ -170,7 +171,7 @@ public class CoordTransBuilder {
     CoordinateTransform ct = builder.makeCoordinateTransform(ds, ctv);
 
     if (ct != null) {
-      parseInfo.append(" Made Coordinate transform "+transform_name+" from variable "+ctv.getName()+": "+builder+"\n");
+      parseInfo.append(" Made Coordinate transform ").append(transform_name).append(" from variable ").append(ctv.getName()).append(": ").append(builder).append("\n");
     }
 
     return ct;
@@ -187,15 +188,14 @@ public class CoordTransBuilder {
    */
   static public VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
     VariableDS v = new VariableDS( ds, null, null, ct.getName(), DataType.CHAR, "", null, null);
-    List params = ct.getParameters();
-    for (int i = 0; i < params.size(); i++) {
-      Parameter p = (Parameter) params.get(i);
+    List<Parameter> params = ct.getParameters();
+    for (Parameter p : params) {
       if (p.isString())
-        v.addAttribute( new Attribute(p.getName(), p.getStringValue()));
+        v.addAttribute(new Attribute(p.getName(), p.getStringValue()));
       else {
         double[] data = p.getNumericValues();
-        Array dataA = Array.factory(double.class, new int[] {data.length}, data);
-        v.addAttribute( new Attribute(p.getName(), dataA));
+        Array dataA = Array.factory(double.class, new int[]{data.length}, data);
+        v.addAttribute(new Attribute(p.getName(), dataA));
       }
     }
     v.addAttribute( new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));

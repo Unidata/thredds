@@ -282,8 +282,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       origin[newDimIndex] = count;
       shape[newDimIndex] = dim.getLength();
 
-      List ranges = Range.factory( origin, shape);
-      Variable varNew = ncVar.section( ranges);
+      Variable varNew = ncVar.section( new Section( origin, shape));
       varNew.setName( name);
       varNew.setDimension( newDimIndex, dim);
 

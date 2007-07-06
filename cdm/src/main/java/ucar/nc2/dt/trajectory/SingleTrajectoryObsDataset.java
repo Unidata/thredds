@@ -4,6 +4,7 @@ package ucar.nc2.dt.trajectory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dt.VariableSimpleAdapter;
 import ucar.nc2.dt.*;
@@ -60,7 +61,7 @@ abstract class SingleTrajectoryObsDataset
 
   public SingleTrajectoryObsDataset() {}
   
-  public SingleTrajectoryObsDataset( NetcdfFile ncfile)
+  public SingleTrajectoryObsDataset( NetcdfDataset ncfile)
   {
     super( ncfile);
   }
@@ -123,7 +124,7 @@ abstract class SingleTrajectoryObsDataset
 
     if ( this.ncfile.hasUnlimitedDimension() && this.ncfile.getUnlimitedDimension().equals( timeDim ) )
     {
-      if ( this.ncfile.addRecordStructure() )
+      if ( (Boolean) this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) )
         this.recordVar = (Structure) this.ncfile.getRootGroup().findVariable( "record");
       else
         this.recordVar = new StructurePseudo( this.ncfile, null, "record", timeDim ); 

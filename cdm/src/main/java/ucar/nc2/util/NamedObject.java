@@ -1,6 +1,5 @@
-// $Id:NamedObject.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,15 +22,18 @@ package ucar.nc2.util;
 /**
  * An object that has a name and a description.
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 public interface NamedObject {
 
-  /** Get the object's name */
+  /** Get the object's name
+   * @return object's name
+   */
   public String getName();
 
-  /** Get the object's description. Use as a tooltip, for example */
+  /** Get the object's description. Use as a tooltip, for example
+   * @return object's description
+   */
   public String getDescription(); 
 
 }

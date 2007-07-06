@@ -1,7 +1,5 @@
 /*
- * $Id:Level2VolumeScan.java 63 2006-07-12 21:50:51Z edavis $
- *
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,8 +31,6 @@ import java.util.*;
 
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
-//import org.apache.tools.bzip2.CBZip2InputStream;
-
 
 /**
  * This class reads a NEXRAD level II data file.
@@ -48,7 +44,6 @@ import ucar.unidata.io.bzip2.BZip2ReadException;
  *
  * @author caron
  * @author David Priegnitz
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Level2VolumeScan {
 
@@ -63,7 +58,6 @@ public class Level2VolumeScan {
   RandomAccessFile raf;
 
   private String dataFormat = null; // ARCHIVE2 or AR2V0001
-  private String volumeNo = null;  // volume number (1 to 999)
   private int title_julianDay; // days since 1/1/70
   private int title_msecs; // milliseconds since midnight
   private String stationId; // 4 letter station assigned by ICAO
@@ -84,8 +78,7 @@ public class Level2VolumeScan {
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {
     this.raf = orgRaf;
 
-    boolean debug = log.isDebugEnabled();
-    if (debug)
+    if (log.isDebugEnabled())
       log.debug("Level2VolumeScan on " + raf.getLocation());
 
     raf.seek(0);
@@ -94,11 +87,11 @@ public class Level2VolumeScan {
     // volume scan header
     dataFormat = raf.readString(8);
     raf.skipBytes(1);
-    volumeNo = raf.readString(3);
+    String volumeNo = raf.readString(3);
     title_julianDay = raf.readInt(); // since 1/1/70
     title_msecs = raf.readInt();
     stationId = raf.readString(4).trim(); // only in AR2V0001
-    if (debug) log.debug(" dataFormat= " + dataFormat + " stationId= " + stationId);
+    if (log.isDebugEnabled()) log.debug(" dataFormat= " + dataFormat + " stationId= " + stationId);
 
     if (stationId.length() == 0) {
       // try to get it from the filename LOOK
@@ -116,15 +109,15 @@ public class Level2VolumeScan {
       raf.skipBytes(4);
       String BZ = raf.readString(2);
       if (BZ.equals("BZ")) {
-        RandomAccessFile uraf = null;
+        RandomAccessFile uraf;
         File uncompressedFile = DiskCache.getFileStandardPolicy(raf.getLocation() + ".uncompress");
         if (uncompressedFile.exists()) {
           uraf = new ucar.unidata.io.RandomAccessFile(uncompressedFile.getPath(), "r");
         } else {
           // nope, gotta uncompress it
-          uraf = uncompress(raf, uncompressedFile.getPath(), debug);
+          uraf = uncompress(raf, uncompressedFile.getPath());
           uraf.flush();
-          if (debug) log.debug("flushed uncompressed file= " + uncompressedFile.getPath());
+          if (log.isDebugEnabled()) log.debug("flushed uncompressed file= " + uncompressedFile.getPath());
         }
         // switch to uncompressed file
         raf.close();
@@ -135,8 +128,8 @@ public class Level2VolumeScan {
       raf.seek(Level2Record.FILE_HEADER_SIZE);
     }
 
-    ArrayList reflectivity = new ArrayList();
-    ArrayList doppler = new ArrayList();
+    List<Level2Record> reflectivity = new ArrayList<Level2Record>();
+    List<Level2Record> doppler = new ArrayList<Level2Record>();
 
     int recno = 0;
     while (true) {
@@ -180,20 +173,16 @@ public class Level2VolumeScan {
     dopplerGroups = sortScans("doppler", doppler);
   }
 
-  private ArrayList sortScans(String name, List scans) {
+  private ArrayList sortScans(String name, List<Level2Record> scans) {
 
     // now group by elevation_num
-    HashMap groupHash = new HashMap(600);
-    for (int i = 0; i < scans.size(); i++) {
-      Level2Record record = (Level2Record) scans.get(i);
-      Integer groupNo = new Integer(record.elevation_num);
-
-      ArrayList group = (ArrayList) groupHash.get(groupNo);
+    Map<Short,List<Level2Record>> groupHash = new HashMap<Short,List<Level2Record>>(600);
+    for (Level2Record record : scans) {
+      List<Level2Record> group = groupHash.get(record.elevation_num);
       if (null == group) {
-        group = new ArrayList();
-        groupHash.put(groupNo, group);
+        group = new ArrayList<Level2Record>();
+        groupHash.put(record.elevation_num, group);
       }
-
       group.add(record);
     }
 
@@ -389,13 +378,11 @@ public class Level2VolumeScan {
     return dopplerGroups;
   }
 
-  private class GroupComparator implements Comparator {
+  private class GroupComparator implements Comparator<List<Level2Record>> {
 
-    public int compare(Object o1, Object o2) {
-      List group1 = (List) o1;
-      List group2 = (List) o2;
-      Level2Record record1 = (Level2Record) group1.get(0);
-      Level2Record record2 = (Level2Record) group2.get(0);
+    public int compare(List<Level2Record> group1, List<Level2Record> group2) {
+      Level2Record record1 =  group1.get(0);
+      Level2Record record2 =  group2.get(0);
 
       //if (record1.elevation_num != record2.elevation_num)
       return record1.elevation_num - record2.elevation_num;
@@ -405,6 +392,7 @@ public class Level2VolumeScan {
 
   /**
    * Get data format (ARCHIVE2, AR2V0001) for this file.
+   * @return data format (ARCHIVE2, AR2V0001) for this file.
    */
   public String getDataFormat() {
     return dataFormat;
@@ -478,9 +466,9 @@ public class Level2VolumeScan {
    * @param raf2      file to uncompress
    * @param ufilename write to this file
    * @return raf of uncompressed file
-   * @throws IOException
+   * @throws IOException on read error
    */
-  private RandomAccessFile uncompress(RandomAccessFile raf2, String ufilename, boolean debug) throws IOException {
+  private RandomAccessFile uncompress(RandomAccessFile raf2, String ufilename) throws IOException {
     raf2.seek(0);
     byte[] header = new byte[Level2Record.FILE_HEADER_SIZE];
     raf2.read(header);
@@ -498,15 +486,15 @@ public class Level2VolumeScan {
         try {
           numCompBytes = raf2.readInt();
           if (numCompBytes == -1) {
-            if (debug) log.debug("  done: numCompBytes=-1 ");
+            if (log.isDebugEnabled()) log.debug("  done: numCompBytes=-1 ");
             break;
           }
         } catch (EOFException ee) {
-          if (debug) log.debug("  got EOFException ");
+          log.warn("  got EOFException ");
           break; // assume this is ok
         }
 
-        if (debug) {
+        if (log.isDebugEnabled()) {
           log.debug("reading compressed bytes " + numCompBytes + " input starts at " + raf2.getFilePointer() + "; output starts at " + dout2.getFilePointer());
         }
         /*
@@ -516,7 +504,7 @@ public class Level2VolumeScan {
         * is the last block and go on our merry little way.
         */
         if (numCompBytes < 0) {
-          if (debug) log.debug("last block?" + numCompBytes);
+          if (log.isDebugEnabled()) log.debug("last block?" + numCompBytes);
           numCompBytes = -numCompBytes;
           eof = true;
         }
@@ -549,7 +537,7 @@ public class Level2VolumeScan {
           log.warn("Nexrad2IOSP.uncompress ", ioe);
         }
         float nrecords = (float) (total / 2432.0);
-        if (debug)
+        if (log.isDebugEnabled())
           log.debug("  unpacked " + total + " num bytes " + nrecords + " records; ouput ends at " + dout2.getFilePointer());
       }
     } catch (EOFException e) {

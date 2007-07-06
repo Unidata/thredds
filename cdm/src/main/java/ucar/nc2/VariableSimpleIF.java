@@ -28,14 +28,14 @@ import java.util.List;
  * @see ucar.nc2.dt.TypedDataset
  * @author caron
  */
-public interface VariableSimpleIF extends Comparable {
+public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
   /** @return full name of the data Variable */
   public String getName();
   /** @return short name of the data Variable */
   public String getShortName();
-  /** @return Text description of the Variable */
+  /** @return  description of the Variable */
   public String getDescription();
-  /* @return Units of the Variable. These should be udunits compatible if possible */
+  /** @return Units of the Variable. These should be udunits compatible if possible */
   public String getUnitsString();
 
   /** @return Variable rank */
@@ -57,9 +57,9 @@ public interface VariableSimpleIF extends Comparable {
    */
   public ucar.nc2.Attribute findAttributeIgnoreCase( String name );
 
-  public double convertScaleOffsetMissing(byte value);
+  /* public double convertScaleOffsetMissing(byte value);
   public double convertScaleOffsetMissing(short value);
   public double convertScaleOffsetMissing(int value);
   public double convertScaleOffsetMissing(long value);
-  public double convertScaleOffsetMissing(double value);
+  public double convertScaleOffsetMissing(double value); */
 }

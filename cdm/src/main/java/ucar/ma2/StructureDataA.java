@@ -1,6 +1,5 @@
-// $Id:StructureDataA.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,7 +23,6 @@ package ucar.ma2;
  * A StructureData implementation delegates everything to the containing ArrayStructure.
  *  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class StructureDataA extends StructureData {
@@ -89,14 +87,14 @@ public class StructureDataA extends StructureData {
     return sa.getScalarFloat(recno, m);
   }
 
-  /**
+  /*
    * Get value as a double. Underlying type must be convertible to double.
    * @param m member Variable.
    * @throws ForbiddenConversionException if not convertible to double.
-   */
+   *
   public double convertScalarDouble(StructureMembers.Member m) {
     return sa.convertScalarDouble(recno, m);
-  }
+  } */
 
 
   /**
@@ -125,14 +123,14 @@ public class StructureDataA extends StructureData {
     return data.getFloat(Array.scalarIndex);
   }
 
-  /**
+  /*
    * Get float value. Underlying type must be convertible to float.
    * @param m member Variable.
    * @throws ForbiddenConversionException if not convertible to float.
-   */
+   *
   public float convertScalarFloat(StructureMembers.Member m) {
     return (float) sa.convertScalarDouble(recno, m);
-  }
+  } */
 
     /**
    * Get member data of type byte.

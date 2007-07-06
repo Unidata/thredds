@@ -1,6 +1,5 @@
-// $Id:N3raf.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,7 +25,6 @@ import ucar.ma2.*;
 /**
  * Use our RandomAccessFile class to read and write.
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 class N3raf extends N3iosp  {
@@ -53,7 +51,7 @@ class N3raf extends N3iosp  {
         raf.seek ( chunk.getFilePos());
         raf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
       }
-      return (dataType == DataType.BYTE) ? pa : (Object) convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
+      return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = new short[size];

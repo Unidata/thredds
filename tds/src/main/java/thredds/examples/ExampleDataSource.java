@@ -24,6 +24,7 @@ package thredds.examples;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.IOServiceProvider;
 import ucar.nc2.Variable;
+import ucar.nc2.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Array;
@@ -68,7 +69,7 @@ public class ExampleDataSource  implements thredds.servlet.DatasetSource {
     }
   }
 
-  public class BarrodaleIOSP implements IOServiceProvider {
+  public class BarrodaleIOSP extends AbstractIOServiceProvider {
     BarrodaleIOSP( String databaseURL) {
     }
 
@@ -92,24 +93,5 @@ public class ExampleDataSource  implements thredds.servlet.DatasetSource {
       //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean syncExtend() throws IOException {
-      return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public boolean sync() throws IOException {
-      return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setSpecial(Object special) {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public String toStringDebug(Object o) {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public String getDetailInfo() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
   }
 }

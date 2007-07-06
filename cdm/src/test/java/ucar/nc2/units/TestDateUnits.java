@@ -133,7 +133,7 @@ public class TestDateUnits extends TestCase  {
 
     value = du.makeValue( d);
     System.out.println("testDateValue "+value+" == "+formatter.toDateTimeStringISO(d));
-    assert ucar.nc2.TestAll.closeEnough(value, 365) : value;
+    assert ucar.nc2.TestLocal.closeEnough(value, 365) : value;
   }
 
    private void showUnitInfo( Unit uu) {

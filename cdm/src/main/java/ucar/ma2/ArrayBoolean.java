@@ -1,6 +1,5 @@
-// $Id:ArrayBoolean.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ package ucar.ma2;
  *
  * @see Array
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ArrayBoolean extends Array {
 
@@ -151,7 +149,7 @@ public class ArrayBoolean extends Array {
   /** not legal, throw ForbiddenConversionException */
   public void setByte(Index i, byte value) { throw new ForbiddenConversionException(); }
 
-  public boolean getBoolean(Index i) { return (boolean) storage[i.currentElement()]; }
+  public boolean getBoolean(Index i) { return storage[i.currentElement()]; }
   public void setBoolean(Index i, boolean value) { storage[i.currentElement()] = value; }
 
   /** not legal, throw ForbiddenConversionException */
@@ -159,8 +157,8 @@ public class ArrayBoolean extends Array {
   /** not legal, throw ForbiddenConversionException */
   public void setChar(Index i, char value) { throw new ForbiddenConversionException(); }
 
-  public Object getObject(Index i) { return new Boolean(storage[i.currentElement()]); }
-  public void setObject(Index i, Object value) { storage[i.currentElement()] = ((Boolean)value).booleanValue(); }
+  public Object getObject(Index i) { return storage[i.currentElement()]; }
+  public void setObject(Index i, Object value) { storage[i.currentElement()] = (Boolean) value; }
 
     // package private : mostly for iterators
   double getDouble(int index) {throw new ForbiddenConversionException(); }
@@ -187,8 +185,8 @@ public class ArrayBoolean extends Array {
   boolean getBoolean(int index) { return storage[index]; }
   void setBoolean(int index, boolean value) {storage[index] = value; }
 
-  Object getObject(int index) { return new Boolean( getBoolean( index)); }
-  void setObject(int index, Object value) { storage[index] = ((Boolean)value).booleanValue(); }
+  Object getObject(int index) { return getBoolean(index); }
+  void setObject(int index, Object value) { storage[index] = (Boolean) value; }
 
     /** Concrete implementation of Array specialized for byte, rank 0. */
   public static class D0 extends ArrayBoolean {

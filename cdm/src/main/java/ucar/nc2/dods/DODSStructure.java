@@ -1,6 +1,5 @@
-// $Id:DODSStructure.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,7 +30,6 @@ import java.io.IOException;
  * A DODS Structure.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class DODSStructure extends ucar.nc2.Structure {
@@ -49,37 +47,53 @@ public class DODSStructure extends ucar.nc2.Structure {
     this.dodsShortName = dodsShortName;
 
     if (ds instanceof DSequence) {
-      this.dimensions.add( Dimension.UNKNOWN);
+      this.dimensions.add( Dimension.VLEN);
       this.shape = new int[1]; // scalar
     } else
       this.shape = new int[0]; // scalar
 
-    for (int i = 0; i < dodsV.children.size(); i++) {
-      DodsV nested = (DodsV) dodsV.children.get(i);
-      dodsfile.addVariable( parentGroup, this, nested);
+    for (DodsV nested : dodsV.children) {
+      dodsfile.addVariable(parentGroup, this, nested);
     }
 
     if (ds instanceof DSequence)
       isVlen = true;
+
+    setSPobject(dodsV);
   }
 
   // constructor called from DODSNetcdfFile.makeVariable() for array of Structure
   DODSStructure( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String shortName,
                  DArray dodsArray, DodsV dodsV) throws IOException {
     this( dodsfile, parentGroup, parentStructure, shortName, dodsV);
-    ArrayList dims = dodsfile.constructDimensions( parentGroup, dodsArray);
+    List<Dimension> dims = dodsfile.constructDimensions( parentGroup, dodsArray);
     setDimensions(dims);
+    setSPobject(dodsV);
   }
+
+  /** Copy constructor.
+   * @param from  copy from this
+   * @param reparent : if true, reparent the members. if so, cant use 'from' anymore
+   */
+  private DODSStructure( DODSStructure from, boolean reparent) {
+    super( from, reparent);
+
+    dodsfile = from.dodsfile;
+    dodsShortName = from.dodsShortName;
+    ds = from.ds;
+  }
+
+  // for section and slice
+  @Override
+  protected Variable copy() {
+    return new DODSStructure(this, false); // dont need to reparent
+  }
+
 
   DConstructor getDConstructor() { return ds; }
 
-  // package access needed
-  protected void calcIsCoordinateVariable() { super.calcIsCoordinateVariable(); }
-
-  /** Let the Structure fill in here. */
-  public String writeCDL(String space, boolean useFullName, boolean strict) {
-    return super.writeCDL( space, useFullName, strict);
-  }
+  // need package access
+  //protected void calcIsCoordinateVariable() { super.calcIsCoordinateVariable(); }
 
   protected String getDODSshortName() { return dodsShortName; }
 
@@ -97,6 +111,7 @@ public class DODSStructure extends ucar.nc2.Structure {
    * @param CE constraint expression, or null.
    * @return iterator over type DODSStructure.
    * @see DODSStructure
+   * @throws java.io.IOException on io error
    */
   public Structure.Iterator getStructureIterator(String CE) throws java.io.IOException {
     return new SequenceIterator(CE);

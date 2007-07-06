@@ -115,7 +115,7 @@ public class WriterProfileObsDataset {
     writeStationData(stns); // write out the station info
 
     // now write the observations
-    if (!ncfile.addRecordStructure())
+    if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
       throw new IllegalStateException("can't add record variable");
   }
 
@@ -538,9 +538,9 @@ public class WriterProfileObsDataset {
     StructureMembers sm = new StructureMembers("manLevel");
     Dimension manDim = ncfile.findDimension("manLevel");
     Structure record = (Structure) ncfile.findVariable("record");
-    List<VariableEnhanced> allList = record.getVariables();
+    List<Variable> allList = record.getVariables();
     List<VariableSimpleIF> varList = new ArrayList<VariableSimpleIF>();
-    for (VariableEnhanced v : allList) {
+    for (Variable v : allList) {
       if ((v.getRank() == 1) && v.getDimension(0).equals(manDim)) {
         // public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName, DataType dataType,
         // String dims, String units, String desc) {

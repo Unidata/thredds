@@ -152,12 +152,12 @@ class N3streamWriter {
 
     // dimensions
     int vsize = var.getDataType().getSize();
-    List dims = var.getDimensions();
+    List<Dimension> dims = var.getDimensions();
     if (null != stream) stream.writeInt(dims.size());
     count += 4;
 
     for (int j = 0; j < dims.size(); j++) {
-      Dimension dim = (Dimension) dims.get(j);
+      Dimension dim = dims.get(j);
       int dimIndex = findDimensionIndex(dim);
       if (null != stream) stream.writeInt(dimIndex);
       count += 4;
@@ -186,7 +186,7 @@ class N3streamWriter {
   }
 
 
-  private int writeAtts(DataOutputStream stream, List atts) throws IOException {
+  private int writeAtts(DataOutputStream stream, List<Attribute> atts) throws IOException {
     int natts = atts.size();
     if (null != stream) {
       if (natts == 0) {
@@ -200,7 +200,7 @@ class N3streamWriter {
     int count = 8;
 
     for (int i = 0; i < natts; i++) {
-      Attribute att = (Attribute) atts.get(i);
+      Attribute att = atts.get(i);
 
       count += writeString(stream, att.getName());
       int type = N3header.getType(att.getDataType());
@@ -323,7 +323,7 @@ class N3streamWriter {
        // see if it has a record dimension we can use
     boolean useRecordDimension = ncfile.hasUnlimitedDimension();
     if (useRecordDimension) {
-      useRecordDimension &= ncfile.addRecordStructure();
+      useRecordDimension &= (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
 
     // write record data

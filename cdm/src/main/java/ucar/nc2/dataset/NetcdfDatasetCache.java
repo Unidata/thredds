@@ -1,6 +1,5 @@
-// $Id:NetcdfDatasetCache.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,41 +30,40 @@ import ucar.nc2.NetcdfFile;
  * <li>The NetcdfDataset object must not be modified.
  * <li>The location must uniquely define the NetcdfDataset object.
  * <li>The location must be usable in NetcdfDataset.openDataset(). We actually use an equivilent package private method,
- *   NetcdfDataset.acquireDataset() which acquires the underlying NetcdfFile.
+ * NetcdfDataset.acquireDataset() which acquires the underlying NetcdfFile.
  * <li>When the NetcdfDataset is closed, the underlying file is also closed.
  * <li>If the NetcdfDataset is acquired from the cache, ncfile.synch() the underlying file is acquired again.
  * </ol>
  * <pre>
-  NetcdfDataset ncd = null;
-  try {
-    ncd = NetcdfDatsetCache.acquire(location, enhance, cancelTask);
-    ...
-  } finally {
-    ncd.close( ncfile)
-  }
- </pre>
- *
- *
- * <p>
+ * NetcdfDataset ncd = null;
+ * try {
+ *   ncd = NetcdfDatsetCache.acquire(location, enhance, cancelTask);
+ *   ...
+ * } finally {
+ *   ncd.close( ncfile)
+ * }
+ * </pre>
+ * <p/>
  * Library ships with cache disabled, call init() to use. Make sure you call exit() when exiting program.
  * All methods are thread safe.
  * Cleanup is done automatically in a background thread, using LRU.
  * Uses org.slf4j.Logger for error messages.
  *
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class NetcdfDatasetCache {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfDatasetCache.class);
-  static private ArrayList cache; // CacheElement
+  static private List<CacheElement> cache; // CacheElement
   static private final Object lock = new Object(); // for synchronizing
   static private int maxElements, minElements;
   static private boolean disabled = true;
   static private Timer timer;
 
-  /** Default 10 minimum, 20 maximum files, cleanup every 20 minutes */
+  /**
+   * Default 10 minimum, 20 maximum files, cleanup every 20 minutes
+   */
   static public void init() {
-    init( 10, 20, 20*60 );
+    init(10, 20, 20 * 60);
   }
 
   /**
@@ -73,12 +71,12 @@ public class NetcdfDatasetCache {
    *
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
-   * @param period (secs) do periodic cleanups every this number of seconds.
+   * @param period              (secs) do periodic cleanups every this number of seconds.
    */
-  static public void init( int minElementsInMemory, int maxElementsInMemory, long period) {
+  static public void init(int minElementsInMemory, int maxElementsInMemory, long period) {
     minElements = minElementsInMemory;
     maxElements = maxElementsInMemory;
-    cache = new ArrayList(2*maxElements-minElements);
+    cache = new ArrayList<CacheElement>(2 * maxElements - minElements);
     disabled = false;
 
     // in case its called more than once
@@ -90,7 +88,8 @@ public class NetcdfDatasetCache {
     timer.schedule(new CleanupTask(), 1000 * period, 1000 * period);
   }
 
-  /** Disable use of the cache.
+  /**
+   * Disable use of the cache.
    * Call init() to start again.
    * Generally call this before any possible use.
    */
@@ -99,33 +98,36 @@ public class NetcdfDatasetCache {
     if (timer != null) timer.cancel();
     timer = null;
     if ((cache != null) && cache.size() > 0)
-      clearCache( true);
+      clearCache(true);
   }
 
-  /** You must call exit() to shut down the background timer in order to get a clean process shutdown. */
+  /**
+   * You must call exit() to shut down the background timer in order to get a clean process shutdown.
+   */
   static public void exit() {
     disabled = true;
     if (timer != null) timer.cancel();
     timer = null;
     if ((cache != null) && cache.size() > 0)
-      clearCache( true);
+      clearCache(true);
   }
 
   /**
    * Try to find a file in the cache.
    * If found, call sync() on it and return it.
+   *
    * @param cacheName used as the key.
    * @return file if its in the cache, null otherwise.
+   * @throws java.io.IOException on error
    */
-  static public NetcdfDataset acquireCacheOnly(String cacheName, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  static public NetcdfDataset acquireCacheOnly(String cacheName) throws IOException {
     if (disabled) return null;
     if (cache == null) init();
 
     // see if its in the cache
     CacheElement wantElem = null;
     synchronized (lock) {
-      for (int i = 0; i < cache.size(); i++) {
-        CacheElement testElem =  (CacheElement) cache.get(i);
+      for (CacheElement testElem : cache) {
         if (testElem.cacheName.equals(cacheName) && !testElem.isLocked) {
           testElem.isLocked = true;
           wantElem = testElem;
@@ -136,14 +138,14 @@ public class NetcdfDatasetCache {
 
     if (wantElem == null)
       return null;
-       
+
     NetcdfDataset ncd = wantElem.ncd;
     if (ncd != null) {
       try {
         ncd.sync();
         if (logger.isDebugEnabled()) logger.debug("NetcdfFileCache.aquire from cache {}", cacheName);
       } catch (IOException e) {
-        logger.error("NetcdfFileCache.synch failed on "+cacheName+" "+e.getMessage());
+        logger.error("NetcdfFileCache.synch failed on " + cacheName + " " + e.getMessage());
       }
     }
 
@@ -153,29 +155,30 @@ public class NetcdfDatasetCache {
   /**
    * Acquire a NetcdfDataset, and lock it so no one else can use it.
    * If not already in cache, open it with NetcdfDataset.openDataset() with enhance=true, and put in cache.
-   * <p>
+   * <p/>
    * You should call NetcdfDataset.close() when done, (rather than
-   *  NetcdfDatasetCache.release() directly) and the file is then released instead of closed.
-   * <p>
+   * NetcdfDatasetCache.release() directly) and the file is then released instead of closed.
+   * <p/>
    * If cache size goes over maxElement, then immediately (actually in 10 msec) schedule a cleanup in a background thread.
    * This means that the cache should never get much larger than maxElement, unless you have them all locked.
    *
-   * @param location file location, also used as the cache name
+   * @param location   file location, also used as the cache name
    * @param cancelTask user can cancel the task, ok to be null.
    * @return NetcdfDataset corresponding to location.
    * @throws IOException on error
-   *
    * @see NetcdfFile#open
    */
   static public NetcdfDataset acquire(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return acquire(location, cancelTask, null);
   }
 
-  /** Same as acquire(), but use a factory to open the dataset.
-   * @param cacheName : use this as the cache name, may or may not be the same as the location. This is also passed to the
-   *  factory object.
+  /**
+   * Same as acquire(), but use a factory to open the dataset.
+   *
+   * @param cacheName  : use this as the cache name, may or may not be the same as the location. This is also passed to the
+   *                   factory object.
    * @param cancelTask user can cancel the task, ok to be null.
-   * @param factory use this to open; if null use NetcdfDataset.openDataset(). factory should not use NetcdfFileCache.
+   * @param factory    use this to open; if null use NetcdfDataset.openDataset(). factory should not use NetcdfFileCache.
    * @return NetcdfFile corresponding to location.
    * @throws IOException on error
    */
@@ -183,17 +186,21 @@ public class NetcdfDatasetCache {
     return acquire(cacheName, -1, cancelTask, null, factory);
   }
 
-  /** Same as acquire(), but use a factory to open the dataset.
-     * @param cacheName : use this as the cache name, may or may not be the same as the location. This is also passed to the
-     *  factory object.
-     * @param cancelTask user can cancel the task, ok to be null.
-     * @param factory use this to open; if null use NetcdfDataset.openDataset(). factory should not use NetcdfFileCache.
-     * @return NetcdfFile corresponding to location.
-     * @throws IOException on error
-     */
-    static public NetcdfDataset acquire(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject, NetcdfDatasetFactory factory) throws IOException {
+  /**
+   * Same as acquire(), but use a factory to open the dataset.
+   *
+   * @param cacheName   : use this as the cache name, may or may not be the same as the location. This is also passed to the
+   *                    factory object.
+   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param cancelTask  allow task to be cancelled; may be null.
+   * @param spiObject   sent to iosp.setSpecial() if not null
+   * @param factory     use this to open; if null use NetcdfDataset.openDataset(). factory should not use NetcdfFileCache.
+   * @return NetcdfFile corresponding to location.
+   * @throws IOException on error
+   */
+  static public NetcdfDataset acquire(String cacheName, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject, NetcdfDatasetFactory factory) throws IOException {
     // see if its in the cache
-    NetcdfDataset ncd = acquireCacheOnly( cacheName, cancelTask);
+    NetcdfDataset ncd = acquireCacheOnly(cacheName);
     if (ncd != null) return ncd;
 
     // open the file
@@ -213,7 +220,7 @@ public class NetcdfDatasetCache {
     // keep in cache
     boolean needCleanup;
     synchronized (lock) {
-      cache.add( new CacheElement( ncd, cacheName, factory));
+      cache.add(new CacheElement(ncd, cacheName, factory));
       needCleanup = (cache.size() > maxElements);
     }
     if (needCleanup)
@@ -225,6 +232,7 @@ public class NetcdfDatasetCache {
   /**
    * Release the file. This unlocks it, updates its lastAccessed date.
    * Normally you need not call this, just close the dataset as usual.
+   *
    * @param ncd release this file.
    * @throws IOException if file not in cache.
    */
@@ -232,7 +240,7 @@ public class NetcdfDatasetCache {
     if (ncd == null) return;
 
     if (disabled) {  // // should not happen
-      ncd.setCacheState( 0); // prevent infinite loops
+      ncd.setCacheState(0); // prevent infinite loops
       ncd.close();
       return;
     }
@@ -240,21 +248,20 @@ public class NetcdfDatasetCache {
     String cacheName = ncd.getCacheName();
 
     synchronized (lock) {
-      for (int i = 0; i < cache.size(); i++) {
-        CacheElement elem =  (CacheElement) cache.get(i);
+      for (CacheElement elem : cache) {
         if (elem.ncd == ncd) {
           if (!elem.isLocked)
-            logger.warn("NetcdfDatasetCache.release "+cacheName+" not locked");
-        //if (elem.cacheName.equals(cacheName) && elem.isLocked) {
+            logger.warn("NetcdfDatasetCache.release " + cacheName + " not locked");
+          //if (elem.cacheName.equals(cacheName) && elem.isLocked) {
           elem.isLocked = false;
           elem.lastAccessed = System.currentTimeMillis();
           elem.countAccessed++;
-          if (logger.isDebugEnabled()) logger.debug("NetcdfDatasetCache release "+cacheName);
+          if (logger.isDebugEnabled()) logger.debug("NetcdfDatasetCache release " + cacheName);
           return;
         }
       }
     }
-    throw new IOException("NetcdfDatasetCache.release does not have in cache = "+ cacheName);
+    throw new IOException("NetcdfDatasetCache.release does not have in cache = " + cacheName);
   }
 
   /**
@@ -268,13 +275,13 @@ public class NetcdfDatasetCache {
 
     int count = 0;
     int need2delete = size - minElements;
-    ArrayList deleteList = new ArrayList();
+    List<CacheElement> deleteList = new ArrayList<CacheElement>();
 
     synchronized (lock) {
-      Collections.sort( cache); //sort so oldest are on top
+      Collections.sort(cache); //sort so oldest are on top
       Iterator iter = cache.iterator();
       while (iter.hasNext()) {
-        CacheElement elem =  (CacheElement) iter.next();
+        CacheElement elem = (CacheElement) iter.next();
         if (!elem.isLocked) {
           iter.remove();
           deleteList.add(elem);
@@ -285,55 +292,56 @@ public class NetcdfDatasetCache {
     }
 
     long start = System.currentTimeMillis();
-    for (int i = 0; i < deleteList.size(); i++) {
-      CacheElement elem =  (CacheElement) deleteList.get(i);
+    for (CacheElement elem : deleteList) {
       if (elem.ncd.getCacheState() != 2)
-        logger.warn("NetcdfDatasetCache file cache flag not set "+elem.cacheName);
+        logger.warn("NetcdfDatasetCache file cache flag not set " + elem.cacheName);
 
       try {
         elem.ncd.setCacheState(0);
         elem.ncd.close();
         elem.ncd = null; // help the gc
       } catch (IOException e) {
-        logger.error("NetcdfDatasetCache.close failed on "+elem.cacheName);
+        logger.error("NetcdfDatasetCache.close failed on " + elem.cacheName);
       }
     }
 
     long took = System.currentTimeMillis() - start;
     if (logger.isDebugEnabled())
-      logger.debug("NetcdfDatasetCache.cleanup had= "+ size+" deleted= "+count+" took="+took+" msec");
+      logger.debug("NetcdfDatasetCache.cleanup had= " + size + " deleted= " + count + " took=" + took + " msec");
     if (count < need2delete)
-      logger.warn("NetcdfDatasetCache.cleanup couldnt delete enough for minimum= "+ minElements+" actual= "+cache.size());
+      logger.warn("NetcdfDatasetCache.cleanup couldnt delete enough for minimum= " + minElements + " actual= " + cache.size());
   }
 
   /**
    * Get the files in the cache. For debugging/status only, do not change!
+   *
    * @return List of NetcdfDatasetCache.CacheElement
    */
-  static public List getCache() {
-    return (cache == null) ? new ArrayList() : new ArrayList(cache);
+  static public List<CacheElement> getCache() {
+    return (cache == null) ? new ArrayList<CacheElement>() : new ArrayList<CacheElement>(cache);
   }
 
   /**
    * Remove all cache entries.
+   *
    * @param force if true, remove them even if they are currently locked.
    */
   static public void clearCache(boolean force) {
     if (null == cache) return;
 
-    ArrayList oldcache;
+    List<CacheElement> oldcache;
     synchronized (lock) {
       if (force) {
         // may need to force all files closed
-        oldcache = new ArrayList(cache);
+        oldcache = new ArrayList<CacheElement>(cache);
         cache.clear();
 
-      } else  {
+      } else {
         // usual case is to respect locks
-        oldcache = new ArrayList(cache.size());
+        oldcache = new ArrayList<CacheElement>(cache.size());
         Iterator iter = cache.iterator();
         while (iter.hasNext()) {
-          CacheElement elem =  (CacheElement) iter.next();
+          CacheElement elem = (CacheElement) iter.next();
           if (!elem.isLocked) {
             iter.remove();
             oldcache.add(elem);
@@ -343,13 +351,11 @@ public class NetcdfDatasetCache {
     } // synch
 
     // close all files in oldcache
-    Iterator iter = oldcache.iterator();
-    while (iter.hasNext()) {
-      CacheElement elem =  (CacheElement) iter.next();
+    for (CacheElement elem : oldcache) {
       if (elem.isLocked)
-        logger.warn("NetcdfDatasetCache close locked file= "+elem);
+        logger.warn("NetcdfDatasetCache close locked file= " + elem);
       if (elem.ncd.getCacheState() != 2)
-        logger.warn("NetcdfDatasetCache file cache flag not set= "+elem);
+        logger.warn("NetcdfDatasetCache file cache flag not set= " + elem);
       //System.out.println("NetcdfDatasetCache close file= "+elem);
 
       try {
@@ -357,7 +363,7 @@ public class NetcdfDatasetCache {
         elem.ncd.close();
         elem.ncd = null; // help the gc
       } catch (IOException e) {
-        logger.error("NetcdfDatasetCache.close failed on "+elem);
+        logger.error("NetcdfDatasetCache.close failed on " + elem);
       }
     }
 
@@ -380,13 +386,13 @@ public class NetcdfDatasetCache {
       this.cacheName = cacheName;
       this.ncd = ncd;
       this.factory = factory;
-      ncd.setCacheState( 2);
-      ncd.setCacheName( cacheName);
-      if (logger.isDebugEnabled()) logger.debug("NetcdfDatasetCache add to cache "+cacheName);
+      ncd.setCacheState(2);
+      ncd.setCacheName(cacheName);
+      if (logger.isDebugEnabled()) logger.debug("NetcdfDatasetCache add to cache " + cacheName);
     }
 
     public String toString() {
-      return isLocked+" "+cacheName+" "+countAccessed+" "+new Date(lastAccessed);
+      return isLocked + " " + cacheName + " " + countAccessed + " " + new Date(lastAccessed);
     }
 
     public int compareTo(Object o) {
@@ -395,8 +401,10 @@ public class NetcdfDatasetCache {
     }
   }
 
-  static private class CleanupTask extends TimerTask  {
-    public void run() { cleanup(); }
+  static private class CleanupTask extends TimerTask {
+    public void run() {
+      cleanup();
+    }
   }
 
 }

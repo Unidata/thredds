@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,7 +26,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.params.HttpClientParams;
@@ -48,7 +46,6 @@ import java.io.IOException;
  * </pre>
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class HttpClientManager {
   static private boolean debug = false;
@@ -84,7 +81,8 @@ public class HttpClientManager {
 
   /**
    * Set the HttpClient object - a single instance is used.
-   * Propaget to entire NetcdfJava library.
+   * Propagate to entire NetcdfJava library.
+   * @param client use this HttpClient object for all calls.
    */
   static public void setHttpClient(HttpClient client) {
     _client = client;
@@ -94,6 +92,7 @@ public class HttpClientManager {
 
   /**
    * Get the HttpClient object - a single instance is used.
+   * @return the  HttpClient object
    */
   static public HttpClient getHttpClient() {
     return _client;
@@ -105,7 +104,7 @@ public class HttpClientManager {
     _client = new HttpClient(connectionManager);
 
     HttpClientParams params = _client.getParams();
-    params.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(timeout));
+    params.setParameter(HttpMethodParams.SO_TIMEOUT, timeout);
     params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
     params.setParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
@@ -123,7 +122,10 @@ public class HttpClientManager {
   }
 
   /**
-   * COnvenience better to use getResponseAsStream
+   * Get the content from a url. For large returns, its better to use getResponseAsStream.
+   * @param urlString url as a String
+   * @return contents of url as a String
+   * @throws java.io.IOException on error
    */
   public static String getContent(String urlString) throws IOException {
     GetMethod m = new GetMethod(urlString);
@@ -138,6 +140,13 @@ public class HttpClientManager {
     }
   }
 
+  /**
+   * Put content to a url, using HTTP PUT. Handles one level of 302 redirection.
+   * @param urlString url as a String
+   * @param content PUT this content at the given url.
+   * @return the HTTP status return code
+   * @throws java.io.IOException on error
+   */
   public static int putContent(String urlString, String content) throws IOException {
     PutMethod m = new PutMethod(urlString);
     m.setDoAuthentication( true );

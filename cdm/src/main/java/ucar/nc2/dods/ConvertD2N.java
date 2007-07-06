@@ -1,6 +1,5 @@
-// $Id:ConvertD2N.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,7 +34,6 @@ import ucar.nc2.Variable;
  * Convert Dods object tree to netcdf.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ConvertD2N {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DODSNetcdfFile.class);
@@ -80,16 +78,16 @@ public class ConvertD2N {
    * @param dataV the dataDDS has been parsed into this dodsV, this is the top variable containing v
    * @param flatten if true, remove the StructureData "wrapper".
    * @return the data as as Array
-   * @throws IOException
-   * @throws DAP2Exception
+   * @throws IOException on io error
+   * @throws DAP2Exception on bad things happening
    */
-  public Array convertNestedVariable(ucar.nc2.Variable v, List section, DodsV dataV, boolean flatten) throws IOException, DAP2Exception {
+  public Array convertNestedVariable(ucar.nc2.Variable v, List<Range> section, DodsV dataV, boolean flatten) throws IOException, DAP2Exception {
     Array data = convertTopVariable(v, section, dataV);
     if (flatten) {
       ArrayStructure as = (ArrayStructure) data;
 
       // make list of names
-      ArrayList names = new ArrayList();
+      List<String> names = new ArrayList<String>();
       Variable nested = v;
       while (nested.isMemberOfStructure()) {
         names.add( 0, nested.getShortName());
@@ -108,8 +106,8 @@ public class ConvertD2N {
     return data;
   }
 
-  private StructureMembers.Member findNested(ArrayStructure as, ArrayList names, String want) {
-    String name = (String) names.get(0);
+  private StructureMembers.Member findNested(ArrayStructure as, List<String> names, String want) {
+    String name = names.get(0);
     StructureMembers sm = as.getStructureMembers();
     StructureMembers.Member m = sm.findMember(name);
     if (name.equals(want))
@@ -128,10 +126,10 @@ public class ConvertD2N {
    * @param section the requested variable section
    * @param dataV the dataDDS has been parsed into this dodsV
    * @return the data as as Array
-   * @throws IOException
-   * @throws DAP2Exception
+   * @throws IOException on io error
+   * @throws DAP2Exception on bad
    */
-  public Array convertTopVariable(ucar.nc2.Variable v, List section, DodsV dataV) throws IOException, DAP2Exception {
+  public Array convertTopVariable(ucar.nc2.Variable v, List<Range> section, DodsV dataV) throws IOException, DAP2Exception {
     Array data = convert(dataV);
 
     // arrays
@@ -172,8 +170,8 @@ public class ConvertD2N {
    *
    * @param dataV the dataDDS has been parsed into this dodsV
    * @return the data as as Array
-   * @throws IOException
-   * @throws DAP2Exception
+   * @throws IOException on io error
+   * @throws DAP2Exception on bad
    */
   public Array convert(DodsV dataV) throws IOException, DAP2Exception {
 
@@ -230,8 +228,7 @@ public class ConvertD2N {
 
   private ArrayStructure makeArrayStructure(DodsV dataV) {
     StructureMembers members = new StructureMembers( dataV.getNetcdfShortName());
-    for (int i = 0; i < dataV.children.size(); i++) {
-      DodsV dodsV = (DodsV) dataV.children.get(i);
+    for (DodsV dodsV : dataV.children) {
       StructureMembers.Member m = new StructureMembers.Member(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
       members.addMember(m);
 
@@ -239,13 +236,13 @@ public class ConvertD2N {
       if ((dodsV.bt instanceof DStructure) || (dodsV.bt instanceof DGrid)) {
         data = makeArrayStructure(dodsV);
       } else if (dodsV.bt instanceof DSequence) {
-         data = makeArrayNestedSequence(dodsV);
-         m.setShape( data.getShape()); // fix the shape based on the actual data  LOOK
+        data = makeArrayNestedSequence(dodsV);
+        m.setShape(data.getShape()); // fix the shape based on the actual data  LOOK
       } else {
         data = Array.factory(dodsV.getDataType(), dodsV.getShapeAll());
       }
-      m.setDataObject( data);
-      m.setDataObject2( data.getIndexIterator()); // for setting values
+      m.setDataObject(data);
+      m.setDataObject2(data.getIndexIterator()); // for setting values
     }
 
     return new ArrayStructureMA( members, dataV.getShapeAll());
@@ -255,8 +252,7 @@ public class ConvertD2N {
 
     // make the members
     StructureMembers members = new StructureMembers(dataV.getName());
-    for (int i = 0; i < dataV.children.size(); i++) {
-      DodsV dodsV = (DodsV) dataV.children.get(i);
+    for (DodsV dodsV : dataV.children) {
       StructureMembers.Member m = new StructureMembers.Member(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
       members.addMember(m);
     }
@@ -283,11 +279,10 @@ public class ConvertD2N {
     aseq.finish();
 
     // ArraySequence makes the inner data arrays; now make iterators for them
-    List memberList = members.getMembers();
-    for (int i = 0; i < memberList.size(); i++) {
-      StructureMembers.Member m = (StructureMembers.Member) memberList.get(i);
+    List<StructureMembers.Member> memberList = members.getMembers();
+    for (StructureMembers.Member m : memberList) {
       Array data = (Array) m.getDataObject();
-      m.setDataObject2( data.getIndexIterator()); // for setting values
+      m.setDataObject2(data.getIndexIterator()); // for setting values
     }
 
     return aseq;
@@ -296,20 +291,19 @@ public class ConvertD2N {
   // dataV is an array of DStructure: DArray with BaseTypePrimitiveVector, whose values are DStructure
   private void iconvertDataStructureArray(DVector darray, StructureMembers members) throws DAP2Exception {
 
-    List mlist = members.getMembers();
-    for (int i = 0; i < mlist.size(); i++) {
+    List<StructureMembers.Member> mlist = members.getMembers();
+    for (StructureMembers.Member member : mlist) {
 
       // get the Array for this member
-      StructureMembers.Member member = (StructureMembers.Member) mlist.get(i);
       String name = member.getName();
       IndexIterator ii = (IndexIterator) member.getDataObject2();
 
       // loop over each row, fill up the data
       BaseTypePrimitiveVector pv = (BaseTypePrimitiveVector) darray.getPrimitiveVector();
-      for (int row=0; row < pv.getLength(); row++) {
+      for (int row = 0; row < pv.getLength(); row++) {
         DStructure ds_data = (DStructure) pv.getValue(row);
-        BaseType member_data = ds_data.getVariable( name);
-        iconvertData( member_data, ii);
+        BaseType member_data = ds_data.getVariable(name);
+        iconvertData(member_data, ii);
       }
     }
   }
@@ -327,22 +321,21 @@ public class ConvertD2N {
   }
 
   private void iconvertDataStructure(DConstructor ds, StructureMembers members) throws DAP2Exception {
-    List mlist = members.getMembers();
-    for (int i = 0; i < mlist.size(); i++) {
+    List<StructureMembers.Member> mlist = members.getMembers();
+    for (StructureMembers.Member member : mlist) {
 
       // get the Array for this member
-      StructureMembers.Member member = (StructureMembers.Member) mlist.get(i);
       IndexIterator ii = (IndexIterator) member.getDataObject2();
 
       // track down the corresponding DODS member
       String name = member.getName();
       String dodsName = name; // LOOK should be: findDodsName (name);
       if (dodsName == null) {
-        throw new DAP2Exception("Cant find dodsName for member variable "+name);
+        throw new DAP2Exception("Cant find dodsName for member variable " + name);
       }
 
-      BaseType bt = ds.getVariable( dodsName);
-      iconvertData( bt, ii); // recursively fill up this data array
+      BaseType bt = ds.getVariable(dodsName);
+      iconvertData(bt, ii); // recursively fill up this data array
     }
   }
 
@@ -551,8 +544,8 @@ public class ConvertD2N {
   private Array convertStringArray(Array data, Variable ncVar) {
     String[] storage = (String[]) data.getStorage();
     int max_len = 0;
-    for (int i=0; i<storage.length; i++) {
-      max_len = Math.max( max_len, storage[i].length());
+    for (String s : storage) {
+      max_len = Math.max(max_len, s.length());
     }
     if (max_len > 1) return data;
 
@@ -560,9 +553,9 @@ public class ConvertD2N {
     int count = 0;
     int n = (int) data.getSize();
     char[] charStorage = new char[n];
-    for (int i=0; i<storage.length; i++) {
-      if (storage[i].length() > 0)
-        charStorage[count++] =  storage[i].charAt(0);
+    for (String s : storage) {
+      if (s.length() > 0)
+        charStorage[count++] = s.charAt(0);
     }
 
     // change it to a char (!!). Since its no longer a String, this code wont get called again for this variable.
@@ -603,7 +596,7 @@ public class ConvertD2N {
     return Array.factory( DataType.STRING.getPrimitiveClassType(), newShape, newStorage); */
   }
 
-  private Array convertStringArrayToChar(DArray dv, Variable ncVar, List section) {
+  private Array convertStringArrayToChar(DArray dv, Variable ncVar, List<Range> section) {
     opendap.dap.PrimitiveVector pv = dv.getPrimitiveVector();
     BaseTypePrimitiveVector btpv = (BaseTypePrimitiveVector) pv;
     int nStrings = btpv.getLength();

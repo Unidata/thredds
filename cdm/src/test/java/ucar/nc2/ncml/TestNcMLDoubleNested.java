@@ -65,7 +65,7 @@ public class TestNcMLDoubleNested extends TestCase {
     assert time.getShape()[0] == 59;
     assert time.getDataType() == DataType.INT;
 
-    assert time.getCoordinateDimension().equals(ncfile.findDimension("time"));
+    assert time.getDimension(0).equals(ncfile.findDimension("time"));
 
     try {
       Array data = time.read();
@@ -98,7 +98,7 @@ public class TestNcMLDoubleNested extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.DOUBLE;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
 
     assert v.getDimension(0).equals(ncfile.findDimension("time"));
     assert v.getDimension(1).equals(ncfile.findDimension("lat"));
@@ -141,7 +141,7 @@ public class TestNcMLDoubleNested extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.DOUBLE;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
 
     assert v.getDimension(0).equals(ncfile.findDimension("time"));
     assert v.getDimension(1).equals(ncfile.findDimension("lat"));

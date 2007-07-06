@@ -176,7 +176,7 @@ public class Float10TrajectoryObsDataset extends MultiTrajectoryObsDataset imple
 
   public Float10TrajectoryObsDataset() {}
 
-  public Float10TrajectoryObsDataset( NetcdfFile ncd ) throws IOException
+  public Float10TrajectoryObsDataset( NetcdfDataset ncd ) throws IOException
   {
     super( ncd);
 

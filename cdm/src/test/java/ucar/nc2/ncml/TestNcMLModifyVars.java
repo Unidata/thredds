@@ -72,7 +72,7 @@ public class TestNcMLModifyVars extends TestCase {
     assert lat.getShape()[0] == 3;
     assert lat.getDataType() == DataType.DOUBLE;
 
-    assert lat.getCoordinateDimension() == null;
+    assert lat.isCoordinateVariable();
     assert !lat.isUnlimited();
 
     assert lat.getDimension(0) == ncfile.findDimension("lat") : lat.getDimension(0);
@@ -104,7 +104,7 @@ public class TestNcMLModifyVars extends TestCase {
 
     assert !lat.isUnlimited();
 
-    assert lat.getCoordinateDimension().equals(ncfile.findDimension("lat")) : lat.getDimension(0);
+    assert lat.getDimension(0).equals(ncfile.findDimension("lat")) : lat.getDimension(0);
 
     Attribute att = lat.findAttribute("units");
     assert null != att;
@@ -145,7 +145,7 @@ public class TestNcMLModifyVars extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.INT;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
     assert v.isUnlimited();
 
     assert v.getDimension(0) == ncfile.findDimension("time");
@@ -265,7 +265,7 @@ public class TestNcMLModifyVars extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.DOUBLE;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
     assert v.isUnlimited();
 
     assert v.getDimension(0) == ncfile.findDimension("time");

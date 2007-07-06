@@ -22,6 +22,7 @@ package ucar.nc2.ncml;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
@@ -61,7 +62,7 @@ public class AggregationExisting extends Aggregation {
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical =  typicalDataset.acquireFile(null);
-    NcMLReader.transferDataset(typical, ncDataset, isNew ? null : new MyReplaceVariableCheck());
+    DatasetConstructor.transferDataset(typical, ncDataset, isNew ? null : new MyReplaceVariableCheck());
 
     // create aggregation dimension
     String dimName = getDimensionName();
@@ -71,9 +72,7 @@ public class AggregationExisting extends Aggregation {
 
     // now we can create the real aggExisting variables
     // all variables with the named aggregation dimension
-    List vars = typical.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
+    for (Variable v : typical.getVariables()) {
       if (v.getRank() < 1)
         continue;
       Dimension d = v.getDimension(0);
@@ -81,9 +80,9 @@ public class AggregationExisting extends Aggregation {
         continue;
 
       VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
-              v.getDimensionsString(), null, null);
-      vagg.setProxyReader(this);
-      NcMLReader.transferVariableAttributes(v, vagg);
+          v.getDimensionsString(), null, null);
+      vagg.setProxyReader2(this);
+      DatasetConstructor.transferVariableAttributes(v, vagg);
 
       ncDataset.removeVariable(null, v.getShortName());
       ncDataset.addVariable(null, vagg);
@@ -145,8 +144,7 @@ public class AggregationExisting extends Aggregation {
         out.print("recheckEvery='" + recheck + "' ");
       out.print(">\n");
 
-      for (int i = 0; i < nestedDatasets.size(); i++) {
-        Dataset dataset = nestedDatasets.get(i);
+      for (Dataset dataset : nestedDatasets) {
         out.print("  <netcdf location='" + dataset.getLocation() + "' ");
         out.print("ncoords='" + dataset.getNcoords(null) + "' ");
 
@@ -184,7 +182,7 @@ public class AggregationExisting extends Aggregation {
 
     Element aggElem;
     try {
-      aggElem = NcMLReader.readAggregation(cacheFile.getPath());
+      aggElem = ucar.nc2.util.xml.Parse.readRootElement(cacheFile.getPath());
     } catch (IOException e) {
       return;
     }
@@ -200,7 +198,8 @@ public class AggregationExisting extends Aggregation {
         try {
           ds.ncoord = Integer.parseInt(ncoordsS);
         } catch (NumberFormatException e) {
-        } // ignore
+          logger.error("bad ncoord attribute on dataset=" + location);
+        }
 
         String coordValue = netcdfElemNested.getAttributeValue("coordValue");
         if (coordValue != null) {
@@ -214,12 +213,11 @@ public class AggregationExisting extends Aggregation {
 
     // find a dataset in the nestedDatasets by location
   private Dataset findDataset(String location) {
-    for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset ds = nestedDatasets.get(i);
-      if (location.equals(ds.getLocation()))
-        return ds;
-    }
-    return null;
+      for (Dataset ds : nestedDatasets) {
+        if (location.equals(ds.getLocation()))
+          return ds;
+      }
+      return null;
   }
 
   // name to use in the DiskCache2 for the persistent XML info.

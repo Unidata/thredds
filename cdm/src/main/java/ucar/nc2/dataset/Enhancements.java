@@ -1,6 +1,5 @@
-// $Id:Enhancements.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,9 +19,6 @@
  */
 package ucar.nc2.dataset;
 
-import ucar.nc2.*;
-import ucar.ma2.DataType;
-
 /**
  * A Variable decorator that handles Coordinates Systems and "standard attributes" and adds them to the object model.
  * Specifically, this:
@@ -34,30 +30,34 @@ import ucar.ma2.DataType;
  * if those "standard attributes" are present.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public interface Enhancements {
 
- /** Get the description of the Variable, or null if none. */
+ /** Get the description of the Variable, or null if none.
+  * @return description of the Variable, or null
+  */
   public String getDescription();
 
-  /** Get the Unit String for the Variable, or null if none. */
+  /** Get the Unit String for the Variable, or null if none.
+   * @return Unit String for the Variable, or null
+   */
   public String getUnitsString();
 
   /**
    * Get the list of Coordinate Systems for this Variable.
    * @return list of type CoordinateSystem; may be empty but not null.
    */
-  public java.util.List getCoordinateSystems();
+  public java.util.List<CoordinateSystem> getCoordinateSystems();
 
-  /** Add a CoordinateSystem to the dataset. */
+  /** Add a CoordinateSystem to the dataset.
+   * @param cs add this Coordinate System
+   */
   public void addCoordinateSystem( CoordinateSystem cs);
 
-  /** Remove a CoordinateSystem from the dataset. */
+  /** Remove a CoordinateSystem from the dataset.
+   * @param cs remove this coordinate system
+   */
   public void removeCoordinateSystem( CoordinateSystem cs);
-
-  /** Get the original variable */
-  // public Variable getOriginalVariable();
 
 }

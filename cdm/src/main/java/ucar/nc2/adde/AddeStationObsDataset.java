@@ -368,10 +368,6 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
       return null;
     }
 
-    public VariableEnhanced getVariable() {
-      return null;
-    }
-
     public double convertScaleOffsetMissing(double value) {
       return value;
     }
@@ -389,12 +385,10 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
       return (double) value;
     }
 
-
-    /** Implement Comparable */
-  public int compareTo(Object o) {
-    VariableSimpleIF vo = (VariableSimpleIF) o;
-    return getName().compareTo( vo.getName());
+  public int compareTo(VariableSimpleIF o) {
+    return getName().compareTo(o.getName());
   }
+
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////

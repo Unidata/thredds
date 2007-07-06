@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,10 +27,9 @@ import java.util.List;
 import java.io.IOException;
 
 /**
- * Forecast Model Run Collection (.
+ * Forecast Model Run Collection
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public interface ForecastModelRunCollection {
 
@@ -39,7 +37,7 @@ public interface ForecastModelRunCollection {
    * Get the list of possible run dates, to be used in getRunTimeDataset().
    * @return List of Date
    */
-  public List getRunDates();
+  public List<Date> getRunDates();
 
    /**
    * Get a NetcdfDataset that has all the data for a model run.
@@ -54,7 +52,7 @@ public interface ForecastModelRunCollection {
    * Get the list of possible forecast dates, to be used in getForecastTimeDataset().
    * @return List of Date
    */
-  public List getForecastDates();
+  public List<Date> getForecastDates();
 
   /**
    * Get a NetcdfDataset that has all the data for a fixed forecast time, across model runs.
@@ -69,7 +67,7 @@ public interface ForecastModelRunCollection {
    * Get the list of possible forecast offsets, to be used in getForecastOffsetDataset().
    * @return List of Double
    */
-  public List getForecastOffsets();
+  public List<Double> getForecastOffsets();
 
   /**
    * Get a NetcdfDataset that has all the data for a fixed forecast offset, across model runs.
@@ -103,7 +101,7 @@ public interface ForecastModelRunCollection {
 
   /** Check if file has changed, and reread metadata if needed.
    * @return true if file was changed.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on io error
    */
   public boolean sync() throws IOException;
 

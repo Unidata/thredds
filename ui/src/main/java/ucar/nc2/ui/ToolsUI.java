@@ -33,8 +33,8 @@ import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.util.*;
+import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.nc2.units.*;
-import ucar.units.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
@@ -741,7 +741,7 @@ public class ToolsUI extends JPanel {
       } */
 
       if (setUseRecordStructure)
-        ncd.addRecordStructure();
+        ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
       return ncd;
 
@@ -763,7 +763,7 @@ public class ToolsUI extends JPanel {
       if (ncfile == null)
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location);
       else if (setUseRecordStructure)
-        ncfile.addRecordStructure();
+        ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     } catch (IOException ioe) {
       String message = ioe.getMessage();
@@ -2777,7 +2777,7 @@ public class ToolsUI extends JPanel {
         try {
           StringBuffer errlog = new StringBuffer();
           FileInputStream fis = new FileInputStream(runtimeConfig);
-          ucar.nc2.util.RuntimeConfigParser.read(fis, errlog);
+          RuntimeConfigParser.read(fis, errlog);
           configRead = true;
           System.out.println(errlog);
         } catch (IOException ioe) {
@@ -2793,7 +2793,7 @@ public class ToolsUI extends JPanel {
         try {
           StringBuffer errlog = new StringBuffer();
           FileInputStream fis = new FileInputStream(filename);
-          ucar.nc2.util.RuntimeConfigParser.read(fis, errlog);
+          RuntimeConfigParser.read(fis, errlog);
           configRead = true;
           System.out.println(errlog);
         } catch (IOException ioe) {

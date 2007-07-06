@@ -1,6 +1,5 @@
-// $Id:Array.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -59,7 +58,6 @@ import java.util.ArrayList;
  * @see IndexIterator
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public abstract class Array {
     public static Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared
@@ -156,6 +154,7 @@ public abstract class Array {
    * @param shape array shape
    * @param storage 1D java array of type classType, except object types like Double.class are mapped to
    *   their corresponding primitive type, eg double.class. So the primitive
+   * @return Array of given  type, shape and storage
    * @exception IllegalArgumentException storage.length != product of shapes
    * @exception ClassCastException wrong storage type
    */
@@ -380,7 +379,7 @@ public abstract class Array {
      * @return the new Array
      */
    public Array section( int [] origin, int [] shape, int[] stride) throws InvalidRangeException {
-    ArrayList ranges = new ArrayList( origin.length);
+    List<Range> ranges = new ArrayList<Range>( origin.length);
     if (stride == null) {
       stride = new int[ origin.length];
       for (int i=0; i<stride.length; i++) stride[i] = 1;
@@ -412,7 +411,7 @@ public abstract class Array {
     * @return the new Array
     */
   public Array sectionNoReduce( int [] origin, int [] shape, int[] stride) throws InvalidRangeException {
-    ArrayList ranges = new ArrayList( origin.length);
+    List<Range> ranges = new ArrayList<Range>( origin.length);
     if (stride == null) {
       stride = new int[ origin.length];
       for (int i=0; i<stride.length; i++) stride[i] = 1;
@@ -476,7 +475,7 @@ public abstract class Array {
     * @return a Java 1D array of type getElementType().
     */
   public Object copyTo1DJavaArray() {
-    Array newA = (Array) copy();
+    Array newA = copy();
     return newA.getStorage();
   }
 

@@ -4,6 +4,7 @@ package ucar.nc2.dt.trajectory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dt.VariableSimpleAdapter;
 import ucar.nc2.dt.*;
@@ -63,7 +64,7 @@ abstract class MultiTrajectoryObsDataset
   protected HashMap trajectoryVarsMap;
 
   public MultiTrajectoryObsDataset() {}
-  public MultiTrajectoryObsDataset( NetcdfFile ncfile)
+  public MultiTrajectoryObsDataset( NetcdfDataset ncfile)
   {
     super( ncfile);
   }
@@ -118,7 +119,7 @@ abstract class MultiTrajectoryObsDataset
 
     if ( this.ncfile.hasUnlimitedDimension() && this.ncfile.getUnlimitedDimension().equals( timeDim))
     {
-      this.ncfile.addRecordStructure();
+      this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       this.recordVar = (Structure) this.ncfile.getRootGroup().findVariable( "record");
     } else {
       this.recordVar = new StructurePseudo( this.ncfile, null, "record", timeDim);

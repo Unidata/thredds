@@ -1,6 +1,5 @@
-// $Id: TimeUnit.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,7 +36,6 @@ import java.util.Calendar;
  * The underlying ucar.units.Unit always has a value of "1.0", ie is a base unit.
  *
  * @author John Caron
- * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 public class TimeUnit extends SimpleUnit {
   private double value;
@@ -79,7 +77,7 @@ public class TimeUnit extends SimpleUnit {
    * Constructor from a value and a unit name.
    * @param value amount of the unit.
    * @param unitString  Time unit string from udunits.
-   * @throws Exception
+   * @throws Exception if parse fails
    */
   public TimeUnit(double value, String unitString) throws Exception {
     this.value = value;
@@ -90,6 +88,7 @@ public class TimeUnit extends SimpleUnit {
 
   /**
    * Copy Constructor.
+   * @param src copy from here
    */
   public TimeUnit( TimeUnit src) {
     this.value = src.getValue();
@@ -101,12 +100,15 @@ public class TimeUnit extends SimpleUnit {
   /** Get the value. */
   public double getValue() { return value; }
 
-  /** Get the factor that converts this value to seconds.
+  /** Get the factor that converts this unit to seconds.
    * getValueInSeconds = factor * value
+   * @return factor that converts this unit to seconds.
    */
   public double getFactor() { return factor; }
 
-  /** Set the value in the original units. */
+  /** Set the value in the original units.
+   * @param value set value, must be in units of this
+   */
   public void setValue( double value) {
     this.value = value;
   }
@@ -119,12 +121,17 @@ public class TimeUnit extends SimpleUnit {
     return Format.d(value, 5) + " "+unitString;
   }
 
-  /** Get the time duration in seconds. */
+  /** Get the time duration in seconds.
+   * @return get current value in units of seconds
+   */
   public double getValueInSeconds() {
     return factor * value;
   }
 
-  /** Get the time duration in seconds of the specified value. */
+  /** Get the time duration in seconds of the specified value.
+   * @param value convert this value, must be in units of this
+   * @return get the value in units of seconds
+   */
   public double getValueInSeconds(double value) {
     return factor * value;
   }

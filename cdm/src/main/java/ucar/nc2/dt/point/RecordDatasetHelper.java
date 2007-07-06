@@ -1,6 +1,5 @@
-// $Id:RecordDatasetHelper.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,6 +21,8 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
@@ -40,18 +41,17 @@ import java.util.*;
  * Helper class for using the netcdf-3 record dimension. Can be used for PointObs or StationObs.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class RecordDatasetHelper {
-  protected NetcdfFile ncfile;
+  protected NetcdfDataset ncfile;
   protected String obsTimeVName, nomTimeVName;
   protected String stnIdVName, stnNameVName, stnDescVName;
   protected String latVName, lonVName, altVName;
   protected DataType stationIdType;
 
   protected HashMap stnHash;
-  protected Structure recordVar;
+  protected StructureDS recordVar;
   protected Dimension obsDim;
 
   protected LatLonRect boundingBox;
@@ -72,11 +72,11 @@ public class RecordDatasetHelper {
    * @param nomTimeVName nominal time variable name (may be null)
    * @throws IllegalArgumentException if ncfile has no unlimited dimension.
    */
-  public RecordDatasetHelper(NetcdfFile ncfile, String obsTimeVName, String nomTimeVName, List typedDataVariables) {
+  public RecordDatasetHelper(NetcdfDataset ncfile, String obsTimeVName, String nomTimeVName, List typedDataVariables) {
     this(ncfile, obsTimeVName, nomTimeVName, typedDataVariables, null, null);
   }
 
-  public RecordDatasetHelper( NetcdfFile ncfile, String obsTimeVName, String nomTimeVName, List typedDataVariables,
+  public RecordDatasetHelper( NetcdfDataset ncfile, String obsTimeVName, String nomTimeVName, List typedDataVariables,
           StringBuffer errBuffer )  {
     this( ncfile, obsTimeVName, nomTimeVName, typedDataVariables, null, errBuffer );
   }
@@ -89,7 +89,7 @@ public class RecordDatasetHelper {
    * @param nomTimeVName nominal time variable name (may be null)
    * @throws IllegalArgumentException if ncfile has no unlimited dimension and recDimName is null.
    */
-  public RecordDatasetHelper(NetcdfFile ncfile, String obsTimeVName, String nomTimeVName, List typedDataVariables,
+  public RecordDatasetHelper(NetcdfDataset ncfile, String obsTimeVName, String nomTimeVName, List typedDataVariables,
           String recDimName, StringBuffer errBuffer) {
     this.ncfile = ncfile;
     this.obsTimeVName = obsTimeVName;
@@ -99,8 +99,8 @@ public class RecordDatasetHelper {
     // check if we already have a structure vs if we have to add it.
 
     if (this.ncfile.hasUnlimitedDimension()) {
-      this.ncfile.addRecordStructure();
-      this.recordVar = (Structure) this.ncfile.getRootGroup().findVariable("record");
+      this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      this.recordVar = (StructureDS) this.ncfile.getRootGroup().findVariable("record");
       this.obsDim = ncfile.getUnlimitedDimension();
 
     } else {
@@ -108,20 +108,19 @@ public class RecordDatasetHelper {
         throw new IllegalArgumentException("File <" + this.ncfile.getLocation() +
                 "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
       this.obsDim = this.ncfile.getRootGroup().findDimension(recDimName);
-      this.recordVar = new StructurePseudo(this.ncfile, null, "record", obsDim);
+      this.recordVar = new StructureDS( null, new StructurePseudo(this.ncfile, null, "record", obsDim), false);
     }
 
     // create member variables
-    List recordMembers = ncfile.getVariables();
-    for (int i = 0; i < recordMembers.size(); i++) {
-      Variable v = (Variable) recordMembers.get(i);
+    List<Variable> recordMembers = ncfile.getVariables();
+    for (Variable v : recordMembers) {
       if (v == recordVar) continue;
       if (v.isScalar()) continue;
       if (v.getDimension(0) == this.obsDim)
-        typedDataVariables.add( v);
+        typedDataVariables.add(v);
     }
 
-     // need the time units
+    // need the time units
     Variable timeVar = ncfile.findVariable(obsTimeVName);
     String timeUnitString = ncfile.findAttValueIgnoreCase(timeVar, "units", "seconds since 1970-01-01");
     try {
@@ -229,8 +228,11 @@ public class RecordDatasetHelper {
       double lat = sdata.getScalarDouble(latVName);
       double lon = sdata.getScalarDouble(lonVName);
       double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.getScalarDouble(altVName);
-      double obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName) );
-      double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
+      double obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
+      double nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+
+      //double obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName) );
+      //double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
 
       if (hasStations) {
         StationImpl stn = (StationImpl) stnHash.get(stationId);
@@ -333,8 +335,11 @@ public class RecordDatasetHelper {
       this.sdata = sdata;
 
       StructureMembers members = sdata.getStructureMembers();
-      obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
-      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
+      obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
+      nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+
+      // obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
+      //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
 
       double lat = sdata.getScalarDouble(latVName);
       double lon = sdata.getScalarDouble(lonVName);
@@ -396,8 +401,11 @@ public class RecordDatasetHelper {
 
       StructureMembers members = sdata.getStructureMembers();
 
-      obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
-      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
+      obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
+      nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+
+      //obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
+      //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
 
       Object stationId;
       if ( stationIdType == DataType.INT) {
@@ -441,8 +449,11 @@ public class RecordDatasetHelper {
       this.location = station;
       this.sdata = sdata;
       StructureMembers members = sdata.getStructureMembers();
-      obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
-      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
+      obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
+      nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+
+      //obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
+      //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
     }
 
     public Station getStation() { return station; }

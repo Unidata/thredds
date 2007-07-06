@@ -70,7 +70,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
 
   public RafTrajectoryObsDataset() {}
 
-  public RafTrajectoryObsDataset( NetcdfFile ncf) throws IOException
+  public RafTrajectoryObsDataset( NetcdfDataset ncf) throws IOException
   {
     super( ncf );
 
@@ -133,7 +133,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
       }
 
       DateFormatter formatter = new DateFormatter();              
-      String timeUnitsString = "seconds since " + formatter.getStandardDateString( baseTimeDate );
+      String timeUnitsString = "seconds since " + formatter.toDateTimeStringISO( baseTimeDate );
       ncfile.findVariable( timeVarName ).addAttribute( new Attribute( "units", timeUnitsString ) );
 
       // Make sure alt units are "meters" convertible.

@@ -1,6 +1,5 @@
-// $Id:VariableEnhanced.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,15 +19,16 @@
  */
 package ucar.nc2.dataset;
 
-import ucar.nc2.*;
-import ucar.nc2.VariableSimpleIF;
-
 /**
  * Public interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package.
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-public interface VariableEnhanced extends VariableSimpleIF, VariableIF, Enhancements, EnhanceScaleMissing {
+public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, EnhanceScaleMissing {
 
+  public ucar.nc2.Variable getOriginalVariable();
+  public void setOriginalVariable(ucar.nc2.Variable orgVar);
+
+  public ProxyReader2 getProxyReader2();
+  public void setProxyReader2( ProxyReader2 proxyReader2);
 }

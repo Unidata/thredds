@@ -29,7 +29,7 @@ import java.text.ParseException;
  * @author Ethan Davis
  * @since 2004-08-13T13:21:19 MDT
  */
-public class DMSPiosp implements IOServiceProvider
+public class DMSPiosp extends AbstractIOServiceProvider
 {
   private NetcdfFile ncFile = null;
   private ucar.unidata.io.RandomAccessFile raf = null;
@@ -53,12 +53,6 @@ public class DMSPiosp implements IOServiceProvider
   private float[] cachedSatEphemHeading = null;
   private float[] cachedScannerOffset = null;
   private byte[] cachedScanDirection = null;
-
-  public void setSpecial( Object special) {}
-
-  public String getDetailInfo() {
-    return "";
-  }
 
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
   {
@@ -516,11 +510,6 @@ public class DMSPiosp implements IOServiceProvider
       this.raf.close();
     this.header = null;
   }
-
-  public boolean syncExtend() { return false; }
-  public boolean sync() { return false; }
-
-  public String toStringDebug( Object o ) { return null; }
 
   Object readUCharArray1D( int offsetInRecord ) throws IOException
   {

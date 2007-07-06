@@ -52,7 +52,7 @@ public class SequenceHelper {
   protected NetcdfFile ncfile;
   protected DODSNetcdfFile dodsFile;
 
-  protected Structure sequenceOuter, sequenceInner;
+  protected StructureDS sequenceOuter, sequenceInner;
   protected Variable latVar, lonVar, altVar, timeVar;
   protected boolean isProfile;
 
@@ -66,7 +66,7 @@ public class SequenceHelper {
    *    can remove extra
    * @throws IllegalArgumentException if ncfile has no unlimited dimension and recDimName is null.
    */
-  public SequenceHelper(NetcdfDataset ncfile, boolean isProfile, Structure sequenceOuter, Structure sequenceInner, Variable latVar, Variable lonVar, Variable altVar,
+  public SequenceHelper(NetcdfDataset ncfile, boolean isProfile, StructureDS sequenceOuter, StructureDS sequenceInner, Variable latVar, Variable lonVar, Variable altVar,
           Variable timeVar, List typedDataVariables, StringBuffer errBuffer) {
 
     this.ncfile = ncfile;
@@ -118,7 +118,7 @@ public class SequenceHelper {
     return( this.timeUnit );
   }
 
-  private Variable getDODSVariable( Variable v) {
+  /* private Variable getDODSVariable( Variable v) {
     while (true) {
       if ((v instanceof DODSVariable) || (v instanceof DODSStructure))
         return v;
@@ -128,7 +128,7 @@ public class SequenceHelper {
         v = v.getIOVar();
       }
     }
-  }
+  } */
 
   public List getData(CancelTask cancel) throws IOException {
     String CE = sequenceOuter.getName();
@@ -234,18 +234,21 @@ public class SequenceHelper {
       this.recno = recno;
       this.sdata = sdata;
 
-      double lat = sdata.convertScalarDouble(latMember);
-      double lon = sdata.convertScalarDouble(lonMember);
-      StructureData inner = sdata.getScalarStructure(innerMember);
+      double lat = sequenceOuter.convertScalarDouble(sdata, latMember);
+      double lon = sequenceOuter.convertScalarDouble(sdata, lonMember);
 
+      // double lat = sdata.convertScalarDouble(latMember);
+      // double lon = sdata.convertScalarDouble(lonMember);
+
+      StructureData inner = sdata.getScalarStructure(innerMember);
       double alt = 0.0;
 
       if (isProfile) {
-        obsTime = sdata.convertScalarDouble(timeMember);
-        alt = inner.convertScalarDouble(altMember);
+        obsTime = sequenceOuter.convertScalarDouble(sdata, timeMember); // sdata.convertScalarDouble(timeMember);
+        alt = sequenceInner.convertScalarDouble(inner, altMember); // inner.convertScalarDouble(altMember);
       } else {
-        obsTime = inner.convertScalarDouble(timeMember);
-        alt = sdata.convertScalarDouble(altMember);
+        obsTime = sequenceInner.convertScalarDouble(inner, timeMember); // inner.convertScalarDouble(timeMember);
+        alt = sequenceOuter.convertScalarDouble(sdata, altMember); // sdata.convertScalarDouble(altMember);
       }
 
       nomTime = obsTime;

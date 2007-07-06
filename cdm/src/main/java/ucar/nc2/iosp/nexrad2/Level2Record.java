@@ -1,7 +1,5 @@
 /*
- * $Id:Level2Record.java 63 2006-07-12 21:50:51Z edavis $
- *
- * Copyright � 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,7 +22,6 @@
 package ucar.nc2.iosp.nexrad2;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.units.DateUnit;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
 
@@ -44,7 +41,6 @@ import java.util.Date;
  *
  * @author caron
  * @author David Priegnitz
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Level2Record {
 
@@ -413,6 +409,8 @@ public class Level2Record {
 
   /**
    * This method returns the gate size in meters
+   * @param datatype which type of data : REFLECTIVITY, VELOCITY_HI, VELOCITY_LO, SPECTRUM_WIDTH
+   * @return the gate size in meters
    */
   public int getGateSize(int datatype) {
     switch (datatype) {
@@ -429,6 +427,8 @@ public class Level2Record {
 
   /**
    * This method returns the starting gate in meters
+   * @param datatype which type of data : REFLECTIVITY, VELOCITY_HI, VELOCITY_LO, SPECTRUM_WIDTH
+   * @return the starting gate in meters
    */
   public int getGateStart(int datatype) {
     switch (datatype) {
@@ -445,6 +445,8 @@ public class Level2Record {
 
   /**
    * This method returns the number of gates
+   * @param datatype which type of data : REFLECTIVITY, VELOCITY_HI, VELOCITY_LO, SPECTRUM_WIDTH
+   * @return the number of gates
    */
   public int getGateCount(int datatype) {
     switch (datatype) {
@@ -476,10 +478,10 @@ public class Level2Record {
   /**
    * Read data from this record.
    * @param raf read from this file
-   * @param datatype which data type we want
+   * @param datatype which type of data : REFLECTIVITY, VELOCITY_HI, VELOCITY_LO, SPECTRUM_WIDTH
    * @param gateRange handles the possible subset of data to return
    * @param ii put the data here
-   * @throws IOException
+   * @throws IOException on read error
    */
   public void readData(RandomAccessFile raf, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     long offset = message_offset;

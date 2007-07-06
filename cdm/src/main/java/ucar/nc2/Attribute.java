@@ -19,13 +19,16 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
 
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
  * The value can be a one dimensional array of Strings or numeric values.
  * <p/>
- * Attributes are considered immutable : do not change them after they have been constructed.
+ * Attributes are immutable.
  *
  * @author caron
  */
@@ -237,35 +240,6 @@ public class Attribute {
 
 
   ///////////////////////////////////////////////////////////////////////////////
-  // for subclasses
-  protected Attribute() {
-  }
-
-  /**
-   * Constructor. Must also set value
-   *
-   * @param name name of Attribute
-   */
-  public Attribute(String name) {
-    this(name, true);
-  }
-
-  /**
-   * Constructor. Must also set value
-   *
-   * @param name     name of Attribute
-   * @param validate whther to validate the name.
-   */
-  public Attribute(String name, boolean validate) {
-    this.name = name;
-    if (validate) validate(name);
-  }
-
-  private void validate(String name) {
-    if (!NetcdfFile.isValidNetcdfObjectName(name))
-      throw new IllegalArgumentException("Illegal Netcdf Object Name = '" + name + "', should be " +
-              NetcdfFile.getValidNetcdfObjectNamePattern());
-  }
 
   /**
    * Copy constructor
@@ -324,75 +298,6 @@ public class Attribute {
     setValues(values);
   }
 
-  /**
-   * Set the name of the Attribute.
-   *
-   * @param name name of Attribute
-   */
-  public void setName(String name) {
-    this.name = name;
-    //validate(name);
-  }
-
-  /**
-   * Create an Attribute with a String or a 1-dimensional array of primitives.
-   *
-   * @param val value of Attribute
-   * @deprecated use setValues( Array val)
-   */
-  protected void setValueOld(Object val) {
-    if (val instanceof String)
-      setStringValue((String) val);
-    else {
-      int n = java.lang.reflect.Array.getLength(val);
-      int[] shape = new int[]{n};
-      Class elemType = val.getClass().getComponentType();
-      Array vala = Array.factory(elemType, shape, val);
-      setValues(vala);
-    }
-    hashCode = 0;
-  }
-
-  /**
-   * set the value as a String, trimming trailing zeroes
-   *
-   * @param val value of Attribute
-   */
-  public void setStringValue(String val) {
-    // get rid of trailing zeroes
-    int len = val.length();
-    while ((len > 0) && (val.charAt(len - 1) == 0))
-      len--;
-
-    if (len != val.length())
-      val = val.substring(0, len);
-    values = Array.factory(String.class, new int[]{1});
-    values.setObject(values.getIndex(), val);
-    setValues(values);
-  }
-
-  /**
-   * set the values from an Array
-   *
-   * @param arr value of Attribute
-   */
-  public void setValues(Array arr) {
-    if (DataType.getType(arr.getElementType()) == null)
-      throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
-
-    if (arr.getElementType() == char.class) { // turn CHAR into STRING
-      ArrayChar carr = (ArrayChar) arr;
-      arr = carr.make1DStringArray();
-    }
-    if (arr.getRank() != 1)
-      arr = arr.reshape(new int[]{(int) arr.getSize()}); // make sure 1D
-
-    this.values = arr;
-    this.nelems = (int) arr.getSize();
-    this.dataType = DataType.getType(arr.getElementType());
-    ima = values.getIndex();
-    hashCode = 0;
-  }
 
   /**
    * A copy constructor using a ucar.unidata.util.Parameter.
@@ -413,6 +318,106 @@ public class Attribute {
       Array vala = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{n}, values);
       setValues(vala);
     }
+  }
+
+  //////////////////////////////////////////
+  // the following make this mutable, but its restricted to subclasses
+
+
+  /**
+   * Constructor. Must also set value
+   *
+   * @param name name of Attribute
+   */
+  protected Attribute(String name) {
+    this(name, true);
+  }
+
+  /**
+   * Constructor. Must also set value
+   *
+   * @param name     name of Attribute
+   * @param validate whether to validate the name.
+   */
+  protected Attribute(String name, boolean validate) {
+    this.name = name;
+    if (validate) validate(name);
+  }
+
+  private void validate(String name) {
+    if (!NetcdfFile.isValidNetcdfObjectName(name))
+      throw new IllegalArgumentException("Illegal Netcdf Object Name = '" + name + "', should be " +
+              NetcdfFile.getValidNetcdfObjectNamePattern());
+  }
+
+
+  /**
+   * Set the name of the Attribute.
+   * @param name name of Attribute
+   *
+  private void setName(String name) {
+    this.name = name;
+    //validate(name);
+  } */
+
+  /**
+   * Create an Attribute with a String or a 1-dimensional array of primitives.
+   *
+   * @param val value of Attribute
+   * @deprecated use setValues( Array val)
+   *
+  private void setValueOld(Object val) {
+    if (val instanceof String)
+      setStringValue((String) val);
+    else {
+      int n = java.lang.reflect.Array.getLength(val);
+      int[] shape = new int[]{n};
+      Class elemType = val.getClass().getComponentType();
+      Array vala = Array.factory(elemType, shape, val);
+      setValues(vala);
+    }
+    hashCode = 0;
+  } */
+
+  /**
+   * set the value as a String, trimming trailing zeroes
+   *
+   * @param val value of Attribute
+   */
+  private void setStringValue(String val) {
+    // get rid of trailing zeroes
+    int len = val.length();
+    while ((len > 0) && (val.charAt(len - 1) == 0))
+      len--;
+
+    if (len != val.length())
+      val = val.substring(0, len);
+    values = Array.factory(String.class, new int[]{1});
+    values.setObject(values.getIndex(), val);
+    setValues(values);
+  }
+
+  /**
+   * set the values from an Array
+   *
+   * @param arr value of Attribute
+   */
+  protected void setValues(Array arr) {
+    if (DataType.getType(arr.getElementType()) == null)
+      throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
+
+    if (arr.getElementType() == char.class) { // turn CHAR into STRING
+      ArrayChar carr = (ArrayChar) arr;
+      arr = carr.make1DStringArray();
+    }
+    if (arr.getRank() != 1)
+      arr = arr.reshape(new int[]{(int) arr.getSize()}); // make sure 1D
+
+    this.values = arr;
+    this.nelems = (int) arr.getSize();
+    this.dataType = DataType.getType(arr.getElementType());
+    ima = values.getIndex();
+    hashCode = 0;
   }
 
 }

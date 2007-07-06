@@ -100,7 +100,7 @@ public class WriterStationObsDataset {
     writeStationData(stns); // write out the station info
 
     // now write the observations
-    if (!ncfile.addRecordStructure())
+    if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
       throw new IllegalStateException("can't add record variable");
   }
 
@@ -431,7 +431,7 @@ public class WriterStationObsDataset {
     writeStationData(sobsDataset.getStations());
 
     // now write the observations
-    if (!ncfile.addRecordStructure())
+    if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
       throw new IllegalStateException("can't add record variable");
 
     int[] origin = new int[1];

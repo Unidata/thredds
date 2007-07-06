@@ -47,7 +47,7 @@ public class NCdump {
    * @param fileName open this file
    * @param out print to this stream
    * @return true if successful
-   * @throws IOException
+   * @throws IOException on write error
    */
   public static boolean printHeader(String fileName, OutputStream out) throws java.io.IOException {
     return print( fileName, out, false, false, false, false, null, null);
@@ -58,7 +58,7 @@ public class NCdump {
    * @param fileName open this file
    * @param out print to this stream
    * @return true if successful
-   * @throws IOException
+   * @throws IOException on write error
    */
   public static boolean printNcML(String fileName, OutputStream out) throws java.io.IOException {
     return print( fileName, out, false, true, true, false, null, null);
@@ -71,6 +71,7 @@ public class NCdump {
    * @param command command string
    * @param out send output here
    * @return true if successful
+   * @throws IOException on write error
    */
   public static boolean print(String command, OutputStream out) throws java.io.IOException {
     return print( command, out, null);
@@ -84,6 +85,7 @@ public class NCdump {
    * @param out send output here
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
+   * @throws IOException on write error
    */
   public static boolean print(String command, OutputStream out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
 
@@ -124,6 +126,7 @@ public class NCdump {
    * @param out send output here
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
+   * @throws IOException on write error
    */
   public static boolean print(NetcdfFile nc, String command, OutputStream out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
 
@@ -170,7 +173,8 @@ public class NCdump {
    * @param varNames semicolon delimited list of variables whose data should be printed
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws IOException
+   * @throws IOException on write error
+
    */
   public static boolean print(String fileName, OutputStream out, boolean showAll, boolean showCoords,
     boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
@@ -208,7 +212,7 @@ public class NCdump {
    *  Fortran90 like selector: eg varName(1:2,*,2)
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws IOException
+   * @throws IOException on write error
    */
   public static boolean print(NetcdfFile nc, OutputStream out, boolean showAll, boolean showCoords,
       boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
@@ -227,20 +231,16 @@ public class NCdump {
         ps.print(" data:\n");
 
         if (showAll) { // dump all data
-          Iterator vi = nc.getVariables().iterator();
-          while(vi.hasNext()) {
-            Variable v = (Variable) vi.next();
-            printArray( v.read(), v.getName(), ps, ct);
+          for (Variable v : nc.getVariables()) {
+            printArray(v.read(), v.getName(), ps, ct);
             if (ct != null && ct.isCancel()) return false;
           }
         }
 
         else if (showCoords) { // dump coordVars
-          Iterator vi = nc.getVariables().iterator();
-          while(vi.hasNext()) {
-            Variable v = (Variable) vi.next();
-            if (v.getCoordinateDimension() != null)
-              printArray( v.read(), v.getName(), ps, ct);
+          for (Variable v : nc.getVariables()) {
+            if (v.isCoordinateVariable())
+              printArray(v.read(), v.getName(), ps, ct);
             if (ct != null && ct.isCancel()) return false;
           }
         }
@@ -261,7 +261,7 @@ public class NCdump {
                 continue;
               }
               // dont print coord vars if they are already printed
-              if (!showCoords || v.getCoordinateDimension() == null)
+              if (!showCoords || v.isCoordinateVariable())
                 printArray( v.read(), v.getName(), ps, ct);
             }
             if (ct != null && ct.isCancel()) return false;
@@ -303,9 +303,10 @@ public class NCdump {
    * @param variableSection the string to parse, eg "record(12).wind(1:20,:,3)"
    * @return return CEresult which has the equivilent Variable
    * @throws IllegalArgumentException when token is misformed, or variable name doesnt exist in ncfile
+   * @throws ucar.ma2.InvalidRangeException if section does not match variable shape
    *
    * @see ucar.ma2.Range#parseSpec(String sectionSpec)
-   **/
+   */
   public static CEresult parseVariableSection( NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
     StringTokenizer stoke = new StringTokenizer(variableSection, ".");
     String selector = stoke.nextToken();
@@ -314,7 +315,7 @@ public class NCdump {
 
     // parse each selector, find the inner variable
     boolean hasInner = false;
-    ArrayList fullSelection = new ArrayList();
+    List<Range> fullSelection = new ArrayList<Range>();
     Variable innerV = parseVariableSelector(ncfile, selector, fullSelection);
     while (stoke.hasMoreTokens()) {
       selector = stoke.nextToken();
@@ -327,9 +328,9 @@ public class NCdump {
   /** public by accident */
   static public class CEresult {
     public Variable v; // the variable
-    public List ranges; // list of ranges for this variable
+    public List<Range> ranges; // list of ranges for this variable
     public boolean hasInner;
-    CEresult( Variable v, List ranges, boolean hasInner) {
+    CEresult( Variable v, List<Range> ranges, boolean hasInner) {
       this.v = v;
       this.ranges = ranges;
       this.hasInner = hasInner;
@@ -337,7 +338,7 @@ public class NCdump {
   }
 
   // parse variable name and index selector out of the selector String
-  private static Variable parseVariableSelector( Object parent, String selector, ArrayList fullSelection)
+  private static Variable parseVariableSelector( Object parent, String selector, List<Range> fullSelection)
           throws InvalidRangeException {
     String varName, indexSelect = null;
     int pos1 = selector.indexOf('(');
@@ -358,22 +359,20 @@ public class NCdump {
 
     } else if (parent instanceof Structure) {
       Structure s = (Structure) parent;
-      v = s.findVariable(varName);
+      v = s.findVariable(varName); // LOOK
     }
     if (v == null)
       throw new IllegalArgumentException(" cant find variable: "+varName+" in selector="+selector);
 
     // get the selected Ranges, or all, and add to the list
-    List section;
-    if (indexSelect != null)
-      section = Range.parseSpec(indexSelect);
-    else
-      section = v.getRanges(); // all
+    Section section;
+    if (indexSelect != null) {
+      section = new Section(indexSelect);
+      section.setDefaults(v.getShape()); // Check section has no nulls, set from shape array.
+    } else
+      section = new Section(v.getShape()); // all
 
-     // Check section has no nulls, set from shape array. 
-    Range.setDefaults( section, v.shape);
-
-    fullSelection.addAll(section);
+    fullSelection.addAll(section.getRanges());
 
     return v;
   }
@@ -384,7 +383,7 @@ public class NCdump {
    * @param ranges list of Range. Must includes all parent structures. The list be null, meaning use all.
    *   Individual ranges may be null, meaning all for that dimension.
    * @return section specification String.
-   * @throws InvalidRangeException
+   * @throws InvalidRangeException is specified section doesnt match variable shape
    */
   public static String makeSectionString(VariableIF v, List ranges) throws InvalidRangeException {
     StringBuffer sb = new StringBuffer();
@@ -426,10 +425,10 @@ public class NCdump {
    * @param v variable to print
    * @param ct allow task to be cancelled; may be null.
    * @return String result
-   * @throws IOException
+   * @throws IOException on write error
    */
   static public String printVariableData(VariableIF v, ucar.nc2.util.CancelTask ct) throws IOException {
-    Array data = null;
+    Array data;
     try {
       data = v.isMemberOfStructure() ? v.readAllStructures(null, true) : v.read();
     }
@@ -443,11 +442,13 @@ public class NCdump {
   }
 
   /**
-   * Print a section the data of the given Variable.
+   * Print a section of the data of the given Variable.
    * @param v variable to print
+   * @param sectionSpec string specification
    * @param ct allow task to be cancelled; may be null.
-   * @return String result
-   * @throws IOException
+   * @return String result formatted data ouptut
+   * @throws IOException on write error
+   * @throws InvalidRangeException is specified section doesnt match variable shape
    */
   static public String printVariableDataSection(VariableIF v, String sectionSpec, ucar.nc2.util.CancelTask ct) throws IOException, InvalidRangeException {
     Array data = v.read(sectionSpec);
@@ -636,13 +637,12 @@ public class NCdump {
   static private void printStructureData(PrintStream out, StructureData sdata, Indent indent, CancelTask ct) {
     indent.incr();
     //int saveIndent = ilev.getIndentLevel();
-    for (Iterator iter = sdata.getMembers().iterator(); iter.hasNext(); ) {
-      StructureMembers.Member m = (StructureMembers.Member) iter.next();
+    for (StructureMembers.Member m : sdata.getMembers()) {
       Array sdataArray = sdata.getArray(m);
       //ilev.setIndentLevel(saveIndent);
       NCdump.printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct);
       if (ct != null && ct.isCancel()) return;
-   }
+    }
     indent.decr();
   }
 
@@ -688,14 +688,15 @@ public class NCdump {
   // standard NCML writing.
 
   /**
-   * Write the NcML representation.
+   * Write the NcML representation for a file.
    * Note that ucar.nc2.dataset.NcMLWriter has a JDOM implementation, for complete NcML.
    * This method implements only the "core" NcML for plain ole netcdf files.
    *
+   * @param ncfile write NcML for this file
    * @param os write to this Output Stream.
    * @param showCoords show coordinate variable values.
    * @param uri use this for the uri attribute; if null use getLocation(). // ??
-   * @throws IOException
+   * @throws IOException on write error
    */
   static public void writeNcML( NetcdfFile ncfile, java.io.OutputStream os, boolean showCoords, String uri) throws IOException {
      PrintStream out = new PrintStream( os);
@@ -727,11 +728,10 @@ public class NCdump {
     }
     indent.incr();
 
-    List dimList = g.getDimensions();
-    for (int i=0; i<dimList.size(); i++) {
-      Dimension dim = (Dimension) dimList.get(i);
+    List<Dimension> dimList = g.getDimensions();
+    for (Dimension dim : dimList) {
       out.print(indent);
-      out.print("<dimension name='"+StringUtil.quoteXmlAttribute(dim.getName())+"' length='"+dim.getLength()+"'");
+      out.print("<dimension name='" + StringUtil.quoteXmlAttribute(dim.getName()) + "' length='" + dim.getLength() + "'");
       if (dim.isUnlimited())
         out.print(" isUnlimited='true'");
       out.print(" />\n");
@@ -739,23 +739,19 @@ public class NCdump {
     if (dimList.size() > 0)
       out.print("\n");
 
-    List attList = g.getAttributes();
-    Iterator attIter = attList.iterator();
-    while (attIter.hasNext()) {
-      Attribute att = (Attribute) attIter.next();
+    List<Attribute> attList = g.getAttributes();
+    for (Attribute att : attList) {
       writeNcMLAtt(att, out, indent);
     }
     if (attList.size() > 0)
       out.print("\n");
 
-    List varList = g.getVariables();
-    for (int i=0; i<varList.size(); i++) {
-      Variable v = (Variable) varList.get(i);
-
+    List<Variable> varList = g.getVariables();
+    for (Variable v : varList) {
       if (v instanceof Structure) {
-        writeNcMLStructure( (Structure) v, out, indent);
+        writeNcMLStructure((Structure) v, out, indent);
       } else {
-        writeNcMLVariable( v, out, indent, showCoords);
+        writeNcMLVariable(v, out, indent, showCoords);
       }
     }
 
@@ -787,19 +783,16 @@ public class NCdump {
 
     indent.incr();
 
-    List attList = s.getAttributes();
-    Iterator attIter = attList.iterator();
-    while (attIter.hasNext()) {
-      Attribute att = (Attribute) attIter.next();
+    List<Attribute> attList = s.getAttributes();
+    for (Attribute att : attList) {
       writeNcMLAtt(att, out, indent);
     }
     if (attList.size() > 0)
       out.print("\n");
 
-    List varList = s.getVariables();
-    for (int i=0; i<varList.size(); i++) {
-      Variable v = (Variable) varList.get(i);
-      writeNcMLVariable( v, out, indent, false);
+    List<Variable> varList = s.getVariables();
+    for (Variable v : varList) {
+      writeNcMLVariable(v, out, indent, false);
     }
 
     indent.decr();
@@ -822,21 +815,19 @@ public class NCdump {
       boolean closed = false;
 
       // any attributes ?
-      java.util.List atts = v.getAttributes();
+      java.util.List<Attribute> atts = v.getAttributes();
       if (atts.size() > 0) {
         if (!closed) {
            out.print(" >\n");
            closed = true;
         }
-        Iterator iter = atts.iterator();
-        while (iter.hasNext()) {
-          Attribute att = (Attribute) iter.next();
+        for (Attribute att : atts) {
           writeNcMLAtt(att, out, indent);
         }
       }
 
       // print data ?
-      if ((showCoords && v.getCoordinateDimension() != null)) {
+      if ((showCoords && v.isCoordinateVariable())) {
         if (!closed) {
            out.print(" >\n");
            closed = true;
@@ -859,9 +850,9 @@ public class NCdump {
   // LOOK anon dimensions
   static private void writeNcMLDimension( Variable v, PrintStream out) {
     out.print(" shape='");
-    java.util.List dims = v.getDimensions();
+    java.util.List<Dimension> dims = v.getDimensions();
     for (int j = 0; j < dims.size(); j++) {
-      Dimension dim = (Dimension) dims.get(j);
+      Dimension dim = dims.get(j);
       if (j != 0)
         out.print(" ");
       if (dim.isShared())
@@ -872,6 +863,7 @@ public class NCdump {
     out.print("'");
   }
 
+  @SuppressWarnings({"ObjectToString"})
   static private void writeNcMLAtt(Attribute att, PrintStream out, Indent indent) {
     out.print(indent);
     out.print("<attribute name='"+StringUtil.quoteXmlAttribute(att.getName())+"' value='");
@@ -925,7 +917,8 @@ public class NCdump {
    * <li> -v varName1;varName2; : dump specified variable(s)
    * <li> -v varName(0:1,:,12) : dump specified variable section
    * </ul>
-   * Deafult is to dump the header info only.
+   * Default is to dump the header info only.
+   * @param args arguments
    */
   public static void main( String[] args) {
 
@@ -935,9 +928,9 @@ public class NCdump {
     }
 
     StringBuffer sbuff = new StringBuffer();
-    for (int i=0; i<args.length; i++) {
-      sbuff.append( args[i]);
-      sbuff.append( " ");
+    for (String arg : args) {
+      sbuff.append(arg);
+      sbuff.append(" ");
     }
 
     try {

@@ -35,25 +35,15 @@ import java.io.*;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
- * <p> Be sure to close the file when done, best practive is to enclose in a try/finally block:
+ * Immutable after setImmutable is called.
+ * <p> Be sure to close the file when done, best practice is to enclose in a try/finally block:
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
- * ncfile = NetcdfFile.open(fileName);
- * ...
+ *  ncfile = NetcdfFile.open(fileName);
+ *  ...
  * } finally {
- * ncfile.close();
- * }
- * </pre>
- * <p/>
- * <p>Be sure to close the file after opening, eg:
- * <pre>
- *  NetcdfFile ncfile = null;
- * try {
- * ncfile = NetcdfFile.open(fileName);
- * ...
- * } finally {
- * if (null != ncfile) ncfile.close();
+ *  ncfile.close();
  * }
  * </pre>
  * <p/>
@@ -72,6 +62,8 @@ import java.io.*;
  */
 
 public class NetcdfFile {
+  static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
+
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
   static private int default_buffersize = 8092;
@@ -172,8 +164,8 @@ public class NetcdfFile {
     N3header.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
     N3header.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
 
-    H5header.setDebugFlags(debugFlag);
-    H5iosp.setDebugFlags(debugFlag);
+    //H5header.setDebugFlags(debugFlag);  LOOK
+    //H5iosp.setDebugFlags(debugFlag);
   }
 
   /**
@@ -431,8 +423,8 @@ public class NetcdfFile {
     if (N3header.isValidFile(raf)) {
       spi = SPFactory.getServiceProvider();
 
-    } else if (H5header.isValidFile(raf)) {
-      spi = new ucar.nc2.H5iosp();
+    //} else if (H5header.isValidFile(raf)) {
+     // spi = new ucar.nc2.H5iosp();
 
     } else {
       // look for registered providers
@@ -572,13 +564,15 @@ public class NetcdfFile {
   protected String location, id, title, cacheName;
   protected Group rootGroup = new Group(this, null, "");
   protected boolean isClosed = false;
+  private boolean immutable = false;
+
   protected int cacheState = 0; // 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
-  protected ArrayList<Variable> variables;
-  protected ArrayList<Dimension> dimensions;
-  protected ArrayList<Attribute> gattributes;
+  protected List<Variable> variables;
+  protected List<Dimension> dimensions;
+  protected List<Attribute> gattributes;
 
   /**
    * is the dataset already closed?
@@ -677,7 +671,7 @@ public class NetcdfFile {
    * @return List of type Variable.
    */
   public java.util.List<Variable> getVariables() {
-    return new ArrayList<Variable>(variables);
+    return variables;
   }
 
   /**
@@ -714,26 +708,11 @@ public class NetcdfFile {
     while (stoke.hasMoreTokens()) {
       if (!(v instanceof Structure)) return null;
       String name = stoke.nextToken();
-      v = ((Structure) v).findVariable(name);
+      v = ((Structure) v).findVariable(name);  // LOOK fishy
       if (v == null) return null;
     }
     return v;
   }
-
-  /* public Variable findNestedVariable(String[] names) {
-   return findNestedVariable( Arrays.asList( names).iterator());
- }
-
- public Variable findNestedVariable(Iterator names) {
-   if (!names.hasNext()) return null;
-   String name = (String) names.next();
-   Variable nested = findVariable( name);
-   if (nested == null) return null;
-   if (!names.hasNext()) return nested;
-   if (nested.getDataType() != DataType.STRUCTURE) return null;
-   Structure s = (Structure) nested;
-   return s.findNestedVariable( names);
- } */
 
   /**
    * Get the shared Dimensions used in this file.
@@ -747,7 +726,7 @@ public class NetcdfFile {
    * @return List of type Dimension.
    */
   public List<Dimension> getDimensions() {
-    return new ArrayList<Dimension>(dimensions);
+    return immutable ? dimensions : new ArrayList<Dimension>(dimensions);
   }
 
   /**
@@ -792,7 +771,7 @@ public class NetcdfFile {
    * @return List of type Attribute
    */
   public java.util.List<Attribute> getGlobalAttributes() {
-    return new ArrayList<Attribute>(gattributes);
+    return immutable ? gattributes : new ArrayList<Attribute>(gattributes);
   }
 
   /**
@@ -838,18 +817,12 @@ public class NetcdfFile {
     Attribute att;
 
     if (v == null)
-      att = findGlobalAttributeIgnoreCase(attName);
+      att = rootGroup.findAttributeIgnoreCase(attName);
     else
       att = v.findAttributeIgnoreCase(attName);
 
     if ((att != null) && att.isString())
       attValue = att.getStringValue();
-
-    /* if (null == attValue) {                    // not found, look for global attribute
-      att = findGlobalAttributeIgnoreCase(attName);
-      if ((att != null) && att.isString())
-        attValue = att.getStringValue();
-    } */
 
     if (null == attValue)                     // not found, use default
       attValue = defaultValue;
@@ -890,10 +863,12 @@ public class NetcdfFile {
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
     NCdump.CEresult cer = NCdump.parseVariableSection(this, variableSection);
-    if (cer.hasInner)
-      return cer.v.readAllStructures(cer.ranges, flatten);
-    else
-      return cer.v.read(cer.ranges);
+    Section s = new Section(cer.ranges);
+    if (cer.hasInner){
+      return cer.v.readAllStructures(s, flatten);
+    } else {
+      return cer.v.read(s);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -1013,7 +988,7 @@ public class NetcdfFile {
 
   /**
    * Open an existing netcdf file (read only), using the specified iosp.
-   * The ClassLoader for this class is used.
+   * The ClassLoader for the NetcdfFile class is used.
    *
    * @param iospClassName the name of the class implementing IOServiceProvider
    * @param iospParam     parameter to pass to the IOSP
@@ -1024,7 +999,6 @@ public class NetcdfFile {
    * @throws IllegalAccessException if the class or its nullary constructor is not accessible.
    * @throws InstantiationException if the class cannot be instatiated, eg if it has no nullary constructor
    * @throws IOException if I/O error
-   * @see ucar.unidata.io.RandomAccessFile
    */
   protected NetcdfFile(String iospClassName, String iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
           throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
@@ -1069,7 +1043,6 @@ public class NetcdfFile {
 
     try {
       spi.open(raf, this, cancelTask);
-      finish();
     } catch (IOException e) {
       raf.close();
       throw e;
@@ -1079,6 +1052,8 @@ public class NetcdfFile {
       setId(findAttValueIgnoreCase(null, "_Id", null));
     if (title == null)
       setId(findAttValueIgnoreCase(null, "_Title", null));
+
+    finish();
   }
 
   /**
@@ -1088,7 +1063,7 @@ public class NetcdfFile {
   }
 
   /**
-   * Copy constructor: used by NetcdfDataset.
+   * Copy constructor, used by NetcdfDataset.
    * Shares the iosp.
    * @param ncfile copy from here
    */
@@ -1105,6 +1080,7 @@ public class NetcdfFile {
    * @param att add this attribute
    */
   public void addAttribute(Group parent, Attribute att) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     if (parent == null) parent = rootGroup;
     parent.addAttribute(att);
   }
@@ -1115,6 +1091,7 @@ public class NetcdfFile {
    * @param g add this group
    */
   public void addGroup(Group parent, Group g) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     if (parent == null) parent = rootGroup;
     parent.addGroup(g);
   }
@@ -1125,6 +1102,7 @@ public class NetcdfFile {
    * @param d add this Dimension
    */
   public void addDimension(Group parent, Dimension d) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     if (parent == null) parent = rootGroup;
     parent.addDimension(d);
   }
@@ -1136,6 +1114,7 @@ public class NetcdfFile {
    * @return true if found and removed.
    */
   public boolean removeDimension(Group g, String dimName) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     if (g == null) g = rootGroup;
     return g.removeDimension(dimName);
   }
@@ -1146,6 +1125,7 @@ public class NetcdfFile {
    * @param v add this Variable
    */
   public void addVariable(Group g, Variable v) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     if (g == null) g = rootGroup;
     if (v != null) g.addVariable(v);
   }
@@ -1157,6 +1137,7 @@ public class NetcdfFile {
    * @return true is variable found and removed
    */
   public boolean removeVariable(Group g, String varName) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     if (g == null) g = rootGroup;
     return g.removeVariable(varName);
   }
@@ -1170,23 +1151,45 @@ public class NetcdfFile {
     v.addAttribute(att);
   }
 
-  /**
+  /*
    * Add a Variable to the given structure.
    * @param s add to this Structure
    * @param v add this Variable.
-   */
+   * @deprecated use Structure.addMemberVariable(StructureMember)
+   *
   public void addMemberVariable(Structure s, Variable v) {
     if (v != null) s.addMemberVariable(v);
+  } */
+
+  /**
+   * Generic way to send a "message" to the underlying IOSP.
+   * @param message iosp specific message
+   * Special:<ul>
+   * <li>IOSP_MESSAGE_ADD_RECORD_STRUCTURE : tells Netcdf-3 files to make record (unlimited)  variables into a structure
+   * </ul>
+   * @return iosp specific return, may be null
+   */
+  public Object sendIospMessage( Object message) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
+    // special hack-a-whack
+    if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
+      return addRecordStructure(); // returns a Boolean
+    }
+
+    if (spi != null)
+      return spi.sendIospMessage( message);
+    return null;
   }
 
   /**
-   * If there is an unlimited dimension, make all variables that use it into an array of structures.
+   * If there is an unlimited dimension, make all variables that use it into a Structure.
    * A Variable called "record" is added.
    * You can then access these through the record structure.
    *
    * @return true if record was actually added on this call.
    */
-  public boolean addRecordStructure() {
+  private boolean addRecordStructure() {
     if (null != getRootGroup().findVariable("record"))
       return false;
 
@@ -1195,6 +1198,7 @@ public class NetcdfFile {
       N3iosp n3iosp = (N3iosp) spi;
       didit = n3iosp.headerParser.addRecordStructure();
       addedRecordStructure = true;
+      finish(); // LOOK should we wait ???
     }
     return didit;
   }
@@ -1213,38 +1217,11 @@ public class NetcdfFile {
   }
 
   /**
-   * Replace a Dimension in a Variable.
-   *
-   * @param v replace in this Variable.
-   * @param d replace existing dimension of the same name.
-   */
-  protected void replaceDimension(Variable v, Dimension d) {
-    v.replaceDimension(d);
-  }
-
-  /**
-   * Replace the group's list of variables. For copy construction.
-   * @param g replace all the variables in this Group
-   * @param vlist replace with this list of variables.
-   */
-  protected void replaceGroupVariables(Group g, ArrayList<Variable> vlist) {
-    g.variables = vlist;
-  }
-
-  /**
-   * Replace the structure's list of variables. For copy construction.
-   * @param s replace all the variables in this Structure
-   * @param vlist replace with this list of variables.
-   */
-  protected void replaceStructureMembers(Structure s, ArrayList<Variable> vlist) {
-    s.setMemberVariables(vlist);
-  }
-
-  /**
    * Set the globally unique dataset identifier.
    * @param id the id
    */
   public void setId(String id) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     this.id = id;
   }
 
@@ -1253,6 +1230,7 @@ public class NetcdfFile {
    * @param title the title
    */
   public void setTitle(String title) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     this.title = title;
   }
 
@@ -1261,9 +1239,94 @@ public class NetcdfFile {
    * @param location the location
    */
   public void setLocation(String location) {
+    if (immutable) throw new IllegalStateException("Cant modify");
     this.location = location;
   }
+ 
+  /**
+   * Make this immutable.
+   * @return this
+   */
+  public NetcdfFile setImmutable() {
+    if (immutable) return this;
+    immutable = true;
+    setImmutable(rootGroup);
+    variables = Collections.unmodifiableList(variables);
+    dimensions = Collections.unmodifiableList(dimensions);
+    gattributes = Collections.unmodifiableList(gattributes);
+    return this;
+  }
 
+  private void setImmutable(Group g) {
+    for (Variable v : g.variables)
+      v.setImmutable();
+
+    for (Dimension d : g.dimensions)
+      d.setImmutable();
+
+    for (Group nested : g.getGroups())
+      setImmutable(nested);
+
+    g.setImmutable();
+  }
+
+  /**
+   * Completely empty the objects in the netcdf file.
+   * Used for rereading the file on a sync().
+   */
+  public void empty() {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    variables = new ArrayList<Variable>();
+    gattributes = new ArrayList<Attribute>();
+    dimensions = new ArrayList<Dimension>();
+    rootGroup = null; // dorky - need this for following call
+    rootGroup = new Group(this, null, "");
+    addedRecordStructure = false;
+  }
+
+  /**
+   * Finish constructing the object model.
+   * This construsts the "global" variables, attributes and dimensions.
+   * It also looks for coordinate variables.
+   */
+  public void finish() {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    variables = new ArrayList<Variable>();
+    gattributes = new ArrayList<Attribute>();
+    dimensions = new ArrayList<Dimension>();
+    finishGroup(rootGroup);
+  }
+
+  private void finishGroup(Group g) {
+
+    variables.addAll(g.variables);
+    /* for (Variable v : g.variables) {
+      v.calcIsCoordinateVariable();
+    } */
+
+    for (Attribute oldAtt : g.attributes) {
+      String newName = makeFullNameWithString(g, oldAtt.getName());
+      gattributes.add(new Attribute(newName, oldAtt));
+    }
+
+    // LOOK this wont match the variables' dimensions if there are groups
+    for (Dimension oldDim : g.dimensions) {
+      if (oldDim.isShared()) {
+        if (g == rootGroup) {
+          dimensions.add(oldDim);
+        } else {
+          String newName = makeFullNameWithString(g, oldDim.getName());
+          dimensions.add(new Dimension(newName, oldDim) );
+        }
+      }
+    }
+
+    List<Group> groups = g.getGroups();
+    for (Group nested : groups) {
+      finishGroup(nested);
+    }
+
+  }
 
   protected String makeFullNameWithString(Group parent, String name) {
     StringBuffer sbuff = new StringBuffer();
@@ -1297,61 +1360,6 @@ public class NetcdfFile {
     sbuff.append(v.getShortName());
   }
 
-  /**
-   * Finish constructing the object model.
-   * This construsts the "global" variables, attributes and dimensions.
-   * It also looks for coordinate variables.
-   */
-  public void finish() {
-    variables = new ArrayList<Variable>();
-    gattributes = new ArrayList<Attribute>();
-    dimensions = new ArrayList<Dimension>();
-    finishGroup(rootGroup);
-  }
-
-  /**
-   * Completely empty the objects in the netcdf file.
-   * Used for rereading the file on a sync().
-   */
-  public void empty() {
-    variables = new ArrayList<Variable>();
-    gattributes = new ArrayList<Attribute>();
-    dimensions = new ArrayList<Dimension>();
-    rootGroup = null; // dorky - need this for following call
-    rootGroup = new Group(this, null, "");
-    addedRecordStructure = false;
-  }
-
-  private void finishGroup(Group g) {
-
-    variables.addAll(g.variables);
-    for (Variable v : g.variables) {
-       v.calcIsCoordinateVariable();
-    }
-
-    for (Attribute oldAtt : g.attributes) {
-      String newName = makeFullNameWithString(g, oldAtt.getName());
-      gattributes.add(new Attribute(newName, oldAtt));
-    }
-
-    // LOOK this wont match the variables' dimensions if there are groups
-    for (Dimension oldDim : g.dimensions) {
-      if (oldDim.isShared()) {
-        if (g == rootGroup) {
-          dimensions.add(oldDim);
-        } else {
-          String newName = makeFullNameWithString(g, oldDim.getName());
-          dimensions.add(new Dimension(newName, oldDim));
-        }
-      }
-    }
-
-    List<Group> groups = g.getGroups();
-    for (Group nested : groups) {
-      finishGroup(nested);
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////
   // Service Provider calls
   // ALL IO eventually goes through these calls.
@@ -1363,17 +1371,19 @@ public class NetcdfFile {
 
   /**
    * do not call this directly, use Variable.read() !!
+   * Ranges must be filled (no nulls)
    */
-  public Array readData(ucar.nc2.Variable v, List section) throws IOException, InvalidRangeException {
-    return spi.readData(v, section);
+  protected Array readData(ucar.nc2.Variable v, List<Range> ranges) throws IOException, InvalidRangeException {
+    return spi.readData(v, ranges);
   }
 
   // this is for reading variables that are members of structures
   /**
    * do not call this directly, use Variable.readSection() !!
+   * Ranges must be filled (no nulls)
    */
-  public Array readMemberData(ucar.nc2.Variable v, List section, boolean flatten) throws IOException, InvalidRangeException {
-    Array result = spi.readNestedData(v, section);
+  protected Array readMemberData(ucar.nc2.Variable v, List<Range> ranges, boolean flatten) throws IOException, InvalidRangeException {
+    Array result = spi.readNestedData(v, ranges);
 
     if (flatten) return result;
 
@@ -1384,30 +1394,34 @@ public class NetcdfFile {
     member.setDataObject(result);
 
     // LOOK this only works for a single structure, what about nested ?
-    Range outerRange = (Range) section.get(0);
+    // LOOK what about scalar, rank - 0 ??
+    Range outerRange = ranges.get(0);
     return new ArrayStructureMA(members, new int[]{outerRange.length()});
   }
 
   /**
-   * Debug info for this object.
+   * Access to iosp debugging info.
+   * @param o must be a Variable, Dimension, Attribute, or Group
+   * @return debug info for this object.
    */
   protected String toStringDebug(Object o) {
     return (spi == null) ? "" : spi.toStringDebug(o);
   }
 
   /**
-   * Show debug / underlying implementation details
+   * Access to iosp debugging info.
+   * @return debug / underlying implementation details
    */
   public String getDetailInfo() {
     StringBuffer sbuff = new StringBuffer(5000);
-    sbuff.append("NetcdfFile location= " + getLocation() + "\n");
-    sbuff.append("  title= " + getTitle() + "\n");
-    sbuff.append("  id= " + getId() + "\n");
+    sbuff.append("NetcdfFile location= ").append(getLocation()).append("\n");
+    sbuff.append("  title= ").append(getTitle()).append("\n");
+    sbuff.append("  id= ").append(getId()).append("\n");
 
     if (spi == null) {
       sbuff.append("  has no iosp!\n");
     } else {
-      sbuff.append("  iosp= " + spi.getClass().getName() + "\n\n");
+      sbuff.append("  iosp= ").append(spi.getClass().getName()).append("\n\n");
       sbuff.append(spi.getDetailInfo());
     }
 

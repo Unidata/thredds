@@ -1,6 +1,5 @@
-// $Id:NetcdfDataset.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,13 +23,14 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLGWriter;
 
 // factories for remote access
 import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.thredds.ThreddsDataFactory;
+
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -40,7 +40,7 @@ import java.util.*;
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
  * scale and offset, and explicit support for Coordinate Systems.
- * A NetcdfDataset either wraps a NetcdfFile, or is defined by an NcML document.
+ * A NetcdfDataset wraps a NetcdfFile, or is defined by an NcML document.
  *
  * <p> Be sure to close the dataset when done, best practice is to enclose in a try/finally block:
   <pre>
@@ -54,7 +54,6 @@ import java.util.*;
   </pre>
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see ucar.nc2.NetcdfFile
  */
 
@@ -84,6 +83,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Set whether to use NaNs for missing values, for efficiency
+   * @param b true if want to replace missing values with NaNs (default true)
    */
   static public void setUseNaNs(boolean b) {
     useNaNs = b;
@@ -91,6 +91,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Get whether to use NaNs for missing values, for efficiency
+   * @return whether to use NaNs for missing values, for efficiency
    */
   static public boolean getUseNaNs() {
     return useNaNs;
@@ -98,6 +99,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Set if _FillValue attribute is considered isMissing()
+   * @param b true if _FillValue are missing (default true)
    */
   static public void setFillValueIsMissing(boolean b) {
     fillValueIsMissing = b;
@@ -105,6 +107,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Get if _FillValue attribute is considered isMissing()
+   * @return if _FillValue attribute is considered isMissing()
    */
   static public boolean getFillValueIsMissing() {
     return fillValueIsMissing;
@@ -112,6 +115,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Set if valid_range attribute is considered isMissing()
+   * @param b true if valid_range are missing (default true)
    */
   static public void setInvalidDataIsMissing(boolean b) {
     invalidDataIsMissing = b;
@@ -119,6 +123,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
    /**
    * Get if valid_range attribute is considered isMissing()
+   * @return if valid_range attribute is considered isMissing()
    */
    static public boolean getInvalidDataIsMissing() {
     return invalidDataIsMissing;
@@ -126,6 +131,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Set if missing_data attribute is considered isMissing()
+   * @param b true if missing_data are missing (default true)
    */
   static public void setMissingDataIsMissing(boolean b) {
     missingDataIsMissing = b;
@@ -133,6 +139,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Get if missing_data attribute is considered isMissing()
+   * @return if missing_data attribute is considered isMissing()
    */
   static public boolean getMissingDataIsMissing() {
     return missingDataIsMissing;
@@ -144,6 +151,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param location location of file
    * @return NetcdfDataset object
    * @see #openDataset(String location, boolean enhance,  ucar.nc2.util.CancelTask cancelTask)
+   * @throws java.io.IOException on read error
    */
   static public NetcdfDataset openDataset(String location) throws IOException {
     return openDataset(location, true, null);
@@ -156,6 +164,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param enhance    if true, process scale/offset/missing and add Coordinate Systems
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfDataset object
+   * @throws java.io.IOException on read error
    */
   static public NetcdfDataset openDataset(String location, boolean enhance, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return openDataset(location, enhance, -1, cancelTask, null);
@@ -170,6 +179,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param  cancelTask allow task to be cancelled; may be null.
    * @param  spiObject sent to iosp.setSpecial() if not null
    * @return NetcdfDataset object
+   * @throws java.io.IOException on read error
    */
   static public NetcdfDataset openDataset(String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     NetcdfFile ncfile = openFile(location, buffer_size, cancelTask, spiObject);
@@ -185,11 +195,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private void enhance(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    List vars = ds.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      if (v instanceof VariableDS) // LOOK : should StructureDS get enhanced ???
-       ((VariableDS)v).enhance();
+    for (Variable v : ds.getVariables()) {
+      if (v instanceof VariableDS)
+        ((VariableDS) v).enhance();
+      else if (v instanceof StructureDS)
+        ((StructureDS) v).enhance();
+
+      if (cancelTask.isCancel()) return;
     }
     ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
     ds.finish(); // recalc the global lists
@@ -200,7 +212,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Same as openDataset, but file is acquired through the NetcdfFileCache, and its always enhanced.
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    *
-   * @see #openDataset for meaning of parameters
+   * @param location   location of file
+   * @param  cancelTask allow task to be cancelled; may be null.
+   * @return NetcdfDataset object
+   * @throws java.io.IOException on read error
    */
   static public NetcdfDataset acquireDataset(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     NetcdfFile ncfile = acquireFile(location, cancelTask);
@@ -223,7 +238,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * <li> DODS file is acquired through NetcdfFileCache with factory
    * <li> NcML file is acquired through NetcdfFileCache with factory, underlying file is not acquired
    * </ol>
-   * @see #openFile
+   * @param location   location of file
+   * @param  cancelTask allow task to be cancelled; may be null.
+   * @return NetcdfFile object
+   * @throws java.io.IOException on read error
    */
   static public NetcdfFile acquireFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     if (location == null)
@@ -274,7 +292,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     * @param location location of dataset.
     * @param cancelTask use to allow task to be cancelled; may be null.
     * @return NetcdfFile object
-    * @throws IOException
+    * @throws java.io.IOException on read error
     */
    public static NetcdfFile openFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
      return openFile(location, -1, cancelTask, null);
@@ -284,8 +302,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Factory method for opening a NetcdfFile through the netCDF API. May be any kind of file that
    * can be read through the netCDF API, including OpenDAP and NcML.
    * <p/>
-   * <p> This does not necessarily turn it into a NetcdfDataset (it may), use NetcdfDataset.open()
-   * method for that. It definitely does not add coordinate systems
+   * <p> This does not necessarily return a NetcdfDataset, or enhance the dataset; use NetcdfDataset.openDataset() method for that.
    *
    * @param location location of dataset. This may be a
    *  <ol>
@@ -294,13 +311,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *    <li>OpenDAP dataset URL (with a dods: or http: prefix).
    *    <li>NcML file or URL if the location ends with ".xml" or ".ncml"
    *    <li>NetCDF file through an HTTP server (http: prefix)
-   *    <li>thredds dataset, see ThreddsDataFactory.openDataset(String location, ...));
+   *    <li>thredds dataset (thredds: prefix), see ThreddsDataFactory.openDataset(String location, ...));
    *  </ol>
    * @param  buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param  cancelTask allow task to be cancelled; may be null.
    * @param  spiObject sent to iosp.setSpecial() if not null
    * @return NetcdfFile object
-   * @throws IOException
+   * @throws java.io.IOException on read error
    */
   public static NetcdfFile openFile(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
@@ -345,7 +362,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * check for existence before essence
+   * Check for existence of dods URL with a HEAD
+   *  LOOK should probably get rid of this, just try getting the dds
    */
   static private boolean isDODS(String location) throws IOException {
     try {
@@ -374,7 +392,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private NetcdfFile openDODS(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     String dodsUri = null;
     try {
-      dodsUri = DODSNetcdfFile.canonicalURL(location);
+      dodsUri = DODSNetcdfFile.canonicalURL(location); // LOOK why canonicalize here, when its done in DODSNetcdfFile ??
       return new DODSNetcdfFile(dodsUri, cancelTask);
     } catch (IOException e) {
       throw new FileNotFoundException("Cant open " + location + " or as DODS " + dodsUri + "\n" + e.getMessage());
@@ -398,9 +416,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private NetcdfFile orgFile = null;
   private boolean isEnhanced;
 
-  private ArrayList coordSys = new ArrayList(); // type CoordinateSystem
-  private ArrayList coordAxes = new ArrayList(); // type CoordinateSystem
-  private ArrayList coordTransforms = new ArrayList(); // type CoordinateTransform
+  private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
+  private List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
+  private List<CoordinateTransform> coordTransforms = new ArrayList<CoordinateTransform>(); // type CoordinateTransform
   private boolean coordSysWereAdded = false;
 
   // If its an aggregation
@@ -421,12 +439,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateSystem; may be empty, not null.
    */
-  public List getCoordinateSystems() {
+  public List<CoordinateSystem> getCoordinateSystems() {
     return coordSys;
   }
 
   /**
-   * Get whether the dataset was enhanced.
+   * @return whether the dataset was enhanced.
    */
   public boolean isEnhanced() {
     return isEnhanced;
@@ -437,7 +455,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateTransform; may be empty, not null.
    */
-  public List getCoordinateTransforms() {
+  public List<CoordinateTransform> getCoordinateTransforms() {
     return coordTransforms;
   }
 
@@ -446,12 +464,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return list of type CoordinateAxis; may be empty, not null.
    */
-  public List getCoordinateAxes() {
+  public List<CoordinateAxis> getCoordinateAxes() {
     return coordAxes;
   }
 
   /**
-   * Has Coordinate System metadata been added.
+   * @return if Coordinate System metadata been added.
    */
   public boolean getCoordSysWereAdded() {
     return coordSysWereAdded;
@@ -459,14 +477,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Set whether Coordinate System metadata has been added.
-   * If false, empty coordSys, coordAxes, coordTransforms
+   * @param coordSysWereAdded If false, empty coordSys, coordAxes, coordTransforms
    */
   public void setCoordSysWereAdded(boolean coordSysWereAdded) {
     this.coordSysWereAdded = coordSysWereAdded;
     if (!coordSysWereAdded) {
-      coordSys = new ArrayList();
-      coordAxes = new ArrayList();
-      coordTransforms = new ArrayList();
+      coordSys = new ArrayList<CoordinateSystem>();
+      coordAxes = new ArrayList<CoordinateAxis>();
+      coordTransforms = new ArrayList<CoordinateTransform>();
     }
   }
 
@@ -478,8 +496,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public CoordinateAxis findCoordinateAxis(String fullName) {
     if (fullName == null) return null;
-    for (int i = 0; i < coordAxes.size(); i++) {
-      CoordinateAxis v = (CoordinateAxis) coordAxes.get(i);
+    for (CoordinateAxis v : coordAxes) {
       if (fullName.equals(v.getName()))
         return v;
     }
@@ -494,8 +511,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public CoordinateSystem findCoordinateSystem(String name) {
     if (name == null) return null;
-    for (int i = 0; i < coordSys.size(); i++) {
-      CoordinateSystem v = (CoordinateSystem) coordSys.get(i);
+    for (CoordinateSystem v : coordSys) {
       if (name.equals(v.getName()))
         return v;
     }
@@ -510,8 +526,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public CoordinateTransform findCoordinateTransform(String name) {
     if (name == null) return null;
-    for (int i = 0; i < coordTransforms.size(); i++) {
-      CoordinateTransform v = (CoordinateTransform) coordTransforms.get(i);
+    for (CoordinateTransform v : coordTransforms) {
       if (name.equals(v.getName()))
         return v;
     }
@@ -578,9 +593,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         Dimension udim = getUnlimitedDimension();
         udim.setLength(newLength);
 
-        List vars = getVariables();
-        for (Iterator i = vars.iterator(); i.hasNext();) {
-          Variable v = (Variable) i.next();
+        for (Variable v : getVariables()) {
           if (v.isUnlimited()) // set it in all of the record variables
             v.setDimensions(v.getDimensions());
         }
@@ -606,9 +619,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Write the NcML-G representation.
    *
    * @param os         write to this Output Stream.
-   * @param showCoords
+   * @param showCoords shoe the values of coordinate axes
    * @param uri        use this for the uri attribute; if null use getLocation().
-   * @throws IOException
+   * @throws IOException on write error
    */
   public void writeNcMLG(java.io.OutputStream os, boolean showCoords, String uri) throws IOException {
     new NcMLGWriter().writeXML(this, os, showCoords, uri);
@@ -621,17 +634,19 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * You must not use the underlying NetcdfFile after this call.
    *
    * @param ncfile NetcdfFile to transform.
+   * @throws java.io.IOException on read error
    */
   public NetcdfDataset(NetcdfFile ncfile) throws IOException {
     this(ncfile, true);
   }
 
   /**
-   * Transform a NetcdfFile into a NetcdfDataset, optionally add Coordinates.
+   * Transform a NetcdfFile into a NetcdfDataset, optionally enhance.
    * You must not use the underlying NetcdfFile after this call.
    *
-   * @param ncfile  NetcdfFile to transform.
+   * @param ncfile  NetcdfFile to transform, do not use independently after this.
    * @param enhance if true, process scale/offset/missing and add Coordinate Systems
+   * @throws java.io.IOException on read error
    */
   public NetcdfDataset(NetcdfFile ncfile, boolean enhance) throws IOException {
     super(ncfile);
@@ -648,27 +663,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   private void convertGroup(Group g, Group from) {
-    List dims = from.getDimensions();
-    for (int i = 0; i < dims.size(); i++) {
-      Dimension d = (Dimension) dims.get(i);
+    for (Dimension d : from.getDimensions())
       g.addDimension(d);
-    }
 
-    List atts = from.getAttributes();
-    for (int i = 0; i < atts.size(); i++) {
-      Attribute a = (Attribute) atts.get(i);
+    for (Attribute a : from.getAttributes())
       g.addAttribute(a);
-    }
 
-    List vars = from.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-      g.addVariable(convertVariable(g, v));
-    }
+    for (Variable v : from.getVariables())
+      g.addVariable( convertVariable(g, v));
 
-    List groups = from.getGroups();
-    for (int i = 0; i < groups.size(); i++) {
-      Group nested = (Group) groups.get(i);
+    for (Group nested : from.getGroups()) {
       Group nnested = new Group(this, g, nested.getShortName());
       g.addGroup(nnested);
       convertGroup(nnested, nested);
@@ -690,10 +694,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // We do this when wrapping a netcdfFile, or when adding the record Structure.
   private void convertStructure(Group g, Structure newStructure) {
     Variable newVar;
-    ArrayList newList = new ArrayList();
-    for (Iterator iter = newStructure.getVariables().iterator(); iter.hasNext();) {
-      Variable v = (Variable) iter.next();
-
+    ArrayList<Variable> newList = new ArrayList<Variable>();
+    for (Variable v : newStructure.getVariables()) {
       if (v instanceof Structure) {
         newVar = new StructureDS(g, (Structure) v, false);
         convertStructure(g, (Structure) newVar);
@@ -703,7 +705,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       newList.add(newVar);
     }
 
-    replaceStructureMembers(newStructure, newList);
+    // replaceStructureMembers(newStructure, newList);
+    newStructure.setMemberVariables( newList);
   }
 
   //////////////////////////////////////
@@ -720,7 +723,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (null != this.orgFile.getRootGroup().findVariable("record"))
       return false;
 
-    boolean didit = this.orgFile.addRecordStructure();
+    boolean didit = (Boolean) this.orgFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     if (didit) {
       Group root = getRootGroup();
       Structure record = (Structure) this.orgFile.findVariable("record");
@@ -740,127 +743,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return didit;
   }
 
-  /** CDL-formatted string representation
-   public String toString() {
-   ByteArrayOutputStream ba = new ByteArrayOutputStream(1000);
-   PrintStream out = new PrintStream( ba);
-   toStringStart(out);
-
-   out.print(" data:\n");
-
-   // loop over variables
-   Iterator iterVar = getVariables().iterator();
-   while (iterVar.hasNext()) {
-   Variable v = (Variable) iterVar.next();
-   if (!(v instanceof Variable)) continue;
-   Variable vds = (Variable) v;
-   if (!vds.isMetadata()) continue;
-   // only the ones with metadata
-
-   out.print("    "+v.getName()+" = ");
-   if (vds.isRegular()) {
-   out.print(vds.getStart()+" start  "+vds.getIncrement()+" increment  "+vds.getSize()+" npts");
-   } else {
-   Array a = null;
-   try {
-   a = v.read();
-   } catch (IOException ioe) {
-   continue;
-   }
-
-   if (a instanceof ArrayChar) {
-   //strings
-   ArrayChar dataC = (ArrayChar) a;
-   out.print( "\""+dataC.getString(0)+"\"");
-   for (int i=1; i<dataC.getShape()[0]; i++) {
-   out.print(", ");
-   out.print( "\""+dataC.getString(i)+"\"");
-   }
-   } else {
-   // numbers
-   boolean isRealType = (v.getElementType() == double.class) || (v.getElementType() == float.class);
-   IndexIterator iter = a.getIndexIterator();
-   out.print(isRealType ? iter.getDoubleNext() : iter.getIntNext());
-   while (iter.hasNext()) {
-   out.print(", ");
-   out.print(isRealType ? iter.getDoubleNext() : iter.getIntNext());
-   }
-   }
-   }
-   out.print(";\n");
-   }
-
-   toStringEnd(out);
-   out.flush();
-   return ba.toString();
-   } */
-
-  //////////////////////////////////////////////////////////////////////////////////////
-
-  /* protected void writeNcMLVariable( Variable v, PrintStream out, IndentLevel indent, boolean showCoords) throws IOException {
-    String elemName = (v instanceof CoordinateAxis) ? "coordinateAxis" : "variable";
-
-    out.print(indent);
-    out.print("<"+elemName+" name='"+quote(v.getShortName())+"' type='"+ v.getDataType()+"'");
-
-    // any dimensions (scalers must skip this attribute) ?
-    if (v.getRank() > 0) {
-      writeNcMLDimension( v, out);
-    }
-
-    // any coordinate systems ?
-    java.util.List coordSys = v.getCoordinateSystems();
-      if (coordSys.size() > 0) {
-        out.print("' coordSys='");
-
-        for (int i=0; i<coordSys.size(); i++) {
-          CoordinateAxis axis = (CoordinateAxis) coordSys.get(i);
-          if (i > 0) out.print(" ");
-          out.print(axis.getName());
-        }
-        out.print("'");
-      }
-
-      indent.incr();
-
-      boolean closed = false;
-
-      // any attributes ?
-      java.util.List atts = v.getAttributes();
-      if (atts.size() > 0) {
-        if (!closed) {
-           out.print(" >\n");
-           closed = true;
-        }
-        Iterator iter = atts.iterator();
-        while (iter.hasNext()) {
-          Attribute att = (Attribute) iter.next();
-          writeNcMLAtt(att, out, indent);
-        }
-      }
-
-      // print data ?
-      if ((showCoords && v.isCoordinateVariable())) {
-        if (!closed) {
-           out.print(" >\n");
-           closed = true;
-        }
-        writeNcMLValues(v, out, indent);
-      }
-
-      indent.decr();
-
-      // close variable element
-      if (!closed)
-        out.print(" />\n");
-      else {
-        out.print(indent);
-        out.print("</"+elemName+">\n");
-      }
-
-  } */
-
-
   /**
    * Sort Variables, CoordAxes by name.
    */
@@ -874,7 +756,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     public int compare(Object o1, Object o2) {
       VariableEnhanced v1 = (VariableEnhanced) o1;
       VariableEnhanced v2 = (VariableEnhanced) o2;
-
       List list1 = v1.getCoordinateSystems();
       String cs1 = (list1.size() > 0) ? ((CoordinateSystem) list1.get(0)).getName() : "";
       List list2 = v2.getCoordinateSystems();
@@ -899,10 +780,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Often a NetcdfDataset wraps a NetcdfFile.
-   * For debugging
-   *
-   * @return underlying file, or null if none.
+   * A NetcdfDataset usually wraps a NetcdfFile, where the actual I/O happens.
+   * This is called the "referenced file". CAUTION : this may have been modified in ways that make it
+   *  unsuitable for general use.
+   * @return underlying NetcdfFile, or null if none.
    */
   public NetcdfFile getReferencedFile() {
     return orgFile;
@@ -942,7 +823,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return vds.referencedVariable;
   }
 
-  // if NcML, send I/O to referencedDataset, else to superclass
+  // LOOK if NcML, send I/O to referencedDataset, else to superclass
   public Array readData(ucar.nc2.Variable v, List section) throws IOException, InvalidRangeException  {
     if (useReferencedDataset) {
       openReferencedDataset(null);
@@ -963,14 +844,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   } */
 
-  public Array readMemberData(ucar.nc2.Variable v, List section, boolean flatten) throws IOException, InvalidRangeException {
+  /* public Array readMemberData(ucar.nc2.Variable v, Section section, boolean flatten) throws IOException, InvalidRangeException {
     return orgFile.readMemberData(v, section, flatten);
   }
 
   // if NcML, send I/O to referencedDataset, else to superclass
-  public Array readData(ucar.nc2.Variable v, List section) throws IOException, InvalidRangeException {
+  public Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
     return orgFile.readData(v, section);
-  }
+  } */
 
 
   protected String toStringDebug(Object o) {
@@ -982,6 +863,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Add a CoordinateSystem to the dataset.
+   * @param cs add this CoordinateSystem to the dataset
    */
   public void addCoordinateSystem(CoordinateSystem cs) {
     coordSys.add(cs);
@@ -989,6 +871,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Add a CoordinateTransform to the dataset.
+   * @param ct add this CoordinateTransform to the dataset
    */
   public void addCoordinateTransform(CoordinateTransform ct) {
     if (!coordTransforms.contains(ct))
@@ -996,14 +879,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Add a CoordinateSystem to a variable.
-   */
-  public void addCoordinateSystem(VariableEnhanced v, CoordinateSystem cs) {
-    v.addCoordinateSystem(cs);
-  }
-
-  /**
-   * Add a CoordinateAxis. Also adds it as a variable. Remove any previous with the same name.
+   * Add a CoordinateAxis to the dataset, by turning the VariableDS into a CoordinateAxis (if needed).
+   * Also adds it to the list of variables. Replaces any existing Variable and CoordinateAxis with the same name.
+   * @param v make this VariableDS into a CoordinateAxis
+   * @return the CoordinateAxis
    */
   public CoordinateAxis addCoordinateAxis(VariableDS v) {
     if (v == null) return null;
@@ -1027,31 +906,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return ca;
   }
 
-  /**
-   * Replace a Dimension in a Variable.
-   *
-   * @param v replace in this Variable.
-   * @param d replace existing dimension of the same name.
-   */
-  protected void replaceDimension(Variable v, Dimension d) {
-    super.replaceDimension(v, d);
+  @Override
+  public void addVariable(Group g, Variable v) {
+    if (!(v instanceof VariableDS) && !(v instanceof StructureDS))
+      throw new IllegalArgumentException("NetcdfDataset variables must be VariableEnhanced objects");
+    super.addVariable(g,v);
   }
 
-  /**
-   * Replace the group's list of variables. For copy construction.
+  /** recalc any enhancement info
+   * @throws java.io.IOException on error
    */
-  protected void replaceGroupVariables(Group g, ArrayList vlist) {
-    super.replaceGroupVariables(g, vlist);
-  }
-
-  /**
-   * Replace the structure's list of variables. For copy construction.
-   */
-  protected void replaceStructureMembers(Structure s, ArrayList vlist) {
-    super.replaceStructureMembers(s, vlist);
-  }
-
-  /** recalc any enhancement info */
   public void enhance() throws IOException {
     enhance( this, null);
   }
@@ -1062,6 +926,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Generate the list of values from a starting value and an increment.
    *
+   * @param v for this variable
    * @param npts  number of values
    * @param start starting value
    * @param incr  increment
@@ -1073,10 +938,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Set the data values from a list of Strings.
    *
+   * @param v for this variable
    * @param values list of Strings
-   * @throws NumberFormatException
+   * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
    */
-  public void setValues(Variable v, ArrayList values) throws IllegalArgumentException {
+  public void setValues(Variable v, List<String> values) throws IllegalArgumentException {
     Array data = makeArray(v.getDataType(), values);
 
     if (data.getSize() != v.getSize())
@@ -1097,21 +963,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return resulting 1D array.
    * @throws NumberFormatException if string values not parssable to specified data type
    */
-  static public Array makeArray(DataType dtype, ArrayList stringValues) throws NumberFormatException {
+  static public Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
     Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{stringValues.size()});
     IndexIterator dataI = result.getIndexIterator();
-    Iterator iter = stringValues.iterator();
 
-    while (iter.hasNext()) {
+    for (String s : stringValues) {
       if (dtype == DataType.STRING) {
-        dataI.setObjectNext(iter.next());
+        dataI.setObjectNext(s);
 
       } else if (dtype == DataType.LONG) {
-        long val = Long.parseLong((String) iter.next());
+        long val = Long.parseLong(s);
         dataI.setLongNext(val);
 
       } else {
-        double val = Double.parseDouble((String) iter.next());
+        double val = Double.parseDouble(s);
         dataI.setDoubleNext(val);
       }
     }
@@ -1147,9 +1012,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public String getDetailInfo() {
     StringBuffer sbuff = new StringBuffer(5000);
-    sbuff.append("NetcdfDataset location= "+getLocation()+"\n");
-    sbuff.append("  title= "+getTitle()+"\n");
-    sbuff.append("  id= "+getId()+"\n");
+      sbuff.append("NetcdfDataset location= ").append(getLocation()).append("\n");
+      sbuff.append("  title= ").append(getTitle()).append("\n");
+      sbuff.append("  id= ").append(getId()).append("\n");
 
     if (orgFile == null) {
       sbuff.append("  has no referenced NetcdfFile!\n");
@@ -1163,6 +1028,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Debugging: get the information from parsing
+   * @return NetcdfDatasetInfo object
    */
   public NetcdfDatasetInfo getInfo() {
     if (null == info)
@@ -1173,35 +1039,27 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   void dumpClasses(Group g, PrintStream out) {
 
     out.println("Dimensions:");
-    Iterator s = g.getDimensions().iterator();
-    while (s.hasNext()) {
-      Dimension ds = (Dimension) s.next();
+    for (Dimension ds : g.getDimensions()) {
       out.println("  " + ds.getName() + " " + ds.getClass().getName());
     }
 
     out.println("Atributes:");
-    Iterator atts = g.getAttributes().iterator();
-    while (atts.hasNext()) {
-      Attribute ds = (Attribute) atts.next();
-      out.println("  " + ds.getName() + " " + ds.getClass().getName());
+    for (Attribute a : g.getAttributes()) {
+      out.println("  " + a.getName() + " " + a.getClass().getName());
     }
 
     out.println("Variables:");
     dumpVariables( g.getVariables(), out);
 
     out.println("Groups:");
-    Iterator groups = g.getGroups().iterator();
-    while (groups.hasNext()) {
-      Group nested = (Group) groups.next();
+    for (Group nested : g.getGroups()) {
       out.println("  " + nested.getName() + " " + nested.getClass().getName());
       dumpClasses(nested, out);
     }
   }
 
-  private void dumpVariables(List vars, PrintStream out) {
-    Iterator iter = vars.iterator();
-    while (iter.hasNext()) {
-      Variable v = (Variable) iter.next();
+  private void dumpVariables(List<Variable> vars, PrintStream out) {
+    for (Variable v : vars) {
       out.print("  " + v.getName() + " " + v.getClass().getName()); // +" "+Integer.toHexString(v.hashCode()));
       if (v instanceof CoordinateAxis)
         out.println("  " + ((CoordinateAxis) v).getAxisType());
@@ -1209,7 +1067,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         out.println();
 
       if (v instanceof Structure)
-        dumpVariables( ((Structure)v).getVariables(), out);
+        dumpVariables(((Structure) v).getVariables(), out);
     }
   }
 

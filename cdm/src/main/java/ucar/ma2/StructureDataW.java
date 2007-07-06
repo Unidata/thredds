@@ -1,6 +1,5 @@
-// $Id:StructureDataW.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,17 +21,17 @@ package ucar.ma2;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A StructureData implementation that has its data self-contained.
  * This is often the easiest to construct, but not very efficient for large arrays of Structures.
  *  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class StructureDataW extends StructureData {
-  protected HashMap memberData = new HashMap(); // Members
+  protected Map<StructureMembers.Member,Array> memberData = new HashMap<StructureMembers.Member,Array>(); // Members
 
   /**
    * Constructor.
@@ -48,9 +47,8 @@ public class StructureDataW extends StructureData {
    */
   public StructureDataW (StructureData from) {
     this(from.getStructureMembers());
-    List members = getMembers();
-    for (int i = 0; i < members.size(); i++) {
-      StructureMembers.Member m = (StructureMembers.Member) members.get(i);
+    List<StructureMembers.Member> members = getMembers();
+    for (StructureMembers.Member m : members) {
       Array data = from.getArray(m);
       setMemberData(m, data.copy());  // LOOK wont work for StructureData
     }
@@ -76,16 +74,16 @@ public class StructureDataW extends StructureData {
    * @return Array values.
    */
   public Array getArray(StructureMembers.Member m) {
-    return (Array) memberData.get(m);
+    return memberData.get(m);
   }
 
-  public float convertScalarFloat(StructureMembers.Member m) {
+  /* public float convertScalarFloat(StructureMembers.Member m) {
     return getScalarFloat(m);
   }
 
   public double convertScalarDouble(StructureMembers.Member m) {
     return getScalarDouble(m);
-  }
+  }  */
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 

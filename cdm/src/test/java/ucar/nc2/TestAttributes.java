@@ -14,7 +14,7 @@ public class TestAttributes extends TestCase {
   }
 
   public void testNC3ReadAttributes() throws IOException {
-    NetcdfFile ncfile = TestNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
 
     // global attributes
     assert("face".equals(ncfile.findAttValueIgnoreCase(null, "yo", "barf")));

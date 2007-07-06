@@ -1,6 +1,5 @@
-// $Id: FmrcDefinition.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -101,16 +100,15 @@ import ucar.unidata.util.StringUtil;
  *
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcDefinition.class);
 
   ///////////////////////////////////////////////////////////////////
 
-  private ArrayList vertTimeCoords; // VertTimeCoord
-  private ArrayList timeCoords; // ForecastModelRunInventory.TimeCoord
-  private ArrayList runSequences; // RunSeq
+  private List<VertTimeCoord> vertTimeCoords;
+  private List<ForecastModelRunInventory.TimeCoord> timeCoords;
+  private List<RunSeq> runSequences;
 
   private String name;
   private String suffixFilter;
@@ -133,21 +131,19 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   }
 
   public ucar.nc2.dt.fmr.FmrcCoordSys.TimeCoord findTimeCoordForVariable(String searchName, java.util.Date runTime) {
-    for (int i = 0; i < runSequences.size(); i++) {
-      RunSeq runSeq = (RunSeq) runSequences.get(i);
-      Grid grid = runSeq.findGrid( searchName);
+    for (RunSeq runSeq : runSequences) {
+      Grid grid = runSeq.findGrid(searchName);
       if (null != grid) {
         ForecastModelRunInventory.TimeCoord from = runSeq.findTimeCoordByRuntime(runTime);
         // we need to wrap it, giving it the name of the RunSeq
-        return new ForecastModelRunInventory.TimeCoord( runSeq.num, from);
+        return new ForecastModelRunInventory.TimeCoord(runSeq.num, from);
       }
     }
     return null;
   }
 
   private ForecastModelRunInventory.TimeCoord findTimeCoord( String id) {
-    for (int i = 0; i < timeCoords.size(); i++) {
-      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
+    for (ForecastModelRunInventory.TimeCoord tc : timeCoords) {
       if (tc.getId().equals(id))
         return tc;
     }
@@ -213,8 +209,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   public class RunSeq {
     private boolean isAll = false;    // true if they all use the same OffsetHours
     private ForecastModelRunInventory.TimeCoord allUseOffset; // they all use this one
-    private ArrayList runs = new ArrayList(); // list of Run
-    private ArrayList vars = new ArrayList(); // list of Grid
+    private List<Run> runs = new ArrayList<Run>(); // list of Run
+    private List<Grid> vars = new ArrayList<Grid>(); // list of Grid
     private int num = 0;
 
     RunSeq(String id) {
@@ -223,17 +219,17 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       num = runseq_num++;
     }
 
-    RunSeq(ArrayList runs) {
+    RunSeq(List<Run> runs) {
       this.runs = runs;
       num = runseq_num++;
 
       // complete a 24 hour cycle
       int matchIndex = 0;
-      Run last = (Run) runs.get(runs.size()-1);
+      Run last = runs.get(runs.size()-1);
       double runHour = last.runHour;
       while (runHour < 24.0) {
-        Run match = (Run) runs.get(matchIndex);
-        Run next = (Run) runs.get(matchIndex+1);
+        Run match = runs.get(matchIndex);
+        Run next = runs.get(matchIndex+1);
         double incr = next.runHour - match.runHour;
         if (incr <= 0)
           break;
@@ -259,10 +255,11 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       return run.tc;
     }
 
-    /** find the Run that matches the run hour */
+    /** @return the Run that matches the run hour
+     * @param hour run hour
+     */
     Run findRun( double hour) {
-      for (int i = 0; i < runs.size(); i++) {
-        Run run = (Run) runs.get(i);
+      for (Run run : runs) {
         if (run.runHour == hour) return run;
       }
       return null;
@@ -271,9 +268,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     Grid findGrid( String name) {
       if (name == null) return null;
 
-      for (int j = 0; j < vars.size(); j++) {
-        Grid grid = (Grid) vars.get(j);
-        if (name.equals( grid.name))
+      for (Grid grid : vars) {
+        if (name.equals(grid.name))
           return grid;
       }
 
@@ -283,8 +279,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   } // RunSeq
 
   RunSeq findSeqForVariable( String name) {
-    for (int i = 0; i < runSequences.size(); i++) {
-      RunSeq runSeq = (RunSeq) runSequences.get(i);
+    for (RunSeq runSeq : runSequences) {
       if (runSeq.findGrid(name) != null)
         return runSeq;
     }
@@ -292,9 +287,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   }
 
   Grid findGridByName( String name) {
-    for (int i = 0; i < runSequences.size(); i++) {
-      RunSeq runSeq = (RunSeq) runSequences.get(i);
-      Grid grid = runSeq.findGrid( name);
+    for (RunSeq runSeq : runSequences) {
+      Grid grid = runSeq.findGrid(name);
       if (null != grid)
         return grid;
     }
@@ -305,36 +299,33 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
      if (id == null)
        return null;
 
-     for (int i = 0; i < vertTimeCoords.size(); i++) {
-       VertTimeCoord vc = (VertTimeCoord) vertTimeCoords.get(i);
-       if (vc.getId().equals(id))
-         return vc;
-     }
-     return null;
+    for (VertTimeCoord vc : vertTimeCoords) {
+      if (vc.getId().equals(id))
+        return vc;
+    }
+    return null;
    }
 
   VertTimeCoord findVertCoordByName( String name) {
-     for (int i = 0; i < vertTimeCoords.size(); i++) {
-       VertTimeCoord vc = (VertTimeCoord) vertTimeCoords.get(i);
-       if (vc.getName().equals(name))
-         return vc;
-     }
-     return null;
+    for (VertTimeCoord vc : vertTimeCoords) {
+      if (vc.getName().equals(name))
+        return vc;
+    }
+    return null;
    }
 
   boolean replaceVertCoord( ForecastModelRunInventory.VertCoord vc) {
-     for (int i = 0; i < vertTimeCoords.size(); i++) {
-       VertTimeCoord vtc = (VertTimeCoord) vertTimeCoords.get(i);
-       if (vtc.getName().equals(vc.getName())) {
-         vtc.vc.values1 = vc.values1;
-         vtc.vc.values2 = vc.values2;
-         vtc.vc.setId( vc.getId());
-         vtc.vc.setUnits( vc.getUnits());
-         return true;
-       }
-     }
+    for (VertTimeCoord vtc : vertTimeCoords) {
+      if (vtc.getName().equals(vc.getName())) {
+        vtc.vc.values1 = vc.values1;
+        vtc.vc.values2 = vc.values2;
+        vtc.vc.setId(vc.getId());
+        vtc.vc.setUnits(vc.getUnits());
+        return true;
+      }
+    }
 
-     // make a new one
+    // make a new one
      vertTimeCoords.add( new VertTimeCoord(vc));
      return false;
    }
@@ -348,7 +339,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     ForecastModelRunInventory.TimeCoord tc; // optional
     int ntimes, nverts;
     double[][] vcForTimeIndex;  // vcForTimeIndex[ntimes]
-    ArrayList restrictList;
+    List<String> restrictList;
 
     VertTimeCoord(ForecastModelRunInventory.VertCoord vc) {
       this.vc = vc;
@@ -361,17 +352,15 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         this.tc = runSeq.allUseOffset;
       } else {
         // make union timeCoord
-        HashSet valueSet = new HashSet();
-        for (int i = 0; i < runSeq.runs.size(); i++) {
-          Run run = (Run) runSeq.runs.get(i);
-          addValues( valueSet, run.tc.getOffsetHours());
+        Set<Double> valueSet = new HashSet<Double>();
+        for (Run run : runSeq.runs) {
+          addValues(valueSet, run.tc.getOffsetHours());
         }
-        List valueList = Arrays.asList( valueSet.toArray());
+        List<Double> valueList = Arrays.asList( (Double[]) valueSet.toArray());
         Collections.sort( valueList);
         double[] values = new double[valueList.size()];
         for (int i = 0; i < valueList.size(); i++) {
-          Double d = (Double) valueList.get(i);
-          values[i] = d.doubleValue();
+          values[i] = valueList.get(i);
         }
         this.tc = new ForecastModelRunInventory.TimeCoord();
         this.tc.setOffsetHours( values);
@@ -384,9 +373,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       nverts = vc.getValues1().length;
     }
 
-    private void addValues(HashSet valueSet, double[] values) {
-      for (int i = 0; i < values.length; i++)
-        valueSet.add( new Double(values[i]));
+    private void addValues(Set<Double> valueSet, double[] values) {
+      for (double value : values) valueSet.add(value);
     }
 
     String getId() { return vc.getId(); }
@@ -403,7 +391,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       }
 
       if (vcForTimeIndex == null) {
-        restrictList = new ArrayList();
+        restrictList = new ArrayList<String>();
         vcForTimeIndex = new double[ntimes][];
         for (int i = 0; i < vcForTimeIndex.length; i++) {
           vcForTimeIndex[i] = vc.getValues1(); // LOOK WRONG
@@ -467,6 +455,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   /**
    * Create an XML document for the entire collection
+   * @return an XML document for the entire collection
    */
   public Document makeDefinitionXML() {
     Element rootElem = new Element("fmrcDefinition");
@@ -477,8 +466,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       rootElem.setAttribute("suffixFilter", suffixFilter);
 
     // list all the vertical coordinaates
-    for (int i = 0; i < vertTimeCoords.size(); i++) {
-      VertTimeCoord vtc = (VertTimeCoord) vertTimeCoords.get(i);
+    for (VertTimeCoord vtc : vertTimeCoords) {
       ForecastModelRunInventory.VertCoord vc = vtc.vc;
 
       Element vcElem = new Element("vertCoord");
@@ -494,19 +482,17 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
       for (int j = 0; j < values1.length; j++) {
         if (j > 0) sbuff.append(" ");
-        sbuff.append( Double.toString(values1[j]));
+        sbuff.append(Double.toString(values1[j]));
         if (values2 != null) {
           sbuff.append(",");
-          sbuff.append( Double.toString(values2[j]));
+          sbuff.append(Double.toString(values2[j]));
         }
       }
       vcElem.addContent(sbuff.toString());
     }
 
     // list all the offset hours
-    for (int i = 0; i < timeCoords.size(); i++) {
-      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) timeCoords.get(i);
-
+    for (ForecastModelRunInventory.TimeCoord tc : timeCoords) {
       Element offsetElem = new Element("offsetHours");
       rootElem.addContent(offsetElem);
       offsetElem.setAttribute("id", tc.getId());
@@ -515,34 +501,30 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       double[] offset = tc.getOffsetHours();
       for (int j = 0; j < offset.length; j++) {
         if (j > 0) sbuff.append(" ");
-        sbuff.append( Double.toString(offset[j]));
+        sbuff.append(Double.toString(offset[j]));
       }
       offsetElem.addContent(sbuff.toString());
     }
 
     // list all the time sequences, containing variables
-    for (int i = 0; i < runSequences.size(); i++) {
-      RunSeq runSeq = (RunSeq) runSequences.get(i);
-
+    for (RunSeq runSeq : runSequences) {
       Element seqElem = new Element("runSequence");
       rootElem.addContent(seqElem);
 
       if (runSeq.isAll) {
         seqElem.setAttribute("allUseSeq", runSeq.allUseOffset.getId());
 
-      }  else { // otherwise show each run
-        for (int j = 0; j < runSeq.runs.size(); j++) {
+      } else { // otherwise show each run
+        for (Run run : runSeq.runs) {
           Element runElem = new Element("run");
           seqElem.addContent(runElem);
 
-          Run run = (Run) runSeq.runs.get(j);
           runElem.setAttribute("runHour", Double.toString(run.runHour));
           runElem.setAttribute("offsetHourSeq", run.tc.getId());
         }
       }
 
-      for (int j = 0; j < runSeq.vars.size(); j++) {
-        Grid grid = (Grid) runSeq.vars.get(j);
+      for (Grid grid : runSeq.vars) {
         Element varElem = new Element("variable");
         seqElem.addContent(varElem);
         varElem.setAttribute("name", grid.name);
@@ -551,8 +533,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
           // look for time-dependent vert coordinates - always specific to one variable
           if (grid.vtc.restrictList != null) {
-            java.util.Iterator iter = grid.vtc.restrictList.iterator();
-            while( iter.hasNext()) {
+            Iterator iter = grid.vtc.restrictList.iterator();
+            while (iter.hasNext()) {
               Element vtElem = new Element("vertCoord");
               varElem.addContent(vtElem);
               vtElem.setAttribute("restrict", (String) iter.next());
@@ -582,7 +564,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     name = rootElem.getAttributeValue("name");
     suffixFilter = rootElem.getAttributeValue("suffixFilter");
 
-    vertTimeCoords = new ArrayList();
+    vertTimeCoords = new ArrayList<VertTimeCoord>();
     java.util.List vList = rootElem.getChildren("vertCoord");
     for (int i=0; i< vList.size(); i++) {
       Element vcElem = (Element) vList.get(i);
@@ -633,7 +615,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       vertTimeCoords.add( vtc);
     }
 
-    timeCoords = new ArrayList();
+    timeCoords = new ArrayList<ForecastModelRunInventory.TimeCoord>();
     java.util.List tList = rootElem.getChildren("offsetHours");
     for (int i=0; i< tList.size(); i++) {
       Element timeElem = (Element) tList.get(i);
@@ -653,7 +635,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       tc.setOffsetHours( offset);
     }
 
-    runSequences = new ArrayList();
+    runSequences = new ArrayList<RunSeq>();
     java.util.List runseqList = rootElem.getChildren("runSequence");
     for (int i=0; i< runseqList.size(); i++) {
       Element runseqElem = (Element) runseqList.get(i);
@@ -663,7 +645,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       if (allUseId != null) {
         rseq = new RunSeq( allUseId);
       } else {
-        ArrayList runs = new ArrayList();
+        List<Run> runs = new ArrayList<Run>();
         java.util.List runList = runseqElem.getChildren("run");
         for (int j=0; j< runList.size(); j++) {
           Element runElem = (Element) runList.get(j);
@@ -715,24 +697,22 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     this.timeCoords = fmrc.getTimeCoords();
 
-    this.vertTimeCoords = new ArrayList();
+    this.vertTimeCoords = new ArrayList<VertTimeCoord>();
     for (int i = 0; i < fmrc.getVertCoords().size(); i++) {
-      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) fmrc.getVertCoords().get(i);
+      ForecastModelRunInventory.VertCoord vc = fmrc.getVertCoords().get(i);
       vertTimeCoords.add( new VertTimeCoord(vc));
     }
 
-    this.runSequences = new ArrayList();
+    this.runSequences = new ArrayList<RunSeq>();
 
     // Convert the run sequences, containing variables
-    List seqs = fmrc.getRunSequences();
-    for (int i = 0; i < seqs.size(); i++) {
-      FmrcInventory.RunSeq invSeq = (FmrcInventory.RunSeq) seqs.get(i);
-
+    List<FmrcInventory.RunSeq> seqs = fmrc.getRunSequences();
+    for (FmrcInventory.RunSeq invSeq : seqs) {
       // check to see if all runs use the same tc
       boolean isAll = true;
       ForecastModelRunInventory.TimeCoord oneTc = null;
       for (int j = 0; j < invSeq.runs.size(); j++) {
-        FmrcInventory.Run run = (FmrcInventory.Run) invSeq.runs.get(j);
+        FmrcInventory.Run run = invSeq.runs.get(j);
         if (j == 0)
           oneTc = run.tc;
         else {
@@ -743,27 +723,24 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
       RunSeq runSeq;
       if (isAll) {
-        runSeq = new RunSeq( oneTc.getId());
-      }  else {
-        ArrayList runs = new ArrayList();
-        for (int j = 0; j < invSeq.runs.size(); j++) {
-          FmrcInventory.Run invRun = (FmrcInventory.Run) invSeq.runs.get(j);
-
-          Run run = new Run(  invRun.tc, getHour( invRun.runTime) );
-          runs.add( run);
+        runSeq = new RunSeq(oneTc.getId());
+      } else {
+        List<Run> runs = new ArrayList<Run>();
+        for (FmrcInventory.Run invRun : invSeq.runs) {
+          Run run = new Run(invRun.tc, getHour(invRun.runTime));
+          runs.add(run);
         }
-        runSeq = new RunSeq( runs);
+        runSeq = new RunSeq(runs);
       }
-      runSequences.add( runSeq);
+      runSequences.add(runSeq);
 
       // convert UberGrids to Grid
-      List vars = invSeq.getVariables();
-      for (int j = 0; j < vars.size(); j++) {
-        FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
-        Grid grid = new Grid( uv.getName());
-        runSeq.vars.add( grid);
+      List<FmrcInventory.UberGrid> vars = invSeq.getVariables();
+      for (FmrcInventory.UberGrid uv : vars) {
+        Grid grid = new Grid(uv.getName());
+        runSeq.vars.add(grid);
         if (uv.vertCoordUnion != null)
-          grid.vtc = new VertTimeCoord( uv.vertCoordUnion);
+          grid.vtc = new VertTimeCoord(uv.vertCoordUnion);
       }
     }
 
@@ -772,27 +749,26 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   }
 
-  /** Add just the vertical coord info to the definition */
+  /** Add just the vertical coord info to the definition
+   * @param fmrc the collection inventory
+   */
   public void addVertCoordsFromCollectionInventory(FmrcInventory fmrc) {
-    this.vertTimeCoords = new ArrayList();
+    this.vertTimeCoords = new ArrayList<VertTimeCoord>();
     for (int i = 0; i < fmrc.getVertCoords().size(); i++) {
-      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) fmrc.getVertCoords().get(i);
+      ForecastModelRunInventory.VertCoord vc = fmrc.getVertCoords().get(i);
       vertTimeCoords.add( new VertTimeCoord(vc));
     }
 
     // Convert the run sequences, containing variables
-    List seqs = fmrc.getRunSequences();
-    for (int i = 0; i < seqs.size(); i++) {
-      FmrcInventory.RunSeq invSeq = (FmrcInventory.RunSeq) seqs.get(i);
-
+    List<FmrcInventory.RunSeq> seqs = fmrc.getRunSequences();
+    for (FmrcInventory.RunSeq invSeq : seqs) {
       // convert UberGrids to Grid
-      List vars = invSeq.getVariables();
-      for (int j = 0; j < vars.size(); j++) {
-        FmrcInventory.UberGrid uv = (FmrcInventory.UberGrid) vars.get(j);
+      List<FmrcInventory.UberGrid> vars = invSeq.getVariables();
+      for (FmrcInventory.UberGrid uv : vars) {
         if (uv.vertCoordUnion != null) {
-          String sname =  uv.getName();
-          Grid grid = findGridByName( sname);
-          grid.vtc = new VertTimeCoord( uv.vertCoordUnion);
+          String sname = uv.getName();
+          Grid grid = findGridByName(sname);
+          grid.vtc = new VertTimeCoord(uv.vertCoordUnion);
         }
       }
     }
@@ -822,34 +798,30 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     boolean changed = false;
 
     // make hashmap
-    HashMap hash = new HashMap();
-    for (int i = 0; i < fmrDef.runSequences.size(); i++) {
-      RunSeq runSeq = (RunSeq) fmrDef.runSequences.get(i);
-      for (int j = 0; j < runSeq.vars.size(); j++) {
-        Grid gridDef =  (Grid) runSeq.vars.get(j);
-        String munged = StringUtil.replace(gridDef.name,'_',"");
-        hash.put(munged,gridDef);
+    Map<String,Grid> hash = new HashMap<String,Grid>();
+    for (RunSeq runSeq : fmrDef.runSequences) {
+      for (Grid gridDef : runSeq.vars) {
+        String munged = StringUtil.replace(gridDef.name, '_', "");
+        hash.put(munged, gridDef);
       }
     }
 
-            // make sure each grid in fmrInv is also in fmrDef
-    List fmrInvTimeCoords = fmrInv.getTimeCoords();
-    for (int i = 0; i < fmrInvTimeCoords.size(); i++) {
-      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) fmrInvTimeCoords.get(i);
-      List fmrInvGrids = tc.getGrids();
-      for (int j = 0; j < fmrInvGrids.size(); j++) {
-        ForecastModelRunInventory.Grid invGrid = (ForecastModelRunInventory.Grid) fmrInvGrids.get(j);
-        FmrcDefinition.Grid defGrid = fmrDef.findGridByName( invGrid.name);
+    // make sure each grid in fmrInv is also in fmrDef
+    List<ForecastModelRunInventory.TimeCoord> fmrInvTimeCoords = fmrInv.getTimeCoords();
+    for (ForecastModelRunInventory.TimeCoord tc : fmrInvTimeCoords) {
+      List<ForecastModelRunInventory.Grid> fmrInvGrids = tc.getGrids();
+      for (ForecastModelRunInventory.Grid invGrid : fmrInvGrids) {
+        Grid defGrid = fmrDef.findGridByName(invGrid.name);
         if (null == defGrid) {
-          String munged = StringUtil.replace(invGrid.name,"-","");
-          munged = StringUtil.replace(munged,"_","");
-          Grid gridDefnew = (Grid) hash.get(munged);
+          String munged = StringUtil.replace(invGrid.name, "-", "");
+          munged = StringUtil.replace(munged, "_", "");
+          Grid gridDefnew = hash.get(munged);
           if (gridDefnew != null) {
-            System.out.println(" replace "+gridDefnew.name+" with "+invGrid.name);
+            System.out.println(" replace " + gridDefnew.name + " with " + invGrid.name);
             gridDefnew.name = invGrid.name;
             changed = false; // true;
           } else {
-            System.out.println("*** cant find replacement for grid= "+invGrid.name+" in the definition");
+            System.out.println("*** cant find replacement for grid= " + invGrid.name + " in the definition");
           }
         }
       }
@@ -872,43 +844,40 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     fmrDef.readDefinitionXML(defName);
 
     // replace vert coords
-    List vcList = fmrInv.getVertCoords();
-    for (int i = 0; i < vcList.size(); i++) {
-      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) vcList.get(i);
+    List<ForecastModelRunInventory.VertCoord> vcList = fmrInv.getVertCoords();
+    for (ForecastModelRunInventory.VertCoord vc : vcList) {
       CoordinateAxis1D axis = vc.axis;
       if (axis == null)
-        System.out.println("*** No Axis "+vc.getName());
+        System.out.println("*** No Axis " + vc.getName());
       else {
-       // boolean isLayer = null != axis.findAttribute(_Coordinate.ZisLayer);
+        // boolean isLayer = null != axis.findAttribute(_Coordinate.ZisLayer);
         //if (isLayer) {
-          if (showState) System.out.print(" "+vc.getName()+" contig= "+axis.isContiguous());
-          // see if theres any TimeCoord that use this
-          //findGridsForVertCoord( fmrDef, vc);
-          boolean ok = fmrDef.replaceVertCoord(vc);
-          if (showState) System.out.println(" = "+ok);
+        if (showState) System.out.print(" " + vc.getName() + " contig= " + axis.isContiguous());
+        // see if theres any TimeCoord that use this
+        //findGridsForVertCoord( fmrDef, vc);
+        boolean ok = fmrDef.replaceVertCoord(vc);
+        if (showState) System.out.println(" = " + ok);
         //}
       }
     }
     Collections.sort( fmrDef.vertTimeCoords);
 
     // reset vert id on grids
-    for (int i = 0; i < fmrDef.runSequences.size(); i++) {
-      RunSeq runSeq = (RunSeq) fmrDef.runSequences.get(i);
-      for (int j = 0; j < runSeq.vars.size(); j++) {
-        Grid gridDef =  (Grid) runSeq.vars.get(j);
-        ForecastModelRunInventory.Grid gridInv = fmrInv.findGrid( gridDef.name);
+    for (RunSeq runSeq : fmrDef.runSequences) {
+      for (Grid gridDef : runSeq.vars) {
+        ForecastModelRunInventory.Grid gridInv = fmrInv.findGrid(gridDef.name);
         if (gridInv == null) {
-          System.out.println("*** cant find def grid= "+gridDef.name+" in the inventory ");
+          System.out.println("*** cant find def grid= " + gridDef.name + " in the inventory ");
           continue;
         }
         if (gridInv.vc != null) {
           VertTimeCoord new_vtc = fmrDef.findVertCoordByName(gridInv.vc.getName());
           if (new_vtc == null) {
-           System.out.println("*** cant find VertCoord= "+gridInv.vc.getName());
+            System.out.println("*** cant find VertCoord= " + gridInv.vc.getName());
             continue;
           }
           gridDef.vtc = new_vtc;
-          if (showState) System.out.println(" ok= "+gridDef.name);
+          if (showState) System.out.println(" ok= " + gridDef.name);
         }
       }
     }
@@ -919,33 +888,31 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     fmrDef.writeDefinitionXML( fout);
 
             // make sure each grid in fmrInv is also in fmrDef
-    List fmrInvTimeCoords = fmrInv.getTimeCoords();
-    for (int i = 0; i < fmrInvTimeCoords.size(); i++) {
-      ForecastModelRunInventory.TimeCoord tc = (ForecastModelRunInventory.TimeCoord) fmrInvTimeCoords.get(i);
-      List fmrInvGrids = tc.getGrids();
-      for (int j = 0; j < fmrInvGrids.size(); j++) {
-        ForecastModelRunInventory.Grid invGrid = (ForecastModelRunInventory.Grid) fmrInvGrids.get(j);
-        FmrcDefinition.Grid defGrid = fmrDef.findGridByName( invGrid.name);
+    List<ForecastModelRunInventory.TimeCoord> fmrInvTimeCoords = fmrInv.getTimeCoords();
+    for (ForecastModelRunInventory.TimeCoord tc : fmrInvTimeCoords) {
+      List<ForecastModelRunInventory.Grid> fmrInvGrids = tc.getGrids();
+      for (ForecastModelRunInventory.Grid invGrid : fmrInvGrids) {
+        Grid defGrid = fmrDef.findGridByName(invGrid.name);
         if (null == defGrid)
-          System.out.println("*** cant find inv grid= "+invGrid.name+" in the definition");
+          System.out.println("*** cant find inv grid= " + invGrid.name + " in the definition");
         else {
           ForecastModelRunInventory.VertCoord inv_vc = invGrid.vc;
 
           if ((inv_vc == null) && (defGrid.vtc == null)) continue; // ok
           if ((inv_vc != null) && (defGrid.vtc == null)) {
-            System.out.println("*** mismatch "+invGrid.name+" VertCoord: inv= "+inv_vc.getSize()+", no def ");
+            System.out.println("*** mismatch " + invGrid.name + " VertCoord: inv= " + inv_vc.getSize() + ", no def ");
             continue;
           }
 
           if ((inv_vc == null) && (defGrid.vtc != null)) {
             ForecastModelRunInventory.VertCoord def_vc = defGrid.vtc.vc;
-            System.out.println("*** mismatch "+invGrid.name+" VertCoord: def= "+def_vc.getSize()+", no inv ");
+            System.out.println("*** mismatch " + invGrid.name + " VertCoord: def= " + def_vc.getSize() + ", no inv ");
             continue;
           }
 
           ForecastModelRunInventory.VertCoord def_vc = defGrid.vtc.vc;
           if (inv_vc.getSize() != def_vc.getSize()) {
-            System.out.println("*** mismatch "+invGrid.name+" VertCoord size: inv= "+inv_vc.getSize()+", def = "+def_vc.getSize());
+            System.out.println("*** mismatch " + invGrid.name + " VertCoord size: inv= " + inv_vc.getSize() + ", def = " + def_vc.getSize());
           }
         }
       }
@@ -967,30 +934,27 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     System.out.println(datasetName);
     ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW, true);
-    List vcList = fmrInv.getVertCoords();
-    for (int i = 0; i < vcList.size(); i++) {
-      ForecastModelRunInventory.VertCoord vc = (ForecastModelRunInventory.VertCoord) vcList.get(i);
+    List<ForecastModelRunInventory.VertCoord> vcList = fmrInv.getVertCoords();
+    for (ForecastModelRunInventory.VertCoord vc : vcList) {
       CoordinateAxis1D axis = vc.axis;
       if (axis == null)
-        System.out.println(" No Axis "+vc.getName());
+        System.out.println(" No Axis " + vc.getName());
       else {
         if (axis.isLayer()) {
-          System.out.println(" Layer "+vc.getName()+" contig= "+axis.isContiguous());
+          System.out.println(" Layer " + vc.getName() + " contig= " + axis.isContiguous());
           // see if theres any TimeCoord that use this
-          findGridsForVertCoord( fmrDef, vc);
+          findGridsForVertCoord(fmrDef, vc);
         }
       }
       boolean got = fmrDef.findVertCoordByName(vc.getName()) != null;
-      if (! got)
-        System.out.println(" ***NOT "+vc.getName());
+      if (!got)
+        System.out.println(" ***NOT " + vc.getName());
     }
   }
 
   static void findGridsForVertCoord(FmrcDefinition fmrDef, ForecastModelRunInventory.VertCoord vc) {
-    for (int i = 0; i < fmrDef.runSequences.size(); i++) {
-      RunSeq runSeq = (RunSeq) fmrDef.runSequences.get(i);
-      for (int j = 0; j < runSeq.vars.size(); j++) {
-        Grid grid = (Grid) runSeq.vars.get(j);
+    for (RunSeq runSeq : fmrDef.runSequences) {
+      for (Grid grid : runSeq.vars) {
         if ((grid.vtc != null) && (grid.vtc.vc == vc)) {
           List restrictList = grid.vtc.restrictList;
           if (restrictList != null && restrictList.size() > 0)

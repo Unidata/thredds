@@ -17,7 +17,7 @@ public class TestStructureArray2 extends TestCase {
 
   public void testBB() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = TestNC2.openFile("testWriteRecord.nc");
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     Structure v = (Structure) ncfile.findVariable("record");
     assert v != null;

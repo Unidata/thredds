@@ -1,6 +1,5 @@
-// $Id:AxisType.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,12 +25,11 @@ package ucar.nc2.dataset;
  * georeferencing axes.
  *
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class AxisType {
 
-  private static java.util.HashMap hash = new java.util.HashMap(10);
+  private static java.util.Map<String,AxisType> hash = new java.util.HashMap<String,AxisType>(10);
 
   /**
    * represents the runTime coordinate
@@ -103,7 +101,7 @@ public class AxisType {
    */
   public static AxisType getType(String name) {
     if (name == null) return null;
-    return (AxisType) hash.get(name);
+    return hash.get(name);
   }
 
   /**

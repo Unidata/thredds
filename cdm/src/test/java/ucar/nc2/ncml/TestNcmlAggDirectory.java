@@ -79,7 +79,7 @@ public class TestNcmlAggDirectory extends TestCase {
 
     Variable lat = ncfile.findVariable("latitude");
     assert lat.getDataType() == DataType.FLOAT;
-    assert lat.getCoordinateDimension().equals(ncfile.findDimension("latitude"));
+    assert lat.getDimension(0).equals(ncfile.findDimension("latitude"));
 
     Attribute att = lat.findAttribute("units");
     assert null != att;
@@ -110,7 +110,7 @@ public class TestNcmlAggDirectory extends TestCase {
     assert time.getShape()[0] == 6;
     assert time.getDataType() == DataType.FLOAT;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     Array data = time.read();
     assert data.getRank() == 1;
@@ -135,7 +135,7 @@ public class TestNcmlAggDirectory extends TestCase {
     assert v.getShape()[2] == 630;
     assert v.getDataType() == DataType.SHORT;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
 
     assert v.getDimension(0) == ncfile.findDimension("time");
     assert v.getDimension(1) == ncfile.findDimension("latitude");
@@ -168,7 +168,7 @@ public class TestNcmlAggDirectory extends TestCase {
     assert v.getShape()[2] == 630;
     assert v.getDataType() == DataType.DOUBLE;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
 
     assert v.getDimension(0) == ncfile.findDimension("time");
     assert v.getDimension(1) == ncfile.findDimension("latitude");

@@ -1,6 +1,5 @@
-// $Id:ArrayLong.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ package ucar.ma2;
  *
  * @see Array
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ArrayLong extends Array {
 
@@ -157,10 +155,10 @@ public class ArrayLong extends Array {
     storage[indexCalc.element(index)] = (long) value;
   } */
   public long getLong(Index i) {
-    return (long) storage[i.currentElement()];
+    return storage[i.currentElement()];
   }
   public void setLong(Index i, long value) {
-    storage[i.currentElement()] = (long) value;
+    storage[i.currentElement()] = value;
   }
 
   /* int
@@ -236,7 +234,7 @@ public class ArrayLong extends Array {
     storage[indexCalc.element(index)] = ((Number)value).longValue();
   }  */
   public Object getObject(Index i) {
-    return new Long(storage[i.currentElement()]);
+    return storage[i.currentElement()];
   }
   public void setObject(Index i, Object value) {
     storage[i.currentElement()] = ((Number)value).longValue();
@@ -249,8 +247,8 @@ public class ArrayLong extends Array {
   float getFloat(int index) { return storage[index]; }
   void setFloat(int index, float value) { storage[index] = (long) value;}
 
-  long getLong(int index) {return (long) storage[index];}
-  void setLong(int index, long value) { storage[index] = (long) value;}
+  long getLong(int index) {return storage[index];}
+  void setLong(int index, long value) { storage[index] = value;}
 
   int getInt(int index) { return (int) storage[index]; }
   void setInt(int index, int value) { storage[index] = (long) value;}
@@ -267,7 +265,7 @@ public class ArrayLong extends Array {
   boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
   void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return new Long( getLong( index)); }
+  Object getObject(int index) { return getLong(index); }
   void setObject(int index, Object value) { storage[index] = ((Number)value).longValue(); }
 
   /** Concrete implementation of Array specialized for longs, rank 0. */

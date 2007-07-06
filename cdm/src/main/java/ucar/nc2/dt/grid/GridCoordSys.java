@@ -1080,7 +1080,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         }
       }
 
-      // this is the case where no point are included
+      // this is the case where no points are included
       if ((mini > maxi) || (minj > maxj)) {
         mini = 0;
         minj = 0;

@@ -1,4 +1,3 @@
-// $Id: $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -29,7 +28,6 @@ import java.io.IOException;
  * Interface for factories that wrap a NetcdfDataset with a subclass of TypedDataset
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public interface TypedDatasetFactoryIF {
 

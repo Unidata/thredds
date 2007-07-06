@@ -1,6 +1,5 @@
-// $Id:ArrayInt.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ package ucar.ma2;
  *
  * @see Array
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ArrayInt extends Array {
 
@@ -171,10 +169,10 @@ public class ArrayInt extends Array {
     storage[indexCalc.element(index)] = (int) value;
   }  */
   public int getInt(Index i) {
-    return (int) storage[i.currentElement()];
+    return storage[i.currentElement()];
   }
   public void setInt(Index i, int value) {
-    storage[i.currentElement()] = (int) value;
+    storage[i.currentElement()] = value;
   }
 
   /* short
@@ -236,7 +234,7 @@ public class ArrayInt extends Array {
     storage[indexCalc.element(index)] = ((Number)value).intValue();
   } */
   public Object getObject(Index i) {
-    return new Integer(storage[i.currentElement()]);
+    return storage[i.currentElement()];
   }
   public void setObject(Index i, Object value) {
     storage[i.currentElement()] = ((Number)value).intValue();
@@ -252,8 +250,8 @@ public class ArrayInt extends Array {
   long getLong(int index) {return (long) storage[index];}
   void setLong(int index, long value) { storage[index] = (int) value;}
 
-  int getInt(int index) { return (int) storage[index]; }
-  void setInt(int index, int value) { storage[index] = (int) value;}
+  int getInt(int index) { return storage[index]; }
+  void setInt(int index, int value) { storage[index] = value;}
 
   short getShort(int index) { return (short) storage[index]; }
   void setShort(int index, short value) { storage[index] = (int) value; }
@@ -267,7 +265,7 @@ public class ArrayInt extends Array {
   boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
   void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return new Integer( getInt( index)); }
+  Object getObject(int index) { return getInt(index); }
   void setObject(int index, Object value) { storage[index] = ((Number)value).intValue(); }
 
   /** Concrete implementation of Array specialized for ints, rank 0. */

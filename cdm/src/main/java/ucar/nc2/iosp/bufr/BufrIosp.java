@@ -19,7 +19,7 @@ import java.net.URL;
 /**
  * BufrIosp
  */
-public class BufrIosp implements IOServiceProvider {
+public class BufrIosp extends AbstractIOServiceProvider  {
 
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
@@ -171,8 +171,6 @@ public class BufrIosp implements IOServiceProvider {
 
     return index;
   }
-
-  public boolean syncExtend() { return false; }
 
   public boolean sync() throws IOException {
     HashMap attrHash = saveIndex.getGlobalAttributes();
@@ -929,14 +927,6 @@ public class BufrIosp implements IOServiceProvider {
 
   public void close() throws IOException {
     raf.close();
-  }
-
-  public void setSpecial( Object special) {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String toStringDebug(Object o) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public String getDetailInfo() {

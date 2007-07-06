@@ -1,6 +1,5 @@
-// $Id: DODSAttribute.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,21 +25,23 @@ import ucar.unidata.util.StringUtil;
 import java.util.*;
 
 /**
- * Adapter for dods.dap.Atribute.
+ * Adapter for dods.dap.Atribute into a ucar.nc2.Attribute.
  * Byte attributes are widened to short because DODS has Bytes as unsigned,
  *  but in Java they are signed.
  *
  * @see ucar.nc2.Attribute
- *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
 
 public class DODSAttribute extends ucar.nc2.Attribute {
   //private dods.dap.Attribute att;
 
-  /** constructor: adapter around dods.dap.Attribute */
+  /** constructor: adapter around dods.dap.Attribute
+   *
+   * @param dodsName the attribute name
+   * @param att the dods ayytibute
+   */
   public DODSAttribute( String dodsName, opendap.dap.Attribute att) {
     super( DODSNetcdfFile.makeNetcdfName( dodsName));
 

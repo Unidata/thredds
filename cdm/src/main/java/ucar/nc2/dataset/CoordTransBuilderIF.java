@@ -1,6 +1,5 @@
-// $Id:CoordTransBuilderIF.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,13 +28,12 @@ import ucar.nc2.Dimension;
  * Must be able to know how to build one from the info in a Coordinate Transform Variable.
  *
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public interface CoordTransBuilderIF {
 
   /**
    * Make a CoordinateTransform from a Coordinate Transform Variable.
-   * @param ds
+   * @param ds the containing dataset
    * @param ctv the coordinate transform variable.
    * @return CoordinateTransform
    */
@@ -65,7 +63,7 @@ public interface CoordTransBuilderIF {
 
   /***
    * Pass in a StringBuffer where error messages can be appended.
-   * @param parseInfo
+   * @param sb use this StringBuffer to record parse and error info
    */
-  public void setErrorBuffer( StringBuffer parseInfo);
+  public void setErrorBuffer( StringBuffer sb);
 }

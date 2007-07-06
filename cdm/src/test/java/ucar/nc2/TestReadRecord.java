@@ -14,7 +14,7 @@ public class TestReadRecord extends TestCase  {
   public void testNC3ReadRecordV3mode() {
 
     try {
-      NetcdfFile nc = TestNC2.openFile("testWriteRecord.nc");
+      NetcdfFile nc = TestLocalNC2.openFile("testWriteRecord.nc");
 
       /* Get the value of the global attribute named "title" */
       String title = nc.findAttValueIgnoreCase( null, "title", "N/A");
@@ -41,10 +41,10 @@ public class TestReadRecord extends TestCase  {
       values = lon.read();
       assert( values instanceof ArrayFloat.D1);
       ArrayFloat.D1 fa = (ArrayFloat.D1) values;
-      assert ( TestAll.closeEnough(fa.get(0), -109.0f)) : fa.get(0);
-      assert ( TestAll.closeEnough(fa.get(1), -107.0f)) : fa.get(1);
-      assert ( TestAll.closeEnough(fa.get(2), -105.0f)) : fa.get(2);
-      assert ( TestAll.closeEnough(fa.get(3), -103.0f)) : fa.get(3);
+      assert ( TestLocal.closeEnough(fa.get(0), -109.0f)) : fa.get(0);
+      assert ( TestLocal.closeEnough(fa.get(1), -107.0f)) : fa.get(1);
+      assert ( TestLocal.closeEnough(fa.get(2), -105.0f)) : fa.get(2);
+      assert ( TestLocal.closeEnough(fa.get(3), -103.0f)) : fa.get(3);
 
       /* Now we can just use the MultiArray to access values, or
          we can copy the MultiArray elements to another array with
@@ -83,15 +83,15 @@ public class TestReadRecord extends TestCase  {
       Array tValues = t.read();
       assert( tValues instanceof ArrayDouble.D3);
       ArrayDouble.D3 Ta = (ArrayDouble.D3) tValues;
-      assert TestAll.closeEnough( Ta.get(0,0,0), 1.0f) : Ta.get(0, 0, 0);
-      assert TestAll.closeEnough( Ta.get(1,1,1), 10.0f) : Ta.get(1, 1, 1);
+      assert TestLocal.closeEnough( Ta.get(0,0,0), 1.0f) : Ta.get(0, 0, 0);
+      assert TestLocal.closeEnough( Ta.get(1,1,1), 10.0f) : Ta.get(1, 1, 1);
 
       /* Read subset of the temperature data */
       tValues = t.read(new int[3], new int[] {2,2,2});
       assert( tValues instanceof ArrayDouble.D3);
       Ta = (ArrayDouble.D3) tValues;
-      assert TestAll.closeEnough( Ta.get(0,0,0), 1.0f) : Ta.get(0, 0, 0);
-      assert TestAll.closeEnough( Ta.get(1,1,1), 10.0f) : Ta.get(1, 1, 1);
+      assert TestLocal.closeEnough( Ta.get(0,0,0), 1.0f) : Ta.get(0, 0, 0);
+      assert TestLocal.closeEnough( Ta.get(1,1,1), 10.0f) : Ta.get(1, 1, 1);
 
       nc.close();
 
@@ -106,8 +106,8 @@ public class TestReadRecord extends TestCase  {
 
   public void testNC3ReadRecordN4mode() {
     try {
-      NetcdfFile nc = TestNC2.openFile("testWriteRecord.nc");
-      nc.addRecordStructure();
+      NetcdfFile nc = TestLocalNC2.openFile("testWriteRecord.nc");
+      nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
       /* Get the value of the global attribute named "title" */
       String title = nc.findAttValueIgnoreCase( null, "title", "N/A");
@@ -134,10 +134,10 @@ public class TestReadRecord extends TestCase  {
       values = lon.read();
       assert( values instanceof ArrayFloat.D1);
       ArrayFloat.D1 fa = (ArrayFloat.D1) values;
-      assert ( TestAll.closeEnough(fa.get(0), -109.0f)) : fa.get(0);
-      assert ( TestAll.closeEnough(fa.get(1), -107.0f)) : fa.get(1);
-      assert ( TestAll.closeEnough(fa.get(2), -105.0f)) : fa.get(2);
-      assert ( TestAll.closeEnough(fa.get(3), -103.0f)) : fa.get(3);
+      assert ( TestLocal.closeEnough(fa.get(0), -109.0f)) : fa.get(0);
+      assert ( TestLocal.closeEnough(fa.get(1), -107.0f)) : fa.get(1);
+      assert ( TestLocal.closeEnough(fa.get(2), -105.0f)) : fa.get(2);
+      assert ( TestLocal.closeEnough(fa.get(3), -103.0f)) : fa.get(3);
 
       /* Now we can just use the MultiArray to access values, or
          we can copy the MultiArray elements to another array with
@@ -209,8 +209,8 @@ public class TestReadRecord extends TestCase  {
   }
 
   public void testNC3ReadRecordStrided() throws InvalidRangeException, IOException {
-    NetcdfFile nc = TestNC2.openFile("testWriteRecord.nc");
-    nc.addRecordStructure();
+    NetcdfFile nc = TestLocalNC2.openFile("testWriteRecord.nc");
+    nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
       // record variable
       Variable record = nc.findVariable("record");

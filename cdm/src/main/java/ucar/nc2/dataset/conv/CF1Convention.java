@@ -172,8 +172,8 @@ public class CF1Convention extends CSMConvention {
       p.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       p.addAttribute(new Attribute(_Coordinate.AliasForDimension, p.getDimensionsString()));
       ds.addVariable(null, p);
-      Dimension d = p.getDimension(0);
-      d.addCoordinateVariable(p);
+      //Dimension d = p.getDimension(0);
+      //d.addCoordinateVariable(p);
       parseInfo.append(" added Vertical Pressure coordinate "+p.getName()+"\n");
 
     } catch (IOException e) {

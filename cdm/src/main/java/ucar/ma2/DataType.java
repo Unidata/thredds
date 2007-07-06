@@ -1,6 +1,5 @@
-// $Id:DataType.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,12 +24,11 @@ package ucar.ma2;
  * Type-safe enumeration of data types.
  *
  * @author john caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class DataType {
 
-  private static java.util.HashMap hash = new java.util.HashMap(20);
+  private static java.util.Map<String,DataType> hash = new java.util.HashMap<String,DataType>(20);
 
   public final static DataType BOOLEAN = new DataType("boolean", 1);
   public final static DataType BYTE = new DataType("byte", 1);
@@ -65,7 +63,7 @@ public class DataType {
    */
   public static DataType getType(String name) {
     if (name == null) return null;
-    return (DataType) hash.get( name);
+    return hash.get( name);
   }
 
    /**
@@ -108,11 +106,13 @@ public class DataType {
    * Size in bytes of one element of this data type.
    * Strings dont know, so return 0.
    * Structures return 1.
-   */
+    * @return Size in bytes of one element of this data type.
+    */
    public int getSize() { return size; }
 
   /**
    * The primitive class type: char, byte, float, double, short, int, long, boolean, String, StructureData.
+   * @return the primitive class type
    */
   public Class getPrimitiveClassType() {
    if (this == DataType.FLOAT)
@@ -140,6 +140,7 @@ public class DataType {
 
   /**
    * The Object class type: Character, Byte, Float, Double, Short, Integer, Boolean, Long, String, StructureData.
+   * @return the Object class type
    */
   public Class getClassType() {
     if (this == DataType.BYTE)
@@ -165,17 +166,26 @@ public class DataType {
     return null;
   }
 
-  /** widen an unsigned int to a long */
+  /** widen an unsigned int to a long
+   * @param i unsigned int
+   * @return equivilent long value
+   */
   static public long unsignedIntToLong(int i) {
     return (i < 0) ? (long) i + 4294967296L : (long) i;
   }
 
-  /** widen an unsigned short to an int */
+  /** widen an unsigned short to an int
+   * @param s unsigned short
+   * @return equivilent int value
+   */
    static public int unsignedShortToInt(short s) {
      return (s & 0xffff);
    }
 
-  /** widen an unsigned byte to a short */
+  /** widen an unsigned byte to a short
+   * @param b unsigned byte
+   * @return equivilent short value
+   */
    static public short unsignedByteToShort(byte b) {
      return (short) (b & 0xff);
    }

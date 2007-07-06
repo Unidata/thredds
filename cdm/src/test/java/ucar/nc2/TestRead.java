@@ -14,7 +14,7 @@ public class TestRead extends TestCase {
   }
 
   public void testNC3Read() throws IOException {
-    NetcdfFile ncfile = TestNC2.openFile("testWrite.nc");
+    NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");
 
     assert(null != ncfile.findDimension("lat"));
     assert(null != ncfile.findDimension("lon"));

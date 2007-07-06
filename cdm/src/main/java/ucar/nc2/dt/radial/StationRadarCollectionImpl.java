@@ -92,7 +92,11 @@ public abstract class StationRadarCollectionImpl extends TypedDatasetImpl implem
         return result;
     }
 
-    public Station getStation(String name) throws IOException {
+  public boolean checkStationProduct(String stationName, Product product) {
+    return false;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public Station getStation(String name) throws IOException {
         if (stations == null) {
           List stationC = null;
           try {

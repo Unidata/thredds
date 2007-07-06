@@ -121,7 +121,7 @@ public class TestNcmlAggSynthetic extends TestCase {
     assert lat.getDataType() == DataType.FLOAT;
 
     assert !lat.isUnlimited();
-    assert lat.getCoordinateDimension().equals(ncfile.findDimension("lat"));
+    assert lat.getDimension(0).equals(ncfile.findDimension("lat"));
 
     Attribute att = lat.findAttribute("units");
     assert null != att;
@@ -156,7 +156,7 @@ public class TestNcmlAggSynthetic extends TestCase {
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.INT;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     try {
       Array data = time.read();
@@ -183,7 +183,7 @@ public class TestNcmlAggSynthetic extends TestCase {
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.INT;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     try {
       Array data = time.read();
@@ -208,7 +208,7 @@ public class TestNcmlAggSynthetic extends TestCase {
       assert time.getShape()[0] == 3;
       assert time.getDataType() == DataType.DOUBLE : time.getDataType();
 
-      assert time.getCoordinateDimension() == ncfile.findDimension("time");
+      assert time.getDimension(0) == ncfile.findDimension("time");
 
       Array data = time.read();
 
@@ -228,7 +228,7 @@ public class TestNcmlAggSynthetic extends TestCase {
       assert time.getShape()[0] == 3;
       assert time.getDataType() == DataType.STRING : time.getDataType();
 
-      assert time.getCoordinateDimension() == ncfile.findDimension("time");
+      assert time.getDimension(0) == ncfile.findDimension("time");
 
       Array data = time.read();
 
@@ -250,7 +250,7 @@ public class TestNcmlAggSynthetic extends TestCase {
       assert time.getShape()[0] == 3;
       assert time.getDataType() == DataType.STRING : time.getDataType();
 
-      assert time.getCoordinateDimension() == ncfile.findDimension("time");
+      assert time.getDimension(0) == ncfile.findDimension("time");
 
       Array data = time.read();
 
@@ -276,7 +276,7 @@ public class TestNcmlAggSynthetic extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.DOUBLE;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
 
     assert v.getDimension(0) == ncfile.findDimension("time");
     assert v.getDimension(1) == ncfile.findDimension("lat");

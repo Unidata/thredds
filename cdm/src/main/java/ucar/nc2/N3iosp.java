@@ -99,9 +99,8 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
 
   public void setSpecial( Object special) {}
   
-  public void setProperties( List iospProperties) {
-    for (int i = 0; i < iospProperties.size(); i++) {
-      Attribute att = (Attribute) iospProperties.get(i);
+  public void setProperties( List<Attribute> iospProperties) {
+    for (Attribute att : iospProperties) {
       if (att.getName().equalsIgnoreCase("useRecordStructure"))
         useRecordStructure = att.getStringValue().equalsIgnoreCase("true");
       if (att.getName().equalsIgnoreCase("syncExtendOnly"))
@@ -199,9 +198,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
 
   private StructureMembers makeStructureMembers(Structure s) {
     StructureMembers members = s.makeStructureMembers();
-    Iterator iter = members.getMembers().iterator();
-    while (iter.hasNext()) {
-      StructureMembers.Member m = (StructureMembers.Member) iter.next();
+    for (StructureMembers.Member m : members.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
       m.setDataParam((int) vinfo.begin - recStart);
@@ -217,7 +214,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
    *  Dimension in each parent, as well as in the Variable itself. Must be in order from outer to inner.
    * @return the requested data in a memory-resident Array
    */
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List sectionList)
+  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List<Range> sectionList)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
@@ -348,7 +345,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     raf.order(RandomAccessFile.BIG_ENDIAN);
 
     if (size > 0) {
-     java.io.RandomAccessFile myRaf = raf.getRandomAccessFile();
+      java.io.RandomAccessFile myRaf = raf.getRandomAccessFile();
       myRaf.setLength( size);
     }
 
@@ -394,7 +391,7 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
       throw new IllegalArgumentException("writeRecordData: data must be ArrayStructure");
     ArrayStructure structureData = (ArrayStructure) values;
 
-    List vars = s.getVariables();
+    List<Variable> vars = s.getVariables();
     StructureMembers members = structureData.getStructureMembers();
 
     Range recordRange = (Range) sectionList.get(0);
@@ -403,19 +400,18 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
       // System.out.println("  wrote "+recnum+" begin at "+begin);
 
       // loop over members
-      for (int i = 0; i < vars.size(); i++) {
-        Variable v2 = (Variable) vars.get(i);
+      for (Variable v2 : vars) {
         N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-        long begin = vinfo.begin + recnum*recsize;
-        Indexer index = new RegularIndexer( v2.shape, v2.getElementSize(), begin, null, -1); 
+        long begin = vinfo.begin + recnum * recsize;
+        Indexer index = new RegularIndexer(v2.shape, v2.getElementSize(), begin, null, -1);
 
-        StructureMembers.Member m = members.findMember( v2.getShortName());
+        StructureMembers.Member m = members.findMember(v2.getShortName());
         if (null == m)
           continue; // this means that the data is missing from the ArrayStructure
-        
-        Array data = structureData.getArray( count, m);
-        writeData( data, index, v2.getDataType());
-     }
+
+        Array data = structureData.getArray(count, m);
+        writeData(data, index, v2.getDataType());
+      }
 
       count++;
     }
@@ -432,17 +428,13 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
     this.numrecs = n;
 
     // need to let unlimited dimension know of new shape
-    Iterator iter = ncfile.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension dim = (Dimension) iter.next();
+    for (Dimension dim : ncfile.getDimensions()) {
       if (dim.isUnlimited())
-       dim.setLength(n);
+        dim.setLength(n);
     }
 
     // need to let all unlimited variables know of new shape
-    iter = ncfile.getVariables().iterator();
-    while (iter.hasNext()) {
-      Variable v = (Variable) iter.next();
+    for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) {
         v.shape[0] = n;
       }
@@ -474,12 +466,10 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   // fill buffer with fill value
   protected void fillNonRecordVariables() throws IOException {
     // run through each variable
-    Iterator varIter = ncfile.getVariables().iterator();
-    while (varIter.hasNext()) {
-      Variable v = (Variable) varIter.next();
+    for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) continue;
       try {
-        writeData(v, null, makeConstantArray( v));
+        writeData(v, null, makeConstantArray(v));
       } catch (InvalidRangeException e) {
         e.printStackTrace();  // shouldnt happen
       }
@@ -492,15 +482,13 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
       Range r = new Range(i,i);
 
       // run through each variable
-      Iterator varIter = ncfile.getVariables().iterator();
-      while (varIter.hasNext()) {
-        Variable v = (Variable) varIter.next();
+      for (Variable v : ncfile.getVariables()) {
         if (!v.isUnlimited() || (v instanceof Structure)) continue;
-        ArrayList ranges = new ArrayList();
+        List<Range> ranges = new ArrayList<Range>();
         ranges.add(r);
-        for (int j=1; j<v.getRank(); j++)
+        for (int j = 1; j < v.getRank(); j++)
           ranges.add(null);
-        writeData(v, ranges, makeConstantArray( v));
+        writeData(v, ranges, makeConstantArray(v));
       }
     }
   }
@@ -591,6 +579,9 @@ abstract class N3iosp implements ucar.nc2.IOServiceProviderWriter {
   /** Debug info for this object. */
   public String toStringDebug(Object o) { return null; }
 
+  public Object sendIospMessage( Object message) {
+    return null;
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff we need the subclass to implement

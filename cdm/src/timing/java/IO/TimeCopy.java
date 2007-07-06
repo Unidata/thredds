@@ -95,10 +95,10 @@ public class TimeCopy {
 
     */
 
-    /* copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut", false);
-    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut2", true);
+    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut", true);
+    /* copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut2", true);
     copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut3", false);
-    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut4", true);
+    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut4", true); */
 
     /*
      copy (no buffer) took = 90.516 sec; rate = 21.755541804763798Mb/sec
@@ -128,9 +128,10 @@ public class TimeCopy {
         copy (buffer) took = 84.73400000000001 sec; rate = 23.24007626218519Mb/sec
         copy (buffer) took = 107.459 sec; rate = 18.325357782968386Mb/sec
         copyFileNIO(10 kb chunk) took = 115.798 sec; rate = 17.005687680270817Mb/sec
-     */
-    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/iostream", true);
+     *
     copyFileNIO("C:/data/hdf5/IASI.h5", "C:/temp/nio", 10);
+    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut4", true);
+    copyFileNIO("C:/data/hdf5/IASI.h5", "C:/temp/nio", 100);  */
 
   }
 

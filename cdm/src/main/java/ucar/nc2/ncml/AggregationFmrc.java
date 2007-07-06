@@ -1,6 +1,5 @@
-// $Id: FmrcAggregation.java 70 2006-07-13 15:16:05Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -98,7 +97,7 @@ public class AggregationFmrc extends Aggregation {
   // split out so FmrcSingle call call seperayely
   protected void buildDataset(Dataset typicalDataset, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
-    NcMLReader.transferDataset( typicalGds.getNetcdfFile(), ncDataset, null);
+    DatasetConstructor.transferDataset( typicalGds.getNetcdfFile(), ncDataset, null);
 
     // some additional global attributes
     Group root = ncDataset.getRootGroup();
@@ -125,28 +124,26 @@ public class AggregationFmrc extends Aggregation {
     if (true) { // LOOK detect if we have the info
       ArrayObject.D1 runData = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {nruns});
       for (int j = 0; j < nestedDatasets.size(); j++) {
-        Dataset dataset = (Dataset) nestedDatasets.get(j);
+        Dataset dataset = nestedDatasets.get(j);
         runData.set(j, dataset.getCoordValueString());
       }
       runtimeCoordVar.setCachedData(runData, true);
     } else {
-      runtimeCoordVar.setProxyReader( this);
+      runtimeCoordVar.setProxyReader2( this);
     }
 
     // handle the 2D time coordinates and dimensions
     // for the case that we have a fmrcDefinition, there may be time coordinates that dont show up in the typical dataset
     if (fmrcDefinition != null) {
 
-      List runSeq = fmrcDefinition.getRunSequences();
-      for (int i = 0; i < runSeq.size(); i++) { // each runSeq generates a 2D time coordinate
-        FmrcDefinition.RunSeq seq = (FmrcDefinition.RunSeq) runSeq.get(i);
+      List<FmrcDefinition.RunSeq> runSeq = fmrcDefinition.getRunSequences();
+      for (FmrcDefinition.RunSeq seq : runSeq) { // each runSeq generates a 2D time coordinate
         String timeDimName = seq.getName();
 
         // whats the maximum size ?
         boolean isRagged = false;
         int max_times = 0;
-        for (int j = 0; j < nestedDatasets.size(); j++) {
-          Dataset dataset = (Dataset) nestedDatasets.get(j);
+        for (Dataset dataset : nestedDatasets) {
           ForecastModelRunInventory.TimeCoord timeCoord = seq.findTimeCoordByRuntime(dataset.getCoordValueDate());
           double[] offsets = timeCoord.getOffsetHours();
           max_times = Math.max(max_times, offsets.length);
@@ -159,7 +156,7 @@ public class AggregationFmrc extends Aggregation {
         ncDataset.removeDimension(null, timeDimName); // remove previous declaration, if any
         ncDataset.addDimension(null, timeDim);
 
-        Dataset firstDataset = (Dataset) nestedDatasets.get(0);
+        Dataset firstDataset = nestedDatasets.get(0);
         Date baseDate = firstDataset.getCoordValueDate();
         String desc = "Coordinate variable for " + timeDimName + " dimension";
         String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
@@ -180,9 +177,9 @@ public class AggregationFmrc extends Aggregation {
         newV.addAttribute(new Attribute("units", units));
         newV.addAttribute(new Attribute("long_name", desc));
         newV.addAttribute(new Attribute("standard_name", "time"));
-        newV.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+        newV.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         if (isRagged)
-          newV.addAttribute(new ucar.nc2.Attribute("missing_value", new Double(Double.NaN)));
+          newV.addAttribute(new Attribute("missing_value", Double.NaN));
 
         // compute the coordinates
         Array coordValues = calcTimeCoordinateFromDef(nruns, max_times, seq);
@@ -197,9 +194,7 @@ public class AggregationFmrc extends Aggregation {
     }
 
     // promote all grid variables
-    List grids = typicalGds.getGrids();
-    for (int i = 0; i < grids.size(); i++) {
-      GridDatatype grid = (GridDatatype) grids.get(i);
+    for (GridDatatype grid : typicalGds.getGrids()) {
       Variable v = (Variable) grid.getVariable();
 
       // add new dimension
@@ -207,8 +202,8 @@ public class AggregationFmrc extends Aggregation {
 
       // construct new variable, replace old one
       VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-      vagg.setProxyReader(this);
-      NcMLReader.transferVariableAttributes(v, vagg);
+      vagg.setProxyReader2(this);
+      DatasetConstructor.transferVariableAttributes(v, vagg);
 
       // we need to explicitly list the coordinate axes, because time coord is now 2D
       vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getCoordinateSystem().getName()));
@@ -233,10 +228,8 @@ public class AggregationFmrc extends Aggregation {
     // For now, we dont handle ragged time coordinates.
 
     // find time axes
-    HashSet timeAxes = new HashSet();
-    List grids = gds.getGrids();
-    for (int i = 0; i < grids.size(); i++) {
-      GridDatatype grid = (GridDatatype) grids.get(i);
+    Set<CoordinateAxis1D> timeAxes = new HashSet<CoordinateAxis1D>();
+    for (GridDatatype grid : gds.getGrids()) {
       GridCoordSystem gcc = grid.getCoordinateSystem();
       CoordinateAxis1D timeAxis = gcc.getTimeAxis1D();
       if (null != timeAxis)
@@ -244,29 +237,26 @@ public class AggregationFmrc extends Aggregation {
     }
 
     // promote the time coordinate(s) to 2D, read in values if we have to
-    Iterator iter = timeAxes.iterator();
-    while (iter.hasNext()) {
-      CoordinateAxis1DTime v = (CoordinateAxis1DTime) iter.next();
-
+    for (CoordinateAxis1D taxis : timeAxes) {
       // construct new variable, replace old one
-      String dims = dimName + " " + v.getDimensionsString();
-      VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-      NcMLReader.transferVariableAttributes(v, vagg);
+      String dims = dimName + " " + taxis.getDimensionsString();
+      VariableDS vagg = new VariableDS(ncDataset, null, null, taxis.getShortName(), taxis.getDataType(), dims, null, null);
+      DatasetConstructor.transferVariableAttributes(taxis, vagg);
       Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
       if (att != null) vagg.remove(att);
 
-      ncDataset.removeVariable(null, v.getShortName());
+      ncDataset.removeVariable(null, taxis.getShortName());
       ncDataset.addVariable(null, vagg);
 
       if (!timeUnitsChange)
         // Case 1: assume the units are all the same, so its just another agg variable
-        vagg.setProxyReader(this);
+        vagg.setProxyReader2(this);
       else {
         // Case 2: assume the time units differ for each nested file
         readTimeCoordinates(vagg, cancelTask);
       }
 
-      if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
+      if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + taxis.getName());
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
   }
@@ -279,28 +269,26 @@ public class AggregationFmrc extends Aggregation {
       return readAggCoord(mainv, cancelTask);
 
     // remove first dimension, calculate size
-    List ranges = mainv.getRanges();
-    List innerSection = ranges.subList(1, ranges.size());
+    List<Range> ranges = mainv.getRanges();
+    List<Range> innerSection = ranges.subList(1, ranges.size());
     long fullSize = Range.computeSize( innerSection); // may not be the same as the data returned !!
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType(); // LOOK why getOriginalDataType() ?
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
-    Iterator iter = nestedDatasets.iterator();
-    while (iter.hasNext()) {
-      Dataset vnested = (Dataset) iter.next();
-      Array varData = vnested.read(mainv, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
+      for (Dataset vnested : nestedDatasets) {
+        Array varData = vnested.read(mainv, cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return null;
 
-      Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
-      destPos += fullSize;
-      if (fullSize != varData.getSize())
-        System.out.println("FMRC RAGGED TIME "+fullSize+" != "+varData.getSize());
-    }
+        Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
+        destPos += fullSize;
+        if (fullSize != varData.getSize())
+          System.out.println("FMRC RAGGED TIME " + fullSize + " != " + varData.getSize());
+      }
 
-    return allData;
+      return allData;
   }
 
   /**
@@ -312,27 +300,27 @@ public class AggregationFmrc extends Aggregation {
    * @return the data array section
    * @throws IOException
    */
-  public Array read(Variable mainv, CancelTask cancelTask, List section) throws IOException, InvalidRangeException {
+  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     // If its full sized, then use full read, so that data gets cached.
-    long size = Range.computeSize( section);
+    long size = section.computeSize();
     if (size == mainv.getSize())
       return read( mainv, cancelTask);
 
     if ( mainv.getShortName().equals(dimName))
-      return readAggCoord(mainv, cancelTask, section);
+      return readAggCoord(mainv, section, cancelTask);
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS)mainv).getOriginalDataType() : mainv.getDataType();
-    Array sectionData = Array.factory(dtype, Range.getShape(section));
+    Array sectionData = Array.factory(dtype, section.getShape());
     int destPos = 0;
 
-    Range joinRange = (Range) section.get(0);
-    List innerSection = section.subList(1, section.size());
+    List<Range> ranges = section.getRanges();
+    Range joinRange = section.getRange(0);
+    List<Range> innerSection = ranges.subList(1, ranges.size());
+
     long fullSize = Range.computeSize( innerSection); // may not be the same as the data returned !!
     if (debug) System.out.println("   agg wants range=" + mainv.getName()+"("+joinRange+")");
 
-    Iterator iter = nestedDatasets.iterator();
-    while (iter.hasNext()) {
-      Dataset nested = (Dataset) iter.next();
+    for (Dataset nested : nestedDatasets) {
       if (!nested.isNeeded(joinRange))
         continue;
 
@@ -341,7 +329,7 @@ public class AggregationFmrc extends Aggregation {
       Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
       destPos += fullSize;
       if (fullSize != varData.getSize())
-        System.out.println("FMRC RAGGED HERE "+fullSize+" != "+varData.getSize());
+        System.out.println("FMRC RAGGED HERE " + fullSize + " != " + varData.getSize());
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -376,15 +364,13 @@ public class AggregationFmrc extends Aggregation {
 
     if (fmrcDefinition != null) {
 
-      List runSeq = fmrcDefinition.getRunSequences();
-      for (int i = 0; i < runSeq.size(); i++) { // each runSeq generates a 2D time coordinate
-        FmrcDefinition.RunSeq seq = (FmrcDefinition.RunSeq) runSeq.get(i);
+      List<FmrcDefinition.RunSeq> runSeq = fmrcDefinition.getRunSequences();
+      for (FmrcDefinition.RunSeq seq : runSeq) { // each runSeq generates a 2D time coordinate
         String timeDimName = seq.getName();
 
         // whats the maximum size ?
         int max_times = 0;
-        for (int j = 0; j < nestedDatasets.size(); j++) {
-          Dataset dataset = (Dataset) nestedDatasets.get(j);
+        for (Dataset dataset : nestedDatasets) {
           ForecastModelRunInventory.TimeCoord timeCoord = seq.findTimeCoordByRuntime(dataset.getCoordValueDate());
           double[] offsets = timeCoord.getOffsetHours();
           max_times = Math.max(max_times, offsets.length);
@@ -394,12 +380,12 @@ public class AggregationFmrc extends Aggregation {
         Dimension timeDim = ncDataset.findDimension(timeDimName);
         timeDim.setLength(max_times);
 
-        Dataset firstDataset = (Dataset) nestedDatasets.get(0);
+        Dataset firstDataset = nestedDatasets.get(0);
         Date baseDate = firstDataset.getCoordValueDate();
         String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
 
         VariableDS timeCoord = (VariableDS) ncDataset.findVariable(timeDimName);
-        timeCoord.setDimensions( timeCoord.getDimensionsString());
+        timeCoord.setDimensions(timeCoord.getDimensionsString());
         timeCoord.addAttribute(new Attribute("units", units));
         timeCoord.setUnitsString(units);
 
@@ -415,40 +401,37 @@ public class AggregationFmrc extends Aggregation {
 
     // reset all aggregation variables
     List<CoordinateAxis> timeAxes = new ArrayList<CoordinateAxis>();
-    List vars = ncDataset.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      VariableDS var = (VariableDS) vars.get(i);
+    List<Variable> vars = ncDataset.getVariables();
+    for (Variable v : vars) {
 
-      if (var instanceof CoordinateAxis) {
-        CoordinateAxis axis = (CoordinateAxis) var;
+      if (v instanceof CoordinateAxis) {
+        CoordinateAxis axis = (CoordinateAxis) v;
         if (axis.getAxisType() == AxisType.Time)
-          timeAxes.add( axis);
+          timeAxes.add(axis);
 
         if (fmrcDefinition != null) // skip time coordinates when we have a fmrcDefinition, since they were already done
           continue;
       }
 
-      if ((var.getRank() > 0) && var.getDimension(0).getName().equals(dimName) && (var != runtimeCoord)) {
-        var.setDimensions( var.getDimensionsString()); // reset dimension
-        var.setCachedData(null, false); // get rid of any cached data, since its now wrong
+      if ((v.getRank() > 0) && v.getDimension(0).getName().equals(dimName) && (v != runtimeCoord)) {
+        v.setDimensions(v.getDimensionsString()); // reset dimension
+        v.setCachedData(null, false); // get rid of any cached data, since its now wrong
 
       } else {
-        ProxyReader proxy = var.getProxyReader();
+        VariableEnhanced ve = (VariableDS) v;
+        ProxyReader2 proxy = ve.getProxyReader2();
         if (proxy instanceof DatasetProxyReader)
-          var.setProxyReader(typicalDatasetProxy);
+          ve.setProxyReader2(typicalDatasetProxy);
       }
 
     }
 
     if (fmrcDefinition == null) {  // LOOK this is not right - need to reset the time lengths !!
       // recalc the time coordinate(s)
-      Iterator iter = timeAxes.iterator();
-      while( iter.hasNext()) {
-        CoordinateAxis timeAxis = (CoordinateAxis) iter.next();
-
+      for (CoordinateAxis timeAxis : timeAxes) {
         if (timeUnitsChange) {
           // Case 2: assume the time units differ for each nested file
-          readTimeCoordinates( timeAxis, cancelTask);
+          readTimeCoordinates(timeAxis, cancelTask);
         }
       }
     }
@@ -503,7 +486,7 @@ public class AggregationFmrc extends Aggregation {
     if (timeAxis.getDataType() == DataType.STRING) {
 
       for (int i = 0; i < dateList.size(); i++) {
-        Date[] dates = (Date[]) dateList.get(i);
+        Date[] dates = dateList.get(i);
         for (int j = 0; j < dates.length; j++) {
           Date date = dates[j];
           timeCoordVals.setObject(ima.set(i, j), formatter.toDateTimeStringISO(date));
@@ -521,7 +504,7 @@ public class AggregationFmrc extends Aggregation {
       timeAxis.addAttribute(new Attribute("units", units));
 
       for (int i = 0; i < dateList.size(); i++) {
-        Date[] dates = (Date[]) dateList.get(i);
+        Date[] dates = dateList.get(i);
         for (int j = 0; j < dates.length; j++) {
           Date date = dates[j];
           double val = du.makeValue(date);
@@ -537,7 +520,7 @@ public class AggregationFmrc extends Aggregation {
     ArrayDouble.D2 coordValues = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[]{nruns, max_times});
     Date baseDate = null;
     for (int j = 0; j < nestedDatasets.size(); j++) {
-      Dataset dataset = (Dataset) nestedDatasets.get(j);
+      Dataset dataset = nestedDatasets.get(j);
       Date runTime = dataset.getCoordValueDate();
       if (baseDate == null)
         baseDate = runTime;

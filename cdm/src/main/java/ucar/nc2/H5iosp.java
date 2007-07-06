@@ -34,7 +34,7 @@ import java.nio.*;
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-class H5iosp implements IOServiceProvider {
+class H5iosp extends AbstractIOServiceProvider {
   static boolean debug = false;
   static boolean debugPos = false;
   static boolean debugHeap = false;

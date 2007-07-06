@@ -1,6 +1,5 @@
-// $Id:ArrayStructureBB.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -47,7 +46,6 @@ import java.nio.ByteOrder;
    </pre>
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see Array
  */
 public class ArrayStructureBB extends ArrayStructure {
@@ -278,8 +276,7 @@ public class ArrayStructureBB extends ArrayStructure {
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.STRUCTURE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be Structure");
     int offset =  calcOffset(recnum, m);
-    ArrayStructureBB subset = new ArrayStructureBB(m.getStructureMembers(), m.getShape(), this.bbuffer, offset);
-    return subset;
+    return new ArrayStructureBB(m.getStructureMembers(), m.getShape(), this.bbuffer, offset);
   }
 
   /** debug */

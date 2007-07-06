@@ -98,7 +98,7 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  imp
     if ( elevVar == null )
       throw new IllegalStateException( "Missing height coordinate variable" );
 
-    timeDimName = timeVar.getCoordinateDimension().getName();
+    timeDimName = timeVar.getDimension(0).getName();
     timeVarName = timeVar.getName();
     latVarName = latVar.getName();
     lonVarName = lonVar.getName();

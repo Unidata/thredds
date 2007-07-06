@@ -42,7 +42,7 @@ import java.util.Date;
  * @author caron
  * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
-public class Cinrad2IOServiceProvider implements IOServiceProvider {
+public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Cinrad2IOServiceProvider.class);
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
@@ -497,15 +497,4 @@ public class Cinrad2IOServiceProvider implements IOServiceProvider {
   public void close() throws IOException {
     volScan.raf.close();
   }
-
-  public boolean syncExtend() { return false; }
-  public boolean sync() { return false; }
-
-  public void setSpecial( Object special) {}
-
-  public String toStringDebug(Object o) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String getDetailInfo() { return ""; }
 }

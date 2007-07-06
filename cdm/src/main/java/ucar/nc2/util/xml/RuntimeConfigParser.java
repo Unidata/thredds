@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -19,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.util;
+package ucar.nc2.util.xml;
 
   import org.jdom.*;
   import org.jdom.input.*;
@@ -43,7 +42,6 @@ package ucar.nc2.util;
  * </pre>
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class RuntimeConfigParser {
 

@@ -1,6 +1,5 @@
-// $Id: DiskCache.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,6 +23,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
+import java.net.URLDecoder;
 
 /**
  * This is a general purpose utility for determining a place to write files and cache them, eg for
@@ -74,7 +74,6 @@ import java.util.*;
     doSomething( wf);
   </pre>
  * @author jcaron
- * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 public class DiskCache {
   static private String root = null;
@@ -159,6 +158,7 @@ public class DiskCache {
    * <p>
    *
    * @param fileLocation normal file location
+   * @param alwaysInCache true if you want to look only in the cache
    * @return  a File that either exists or is writeable.
    */
   static public File getFile(String fileLocation, boolean alwaysInCache) {
@@ -226,17 +226,15 @@ public class DiskCache {
     pw.println("Cache files");
     pw.println("Size   LastModified       Filename");
     File dir = new File(root);
-    File[] files = dir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
+    for (File file : dir.listFiles()) {
       String org = null;
       try {
-        org = java.net.URLDecoder.decode(file.getName(), "UTF8");
+        org = URLDecoder.decode(file.getName(), "UTF8");
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
       }
 
-      pw.println(" "+file.length() + " " + new Date(file.lastModified())+" "+org);
+      pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
     }
   }
 
@@ -246,15 +244,13 @@ public class DiskCache {
    * @param sbuff write results here, null is ok.
    */
   static public void cleanCache(Date cutoff, StringBuffer sbuff) {
-    if (sbuff != null) sbuff.append("CleanCache files before "+cutoff+"\n");
+    if (sbuff != null) sbuff.append("CleanCache files before ").append(cutoff).append("\n");
     File dir = new File(root);
-    File[] files = dir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
+    for (File file : dir.listFiles()) {
       Date lastMod = new Date(file.lastModified());
-      if (lastMod.before( cutoff)) {
+      if (lastMod.before(cutoff)) {
         file.delete();
-        if (sbuff != null) sbuff.append(" delete "+file+" ("+lastMod+")\n");
+        if (sbuff != null) sbuff.append(" delete ").append(file).append(" (").append(lastMod).append(")\n");
       }
     }
   }
@@ -277,27 +273,26 @@ public class DiskCache {
    * @param sbuff write results here, null is ok.
    */
   static public void cleanCache(long maxBytes, Comparator fileComparator, StringBuffer sbuff) {
-    if (sbuff != null) sbuff.append("CleanCache maxBytes= "+maxBytes+"\n");
+    if (sbuff != null) sbuff.append("CleanCache maxBytes= ").append(maxBytes).append("\n");
 
     File dir = new File(root);
     File[] files = dir.listFiles();
-    List fileList = Arrays.asList( files);
+    List<File> fileList = Arrays.asList( files);
     Collections.sort( fileList, fileComparator);
 
     long total = 0, total_delete = 0;
-    for (int i = 0; i < fileList.size(); i++) {
-      File file = (File) fileList.get(i);
+    for (File file : fileList) {
       if (file.length() + total > maxBytes) {
         total_delete += file.length();
-        if (sbuff != null) sbuff.append(" delete "+file+" ("+file.length()+")\n");
+        if (sbuff != null) sbuff.append(" delete ").append(file).append(" (").append(file.length()).append(")\n");
         file.delete();
       } else {
         total += file.length();
       }
     }
     if (sbuff != null) {
-      sbuff.append("Total bytes deleted= "+total_delete+"\n");
-      sbuff.append("Total bytes left in cache= "+total+"\n");
+      sbuff.append("Total bytes deleted= ").append(total_delete).append("\n");
+      sbuff.append("Total bytes left in cache= ").append(total).append("\n");
     }
   }
 
@@ -309,7 +304,10 @@ public class DiskCache {
     }
   }
 
-  /** debug */
+  /** debug
+   * @param filename look for this file
+   * @throws java.io.IOException if read error
+   */
   static void make(String filename) throws IOException {
     File want = DiskCache.getCacheFile(filename);
     System.out.println("make=" + want.getPath() + "; exists = " + want.exists());
@@ -321,7 +319,7 @@ public class DiskCache {
       String enc = java.net.URLEncoder.encode(filename, "UTF8");
       System.out.println(" original=" + java.net.URLDecoder.decode(enc, "UTF8"));
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
   }
 

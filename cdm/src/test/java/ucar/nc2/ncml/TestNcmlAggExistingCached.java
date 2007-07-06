@@ -104,7 +104,7 @@ public class TestNcmlAggExistingCached extends TestCase {
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.DOUBLE;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     try {
       Array data = time.read();
@@ -137,7 +137,7 @@ public class TestNcmlAggExistingCached extends TestCase {
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.DOUBLE;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     Array data = time.read("1:2");
     assert data.getRank() == 1;
@@ -175,7 +175,7 @@ public class TestNcmlAggExistingCached extends TestCase {
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.DOUBLE;
 
-    assert time.getCoordinateDimension() == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
     time.setCachedData(null, false);
     Array data = time.read("1:2");

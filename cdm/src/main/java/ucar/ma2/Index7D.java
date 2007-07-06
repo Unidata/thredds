@@ -1,6 +1,5 @@
-// $Id:Index7D.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,7 +24,6 @@ package ucar.ma2;
  *
  * @see Index
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class Index7D extends Index {
 
@@ -80,46 +78,13 @@ public class Index7D extends Index {
     current[4] = curr4;
     current[5] = curr5;
     current[6] = curr6;
-    return (int []) current.clone();
+    return current.clone();
   }
 
   public int currentElement() {
     return offset + curr0*stride0 + curr1*stride1 + curr2*stride2 +
         + curr3*stride3 + curr4*stride4 + curr5*stride5 + curr6*stride6;
   }
-
-  /* public int element(int [] index) {
-    int val0 = index[0];
-    if (val0 < 0 || val0 >= shape0)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val1 = index[1];
-    if (val1 < 0 || val1 >= shape1)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val2 = index[2];
-    if (val2 < 0 || val2 >= shape2)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val3 = index[3];
-    if (val3 < 0 || val3 >= shape3)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val4 = index[4];
-    if (val4 < 0 || val4 >= shape4)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val5 = index[5];
-    if (val5 < 0 || val5 >= shape5)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    int val6 = index[6];
-    if (val6 < 0 || val6 >= shape6)  // check index here
-      throw new ArrayIndexOutOfBoundsException();
-
-    return offset + val0*stride0 + val1*stride1 + val2*stride2
-        + val3*stride3 + val4*stride4 + val5*stride5 + val6*stride6;
-  } */
 
   protected int incr() {
     if (++curr6 >= shape6) {

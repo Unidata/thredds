@@ -77,7 +77,7 @@ public class TestNcmlUnion extends TestCase {
 
     assert !lat.isUnlimited();
 
-    assert lat.getCoordinateDimension().equals(ncfile.findDimension("lat"));
+    assert lat.getDimension(0).equals(ncfile.findDimension("lat"));
 
     Attribute att = lat.findAttribute("units");
     assert null != att;
@@ -116,7 +116,7 @@ public class TestNcmlUnion extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.INT;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
     assert !v.isUnlimited();
 
     assert v.getDimension(0).equals(ncfile.findDimension("time"));
@@ -225,7 +225,7 @@ public class TestNcmlUnion extends TestCase {
     assert v.getShape()[2] == 4;
     assert v.getDataType() == DataType.DOUBLE;
 
-    assert v.getCoordinateDimension() == null;
+    assert !v.isCoordinateVariable();
     assert !v.isUnlimited();
 
     assert v.getDimension(0).equals(ncfile.findDimension("time"));

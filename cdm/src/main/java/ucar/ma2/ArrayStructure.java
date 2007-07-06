@@ -1,6 +1,5 @@
-// $Id:ArrayStructure.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,7 +23,6 @@ package ucar.ma2;
  * Superclass for implementations of Array of StructureData.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see Array
  */
 public abstract class ArrayStructure extends Array {
@@ -82,6 +80,7 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Get the structure members.
+   * @return the structure members.
    */
   public StructureMembers getStructureMembers() { return members; }
 
@@ -150,7 +149,8 @@ public abstract class ArrayStructure extends Array {
   abstract protected StructureData makeStructureData( ArrayStructure as, int index);
 
   /**
-   * Get the size each StructureData object takes in bytes.
+   * Get the size each StructureData object in bytes.
+   * @return the size each StructureData object in bytes.
    */
   public int getStructureSize() {
     return members.getStructureSize();
@@ -226,22 +226,22 @@ public abstract class ArrayStructure extends Array {
     //boolean isScalar = m.isScalar();
 
     if (dataType == DataType.DOUBLE) {
-        return new Double( getScalarDouble(recno, m));
+        return getScalarDouble(recno, m);
 
     } else if (dataType == DataType.FLOAT) {
-      return new Float( getScalarFloat(recno, m));
+      return getScalarFloat(recno, m);
 
     } else if (dataType == DataType.BYTE) {
-      return new Byte( getScalarByte(recno, m));
+      return getScalarByte(recno, m);
 
     } else if (dataType == DataType.SHORT) {
-      return new Short( getScalarShort(recno, m));
+      return getScalarShort(recno, m);
 
     } else if (dataType == DataType.INT) {
-      return new Integer( getScalarInt(recno, m));
+      return getScalarInt(recno, m);
 
     } else if (dataType == DataType.LONG) {
-      return new Long( getScalarLong(recno, m));
+      return getScalarLong(recno, m);
 
     } else if (dataType == DataType.CHAR) {
       return getScalarString(recno, m);
@@ -429,7 +429,7 @@ public abstract class ArrayStructure extends Array {
    * @param m member Variable.
    * @throws IllegalArgumentException if m is not legal member.
    * @throws ForbiddenConversionException if not convertible to float.
-   */
+   *
   public double convertScalarDouble(int recno, StructureMembers.Member m) {
     DataType dt = m.getDataType();
     if (dt == DataType.FLOAT)
@@ -448,7 +448,7 @@ public abstract class ArrayStructure extends Array {
       return m.convertScaleOffsetMissing( getScalarChar(recno, m));
 
     throw new ForbiddenConversionException();
-  }
+  } */
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
   /**

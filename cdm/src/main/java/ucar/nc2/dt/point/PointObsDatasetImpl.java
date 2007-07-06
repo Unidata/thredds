@@ -26,6 +26,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.StructureData;
 import ucar.ma2.DataType;
@@ -67,7 +68,7 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
     super(title, description, location);
   }
 
-  public PointObsDatasetImpl(NetcdfFile ncfile) {
+  public PointObsDatasetImpl(NetcdfDataset ncfile) {
     super( ncfile);
   }
 

@@ -1,6 +1,5 @@
-// $Id:DODSVariable.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,7 +33,6 @@ import java.util.*;
  *
  * @see ucar.nc2.Variable
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class DODSVariable extends ucar.nc2.Variable {
@@ -43,14 +41,15 @@ public class DODSVariable extends ucar.nc2.Variable {
   protected String dodsShortName;
 
   // used by subclasses and the other constructors
-  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName) {
+  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DodsV dodsV) {
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
     this.dodsShortName = dodsShortName;
+    setSPobject(dodsV);
   }
 
     // use when a dods variable is a scalar
-  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, opendap.dap.BaseType dodsScalar) {
+  DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, opendap.dap.BaseType dodsScalar, DodsV dodsV) {
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
     this.dodsShortName = dodsShortName;
@@ -65,7 +64,7 @@ public class DODSVariable extends ucar.nc2.Variable {
     if ((dataType == DataType.STRING) &&
         (null != (strlenDim = dodsfile.getNetcdfStrlenDim( this)))) {
 
-      ArrayList dims = new ArrayList();
+      List<Dimension> dims = new ArrayList<Dimension>();
       if (strlenDim.getLength() != 0)
         dims.add( dodsfile.getSharedDimension( parentGroup, strlenDim));
       setDimensions(dims);
@@ -74,11 +73,13 @@ public class DODSVariable extends ucar.nc2.Variable {
     } else {
       shape = new int[0];
     }
+
+    setSPobject(dodsV);
   }
 
    // use when a dods variable is an Array, rank > 0
   DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DArray dodsArray,
-                opendap.dap.BaseType elemType ) {
+                opendap.dap.BaseType elemType, DodsV dodsV ) {
 
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     this.dodsfile = dodsfile;
@@ -89,7 +90,7 @@ public class DODSVariable extends ucar.nc2.Variable {
       addAttribute(new Attribute("_unsigned", "true"));
     }
 
-    ArrayList dims = dodsfile.constructDimensions( parentGroup, dodsArray);
+    List<Dimension> dims = dodsfile.constructDimensions( parentGroup, dodsArray);
 
     // check for netcdf char array
     Dimension strlenDim;
@@ -102,15 +103,30 @@ public class DODSVariable extends ucar.nc2.Variable {
     }
 
     setDimensions(dims);
+    setSPobject(dodsV);
   }
 
+  // for section, slice
+  @Override
+  protected Variable copy() {
+    return new DODSVariable(this);
+  }
+
+  protected DODSVariable(DODSVariable from) {
+    super(from);
+
+    dodsfile = from.dodsfile;
+    dodsShortName = from.dodsShortName;
+    CE = from.CE;
+  }
+
+
   // need package access
-  protected void calcIsCoordinateVariable() { super.calcIsCoordinateVariable(); }
- 
+  // protected void calcIsCoordinateVariable() { super.calcIsCoordinateVariable(); }
+
   protected void setCE( String CE ){ this.CE = CE; }
   protected boolean hasCE(){ return CE != null; }
   protected String nameWithCE() { return hasCE() ? getShortName() + CE : getShortName(); }
 
   protected String getDODSshortName() { return dodsShortName; }
-
 }

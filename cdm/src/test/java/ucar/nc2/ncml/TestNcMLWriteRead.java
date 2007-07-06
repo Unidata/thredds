@@ -107,7 +107,7 @@ public class TestNcMLWriteRead extends TestCase {
 
     NetcdfFile org_ncd = NetcdfDataset.acquireFile(location, null);
     if (useRecords)
-      org_ncd.addRecordStructure();
+      org_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     NcMLWriter writer = new NcMLWriter();
 
@@ -132,7 +132,7 @@ public class TestNcMLWriteRead extends TestCase {
     // read it back in
     NetcdfFile new_ncd = NetcdfDataset.acquireFile(ncmlOut, null);
     if (useRecords)
-      new_ncd.addRecordStructure();
+      new_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     TestCompare.compareFiles( org_ncd, new_ncd);
     //assert cat.equals( catV1);
@@ -146,7 +146,7 @@ public class TestNcMLWriteRead extends TestCase {
 
     NetcdfDataset org_ncd = NetcdfDataset.openDataset(location, false, null);
     if (useRecords)
-      org_ncd.addRecordStructure();
+      org_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     NcMLWriter writer = new NcMLWriter();
     if (showFiles) {
@@ -171,7 +171,7 @@ public class TestNcMLWriteRead extends TestCase {
     // read it back in
     NetcdfDataset new_ncd = NetcdfDataset.openDataset(ncmlOut, false, null);
     if (useRecords)
-      new_ncd.addRecordStructure();
+      new_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     TestCompare.compareFiles( org_ncd, new_ncd);
     //assert cat.equals( catV1);

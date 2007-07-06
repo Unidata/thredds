@@ -4,6 +4,7 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
@@ -164,7 +165,7 @@ public class TestStationDataset extends TestCase {
     double h = bb.getUpperRightPoint().getLatitude() - bb.getLowerLeftPoint().getLatitude();
     LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getWidth()/2, h/2);
 
-    List stationsBB= sod.getStations( bb2);
+    List<Station> stationsBB= sod.getStations( bb2);
     assert null != stationsBB;
     assert stationsBB.size() <= stations.size();
     System.out.println(" bb2 stations = "+stationsBB.size());
@@ -297,7 +298,7 @@ public class TestStationDataset extends TestCase {
         }
 
          if (dt != DataType.STRING) {
-           sdata.convertScalarFloat(member);
+           sdata.getScalarDouble(member.getName());
          }
 
       }

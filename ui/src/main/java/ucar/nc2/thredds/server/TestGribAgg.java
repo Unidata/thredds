@@ -83,7 +83,7 @@ public class TestGribAgg implements CatalogCrawler.Listener {
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
 
-      if (v.getCoordinateDimension() == null) { // only data variables
+      if (!v.isCoordinateVariable()) { // only data variables
         UberVariable uv = (UberVariable) hash.get( v.getName());
         if (uv == null) {
           uv = new UberVariable(v);

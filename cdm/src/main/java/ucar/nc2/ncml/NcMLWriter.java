@@ -1,6 +1,5 @@
-// $Id:NcMLWriter.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,19 +34,19 @@ import org.jdom.output.Format;
 
 import java.io.*;
 import java.util.*;
-import java.net.URI;
 
 /**
  * Helper class to write NcML.
  *
- * @see ucar.nc2.NetcdfFile
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
+ * @see ucar.nc2.NetcdfFile
  */
 
 public class NcMLWriter {
   protected static final Namespace ncNS = Namespace.getNamespace(XMLEntityResolver.NJ22_NAMESPACE);
   protected static final Namespace xsiNS = Namespace.getNamespace("xsi", XMLEntityResolver.W3C_XML_NAMESPACE);
+
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLWriter.class);
 
   private NetcdfDataset ncd;
   private XMLOutputter fmt;
@@ -56,36 +55,36 @@ public class NcMLWriter {
   /**
    * Write a NetcdfFile as an XML document to the specified file.
    *
-   * @param ncfile NcML for this NetcdfFile
+   * @param ncfile      NcML for this NetcdfFile
    * @param filenameOut write NcML to this location
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void writeXML(NetcdfFile ncfile, String filenameOut) throws IOException {
-    OutputStream out = new BufferedOutputStream( new FileOutputStream( filenameOut, false));
-    writeXML( ncfile, out, null);
+    OutputStream out = new BufferedOutputStream(new FileOutputStream(filenameOut, false));
+    writeXML(ncfile, out, null);
     out.close();
   }
 
   /**
    * Write a NetcdfFile as an XML document to the specified stream.
    *
-   * @param ncfile NcML for this NetcdfFile
-   * @param os write to this OutputStream
+   * @param ncfile   NcML for this NetcdfFile
+   * @param os       write to this OutputStream
    * @param location normally null, meaning use ncd.getLocation(); otherwise put this into the NcML location
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void writeXML(NetcdfFile ncfile, OutputStream os, String location) throws IOException {
 
     if (ncfile instanceof NetcdfDataset)
       ncd = (NetcdfDataset) ncfile;
     else
-      ncd = new NetcdfDataset( ncfile, false);
+      ncd = new NetcdfDataset(ncfile, false);
 
     // Output the document, use standard formatter
     //fmt = new XMLOutputter("  ", true);
     //fmt.setLineSeparator("\n");
-    fmt = new XMLOutputter( Format.getPrettyFormat());
-    fmt.output( makeDocument(location), os);
+    fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(makeDocument(location), os);
   }
 
   public void writeXMLAgg(NetcdfDataset ncd, OutputStream os, String location) throws IOException {
@@ -94,16 +93,16 @@ public class NcMLWriter {
     // Output the document, use standard formatter
     //fmt = new XMLOutputter("  ", true);
     //fmt.setLineSeparator("\n");
-    fmt = new XMLOutputter( Format.getPrettyFormat());
-    fmt.output( makeDocument(location), os);
+    fmt = new XMLOutputter(Format.getPrettyFormat());
+    fmt.output(makeDocument(location), os);
   }
 
 
-  private Document makeDocument( String location) throws IOException {
+  private Document makeDocument(String location) throws IOException {
     Element rootElem = new Element("netcdf", ncNS);
     Document doc = new Document(rootElem);
 
-      // namespaces
+    // namespaces
     rootElem.addNamespaceDeclaration(ncNS);
     /* rootElem.addNamespaceDeclaration(xsiNS);
 
@@ -119,7 +118,7 @@ public class NcMLWriter {
       location = ncd.getLocation();
 
     if (null != location) {
-      rootElem.setAttribute("location", NetworkUtils.canonicalize( location));
+      rootElem.setAttribute("location", NetworkUtils.canonicalize(location));
     }
 
     if (null != ncd.getId())
@@ -134,7 +133,7 @@ public class NcMLWriter {
     Aggregation agg = ncd.getAggregation();
     if (agg != null) {
       String aggDimensionName = agg.getDimensionName();
-      aggCoord = ncd.findVariable( aggDimensionName);
+      aggCoord = ncd.findVariable(aggDimensionName);
       //System.out.println("isMetadata="+aggCoord.isMetadata());
     }
 
@@ -143,22 +142,22 @@ public class NcMLWriter {
     if (ncd.getCoordSysWereAdded()) {
       String conv = ncd.findAttValueIgnoreCase(null, "Conventions", null);
       if (conv == null)
-        rootGroup.addAttribute( new Attribute("Conventions", _Coordinate.Convention));
+        rootGroup.addAttribute(new Attribute("Conventions", _Coordinate.Convention));
       else
-        rootGroup.addAttribute( new Attribute("Conventions", conv + ", "+_Coordinate.Convention));
+        rootGroup.addAttribute(new Attribute("Conventions", conv + ", " + _Coordinate.Convention));
 
     }
 
-    writeGroup( rootElem, rootGroup);
+    writeGroup(rootElem, rootGroup);
 
     if (agg != null) {
-      rootElem.addContent( writeAggregation( agg));
+      rootElem.addContent(writeAggregation(agg));
     }
 
     return doc;
   }
 
-  private Element writeAggregation( Aggregation agg) throws IOException {
+  private Element writeAggregation(Aggregation agg) throws IOException {
     Element aggElem = new Element("aggregation", ncNS);
     Aggregation.Type type = agg.getType();
     aggElem.setAttribute("type", type.toString());
@@ -167,30 +166,27 @@ public class NcMLWriter {
     if (dimName != null)
       aggElem.setAttribute("dimName", dimName);
 
-    List varList = agg.getVariables();
-    for (int i = 0; i < varList.size(); i++) {
-      String s = (String) varList.get(i);
+    List<String> varList = agg.getVariables();
+    for (String s : varList) {
       Element e = new Element("variableAgg", ncNS);
       e.setAttribute("name", s);
       aggElem.addContent(e);
     }
 
     List<Aggregation.Dataset> dsList = agg.getNestedDatasets();
-    for (int i = 0; i < dsList.size(); i++) {
-      Aggregation.Dataset ds = dsList.get(i);
+    for (Aggregation.Dataset ds : dsList) {
       Element e = new Element("netcdf", ncNS);
       e.setAttribute("location", ds.getLocation());
       //if (type == Aggregation.Type.JOIN_EXISTING)
-        e.setAttribute("ncoords", Integer.toString(ds.getNcoords(null)));
+      e.setAttribute("ncoords", Integer.toString(ds.getNcoords(null)));
       if (null != ds.getCoordValueString())
         e.setAttribute("coordValue", ds.getCoordValueString());
       aggElem.addContent(e);
     }
 
     if (agg.getType() == Aggregation.Type.UNION) {
-      List<NetcdfDataset> unionList = ((AggregationUnion)agg).getUnionDatasets();
-      for (int i = 0; i < unionList.size(); i++) {
-        NetcdfDataset ds = unionList.get(i);
+      List<NetcdfDataset> unionList = ((AggregationUnion) agg).getUnionDatasets();
+      for (NetcdfDataset ds : unionList) {
         Element e = new Element("netcdf", ncNS);
         e.setAttribute("location", ds.getLocation());
         aggElem.addContent(e);
@@ -200,7 +196,7 @@ public class NcMLWriter {
     return aggElem;
   }
 
-  public static Element writeAttribute( ucar.nc2.Attribute att, String elementName, Namespace ns) {
+  public static Element writeAttribute(ucar.nc2.Attribute att, String elementName, Namespace ns) {
     Element attElem = new Element(elementName, ns);
     attElem.setAttribute("name", att.getName());
 
@@ -212,17 +208,17 @@ public class NcMLWriter {
       String value = att.getStringValue();
       String err = org.jdom.Verifier.checkCharacterData(value);
       if (err != null) {
-        value = "NcMLWriter invalid attribute value, err= "+err;
+        value = "NcMLWriter invalid attribute value, err= " + err;
         System.out.println(value);
       }
       attElem.setAttribute("value", StringUtil.quoteXmlAttribute(value));
     } else {
 
       StringBuffer buff = new StringBuffer();
-      for (int i=0; i<att.getLength(); i++) {
+      for (int i = 0; i < att.getLength(); i++) {
         Number val = att.getNumericValue(i);
-        if (i > 0) buff.append( " ");
-        buff.append( val.toString());
+        if (i > 0) buff.append(" ");
+        buff.append(val.toString());
       }
       attElem.setAttribute("value", buff.toString());
     }
@@ -281,7 +277,8 @@ public class NcMLWriter {
   }  */
 
   // shared dimensions
-  public static Element writeDimension( Dimension dim, Namespace ns) {
+
+  public static Element writeDimension(Dimension dim, Namespace ns) {
     Element dimElem = new Element("dimension", ns);
     dimElem.setAttribute("name", dim.getName());
     dimElem.setAttribute("length", Integer.toString(dim.getLength()));
@@ -292,20 +289,16 @@ public class NcMLWriter {
     return dimElem;
   }
 
-  private Element writeGroup( Element elem, Group group) {
+  private Element writeGroup(Element elem, Group group) {
 
-      // dimensions
-    Iterator dims = group.getDimensions().iterator();
-    while ( dims.hasNext()) {
-      Dimension dim = (Dimension) dims.next();
-      elem.addContent( writeDimension( dim, ncNS));
+    // dimensions
+    for (Dimension dim : group.getDimensions()) {
+      elem.addContent(writeDimension(dim, ncNS));
     }
 
-       // attributes
-    Iterator atts = group.getAttributes().iterator();
-    while ( atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      elem.addContent( writeAttribute( att, "attribute", ncNS));
+    // attributes
+    for (Attribute att : group.getAttributes()) {
+      elem.addContent(writeAttribute(att, "attribute", ncNS));
     }
 
     /* if (addCoords) {
@@ -318,26 +311,20 @@ public class NcMLWriter {
       }
     } */
 
-        // regular variables
-    Iterator vars = group.getVariables().iterator();
-    while ( vars.hasNext()) {
-      Variable  var = (Variable) vars.next();
-      if (!(var instanceof VariableEnhanced))
-        System.out.println(" type= "+var.getClass().getName());
-      VariableEnhanced vare = (VariableEnhanced) var;
-      /* if (addCoords && (var instanceof CoordinateAxis))
-        continue; // skip if already added */
-
-      elem.addContent( writeVariable( vare));
+    // regular variables
+    for (Variable var : group.getVariables()) {
+      try {
+        elem.addContent(writeVariable((VariableEnhanced) var));
+      } catch (ClassCastException e) {
+        log.error("var not instanceof VariableEnhanced = " + var.getName(), e);
+      }
     }
 
-       // nested groups
-    Iterator groups = group.getGroups().iterator();
-    while ( groups.hasNext()) {
-      Group g = (Group) groups.next();
+    // nested groups
+    for (Group g : group.getGroups()) {
       Element groupElem = new Element("group", ncNS);
       groupElem.setAttribute("name", g.getShortName());
-      elem.addContent( writeGroup( groupElem, g));
+      elem.addContent(writeGroup(groupElem, g));
     }
 
     return elem;
@@ -369,24 +356,23 @@ public class NcMLWriter {
     return attElem;
   } */
 
-
   /* private Element makeReferenceSys( ReferenceSystem referenceSystem) {
-    Element elem = new Element("referenceCoordinateSystem", ncNS);
-    elem.setAttribute("name", referenceSystem.getName());
-    elem.setAttribute("authority", referenceSystem.getAuthority());
-    if (referenceSystem.getReferenceType() != null)
-      elem.setAttribute("type", referenceSystem.getReferenceType().toString());
+   Element elem = new Element("referenceCoordinateSystem", ncNS);
+   elem.setAttribute("name", referenceSystem.getName());
+   elem.setAttribute("authority", referenceSystem.getAuthority());
+   if (referenceSystem.getReferenceType() != null)
+     elem.setAttribute("type", referenceSystem.getReferenceType().toString());
 
-    ArrayList params = referenceSystem.getParameters();
-    for (int i=0; i<params.size(); i++) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) params.get(i);
-      elem.addContent( makeAttribute(att, "parameter"));
-    }
-    return elem;
-  } */
+   ArrayList params = referenceSystem.getParameters();
+   for (int i=0; i<params.size(); i++) {
+     ucar.nc2.Attribute att = (ucar.nc2.Attribute) params.get(i);
+     elem.addContent( makeAttribute(att, "parameter"));
+   }
+   return elem;
+ } */
 
 
-  private Element writeVariable( VariableEnhanced var) {
+  private Element writeVariable(VariableEnhanced var) {
     boolean isStructure = var instanceof Structure;
 
     Element varElem = new Element("variable", ncNS);
@@ -394,13 +380,13 @@ public class NcMLWriter {
 
     StringBuffer buff = new StringBuffer();
     List dims = var.getDimensions();
-    for (int i=0; i<dims.size(); i++) {
+    for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
-      if (i > 0) buff.append( " ");
+      if (i > 0) buff.append(" ");
       if (dim.isShared())
-        buff.append( dim.getName());
+        buff.append(dim.getName());
       else
-        buff.append( dim.getLength());
+        buff.append(dim.getLength());
     }
     if (buff.length() > 0)
       varElem.setAttribute("shape", buff.toString());
@@ -409,39 +395,36 @@ public class NcMLWriter {
     if (dt != null)
       varElem.setAttribute("type", dt.toString());
 
-        // attributes
-    Iterator atts = var.getAttributes().iterator();
-    while ( atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
-      varElem.addContent( writeAttribute( att, "attribute", ncNS));
+    // attributes
+    for (Attribute att : var.getAttributes()) {
+      varElem.addContent(writeAttribute(att, "attribute", ncNS));
     }
 
     if (var.isMetadata() || (var == aggCoord))
-      varElem.addContent( writeValues( var, ncNS, true));
+      varElem.addContent(writeValues(var, ncNS, true));
 
     if (isStructure) {
       Structure s = (Structure) var;
-      Iterator nested = s.getVariables().iterator();
-      while ( nested.hasNext()) {
-        VariableEnhanced nestedV = (VariableEnhanced) nested.next();
-        varElem.addContent( writeVariable( nestedV));
+      for (Variable variable : s.getVariables()) {
+        VariableEnhanced nestedV = (VariableEnhanced) variable;
+        varElem.addContent(writeVariable(nestedV));
       }
     }
 
     return varElem;
   }
 
- /* private Element makeCoordinateAxis( CoordinateAxis var) {
-    var.addAttribute( new Attribute("units", var.getUnitsString()));
-    if (var.getAxisType() != null)
-      var.addAttribute( new Attribute(_Coordinate.AxisType", var.getAxisType().toString()));
-    if (var.getPositive() != null)
-      var.addAttribute( new Attribute(_Coordinate.ZisPositive", var.getPositive()));
+  /* private Element makeCoordinateAxis( CoordinateAxis var) {
+   var.addAttribute( new Attribute("units", var.getUnitsString()));
+   if (var.getAxisType() != null)
+     var.addAttribute( new Attribute(_Coordinate.AxisType", var.getAxisType().toString()));
+   if (var.getPositive() != null)
+     var.addAttribute( new Attribute(_Coordinate.ZisPositive", var.getPositive()));
 
-    return makeVariable(var);
-  } */
+   return makeVariable(var);
+ } */
 
-  public static Element writeValues( VariableEnhanced v, Namespace ns, boolean allowRegular) {
+  public static Element writeValues(VariableEnhanced v, Namespace ns, boolean allowRegular) {
     Element elem = new Element("values", ns);
 
     StringBuffer buff = new StringBuffer();
@@ -453,37 +436,37 @@ public class NcMLWriter {
     }
 
     if (v.getDataType() == DataType.CHAR) {
-      char[] data = (char []) a.getStorage();
+      char[] data = (char[]) a.getStorage();
       elem.setText(new String(data));
 
     } else if (v.getDataType() == DataType.STRING) { // use seperate elements??
       IndexIterator iter = a.getIndexIterator();
       int count = 0;
       while (iter.hasNext()) {
-        String s =  (String) iter.getObjectNext();
+        String s = (String) iter.getObjectNext();
         if (count++ > 0) buff.append(" ");
-        buff.append( "\""+s+"\"");
+        buff.append("\"").append(s).append("\"");
       }
       elem.setText(buff.toString());
 
     } else {
-       //check to see if regular
+      //check to see if regular
       if (allowRegular && (a.getRank() == 1) && (a.getSize() > 2)) {
         Index ima = a.getIndex();
-        double start = a.getDouble( ima.set(0));
-        double incr = a.getDouble( ima.set(1)) - start;
+        double start = a.getDouble(ima.set(0));
+        double incr = a.getDouble(ima.set(1)) - start;
         boolean isRegular = true;
-        for (int i=2; i < a.getSize(); i++) {
-          double v1 = a.getDouble( ima.set(i));
-          double v0 = a.getDouble( ima.set(i-1));
-          if (!ucar.nc2.util.Misc.closeEnough(v1-v0, incr))
+        for (int i = 2; i < a.getSize(); i++) {
+          double v1 = a.getDouble(ima.set(i));
+          double v0 = a.getDouble(ima.set(i - 1));
+          if (!ucar.nc2.util.Misc.closeEnough(v1 - v0, incr))
             isRegular = false;
         }
 
         if (isRegular) {
-          elem.setAttribute("start", Double.toString( start));
-          elem.setAttribute("increment", Double.toString( incr));
-          elem.setAttribute("npts", Long.toString( v.getSize()));
+          elem.setAttribute("start", Double.toString(start));
+          elem.setAttribute("increment", Double.toString(incr));
+          elem.setAttribute("npts", Long.toString(v.getSize()));
           return elem;
         }
       }
@@ -503,19 +486,19 @@ public class NcMLWriter {
     return elem;
   }
 
-  public static void main( String arg[]){
+  public static void main(String arg[]) {
     //String urls = "C:/data/conventions/coards/cldc.mean.nc";
-    String test =  "C:/data/atd/rgg.20020411.000000.lel.ll.nc";
+    String test = "C:/data/atd/rgg.20020411.000000.lel.ll.nc";
     String urls = (arg.length == 0) ? test : arg[0];
 
     try {
       NetcdfDataset df = NetcdfDataset.openDataset(urls);
       NcMLWriter writer = new NcMLWriter();
-      System.out.println("NetcdfDataset = "+urls+"\n"+df);
+      System.out.println("NetcdfDataset = " + urls + "\n" + df);
       System.out.println("-----------");
-      writer.writeXML( df, System.out, null);
+      writer.writeXML(df, System.out, null);
     } catch (Exception ioe) {
-      System.out.println("error = "+urls);
+      System.out.println("error = " + urls);
       ioe.printStackTrace();
     }
   }

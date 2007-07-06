@@ -75,7 +75,7 @@ public class OldUnidataPointObsDataset extends PointObsDatasetImpl implements Ty
   private RecordDatasetHelper recordHelper;
   private ArrayList records;
 
-  public OldUnidataPointObsDataset(NetcdfFile ds) throws IOException {
+  public OldUnidataPointObsDataset(NetcdfDataset ds) throws IOException {
     super( ds);
 
     recordHelper = new RecordDatasetHelper(ds, timeName, timeName, dataVariables);

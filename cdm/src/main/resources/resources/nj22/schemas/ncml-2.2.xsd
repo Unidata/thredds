@@ -190,12 +190,6 @@
       <xsd:attribute name="fmrcDefinition" type="xsd:string" />
       <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
 
-      <!-- deprecated  -->
-      <xsd:attribute name="forecastDate" type="xsd:string" />
-      <xsd:attribute name="forecastDateVariable" type="xsd:string" />
-      <xsd:attribute name="forecastOffset" type="xsd:string" />
-      <xsd:attribute name="forecastTimeOffset" type="xsd:string" />
-      <xsd:attribute name="referenceDateVariable" type="xsd:string" />
     </xsd:complexType>
   </xsd:element>
 
@@ -204,7 +198,6 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="forecastModelRunCollection"/>
       <xsd:enumeration value="forecastModelRunSingleCollection"/>
-      <xsd:enumeration value="forecastModelRun"/>  <!-- deprecated  -->
       <xsd:enumeration value="joinExisting"/>
       <xsd:enumeration value="joinExistingOne"/>
       <xsd:enumeration value="joinNew"/>

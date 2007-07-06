@@ -62,7 +62,7 @@ public class TestAggFmrcNonuniform extends TestCase {
     assert lat.getDataType() == DataType.DOUBLE;
 
     assert !lat.isUnlimited();
-    assert lat.getCoordinateDimension().equals(ncfile.findDimension("y"));
+    assert lat.getDimension(0).equals(ncfile.findDimension("y"));
 
     Attribute att = lat.findAttribute("units");
     assert null != att;

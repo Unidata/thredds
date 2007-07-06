@@ -1,4 +1,3 @@
-// $Id: StationImpl.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -28,12 +27,11 @@ import java.io.IOException;
  * Implementation of Station
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
 public class StationImpl extends EarthLocationImpl implements Station, Comparable {
   protected String name, desc, wmoId;
-  protected ArrayList obsList;
+  protected List<StationObsDatatype> obsList;
   protected int count = -1;
 
   public StationImpl() {
@@ -70,11 +68,11 @@ public class StationImpl extends EarthLocationImpl implements Station, Comparabl
 
   // got to use this or subclass readObservations()
   public void addObs( StationObsDatatype sobs) {
-    if (null == obsList) obsList = new ArrayList();
+    if (null == obsList) obsList = new ArrayList<StationObsDatatype>();
     obsList.add( sobs);
   }
 
-  protected ArrayList readObservations()  throws IOException { return null; }
+  protected List<StationObsDatatype> readObservations()  throws IOException { return null; }
 
   public int compareTo(Object o) {
     StationImpl so = (StationImpl) o;

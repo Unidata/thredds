@@ -1,6 +1,5 @@
-// $Id:DODSNetcdfFile.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,7 +36,6 @@ import java.util.*;
  * Access to DODS datasets through the Netcdf API.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see ucar.nc2.NetcdfFile
  */
 
@@ -84,9 +82,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Debugging flags.
-   *
-   * @param debugFlag
+   * Debugging flags. This is a way to decouple setting flags from particular implementations.
+   * @param debugFlag set of debug flags.
    */
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugCE = debugFlag.isSet("DODS/constraintExpression");
@@ -106,6 +103,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   /**
    * Set whether small variables are preloaded; only turn off for debugging.
+   * @param b true if small variables are preloaded (default true)
    */
   static void setPreload(boolean b) {
     preload = b;
@@ -138,7 +136,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *
    * @param datasetURL URL of the file. This should start with the protocol "dods:"
    *                   It may also start with protocol "http:".
-   * @throws IOException
+   * @throws IOException on io error
    * @throws java.net.MalformedURLException
    */
   public DODSNetcdfFile(String datasetURL) throws IOException {
@@ -151,7 +149,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *
    * @param datasetURL URL of the file. This should start with the protocol "dods:" or "http:".
    * @param cancelTask check if task is cancelled. may be null.
-   * @throws IOException
+   * @throws IOException on io error
    * @throws java.net.MalformedURLException
    */
   public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException {
@@ -228,12 +226,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     parseGlobalAttributes(das, rootDodsV);
     if (cancelTask != null && cancelTask.isCancel()) return;
 
-    // look for coordinate variables
-    for (int i = 0; i < variables.size(); i++) {
-      Variable v = (Variable) variables.get(i);
+    /* look for coordinate variables
+    for (Variable v : variables) {
       if (v instanceof DODSVariable)
         ((DODSVariable) v).calcIsCoordinateVariable();
-    }
+    } */
 
     // see if theres a CE: if so, we need to reset the dodsConnection without it,
     // since we are reusing dodsConnection; perhaps this is not needed?
@@ -265,11 +262,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     // preload scalers, coordinate variables, strings, small arrays
     if (preload) {
-      List preloadList = new ArrayList();
-      for (int i = 0; i < variables.size(); i++) {
-        Variable dodsVar = (Variable) variables.get(i);
-        if (dodsVar.getCoordinateDimension() != null || dodsVar.isCaching() ||
-                dodsVar.getDataType() == DataType.STRING) {
+      List<Variable> preloadList = new ArrayList<Variable>();
+      for (Variable dodsVar : variables) {
+        if (dodsVar.isCoordinateVariable() || dodsVar.isCaching() ||
+            dodsVar.getDataType() == DataType.STRING) {
           dodsVar.setCaching(true);
           preloadList.add(dodsVar);
         }
@@ -424,9 +420,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   private void parseGlobalAttributes(DAS das, DodsV root) {
 
-    List atts = root.attributes;
-    for (int i = 0; i < atts.size(); i++) {
-      DODSAttribute ncatt = (DODSAttribute) atts.get(i);
+    List<DODSAttribute> atts = root.attributes;
+    for (DODSAttribute ncatt : atts) {
       rootGroup.addAttribute(ncatt);
     }
 
@@ -540,9 +535,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   private void constructTopVariables(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
-    List topVariables = rootDodsV.children;
-    for (int i = 0; i < topVariables.size(); i++) {
-      DodsV dodsV = (DodsV) topVariables.get(i);
+    List<DodsV> topVariables = rootDodsV.children;
+    for (DodsV dodsV : topVariables) {
       if (dodsV.bt instanceof DConstructor) continue;
 
       addVariable(rootGroup, null, dodsV);
@@ -551,9 +545,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   private void constructConstructors(DodsV rootDodsV, CancelTask cancelTask) throws IOException {
-    List topVariables = rootDodsV.children;
-    for (int i = 0; i < topVariables.size(); i++) {
-      DodsV dodsV = (DodsV) topVariables.get(i);
+    List<DodsV> topVariables = rootDodsV.children;
+    for (DodsV dodsV : topVariables) {
       if (dodsV.isDone) continue;
 
       addVariable(rootGroup, null, dodsV);
@@ -571,7 +564,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       else
         parentStructure.addMemberVariable(v);
 
-      v.setSPobject(dodsV);
       dodsV.isDone = true;
     }
     return v;
@@ -587,10 +579,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (dodsBT instanceof DString) {
       if (dodsV.darray == null) {
         if (debugConstruct) System.out.println("  assigned to DString: name = " + dodsShortName);
-        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT, dodsV);
       } else {
         if (debugConstruct) System.out.println("  assigned to Array of Strings: name = " + dodsShortName);
-        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT, dodsV);
       }
 
       // primitives
@@ -601,11 +593,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (dodsV.darray == null) {
         if (debugConstruct)
           System.out.println("  assigned to scalar " + dodsBT.getTypeName() + ": name = " + dodsShortName);
-        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsBT, dodsV);
       } else {
         if (debugConstruct)
           System.out.println("  assigned to array of type " + dodsBT.getClass().getName() + ": name = " + dodsShortName);
-        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT);
+        return new DODSVariable(this, parentGroup, parentStructure, dodsShortName, dodsV.darray, dodsBT, dodsV);
       }
     }
 
@@ -616,7 +608,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         //  common case is that the map vectors already exist as top level variables
         // this is how the netccdf servers do it
         for (int i = 1; i < dodsV.children.size(); i++) {
-          DodsV map = (DodsV) dodsV.children.get(i);
+          DodsV map = dodsV.children.get(i);
           String shortName = DODSNetcdfFile.makeNetcdfName(map.bt.getName());
           Variable mapV = parentGroup.findVariable(shortName);
           if (mapV == null) {        // if not, add it LOOK need to compare values
@@ -650,8 +642,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           addAttributes(g, dodsV);
           parentGroup.addGroup(g);
 
-          for (int i = 0; i < dodsV.children.size(); i++) {
-            DodsV nested = (DodsV) dodsV.children.get(i);
+          for (DodsV nested : dodsV.children) {
             addVariable(g, null, nested);
           }
           return null;
@@ -756,9 +747,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   } */
 
   private void addAttributes(Variable v, DodsV dodsV) {
-    List atts = dodsV.attributes;
-    for (int i = 0; i < atts.size(); i++) {
-      DODSAttribute ncatt = (DODSAttribute) atts.get(i);
+    List<DODSAttribute> atts = dodsV.attributes;
+    for (DODSAttribute ncatt : atts) {
       v.addAttribute(ncatt);
     }
 
@@ -772,9 +762,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   private void addAttributes(Group g, DodsV dodsV) {
-    List atts = dodsV.attributes;
-    for (int i = 0; i < atts.size(); i++) {
-      DODSAttribute ncatt = (DODSAttribute) atts.get(i);
+    List<DODSAttribute> atts = dodsV.attributes;
+    for (DODSAttribute ncatt : atts) {
       g.addAttribute(ncatt);
     }
   }
@@ -833,7 +822,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     String dimName = (att2 == null) ? null : att2.getValueAtN(0);
     if (debugCharArray) System.out.println(v.getName() + " has strlen= " + strlen + " dimName= " + dimName);
 
-    int dimLength = 0;
+    int dimLength;
     try {
       dimLength = Integer.parseInt(strlen);
     } catch (NumberFormatException e) {
@@ -848,6 +837,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * If an equivilent shared dimension already exists, use it, else add d to shared dimensions.
    * Equivilent is same name and length.
    *
+   * @param group from this goup, if null, use rootGroup
    * @param d find equivilent shared dimension to this one.
    * @return equivilent shared dimension or d.
    */
@@ -855,9 +845,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (d.getName() == null) return d;
 
     if (group == null) group = rootGroup;
-    Iterator iter = group.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension sd = (Dimension) iter.next();
+    for (Dimension sd : group.getDimensions()) {
       if (sd.getName().equals(d.getName()) && sd.getLength() == d.getLength())
         return sd;
     }
@@ -867,10 +855,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // construct list of dimensions to use
-  ArrayList constructDimensions(Group group, opendap.dap.DArray dodsArray) {
+  List<Dimension> constructDimensions(Group group, opendap.dap.DArray dodsArray) {
     if (group == null) group = rootGroup;
 
-    ArrayList dims = new ArrayList();
+    List<Dimension> dims = new ArrayList<Dimension>();
     Enumeration enumerate = dodsArray.getDimensions();
     while (enumerate.hasMoreElements()) {
       opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
@@ -965,6 +953,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * This is the inverse of convertToNCType().
    *
    * @param dataType Netcdf data type.
+   * @param isUnsigned if its unsigned
    * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
    */
   static public int convertToDODSType(DataType dataType, boolean isUnsigned) {
@@ -1083,6 +1072,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *
    * @param CE constraint expression; use empty string if none
    * @return DataDDS
+   * @throws java.io.IOException on io error
+   * @throws opendap.dap.parser.ParseException if error parsing return
+   * @throws opendap.dap.DAP2Exception if you have otherwise been bad
    */
   DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parser.ParseException,
           opendap.dap.DAP2Exception {
@@ -1116,32 +1108,32 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *
    * @param preloadVariables list of type Variable
    * @return list of type Array, contains the data
-   * @throws IOException
+   * @throws IOException on error
    */
-  public List readArrays(List preloadVariables) throws IOException {
+  @Override
+  public List<Array> readArrays(List<Variable> preloadVariables) throws IOException {
     //For performance tests:
     //if (true) return super.readArrays (variables);
-    if (preloadVariables.size() == 0) return new ArrayList();
+    if (preloadVariables.size() == 0) return new ArrayList<Array>();
 
     // construct the list of variables, skipping ones with cached data
-    ArrayList reqDodsVlist = new ArrayList();
+    List<DodsV> reqDodsVlist = new ArrayList<DodsV>();
     DodsV root;
-    for (int i = 0; i < preloadVariables.size(); i++) {
-      Variable var = (Variable) preloadVariables.get(i);
+    for (Variable var : preloadVariables) {
       if (var.hasCachedData()) continue;
-      reqDodsVlist.add(var.getSPobject());
+      reqDodsVlist.add((DodsV)var.getSPobject());
     }
     Collections.sort(reqDodsVlist); // "depth first" order
 
     // read the data
-    DataDDS dataDDS = null;
-    HashMap map = new HashMap(2 * reqDodsVlist.size() + 1);
+    DataDDS dataDDS;
+    Map<DodsV,DodsV> map = new HashMap<DodsV,DodsV>(2 * reqDodsVlist.size() + 1);
     if (reqDodsVlist.size() > 0) {
 
       // Create the request
       StringBuffer requestString = new StringBuffer();
       for (int i = 0; i < reqDodsVlist.size(); i++) {
-        DodsV dodsV = (DodsV) reqDodsVlist.get(i);
+        DodsV dodsV = reqDodsVlist.get(i);
         requestString.append(i == 0 ? "?" : ",");
         requestString.append(makeDODSname(dodsV));
       }
@@ -1156,9 +1148,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       }
 
       // gotta find the corresponding data in "depth first" order
-      for (int i = 0; i < reqDodsVlist.size(); i++) {
-        DodsV ddsV = (DodsV) reqDodsVlist.get(i);
-
+      for (DodsV ddsV : reqDodsVlist) {
         DodsV dataV = root.findDataV(ddsV);
         if (dataV != null) {
           if (debugConvertData) System.out.println("readArray found dataV= " + makeDODSname(ddsV));
@@ -1171,9 +1161,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     // For each variable either extract the data or use cached data.
-    List result = new ArrayList();
-    for (int i = 0; i < preloadVariables.size(); i++) {
-      Variable var = (Variable) preloadVariables.get(i);
+    List<Array> result = new ArrayList<Array>();
+    for (Variable var : preloadVariables) {
       if (var.hasCachedData()) {
         result.add(var.read());
 
@@ -1181,7 +1170,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         Array data = null;
         DodsV ddsV = (DodsV) var.getSPobject();
 
-        DodsV dataV = (DodsV) map.get(ddsV);
+        DodsV dataV = map.get(ddsV);
         if (dataV == null) {
           logger.error("DODSNetcdfFile.readArrays cant find " + makeDODSname(ddsV) + " in dataDDS; " + location);
           //dataDDS.print( System.out);
@@ -1217,7 +1206,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // this is for reading top variables
-  public Array readData(ucar.nc2.Variable v, List section) throws IOException, InvalidRangeException {
+  // Array readData(ucar.nc2.Variable v, List<Range> ranges) throws IOException, InvalidRangeException {
+
+  @Override
+  protected Array readData(ucar.nc2.Variable v, List<Range> section) throws IOException, InvalidRangeException {
 
     // LOOK: what if theres already a CE !!!!
     // create the constraint expression
@@ -1227,7 +1219,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     // add the selector if not a Sequence
     if (!v.isVariableLength()) {
-      List dodsSection = section;
+      List<Range> dodsSection = section;
       if ((v.getDataType() == DataType.CHAR) && (section != null)) { // CHAR is mapped to DString
         int n = section.size();
         if (n == v.getRank())  // remove last section if present
@@ -1243,7 +1235,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
       DataDDS dataDDS = readDataDDSfromServer(buff.toString());
       DodsV root = DodsV.parseDataDDS(dataDDS);
-      DodsV want = (DodsV) root.children.get(0); // can only be one
+      DodsV want = root.children.get(0); // can only be one
       dataArray = convertD2N.convertTopVariable(v, section, want);
     }
     catch (DAP2Exception ex) {
@@ -1259,7 +1251,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // this is for reading variables that are members of structures
-  public Array readMemberData(ucar.nc2.Variable v, List section, boolean flatten) throws IOException, InvalidRangeException {
+  @Override
+  protected Array readMemberData(ucar.nc2.Variable v, List<Range> section, boolean flatten) throws IOException, InvalidRangeException {
     StringBuffer buff = new StringBuffer(100);
     buff.setLength(0);
 
@@ -1273,7 +1266,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
       DataDDS dataDDS = readDataDDSfromServer(buff.toString());
       DodsV root = DodsV.parseDataDDS(dataDDS);
-      DodsV want = (DodsV) root.children.get(0); // can only be one
+      DodsV want = root.children.get(0); // can only be one
       dataArray = convertD2N.convertNestedVariable(v, section, want, flatten);
 
     }
@@ -1296,7 +1289,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
       DataDDS dataDDS = readDataDDSfromServer(CE);
       DodsV root = DodsV.parseDataDDS(dataDDS);
-      DodsV want = (DodsV) root.children.get(0); // can only be one
+      DodsV want = root.children.get(0); // can only be one
 
       if (v.isMemberOfStructure())
         dataArray = convertD2N.convertNestedVariable(v, null, want, true);
@@ -1315,14 +1308,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return dataArray;
   }
 
-  private int addParents(StringBuffer buff, Variable s, List section, int start) {
+  private int addParents(StringBuffer buff, Variable s, List<Range> section, int start) {
     Structure parent = s.getParentStructure();
     if (parent != null) {
       start = addParents(buff, parent, section, start);
       buff.append(".");
     }
 
-    List subSection = section.subList(start, start + s.getRank());
+    List<Range> subSection = section.subList(start, start + s.getRank());
 
     buff.append(getDODSshortName(s));
 
@@ -1332,9 +1325,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return start + s.getRank();
   }
 
-  private void makeSelector(StringBuffer buff, List section) {
-    for (int d = 0; d < section.size(); d++) {
-      Range r = (Range) section.get(d);
+  private void makeSelector(StringBuffer buff, List<Range> section) {
+    for (Range r : section) {
       buff.append("[");
       buff.append(r.first());
       buff.append(':');
@@ -1882,7 +1874,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   public String toStringDebug() {
     StringBuffer buff = new StringBuffer(2000);
     buff.setLength(0);
-    buff.append("=======================================\nNETCDF DODS file " + getLocation() + "\n");
+    buff.append("=======================================\nNETCDF DODS file ").append(getLocation()).append("\n");
 
     buff.append("DDS = \n");
     ByteArrayOutputStream buffOS = new ByteArrayOutputStream(8000);

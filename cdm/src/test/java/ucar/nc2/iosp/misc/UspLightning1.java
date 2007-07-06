@@ -41,7 +41,7 @@ import java.text.ParseException;
  *
  * @author caron
  */
-public class UspLightning1 implements IOServiceProvider {
+public class UspLightning1 extends AbstractIOServiceProvider {
 
 /*  USPLN data format:
 
@@ -290,26 +290,6 @@ these are long-range detections.
 
   public void close() throws IOException {
     //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public boolean syncExtend() throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public boolean sync() throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public void setSpecial(Object special) {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String toStringDebug(Object o) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String getDetailInfo() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException {
