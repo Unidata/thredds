@@ -144,7 +144,7 @@ public class TestPointDataset extends TestCase {
         }
 
          if ((dt != DataType.STRING) && (dt != DataType.STRUCTURE)) {
-           sdata.getScalarFloat(member);
+           sdata.getScalarFloat(member.getName());
          }
 
       }

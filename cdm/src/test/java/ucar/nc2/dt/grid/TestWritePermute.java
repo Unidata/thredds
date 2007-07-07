@@ -71,7 +71,6 @@ public class TestWritePermute extends TestCase {
     ncfile.addVariable("xzy", double.class, new Dimension[] { xDim, zDim, yDim });
     ncfile.addVariable("yxt", double.class, new Dimension[] { yDim, xDim, tDim });
     ncfile.addVariable("xyt", double.class, new Dimension[] { xDim, yDim, tDim });
-    ncfile.addVariable("yxt", double.class, new Dimension[] { yDim, xDim, tDim });
     ncfile.addVariable("xyz", double.class, new Dimension[] { xDim, yDim, zDim });
 
     // missing two dimension

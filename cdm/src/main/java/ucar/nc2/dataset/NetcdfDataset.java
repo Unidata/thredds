@@ -201,7 +201,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       else if (v instanceof StructureDS)
         ((StructureDS) v).enhance();
 
-      if (cancelTask.isCancel()) return;
+      if ((cancelTask != null) && cancelTask.isCancel()) return;
     }
     ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
     ds.finish(); // recalc the global lists
@@ -426,10 +426,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /** If its an NcML aggregation, it has an Aggregation object associated.
    *  This is public for use by NcmlWriter.
-   **/
+   *
+   * @return  Aggregation or null
+   */
   public ucar.nc2.ncml.Aggregation getAggregation() { return agg; }
 
-  /** Set the Aggregation object associated with this NcML dataset */
+  /** Set the Aggregation object associated with this NcML dataset
+   * @param agg the Aggregation object
+   */
   public void setAggregation(ucar.nc2.ncml.Aggregation agg) {
     this.agg = agg;
   }
@@ -641,8 +645,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Transform a NetcdfFile into a NetcdfDataset, optionally enhance.
-   * You must not use the underlying NetcdfFile after this call.
+   * Transform a NetcdfFile into a NetcdfDataset, optionally enhances it.
+   * You must not use the original NetcdfFile after this call.
    *
    * @param ncfile  NetcdfFile to transform, do not use independently after this.
    * @param enhance if true, process scale/offset/missing and add Coordinate Systems
@@ -711,7 +715,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   //////////////////////////////////////
 
-  public boolean addRecordStructure() {
+  @Override
+  protected boolean makeRecordStructure() {
     if (addedRecordStructure)
       return false;
 
@@ -791,6 +796,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Set underlying file. CAUTION - normally only done through the constructor.
+   * @param ncfile underlying "referenced file"
    */
   public void setReferencedFile(NetcdfFile ncfile) {
     orgFile = ncfile;

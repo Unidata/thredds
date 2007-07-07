@@ -61,7 +61,7 @@ public class NcMLReader {
     debugAggDetail = debugFlag.isSet("NcML/debugAggDetail");
   }
 
-  private static boolean validate = true;
+  private static boolean validate = false;
 
   /**
    * Use NCML to modify a dataset, getting the NcML document as a resource stream.
@@ -77,6 +77,12 @@ public class NcMLReader {
     InputStream is = cl.getResourceAsStream(ncmlResourceLocation);
     if (is == null)
       throw new FileNotFoundException(ncmlResourceLocation);
+
+    if (debugXML) {
+      System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
+      InputStream is2 = cl.getResourceAsStream(ncmlResourceLocation);
+      System.out.println(" contents=\n"+thredds.util.IO.readContents(is2));
+    }
 
     org.jdom.Document doc;
     try {
@@ -585,23 +591,25 @@ public class NcMLReader {
    * @param groupElem ncml group element
    */
   private void readGroup(NetcdfDataset newds, NetcdfDataset refds, Group parent, Group refParent, Element groupElem) {
-    String name = groupElem.getAttributeValue("name");
-    if (name == null) {
-      log.info("NcML Group name is required ("+groupElem+")");
-      hasFatalError = true;
-      return;
-    }
-
-    String nameInFile = groupElem.getAttributeValue("orgName");
-    if (nameInFile == null) nameInFile = name;
 
     Group g, refg;
-    if (parent == null) {
+    if (parent == null) { // this is the <netcdf> element
       g = newds.getRootGroup();
       refg = refds.getRootGroup();
       if (debugConstruct) System.out.println(" root group ");
 
     } else {
+      
+      String name = groupElem.getAttributeValue("name");
+      if (name == null) {
+        log.info("NcML Group name is required ("+groupElem+")");
+        hasFatalError = true;
+        return;
+      }
+
+      String nameInFile = groupElem.getAttributeValue("orgName");
+      if (nameInFile == null) nameInFile = name;
+
       // see if it exists in referenced dataset
       refg = refParent.findGroup(nameInFile);
       if (refg == null) { // new

@@ -1016,7 +1016,6 @@ public class Variable implements VariableIF {
       //if (isMetadata()) result++;
       result = 37 * result + dimensions.hashCode();
       result = 37 * result + getParentGroup().hashCode();
-      result = 37 * result + getShape().hashCode();
       if (parent != null)
         result = 37 * result + parent.hashCode();
 

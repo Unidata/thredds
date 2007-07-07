@@ -1174,7 +1174,7 @@ public class NetcdfFile {
 
     // special hack-a-whack
     if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
-      return addRecordStructure(); // returns a Boolean
+      return makeRecordStructure(); // returns a Boolean
     }
 
     if (spi != null)
@@ -1189,7 +1189,7 @@ public class NetcdfFile {
    *
    * @return true if record was actually added on this call.
    */
-  private boolean addRecordStructure() {
+  protected boolean makeRecordStructure() {
     if (null != getRootGroup().findVariable("record"))
       return false;
 

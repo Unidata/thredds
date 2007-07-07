@@ -25,6 +25,7 @@ package ucar.nc2.dataset;
 import junit.framework.*;
 import ucar.nc2.TestAll;
 import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 
@@ -39,7 +40,11 @@ public class TestCoordinates extends TestCase {
   public void testAlias() throws IOException {
     String filename = TestAll.upcShareTestDataDir + "fmrc/MM_cnrm_129_red.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
-    Dimension d = ncd.findDimension("ensemble");
-    assert d.getCoordinateVariables().size() > 0;
+    Variable v = ncd.findCoordinateAxis("number");
+    assert v != null;
+    assert v.isCoordinateVariable();
+    assert v instanceof CoordinateAxis1D;
+    assert null != ncd.findDimension("ensemble");
+    assert v.getDimension(0) == ncd.findDimension("ensemble");
   }
 }

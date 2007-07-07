@@ -187,7 +187,7 @@ public class Dimension implements Comparable {
     this.isUnlimited = from.isUnlimited;
     this.isVariableLength = from.isVariableLength;
     this.isShared = from.isShared;
-    this.coordVars = new ArrayList<Variable>(from.coordVars);
+    //this.coordVars = new ArrayList<Variable>(from.coordVars);
   }
 
   ///////////////////////////////////////////////////////////
@@ -223,11 +223,11 @@ public class Dimension implements Comparable {
   public void setLength( int n) {
     if (immutable && !isUnlimited) throw new IllegalStateException("Cant modify");
     if (isVariableLength) {
-      if (n != -1) throw new IllegalArgumentException("VariableLength Dimension length ="+n);
+      if (n != -1) throw new IllegalArgumentException("VariableLength Dimension length ="+n+" must be -1");
     } else if (isUnlimited) {
-        if (n < 0) throw new IllegalArgumentException("Unlimited Dimension length ="+n);
+        if (n < 0) throw new IllegalArgumentException("Unlimited Dimension length ="+n+" must >= 0");
      } else {
-      if (n < 1) throw new IllegalArgumentException("Dimension length ="+n);
+      if (n < 1) throw new IllegalArgumentException("Dimension length ="+n+" must be > 0");
     }
     this.length = n;
     hashCode = 0;

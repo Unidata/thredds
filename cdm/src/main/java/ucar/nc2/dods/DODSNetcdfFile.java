@@ -830,6 +830,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       return null;
     }
 
+    if (dimLength <= 0) return null; // LOOK what about unlimited ??
     return new Dimension(dimName, dimLength, dimName != null);
   }
 

@@ -61,8 +61,7 @@ public class DODSVariable extends ucar.nc2.Variable {
 
     // check for netcdf char array
     Dimension strlenDim;
-    if ((dataType == DataType.STRING) &&
-        (null != (strlenDim = dodsfile.getNetcdfStrlenDim( this)))) {
+    if ((dataType == DataType.STRING) && (null != (strlenDim = dodsfile.getNetcdfStrlenDim( this)))) {
 
       List<Dimension> dims = new ArrayList<Dimension>();
       if (strlenDim.getLength() != 0)

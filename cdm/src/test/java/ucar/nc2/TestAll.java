@@ -131,13 +131,13 @@ public class TestAll {
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
-    suite.addTest( ucar.nc2.units.TestUnitsAll.suite());
-    suite.addTest( ucar.nc2.TestNC2.suite());
-    suite.addTest( ucar.nc2.TestH5.suite()); //
-    suite.addTest( ucar.nc2.TestIosp.suite());   //
+    //suite.addTest( ucar.nc2.TestLocal.suite());
+    //suite.addTest( ucar.nc2.TestNC2.suite());
+    //suite.addTest( ucar.nc2.TestH5.suite()); //
+    //suite.addTest( ucar.nc2.TestIosp.suite());   //
 
-    suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
-    suite.addTest( ucar.nc2.ncml.TestNcML.suite());  //
+    //suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
+    //suite.addTest( ucar.nc2.ncml.TestNcML.suite());  //
 
     suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());

@@ -45,6 +45,8 @@ public class TestCompare {
    }
   
   static public void compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach) {
+    System.out.println("Original= "+org);
+    System.out.println("Copy= "+copy);
     showCompare = _showCompare;
     showEach = _showEach;
     compareData = _compareData;

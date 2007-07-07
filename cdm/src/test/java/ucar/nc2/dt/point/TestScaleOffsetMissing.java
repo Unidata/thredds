@@ -64,7 +64,7 @@ public class TestScaleOffsetMissing extends TestCase {
     assert null != m;
     assert m.getUnitsString().equals("meters");
 
-    double dval = sdata.getScalarDouble( m);
+    double dval = sdata.getScalarDouble( m.getName());
     assert dval == -999.0;
 
     int count = 0;
@@ -102,7 +102,7 @@ public class TestScaleOffsetMissing extends TestCase {
     StructureData sdata = s.readStructure(0);
     StructureMembers.Member m = sdata.findMember("testScale");
     assert null != m;
-    float dval = sdata.getScalarFloat( m);
+    float dval = sdata.getScalarFloat( m.getName());
     assert Float.isNaN(dval) : dval;
 
     int count = 0;
@@ -143,8 +143,8 @@ public class TestScaleOffsetMissing extends TestCase {
 
     StructureData sdata = s.readStructure(0);
     StructureMembers.Member m = sdata.findMember("testScale");
-    assert m.getUnitsString().equals("meters");
     assert null != m;
+    assert m.getUnitsString().equals("meters");
 
     Structure.Iterator siter = s.getStructureIterator();
     while (siter.hasNext()) {

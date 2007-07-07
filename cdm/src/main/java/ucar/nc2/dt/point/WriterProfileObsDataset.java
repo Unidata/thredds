@@ -531,7 +531,7 @@ public class WriterProfileObsDataset {
 
     String location = "R:/testdata/sounding/netcdf/Upperair_20070401_0000.nc";
     NetcdfDataset ncfile =  NetcdfDataset.openDataset(location);
-    ncfile.addRecordStructure();
+    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // look through record varibles, for those that have "manLevel" dimension
     // make a StructureData object for those
