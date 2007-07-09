@@ -21,6 +21,10 @@
 
 package thredds.catalog.query;
 
+import ucar.nc2.iosp.nexrad2.NexradStationDB;
+
+import java.io.IOException;
+
 /**
  * Implementation of a DQC  station element. This extends Choice with a location.
  *
@@ -41,7 +45,26 @@ public class Station extends ListChoice {
   public void setLocation(Location location) { this.location = location; }
   public Location getLocation() { return location; }
 
-   public boolean equals(Object o) {
+  public double getLatitude() { return location.getLatitude(); }
+
+  public double getLongitude() { return location.getLongitude(); }
+
+  public double getElevation() {
+      if(location.hasElevation())
+        return location.getElevation();
+      else
+        return Double.NaN;
+  }
+    
+  public String getStationName() {
+    return getName();
+  }
+
+  public String getStationID() {
+      return getValue();
+  }
+
+  public boolean equals(Object o) {
      if (this == o) return true;
      if (!(o instanceof Station )) return false;
      return o.hashCode() == this.hashCode();
