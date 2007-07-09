@@ -726,9 +726,9 @@ class N3header {
   }
 
   private int findDimensionIndex(NetcdfFile ncfile, Dimension wantDim) {
-    List dims = ncfile.getDimensions();
+    List<Dimension> dims = ncfile.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
-      Dimension dim = (Dimension) dims.get(i);
+      Dimension dim = dims.get(i);
       if (dim.equals(wantDim)) return i;
     }
     throw new IllegalStateException("unknown Dimension == " + wantDim);

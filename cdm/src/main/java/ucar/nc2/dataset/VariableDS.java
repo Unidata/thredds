@@ -85,7 +85,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
   /**
    * Wrap the given Variable, making it into a VariableDS.
-   * @param g logical container, if null use ioVar's group
+   * Delegate data reading to the original variable.
+   * Does not share cache, iosp.
+   *
+   * @param g logical container, if null use orgVar's group
    * @param orgVar the original Variable to wrap.
    * @param enhance if true, handle scale/offset/missing values; this can change DataType and data values. You can also call enhance() later.
    */
@@ -95,9 +98,14 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     if (orgVar instanceof Structure)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
 
+    // dont share cache, iosp
+    this.ncfile = null;
+    this.spiObject = null;
+    this.proxyReader = null;
+    createNewCache();
+
     this.orgVar = orgVar;
     this.orgDataType = orgVar.getDataType();
-
     if (g != null) this.group = g; // otherwise super() sets group; this affects the long name.
 
     if (orgVar instanceof VariableDS) {
@@ -113,10 +121,28 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     }
   }
 
+  /**
+   * Copy constructor, for subclasses.
+   * @param vds copy from here.
+   */
+  protected VariableDS( VariableDS vds) {
+    super(vds);
+
+    this.isEnhanced = vds.isEnhanced;
+    this.orgVar = vds.orgVar;
+    this.orgDataType = vds.orgDataType;
+    this.proxyReader2 = vds.proxyReader2;
+    this.smProxy = vds.smProxy;
+
+    //decouyple coordinate systems
+    this.proxy = new EnhancementsImpl( this);
+
+  }
+
   // for section and slice
   @Override
   protected Variable copy() {
-    return new VariableDS(null, this, false); // dont need to enhance
+    return new VariableDS( this);
   }
 
   /** recalc any enhancement info */
@@ -293,6 +319,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       result = super._read();
     else if (proxyReader2 != null)
       result = proxyReader2.read( this, null);
+    else if (proxyReader != null)
+      result = proxyReader.read();
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
@@ -324,6 +352,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       result = super._read(section);
     else if (proxyReader2 != null)
       result = proxyReader2.read( this, section, null);
+    else if (proxyReader != null)
+      result = proxyReader.read( section);
     else if (orgVar != null)
       result = orgVar.read(section);
     else  { // return fill value in a "constant array"

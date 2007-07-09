@@ -49,10 +49,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
 
   /** Create a 1D coordinate axis from an existing Variable
+   * @param ncd the containing dataset
    * @param vds wrap this VariableDS, which is not changed.
    */
-  public CoordinateAxis1D(VariableDS vds) {
-    super( vds);
+  public CoordinateAxis1D(NetcdfDataset ncd, VariableDS vds) {
+    super( ncd, vds);
     setIsLayer();
   }
 
@@ -79,15 +80,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @throws InvalidRangeException if IllegalRange
    */
   public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    List<Range> section = new ArrayList<Range>();
-    section.add(r);
+    Section section = new Section().appendRange(r);
     return (CoordinateAxis1D) section(section);
   }
 
    // for section and slice
   @Override
   protected Variable copy() {
-    return new CoordinateAxis1D(this);
+    return new CoordinateAxis1D(this.ncd, this);
   }
 
   /** The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
@@ -512,7 +512,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     Attribute boundsAtt = findAttributeIgnoreCase("bounds");
     if ((null == boundsAtt) || !boundsAtt.isString()) return false;
     String boundsVarName = boundsAtt.getStringValue();
-    Variable boundsVar = ncfile.findVariable(boundsVarName);
+    Variable boundsVar = ncd.findVariable(boundsVarName);
     if (null == boundsVar) return false;
     if (2 != boundsVar.getRank()) return false;
 
@@ -610,9 +610,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   ////////////////////////////////////////////////////////////////////
-  protected ArrayList<NamedAnything> named;
+  protected ArrayList<NamedObject> named;
   private void makeNames() {
-    named = new ArrayList<NamedAnything>();
+    named = new ArrayList<NamedObject>();
     int n = (int) getSize();
     for (int i = 0; i < n; i++)
       named.add(new NamedAnything(getCoordName(i), getUnitsString()));
@@ -637,7 +637,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public int getIndex(String name) {
     if (named == null) makeNames();
     for (int i = 0; i < named.size(); i++) {
-      NamedAnything level = named.get(i);
+      NamedObject level = named.get(i);
       if (level.getName().trim().equals(name)) return i;
     }
     return -1;

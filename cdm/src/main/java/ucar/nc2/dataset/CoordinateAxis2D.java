@@ -37,15 +37,19 @@ import java.util.List;
 public class CoordinateAxis2D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
 
-  /** create a 2D coordinate axis from an existing Variable */
-  public CoordinateAxis2D( VariableDS vds) {
-    super( vds);
+  /**
+   * Create a 2D coordinate axis from an existing VariableDS
+   * @param ncd the containing dataset
+   * @param vds create it from here
+   */
+  public CoordinateAxis2D( NetcdfDataset ncd, VariableDS vds) {
+    super( ncd, vds);
   }
 
   // for section and slice
   @Override
   protected Variable copy() {
-    return new CoordinateAxis2D(this); 
+    return new CoordinateAxis2D(this.ncd, this);
   }
 
   /** Get the coordinate value at the i, j index.

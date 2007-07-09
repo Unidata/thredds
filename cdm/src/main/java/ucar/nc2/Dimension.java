@@ -19,7 +19,6 @@
  */
 package ucar.nc2;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,6 +45,7 @@ public class Dimension implements Comparable {
   private String name;
   private int length;
   private boolean immutable = false;
+  private Group g;
 
   /**
    * Returns the name of this Dimension; may be null.
@@ -81,16 +81,23 @@ public class Dimension implements Comparable {
    */
   public boolean isShared() { return isShared; }
 
+
+  /**
+   * Get the Group that owns this Dimension.
+   * @return owning group
+   */
+  public Group getGroup() { return g; }
+
   /**
    * Instances which have same contents are equal.
    * Careful!! this is not object identity !!
-   * LOOK need Group ??
    */
   @Override
   public boolean equals(Object oo) {
     if (this == oo) return true;
     if ( !(oo instanceof Dimension)) return false;
     Dimension other = (Dimension) oo;
+    if ((g != null) && !g.equals(other.getGroup())) return false;
     return (getLength() == other.getLength()) &&
            (getName().equals(other.getName())) &&
            (isUnlimited() == other.isUnlimited()) &&
@@ -103,6 +110,7 @@ public class Dimension implements Comparable {
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
+      if (g != null) result += 37 * result + g.hashCode();
       result += 37 * result + getLength();
       result += 37 * result + getName().hashCode();
       result += 37 * result + (isUnlimited() ? 0 : 1);
@@ -232,6 +240,7 @@ public class Dimension implements Comparable {
     this.length = n;
     hashCode = 0;
   }
+
   /** rename
    * @param name new name of Dimension.
    */
@@ -240,6 +249,17 @@ public class Dimension implements Comparable {
     this.name = name;
     hashCode = 0;
   }
+
+  /**
+   * Set the group
+   * @param g parent group
+   */
+  public void setGroup( Group g) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    this.g = g;
+    hashCode = 0;
+  }
+
 
   /**
    * Make this immutable.

@@ -1,4 +1,3 @@
-// $Id:AWIPSConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -38,12 +37,14 @@ import java.util.*;
  * AWIPS netcdf output.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class AWIPSConvention extends CoordSysBuilder {
 
-  /** return true if we think this is a AWIPS file. */
+  /**
+   * @param ncfile the NetcdfFile to test
+   * @return true if we think this is a AWIPS file.
+   */
   public static boolean isMine( NetcdfFile ncfile) {
     return (null != ncfile.findGlobalAttribute("projName")) &&
        (null != ncfile.findDimension("charsPerLevel")) &&
@@ -54,7 +55,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   private final boolean debugProj = false;
   private final boolean debugBreakup = false;
 
-  private ArrayList mungedList = new ArrayList();
+  private List<Variable> mungedList = new ArrayList<Variable>();
   private ProjectionCT projCT = null;
   private double startx, starty;
 
@@ -94,23 +95,21 @@ public class AWIPSConvention extends CoordSysBuilder {
     }
 
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
-    Iterator vars = ds.getVariables().iterator();
-    while (vars.hasNext()) {
-      Variable ncvar = (Variable) vars.next();
-      String levelName = ncvar.getName()+"Levels";
-      Variable levelVar = (Variable) ds.findVariable(levelName);
+    for (Variable ncvar : ds.getVariables()) {
+      String levelName = ncvar.getName() + "Levels";
+      Variable levelVar = ds.findVariable(levelName);
       if (levelVar == null) continue;
       if (levelVar.getRank() != 2) continue;
       if (levelVar.getDataType() != DataType.CHAR) continue;
 
-      ArrayList levels = breakupLevels( ds, levelVar);
+      List<Dimension> levels = breakupLevels(ds, levelVar);
       try {
         createNewVariables(ds, ncvar, levels, levelVar.getDimension(0));
       }
       catch (InvalidRangeException ex) {
         parseInfo.append("createNewVariables InvalidRangeException\n");
       }
-      mungedList.add( ncvar);
+      mungedList.add(ncvar);
     }
 
     if (projCT != null) {
@@ -123,13 +122,12 @@ public class AWIPSConvention extends CoordSysBuilder {
     ds.finish();
 
       // kludge in fixing the units
-    List vlist = ds.getVariables();
-    for (int i=0; i<vlist.size(); i++) {
-      Variable v = (Variable) vlist.get(i);
-      Attribute att = v.findAttributeIgnoreCase( "units");
+    List<Variable> vlist = ds.getVariables();
+    for (Variable v : vlist) {
+      Attribute att = v.findAttributeIgnoreCase("units");
       if (att != null) {
         String units = att.getStringValue();
-        v.addAttribute( new Attribute( "units", normalize( units))); // removes the old
+        v.addAttribute(new Attribute("units", normalize(units))); // removes the old
       }
     }
 
@@ -149,9 +147,9 @@ public class AWIPSConvention extends CoordSysBuilder {
 
   // take a combined level variable and create multiple levels out of it
   // return the list of Dimensions that were created
-  private ArrayList breakupLevels( NetcdfDataset ds, Variable levelVar) {
+  private List<Dimension> breakupLevels( NetcdfDataset ds, Variable levelVar) {
     if (debugBreakup)  parseInfo.append("breakupLevels = "+levelVar.getName()+"\n");
-    ArrayList dimList = new ArrayList();
+    List<Dimension> dimList = new ArrayList<Dimension>();
 
     ArrayChar levelVarData;
     try {
@@ -160,7 +158,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       return dimList;
     }
 
-    ArrayList values = null;
+    List<String> values = null;
     String currentUnits = null;
     ArrayChar.StringIterator iter = levelVarData.getStringIterator();
     while (iter.hasNext()) {
@@ -173,7 +171,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       if (!units.equals(currentUnits)) {
         if (values != null)
           dimList.add( makeZCoordAxis(ds, values, currentUnits));
-        values = new ArrayList();
+        values = new ArrayList<String>();
         currentUnits = units;
       }
 
@@ -192,7 +190,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // make a new variable out of the list in "values"
-  private Dimension makeZCoordAxis( NetcdfDataset ds, ArrayList values, String units) {
+  private Dimension makeZCoordAxis( NetcdfDataset ds, List<String> values, String units) {
     int len = values.size();
     String name = makeZCoordName( units);
     if (len > 1)
@@ -203,7 +201,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     // LOOK replace with check against actual values !!!
     Dimension dim;
-    if (null != (dim = (Dimension) ds.getRootGroup().findDimension(name))) {
+    if (null != (dim = ds.getRootGroup().findDimension(name))) {
       if (dim.getLength() == len) {
         if (debugBreakup) parseInfo.append("  use existing dim"+dim);
         return dim;
@@ -265,33 +263,32 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // create new variables as sections of ncVar
-  private void createNewVariables( NetcdfDataset ds, Variable ncVar, ArrayList newDims,
+  private void createNewVariables( NetcdfDataset ds, Variable ncVar, List<Dimension> newDims,
      Dimension levelDim) throws InvalidRangeException {
 
-    List dims = ncVar.getDimensions();
+    List<Dimension> dims = ncVar.getDimensions();
     int newDimIndex = dims.indexOf(levelDim);
     //String shapeS = ncVar.getShapeS();
 
     int[] origin = new int[ncVar.getRank()];
     int[] shape = ncVar.getShape();
     int count = 0;
-    for (int i=0; i<newDims.size(); i++) {
-      Dimension dim = (Dimension) newDims.get(i);
-      String name = ncVar.getName()+"-"+dim.getName();
+    for (Dimension dim : newDims) {
+      String name = ncVar.getName() + "-" + dim.getName();
 
       origin[newDimIndex] = count;
       shape[newDimIndex] = dim.getLength();
 
-      Variable varNew = ncVar.section( new Section( origin, shape));
-      varNew.setName( name);
-      varNew.setDimension( newDimIndex, dim);
+      Variable varNew = ncVar.section(new Section(origin, shape));
+      varNew.setName(name);
+      varNew.setDimension(newDimIndex, dim);
 
       // synthesize long name
       String long_name = ds.findAttValueIgnoreCase(ncVar, "long_name", ncVar.getName());
-      long_name = long_name+"-"+dim.getName();
-      ds.addVariableAttribute( varNew, new Attribute("long_name", long_name));
+      long_name = long_name + "-" + dim.getName();
+      ds.addVariableAttribute(varNew, new Attribute("long_name", long_name));
 
-      ds.addVariable( null, varNew);
+      ds.addVariable(null, varNew);
 
       parseInfo.append("Created New Variable as section = ");
       varNew.getNameAndDimensions(parseInfo, true, false);
@@ -379,9 +376,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     startx = start.getX();
     starty = start.getY();
 
-    ProjectionCT ct = new ProjectionCT(name, "FGDC", lc);
-
-    return ct;
+    return new ProjectionCT(name, "FGDC", lc);
   }
 
   private ProjectionCT makeStereoProjection(NetcdfDataset ds, String name) throws NoSuchElementException {

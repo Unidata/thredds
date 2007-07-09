@@ -170,6 +170,12 @@ public class CoordinateSystem {
   public String getName() { return name; }
 
   /**
+   * Get the underlying NetcdfDataset
+   * @return the underlying NetcdfDataset.
+   */
+  public NetcdfDataset getNetcdfDataset() { return ds; }
+
+  /**
    * List of Dimensions that constitute the domain.
    * @return the List of Dimensions that constitute the domain.
    */

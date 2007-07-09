@@ -27,6 +27,7 @@ import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
+import ucar.nc2.util.NamedObject;
 import ucar.ma2.*;
 
 import java.util.ArrayList;
@@ -49,34 +50,35 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private Date[] timeDates;
   private DateUnit dateUnit;
 
-  static public CoordinateAxis1DTime factory(VariableDS org, StringBuffer errMessages) throws IOException {
+  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, StringBuffer errMessages) throws IOException {
     if (org.getDataType() == DataType.CHAR) {
-      return new CoordinateAxis1DTime( org, errMessages, org.getDimension(0).getName());
+      return new CoordinateAxis1DTime( ncd, org, errMessages, org.getDimension(0).getName());
     }
 
-    return new CoordinateAxis1DTime( org, errMessages);
+    return new CoordinateAxis1DTime( ncd, org, errMessages);
   }
 
   /**
    * Constructor for CHAR variables, turn into String
    *
+   * @param ncd the containing dataset
    * @param org the underlying Variable
    * @param errMessages put error messages here; may be null
    * @param dims list of dimensions
    * @throws IOException on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
-  private CoordinateAxis1DTime( VariableDS org, StringBuffer errMessages, String dims) throws IOException {
+  private CoordinateAxis1DTime( NetcdfDataset ncd, VariableDS org, StringBuffer errMessages, String dims) throws IOException {
     // NetcdfDataset ds, Group group, String shortName,  DataType dataType, String dims, String units, String desc
-    super( null, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription() );
+    super( ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription() );
+    this.ncd = ncd;
 
-    List atts = org.getAttributes();
-    for (int i = 0; i < atts.size(); i++) {
-      Attribute att = (Attribute) atts.get(i);
+    List<Attribute> atts = org.getAttributes();
+    for (Attribute att : atts) {
       addAttribute(att);
     }
 
-    named = new ArrayList(); // declared in CoordinateAxis1D superclass
+    named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
 
     int ncoords = (int) org.getSize();
     int rank = org.getRank();
@@ -109,10 +111,10 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     setCachedData( sdata, true);
   }
 
-  private CoordinateAxis1DTime( VariableDS org, StringBuffer errMessages) throws IOException {
-    super( org);
+  private CoordinateAxis1DTime( NetcdfDataset ncd, VariableDS org, StringBuffer errMessages) throws IOException {
+    super( ncd, org);
 
-    named = new ArrayList(); // declared in CoordinateAxis1D superclass
+    named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
 
     int ncoords = (int) org.getSize();
     timeDates = new Date[ncoords];
@@ -161,9 +163,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         // shorten up the timeDate array
         Date[] keep = timeDates;
         timeDates = new Date[count];
-        for (int i = 0; i < timeDates.length; i++) {
-          timeDates[i] = keep[i];
-        }
+        System.arraycopy(keep, 0, timeDates, 0, timeDates.length);
       }
 
       return;
@@ -218,8 +218,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
   }
 
-  private CoordinateAxis1DTime( CoordinateAxis1DTime org, Date[] timeDates) {
-    super( org);
+  private CoordinateAxis1DTime( NetcdfDataset ncd, CoordinateAxis1DTime org, Date[] timeDates) {
+    super( ncd, org);
     this.timeDates = timeDates;
     this.dateUnit = org.dateUnit;
   }
@@ -227,7 +227,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
      // for section and slice
   @Override
   protected Variable copy() {
-    return new CoordinateAxis1DTime(this, getTimeDates()); 
+    return new CoordinateAxis1DTime(this.ncd, this, getTimeDates());
   }
 
 
@@ -243,7 +243,10 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return new DateRange(timeDates[0], timeDates[timeDates.length - 1]);
   }
 
-  /** only if isRegular() LOOK REDO */
+  /** only if isRegular() LOOK REDO
+   * @return time unit
+   * @throws Exception on bad unit string
+   */
   public TimeUnit getTimeResolution() throws Exception {
     String tUnits = getUnitsString();
     StringTokenizer stoker = new StringTokenizer( tUnits);

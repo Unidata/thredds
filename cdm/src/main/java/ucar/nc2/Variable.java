@@ -1058,6 +1058,7 @@ public class Variable implements VariableIF {
   /**
    * Copy constructor.
    * The returned Variable is mutable. It shares the cache object and the iosp Object with the original.
+   * Use for section, slice, "logical views" of original variable.
    *
    * @param from copy from this Variable.
    */
@@ -1293,7 +1294,7 @@ public class Variable implements VariableIF {
 
 
   // for IOServiceProvider
-  private Object spiObject;
+  protected Object spiObject;
 
   /**
    * Should not be public.

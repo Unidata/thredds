@@ -957,7 +957,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       isCoordinateVariable = v.isCoordinateVariable();
       if (isCoordinateVariable) {
         addCoordinateVariable(v.getDimension(0), this);
-        parseInfo.append(" Coordinate Variable added = ").append(v.getName()).append("\n");
+        parseInfo.append(" Coordinate Variable added = ").append(v.getName()).append(" for dimension ").append(v.getDimension(0)).append("\n");
       }
 
       Attribute att = v.findAttributeIgnoreCase(_Coordinate.AxisType);

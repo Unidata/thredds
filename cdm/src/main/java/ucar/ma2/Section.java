@@ -250,6 +250,17 @@ public class Section {
   }
 
   /**
+   * Append a Range to the Section
+   *
+   * @return this
+   */
+  public Section appendRange(Range r) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    list.add(r);
+    return this;
+  }
+
+  /**
    * Append a new Range(0,size-1) to the Section
    *
    * @param size add this Range

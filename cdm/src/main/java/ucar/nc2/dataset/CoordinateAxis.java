@@ -59,31 +59,34 @@ public class CoordinateAxis extends VariableDS {
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
 
+  protected NetcdfDataset ncd; // container dataset
   protected AxisType axisType = null;
   protected String positive = null;
   protected String boundaryRef = null;
   protected boolean isContiguous = true;
 
   /** Create a coordinate axis from an existing Variable.
-   * @param dataset the containing dataset
+   * @param ncd the containing dataset
    * @param vds an existing Variable in dataset.
    * @return CoordinateAxis or one of its subclasses (CoordinateAxis1D, CoordinateAxis2D, or CoordinateAxis1DTime).
    */
-  static public CoordinateAxis factory(NetcdfDataset dataset, VariableDS vds){
+  static public CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds){
     if ((vds.getRank() == 1) ||
         (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR))
-      return new CoordinateAxis1D( vds);
+      return new CoordinateAxis1D( ncd, vds);
     else if (vds.getRank() == 2)
-      return new CoordinateAxis2D( vds);
+      return new CoordinateAxis2D( ncd, vds);
     else
-      return new CoordinateAxis( vds);
+      return new CoordinateAxis( ncd, vds);
   }
 
   /** Create a coordinate axis from an existing Variable.
+   * @param ncd the containing dataset
    * @param vds an existing Variable
    */
-   protected CoordinateAxis(Variable vds) {
-    super( null, vds, true); // LOOK always in the root group, always enhance
+   protected CoordinateAxis(NetcdfDataset ncd, VariableDS vds) {
+    super( vds);
+    this.ncd = ncd;
 
     if (vds instanceof CoordinateAxis) {
       CoordinateAxis axis = (CoordinateAxis) vds;
@@ -105,12 +108,13 @@ public class CoordinateAxis extends VariableDS {
     */
   public CoordinateAxis(NetcdfDataset ds, Group group, String shortName, DataType dataType, String dims, String units, String desc) {
     super( ds, group, null, shortName, dataType, dims, units, desc);
+    this.ncd = ds;
   }
 
     // for section and slice
   @Override
   protected Variable copy() {
-    return new CoordinateAxis(this);
+    return new CoordinateAxis(this.ncd, this);
   }
 
   /** @return type of axis, or null if none. */

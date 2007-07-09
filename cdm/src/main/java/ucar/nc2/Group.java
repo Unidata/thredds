@@ -293,6 +293,7 @@ public class Group {
       throw new IllegalArgumentException("Variable name (" + d.getName() + ") must be unique within Group " + getName());
 
     dimensions.add( d);
+    d.setGroup(this);
   }
 
   /** Add a nested Group
@@ -401,6 +402,9 @@ public class Group {
     attributes = Collections.unmodifiableList(attributes);
     return this;
   }
+
+  @Override
+  public String toString() { return getName(); }
 
   /**
    * Instances which have same name and parent are equal.

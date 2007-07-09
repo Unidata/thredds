@@ -113,10 +113,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
         // see if it has a GridCS
         // LOOK: should add geogrid it multiple times if there are multiple geoCS ??
         GridCoordSys gcs = null;
-        List csys  = v.getCoordinateSystems();
-        for (int j=0; j< csys.size(); j++) {
-          CoordinateSystem cs = (CoordinateSystem) csys.get(j);
-          GridCoordSys gcsTry = GridCoordSys.makeGridCoordSys( parseInfo, cs, v);
+        List<CoordinateSystem> csys  = v.getCoordinateSystems();
+        for (CoordinateSystem cs : csys) {
+          GridCoordSys gcsTry = GridCoordSys.makeGridCoordSys(parseInfo, cs, v);
           if (gcsTry != null) {
             gcs = gcsTry;
             if (gcsTry.isProductSet()) break;
