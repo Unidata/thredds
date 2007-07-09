@@ -1,5 +1,5 @@
 /*
- * $Id: DatedObject.java,v 1.8 2007/07/03 12:38:36 jeffmc Exp $
+ * $Id: DatedObject.java,v 1.9 2007/07/08 18:15:01 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,6 +19,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 
 
 
@@ -84,11 +85,12 @@ public class DatedObject implements DatedThing {
      *
      * @return List of DatedThing-s that are between the given dates
      */
-    public static List select(Date startDate, Date endDate, List datedThings) {
+    public static List select(Date startDate, Date endDate,
+                              List datedThings) {
         if (startDate.getTime() > endDate.getTime()) {
             Date tmp = startDate;
             startDate = endDate;
-            endDate = tmp;
+            endDate   = tmp;
         }
         long t1       = startDate.getTime();
         long t2       = endDate.getTime();
@@ -112,8 +114,8 @@ public class DatedObject implements DatedThing {
      */
     public static List wrap(List dates) {
         List result = new ArrayList();
-        for(int i=0;i<dates.size();i++) {
-            result.add(new DatedObject((Date)dates.get(i)));
+        for (int i = 0; i < dates.size(); i++) {
+            result.add(new DatedObject((Date) dates.get(i)));
         }
         return result;
     }
@@ -126,8 +128,25 @@ public class DatedObject implements DatedThing {
      */
     public static List unwrap(List datedThings) {
         List result = new ArrayList();
-        for(int i=0;i<datedThings.size();i++) {
-            result.add(((DatedThing)datedThings.get(i)).getDate());
+        for (int i = 0; i < datedThings.size(); i++) {
+            result.add(((DatedThing) datedThings.get(i)).getDate());
+        }
+        return result;
+    }
+
+    /**
+     * A utility method that takes a list of DatedObjects-s and returns a list of the objects
+     *
+     * @param datedObjects List of objects
+     * @return A list of the objects the datedobjects hold
+     */
+    public static List getObjects(List datedObjects) {
+        List result = new ArrayList();
+        if (datedObjects == null) {
+            return result;
+        }
+        for (int i = 0; i < datedObjects.size(); i++) {
+            result.add(((DatedObject) datedObjects.get(i)).getObject());
         }
         return result;
     }
