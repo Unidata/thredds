@@ -45,8 +45,8 @@ public class TestCompare {
    }
   
   static public void compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach) {
-    System.out.println("Original= "+org);
-    System.out.println("Copy= "+copy);
+    System.out.println("Original= "+org.getLocation());
+    System.out.println("Copy= "+copy.getLocation());
     showCompare = _showCompare;
     showEach = _showEach;
     compareData = _compareData;
@@ -72,11 +72,18 @@ public class TestCompare {
     checkAll( org.getAttributes(), copy.getAttributes());
 
     // variables
-    List vars = checkAll( org.getVariables(), copy.getVariables());
-    for (int i = 0; i < vars.size(); i+=2) {
-      Variable orgV =  (Variable) vars.get(i);
-      Variable ncmlV =  (Variable) vars.get(i+1);
-      compareVariables(orgV, ncmlV);
+    //List vars = checkAll( org.getVariables(), copy.getVariables());
+    List<Variable> varsOrg = org.getVariables();
+    for (Variable orgV : varsOrg) {
+      Variable copyVar = copy.findVariable(orgV.getShortName());
+      assert copyVar != null;
+      compareVariables(orgV, copyVar);
+    }
+
+    List<Variable> varsCopy = copy.getVariables();
+    for (Variable copyV : varsCopy) {
+      Variable orgV = org.findVariable(copyV.getShortName());
+      assert orgV != null;
     }
 
     // nested groups

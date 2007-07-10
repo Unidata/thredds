@@ -22,9 +22,8 @@
 package thredds.examples;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.IOServiceProvider;
 import ucar.nc2.Variable;
-import ucar.nc2.AbstractIOServiceProvider;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Array;

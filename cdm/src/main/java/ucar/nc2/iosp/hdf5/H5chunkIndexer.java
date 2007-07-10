@@ -18,10 +18,12 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp.hdf5;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
+import ucar.nc2.iosp.Indexer;
+import ucar.nc2.Variable;
 
 import java.util.*;
 
@@ -147,7 +149,7 @@ class H5chunkIndexer extends Indexer {
 
       currentDataNelems = currentDataNode.size / elemSize;
       currentDataNelemsDone = 0;
-      chunk.filePos = currentDataNode.address;
+      chunk.setFilePos( currentDataNode.address);
       // set origin, figure out how many elements are left in the row
       resultIndex.setOffset( currentDataNode.offset);
       this.chunkNelems = Math.min( chunkSize[varRank-1], resultIndex.getRemainingInRow());
@@ -155,19 +157,19 @@ class H5chunkIndexer extends Indexer {
       if (debug) H5header.debugOut.println(" new dataNode = "+currentDataNode);
 
     } else { // incr within existing data node
-      chunk.filePos += chunk.nelems * getElemSize(); // how many done last time
+      chunk.incrFilePos(chunk.getNelems() * getElemSize()); // how many done last time
       resultIndex.incrRow();
     }
 
     // how big a chunk can we do?
-    chunk.nelems = chunkNelems; // LOOK Math.min(chunkNelems, size - count);
+    chunk.setNelems(chunkNelems); // LOOK Math.min(chunkNelems, size - count);
 
     // heres the position within the result array
-    chunk.indexPos = resultIndex.currentElement();
+    chunk.setIndexPos( resultIndex.currentElement());
 
     if (debug) H5header.debugOut.println(" next hchunk = "+chunk+" totalNelemsDone="+totalNelemsDone);
-    currentDataNelemsDone += chunk.nelems;
-    totalNelemsDone += chunk.nelems;
+    currentDataNelemsDone += chunk.getNelems();
+    totalNelemsDone += chunk.getNelems();
 
     return chunk;
   }

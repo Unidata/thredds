@@ -26,6 +26,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import java.nio.channels.WritableByteChannel;
 
 
 /**
@@ -60,7 +61,8 @@ public class RandomAccessFile implements DataInput, DataOutput {
   // debug leaks - keep track of open files
 
   /**
-   * Debugging, do not use.
+   * Debug java.io.RandomAccessFile not getting closed
+   * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
     debugLeaks = b;
@@ -68,6 +70,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   /**
    * Debugging, do not use.
+   * @param b to debug file reading
    */
   static public void setDebugAccess(boolean b) {
     debugAccess = b;
@@ -75,7 +78,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
-  static public List openFiles = Collections.synchronizedList(new ArrayList());
+  static public List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
 
   /**
    * The default buffer size, in bytes.
@@ -91,6 +94,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * The underlying java.io.RandomAccessFile.
    */
   protected java.io.RandomAccessFile file;
+  protected java.nio.channels.FileChannel fileChannel;
 
   /**
    * The offset in bytes from the file start, of the next read or
@@ -168,7 +172,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    *
    * @param location location of the file
    * @param mode     same as for java.io.RandomAccessFile
-   * @throws IOException
+   * @throws IOException on open error
    */
   public RandomAccessFile(String location, String mode) throws IOException {
     this(location, mode, defaultBufferSize);
@@ -181,7 +185,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param location   location of the file
    * @param mode       same as for java.io.RandomAccessFile
    * @param bufferSize size of buffer to use.
-   * @throws IOException
+   * @throws IOException on open error
    */
   public RandomAccessFile(String location, String mode, int bufferSize)
       throws IOException {
@@ -512,6 +516,31 @@ public class RandomAccessFile implements DataInput, DataOutput {
     // Return the amount copied.
     return copyLength;
   }
+
+  /**
+   * Read up to <code>nbytes</code> bytes, at a specified offset, to an OutputStream.
+   * This will block until all bytes are read.
+   *
+   * @param dest write to this WritableByteChannel.
+   * @param offset the offset in the file where copying will start.
+   * @param nbytes the number of bytes to copy.
+   * @return the actual number of bytes read, or -1 if there is no
+   *         more data due to the end of the file being reached.
+   * @throws IOException if an I/O error occurs.
+   */
+  public long readBytes(WritableByteChannel dest, long offset, long nbytes) throws IOException {
+
+    if (fileChannel == null)
+        fileChannel = file.getChannel();
+
+    long done = 0;
+    while (done < nbytes) {
+      done += fileChannel.transferTo(offset, nbytes, dest);
+      if (done <= 0) break;  // LOOK not sure what the EOF condition is
+    }
+    return done;
+  }
+  
 
   /**
    * read directly, without going through the buffer
@@ -870,9 +899,9 @@ public class RandomAccessFile implements DataInput, DataOutput {
       throw new EOFException();
     }
     if (bigEndian) {
-      return (short) ((ch1 << 8) + (ch2 << 0));
+      return (short) ((ch1 << 8) + (ch2));
     } else {
-      return (short) ((ch2 << 8) + (ch1 << 0));
+      return (short) ((ch2 << 8) + (ch1));
     }
   }
 
@@ -917,9 +946,9 @@ public class RandomAccessFile implements DataInput, DataOutput {
       throw new EOFException();
     }
     if (bigEndian) {
-      return ((ch1 << 8) + (ch2 << 0));
+      return ((ch1 << 8) + (ch2));
     } else {
-      return ((ch2 << 8) + (ch1 << 0));
+      return ((ch2 << 8) + (ch1));
     }
   }
 
@@ -948,9 +977,9 @@ public class RandomAccessFile implements DataInput, DataOutput {
       throw new EOFException();
     }
     if (bigEndian) {
-      return (char) ((ch1 << 8) + (ch2 << 0));
+      return (char) ((ch1 << 8) + (ch2));
     } else {
-      return (char) ((ch2 << 8) + (ch1 << 0));
+      return (char) ((ch2 << 8) + (ch1));
     }
   }
 
@@ -983,9 +1012,9 @@ public class RandomAccessFile implements DataInput, DataOutput {
     }
 
     if (bigEndian) {
-      return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+      return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4));
     } else {
-      return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
+      return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1));
     }
   }
 
@@ -994,7 +1023,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    *
    * @param pos read a byte at this position
    * @return The int that was read
-   * @throws IOException
+   * @throws IOException if an I/O error occurs.
    */
   public final int readIntUnbuffered(long pos) throws IOException {
     byte[] bb = new byte[4];
@@ -1008,9 +1037,9 @@ public class RandomAccessFile implements DataInput, DataOutput {
     }
 
     if (bigEndian) {
-      return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+      return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4));
     } else {
-      return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
+      return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1));
     }
   }
 
@@ -1071,8 +1100,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     if (bigEndian) {
       return ((long) (readInt()) << 32) + (readInt() & 0xFFFFFFFFL);  // tested ok
     } else {
-      return ((long) (readInt() & 0xFFFFFFFFL)
-          + ((long) readInt() << 32));                            // not tested yet ??
+      return ( (readInt() & 0xFFFFFFFFL) + ((long) readInt() << 32)); // not tested yet ??
     }
 
     /*     int ch1 = this.read();
@@ -1248,7 +1276,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    *
    * @param nbytes number of bytes to read
    * @return String wrapping the bytes.
-   * @throws IOException
+   * @throws IOException if an I/O error occurs.
    */
   public String readString(int nbytes) throws IOException {
     byte[] data = new byte[nbytes];
@@ -1308,7 +1336,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    */
   public final void writeShort(int v) throws IOException {
     write((v >>> 8) & 0xFF);
-    write((v >>> 0) & 0xFF);
+    write((v) & 0xFF);
   }
 
   /**
@@ -1335,7 +1363,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    */
   public final void writeChar(int v) throws IOException {
     write((v >>> 8) & 0xFF);
-    write((v >>> 0) & 0xFF);
+    write((v) & 0xFF);
   }
 
   /**
@@ -1364,7 +1392,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     write((v >>> 24) & 0xFF);
     write((v >>> 16) & 0xFF);
     write((v >>> 8) & 0xFF);
-    write((v >>> 0) & 0xFF);
+    write((v) & 0xFF);
   }
 
   /**
@@ -1396,7 +1424,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     write((int) (v >>> 24) & 0xFF);
     write((int) (v >>> 16) & 0xFF);
     write((int) (v >>> 8) & 0xFF);
-    write((int) (v >>> 0) & 0xFF);
+    write((int) (v) & 0xFF);
   }
 
   /**
@@ -1519,7 +1547,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     for (int i = 0; i < len; i++) {
       int v = s.charAt(i);
       write((v >>> 8) & 0xFF);
-      write((v >>> 0) & 0xFF);
+      write((v) & 0xFF);
     }
   }
 
@@ -1556,7 +1584,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     }
 
     write((utflen >>> 8) & 0xFF);
-    write((utflen >>> 0) & 0xFF);
+    write((utflen) & 0xFF);
     for (int i = 0; i < strlen; i++) {
       int c = str.charAt(i);
       if ((c >= 0x0001) && (c <= 0x007F)) {
@@ -1564,10 +1592,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
       } else if (c > 0x07FF) {
         write(0xE0 | ((c >> 12) & 0x0F));
         write(0x80 | ((c >> 6) & 0x3F));
-        write(0x80 | ((c >> 0) & 0x3F));
+        write(0x80 | ((c) & 0x3F));
       } else {
         write(0xC0 | ((c >> 6) & 0x1F));
-        write(0x80 | ((c >> 0) & 0x3F));
+        write(0x80 | ((c) & 0x3F));
       }
     }
   }

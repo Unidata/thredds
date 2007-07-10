@@ -1,6 +1,7 @@
 package ucar.nc2.adde;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -30,20 +31,8 @@ public class AddeServiceProvider extends AbstractIOServiceProvider {
     throw new UnsupportedOperationException("Adde IOSP does not support nested variables");
   }
 
-  public boolean syncExtend() { return false; }
-  public boolean sync() { return false; }
-
   public void close() throws IOException {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  public void setSpecial( Object special) {}
-
-  public String toStringDebug(Object o) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String getDetailInfo() {
-    return "";
-  }
 }

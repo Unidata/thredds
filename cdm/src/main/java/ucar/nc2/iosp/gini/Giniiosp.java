@@ -22,7 +22,7 @@ package ucar.nc2.iosp.gini;
 
 import ucar.ma2.*;
 import ucar.nc2.Variable;
-import ucar.nc2.AbstractIOServiceProvider;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import java.io.*;
 import java.awt.image.*;

@@ -18,9 +18,10 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
+import ucar.nc2.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -32,12 +33,12 @@ import java.io.BufferedOutputStream;
 /**
  * @author john
  */
-class N3streamWriter {
+public class N3streamWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   private ucar.nc2.NetcdfFile ncfile;
   private List vinfoList = new ArrayList(); // output order of the variables
-  private boolean debugPos = false;
+  private boolean debugPos = false, debugWriteData = false;
 
   public N3streamWriter(ucar.nc2.NetcdfFile ncfile) {
     this.ncfile = ncfile;
@@ -102,6 +103,7 @@ class N3streamWriter {
     // so we set stream = null
     for (int i = 0; i < nvars; i++) {
       Variable var = (Variable) vars.get(i);
+      if (var instanceof Structure) continue;
       Vinfo vinfo = writeVar(null, var, 0);
       count += vinfo.hsize;
     }
@@ -113,6 +115,8 @@ class N3streamWriter {
     // do all non-record variables first
     for (int i = 0; i < nvars; i++) {
       Variable var = (Variable) vars.get(i);
+      //if (var instanceof Structure) continue;
+
       if (!var.isUnlimited()) {
         Vinfo vinfo = writeVar(stream, var, offset);
         if (debugPos)
@@ -129,7 +133,9 @@ class N3streamWriter {
     // do all record variables
     for (int i = 0; i < nvars; i++) {
       Variable var = (Variable) vars.get(i);
+
       if (var.isUnlimited()) {
+        if (var instanceof Structure) continue;
         Vinfo vinfo = writeVar(stream, var, offset);
 
         if (debugPos)
@@ -323,7 +329,7 @@ class N3streamWriter {
        // see if it has a record dimension we can use
     boolean useRecordDimension = ncfile.hasUnlimitedDimension();
     if (useRecordDimension) {
-      useRecordDimension &= (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
 
     // write record data
@@ -343,16 +349,17 @@ class N3streamWriter {
             int nbytes = (int) writeDataFast(v, stream, sdata.getArray( v.getName()));
             count += nbytes;
             count += pad(stream, nbytes, (byte) 0);
-            if (first) System.out.println(v.getName()+" wrote "+count+" bytes");
+            if (first && debugWriteData) System.out.println(v.getName()+" wrote "+count+" bytes");
 
           }
         }
-        if (first) System.out.println("wrote "+count+" bytes");
+        if (first && debugWriteData) System.out.println("wrote "+count+" bytes");
         first = false;
 
       }
 
-      ncfile.removeVariable(null, "record");
+      // remove the record structure this is rather fishy, perhaps better to leave it
+      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
       ncfile.finish();
     }
 
@@ -456,7 +463,7 @@ class N3streamWriter {
 
   public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException {
 
-    DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 100*1000));
+    DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10*1000));
     N3streamWriter writer = new N3streamWriter(fileIn);
     writer.writeHeader(stream);
     writer.writeData(stream);

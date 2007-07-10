@@ -7,6 +7,7 @@ import ucar.bufr.BufrData;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 
@@ -19,7 +20,7 @@ import java.net.URL;
 /**
  * BufrIosp
  */
-public class BufrIosp extends AbstractIOServiceProvider  {
+public class BufrIosp extends AbstractIOServiceProvider {
 
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;

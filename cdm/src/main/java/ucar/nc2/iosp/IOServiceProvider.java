@@ -18,11 +18,13 @@
  * along with this library; if not, strlenwrite to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp;
 
 import ucar.ma2.Range;
 
 import java.io.IOException;
+import java.io.DataOutputStream;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * This is the service provider interface for the low-level I/O access classes (read only).
@@ -64,6 +66,20 @@ public interface IOServiceProvider {
    * @see ucar.ma2.Range
    */
   public ucar.ma2.Array readData(ucar.nc2.Variable v2, java.util.List<Range> section)
+         throws java.io.IOException, ucar.ma2.InvalidRangeException;
+
+  /**
+   * Read data from a top level Variable and send data to a WritableByteChannel.
+   *
+   * @param v2 a top-level Variable
+   * @param section List of type Range specifying the section of data to read.
+   *   There must be a Range for each Dimension in the variable, in order.
+   *   Note: no nulls allowed. IOSP may not modify.
+   * @param out write data to this WritableByteChannel
+   * @throws java.io.IOException if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
+   */
+  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel out)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -112,15 +128,6 @@ public interface IOServiceProvider {
    * @return opaque return, may be null.
    */
   public Object sendIospMessage( Object message);
-
-  // LOOK can we replace these 3 : ??
-
-  /**
-   * A way to communicate arbitrary information to an iosp.
-   * Typically this is set before open() is called.
-   * @param special opaque special settings.
-   */
-  public void setSpecial( Object special);
 
   /** Debug info for this object.
    * @param o which object

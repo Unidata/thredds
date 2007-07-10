@@ -18,9 +18,10 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp.hdf5;
 
-import ucar.ma2.InvalidRangeException;
+import ucar.nc2.iosp.Indexer;
+import ucar.nc2.Variable;
 
 /**
  * This is for transferring decompressed bytes into the result byte array.
@@ -47,7 +48,6 @@ import ucar.ma2.InvalidRangeException;
  */
 class H5chunkFilterIndexer extends Indexer {
 
-  private int[] storageSize;
   private MyIndex resultIndex; // current index in result array, for iterating
   private int elemSize; // last dimension of the StorageLayout message
   private int chunkNumElemsTotal, chunkNumElemsDone, contNumElems;
@@ -61,10 +61,8 @@ class H5chunkFilterIndexer extends Indexer {
    * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
    * @param v Variable to index over
    * @param storageSize storage sizes from HDF5 header
-   * @throws InvalidRangeException
    */
-  H5chunkFilterIndexer( Variable v, int[] storageSize) throws InvalidRangeException {
-    this.storageSize = storageSize;
+  H5chunkFilterIndexer( Variable v, int[] storageSize) { // throws InvalidRangeException {
     resultIndex = new MyIndex( v.getShape());
 
     chunkNumElemsTotal = 1;
@@ -83,7 +81,7 @@ class H5chunkFilterIndexer extends Indexer {
     //if (debugNext) H5header.debugOut.println(" setChunkOffset = "+);
     resultIndex.setOffset( offset);
     chunkNumElemsDone = 0;
-    chunk.indexPos = 0;
+    chunk.setIndexPos(0);
     first = true;
   }
 
@@ -94,12 +92,12 @@ class H5chunkFilterIndexer extends Indexer {
 
     if (!first) {
       resultIndex.incrRow();
-      chunk.indexPos += contNumElems;
+      chunk.incrIndexPos(contNumElems);
     }
     first = false;
 
     // heres the position within the result array
-    chunk.filePos = resultIndex.currentElement() * elemSize;
+    chunk.setFilePos( resultIndex.currentElement() * elemSize);
 
     if (H5iosp.debugFilterIndexer) H5header.debugOut.println(" next hchunk = "+chunk+" totalNelemsDone="+chunkNumElemsDone);
     chunkNumElemsDone += contNumElems;

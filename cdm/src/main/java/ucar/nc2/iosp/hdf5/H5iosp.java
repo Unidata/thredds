@@ -18,11 +18,17 @@
  * along with this library; if not, strlenwrite to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp.hdf5;
 
 import ucar.ma2.*;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.nc2.iosp.RegularIndexer;
+import ucar.nc2.iosp.Indexer;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.Structure;
 
 import java.util.*;
 import java.util.zip.*;
@@ -34,7 +40,7 @@ import java.nio.*;
  * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
-class H5iosp extends AbstractIOServiceProvider {
+public class H5iosp extends AbstractIOServiceProvider {
   static boolean debug = false;
   static boolean debugPos = false;
   static boolean debugHeap = false;
@@ -51,6 +57,11 @@ class H5iosp extends AbstractIOServiceProvider {
     debugFilter =  debugFlag.isSet("H5iosp/filter");
     debugFilterIndexer =  debugFlag.isSet("H5iosp/filterIndexer");
     debugChunkIndexer =  debugFlag.isSet("H5iosp/chunkIndexer");
+  }
+
+
+  static public void setDebugOutputStream( java.io.PrintStream printStream) {
+    H5header.debugOut = printStream;
   }
 
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) {

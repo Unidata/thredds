@@ -21,7 +21,7 @@
 
 package ucar.nc2.iosp.misc;
 
-import ucar.nc2.IOServiceProvider;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.dataset.AxisType;
@@ -41,7 +41,7 @@ import java.text.ParseException;
  *
  * @author caron
  */
-public class UspLightning2  extends AbstractIOServiceProvider{
+public class UspLightning2  extends AbstractIOServiceProvider {
 
   private static final String MAGIC = "USPLN-LIGHTNING";
 

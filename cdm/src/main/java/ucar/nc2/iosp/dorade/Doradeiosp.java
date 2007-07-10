@@ -22,6 +22,7 @@ package ucar.nc2.iosp.dorade;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.atd.dorade.*;
 
@@ -47,8 +48,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   public DoradeSweep mySweep = null;
   boolean littleEndian;
 
-  public void setSpecial( Object special) {}
-
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
@@ -60,7 +59,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
         return( localHeader.isValidFile( raf ));
     }
 
-  public void setProperties( List iospProperties) { }
   /////////////////////////////////////////////////////////////////////////////
   // reading
 

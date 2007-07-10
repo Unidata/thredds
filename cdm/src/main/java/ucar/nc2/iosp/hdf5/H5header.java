@@ -18,12 +18,12 @@
  * along with this library; if not, strlenwrite to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp.hdf5;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 
@@ -52,10 +52,6 @@ class H5header {
     debugContinueMessage =  debugFlag.isSet("H5header/continueMessage");
     debugSymbolTable =  debugFlag.isSet("H5header/symbolTable");
     debugTracker =  debugFlag.isSet("H5header/memTracker");
-  }
-
-  static public void setDebugOutputStream( java.io.PrintStream printStream) {
-    debugOut = printStream;
   }
 
   static private java.text.SimpleDateFormat dateFormat;
@@ -1821,11 +1817,11 @@ class H5header {
       Message mess = (Message) messages.get(i);
       if (mess.mtype == MessageType.Attribute) {
         MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes(h5group.name, matt, ncGroup.attributes);
+        makeAttributes(h5group.name, matt, ncGroup.getAttributes());
       }
     }
 
-    addSystemAttributes( messages, ncGroup.attributes);
+    addSystemAttributes( messages, ncGroup.getAttributes());
 
     // nested objects
     List nestedObjects = h5group.nestedObjects;
@@ -2056,14 +2052,14 @@ class H5header {
 
       if (mess.mtype == MessageType.Attribute) {
         MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes( name, matt, v.attributes);
+        makeAttributes( name, matt, v.getAttributes());
       }
     }
 
-    addSystemAttributes( messages, v.attributes);
+    addSystemAttributes( messages, v.getAttributes());
 
     if (!vinfo.signed)
-      v.attributes.add( new Attribute("_unsigned", "true"));
+      v.addAttribute( new Attribute("_unsigned", "true"));
 
     return v;
   }

@@ -21,6 +21,7 @@ package ucar.nc2.iosp.nids;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import ucar.nc2.units.DateUnit;
 

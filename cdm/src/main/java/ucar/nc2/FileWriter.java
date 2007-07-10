@@ -111,7 +111,7 @@ public class FileWriter {
     // copy dimensions LOOK anon dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : fileIn.getDimensions()) {
-      Dimension newD = ncfile.addDimension(oldD.getName(), oldD.isUnlimited() ? -1 : oldD.getLength(),
+      Dimension newD = ncfile.addDimension(oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
           oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
       dimHash.put(newD.getName(), newD);
       if (debug) System.out.println("add dim= " + newD);
@@ -175,7 +175,7 @@ public class FileWriter {
     boolean useRecordDimension = fileIn.hasRecordStructure() && ncfile.hasRecordStructure();
     Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
 
-    long total = copyVarData( ncfile, varlist, recordVar, delay);
+    double total = copyVarData( ncfile, varlist, recordVar, delay);
     ncfile.flush();
     if (debug) System.out.println("FileWriter done total bytes = " + total);
 
@@ -193,14 +193,16 @@ public class FileWriter {
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
-  private static long copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
+  private static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
     boolean useRecordDimension = (recordVar != null);
 
     // write non-record data
-    long total = 0;
+    double total = 0;
     for (Variable oldVar : varlist) {
       if (useRecordDimension && oldVar.isUnlimited())
         continue; // skip record variables
+      if (oldVar == recordVar)
+        continue;
 
       if (debug)
         System.out.println("write var= " + oldVar.getName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
@@ -223,17 +225,18 @@ public class FileWriter {
       int nrecs = (int) recordVar.getSize();
       int sdataSize = recordVar.getElementSize();
 
+      double totalRecordBytes = 0;
       for (int count = 0; count < nrecs; count++) {
         origin[0] = count;
         try {
           Array recordData = recordVar.read(origin, size);
           ncfile.write("record", origin, recordData);  // rather magic here - only writes the ones in ncfile !!
-          if (debugExtend) System.out.println("write record var; size = " + sdataSize + " recno=" + count);
+          if (debug && (count == 0)) System.out.println("write record size = " + sdataSize);
         } catch (InvalidRangeException e) {
           e.printStackTrace();
           break;
         }
-        total += sdataSize;
+        totalRecordBytes += sdataSize;
 
         if (delay > 0) {
           ncfile.flush();
@@ -243,6 +246,9 @@ public class FileWriter {
           }
         }
       }
+      total += totalRecordBytes;
+      totalRecordBytes /= 1000 * 1000;
+      if (debug) System.out.println("write record var; total = " + totalRecordBytes + " Mbytes # recs=" + nrecs);
     }
     return total;
   }
@@ -446,7 +452,7 @@ public class FileWriter {
   public void finish() throws IOException {
     ncfile.create();
 
-    long total = copyVarData( ncfile, varList, recordVar, 0);
+    double total = copyVarData( ncfile, varList, recordVar, 0);
     ncfile.close();
     if (debug) System.out.println("FileWriter finish total bytes = " + total);
   }

@@ -6,6 +6,7 @@ import ucar.grib.grib2.Grib2IndexExtender;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
@@ -321,14 +322,12 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     raf.close();
   }
 
-  public void setSpecial( Object special) {
+  public Object sendIospMessage( Object special) {
     if (special instanceof FmrcCoordSys)
       fmrcCoordSys = (FmrcCoordSys) special;
+    return null;
   }
 
-  public String toStringDebug(Object o) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
 
   public String getDetailInfo() {
     return parseInfo.toString();

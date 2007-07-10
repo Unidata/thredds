@@ -2,6 +2,7 @@
 package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
@@ -15,7 +16,7 @@ import java.util.*;
 import java.text.ParseException;
 
 /**
- * This ucar.nc2.IOServiceProvider provides access to DMSP satellite data
+ * This ucar.nc2.iosp.IOServiceProvider provides access to DMSP satellite data
  * in the NOAA/NGDC DMSP archive format. Currently only data from the OLS
  * instrument is supported, in particular only NOAA/NGDC DMSP OIS (OLS
  * Integrated Smooth) data files. The OIS data is visible and thermal
@@ -29,8 +30,7 @@ import java.text.ParseException;
  * @author Ethan Davis
  * @since 2004-08-13T13:21:19 MDT
  */
-public class DMSPiosp extends AbstractIOServiceProvider
-{
+public class DMSPiosp extends AbstractIOServiceProvider {
   private NetcdfFile ncFile = null;
   private ucar.unidata.io.RandomAccessFile raf = null;
 

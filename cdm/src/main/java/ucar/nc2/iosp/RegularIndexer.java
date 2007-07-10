@@ -18,7 +18,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp;
 
 import ucar.ma2.Index;
 import ucar.ma2.Range;
@@ -35,7 +35,7 @@ import java.util.*;
  * @author caron
  * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
-class RegularIndexer extends Indexer {
+public class RegularIndexer extends Indexer {
   private int elemSize; // size of each element
   private long startPos; // starting address
 
@@ -59,7 +59,7 @@ class RegularIndexer extends Indexer {
    * @param recSize if > 0, then size of outer stride in bytes, else ignored
    * @throws InvalidRangeException is ranges are misformed
    */
-  RegularIndexer( int[] varShape, int elemSize, long startPos, List section, int recSize) throws InvalidRangeException {
+  public RegularIndexer( int[] varShape, int elemSize, long startPos, List section, int recSize) throws InvalidRangeException {
     this.elemSize = elemSize;
     this.startPos = startPos;
 
@@ -181,7 +181,7 @@ class RegularIndexer extends Indexer {
     System.out.println();
   }
 
-  int getChunkSize() { return nelems; }              // debug
+  public int getChunkSize() { return nelems; }              // debug
   public int[] getWantShape() { return wantShape; }  // for N3iosp
 
   // Indexer abstract methods

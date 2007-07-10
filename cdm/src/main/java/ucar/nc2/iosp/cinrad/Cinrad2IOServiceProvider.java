@@ -23,6 +23,7 @@ package ucar.nc2.iosp.cinrad;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;

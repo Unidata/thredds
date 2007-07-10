@@ -20,6 +20,8 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.iosp.netcdf3.SPFactory;
+import ucar.nc2.iosp.IOServiceProviderWriter;
 
 import java.util.*;
 import java.io.IOException;
@@ -42,7 +44,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   private boolean defineMode;
   private boolean fill = true;
   private long size = -1;
-  private ucar.nc2.IOServiceProviderWriter spiw;
+  private IOServiceProviderWriter spiw;
 
   /**
    * Open an existing Netcdf file for writing data. Fill mode is true.
@@ -372,7 +374,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       throw new UnsupportedOperationException("not in define mode");
 
     spi = SPFactory.getServiceProvider();
-    spiw = (ucar.nc2.IOServiceProviderWriter) spi;
+    spiw = (IOServiceProviderWriter) spi;
     spiw.create(location, this, fill, size);
 
     defineMode = false;
@@ -511,7 +513,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     this.location = location;
     ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
     spi = SPFactory.getServiceProvider();
-    spiw = (ucar.nc2.IOServiceProviderWriter) spi;
+    spiw = (IOServiceProviderWriter) spi;
     spiw.open(raf, this, null);
     defineMode = false;
   }

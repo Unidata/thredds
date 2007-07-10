@@ -18,7 +18,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp;
 
 import ucar.ma2.*;
 
@@ -33,7 +33,7 @@ import java.util.ArrayList;
  *
  * @author caron
  */
-class RegularLayoutTest extends Indexer {
+public class RegularLayoutTest extends Indexer {
   private int elemSize; // size of each element
   private long startPos; // starting address
 
@@ -347,7 +347,7 @@ class RegularLayoutTest extends Indexer {
     System.out.println();
   }
 
-  int getChunkSize() {
+  public int getChunkSize() {
     return nelems;
   }              // debug
 

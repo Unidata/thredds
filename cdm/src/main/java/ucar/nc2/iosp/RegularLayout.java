@@ -17,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp;
 
 import ucar.ma2.*;
 
@@ -32,7 +32,7 @@ import java.util.ArrayList;
  *
  * @author caron
  */
-class RegularLayout extends Indexer {
+public class RegularLayout extends Indexer {
   private List<Dim> dimList = new ArrayList<Dim>();
   private MyIndex myIndex;
   private Section want;
@@ -57,7 +57,7 @@ class RegularLayout extends Indexer {
    *                 corresponding to each Dimension, else null means all.
    * @throws InvalidRangeException if ranges are misformed
    */
-  RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
+  public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
     this.elemSize = elemSize;
     this.want = (wantSection == null) ?  new Section(varShape) :  new Section(wantSection.getRanges(), varShape);
     String err = want.checkInRange(varShape);
@@ -172,9 +172,10 @@ class RegularLayout extends Indexer {
     }
   }
 
-  int getChunkSize() {
+  // debug
+  public int getChunkSize() {
     return nelems;
-  }              // debug
+  }
 
   public int[] getWantShape() {
     return want.getShape();

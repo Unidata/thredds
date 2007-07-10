@@ -3,6 +3,9 @@ package ucar.nc2;
 import junit.framework.*;
 
 import ucar.ma2.*;
+import ucar.nc2.iosp.RegularIndexer;
+import ucar.nc2.iosp.Indexer;
+
 import java.util.*;
 
 public class TestIndexer extends TestCase  {

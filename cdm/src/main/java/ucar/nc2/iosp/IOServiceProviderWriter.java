@@ -17,9 +17,10 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp;
 
 import ucar.ma2.Range;
+import ucar.nc2.Attribute;
 
 import java.io.IOException;
 

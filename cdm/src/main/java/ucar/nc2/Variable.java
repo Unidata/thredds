@@ -192,7 +192,7 @@ public class Variable implements VariableIF {
    * @return List<Dimension>, a copy or an immutable list
    */
   public java.util.List<Dimension> getDimensions() {
-    return immutable ? dimensions : new ArrayList<Dimension>(dimensions);
+    return dimensions;
   }
 
   /**
@@ -242,7 +242,7 @@ public class Variable implements VariableIF {
    * @return List<Attribute>, a copy or an immutable list
    */
   public java.util.List<Attribute> getAttributes() {
-    return immutable ? attributes : new ArrayList<Attribute>(attributes);
+    return attributes;
   }
 
   /**
@@ -1193,7 +1193,7 @@ public class Variable implements VariableIF {
     resetShape();
   }
 
-  protected void resetShape() {
+  public void resetShape() {
     // if (immutable) throw new IllegalStateException("Cant modify");  LOOK allow this for unlimited dimension updating
     this.shape = new int[dimensions.size()];
     for (int i = 0; i < dimensions.size(); i++) {

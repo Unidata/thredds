@@ -17,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp;
 
 /**
  * Iterator to read/write subsets of an array.
@@ -43,30 +43,30 @@ package ucar.nc2;
    </pre>
  * @author caron
  */
-abstract class Indexer {
+public abstract class Indexer {
 
   /** @return total number of elements in the wanted subset. */ // LOOK change to long ??
-  abstract int getTotalNelems();
+  public abstract int getTotalNelems();
 
   /** @return  size of each element in bytes. */
-  abstract int getElemSize();
+  public abstract int getElemSize();
 
   /** @return true if theres more to do */
-  abstract boolean hasNext();
+  public abstract boolean hasNext();
 
   /** @return next chunk */
-  abstract Chunk next();
+  public abstract Chunk next();
 
   /** A contiguous chunk of data in the file, that is wanted for this subset.
    *  Read nelems from file at filePos, store in array at indexPos.
    *  (or) Write nelems to file at filePos, from array at indexPos.
    */
-  class Chunk {
+  public class Chunk {
     long filePos; // start reading here
     int nelems; // read these many elements
     int indexPos; // put them here in the result array
 
-    Chunk( long filePos, int nelems, int indexPos) {
+    public Chunk( long filePos, int nelems, int indexPos) {
       this.filePos = filePos;
       this.nelems = nelems;
       this.indexPos = indexPos;
@@ -74,10 +74,15 @@ abstract class Indexer {
 
     /** @return position in file where to read or write: "file position" */
     public long getFilePos() { return filePos; }
+    public void setFilePos(long filePos) { this.filePos = filePos; }
+    public void incrFilePos(int incr) { this.filePos += incr; }
     /** @return number of elements to transfer (Note: elements, not bytes) */
     public int getNelems() { return nelems; }
+    public void setNelems(int nelems) { this.nelems = nelems; }
     /** @return position in the memory array: "memory position" */
     public int getIndexPos() { return indexPos; }
+    public void setIndexPos(int indexPos) { this.indexPos = indexPos; }
+    public void incrIndexPos(int incr) { this.indexPos += incr; }
 
     public String toString() { return " filePos="+filePos+" nelems="+nelems+" indexPos="+indexPos; }
   }

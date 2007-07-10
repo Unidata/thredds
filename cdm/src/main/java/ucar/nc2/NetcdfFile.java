@@ -25,6 +25,11 @@ import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.iosp.netcdf3.N3header;
+import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.netcdf3.SPFactory;
+import ucar.nc2.iosp.hdf5.H5iosp;
+import ucar.nc2.iosp.IOServiceProvider;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;
@@ -32,6 +37,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.regex.*;
 import java.net.URL;
 import java.io.*;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
@@ -63,6 +69,7 @@ import java.io.*;
 
 public class NetcdfFile {
   static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
+  static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
@@ -173,7 +180,7 @@ public class NetcdfFile {
    * @param printStream write to this stream.
    */
   static public void setDebugOutputStream(PrintStream printStream) {
-    H5header.setDebugOutputStream(printStream);
+    H5iosp.setDebugOutputStream(printStream);
   }
 
   /**
@@ -184,7 +191,7 @@ public class NetcdfFile {
    * @param value value of property
    */
   static public void setProperty( String name, String value) {
-    ucar.nc2.N3iosp.setProperty( name, value);
+    N3iosp.setProperty( name, value);
   }
 
   /**
@@ -241,16 +248,16 @@ public class NetcdfFile {
    *                    it will use the directory defined by ucar.nc2.util.DiskCache class.
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.
-   * @param spiObject   sent to iosp.setSpecial() if not null
+   * @param iospMessage  special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if error
    */
-  static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+  static public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
 
     try {
-      return open(raf, location, cancelTask, spiObject);
+      return open(raf, location, cancelTask, iospMessage);
     } catch (IOException ioe) {
       raf.close();
       throw ioe;
@@ -414,7 +421,7 @@ public class NetcdfFile {
 
 
   private static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
-          Object spiObject) throws IOException {
+          Object iospMessage) throws IOException {
 
     IOServiceProvider spi = null;
     if (debugSPI) System.out.println("NetcdfFile try to open = " + location);
@@ -424,7 +431,7 @@ public class NetcdfFile {
       spi = SPFactory.getServiceProvider();
 
     //} else if (H5header.isValidFile(raf)) {
-     // spi = new ucar.nc2.H5iosp();
+     // spi = new ucar.nc2.iosp.hdf5.H5iosp();
 
     } else {
       // look for registered providers
@@ -451,8 +458,8 @@ public class NetcdfFile {
       throw new IOException("Cant read " + location + ": not a valid NetCDF file.");
     }
 
-    if (spiObject != null)
-      spi.setSpecial(spiObject);
+    if (iospMessage != null)
+      spi.sendIospMessage(iospMessage);
 
     if (log.isDebugEnabled())
       log.debug("Using IOSP " + spi.getClass().getName());
@@ -461,14 +468,14 @@ public class NetcdfFile {
   }
 
   // experimental - pass in the iosp
-  static public NetcdfFile open(String location, String className, int bufferSize, CancelTask cancelTask, String iospParam)
+  static public NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage)
           throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
 
-    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(className);
+    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
 
-    if (iospParam != null)
-      spi.setSpecial(iospParam);
+    if (iospMessage != null)
+      spi.sendIospMessage(iospMessage);
 
     // get rid of file prefix, if any
     String uriString = location.trim();
@@ -991,7 +998,7 @@ public class NetcdfFile {
    * The ClassLoader for the NetcdfFile class is used.
    *
    * @param iospClassName the name of the class implementing IOServiceProvider
-   * @param iospParam     parameter to pass to the IOSP
+   * @param iospParam     parameter to pass to the IOSP (before open is called)
    * @param location      location of file. This is a URL string, or a local pathname.
    * @param buffer_size   use this buffer size on the RandomAccessFile
    * @param cancelTask    allow user to cancel
@@ -1006,7 +1013,7 @@ public class NetcdfFile {
     Class iospClass = getClass().getClassLoader().loadClass(iospClassName);
     this.spi = (IOServiceProvider) iospClass.newInstance();
     if (debugSPI) System.out.println("NetcdfFile uses iosp = " + spi.getClass().getName());
-    this.spi.setSpecial(iospParam);
+    spi.sendIospMessage(iospParam);
 
     this.location = location;
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);
@@ -1163,6 +1170,7 @@ public class NetcdfFile {
 
   /**
    * Generic way to send a "message" to the underlying IOSP.
+   * This message is sent after the file is open. To affect the creation of the file, you must send into the factory method.
    * @param message iosp specific message
    * Special:<ul>
    * <li>IOSP_MESSAGE_ADD_RECORD_STRUCTURE : tells Netcdf-3 files to make record (unlimited)  variables into a structure
@@ -1170,11 +1178,15 @@ public class NetcdfFile {
    * @return iosp specific return, may be null
    */
   public Object sendIospMessage( Object message) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (null == message) return null;
 
-    // special hack-a-whack
     if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
       return makeRecordStructure(); // returns a Boolean
+
+    } else if (message == IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE) {
+      boolean didit = rootGroup.remove( rootGroup.findVariable( "record"));
+      addedRecordStructure = false;
+      return didit;
     }
 
     if (spi != null)
@@ -1190,14 +1202,15 @@ public class NetcdfFile {
    * @return true if record was actually added on this call.
    */
   protected boolean makeRecordStructure() {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
     if (null != getRootGroup().findVariable("record"))
       return false;
 
     boolean didit = false;
     if ((spi instanceof N3iosp) && hasUnlimitedDimension() && !addedRecordStructure) {
-      N3iosp n3iosp = (N3iosp) spi;
-      didit = n3iosp.headerParser.addRecordStructure();
-      addedRecordStructure = true;
+      didit = (Boolean) spi.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      addedRecordStructure = true; // or at least we tried
       finish(); // LOOK should we wait ???
     }
     return didit;
@@ -1375,6 +1388,12 @@ public class NetcdfFile {
    */
   protected Array readData(ucar.nc2.Variable v, List<Range> ranges) throws IOException, InvalidRangeException {
     return spi.readData(v, ranges);
+  }
+
+  public long readData(ucar.nc2.Variable v, java.util.List<Range> section, WritableByteChannel out)
+       throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    return spi.readData(v, section, out);
   }
 
   // this is for reading variables that are members of structures

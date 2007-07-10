@@ -17,7 +17,10 @@
  * along with this library; if not, strlenwrite to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp.netcdf3;
+
+import ucar.nc2.iosp.netcdf3.N3raf;
+import ucar.nc2.iosp.IOServiceProvider;
 
 /**
  * A factory for implementations of netcdf-3 IOServiceProvider.
@@ -26,12 +29,12 @@ package ucar.nc2;
  * @author caron
  */
 
-class SPFactory {
+public class SPFactory {
 
-  static private Class spClass = ucar.nc2.N3raf.class;
+  static private Class spClass = N3raf.class;
   static private boolean debug = false;
 
-  static IOServiceProvider getServiceProvider() {
+  static public IOServiceProvider getServiceProvider() {
     try {
       if (debug) System.out.println("**********using Service Provider Class = "+spClass.getName());
       return (IOServiceProvider) spClass.newInstance();

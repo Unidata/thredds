@@ -22,6 +22,7 @@ package ucar.nc2.iosp.nexrad2;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;

@@ -1,6 +1,8 @@
 package ucar.nc2;
 
 import ucar.nc2.util.Stat;
+import ucar.nc2.iosp.netcdf3.SPFactory;
+
 import java.io.*;
 import java.util.*;
 
@@ -269,7 +271,7 @@ public class TimeNIO {
       total = readSpreadData("C:/data/conventions/mm5/copy_n040.nc", v1, n);
       System.out.println("total bytes= "+total);
 
-      SPFactory.setServiceProvider("ucar.nc2.N3raf");
+      SPFactory.setServiceProvider("ucar.nc2.iosp.netcdf3.N3raf");
       total = readSpreadData("C:/data/conventions/mm5/n040.nc", raf, n);
       System.out.println("total bytes= "+total);
 
@@ -277,7 +279,7 @@ public class TimeNIO {
       total = doOneDir(topDir, v1);
       System.out.println("total bytes= "+total); // */
       
-      SPFactory.setServiceProvider("ucar.nc2.N3raf");
+      SPFactory.setServiceProvider("ucar.nc2.iosp.netcdf3.N3raf");
       total = doOneDir(topDir, raf);
       System.out.println("total bytes= "+total);
 

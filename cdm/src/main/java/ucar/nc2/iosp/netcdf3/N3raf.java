@@ -17,9 +17,13 @@
  * along with this library; if not, strlenwrite to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
+import ucar.nc2.iosp.Indexer;
+
+import java.io.DataOutputStream;
+import java.nio.channels.WritableByteChannel;
 
 
 /**
@@ -27,7 +31,7 @@ import ucar.ma2.*;
  * @author caron
  */
 
-class N3raf extends N3iosp  {
+public class N3raf extends N3iosp  {
 
   protected void _open(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException {
   }
@@ -35,63 +39,98 @@ class N3raf extends N3iosp  {
   protected void _create(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException {
   }
 
-   /**
-    * Read data subset from file for a variable, create primitive array.
-    * @param index handles skipping around in the file.
-    * @param dataType dataType of the variable
-    * @return primitive array with data read in
-    */
-  protected Object readData( Indexer index, DataType dataType) throws java.io.IOException {
-    int size = index.getTotalNelems();
+  /**
+   * Read data subset from file for a variable, create primitive array.
+   * @param index handles skipping around in the file.
+   * @param dataType dataType of the variable
+   * @return primitive array with data read in
+   */
+ protected Object readData( Indexer index, DataType dataType) throws java.io.IOException {
+   int size = index.getTotalNelems();
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-      byte[] pa = new byte[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
+   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+     byte[] pa = new byte[size];
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       raf.seek ( chunk.getFilePos());
+       raf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+     }
+     return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
 
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = new short[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readShort( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
+   } else if (dataType == DataType.SHORT) {
+     short[] pa = new short[size];
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       raf.seek ( chunk.getFilePos());
+       raf.readShort( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+     }
+     return pa;
 
-    } else if (dataType == DataType.INT) {
-      int[] pa = new int[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
+   } else if (dataType == DataType.INT) {
+     int[] pa = new int[size];
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       raf.seek ( chunk.getFilePos());
+       raf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+     }
+     return pa;
 
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = new float[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readFloat( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
+   } else if (dataType == DataType.FLOAT) {
+     float[] pa = new float[size];
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       raf.seek ( chunk.getFilePos());
+       raf.readFloat( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+     }
+     return pa;
 
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = new double[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readDouble( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-    }
+   } else if (dataType == DataType.DOUBLE) {
+     double[] pa = new double[size];
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       raf.seek ( chunk.getFilePos());
+       raf.readDouble( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+     }
+     return pa;
+   }
 
-    throw new IllegalStateException();
-  }
+   throw new IllegalStateException();
+ }
+
+  /**
+   * Read data subset from file for a variable, to DataOutputStream .
+   * @param index handles skipping around in the file.
+   * @param dataType dataType of the variable
+   */
+ protected long readData( Indexer index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
+   long count = 0;
+   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       count += raf.readBytes( out, chunk.getFilePos(), chunk.getNelems());
+     }
+
+   } else if (dataType == DataType.SHORT) {
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       count += raf.readBytes( out, chunk.getFilePos(), 2 * chunk.getNelems());
+     }
+
+   } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT)) {
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       count += raf.readBytes( out, chunk.getFilePos(), 4 * chunk.getNelems());
+     }
+
+   } else if ((dataType == DataType.DOUBLE) || (dataType == DataType.LONG)) {
+     while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       count += raf.readBytes( out, chunk.getFilePos(), 8 * chunk.getNelems());
+     }
+   }
+
+   return count;
+ }
 
    /**
     * write data to a file for a variable.
