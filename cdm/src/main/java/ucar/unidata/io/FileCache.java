@@ -1,6 +1,5 @@
-// $Id: FileCache.java 64 2006-07-12 22:30:50Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -50,7 +49,7 @@ import java.io.IOException;
  */
 public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
-  static private ArrayList cache; // CacheElement
+  static private List<CacheElement> cache; // CacheElement
   static private final Object lock = new Object(); // for synchronizing
   static private int maxElements, minElements;
   static private boolean disabled = true;
@@ -71,7 +70,7 @@ public class FileCache {
   static public void init( int minElementsInMemory, int maxElementsInMemory, long period) {
     minElements = minElementsInMemory;
     maxElements = maxElementsInMemory;
-    cache = new ArrayList(2*maxElements-minElements);
+    cache = new ArrayList<CacheElement>(2*maxElements-minElements);
     disabled = false;
 
     // in case its called more than once
@@ -115,8 +114,7 @@ public class FileCache {
     // see if its in the cache
     RandomAccessFile raf = null;
     synchronized (lock) {
-      for (int i = 0; i < cache.size(); i++) {
-        CacheElement elem =  (CacheElement) cache.get(i);
+      for (CacheElement elem : cache) {
         if (elem.location.equals(location) && !elem.isLocked) {
           elem.isLocked = true;
           raf = elem.raf;
@@ -174,8 +172,7 @@ public class FileCache {
     String location = raf.getLocation();
 
     synchronized (lock) {
-      for (int i = 0; i < cache.size(); i++) {
-        CacheElement elem =  (CacheElement) cache.get(i);
+      for (CacheElement elem : cache) {
         if (elem.location.equals(location) && elem.isLocked) {
           elem.isLocked = false;
           elem.lastAccessed = System.currentTimeMillis();
@@ -198,7 +195,7 @@ public class FileCache {
 
     int count = 0;
     int need2delete = size - minElements;
-    ArrayList deleteList = new ArrayList();
+    List<CacheElement> deleteList = new ArrayList<CacheElement>();
 
     synchronized (lock) {
       Collections.sort( cache); //sort so oldest are on top
@@ -215,17 +212,16 @@ public class FileCache {
     }
 
     long start = System.currentTimeMillis();
-    for (int i = 0; i < deleteList.size(); i++) {
-      CacheElement elem =  (CacheElement) deleteList.get(i);
+    for (CacheElement elem : deleteList) {
       if (!elem.raf.isCached())
-	  log.warn("FileCache file cache flag not set "+elem.location);
+        log.warn("FileCache file cache flag not set " + elem.location);
 
       try {
         elem.raf.setCached(false);
         elem.raf.close();
         elem.raf = null; // help the gc
       } catch (IOException e) {
-	  log.error("FileCache.close failed on "+elem.location);
+        log.error("FileCache.close failed on " + elem.location);
       }
     }
 
@@ -239,26 +235,26 @@ public class FileCache {
    * Get the files in the cache. For debugging/status only, do not change!
    * @return List of FileCache.CacheElement
    */
-  static public List getCache() {
-    return (cache == null) ? new ArrayList() : new ArrayList(cache);
+  static public List<CacheElement> getCache() {
+    return (cache == null) ? new ArrayList<CacheElement>() : new ArrayList<CacheElement>(cache);
   }
 
   static public void clearCache(boolean force) {
     if (null == cache) return;
 
-    ArrayList oldcache;
+    List<CacheElement> oldcache;
     synchronized (lock) {
       if (force) {
         // may need to force all files closed
-        oldcache = new ArrayList(cache);
+        oldcache = new ArrayList<CacheElement>(cache);
         cache.clear();
 
       } else  {
         // usual case is to respect locks
-        oldcache = new ArrayList(cache.size());
+        oldcache = new ArrayList<CacheElement>(cache.size());
         Iterator iter = cache.iterator();
         while (iter.hasNext()) {
-          CacheElement elem =  (CacheElement) iter.next();
+          CacheElement elem = (CacheElement) iter.next();
           if (!elem.isLocked) {
             iter.remove();
             oldcache.add(elem);
@@ -268,13 +264,11 @@ public class FileCache {
     } // synch
 
     // close all files in oldcache
-    Iterator iter = oldcache.iterator();
-    while (iter.hasNext()) {
-      CacheElement elem =  (CacheElement) iter.next();
+    for (CacheElement elem : oldcache) {
       if (elem.isLocked)
-        log.warn("FileCache close locked file= "+elem);
+        log.warn("FileCache close locked file= " + elem);
       if (!elem.raf.isCached())
-        log.warn("FileCache file cache flag not set= "+elem);
+        log.warn("FileCache file cache flag not set= " + elem);
       //System.out.println("FileCache close file= "+elem);
 
       try {
@@ -282,7 +276,7 @@ public class FileCache {
         elem.raf.close();
         elem.raf = null; // help the gc
       } catch (IOException e) {
-        log.error("FileCache.close failed on "+elem);
+        log.error("FileCache.close failed on " + elem);
       }
     }
 

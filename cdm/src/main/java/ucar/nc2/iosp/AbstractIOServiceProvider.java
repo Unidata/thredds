@@ -33,7 +33,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   // default implementation, reads into an Array, then writes to WritableByteChannel
   // subclasses should override if possible
-  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel out)
+  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array result = readData(v2, section);
@@ -42,7 +42,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     Class classType = result.getElementType();
 
     // LOOK should we buffer ??
-    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream(out));
+    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream(channel));
 
     if (classType == double.class) {
       while (iterA.hasNext())

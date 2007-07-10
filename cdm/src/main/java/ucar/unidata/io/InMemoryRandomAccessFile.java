@@ -1,6 +1,5 @@
-// $Id: InMemoryRandomAccessFile.java 64 2006-07-12 22:30:50Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,36 +19,57 @@
  */
 package ucar.unidata.io;
 
+import java.nio.channels.WritableByteChannel;
+import java.nio.ByteBuffer;
+import java.io.IOException;
+
 /**
  * @author john
  */
 public class InMemoryRandomAccessFile extends RandomAccessFile {
 
-   /**
-    * Constructor for in-memory "files"
-    * @param location used as a name
-    * @param data the complete file
-    */
-   public InMemoryRandomAccessFile(String location, byte[] data)  {
-     super(1);
-     this.location = location;
-     this.file = null;
-		 if (data == null)
-			 throw new IllegalArgumentException("data array is null");
+  /**
+   * Constructor for in-memory "files"
+   *
+   * @param location used as a name
+   * @param data     the complete file
+   */
+  public InMemoryRandomAccessFile(String location, byte[] data) {
+    super(1);
+    this.location = location;
+    this.file = null;
+    if (data == null)
+      throw new IllegalArgumentException("data array is null");
 
-     buffer = data;
-		 bufferStart = 0;
-		 dataSize = buffer.length;
-		 dataEnd = buffer.length;
-     filePosition = 0;
-     endOfFile = false;
+    buffer = data;
+    bufferStart = 0;
+    dataSize = buffer.length;
+    dataEnd = buffer.length;
+    filePosition = 0;
+    endOfFile = false;
 
-     if (debugLeaks)
-       openFiles.add( location);
-   }
+    if (debugLeaks)
+      openFiles.add(location);
+  }
 
-   public long length( ) {
-     return dataEnd;
-   }
+  public long length() {
+    return dataEnd;
+  }
+
+  /**
+   * Read up to <code>nbytes</code> bytes, at a specified offset, send to a WritableByteChannel.
+   * This will block until all bytes are read.
+   * This uses the underlying file channel directly, bypassing all user buffers.
+   *
+   * @param dest   write to this WritableByteChannel.
+   * @param offset the offset in the file where copying will start.
+   * @param nbytes the number of bytes to read.
+   * @return the actual number of bytes read, or -1 if there is no
+   *         more data due to the end of the file being reached.
+   * @throws java.io.IOException if an I/O error occurs.
+   */
+  public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
+    return dest.write(ByteBuffer.wrap(buffer, (int) offset, (int) nbytes));
+  }
 
 }

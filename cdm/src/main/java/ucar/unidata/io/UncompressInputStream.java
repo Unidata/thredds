@@ -1,6 +1,4 @@
 /*
- * @(#)UncompressInputStream.java			0.3-3 06/05/2001
- *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschalar
  *
@@ -315,10 +313,10 @@ public class UncompressInputStream extends FilterInputStream {
 
 
   /**
-   * Moves the unread data in the buffer to the beginning and resets
-   * the pointers.
+   * Moves the unread data in the buffer to the beginning and resets the pointers.
+   * @return 0
    */
-  private final int resetbuf(int bit_pos) {
+  private int resetbuf(int bit_pos) {
     int pos = bit_pos >> 3;
     System.arraycopy(data, pos, data, 0, end - pos);
     end -= pos;
@@ -326,7 +324,7 @@ public class UncompressInputStream extends FilterInputStream {
   }
 
 
-  private final void fill() throws IOException {
+  private void fill() throws IOException {
     got = in.read(data, end, data.length - 1 - end);
     if (got > 0) end += got;
   }

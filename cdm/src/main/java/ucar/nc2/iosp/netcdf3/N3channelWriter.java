@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
-import java.io.BufferedOutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
+import java.nio.ByteBuffer;
 
 /**
  * @author john
@@ -40,7 +40,7 @@ public class N3channelWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   private ucar.nc2.NetcdfFile ncfile;
-  private List vinfoList = new ArrayList(); // output order of the variables
+  private List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
   private boolean debugPos = false, debugWriteData = false;
 
   public N3channelWriter(ucar.nc2.NetcdfFile ncfile) {
@@ -165,8 +165,7 @@ public class N3channelWriter {
     if (null != stream) stream.writeInt(dims.size());
     count += 4;
 
-    for (int j = 0; j < dims.size(); j++) {
-      Dimension dim = dims.get(j);
+    for (Dimension dim : dims) {
       int dimIndex = findDimensionIndex(dim);
       if (null != stream) stream.writeInt(dimIndex);
       count += 4;
@@ -189,9 +188,7 @@ public class N3channelWriter {
     count += 12;
 
     //if (debug) out.println(" name= "+name+" type="+type+" vsize="+vsize+" begin= "+begin+" isRecord="+isRecord+"\n");
-    Vinfo vinfo = new Vinfo(var, count, vsize, var.isUnlimited());
-
-    return vinfo;
+    return new Vinfo(var, count, vsize, var.isUnlimited());
   }
 
 
@@ -292,7 +289,7 @@ public class N3channelWriter {
     throw new IllegalStateException("unknown Dimension == " + wantDim);
   }
 
-  // pad to a 4 byte boundary
+    // pad to a 4 byte boundary
   private int pad(DataOutputStream stream, int nbytes, byte fill) throws IOException {
     int pad = N3header.padding(nbytes);
     if (null != stream) {
@@ -318,13 +315,12 @@ public class N3channelWriter {
     }
   }
 
-  public void writeData(WritableByteChannel out) throws IOException, InvalidRangeException {
-    for (int i = 0; i < vinfoList.size(); i++) {
-      Vinfo vinfo = (Vinfo) vinfoList.get(i);
+  public void writeData(WritableByteChannel channel) throws IOException, InvalidRangeException {
+    for (Vinfo vinfo : vinfoList) {
       if (!vinfo.isRecord) {
         Variable v = vinfo.v;
-        ncfile.readData(v, v.getRanges(), out);
-        // pad(stream, vinfo.vsize, (byte) 0);
+        ncfile.readData(v, v.getRanges(), channel);
+        pad(channel, vinfo.vsize);
       }
     }
 
@@ -345,7 +341,7 @@ public class N3channelWriter {
       for (int count = 0; count < nrecs; count+=nr) {
         ranges.set(0, new Range(count, count+nr-1));
         try {
-          total += ncfile.readData(recordVar, ranges, out);
+          total += ncfile.readData(recordVar, ranges, channel);
         } catch (InvalidRangeException e) {
           e.printStackTrace();
           break;
@@ -359,6 +355,19 @@ public class N3channelWriter {
       ncfile.finish();
     }
 
+  }
+
+  // pad to a 4 byte boundary
+  private ByteBuffer padddingBB;
+  private int pad(WritableByteChannel channel, int nbytes) throws IOException {
+    int pad = N3header.padding(nbytes);
+    if ((null != channel) && (pad > 0)) {
+      if (padddingBB == null) padddingBB = ByteBuffer.allocate(4); // just 4 zero bytes
+      padddingBB.position(0);
+      padddingBB.limit(pad);
+      channel.write( padddingBB);
+    }
+    return pad;
   }
 
   ////////////////////////////////////////

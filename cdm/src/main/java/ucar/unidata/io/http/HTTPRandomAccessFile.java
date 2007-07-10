@@ -1,4 +1,3 @@
-// $Id: HTTPRandomAccessFile3.java 64 2006-07-12 22:30:50Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,6 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.WritableByteChannel;
+import java.nio.ByteBuffer;
 
 /**
  * Gives access to files over HTTP, using jakarta commons HttpClient library.
@@ -50,6 +51,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * Set the HttpClient object - a single instance is used.
+   * @param client the HttpClient object
    */
   static public void setHttpClient(HttpClient client) {
     _client = client;
@@ -57,6 +59,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * Get the HttpClient object - a single instance is used.
+   * @return client the HttpClient object
    */
   static public HttpClient getHttpClient() {
     return _client;
@@ -76,14 +79,14 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   public HTTPRandomAccessFile(String url) throws IOException {
     this(url, defaultHTTPBufferSize);
-    location = url.toString();
+    location = url;
   }
 
   public HTTPRandomAccessFile(String url, int bufferSize) throws IOException {
     super(bufferSize);
     file = null;
     this.url = url;
-    location = url.toString();
+    location = url;
 
     initHttpClient();
 
@@ -137,13 +140,23 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   private void printHeaders(String title, Header[] heads) {
     System.out.println(title);
-    for (int i = 0; i < heads.length; i++) {
-      Header head = heads[i];
+    for (Header head : heads) {
       System.out.print("  " + head.toString());
     }
     System.out.println();
   }
 
+  /**
+   * Read directly from file, without going through the buffer.
+   * All reading goes through here or readToByteChannel;
+   *
+   * @param pos    start here in the file
+   * @param buff      put data into this buffer
+   * @param offset buffer offset
+   * @param len    this number of bytes
+   * @return actual number of bytes read
+   * @throws IOException on io error
+   */
   protected int read_(long pos, byte[] buff, int offset, int len) throws IOException {
     long end = pos + len - 1;
     if (end >= total_length)
@@ -186,6 +199,15 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return done;
   }
 
+  public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
+    int n = (int) nbytes;
+    byte[] buff = new byte[n];
+    int done = read_(offset, buff, 0, n);
+    dest.write(ByteBuffer.wrap(buff));
+    return done;
+  }
+
+  // override the rest of the RandomAccessFile public methods
   public long length() throws IOException {
     long fileLength = total_length;
     if (fileLength < dataEnd)
@@ -194,10 +216,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       return fileLength;
   }
 
-
-  /**
-   * override the rest of the RandomAccessFile public methods
-   */
   public void close() {
     if (debugLeaks) openFiles.remove(location);
   }

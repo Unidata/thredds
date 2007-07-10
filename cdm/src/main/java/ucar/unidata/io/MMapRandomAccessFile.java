@@ -26,7 +26,7 @@ import java.nio.MappedByteBuffer;
 
 /**
  * Use NIO MappedByteBuffer to implement a RandomAccessFile.
- * Limited to 2G size.
+ * Limited to 2G size. Not currently used
  * @author john
  */
 public class MMapRandomAccessFile extends RandomAccessFile {

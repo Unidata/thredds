@@ -23,7 +23,6 @@ package ucar.nc2.iosp;
 import ucar.ma2.Range;
 
 import java.io.IOException;
-import java.io.DataOutputStream;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -75,11 +74,12 @@ public interface IOServiceProvider {
    * @param section List of type Range specifying the section of data to read.
    *   There must be a Range for each Dimension in the variable, in order.
    *   Note: no nulls allowed. IOSP may not modify.
-   * @param out write data to this WritableByteChannel
+   * @param channel write data to this WritableByteChannel
+   * @return the number of bytes written to the channel
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel out)
+  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**

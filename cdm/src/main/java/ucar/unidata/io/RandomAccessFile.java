@@ -518,17 +518,18 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * Read up to <code>nbytes</code> bytes, at a specified offset, to an OutputStream.
+   * Read up to <code>nbytes</code> bytes, at a specified offset, send to a WritableByteChannel.
    * This will block until all bytes are read.
+   * This uses the underlying file channel directly, bypassing all user buffers.
    *
    * @param dest write to this WritableByteChannel.
    * @param offset the offset in the file where copying will start.
-   * @param nbytes the number of bytes to copy.
+   * @param nbytes the number of bytes to read.
    * @return the actual number of bytes read, or -1 if there is no
    *         more data due to the end of the file being reached.
    * @throws IOException if an I/O error occurs.
    */
-  public long readBytes(WritableByteChannel dest, long offset, long nbytes) throws IOException {
+  public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
 
     if (fileChannel == null)
         fileChannel = file.getChannel();
@@ -543,14 +544,15 @@ public class RandomAccessFile implements DataInput, DataOutput {
   
 
   /**
-   * read directly, without going through the buffer
+   * Read directly from file, without going through the buffer.
+   * All reading goes through here or readToByteChannel;
    *
-   * @param pos    _more_
-   * @param b      _more_
-   * @param offset _more_
-   * @param len    _more_
-   * @return _more_
-   * @throws IOException _more_
+   * @param pos    start here in the file
+   * @param b      put data into this buffer
+   * @param offset buffer offset
+   * @param len    this number of bytes
+   * @return actual number of bytes read
+   * @throws IOException on io error
    */
   protected int read_(long pos, byte[] b, int offset, int len)
       throws IOException {

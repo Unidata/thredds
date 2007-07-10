@@ -181,13 +181,13 @@ public abstract class N3iosp implements IOServiceProviderWriter {
       int first = recordRange.first();
       int n = recordRange.length();
       if (false) System.out.println(" read record " + first+" "+ n * recsize+" bytes ");
-      return raf.readBytes(out, recStart + first * recsize, n * recsize);
+      return raf.readToByteChannel(out, recStart + first * recsize, n * recsize);
 
     }  else {
       for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
         if (debugRecord) System.out.println(" read record " + recnum);
         raf.seek(recStart + recnum * recsize); // where the record starts
-        count += raf.readBytes(out, recStart + recnum * recsize, recsize);
+        count += raf.readToByteChannel(out, recStart + recnum * recsize, recsize);
       }
     }
 

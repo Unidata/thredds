@@ -107,25 +107,25 @@ public class N3raf extends N3iosp  {
    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
-       count += raf.readBytes( out, chunk.getFilePos(), chunk.getNelems());
+       count += raf.readToByteChannel( out, chunk.getFilePos(), chunk.getNelems());
      }
 
    } else if (dataType == DataType.SHORT) {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
-       count += raf.readBytes( out, chunk.getFilePos(), 2 * chunk.getNelems());
+       count += raf.readToByteChannel( out, chunk.getFilePos(), 2 * chunk.getNelems());
      }
 
    } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT)) {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
-       count += raf.readBytes( out, chunk.getFilePos(), 4 * chunk.getNelems());
+       count += raf.readToByteChannel( out, chunk.getFilePos(), 4 * chunk.getNelems());
      }
 
    } else if ((dataType == DataType.DOUBLE) || (dataType == DataType.LONG)) {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
-       count += raf.readBytes( out, chunk.getFilePos(), 8 * chunk.getNelems());
+       count += raf.readToByteChannel( out, chunk.getFilePos(), 8 * chunk.getNelems());
      }
    }
 

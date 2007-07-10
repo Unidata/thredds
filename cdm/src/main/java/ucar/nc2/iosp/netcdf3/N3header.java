@@ -254,13 +254,13 @@ public class N3header {
       for (Variable v : uvars) {
         List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
         dims.remove(0); //remove record dimension
-        Variable recordV = new Variable(ncfile, ncfile.getRootGroup(), recordStructure, v.getShortName());
-        recordV.setDataType(v.getDataType());
-        recordV.setSPobject(v.getSPobject());
-        // recordV.getAttributes().addAll(v.getAttributes()); // ?? LOOK
-        recordV.setDimensions(dims);
+        Variable memberV = new Variable(ncfile, ncfile.getRootGroup(), recordStructure, v.getShortName());
+        memberV.setDataType(v.getDataType());
+        memberV.setSPobject(v.getSPobject());
+        memberV.getAttributes().addAll(v.getAttributes());
+        memberV.setDimensions(dims);
 
-        recordStructure.addMemberVariable(recordV);
+        recordStructure.addMemberVariable(memberV);
       }
 
       ncfile.addVariable(ncfile.getRootGroup(), recordStructure);
