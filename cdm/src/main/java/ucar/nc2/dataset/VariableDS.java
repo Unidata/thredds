@@ -310,6 +310,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
    */
   public ProxyReader2 getProxyReader2() { return this.proxyReader2; }
 
+  public String toStringDebug() {
+    return (orgVar != null) ? orgVar.toStringDebug() : "";
+  }
+
   // regular Variables.
   @Override
   protected Array _read() throws IOException {

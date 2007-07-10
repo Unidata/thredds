@@ -143,7 +143,7 @@ public class RegularIndexer extends Indexer {
     // make stride into bytes instead of elements
     for (int ii = 0; ii < rank; ii++)
       finalStride[ii] *= elemSize;
-    if (isRecord)
+    if (isRecord && (rank > 0))
       finalStride[0] = recSize * wantStride[0];
 
     int[] finalShape = new int[ rank];

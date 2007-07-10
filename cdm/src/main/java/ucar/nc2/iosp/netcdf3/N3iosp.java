@@ -27,6 +27,7 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.RegularIndexer;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.IOServiceProviderWriter;
+import ucar.nc2.iosp.RegularLayout;
 
 import java.util.*;
 import java.io.*;
@@ -140,14 +141,16 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   /////////////////////////////////////////////////////////////////////////////
   // data reading
 
-  public Array readData(ucar.nc2.Variable v2, java.util.List<Range> sectionList) throws IOException, InvalidRangeException {
+  public Array readData(ucar.nc2.Variable v2, java.util.List<Range> rangeList) throws IOException, InvalidRangeException {
     if (v2 instanceof Structure)
-      return readRecordData((Structure) v2, sectionList);
+      return readRecordData((Structure) v2, rangeList);
 
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, sectionList, v2.isUnlimited() ? recsize : -1);
+    //RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, rangeList, v2.isUnlimited() ? recsize : -1);
+    // public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
+    RegularLayout index = new RegularLayout(vinfo.begin, v2.isUnlimited() ? recsize : -1, v2.getElementSize(), v2.getShape(), rangeList);
     Object data = readData(index, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), index.getWantShape(), data);
   }
