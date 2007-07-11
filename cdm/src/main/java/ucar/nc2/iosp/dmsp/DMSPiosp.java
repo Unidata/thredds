@@ -6,9 +6,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.DataType;
+import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -157,13 +155,14 @@ public class DMSPiosp extends AbstractIOServiceProvider {
 
   }
 
-  public Array readData( Variable v2, List section ) throws IOException, InvalidRangeException
+  public Array readData( Variable v2, Section section ) throws IOException, InvalidRangeException
   {
     if ( v2 == null ) throw new IllegalArgumentException( "Variable must not be null.");
     if ( section == null ) throw new IllegalArgumentException( "Section must not be null.");
 
     Object data = null;
     Array dataArray = null;
+    List<Range> ranges = section.getRanges();
 
     // Read in date/time variables for each scan (year, dayOfYear, and secondsOfDay).
     if ( v2.getName().equals( VariableInfo.YEAR.getName()))
@@ -174,7 +173,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedYear;
       dataArray = Array.factory( int.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section).copy());
+      return( dataArray.sectionNoReduce( ranges).copy());
     }
     else if ( v2.getName().equals( VariableInfo.DAY_OF_YEAR.getName()))
     {
@@ -184,7 +183,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedDayOfYear;
       dataArray = Array.factory( int.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
     else if ( v2.getName().equals( VariableInfo.SECONDS_OF_DAY.getName()))
     {
@@ -194,7 +193,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedSecondsOfDay;
       dataArray = Array.factory( double.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
     else if ( v2.getName().equals( VariableInfo.TIME.getName()))
     {
@@ -207,16 +206,13 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         // [Note: don't need Arrays returned.]
         // @todo Could seperate reading cache from Array production.
         Variable curVar = this.ncFile.findVariable( VariableInfo.YEAR.getName() );
-        List fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection);
+        this.readData( curVar, curVar.getShapeAsSection());
 
         curVar = this.ncFile.findVariable( VariableInfo.DAY_OF_YEAR.getName() );
-        fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection);
+        this.readData( curVar, curVar.getShapeAsSection());
 
         curVar = this.ncFile.findVariable( VariableInfo.SECONDS_OF_DAY.getName() );
-        fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection);
+        this.readData( curVar, curVar.getShapeAsSection());
 
         Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ), Locale.US );
 
@@ -243,7 +239,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         }
 
         dataArray = Array.factory( float.class, v2.getShape(), this.calculatedTime);
-        return ( dataArray.sectionNoReduce( section ).copy() );
+        return ( dataArray.sectionNoReduce( ranges ).copy() );
       }
     }
 
@@ -257,7 +253,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedSatEphemLatitude;
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
     else if ( v2.getName().equals( VariableInfo.SAT_EPHEM_LONGITUDE.getName()))
     {
@@ -267,7 +263,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedSatEphemLongitude;
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
     else if ( v2.getName().equals( VariableInfo.SAT_EPHEM_ALTITUDE.getName()))
     {
@@ -277,7 +273,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedSatEphemAltitude;
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
     else if ( v2.getName().equals( VariableInfo.SAT_EPHEM_HEADING.getName()))
     {
@@ -287,7 +283,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedSatEphemHeading;
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
 
     // Read in scan information variables for each scan (scannerOffset and scanDirection).
@@ -299,7 +295,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedScannerOffset;
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
     else if ( v2.getName().equals( VariableInfo.SCAN_DIRECTION.getName()))
     {
@@ -309,7 +305,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
       data = this.cachedScanDirection;
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return ( dataArray.sectionNoReduce( section ).copy() );
+      return ( dataArray.sectionNoReduce( ranges ).copy() );
     }
 
     // Read in sun and moon information variables for each scan (solarElevation,
@@ -318,31 +314,31 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     {
       data = this.readFloatArray1D( VariableInfo.SOLAR_ELEVATION.getByteOffsetInRecord());
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.SOLAR_AZIMUTH.getName()))
     {
       data = this.readFloatArray1D( VariableInfo.SOLAR_AZIMUTH.getByteOffsetInRecord());
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.LUNAR_ELEVATION.getName()))
     {
       data = this.readFloatArray1D( VariableInfo.LUNAR_ELEVATION.getByteOffsetInRecord());
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.LUNAR_AZIMUTH.getName()))
     {
       data = this.readFloatArray1D( VariableInfo.LUNAR_AZIMUTH.getByteOffsetInRecord());
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.LUNAR_PHASE.getName()))
     {
       data = this.readFloatArray1D( VariableInfo.LUNAR_PHASE.getByteOffsetInRecord());
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
 
     // Read in gain information variables for each scan (gainCode, gainMode,
@@ -351,25 +347,25 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     {
       data = this.readFloatArray1D( VariableInfo.GAIN_CODE.getByteOffsetInRecord());
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.GAIN_MODE.getName()))
     {
       data = this.readUCharArray1D( VariableInfo.GAIN_MODE.getByteOffsetInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.GAIN_SUB_MODE.getName()))
     {
       data = this.readUCharArray1D( VariableInfo.GAIN_SUB_MODE.getByteOffsetInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.T_CHANNEL_GAIN.getName()))
     {
       data = this.readFloatArray1D( VariableInfo.T_CHANNEL_GAIN.getByteOffsetInRecord());
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
 
     // Read in calibration variables for each scan (hotTCalSegmentID,
@@ -378,31 +374,31 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     {
       data = this.readUCharArray1D( VariableInfo.HOT_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.COLD_T_CAL_SEGMENT_ID.getName()))
     {
       data = this.readUCharArray1D( VariableInfo.COLD_T_CAL_SEGMENT_ID.getByteOffsetInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.HOT_T_CAL.getName()))
     {
       data = this.readUCharArray1D( VariableInfo.HOT_T_CAL.getByteOffsetInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.COLD_T_CAL.getName()))
     {
       data = this.readUCharArray1D( VariableInfo.COLD_T_CAL.getByteOffsetInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.PMT_CAL.getName()))
     {
       data = this.readUCharArray1D( VariableInfo.PMT_CAL.getByteOffsetInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
 
     // Read in scan quality flag variables (visibleScanQualityFlag and thermalScanQualityFlag).
@@ -410,13 +406,13 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     {
       data = this.readIntArray1D( VariableInfo.VISIBLE_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
       dataArray = Array.factory( int.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getName()))
     {
       data = this.readIntArray1D( VariableInfo.THERMAL_SCAN_QUALITY_FLAG.getByteOffsetInRecord());
       dataArray = Array.factory( int.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
 
     // Read in scan variables (visibleImagery and infraredImagery).
@@ -426,7 +422,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       data = this.readByteArray2D( VariableInfo.VISIBLE_SCAN.getByteOffsetInRecord(),
                                    VariableInfo.VISIBLE_SCAN.getNumElementsInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
     else if ( v2.getName().equals( VariableInfo.THERMAL_SCAN.getName()))
     {
@@ -434,7 +430,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       data = this.readByteArray2D( VariableInfo.THERMAL_SCAN.getByteOffsetInRecord(),
                                    VariableInfo.THERMAL_SCAN.getNumElementsInRecord());
       dataArray = Array.factory( byte.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section));
+      return( dataArray.sectionNoReduce( ranges));
     }
 
     else if ( v2.getName().equals( VariableInfo.LATITUDE.getName()) ||
@@ -449,24 +445,19 @@ public class DMSPiosp extends AbstractIOServiceProvider {
         // SAT_EPHEM_LONGITUDE, SAT_EPHEM_ALTITUDE, and SAT_EPHEM_HEADING
         // is available as it is used in the latitude and longitude calculation.
         Variable curVar = this.ncFile.findVariable( VariableInfo.SCANNER_OFFSET.getName() );
-        List fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection );
+        this.readData( curVar, curVar.getShapeAsSection() );
 
         curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_LATITUDE.getName() );
-        fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection );
+        this.readData( curVar, curVar.getShapeAsSection() );
 
         curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_LONGITUDE.getName() );
-        fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection );
+        this.readData( curVar, curVar.getShapeAsSection() );
 
         curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_ALTITUDE.getName() );
-        fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection );
+        this.readData( curVar, curVar.getShapeAsSection() );
 
         curVar = this.ncFile.findVariable( VariableInfo.SAT_EPHEM_HEADING.getName() );
-        fullSection = curVar.getRanges();
-        this.readData( curVar, fullSection );
+        this.readData( curVar, curVar.getShapeAsSection() );
 
         int satID = Integer.parseInt( this.ncFile.getRootGroup().findAttribute( "spacecraftId").getStringValue().substring( 1));
         GeolocateOLS.geolocateOLS( satID, 0, header.getNumDataRecords(),
@@ -486,7 +477,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       }
 
       dataArray = Array.factory( float.class, v2.getShape(), data);
-      return( dataArray.sectionNoReduce( section).copy());
+      return( dataArray.sectionNoReduce( ranges).copy());
     }
 
     else
@@ -496,12 +487,6 @@ public class DMSPiosp extends AbstractIOServiceProvider {
     }
 
     return( null); // Should return from one of above if-else-if blocks.
-  }
-
-  public Array readNestedData( Variable v2, List section )
-          throws IOException, InvalidRangeException
-  {
-    throw( new IllegalStateException( "No nested variables in DMSP datasets."));
   }
 
   public void close() throws IOException

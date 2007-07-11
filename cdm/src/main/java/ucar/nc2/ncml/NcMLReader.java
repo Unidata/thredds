@@ -295,7 +295,7 @@ public class NcMLReader {
         try {
           ncfile = new NcMLNetcdfFile(iospS, iospParam, referencedDatasetUri, buffer_size, cancelTask);
         } catch (Exception e) {
-          throw new IOException(e.getMessage(), e);
+          throw new IOException(e.getMessage());
         }
         refds = new NetcdfDataset(ncfile, false);
       } else {

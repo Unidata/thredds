@@ -1210,7 +1210,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   // Array readData(ucar.nc2.Variable v, List<Range> ranges) throws IOException, InvalidRangeException {
 
   @Override
-  protected Array readData(ucar.nc2.Variable v, List<Range> section) throws IOException, InvalidRangeException {
+  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
 
     // LOOK: what if theres already a CE !!!!
     // create the constraint expression
@@ -1220,11 +1220,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     // add the selector if not a Sequence
     if (!v.isVariableLength()) {
-      List<Range> dodsSection = section;
-      if ((v.getDataType() == DataType.CHAR) && (section != null)) { // CHAR is mapped to DString
-        int n = section.size();
+      List<Range> dodsSection = section.getRanges();
+      if ((v.getDataType() == DataType.CHAR)) { // CHAR is mapped to DString
+        int n = section.getRank();
         if (n == v.getRank())  // remove last section if present
-          dodsSection = section.subList(0, n - 1);
+          dodsSection = dodsSection.subList(0, n - 1);
       }
       makeSelector(buff, dodsSection);
     }
@@ -1237,7 +1237,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       DataDDS dataDDS = readDataDDSfromServer(buff.toString());
       DodsV root = DodsV.parseDataDDS(dataDDS);
       DodsV want = root.children.get(0); // can only be one
-      dataArray = convertD2N.convertTopVariable(v, section, want);
+      dataArray = convertD2N.convertTopVariable(v, section.getRanges(), want);
     }
     catch (DAP2Exception ex) {
       ex.printStackTrace();
@@ -1253,12 +1253,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   // this is for reading variables that are members of structures
   @Override
-  protected Array readMemberData(ucar.nc2.Variable v, List<Range> section, boolean flatten) throws IOException, InvalidRangeException {
+  protected Array readMemberData(ucar.nc2.Variable v, Section section, boolean flatten) throws IOException, InvalidRangeException {
     StringBuffer buff = new StringBuffer(100);
     buff.setLength(0);
 
+    List<Range> ranges = section.getRanges();
+
     // add the selector
-    addParents(buff, v, section, 0);
+    addParents(buff, v, ranges, 0);
 
     Array dataArray;
     try {
@@ -1268,7 +1270,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       DataDDS dataDDS = readDataDDSfromServer(buff.toString());
       DodsV root = DodsV.parseDataDDS(dataDDS);
       DodsV want = root.children.get(0); // can only be one
-      dataArray = convertD2N.convertNestedVariable(v, section, want, flatten);
+      dataArray = convertD2N.convertNestedVariable(v, ranges, want, flatten);
 
     }
     catch (DAP2Exception ex) {

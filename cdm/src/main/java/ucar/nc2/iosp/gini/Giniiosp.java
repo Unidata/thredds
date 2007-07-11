@@ -84,21 +84,11 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   }
 
-  public Array readData(ucar.nc2.Variable v2, java.util.List sectionList) throws IOException, InvalidRangeException  {
+  public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException  {
     // subset
-    Range[] section = Range.toArray( sectionList);
-    int[] origin = new int[v2.getRank()];
-    int[] shape = v2.getShape();
-    int[] stride = new int[v2.getRank()];
-    if (section != null) {
-      for (int i=0; i<section.length; i++ ) {
-        origin[i] = section[i].first();
-        shape[i] = section[i].length();
-        stride[i] = section[i].stride();
-        //if (section[i].stride() != 1)
-         // throw new UnsupportedOperationException("Giniiosp doesnt yet support strides");
-      }
-    }
+    int[] origin = section.getOrigin();
+    int[] shape = section.getShape();
+    int[] stride = section.getStride();
     Giniheader.Vinfo vinfo = (Giniheader.Vinfo) v2.getSPobject();
 
     if( headerParser.gini_GetCompressType() == 0)

@@ -108,7 +108,7 @@ public class StructurePseudo extends Structure {
     ArrayStructureMA asma = new ArrayStructureMA( smembers, getShape());
 
     for (Variable v : orgVariables) {
-      List<Range> vsection =  v.getRanges();
+      List<Range> vsection =  new ArrayList<Range>(v.getRanges());
       vsection.set(0, r);
       Array data = v.read(vsection);
       StructureMembers.Member m = smembers.findMember(v.getName());

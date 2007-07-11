@@ -436,14 +436,14 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ngatesVar.setCachedData( ngatesData, false);
   }
 
-  public Array readData(Variable v2, List section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     Vgroup vgroup = (Vgroup) v2.getSPobject();
 
-    Range scanRange = (Range) section.get(0);
-    Range radialRange = (Range) section.get(1);
-    Range gateRange = (Range) section.get(2);
+    Range scanRange = section.getRange(0);
+    Range radialRange = section.getRange(1);
+    Range gateRange = section.getRange(2);
 
-    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), Range.getShape( section));
+    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
     IndexIterator ii = data.getIndexIterator();
 
     for (int i=scanRange.first(); i<=scanRange.last(); i+= scanRange.stride()) {
@@ -481,10 +481,6 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////
-
-  public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
-    throw new UnsupportedOperationException("Nexrad2 IOSP does not support nested variables");
-  }
 
   public void close() throws IOException {
     volScan.raf.close();

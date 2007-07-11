@@ -397,7 +397,7 @@ public abstract class Array {
     *   A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
     * @return the new Array
     */
-  public Array sectionNoReduce( List ranges) throws InvalidRangeException {
+  public Array sectionNoReduce( List<Range> ranges) throws InvalidRangeException {
     return createView( indexCalc.sectionNoReduce(ranges));
   }
 

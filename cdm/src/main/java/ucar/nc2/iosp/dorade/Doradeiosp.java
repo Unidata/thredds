@@ -48,11 +48,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   public DoradeSweep mySweep = null;
   boolean littleEndian;
 
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
-         throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    throw new UnsupportedOperationException("Dorade IOSP does not support nested variables");       
-  }
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
     {
         Doradeheader localHeader = new Doradeheader();
@@ -94,16 +89,17 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   }
 
 
-  public Array readData(ucar.nc2.Variable v2, java.util.List section) throws IOException, InvalidRangeException  {
+  public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException  {
 
     Array outputData = null;
     int nSensor = mySweep.getNSensors();
     int nRays = mySweep.getNRays();
+    List<Range> ranges = section.getRanges();
 
     if ( v2.getName().equals( "elevation"))
     {
         float [] elev = mySweep.getElevations();
-        outputData = readData1(v2, section, elev);
+        outputData = readData1(v2, ranges, elev);
         //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), elev);
     }
     else if ( v2.getName().equals( "rays_time"))
@@ -112,13 +108,13 @@ public class Doradeiosp extends AbstractIOServiceProvider {
         double [] d  = new double [dd.length];
         for(int i = 0; i < dd.length; i++ )
             d[i] = (double) dd[i].getTime();
-        outputData = readData2(v2, section, d);
+        outputData = readData2(v2, ranges, d);
         //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), d);
     }
     else if (v2.getName().equals( "azimuth"))
     {
         float [] azim = mySweep.getAzimuths();
-        outputData = readData1(v2, section, azim);
+        outputData = readData1(v2, ranges, azim);
         //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), azim);
     }
     else if (v2.getName().startsWith( "latitudes_"))
@@ -129,7 +125,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
            lats = mySweep.getLatitudes(i);
            System.arraycopy(lats, 0, allLats, i*nRays, nRays);
         }
-        outputData = readData1(v2, section, allLats);
+        outputData = readData1(v2, ranges, allLats);
         //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), allLats);
     }
     else if (v2.getName().startsWith( "longitudes_"))
@@ -140,7 +136,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
            lons = mySweep.getLongitudes(i);
            System.arraycopy(lons, 0, allLons, i*nRays, nRays);
         }
-        outputData = readData1(v2, section, allLons);
+        outputData = readData1(v2, ranges, allLons);
         //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), lons);
     }
     else if (v2.getName().startsWith( "altitudes_"))
@@ -151,7 +147,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
            alts = mySweep.getAltitudes(i);
            System.arraycopy(alts, 0, allAlts, i*nRays, nRays);
         }
-        outputData = readData1(v2, section, allAlts);
+        outputData = readData1(v2, ranges, allAlts);
         //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), alts);
     }
     else if (v2.getName().startsWith( "distance_"))
@@ -169,7 +165,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
         Array data = NetcdfDataset.makeArray( DataType.FLOAT, nc,
           (double) mySweep.getRangeToFirstCell(j), (double) mySweep.getCellSpacing(j));
         dist = (float [])data.get1DJavaArray(Float.class);
-        outputData = readData1(v2, section, dist);;
+        outputData = readData1(v2, ranges, dist);;
 
     }
     else if(v2.isScalar())
@@ -222,10 +218,10 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     }
     else
     {
-        Range radialRange = (Range) section.get(0);
-        Range gateRange = (Range) section.get(1);
+        Range radialRange = section.getRange(0);
+        Range gateRange = section.getRange(1);
 
-        Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), Range.getShape( section));
+        Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
         IndexIterator ii = data.getIndexIterator();
 
         DoradePARM dp = mySweep.lookupParamIgnoreCase(v2.getName());
@@ -286,11 +282,8 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
       return data;
   }
-  // all the work is here, so can be called recursively
-  public Array readData(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride) throws IOException, InvalidRangeException  {
 
-     return null;
-  }
+
     // for the compressed data read all out into a array and then parse into requested
 
 

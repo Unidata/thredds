@@ -64,7 +64,7 @@ public class RegularLayoutTest2 {
     }
 
     // public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, List<Range> rangeList) throws InvalidRangeException {
-    layout = new RegularLayout(startPos, elemSize, recSize, varShape, want.getRanges());
+    layout = new RegularLayout(startPos, elemSize, recSize, varShape, want);
 
     //   public RegularIndexer( int[] varShape, int elemSize, long startPos, List section, int recSize) throws InvalidRangeException {
     index = new RegularIndexer(varShape, elemSize, startPos, want.getRanges(), recSize);

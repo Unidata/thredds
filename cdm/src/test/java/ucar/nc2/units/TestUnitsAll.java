@@ -2,12 +2,6 @@ package ucar.nc2.units;
 
 import junit.framework.*;
 
-import java.io.IOException;
-
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.nc2.TestIndexer;
-
 /**
  * TestSuite that runs all nj22 unit tests.
  *

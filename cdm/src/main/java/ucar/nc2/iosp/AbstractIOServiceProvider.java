@@ -23,6 +23,7 @@ package ucar.nc2.iosp;
 import ucar.ma2.Range;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
+import ucar.ma2.Section;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -31,9 +32,14 @@ import java.nio.channels.Channels;
 
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
+  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
+         throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support nested variables");
+  }
+
   // default implementation, reads into an Array, then writes to WritableByteChannel
   // subclasses should override if possible
-  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel channel)
+  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array result = readData(v2, section);

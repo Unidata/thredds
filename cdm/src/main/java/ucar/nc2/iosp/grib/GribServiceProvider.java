@@ -232,17 +232,17 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  public Array readData(Variable v2, List section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     long start = System.currentTimeMillis();
 
-    Array dataArray = Array.factory( DataType.FLOAT.getClassType(), Range.getShape(section));
+    Array dataArray = Array.factory( DataType.FLOAT.getClassType(), section.getShape());
     GribVariable pv = (GribVariable) v2.getSPobject();
 
     int count = 0;
-    Range timeRange = (Range) section.get(count++);
-    Range levRange = pv.hasVert() ? (Range) section.get(count++) : null;
-    Range yRange = (Range) section.get(count++);
-    Range xRange = (Range) section.get(count);
+    Range timeRange = section.getRange(count++);
+    Range levRange = pv.hasVert() ? section.getRange(count++) : null;
+    Range yRange = section.getRange(count++);
+    Range xRange = section.getRange(count);
 
     IndexIterator ii = dataArray.getIndexIteratorFast();
 
@@ -313,10 +313,6 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   }
 
   protected abstract float[] _readData( long offset1, long offset2, int decimalScale, boolean bmsExists ) throws IOException;
-
-  public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
-    throw new UnsupportedOperationException("Grib IOSP does not support nested variables");
-  }
 
   public void close() throws IOException {
     raf.close();

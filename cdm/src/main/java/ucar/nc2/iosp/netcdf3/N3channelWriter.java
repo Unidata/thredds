@@ -319,7 +319,7 @@ public class N3channelWriter {
     for (Vinfo vinfo : vinfoList) {
       if (!vinfo.isRecord) {
         Variable v = vinfo.v;
-        ncfile.readData(v, v.getRanges(), channel);
+        ncfile.readData(v, v.getShapeAsSection(), channel);
         pad(channel, vinfo.vsize);
       }
     }
@@ -330,8 +330,8 @@ public class N3channelWriter {
       ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
       Structure recordVar = (Structure) ncfile.findVariable("record");
-      List<Range> ranges =  new ArrayList<Range>();
-      ranges.add(null);
+      Section section = new Section();
+      section.appendRange(null);
 
       long total = 0;
       int nrecs = (int) recordVar.getSize();
@@ -339,9 +339,9 @@ public class N3channelWriter {
       int nr = Math.max(buffer_size/sdataSize, 1);
 
       for (int count = 0; count < nrecs; count+=nr) {
-        ranges.set(0, new Range(count, count+nr-1));
+        section.setRange(0, new Range(count, count+nr-1));
         try {
-          total += ncfile.readData(recordVar, ranges, channel);
+          total += ncfile.readData(recordVar, section, channel);
         } catch (InvalidRangeException e) {
           e.printStackTrace();
           break;

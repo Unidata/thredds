@@ -230,7 +230,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  public Array readData(Variable v2, List section) 
+  public Array readData(Variable v2, Section section)
     throws IOException, InvalidRangeException {
     long start = System.currentTimeMillis();
 
@@ -247,8 +247,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
        //HashMap timeLocations = saveIndex.getObsLocations();
        //ArrayList parameters = saveIndex.getParameters();
 
-       int[] shape = Range.getShape( section );
-       Range range = (Range) section.get(0);
+       int[] shape = section.getShape();
+       Range range = section.getRange(0);
        //System.out.println( "range.first ="+ range.first() +" range.last ="+ range.last() );
        //System.out.println( "shape[0]  ="+ shape[0] );
 
@@ -461,7 +461,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
     // non-structure variable read
     //System.out.println( "non-structure variable read name ="+ v2.getName() );
-    return readDataVariable( v2.getName(),  v2.getDataType(), section );
+    return readDataVariable( v2.getName(),  v2.getDataType(), section.getRanges() );
   }
 
   public void readDataCompressed( String table, ArrayList locations,
@@ -655,7 +655,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     return null; // should never get here
   }
 
-  public Array readDataVariableRecord(Variable v2, List section) 
+  private Array readDataVariableRecord(Variable v2, List section)
     throws IOException, InvalidRangeException {
 
        //System.out.println( "v2 is a variable in a Structure" );
@@ -911,14 +911,14 @@ public class BufrIosp extends AbstractIOServiceProvider {
        }
   } // end readDataVariableRecordCompressed
 
-  public Array readNestedData(Variable v2, List section)
+  public Array readNestedData(Variable v2, Section section)
     throws IOException, InvalidRangeException {
     //System.out.println( "readNestedData variable ="+ v2.getName() );
     //throw new UnsupportedOperationException("Bufr IOSP does not support nested variables");
     if( v2.getName().startsWith( "record." ) ) {
-       return readDataVariableRecord( v2, section );
+       return readDataVariableRecord( v2, section.getRanges() );
     } else {
-       return readDataVariable( v2.getName(),  v2.getDataType(), section );
+       return readDataVariable( v2.getName(),  v2.getDataType(), section.getRanges() );
     }
   }
 

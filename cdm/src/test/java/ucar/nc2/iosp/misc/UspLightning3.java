@@ -249,18 +249,18 @@ public class UspLightning3  extends AbstractIOServiceProvider {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
+  public Array readNestedData(Variable v2, Section section) throws IOException, InvalidRangeException {
     IospData iospd = (IospData) v2.getSPobject();
 
     java.text.SimpleDateFormat isoDateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 
-    int[] sectionShape = Range.getShape(section);
+    int[] sectionShape = section.getShape();
     Array data = Array.factory(v2.getDataType(), sectionShape);
     Index ima = data.getIndex();
 
     int count = 0;
-    Range r = (Range) section.get(0);
+    Range r = (Range) section.getRange(0);
     Range.Iterator riter = r.getIterator();
     while (riter.hasNext()) {
       int index = riter.next();
@@ -299,14 +299,14 @@ public class UspLightning3  extends AbstractIOServiceProvider {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public Array readData(Variable v2, List section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
 
     java.text.SimpleDateFormat isoDateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 
     Structure struct = (Structure) v2;
 
-    int[] sectionShape = Range.getShape(section);
+    int[] sectionShape = section.getShape();
     ArrayStructureMA structData = new ArrayStructureMA(struct.makeStructureMembers(), sectionShape);
     ArrayInt.D1 dateArray = (ArrayInt.D1) Array.factory(DataType.INT, sectionShape);
     ArrayDouble.D1 latArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, sectionShape);
@@ -321,7 +321,7 @@ public class UspLightning3  extends AbstractIOServiceProvider {
     structData.setMemberArray(NSTROKES, nstrokesArray);
 
     int count = 0;
-    Range r = (Range) section.get(0);
+    Range r = section.getRange(0);
     Range.Iterator riter = r.getIterator();
     while (riter.hasNext()) {
       int index = riter.next();

@@ -20,6 +20,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import ucar.nc2.iosp.TestIndexer;
 
 /**
  * ucar.nc2 core testing, using only local files (part of release)

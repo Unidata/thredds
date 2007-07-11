@@ -100,18 +100,13 @@ public class H5iosp extends AbstractIOServiceProvider {
     //mapBuffer.order(ByteOrder.LITTLE_ENDIAN);
   }
 
-  public Array readData(ucar.nc2.Variable v2, java.util.List sectionList) throws IOException, InvalidRangeException  {
+  public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException  {
     // subset
-    Range[] section = Range.toArray( sectionList);
-    int[] origin = new int[v2.getRank()];
-    int[] shape = v2.getShape();
-    if (section != null) {
-      for (int i=0; i<section.length; i++ ) {
-        origin[i] = section[i].first();
-        shape[i] = section[i].length();
-        if (section[i].stride() != 1)
-          throw new UnsupportedOperationException("H5iosp doesnt yet support strides");
-      }
+    int[] origin = section.getOrigin();
+    int[] shape = section.getShape();
+    for (Range r : section.getRanges()) {
+      if (r.stride() != 1)
+        throw new UnsupportedOperationException("H5iosp doesnt yet support strides");
     }
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     return readData( v2, vinfo.dataPos, origin, shape);
@@ -269,13 +264,6 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     throw new IllegalStateException();
-  }
-
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List section)
-         throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    throw new UnsupportedOperationException("H5 IOSP does not support nested variables");
-
   }
 
   private StructureData readStructure(Structure s, ArrayStructureW asw, long dataPos) throws IOException, InvalidRangeException  {

@@ -35,7 +35,7 @@ import java.util.ArrayList;
 public class RegularLayout extends Indexer {
   private List<Dim> dimList = new ArrayList<Dim>();
   private MyIndex myIndex;
-  private List<Range> want;
+  //private List<Range> want;
 
   private int elemSize; // size of each element
   private long startPos; // starting address
@@ -44,27 +44,29 @@ public class RegularLayout extends Indexer {
   private int nelems; // number of elements to read at one time
   private long total, done;
 
-  private boolean debug = false, debugMerge = false, debugNext = false;
+  private boolean debug = true, debugMerge = false, debugNext = false;
 
   /**
    * Constructor.
    *
    * @param startPos starting address of the entire data array.
-   * @param elemSize size of on element in bytes.
+   * @param elemSize size of an element in bytes.
    * @param recSize  if > 0, then size of outer stride in bytes, else ignored
    * @param varShape shape of the entire data array.
-   * @param rangeList the wanted section of data, contains a List of Range objects, must be filled.
+   * @param section the wanted section of data, contains a List of Range objects, must be filled.
    * @throws InvalidRangeException if ranges are misformed
    */
-  public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, List<Range> rangeList) throws InvalidRangeException {
+  public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section section) throws InvalidRangeException {
+    assert startPos >= 0;
+    assert elemSize > 0;
+
     this.elemSize = elemSize;
-    this.want = rangeList; // (wantSection == null) ?  new Section(varShape) :  new Section(wantSection.getRanges(), varShape);
-    //String err = want.checkInRange(varShape);
-    //if (err != null)
-    //  throw new InvalidRangeException(err);
+    String err = section.checkInRange(varShape);
+    if (err != null)
+      throw new InvalidRangeException(err);
 
     // compute total size of wanted section
-    this.total = Range.computeSize(want);
+    this.total = section.computeSize();
     this.done = 0;
 
     // compute the layout
@@ -75,7 +77,7 @@ public class RegularLayout extends Indexer {
     int stride = 1;
     for (int ii = varRank - 1; ii >= 0; ii--) {
       int realStride = (isRecord && ii == 0) ? recSize : elemSize * stride;
-      dimList.add( new Dim(realStride, varShape[ii], want.get(ii))); // note reversed : fastest first
+      dimList.add( new Dim(realStride, varShape[ii], section.getRange(ii))); // note reversed : fastest first
       stride *= varShape[ii];
     }
 
@@ -145,7 +147,10 @@ public class RegularLayout extends Indexer {
     long nchunks = Index.computeSize(shape);
     assert nchunks * nelems == total;
 
-    System.out.println("RegularLayout = "+this);
+    if (debug) {
+      System.out.println("RegularLayout = "+this);
+      System.out.println("startPos= "+ startPos+" elemSize= "+elemSize+" recSize= "+recSize+" varShape= "+printa(varShape)+" section= "+section);
+    }
   }
 
   private class Dim {
@@ -176,10 +181,6 @@ public class RegularLayout extends Indexer {
   public int getChunkSize() {
     return nelems;
   }
-
-  public int[] getWantShape() {
-    return Range.getShape(want);
-  }  // for N3iosp
 
   public int getTotalNelems() {
     return (int) total;
@@ -243,10 +244,10 @@ public class RegularLayout extends Indexer {
     return sbuff.toString();
   }
 
-  private void printa(String name, int[] a, int rank) {
-    System.out.print(name + "= ");
-    for (int i = 0; i < rank; i++) System.out.print(a[i] + " ");
-    System.out.println();
+  private String printa(int[] a) {
+    StringBuffer sbuff = new StringBuffer();
+    for (int i = 0; i < a.length; i++) sbuff.append(a[i] + " ");
+    return sbuff.toString();
   }
 
   private void printa(String name, int[] a) {

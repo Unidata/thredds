@@ -1383,14 +1383,15 @@ public class NetcdfFile {
   // section is null for full read
 
   /**
-   * do not call this directly, use Variable.read() !!
+   * Do not call this directly, use Variable.read() !!
    * Ranges must be filled (no nulls)
    */
-  protected Array readData(ucar.nc2.Variable v, List<Range> ranges) throws IOException, InvalidRangeException {
+  protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
     return spi.readData(v, ranges);
   }
 
-  public long readData(ucar.nc2.Variable v, java.util.List<Range> section, WritableByteChannel out)
+  /** Experimental */
+  public long readData(ucar.nc2.Variable v, Section section, WritableByteChannel out)
        throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     return spi.readData(v, section, out);
@@ -1398,10 +1399,10 @@ public class NetcdfFile {
 
   // this is for reading variables that are members of structures
   /**
-   * do not call this directly, use Variable.readSection() !!
+   * Do not call this directly, use Variable.readSection() !!
    * Ranges must be filled (no nulls)
    */
-  protected Array readMemberData(ucar.nc2.Variable v, List<Range> ranges, boolean flatten) throws IOException, InvalidRangeException {
+  protected Array readMemberData(ucar.nc2.Variable v, Section ranges, boolean flatten) throws IOException, InvalidRangeException {
     Array result = spi.readNestedData(v, ranges);
 
     if (flatten) return result;
@@ -1414,7 +1415,7 @@ public class NetcdfFile {
 
     // LOOK this only works for a single structure, what about nested ?
     // LOOK what about scalar, rank - 0 ??
-    Range outerRange = ranges.get(0);
+    Range outerRange = ranges.getRange(0);
     return new ArrayStructureMA(members, new int[]{outerRange.length()});
   }
 

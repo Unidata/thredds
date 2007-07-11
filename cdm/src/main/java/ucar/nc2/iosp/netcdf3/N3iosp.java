@@ -141,34 +141,34 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   /////////////////////////////////////////////////////////////////////////////
   // data reading
 
-  public Array readData(ucar.nc2.Variable v2, java.util.List<Range> rangeList) throws IOException, InvalidRangeException {
+  public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
     if (v2 instanceof Structure)
-      return readRecordData((Structure) v2, rangeList);
+      return readRecordData((Structure) v2, section);
 
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
     //RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, rangeList, v2.isUnlimited() ? recsize : -1);
     // public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
-    RegularLayout index = new RegularLayout(vinfo.begin, v2.isUnlimited() ? recsize : -1, v2.getElementSize(), v2.getShape(), rangeList);
+    RegularLayout index = new RegularLayout(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
     Object data = readData(index, dataType);
-    return Array.factory(dataType.getPrimitiveClassType(), index.getWantShape(), data);
+    return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
   }
 
-  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel out)
+  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     if (v2 instanceof Structure)
-      return readRecordData((Structure) v2, section, out);
+      return readRecordData((Structure) v2, section, channel);
 
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, section, v2.isUnlimited() ? recsize : -1);
-    return readData(index, dataType, out);
+    RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, section.getRanges(), v2.isUnlimited() ? recsize : -1);
+    return readData(index, dataType, channel);
   }
 
-  private long readRecordData(ucar.nc2.Structure s, List<Range> section, WritableByteChannel out) throws java.io.IOException, InvalidRangeException {
+  private long readRecordData(ucar.nc2.Structure s, Section section, WritableByteChannel out) throws java.io.IOException, InvalidRangeException {
     long count = 0;
 
     /* RegularIndexer index = new RegularIndexer( s.getShape(), recsize, recStart, section, recsize);
@@ -178,7 +178,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
      }  */
 
     // not sure this works buy should give an idea of timing
-    Range recordRange = section.get(0);
+    Range recordRange = section.getRange(0);
     int stride = recordRange.stride();
     if (stride == 1) {
       int first = recordRange.first();
@@ -203,13 +203,13 @@ public abstract class N3iosp implements IOServiceProviderWriter {
    * Read all variables for each record, for efficiency.
    *
    * @param s           the record structure
-   * @param sectionList the record range to read
+   * @param section the record range to read
    * @return an ArrayStructure, with all the data read in.
    * @throws IOException on error
    */
-  private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, List<Range> sectionList) throws java.io.IOException {
+  private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, Section section) throws java.io.IOException {
     // has to be 1D
-    Range recordRange = sectionList.get(0);
+    Range recordRange = section.getRange(0);
 
     // create the ArrayStructure
     StructureMembers members = makeStructureMembers(s);
@@ -244,15 +244,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     return members;
   }
 
-  /**
-   * Read data from a Variable that is nested in the record Structure.
-   *
-   * @param v2          a nested Variable.
-   * @param sectionList List of type Range specifying the section of data to read. There must be a Range for each
-   *                    Dimension in each parent, as well as in the Variable itself. Must be in order from outer to inner.
-   * @return the requested data in a memory-resident Array
-   */
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List<Range> sectionList)
+  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
@@ -263,9 +255,9 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     fullShape[0] = numrecs;  // the first dimension
     System.arraycopy(v2.getShape(), 0, fullShape, 1, v2.getRank()); // the remaining dimensions
 
-    Indexer index = new RegularIndexer(fullShape, v2.getElementSize(), vinfo.begin, sectionList, recsize);
+    Indexer index = new RegularIndexer(fullShape, v2.getElementSize(), vinfo.begin, section.getRanges(), recsize);
     Object dataObject = readData(index, dataType);
-    return Array.factory(dataType.getPrimitiveClassType(), Range.getShape(sectionList), dataObject);
+    return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
 
     //if (flatten)
     //  return result;

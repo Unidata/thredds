@@ -280,12 +280,8 @@ these are long-range detections.
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public Array readData(Variable v2, List section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
-    return null;
   }
 
   public void close() throws IOException {

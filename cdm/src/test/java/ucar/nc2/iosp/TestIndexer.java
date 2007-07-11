@@ -1,10 +1,8 @@
-package ucar.nc2;
+package ucar.nc2.iosp;
 
 import junit.framework.*;
 
 import ucar.ma2.*;
-import ucar.nc2.iosp.RegularIndexer;
-import ucar.nc2.iosp.Indexer;
 
 import java.util.*;
 
@@ -16,7 +14,7 @@ public class TestIndexer extends TestCase  {
 
   public void testRegularIndexerNonRecord() throws InvalidRangeException {
 
-      RegularIndexer index;
+      RegularLayout index;
 
       index = makeIndexer( new int[] {29}, 1, new int[] {2}, new int[] {7}, -1);
       assert index.getTotalNelems() == 7;
@@ -82,7 +80,7 @@ public class TestIndexer extends TestCase  {
   public void testRegularIndexerNonRecordElemSize() {
 
     try {
-      RegularIndexer index;
+      RegularLayout index;
 
       index = makeIndexer( new int[] {29}, 2, new int[] {2}, new int[] {7}, -1);
       assert index.getTotalNelems() == 7;
@@ -130,7 +128,7 @@ public class TestIndexer extends TestCase  {
 
   public void testRegularIndexerWithRecord() throws InvalidRangeException {
 
-      RegularIndexer index;
+      RegularLayout index;
 
       index = makeIndexer( new int[] {29}, 1, new int[] {2}, new int[] {7}, 1000);
       assert index.getTotalNelems() == 7;
@@ -216,7 +214,7 @@ public class TestIndexer extends TestCase  {
   public void testRegularIndexerWhole() {
 
     try {
-      RegularIndexer index;
+      RegularLayout index;
 
       index = makeIndexer( new int[] {29}, 1, new int[1], new int[] {29}, -1);
       assert index.getTotalNelems() == 29;
@@ -300,7 +298,7 @@ public class TestIndexer extends TestCase  {
   public void testRegularIndexerRangeErrors() {
 
     try {
-      RegularIndexer index = makeIndexer( new int[] {29}, 1, new int[1], new int[] {30}, -1);
+      RegularLayout index = makeIndexer( new int[] {29}, 1, new int[1], new int[] {30}, -1);
       assert false;
     } catch( InvalidRangeException e) {
       assert true;
@@ -308,28 +306,28 @@ public class TestIndexer extends TestCase  {
 
 
     try {
-      RegularIndexer index = makeIndexer( new int[] {29}, 1, new int[1], new int[] {30, 30}, -1);
+      RegularLayout index = makeIndexer( new int[] {29}, 1, new int[1], new int[] {30, 30}, -1);
       assert false;
     } catch( InvalidRangeException e) {
       assert true;
     }
 
     try {
-      RegularIndexer index = makeIndexer( new int[] {2,3}, 1, new int[2], new int[] {30, 30}, -1);
+      RegularLayout index = makeIndexer( new int[] {2,3}, 1, new int[2], new int[] {30, 30}, -1);
       assert false;
     } catch( InvalidRangeException e) {
       assert true;
     }
 
     try {
-      RegularIndexer index = makeIndexer( new int[] {2,2}, 1, new int[2], new int[] {1}, -1);
+      RegularLayout index = makeIndexer( new int[] {2,2}, 1, new int[2], new int[] {1}, -1);
       assert false;
     } catch( InvalidRangeException e) {
       assert true;
     }
 
     try {
-      RegularIndexer index = makeIndexer( new int[] {20}, 1, new int[] {10}, new int[] {15}, -1);
+      RegularLayout index = makeIndexer( new int[] {20}, 1, new int[] {10}, new int[] {15}, -1);
       assert false;
     } catch( InvalidRangeException e) {
       assert true;
@@ -610,10 +608,19 @@ public class TestIndexer extends TestCase  {
 
   } // */
 
-  static private RegularIndexer makeIndexer( int[] diml, int elemLength, int[] origin,
-                                             int[] shape, int recsize) throws InvalidRangeException {
+    /**
+   * @param varShape shape of the entire data array.
+   * @param elemSize size of on element in bytes.
+   * @param recSize if > 0, then size of outer stride in bytes, else ignored
+   * @throws InvalidRangeException is ranges are misformed
+   */
+  static private RegularLayout makeIndexer( int[] varShape, int elemSize, int[] origin,
+                                             int[] shape, int recSize) throws InvalidRangeException {
 
-    return new RegularIndexer( diml, elemLength, 0L, Range.factory(origin, shape), recsize);
+    //return new RegularIndexer( diml, elemLength, 0L, Range.factory(origin, shape), recsize);
+    return new RegularLayout(  0L,  elemSize, recSize, varShape, new Section(origin, shape));
+    //   public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, List<Range> rangeList) throws InvalidRangeException {
+
   }
 
 

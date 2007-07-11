@@ -45,7 +45,7 @@ public class Variable implements VariableIF {
   protected Group group; // logical container for this Variable. may not be null.
   protected String shortName; // may not be blank
   protected int[] shape;
-  protected List<Range> ranges;  // derived from the shape, cache for getRanges(), which is used for every read
+  protected Section shapeAsSection;  // derived from the shape, immutable; used for every read
 
   protected DataType dataType;
   protected int elementSize;
@@ -189,7 +189,7 @@ public class Variable implements VariableIF {
    * The most slowly varying (leftmost for Java and C programmers) dimension is first.
    * For scalar variables, the list is empty.
    *
-   * @return List<Dimension>, a copy or an immutable list
+   * @return List<Dimension>, not a copy, may be immutable
    */
   public java.util.List<Dimension> getDimensions() {
     return dimensions;
@@ -239,7 +239,7 @@ public class Variable implements VariableIF {
   /**
    * Returns the set of attributes for this variable.
    *
-   * @return List<Attribute>, a copy or an immutable list
+   * @return List<Attribute>, not a copy, but may be immutable
    */
   public java.util.List<Attribute> getAttributes() {
     return attributes;
@@ -322,28 +322,28 @@ public class Variable implements VariableIF {
   }
 
   /**
-   * Get shape as an array of Range objects.
-   *
-   * @return array of Ranges, one for each Dimension.
+   * Get shape as an List of Range objects.
+   * The List is immutable.
+   * @return List of Ranges, one for each Dimension.
    */
   public List<Range> getRanges() {
-    if (ranges == null)
-      ranges = getShapeAsSection().getRanges();
-    return ranges;
+    return getShapeAsSection().getRanges();
   }
 
   /**
    * Get shape as a Section object.
-   *
    * @return Section containing List<Range>, one for each Dimension.
    */
   public Section getShapeAsSection() {
-    try {
-      return new Section(shape);
-    } catch (InvalidRangeException e) {
-      log.error("Bad shape " + getName(), e);
-      throw new IllegalStateException(e.getMessage());
+    if (shapeAsSection == null) {
+      try {
+        shapeAsSection = new Section(shape).setImmutable();
+      } catch (InvalidRangeException e) {
+        log.error("Bad shape in variable " + getName(), e);
+        throw new IllegalStateException(e.getMessage());
+      }
     }
+    return shapeAsSection;
   }
 
   /*
@@ -541,7 +541,7 @@ public class Variable implements VariableIF {
    * @throws InvalidRangeException
    */
   public Variable section(List<Range> ranges) throws InvalidRangeException {
-    return section(new Section(ranges, shape).finish());
+    return section(new Section(ranges, shape).setImmutable());
   }
 
   /**
@@ -594,7 +594,7 @@ public class Variable implements VariableIF {
     // create a copy of this variable with a proxy reader
     Variable sliceV = copy(); // subclasses must override
     Section slice = getShapeAsSection();
-    slice.replaceRange(dim, new Range(value, value)).finish();
+    slice.replaceRange(dim, new Range(value, value)).setImmutable();
     sliceV.proxyReader = new SliceReader(this, dim, slice);
 
     // remove that dimension - reduce rank
@@ -846,7 +846,7 @@ public class Variable implements VariableIF {
     // read the data
     Array data;
     try {
-      data = ncfile.readData(this, getRanges());
+      data = ncfile.readData(this, getShapeAsSection());
     } catch (InvalidRangeException e) {
       throw new IOException(e.getMessage()); // cant happen
     }
@@ -884,7 +884,7 @@ public class Variable implements VariableIF {
     // full read was cached
     if (isCaching()) {
       if (cache.data == null) {
-        cache.data = ncfile.readData(this, getRanges()); // read and cache entire array
+        cache.data = ncfile.readData(this, getShapeAsSection()); // read and cache entire array
         if (debugCaching) System.out.println("cache " + getName());
       }
       if (debugCaching) System.out.println("got data from cache " + getName());
@@ -892,7 +892,7 @@ public class Variable implements VariableIF {
     }
 
     // read just this section
-    return ncfile.readData(this, section.getRanges());
+    return ncfile.readData(this, section);
   }
 
   /* structure-member Variable;  section has a Range for each array in the parent
@@ -1208,7 +1208,7 @@ public class Variable implements VariableIF {
           isVlen = true;
       }
     }
-    this.ranges = null;
+    this.shapeAsSection = null; // recalc next time its asked for
   }
 
   /**
@@ -1586,45 +1586,15 @@ public class Variable implements VariableIF {
   // structure-member Variable;  section has a Range for each array in the parent
   // stuctures(s) and for the Variable.
   protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException {
-    return ncfile.readMemberData(this, section.getRanges(), flatten);
+    return ncfile.readMemberData(this, section, flatten);
   }
 
+  ////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////////////
-  // deprecated
   /**
-   * @deprecated use isVariableLength()
+   * Calculate if this is a coordinate variable: has same name as its first dimension. If type char, must be 2D, else must be 1D.
+   * @return true if a coordinate variable.
    */
-  public boolean isUnknownLength() {
-    return isVlen;
-  }
-
-
-  /**
-   * make this Variable a 1D coordinate axis or variable for the given Dimension
-   * @param dim make this a Coordinate Axis for this dimension
-   * @deprecated do not use
-   */
-  public void setIsCoordinateAxis(Dimension dim) {
-    /* if (immutable) throw new IllegalStateException("Cant modify");
-    if ((dataType == DataType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be coordinate variables
-      throw new UnsupportedOperationException("Structures/StructureMembers cannot be coordinate axes var= " + getName());
-
-    isCoordinateAxis = true;
-    dim.addCoordinateVariable(this); */
-  }
-
-  /**
-   * If this is a coordinate variable, return the corresponding dimension. If not, return null.
-   * A coordinate axis has a single dimension, and names that Dimension's coordinates.
-   * A coordinate variable has a single dimension, and names that Dimension's coordinates, and its name must match the dimension name.
-   * If numeric, coordinate axis must be strictly monotonically increasing or decreasing.
-   * @return the first Dimension if this is a coordinate variable, else null
-   *
-  public Dimension getCoordinateDimension() {
-    return isCoordinateVariable() ? dimensions.get(0) : null;
-  } */
-
   public boolean isCoordinateVariable() {
     if ((dataType == DataType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be coordinate variables
       return false;
@@ -1645,5 +1615,16 @@ public class Variable implements VariableIF {
     }
 
     return false;
+  }
+
+
+
+  ///////////////////////////////////////////////////////////////////////
+  // deprecated
+  /**
+   * @deprecated use isVariableLength()
+   */
+  public boolean isUnknownLength() {
+    return isVlen;
   }
 }

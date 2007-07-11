@@ -21,6 +21,7 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.Range;
+import ucar.ma2.Section;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -56,7 +57,7 @@ public interface IOServiceProvider {
    * This Array has the same element type as the Variable, and the requested shape.
    *
    * @param v2 a top-level Variable
-   * @param section List of type Range specifying the section of data to read.
+   * @param section the section of data to read.
    *   There must be a Range for each Dimension in the variable, in order.
    *   Note: no nulls allowed. IOSP may not modify.
    * @return the requested data in a memory-resident Array
@@ -64,14 +65,14 @@ public interface IOServiceProvider {
    * @throws ucar.ma2.InvalidRangeException if invalid section
    * @see ucar.ma2.Range
    */
-  public ucar.ma2.Array readData(ucar.nc2.Variable v2, java.util.List<Range> section)
+  public ucar.ma2.Array readData(ucar.nc2.Variable v2, Section section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
    * Read data from a top level Variable and send data to a WritableByteChannel.
    *
    * @param v2 a top-level Variable
-   * @param section List of type Range specifying the section of data to read.
+   * @param section the section of data to read.
    *   There must be a Range for each Dimension in the variable, in order.
    *   Note: no nulls allowed. IOSP may not modify.
    * @param channel write data to this WritableByteChannel
@@ -79,7 +80,7 @@ public interface IOServiceProvider {
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public long readData(ucar.nc2.Variable v2, java.util.List<Range> section, WritableByteChannel channel)
+  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -91,14 +92,14 @@ public interface IOServiceProvider {
    * <p> v2.getParent() is called to get the containing Structures.
    *
    * @param v2 a nested Variable.
-   * @param section List of type Range specifying the section of data to read. There must be a Range for each
+   * @param section the section of data to read. There must be a Range for each
    *  Dimension in each parent, as well as in the Variable itself. Must be in order from outer to inner.
    *   Note: no nulls. IOSP may not modify.
    * @return the requested data in a memory-resident Array
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, java.util.List<Range> section)
+  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
          throws IOException, ucar.ma2.InvalidRangeException;
 
   /**

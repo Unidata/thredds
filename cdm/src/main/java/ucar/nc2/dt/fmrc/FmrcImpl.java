@@ -709,15 +709,14 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
       Array allData = Array.factory(mainv.getDataType(), varShape);
       int destPos = 0;
-      List<Range> section = orgVar.getRanges();
+      Section section = new Section(orgVar.getRanges());
 
       // loop over inventory
       for (Inventory inv : invList) {
         Array varData;
         try {
-          section.set(0, new Range(inv.run, inv.run));
-          section.set(1, new Range(inv.time, inv.time));
-
+          section.setRange(0, new Range(inv.run, inv.run));
+          section.setRange(1, new Range(inv.time, inv.time));
           varData = orgVar.read(section);
 
         } catch (InvalidRangeException e) {

@@ -391,19 +391,19 @@ public class NCdump {
     return sb.toString();
   }
 
-  private static List makeSpec(StringBuffer sb, VariableIF v, List orgRanges) throws InvalidRangeException {
+  private static List<Range> makeSpec(StringBuffer sb, VariableIF v, List<Range> orgRanges) throws InvalidRangeException {
     if (v.isMemberOfStructure()) {
       orgRanges = makeSpec(sb, v.getParentStructure(), orgRanges);
       sb.append('.');
     }
-    List ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
+    List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
     sb.append( v.isMemberOfStructure() ? v.getShortName() : v.getName());
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');
       for (int count=0; count<v.getRank(); count++) {
-        Range r = (Range) ranges.get(count);
+        Range r = ranges.get(count);
         if (r == null)
           r = new Range( 0, v.getDimension(count).getLength());
         if (count>0) sb.append(", ");
@@ -746,8 +746,7 @@ public class NCdump {
     if (attList.size() > 0)
       out.print("\n");
 
-    List<Variable> varList = g.getVariables();
-    for (Variable v : varList) {
+    for (Variable v : g.getVariables()) {
       if (v instanceof Structure) {
         writeNcMLStructure((Structure) v, out, indent);
       } else {

@@ -317,6 +317,20 @@ public class Section {
   }
 
   /**
+   * Set the range at the specified index in the list, previous Range is discarded
+   *
+   * @param index list index, must be in interval [0,size).
+   * @param r  insert this Range
+   * @return this
+   * @throws IndexOutOfBoundsException if bad index
+   */
+  public Section setRange(int index, Range r) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    list.set(index, r);
+    return this;
+  }
+
+  /**
    * Replace a range at the specified index in the list.
    *
    * @param index replace here in the list.
@@ -356,7 +370,7 @@ public class Section {
    *
    * @return this Section
    */
-  public Section finish() {
+  public Section setImmutable() {
     immutable = true;
     list = Collections.unmodifiableList(list);
     return this;
@@ -388,6 +402,19 @@ public class Section {
     int[] result = new int[list.size()];
     for (int i = 0; i < list.size(); i++) {
       result[i] = list.get(i).first();
+    }
+    return result;
+  }
+
+  /**
+   * Get stride array using the Range.stride() values.
+   *
+   * @return int[] origin
+   */
+  public int[] getStride() {
+    int[] result = new int[list.size()];
+    for (int i = 0; i < list.size(); i++) {
+      result[i] = list.get(i).stride();
     }
     return result;
   }
@@ -446,7 +473,7 @@ public class Section {
    * @return the List<Range>
    */
   public List<Range> getRanges() {
-    return immutable ? list : new ArrayList<Range>(list);
+    return list;
   }
 
   /**

@@ -5,6 +5,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,12 +24,8 @@ public class AddeServiceProvider extends AbstractIOServiceProvider {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  public Array readData(Variable v2, List section) throws IOException, InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
-    throw new UnsupportedOperationException("Adde IOSP does not support nested variables");
   }
 
   public void close() throws IOException {
