@@ -411,7 +411,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (v2 == null)
       throw new IllegalArgumentException("NetcdfFileWriteable.write illegal variable name = " + varName);
 
-    spiw.writeData(v2, new Section(origin, values.getShape()).getRanges(), values);
+    spiw.writeData(v2, new Section(origin, values.getShape()), values);
     v2.invalidateCache();
   }
 

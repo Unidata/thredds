@@ -168,11 +168,11 @@ public class FileWriter {
       System.out.println("File Out= " + ncfile.toString());
 
     // see if it has a record dimension we can use
-    if (fileIn.hasUnlimitedDimension()) {
+   if (fileIn.hasUnlimitedDimension()) {
       fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
-    boolean useRecordDimension = fileIn.hasRecordStructure() && ncfile.hasRecordStructure();
+    boolean useRecordDimension = hasRecordStructure(fileIn) && hasRecordStructure(ncfile);
     Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
 
     double total = copyVarData( ncfile, varlist, recordVar, delay);
@@ -180,6 +180,11 @@ public class FileWriter {
     if (debug) System.out.println("FileWriter done total bytes = " + total);
 
     return ncfile;
+  }
+
+   private static boolean hasRecordStructure(NetcdfFile file) {
+    Variable v = file.findVariable("record");
+    return (v != null) && (v.getDataType() == DataType.STRUCTURE);
   }
 
   /**

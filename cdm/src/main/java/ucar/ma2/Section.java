@@ -97,23 +97,17 @@ public class Section {
     if (s == null)
       return new Section(shape);
 
+    String errs = s.checkInRange(shape);
+    if (errs != null) throw new InvalidRangeException(errs);
+
     // if s is already filled, use it
     boolean ok = true;
-    for (int i = 0; i < shape.length; i++) {
-      Range r = s.getRange(i);
-      ok &= (r != null);
-    }
-    if (ok) {
-      String errs = s.checkInRange(shape);
-      if (errs != null) throw new InvalidRangeException(errs);
-      return s;
-    }
+    for (int i = 0; i < shape.length; i++)
+      ok &= (s.getRange(i) != null);
+    if (ok) return s;
 
     // fill in any nulls
-    Section result = new Section(s.getRanges(), shape);
-    String errs = result.checkInRange(shape);
-    if (errs != null) throw new InvalidRangeException(errs);
-    return result;
+    return new Section(s.getRanges(), shape);
   }
 
   /**

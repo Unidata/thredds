@@ -1173,7 +1173,8 @@ public class NetcdfFile {
    * This message is sent after the file is open. To affect the creation of the file, you must send into the factory method.
    * @param message iosp specific message
    * Special:<ul>
-   * <li>IOSP_MESSAGE_ADD_RECORD_STRUCTURE : tells Netcdf-3 files to make record (unlimited)  variables into a structure
+   * <li>IOSP_MESSAGE_ADD_RECORD_STRUCTURE : tells Netcdf-3 files to make record (unlimited) variables into a structure.
+   *  return true if it has a Nectdf-3 record structure
    * </ul>
    * @return iosp specific return, may be null
    */
@@ -1181,12 +1182,18 @@ public class NetcdfFile {
     if (null == message) return null;
 
     if (message == IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
-      return makeRecordStructure(); // returns a Boolean
+      Variable v = rootGroup.findVariable("record");
+      boolean gotit = (v != null) && (v instanceof Structure);
+      return gotit || makeRecordStructure();
 
     } else if (message == IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE) {
-      boolean didit = rootGroup.remove( rootGroup.findVariable( "record"));
-      addedRecordStructure = false;
-      return didit;
+      Variable v = rootGroup.findVariable( "record");
+      boolean gotit = (v != null) && (v instanceof Structure);
+      if (gotit) {
+        rootGroup.remove( v);
+        variables.remove( v);
+      }
+      return (gotit);
     }
 
     if (spi != null)
@@ -1199,35 +1206,19 @@ public class NetcdfFile {
    * A Variable called "record" is added.
    * You can then access these through the record structure.
    *
-   * @return true if record was actually added on this call.
+   * @return true if it has a Nectdf-3 record structure
    */
-  protected boolean makeRecordStructure() {
+  protected Boolean makeRecordStructure() {
     if (immutable) throw new IllegalStateException("Cant modify");
 
-    if (null != getRootGroup().findVariable("record"))
-      return false;
-
-    boolean didit = false;
-    if ((spi instanceof N3iosp) && hasUnlimitedDimension() && !addedRecordStructure) {
+    Boolean didit = false;
+    if ((spi instanceof N3iosp) && hasUnlimitedDimension()) {
       didit = (Boolean) spi.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-      addedRecordStructure = true; // or at least we tried
-      finish(); // LOOK should we wait ???
     }
     return didit;
   }
 
-  protected boolean addedRecordStructure = false;
-
-  /**
-   * Find out if if it has a record Structure.
-   * Optimization for Netcdf-3 files.
-   *
-   * @return true if it has a record Structure
-   */
-  public boolean hasRecordStructure() {
-    Variable v = findVariable("record");
-    return (v != null) && (v.getDataType() == DataType.STRUCTURE);
-  }
+  //protected boolean addedRecordStructure = false;
 
   /**
    * Set the globally unique dataset identifier.
@@ -1294,7 +1285,7 @@ public class NetcdfFile {
     dimensions = new ArrayList<Dimension>();
     rootGroup = null; // dorky - need this for following call
     rootGroup = new Group(this, null, "");
-    addedRecordStructure = false;
+    // addedRecordStructure = false;
   }
 
   /**

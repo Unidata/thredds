@@ -124,7 +124,8 @@ abstract class SingleTrajectoryObsDataset
 
     if ( this.ncfile.hasUnlimitedDimension() && this.ncfile.getUnlimitedDimension().equals( timeDim ) )
     {
-      if ( (Boolean) this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) )
+      Object result = this.ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      if ((result != null) && (Boolean) result )
         this.recordVar = (Structure) this.ncfile.getRootGroup().findVariable( "record");
       else
         this.recordVar = new StructurePseudo( this.ncfile, null, "record", timeDim ); 

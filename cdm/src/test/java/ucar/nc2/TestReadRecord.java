@@ -3,6 +3,9 @@ package ucar.nc2;
 import junit.framework.*;
 
 import ucar.ma2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.StructureDS;
+
 import java.io.IOException;
 
 public class TestReadRecord extends TestCase  {
@@ -208,6 +211,46 @@ public class TestReadRecord extends TestCase  {
 
   }
 
+  public void testDatasetAddRecord() throws InvalidRangeException, IOException {
+    NetcdfDataset nc = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir+"testWriteRecord.nc");
+    assert (Boolean) nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+
+      // record variable
+      Variable record = nc.findVariable("record");
+      assert record instanceof StructureDS;
+      StructureDS rs  = (StructureDS) record;
+      assert rs.getRank() == 1;
+      assert rs.getDimension(0).getLength() == 2;
+
+      /* Read a record */
+      Array rsValues = rs.read("1:1:2");
+      assert( rsValues instanceof ArrayStructure);
+      assert rsValues.getRank() == 1;
+      assert rsValues.getShape()[0] == 1;
+
+      StructureData sdata = (StructureData) rsValues.getObject( rsValues.getIndex());
+      Array gdata = sdata.getArray("time");
+      assert gdata instanceof ArrayInt.D0 : gdata.getClass().getName();
+      ArrayInt.D0 tdata = (ArrayInt.D0) gdata;
+      int t = tdata.get();
+      assert t == 18;
+
+      int t2 = sdata.getScalarInt("time");
+      assert t2 == 18;
+
+    /* Read the times: unlimited dimension */
+    Variable time = rs.findVariable("time");
+    Array timeValues = time.read();
+    assert( timeValues instanceof ArrayInt.D0);
+    ArrayInt.D0 ta = (ArrayInt.D0) timeValues;
+    assert ( ta.get() ==  6) : ta.get();
+
+
+
+    nc.close();
+
+  }
+
   public void testNC3ReadRecordStrided() throws InvalidRangeException, IOException {
     NetcdfFile nc = TestLocalNC2.openFile("testWriteRecord.nc");
     nc.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -226,7 +269,7 @@ public class TestReadRecord extends TestCase  {
       assert rsValues.getShape()[0] == 1;
 
       StructureData sdata = (StructureData) rsValues.getObject( rsValues.getIndex());
-      Array gdata = sdata.findMemberArray("time");
+      Array gdata = sdata.getArray("time");
       assert gdata instanceof ArrayInt.D0 : gdata.getClass().getName();
       ArrayInt.D0 tdata = (ArrayInt.D0) gdata;
       int t = tdata.get();

@@ -306,9 +306,9 @@ public class TestIndexer extends TestCase  {
 
 
     try {
-      RegularLayout index = makeIndexer( new int[] {29}, 1, new int[1], new int[] {30, 30}, -1);
+      RegularLayout index = makeIndexer( new int[] {29}, 1, new Section(new int[1], new int[] {30, 30}), -1);
       assert false;
-    } catch( InvalidRangeException e) {
+    } catch( Exception e) {
       assert true;
     }
 
@@ -338,13 +338,13 @@ public class TestIndexer extends TestCase  {
 
   public void testSection() throws InvalidRangeException {
       ArrayList section;
-      RegularIndexer index;
+      RegularLayout index;
 
       // RegularIndexer( int[] varShape, int elemSize, long startPos, List section, int recSize)
       section = new ArrayList();
       section.add( new Range(0, 9));
       section.add( new Range(0, 9));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 100;
       assert index.getChunkSize() == 100;
       assert index.next().getFilePos() == 0;
@@ -353,7 +353,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(0, 9));
       section.add( new Range(0, 4));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 50;
       assert index.getChunkSize() == 5;
       int count = 0;
@@ -368,7 +368,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 5));
       section.add( new Range(0, 9));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 50;
       assert index.getChunkSize() == 50;
       count = 0;
@@ -385,13 +385,13 @@ public class TestIndexer extends TestCase  {
 
   public void testSectionStride() throws InvalidRangeException {
       ArrayList section;
-      RegularIndexer index;
+      RegularLayout index;
 
       // RegularIndexer( int[] varShape, int elemSize, long startPos, List section, int recSize)
       section = new ArrayList();
       section.add( new Range(0, 9));
       section.add( new Range(0, 9, 2));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 50;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       int count = 0;
@@ -406,7 +406,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(0, 9, 2));
       section.add( new Range(0, 9));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 50;
       assert index.getChunkSize() == 10 : index.getChunkSize();
       count = 0;
@@ -421,7 +421,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(0, 9, 2));
       section.add( new Range(0, 9, 2));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 25;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       assert index.next().getFilePos() == 0;
@@ -440,7 +440,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(0, 9, 2));
       section.add( new Range(0, 9, 2));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       count = 0;
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
@@ -454,13 +454,13 @@ public class TestIndexer extends TestCase  {
 
   public void testSectionStrideOrigin() throws InvalidRangeException {
       ArrayList section;
-      RegularIndexer index;
+      RegularLayout index;
       int count;
 
       section = new ArrayList();
       section.add( new Range(1, 8, 2));
       section.add( new Range(1, 8, 2));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 16;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       count = 0;
@@ -476,7 +476,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 8));
       section.add( new Range(1, 8, 2));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 32;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       count = 0;
@@ -491,7 +491,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 8, 2));
       section.add( new Range(1, 8));
-      index = new RegularIndexer( new int[] {10, 10}, 1, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, 1, 0, section, -1);
       assert index.getTotalNelems() == 32;
       assert index.getChunkSize() == 8 : index.getChunkSize();
       count = 0;
@@ -505,14 +505,14 @@ public class TestIndexer extends TestCase  {
 
   public void testSectionStrideOriginElemsize() throws InvalidRangeException {
       ArrayList section;
-      RegularIndexer index;
+      RegularLayout index;
       int count;
       int elemSize = 7;
 
       section = new ArrayList();
       section.add( new Range(1, 8, 2));
       section.add( new Range(1, 8, 2));
-      index = new RegularIndexer( new int[] {10, 10}, elemSize, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, elemSize, 0, section, -1);
       assert index.getTotalNelems() == 16;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       count = 0;
@@ -528,7 +528,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 8));
       section.add( new Range(1, 8, 2));
-      index = new RegularIndexer( new int[] {10, 10}, elemSize, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, elemSize, 0, section, -1);
       assert index.getTotalNelems() == 32;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       count = 0;
@@ -543,7 +543,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 8, 2));
       section.add( new Range(1, 8));
-      index = new RegularIndexer( new int[] {10, 10}, elemSize, 0, section, -1);
+      index = new RegularLayout( new int[] {10, 10}, elemSize, 0, section, -1);
       assert index.getTotalNelems() == 32;
       assert index.getChunkSize() == 8 : index.getChunkSize();
       count = 0;
@@ -557,7 +557,7 @@ public class TestIndexer extends TestCase  {
 
   public void testSectionStrideOriginElemsizeRecord() throws InvalidRangeException {
       ArrayList section;
-      RegularIndexer index;
+      RegularLayout index;
       int count;
       int elemSize = 7;
       int recSize = 1000;
@@ -565,7 +565,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 8, 2));
       section.add( new Range(1, 8, 2));
-      index = new RegularIndexer( new int[] {10, 10}, elemSize, 0, section, recSize);
+      index = new RegularLayout( new int[] {10, 10}, elemSize, 0, section, recSize);
       assert index.getTotalNelems() == 16;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       count = 0;
@@ -581,7 +581,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 8));
       section.add( new Range(1, 8, 2));
-      index = new RegularIndexer( new int[] {10, 10}, elemSize, 0, section, recSize);
+      index = new RegularLayout( new int[] {10, 10}, elemSize, 0, section, recSize);
       assert index.getTotalNelems() == 32;
       assert index.getChunkSize() == 1 : index.getChunkSize();
       count = 0;
@@ -596,7 +596,7 @@ public class TestIndexer extends TestCase  {
       section = new ArrayList();
       section.add( new Range(1, 8, 2));
       section.add( new Range(1, 8));
-      index = new RegularIndexer( new int[] {10, 10}, elemSize, 0, section, recSize);
+      index = new RegularLayout( new int[] {10, 10}, elemSize, 0, section, recSize);
       assert index.getTotalNelems() == 32;
       assert index.getChunkSize() == 8 : index.getChunkSize();
       count = 0;
@@ -608,20 +608,32 @@ public class TestIndexer extends TestCase  {
 
   } // */
 
-    /**
-   * @param varShape shape of the entire data array.
-   * @param elemSize size of on element in bytes.
-   * @param recSize if > 0, then size of outer stride in bytes, else ignored
-   * @throws InvalidRangeException is ranges are misformed
-   */
-  static private RegularLayout makeIndexer( int[] varShape, int elemSize, int[] origin,
-                                             int[] shape, int recSize) throws InvalidRangeException {
+  /**
+  * @param varShape shape of the entire data array.
+  * @param elemSize size of on element in bytes.
+  * @param recSize if > 0, then size of outer stride in bytes, else ignored
+  * @throws InvalidRangeException is ranges are misformed
+  */
+ static private RegularLayout makeIndexer( int[] varShape, int elemSize, int[] origin,
+                                            int[] shape, int recSize) throws InvalidRangeException {
 
-    //return new RegularIndexer( diml, elemLength, 0L, Range.factory(origin, shape), recsize);
-    return new RegularLayout(  0L,  elemSize, recSize, varShape, new Section(origin, shape));
-    //   public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, List<Range> rangeList) throws InvalidRangeException {
+   //return new RegularIndexer( diml, elemLength, 0L, Range.factory(origin, shape), recsize);
+   return new RegularLayout(  0L,  elemSize, recSize, varShape, new Section(origin, shape));
+   //   public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, List<Range> rangeList) throws InvalidRangeException {
 
-  }
+ }
+
+  /**
+  * @param varShape shape of the entire data array.
+  * @param elemSize size of on element in bytes.
+  * @param recSize if > 0, then size of outer stride in bytes, else ignored
+  * @throws InvalidRangeException is ranges are misformed
+  */
+ static private RegularLayout makeIndexer( int[] varShape, int elemSize, Section section, int recSize) throws InvalidRangeException {
+
+   return new RegularLayout(  0L,  elemSize, recSize, varShape, section);
+
+ }
 
 
 

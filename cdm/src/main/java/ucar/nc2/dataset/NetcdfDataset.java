@@ -23,6 +23,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFileCache;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLGWriter;
@@ -716,36 +717,44 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   //////////////////////////////////////
 
   @Override
-  protected boolean makeRecordStructure() {
-    if (addedRecordStructure)
-      return false;
+  protected Boolean makeRecordStructure() {
+    if (this.orgFile == null) return false;
 
-    if (this.orgFile == null) {
-      // this is the case where a NcML file has no underlying orgFile (eg ncgen mode)
-      return false; 
+    Boolean hasRecord = (Boolean) this.orgFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    if ((hasRecord == null) || !hasRecord) return false;
+
+    Variable orgV = this.orgFile.getRootGroup().findVariable("record");
+    if ((orgV == null) || !(orgV instanceof Structure)) return false;
+    Structure orgStructure = (Structure) orgV;
+
+    Dimension udim = getUnlimitedDimension();
+    if (udim == null) return false;
+
+    Group root = getRootGroup();
+    StructureDS newStructure = new StructureDS(this, root, null, "record", udim.getName(), null, null);
+    newStructure.setOriginalVariable( orgStructure);
+
+    for (Variable v : getVariables()) {
+      if (!v.isUnlimited()) continue;
+
+      VariableDS memberV = new VariableDS(root, v, isEnhanced);
+      memberV.setParentStructure(newStructure);
+      memberV.createNewCache(); // decouple caching
+      orgV = orgStructure.findVariable(v.getShortName());
+      if (orgV != null)
+        memberV.setOriginalVariable( orgV);
+
+      //remove record dimension
+      List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
+      dims.remove(0);
+      memberV.setDimensions(dims);
+
+      newStructure.addMemberVariable(memberV);
     }
 
-    if (null != this.orgFile.getRootGroup().findVariable("record"))
-      return false;
-
-    boolean didit = (Boolean) this.orgFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    if (didit) {
-      Group root = getRootGroup();
-      Structure record = (Structure) this.orgFile.findVariable("record");
-      if (record == null) {
-        log.error("record not added to "+getLocation());
-        return false;
-      }
-      // LOOK: should copy attributes from variableDS to the member variables NOW
-      Structure recordDS = new StructureDS(root, record, false);
-      convertStructure(root, recordDS);
-      root.removeVariable("record");
-      root.addVariable(recordDS);
-      finish();
-      addedRecordStructure = true;
-    }
-
-    return didit;
+    root.addVariable(newStructure);
+    finish();
+    return true;
   }
 
   /**

@@ -23,7 +23,7 @@ package ucar.nc2.iosp.hdf5;
 import ucar.ma2.*;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.RegularIndexer;
+import ucar.nc2.iosp.RegularLayout;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.NetcdfFile;
@@ -147,7 +147,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         index = new H5chunkIndexer( v2, origin, shape);
 
       } else {
-        index = new RegularIndexer(v2.getShape(), v2.getElementSize(), dataPos, Range.factory(origin, shape), -1);
+        index = new RegularLayout(v2.getShape(), v2.getElementSize(), dataPos, Range.factory(origin, shape), -1);
       }
 
       if (vinfo.byteOrder >= 0) {

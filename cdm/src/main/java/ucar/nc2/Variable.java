@@ -1553,7 +1553,7 @@ public class Variable implements VariableIF {
   private Section makeSectionAddParents(Section section, boolean firstOnly) throws InvalidRangeException {
     Section result;
     if (section == null)
-      result = getShapeAsSection();
+      result = new Section(getRanges());
     else
       result = new Section(section.getRanges(), getShape());
 

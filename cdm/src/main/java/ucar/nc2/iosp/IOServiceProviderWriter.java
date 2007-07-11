@@ -20,6 +20,7 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.Range;
+import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 
 import java.io.IOException;
@@ -56,14 +57,14 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
   /**
    * Write data into a variable.
    * @param v2 variable to write; must already exist.
-   * @param section List of type Range specifying the section of data to write.
-   * There must be a Range for each Dimension in the variable, in order.
-   * The shape must match the shape of values.
+   * @param section the section of data to write.
+   *  There must be a Range for each Dimension in the variable, in order.
+   *  The shape must match the shape of values.
    * @param values data to write. The shape must match the shape of Range list.
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public void writeData(ucar.nc2.Variable v2, java.util.List<Range> section, ucar.ma2.Array values)
+  public void writeData(ucar.nc2.Variable v2, Section section, ucar.ma2.Array values)
       throws IOException, ucar.ma2.InvalidRangeException;
 
   /**

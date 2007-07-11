@@ -24,7 +24,6 @@ import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.nc2.*;
-import ucar.nc2.iosp.RegularIndexer;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.RegularLayout;
@@ -148,8 +147,6 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    //RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, rangeList, v2.isUnlimited() ? recsize : -1);
-    // public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
     RegularLayout index = new RegularLayout(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
     Object data = readData(index, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
@@ -164,7 +161,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, section.getRanges(), v2.isUnlimited() ? recsize : -1);
+    RegularLayout index = new RegularLayout(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
     return readData(index, dataType, channel);
   }
 
@@ -255,7 +252,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     fullShape[0] = numrecs;  // the first dimension
     System.arraycopy(v2.getShape(), 0, fullShape, 1, v2.getRank()); // the remaining dimensions
 
-    Indexer index = new RegularIndexer(fullShape, v2.getElementSize(), vinfo.begin, section.getRanges(), recsize);
+    Indexer index = new RegularLayout(vinfo.begin, v2.getElementSize(), recsize, fullShape, section);
     Object dataObject = readData(index, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
 
@@ -396,26 +393,26 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   //////////////////////////////////////////////////////////////////////////////////////
   // write
 
-  public void writeData(Variable v2, java.util.List sectionList, Array values) throws java.io.IOException, InvalidRangeException {
+  public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
 
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
     if (v2.isUnlimited()) {
-      Range firstRange = (Range) sectionList.get(0);
+      Range firstRange = section.getRange(0);
       setNumrecs(firstRange.last() + 1);
     }
 
     if (v2 instanceof Structure) {
-      writeRecordData((Structure) v2, sectionList, values);
+      writeRecordData((Structure) v2, section, values);
 
     } else {
-      Indexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), vinfo.begin, sectionList, v2.isUnlimited() ? recsize : -1);
+      Indexer index = new RegularLayout(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
       writeData(values, index, dataType);
     }
   }
 
-  private void writeRecordData(ucar.nc2.Structure s, List sectionList, Array values) throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  private void writeRecordData(ucar.nc2.Structure s, Section section, Array values) throws java.io.IOException, ucar.ma2.InvalidRangeException {
     if (!(values instanceof ArrayStructure))
       throw new IllegalArgumentException("writeRecordData: data must be ArrayStructure");
     ArrayStructure structureData = (ArrayStructure) values;
@@ -423,7 +420,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     List<Variable> vars = s.getVariables();
     StructureMembers members = structureData.getStructureMembers();
 
-    Range recordRange = (Range) sectionList.get(0);
+    Range recordRange = section.getRange(0);
     int count = 0;
     for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
       // System.out.println("  wrote "+recnum+" begin at "+begin);
@@ -432,7 +429,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
       for (Variable v2 : vars) {
         N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
         long begin = vinfo.begin + recnum * recsize;
-        Indexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), begin, null, -1);
+        Indexer index = new RegularLayout(begin, v2.getElementSize(), -1, v2.getShape(), null);  // LOOK fishy; why null???
 
         StructureMembers.Member m = members.findMember(v2.getShortName());
         if (null == m)
@@ -500,7 +497,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) continue;
       try {
-        writeData(v, null, makeConstantArray(v));
+        writeData(v, v.getShapeAsSection(), makeConstantArray(v));
       } catch (InvalidRangeException e) {
         e.printStackTrace();  // shouldnt happen
       }
@@ -509,17 +506,16 @@ public abstract class N3iosp implements IOServiceProviderWriter {
 
   protected void fillRecordVariables(int recStart, int recEnd) throws IOException, InvalidRangeException {
     // do each record completely, should be a bit more efficient
-    for (int i = recStart; i < recEnd; i++) {
+
+    for (int i = recStart; i < recEnd; i++) { // do one record at a time
       Range r = new Range(i, i);
 
       // run through each variable
       for (Variable v : ncfile.getVariables()) {
         if (!v.isUnlimited() || (v instanceof Structure)) continue;
-        List<Range> ranges = new ArrayList<Range>();
-        ranges.add(r);
-        for (int j = 1; j < v.getRank(); j++)
-          ranges.add(null);
-        writeData(v, ranges, makeConstantArray(v));
+        Section recordSection = new Section( v.getRanges());
+        recordSection.setRange(0, r);
+        writeData(v, recordSection, makeConstantArray(v));
       }
     }
   }

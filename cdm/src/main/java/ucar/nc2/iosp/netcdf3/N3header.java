@@ -246,24 +246,25 @@ public class N3header {
   }
 
   boolean addRecordStructure() {
-
     // create record structure
     if (uvars.size() > 0) {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
       recordStructure.setDimensions( udim.getName());
       for (Variable v : uvars) {
+        Variable memberV = new Variable(v);
+        memberV.setParentStructure(recordStructure);
+        memberV.createNewCache(); // decouple caching - LOOK could use this ??
+
+        //remove record dimension
         List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
-        dims.remove(0); //remove record dimension
-        Variable memberV = new Variable(ncfile, ncfile.getRootGroup(), recordStructure, v.getShortName());
-        memberV.setDataType(v.getDataType());
-        memberV.setSPobject(v.getSPobject());
-        memberV.getAttributes().addAll(v.getAttributes());
+        dims.remove(0);
         memberV.setDimensions(dims);
 
         recordStructure.addMemberVariable(memberV);
       }
 
-      ncfile.addVariable(ncfile.getRootGroup(), recordStructure);
+      ncfile.getRootGroup().addVariable( recordStructure);
+      ncfile.finish();
       return true;
     }
 

@@ -44,7 +44,12 @@ public class RegularLayout extends Indexer {
   private int nelems; // number of elements to read at one time
   private long total, done;
 
-  private boolean debug = true, debugMerge = false, debugNext = false;
+  private boolean debug = false, debugMerge = false, debugNext = false;
+
+  public RegularLayout( int[] varShape, int elemSize, long startPos, List<Range> ranges, int recSize) throws InvalidRangeException {
+    this(startPos, elemSize, recSize, varShape, new Section(ranges));
+  }
+
 
   /**
    * Constructor.
@@ -61,9 +66,7 @@ public class RegularLayout extends Indexer {
     assert elemSize > 0;
 
     this.elemSize = elemSize;
-    String err = section.checkInRange(varShape);
-    if (err != null)
-      throw new InvalidRangeException(err);
+    section =  Section.fill(section, varShape); // will throw InvalidRangeException if illegal section
 
     // compute total size of wanted section
     this.total = section.computeSize();
