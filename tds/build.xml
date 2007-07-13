@@ -599,7 +599,8 @@
     <property name="test.classpath" refid="test.classpath"/>
     <echo>test.classpath=${test.classpath}</echo>
 
-    <javac destdir="${test.classes.dir}" source="1.5" target="1.5" debug="${build.debug}" srcdir="${test.src.dir}">
+    <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}"
+           source="1.5" target="1.5" debug="${build.debug}">
       <classpath refid="test.classpath"/>
     </javac>
 

@@ -704,6 +704,7 @@
     <fileset refid="compile.libraries"/>
     <fileset refid="compileUI.libraries"/>
     <fileset refid="runtime.libraries" />
+    <pathelement location="${build.classes.dir}"/>
     <pathelement location="${test.dir}/classes"/>
     <pathelement location="${resources.dir}"/>
     <pathelement location="${resourcesUI.dir}"/>
@@ -717,9 +718,10 @@
     <!-- debugging path -->
     <property name="test.classpath" refid="test.classpath"/>
     <echo>test.classpath=${test.classpath}</echo>
-    <javac destdir="${test.dir}/classes" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.5" target="1.5">
-      <src refid="test.sourcepath"/>
-      <patternset refid="sources"/>
+    <javac srcdir="${test.src.dir}" destdir="${test.dir}/classes"
+           debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false"
+           source="1.5" target="1.5">
+      <exclude name="examples/*.java" />
       <classpath refid="test.classpath"/>
     </javac>
 
