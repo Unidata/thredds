@@ -1110,30 +1110,3 @@ public class Index implements Cloneable {
   }
 
 }
-
-/* Change History:
-   $Log: Index.java,v $
-   Revision 1.9  2006/01/31 21:15:53  caron
-   bug in setCurrentElement() - it was totally wrong
-
-   Revision 1.8  2005/12/15 00:29:08  caron
-   *** empty log message ***
-
-   Revision 1.7  2005/12/09 04:24:34  caron
-   Aggregation
-   caching
-   sync
-
-   Revision 1.6  2005/03/03 20:52:22  caron
-   datatype checkin
-
-   Revision 1.5  2004/08/26 17:55:06  caron
-   no message
-
-   Revision 1.4  2004/08/16 20:53:44  caron
-   2.2 alpha (2)
-
-   Revision 1.3  2004/07/12 23:40:13  caron
-   2.2 alpha 1.0 checkin
-
- */

@@ -1,6 +1,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import ucar.nc2.TestHTTP;
 
 /**
  * ucar.nc2 core testing

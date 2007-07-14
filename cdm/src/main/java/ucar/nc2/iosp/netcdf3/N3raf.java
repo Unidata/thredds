@@ -46,7 +46,7 @@ public class N3raf extends N3iosp  {
    * @return primitive array with data read in
    */
  protected Object readData( Indexer index, DataType dataType) throws java.io.IOException {
-   int size = index.getTotalNelems();
+   int size = (int) index.getTotalNelems();
 
    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
      byte[] pa = new byte[size];
@@ -98,7 +98,7 @@ public class N3raf extends N3iosp  {
  }
 
   /**
-   * Read data subset from file for a variable, to DataOutputStream .
+   * Read data subset from file for a variable, to WritableByteChannel .
    * @param index handles skipping around in the file.
    * @param dataType dataType of the variable
    */
@@ -139,16 +139,13 @@ public class N3raf extends N3iosp  {
     * @param dataType dataType of the variable
     */
   protected void writeData( Array values, Indexer index, DataType dataType) throws java.io.IOException {
-    // LOOK - could do an optimization here
-    // if (fastOk) writeDataFast( values, index, dataType);
-
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         raf.seek ( chunk.getFilePos());
         for (int k=0; k<chunk.getNelems(); k++)
-          raf.write( ii.getByteNext()); // LOOK what about chunk.getIndexPos() ??
+          raf.write( ii.getByteNext());
       }
       return;
 
@@ -207,235 +204,5 @@ public class N3raf extends N3iosp  {
 
     throw new IllegalStateException("dataType= "+dataType);
   }
-
-   /**
-    * write data to a file for a variable.
-    * @param values write this data.
-    * @param index handles skipping around in the file.
-    * @param dataType dataType of the variable
-    * @throws java.io.IOException if io fails
-    */
-  private void writeDataFast( Array values, Indexer index, DataType dataType) throws java.io.IOException {
-    //int size = index.getTotalNelems();
-
-    if (dataType == DataType.BYTE) {
-      byte[] pa = (byte []) values.getStorage();
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.write( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return;
-
-    } else if (dataType == DataType.CHAR) {
-      byte[] pa = convertCharToByte( (char []) values.getStorage());
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.write( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return;
-
-    } else if (dataType == DataType.STRING) {
-      byte[] pa = (byte []) values.getStorage(); // ??
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.write( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return;
-
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = (short []) values.getStorage();
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.writeShort( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return;
-
-    } else if (dataType == DataType.INT) {
-      int[] pa = (int []) values.getStorage();
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.writeInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return;
-
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = (float []) values.getStorage();
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.writeFloat( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive arr
-      }
-      return;
-
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = (double []) values.getStorage();
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.writeDouble( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-      return;
-    }
-
-    throw new IllegalStateException("dataType= "+dataType);
-  }
-
-   /*
-    * Read data subset from file for a variable, into a primitive array.
-    * @param beginOffset variable's begining byte offset in file.
-    * @param index handles skipping around in the file.
-    * @param dataType dataType of the variable
-    * @param dataArray primitive array
-    * @param offset start reading into primitive array here
-    * @return number of elements read
-    *
-  protected int readData( int beginOffset, Indexer index, DataType dataType, Object dataArray, int offset) throws java.io.IOException {
-    int size = index.getTotalNelems();
-
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-      byte[] pa = (byte[]) dataArray;
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-      }
-
-      byte[] pa = (byte[]) dataArray;
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.read( pa, offset, chunk); // copy into primitive array
-        offset += chunk;
-      }
-
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = (short[]) dataArray;
-      while (index.hasNext()) {
-        raf.seek ((long) beginOffset + index.next());
-        raf.readShort( pa, offset, chunk); // copy into primitive array
-        offset += chunk;
-      }
-
-    } else if (dataType == DataType.INT) {
-      int[] pa = (int[]) dataArray;
-      while (index.hasNext()) {
-        raf.seek ((long) beginOffset + index.next());
-        raf.readInt( pa, offset, chunk); // copy into primitive array
-        offset += chunk;
-      }
-
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = (float[]) dataArray;
-      while (index.hasNext()) {
-       raf.seek ((long) beginOffset + index.next());
-       raf.readFloat( pa, offset, chunk); // copy into primitive array
-       offset += chunk;
-      }
-
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = (double[]) dataArray;
-      while (index.hasNext()) {
-        raf.seek ((long) beginOffset + index.next());
-        raf.readDouble( pa, offset, chunk); // copy into primitive array
-        offset += chunk;
-      }
-    } else {
-      throw new IllegalStateException();
-    }
-
-    return size;
-  } */
-
-   /*
-    * Write data subset to file for a variable, create primitive array.
-    * @param beginOffset: variable's beginning byte offset in file.
-    * @param index handles skipping around in the file.
-    * @param source from this buye buffer
-    * @param dataType dataType of the variable
-    * @return primitive array with data read in
-    *
-  protected void writeData( Array aa, long beginOffset, Indexer index, DataType dataType) throws java.io.IOException {
-    /* int offset = 0;
-    int chunk = index.getChunkSize();
-    int size = index.getTotalSize();
-
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-      byte[] pa;
-      if (dataType == DataType.BYTE)
-         pa = (byte[]) aa.getStorage();
-      else {
-        char[] cbuff = (char[]) aa.getStorage();
-        pa = convertCharToByte( cbuff);
-      }
-      ByteBuffer bbuff = ByteBuffer.allocateDirect( chunk);
-      while (index.hasNext()) {
-        bbuff.clear();
-        bbuff.put(pa, offset, chunk); // copy from primitive array to buffer
-        bbuff.flip();
-        channel.write(bbuff, beginOffset + index.next());
-        offset += chunk;
-      }
-      return;
-
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = (short[]) aa.getStorage();
-      ByteBuffer bbuff = ByteBuffer.allocateDirect( chunk*2);
-      ShortBuffer tbuff = bbuff.asShortBuffer(); // typed buffer
-      while (index.hasNext()) {
-        tbuff.clear();
-        tbuff.put(pa, offset, chunk); // copy from primitive array to typed buffer
-        bbuff.clear();
-        channel.write(bbuff, beginOffset + index.next());
-        offset += chunk;
-      }
-      return;
-
-    } else if (dataType == DataType.INT) {
-      int[] pa = (int[]) aa.getStorage();
-      ByteBuffer bbuff = ByteBuffer.allocateDirect( chunk*4);
-      IntBuffer tbuff = bbuff.asIntBuffer(); // typed buffer
-      while (index.hasNext()) {
-        tbuff.clear();
-        tbuff.put(pa, offset, chunk); // copy from primitive array to typed buffer
-        bbuff.clear();
-        channel.write(bbuff, beginOffset + index.next());
-        offset += chunk;
-      }
-      return;
-
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = (float[]) aa.getStorage();
-      ByteBuffer bbuff = ByteBuffer.allocateDirect( chunk*4);
-      FloatBuffer tbuff = bbuff.asFloatBuffer(); // typed buffer
-      while (index.hasNext()) {
-        tbuff.clear();
-        tbuff.put(pa, offset, chunk); // copy from primitive array to typed buffer
-        bbuff.clear();
-        channel.write(bbuff, beginOffset + index.next());
-        offset += chunk;
-      }
-      return;
-
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = (double[]) aa.getStorage();
-      ByteBuffer bbuff = ByteBuffer.allocateDirect( chunk*8);
-      DoubleBuffer tbuff = bbuff.asDoubleBuffer(); // typed buffer
-      while (index.hasNext()) {
-        tbuff.clear();
-        tbuff.put(pa, offset, chunk); // copy from primitive array to typed buffer
-        bbuff.clear();
-        channel.write(bbuff, beginOffset + index.next());
-        offset += chunk;
-      }
-      return;
-    }
-
-    throw new IllegalStateException();
-  } */
 
 }

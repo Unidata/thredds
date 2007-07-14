@@ -1,6 +1,5 @@
-// $Id:H5iosp.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,21 +22,20 @@ package ucar.nc2.iosp.hdf5;
 import ucar.ma2.*;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.RegularLayout;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.RegularSectionLayout;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 
-import java.util.*;
 import java.util.zip.*;
 import java.io.IOException;
 import java.nio.*;
 
 /**
+ * HDF5 I/O
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class H5iosp extends AbstractIOServiceProvider {
@@ -92,12 +90,6 @@ public class H5iosp extends AbstractIOServiceProvider {
     headerParser.read(myRaf, ncfile);
 
     ncfile.finish();
-
-    //channel = raf.getChannel();
-    //if (debug) out.println ("Opened file to read:'" + ncfile.getPathName()+ "', size=" + channel.size());
-
-    //mapBuffer = channel.map(FileChannel.MapMode.READ_ONLY, (long) 0, channel.size());
-    //mapBuffer.order(ByteOrder.LITTLE_ENDIAN);
   }
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException  {
@@ -144,10 +136,11 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (vinfo.isChunked) {
         if (vinfo.btree == null)
           vinfo.btree = headerParser.getDataBTreeAt( v2.getName(), vinfo.dataPos, vinfo.storageSize.length);
-        index = new H5chunkIndexer( v2, origin, shape);
+        //index = new H5chunkIndexer( v2, origin, shape);
+        index = new H5chunkLayout( v2, new Section(origin, shape));
 
       } else {
-        index = new RegularLayout(v2.getShape(), v2.getElementSize(), dataPos, Range.factory(origin, shape), -1);
+        index = RegularSectionLayout.factory(dataPos, v2.getElementSize(), new Section(v2.getShape()), new Section(origin, shape));
       }
 
       if (vinfo.byteOrder >= 0) {
@@ -171,7 +164,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     * @return primitive array with data read in
     */
   protected Object readData( Variable v, Indexer index, DataType dataType, int[] shape) throws java.io.IOException, InvalidRangeException {
-    int size = index.getTotalNelems();
+    int size = (int) index.getTotalNelems();
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       byte[] pa = new byte[size];
@@ -180,7 +173,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         myRaf.seek ( chunk.getFilePos());
         myRaf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
       }
-      return (dataType == DataType.BYTE) ? pa : (Object) convertByteToChar( pa);
+      return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = new short[size];
@@ -234,8 +227,9 @@ public class H5iosp extends AbstractIOServiceProvider {
         Indexer.Chunk chunk = index.next();
         for (int i=0; i< chunk.getNelems(); i++) {
           H5header.HeapIdentifier heapId = headerParser.getHeapIdentifier(chunk.getFilePos() + index.getElemSize()*i);
+          if (debugString) H5header.debugOut.println("getHeapIdentifier= "+(chunk.getFilePos() + index.getElemSize()*i)+" chunk= "+chunk);
           H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
-          if (debugString) H5header.debugOut.println("readString at HeapObject "+ho);
+          if (debugString) H5header.debugOut.println(" readString at HeapObject "+ho);
 
           byte[] ba = new byte[(int)ho.dataSize];
           myRaf.seek(ho.dataPos);
@@ -270,13 +264,11 @@ public class H5iosp extends AbstractIOServiceProvider {
     StructureDataW sdata = new StructureDataW(asw.getStructureMembers());
     if (debug) H5header.debugOut.println(" readStructure "+s.getName()+" dataPos = "+dataPos);
 
-    Iterator viter = s.getVariables().iterator();
-    while (viter.hasNext()) {
-      Variable v2 = (Variable) viter.next();
+    for (Variable v2 : s.getVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
-      if (debug) H5header.debugOut.println(" readStructureMember "+v2.getName()+ " vinfo = "+vinfo);
+      if (debug) H5header.debugOut.println(" readStructureMember " + v2.getName() + " vinfo = " + vinfo);
       Array dataArray = readData(v2, dataPos + vinfo.dataPos, null, null);
-      sdata.setMemberData( v2.getShortName(), dataArray);
+      sdata.setMemberData(v2.getShortName(), dataArray);
     }
 
     return sdata;
@@ -313,17 +305,15 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (vinfo.btree == null)
       vinfo.btree = headerParser.getDataBTreeAt( v2.getName(), vinfo.dataPos, vinfo.storageSize.length);
 
-    ArrayList entries = vinfo.btree.getEntries();
-    for (int i=0; i<entries.size(); i++) {
-      H5header.DataBTree.DataEntry entry = (H5header.DataBTree.DataEntry) entries.get(i);
-      if (debugFilter) H5header.debugOut.println("-----entry= = "+entry);
+    for (H5header.DataBTree.DataEntry entry : vinfo.btree.getEntries()) {
+      if (debugFilter) H5header.debugOut.println("-----entry= = " + entry);
       if ((cbuff == null) || (cbuffSize < entry.size)) {
-        cbuffSize = 2*entry.size;
+        cbuffSize = 2 * entry.size;
         cbuff = new byte[cbuffSize];
       }
 
       // jump to the data
-      myRaf.seek ( entry.address);
+      myRaf.seek(entry.address);
 
       if (entry.filterMask == 1) { // skip  decompress
         if (debugFilter) H5header.debugOut.println("skip inflate");
@@ -332,29 +322,30 @@ public class H5iosp extends AbstractIOServiceProvider {
       } else {
         // read compressed bytes
         myRaf.read(cbuff, 0, entry.size);
-        if (debugFilterDetails) H5header.printBytes( "  raw bytes=", buff, 0, entry.size);
+        if (debugFilterDetails) H5header.printBytes("  raw bytes=", buff, 0, entry.size);
 
         // decompress the bytes
         inflater.setInput(cbuff, 0, entry.size);
-        int resultLength = 0;
+        int resultLength;
         try {
           resultLength = inflater.inflate(buff, 0, chunkSize);
         }
         catch (DataFormatException ex) {
-          System.out.println("ERROR on "+v2.getName());
+          System.out.println("ERROR on " + v2.getName());
           ex.printStackTrace();
-          throw new IOException( ex.getMessage());
+          throw new IOException(ex.getMessage());
         }
-        if (debugFilter) H5header.debugOut.println( "inflate finished="+ inflater.finished()+" "+resultLength+" bytes; totalDone= "+totalDone);
-        if (debugFilterDetails) H5header.printBytes( "  bytes=", buff, 0, chunkSize);
+        if (debugFilter)
+          H5header.debugOut.println("inflate finished=" + inflater.finished() + " " + resultLength + " bytes; totalDone= " + totalDone);
+        if (debugFilterDetails) H5header.printBytes("  bytes=", buff, 0, chunkSize);
         inflater.reset();
       }
 
       // copy decompressed bytes into the right place in the output array
-      indexer.setChunkOffset( entry.offset);
+      indexer.setChunkOffset(entry.offset);
       while (indexer.hasNext() && (totalDone < totalSize)) {
         Indexer.Chunk chunk = indexer.next();
-        int n = Math.min( chunk.getNelems(), totalSize - totalDone);
+        int n = Math.min(chunk.getNelems(), totalSize - totalDone);
         System.arraycopy(buff, chunk.getIndexPos(), barray, (int) chunk.getFilePos(), n);
         totalDone += chunk.getNelems();
       }
@@ -665,7 +656,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   /**
    * Flush all data buffers to disk.
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void flush() throws IOException {
     myRaf.flush();
@@ -673,7 +664,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   /**
    *  Close the file.
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void close() throws IOException {
     if (myRaf != null)

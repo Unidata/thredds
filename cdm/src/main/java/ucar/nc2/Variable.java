@@ -1509,7 +1509,7 @@ public class Variable implements VariableIF {
    *                   for the Variable itself. If the list is null, use the full shape for everything.
    *                   If an individual Range is null, use the full shape for that dimension.
    * @param flatten    if true, remove enclosing StructureData. Otherwise, each parent Structure will create a
-   *                   StructureData container for the returned data array.
+   *                   StructureData container for the returned data array. LOOK maybe always flatten = true ??
    * @return the requested data which has the shape of the request.
    */
   public Array readAllStructures(ucar.ma2.Section sectionAll, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException {

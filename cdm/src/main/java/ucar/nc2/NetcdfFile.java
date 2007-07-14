@@ -82,6 +82,11 @@ public class NetcdfFile {
   // still get automatically loaded if they are present.
   static {
     try {
+      registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
+    } catch (Throwable e) {
+      log.warn("Cant load class: " + e);
+    }
+    try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib1.Grib1Input"); // only load if grib.jar is present
       registerIOProvider("ucar.nc2.iosp.grib.Grib1ServiceProvider");
     } catch (Throwable e) {
@@ -431,7 +436,7 @@ public class NetcdfFile {
       spi = SPFactory.getServiceProvider();
 
     //} else if (H5header.isValidFile(raf)) {
-     // spi = new ucar.nc2.iosp.hdf5.H5iosp();
+      // spi = new ucar.nc2.iosp.hdf5.H5iosp();
 
     } else {
       // look for registered providers

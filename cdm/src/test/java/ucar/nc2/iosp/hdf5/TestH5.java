@@ -1,6 +1,8 @@
-package ucar.nc2;
+package ucar.nc2.iosp.hdf5;
 
 import junit.framework.*;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestAll;
 
 /**
  * TestSuite that runs all the sample testsNew

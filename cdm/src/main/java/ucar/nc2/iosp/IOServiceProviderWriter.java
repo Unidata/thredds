@@ -60,7 +60,8 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * @param section the section of data to write.
    *  There must be a Range for each Dimension in the variable, in order.
    *  The shape must match the shape of values.
-   * @param values data to write. The shape must match the shape of Range list.
+   *  The origin and stride indicate where the data is placed into the stored Variable array.
+   * @param values data to write. The shape must match section.getShape().
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */

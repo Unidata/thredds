@@ -23,7 +23,7 @@ package ucar.nc2.iosp.hdf5;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.Indexer;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 
 import java.util.*;
 
@@ -136,20 +136,20 @@ class H5chunkIndexer extends Indexer {
   }
 
 
-  public int getTotalNelems() { return totalNelems; }
+  public long getTotalNelems() { return totalNelems; }
   public int getElemSize() { return elemSize; }
   public boolean hasNext() { return !done && (totalNelemsDone < totalNelems); }
   public Chunk next() {
 
     if (currentDataNelemsDone == currentDataNelems) { // get new data node
       if (chunkListIter.hasNext())
-        currentDataNode = (H5header.DataBTree.DataEntry) chunkListIter.next();        
+        currentDataNode = (H5header.DataBTree.DataEntry) chunkListIter.next();
       else
         done = true;
 
       currentDataNelems = currentDataNode.size / elemSize;
       currentDataNelemsDone = 0;
-      chunk.setFilePos( currentDataNode.address);
+      chunk.setFilePos(currentDataNode.address);
       // set origin, figure out how many elements are left in the row
       resultIndex.setOffset( currentDataNode.offset);
       this.chunkNelems = Math.min( chunkSize[varRank-1], resultIndex.getRemainingInRow());

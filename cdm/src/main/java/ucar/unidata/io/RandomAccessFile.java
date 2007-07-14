@@ -1405,8 +1405,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param n     _more_
    * @throws IOException _more_
    */
-  public final void writeInt(int[] pa, int start, int n)
-      throws IOException {
+  public final void writeInt(int[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
       writeInt(pa[start + i]);
     }

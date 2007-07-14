@@ -206,6 +206,75 @@ public class Section {
   }
 
   /**
+   * Create a new Section by intersection with another Section
+   * @param other Section other section
+   * @return new Section, composed
+   * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
+   */
+  public Section intersect(Section other) throws InvalidRangeException {
+    if (other.getRank() != getRank())
+        throw new InvalidRangeException("Invalid Section rank");
+
+    // check individual nulls
+    List<Range> results = new ArrayList<Range>(getRank());
+    for (int j = 0; j < list.size(); j++) {
+      Range base = list.get(j);
+      Range r =  other.getRange(j);
+      results.add( base.intersect(r));
+    }
+
+    return new Section( results);
+  }
+
+  /**
+   * Create a new Section by shifting each range by shift.first()
+   * @param shift Section subtract shift.first()
+   * @return new Section, shifted
+   * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
+   */
+  public Section shiftOrigin(Section shift) throws InvalidRangeException {
+    if (shift.getRank() != getRank())
+        throw new InvalidRangeException("Invalid Section rank");
+
+    // check individual nulls
+    List<Range> results = new ArrayList<Range>(getRank());
+    for (int j = 0; j < list.size(); j++) {
+      Range base = list.get(j);
+      Range r =  shift.getRange(j);
+      results.add( base.shiftOrigin(r.first()));
+    }
+
+    return new Section( results);
+  }
+
+  /**
+   * See if this Section intersects with another Section. ignores strides
+   * @param other another section
+   * @return true if intersection is non-empty
+   * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
+   */
+  public boolean intersects(Section other) throws InvalidRangeException {
+    if (other.getRank() != getRank())
+        throw new InvalidRangeException("Invalid Section rank");
+
+    // check individual nulls
+    for (int j = 0; j < list.size(); j++) {
+      Range base = list.get(j);
+      Range r =  other.getRange(j);
+      if ((base.length() == 0) || (r.length() == 0))
+        return false;
+
+      // LOOK ignores strides
+      int first = Math.max(base.first(), r.first());
+      int last = Math.min(base.last(), r.last());
+      if (first > last)  return false;
+    }
+
+    return true;
+  }
+
+
+  /**
    * Convert List of Ranges to String Spec.
    * Inverse of new Section(String sectionSpec)
    *

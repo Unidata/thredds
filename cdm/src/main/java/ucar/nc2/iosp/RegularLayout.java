@@ -25,17 +25,17 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Indexer into a regular array.
- * This calculates byte lengths and offsets of the wanted data into the entire data.
- * Assumes that the data is stored "regularly", like netcdf arrays and hdf5 continuous storage.
+ * Indexer into data that has a "regular" layout, like netcdf-3 and hdf5 continuous storage.
+ * The data is contigous, with outer dimension varying fastest.
+ * Given a Section, this calculates the set of contiguous "chunks" of the wanted data into the stored data.
  * Also handles netcdf3 record dimensions.
  *
  * @author caron
+ * @see Indexer
  */
 public class RegularLayout extends Indexer {
   private List<Dim> dimList = new ArrayList<Dim>();
   private MyIndex myIndex;
-  //private List<Range> want;
 
   private int elemSize; // size of each element
   private long startPos; // starting address
@@ -46,6 +46,23 @@ public class RegularLayout extends Indexer {
 
   private boolean debug = false, debugMerge = false, debugNext = false;
 
+  static public Indexer factory(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
+    if ((recSize < 0) && Index.computeSize(varShape) == wantSection.computeSize()) // optimize the simple case
+      return new SingleChunkIndexer(startPos, (int) wantSection.computeSize(), elemSize);
+
+    return new RegularLayout(startPos, elemSize, recSize, varShape, wantSection);
+  }
+
+  /**
+   * Constructor: drop in replacement for old RegularIndexer.
+   * @param varShape shape of the entire data array.
+   * @param elemSize size of on element in bytes.
+   * @param startPos starting address of the entire data array.
+   * @param ranges the wanted section of data: List of Range objects,
+   *    corresponding to each Dimension, else null means all.
+   * @param recSize if > 0, then size of outer stride in bytes, else ignored
+   * @throws InvalidRangeException is ranges are misformed
+   */
   public RegularLayout( int[] varShape, int elemSize, long startPos, List<Range> ranges, int recSize) throws InvalidRangeException {
     this(startPos, elemSize, recSize, varShape, new Section(ranges));
   }
@@ -58,18 +75,18 @@ public class RegularLayout extends Indexer {
    * @param elemSize size of an element in bytes.
    * @param recSize  if > 0, then size of outer stride in bytes, else ignored
    * @param varShape shape of the entire data array.
-   * @param section the wanted section of data, contains a List of Range objects, must be filled.
+   * @param wantSection the wanted section of data, contains a List of Range objects.
    * @throws InvalidRangeException if ranges are misformed
    */
-  public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section section) throws InvalidRangeException {
+  public RegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
     assert startPos >= 0;
     assert elemSize > 0;
 
     this.elemSize = elemSize;
-    section =  Section.fill(section, varShape); // will throw InvalidRangeException if illegal section
+    wantSection =  Section.fill(wantSection, varShape); // will throw InvalidRangeException if illegal section
 
     // compute total size of wanted section
-    this.total = section.computeSize();
+    this.total = wantSection.computeSize();
     this.done = 0;
 
     // compute the layout
@@ -80,7 +97,7 @@ public class RegularLayout extends Indexer {
     int stride = 1;
     for (int ii = varRank - 1; ii >= 0; ii--) {
       int realStride = (isRecord && ii == 0) ? recSize : elemSize * stride;
-      dimList.add( new Dim(realStride, varShape[ii], section.getRange(ii))); // note reversed : fastest first
+      dimList.add( new Dim(realStride, varShape[ii], wantSection.getRange(ii))); // note reversed : fastest first
       stride *= varShape[ii];
     }
 
@@ -152,7 +169,7 @@ public class RegularLayout extends Indexer {
 
     if (debug) {
       System.out.println("RegularLayout = "+this);
-      System.out.println("startPos= "+ startPos+" elemSize= "+elemSize+" recSize= "+recSize+" varShape= "+printa(varShape)+" section= "+section);
+      System.out.println("startPos= "+ startPos+" elemSize= "+elemSize+" recSize= "+recSize+" varShape= "+printa(varShape)+" section= "+wantSection);
     }
   }
 
@@ -170,24 +187,14 @@ public class RegularLayout extends Indexer {
     }
   }
 
-  private class MyIndex extends Index {
-    MyIndex(int[] shape, int[] stride) {
-      super(shape, stride);
-    }
-
-    protected int incr() {
-      return super.incr();
-    }
-  }
-
   // debug
   public int getChunkSize() {
     return nelems;
   }
 
-  public int getTotalNelems() {
-    return (int) total;
-  } // LOOK int should be long
+  public long getTotalNelems() {
+    return total;
+  }
 
   public int getElemSize() {
     return elemSize;
@@ -202,11 +209,11 @@ public class RegularLayout extends Indexer {
       chunk = new Chunk(startPos, nelems, 0);
     } else {
       myIndex.incr(); // increment one element, but is represents one chunk = nelems * sizeElem
-      chunk.indexPos += nelems; // always read nelems at a time
+      chunk.incrIndexPos( nelems); // always read nelems at a time
     }
 
     // Get the current element's byte index from the start of the file
-    chunk.filePos = startPos + myIndex.currentElement();
+    chunk.setFilePos( startPos + myIndex.currentElement());
 
     if (debugNext)
       System.out.println(" next chunk: " + chunk);

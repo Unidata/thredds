@@ -1,0 +1,155 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+package ucar.nc2.iosp.hdf5;
+
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.DataType;
+import ucar.ma2.Section;
+import ucar.nc2.iosp.Indexer;
+import ucar.nc2.iosp.RegularSectionLayout;
+import ucar.nc2.Variable;
+
+import java.util.*;
+
+/**
+ * Iterator to read/write subsets of an array.
+ * This calculates byte offsets for HD5 chunked datasets.
+ * Assumes that the data is stored in chunks, indexed by a Btree.
+ *
+ * @author caron
+ */
+class H5chunkLayout extends Indexer {
+  private Section want;
+  private int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
+  private int elemSize; // last dimension of the StorageLayout message
+
+  // iterate over the btree entries
+  private Iterator<H5header.DataBTree.DataEntry> chunkListIter;
+
+  // track the overall iteration
+  private long totalNelems, totalNelemsDone; // total number of elemens
+  private boolean done = false;
+
+  private boolean debug = false;
+
+  /**
+   * Constructor.
+   * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
+   *
+   * @param v2          Variable to index over; assumes that vinfo is the data object
+   * @param wantSection the wanted section of data, contains a List of Range objects.
+   * @throws InvalidRangeException if section invalid for this variable
+   */
+  H5chunkLayout(Variable v2, Section wantSection) throws InvalidRangeException {
+    debug = H5iosp.debugChunkIndexer;
+
+    wantSection = Section.fill(wantSection, v2.getShape());
+    this.totalNelems = wantSection.computeSize();
+    this.want = wantSection;
+
+    H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
+
+    // heres the chunking info
+    // one less chunk dimension, except in the case of char
+    nChunkDims = (v2.getDataType() == DataType.CHAR) ? vinfo.storageSize.length : vinfo.storageSize.length - 1;
+    this.chunkSize = new int[nChunkDims];
+    System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
+    this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
+
+    // generally we can only read this many elements at once
+    //this.chunkNelems = chunkSize[nChunkDims - 1];
+    if (debug) H5header.debugOut.println(" H5chunkIndexer: " + this);
+
+    // the index within the result array
+    //this.resultIndex = new MyIndex( section.getShape());
+
+    // load in the first data node
+    H5header.DataBTree btree = vinfo.btree;
+    chunkListIter = btree.getEntries().iterator();
+
+    // holds the chunk info as we iterate
+    //this.chunk = new Chunk(0L, 0, 0);
+  }
+
+  public long getTotalNelems() {
+    return totalNelems;
+  }
+
+  public int getElemSize() {
+    return elemSize;
+  }
+
+  public boolean hasNext() {
+    return !done && (totalNelemsDone < totalNelems);
+  }
+
+  private int nChunkDims;
+  private H5header.DataBTree.DataEntry btreeNode;
+  private Indexer index = null;
+
+  public Chunk next() {
+
+    if ((index == null) || !index.hasNext()) { // get new data node
+
+      try {
+        Section dataSection;
+        while (true) { // look for intersecting sections
+          if (chunkListIter.hasNext())
+            btreeNode = chunkListIter.next(); // LOOK can we do a btree search ?
+          else {
+            done = true; // LOOK shouldnt we return empty chunk ??
+            return null;
+          }
+
+          int[] sectionOrigin = new int[nChunkDims];
+          for (int i = 0; i < nChunkDims; i++)
+            sectionOrigin[i] = (int) btreeNode.offset[i];
+          dataSection = new Section(sectionOrigin, chunkSize);
+          if (dataSection.intersects(want))
+            break;
+        }
+
+        if (debug) System.out.println(" found intersection: " + dataSection+" for address "+btreeNode.address);
+        index = RegularSectionLayout.factory(btreeNode.address, elemSize, dataSection, want);
+      } catch (InvalidRangeException e) {
+        assert false;
+      }
+    }
+
+    Chunk chunk = index.next();
+    totalNelemsDone += chunk.getNelems();
+    return chunk;
+  }
+
+  public String toString() {
+    StringBuffer sbuff = new StringBuffer();
+    sbuff.append("want="+want+"; ");
+    sbuff.append("chunkSize=[");
+    for (int i = 0; i < chunkSize.length; i++) {
+      if (i > 0) sbuff.append(",");
+      sbuff.append(chunkSize[i]);
+    }
+    sbuff.append("] totalNelems=").append(totalNelems);
+    sbuff.append(" elemSize=").append(elemSize);
+    return sbuff.toString();
+  }
+
+
+}

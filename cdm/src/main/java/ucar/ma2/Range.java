@@ -122,25 +122,18 @@ public final class Range {
     return new Range(first, last, stride);
   }
 
-  /* LOOK
-     Create a range by combining two other ranges.
-     @param base	base range
-     @param r	range reletive to base
-     @exception InvalidRangeException elements must be nonnegative
-  public Range(Range base, Range r) throws InvalidRangeException {
-    this.first = base.element( r.first());
-    this.stride = base.stride() * r.stride();
-
-    if ((base.length() == 0) || (r.length() == 0)) {
-      this.n = 0;
-    } else {
-      int last = base.element(r.last());
-      this.n = Math.max( (last - first) / stride + 1, 0);
-    }
-    setName( r.getName());
-  }
-
+  /**
+     Create a new Range shifting this range by a constant factor.
+     @param origin subtract this from first, last
+     @return shiften range
+     @exception InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
+  public Range shiftOrigin(int origin) throws InvalidRangeException {
+    int first = first() - origin;
+    int stride = stride();
+    int last = last() - origin;
+    return new Range(first, last, stride);
+  }
 
   /** Get name
    * @return name, or null if none

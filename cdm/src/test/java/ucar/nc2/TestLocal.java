@@ -4,10 +4,7 @@ import junit.framework.*;
 import junit.extensions.TestSetup;
 
 import java.util.List;
-import java.util.Properties;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 import ucar.unidata.io.RandomAccessFile;
 
@@ -50,7 +47,7 @@ public class TestLocal {
     suite.addTest( ucar.nc2.TestLocalNC2.suite());
     suite.addTest( ucar.nc2.units.TestUnitsAll.suite());
 
-    // suite.addTest( ucar.nc2.TestH5.suite()); //
+    // suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); //
     // suite.addTest( ucar.nc2.TestIosp.suite());   //
 
     /* suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //

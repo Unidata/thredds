@@ -1,6 +1,5 @@
-// $Id: RegularIndexer.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,7 +32,7 @@ import java.util.*;
  * Also handles netcdf3 record dimensions.
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
+ * @deprecated use RegularLayout
  */
 public class RegularIndexer extends Indexer {
   private int elemSize; // size of each element
@@ -185,7 +184,7 @@ public class RegularIndexer extends Indexer {
   public int[] getWantShape() { return wantShape; }  // for N3iosp
 
   // Indexer abstract methods
-  public int getTotalNelems() { return total; }
+  public long getTotalNelems() { return total; }
   public int getElemSize() { return elemSize; }
   public boolean hasNext() { return done < total; }
 
@@ -196,11 +195,11 @@ public class RegularIndexer extends Indexer {
 
     } else {
       index.incr(); // increment file position
-      chunk.indexPos += nelems; // always read nelems at a time
+      chunk.incrIndexPos(nelems); // always read nelems at a time
     }
 
     // Get the current element's byte index from the start
-    chunk.filePos = startPos + index.currentPos();
+    chunk.setFilePos(startPos + index.currentPos());
 
     if (debugNext) {
       printa("-- current index= ", index.current);

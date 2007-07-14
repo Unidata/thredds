@@ -12,6 +12,16 @@ public class TestIndexer extends TestCase  {
     super(name);
   }
 
+  public void testFull() throws InvalidRangeException {
+    int[] shape = new int[] {123,22,92,12};
+    Section section = new Section(shape);
+    RegularLayout index = new RegularLayout(0, 1, -1, shape, section);
+    assert index.getTotalNelems() == section.computeSize();
+    Indexer.Chunk chunk = index.next();
+    assert chunk.getNelems() == section.computeSize();
+    assert !index.hasNext();
+  }
+
   public void testRegularIndexerNonRecord() throws InvalidRangeException {
 
       RegularLayout index;

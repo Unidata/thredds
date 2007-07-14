@@ -1,6 +1,5 @@
-// $Id:H5header.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -79,7 +78,9 @@ class H5header {
           return true;
         pos = (pos == 0) ? 512 : 2 * pos;
       }
-    } catch (IOException ioe) { } // fall through
+    } catch (IOException ioe) {
+      ; // fall through
+    }
 
     return false;
   }
@@ -92,13 +93,13 @@ class H5header {
   private byte sizeOffsets, sizeLengths;
   private boolean isOffsetLong, isLengthLong;
   private boolean v3mode = true;
-  private HashMap hashDataObjects = new HashMap( 100);
-  private HashMap hashGroups = new HashMap( 100);
+  private Map<String, DataObject> hashDataObjects = new HashMap<String, DataObject>( 100);
+  private Map<Long,Group> hashGroups = new HashMap<Long,Group>( 100);
 
   // netcdf 4 stuff
   private boolean isNetCDF4;
-  private HashMap dimTable = new HashMap();
-  private HashMap varTable = new HashMap();
+  private Map<Integer, Dimension> dimTable = new HashMap<Integer, Dimension>();
+  private Map<String, Vatt> varTable = new HashMap<String, Vatt>();
 
   private MemTracker memTracker;
 
@@ -124,7 +125,7 @@ class H5header {
   }
 
   void readSuperBlock() throws IOException {
-    byte versionSB, versionFSS,  versionGroup, versionSHMF;
+    byte versionSB = -1, versionFSS = -1,  versionGroup = -1, versionSHMF = -1;
     short btreeLeafNodeSize, btreeInternalNodeSize, storageInternalNodeSize;
     int fileFlags;
 
@@ -135,12 +136,14 @@ class H5header {
 
     // the "superblock"
     versionSB = raf.readByte();
-    versionFSS = raf.readByte();
-    versionGroup = raf.readByte();
-    raf.readByte(); // skip 1 byte
-    versionSHMF = raf.readByte();
-    if (debugDetail) debugOut.println(" versionSB= "+versionSB+" versionFSS= "+versionFSS+" versionGroup= "+versionGroup+
-      " versionSHMF= "+versionSHMF);
+    if (versionSB < 2) {
+      versionFSS = raf.readByte();
+      versionGroup = raf.readByte();
+      raf.readByte(); // skip 1 byte
+      versionSHMF = raf.readByte();
+    }
+    if (debugDetail) debugOut.println(" version SuperBlock= "+versionSB+"\n version FileFreeSpace= "+versionFSS+"\n version Root Group Symbol Table= "+versionGroup+
+      "\n version Shared Header Message Format= "+versionSHMF);
 
     sizeOffsets = raf.readByte();
     isOffsetLong = (sizeOffsets == 8);
@@ -155,7 +158,7 @@ class H5header {
 
     btreeLeafNodeSize = raf.readShort();
     btreeInternalNodeSize = raf.readShort();
-    if (debugDetail) debugOut.println(" btreeLeafNodeSize= "+btreeLeafNodeSize+" btreeInternalNodeSize= "+btreeInternalNodeSize);;
+    if (debugDetail) debugOut.println(" btreeLeafNodeSize= "+btreeLeafNodeSize+" btreeInternalNodeSize= "+btreeInternalNodeSize);
     //debugOut.println(" position="+mapBuffer.position());
 
     fileFlags = raf.readInt();
@@ -171,12 +174,6 @@ class H5header {
     eofAddress = readOffset();
     driverBlockAddress = readOffset();
 
-    if (baseAddress != superblockStart) {
-      baseAddress = superblockStart;
-      eofAddress += superblockStart;
-      if (debugDetail) debugOut.println(" baseAddress set to superblockStart");
-    }
-
     if (debugDetail)  {
       debugOut.println(" baseAddress= 0x"+Long.toHexString(baseAddress));
       debugOut.println(" global free space heap Address= 0x"+Long.toHexString(heapAddress));
@@ -185,6 +182,12 @@ class H5header {
       debugOut.println();
     }
     memTracker.add("superblock", superblockStart, raf.getFilePointer());
+
+    if (baseAddress != superblockStart) {
+      baseAddress = superblockStart;
+      eofAddress += superblockStart;
+      if (debugDetail) debugOut.println(" baseAddress set to superblockStart");
+    }
 
     // look for file truncation
     long fileSize = raf.length();
@@ -217,16 +220,16 @@ class H5header {
   }
 
   private void findSymbolicLinks( Group group) {
-    List nolist = group.nestedObjects;
+    List<DataObject> nolist = group.nestedObjects;
     for (int i=0; i<nolist.size(); i++) {
-      DataObject ndo = (DataObject) nolist.get(i);
+      DataObject ndo = nolist.get(i);
 
       if (ndo.group != null) {
         findSymbolicLinks( ndo.group);
       } else {
 
         if (ndo.linkName != null) { // its a symbolic link
-          DataObject link = (DataObject) hashDataObjects.get(ndo.linkName);
+          DataObject link = hashDataObjects.get(ndo.linkName);
           if (link == null) {
             debugOut.println(" WARNING Didnt find symbolic link=" + ndo.linkName+" from "+ndo.name);
             nolist.remove(i);
@@ -383,18 +386,15 @@ class H5header {
 
     public String toString() {
       StringBuffer buff = new StringBuffer();
-      buff.append(
-          "dataPos="+dataPos+
-          " byteSize="+byteSize+
-          " datatype="+dataType+" ("+hdfType+")");
+      buff.append("dataPos=").append(dataPos).append(" byteSize=").append(byteSize).append(" datatype=").append(dataType).append(" (").append(hdfType).append(")");
       if (isChunked) {
         buff.append(" isChunked (");
         for (int j=0;j<storageSize.length;j++)
-          buff.append(storageSize[j]+" ");
+          buff.append(storageSize[j]).append(" ");
         buff.append(")");
       }
       if (hasFilter) buff.append( " hasFilter");
-      buff.append("; // "+extraInfo());
+      buff.append("; // ").append(extraInfo());
       return buff.toString();
     }
 
@@ -435,8 +435,8 @@ class H5header {
 
   private class Vatt {
     String name;
-    ArrayList dimList;
-    Vatt( String name, ArrayList dimList) {
+    List<Dimension> dimList;
+    Vatt( String name, List<Dimension> dimList) {
         this.name = name;
         this.dimList = dimList;
     }
@@ -446,12 +446,11 @@ class H5header {
     return new HeapIdentifier( address);
   }
 
-  private HashMap heapMap = new HashMap();
+  private Map<Long,GlobalHeap> heapMap = new HashMap<Long,GlobalHeap>();
   class HeapIdentifier {
     int nelems; // "number of 'base type' elements in the sequence in the heap"
     int index;
     long heapAddress;
-    Object id;
 
     HeapIdentifier(long address) throws IOException {
       // header information is in le byte order
@@ -462,20 +461,17 @@ class H5header {
       heapAddress = readOffset();
       index = raf.readInt();
       if (debugDetail) debugOut.println("   read HeapIdentifier address="+address+" nelems="+nelems+" heapAddress="+heapAddress+" index="+index);
-      id = new Long(heapAddress);
       if (debugHeap) dump("heapIdentifier", getFileOffset(address), 16, true);
     }
 
     GlobalHeap.HeapObject getHeapObject() throws IOException {
-      GlobalHeap gheap = null;
-      if (null == (gheap = (GlobalHeap) heapMap.get(id))) {
+      GlobalHeap gheap;
+      if (null == (gheap = heapMap.get(heapAddress))) {
         gheap = new GlobalHeap(heapAddress);
-        heapMap.put( id, gheap);
+        heapMap.put( heapAddress, gheap);
       }
 
-      List list = gheap.hos;
-      for (int i=0; i<list.size(); i++) {
-        GlobalHeap.HeapObject ho = (GlobalHeap.HeapObject) list.get(i);
+      for (GlobalHeap.HeapObject ho : gheap.hos) {
         if (ho.id == index)
           return ho;
       }
@@ -526,7 +522,7 @@ class H5header {
     long address; // aka object id
 
     String displayName;
-    ArrayList messages = new ArrayList();
+    List<Message> messages = new ArrayList<Message>();
 
     byte version;
     short nmess;
@@ -607,9 +603,8 @@ class H5header {
       // look for group or a datatype/dataspace/layout message
       MessageGroup groupMessage = null;
 
-      for (int i=0; i<messages.size(); i++) {
-        Message mess = (Message) messages.get(i);
-        if (debugTracker) memTracker.addByLen( "Message ("+displayName+") "+mess.mtype, mess.start, mess.size+8);
+      for (Message mess : messages) {
+        if (debugTracker) memTracker.addByLen("Message (" + displayName + ") " + mess.mtype, mess.start, mess.size + 8);
 
         if (mess.mtype == MessageType.SimpleDataspace)
           mds = (MessageSimpleDataspace) mess.messData;
@@ -627,7 +622,7 @@ class H5header {
       if (groupMessage != null) {
         // check for hard links
         // debugOut.println("HO look for group address = "+groupMessage.btreeAddress);
-        if ( null != (group = (Group) hashGroups.get( new Long(groupMessage.btreeAddress)))) {
+        if ( null != (group = hashGroups.get(groupMessage.btreeAddress))) {
           debugOut.println("WARNING hard link to group = "+group.getName());
           if (parent.isChildOf( group)) {
             debugOut.println("ERROR hard link to group create a loop = "+group.getName());
@@ -693,10 +688,8 @@ class H5header {
     private void dumpInfo() {
       debugOut.println( "\nDataObject= "+name+" id= "+address);
       debugOut.println( " messages= ");
-      for (int i = 0; i < messages.size(); i++) {
-        Message message = (Message) messages.get(i);
-        debugOut.println( message);
-      }
+      for (Message message : messages)
+        debugOut.println(message);
     }
 
   }
@@ -704,7 +697,7 @@ class H5header {
   // type safe enum
   static private class MessageType {
     private static int MAX_MESSAGE = 19;
-    private static java.util.HashMap hash = new java.util.HashMap(10);
+    private static java.util.Map<String,MessageType> hash = new java.util.HashMap<String,MessageType>(10);
     private static MessageType[] mess = new MessageType[ MAX_MESSAGE];
 
     public final static MessageType NIL = new MessageType("NIL", 0);
@@ -740,7 +733,7 @@ class H5header {
      */
     public static MessageType getType(String name) {
       if (name == null) return null;
-      return (MessageType) hash.get( name);
+      return hash.get( name);
     }
 
     /**
@@ -755,7 +748,7 @@ class H5header {
 
     /** Message name. */
      public String toString() { return name+"("+num+")"; }
-    /** Message number. */
+    /** @return Message number. */
      public int getNum() { return num; }
 
   }
@@ -872,7 +865,7 @@ class H5header {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append(" dim length,max,permute ");
       for (int i=0; i<dim.length; i++)
-       sbuff.append(i+"=("+ dim[i]+","+ maxLength[i]+","+permute[i] + ") ");
+        sbuff.append(i).append("=(").append(dim[i]).append(",").append(maxLength[i]).append(",").append(permute[i]).append(") ");
       return sbuff.toString();
     }
 
@@ -928,7 +921,7 @@ class H5header {
 
     // compound type
     short nmembers;
-    ArrayList members;
+    List<StructureMember> members;
 
     // variable-length, array types have "parent" DataType
     MessageDatatype parent;
@@ -944,8 +937,8 @@ class H5header {
       if (debugPos) debugOut.println("   *MessageDatatype start pos= "+raf.getFilePointer());
 
       byte tandv = raf.readByte();
-      type = (int)(tandv & 0xf);
-      version = (int)((tandv & 0xf0) >> 4);
+      type = (tandv & 0xf);
+      version = ((tandv & 0xf0) >> 4);
       raf.read( flags);
       byteSize = raf.readInt();
       byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
@@ -989,7 +982,7 @@ class H5header {
       else if (type == 6){ // compound
         int nmembers = flags[1]*256+ flags[0];
         if (debug1)  debugOut.println("   --type 6(compound): nmembers="+nmembers);
-        members = new ArrayList();
+        members = new ArrayList<StructureMember>();
         for (int i=0; i<nmembers; i++) {
           members.add( new StructureMember(version));
         }
@@ -1105,7 +1098,7 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append(" dataAddress="+ dataAddress+ " storageSize = ");
+      sbuff.append(" dataAddress=").append(dataAddress).append(" storageSize = ");
       for (int i=0; i<ndims; i++){
         if (i>0) sbuff.append(",");
         sbuff.append(storageSize[i]);
@@ -1308,7 +1301,7 @@ class H5header {
     private GroupBTree btree;
     private long btreeAddress, nameHeapAddress;
 
-    private ArrayList nestedObjects = new ArrayList(); // nested data objects
+    private List<DataObject> nestedObjects = new ArrayList<DataObject>(); // nested data objects
 
     public Group(Group parent, String name, long btreeAddress, long nameHeapAddress) {
       this.parent = parent;
@@ -1319,7 +1312,7 @@ class H5header {
       isNetCDF4 = name.equals("_netCDF");
 
       // track by address for hard links
-      hashGroups.put( new Long(btreeAddress), this);
+      hashGroups.put(btreeAddress, this);
       //debugOut.println("HEY group address added = "+btreeAddress);
     }
 
@@ -1329,24 +1322,22 @@ class H5header {
       this.btree = new GroupBTree( dname, btreeAddress);
 
       // now read all the entries in the btree
-      List sentries = btree.getSymbolTableEntries();
-      for (int i=0; i<sentries.size(); i++) {
-        SymbolTableEntry s = (SymbolTableEntry) sentries.get(i);
-        String sname = nameHeap.getString( (int)s.getNameOffset());
-        if (debugSymbolTable) debugOut.println("\n   Symbol name="+sname);
+      for (SymbolTableEntry s : btree.getSymbolTableEntries()) {
+        String sname = nameHeap.getString((int) s.getNameOffset());
+        if (debugSymbolTable) debugOut.println("\n   Symbol name=" + sname);
 
         DataObject o;
         if (s.cacheType == 2) {
-          String linkName = nameHeap.getString( (int) s.linkOffset);
-          if (debugSymbolTable) debugOut.println("   Symbolic link name="+linkName);
+          String linkName = nameHeap.getString( s.linkOffset);
+          if (debugSymbolTable) debugOut.println("   Symbolic link name=" + linkName);
           o = new DataObject(this, sname, linkName);
 
         } else {
           o = new DataObject(this, sname, s.getObjectAddress());
           o.read();
         }
-        nestedObjects.add( o);
-        hashDataObjects.put( o.getName(), o); // to look up symbolic links
+        nestedObjects.add(o);
+        hashDataObjects.put(o.getName(), o); // to look up symbolic links
       }
       if (debug1)  debugOut.println("<-- end Group read <"+dname+">");
     }
@@ -1369,8 +1360,8 @@ class H5header {
   private class GroupBTree {
     protected String owner;
     protected int wantType = 0;
-    protected ArrayList entries = new ArrayList(); // list of type Entry
-    private ArrayList sentries = new ArrayList(); // list of type SymbolTableEntry
+    protected List<Entry> entries = new ArrayList<Entry>(); // list of type Entry
+    private List<SymbolTableEntry> sentries = new ArrayList<SymbolTableEntry>(); // list of type SymbolTableEntry
 
     // for DataBTree
     GroupBTree( String owner) {
@@ -1383,15 +1374,14 @@ class H5header {
       readAllEntries( address);
 
       // now convert the entries to SymbolTableEntry
-      for (int i = 0; i < entries.size(); i++) {
-        Entry e = (Entry) entries.get(i);
+      for (Entry e : entries) {
         GroupNode node = new GroupNode(e.address);
-        sentries.addAll( node.getSymbols());
+        sentries.addAll(node.getSymbols());
       }
     }
 
-    ArrayList getEntries() { return entries; }
-    ArrayList getSymbolTableEntries() { return sentries; }
+    List<Entry> getEntries() { return entries; }
+    List<SymbolTableEntry> getSymbolTableEntries() { return sentries; }
 
      // recursively read all entries, place them in order in list
     protected void readAllEntries(long address) throws IOException {
@@ -1423,7 +1413,7 @@ class H5header {
                     " rightAddress=" + rightAddress + " " +  Long.toHexString(rightAddress));
 
       // read all entries in this Btree "Node"
-      ArrayList myEntries = new ArrayList();
+      List<Entry> myEntries = new ArrayList<Entry>();
       for (int i = 0; i < nentries; i++) {
         myEntries.add( new Entry());
       }
@@ -1431,8 +1421,7 @@ class H5header {
       if (level == 0)
         entries.addAll( myEntries);
       else {
-        for (int i = 0; i < myEntries.size(); i++) {
-          Entry entry = (Entry) myEntries.get(i);
+        for (Entry entry : myEntries) {
           if (debugDataBtree) debugOut.println("  nonzero node entry at =" + entry.address);
           readAllEntries(entry.address);
         }
@@ -1455,7 +1444,7 @@ class H5header {
       long address;
       byte version;
       short nentries;
-      ArrayList symbols = new ArrayList(); // SymbolTableEntry
+      List<SymbolTableEntry> symbols = new ArrayList<SymbolTableEntry>(); // SymbolTableEntry
 
       GroupNode( long address) throws IOException {
         this.address = address;
@@ -1486,7 +1475,7 @@ class H5header {
         if (debugTracker) memTracker.addByLen("Group BtreeNode (" + owner + ")", address, size);
       }
 
-      List getSymbols() { return symbols; }
+      List<SymbolTableEntry> getSymbols() { return symbols; }
     }
 
 
@@ -1503,7 +1492,7 @@ class H5header {
   class DataBTree {
     private String owner;
     private int ndim, wantType;
-    private ArrayList entries = new ArrayList();
+    private List<DataEntry> entries = new ArrayList<DataEntry>();
 
     DataBTree(String owner, long pos, int ndim) throws IOException {
       this.owner = owner;
@@ -1517,7 +1506,7 @@ class H5header {
      }
 
     // type DataEntry
-    ArrayList getEntries() { return entries; }
+    List<DataEntry> getEntries() { return entries; }
 
      // recursively read all entries, place them in order in list
     private void readAllEntries(long pos) throws IOException {
@@ -1554,7 +1543,7 @@ class H5header {
       //raf.seek(entryPos);
 
       // read all entries in this Btree "Node"
-      ArrayList myEntries = new ArrayList();
+      List<DataEntry> myEntries = new ArrayList<DataEntry>();
       for (int i = 0; i < nentries; i++) {
         myEntries.add( new DataEntry(ndim));
       }
@@ -1562,8 +1551,7 @@ class H5header {
       if (level == 0)
         entries.addAll( myEntries);
       else {
-        for (int i = 0; i < myEntries.size(); i++) {
-          DataEntry entry = (DataEntry) myEntries.get(i);
+        for (DataEntry entry : myEntries) {
           if (debugDataBtree) debugOut.println("  nonzero node entry at =" + entry.address);
           readAllEntries(entry.address);
         }
@@ -1574,13 +1562,12 @@ class H5header {
 
     void dump( DataType dt) {
       try {
-        for (int i = 0; i < entries.size(); i++) {
-          DataEntry node = (DataEntry) entries.get(i);
+        for (DataEntry node : entries) {
           if (dt == DataType.STRING) {
             HeapIdentifier heapId = new HeapIdentifier(node.address);
             GlobalHeap.HeapObject ho = heapId.getHeapObject();
-            byte[] pa = new byte[ (int) ho.dataSize];
-            raf.seek( getFileOffset(ho.dataPos));
+            byte[] pa = new byte[(int) ho.dataSize];
+            raf.seek(getFileOffset(ho.dataPos));
             raf.read(pa);
             debugOut.println(" data at " + ho.dataPos + " = " + new String(pa));
           }
@@ -1613,8 +1600,8 @@ class H5header {
 
       public String toString() {
         StringBuffer sbuff = new StringBuffer();
-        sbuff.append("  ChunkedDataNode size="+size+" filterMask="+filterMask+" address="+address+" offsets= ");
-        for (int k=0; k<offset.length; k++) sbuff.append(offset[k]+" ");
+        sbuff.append("  ChunkedDataNode size=").append(size).append(" filterMask=").append(filterMask).append(" address=").append(address).append(" offsets= ");
+        for (long anOffset : offset) sbuff.append(anOffset).append(" ");
         return sbuff.toString();
       }
     }
@@ -1625,7 +1612,7 @@ class H5header {
   class GlobalHeap {
     byte version;
     int size;
-    ArrayList hos = new ArrayList();
+    List<HeapObject> hos = new ArrayList<HeapObject>();
     HeapObject freeSpace = null;
 
     GlobalHeap(long address) throws IOException {
@@ -1812,9 +1799,8 @@ class H5header {
     Group h5group = dataObject.group;
 
     // create group attributes
-    List messages = dataObject.messages;
-    for (int i = 0; i < messages.size(); i++) {
-      Message mess = (Message) messages.get(i);
+    List<Message> messages = dataObject.messages;
+    for (Message mess : dataObject.messages) {
       if (mess.mtype == MessageType.Attribute) {
         MessageAttribute matt = (MessageAttribute) mess.messData;
         makeAttributes(h5group.name, matt, ncGroup.getAttributes());
@@ -1824,26 +1810,24 @@ class H5header {
     addSystemAttributes( messages, ncGroup.getAttributes());
 
     // nested objects
-    List nestedObjects = h5group.nestedObjects;
-    for (int i=0; i<nestedObjects.size(); i++) {
-      DataObject ndo = (DataObject) nestedObjects.get(i);
-
+    List<DataObject> nestedObjects = h5group.nestedObjects;
+    for (DataObject ndo : nestedObjects) {
       if (ndo.group != null) {
-        ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, NetcdfFile.createValidNetcdfObjectName( ndo.group.name));
-        ncGroup.addGroup( nestedGroup);
-        if (debug1) debugOut.println("--made Group "+nestedGroup.getName()+" add to "+ncGroup.getName());
+        ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, NetcdfFile.createValidNetcdfObjectName(ndo.group.name));
+        ncGroup.addGroup(nestedGroup);
+        if (debug1) debugOut.println("--made Group " + nestedGroup.getName() + " add to " + ncGroup.getName());
 
-        makeNetcdfGroup( nestedGroup, ndo);
+        makeNetcdfGroup(nestedGroup, ndo);
 
       } else {
 
         if (ndo.isVariable) {
 
-         if (debugReference && ndo.mdt.type == 7)
+          if (debugReference && ndo.mdt.type == 7)
             ndo.dumpInfo();
 
-          Variable v = makeVariable( ndo.name, ndo.messages, getFileOffset(ndo.msl.dataAddress), ndo.mdt,
-            ndo.msl, ndo.mds, ndo.mfp);
+          Variable v = makeVariable(ndo.name, ndo.messages, getFileOffset(ndo.msl.dataAddress), ndo.mdt,
+              ndo.msl, ndo.mds, ndo.mfp);
 
           if ((v != null) && (v.getDataType() != null)) {
             v.setParentGroup(ncGroup);
@@ -1852,10 +1836,10 @@ class H5header {
             Vinfo vinfo = (Vinfo) v.getSPobject();
             vinfo.address = ndo.address; // for debugging
 
-            if (debug1) debugOut.println("  made Variable "+v.getName()+"  vinfo= "+vinfo+"\n"+v);
+            if (debug1) debugOut.println("  made Variable " + v.getName() + "  vinfo= " + vinfo + "\n" + v);
           }
         } else if (warnings) {
-          debugOut.println("WARN:  DataObject ndo "+ndo+" not a Group of variable");
+          debugOut.println("WARN:  DataObject ndo " + ndo + " not a Group of variable");
         }
 
       }
@@ -1868,9 +1852,9 @@ class H5header {
    * @param forWho whose attribue?
    * @param matt attribute message
    * @param attList add Attribute to this list
-   * @throws IOException
+   * @throws IOException on io error
    */
-  private void makeAttributes( String forWho, MessageAttribute matt, List attList) throws IOException {
+  private void makeAttributes( String forWho, MessageAttribute matt, List<Attribute> attList) throws IOException {
     MessageDatatype mdt = matt.mdt;
 
     if (isNetCDF4 && matt.name.startsWith("_ncdim_"))
@@ -1880,16 +1864,14 @@ class H5header {
       makeNC4Variable( forWho, matt, mdt);
 
     else if (mdt.type == 6) { // structure : make seperate attribute for each member
-      Iterator iter = mdt.members.iterator();
-      while (iter.hasNext()) {
-        StructureMember m = (StructureMember) iter.next();
+      for (StructureMember m : mdt.members) {
         //String attName = matt.name + "." + m.name;
         //if ((prefix != null) && (prefix.length() > 0)) attName = prefix + "." + attName;
         String attName = matt.name;
         if (mdt.type != 6) // LOOK nested compound attributes
           //makeAttributes( forWho, MessageAttribute matt, attList);
-        //else
-          attList.add( makeAttribute(forWho, attName, m.mdt, matt.mds, matt.dataPos+ m.offset));
+          //else
+          attList.add(makeAttribute(forWho, attName, m.mdt, matt.mds, matt.dataPos + m.offset));
       }
     }
 
@@ -1908,11 +1890,10 @@ class H5header {
 
   private void makeNC4Dimension( String varName, MessageAttribute matt, MessageDatatype mdt) throws IOException {
     Attribute attLen = null, attName = null;
-    Iterator iter = mdt.members.iterator();
-    while (iter.hasNext()) {
-      StructureMember m = (StructureMember) iter.next();
-      Attribute att = makeAttribute(varName, m.name, m.mdt, matt.mds, matt.dataPos+ m.offset);
-      if (m.name.equals("len")) attLen = att; else attName = att;
+    for (StructureMember m : mdt.members) {
+      Attribute att = makeAttribute(varName, m.name, m.mdt, matt.mds, matt.dataPos + m.offset);
+      if (m.name.equals("len")) attLen = att;
+      else attName = att;
     }
     int len = attLen.getNumericValue().intValue();
     String name = attName.getStringValue();
@@ -1924,25 +1905,23 @@ class H5header {
     try {
       dimId = Integer.parseInt( dimIdS);
     } catch ( NumberFormatException e) { }
-    dimTable.put( new Integer(dimId), dim);
+    dimTable.put(dimId, dim);
     if (debug1) debugOut.println("makeNC4Dimension "+matt.name);
   }
 
   private void makeNC4Variable( String forWho, MessageAttribute matt, MessageDatatype mdt) throws IOException {
     Attribute attDims = null, attName = null, attNDims = null;
-    Iterator iter = mdt.members.iterator();
-    while (iter.hasNext()) {
-      StructureMember m = (StructureMember) iter.next();
-      if (m.name.equals("name")) attName = makeAttribute(forWho, m.name, m.mdt, matt.mds, matt.dataPos+ m.offset);
-      if (m.name.equals("ndims")) attNDims = makeAttribute(forWho, m.name, m.mdt, matt.mds, matt.dataPos+ m.offset);
-      if (m.name.equals("dimids")) attDims = makeAttribute(forWho, m.name, m.mdt, matt.mds, matt.dataPos+ m.offset);
+    for (StructureMember m : mdt.members) {
+      if (m.name.equals("name")) attName = makeAttribute(forWho, m.name, m.mdt, matt.mds, matt.dataPos + m.offset);
+      if (m.name.equals("ndims")) attNDims = makeAttribute(forWho, m.name, m.mdt, matt.mds, matt.dataPos + m.offset);
+      if (m.name.equals("dimids")) attDims = makeAttribute(forWho, m.name, m.mdt, matt.mds, matt.dataPos + m.offset);
     }
     String name = attName.getStringValue().replace(' ','_');
     int ndims = attNDims.getNumericValue().intValue();
-    ArrayList dimList  = new ArrayList();
+    List<Dimension> dimList  = new ArrayList<Dimension>();
     for (int i=0; i< ndims; i++) {
       int dimId = attDims.getNumericValue(i).intValue();
-      Dimension dim = (Dimension) dimTable.get( new Integer(dimId));
+      Dimension dim = dimTable.get(dimId);
       dimList.add( dim);
     }
     varTable.put( matt.name, new Vatt( name, dimList));
@@ -1961,10 +1940,7 @@ class H5header {
     v.setCaching(false);
     if (debug1) debugOut.println("makeAttribute "+attName+" for "+forWho+"; vinfo= "+vinfo);
 
-    Attribute att = new Attribute(attName, v.read());
-    //att.setValues( v.read());
-
-    return att;
+    return new Attribute(attName, v.read());
   }
 
 /*
@@ -1973,7 +1949,7 @@ class H5header {
    An array is specified through Datatype=10. Storage is speced in the parent.
    dataPos must be absolute.
 */
-  private Variable makeVariable( String name, List messages, long dataPos,
+  private Variable makeVariable( String name, List<Message> messages, long dataPos,
         MessageDatatype mdt, MessageStorageLayout msl, MessageSimpleDataspace msd, MessageFilter mfp)
           throws IOException {
 
@@ -2000,15 +1976,14 @@ class H5header {
       vinfo.useFillValue = true;
 
      // find fill value
-      for (int i=0; i<messages.size(); i++) {
-        Message mess = (Message) messages.get(i);
+      for (Message mess : messages) {
         if (mess.mtype == MessageType.FillValue) {
-          MessageFillValue fvm = (MessageFillValue)  mess.messData;
+          MessageFillValue fvm = (MessageFillValue) mess.messData;
           if (fvm.size > 0)
             vinfo.fillValue = fvm.value;
 
         } else if (mess.mtype == MessageType.FillValueOld) {
-          MessageFillValueOld fvm = (MessageFillValueOld)  mess.messData;
+          MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
           if (fvm.size > 0)
             vinfo.fillValue = fvm.value;
         }
@@ -2022,7 +1997,7 @@ class H5header {
 
     // deal with netCDF4
     if (isNetCDF4 && name.startsWith("_ncvar_")) {
-      Vatt vatt = (Vatt) varTable.get(name);
+      Vatt vatt = varTable.get(name);
       v = new Variable(ncfile, null, null, vatt.name);  // LOOK null group
       v.setDataType( vinfo.getNCDataType());
       v.setDimensions( vatt.dimList);
@@ -2047,16 +2022,14 @@ class H5header {
     v.setSPobject( vinfo);
 
     // look for attributes
-    for (int i=0; i<messages.size(); i++) {
-      Message mess = (Message) messages.get(i);
-
-      if (mess.mtype == MessageType.Attribute) {
-        MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes( name, matt, v.getAttributes());
-      }
+  for (Message mess : messages) {
+    if (mess.mtype == MessageType.Attribute) {
+      MessageAttribute matt = (MessageAttribute) mess.messData;
+      makeAttributes(name, matt, v.getAttributes());
     }
+  }
 
-    addSystemAttributes( messages, v.getAttributes());
+  addSystemAttributes( messages, v.getAttributes());
 
     if (!vinfo.signed)
       v.addAttribute( new Attribute("_unsigned", "true"));
@@ -2065,43 +2038,35 @@ class H5header {
   }
 
   private DateFormatter formatter = new DateFormatter();
-  private void addSystemAttributes( List messages, List attributes) {
-    for (int i=0; i<messages.size(); i++) {
-      Message mess = (Message) messages.get(i);
-
+  private void addSystemAttributes( List<Message> messages, List<Attribute> attributes) {
+    for (Message mess : messages) {
       if (mess.mtype == MessageType.LastModified) {
         MessageLastModified m = (MessageLastModified) mess.messData;
         Date d = new Date((long) m.secs * 1000);
-        attributes.add( new Attribute("_LastModified", formatter.toDateTimeStringISO( d)));
-      }
-
-      else if (mess.mtype == MessageType.LastModifiedOld) {
+        attributes.add(new Attribute("_LastModified", formatter.toDateTimeStringISO(d)));
+      } else if (mess.mtype == MessageType.LastModifiedOld) {
         MessageLastModifiedOld m = (MessageLastModifiedOld) mess.messData;
         try {
           Date d = dateFormat.parse(m.datemod);
-          attributes.add( new Attribute("_LastModified", formatter.toDateTimeStringISO( d)));
+          attributes.add(new Attribute("_LastModified", formatter.toDateTimeStringISO(d)));
         }
         catch (ParseException ex) {
-          debugOut.println("ERROR parsing date from MessageLastModifiedOld = "+m.datemod);
+          debugOut.println("ERROR parsing date from MessageLastModifiedOld = " + m.datemod);
         }
-      }
-
-      else if (mess.mtype == MessageType.Comment) {
+      } else if (mess.mtype == MessageType.Comment) {
         MessageComment m = (MessageComment) mess.messData;
-        attributes.add( new Attribute("_Description", NetcdfFile.createValidNetcdfObjectName( m.name)));
+        attributes.add(new Attribute("_Description", NetcdfFile.createValidNetcdfObjectName(m.name)));
       }
     }
   }
 
 
   private void addMembersToStructure( Structure s, MessageDatatype mdt) throws IOException {
-    Iterator iter = mdt.members.iterator();
-    while (iter.hasNext()) {
-      StructureMember m = (StructureMember) iter.next();
-      Variable v = makeVariable( m.name, new ArrayList(), m.offset, m.mdt, null, null, null);
+    for (StructureMember m : mdt.members) {
+      Variable v = makeVariable(m.name, new ArrayList<Message>(), m.offset, m.mdt, null, null, null);
       if (v != null) {
-        s.addMemberVariable( v);
-        if (debug1) debugOut.println("  made Member Variable "+v.getName()+"\n"+v);
+        s.addMemberVariable(v);
+        if (debug1) debugOut.println("  made Member Variable " + v.getName() + "\n" + v);
       }
     }
   }
@@ -2125,11 +2090,9 @@ class H5header {
       if (dim == null) // scalar string member variable
         v.setDimensionsAnonymous( new int[] {mdt.byteSize} );
       else {
-        int[] shapeOld = dim;
-        int[] shape = new int[shapeOld.length + 1];
-        for (int k = 0; k < shapeOld.length; k++)
-          shape[k] = shapeOld[k];
-        shape[shapeOld.length] = mdt.byteSize;
+        int[] shape = new int[dim.length + 1];
+        System.arraycopy(dim, 0, shape, 0, dim.length);
+        shape[dim.length] = mdt.byteSize;
         v.setDimensionsAnonymous(shape);
       }
 
@@ -2166,6 +2129,7 @@ class H5header {
    * @param raf from this file
    * @param pos starting here; if -1 then start at the current file position
    * @return String (dont include zero terminator)
+   * @throws java.io.IOException on io error
    */
   static String readString(RandomAccessFile raf, long pos) throws IOException {
     if (pos >= 0)
@@ -2187,6 +2151,7 @@ class H5header {
    * Read a zero terminated String at current position; advance file to a multiple of 8.
    * @param raf from this file
    * @return String (dont include zero terminator)
+   * @throws java.io.IOException on io error
    */
   static String readString8(RandomAccessFile raf) throws IOException {
     long pos = raf.getFilePointer();
@@ -2243,7 +2208,7 @@ class H5header {
       debugOut.print( ub);
       if (!count) {
         debugOut.print( "(");
-        debugOut.write(b);
+        debugOut.print(b);
         debugOut.print( ")");
       }
       debugOut.print( " ");
@@ -2267,7 +2232,7 @@ class H5header {
   }
 
   private class MemTracker  {
-    private ArrayList memList = new ArrayList();
+    private List<Mem> memList = new ArrayList<Mem>();
     private StringBuffer sbuff = new StringBuffer();
 
     private long fileSize;
@@ -2288,10 +2253,9 @@ class H5header {
       debugOut.println("  start    end   size   name");
       Collections.sort(memList);
       Mem prev = null;
-      for (int i = 0; i < memList.size(); i++) {
-        Mem m = (Mem) memList.get(i);
+      for (Mem m : memList) {
         if ((prev != null) && (m.start > prev.end))
-          doOne('+',prev.end, m.start, m.start-prev.end, "HOLE");
+          doOne('+', prev.end, m.start, m.start - prev.end, "HOLE");
         char c = ((prev != null) && (prev.end != m.start)) ? '*' : ' ';
         doOne(c, m.start, m.end, m.end - m.start, m.name);
         prev = m;

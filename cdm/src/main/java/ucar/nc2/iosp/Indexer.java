@@ -24,17 +24,19 @@ package ucar.nc2.iosp;
  * <p>
  * Example for Integers:
  * <pre>
- *    int[] pa = new int[size];
- *    Indexer index;
- *    while (index.hasNext()) {
+ * Reading:
+     int[] pa = new int[size];
+     Indexer index;
+     while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         raf.seek ( chunk.getFilePos());
         raf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
       }
 
+   Writing:
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next(); // LOOK not using chunk.getIndexPos()
+        Indexer.Chunk chunk = index.next();
         raf.seek ( chunk.getFilePos());
         for (int k=0; k<chunk.getNelems(); k++)
           raf.writeInt( ii.getIntNext());
@@ -45,8 +47,8 @@ package ucar.nc2.iosp;
  */
 public abstract class Indexer {
 
-  /** @return total number of elements in the wanted subset. */ // LOOK change to long ??
-  public abstract int getTotalNelems();
+  /** @return total number of elements in the wanted subset. */
+  public abstract long getTotalNelems();
 
   /** @return  size of each element in bytes. */
   public abstract int getElemSize();
@@ -62,9 +64,9 @@ public abstract class Indexer {
    *  (or) Write nelems to file at filePos, from array at indexPos.
    */
   public class Chunk {
-    long filePos; // start reading here
-    int nelems; // read these many elements
-    int indexPos; // put them here in the result array
+    private long filePos; // start reading here
+    private int nelems; // read these many elements
+    private int indexPos; // put them here in the result array
 
     public Chunk( long filePos, int nelems, int indexPos) {
       this.filePos = filePos;
@@ -76,15 +78,29 @@ public abstract class Indexer {
     public long getFilePos() { return filePos; }
     public void setFilePos(long filePos) { this.filePos = filePos; }
     public void incrFilePos(int incr) { this.filePos += incr; }
+
     /** @return number of elements to transfer (Note: elements, not bytes) */
     public int getNelems() { return nelems; }
     public void setNelems(int nelems) { this.nelems = nelems; }
-    /** @return position in the memory array: "memory position" */
+
+    /** @return position in the output Array: "memory position" */
     public int getIndexPos() { return indexPos; }
     public void setIndexPos(int indexPos) { this.indexPos = indexPos; }
     public void incrIndexPos(int incr) { this.indexPos += incr; }
 
     public String toString() { return " filePos="+filePos+" nelems="+nelems+" indexPos="+indexPos; }
+  }
+
+  // used to keep track of which element we are on
+  // need access to protected methods
+  protected class MyIndex extends ucar.ma2.Index {
+    MyIndex(int[] shape, int[] stride) {
+      super(shape, stride);
+    }
+
+    protected int incr() {
+      return super.incr();
+    }
   }
 
 }

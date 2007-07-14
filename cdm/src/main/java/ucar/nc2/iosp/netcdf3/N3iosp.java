@@ -147,53 +147,10 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    RegularLayout index = new RegularLayout(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
+    Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
     Object data = readData(index, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
   }
-
-  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    if (v2 instanceof Structure)
-      return readRecordData((Structure) v2, section, channel);
-
-    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-    DataType dataType = v2.getDataType();
-
-    RegularLayout index = new RegularLayout(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
-    return readData(index, dataType, channel);
-  }
-
-  private long readRecordData(ucar.nc2.Structure s, Section section, WritableByteChannel out) throws java.io.IOException, InvalidRangeException {
-    long count = 0;
-
-    /* RegularIndexer index = new RegularIndexer( s.getShape(), recsize, recStart, section, recsize);
-    while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       count += raf.readBytes( out, chunk.getFilePos(), chunk.getNelems() * s.getElementSize());
-     }  */
-
-    // not sure this works buy should give an idea of timing
-    Range recordRange = section.getRange(0);
-    int stride = recordRange.stride();
-    if (stride == 1) {
-      int first = recordRange.first();
-      int n = recordRange.length();
-      if (false) System.out.println(" read record " + first+" "+ n * recsize+" bytes ");
-      return raf.readToByteChannel(out, recStart + first * recsize, n * recsize);
-
-    }  else {
-      for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
-        if (debugRecord) System.out.println(" read record " + recnum);
-        raf.seek(recStart + recnum * recsize); // where the record starts
-        count += raf.readToByteChannel(out, recStart + recnum * recsize, recsize);
-      }
-    }
-
-    return count;
-  }
-
 
   /**
    * Read data from record structure. For N3, this is the only possible structure, and there can be no nesting.
@@ -241,8 +198,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     return members;
   }
 
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
@@ -252,7 +208,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     fullShape[0] = numrecs;  // the first dimension
     System.arraycopy(v2.getShape(), 0, fullShape, 1, v2.getRank()); // the remaining dimensions
 
-    Indexer index = new RegularLayout(vinfo.begin, v2.getElementSize(), recsize, fullShape, section);
+    Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), recsize, fullShape, section);
     Object dataObject = readData(index, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
 
@@ -294,10 +250,9 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     }
 
     return result; */
-
   }
 
-  /* If flatten is true, return an Array of the same type as the Variable.
+    /* If flatten is true, return an Array of the same type as the Variable.
    * The shape of the returned Array will include the shape of the Structure containing the variable.
  private Array readNestedDataFlatten(ucar.nc2.Variable v2, java.util.List sectionList) throws IOException, InvalidRangeException  {
    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
@@ -315,6 +270,48 @@ public abstract class N3iosp implements IOServiceProviderWriter {
    Object dataObject = readData( index, dataType);
    return Array.factory( dataType.getPrimitiveClassType(), Range.getShape(sectionList), dataObject);
  } */
+
+  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    if (v2 instanceof Structure)
+      return readRecordData((Structure) v2, section, channel);
+
+    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
+    DataType dataType = v2.getDataType();
+
+    Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
+    return readData(index, dataType, channel);
+  }
+
+  private long readRecordData(ucar.nc2.Structure s, Section section, WritableByteChannel out) throws java.io.IOException, InvalidRangeException {
+    long count = 0;
+
+    /* RegularIndexer index = new RegularIndexer( s.getShape(), recsize, recStart, section, recsize);
+    while (index.hasNext()) {
+       Indexer.Chunk chunk = index.next();
+       count += raf.readBytes( out, chunk.getFilePos(), chunk.getNelems() * s.getElementSize());
+     }  */
+
+    // not sure this works but should give an idea of timing
+    Range recordRange = section.getRange(0);
+    int stride = recordRange.stride();
+    if (stride == 1) {
+      int first = recordRange.first();
+      int n = recordRange.length();
+      if (false) System.out.println(" read record " + first+" "+ n * recsize+" bytes ");
+      return raf.readToByteChannel(out, recStart + first * recsize, n * recsize);
+
+    }  else {
+      for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
+        if (debugRecord) System.out.println(" read record " + recnum);
+        raf.seek(recStart + recnum * recsize); // where the record starts
+        count += raf.readToByteChannel(out, recStart + recnum * recsize, recsize);
+      }
+    }
+
+    return count;
+  }
 
   // convert byte array to char array, assuming UTF-8 encoding
 
@@ -341,7 +338,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   }
 
   // convert char array to byte array
-  static protected byte[] convertCharToByte(char[] from) {
+  static public byte[] convertCharToByte(char[] from) {
     int size = from.length;
     byte[] to = new byte[size];
     for (int i = 0; i < size; i++)
@@ -407,7 +404,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
       writeRecordData((Structure) v2, section, values);
 
     } else {
-      Indexer index = new RegularLayout(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
+      Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
       writeData(values, index, dataType);
     }
   }
@@ -429,7 +426,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
       for (Variable v2 : vars) {
         N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
         long begin = vinfo.begin + recnum * recsize;
-        Indexer index = new RegularLayout(begin, v2.getElementSize(), -1, v2.getShape(), null);  // LOOK fishy; why null???
+        Indexer index =  RegularLayout.factory(begin, v2.getElementSize(), -1, v2.getShape(), null);  // null because always write a full variable
 
         StructureMembers.Member m = members.findMember(v2.getShortName());
         if (null == m)

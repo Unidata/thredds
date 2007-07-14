@@ -1,6 +1,5 @@
-// $Id: H5chunkFilterIndexer.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -44,7 +43,6 @@ import ucar.nc2.Variable;
  * </pre>
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 class H5chunkFilterIndexer extends Indexer {
 
@@ -85,7 +83,7 @@ class H5chunkFilterIndexer extends Indexer {
     first = true;
   }
 
-  public int getTotalNelems() { return chunkNumElemsTotal; }
+  public long getTotalNelems() { return chunkNumElemsTotal; }
   public int getElemSize() { return 1; }
   public boolean hasNext() { return chunkNumElemsDone < chunkNumElemsTotal; }
   public Chunk next() {

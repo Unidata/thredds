@@ -22,18 +22,10 @@ package ucar.nc2.iosp;
 
 import ucar.ma2.*;
 
-import java.util.List;
-import java.util.ArrayList;
-
 /**
- * Indexer into a regular array.
- * This calculates byte lengths and offsets of the wanted data into the entire data.
- * Assumes that the data is stored "regularly", like netcdf arrays and hdf5 continuous storage.
- * Also handles netcdf3 record dimensions.
- *
- * @author caron
+ * Compare RegularLayout to RegularInderer
  */
-public class RegularLayoutTest2 {
+public class TestRegularLayout {
   RegularLayout layout;
   RegularIndexer index;
 
@@ -50,7 +42,7 @@ public class RegularLayoutTest2 {
    *                 corresponding to each Dimension, else null means all.
    * @throws InvalidRangeException is ranges are misformed
    */
-  private RegularLayoutTest2(long startPos, int elemSize, int recSize, int[] varShape, Section want) throws InvalidRangeException {
+  private TestRegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section want) throws InvalidRangeException {
 
     // clean up and check want Section
     if (want == null)
@@ -100,7 +92,7 @@ public class RegularLayoutTest2 {
   }
 
 
-  static public void compare(RegularLayoutTest2 rlayout) throws InvalidRangeException {
+  static public void compare(TestRegularLayout rlayout) throws InvalidRangeException {
 
     while (rlayout.layout.hasNext() && rlayout.index.hasNext()) {
       Indexer.Chunk chunk = rlayout.layout.next();
@@ -116,49 +108,49 @@ public class RegularLayoutTest2 {
 
 
   static public void main(String args[]) throws InvalidRangeException {
-    // RegularLayoutTest2(long startPos, int elemSize, int recSize, int[] varShape, Section want) throws InvalidRangeException {
+    // TestRegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section want) throws InvalidRangeException {
 
     // 4D
     Section var = new Section().appendRange(10).appendRange(20).appendRange(30).appendRange(4);
     Section want = new Section().appendRange(2).appendRange(10).appendRange(30).appendRange(4);
-    compare(new RegularLayoutTest2(0, 1, 0, var.getShape(), want));
-    compare(new RegularLayoutTest2(1000, 8, 4000, var.getShape(), want));
+    compare(new TestRegularLayout(0, 1, 0, var.getShape(), want));
+    compare(new TestRegularLayout(1000, 8, 4000, var.getShape(), want));
 
     want = new Section().appendRange(5,5).appendRange(0,900,20).appendRange(3,3).appendRange(0,16);
-    compare(new RegularLayoutTest2(1000, 4, 888, new int[] {13,1000,4,17}, want));
-    compare(new RegularLayoutTest2(1000, 4, 0, new int[] {13,1000,4,17}, want));
+    compare(new TestRegularLayout(1000, 4, 888, new int[] {13,1000,4,17}, want));
+    compare(new TestRegularLayout(1000, 4, 0, new int[] {13,1000,4,17}, want));
 
     // 3D
     want = new Section().appendRange(5,5).appendRange().appendRange();
-    compare(new RegularLayoutTest2(1000, 4, 888, new int[] {13,40,5}, want));
-    compare(new RegularLayoutTest2(1000, 4, 0, new int[] {13,40,5}, want));
+    compare(new TestRegularLayout(1000, 4, 888, new int[] {13,40,5}, want));
+    compare(new TestRegularLayout(1000, 4, 0, new int[] {13,40,5}, want));
 
     want = new Section().appendRange(2).appendRange(0,55,11);
-    compare(new RegularLayoutTest2(200000, 3, 123999, new int[] {5,56}, want));
-    compare(new RegularLayoutTest2(200000, 3, 0, new int[] {5,56}, want));
+    compare(new TestRegularLayout(200000, 3, 123999, new int[] {5,56}, want));
+    compare(new TestRegularLayout(200000, 3, 0, new int[] {5,56}, want));
 
     want = new Section().appendRange(0,55,19).appendRange();
-    compare(new RegularLayoutTest2(4000, 4000, 4000, new int[] {60,5}, want));
-    compare(new RegularLayoutTest2(4000, 4000, 0, new int[] {60,5}, want));
+    compare(new TestRegularLayout(4000, 4000, 4000, new int[] {60,5}, want));
+    compare(new TestRegularLayout(4000, 4000, 0, new int[] {60,5}, want));
 
     // 2D
     want = new Section().appendRange(6,55,2).appendRange();
-    compare(new RegularLayoutTest2(4000, 4000, 4000, new int[] {60,5}, want));
-    compare(new RegularLayoutTest2(4000, 4000, 0, new int[] {60,5}, want));
+    compare(new TestRegularLayout(4000, 4000, 4000, new int[] {60,5}, want));
+    compare(new TestRegularLayout(4000, 4000, 0, new int[] {60,5}, want));
 
     // 1D
     want = new Section().appendRange(0,55,9);
-    compare(new RegularLayoutTest2(4000, 4000, 4000, new int[] {60}, want));
-    compare(new RegularLayoutTest2(4000, 4000, 0, new int[] {60}, want));
+    compare(new TestRegularLayout(4000, 4000, 4000, new int[] {60}, want));
+    compare(new TestRegularLayout(4000, 4000, 0, new int[] {60}, want));
 
     want = new Section().appendRange(19,55,3);
-    compare(new RegularLayoutTest2(4000, 4000, 4000, new int[] {60}, want));
-    compare(new RegularLayoutTest2(4000, 4000, 0, new int[] {60}, want));
+    compare(new TestRegularLayout(4000, 4000, 4000, new int[] {60}, want));
+    compare(new TestRegularLayout(4000, 4000, 0, new int[] {60}, want));
 
     // scaler */
     want = new Section();
-    compare(new RegularLayoutTest2(4000, 4000, 4000, new int[] {}, want));  // */
-    compare(new RegularLayoutTest2(4000, 4000, 0, new int[] {}, want));
+    compare(new TestRegularLayout(4000, 4000, 4000, new int[] {}, want));  // */
+    compare(new TestRegularLayout(4000, 4000, 0, new int[] {}, want));
 
   }
 
