@@ -121,7 +121,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     byte[] vdata;
     Nidsheader.Vinfo vinfo;
     ByteBuffer bos;
-
+    List<Range> ranges = section.getRanges();
     vinfo = (Nidsheader.Vinfo) v2.getSPobject();
 
     /*
@@ -218,7 +218,8 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
     }
 
-    return outputData;
+    return( outputData.sectionNoReduce( ranges).copy());
+    //return outputData;
   }
 
   /**
