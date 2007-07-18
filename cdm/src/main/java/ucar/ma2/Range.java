@@ -265,7 +265,7 @@ public final class Range {
   /** Range elements with same first, last, stride are equal. */
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Range)) return false;
+    if (!(o instanceof Range)) return false;   // this catches nulls
     Range or =(Range) o;
 
     if ((n == 0) && (or.n == 0)) // empty ranges are equal

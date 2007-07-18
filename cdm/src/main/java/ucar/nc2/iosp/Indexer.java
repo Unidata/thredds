@@ -19,6 +19,8 @@
  */
 package ucar.nc2.iosp;
 
+import java.io.IOException;
+
 /**
  * Iterator to read/write subsets of an array.
  * <p>
@@ -57,7 +59,7 @@ public abstract class Indexer {
   public abstract boolean hasNext();
 
   /** @return next chunk */
-  public abstract Chunk next();
+  public abstract Chunk next() throws IOException;
 
   /** A contiguous chunk of data in the file, that is wanted for this subset.
    *  Read nelems from file at filePos, store in array at indexPos.
@@ -91,7 +93,7 @@ public abstract class Indexer {
     public String toString() { return " filePos="+filePos+" nelems="+nelems+" indexPos="+indexPos; }
   }
 
-  // used to keep track of which element we are on
+  // used by subclasses to keep track of which element we are on
   // need access to protected methods
   protected class MyIndex extends ucar.ma2.Index {
     MyIndex(int[] shape, int[] stride) {

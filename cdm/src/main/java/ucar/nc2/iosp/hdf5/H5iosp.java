@@ -30,6 +30,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 
 import java.util.zip.*;
+import java.util.Iterator;
 import java.io.IOException;
 import java.nio.*;
 
@@ -48,13 +49,15 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugFilterIndexer = false;
   static boolean debugChunkIndexer = false;
 
-  static void setDebugFlags( ucar.nc2.util.DebugFlags debugFlag) {
+  static public void setDebugFlags( ucar.nc2.util.DebugFlags debugFlag) {
     debug =  debugFlag.isSet("H5iosp/read");
     debugPos =  debugFlag.isSet("H5iosp/filePos");
     debugHeap =  debugFlag.isSet("H5iosp/Heap");
     debugFilter =  debugFlag.isSet("H5iosp/filter");
     debugFilterIndexer =  debugFlag.isSet("H5iosp/filterIndexer");
     debugChunkIndexer =  debugFlag.isSet("H5iosp/chunkIndexer");
+
+    H5header.setDebugFlags(debugFlag);    
   }
 
 
@@ -62,7 +65,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     H5header.debugOut = printStream;
   }
 
-  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) {
+  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return H5header.isValidFile( raf);
   }
 
@@ -134,11 +137,8 @@ public class H5iosp extends AbstractIOServiceProvider {
 
       Indexer index;
       if (vinfo.isChunked) {
-        if (vinfo.btree == null)
-          vinfo.btree = headerParser.getDataBTreeAt( v2.getName(), vinfo.dataPos, vinfo.storageSize.length);
         //index = new H5chunkIndexer( v2, origin, shape);
         index = new H5chunkLayout( v2, new Section(origin, shape));
-
       } else {
         index = RegularSectionLayout.factory(dataPos, v2.getElementSize(), new Section(v2.getShape()), new Section(origin, shape));
       }
@@ -302,10 +302,9 @@ public class H5iosp extends AbstractIOServiceProvider {
     java.util.zip.Inflater inflater = new java.util.zip.Inflater( false);
 
     // loop over all the entries in the data btree structure
-    if (vinfo.btree == null)
-      vinfo.btree = headerParser.getDataBTreeAt( v2.getName(), vinfo.dataPos, vinfo.storageSize.length);
-
-    for (H5header.DataBTree.DataEntry entry : vinfo.btree.getEntries()) {
+    H5header.DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIterator(null);
+    while (iter.hasNext()) {
+      H5header.DataBTree.DataChunk entry = iter.next();
       if (debugFilter) H5header.debugOut.println("-----entry= = " + entry);
       if ((cbuff == null) || (cbuffSize < entry.size)) {
         cbuffSize = 2 * entry.size;

@@ -50,7 +50,7 @@ public class RegularSectionLayout extends Indexer {
   private boolean debug = false, debugMerge = false, debugNext = false;
 
   static public Indexer factory(long startFilePos, int elemSize, Section dataSection, Section wantSection) throws InvalidRangeException {
-    if (dataSection.computeSize() == wantSection.computeSize()) // optimize the simple case
+    if (dataSection.equals(wantSection)) // optimize the simple case
       return new SingleChunkIndexer(startFilePos, (int) dataSection.computeSize(), elemSize);
 
     return new  RegularSectionLayout(startFilePos, elemSize, dataSection, wantSection);

@@ -175,9 +175,6 @@ public class NetcdfFile {
     debugStructureIterator = debugFlag.isSet("NetcdfFile/structureIterator");
     N3header.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
     N3header.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
-
-    //H5header.setDebugFlags(debugFlag);  LOOK
-    //H5iosp.setDebugFlags(debugFlag);
   }
 
   /**

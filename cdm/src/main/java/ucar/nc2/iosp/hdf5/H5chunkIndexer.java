@@ -26,6 +26,7 @@ import ucar.nc2.iosp.Indexer;
 import ucar.nc2.*;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Iterator to read/write subsets of an array.
@@ -61,8 +62,8 @@ class H5chunkIndexer extends Indexer {
   private int elemSize; // last dimension of the StorageLayout message
 
   // iterate over the data chunks
-  private Iterator chunkListIter;
-  private H5header.DataBTree.DataEntry currentDataNode;
+  private H5header.DataBTree.DataChunkIterator chunkListIter;
+  private H5header.DataBTree.DataChunk currentDataNode;
   private int currentDataNelems, currentDataNelemsDone; // within the data chunk
 
   // track the overall iteration
@@ -81,7 +82,7 @@ class H5chunkIndexer extends Indexer {
    * @param wantShape want subset shape
    * @throws InvalidRangeException
    */
-  H5chunkIndexer( Variable v2, int[] wantOrigin, int[] wantShape) throws InvalidRangeException {
+  H5chunkIndexer( Variable v2, int[] wantOrigin, int[] wantShape) throws InvalidRangeException, IOException {
     debug = H5iosp.debugChunkIndexer;
 
     this.varShape = v2.getShape();
@@ -129,7 +130,7 @@ class H5chunkIndexer extends Indexer {
 
     // load in the first data node
     H5header.DataBTree btree = vinfo.btree;
-    chunkListIter = btree.getEntries().iterator();
+    chunkListIter = btree.getDataChunkIterator(null);
 
     // holds the chunk info as we iterate
     this.chunk = new Chunk(0L, 0, 0);
@@ -139,11 +140,11 @@ class H5chunkIndexer extends Indexer {
   public long getTotalNelems() { return totalNelems; }
   public int getElemSize() { return elemSize; }
   public boolean hasNext() { return !done && (totalNelemsDone < totalNelems); }
-  public Chunk next() {
+  public Chunk next() throws IOException {
 
     if (currentDataNelemsDone == currentDataNelems) { // get new data node
       if (chunkListIter.hasNext())
-        currentDataNode = (H5header.DataBTree.DataEntry) chunkListIter.next();
+        currentDataNode = chunkListIter.next();
       else
         done = true;
 

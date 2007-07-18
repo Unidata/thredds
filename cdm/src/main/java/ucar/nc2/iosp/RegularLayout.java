@@ -47,7 +47,7 @@ public class RegularLayout extends Indexer {
   private boolean debug = false, debugMerge = false, debugNext = false;
 
   static public Indexer factory(long startPos, int elemSize, int recSize, int[] varShape, Section wantSection) throws InvalidRangeException {
-    if ((recSize < 0) && Index.computeSize(varShape) == wantSection.computeSize()) // optimize the simple case
+    if ((recSize <= 0) && wantSection.equivilent(varShape)) // optimize the simple case
       return new SingleChunkIndexer(startPos, (int) wantSection.computeSize(), elemSize);
 
     return new RegularLayout(startPos, elemSize, recSize, varShape, wantSection);

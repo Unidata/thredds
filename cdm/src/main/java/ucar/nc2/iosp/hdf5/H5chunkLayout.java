@@ -26,7 +26,7 @@ import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.RegularSectionLayout;
 import ucar.nc2.Variable;
 
-import java.util.*;
+import java.io.IOException;
 
 /**
  * Iterator to read/write subsets of an array.
@@ -40,14 +40,11 @@ class H5chunkLayout extends Indexer {
   private int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
   private int elemSize; // last dimension of the StorageLayout message
 
-  // iterate over the btree entries
-  private Iterator<H5header.DataBTree.DataEntry> chunkListIter;
-
   // track the overall iteration
   private long totalNelems, totalNelemsDone; // total number of elemens
   private boolean done = false;
 
-  private boolean debug = false;
+  private boolean debug = true;
 
   /**
    * Constructor.
@@ -56,9 +53,10 @@ class H5chunkLayout extends Indexer {
    * @param v2          Variable to index over; assumes that vinfo is the data object
    * @param wantSection the wanted section of data, contains a List of Range objects.
    * @throws InvalidRangeException if section invalid for this variable
+   * @throws java.io.IOException on io error
    */
-  H5chunkLayout(Variable v2, Section wantSection) throws InvalidRangeException {
-    debug = H5iosp.debugChunkIndexer;
+  H5chunkLayout(Variable v2, Section wantSection) throws InvalidRangeException, IOException {
+    //debug = H5iosp.debugChunkIndexer;
 
     wantSection = Section.fill(wantSection, v2.getShape());
     this.totalNelems = wantSection.computeSize();
@@ -72,20 +70,10 @@ class H5chunkLayout extends Indexer {
     this.chunkSize = new int[nChunkDims];
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
-
-    // generally we can only read this many elements at once
-    //this.chunkNelems = chunkSize[nChunkDims - 1];
     if (debug) H5header.debugOut.println(" H5chunkIndexer: " + this);
 
-    // the index within the result array
-    //this.resultIndex = new MyIndex( section.getShape());
-
-    // load in the first data node
-    H5header.DataBTree btree = vinfo.btree;
-    chunkListIter = btree.getEntries().iterator();
-
-    // holds the chunk info as we iterate
-    //this.chunk = new Chunk(0L, 0, 0);
+    // load in the data node iterator
+    chunkIterator = vinfo.btree.getDataChunkIterator(wantSection);
   }
 
   public long getTotalNelems() {
@@ -101,35 +89,42 @@ class H5chunkLayout extends Indexer {
   }
 
   private int nChunkDims;
-  private H5header.DataBTree.DataEntry btreeNode;
+  private H5header.DataBTree.DataChunkIterator chunkIterator;  // iterate over the btree entries
   private Indexer index = null;
 
-  public Chunk next() {
+  public Chunk next() throws IOException {
 
     if ((index == null) || !index.hasNext()) { // get new data node
 
       try {
         Section dataSection;
+        H5header.DataBTree.DataChunk btreeNode;
+
         while (true) { // look for intersecting sections
-          if (chunkListIter.hasNext())
-            btreeNode = chunkListIter.next(); // LOOK can we do a btree search ?
+          if (chunkIterator.hasNext())
+            btreeNode = chunkIterator.next();
           else {
             done = true; // LOOK shouldnt we return empty chunk ??
             return null;
           }
 
+          // make the dataSection for this chunk
           int[] sectionOrigin = new int[nChunkDims];
           for (int i = 0; i < nChunkDims; i++)
             sectionOrigin[i] = (int) btreeNode.offset[i];
           dataSection = new Section(sectionOrigin, chunkSize);
+
+          // does it intersect ?
           if (dataSection.intersects(want))
             break;
         }
 
-        if (debug) System.out.println(" found intersection: " + dataSection+" for address "+btreeNode.address);
+        if (debug) System.out.println(" found intersection: " + dataSection+" for address "+ btreeNode.address);
         index = RegularSectionLayout.factory(btreeNode.address, elemSize, dataSection, want);
+
       } catch (InvalidRangeException e) {
         assert false;
+        throw new IllegalStateException(e);
       }
     }
 

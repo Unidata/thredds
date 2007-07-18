@@ -42,10 +42,10 @@ public class TestChunkIndexer extends TestCase {
     Group g2 = g1.findGroup("EPS");
     Group g3 = g2.findGroup("IASI_xxx_1C");
     Group g4 = g3.findGroup("DATA");
-    Variable v2 = g4.findVariable("IMAGE_DATA");
+    Variable v2 = g4.findVariable("IMAGE_DATA");  // chunked short
 
-    int[] origin = new int[]{99, 122};
-    int[] shape = new int[]{10, 12};
+    int[] origin = new int[]{46000, 122};
+    int[] shape = new int[]{80, 12};
     Section section = new Section(origin, shape);
 
     Array data = v2.read(section); // force btree to be filled
@@ -57,17 +57,32 @@ public class TestChunkIndexer extends TestCase {
     while (index.hasNext()) {
       Indexer.Chunk chunk = index.next();
       count++;
-      if (count > 100)
-      System.out.println("hay");
     }
   }
 
   public void test2() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestH5.openH5("support/uvlstr.h5");
     Group root = ncfile.getRootGroup();
-    Variable v2 = root.findVariable("Space1");
+    Variable v2 = root.findVariable("Space1"); // VLEN String
     assert v2 != null;
 
     Array data = v2.read();
+    IndexIterator ii =data.getIndexIterator();
+    while (ii.hasNext()) {
+      String s = (String) ii.getObjectNext();
+      System.out.println(s);
+    }
+    Section section = new Section().appendRange(new Range(1,9,3));
+    Array dataSection = data.section(section.getRanges());
+    ii = dataSection.getIndexIterator();
+
+    Array data2 = v2.read(section);
+    IndexIterator ii2 = data2.getIndexIterator();
+    while (ii2.hasNext()) {
+      String s = (String) ii2.getObjectNext();
+      System.out.println(s);
+      String ss = (String) ii.getObjectNext();
+      assert (s.equals(ss));
+    }
   }
 }

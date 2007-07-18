@@ -20,8 +20,6 @@
 
 package ucar.ma2;
 
-import ucar.nc2.Variable;
-
 import java.util.*;
 
 /**
@@ -65,6 +63,7 @@ public class Section {
 
   /**
    * Create Section from a List<Range>.
+   *
    * @param from the list of Range
    */
   public Section(List<Range> from) {
@@ -73,7 +72,8 @@ public class Section {
 
   /**
    * Create Section from a List<Range>.
-   * @param from the list of Range
+   *
+   * @param from  the list of Range
    * @param shape use this as default shape if any of the ranges are null.
    * @throws InvalidRangeException if shape and range list done match
    */
@@ -87,10 +87,10 @@ public class Section {
    * A section with no nulls is called "filled".
    * If s is already filled, return it, otherwise return a new Section, filled from the shape.
    *
-   * @param s the original Section, may be null or not filled
+   * @param s     the original Section, may be null or not filled
    * @param shape use this as default shape if any of the ranges are null.
-   * @throws InvalidRangeException if shape and s and shape rank dont match, or if s has invalid range compared to shape
    * @return a filled Section
+   * @throws InvalidRangeException if shape and s and shape rank dont match, or if s has invalid range compared to shape
    */
   static public Section fill(Section s, int[] shape) throws InvalidRangeException {
     // want all
@@ -179,6 +179,7 @@ public class Section {
 
   /**
    * Create a new Section by composing with a Section that is reletive to this Section.
+   *
    * @param want Section reletive to this one. If null, return this. If individual ranges are null, use corresponding Range in this.
    * @return new Section, composed
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
@@ -188,86 +189,88 @@ public class Section {
     if (want == null) return this; // LOOK maybe a copy ??
 
     if (want.getRank() != getRank())
-        throw new InvalidRangeException("Invalid Section rank");
+      throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
     List<Range> results = new ArrayList<Range>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
-      Range r =  want.getRange(j);
+      Range r = want.getRange(j);
 
       if (r == null)
-        results.add( base);
+        results.add(base);
       else
-        results.add( base.compose(r));
+        results.add(base.compose(r));
     }
 
-    return new Section( results);
+    return new Section(results);
   }
 
   /**
    * Create a new Section by intersection with another Section
+   *
    * @param other Section other section
    * @return new Section, composed
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
    */
   public Section intersect(Section other) throws InvalidRangeException {
     if (other.getRank() != getRank())
-        throw new InvalidRangeException("Invalid Section rank");
+      throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
     List<Range> results = new ArrayList<Range>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
-      Range r =  other.getRange(j);
-      results.add( base.intersect(r));
+      Range r = other.getRange(j);
+      results.add(base.intersect(r));
     }
 
-    return new Section( results);
+    return new Section(results);
   }
 
   /**
    * Create a new Section by shifting each range by shift.first()
+   *
    * @param shift Section subtract shift.first()
    * @return new Section, shifted
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
    */
   public Section shiftOrigin(Section shift) throws InvalidRangeException {
     if (shift.getRank() != getRank())
-        throw new InvalidRangeException("Invalid Section rank");
+      throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
     List<Range> results = new ArrayList<Range>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
-      Range r =  shift.getRange(j);
-      results.add( base.shiftOrigin(r.first()));
+      Range r = shift.getRange(j);
+      results.add(base.shiftOrigin(r.first()));
     }
 
-    return new Section( results);
+    return new Section(results);
   }
 
   /**
    * See if this Section intersects with another Section. ignores strides
+   *
    * @param other another section
    * @return true if intersection is non-empty
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
    */
   public boolean intersects(Section other) throws InvalidRangeException {
     if (other.getRank() != getRank())
-        throw new InvalidRangeException("Invalid Section rank");
+      throw new InvalidRangeException("Invalid Section rank");
 
-    // check individual nulls
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
-      Range r =  other.getRange(j);
+      Range r = other.getRange(j);
       if ((base.length() == 0) || (r.length() == 0))
         return false;
 
       // LOOK ignores strides
       int first = Math.max(base.first(), r.first());
       int last = Math.min(base.last(), r.last());
-      if (first > last)  return false;
+      if (first > last) return false;
     }
 
     return true;
@@ -369,7 +372,7 @@ public class Section {
    * Insert a range at the specified index in the list.
    *
    * @param index insert here in the list, existing ranges at or after this index get shifted by one
-   * @param r  insert this Range
+   * @param r     insert this Range
    * @return this
    * @throws IndexOutOfBoundsException if bad index
    */
@@ -383,7 +386,7 @@ public class Section {
    * Set the range at the specified index in the list, previous Range is discarded
    *
    * @param index list index, must be in interval [0,size).
-   * @param r  insert this Range
+   * @param r     insert this Range
    * @return this
    * @throws IndexOutOfBoundsException if bad index
    */
@@ -397,7 +400,7 @@ public class Section {
    * Replace a range at the specified index in the list.
    *
    * @param index replace here in the list.
-   * @param r  use this Range
+   * @param r     use this Range
    * @return this
    * @throws IndexOutOfBoundsException if bad index
    */
@@ -441,7 +444,9 @@ public class Section {
 
   // end mutable methods
 
-  public boolean isImmutable() { return immutable; }
+  public boolean isImmutable() {
+    return immutable;
+  }
 
   /**
    * Get shape array using the Range.length() values.
@@ -567,6 +572,56 @@ public class Section {
     }
 
     return null;
+  }
+
+  /**
+   * Is this section equivilent to the given shape.
+   * All non-null ranges must have origin 0 and length = shape[i]
+   * @param shape the given shape.
+   * @return true if equivilent
+   * @throws InvalidRangeException if setion rank doesnt match shape length
+   */
+  public boolean equivilent(int[] shape) throws InvalidRangeException {
+    if (getRank() != shape.length)
+      throw new InvalidRangeException("Invalid Section rank");
+
+    for (int i = 0; i < list.size(); i++) {
+       Range r = list.get(i);
+       if (r == null) continue;
+       if (r.first() != 0) return false;
+       if (r.length() != shape[i]) return false;
+     }
+    return true;
+  }
+
+  /**
+   * Sections with equals Ranges are equal.
+   */
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Section)) return false;
+    Section os = (Section) o;
+
+    if (getRank() != os.getRank()) return false;
+    for (int i = 0; i < getRank(); i++) {
+      Range r = getRange(i);
+      Range or = os.getRange(i);
+      if ((r == null) && (or != null)) return false;
+      if ((or == null) && (r != null)) return false;
+      if (r == null) continue;  // then or is also null
+      if (!r.equals(or)) return false;
+    }
+    return true;
+  }
+
+  /**
+   * Override Object.hashCode() to agree with equals.
+   */
+  public int hashCode() {
+    int result = 17;
+    for (Range r : list)
+      if (r != null) result += 37 * result + r.hashCode();
+    return result;
   }
 
 }
