@@ -19,11 +19,10 @@ public class TestH5read extends TestCase {
     super(name);
   }
 
-  public void test1() {
+  public void testSamples() {
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/support");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/samples");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/complex");
-    readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
   }
 
   public void ntestNc4() {
@@ -31,7 +30,12 @@ public class TestH5read extends TestCase {
   }
 
   public void testAll() {
-    readAllDir( TestAll.upcShareTestDataDir + "hdf5/");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/IASI");
+  }
+
+  public void testNPoess() {
+    readAllDir( "C:/data/npoess/ExampleFiles/");
   }
 
   void readAllDir(String dirName) {

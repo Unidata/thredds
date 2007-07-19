@@ -60,6 +60,19 @@ public class TestChunkIndexer extends TestCase {
     }
   }
 
+  public void testa() throws InvalidRangeException, IOException {
+    NetcdfFile ncfile = TestH5.openH5("IASI.h5");
+    Variable v2 = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA");  // chunked short
+    assert v2 != null;
+
+    long start = System.currentTimeMillis();
+    Array data = v2.read();
+    assert data.getElementType() == short.class;
+    long took = System.currentTimeMillis() - start;
+    double rate = 0.001* data.getSize() / took;
+    System.out.println(" that took = "+took+" msec = "+rate+" Mb/sec ");
+  }
+
   public void test2() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestH5.openH5("support/uvlstr.h5");
     Group root = ncfile.getRootGroup();
@@ -84,5 +97,16 @@ public class TestChunkIndexer extends TestCase {
       String ss = (String) ii.getObjectNext();
       assert (s.equals(ss));
     }
+  }
+
+  public void ntest3() throws InvalidRangeException, IOException {
+    NetcdfFile ncfile = TestH5.openH5("support/MSG1_8bit_HRV.H5");
+    Group root = ncfile.getRootGroup();
+    Group g = root.findGroup("image1");
+    Variable v2 = g.findVariable("image_data");
+    assert v2 != null;
+
+    Array data = v2.read();
+    assert data.getElementType() == byte.class;
   }
 }

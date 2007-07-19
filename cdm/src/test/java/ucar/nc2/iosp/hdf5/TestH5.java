@@ -51,7 +51,8 @@ public class TestH5 {
     suite.addTest(new TestSuite(TestH5ReadStructure.class)); //
     suite.addTest(new TestSuite(TestH5ReadStructure2.class)); //
     suite.addTest(new TestSuite(TestH5Vlength.class)); //
-    suite.addTest(new TestSuite(TestH5misc.class)); //
+    suite.addTest(new TestSuite(TestH5ReadArray.class)); //
+    suite.addTest(new TestSuite(TestOddTypes.class)); //
     suite.addTest(new TestSuite(TestH5compressed.class)); //
     // suite.addTest(new TestSuite(TestH5eos.class)); //
 

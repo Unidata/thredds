@@ -23,66 +23,152 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.*;
 
 /**
+ * file = {segment}
+ * segment = head_segment | data_segment
+ * <p/>
+ * head_segment = magic_head, {head_subsection}
+ * head_subsection = magic_dim, dims | magic_var, vars | magic_att, atts
+ * dims = ndim, {name, length, flags}
+ * atts = natts, {att}
+ * att = name, type, nvals, vals
+ * vars = nvars, {var}
+ * var = name, type, dims, atts
+ * <p/>
+ * data_segment = magic_data, varname, section, vals
+ * section = nranges, {origin, size}
+ * vals = {byte} | {short} | {int} | {long} | {float} | {double} | {String}
+ *
  * @author caron
  * @since Jul 12, 2007
  */
 public class StreamWriter {
-  static final byte[] MAGIC_DATA = new byte[]{0x43, 0x44, 0x46, 0x55};  // 'DATA'
-  static final byte[] MAGIC_HEADER = new byte[]{0x43, 0x44, 0x46, 0x55};  // 'CDFS'
-  static final byte MAGIC_DIM = 10;
-  static final byte MAGIC_VAR = 11;
-  static final byte MAGIC_ATT = 12;
+  static final String MAGIC_DATA = "Data";
+  static final String MAGIC_HEADER = "CDFS";
+  static final String MAGIC_EOF = "EOF\n";
+
+  static final String MAGIC_ATTS = "Atts";
+  static final String MAGIC_DIMS = "Dims";
+  static final String MAGIC_VARS = "Vars";
 
   private NetcdfFile ncfile;
   private DataOutputStream out;
+  private boolean debug = false;
 
-  public void StreamWriter(NetcdfFile ncfile, DataOutputStream out) throws IOException {
+  /**
+   * Write the entire contents of a NetcdfFile out into a "stream format"
+   *
+   * @param ncfile write contents of this NetcdfFile
+   * @param out    wrte to this stream
+   * @throws IOException on i/o error
+   */
+  public StreamWriter(NetcdfFile ncfile, DataOutputStream out, boolean useRecord) throws IOException, InvalidRangeException {
     this.ncfile = ncfile;
     this.out = out;
 
-    writeHeader();
+    if (useRecord) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    writeHeader(useRecord);
 
     List<Variable> vars = ncfile.getVariables();
     for (Variable v : vars) {
-      writeData(v);
+      if (!useRecord || !v.isUnlimited())
+        writeData(v);
     }
+    if (useRecord)
+      writeRecordData();
+
+    writeMagic(MAGIC_EOF);
+    out.flush();
   }
 
-  int writeHeader() throws IOException {
+  int writeHeader(boolean useRecord) throws IOException {
 
     // magic number
-    int count = writeBytes(MAGIC_HEADER);
+    int count = writeMagic(MAGIC_HEADER);
 
     // dims
     List<Dimension> dims = ncfile.getDimensions();
     int ndims = dims.size();
     if (ndims > 0) {
-      count += writeByte(MAGIC_DIM);
-      count += writeVInt(ndims);
-      for (int i = 0; i < ndims; i++) {
-        Dimension dim = dims.get(i);
-        count += writeString(dim.getName());
-        count += writeVInt(dim.getLength());
-      }
+      count += writeMagic(MAGIC_DIMS);
+      writeDims(dims);
     }
 
     // global attributes
-    count += writeAtts(ncfile.getGlobalAttributes());
+    List<Attribute> atts = ncfile.getGlobalAttributes();
+    if (atts.size() > 0) {
+      count += writeMagic(MAGIC_ATTS);
+      count += writeAtts(atts);
+    }
 
     // variables
-    List<Variable> vars = ncfile.getVariables();
-    int nvars = vars.size();
-    if (nvars > 0) {
-      count += writeByte(MAGIC_VAR);
-      count += writeVInt(nvars);
+    if (useRecord) {
+      Structure record = (Structure) ncfile.findVariable("record");
+      assert record != null;
 
-      for (int i = 0; i < nvars; i++) {
-        Variable v = vars.get(i);
-        count += writeVar(v);
+      // non-record variables
+      List<Variable> vars = new ArrayList(ncfile.getVariables());
+      Iterator<Variable> iter = vars.iterator();
+      while (iter.hasNext()) {
+        Variable v = iter.next();
+        if (v.isUnlimited() && v != record) iter.remove();
       }
+      int nvars = vars.size();
+      if (nvars > 0) {
+        count += writeMagic(MAGIC_VARS);
+        count += writeVInt(nvars);
+        for (Variable v : vars) {
+          count += writeVar(v);
+        }
+      }
+
+      // record variables
+      List<Variable> members = record.getVariables();
+      nvars = members.size();
+      if (nvars > 0) {
+        count += writeMagic(MAGIC_VARS);
+        count += writeVInt(nvars);
+        for (Variable v : members) {
+          count += writeVar(v);
+        }
+      }
+
+    } else {
+
+      List<Variable> vars = ncfile.getVariables();
+      int nvars = vars.size();
+      if (nvars > 0) {
+        count += writeMagic(MAGIC_VARS);
+        count += writeVInt(nvars);
+        for (Variable v : vars) {
+          count += writeVar(v);
+        }
+      }
+    }
+
+    return count;
+  }
+
+  int writeMagic(String magic) throws IOException {
+    assert magic.length() == 4;
+    return writeBytes(magic.getBytes());
+  }
+
+  private int writeDims(List<Dimension> dims) throws IOException {
+    int ndims = dims.size();
+    int count = writeVInt(ndims);
+    for (int i = 0; i < ndims; i++) {
+      Dimension dim = dims.get(i);
+      count += writeString(dim.getName());
+      count += writeVInt(dim.getLength());
+      int flags = dim.isShared() ? 1 : 0;
+      if (dim.isUnlimited()) flags += 2;
+      if (dim.isVariableLength()) flags += 4;
+      count += writeByte((byte) flags);
     }
     return count;
   }
@@ -95,12 +181,7 @@ public class StreamWriter {
     count += writeVInt(type);
 
     // dimensions
-    List<Dimension> dims = var.getDimensions();
-    count += writeVInt(dims.size());
-    for (Dimension dim : dims) {
-      int dimIndex = findDimensionIndex(dim);
-      count += writeVInt(dimIndex);
-    }
+    count += writeDims(var.getDimensions());
 
     // variable attributes
     count += writeAtts(var.getAttributes());
@@ -111,44 +192,29 @@ public class StreamWriter {
 
   private int writeAtts(List<Attribute> atts) throws IOException {
     int natts = atts.size();
-    if (natts == 0) return 0;
-
-    int count = writeByte(MAGIC_ATT);
-    count += writeVInt(natts);
+    int count = writeVInt(natts);
     for (int i = 0; i < natts; i++) {
       Attribute att = atts.get(i);
       count += writeString(att.getName());
+
       int type = getType(att.getDataType());
-      writeVInt(type);
+      if (type == 2) type = 7;
+      count += writeVInt(type);
 
-      if (type == 2) {
-        count += writeStringValues(att);
-      } else {
-        int nelems = att.getLength();
-        count += writeVInt(nelems);
+      int nelems = att.getLength();
+      count += writeVInt(nelems);
 
-        int nbytes = 0;
+      if (type == 7) {
         for (int j = 0; j < nelems; j++)
-          nbytes += writeAttributeValue( att.getNumericValue(j));
-        count += nbytes;
+          count += writeString(att.getStringValue(j));
 
-        // count += pad(stream, nbytes, (byte) 0); no padding !!
+      } else {
+        for (int j = 0; j < nelems; j++)
+          count += writeAttributeValue(att.getNumericValue(j));
       }
     }
 
     return count;
-  }
-
-  private int writeStringValues(Attribute att) throws IOException {
-    int n = att.getLength();
-    if (n == 1)
-      return writeString(att.getStringValue());
-    else {
-      StringBuffer values = new StringBuffer();
-      for (int i = 0; i < n; i++)
-        values.append(att.getStringValue(i));
-      return writeString(values.toString());
-    }
   }
 
   private int writeAttributeValue(Number numValue) throws IOException {
@@ -176,29 +242,48 @@ public class StreamWriter {
     throw new IllegalStateException("unknown attribute type == " + numValue.getClass().getName());
   }
 
-  private int findDimensionIndex(Dimension wantDim) {
-    List dims = ncfile.getDimensions();
-    for (int i = 0; i < dims.size(); i++) {
-      Dimension dim = (Dimension) dims.get(i);
-      if (dim.equals(wantDim)) return i;
-    }
-    throw new IllegalStateException("unknown Dimension == " + wantDim);
-  }
-
   static int getType(DataType dt) {
     if (dt == DataType.BYTE) return 1;
-    else if ((dt == DataType.CHAR) || (dt == DataType.STRING)) return 2;
+    else if (dt == DataType.CHAR) return 2;
     else if (dt == DataType.SHORT) return 3;
     else if (dt == DataType.INT) return 4;
     else if (dt == DataType.FLOAT) return 5;
     else if (dt == DataType.DOUBLE) return 6;
+    else if (dt == DataType.STRING) return 7;
+    else if (dt == DataType.STRUCTURE) return 8;
 
     throw new IllegalStateException("unknown DataType == " + dt);
   }
 
+  static DataType getDataType(int code) {
+    if (code == 1) return DataType.BYTE;
+    else if (code == 2) return DataType.CHAR;
+    else if (code == 3) return DataType.SHORT;
+    else if (code == 4) return DataType.INT;
+    else if (code == 5) return DataType.FLOAT;
+    else if (code == 6) return DataType.DOUBLE;
+    else if (code == 7) return DataType.STRING;
+    else if (code == 8) return DataType.STRUCTURE;
+
+    throw new IllegalStateException("unknown DataType == " + code);
+  }
+
   public int writeData(Variable v) throws IOException {
-    int count = writeBytes(MAGIC_DATA);
+    int count = writeMagic(MAGIC_DATA);
+    if (debug) System.out.println("  var= " + v.getNameAndDimensions() + " section = " + v.getShapeAsSection());
+
+    count += writeString(v.getName());
+    count += writeSection(v.getShapeAsSection());
     count += writeData(v.getDataType(), v.read());
+    return count;
+  }
+
+  public int writeSection(Section s) throws IOException {
+    int count = writeVInt(s.getRank());
+    for (Range r : s.getRanges()) {
+      count += writeVInt(r.first());
+      count += writeVInt(r.length());
+    }
     return count;
   }
 
@@ -212,8 +297,8 @@ public class StreamWriter {
       return pa.length;
 
     } else if (dataType == DataType.CHAR) {
-      char[] pa =(char[]) values.get1DJavaArray(char.class);
-      for (char c : pa) out.write( (byte) c);
+      char[] pa = (char[]) values.get1DJavaArray(char.class);
+      for (char c : pa) out.write((byte) c);
       return pa.length;
 
     } else if (dataType == DataType.SHORT) {
@@ -235,9 +320,62 @@ public class StreamWriter {
       double[] pa = (double[]) values.get1DJavaArray(double.class);
       for (double d : pa) out.writeDouble(d);
       return 8 * pa.length;
+
+    } else if (dataType == DataType.STRING) {
+      String[] pa = (String[]) values.get1DJavaArray(String.class);
+      for (String s : pa) writeString(s);
+      return 8 * pa.length;
+
+    } else if (dataType == DataType.STRUCTURE) {
+      int count = 0;
+      ArrayStructure as = (ArrayStructure) values;
+      StructureMembers sm = as.getStructureMembers();
+      IndexIterator ii = values.getIndexIterator();
+      while (ii.hasNext()) {
+        StructureData sdata = (StructureData) ii.getObjectNext();
+        for (StructureMembers.Member m : sm.getMembers()) {
+          Array data = sdata.getArray(m);
+          count += writeData(m.getDataType(), data); // recursive
+        }
+      }
+      return count;
     }
 
+
     throw new IllegalStateException("dataType= " + dataType);
+  }
+
+  private int writeRecordData() throws java.io.IOException, InvalidRangeException {
+    Structure record = (Structure) ncfile.findVariable("record");
+    assert record != null;
+
+    int recno = 0;
+    int count = 0;
+    StructureMembers sm = record.makeStructureMembers();
+    int size = sm.getStructureSize();
+    int nrecsPerSection = Math.max(1, (1000 * 1000)/size); // do about 1M at a time = nrecs
+    int total_nrecs = (int) record.getSize();
+
+    Structure.Iterator iter = record.getStructureIterator();
+    while (iter.hasNext()) {
+      if (recno % nrecsPerSection == 0) {
+        int need = Math.min(nrecsPerSection, total_nrecs - recno);
+        if (debug) System.out.println("  var= " + record.getNameAndDimensions() + " start = " + recno+" nrecs="+need);
+        count += writeMagic(MAGIC_DATA); // each record is its own data section - could also do multiples
+        count += writeString(record.getName());
+        count += writeVInt(1);
+        count += writeVInt(recno);
+        count += writeVInt(need);
+      }
+
+      StructureData sdata = iter.next();
+      for (StructureMembers.Member m : sm.getMembers()) {
+        Array data = sdata.getArray(m);
+        count += writeData(m.getDataType(), data);
+      }
+      recno++;
+    }
+    return count;
   }
 
   ////////////////////////////////////////
@@ -323,5 +461,38 @@ public class StreamWriter {
     return count;
   }
 
+  static public void main(String args[]) throws IOException, InvalidRangeException {
+
+    long start = System.currentTimeMillis();
+    String filenameIn = "C:/data/metars/Surface_METAR_20070329_0000.nc";
+    //String filenameIn = "C:/dev/thredds/cdm/src/test/data/testWriteRecord.nc";
+    File f = new File(filenameIn);
+    long size = f.length();
+    //String filenameIn = "C:/data/test2.nc";
+    String filenameStream = "C:/temp/stream.ncs";
+    String filenameOut = "C:/temp/copy.nc";
+    NetcdfFile ncfile = NetcdfFile.open(filenameIn);
+
+    DataOutputStream streamFile = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filenameStream), 10 * 1000));
+    StreamWriter writer = new StreamWriter(ncfile, streamFile, true);
+    ncfile.close();
+    streamFile.close();
+
+    long took = System.currentTimeMillis() - start;
+    double rate = 0.001 * size / took;
+    System.out.println(" write to stream took = " + took + " msec = " + rate + " Mb/sec ");
+    start = System.currentTimeMillis();
+
+    DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(filenameStream), 10 * 1000));
+    NetcdfFileWriteable ncfilew = NetcdfFileWriteable.createNew(filenameOut, false);
+    Stream2Netcdf ncWriter = new Stream2Netcdf(ncfilew, in);
+    in.close();
+    ncfilew.close();
+
+    took = System.currentTimeMillis() - start;
+    rate = 0.001 * size / took;
+    System.out.println(" write stream to netcdf took = " + took + " msec = " + rate + " Mb/sec ");
+
+  }
 
 }

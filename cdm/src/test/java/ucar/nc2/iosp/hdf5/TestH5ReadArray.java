@@ -9,9 +9,9 @@ import java.io.*;
 
 /** Test nc2 read JUnit framework. */
 
-public class TestH5misc extends TestCase {
+public class TestH5ReadArray extends TestCase {
 
-  public TestH5misc(String name) {
+  public TestH5ReadArray(String name) {
     super(name);
   }
 
@@ -90,23 +90,6 @@ public class TestH5misc extends TestCase {
     }
 
     ncfile.close();
-  }
-
-  public void utest2() {
-    // these arent done
-
-    // bitfields, opague
-    NetcdfFile ncfile = TestH5.openH5("support/bitop.h5");
-
-    // enums
-    ncfile = TestH5.openH5("support/enum.h5");
-
-    // compund enums
-    ncfile = TestH5.openH5("support/cenum.h5");
-
-    // time
-    ncfile = TestH5.openH5("support/time.h5");
-
   }
 
 }

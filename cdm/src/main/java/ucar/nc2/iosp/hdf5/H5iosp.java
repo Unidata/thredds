@@ -166,14 +166,14 @@ public class H5iosp extends AbstractIOServiceProvider {
   protected Object readData( Variable v, Indexer index, DataType dataType, int[] shape) throws java.io.IOException, InvalidRangeException {
     int size = (int) index.getTotalNelems();
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
       byte[] pa = new byte[size];
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         myRaf.seek ( chunk.getFilePos());
         myRaf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
       }
-      return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);
+      return (dataType == DataType.CHAR) ? convertByteToChar( pa) : pa;
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = new short[size];
@@ -255,6 +255,15 @@ public class H5iosp extends AbstractIOServiceProvider {
         }
       }
       return asw;
+
+     } else if (dataType == DataType.ENUM) {  // LOOK - must be based on the parent type
+       int[] pa = new int[size];
+       while (index.hasNext()) {
+         Indexer.Chunk chunk = index.next();
+         myRaf.seek ( chunk.getFilePos());
+         myRaf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+       }
+       return pa;
     }
 
     throw new IllegalStateException();

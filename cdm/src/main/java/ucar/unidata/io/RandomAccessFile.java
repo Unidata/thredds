@@ -681,7 +681,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * Caveat: the effects of seek( )ing beyond the end of the file are
    * undefined.
    *
-   * @param b _more_
+   * @param b write this byte
    * @throws IOException if an I/O error occurrs.
    */
   public void write(int b) throws IOException {

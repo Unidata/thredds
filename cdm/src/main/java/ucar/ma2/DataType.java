@@ -43,6 +43,10 @@ public class DataType {
   public final static DataType STRING = new DataType("String", 1); // LOOK sizes ?
   public final static DataType STRUCTURE = new DataType("Structure", 1);
 
+  // netcdf4 types
+  public final static DataType OPAQUE = new DataType("opaque", 1);
+  public final static DataType ENUM = new DataType("enum", 1);
+
   static { // accept lower case for lookup also
     hash.put( "string", STRING);
     hash.put( "structure", STRUCTURE);
@@ -121,9 +125,9 @@ public class DataType {
       return double.class;
     if (this == DataType.SHORT)
       return short.class;
-    if (this == DataType.INT)
+    if ((this == DataType.INT)  || (this == DataType.ENUM)) // LOOK wrong
       return int.class;
-    if (this == DataType.BYTE)
+    if ((this == DataType.BYTE) || (this == DataType.OPAQUE))
       return byte.class;
      if (this == DataType.CHAR)
       return char.class;
@@ -143,7 +147,7 @@ public class DataType {
    * @return the Object class type
    */
   public Class getClassType() {
-    if (this == DataType.BYTE)
+    if ((this == DataType.BYTE) || (this == DataType.OPAQUE))
       return Byte.class;
     if (this == DataType.FLOAT)
       return Float.class;
@@ -151,7 +155,7 @@ public class DataType {
       return Double.class;
     if (this == DataType.SHORT)
       return Short.class;
-    if (this == DataType.INT)
+    if ((this == DataType.INT) || (this == DataType.ENUM))
       return Integer.class;
     if (this == DataType.CHAR)
       return Character.class;

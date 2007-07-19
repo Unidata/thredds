@@ -426,8 +426,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
       for (Variable v2 : vars) {
         N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
         long begin = vinfo.begin + recnum * recsize;
-        Indexer index =  RegularLayout.factory(begin, v2.getElementSize(), -1, v2.getShape(), null);  // null because always write a full variable
-
+        Indexer index =  RegularLayout.factory(begin, v2.getElementSize(), -1, v2.getShape(), v2.getShapeAsSection()); 
         StructureMembers.Member m = members.findMember(v2.getShortName());
         if (null == m)
           continue; // this means that the data is missing from the ArrayStructure

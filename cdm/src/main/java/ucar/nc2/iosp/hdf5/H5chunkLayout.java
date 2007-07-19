@@ -44,7 +44,7 @@ class H5chunkLayout extends Indexer {
   private long totalNelems, totalNelemsDone; // total number of elemens
   private boolean done = false;
 
-  private boolean debug = true;
+  private boolean debug = false;
 
   /**
    * Constructor.

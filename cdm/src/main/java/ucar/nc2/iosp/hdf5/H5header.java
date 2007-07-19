@@ -37,8 +37,9 @@ class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // debugging
+  static private boolean debugEnum = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
-  static private boolean debugGroupBtree = false, debugDataBtree = true, debugDataChunk = true;
+  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSymbolTable = false;
   static private boolean warnings = true, debugReference = false;
   static java.io.PrintStream debugOut = System.out;
@@ -285,7 +286,10 @@ class H5header {
       this.byteSize = mdt.byteSize;
       this.dataPos = dataPos;
 
-      if (!mdt.isOK) return; // not a supported datatype
+      if (!mdt.isOK) {
+        debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling " + mdt);        
+        return; // not a supported datatype
+      }
 
       this.isChunked = (msl != null) && (msl.type == 2); // chunked vs. continuous storage
       if (msl != null)
@@ -312,17 +316,18 @@ class H5header {
 
       } else if (hdfType == 4) { // bit field
         dataType = getNCtype(hdfType, byteSize);
-      }
 
-      /* else if (hdfType == 5) { // opaque
-        dataType = DataType.BYTE;
-      } */
+      } else if (hdfType == 5) { // opaque
+        dataType = DataType.OPAQUE;
 
-      else if (hdfType == 6) { // structure
+      } else if (hdfType == 6) { // structure
         dataType = DataType.STRUCTURE;
 
       } else if (hdfType == 7) { // structure
         dataType = DataType.BYTE;
+
+      } else if (hdfType == 8) { // enums
+        dataType = DataType.ENUM;
 
       } else if (hdfType == 9) { // variable length array
         int kind = (flags[0] & 0xf);
@@ -363,7 +368,7 @@ class H5header {
         else if (size == 8)
           return DataType.LONG;
         else {
-          debugOut.println("HDF5 file "+ncfile.getLocation()+" not handling hdf integer type (" + type + ") with size= " + size);
+          debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling hdf integer type (" + type + ") with size= " + size);
           log.warn("HDF5 file "+ncfile.getLocation()+" not handling hdf integer type (" + type + ") with size= " + size);
           return null;
         }
@@ -374,7 +379,7 @@ class H5header {
         else if (size == 8)
           return DataType.DOUBLE;
         else {
-          debugOut.println("HDF5 file "+ncfile.getLocation()+" not handling hdf float type with size= " + size);
+          debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling hdf float type with size= " + size);
           log.warn("HDF5 file "+ncfile.getLocation()+" not handling hdf float type with size= " + size);
           return null;
         }
@@ -975,6 +980,7 @@ class H5header {
         if (debug1)
           debugOut.println("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
+
       } else if (type == 1) {  // floating point
         short bitOffset = raf.readShort();
         short bitPrecision = raf.readShort();
@@ -987,15 +993,24 @@ class H5header {
           debugOut.println("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision +
               " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
               " manSize= " + manSize + " expBias= " + expBias);
+
+      } else if (type == 2) {  // time
+          short bitPrecision = raf.readShort();
+          if (debug1)
+            debugOut.println("   type 2 (time): bitPrecision= " + bitPrecision);
+          isOK = false;
+
       } else if (type == 4) { // bit field
         short bitOffset = raf.readShort();
         short bitPrecision = raf.readShort();
         if (debug1)
           debugOut.println("   type 4 (bit field): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
+
       } else if (type == 5) { // opaque
         String desc = readString(raf, -1);
         if (debug1) debugOut.println("   type 5 (opaque): desc= " + desc);
+
       } else if (type == 6) { // compound
         int nmembers = flags[1] * 256 + flags[0];
         if (debug1) debugOut.println("   --type 6(compound): nmembers=" + nmembers);
@@ -1004,14 +1019,21 @@ class H5header {
           members.add(new StructureMember(version));
         }
         if (debugDetail) debugOut.println("   --done with compound type");
+
       } else if (type == 7) { // reference
         referenceType = flags[0] & 0xf;
         if (debugReference) debugOut.println("   --type 7(reference): =" + referenceType);
+
       } else if (type == 8) { // enums
         int nmembers = flags[1] * 256 + flags[0];
-        if (debug1) debugOut.println("   --type 8(enums): nmembers=" + nmembers);
+        boolean saveDebugDetail = debugDetail;
+        if (debugEnum) {
+          debugOut.println("   --type 8(enums): nmembers=" + nmembers);
+          debugDetail = true;
+        }
         parent = new MessageDatatype(); // base type
         parent.read();
+        debugDetail = saveDebugDetail;
 
         String[] enumName = new String[nmembers];
         int[] enumValue = new int[nmembers];
@@ -1022,16 +1044,18 @@ class H5header {
         for (int i = 0; i < nmembers; i++)
           enumValue[i] = raf.readInt();
         raf.order(RandomAccessFile.LITTLE_ENDIAN);
-        if (debug1) {
+        if (debugEnum) {
           for (int i = 0; i < nmembers; i++)
             debugOut.println("   " + enumValue[i] + "=" + enumName[i]);
         }
+
       } else if (type == 9) { // variable-length
         isVString = (flags[0] & 0xf) == 1;
         if (debug1)
           debugOut.println("   type 9(variable length): type= " + (type == 0 ? "sequence of type:" : "string"));
         parent = new MessageDatatype(); // base type
         parent.read();
+
       } else if (type == 10) { // array
         if (debug1) debugOut.print("   type 10(array) lengths= ");
         int ndims = (int) raf.readByte();
@@ -1547,10 +1571,8 @@ class H5header {
 
       DataChunkIterator(Section want) throws IOException {
         node = new Node( rootNodeAddress, -1); // should we cache the nodes ???
-        if (want != null) {
-          wantOrigin = want.getOrigin();
-          node.first(wantOrigin);
-        }
+        wantOrigin = (want != null) ? want.getOrigin() : null;
+        node.first(wantOrigin);
       }
 
       public boolean hasNext() {
@@ -1573,7 +1595,8 @@ class H5header {
       Node currentNode;
 
       Node(long address, long parent) throws IOException {
-        if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent+ " owner= " + owner.getSPobject());
+        if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent+
+            " owner= " + owner.getNameAndDimensions()+" vinfo= "+owner.getSPobject());
 
         raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
         raf.seek(address);
@@ -1659,7 +1682,7 @@ class H5header {
 
         } else {
           if (currentNode.hasNext()) return true;
-          return currentEntry < nentries;
+          return currentEntry < nentries-1;
         }
       }
 
@@ -1668,10 +1691,14 @@ class H5header {
           return myEntries.get(currentEntry++);
 
         } else {
+          if (currentNode == null)
+            System.out.println("hey");
           if (currentNode.hasNext())
             return currentNode.next();
 
-          currentNode = new Node(childPointer[currentEntry++], this.address);
+          currentEntry++;
+          currentNode = new Node(childPointer[currentEntry], this.address);
+          currentNode.first(null);
           return currentNode.next();
         }
       }
@@ -1725,7 +1752,7 @@ class H5header {
 
     // is this offset less than the "wantOrigin" ?
     private boolean lessThan(int[] wantOrigin, long[] offset) {
-      if (wantOrigin == null) return false;
+      if (wantOrigin == null) return true;
       int n = Math.min(offset.length, wantOrigin.length);
       for (int i=0; i<n; i++) {
         if (wantOrigin[i] < offset[i]) return true;

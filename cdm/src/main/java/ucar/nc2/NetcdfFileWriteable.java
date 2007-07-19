@@ -380,6 +380,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
     defineMode = false;
   }
 
+  public boolean isDefineMode() { return defineMode; }
+
   ////////////////////////////////////////////
   //// use these calls to write to the file
 

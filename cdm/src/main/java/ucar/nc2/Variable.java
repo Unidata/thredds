@@ -555,6 +555,9 @@ public class Variable implements VariableIF {
    * @throws InvalidRangeException if section not compatible with shape
    */
   public Variable section(Section subsection) throws InvalidRangeException {
+    if (dataType == DataType.OPAQUE)
+      throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
+
     subsection = Section.fill(subsection, getShape());
 
     // create a copy of this variable with a proxy reader
@@ -590,6 +593,8 @@ public class Variable implements VariableIF {
       throw new InvalidRangeException("Slice dim invalid= " + dim);
     if ((value < 0) || (value >= shape[dim]))
       throw new InvalidRangeException("Slice value invalid= " + value + " for dimension " + dim);
+    if (dataType == DataType.OPAQUE)
+      throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
 
     // create a copy of this variable with a proxy reader
     Variable sliceV = copy(); // subclasses must override
@@ -868,6 +873,9 @@ public class Variable implements VariableIF {
     if ((null == section) || section.computeSize() == getSize())
       return _read();
 
+    if (dataType == DataType.OPAQUE)
+      throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
+    
     /* error checking already done
     String err = section.checkInRange(getShape());
     if (err != null)
