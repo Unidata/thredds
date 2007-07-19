@@ -26,12 +26,34 @@
   <li>catalog.xml [[combine existing 1) catalog section from "Getting Started" and 2) "Catalog Primer"]]</li>
 </ul>
 <h3>12:00 Lunch</h3>
-<h3>1:00  Production Installation (Anne) </h3>
+<h3>1:00  Basic Tomcat Management and Security (Anne) </h3>
 <ul>
-  <li>setting up users (tomcat-users) </li>
-  <li>setting up SSL (including self-signed key generation)</li>
-  <li>server.xml: Ports</li>
-  <li>access Logs</li>
+  <li>Create and Administer Tomcat as User "tomcat"</li>
+  <li>Important Tomcat Directories: conf, logs, webapps, exec</li>
+  <li>Configuring Tomcat in server.xml</li>
+    <ul>
+        <li>Ports: 8080, 8443, 8009?? </li>
+        <li>Host localhost </li>
+        <li>Turning on Access Logging</li>
+    </ul>
+  <li>Starting and Stopping Tomcat: watching log files, simple start up troubleshooting</li>
+  <li>Tomcat Security Illustrated By Enabling the Tomcat Manager</li>
+    <ul>
+        <li>Use a Firewall (covered elsewhere)</li>
+        <li>Using Authentication to Restrict Access to Tomcat Applications</li>
+        <ul>
+            <li> The Tomcat Manager Application</li>
+            <li> tomcat-users.xml</li>
+            <li> Configuring tomcat-users to Allow a User to Execute the Manager</li>
+            <li> Using Digested Passwords</li>
+        </ul>
+        <li>Enabling Secure Communication Via SSL</li>
+        <ul>
+            <li> Creating a Self-Signed Certificate</li>
+            <li> Configure Tomcat to Use SSL Encryption: server.xml (again) </li>
+        </ul>
+        <li> Other Tomcat Security Resources</li>
+    </ul>
 </ul>
 <h3>2:00 Tour of Production Installation (John)</h3>
 <ul>
