@@ -17,24 +17,35 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.iosp.hdf5;
 
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestAll;
+package ucar.nc2.util;
 
-import java.io.IOException;
-
-import junit.framework.TestCase;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 /**
+ * Class Description.
+ *
  * @author caron
- * @since Jul 18, 2007
  */
-public class TestNpoess extends TestCase {
+public class DebugFlagsImpl implements DebugFlags {
 
-  public void test1() throws InvalidRangeException, IOException {
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.open(TestAll.upcShareTestDataDir+"satellite/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
+  private Map<String,Boolean> map = new HashMap<String,Boolean>();
+
+  public DebugFlagsImpl(String flagsOn) {
+    StringTokenizer stoke = new StringTokenizer(flagsOn);
+    while (stoke.hasMoreTokens())
+      set(stoke.nextToken(), true);
   }
+
+  public boolean isSet(String flagName) {
+    Boolean b  = map.get(flagName);
+    return (b != null) && b.booleanValue();
+  }
+
+  public void set(String flagName, boolean value) {
+    map.put(flagName, value);
+  }
+
 }

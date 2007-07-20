@@ -16,9 +16,14 @@ public class TestH5eos extends TestCase {
     super(name);
   }
 
+  public void test1() {
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    NetcdfFile ncfile = TestH5.open("C:/data/hdf5/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5");
+  }
+
   public void testEosMetadata() {
     //NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
-    NetcdfFile ncfile = TestH5.open("C:/doc/hdf5Conference/auraData/HIRDLS2-Aura73p_b029_2000d275.he5");
+    NetcdfFile ncfile = TestH5.open("C:/data/hdf5/auraData/HIRDLS2-Aura73p_b029_2000d275.he5");
 
     Group root = ncfile.getRootGroup();
     Group g = root.findGroup("HDFEOS_INFORMATION");

@@ -133,7 +133,7 @@ public class TestAll {
     TestSuite suite= new TestSuite();
     suite.addTest( ucar.nc2.TestLocal.suite());
     suite.addTest( ucar.nc2.TestNC2.suite());
-    // suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); //
+    suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); //
     suite.addTest( ucar.nc2.TestIosp.suite());   //
 
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //

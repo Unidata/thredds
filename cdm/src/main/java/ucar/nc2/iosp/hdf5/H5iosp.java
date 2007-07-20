@@ -96,64 +96,53 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   public Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException  {
-    // subset
-    int[] origin = section.getOrigin();
-    int[] shape = section.getShape();
-    for (Range r : section.getRanges()) {
-      if (r.stride() != 1)
-        throw new UnsupportedOperationException("H5iosp doesnt yet support strides");
-    }
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
-    return readData( v2, vinfo.dataPos, origin, shape);
+    return readData( v2, vinfo.dataPos, section);
   }
 
   // all the work is here, so can be called recursively
-  private Array readData(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape) throws IOException, InvalidRangeException  {
-    if (origin == null) origin = new int[ v2.getRank()];
-    if (shape == null) shape = v2.getShape();
-
+  private Array readData(ucar.nc2.Variable v2, long dataPos, Section wantSection) throws IOException, InvalidRangeException  {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
     Object data;
 
-    if (vinfo.useFillValue) {
-      Array arr = Array.factory(dataType.getPrimitiveClassType(), shape);
+    if (vinfo.useFillValue) { // fill value only
+      Array arr = Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape());
       Object fillValue = convert( vinfo.fillValue, dataType, vinfo.byteOrder);
       IndexIterator ii = arr.getIndexIterator();
       while(ii.hasNext())
-        ii.setObjectNext( fillValue);
+        ii.setObjectNext( fillValue); // slow, but does the conversion
       return arr;
 
-    } else if (vinfo.hasFilter) {
+    } else if (vinfo.mfp != null) { // filtered
       if (debugFilter) H5header.debugOut.println("read variable "+v2.getName()+" vinfo = "+vinfo);
       data = readFilterData( v2, vinfo);
 
       // LOOK what to do about origin/shape ??
       Array fullArray = Array.factory(dataType.getPrimitiveClassType(), v2.getShape(), data);
-      return fullArray.sectionNoReduce( origin, shape, null);
+      return fullArray.sectionNoReduce( wantSection.getRanges());
 
-    } else {
+    } else { // normal case
       if (debug) H5header.debugOut.println("read variable "+v2.getName()+" vinfo = "+vinfo);
 
       Indexer index;
       if (vinfo.isChunked) {
-        //index = new H5chunkIndexer( v2, origin, shape);
-        index = new H5chunkLayout( v2, new Section(origin, shape));
+        index = new H5chunkLayout( v2, wantSection);
       } else {
-        index = RegularSectionLayout.factory(dataPos, v2.getElementSize(), new Section(v2.getShape()), new Section(origin, shape));
+        index = RegularSectionLayout.factory(dataPos, v2.getElementSize(), new Section(v2.getShape()), wantSection);
       }
 
       if (vinfo.byteOrder >= 0) {
         myRaf.order(vinfo.byteOrder);
         if (debug) H5header.debugOut.println("$$set byteOrder to  "+(vinfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? " LittleEndian" : " BigEndian"));
       }
-      data = readData( v2, index, dataType, shape);
+      data = readData( v2, index, dataType, wantSection.getShape());
     }
 
     if (data instanceof ArrayStructure)
       return (ArrayStructure) data;
     else
-      return Array.factory(dataType.getPrimitiveClassType(), shape, data);
+      return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), data);
   }
 
    /**
@@ -276,7 +265,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     for (Variable v2 : s.getVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
       if (debug) H5header.debugOut.println(" readStructureMember " + v2.getName() + " vinfo = " + vinfo);
-      Array dataArray = readData(v2, dataPos + vinfo.dataPos, null, null);
+      Array dataArray = readData(v2, dataPos + vinfo.dataPos, v2.getShapeAsSection());
       sdata.setMemberData(v2.getShortName(), dataArray);
     }
 
@@ -291,8 +280,90 @@ public class H5iosp extends AbstractIOServiceProvider {
     int totalSize = (int) v2.getSize() * elemSize;
     int totalDone = 0;
     byte[] barray = new byte[ totalSize];
-    if (debugFilter) H5header.debugOut.println("-----readFilterData totalSize = "+totalSize+
-                                               " elemSize = "+elemSize);
+    if (debugFilter) H5header.debugOut.println("-----readFilterData totalSize = "+totalSize+" elemSize = "+elemSize);
+
+    // read one chunk at a time
+    int chunkSize = 1;
+    for (int j=0; j<vinfo.storageSize.length; j++)
+      chunkSize *= vinfo.storageSize[j];
+    if (debugFilter) H5header.debugOut.println("      chunkSize = "+chunkSize);
+    byte[] buff = new byte[chunkSize];
+
+    // this handles where the chunk lives in the overall data array
+    H5chunkFilterIndexer indexer = new H5chunkFilterIndexer( v2, vinfo.storageSize);
+
+    // buffer for the compressed bytes
+    byte[] cbuff = null; // compressed bytes
+    int cbuffSize = 0;
+
+    java.util.zip.Inflater inflater = new java.util.zip.Inflater( false);
+
+    // loop over all the entries in the data btree structure
+    H5header.DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIterator(null);
+    while (iter.hasNext()) {
+      H5header.DataBTree.DataChunk entry = iter.next();
+      if (debugFilter) H5header.debugOut.println("-----entry= = " + entry);
+      if ((cbuff == null) || (cbuffSize < entry.size)) {
+        cbuffSize = 2 * entry.size;
+        cbuff = new byte[cbuffSize];
+      }
+
+      // jump to the data
+      myRaf.seek(entry.address);
+
+      if (entry.filterMask == 1) { // skip  decompress
+        if (debugFilter) H5header.debugOut.println("skip inflate");
+        myRaf.read(buff, 0, entry.size);
+
+      } else {
+        // read compressed bytes
+        myRaf.read(cbuff, 0, entry.size);
+        if (debugFilterDetails) H5header.printBytes("  raw bytes=", buff, 0, entry.size);
+
+        // decompress the bytes
+        inflater.setInput(cbuff, 0, entry.size);
+        int resultLength;
+        try {
+          resultLength = inflater.inflate(buff, 0, chunkSize);
+        }
+        catch (DataFormatException ex) {
+          System.out.println("ERROR on " + v2.getName());
+          ex.printStackTrace();
+          throw new IOException(ex.getMessage());
+        }
+        if (debugFilter)
+          H5header.debugOut.println("inflate finished=" + inflater.finished() + " " + resultLength + " bytes; totalDone= " + totalDone);
+        if (debugFilterDetails) H5header.printBytes("  bytes=", buff, 0, chunkSize);
+        inflater.reset();
+      }
+
+      // copy decompressed bytes into the right place in the output array
+      indexer.setChunkOffset(entry.offset);
+      while (indexer.hasNext() && (totalDone < totalSize)) {
+        Indexer.Chunk chunk = indexer.next();
+        int n = Math.min(chunk.getNelems(), totalSize - totalDone);
+        System.arraycopy(buff, chunk.getIndexPos(), barray, (int) chunk.getFilePos(), n);
+        totalDone += chunk.getNelems();
+      }
+
+    }
+
+    if (debugFilter)
+      H5header.debugOut.println( "----- total elements read="+ totalDone+" bytes (should be "+ totalSize+")");
+
+    // convert to the correct primitive type
+    return convert( barray, v2.getDataType(), (int) v2.getSize(), vinfo.byteOrder);
+  }
+
+  // this reads the entire data array
+  private Object deflate(ucar.nc2.Variable v2, H5header.Vinfo vinfo) throws IOException, InvalidRangeException  {
+
+    // pretend everything is just bytes for now
+    int elemSize = v2.getElementSize();
+    int totalSize = (int) v2.getSize() * elemSize;
+    int totalDone = 0;
+    byte[] barray = new byte[ totalSize];
+    if (debugFilter) H5header.debugOut.println("-----readFilterData totalSize = "+totalSize+" elemSize = "+elemSize);
 
     // read one chunk at a time
     int chunkSize = 1;
@@ -411,7 +482,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   // this converts a byte array to a wrapped primitive (Byte, Short, Integer, Double, Float, Long)
-  protected Object convert( byte[] barray, DataType dataType, int byteOrder) {
+  static Object convert( byte[] barray, DataType dataType, int byteOrder) {
 
     if (dataType == DataType.BYTE) {
       return new Byte( barray[0]);

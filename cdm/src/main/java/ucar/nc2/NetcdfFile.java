@@ -84,6 +84,7 @@ public class NetcdfFile {
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
+      // log.warn("Cant load class: " + e);
       log.warn("Cant load class: " + e);
     }
     try {
@@ -300,7 +301,7 @@ public class NetcdfFile {
        //allow to fall through to open the "compressed" file directly - may be a misnamed suffix
       }
 
-      if (uncompressedFileName != null) { 
+      if (uncompressedFileName != null) {
         // open uncompressed file as a RandomAccessFile.
         raf = new ucar.unidata.io.RandomAccessFile(uncompressedFileName, "r", buffer_size);
         //raf = new ucar.unidata.io.MMapRandomAccessFile(uncompressedFileName, "r");
@@ -433,7 +434,7 @@ public class NetcdfFile {
       spi = SPFactory.getServiceProvider();
 
     //} else if (H5header.isValidFile(raf)) {
-      // spi = new ucar.nc2.iosp.hdf5.H5iosp();
+     // spi = new ucar.nc2.iosp.hdf5.H5iosp();
 
     } else {
       // look for registered providers

@@ -30,8 +30,9 @@ public class TestH5read extends TestCase {
   }
 
   public void testAll() {
-    readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
-    readAllDir( TestAll.upcShareTestDataDir + "hdf5/IASI");
+    //readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
+    //readAllDir( TestAll.upcShareTestDataDir + "hdf5/IASI");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/wrf");
   }
 
   public void testNPoess() {
@@ -61,17 +62,7 @@ public class TestH5read extends TestCase {
 
   }
 
-  int max_size = 1000 * 1000 * 10;
-  Section makeSubset(Variable v) throws InvalidRangeException {
-    int[] shape = v.getShape();
-    shape[0] = 1;
-    Section s = new Section(shape);
-    long size = s.computeSize();
-    shape[0] = (int) Math.max(1, max_size / size);
-    return new Section(shape);
-  }
-
-  void readAllData( String filename) {
+  static public void readAllData( String filename) {
     System.out.println("------Reading filename "+filename);
     try {
       NetcdfFile ncfile = TestH5.open(filename);
@@ -91,6 +82,18 @@ public class TestH5read extends TestCase {
       assert false;
     }
   }
+
+  static int max_size = 1000 * 1000 * 10;
+  static Section makeSubset(Variable v) throws InvalidRangeException {
+    int[] shape = v.getShape();
+    shape[0] = 1;
+    Section s = new Section(shape);
+    long size = s.computeSize();
+    shape[0] = (int) Math.max(1, max_size / size);
+    return new Section(shape);
+  }
+
+
 
   public static void main(String[] args) {
     TestH5read test = new TestH5read("fake");

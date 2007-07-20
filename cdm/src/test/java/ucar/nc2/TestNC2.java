@@ -1,7 +1,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
-import ucar.nc2.TestHTTP;
+//import ucar.nc2.TestHTTP;
 
 /**
  * ucar.nc2 core testing
@@ -31,7 +31,7 @@ public class TestNC2 {
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
-    suite.addTest(new TestSuite(TestHTTP.class)); // */
+    //suite.addTest(new TestSuite(TestHTTP.class)); // */
     suite.addTest(new TestSuite(TestStructure.class)); //
     suite.addTest(new TestSuite(TestStructureArray.class)); //
     suite.addTest(new TestSuite(TestStructureArray2.class)); //

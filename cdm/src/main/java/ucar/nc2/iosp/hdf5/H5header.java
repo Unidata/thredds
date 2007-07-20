@@ -46,14 +46,16 @@ class H5header {
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug1 = debugFlag.isSet("H5header/header");
-    debugDetail = debugFlag.isSet("H5header/headerDetails");
-    debugGroupBtree = debugFlag.isSet("H5header/groupBtree");
-    debugDataBtree = debugFlag.isSet("H5header/dataBtree");
-    debugPos = debugFlag.isSet("H5header/filePos");
-    debugHeap = debugFlag.isSet("H5header/Heap");
     debugContinueMessage = debugFlag.isSet("H5header/continueMessage");
+    debugDetail = debugFlag.isSet("H5header/headerDetails");
+    debugDataBtree = debugFlag.isSet("H5header/dataBtree");
+    debugGroupBtree = debugFlag.isSet("H5header/groupBtree");
+    debugHeap = debugFlag.isSet("H5header/Heap");
+    debugPos = debugFlag.isSet("H5header/filePos");
+    debugReference = debugFlag.isSet("H5header/reference");
     debugSymbolTable = debugFlag.isSet("H5header/symbolTable");
     debugTracker = debugFlag.isSet("H5header/memTracker");
+    debugV = debugFlag.isSet("H5header/Variable");
   }
 
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
@@ -85,7 +87,7 @@ class H5header {
   private long actualSize, baseAddress;
   private byte sizeOffsets, sizeLengths;
   private boolean isOffsetLong, isLengthLong;
-  private boolean v3mode = true;
+  private boolean v3mode = false;
   private Map<String, DataObject> hashDataObjects = new HashMap<String, DataObject>(100);
   private Map<Long, Group> hashGroups = new HashMap<Long, Group>(100);
 
@@ -255,6 +257,8 @@ class H5header {
    */
   class Vinfo {
     Variable owner; // debugging
+    DataObject ndo; // debugging
+
     long address = -1;  // data object address, aka id
     long dataPos; // LOOK for  regular variables, needs to be absolute, with baseAddress added if needed
                   // for member variables, is the offset from start of structure
@@ -271,7 +275,8 @@ class H5header {
     boolean isChunked = false;
     DataBTree btree = null; // only if isChunked
 
-    boolean hasFilter = false;
+    MessageFilter mfp;
+
     boolean useFillValue = false;
     byte[] fillValue;
 
@@ -323,8 +328,8 @@ class H5header {
       } else if (hdfType == 6) { // structure
         dataType = DataType.STRUCTURE;
 
-      } else if (hdfType == 7) { // structure
-        dataType = DataType.BYTE;
+      } else if (hdfType == 7) { // reference
+        dataType = DataType.LONG;
 
       } else if (hdfType == 8) { // enums
         dataType = DataType.ENUM;
@@ -403,7 +408,7 @@ class H5header {
           buff.append(storageSize[j]).append(" ");
         buff.append(")");
       }
-      if (hasFilter) buff.append(" hasFilter");
+      if (mfp != null) buff.append(" hasFilter");
       buff.append("; // ").append(extraInfo());
       return buff.toString();
     }
@@ -1022,12 +1027,12 @@ class H5header {
 
       } else if (type == 7) { // reference
         referenceType = flags[0] & 0xf;
-        if (debugReference) debugOut.println("   --type 7(reference): =" + referenceType);
+        if (debug1 || debugReference) debugOut.println("   --type 7(reference): type= " + referenceType);
 
       } else if (type == 8) { // enums
         int nmembers = flags[1] * 256 + flags[0];
         boolean saveDebugDetail = debugDetail;
-        if (debugEnum) {
+        if (debug1 || debugEnum) {
           debugOut.println("   --type 8(enums): nmembers=" + nmembers);
           debugDetail = true;
         }
@@ -1121,7 +1126,8 @@ class H5header {
       if ((version <= 1) || (fillDefined != 0)) {
         size = raf.readInt();
         value = new byte[size];
-        raf.read(value);
+        if (size > 0)
+          raf.read(value);
       }
 
       if (debug1) {
@@ -1180,7 +1186,6 @@ class H5header {
   // Message Type 11/0xB ( p 50) "Filter Pipeline" : apply a filter to the "data stream"
   private class MessageFilter {
     byte version, nfilters;
-    long btreeAddress, nameHeapAddress;
     Filter[] filters;
 
     void read() throws IOException {
@@ -1195,23 +1200,47 @@ class H5header {
       }
     }
 
+    public String toString() {
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append("   MessageFilter version=" + version + " nfilters=" + nfilters+"\n");
+      for (Filter f : filters)
+        sbuff.append(" ").append(f).append("\n");
+      return sbuff.toString();      
+    }
+
     class Filter {
       short id, flags;
       String name;
+      short nValues;
+      int[] data;
 
       Filter() throws IOException {
         this.id = raf.readShort();
         short nameSize = raf.readShort();
         this.flags = raf.readShort();
-        short nValues = raf.readShort();
+        nValues = raf.readShort();
 
         long pos = raf.getFilePointer();
         this.name = readString(raf, -1); // read at current pos
         nameSize += padding(nameSize, 8);
         raf.seek(pos + nameSize); // make it more robust for errors
 
-        if (debug1) debugOut.println("   Filter id= " + id + " flags = " + flags +
-            " nValues=" + nValues + " name= " + name);
+        data = new int[nValues];
+        for (int i=0; i<nValues; i++)
+          data[i] = raf.readInt();
+        if (nValues % 2 == 1)
+          raf.skipBytes(4);
+
+        if (debug1) debugOut.println(this);
+      }
+
+      public String toString() {
+        StringBuffer sbuff = new StringBuffer();
+        sbuff.append( "   Filter id= " + id + " flags = " + flags +
+            " nValues=" + nValues + " name= " + name+" data = ");
+        for (int i=0; i<nValues;i++)
+           sbuff.append(data[i]).append(" ");
+        return sbuff.toString();
       }
     }
   }
@@ -1219,7 +1248,7 @@ class H5header {
   // Message Type 12/0xC ( p 52) "Attribute" : define an Atribute
   private class MessageAttribute {
     byte version;
-    short nameSize, typeSize, spaceSize;
+    //short typeSize, spaceSize;
     String name;
     MessageDatatype mdt = new MessageDatatype();
     MessageSimpleDataspace mds = new MessageSimpleDataspace();
@@ -1233,9 +1262,9 @@ class H5header {
       if (debugPos) debugOut.println("   *MessageAttribute start pos= " + raf.getFilePointer());
       version = raf.readByte();
       raf.read(); // skip byte
-      nameSize = raf.readShort();
-      typeSize = raf.readShort();
-      spaceSize = raf.readShort();
+      short nameSize = raf.readShort();
+      short typeSize = raf.readShort();
+      short spaceSize = raf.readShort();
 
       // read the name
       long pos = raf.getFilePointer();
@@ -2001,6 +2030,7 @@ class H5header {
 
             Vinfo vinfo = (Vinfo) v.getSPobject();
             vinfo.address = ndo.address; // for debugging
+            vinfo.ndo = ndo;  // for debugging
 
             if (debugV) debugOut.println("  made Variable " + v.getName() + "  vinfo= " + vinfo + "\n" + v);
           }
@@ -2127,34 +2157,42 @@ class H5header {
       return null;
     }
 
-    // deal with "filters"
+    // deal with filters, cant do SZIP
     if (mfp != null) {
-      if ((mfp.nfilters == 1) && (mfp.filters[0].id == 1)) {
-        vinfo.hasFilter = true;
-        //debugOut.println("OK variable with Filter= "+mfp+" for variable "+name);
-      } else {
-        debugOut.println("SKIPPING variable with Filter= " + mfp + " for variable " + name);
-        return null;
+      for (MessageFilter.Filter f : mfp.filters) {
+        if (f.id == 4) {
+          debugOut.println("SKIPPING variable with SZIP Filter= " + mfp + " for variable " + name);
+          return null;
+        }
+      }
+      vinfo.mfp = mfp;
+    }
+
+    // find fill value
+    Attribute fillAttribute = null;
+    for (Message mess : messages) {
+      if (mess.mtype == MessageType.FillValue) {
+        MessageFillValue fvm = (MessageFillValue) mess.messData;
+        if (fvm.size > 0)
+          vinfo.fillValue = fvm.value;
+
+      } else if (mess.mtype == MessageType.FillValueOld) {
+        MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
+        if (fvm.size > 0)
+          vinfo.fillValue = fvm.value;
+      }
+
+      if (vinfo.fillValue != null) {
+        Object fillValue = H5iosp.convert( vinfo.fillValue, vinfo.getNCDataType(), vinfo.byteOrder);
+        if (fillValue instanceof Number)
+          fillAttribute = new Attribute("_FillValue", (Number) fillValue);
       }
     }
+
 
     // deal with unallocated data
     if (dataPos == -1) {
       vinfo.useFillValue = true;
-
-      // find fill value
-      for (Message mess : messages) {
-        if (mess.mtype == MessageType.FillValue) {
-          MessageFillValue fvm = (MessageFillValue) mess.messData;
-          if (fvm.size > 0)
-            vinfo.fillValue = fvm.value;
-
-        } else if (mess.mtype == MessageType.FillValueOld) {
-          MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
-          if (fvm.size > 0)
-            vinfo.fillValue = fvm.value;
-        }
-      }
 
       // if didnt find, use zeroes !!
       if (vinfo.fillValue == null) {
@@ -2198,6 +2236,8 @@ class H5header {
     }
 
     addSystemAttributes(messages, v.getAttributes());
+    if (fillAttribute != null)
+      v.addAttribute(fillAttribute);
 
     if (!vinfo.signed)
       v.addAttribute(new Attribute("_unsigned", "true"));
