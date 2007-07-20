@@ -1,234 +1,182 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
-	<TITLE>Untitled Document</TITLE>
-	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Unix)">
-	<META NAME="CREATED" CONTENT="20070719;13103900">
-	<META NAME="CHANGEDBY" CONTENT="Robb Kambic">
-	<META NAME="CHANGED" CONTENT="20070719;13373000">
-</HEAD>
-<BODY LANG="en-US" DIR="LTR">
-<H1><IMG SRC="../THREDDSlogo.jpg" NAME="graphics1" ALIGN=BOTTOM WIDTH=67 HEIGHT=54 BORDER=0>
+<html><head>
+	<meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8"><title>Untitled Document</title>
+	
+	<meta name="GENERATOR" content="OpenOffice.org 2.0  (Unix)">
+	<meta name="CREATED" content="20070719;13103900">
+	<meta name="CHANGEDBY" content="Robb Kambic">
+	<meta name="CHANGED" content="20070719;13373000"></head>
+
+<body dir="ltr" lang="en-US">
+<h1><img src="../THREDDSlogo.jpg" name="graphics1" align="bottom" border="0" height="54" width="67" alt="THREDDS">
 TDS Tutorial Schedule 
-</H1>
-<HR>
-<H2>Monday</H2>
-<H3>8:30 Overview (John) 
-</H3>
-<H3>9:30 Getting Started (Ethan) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Install Java and Tomcat 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Starting up tomcat 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Deploy thredds.war 
-	</P>
-	<LI><P>Browse catalogs 
-	</P>
-</UL>
-<H3>10:30 Break</H3>
-<H3>11:00 Tour of Basic Installation (Ethan) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Directory layout [[combine
-	existing 1) section from &quot;Getting Started&quot; and 2)
-	&quot;Directory layout&quot;]] 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Quick Tour (of vanilla install
-	through browser) 
-	</P>
-	<LI><P>catalog.xml [[combine existing 1) catalog section from
-	&quot;Getting Started&quot; and 2) &quot;Catalog Primer&quot;]] 
-	</P>
-</UL>
-<H3>12:00 Lunch</H3>
-<H3>1:00 Basic Tomcat Management and Security (Anne) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Create and Administer Tomcat as
-	User &quot;tomcat&quot; 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Important Tomcat Directories:
+</h1>
+<hr>
+<h2>Monday</h2>
+<h3>8:30 Overview (John) 
+</h3>
+<h3>9:30 Getting Started (Ethan) 
+</h3>
+<ul>
+	<li>Install Java and Tomcat
+	</li><li>Starting up tomcat
+	</li><li>Deploy thredds.war
+	</li><li><p>Browse catalog<br>
+</p></li></ul>
+<h3>10:30 Break</h3>
+<h3>11:00 Tour of Basic Installation (Ethan) 
+</h3>
+<ul>
+	<li>Tomcat and TDS Directories [[combine
+	existing 1) section from "Getting Started" and 2)
+	"Directory layout"]] 
+	</li><li><p>TDS Configuration Catalog - datasetScan ??? catalog.xml [[combine existing 1) catalog section from
+	"Getting Started" and 2) "Catalog Primer"]]</p></li><li>THREDDS catalogs in the IDV/ToolsUI</li>
+</ul>
+<h3>12:00 Lunch</h3>
+<h3>1:00 Basic Tomcat Management and Security (Anne) 
+</h3>
+<ul>
+	<li>Create and Administer Tomcat as
+	User "tomcat" 
+	</li><li>Important Tomcat Directories:
 	conf, logs, webapps, exec 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Configuring Tomcat in server.xml 
-	</P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in">Ports: 8080, 8443, 8009?? 
-		</P>
-	</UL>
-	<LI><P STYLE="margin-bottom: 0in">Host localhost 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Turning on Access Logging 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Starting and Stopping Tomcat:
+	</li><li>Configuring Tomcat in server.xml
+	<ul>
+		<li>Ports: 8080, 8443, 8009??
+	</li></ul>
+	</li><li>Host localhost
+	</li><li>Turning on Access Logging
+	</li><li>Starting and Stopping Tomcat:
 	watching log files, simple start up troubleshooting 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Tomcat Security Illustrated By
+	</li><li>Tomcat Security Illustrated By
 	Enabling the Tomcat Manager 
-	</P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in">Use a Firewall (covered
+	<ul>
+		<li>Use a Firewall (covered
 		elsewhere) 
-		</P>
-	</UL>
-	<LI><P STYLE="margin-bottom: 0in">Using Authentication to Restrict
+	</li></ul>
+	</li><li>Using Authentication to Restrict
 	Access to Tomcat Applications 
-	</P>
-	<UL>
-		<UL>
-			<LI><P STYLE="margin-bottom: 0in">The Tomcat Manager Application 
-			</P>
-		</UL>
-	</UL>
-	<LI><P STYLE="margin-bottom: 0in">tomcat-users.xml 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Configuring tomcat-users to Allow
+	<ul>
+		<ul>
+			<li>The Tomcat Manager Application
+		</li></ul>
+	</ul>
+	</li><li>tomcat-users.xml
+	</li><li>Configuring tomcat-users to Allow
 	a User to Execute the Manager 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Using Digested Passwords 
-	</P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in">Enabling Secure Communication Via
+	</li><li>Using Digested Passwords
+	<ul>
+		<li>Enabling Secure Communication Via
 		SSL 
-		</P>
-		<UL>
-			<LI><P STYLE="margin-bottom: 0in">Creating a Self-Signed
+		<ul>
+			<li>Creating a Self-Signed
 			Certificate 
-			</P>
-		</UL>
-	</UL>
-	<LI><P STYLE="margin-bottom: 0in">Configure Tomcat to Use SSL
+		</li></ul>
+	</li></ul>
+	</li><li>Configure Tomcat to Use SSL
 	Encryption: server.xml (again) 
-	</P>
-	<UL>
-		<LI><P>Other Tomcat Security Resources 
-		</P>
-	</UL>
-</UL>
-<H3>2:00 Tour of Production Installation (John)</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">TDS Remote Management 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Logs 
-	</P>
-	<UL>
-		<LI><P STYLE="margin-bottom: 0in">catalina.out 
-		</P>
-	</UL>
-	<LI><P STYLE="margin-bottom: 0in">threddsServer.log 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">catalogErrors.log 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">access</P>
-	<LI><P STYLE="margin-bottom: 0in">Tomcat Manager application
+	<ul>
+		<li><p>Other Tomcat Security Resources 
+		</p>
+	</li></ul>
+</li></ul>
+<h3>2:00 Tour of Production Installation (John)</h3>
+<ul>
+	<li>TDS Remote Management
+	</li><li>Logs
+	<ul>
+		<li>catalina.out
+	</li></ul>
+	</li><li>threddsServer.log
+	</li><li>catalogErrors.log
+	</li><li>access
+	</li><li>Tomcat Manager application
 	(deploy, start, stop a web-app) 
-	</P>
-	<LI><P>threddsConfig.xml</P>
-</UL>
-<H3>3:00 Break</H3>
-<H3>4:00 Writing and maintaining catalogs (Ethan) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Catalog Primer [???move to
+	</li><li><p>threddsConfig.xml</p>
+</li></ul>
+<h3>3:00 Break</h3>
+<h3>4:00 Writing and maintaining catalogs (Ethan) 
+</h3>
+<ul>
+	<li>Catalog Primer [???move to
 	3.catalog.xml above] 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">TDS Catalog Configuration 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">DatasetScan 
-	</P>
-	<LI><P>CatalogGen 
-	</P>
-</UL>
-<H3>Evening - dinner at Flagstaff house or Subway</H3>
-<H2>Tuesday</H2>
-<H3>8:30 Enhanced Catalogs (Ethan) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Annotated Example 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Metadata Extraction 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Digital Library Harvesting 
-	</P>
-	<LI><P>Metadata standards 
-	</P>
-</UL>
-<H3>9:30 Using NcML in TDS (John) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Dataset Modification/Dataset
+	</li><li>TDS Catalog Configuration
+	</li><li>DatasetScan
+	</li><li><p>CatalogGen 
+	</p>
+</li></ul>
+<h3>Evening - dinner at Flagstaff house or Subway</h3>
+<h2>Tuesday</h2>
+<h3>8:30 Enhanced Catalogs (Ethan) 
+</h3>
+<ul>
+	<li>Annotated Example
+	</li><li>Metadata Extraction
+	</li><li>Digital Library Harvesting
+	</li><li><p>Metadata standards 
+	</p>
+</li></ul>
+<h3>9:30 Using NcML in TDS (John) 
+</h3>
+<ul>
+	<li>Dataset Modification/Dataset
 	Aggregation 
-	</P>
-	<LI><P>Forecast Model Aggregation 
-	</P>
-</UL>
-<H3>10:30 Break</H3>
-<H3>11:00 Production Installation - Advanced (Robb) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Creating user “tomcat” with
-	limited permissions.</P>
-	<LI><P STYLE="margin-bottom: 0in">Using a Firewall to close all
+	</li><li><p>Forecast Model Aggregation 
+	</p>
+</li></ul>
+<h3>10:30 Break</h3>
+<h3>11:00 Production Installation - Advanced (Robb) 
+</h3>
+<ul>
+	<li>Creating user &quot;tomcat&quot; with
+	limited permissions.
+	</li><li>Using a Firewall to close all
 	ports except ports 8080 and 8443. 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Using IP Filters to deny access to
+	</li><li>Using IP Filters to deny access to
 	users abusing the TDS 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Upgrading SSL security level by
+	</li><li>Upgrading SSL security level by
 	creating a  CA (Certificate Authority) signed key 
-	</P>
-	<LI><P>Configuring Apache/Tomcat so that Tomcat runs as a proxy
+	</li><li>Configuring Apache/Tomcat so that Tomcat runs as a proxy
 	through Apache 
-	</P>
-</UL>
-<H3>12:00 Lunch</H3>
-<H3>1:00 Advanced TDS management (John) 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">Performance 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Viewers 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Restricting Access to Datasets 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">Adding your own Authenticator for
+</li></ul>
+<h3>12:00 Lunch</h3>
+<h3>1:00 Advanced TDS management (John) 
+</h3>
+<ul>
+	<li>Performance
+	</li><li>Viewers
+	</li><li>Restricting Access to Datasets
+	</li><li>Adding your own Authenticator for
 	Restricting Access 
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">TroubleShooting 
-	</P>
-	<LI><P>Tips 
-	</P>
-</UL>
-<H3>2:30 Break 
-</H3>
-<H3>3:00 TDS IDD Configuration (Robb)</H3>
-<UL>
-	<LI><P>What is the IDD?</P>
-	<UL>
-		<LI><P>Configuring the TDS to use IDD catalogs.</P>
-		<LI><P>Configuring the IDD/LDM to make predetermined data
-		structures.</P>
-		<LI><P>Managing the IDD datasets.</P>
-		<LI><P>Performance enhancements by GRIB indexing</P>
-	</UL>
-</UL>
-<H3>4:00 Serving Datasets - Examples 
-</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">The LEAD Project use of TDS (Tom) 
-	</P>
-	<LI><P>TDR (Anne) 
-	</P>
-</UL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<HR>
-<ADDRESS STYLE="margin-bottom: 0.2in"><IMG SRC="../images/thread.png" NAME="graphics2" ALIGN=BOTTOM WIDTH=110 HEIGHT=108 BORDER=0>
-</ADDRESS>
-<P>&nbsp; 
-</P>
-</BODY>
-</HTML>
+	</li><li>TroubleShooting
+	</li><li><p>Tips 
+	</p>
+</li></ul>
+<h3>2:30 Break 
+</h3>
+<h3>3:00 TDS IDD Configuration (Robb)</h3>
+<ul>
+	<li><p>What is the IDD?</p>
+	<ul>
+		<li><p>Configuring the TDS to use IDD catalogs.</p>
+		</li><li><p>Configuring the IDD/LDM to make predetermined data
+		structures.</p>
+		</li><li><p>Managing the IDD datasets.</p>
+		</li><li><p>Performance enhancements by GRIB indexing</p>
+	</li></ul>
+</li></ul>
+<h3>4:00 Serving Datasets - Examples 
+</h3>
+<ul>
+	<li>The LEAD Project use of TDS (Tom)
+	</li><li><p>TDR (Anne) 
+	</p>
+</li></ul>
+<br>
+<hr>
+<address style="margin-bottom: 0.2in;"><img src="../images/thread.png" name="graphics2" align="bottom" border="0" height="108" width="110" alt="THREDDS">
+</address>
+<p>&nbsp; 
+</p>
+</body></html>
