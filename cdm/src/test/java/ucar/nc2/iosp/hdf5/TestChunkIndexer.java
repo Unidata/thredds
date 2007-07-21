@@ -36,7 +36,7 @@ public class TestChunkIndexer extends TestCase {
   }
 
   public void test() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestH5.openH5("IASI.h5");
+    NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5");
     Group root = ncfile.getRootGroup();
     Group g1 = root.findGroup("U-MARF");
     Group g2 = g1.findGroup("EPS");
@@ -61,7 +61,7 @@ public class TestChunkIndexer extends TestCase {
   }
 
   public void testa() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = TestH5.openH5("IASI.h5");
+    NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5");
     Variable v2 = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA");  // chunked short
     assert v2 != null;
 

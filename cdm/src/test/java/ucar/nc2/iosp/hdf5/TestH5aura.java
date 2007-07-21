@@ -10,14 +10,14 @@ import java.io.*;
 
 /** Test nc2 read JUnit framework. */
 
-public class TestH5eos extends TestCase {
+public class TestH5aura extends TestCase {
 
-  public TestH5eos(String name) {
+  public TestH5aura(String name) {
     super(name);
   }
 
   public void test1() {
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.open("C:/data/hdf5/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5");
   }
 
@@ -75,7 +75,7 @@ public class TestH5eos extends TestCase {
   }
 
   public static void main(String[] args) {
-    TestH5eos test = new TestH5eos("fake");
+    TestH5aura test = new TestH5aura("fake");
     //test.readAllData( "c:/data/hdf5/msg/test.h5");
     //test.readAllData( "c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
     test.testEosMetadata();

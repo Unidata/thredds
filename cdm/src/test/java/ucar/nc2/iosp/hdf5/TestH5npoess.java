@@ -31,10 +31,10 @@ import junit.framework.TestCase;
  * @author caron
  * @since Jul 18, 2007
  */
-public class TestNpoess extends TestCase {
+public class TestH5npoess extends TestCase {
 
   public void test1() throws InvalidRangeException, IOException {
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.open(TestAll.upcShareTestDataDir+"satellite/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
+    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    TestH5read.readAllData(TestAll.upcShareTestDataDir+"satellite/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5");
   }
 }

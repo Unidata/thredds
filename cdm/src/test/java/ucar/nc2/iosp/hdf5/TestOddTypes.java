@@ -27,6 +27,7 @@ import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.TestAll;
 
 import java.io.IOException;
 
@@ -69,6 +70,16 @@ public class TestOddTypes extends TestCase {
   // not supporting bitfield, poor documentation
   public void testBitfield() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5");
+  }
+
+  public void testAttString() throws InvalidRangeException, IOException {
+    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    NetcdfFile ncfile = TestH5.openH5("support/attstr.h5");
+  }
+
+  public void testCompoundString() throws InvalidRangeException, IOException {
+    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    TestH5read.readAllData(TestAll.upcShareTestDataDir + "hdf5/support/cstr.h5");
   }
 
 

@@ -87,7 +87,7 @@ class H5header {
   private long actualSize, baseAddress;
   private byte sizeOffsets, sizeLengths;
   private boolean isOffsetLong, isLengthLong;
-  private boolean v3mode = false;
+  //private boolean v3mode = false;
   private Map<String, DataObject> hashDataObjects = new HashMap<String, DataObject>(100);
   private Map<Long, Group> hashGroups = new HashMap<Long, Group>(100);
 
@@ -316,8 +316,8 @@ class H5header {
         dataType = getNCtype(hdfType, byteSize);
         byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
-      } else if (hdfType == 3) { // string
-        dataType = v3mode ? DataType.CHAR : DataType.STRING;
+      } else if (hdfType == 3) { // fixed length strings. String is used for Vlen type = 1
+        dataType = DataType.CHAR;
 
       } else if (hdfType == 4) { // bit field
         dataType = getNCtype(hdfType, byteSize);
@@ -389,8 +389,8 @@ class H5header {
           return null;
         }
 
-      } else if (type == 3) {
-        return v3mode ? DataType.CHAR : DataType.STRING;
+      } else if (type == 3) {  // fixed length strings. String is used for Vlen type = 1
+        return DataType.CHAR;
 
       } else {
         debugOut.println("WARNING not handling hdf type = " + type + " size= " + size);
@@ -410,6 +410,9 @@ class H5header {
       }
       if (mfp != null) buff.append(" hasFilter");
       buff.append("; // ").append(extraInfo());
+      if (null != ndo)
+        buff.append("\n").append(ndo);
+
       return buff.toString();
     }
 
@@ -428,7 +431,7 @@ class H5header {
       return dataType;
     }
 
-    public String toStringDebug(String name) {
+    /* public String toStringDebug(String name) {
       if (address < 0) return null;
 
       java.io.PrintStream save = debugOut;
@@ -446,7 +449,7 @@ class H5header {
       debugOut.println("vinfo=" + this);
       debugOut = save;
       return bos.toString();
-    }
+    } */
 
   } // Vinfo
 
@@ -705,11 +708,14 @@ class H5header {
       return count;
     }
 
-    private void dumpInfo() {
-      debugOut.println("\nDataObject= " + name + " id= " + address);
-      debugOut.println(" messages= ");
+    public String toString() {
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append("DataObject= " + name + " id= " + address);
+      sbuff.append(" messages= ");
       for (Message message : messages)
-        debugOut.println(message);
+        sbuff.append("\n  ").append(message);
+
+      return sbuff.toString();
     }
 
   } // DataObject
@@ -895,9 +901,13 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append(" dim length,max,permute ");
-      for (int i = 0; i < dim.length; i++)
-        sbuff.append(i).append("=(").append(dim[i]).append(",").append(maxLength[i]).append(",").append(permute[i]).append(") ");
+      sbuff.append(" length=(");
+      for (int i = 0; i < dim.length; i++) sbuff.append(dim[i]).append(",");
+      sbuff.append(") max=(");
+      for (int i = 0; i < dim.length; i++) sbuff.append(maxLength[i]).append(",");
+      sbuff.append(") permute=(");
+      for (int i = 0; i < dim.length; i++) sbuff.append(permute[i]).append(",");
+      sbuff.append(")");
       return sbuff.toString();
     }
 
@@ -975,7 +985,7 @@ class H5header {
       byteSize = raf.readInt();
       byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
-      if (debugDetail) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
+      if (debug1) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
           flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
           + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
 
@@ -1103,11 +1113,14 @@ class H5header {
       value = new byte[size];
       raf.read(value);
 
-      if (debug1) {
-        debugOut.print("   FillValueOld size= " + size + " value=");
-        for (int i = 0; i < size; i++) debugOut.print(" " + value[i]);
-        debugOut.println();
-      }
+      if (debug1) debugOut.println(this);
+    }
+
+    public String toString() {
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append("   FillValueOld size= " + size + " value=");
+      for (int i = 0; i < size; i++) sbuff.append(" " + value[i]);
+      return sbuff.toString();
     }
   }
 
@@ -1130,13 +1143,16 @@ class H5header {
           raf.read(value);
       }
 
-      if (debug1) {
-        debugOut.print("   FillValue version= " + version + " spaceAllocateTime = " +
+      if (debug1) debugOut.println(this);
+    }
+
+    public String toString() {
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append("   FillValue version= " + version + " spaceAllocateTime = " +
             spaceAllocateTime + " fillWriteTime=" + fillWriteTime + " fillDefined= " + fillDefined +
             " size = " + size + " value=");
-        for (int i = 0; i < size; i++) debugOut.print(" " + value[i]);
-        debugOut.println();
-      }
+      for (int i = 0; i < size; i++) sbuff.append(" " + value[i]);
+      return sbuff.toString();
     }
   }
 
@@ -1148,11 +1164,18 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append(" dataAddress=").append(dataAddress).append(" storageSize = ");
+      switch (type) {
+        case 0 : sbuff.append("compact"); break;
+        case 1 : sbuff.append("contiguous"); break;
+        case 2 : sbuff.append("chunked"); break;
+        default : sbuff.append("unkown type= "+type);
+      }
+      sbuff.append(" storageSize = (");
       for (int i = 0; i < ndims; i++) {
         if (i > 0) sbuff.append(",");
         sbuff.append(storageSize[i]);
       }
+      sbuff.append(") dataAddress=").append(dataAddress);
       return sbuff.toString();
     }
 
@@ -1317,6 +1340,10 @@ class H5header {
     void read() throws IOException {
       name = readString(raf, -1);
     }
+
+    public String toString() {
+      return name;
+    }
   }
 
   // Message Type 14/0xE ( p 55) "Last Modified (old)" : last modified date represented as a String YYMM etc. use message type 18 instead
@@ -1328,6 +1355,10 @@ class H5header {
       raf.read(s);
       datemod = new String(s);
       if (debug1) debugOut.println("   MessageLastModifiedOld=" + datemod);
+    }
+
+    public String toString() {
+      return datemod;
     }
   }
 
@@ -1362,6 +1393,10 @@ class H5header {
       version = raf.readByte();
       raf.skipBytes(3); // skip byte
       secs = raf.readInt();
+    }
+
+    public String toString() {
+      return new Date(secs * 1000).toString();
     }
   }
 
@@ -2019,7 +2054,7 @@ class H5header {
         if (ndo.isVariable) {
 
           if (debugReference && ndo.mdt.type == 7)
-            ndo.dumpInfo();
+            debugOut.println(ndo);
 
           Variable v = makeVariable(ndo.name, ndo.messages, getFileOffset(ndo.msl.dataAddress), ndo.mdt,
               ndo.msl, ndo.mds, ndo.mfp);
@@ -2132,12 +2167,16 @@ class H5header {
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.hdfType);
       return null;
     }
+
     v.setSPobject(vinfo);
     vinfo.setOwner(v);
     v.setCaching(false);
     if (debug1) debugOut.println("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
 
-    return new Attribute(attName, v.read());
+    //Object data = H5iosp.readData( Variable v2, Indexer index, DataType dataType, int[] shape);
+
+    ucar.ma2.Array data = v.read();
+    return new Attribute(attName, data);
   }
 
   /*
@@ -2222,7 +2261,7 @@ class H5header {
 
     // special case of variable length strings
     if (v.getDataType() == DataType.STRING)
-      v.setElementSize(16); // because the array has elemnts that are HeapIdentifier
+      v.setElementSize(16); // because the array has elements that are HeapIdentifier
 
     v.setSPobject(vinfo);
     vinfo.setOwner(v);
@@ -2241,6 +2280,10 @@ class H5header {
 
     if (!vinfo.signed)
       v.addAttribute(new Attribute("_unsigned", "true"));
+
+    // debugging
+    if (vinfo.hdfType == 7)  debugOut.println("WARN:  Variable " + name + " is a Reference type");
+    if (vinfo.mfp != null)  debugOut.println("WARN:  Variable " + name + " has a Filter");
 
     return v;
   }
@@ -2303,8 +2346,9 @@ class H5header {
     }
 
     try {
-      // do this in V3mode
-      if ((mdt.type == 3) && v3mode) { // string - gotta add string dimensions
+      // LOOK only for attributes ??
+      if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
+
         if (dim == null) // scalar string member variable
           v.setDimensionsAnonymous(new int[]{mdt.byteSize});
         else {

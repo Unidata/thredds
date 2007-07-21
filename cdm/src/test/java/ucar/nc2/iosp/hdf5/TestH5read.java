@@ -20,6 +20,7 @@ public class TestH5read extends TestCase {
   }
 
   public void testSamples() {
+    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/support");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/samples");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/complex");
@@ -30,8 +31,8 @@ public class TestH5read extends TestCase {
   }
 
   public void testAll() {
-    //readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
-    //readAllDir( TestAll.upcShareTestDataDir + "hdf5/IASI");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/IASI");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/wrf");
   }
 

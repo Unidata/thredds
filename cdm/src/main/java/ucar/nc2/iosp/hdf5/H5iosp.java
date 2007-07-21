@@ -245,14 +245,14 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
       return asw;
 
-     } else if (dataType == DataType.ENUM) {  // LOOK - must be based on the parent type
-       int[] pa = new int[size];
-       while (index.hasNext()) {
-         Indexer.Chunk chunk = index.next();
-         myRaf.seek ( chunk.getFilePos());
-         myRaf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
-       }
-       return pa;
+    } else if (dataType == DataType.ENUM) {  // LOOK - must be based on the parent type
+      int[] pa = new int[size];
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        myRaf.seek ( chunk.getFilePos());
+        myRaf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+      }
+      return pa;
     }
 
     throw new IllegalStateException();
@@ -756,7 +756,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
       H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
-      return vinfo.toStringDebug( v.getName());
+      return vinfo.toString();
     }
     return null;
   }
