@@ -20,7 +20,6 @@
  */
 package ucar.nc2;
 
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
@@ -51,6 +50,9 @@ public class TestCompare {
     showEach = _showEach;
     compareData = _compareData;
 
+    System.out.println("Original= "+org);
+    System.out.println("Copy= "+copy);
+
     if ((org.getId() != null) || (copy.getId() != null))
       assert org.getId().equals( copy.getId());
     if ((org.getTitle() != null) || (copy.getTitle() != null))
@@ -76,7 +78,7 @@ public class TestCompare {
     List<Variable> varsOrg = org.getVariables();
     for (Variable orgV : varsOrg) {
       Variable copyVar = copy.findVariable(orgV.getShortName());
-      assert copyVar != null;
+      assert copyVar != null : orgV.getShortName();
       compareVariables(orgV, copyVar);
     }
 
@@ -162,11 +164,11 @@ public class TestCompare {
     if (index2 < 0)
       System.out.println(); // grab in debugger
 
-    assert (index2 >= 0) : want1 + " not in list 2";
+    assert (index2 >= 0) : want1.getClass().getName() +" "+want1 + " not in list 2";
     Object want2 = list2.get( index2);
 
     int index1 = list1.indexOf( want2);
-    assert (index1 >= 0) : want2 + " not in list 1";
+    assert (index1 >= 0) :  want2.getClass().getName() +" "+want2 + " not in list 1";
     Object want = list1.get( index1);
     assert want == want1: want1 + " not == "+ want;
 

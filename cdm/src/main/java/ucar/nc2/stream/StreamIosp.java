@@ -21,6 +21,9 @@ package ucar.nc2.stream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.unidata.io.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -31,22 +34,23 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Jul 18, 2007
  */
-public class StreamIosp {
+public class StreamIosp { // extends AbstractIOServiceProvider {
 
-  private NetcdfFileWriteable ncfile;
-  private DataInputStream in;
   private boolean debug = true;
 
-  /**
-   * Read a "stream format"  and write it to a Netcdf-3 file
-   *
-   * @param ncfile write to this NetcdfFileWriteable
-   * @param in     read from this stream
-   * @throws IOException on i/o error
-   */
-  public StreamIosp(NetcdfFileWriteable ncfile, DataInputStream in) throws IOException, InvalidRangeException {
-    this.ncfile = ncfile;
-    this.in = in;
+  /* public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    // this is the first time we try to read the file - if theres a problem we get a IOException
+    raf.seek(0);
+    byte[] magicb = new byte[8];
+    readBytes(magicb);
+    String magicS = new String(magicb);
+    return magicS.equals(StreamWriter.MAGIC_FILE);
+  }
+
+  /* public void open(ucar.unidata.io.RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    
+    if (!isValidFile(raf)) throw new IllegalArgumentException("Not a NetCDF Stream file");
+
 
     while (true) {
       String magic = readMagic();
@@ -276,7 +280,7 @@ public class StreamIosp {
    * @param buffer the array to read characters into
    * @param start  the offset in the array to start storing characters
    * @param length the number of characters to read
-   */
+   *
   public void readChars(char[] buffer, int start, int length) throws IOException {
     final int end = start + length;
     for (int i = start; i < end; i++) {
@@ -291,7 +295,7 @@ public class StreamIosp {
             | ((readByte() & 0x3F) << 6)
             | (readByte() & 0x3F));
     }
-  }
+  } */
 
 
 }

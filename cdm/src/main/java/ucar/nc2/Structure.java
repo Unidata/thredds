@@ -213,7 +213,11 @@ public class Structure extends Variable {
   }
 
   /**
-   * @return the StructureMembers object corresponding to this Structure.
+   * Create a StructureMembers object that describes this Structure.
+   * CAUTION: Do not use for iterating over a StructureData or ArrayStructure - get the StructureMembers object
+   * directly from the StructureData or ArrayStructure.
+   *
+   * @return a StructureMembers object that describes this Structure.
    */
   public StructureMembers makeStructureMembers() {
     //if (smembers == null) {

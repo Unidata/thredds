@@ -75,7 +75,7 @@ class H5chunkFilterIndexer extends Indexer {
     this.chunk = new Chunk(0L, contNumElems, 0);
   }
 
-  void setChunkOffset( long[] offset) {
+  void setChunkOffset( int[] offset) {
     //if (debugNext) H5header.debugOut.println(" setChunkOffset = "+);
     resultIndex.setOffset( offset);
     chunkNumElemsDone = 0;
@@ -110,8 +110,8 @@ class H5chunkFilterIndexer extends Indexer {
       if (rank < 2) return;
       current[rank-2]++;
     }
-    private void setOffset(long[] offset) {
-      for (int i=0; i<rank; i++) current[i] = (int) offset[i];
+    private void setOffset(int[] offset) {
+      for (int i=0; i<rank; i++) current[i] = offset[i];
     }
   }
 

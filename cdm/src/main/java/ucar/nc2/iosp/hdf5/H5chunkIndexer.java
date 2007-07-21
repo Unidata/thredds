@@ -181,8 +181,8 @@ class H5chunkIndexer extends Indexer {
       if (rank < 2) return;
       current[rank-2]++;
     }
-    private void setOffset(long[] offset) {
-      for (int i=0; i<rank; i++) current[i] = (int) offset[i];
+    private void setOffset(int[] offset) {
+      for (int i=0; i<rank; i++) current[i] = offset[i];
     }
     private int getRemainingInRow() { return shape[rank-1] - current[rank-1]; }
   }

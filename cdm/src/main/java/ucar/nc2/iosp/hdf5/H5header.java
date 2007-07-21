@@ -292,7 +292,7 @@ class H5header {
       this.dataPos = dataPos;
 
       if (!mdt.isOK) {
-        debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling " + mdt);        
+        debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling " + mdt);
         return; // not a supported datatype
       }
 
@@ -1228,7 +1228,7 @@ class H5header {
       sbuff.append("   MessageFilter version=" + version + " nfilters=" + nfilters+"\n");
       for (Filter f : filters)
         sbuff.append(" ").append(f).append("\n");
-      return sbuff.toString();      
+      return sbuff.toString();
     }
 
     class Filter {

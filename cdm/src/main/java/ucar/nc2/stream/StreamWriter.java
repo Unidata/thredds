@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.io.*;
 
 /**
- * file = {segment}
+ * file = magic_file, {segment}
  * segment = head_segment | data_segment
  * <p/>
  * head_segment = magic_head, {head_subsection}
@@ -47,8 +47,9 @@ import java.io.*;
  * @since Jul 12, 2007
  */
 public class StreamWriter {
+  static final String MAGIC_FILE = "CDFSver0";
   static final String MAGIC_DATA = "Data";
-  static final String MAGIC_HEADER = "CDFS";
+  static final String MAGIC_HEADER = "Head";
   static final String MAGIC_EOF = "EOF\n";
 
   static final String MAGIC_ATTS = "Atts";
@@ -69,6 +70,8 @@ public class StreamWriter {
   public StreamWriter(NetcdfFile ncfile, DataOutputStream out, boolean useRecord) throws IOException, InvalidRangeException {
     this.ncfile = ncfile;
     this.out = out;
+
+    writeMagic(MAGIC_FILE);
 
     if (useRecord) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     writeHeader(useRecord);
@@ -154,7 +157,7 @@ public class StreamWriter {
   }
 
   int writeMagic(String magic) throws IOException {
-    assert magic.length() == 4;
+    //assert magic.length() == 4;
     return writeBytes(magic.getBytes());
   }
 
@@ -369,8 +372,8 @@ public class StreamWriter {
       }
 
       StructureData sdata = iter.next();
-      for (StructureMembers.Member m : sm.getMembers()) {
-        Array data = sdata.getArray(m);
+      for (StructureMembers.Member m : sdata.getMembers()) {
+        Array data = sdata.getArray(m.getName());
         count += writeData(m.getDataType(), data);
       }
       recno++;
@@ -459,40 +462,6 @@ public class StreamWriter {
       }
     }
     return count;
-  }
-
-  static public void main(String args[]) throws IOException, InvalidRangeException {
-
-    long start = System.currentTimeMillis();
-    String filenameIn = "C:/data/metars/Surface_METAR_20070329_0000.nc";
-    //String filenameIn = "C:/dev/thredds/cdm/src/test/data/testWriteRecord.nc";
-    File f = new File(filenameIn);
-    long size = f.length();
-    //String filenameIn = "C:/data/test2.nc";
-    String filenameStream = "C:/temp/stream.ncs";
-    String filenameOut = "C:/temp/copy.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filenameIn);
-
-    DataOutputStream streamFile = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filenameStream), 10 * 1000));
-    StreamWriter writer = new StreamWriter(ncfile, streamFile, true);
-    ncfile.close();
-    streamFile.close();
-
-    long took = System.currentTimeMillis() - start;
-    double rate = 0.001 * size / took;
-    System.out.println(" write to stream took = " + took + " msec = " + rate + " Mb/sec ");
-    start = System.currentTimeMillis();
-
-    DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(filenameStream), 10 * 1000));
-    NetcdfFileWriteable ncfilew = NetcdfFileWriteable.createNew(filenameOut, false);
-    Stream2Netcdf ncWriter = new Stream2Netcdf(ncfilew, in);
-    in.close();
-    ncfilew.close();
-
-    took = System.currentTimeMillis() - start;
-    rate = 0.001 * size / took;
-    System.out.println(" write stream to netcdf took = " + took + " msec = " + rate + " Mb/sec ");
-
   }
 
 }

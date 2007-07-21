@@ -50,6 +50,12 @@ public class Stream2Netcdf {
     this.ncfile = ncfile;
     this.in = in;
 
+    byte[] magicb = new byte[8];
+    readBytes(magicb);
+    String magicS = new String(magicb);
+    if (!magicS.equals(StreamWriter.MAGIC_FILE))
+      throw new IllegalArgumentException("Not a NetCDF Stream file");
+
     while (true) {
       String magic = readMagic();
 
