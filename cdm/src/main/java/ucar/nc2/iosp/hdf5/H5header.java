@@ -23,7 +23,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
-import ucar.nc2.iosp.Indexer;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -31,7 +30,6 @@ import ucar.ma2.Section;
 import java.util.*;
 import java.text.*;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 
 class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
@@ -87,14 +85,14 @@ class H5header {
   private long actualSize, baseAddress;
   private byte sizeOffsets, sizeLengths;
   private boolean isOffsetLong, isLengthLong;
-  //private boolean v3mode = false;
   private Map<String, DataObject> hashDataObjects = new HashMap<String, DataObject>(100);
   private Map<Long, Group> hashGroups = new HashMap<Long, Group>(100);
 
-  // netcdf 4 stuff
+  /* netcdf 4 stuff
   private boolean isNetCDF4;
   private Map<Integer, Dimension> dimTable = new HashMap<Integer, Dimension>();
-  private Map<String, Vatt> varTable = new HashMap<String, Vatt>();
+  private Map<String, Vatt> varTable = new HashMap<String, Vatt>(); */
+  //private boolean v3mode = false;
 
   private MemTracker memTracker;
 
@@ -120,7 +118,7 @@ class H5header {
   }
 
   private void readSuperBlock() throws IOException {
-    byte versionSB = -1, versionFSS = -1, versionGroup = -1, versionSHMF = -1;
+    byte versionSB, versionFSS = -1, versionGroup = -1, versionSHMF = -1;
     short btreeLeafNodeSize, btreeInternalNodeSize, storageInternalNodeSize;
     int fileFlags;
 
@@ -259,17 +257,18 @@ class H5header {
     Variable owner; // debugging
     DataObject ndo; // debugging
 
-    long address = -1;  // data object address, aka id
-    long dataPos; // LOOK for  regular variables, needs to be absolute, with baseAddress added if needed
-                  // for member variables, is the offset from start of structure
+    //long address = -1;  // data object address, aka id
+    long dataPos; // LOOK for regular variables, needs to be absolute, with baseAddress added if needed
+    // for member variables, is the offset from start of structure
 
     int hdfType;
     DataType dataType = null;
     int byteOrder = -1;
     boolean signed = true;
     int byteSize, vpad;
-    int[] storageSize; // for type 1 (continuous) : (dims, elemSize)
-                       // for type 2 (chunked)    : (chunkDim, elemSize)
+    int[] storageSize;  // for type 1 (continuous) : (varDims, elemSize)
+                        // for type 2 (chunked)    : (chunkDim, elemSize)
+                        // null for attributs
 
     // chunked stuff
     boolean isChunked = false;
@@ -283,28 +282,58 @@ class H5header {
     /**
      * Constructor
      *
-     * @param mdt     datatype
-     * @param msl     storage layout
-     * @param dataPos start of data in file
+     * @param ndo DataObject. always has an mdt and an msl
+     * @throws java.io.IOException on read error
      */
-    Vinfo(MessageDatatype mdt, MessageStorageLayout msl, long dataPos) throws IOException {
+    Vinfo(DataObject ndo) throws IOException {
+      this.ndo = ndo;
+      //this.address = ndo.address; 
+      this.hdfType = ndo.mdt.type;
+      this.byteSize = ndo.mdt.byteSize;
+      this.dataPos = getFileOffset(ndo.msl.dataAddress);
+      this.mfp = ndo.mfp;
+
+      if (!ndo.mdt.isOK) {
+        debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + ndo.mdt);
+        return; // not a supported datatype
+      }
+
+      this.isChunked = (ndo.msl.type == 2); // chunked vs. continuous storage
+      this.storageSize = ndo.msl.storageSize;
+
+      // figure out the data type
+      calcNCtype(ndo.mdt);
+    }
+
+    /**
+     * Constructor, used for reading attributes
+     *
+     * @param mdt     datatype
+     * @param dataPos start of data in file
+     * @throws java.io.IOException on read error
+     */
+    Vinfo(MessageDatatype mdt, long dataPos) throws IOException {
       this.byteSize = mdt.byteSize;
       this.dataPos = dataPos;
 
       if (!mdt.isOK) {
-        debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling " + mdt);
+        debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + mdt);
         return; // not a supported datatype
       }
 
-      this.isChunked = (msl != null) && (msl.type == 2); // chunked vs. continuous storage
-      if (msl != null)
-        this.storageSize = msl.storageSize;
-
-      if (isChunked) // make the data btree, but entries are not read in
-        btree = new DataBTree(dataPos, storageSize);
-
       // figure out the data type
       hdfType = mdt.type;
+      calcNCtype(mdt);
+    }
+
+    void setOwner(Variable owner) {
+      this.owner = owner;
+      if (btree != null) btree.setOwner(owner);
+    }
+
+    private void calcNCtype(MessageDatatype mdt) {
+      int hdfType = mdt.type;
+      int byteSize = mdt.byteSize;
       byte[] flags = mdt.flags;
 
       if (hdfType == 0) { // int, long, short, byte
@@ -345,21 +374,14 @@ class H5header {
 
       } else if (hdfType == 10) { // array
         byteOrder = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
-
         if ((mdt.parent.type == 9) && mdt.parent.isVString) {
           dataType = DataType.STRING;
         } else
           dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
 
       } else {
-
         debugOut.println("WARNING not handling hdf dataType = " + hdfType + " size= " + byteSize);
       }
-    }
-
-    void setOwner( Variable owner) {
-      this.owner = owner;
-      if (btree != null) btree.setOwner(owner);
     }
 
     private DataType getNCtype(int type, int size) {
@@ -373,8 +395,8 @@ class H5header {
         else if (size == 8)
           return DataType.LONG;
         else {
-          debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling hdf integer type (" + type + ") with size= " + size);
-          log.warn("HDF5 file "+ncfile.getLocation()+" not handling hdf integer type (" + type + ") with size= " + size);
+          debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + type + ") with size= " + size);
+          log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + type + ") with size= " + size);
           return null;
         }
 
@@ -384,8 +406,8 @@ class H5header {
         else if (size == 8)
           return DataType.DOUBLE;
         else {
-          debugOut.println("WARNING HDF5 file "+ncfile.getLocation()+" not handling hdf float type with size= " + size);
-          log.warn("HDF5 file "+ncfile.getLocation()+" not handling hdf float type with size= " + size);
+          debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
+          log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
           return null;
         }
 
@@ -394,7 +416,7 @@ class H5header {
 
       } else {
         debugOut.println("WARNING not handling hdf type = " + type + " size= " + size);
-        log.warn("HDF5 file "+ncfile.getLocation()+" not handling hdf type = " + type + " size= " + size);
+        log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf type = " + type + " size= " + size);
         return null;
       }
     }
@@ -404,8 +426,7 @@ class H5header {
       buff.append("dataPos=").append(dataPos).append(" byteSize=").append(byteSize).append(" datatype=").append(dataType).append(" (").append(hdfType).append(")");
       if (isChunked) {
         buff.append(" isChunked (");
-        for (int j = 0; j < storageSize.length; j++)
-          buff.append(storageSize[j]).append(" ");
+        for (int size : storageSize) buff.append(size).append(" ");
         buff.append(")");
       }
       if (mfp != null) buff.append(" hasFilter");
@@ -453,7 +474,7 @@ class H5header {
 
   } // Vinfo
 
-  private class Vatt {
+  /* private class Vatt {
     String name;
     List<Dimension> dimList;
 
@@ -461,7 +482,7 @@ class H5header {
       this.name = name;
       this.dimList = dimList;
     }
-  }
+  } */
 
   HeapIdentifier getHeapIdentifier(long address) throws IOException {
     return new HeapIdentifier(address);
@@ -562,7 +583,7 @@ class H5header {
     // or
     boolean isVariable;
     MessageDatatype mdt = null;
-    MessageSimpleDataspace mds = null;
+    MessageSimpleDataspace msd = null;
     MessageStorageLayout msl = null;
     MessageFilter mfp = null;
 
@@ -596,7 +617,6 @@ class H5header {
     // read a Data Object Header
     // no side effects, can be called multiple time for debugging
     private void read() throws IOException {
-
       if (debug1) debugOut.println("\n--> DataObject.read parsing <" + displayName + "> object ID/address=" + address);
       if (debugPos)
         debugOut.println("      DataObject.read now at position=" + raf.getFilePointer() + " for <" + displayName + "> reposition to " + getFileOffset(address));
@@ -622,9 +642,6 @@ class H5header {
       if (debugContinueMessage) debugOut.println(" nmessages read = " + count);
       if (debugPos) debugOut.println("<--done reading messages for <" + name + ">; position=" + raf.getFilePointer());
 
-      // sort messages for deterministic processing
-      // Collections.sort( messages);
-
       // look for group or a datatype/dataspace/layout message
       MessageGroup groupMessage = null;
 
@@ -632,7 +649,7 @@ class H5header {
         if (debugTracker) memTracker.addByLen("Message (" + displayName + ") " + mess.mtype, mess.start, mess.size + 8);
 
         if (mess.mtype == MessageType.SimpleDataspace)
-          mds = (MessageSimpleDataspace) mess.messData;
+          msd = (MessageSimpleDataspace) mess.messData;
         else if (mess.mtype == MessageType.Datatype)
           mdt = (MessageDatatype) mess.messData;
         else if (mess.mtype == MessageType.Layout)
@@ -710,7 +727,7 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("DataObject= " + name + " id= " + address);
+      sbuff.append("DataObject= ").append(name).append(" id= ").append(address);
       sbuff.append(" messages= ");
       for (Message message : messages)
         sbuff.append("\n  ").append(message);
@@ -902,11 +919,11 @@ class H5header {
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append(" length=(");
-      for (int i = 0; i < dim.length; i++) sbuff.append(dim[i]).append(",");
+      for (int size : dim) sbuff.append(size).append(",");
       sbuff.append(") max=(");
-      for (int i = 0; i < dim.length; i++) sbuff.append(maxLength[i]).append(",");
+      for (int aMaxLength : maxLength) sbuff.append(aMaxLength).append(",");
       sbuff.append(") permute=(");
-      for (int i = 0; i < dim.length; i++) sbuff.append(permute[i]).append(",");
+      for (int aPermute : permute) sbuff.append(aPermute).append(",");
       sbuff.append(")");
       return sbuff.toString();
     }
@@ -931,8 +948,7 @@ class H5header {
         for (int i = 0; i < ndims; i++)
           maxLength[i] = (int) readLength();
       } else {
-        for (int i = 0; i < ndims; i++)
-          maxLength[i] = dim[i];
+        System.arraycopy(dim, 0, maxLength, 0, ndims);
       }
 
       isPermuted = (flags & 0x02) != 0;
@@ -1010,10 +1026,10 @@ class H5header {
               " manSize= " + manSize + " expBias= " + expBias);
 
       } else if (type == 2) {  // time
-          short bitPrecision = raf.readShort();
-          if (debug1)
-            debugOut.println("   type 2 (time): bitPrecision= " + bitPrecision);
-          isOK = false;
+        short bitPrecision = raf.readShort();
+        if (debug1)
+          debugOut.println("   type 2 (time): bitPrecision= " + bitPrecision);
+        isOK = false;
 
       } else if (type == 4) { // bit field
         short bitOffset = raf.readShort();
@@ -1118,8 +1134,8 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("   FillValueOld size= " + size + " value=");
-      for (int i = 0; i < size; i++) sbuff.append(" " + value[i]);
+      sbuff.append("   FillValueOld size= ").append(size).append(" value=");
+      for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
       return sbuff.toString();
     }
   }
@@ -1148,10 +1164,8 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("   FillValue version= " + version + " spaceAllocateTime = " +
-            spaceAllocateTime + " fillWriteTime=" + fillWriteTime + " fillDefined= " + fillDefined +
-            " size = " + size + " value=");
-      for (int i = 0; i < size; i++) sbuff.append(" " + value[i]);
+      sbuff.append("   FillValue version= ").append(version).append(" spaceAllocateTime = ").append(spaceAllocateTime).append(" fillWriteTime=").append(fillWriteTime).append(" fillDefined= ").append(fillDefined).append(" size = ").append(size).append(" value=");
+      for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
       return sbuff.toString();
     }
   }
@@ -1165,10 +1179,17 @@ class H5header {
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
       switch (type) {
-        case 0 : sbuff.append("compact"); break;
-        case 1 : sbuff.append("contiguous"); break;
-        case 2 : sbuff.append("chunked"); break;
-        default : sbuff.append("unkown type= "+type);
+        case 0:
+          sbuff.append("compact");
+          break;
+        case 1:
+          sbuff.append("contiguous");
+          break;
+        case 2:
+          sbuff.append("chunked");
+          break;
+        default:
+          sbuff.append("unkown type= ").append(type);
       }
       sbuff.append(" storageSize = (");
       for (int i = 0; i < ndims; i++) {
@@ -1207,7 +1228,7 @@ class H5header {
   }
 
   // Message Type 11/0xB ( p 50) "Filter Pipeline" : apply a filter to the "data stream"
-  private class MessageFilter {
+  class MessageFilter {
     byte version, nfilters;
     Filter[] filters;
 
@@ -1223,48 +1244,51 @@ class H5header {
       }
     }
 
+    public Filter[] getFilters() { return filters; }
+
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("   MessageFilter version=" + version + " nfilters=" + nfilters+"\n");
+      sbuff.append("   MessageFilter version=").append(version).append(" nfilters=").append(nfilters).append("\n");
       for (Filter f : filters)
         sbuff.append(" ").append(f).append("\n");
       return sbuff.toString();
     }
+  }
 
-    class Filter {
-      short id, flags;
-      String name;
-      short nValues;
-      int[] data;
+  class Filter {
+    short id;
+    short flags;
+    String name;
+    short nValues;
+    int[] data;
 
-      Filter() throws IOException {
-        this.id = raf.readShort();
-        short nameSize = raf.readShort();
-        this.flags = raf.readShort();
-        nValues = raf.readShort();
+    Filter() throws IOException {
+      this.id = raf.readShort();
+      short nameSize = raf.readShort();
+      this.flags = raf.readShort();
+      nValues = raf.readShort();
 
-        long pos = raf.getFilePointer();
-        this.name = readString(raf, -1); // read at current pos
-        nameSize += padding(nameSize, 8);
-        raf.seek(pos + nameSize); // make it more robust for errors
+      long pos = raf.getFilePointer();
+      this.name = readString(raf, -1); // read at current pos
+      nameSize += padding(nameSize, 8);
+      raf.seek(pos + nameSize); // make it more robust for errors
 
-        data = new int[nValues];
-        for (int i=0; i<nValues; i++)
-          data[i] = raf.readInt();
-        if (nValues % 2 == 1)
-          raf.skipBytes(4);
+      data = new int[nValues];
+      for (int i = 0; i < nValues; i++)
+        data[i] = raf.readInt();
+      if (nValues % 2 == 1)
+        raf.skipBytes(4);
 
-        if (debug1) debugOut.println(this);
-      }
+      if (debug1) debugOut.println(this);
+    }
 
-      public String toString() {
-        StringBuffer sbuff = new StringBuffer();
-        sbuff.append( "   Filter id= " + id + " flags = " + flags +
-            " nValues=" + nValues + " name= " + name+" data = ");
-        for (int i=0; i<nValues;i++)
-           sbuff.append(data[i]).append(" ");
-        return sbuff.toString();
-      }
+
+    public String toString() {
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append("   Filter id= ").append(id).append(" flags = ").append(flags).append(" nValues=").append(nValues).append(" name= ").append(name).append(" data = ");
+      for (int i = 0; i < nValues; i++)
+        sbuff.append(data[i]).append(" ");
+      return sbuff.toString();
     }
   }
 
@@ -1327,7 +1351,7 @@ class H5header {
         DataObject referencedObject = new DataObject(null, "att", referencedObjectPos);
         referencedObject.read();
         mdt = referencedObject.mdt;
-        mds = referencedObject.mds;
+        mds = referencedObject.msd;
         dataPos = referencedObject.msl.dataAddress;
       }
     }
@@ -1419,7 +1443,7 @@ class H5header {
       this.dname = (name.length() == 0) ? "root" : name;
       this.btreeAddress = btreeAddress;
       this.nameHeapAddress = nameHeapAddress;
-      isNetCDF4 = name.equals("_netCDF");
+      //isNetCDF4 = name.equals("_netCDF");
 
       // track by address for hard links
       hashGroups.put(btreeAddress, this);
@@ -1610,17 +1634,17 @@ class H5header {
   class DataBTree {
     private Variable owner;
     private long rootNodeAddress;
-    private int[] storageSize;
-    private int ndim, wantType;
+    private Tiling tiling;
+    private int ndimStorage, wantType;
 
-    DataBTree(long rootNodeAddress, int[] storageSize) throws IOException {
+    DataBTree(long rootNodeAddress, int[] varShape, int[] storageSize) throws IOException {
       this.rootNodeAddress = rootNodeAddress;
-      this.storageSize = storageSize;
-      this.ndim = storageSize.length;
+      this.tiling = new Tiling(varShape, storageSize);
+      this.ndimStorage = storageSize.length;
       wantType = 1;
     }
 
-    void setOwner( Variable owner) {
+    void setOwner(Variable owner) {
       this.owner = owner;
     }
 
@@ -1628,39 +1652,48 @@ class H5header {
       return new DataChunkIterator(want);
     }
 
+    // An Iterator over the DataChunks in the btree.
+    // returns only the actual data from the btree leaf (level 0) nodes.
+    class DataChunkIterator {
+      private Node root;
+      private int[] wantOrigin;
 
-    class DataChunkIterator  {
-      Node node;
-      int[] wantOrigin;
-
+      /**
+       * Constructor
+       * @param want skip any nodes that are before this section
+       * @throws IOException on error
+       */
       DataChunkIterator(Section want) throws IOException {
-        node = new Node( rootNodeAddress, -1); // should we cache the nodes ???
+        root = new Node(rootNodeAddress, -1); // should we cache the nodes ???
         wantOrigin = (want != null) ? want.getOrigin() : null;
-        node.first(wantOrigin);
+        root.first(wantOrigin);
       }
 
       public boolean hasNext() {
-        return node.hasNext(); //  && !node.greaterThan(wantOrigin);
+        return root.hasNext(); //  && !node.greaterThan(wantOrigin);
       }
 
       public DataChunk next() throws IOException {
-        return node.next();
+        return root.next();
       }
     }
 
     class Node {
-      long address;
-      int level, nentries;
-      List<DataChunk> myEntries; // level 0
-      long[][] offset; // long[nentries][ndim]; // other levels
-      long[] childPointer; // long[nentries];
+      private long address;
+      private int level, nentries;
+      private Node currentNode;
 
-      int currentEntry; // track iteration
-      Node currentNode;
+      // level 0 only
+      private List<DataChunk> myEntries;
+      // level > 0 only
+      private int[][] offset; // int[nentries][ndim]; // other levels
+      private long[] childPointer; // long[nentries];
+
+      private int currentEntry; // track iteration
 
       Node(long address, long parent) throws IOException {
-        if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent+
-            " owner= " + owner.getNameAndDimensions()+" vinfo= "+owner.getSPobject());
+        if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
+            " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
 
         raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
         raf.seek(address);
@@ -1678,10 +1711,10 @@ class H5header {
         if (type != wantType)
           throw new IllegalStateException("DataBTree must be type " + wantType);
 
-        long size = 8 + 2 * sizeOffsets + nentries * (8 + sizeOffsets + 8 + ndim);
+        long size = 8 + 2 * sizeOffsets + nentries * (8 + sizeOffsets + 8 + ndimStorage);
         if (debugTracker) memTracker.addByLen("Data BTree (" + owner + ")", address, size);
         if (debugDataBtree)
-          debugOut.println("    type=" + type + " level=" + level + " nentries=" + nentries+" size = " + size);
+          debugOut.println("    type=" + type + " level=" + level + " nentries=" + nentries + " size = " + size);
 
         long leftAddress = readOffset();
         long rightAddress = readOffset();
@@ -1694,21 +1727,24 @@ class H5header {
           // read all entries as a DataChunk
           myEntries = new ArrayList<DataChunk>();
           for (int i = 0; i <= nentries; i++) {
-            DataChunk dc = new DataChunk(ndim, (i==nentries));
+            DataChunk dc = new DataChunk(ndimStorage, (i == nentries));
             myEntries.add(dc);
             if (debugDataChunk) debugOut.println(dc);
           }
         } else { // just track the offsets and node addresses
-          offset = new long [nentries+1][ndim];
-          childPointer = new long[nentries+1];
+          offset = new int[nentries + 1][ndimStorage];
+          childPointer = new long[nentries + 1];
           for (int i = 0; i <= nentries; i++) {
             raf.skipBytes(8); // skip size, filterMask
-            for (int j = 0; j < ndim; j++)
-              offset[i][j] = raf.readLong();
+            for (int j = 0; j < ndimStorage; j++) {
+              long loffset = raf.readLong();
+              assert loffset < Integer.MAX_VALUE;
+              offset[i][j] = (int) loffset;
+            }
             this.childPointer[i] = (i == nentries) ? -1 : readOffset();
             if (debugDataBtree) {
               debugOut.print("    childPointer=" + childPointer[i] + " =0x" + Long.toHexString(childPointer[i]));
-              for (long anOffset : offset[i]) debugOut.print(" "+anOffset);
+              for (long anOffset : offset[i]) debugOut.print(" " + anOffset);
               debugOut.println();
             }
           }
@@ -1721,14 +1757,14 @@ class H5header {
       // so keep skipping until want < offset(i+1)
       void first(int[] wantOrigin) throws IOException {
         if (level == 0) {
-          for (currentEntry=0; currentEntry<nentries; currentEntry++) {
-            DataChunk entry = myEntries.get(currentEntry+1);
-            if (lessThan(wantOrigin, entry.offset)) break;
+          for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
+            DataChunk entry = myEntries.get(currentEntry + 1);
+            if ((wantOrigin == null) || tiling.compare(wantOrigin, entry.offset) < 0) break;
           }
 
         } else {
-          for (currentEntry=0; currentEntry<nentries; currentEntry++) {
-            if (lessThan(wantOrigin, offset[currentEntry+1])) {
+          for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
+            if ((wantOrigin == null) || tiling.compare(wantOrigin, offset[currentEntry + 1]) < 0) {
               currentNode = new Node(childPointer[currentEntry], this.address);
               currentNode.first(wantOrigin);
               break;
@@ -1736,7 +1772,9 @@ class H5header {
           }
           assert currentNode != null;
         }
-        assert currentEntry<nentries;
+        if (nentries == 0)
+          System.out.println("hah");
+        assert (nentries == 0) || (currentEntry < nentries);
       }
 
       // LOOK - wouldnt be a bad idea to terminate if possible instead of running through all subsequent entries
@@ -1746,7 +1784,7 @@ class H5header {
 
         } else {
           if (currentNode.hasNext()) return true;
-          return currentEntry < nentries-1;
+          return currentEntry < nentries - 1;
         }
       }
 
@@ -1755,8 +1793,6 @@ class H5header {
           return myEntries.get(currentEntry++);
 
         } else {
-          if (currentNode == null)
-            System.out.println("hey");
           if (currentNode.hasNext())
             return currentNode.next();
 
@@ -1788,18 +1824,21 @@ class H5header {
 
     // these are part of the level 1A data structure, type 1
     // see "Key" field (type 1) p 10
+    // this is only for level 0
     class DataChunk {
       int size; // size of chunk in bytes; need storage layout dimensions to interpret
       int filterMask; // bitfield indicating which filters have been skipped for this chunk
-      long[] offset; // offset index of this chunk, reletive to entire array
-      long address; // address of a single raw data chunk (level 0) else address of another node
+      int[] offset; // offset index of this chunk, reletive to entire array
+      long address; // address of a single raw data chunk 
 
       DataChunk(int ndim, boolean last) throws IOException {
         this.size = raf.readInt();
         this.filterMask = raf.readInt();
-        offset = new long[ndim];
+        offset = new int[ndim];
         for (int i = 0; i < ndim; i++) {
-          offset[i] = raf.readLong();
+          long loffset = raf.readLong();
+          assert loffset < Integer.MAX_VALUE;
+          offset[i] = (int) loffset;
         }
         this.address = last ? -1 : readOffset();
         if (debugTracker) memTracker.addByLen("Chunked Data (" + owner + ")", address, size);
@@ -1813,16 +1852,15 @@ class H5header {
       }
     }
 
-
-    // is this offset less than the "wantOrigin" ?
-    private boolean lessThan(int[] wantOrigin, long[] offset) {
-      if (wantOrigin == null) return true;
-      int n = Math.min(offset.length, wantOrigin.length);
-      for (int i=0; i<n; i++) {
-        if (wantOrigin[i] < offset[i]) return true;
-      }
-      return false;
-    }
+    /* is this offset less than the "wantOrigin" ?
+   private boolean lessThan(int[] wantOrigin, long[] offset) {
+     if (wantOrigin == null) return true;
+     int n = Math.min(offset.length, wantOrigin.length);
+     for (int i=0; i<n; i++) {
+       if (wantOrigin[i] < offset[i]) return true;
+     }
+     return false;
+   } */
 
 
   } // DataBtree
@@ -2056,16 +2094,13 @@ class H5header {
           if (debugReference && ndo.mdt.type == 7)
             debugOut.println(ndo);
 
-          Variable v = makeVariable(ndo.name, ndo.messages, getFileOffset(ndo.msl.dataAddress), ndo.mdt,
-              ndo.msl, ndo.mds, ndo.mfp);
+          Variable v = makeVariable(ndo);
 
           if ((v != null) && (v.getDataType() != null)) {
             v.setParentGroup(ncGroup);
             ncGroup.addVariable(v);
 
             Vinfo vinfo = (Vinfo) v.getSPobject();
-            vinfo.address = ndo.address; // for debugging
-            vinfo.ndo = ndo;  // for debugging
 
             if (debugV) debugOut.println("  made Variable " + v.getName() + "  vinfo= " + vinfo + "\n" + v);
           }
@@ -2089,13 +2124,15 @@ class H5header {
   private void makeAttributes(String forWho, MessageAttribute matt, List<Attribute> attList) throws IOException {
     MessageDatatype mdt = matt.mdt;
 
-    if (isNetCDF4 && matt.name.startsWith("_ncdim_"))
+    /* if (isNetCDF4 && matt.name.startsWith("_ncdim_"))
       makeNC4Dimension(forWho, matt, mdt);
 
     else if (isNetCDF4 && matt.name.startsWith("_ncvar_"))
       makeNC4Variable(forWho, matt, mdt);
 
-    else if (mdt.type == 6) { // structure : make seperate attribute for each member
+    else */
+
+    if (mdt.type == 6) { // structure : make seperate attribute for each member
       for (StructureMember m : mdt.members) {
         //String attName = matt.name + "." + m.name;
         //if ((prefix != null) && (prefix.length() > 0)) attName = prefix + "." + attName;
@@ -2118,7 +2155,7 @@ class H5header {
     raf.order(RandomAccessFile.LITTLE_ENDIAN);
   }
 
-  private void makeNC4Dimension(String varName, MessageAttribute matt, MessageDatatype mdt) throws IOException {
+  /* private void makeNC4Dimension(String varName, MessageAttribute matt, MessageDatatype mdt) throws IOException {
     Attribute attLen = null, attName = null;
     for (StructureMember m : mdt.members) {
       Attribute att = makeAttribute(varName, m.name, m.mdt, matt.mds, matt.dataPos + m.offset);
@@ -2157,12 +2194,12 @@ class H5header {
     }
     varTable.put(matt.name, new Vatt(name, dimList));
     if (debug1) debugOut.println("makeNC4Variable " + matt.name);
-  }
+  } */
 
   private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageSimpleDataspace mds, long dataPos) throws IOException {
     attName = NetcdfFile.createValidNetcdfObjectName(attName); // look cannot search by name
     Variable v = new Variable(ncfile, null, null, attName); // LOOK null group
-    Vinfo vinfo = new Vinfo(mdt, null, dataPos);
+    Vinfo vinfo = new Vinfo(mdt, dataPos);
     if (!makeVariableShapeAndType(v, mdt, mds, vinfo)) {
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.hdfType);
       return null;
@@ -2184,32 +2221,31 @@ class H5header {
      A structure member only has Datatype.
      An array is specified through Datatype=10. Storage is speced in the parent.
      dataPos must be absolute.
-  */
-  private Variable makeVariable(String name, List<Message> messages, long dataPos,
-                                MessageDatatype mdt, MessageStorageLayout msl, MessageSimpleDataspace msd, MessageFilter mfp)
-      throws IOException {
 
-    Variable v;
-    Vinfo vinfo = new Vinfo(mdt, msl, dataPos);
+               Variable v = makeVariable(ndo.name, ndo.messages, getFileOffset(ndo.msl.dataAddress), ndo.mdt,
+              ndo.msl, ndo.mds, ndo.mfp)
+  */
+  private Variable makeVariable(DataObject ndo) throws IOException {
+
+    Vinfo vinfo = new Vinfo(ndo);
     if (vinfo.getNCDataType() == null) {
-      debugOut.println("SKIPPING DataType= " + vinfo.hdfType + " for variable " + name);
+      debugOut.println("SKIPPING DataType= " + vinfo.hdfType + " for variable " + ndo.name);
       return null;
     }
 
     // deal with filters, cant do SZIP
-    if (mfp != null) {
-      for (MessageFilter.Filter f : mfp.filters) {
+    if (ndo.mfp != null) {
+      for (Filter f : ndo.mfp.filters) {
         if (f.id == 4) {
-          debugOut.println("SKIPPING variable with SZIP Filter= " + mfp + " for variable " + name);
+          debugOut.println("SKIPPING variable with SZIP Filter= " + ndo.mfp + " for variable " + ndo.name);
           return null;
         }
       }
-      vinfo.mfp = mfp;
     }
 
     // find fill value
     Attribute fillAttribute = null;
-    for (Message mess : messages) {
+    for (Message mess : ndo.messages) {
       if (mess.mtype == MessageType.FillValue) {
         MessageFillValue fvm = (MessageFillValue) mess.messData;
         if (fvm.size > 0)
@@ -2222,14 +2258,14 @@ class H5header {
       }
 
       if (vinfo.fillValue != null) {
-        Object fillValue = H5iosp.convert( vinfo.fillValue, vinfo.getNCDataType(), vinfo.byteOrder);
+        Object fillValue = H5iosp.convert(vinfo.fillValue, vinfo.getNCDataType(), vinfo.byteOrder);
         if (fillValue instanceof Number)
           fillAttribute = new Attribute("_FillValue", (Number) fillValue);
       }
     }
 
-
     // deal with unallocated data
+    long dataPos = getFileOffset(ndo.msl.dataAddress);
     if (dataPos == -1) {
       vinfo.useFillValue = true;
 
@@ -2239,24 +2275,85 @@ class H5header {
       }
     }
 
-    // deal with netCDF4
+    /* deal with netCDF4
     if (isNetCDF4 && name.startsWith("_ncvar_")) {
       Vatt vatt = varTable.get(name);
-      v = new Variable(ncfile, null, null, vatt.name);  // LOOK null group
+      v = new Variable(ncfile, null, null, vatt.name);
       v.setDataType(vinfo.getNCDataType());
       v.setDimensions(vatt.dimList);
 
-    } else if (mdt.type == 6) {
+    } else */
+
+    Variable v;
+    if (ndo.mdt.type == 6) {
+      String vname = NetcdfFile.createValidNetcdfObjectName(ndo.name); // look cannot search by name
+      v = new Structure(ncfile, null, null, vname); // LOOK null group
+      makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo);
+      addMembersToStructure((Structure) v, ndo.mdt);
+      v.setElementSize(ndo.mdt.byteSize);
+
+    } else {
+      String vname = NetcdfFile.createValidNetcdfObjectName(ndo.name); // look cannot search by name
+      v = new Variable(ncfile, null, null, vname);  // LOOK null group
+      makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo);
+    }
+
+    // special case of variable length strings
+    if (v.getDataType() == DataType.STRING)
+      v.setElementSize(16); // because the array has elements that are HeapIdentifier
+
+    v.setSPobject(vinfo);
+
+    // look for attributes
+    for (Message mess : ndo.messages) {
+      if (mess.mtype == MessageType.Attribute) {
+        MessageAttribute matt = (MessageAttribute) mess.messData;
+        makeAttributes(ndo.name, matt, v.getAttributes());
+      }
+    }
+
+    addSystemAttributes(ndo.messages, v.getAttributes());
+    if (fillAttribute != null)
+      v.addAttribute(fillAttribute);
+
+    if (!vinfo.signed)
+      v.addAttribute(new Attribute("_unsigned", "true"));
+
+    if (vinfo.isChunked) // make the data btree, but entries are not read in
+      vinfo.btree = new DataBTree(dataPos, v.getShape(), vinfo.storageSize);
+
+    // debugging
+    vinfo.setOwner(v);
+    if (vinfo.hdfType == 7) debugOut.println("WARN:  Variable " + ndo.name + " is a Reference type");
+    if (vinfo.mfp != null) debugOut.println("WARN:  Variable " + ndo.name + " has a Filter");
+
+    return v;
+  }
+
+  /*
+     Used for Structure Members
+  */
+  private Variable makeMemberVariable(String name, long dataPos, MessageDatatype mdt)
+      throws IOException {
+
+    Variable v;
+    Vinfo vinfo = new Vinfo(mdt, dataPos);
+    if (vinfo.getNCDataType() == null) {
+      debugOut.println("SKIPPING DataType= " + vinfo.hdfType + " for variable " + name);
+      return null;
+    }
+
+    if (mdt.type == 6) {
       String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
       v = new Structure(ncfile, null, null, vname); // LOOK null group
-      makeVariableShapeAndType(v, mdt, msd, vinfo);
+      makeVariableShapeAndType(v, mdt, null, vinfo);
       addMembersToStructure((Structure) v, mdt);
       v.setElementSize(mdt.byteSize);
 
     } else {
       String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
       v = new Variable(ncfile, null, null, vname);  // LOOK null group
-      makeVariableShapeAndType(v, mdt, msd, vinfo);
+      makeVariableShapeAndType(v, mdt, null, vinfo);
     }
 
     // special case of variable length strings
@@ -2266,30 +2363,15 @@ class H5header {
     v.setSPobject(vinfo);
     vinfo.setOwner(v);
 
-    // look for attributes
-    for (Message mess : messages) {
-      if (mess.mtype == MessageType.Attribute) {
-        MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes(name, matt, v.getAttributes());
-      }
-    }
-
-    addSystemAttributes(messages, v.getAttributes());
-    if (fillAttribute != null)
-      v.addAttribute(fillAttribute);
-
     if (!vinfo.signed)
       v.addAttribute(new Attribute("_unsigned", "true"));
-
-    // debugging
-    if (vinfo.hdfType == 7)  debugOut.println("WARN:  Variable " + name + " is a Reference type");
-    if (vinfo.mfp != null)  debugOut.println("WARN:  Variable " + name + " has a Filter");
 
     return v;
   }
 
   private DateFormatter formatter = new DateFormatter();
   private java.text.SimpleDateFormat hdfDateParser;
+
   private java.text.SimpleDateFormat getDateFormatter() {
     if (hdfDateParser == null) {
       hdfDateParser = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
@@ -2324,7 +2406,7 @@ class H5header {
 
   private void addMembersToStructure(Structure s, MessageDatatype mdt) throws IOException {
     for (StructureMember m : mdt.members) {
-      Variable v = makeVariable(m.name, new ArrayList<Message>(), m.offset, m.mdt, null, null, null);
+      Variable v = makeMemberVariable(m.name, m.offset, m.mdt);
       if (v != null) {
         s.addMemberVariable(v);
         if (debug1) debugOut.println("  made Member Variable " + v.getName() + "\n" + v);

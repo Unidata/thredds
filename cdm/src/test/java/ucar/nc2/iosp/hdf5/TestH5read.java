@@ -31,8 +31,9 @@ public class TestH5read extends TestCase {
   }
 
   public void testAll() {
-    readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/auraData");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/IASI");
+    readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/wrf");
   }
 

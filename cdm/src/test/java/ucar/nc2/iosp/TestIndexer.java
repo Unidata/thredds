@@ -371,7 +371,7 @@ public class TestIndexer extends TestCase  {
         Indexer.Chunk chunk = index.next();
         assert chunk.getFilePos() == count * 10 : chunk.getFilePos();
         assert chunk.getNelems() == 5;
-        assert chunk.getIndexPos() == count * 5;
+        assert chunk.getStartElem() == count * 5;
         count++;
       }
 
@@ -387,7 +387,7 @@ public class TestIndexer extends TestCase  {
         System.out.println(" chunk= "+chunk);
         assert chunk.getFilePos() == 10;
         assert chunk.getNelems() == index.getChunkSize();
-        assert chunk.getIndexPos() == count * index.getChunkSize();
+        assert chunk.getStartElem() == count * index.getChunkSize();
         count++;
       }
 
@@ -409,7 +409,7 @@ public class TestIndexer extends TestCase  {
         Indexer.Chunk chunk = index.next();
         assert chunk.getFilePos() == count * 2 : chunk.getFilePos();
         assert chunk.getNelems() == index.getChunkSize();
-        assert chunk.getIndexPos() == count * index.getChunkSize();
+        assert chunk.getStartElem() == count * index.getChunkSize();
         count++;
       }
 
@@ -424,7 +424,7 @@ public class TestIndexer extends TestCase  {
         Indexer.Chunk chunk = index.next();
         assert chunk.getFilePos() == count * 20 : chunk.getFilePos();
         assert chunk.getNelems() == index.getChunkSize();
-        assert chunk.getIndexPos() == count * index.getChunkSize();
+        assert chunk.getStartElem() == count * index.getChunkSize();
         count++;
       }
 

@@ -25,10 +25,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Indexer into data that has a "regular" layout, like netcdf-3 and hdf5 continuous storage.
- * The data is contigous, with outer dimension varying fastest.
+ * Indexer into data that has a "regular" layout, like netcdf-3 and hdf5 compact and contiguous storage.
+ * The data is contiguous, with outer dimension varying fastest.
  * Given a Section, this calculates the set of contiguous "chunks" of the wanted data into the stored data.
  * Also handles netcdf3 record dimensions.
+ * The wanted section is always a subset of the data section (see RegularSectionLayout where thats not the case).
  *
  * @author caron
  * @see Indexer
@@ -208,8 +209,8 @@ public class RegularLayout extends Indexer {
     if (chunk == null) {
       chunk = new Chunk(startPos, nelems, 0);
     } else {
-      myIndex.incr(); // increment one element, but is represents one chunk = nelems * sizeElem
-      chunk.incrIndexPos( nelems); // always read nelems at a time
+      myIndex.incr(); // increment one element, but it represents one chunk = nelems * sizeElem
+      chunk.incrStartElem( nelems); // always read nelems at a time
     }
 
     // Get the current element's byte index from the start of the file
@@ -254,15 +255,4 @@ public class RegularLayout extends Indexer {
     return sbuff.toString();
   }
 
-  private String printa(int[] a) {
-    StringBuffer sbuff = new StringBuffer();
-    for (int i = 0; i < a.length; i++) sbuff.append(a[i] + " ");
-    return sbuff.toString();
-  }
-
-  private void printa(String name, int[] a) {
-    System.out.print(name + "= ");
-    for (int i = 0; i < a.length; i++) System.out.print(a[i] + " ");
-    System.out.println();
-  }
 }

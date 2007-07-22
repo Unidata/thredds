@@ -21,6 +21,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.nc2.iosp.TestIndexer;
+import ucar.nc2.iosp.TestRegularLayout;
 
 /**
  * ucar.nc2 core testing, using only local files (part of release)
@@ -54,6 +55,7 @@ public class TestLocalNC2 {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     suite.addTest(new TestSuite(TestIndexer.class));
+    suite.addTest(new TestSuite(TestRegularLayout.class));
     suite.addTest(new TestSuite(TestWrite.class));
     suite.addTest(new TestSuite(TestRead.class));
     suite.addTest(new TestSuite(TestOpenInMemory.class));

@@ -302,6 +302,8 @@ public class DatasetViewer extends JPanel {
     infoTA.appendLine( v.toString());
     if (Debug.isSet( "Xdeveloper")) {
       infoTA.appendLine("\n");
+      infoTA.appendLine( "FULL NAME = "+ v.getName());
+      infoTA.appendLine("\n");
       infoTA.appendLine(v.toStringDebug());
     }
     infoTA.gotoTop();

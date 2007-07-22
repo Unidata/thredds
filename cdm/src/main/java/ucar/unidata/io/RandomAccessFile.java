@@ -908,12 +908,12 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Read an array of shorts
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    read into this array
+   * @param start starting at pa[start]
+   * @param n     read this many elements
+   * @throws IOException on read error
    */
   public final void readShort(short[] pa, int start, int n)
       throws IOException {
@@ -953,6 +953,21 @@ public class RandomAccessFile implements DataInput, DataOutput {
       return ((ch2 << 8) + (ch1));
     }
   }
+
+
+  /*
+   * Reads a signed 24-bit integer from this file. This method reads 3
+   * bytes from the file. If the bytes read, in order, are <code>b1</code>,
+   * <code>b2</code>, and <code>b3</code>, where
+   * <code>0&nbsp;&lt;=&nbsp;b1, b2, b3&nbsp;&lt;=&nbsp;255</code>,
+   * then the result is equal to:
+   * <ul><code>
+   * (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) + (b3 &lt;&lt; 0)
+   * </code></ul>
+   * <p/>
+   * This method blocks until the three bytes are read, the end of the
+   * stream is detected, or an exception is thrown.
+   */
 
   /**
    * Reads a Unicode character from this file. This method reads two
@@ -1045,25 +1060,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
     }
   }
 
+
   /**
-   * Reads a signed 24-bit integer from this file. This method reads 3
-   * bytes from the file. If the bytes read, in order, are <code>b1</code>,
-   * <code>b2</code>, and <code>b3</code>, where
-   * <code>0&nbsp;&lt;=&nbsp;b1, b2, b3&nbsp;&lt;=&nbsp;255</code>,
-   * then the result is equal to:
-   * <ul><code>
-   * (b1 &lt;&lt; 16) | (b2 &lt;&lt; 8) + (b3 &lt;&lt; 0)
-   * </code></ul>
-   * <p/>
-   * This method blocks until the three bytes are read, the end of the
-   * stream is detected, or an exception is thrown.
+   * Read an array of ints
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws EOFException if this file reaches the end before reading
-   *                      four bytes.
-   * @throws IOException  if an I/O error occurs.
+   * @param pa    read into this array
+   * @param start starting at pa[start]
+   * @param n     read this many elements
+   * @throws IOException on read error
    */
   public final void readInt(int[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
@@ -1124,12 +1128,12 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Read an array of longs
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    read into this array
+   * @param start starting at pa[start]
+   * @param n     read this many elements
+   * @throws IOException on read error
    */
   public final void readLong(long[] pa, int start, int n)
       throws IOException {
@@ -1162,12 +1166,12 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Read an array of floats
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    read into this array
+   * @param start starting at pa[start]
+   * @param n     read this many elements
+   * @throws IOException on read error
    */
   public final void readFloat(float[] pa, int start, int n)
       throws IOException {
@@ -1200,12 +1204,12 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * _more_
+   * Read an array of doubles
    *
-   * @param pa    _more_
-   * @param start _more_
-   * @param n     _more_
-   * @throws IOException _more_
+   * @param pa    read into this array
+   * @param start starting at pa[start]
+   * @param n     read this many elements
+   * @throws IOException on read error
    */
   public final void readDouble(double[] pa, int start, int n)
       throws IOException {

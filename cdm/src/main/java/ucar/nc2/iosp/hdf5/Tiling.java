@@ -32,7 +32,7 @@ package ucar.nc2.iosp.hdf5;
 public class Tiling {
 
   private int rank;
-  private int[] shape, tileSize, stride;
+  private int[] shape, tileSize, tile, stride;
 
   /**
    * Create a Tiling
@@ -40,14 +40,15 @@ public class Tiling {
    * @param tileSize tile size
    */
   public Tiling(int[] shape, int[] tileSize) {
-    assert shape.length == tileSize.length;
+    assert shape.length <= tileSize.length; // convenient to allow tileSize to have (an) extra dimension at the end
+                                            // to accomodate hdf5 storage, which has the element size
 
     this.rank = shape.length;
     this.shape = shape;
     this.tileSize = tileSize;
+    this.tile = tile( shape); // dont really need this, but udeful for debugging
 
-    stride = new int[rank];
-    int[] tile = tile( shape);
+    this.stride = new int[rank];
     int strider = 1;
     for (int k = rank-1; k >= 0; k--) {
       stride[k] = strider;

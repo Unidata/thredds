@@ -20,6 +20,7 @@
 package ucar.nc2.iosp;
 
 /**
+ * An Indexer that has exactly one chunk.
  * @author caron
  * @since Jul 13, 2007
  */

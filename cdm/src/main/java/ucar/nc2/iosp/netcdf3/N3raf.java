@@ -22,7 +22,6 @@ package ucar.nc2.iosp.netcdf3;
 import ucar.ma2.*;
 import ucar.nc2.iosp.Indexer;
 
-import java.io.DataOutputStream;
 import java.nio.channels.WritableByteChannel;
 
 
@@ -53,7 +52,7 @@ public class N3raf extends N3iosp  {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
        raf.seek ( chunk.getFilePos());
-       raf.read( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+       raf.read( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
      }
      return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
 
@@ -62,7 +61,7 @@ public class N3raf extends N3iosp  {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
        raf.seek ( chunk.getFilePos());
-       raf.readShort( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+       raf.readShort( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
      }
      return pa;
 
@@ -71,7 +70,7 @@ public class N3raf extends N3iosp  {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
        raf.seek ( chunk.getFilePos());
-       raf.readInt( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+       raf.readInt( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
      }
      return pa;
 
@@ -80,7 +79,7 @@ public class N3raf extends N3iosp  {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
        raf.seek ( chunk.getFilePos());
-       raf.readFloat( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+       raf.readFloat( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
      }
      return pa;
 
@@ -89,7 +88,7 @@ public class N3raf extends N3iosp  {
      while (index.hasNext()) {
        Indexer.Chunk chunk = index.next();
        raf.seek ( chunk.getFilePos());
-       raf.readDouble( pa, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+       raf.readDouble( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
      }
      return pa;
    }

@@ -38,7 +38,7 @@ public class TestH5filter extends TestCase {
 
   public void testOpen() {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    TestH5read.readAllData(TestAll.upcShareTestDataDir + "hdf5/wrf/wrf_input_seq.h5");
+    TestH5read.readAllData(TestAll.upcShareTestDataDir + "hdf5/support/MSG1_8bit_HRV.H5");
   }
 
   public void testFilter() {

@@ -25,7 +25,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.*;
 
-import java.util.*;
 import java.io.IOException;
 
 /**
@@ -166,7 +165,7 @@ class H5chunkIndexer extends Indexer {
     chunk.setNelems(chunkNelems); // LOOK Math.min(chunkNelems, size - count);
 
     // heres the position within the result array
-    chunk.setIndexPos( resultIndex.currentElement());
+    chunk.setStartElem( resultIndex.currentElement());
 
     if (debug) H5header.debugOut.println(" next hchunk = "+chunk+" totalNelemsDone="+totalNelemsDone);
     currentDataNelemsDone += chunk.getNelems();

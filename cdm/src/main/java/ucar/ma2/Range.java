@@ -147,6 +147,7 @@ public final class Range {
 
   /**
      Create a new Range by intersecting with a Range using same interval as this Range.
+     NOTE: we dont yet support intersection when both Ranges have strides
      @param r	range to intersect
      @return intersected Range, may be EMPTY
      @exception InvalidRangeException elements must be nonnegative
@@ -155,11 +156,33 @@ public final class Range {
     if ((length() == 0) || (r.length() == 0))
       return EMPTY;
 
-    int first = Math.max(this.first(), r.first());
     int last = Math.min(this.last(), r.last());
+    int stride = stride() * r.stride();
+
+    int first;
+    if (stride == 1) {
+      first = Math.max(this.first(), r.first());
+
+    } else if (stride() == 1) { // then r has a stride
+      first = this.first();
+      int rem = first % stride;
+      if (rem > 0) // round up to multiple of stride
+        first += stride - rem;
+      first = Math.max(first, r.first());
+
+    } else if (r.stride() == 1) { // then this has a stride
+      first = r.first();
+      int rem = first % stride;
+      if (rem > 0) // round up to multiple of stride
+        first += stride - rem;
+      first = Math.max(first, this.first());
+
+    } else {
+      throw new UnsupportedOperationException("Intersection when both ranges have a stride");
+    }
+
     if (first > last)
       return EMPTY;
-    int stride = stride() * r.stride(); // LOOK  should be Least Common Multiple ??
     return new Range(first, last, stride);
   }
 

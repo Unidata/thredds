@@ -5,6 +5,7 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
+import ucar.nc2.TestAll;
 
 import java.io.*;
 
@@ -18,12 +19,22 @@ public class TestH5aura extends TestCase {
 
   public void test1() {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.open("C:/data/hdf5/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5");
+    NetcdfFile ncfile = TestH5.open(TestAll.upcShareTestDataDir+"hdf5/auraData/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
+  }
+
+  public void test2() throws IOException {
+    NetcdfFile ncfile = TestH5.open("C:/data/testdata/hdf5/auraData/HIRDLS2-AFGL_b027_na.he5");
+    Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
+    
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree"));
+    Array data = dset.read();
+    assert data.getElementType() == float.class;
+
   }
 
   public void testEosMetadata() {
     //NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
-    NetcdfFile ncfile = TestH5.open("C:/data/hdf5/auraData/HIRDLS2-Aura73p_b029_2000d275.he5");
+    NetcdfFile ncfile = TestH5.open(TestAll.upcShareTestDataDir+"hdf5/auraData/HIRDLS2-Aura73p_b029_2000d275.he5");
 
     Group root = ncfile.getRootGroup();
     Group g = root.findGroup("HDFEOS_INFORMATION");

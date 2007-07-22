@@ -32,6 +32,7 @@ import java.io.IOException;
  * Iterator to read/write subsets of an array.
  * This calculates byte offsets for HD5 chunked datasets.
  * Assumes that the data is stored in chunks, indexed by a Btree.
+ * for unfiltered data only
  *
  * @author caron
  */
@@ -63,6 +64,8 @@ class H5chunkLayout extends Indexer {
     this.want = wantSection;
 
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
+    assert vinfo.isChunked;
+    assert vinfo.btree != null;
 
     // heres the chunking info
     // one less chunk dimension, except in the case of char
@@ -72,7 +75,7 @@ class H5chunkLayout extends Indexer {
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
     if (debug) H5header.debugOut.println(" H5chunkIndexer: " + this);
 
-    // load in the data node iterator
+    // create the data chunk iterator
     chunkIterator = vinfo.btree.getDataChunkIterator(wantSection);
   }
 
@@ -89,8 +92,8 @@ class H5chunkLayout extends Indexer {
   }
 
   private int nChunkDims;
-  private H5header.DataBTree.DataChunkIterator chunkIterator;  // iterate over the btree entries
-  private Indexer index = null;
+  private H5header.DataBTree.DataChunkIterator chunkIterator;  // iterate over the btree DataChunks
+  private Indexer index = null; // iterate within a chunk
 
   public Chunk next() throws IOException {
 
@@ -104,14 +107,13 @@ class H5chunkLayout extends Indexer {
           if (chunkIterator.hasNext())
             btreeNode = chunkIterator.next();
           else {
-            done = true; // LOOK shouldnt we return empty chunk ??
+            done = true;
             return null;
           }
 
           // make the dataSection for this chunk
           int[] sectionOrigin = new int[nChunkDims];
-          for (int i = 0; i < nChunkDims; i++)
-            sectionOrigin[i] = (int) btreeNode.offset[i];
+          System.arraycopy(btreeNode.offset, 0, sectionOrigin, 0, nChunkDims);
           dataSection = new Section(sectionOrigin, chunkSize);
 
           // does it intersect ?
@@ -120,7 +122,7 @@ class H5chunkLayout extends Indexer {
         }
 
         if (debug) System.out.println(" found intersection: " + dataSection+" for address "+ btreeNode.address);
-        index = RegularSectionLayout.factory(btreeNode.address, elemSize, dataSection, want);
+        index = indexFactory(btreeNode.address, btreeNode.size, elemSize, dataSection, want);
 
       } catch (InvalidRangeException e) {
         assert false;
@@ -133,9 +135,14 @@ class H5chunkLayout extends Indexer {
     return chunk;
   }
 
+  // allow subclasses to filter the data
+  protected Indexer indexFactory(long filePos, int size, int elemSize, Section dataSection, Section want) throws IOException, InvalidRangeException {
+    return RegularSectionLayout.factory(filePos, elemSize, dataSection, want);
+  }
+
   public String toString() {
     StringBuffer sbuff = new StringBuffer();
-    sbuff.append("want="+want+"; ");
+    sbuff.append("want=").append(want).append("; ");
     sbuff.append("chunkSize=[");
     for (int i = 0; i < chunkSize.length; i++) {
       if (i > 0) sbuff.append(",");

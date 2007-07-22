@@ -21,15 +21,18 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.*;
+import junit.framework.TestCase;
 
 /**
  * Compare RegularLayout to RegularInderer
  */
-public class TestRegularLayout {
+public class TestRegularLayout extends TestCase {
   RegularLayout layout;
   RegularIndexer index;
 
-  private boolean debug = false;
+  public TestRegularLayout( String name) {
+    super(name);  
+  }
 
   /**
    * Constructor.
@@ -98,7 +101,7 @@ public class TestRegularLayout {
       Indexer.Chunk chunk = rlayout.layout.next();
       Indexer.Chunk chunk2 = rlayout.index.next();
       assert chunk.getFilePos() == chunk2.getFilePos();
-      assert chunk.getIndexPos() == chunk2.getIndexPos();
+      assert chunk.getStartElem() == chunk2.getStartElem();
       assert chunk.getNelems() == chunk2.getNelems();
     }
     assert !rlayout.layout.hasNext();
@@ -107,7 +110,7 @@ public class TestRegularLayout {
   }
 
 
-  static public void main(String args[]) throws InvalidRangeException {
+  public void test() throws InvalidRangeException {
     // TestRegularLayout(long startPos, int elemSize, int recSize, int[] varShape, Section want) throws InvalidRangeException {
 
     // 4D

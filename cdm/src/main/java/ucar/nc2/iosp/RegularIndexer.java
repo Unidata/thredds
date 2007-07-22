@@ -174,12 +174,6 @@ public class RegularIndexer extends Indexer {
     System.out.println();
   }
 
-  private void printa( String name, int[] a) {
-    System.out.print(name+"= ");
-    for (int i=0;i<a.length; i++) System.out.print(a[i]+" ");
-    System.out.println();
-  }
-
   public int getChunkSize() { return nelems; }              // debug
   public int[] getWantShape() { return wantShape; }  // for N3iosp
 
@@ -195,7 +189,7 @@ public class RegularIndexer extends Indexer {
 
     } else {
       index.incr(); // increment file position
-      chunk.incrIndexPos(nelems); // always read nelems at a time
+      chunk.incrStartElem(nelems); // always read nelems at a time
     }
 
     // Get the current element's byte index from the start

@@ -79,7 +79,7 @@ class H5chunkFilterIndexer extends Indexer {
     //if (debugNext) H5header.debugOut.println(" setChunkOffset = "+);
     resultIndex.setOffset( offset);
     chunkNumElemsDone = 0;
-    chunk.setIndexPos(0);
+    chunk.setStartElem(0);
     first = true;
   }
 
@@ -90,7 +90,7 @@ class H5chunkFilterIndexer extends Indexer {
 
     if (!first) {
       resultIndex.incrRow();
-      chunk.incrIndexPos(contNumElems);
+      chunk.incrStartElem(contNumElems);
     }
     first = false;
 
