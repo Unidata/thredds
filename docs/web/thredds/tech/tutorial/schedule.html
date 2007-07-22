@@ -24,14 +24,14 @@ TDS Tutorial Schedule
 	</li><li>Browse catalog</li>
 </ul>
 <h3>10:30 Break</h3>
-<h3>11:00 Tour of Basic Installation (Ethan) 
+<h3>11:00 Basic Installation (Ethan) 
 </h3>
 <ul>
 	<li>Tomcat and TDS Directories [[combine
 	existing 1) section from "Getting Started" and 2)
-	"Directory layout"]] 
-	</li><li><p>TDS Configuration Catalog - datasetScan ??? catalog.xml [[combine existing 1) catalog section from
-	"Getting Started" and 2) "Catalog Primer"]]</p></li><li>THREDDS catalogs in the IDV/ToolsUI</li>
+	"Directory layout"]]</li>
+	<li>TDS Configuration Catalog - datasetScan ??? catalog.xml [[combine existing 1) catalog section from "Getting Started" and 2) "Catalog Primer"]]</li>
+	<li>THREDDS catalogs in the IDV/ToolsUI</li>
 </ul>
 <h3>12:00 Lunch</h3>
 
@@ -66,101 +66,94 @@ TDS Tutorial Schedule
     </ul>
 </ul>
 
-<h3>2:00 Tour of Production Installation (John)</h3>
+<h3>2:00 Writing and maintaining catalogs (Ethan) </h3>
 <ul>
-	<li>TDS Remote Management
-	</li><li>Logs
-	<ul>
-		<li>catalina.out
-	</li></ul>
-	</li><li>threddsServer.log
-	</li><li>catalogErrors.log
-	</li><li>access
-	</li><li>Tomcat Manager application
-	(deploy, start, stop a web-app) 
-	</li><li><p>threddsConfig.xml</p>
-</li></ul>
-<h3>3:00 Break</h3>
-<h3>4:00 Writing and maintaining catalogs (Ethan) 
-</h3>
-<ul>
-	<li>Catalog Primer [???move to
-	3.catalog.xml above] 
-	</li><li>TDS Catalog Configuration
-	</li><li>DatasetScan
-	</li><li><p>CatalogGen 
-	</p>
-</li></ul>
-<h3>Evening - dinner at Flagstaff house or Subway</h3>
-<h2>Tuesday</h2>
-<h3>8:30 Enhanced Catalogs (Ethan) 
-</h3>
-<ul>
-	<li>Annotated Example
-	</li><li>Metadata Extraction
-	</li><li>Digital Library Harvesting
-	</li><li><p>Metadata standards 
-	</p>
-</li></ul>
-<h3>9:30 Using NcML in TDS (John) 
-</h3>
-<ul>
-	<li>Dataset Modification/Dataset
-	Aggregation 
-	</li><li><p>Forecast Model Aggregation 
-	</p>
-</li></ul>
-<h3>10:30 Break</h3>
-<h3>11:00 Production Installation - Advanced (Robb) 
-</h3>
-<ul>
-	<li>Creating user &quot;tomcat&quot; with
-	limited permissions.
-	</li><li>Using a Firewall to close all
-	ports except ports 8080 and 8443. 
-	</li><li>Using IP Filters to deny access to
-	users abusing the TDS 
-	</li><li>Upgrading SSL security level by
-	creating a  CA (Certificate Authority) signed key 
-	</li><li>Configuring Apache/Tomcat so that Tomcat runs as a proxy
-	through Apache 
-</li></ul>
-<h3>12:00 Lunch</h3>
-<h3>1:00 Advanced TDS management (John) 
-</h3>
-<ul>
-	<li>Performance
-	</li><li>Viewers
-	</li><li>Restricting Access to Datasets
-	</li><li>Adding your own Authenticator for
-	Restricting Access 
-	</li><li>TroubleShooting
-	</li><li><p>Tips 
-	</p>
-</li></ul>
-<h3>2:30 Break 
-</h3>
-<h3>3:00 TDS IDD Configuration (Robb)</h3>
-<ul>
-	<li><p>What is the IDD?</p>
-	<ul>
-		<li><p>Configuring the TDS to use IDD catalogs.</p>
-		</li><li><p>Configuring the IDD/LDM to make predetermined data
-		structures.</p>
-		</li><li><p>Managing the IDD datasets.</p>
-		</li><li><p>Performance enhancements by GRIB indexing</p>
-	</li></ul>
-</li></ul>
-<h3>4:00 Serving Datasets - Examples 
-</h3>
-<ul>
-	<li>The LEAD Project use of TDS (Tom)</li>
-    <li>Create an An Archive with the Thredds Data Repository (TDR) (Anne) </li>
+  <li>Catalog Primer [???move to 3.catalog.xml above] </li>
+  <li>TDS Catalog Configuration </li>
+  <li>DatasetScan </li>
+  <li>CatalogGen </li>
 </ul>
-<br>
+<h3>3:00 Break</h3>
+            <h3>3:30 Tools for Managing TDS (John)</h3>
+            <ul>
+              <li>TDS Remote Management</li>
+              <li>Examining Logs
+                <ul>
+                  <li>can we show sawmill, whats the other tool? </li>
+                </ul>
+              </li>
+              <li>Looking for status and errors </li>
+              <ul>
+                <li>catalogErrors.log </li>
+                <li>catalina.out</li>
+              </ul>
+              <li><a href="../reference/ThreddsConfigXMLFile.html">TDS Configuration with threddsConfig.xml</a>                          </ul>
+            <h2>Tuesday</h2>
+            <h3>8:30 Enhanced Catalogs (Ethan) 
+            </h3>
+            <ul>
+              <li>Annotated Example </li>
+              <li>Metadata Extraction </li>
+              <li>Digital Library Harvesting </li>
+              <li>Metadata standards </li>
+            </ul>
+      <h3>9:30 Using NcML in TDS (John) 
+</h3>
+            <ul>
+              <li><a href="NcML.htm">Dataset Modification/Dataset Aggregation</a></li>
+              <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">Forecast Model Aggregation</a> </li>
+            </ul>
+      <h3>10:30 Break</h3>
+            <h3>11:00 Production Installation - Advanced (Robb) 
+            </h3>
+            <ul>
+              <li>Creating user &quot;tomcat&quot; with
+	        limited permissions. </li>
+              <li>Using a Firewall to close all
+	          ports except ports 8080 and 8443. </li>
+              <li>Using IP Filters to deny access to
+	          users abusing the TDS </li>
+              <li>Upgrading SSL security level by
+	          creating a  CA (Certificate Authority) signed key </li>
+              <li>Configuring Apache/Tomcat so that Tomcat runs as a proxy
+	          through Apache </li>
+            </ul>
+      <h3>12:00 Lunch</h3>
+            <h3>1:00 Advanced TDS management (John) 
+            </h3>
+            <ul>
+              <li><a href="Performance.html">Performance</a></li>
+              <li><a href="Viewers.html">Viewers</a></li>
+              <li><a href="RestrictedAccess.html">Restricting Access</a> to Datasets</li>
+              <li><a href="PluggableRestrictedAccess.htm">Adding your own Authenticator</a> for Restricting Access</li>
+              <li><a href="TroubleShooting.html">TroubleShooting</a></li>
+              <li><a href="TipsnTricksatTDSWorkshop.pdf">Tips</a></li>
+            </ul>
+      <h3>2:30 Break 
+</h3>
+            <h3>3:00 TDS IDD Configuration (Robb)</h3>
+            <ul>
+              <li>What is the IDD?</li>
+              <li>Configuring the TDS to use IDD catalogs.</li>
+              <li>Configuring the IDD/LDM to make predetermined data
+		          structures.</li>
+              <li>Managing the IDD datasets.</li>
+              <li>Performance enhancements by GRIB indexing</li>
+            </ul>
+      <h3>4:00 Serving Datasets - Examples 
+</h3>
+            <ul>
+              <li>The LEAD Project use of TDS (Tom)</li>
+              <li>Create an  Archive with the Thredds Data Repository (TDR) (Anne) </li>
+            </ul>
+            <p><br>
 <hr>
-<address style="margin-bottom: 0.2in;"><img src="../images/thread.png" name="graphics2" alt="THREDDS" align="bottom" border="0" height="108" width="110">
+            </p>
+<address style="margin-bottom: 0.2in;">
+            <img src="../images/thread.png" name="graphics2" alt="THREDDS" align="bottom" border="0" height="108" width="110">
 </address>
-<p>&nbsp; 
+            <p>&nbsp; 
 </p>
+  </li>
+</ul>
 </body></html>
