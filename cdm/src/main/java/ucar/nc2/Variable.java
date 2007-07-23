@@ -73,6 +73,13 @@ public class Variable implements VariableIF {
   }
 
   /**
+   * @return the full name of this Variable, with special characters escaped.
+   */
+  public String getNameEscaped() {
+    return NetcdfFile.makeFullNameEscaped(this.group, this);
+  }
+
+  /**
    * Get the short name of this Variable. The name is unique within its parent group.
    */
   public String getShortName() {

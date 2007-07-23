@@ -45,6 +45,8 @@ class H5chunkFilterLayout extends H5chunkLayout {
   private FloatBuffer fb;
   private DoubleBuffer db;
 
+  private boolean debug = false;
+
   H5chunkFilterLayout(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters) throws InvalidRangeException, IOException {
     super(v2, wantSection);
     this.raf = raf;
@@ -73,16 +75,19 @@ class H5chunkFilterLayout extends H5chunkLayout {
     return db;
   }
 
-  protected Indexer indexFactory(long filePos, int size, int elemSize, Section dataSection, Section want) throws IOException, InvalidRangeException {
-
+  protected Indexer indexFactory(H5header.DataBTree.DataChunk dataChunk, long filePos, int elemSize, Section dataSection, Section want) throws IOException, InvalidRangeException {
     // read the data
-    byte[] data = new byte[size];
-    raf.seek(filePos);
+    byte[] data = new byte[dataChunk.size];
+    raf.seek(dataChunk.address);
     raf.readFully(data);
 
     // apply filters backwards
     for (int i=filters.length-1; i >=0; i--) {
-       H5header.Filter f = filters[i];
+      H5header.Filter f = filters[i];
+      if (isBitSet(dataChunk.filterMask, i)) {
+        if (debug) System.out.println("skip for chunk "+dataChunk);
+        continue;
+      }
       if (f.id == 1)
         data = inflate(data);
       if (f.id == 2)
@@ -96,7 +101,7 @@ class H5chunkFilterLayout extends H5chunkLayout {
     fb = null;
     db = null;
 
-    return super.indexFactory(0, data.length, elemSize, dataSection, want);
+    return super.indexFactory(null, 0, elemSize, dataSection, want);
   }
 
   /**
@@ -106,7 +111,6 @@ class H5chunkFilterLayout extends H5chunkLayout {
    * @throws IOException on I/O error
    */
   private byte[] inflate(byte[] compressed) throws IOException {
-
      // run it through the Inflator
      ByteArrayInputStream in = new ByteArrayInputStream(compressed);
      java.util.zip.InflaterInputStream inflater = new java.util.zip.InflaterInputStream( in);
@@ -114,11 +118,13 @@ class H5chunkFilterLayout extends H5chunkLayout {
      thredds.util.IO.copy(inflater, out);
 
      byte[] uncomp = out.toByteArray();
-     System.out.println(" inflate bytes in= "+compressed.length+ " bytes out= "+uncomp.length);
+     if (debug) System.out.println(" inflate bytes in= "+compressed.length+ " bytes out= "+uncomp.length);
      return uncomp;
    }
 
   private byte[] shuffle(byte[] data, int n) throws IOException {
+    if (debug) System.out.println(" shuffle bytes in= "+data.length+ " n= "+n);
+
     assert data.length % n == 0;
     if (n <= 1) return data;
 
@@ -132,7 +138,23 @@ class H5chunkFilterLayout extends H5chunkLayout {
         result[count[k]++] = data[i+k];
       }
     }
+
     return result;
   }
+
+  static boolean isBitSet(int val, int bitno) {
+    return ((val >>> bitno) & 1) != 0;
+  }
+
+  // test
+  public static void main(String args[]) {
+    assert isBitSet(1,0);
+    assert !isBitSet(1,1);
+    assert !isBitSet(2,0);
+    assert isBitSet(2,1);
+    assert isBitSet(1024,10);
+    assert !isBitSet(1024,1);
+  }
+
 
 }

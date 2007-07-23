@@ -50,7 +50,7 @@ public class RegularSectionLayout extends Indexer {
   private int nelems; // number of elements to read at one time
   private long total, done;
 
-  private boolean debug = true, debugMerge = false, debugDetail = false, debugNext = true;
+  private boolean debug = false, debugMerge = false, debugDetail = false, debugNext = false;
 
   static public Indexer factory(long startFilePos, int elemSize, Section dataSection, Section wantSection) throws InvalidRangeException {
     if (dataSection.equals(wantSection)) // optimize the simple case
@@ -176,7 +176,7 @@ public class RegularSectionLayout extends Indexer {
     assert nchunks * nelems == total;
 
     if (debug) {
-      System.out.println("RegularSectionLayout total = "+total+" nchunks= "+nchunks+" nelems= "+nelems+
+      System.out.println("RegularSectionLayout total = "+total+" nchunks= "+nchunks+" nelems= "+nelems+" elemSize= "+elemSize+
           " dataSection= " + dataSection + " wantSection= " + wantSection+ " intersect= " + intersect+ this);
     }
   }

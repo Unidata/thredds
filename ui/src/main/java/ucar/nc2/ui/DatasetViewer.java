@@ -496,16 +496,9 @@ public class DatasetViewer extends JPanel {
       //vs = (v instanceof VariableEnhanced) ? (VariableEnhanced) v : new VariableStandardized( v);
 
       setName( vs.getShortName());
-      if (vs instanceof VariableEnhanced) {
-        VariableEnhanced ve = (VariableEnhanced) vs;
-        setDescription( ve.getDescription());
-        setUnits( ve.getUnitsString());
-      } else {
-        setUnits( ds.findAttValueIgnoreCase(vs, "units", null));
-        setDescription( ds.findAttValueIgnoreCase(vs, "long_name", null));
-      }
-
-      setDataType( vs.isVariableLength() ? "vlen" : vs.getDataType().toString());
+      setDescription( vs.getDescription());
+      setUnits( vs.getUnitsString());
+      setDataType( vs.getDataType().toString());
 
       Attribute csAtt = vs.findAttribute("_coordSystems");
       if (csAtt != null)

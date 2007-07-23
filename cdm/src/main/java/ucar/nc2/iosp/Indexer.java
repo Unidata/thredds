@@ -84,7 +84,10 @@ public abstract class Indexer {
       this.startElem = startElem;
     }
 
-    /** @return position in source where to read or write: "file position" */
+    /**
+     * Get the position in source where to read or write: "file position"
+     * @return position as a byte count
+     */
     public long getFilePos() { return filePos; }
     public void setFilePos(long filePos) { this.filePos = filePos; }
     public void incrFilePos(int incr) { this.filePos += incr; }

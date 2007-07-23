@@ -286,7 +286,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         ShortBuffer buff = index.getShortBuffer();
-        buff.position((int) chunk.getFilePos());
+        buff.position((int) chunk.getFilePos()/2);
         int pos = (int) chunk.getStartElem();
         for (int i=0; i<chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -298,7 +298,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         IntBuffer buff = index.getIntBuffer();
-        buff.position((int) chunk.getFilePos());
+        buff.position((int) chunk.getFilePos()/4);
         int pos = (int) chunk.getStartElem();
         for (int i=0; i<chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -310,7 +310,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         LongBuffer buff = index.getLongBuffer();
-        buff.position((int) chunk.getFilePos());
+        buff.position((int) chunk.getFilePos()/8);
         int pos = (int) chunk.getStartElem();
         for (int i=0; i<chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -322,7 +322,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         FloatBuffer buff = index.getFloatBuffer();
-        buff.position((int) chunk.getFilePos());
+        buff.position((int) chunk.getFilePos()/4);
         int pos = (int) chunk.getStartElem();
         for (int i=0; i<chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -334,7 +334,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
         DoubleBuffer buff = index.getDoubleBuffer();
-        buff.position((int) chunk.getFilePos());
+        buff.position((int) chunk.getFilePos()/8);
         int pos = (int) chunk.getStartElem();
         for (int i=0; i<chunk.getNelems(); i++)
           pa[pos++] = buff.get();

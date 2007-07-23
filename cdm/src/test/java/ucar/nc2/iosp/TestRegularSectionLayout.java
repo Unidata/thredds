@@ -27,8 +27,6 @@ import junit.framework.TestCase;
  * Compare RegularLayout to RegularInderer
  */
 public class TestRegularSectionLayout extends TestCase {
-  RegularLayout layout;
-  RegularIndexer index;
 
   public TestRegularSectionLayout( String name) {
     super(name);
@@ -165,6 +163,13 @@ public class TestRegularSectionLayout extends TestCase {
     want = new Section().appendRange(0,20,2).appendRange(0,20,2);
     doit(new RegularSectionLayout(0, 1, data, want), new int[][] {{6,1,72},{8,1,74},{16,1,94},{18,1,96}});
   }
+
+  public void test2Da() throws InvalidRangeException {
+    Section data = new Section().appendRange(20).appendRange(20);
+    Section want = new Section().appendRange(1000).appendRange(20);
+    doit(new RegularSectionLayout(0, 1, data, want), new int[][] {});
+  }
+
 
   public void test3D() throws InvalidRangeException {
     System.out.println("\n data ================");

@@ -101,11 +101,11 @@ class H5chunkLayout extends Indexer {
 
       try {
         Section dataSection;
-        H5header.DataBTree.DataChunk btreeNode;
+        H5header.DataBTree.DataChunk dataChunk;
 
         while (true) { // look for intersecting sections
           if (chunkIterator.hasNext())
-            btreeNode = chunkIterator.next();
+            dataChunk = chunkIterator.next();
           else {
             done = true;
             return null;
@@ -113,7 +113,7 @@ class H5chunkLayout extends Indexer {
 
           // make the dataSection for this chunk
           int[] sectionOrigin = new int[nChunkDims];
-          System.arraycopy(btreeNode.offset, 0, sectionOrigin, 0, nChunkDims);
+          System.arraycopy(dataChunk.offset, 0, sectionOrigin, 0, nChunkDims);
           dataSection = new Section(sectionOrigin, chunkSize);
 
           // does it intersect ?
@@ -121,8 +121,8 @@ class H5chunkLayout extends Indexer {
             break;
         }
 
-        if (debug) System.out.println(" found intersection: " + dataSection+" for address "+ btreeNode.address);
-        index = indexFactory(btreeNode.address, btreeNode.size, elemSize, dataSection, want);
+        if (debug) System.out.println(" found intersection: " + dataSection+" for address "+ dataChunk.address);
+        index = indexFactory(dataChunk, dataChunk.address, elemSize, dataSection, want);
 
       } catch (InvalidRangeException e) {
         assert false;
@@ -136,7 +136,7 @@ class H5chunkLayout extends Indexer {
   }
 
   // allow subclasses to filter the data
-  protected Indexer indexFactory(long filePos, int size, int elemSize, Section dataSection, Section want) throws IOException, InvalidRangeException {
+  protected Indexer indexFactory(H5header.DataBTree.DataChunk dataChunk, long filePos, int elemSize, Section dataSection, Section want) throws IOException, InvalidRangeException {
     return RegularSectionLayout.factory(filePos, elemSize, dataSection, want);
   }
 

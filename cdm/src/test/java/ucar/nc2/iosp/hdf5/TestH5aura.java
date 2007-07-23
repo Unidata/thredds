@@ -17,9 +17,11 @@ public class TestH5aura extends TestCase {
     super(name);
   }
 
-  public void test1() {
+  public void test1() throws IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.open(TestAll.upcShareTestDataDir+"hdf5/auraData/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
+    Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data_Fields/Scaled_Ch01_Radiance");
+    Array data = dset.read();
   }
 
   public void test2() throws IOException {
@@ -29,7 +31,6 @@ public class TestH5aura extends TestCase {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree"));
     Array data = dset.read();
     assert data.getElementType() == float.class;
-
   }
 
   public void testEosMetadata() {

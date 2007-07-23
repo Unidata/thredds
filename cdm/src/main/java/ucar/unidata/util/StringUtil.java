@@ -407,47 +407,88 @@ public class StringUtil {
         return sb.toString();
     }
 
-    /**
-     * Escape any char not alphanumeric or in okChars.
-     * Escape by replacing char with %xx (hex).
-     * LOOK: need to check for %, replace with %%
-     * @param x escape this string
-     * @param okChars these are ok.
-     * @return equivilent escaped string.
-     */
-    static public String escape(String x, String okChars) {
-        boolean ok = true;
-        for (int pos = 0; pos < x.length(); pos++) {
-            char c = x.charAt(pos);
-            if ( !(Character.isLetterOrDigit(c)
-                    || (0 <= okChars.indexOf(c)))) {
-                ok = false;
-                break;
-            }
-        }
-        if (ok) {
-            return x;
-        }
-
-        // gotta do it
-        StringBuffer sb = new StringBuffer(x);
-        for (int pos = 0; pos < sb.length(); pos++) {
-            char c = sb.charAt(pos);
-            if (Character.isLetterOrDigit(c) || (0 <= okChars.indexOf(c))) {
-                continue;
-            }
-
-            sb.setCharAt(pos, '%');
-            int value = (int) c;
-            pos++;
-            sb.insert(pos, Integer.toHexString(value));
-            pos++;
-        }
-
-        return sb.toString();
+  /**
+   * Escape any char not alphanumeric or in okChars.
+   * Escape by replacing char with %xx (hex).
+   * LOOK: need to check for %, replace with %%
+   *
+   * @param x       escape this string
+   * @param okChars these are ok.
+   * @return equivilent escaped string.
+   */
+  static public String escape(String x, String okChars) {
+    boolean ok = true;
+    for (int pos = 0; pos < x.length(); pos++) {
+      char c = x.charAt(pos);
+      if (!(Character.isLetterOrDigit(c) || (0 <= okChars.indexOf(c)))) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) {
+      return x;
     }
 
-    /**
+    // gotta do it
+    StringBuffer sb = new StringBuffer(x);
+    for (int pos = 0; pos < sb.length(); pos++) {
+      char c = sb.charAt(pos);
+      if (Character.isLetterOrDigit(c) || (0 <= okChars.indexOf(c))) {
+        continue;
+      }
+
+      sb.setCharAt(pos, '%');
+      int value = (int) c;
+      pos++;
+      sb.insert(pos, Integer.toHexString(value));
+      pos++;
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * Escape any char in reservedChars.
+   * Escape by replacing char with %xx (hex).
+   * LOOK: need to check for %, replace with %%
+   *
+   * @param x             escape this string
+   * @param reservedChars these must be replaced
+   * @return equivilent escaped string.
+   */
+  static public String escape2(String x, String reservedChars) {
+   boolean ok = true;
+    for (int pos = 0; pos < x.length(); pos++) {
+      char c = x.charAt(pos);
+      if (reservedChars.indexOf(c) >= 0) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) {
+      return x;
+    }
+
+    // gotta do it
+    StringBuffer sb = new StringBuffer(x);
+    for (int pos = 0; pos < sb.length(); pos++) {
+      char c = sb.charAt(pos);
+      if (reservedChars.indexOf(c) < 0) {
+        continue;
+      }
+
+      sb.setCharAt(pos, '%');
+      int value = (int) c;
+      pos++;
+      sb.insert(pos, Integer.toHexString(value));
+      pos++;
+    }
+
+    return sb.toString();
+  }
+
+
+  /**
      * Convert the given color to is string hex representation
      *
      * @param c color
@@ -459,6 +500,35 @@ public class StringUtil {
                + padRight(Integer.toHexString(c.getGreen()), 2, "0")
                + padRight(Integer.toHexString(c.getBlue()), 2, "0");
     }
+
+  /**
+   * Inverse of escape().
+   * @param x
+   * @return original String.
+   */
+  static public String unescape(String x) {
+      if (x.indexOf('%') < 0) {
+          return x;
+      }
+
+      // gotta do it
+      char[]       b  = new char[2];
+      StringBuffer sb = new StringBuffer(x);
+      for (int pos = 0; pos < sb.length(); pos++) {
+          char c = sb.charAt(pos);
+          if (c != '%') {
+              continue;
+          }
+          b[0] = sb.charAt(pos + 1);
+          b[1] = sb.charAt(pos + 2);
+          int value = Integer.parseInt(new String(b), 16);
+          c = (char) value;
+          sb.setCharAt(pos, c);
+          sb.delete(pos + 1, pos + 3);
+      }
+
+      return sb.toString();
+  }
 
 
 
@@ -546,36 +616,6 @@ public class StringUtil {
             }
 
             sb.setCharAt(pos, replaceChar);
-        }
-
-        return sb.toString();
-    }
-
-
-    /**
-     * Inverse of escape().
-     * @param x
-     * @return original String.
-     */
-    static public String unescape(String x) {
-        if (x.indexOf('%') < 0) {
-            return x;
-        }
-
-        // gotta do it
-        char[]       b  = new char[2];
-        StringBuffer sb = new StringBuffer(x);
-        for (int pos = 0; pos < sb.length(); pos++) {
-            char c = sb.charAt(pos);
-            if (c != '%') {
-                continue;
-            }
-            b[0] = sb.charAt(pos + 1);
-            b[1] = sb.charAt(pos + 2);
-            int value = Integer.parseInt(new String(b), 16);
-            c = (char) value;
-            sb.setCharAt(pos, c);
-            sb.delete(pos + 1, pos + 3);
         }
 
         return sb.toString();

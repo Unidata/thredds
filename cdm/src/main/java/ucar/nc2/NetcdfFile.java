@@ -139,6 +139,16 @@ public class NetcdfFile {
     }
   }
 
+  static public final String reserved = ".!*'();:@&=+$,/?%#[]";
+
+  public static String escapeName(String vname) {
+    return StringUtil.escape2(vname, NetcdfFile.reserved);
+  }
+
+  public static String unescapeName(String vname) {
+    return StringUtil.unescape(vname);
+  }
+
   /**
    * Register an IOServiceProvider, using its class string name.
    *
@@ -703,6 +713,10 @@ public class NetcdfFile {
   /**
    * Find a variable, with the specified (full) name.
    * It may possibly be nested in multiple groups and/or structures.
+   * An embedded "." is interpreted as structure.member.
+   * An embedded "/" is interpreted as group/variable.
+   * If the name actually has a ".", you must escape it (replace with "%2e")
+   * If the name actually has a "/", you must escape it (replace with "%??")
    *
    * @param fullName eg "group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
@@ -712,12 +726,12 @@ public class NetcdfFile {
     String selector = stoke.nextToken();
     if (selector == null) return null;
 
-    Variable v = findTopVariable(selector);
+    Variable v = findTopVariable( NetcdfFile.unescapeName( selector));
     if (v == null) return null;
 
     while (stoke.hasMoreTokens()) {
       if (!(v instanceof Structure)) return null;
-      String name = stoke.nextToken();
+      String name = NetcdfFile.unescapeName( stoke.nextToken());
       v = ((Structure) v).findVariable(name);  // LOOK fishy
       if (v == null) return null;
     }
@@ -1366,6 +1380,32 @@ public class NetcdfFile {
     }
     sbuff.append(v.getShortName());
   }
+
+  static protected String makeFullNameEscaped(Group parent, Variable v) {
+    StringBuffer sbuff = new StringBuffer();
+    appendGroupNameEscaped(sbuff, parent);
+    appendStructureNameEscaped(sbuff, v);
+    return sbuff.toString();
+  }
+
+  static private void appendGroupNameEscaped(StringBuffer sbuff, Group g) {
+    boolean isRoot = g.getParentGroup() == null;
+    if (isRoot) return;
+
+    if (g.getParentGroup() != null)
+      appendGroupNameEscaped(sbuff, g.getParentGroup());
+    sbuff.append( escapeName(g.getShortName()));
+    sbuff.append("/");
+  }
+
+  static private void appendStructureNameEscaped(StringBuffer sbuff, Variable v) {
+    if (v.isMemberOfStructure()) {
+      appendStructureNameEscaped(sbuff, v.getParentStructure());
+      sbuff.append(".");
+    }
+    sbuff.append( escapeName(v.getShortName()));
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////////////
   // Service Provider calls

@@ -398,7 +398,7 @@ public class NCdump {
     }
     List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
-    sb.append( v.isMemberOfStructure() ? v.getShortName() : v.getName());
+    sb.append( v.isMemberOfStructure() ? v.getShortName() : v.getNameEscaped());
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');
