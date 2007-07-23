@@ -59,7 +59,7 @@
       </metadata>
 
       <filter>
-        <include wildcard="*.eta_211.nc" />
+        <include wildcard="*eta_211.nc" />
       </filter>
       <addID/>
       <sort>
