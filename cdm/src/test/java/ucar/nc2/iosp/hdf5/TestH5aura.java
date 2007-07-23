@@ -28,7 +28,7 @@ public class TestH5aura extends TestCase {
     NetcdfFile ncfile = TestH5.open("C:/data/testdata/hdf5/auraData/HIRDLS2-AFGL_b027_na.he5");
     Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
     
-    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree"));
+    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree"));
     Array data = dset.read();
     assert data.getElementType() == float.class;
   }

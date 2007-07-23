@@ -116,6 +116,11 @@ class H5header {
     if (debug1) debugOut.println("H5header 0pened file to read:'" + ncfile.getLocation() + "', size=" + actualSize);
     readSuperBlock();
 
+    if (debugReference) {
+      System.out.println("DataObjects");
+      for (DataObject ob : obsList)
+        System.out.println("  "+ob.name+" address= "+ob.address+" filePos= "+ getFileOffset(ob.address));
+    }
     if (debugTracker) memTracker.report();
   }
 
@@ -594,6 +599,7 @@ class H5header {
   // 2A "data object header" section IV.A (p 19)
   // A Group, a link or a Variable
 
+  private List<DataObject> obsList = new ArrayList<DataObject>();
   private class DataObject {
     Group parent;
     String name;
@@ -624,6 +630,7 @@ class H5header {
       this.parent = parent;
       this.name = name;
       this.address = address;
+      obsList.add(this);
 
       displayName = (name.length() == 0) ? "root" : name;
     }
