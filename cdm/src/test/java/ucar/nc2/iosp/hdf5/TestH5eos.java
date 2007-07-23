@@ -68,7 +68,19 @@ public class TestH5eos extends TestCase {
     System.out.println(dset.getName());
     System.out.println(" Length = "+sval.length());
     System.out.println(" Value = "+sval);
-
-
   }
+
+  public void test1() {
+    NetcdfFile ncfile = TestH5.openH5("auraData/HIR2ARSP_c3_na.he5");
+    assert ncfile.findDimension("nChans") != null;
+
+    System.out.println(ncfile);
+  }
+
+  public void test2() {
+    NetcdfFile ncfile = TestH5.openH5("auraData/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
+    System.out.println(ncfile);
+  }
+
+
 }

@@ -31,24 +31,28 @@ import java.io.*;
  * file = magic_file, {segment}
  * segment = head_segment | data_segment
  * <p/>
- * head_segment = magic_head, {head_subsection}
- * head_subsection = magic_dim, dims | magic_var, vars | magic_att, atts
+ * head_segment = MAGIC_HEAD, {head_subsection}
+ * head_subsection = MAGIC_DIM, dims | MAGIC_VAR, vars | MAGIC_ATT, atts
  * dims = ndim, {name, length, flags}
  * atts = natts, {att}
  * att = name, type, nvals, vals
  * vars = nvars, {var}
  * var = name, type, dims, atts
  * <p/>
- * data_segment = magic_data, varname, section, vals
+ * data_segment = MAGIC_DATA, varname, section, vals
  * section = nranges, {origin, size}
- * vals = {byte} | {short} | {int} | {long} | {float} | {double} | {String}
+ * vals = {BYTE} | {SHORT} | {INT} | {LONG} | {FLOAT} | {DOUBLE} | {STRING}
+ * <p/>
+ * ndim, length, flags, natts, type, nvals, nvars, nranges, origin, size = VLEN4
+ * name, varname = STRING
+ * type = TYPE_BYTE=1 | TYPE_SHORT=2 | TYPE_INT=3 | TYPE_FLOAT=4 | TYPE_DOUBLE=5 | TYPE_LONG=6 | TYPE_STRING=7
  *
  * @author caron
  * @since Jul 12, 2007
  */
 public class StreamWriter {
   static final String MAGIC_FILE = "CDFSver0";
-  static final String MAGIC_DATA = "Data";
+  static final String MAGIC_DATA = "CDFS";
   static final String MAGIC_HEADER = "Head";
   static final String MAGIC_EOF = "EOF\n";
 
@@ -252,8 +256,9 @@ public class StreamWriter {
     else if (dt == DataType.INT) return 4;
     else if (dt == DataType.FLOAT) return 5;
     else if (dt == DataType.DOUBLE) return 6;
-    else if (dt == DataType.STRING) return 7;
-    else if (dt == DataType.STRUCTURE) return 8;
+    else if (dt == DataType.LONG) return 7;
+    else if (dt == DataType.STRING) return 8;
+    else if (dt == DataType.STRUCTURE) return 9;
 
     throw new IllegalStateException("unknown DataType == " + dt);
   }
@@ -265,8 +270,9 @@ public class StreamWriter {
     else if (code == 4) return DataType.INT;
     else if (code == 5) return DataType.FLOAT;
     else if (code == 6) return DataType.DOUBLE;
-    else if (code == 7) return DataType.STRING;
-    else if (code == 8) return DataType.STRUCTURE;
+    else if (code == 7) return DataType.LONG;
+    else if (code == 8) return DataType.STRING;
+    else if (code == 9) return DataType.STRUCTURE;
 
     throw new IllegalStateException("unknown DataType == " + code);
   }

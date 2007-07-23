@@ -89,4 +89,18 @@ public class TestH5filter extends TestCase {
     assert shape[1] == 1500;
   }
 
+  public void testMissing() throws IOException {
+    //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    NetcdfFile ncfile = TestH5.openH5("auraData/HIRDLS2-AFGL_b027_na.he5");
+
+    // picture looks ok in ToolsUI
+    Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
+    assert v != null;
+    Array data = v.read();
+    int[] shape = data.getShape();
+    assert shape[0] == 6;
+    assert shape[1] == 145;
+  }
+
+
 }

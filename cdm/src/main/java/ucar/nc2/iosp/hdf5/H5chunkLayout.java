@@ -131,7 +131,8 @@ class H5chunkLayout extends Indexer {
     }
 
     Chunk chunk = index.next();
-    totalNelemsDone += chunk.getNelems();
+    if (chunk != null)
+      totalNelemsDone += chunk.getNelems();
     return chunk;
   }
 

@@ -23,6 +23,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -30,6 +31,7 @@ import ucar.ma2.Section;
 import java.util.*;
 import java.text.*;
 import java.io.IOException;
+import java.nio.*;
 
 class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
@@ -452,25 +454,56 @@ class H5header {
       return dataType;
     }
 
-    /* public String toStringDebug(String name) {
-      if (address < 0) return null;
 
-      java.io.PrintStream save = debugOut;
+    /**
+     * Get the Fill Value, if there is one.
+     * @return  wrapped primitive (Byte, Short, Integer, Double, Float, Long), or null if none
+     */
+    Object getFillValue() {
 
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      debugOut = new java.io.PrintStream(bos);
-      DataObject o = new DataObject(null, name, address);
-      try {
-        o.read();
+      if (fillValue == null) {
+        if (dataType == DataType.BYTE) return N3iosp.NC_FILL_BYTE;
+        if (dataType == DataType.CHAR) return (byte) 0;
+        if (dataType == DataType.SHORT) return N3iosp.NC_FILL_SHORT;
+        if (dataType == DataType.INT) return N3iosp.NC_FILL_INT;       
+        if (dataType == DataType.LONG) return N3iosp.NC_FILL_LONG;
+        if (dataType == DataType.FLOAT) return N3iosp.NC_FILL_FLOAT;
+        if (dataType == DataType.DOUBLE) return N3iosp.NC_FILL_DOUBLE;
+        return null;
       }
-      catch (IOException ex) {
-        ex.printStackTrace(debugOut);
+
+      if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+        return fillValue[0];
       }
 
-      debugOut.println("vinfo=" + this);
-      debugOut = save;
-      return bos.toString();
-    } */
+      ByteBuffer bbuff = ByteBuffer.wrap( fillValue);
+      if (byteOrder >= 0)
+        bbuff.order( byteOrder == RandomAccessFile.LITTLE_ENDIAN? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+
+      if (dataType == DataType.SHORT) {
+        ShortBuffer tbuff = bbuff.asShortBuffer();
+        return tbuff.get();
+
+      } else if (dataType == DataType.INT) {
+        IntBuffer tbuff = bbuff.asIntBuffer();
+        return tbuff.get();
+
+      } else if (dataType == DataType.LONG) {
+        LongBuffer tbuff = bbuff.asLongBuffer();
+        return tbuff.get();
+
+      } else if (dataType == DataType.FLOAT) {
+        FloatBuffer tbuff = bbuff.asFloatBuffer();
+        return tbuff.get();
+
+      } else if (dataType == DataType.DOUBLE) {
+        DoubleBuffer tbuff = bbuff.asDoubleBuffer();
+        return tbuff.get();
+      }
+
+      throw new IllegalStateException();
+    }
+
 
   } // Vinfo
 
@@ -1168,6 +1201,7 @@ class H5header {
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
       return sbuff.toString();
     }
+
   }
 
   // Message Type 8 ( p 44) "Data Storage Layout" : regular, chunked, or compact (stored with the message)
@@ -1772,8 +1806,8 @@ class H5header {
           }
           assert currentNode != null;
         }
-        if (nentries == 0)
-          System.out.println("hah");
+        //if (nentries == 0)
+         // System.out.println("hah");
         assert (nentries == 0) || (currentEntry < nentries);
       }
 
@@ -2258,7 +2292,7 @@ class H5header {
       }
 
       if (vinfo.fillValue != null) {
-        Object fillValue = H5iosp.convert(vinfo.fillValue, vinfo.getNCDataType(), vinfo.byteOrder);
+        Object fillValue = vinfo.getFillValue();
         if (fillValue instanceof Number)
           fillAttribute = new Attribute("_FillValue", (Number) fillValue);
       }
