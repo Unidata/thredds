@@ -1,91 +1,125 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Getting Started</title>
+   
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Getting Started</title>
 </head>
 <body>
-<h1><img src="THREDDSlogo.jpg" width="67" height="54">Quick Start </h1>
+<h1><img src="THREDDSlogo.jpg" height="54" width="67">Getting Started </h1>
+
 <div class="head">
   <address>
   </address>
   <hr>
-  <div class="head"></div>
-  <h2>Installation</h2>
-</div>
+  
+  <h2>Install Java</h2>
+<p>The TDS requires Java 1.5 or above, we recommend the current verison of 1.6 and use it on our development servers.<br>
+</p>
+<p>Current versions of the JRE and JDK are available from the Java web page, <a href="http://java.sun.com/">http://java.sun.com/</a>.<br>
+</p>
+<p>The Java SE Developer Kit (JDK) 1.5.0_12 is already installed on the workshop computers at <code>/usr/java/jdk1.5.0_12.<br>
+</code></p>
 <ol>
-  <li> Install the latest released version of <a href="http://java.sun.com/javase/index.jsp">Java 5</a>. You should set the environment variable <strong><code>JAVA_HOME</code></strong> to the base path of the JDK, eg <em><strong>/usr/local/jdk1.5.0_09</strong></em> or <strong><em>C:\Program Files\Java\jdk1.5.0_09</em></strong>. </li>
-  <li>The root directory where Java is installed is referred to here as <strong>${java_home}</strong>. It may be convenient to have <strong>${java_home}/bin</strong> in your executable path, so that you can run Java tools from the command line. </li>
-  <li>Install the latest stable version  of <a href="http://jakarta.apache.org/tomcat/">Tomcat 5.5</a>. (On Windows, dont use the &quot;Windows Executable&quot; installation unless you know what you are doing). </li>
-  <li>The root directory where Tomcat is installed is referred to here as <strong>${tomcat_home}</strong>. </li>
-  <li>Download the latest <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html#TDS">thredds.war</a> and put in <strong>${tomcat_home}/webapps</strong>.</li>
+  <li>Set <code>JAVA_HOME</code> environment variable</li>
+  <ul>
+    <li><code>set JAVA_HOME /usr/java/jdk1.5.0_12</code><br>
+    </li>
+  </ul>
 </ol>
-<h2>Tomcat Directory Layout </h2>
-<p>The Thredds software is kept under <strong>${tomcat_home}/webapps/thredds</strong>. This area is overwritten whenever a new thredds.war file is installed.</p>
-<p>Any files that you will modify or add are kept under  <strong>${tomcat_home}/content/thredds. </strong>
-Its a really good idea not to  put any files containing passwords here, or anything with security issues.
-Typically you will only be adding and modifying catalogs and configuration files. </p>
-<p>The subdirectories of<strong> ${tomcat_home}/content/thredds </strong>are used by specific servlets, for example, files in <strong>${tomcat_home}/content/thredds/cataloggen</strong> are used by the Catalog Generator servlet, etc. </p>
-<p>These directories are populated with default values the first time
-the Thredds applications are run, so its important to start up the
-Thredds servlet immediately after installing, before you change or add
-new files that might get overwritten. The presence of an empty file
-called <strong>${tomcat_home}/content/thredds/.INIT</strong> indicates whether the default files have been copied - <em><strong>its important not to delete this file</strong></em>. </p>
-<h2>Startup Tomcat and the THREDDS Data Server </h2>
-<p>The user that starts up the Tomcat web server is referred to here as the <strong>tomcat user</strong>. The tomcat user should not have root privileges in a production environment, see <a href="TomcatSecurity.html">Security</a> for more details. </p>
-<p>Now startup the Tomcat web server:</p>
-<blockquote>
-  <pre><strong>&gt; cd ${tomcat_home}/bin<br>&gt; ./startup.sh</strong></pre>
-</blockquote>
-<p>If the machine name is <em><strong>hostname</strong></em>, the tomcat server URL will be <strong>http://hostname:8080/. </strong>If you are working on the same machine that the server is running on, you can refer to it as<strong> http://localhost:8080/. </strong>From a browser, go to<strong> <a href="http://hostname:8080/">http://hostname:8080/</a> </strong> You should see the Tomcat start page which starts with:</p>
-<blockquote>
-  <p><b>If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!</b> </p>
-</blockquote>
-<p>Now go to<strong> <a href="http://hostname:8080/thredds/catalog.html">http://hostname:8080/thredds/catalog.html</a> </strong>in
-a web browser. You should see the Thredds default catalog. This
-initializes the content directories with defaults (after this step, you
-can edit these without worrying about them being overwritten).</p>
-<p>Look at <strong> <a href="http://hostname:8080/thredds/catalog.xml">http://hostname:8080/thredds/catalog.xml</a> </strong>in a THREDDS client like the <a href="http://www.unidata.ucar.edu/software/idv/index.html">IDV</a> or the <a href="http://localhost:8080/thredds/view/nj22UI.jnlp?catalog=/thredds/catalog.xml&dataset=testSingle">NetCDF ToolsUI </a>
-(or in a browser to view the raw XML) and you should be able to view
-the test THREDDS datasets. Bang around on it to make sure its working. </p>
-<p>Note that to end Tomcat, use</p>
-<blockquote>
-  <pre><strong>&gt; cd ${tomcat_home}/bin<br>&gt; ./shutdown.sh</strong></pre>
-</blockquote>
-<p>You can do further administration through the Tomcat Administrator/Manager web interface (links on the left sidebar from<a href="http://hostname:8080/"> <strong>http://hostname:8080/</strong></a>).
-You can add and modify other users through the Tomcat Administrator
-interface. You can start and stop web applications, including Thredds,
-through the Tomcat Manager interface. To enable this, see <a href="RemoteManagement.html">Remote Management </a>. </p>
-<h2>Configuring the THREDDS Data Server Catalog </h2>
-<p>The <em>top-level catalog</em> lives at <strong>${tomcat_home}/content/thredds/catalog.xml</strong> . We ship a simple test  catalog that looks like: </p>
-<pre>  &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>  &lt;catalog <br>    name="THREDDS Server Default Catalog : You must change this to fit your server!"<br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" <br>    xmlns:xlink="http://www.w3.org/1999/xlink" &gt;<br>  <br><strong>(1)</strong> &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
-    &lt;datasetRoot path="test" location="content/testdata/" /&gt;<br>				 <br><strong>(2)</strong> &lt;dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS" <br>       urlPath="test/testData.nc" /&gt;</pre>
-<pre><strong>(3)</strong> &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan" <br>		path="testAll" <strong>location</strong>="content/testdata"&gt;<br><br>       &lt;metadata inherited="true"&gt;<br>         &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;<br>       &lt;/metadata&gt;<br><br>      &lt;filter&gt;<br><strong>(3a)</strong>     &lt;include <strong>wildcard="*.nc"</strong> /&gt;<br>      &lt;/filter&gt;<br><br>    &lt;/datasetScan&gt;<br><br><strong>(4)</strong> &lt;catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name ="" /&gt;<br>&lt;/catalog&gt;</pre>
-<p>This defines (1) an OpenDAP server for (2) a single dataset, 3) all
-the datasets in a directory that match the given wildcard pattern (3a),
-and (4) a catalog reference, to use as a quick test that the TDS is
-working as it should. </p>
-<p>Lets change this to make it work for a  directory that contains your data. </p>
-<p> On the <em><strong>datasetScan</strong></em> element, change the <em><strong>location</strong></em> attribute to point to a directory with data in it that you want to serve. The files must be readable through the <a href="http://www.unidata.ucar.edu/packages/netcdf-java/">NetCDF-Java 2.2 </a>library, so to be safe, you might want to start with some NetCDF files. Make sure that the <em><strong>location</strong></em> is an absolute path (unlike the example shown), like <strong>"/data/mydata/"</strong> or <strong>"C:/data/mydata/</strong>". The <strong>tomcat</strong> <strong>user</strong> will need read permission on the files. </p>
-
-<p>If necessary, change the <em><strong>filter</strong></em> element to include only the datasets in that directory that you want. For example <strong>wildcard="*.nc"</strong>
-matches any filename ending with ".nc", typical for netCDF files. (For
-more details on datasetScan filtering, see the datasetScan
-documentation <a href="DatasetScan.html">filtering</a> section.)</p>
-<p>For now, you will need to stop and restart Tomcat for your changes to take effect (see <a href="RemoteManagement.html">Remote Management </a> for ways to do this without restarting Tomcat). </p>
-
-<p>Now go to <strong><a href="http://hostname:8080/thredds/catalog.html">http://hostname:8080/thredds/catalog.html</a> </strong>in a browser or<strong> <a href="http://hostname:8080/thredds/catalog.xml">http://hostname:8080/thredds/catalog.xml</a> </strong>in a THREDDS client, and have a look at your files. Hopefully you  are off and running!</p>
-<p> For more details on the <em><strong>datasetScan</strong></em> element,&nbsp; read <a href="DatasetScan.html">Catalog Generation Using datasetScan</a>. Also read the Configuration <a href="TDSConfiguration.html">Reference</a> to understand more of your options. </p>
-<h2>&nbsp;</h2>
-<h2>Resources</h2>
-<ul>
-  <li><a href="TomcatTraining/tomcat_course.html">Tomcat Installation and Configuration Tutorial </a></li>
-  <li><a href="http://timarcher.com/?q=node/60%20">Quick Start Guide to Setting up Apache Tomcat on Linux</a> <br>
+<h2>Install Tomcat</h2>
+<p>Current versions of Tomcat are available from the Tomcat web page, <a href="http://tomcat.apache.org/">http://tomcat.apache.org/</a>.<br>
+</p>
+<p>Install Tomcat 6.0:<br>
+</p>
+<ol>
+  <li>Move to installation location</li>
+  <ul>
+    <li><code>cd tds</code></li>
+  </ul>
+  <li>Unpack the Tomcat 6.0.13 archive</li>
+  <ul>
+    <li><code>tar xvzf /opt/apache-tomcat-6.0.13.tar.gz</code></li>
+  </ul>
+  <li>Set <code>TOMCAT_HOME</code> environment variable</li>
+  <ul>
+    <li><code>set TOMCAT_HOME /home/workshop/tds/apache-tomcat-6.0.13</code><br>
+    </li>
+  </ul>
+  <li>Move to Tomcat bin directory</li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/bin</code></li>
+  </ul>
+  <li>Edit startup.sh and shutdown.sh and set environment variables:</li>
+  <ul>
+    <li>Run editor of choice, e.g.</li>
+    <ul>
+      <li><code>vi startup.sh shutdown.sh</code></li>
+      <li><code>gedit startup.sh shutdown.sh</code><br>
+        <code></code></li>
+    </ul>
+    <li><code>JAVA_HOME="</code><code>/usr/java/jdk1.5.0_12</code><code>"<br>
+export JAVA_HOME<br>
+J</code><code>AVA_OPTS="-Xmx1024m -Xms512m -server"<br>
+export JAVA_OPTS<br>
+C</code><code>ATALINA_HOME="/home/workshop/tds/apache-tomcat-6.0.13"<br>
+export CATALINA_HOME</code></li>
+  </ul>
+</ol>
+<code></code><code></code>
+<h2>Running Tomcat</h2>
+<ol>
+  <li>cd to Tomcat bin directory</li>
+  <ul>
+    <li><code>cd </code><code>${TOMCAT_HOME}</code><code>/bin</code></li>
+  </ul>
+  <li>Startup Tomcat<br>
   </li>
-</ul>
+  <ul>
+    <li><code>./startup.sh</code></li>
+  </ul>
+  <li>Open browser window and check that Tomcat is running</li>
+  <ul>
+    <li>URL: <a href="http://localhost:8080/"><code>http://localhost:8080/</code></a></li>
+    <li>You should see the Tomcat start page which begins with the text: 
+      <blockquote>
+  <p><b>If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!</b></p></blockquote><br>
+    </li>
+  </ul>
+  <li>Shutdown Tomcat</li>
+  <ul>
+    <li><code>./shutdown.sh</code><br>
+    </li>
+  </ul>
+</ol>
+<h2>Deploy TDS (thredds.war)</h2>
+<p>The THREDDS Data Server (TDS) is available from the Unidata FTP site at <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/3.16/">ftp://ftp.unidata.ucar.edu/pub/thredds/3.16/</a>.<br>
+</p>
+<ol>
+  <li>Download the thredds.war file</li>
+  <ul>
+    <li>Click on the above FTP URL.</li>
+    <li>Click on the thredds.war file and save to the Tomcat webapps directory, <code>${TOMCAT_HOME}/webapps</code>.</li>
+  </ul>
+  <li>Startup Tomcat</li>
+  <ul>
+    <li><code>./startup.sh</code></li>
+  </ul>
+  <li>Test TDS in browser</li>
+  <ul>
+    <li>URL: <a href="http://localhost:8080/thredds/"><code>http://localhost:8080/thredds/</code></a></li>
+    <li>Browse distribution test catalogs and datasets<br>
+    </li>
+  </ul>
+</ol>
+</div>
 <hr width="100%">
 <strong><br>
 </strong>
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 29, 2006
+<img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was last updated on July 23, 2007. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.<br>
+
 </address>
+
 <p>&nbsp;</p>
+
 </body></html>

@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Basic TDS Configuration</title></head>
+
+<body>
+<h1><img src="../THREDDSlogo.jpg" height="54" width="67">Basic TDS Configuration<br>
+ </h1>
+<div class="head">
+  <address>
+  </address>
+  <hr>
+  <h2> Tomcat Directories</h2>
+<p>We've already looked in a few of the directories under the <code>${TOMCAT_HOME}</code> directory:<br>
+</p>
+<ul>
+  <li>The <code>bin/</code> directory contains the Tomcat starup and shutdown scripts:</li>
+  <ul>
+    <li><code>starup.sh</code></li>
+    <li><code>shutdown.sh</code></li>
+  </ul>
+  <li>The <code>webapps/</code> directory contains the software for each web application installed in Tomcat. For the TDS, we have:<br>
+  </li>
+  <ul>
+    <li>the <code>thredds.war</code> distribution file; and</li>
+    <li>the <code>thredds/</code> directory where the distribution is unpacked [Note: This directory is overwritten each time a new TDS is deployed.]<br>
+    </li>
+  </ul>
+</ul>
+<p>Another directory under <code>${TOMCAT_HOME}</code> we'll be looking at soon:<code></code><br>
+</p>
+<ul>
+  <li>The <code>logs/</code> directory contains the Tomcat log files:</li>
+  <ul>
+    <li><code>catalina.out</code> - standard output from all web applications<br>
+    </li>
+  </ul>
+</ul>
+<p>We will go into more detail on the <a href="DirectoryLayout.html#Tomcat">Tomcat directories</a> later.<br>
+</p>
+<h2>TDS Directories</h2>
+<p>All TDS configuration information is stored in a directory that is
+created the first time the TDS is run. The configuration directory, <code>${TOMCAT_HOME}/content/thredds</code>,
+is created and populated with default files the first time a TDS
+installation is run. It is persistent even when a TDS installation is
+upgraded or re-deployed. All your configuration, modifications, and
+additions should be made in this directory. Do not place files
+containing passwords or anything else with security issues in this
+directory.Typically you will only be adding and modifying catalogs and configuration files. </p>
+<p>We will go into more detail on the <a href="DirectoryLayout.html#TDS">TDS directories</a> later. For now, we will be focus on the following subset of the content directory:<br>
+</p>
+<ul>
+  <li><code>content/thredds/</code></li>
+  <ul>
+    <li><code>.INIT</code> - the presence of this file indicates whether the default files have been copied - <em><strong>it is important not to delete this file</strong></em>.</li>
+    <li><code>catalog.xml </code> - the main TDS configuration catalog (root catalog for TDS configuration) <br>
+    </li>
+    <li><code>enhancedCatalog.xml</code> - an example catalog [Note: It is referenced from <code>catalog.xml</code>.]<code></code><br>
+    </li>
+    <li><code>logs/</code></li>
+    <ul>
+      <li><code>catalogErrors.xml</code> - messages from TDS configuration contains information on the TDS configuration catalogs<br>
+      </li>
+      <li><code>threddsServlet.xml</code></li>
+    </ul>
+  </ul>
+</ul>
+<br>
+<hr size="2" width="100%">
+<h2>TDS Configuration Catalog</h2>
+<p>The main TDS configuration catalog is at <code>${TOMCAT_HOME}/content/thredds/catalog.xml</code>. We ship a simple test catalog:</p>
+<pre>  &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>  &lt;catalog <br>    name="THREDDS Server Default Catalog : You must change this to fit your server!"<br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" <br>    xmlns:xlink="http://www.w3.org/1999/xlink" &gt;<br>  <br><strong>(1)</strong> &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>    &lt;datasetRoot path="test" location="content/testdata/" /&gt;<br>				 <br><strong>(2)</strong> &lt;dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS" <br>       urlPath="test/testData.nc" /&gt;</pre>
+
+<pre><strong>(3)</strong> &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan" <br>		path="testAll" <strong>location</strong>="content/testdata"&gt;<br><br>       &lt;metadata inherited="true"&gt;<br>         &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;<br>       &lt;/metadata&gt;<br><br>      &lt;filter&gt;<br><strong>(3a)</strong>     &lt;include <strong>wildcard="*.nc"</strong> /&gt;<br>      &lt;/filter&gt;<br><br>    &lt;/datasetScan&gt;<br><br><strong>(4)</strong> &lt;catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name ="" /&gt;<br>&lt;/catalog&gt;</pre>
+
+<p>which defines (1) an OPeNDAP server, (2) a single dataset, (3) all
+the datasets in a directory that match the given wildcard pattern (3a),
+and (4) a catalog reference. It is provided as a quick test that the TDS is
+working as it should.<br>
+</p>
+<p>By default, all datasets to be served by the TDS must be defined in
+the tree of catalogs starting with the main TDS configuration catalog
+and branching out along <code>catalogRef</code> elements to other TDS configuration catalogs.<br>
+</p>
+<h3>Example: Fix Enhanced Catalog</h3>
+<ol>
+  <li>Drilling down into the "Test Enhanced Catalog" dataset, we can see that there are no datasets cataloged.</li>
+  <ul>
+    <li>URL: <a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></li>
+    <li>Select the "Test Enhanced Catalog" dataset.</li>
+    <li>Select the "Eta Data" dataset.</li>
+  </ul>
+  <li>If we open the enhanced catalog, we see that there is a <code>datasetScan</code> element with a <code>location</code> of "content/testdata/". This location is a shortcut that corresponds to the directory <code>${TOMCAT_HOME}/content/thredds/public/testdata/</code>. Let's see what is in that directory and why the <code>datasetScan</code> in <code>enhancedCatalog.xml</code> isn't finding any datasets:<br>
+  </li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/content/thredds</code></li>
+    <li><code>ls public/testdata</code><br>
+    </li>
+    <li><code>vi enhancedCatalog.xml</code></li>
+  </ul>
+</ol>
+<p>Here are the datasets listed:<br>
+</p>
+<pre>2004050300_eta_211.nc<br>2004050312_eta_211.nc<br>2004050400_eta_211.nc<br>2004050412_eta_211.nc<br>testData2.nc<br>testData.nc<br></pre>
+<p>And here's some of the text from the <code>datasetScan</code> element:</p>
+<pre>    &lt;datasetScan name="ETA Data" ID="testEnhanced"<br>                 path="testEnhanced" location="content/testdata/"<br>                 harvest="true"&gt;<br>      &lt;metadata inherited="true"&gt;<br>        ...<br>      &lt;/metadata&gt;<br><br>      &lt;filter&gt;<br>        &lt;include wildcard="*.eta_211.nc" /&gt;<br>      &lt;/filter&gt;<br>      ...<br>    &lt;/datasetScan&gt;<br></pre>
+<p>Notice the filter wildcard pattern. The filenames contain an
+underscore ("_") before "eta" but the wildcard contains a dot (".").
+Let's change it and see what happens:<br>
+</p>
+<ol start="3">
+  <li>Edit the enhanced catalog and change the wildcard pattern.</li>
+  <li>Browse the catalog</li>
+  <ul>
+    <li>URL: <code><a href="http://localhost:8080/thredds/enhancedCatalog.html">http://localhost:8080/thredds/enhancedCatalog.html</a></code></li>
+    <li>No change!?</li>
+  </ul>
+  <li>Oh yeah! Restart Tomcat so the TDS is reinitialized</li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/bin</code></li>
+    <li><code>./shutdown.sh</code></li>
+    <li><code>./startup.sh</code></li>
+  </ul>
+  <li>Brows the catalog again</li>
+  <ul>
+    <li>URL: <code><a href="http://localhost:8080/thredds/enhancedCatalog.html">http://localhost:8080/thredds/enhancedCatalog.html</a></code></li>
+  </ul>
+</ol>
+<p>Note: It is NOT recommended to use the <code>location</code> value
+shortcut "content/" in a production server. You will probably want to
+locate your data on a seperate disk partition from your configuration.<br>
+</p>
+<p> </p>
+
+<h3>Example: Add NCEP GFS Alaska 191km model data</h3>
+<p>Let's modify the main TDS configuration catalog to include some model data.<br>
+</p>
+<ol>
+  <li>Edit the main TDS configuration catalog:</li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/content/thredds</code></li>
+    <li><code>vi catalog.xml</code></li>
+  </ul>
+  <li>Change the <code>datasetScan</code> element <code>location</code> attribute value to <code>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</code></li>
+  <li>Change the <code>name</code>, <code>ID</code> and other items as appropriate. Does the filter pattern need to be changed?</li>
+  <ul>
+    <li><code>ls /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</code></li>
+    <li>Yes, change it to "<code>GFS_*</code>" or "<code>GFS_*.grib1</code>"</li>
+  </ul>
+  <li>Restart Tomcat so the TDS is reinitialized:</li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/bin</code></li>
+    <li><code>./shutdown.sh</code></li>
+    <li><code>./startup.sh</code></li>
+  </ul>
+  <li>Brows the catalog again</li>
+  <ul>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
+  </ul>
+</ol>
+<h3>Example: Other Available Datasets</h3>
+<p>When configuring the TDS to serve your data, it is important to
+remember that the TDS can only serve data that is readable through the
+netCDF-Java library. Let's take a look around for some more data that
+we can serve:<br>
+</p>
+<ol>
+  <li>Open the ToolsUI application:</li>
+  <ul>
+    <li>Webstart URL: <code><a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp">http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp</a></code></li>
+  </ul>
+  <li>Browse under the <code>/data</code> directory for a collection of datasets</li>
+  <li>Edit main TDS configuration catalog as above<br>
+  </li>
+</ol>
+<h3>View catalogs and datasets in ToolsUI and/or IDV</h3>
+<ol>
+  <li>Open ToolsUI or IDV:</li>
+  <ul>
+    <li>ToolsUI Webstart URL: <code><a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp">http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp</a></code></li>
+    <li>IDV Webstart URL: <a href="http://www.unidata.ucar.edu/software/idv/release/stable/webstart/IDV/idv.jnlp"><code>http://www.unidata.ucar.edu/software/idv/release/stable/webstart/IDV/idv.jnlp</code></a></li>
+  </ul>
+  <li>In ToolsUI</li>
+  <ul>
+    <li>Open "THREDDS" tab</li>
+    <li>Enter catalog URL: http://localhost:8080/thredds/catalog.xml</li>
+    <li>Select "Connect" button</li>
+    <li>Browse down and select a dataset then select "Open File"</li>
+  </ul>
+  <li>In IDV</li>
+  <ul>
+    <li>Select "Dataset Chooser"</li>
+    <li>Select "Catalog"</li>
+    <li>Enter catalog URL: http://localhost:8080/thredds/catalog.xml</li>
+    <li>Browse down and select a dataset</li>
+  </ul>
+</ol>
+</div>
+<hr width="100%">
+<address>
+<img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was last updated on July 24, 2007. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+</address>
+<p>&nbsp;</p>
+</body></html>

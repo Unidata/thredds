@@ -7,12 +7,9 @@
 </head>
 
 <body>
-<h1><img src="../THREDDSlogo.jpg" width="67" height="54">Tomcat, TDS Directory Layout </h1>
-<div class="head">
-  <address>
-  </address>
+<h1><img src="../THREDDSlogo.jpg" alt="THREDDS" width="67" height="54">Tomcat, TDS Directory Layout </h1>
   <hr>
-  <h2> Tomcat Directory Layout</h2>
+  <a name="Tomcat"></a><h2> Tomcat Directory Layout</h2>
   <p>The following are created when Tomcat is installed, reletive to <strong>$CATALINA_HOME</strong> directory: </p>
   <pre>
 bin/
@@ -47,7 +44,7 @@ webapps/            web applications are installed here
 
 work/			      work/temp directory
 </pre>
-  <h2>TDS Directory Layout</h2>
+  <a name="TDS"></a><h2>TDS Directory Layout</h2>
   <p>After the TDS is installed and run the first time, the following directories are created in the <strong>$CATALINA_HOME</strong> directory. These directories hold <em>persistent information</em>, that should not be wiped out when an upgrade to tomcat or TRS is made. </p>
   <pre>
 content/thredds/
@@ -64,10 +61,9 @@ content/thredds/
   public/             anything in here will be publically viewable
 	root/				copy these files to webapps/ROOT for efficiency</pre>
   <p>Other directories are used for caching; these may change in future releases.</p>
-</div>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 15, 2006
+<img src="../images/thread.png" alt="THREDDS" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 15, 2006
 </address>
 <p>&nbsp;</p>
 </body>
