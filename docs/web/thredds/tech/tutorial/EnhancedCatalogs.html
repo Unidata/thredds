@@ -58,7 +58,7 @@ there are 14 days of data available in the collection, ending with the
 present time. </li>
     </ol>
   </li>
-  <li> The <strong>datasetScan</strong> element dynamically creates a subcatalog by scanning the directory named by <strong>location</strong>. The <strong>name</strong> attribute is used as the title of DL records, so try to make it concise yet descriptive. The <strong>ID</strong> is also very important. See <a href="DatasetScan.html">here</a> for a full description of the datasetScan element.</li>
+  <li> The <strong>datasetScan</strong> element dynamically creates a subcatalog by scanning the directory named by <strong>location</strong>. The <strong>name</strong> attribute is used as the title of DL records, so try to make it concise yet descriptive. The <strong>ID</strong> is also very important. See <a href="../reference/DatasetScan.html">here</a> for a full description of the datasetScan element.</li>
   <li>This metadata also applies to all the dynamically created datasets in the datasetScan element. </li>
   <li>The <strong>summary</strong>
 documentation is used as a paragraph-length summary of the dataset in
@@ -66,7 +66,7 @@ Digital Libraries. Anyone searching for your data will use this to
 decide if its the data they are looking for. </li>
   <li>The <strong>geospatialCoverage</strong> is a lat/lon (and optionally elevation) bounding box for the dataset.</li>
   <li>The <strong>variables</strong> element list the data variables available in the dataset. </li>
-  <li>There are a number of special instructions for datasetScan (see <a href="DatasetScan.html#addTimeCoverage">here</a> for the gory details). The <strong>filter</strong> element specifies which files and directories to include or exclude from the catalog. The <strong>addDatasetSize</strong> element indicates that a <strong>dataSize</strong> element should be added to each atomic dataset. The <strong>addProxies</strong>
+  <li>There are a number of special instructions for datasetScan (see <a href="../reference/DatasetScan.html#addTimeCoverage">here</a> for the gory details). The <strong>filter</strong> element specifies which files and directories to include or exclude from the catalog. The <strong>addDatasetSize</strong> element indicates that a <strong>dataSize</strong> element should be added to each atomic dataset. The <strong>addProxies</strong>
 element causes resolver datasets to be added at each collection level
 that when accessed resolve to the latest dataset at that collection
 level. This is useful for real-time collections. The <strong>addTimeCoverage</strong> dynamically adds a <strong>timeCoverage</strong> element to the individual datasets in the collection, which will override the <strong>timeCoverage</strong>

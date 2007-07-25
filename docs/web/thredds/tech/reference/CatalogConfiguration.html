@@ -12,7 +12,7 @@ is removed when the TDS sends the catalog to the client. </p>
 <p>The <em>default root catalog</em> is <strong>${tomcat_home}/content/thredds/catalog.xml. </strong>It may reference other configuration catalogs using the <strong>catalogRef</strong>
 element. These catalogs can also contain catalogRef elements, etc. If
 you want to serve other catalogs that are not linked to the root
-catalog, then <a href="../tutorial/TDSConfiguration.html#RootCatalogs">declare them</a> in <strong>${tomcat_home}/content/thredds/threddsConfig.xml. </strong>The set of  configuration catalogs is found by traversing all the root catalogs. This is the set of <em>configuration catalogs</em>, aka <em>static catalogs</em>. </p>
+catalog, then <a href="TDSConfiguration.html#RootCatalogs">declare them</a> in <strong>${tomcat_home}/content/thredds/threddsConfig.xml. </strong>The set of  configuration catalogs is found by traversing all the root catalogs. This is the set of <em>configuration catalogs</em>, aka <em>static catalogs</em>. </p>
 <p>The catalogRef element looks like: </p>
 <blockquote>
   <pre><strong>&lt;catalogRef xlink:href=&quot;idd/models.xml&quot; xlink:title=&quot;NCEP Model Data&quot; name=&quot;&quot; /&gt;</strong></pre>
