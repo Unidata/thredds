@@ -43,7 +43,7 @@ public class TestH5npoess extends TestCase {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/reference"));
     NetcdfFile ncfile = TestH5.openH5("npoess/ExampleFiles/GDNBF-VNCCO_NPP_d2003125_t101038_e10116_b9_c2005829162517_dev.h5");
     Variable dset = ncfile.findVariable("Data_Products/VIIRS-DNB-FGEO/VIIRS-DNB-FGEO_Aggr");
-    assert(null != dset );    
+    assert(null != dset );
   }
 
 }
