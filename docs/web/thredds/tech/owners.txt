@@ -19,14 +19,14 @@ john	 10742 Apr 26 16:42 indexOld.html
 
 reference
 
-john	 13295 Jul 24 19:37 ThreddsConfigXMLFile.html
-john	  6749 Jul 24 19:22 threddsConfig.xml.txt
+*john	 13295 Jul 24 19:37 ThreddsConfigXMLFile.html
+*john	  6749 Jul 24 19:22 threddsConfig.xml.txt
 ethan	  3917 Jul 10 13:10 TomcatBehindProxyServer.html
 john	  1868 Jul 10 13:10 index.html
-john	 11770 Jun  6 16:54 PluggableRestrictedAccess.htm
-ethan	  2520 May 18 16:54 AccessLog.html
-??	  3626 May 18 16:54 CatalogConfiguration.html	// replaced by TDSConfiguration.html ??
-john	 11240 Apr 27 17:37 RestrictedAccess.html
+*john	 11770 Jun  6 16:54 PluggableRestrictedAccess.htm
+*john	  2520 May 18 16:54 AccessLog.html
+john	  3626 May 18 16:54 CatalogConfiguration.html  	// incomplete
+*john	 11240 Apr 27 17:37 RestrictedAccess.html
 john	  8209 Apr  3 18:59 HTTPsecurityChallenge.html
 john	  3985 Feb 15 10:33 DatasetSource.html
 john	 23906 Feb 13 17:44 Paths.html	   // should be internal ??
@@ -36,11 +36,13 @@ john	  8563 Jul  5  2006 WCS.html          // needs updating
 
 tutorial
 
-all	    7159 Jul 24 20:08 schedule.html
-ethan	   11248 Jul 24 15:38 BasicConfig.html
-ethan	    3017 Jul 24 15:38 DirectoryLayout.html
-ethan	    4173 Jul 24 15:38 GettingStarted.html
-john	 2908672 Jul 22 15:03 TDSOverview.ppt
+*anne	   42795 Jul 25 14:18 BasicTomcatMgmtAndSecurity.html
+*robb	   78550 Jul 25 12:37 productionAdvanced.html
+*all	    7159 Jul 24 20:08 schedule.html
+*ethan	   11248 Jul 24 15:38 BasicConfig.html
+*ethan	    3017 Jul 24 15:38 DirectoryLayout.html
+*ethan	    4173 Jul 24 15:38 GettingStarted.html
+*john	 2908672 Jul 22 15:03 TDSOverview.ppt
 delete    4015 Jul 11 16:06 index-ethan.html
 robb	       0 Jun 28 16:48 docTomcat
 robb	       0 Jun 28 16:48 IDDconfig
@@ -48,10 +50,10 @@ john	    3194 Jun 28 09:26 index.html
 ethan	    2188 Jun 19 17:46 DigitalLibraries.html
 ethan	   24005 May 18 16:54 DatasetScan.html
 john	   12467 Apr 27 17:37 TomcatSecurity.html
-john?	   14280 Apr 12 17:49 TDSConfiguration.html	compaare to refrence/CatalogConfiguration.html
+john	   14280 Apr 12 17:49 TDSConfiguration.html
 john	   14261 Apr 12 17:25 RemoteManagement.html
-john	   12922 Apr  2 16:23 NcML.htm
-john	    7965 Jan 31 15:14 Viewers.html
+*john	   12922 Apr  2 16:23 NcML.htm
+*john	    7965 Jan 31 15:14 Viewers.html
 john	       0 Jan 29 16:52 TomcatTraining
 ethan	   10559 Jan 19  2007 EnhancedCatalogs.html
 john	    5212 Dec 19  2006 TomcatFAQ.html
@@ -64,14 +66,13 @@ tom	  348083 Nov 12  2006 TipsnTricksatTDSWorkshop.pdf
 ethan	    2769 Nov 10  2006 CrDs.html
 ethan	   35829 Nov 10  2006 CrDsClassDiagram.png
 ethan	    1003 Nov  9  2006 TSF.html
-john	    4040 Nov  9  2006 Performance.html
+*john	    4040 Nov  9  2006 Performance.html
 john	     315 Nov  9  2006 Debug.html			// ?? internal ??
-john	    3652 Nov  6  2006 TroubleShooting.html
+*john	    3652 Nov  6  2006 TroubleShooting.html
 ethan	    6094 Oct 30  2006 MetadataExtraction.html
 ethan	    1916 Oct 30  2006 MetadataStandards.html
 john	   16369 Oct 29  2006 CatalogPrimer.html
 ethan	    1846 Oct 29  2006 CatalogGen.html
 ethan	  165631 Oct 29  2006 catGenServlet.png
--rwx------+ 1 caron Domain Users    1733 Oct 28  2006 THREDDSlogo.jpg
--rwx------+ 1 caron Domain Users     857 Oct 28  2006 exampleTDScatalog.xml
--rwx------+ 1 caron Domain Users    1930 Oct 28  2006 exampleCatalog.xml
+?	     857 Oct 28  2006 exampleTDScatalog.xml
+?	    1930 Oct 28  2006 exampleCatalog.xml

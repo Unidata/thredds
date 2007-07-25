@@ -40,6 +40,7 @@
  <p>These elements control where the <em><strong>CDM/NetCDF-Java</strong></em> library writes temporary files, for example when it needs to unzip files, or write GRIB index files, etc. If <strong>alwaysUse</strong> is true, these temporary files will always be written to the <em>cache directory</em> specified by <strong>dir</strong>. If <strong>alwaysUse</strong> is false, TDS will try to write them to the same directory as the original file, and if the TDS doesnt have write permission it will then write the files to the cache directory. Write permission will be determined by what rights the <em>Tomcat user</em> has (the user that starts up Tomcat). For security reasons, you want to carefully limit the file permissions of the Tomcat user. </p>
  <p>When opening a file, if <strong>alwaysUse</strong> is true, TDS looks only in the cache directory for the temporary file. If <strong>alwaysUse</strong> is false, TDS will first look for the temporary file in the same directory as the original file, and if not found, then will look in the cache.</p>
  <p>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs.</p>
+ <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/</strong> directory. </p>
  <h3>THREDDS File Handle Caching </h3>
  <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;
     &lt;<strong>minFiles</strong>&gt;200&lt;/minFiles&gt;
@@ -74,6 +75,7 @@
   &lt;/AggregationCache&gt;
 </pre>
  <p> If you have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong>. Every <strong>scour</strong> amount of time, any item older than maxAge will be deleted. Set scour to -1 to not scour at all. </p>
+ <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cacheAged/</strong> directory. </p>
  <h3>Aggregation</h3>
  <pre>  &lt;<strong>Aggregation</strong>&gt;<br>    &lt;<strong>typicalDataset</strong>&gt;latest&lt;/typicalDataset&gt;<br>  &lt;/Aggregation&gt;
 </pre>
@@ -89,6 +91,7 @@
    <li> <strong>scour</strong> : how often to scour the working directory</li>
    <li><strong>maxAge</strong>: how long to leave the files in the working directory. If this value is &lt;=0 (or you dont include this element), the files will be deleted immediately. </li>
  </ol>
+ <p>If <strong>CdmValidatorService</strong> is allowed but the directory is not  set, the TDS will use the <strong>${tomcat_home}/content/thredds/cdmValidate</strong>/ directory for uploaded files. </p>
  <h3><strong>NetcdfSubsetService</strong></h3>
  <pre>  &lt;<strong>NetcdfSubsetService</strong>&gt;
     &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;
@@ -104,6 +107,7 @@
    <li> <strong>scour</strong> : how often to scour the working directory, to delete files that were not successfully downloaded. </li>
    <li><strong>maxAge</strong>: how long to leave the files in the working directory while the download is occurring. The files are deleted after a successful download. </li>
  </ol>
+ <p>If <strong>NetcdfSubsetService</strong> is allowed but the directory is not set, the TDS will use the <strong>${tomcat_home}/content/thredds/ncss/grid/cache</strong>/ directory for temporary files. </p>
  <h3>WCS<a name="WCS"></a> Service </h3>
  <pre>  &lt;<strong>WCS</strong>&gt;
     &lt;<strong>allow</strong>&gt;true&lt;/allow&gt;
@@ -118,6 +122,7 @@
    <li> <strong>scour</strong> : how often to scour the working directory, to delete files that were not successfully downloaded. </li>
    <li><strong>maxAge</strong>: how long to leave the files in the working directory while the download is occurring. The files are deleted after a successful download. </li>
 </ol>
+ <p>If <strong>WCS</strong> is allowed but the directory is not set, the TDS will use the <strong>${tomcat_home}/content/thredds/wcs/wcache</strong>/ directory for temporary files. </p>
 <h3>Loadable Viewers</h3>
  <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
  <p>You can place a link  to your own <em><strong>Viewer</strong></em>  on the TDS HTML page, by loading a <a href="../tutorial/Viewers.html">viewer</a> at runtime. </p>
@@ -132,7 +137,7 @@
  </p>
  <hr WIDTH="100%">
  <address>
- <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jul 24, 2007 
+ <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jul 25, 2007 
  </address>
  <p></p>
 </body>
