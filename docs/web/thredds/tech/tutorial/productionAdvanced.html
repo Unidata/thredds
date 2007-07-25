@@ -145,7 +145,7 @@ div.Section1
 	mso-list-template-ids:1435024326;}
 @list l0:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -188,7 +188,7 @@ div.Section1
 	mso-list-template-ids:-1790806996;}
 @list l1:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -231,7 +231,7 @@ div.Section1
 	mso-list-template-ids:-1185275268;}
 @list l2:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -274,7 +274,7 @@ div.Section1
 	mso-list-template-ids:-2082973768;}
 @list l3:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -317,7 +317,7 @@ div.Section1
 	mso-list-template-ids:-977519168;}
 @list l4:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -360,7 +360,7 @@ div.Section1
 	mso-list-template-ids:1136928356;}
 @list l5:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -403,7 +403,7 @@ div.Section1
 	mso-list-template-ids:1666220714;}
 @list l6:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -446,7 +446,7 @@ div.Section1
 	mso-list-template-ids:717548572;}
 @list l7:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -489,7 +489,7 @@ div.Section1
 	mso-list-template-ids:422315402;}
 @list l8:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -500,7 +500,7 @@ div.Section1
 	mso-list-template-ids:-87143334;}
 @list l9:level1
 	{mso-level-number-format:bullet;
-	mso-level-text:;
+	mso-level-text:   ;
 	mso-level-tab-stop:.5in;
 	mso-level-number-position:left;
 	text-indent:-.25in;
@@ -554,19 +554,19 @@ future, so it's better to tighten the installation now so if a security
 break-in does occur then the damage will be minimum. Why do you think Tomcat
 has security risks? Security risks are limited by restricting the tomcat permissions,
 the machine ports open to the internet, and the IPs accessing the TDS. UCAR
-break in example. <span style='mso-spacerun:yes'> </span></p>
+break in example. <span style='mso-spacerun:yes'>  </span></p>
 
 <p>The production installation requires root privileges for many of the
 operations so the use of sudo command is needed or the root passwd. Because
 many of the configurations are complex, it is advised to have your system
 administrator do them for you. Also, if a configuration mistake is made then
-the responsibility is on the system administrator’s shoulders, not yours.<span
-style='mso-spacerun:yes'>  </span></p>
+the responsibility is on the system administrator's shoulders, not yours.<span
+style='mso-spacerun:yes'>   </span></p>
 
 <h2>Create unprivileged user tomcat &amp; Tomcat Install Location</h2>
 
 <p>By default, Tomcat runs on port 8080 and therefore does not require root to
-run. It’s important not to run as root. Create a special user, e.g. named
+run. It's important not to run as root. Create a special user, e.g. named
 &quot;tomcat&quot;, which owns everything under ${tomcat_home}, and change to
 that user to run Tomcat. This special user will need read/write access to
 ${tomcat_home} and its subdirectories, and read access to your data
@@ -583,17 +583,17 @@ to make the user tomcat. </p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>The
 default home for tomcat is /opt/tomcat but in reality, it's a link to the
-current tomcat distribution.<span style='mso-spacerun:yes'>  </span>This is
+current tomcat distribution.<span style='mso-spacerun:yes'>   </span>This is
 done so one can switch which tomcat is running by making the tomcat link point
 to a different distribution. More on that later. <span
-style='mso-spacerun:yes'> </span></pr></p>
+style='mso-spacerun:yes'>  </span></pr></p>
 
-<pre><o:p>&nbsp;</o:p></pre><pre>% cd /opt</pre><pre>- Get the latest tomcat installation from web</pre><pre>ie.<span style='mso-spacerun:yes'>  </span>apache-tomcat-6.0.13.tar.gz</pre><pre>% mkdir<span style='mso-spacerun:yes'>  </span>apache-tomcat-6.0.13</pre><pre>% chown tomcat:tomcat apache-tomcat-6.0.13</pre><pre>% ln -s apache-tomcat-6.0.13 tomcat<span style='mso-spacerun:yes'>  </span>Why make the tomcat link?</pre><pre><o:p>&nbsp;</o:p></pre><pre>% su tomcat</pre><pre>% tar zxvf apache-tomcat-6.0.13.tar.gz</pre><pre><o:p>&nbsp;</o:p></pre>
+<pre><o:p>&nbsp;</o:p></pre><pre>% cd /opt</pre><pre>- Get the latest tomcat installation from web</pre><pre>ie.<span style='mso-spacerun:yes'>   </span>apache-tomcat-6.0.13.tar.gz</pre><pre>% mkdir<span style='mso-spacerun:yes'>   </span>apache-tomcat-6.0.13</pre><pre>% chown tomcat:tomcat apache-tomcat-6.0.13</pre><pre>% ln -s apache-tomcat-6.0.13 tomcat<span style='mso-spacerun:yes'>   </span>Why make the tomcat link?</pre><pre><o:p>&nbsp;</o:p></pre><pre>% su tomcat</pre><pre>% tar zxvf apache-tomcat-6.0.13.tar.gz</pre><pre><o:p>&nbsp;</o:p></pre>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>The
 tomcat installation is now encapsulated under one directory tree, so if a
 break-in does occurs the hacker cannot modify files outside the tomcat
-directory structure.<span style='mso-spacerun:yes'>  </span>If the installation
+directory structure.<span style='mso-spacerun:yes'>   </span>If the installation
 was done under your personal login, the hacker would gain all the permissions
 that you have and he could possibility do much more damage.<o:p></o:p></p>
 
@@ -606,7 +606,7 @@ As a backup measure, always create a new tomcat installation so if the new
 installation doesn't go well, one can move the tomcat link back to the old
 installation. Basically follow the steps above but skip the creation of the
 tomcat link until one is ready to start the new installation.<span
-style='mso-spacerun:yes'>  </span>After the new installation is unpacked as
+style='mso-spacerun:yes'>   </span>After the new installation is unpacked as
 user tomcat, one has to copy the entire TDS configuration from the old installation
 to the new installation. </p>
 
@@ -636,19 +636,19 @@ information back to you, <code><span style='font-size:10.0pt'>iptables</span></c
 can determine the information sent back to you was in response to your initial
 web request, and accept it as part of your web request. This allows for fairly
 tight firewall rules to be constructed that still do not interfere with what
-you want to do.<span style='mso-spacerun:yes'>  </span></p>
+you want to do.<span style='mso-spacerun:yes'>   </span></p>
 
 <p style='margin-left:.5in;text-indent:-.25in;mso-list:l4 level1 lfo2;
 tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
 mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span></span><![endif]>Port 8080 should have unrestricted access. </p>
 
 <p style='margin-left:.5in;text-indent:-.25in;mso-list:l5 level1 lfo4;
 tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
 mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span></span><![endif]>If you are allowing remote management, you must
 also open up port 8443. (recommended) </p>
@@ -656,7 +656,7 @@ also open up port 8443. (recommended) </p>
 <p style='margin-left:.5in;text-indent:-.25in;mso-list:l0 level1 lfo6;
 tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
 mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span></span><![endif]>Tomcat also uses port 8005 to enable shutdown.
 However, shutdown can only be run from the same machine as Tomcat is running.
@@ -667,7 +667,7 @@ public access to it so hackers aren't tempted. </p>
 <p style='margin-left:.5in;text-indent:-.25in;mso-list:l3 level1 lfo8;
 tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
 mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span></span><![endif]>If you are also using Tomcat in conjunction with
 another web server like Apache to handle servlet/JSP requests, you need to
@@ -702,7 +702,7 @@ Configure Tomcat file conf/server.xml for IP filtering</h2>
 known users abuse your TDS service by hammering your TDS with constant requests
 or hackers hammering your server. Tomcat provides a valve to allow one to
 filter the request and to deny service to those IPs.<span
-style='mso-spacerun:yes'>  </span>A valve is a component to be inserted into
+style='mso-spacerun:yes'>   </span>A valve is a component to be inserted into
 the request processing pipeline for a Catalina container in the tomcat
 conf/server.xml configuration file.</p>
 
@@ -722,7 +722,7 @@ href="http://tomcat.apache.org/tomcat-6.0-doc/config/engine.html">engine</a>
 Documentation</p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Are
-there any other ways to do IP filtering?<span style='mso-spacerun:yes'>  
+there any other ways to do IP filtering?<span style='mso-spacerun:yes'>    
 </span></p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>How
@@ -733,7 +733,7 @@ INPUT -s 18.83.0.150 -j DROP</p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><b
 style='mso-bidi-font-weight:normal'><span style='font-size:18.0pt'>- Disable
-web indexers<o:p></o:p></span></b></p>
+Web Indexers<o:p></o:p></span></b></p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>The
 TDS installation comes with a robots.txt file to disable robots from indexing
@@ -761,7 +761,7 @@ time you access a web page that uses self-signed certificates. It will allow
 you to choose to continue however, and so a clever enough attacker might induce
 you to accept their self-signed certificate. To prevent this, you can obtain a
 certificate signed by a <em>Certificate Authority</em> (CA). <span
-style='mso-spacerun:yes'> </span>The browser will see that its a valid
+style='mso-spacerun:yes'>  </span>The browser will see that its a valid
 certificate, and so you will never accept self-signed certificates and you will
 preclude man-in-the-middle attacks.</p>
 
@@ -843,7 +843,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
     auto;margin-left:1.0in;text-indent:-.25in;mso-list:l1 level1 lfo10;
     tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
     mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
     style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span></span></span><![endif]>Create a local Certificate (as described in
     the previous section): </p>
@@ -904,7 +904,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
       src="productionAdvanced_files/image001.gif" v:shapes="_x0000_i1028"><![endif]></p>
       </td>
       <td style='background:white;padding:0in 0in 0in 0in;height:.75pt'><pre>keytool -genkey -alias tomcat -keyalg RSA \</pre><pre
-      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>        </span>-keystore &lt;your_keystore_filename&gt;</pre></td>
+      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>               </span>-keystore &lt;your_keystore_filename&gt;</pre></td>
       <td width=10 style='width:.1in;background:#023264;padding:0in 0in 0in 0in;
       height:.75pt'>
       <p class=MsoNormal style='mso-line-height-alt:.75pt;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><!--[if gte vml 1]><v:shape
@@ -944,7 +944,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
     auto;margin-left:1.0in;text-indent:-.25in;mso-list:l1 level1 lfo10;
     tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
     mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
     style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span></span></span><![endif]>Note: In some cases you will have to enter the
     domain of your website (i.e. <code><span style='font-size:10.0pt'>www.myside.org</span></code>)
@@ -954,7 +954,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
     auto;margin-left:1.0in;text-indent:-.25in;mso-list:l1 level1 lfo10;
     tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
     mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
     style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span></span></span><![endif]>The CSR is then created with: </p>
     <table class=MsoNormalTable border=0 cellspacing=4 cellpadding=0
@@ -994,7 +994,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
       src="productionAdvanced_files/image001.gif" v:shapes="_x0000_i1036"><![endif]></p>
       </td>
       <td style='background:white;padding:0in 0in 0in 0in;height:.75pt'><pre>keytool -certreq -keyalg RSA -alias tomcat -file certreq.csr \</pre><pre
-      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>        </span>-keystore &lt;your_keystore_filename&gt;</pre></td>
+      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>               </span>-keystore &lt;your_keystore_filename&gt;</pre></td>
       <td width=10 style='width:.1in;background:#023264;padding:0in 0in 0in 0in;
       height:.75pt'>
       <p class=MsoNormal style='mso-line-height-alt:.75pt;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><!--[if gte vml 1]><v:shape
@@ -1056,7 +1056,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
     auto;margin-left:1.0in;text-indent:-.25in;mso-list:l6 level1 lfo12;
     tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
     mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
     style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span></span></span><![endif]>Download a Chain Certificate from the
     Certificate Authority you obtained the Certificate from.<br>
@@ -1070,7 +1070,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
     auto;margin-left:1.0in;text-indent:-.25in;mso-list:l6 level1 lfo12;
     tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
     mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
     style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span></span></span><![endif]>Import the Chain Certificate into you
     keystore </p>
@@ -1111,7 +1111,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
       src="productionAdvanced_files/image001.gif" v:shapes="_x0000_i1044"><![endif]></p>
       </td>
       <td style='background:white;padding:0in 0in 0in 0in;height:.75pt'><pre>keytool -import -alias root -keystore &lt;your_keystore_filename&gt; \</pre><pre
-      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>        </span>-trustcacerts -file &lt;filename_of_the_chain_certificate&gt;</pre></td>
+      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>               </span>-trustcacerts -file &lt;filename_of_the_chain_certificate&gt;</pre></td>
       <td width=10 style='width:.1in;background:#023264;padding:0in 0in 0in 0in;
       height:.75pt'>
       <p class=MsoNormal style='mso-line-height-alt:.75pt;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><!--[if gte vml 1]><v:shape
@@ -1151,7 +1151,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
     auto;margin-left:1.0in;text-indent:-.25in;mso-list:l6 level1 lfo12;
     tab-stops:list .5in'><![if !supportLists]><span style='font-size:10.0pt;
     mso-bidi-font-size:12.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
-    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>·<span
+    mso-bidi-font-family:Symbol'><span style='mso-list:Ignore'>  <span
     style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span></span></span><![endif]>And finally import your new Certificate </p>
     <table class=MsoNormalTable border=0 cellspacing=4 cellpadding=0
@@ -1191,7 +1191,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
       src="productionAdvanced_files/image001.gif" v:shapes="_x0000_i1052"><![endif]></p>
       </td>
       <td style='background:white;padding:0in 0in 0in 0in;height:.75pt'><pre>keytool -import -alias tomcat -keystore &lt;your_keystore_filename&gt; \</pre><pre
-      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>        </span>-file &lt;your_certificate_filename&gt;</pre></td>
+      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>               </span>-file &lt;your_certificate_filename&gt;</pre></td>
       <td width=10 style='width:.1in;background:#023264;padding:0in 0in 0in 0in;
       height:.75pt'>
       <p class=MsoNormal style='mso-line-height-alt:.75pt;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><!--[if gte vml 1]><v:shape
@@ -1261,7 +1261,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
   margin-left:1.0in;text-indent:-.25in;mso-list:l7 level1 lfo15;tab-stops:list .5in'><![if !supportLists]><span
   style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
   mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
-  style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  style='mso-list:Ignore'>  <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   </span></span></span><![endif]>I get
   &quot;java.security.NoSuchAlgorithmException&quot; errors in my log files. </p>
   <p style='margin-left:.5in'>The JVM cannot find the JSSE JAR files. Follow
@@ -1272,7 +1272,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
   margin-left:1.0in;text-indent:-.25in;mso-list:l7 level1 lfo15;tab-stops:list .5in'><![if !supportLists]><span
   style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
   mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
-  style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  style='mso-list:Ignore'>  <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   </span></span></span><![endif]>When Tomcat starts up, I get an exception like
   &quot;java.io.FileNotFoundException: {some-directory}/{some-file} not
   found&quot;. </p>
@@ -1290,7 +1290,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
   margin-left:1.0in;text-indent:-.25in;mso-list:l7 level1 lfo15;tab-stops:list .5in'><![if !supportLists]><span
   style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
   mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
-  style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  style='mso-list:Ignore'>  <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   </span></span></span><![endif]>When Tomcat starts up, I get an exception like
   &quot;java.io.FileNotFoundException: Keystore was tampered with, or password
   was incorrect&quot;. </p>
@@ -1309,7 +1309,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
   margin-left:1.0in;text-indent:-.25in;mso-list:l7 level1 lfo15;tab-stops:list .5in'><![if !supportLists]><span
   style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
   mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
-  style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  style='mso-list:Ignore'>  <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   </span></span></span><![endif]>When Tomcat starts up, I get an exception like
   &quot;java.net.SocketException: SSL handshake
   errorjavax.net.ssl.SSLException: No available certificate or key corresponds
@@ -1339,21 +1339,21 @@ name="JRE_keystore"></a><o:p>&nbsp;</o:p></p>
 href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html">SSL HOWTO</a></p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
-style='mso-spacerun:yes'> </span><a
+style='mso-spacerun:yes'>  </span><a
 href="http://java.sun.com/javase/6/docs/technotes/tools/solaris/keytool.html">keytool</a><o:p></o:p></p>
 
 <h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>-
 Configure Tomcat start/stop scripts</h2>
 
-<pre>- Go to bin directory<span style='mso-spacerun:yes'>  </span></pre><pre>% cd /opt/tomcat/bin</pre><pre> </pre><pre>% edit catalina.sh</pre><pre><o:p>&nbsp;</o:p></pre><pre>- enter the following environment variables. </pre><pre>#<span style='mso-spacerun:yes'>   </span>CATALINA_HOME<span style='mso-spacerun:yes'>   </span>Points at your ${tomcat-home} directory.</pre><pre>#<span style='mso-spacerun:yes'>   </span>JAVA_HOME<span style='mso-spacerun:yes'>       </span>Must point at your Java Development Kit installation.</pre><pre>#<span style='mso-spacerun:yes'>   </span>JAVA_OPTS<span style='mso-spacerun:yes'>       </span>Java runtime options used when the &quot;start&quot;,</pre><pre>#</pre><pre><o:p>&nbsp;</o:p></pre><pre> </pre><pre>#!/bin/sh</pre><pre># -----------------------------------------------------------------------------</pre><pre># Start/Stop Script for the CATALINA Server</pre><pre>#</pre><pre># $Id: catalina.sh 385888 2006-03-14 <st1:time
-Minute="4" Hour="21">21:04</st1:time>:40Z keith $</pre><pre># -----------------------------------------------------------------------------</pre><pre><o:p>&nbsp;</o:p></pre><pre>CATALINA_HOME=&quot;/opt/tomcat&quot;</pre><pre>export CATALINA_HOME</pre><pre>JAVA_HOME=&quot;/opt/jdk1.6.0&quot;</pre><pre>export JAVA_HOME</pre><pre>JAVA_OPTS&quot;-Xmx2048m -Xms512m -server&quot;</pre><pre>export JAVA_OPTS</pre><pre><o:p>&nbsp;</o:p></pre><pre>...</pre><pre>...</pre><pre><span style='mso-spacerun:yes'>        </span></pre>
+<pre>- Go to bin directory<span style='mso-spacerun:yes'>   </span></pre><pre>% cd /opt/tomcat/bin</pre><pre> </pre><pre>% edit catalina.sh</pre><pre><o:p>&nbsp;</o:p></pre><pre>- enter the following environment variables. </pre><pre>#<span style='mso-spacerun:yes'>     </span>CATALINA_HOME<span style='mso-spacerun:yes'>     </span>Points at your ${tomcat-home} directory.</pre><pre>#<span style='mso-spacerun:yes'>     </span>JAVA_HOME<span style='mso-spacerun:yes'>             </span>Must point at your Java Development Kit installation.</pre><pre>#<span style='mso-spacerun:yes'>     </span>JAVA_OPTS<span style='mso-spacerun:yes'>             </span>Java runtime options used when the &quot;start&quot;,</pre><pre>#</pre><pre><o:p>&nbsp;</o:p></pre><pre> </pre><pre>#!/bin/sh</pre><pre># -----------------------------------------------------------------------------</pre><pre># Start/Stop Script for the CATALINA Server</pre><pre>#</pre><pre># $Id: catalina.sh 385888 2006-03-14 <st1:time
+Minute="4" Hour="21">21:04</st1:time>:40Z keith $</pre><pre># -----------------------------------------------------------------------------</pre><pre><o:p>&nbsp;</o:p></pre><pre>CATALINA_HOME=&quot;/opt/tomcat&quot;</pre><pre>export CATALINA_HOME</pre><pre>JAVA_HOME=&quot;/opt/jdk1.6.0&quot;</pre><pre>export JAVA_HOME</pre><pre>JAVA_OPTS&quot;-Xmx2048m -Xms512m -server&quot;</pre><pre>export JAVA_OPTS</pre><pre><o:p>&nbsp;</o:p></pre><pre>...</pre><pre>...</pre><pre><span style='mso-spacerun:yes'>               </span></pre>
 
 <h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><strong>-
 Remove Default Tomcat Applications</strong></h2>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Tomcat
 ships with several default web applications, found in the <strong><span
-style='mso-spacerun:yes'> </span>/opt/tomcat/webapps</strong> directory. </p>
+style='mso-spacerun:yes'>  </span>/opt/tomcat/webapps</strong> directory. </p>
 
 <ul type=disc>
  <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
@@ -1363,7 +1363,7 @@ style='mso-spacerun:yes'> </span>/opt/tomcat/webapps</strong> directory. </p>
  <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
      mso-list:l2 level1 lfo18;tab-stops:list .5in'>The <strong>admin</strong>
      and <strong>manager</strong> applications are used for remote
-     management.<span style='mso-spacerun:yes'>   </span></li>
+     management.<span style='mso-spacerun:yes'>     </span></li>
  <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
      mso-list:l2 level1 lfo18;tab-stops:list .5in'>The <strong>servlets-examples</strong>
      and <strong>jsp-examples</strong> should probably be removed from a
@@ -1381,12 +1381,12 @@ Apache/Tomcat architecture</b></span></p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>It
 use to be that the Apache server was much faster at serving up static html
-pages then tomcat, so tomcat was installed inside Apache as a proxy. This isn’t
-the case anymore, so it’s better to install tomcat as a standalone process
+pages then tomcat, so tomcat was installed inside Apache as a proxy. This isn   t
+the case anymore, so it's better to install tomcat as a standalone process
 especially since Apache runs on port 80 which requires root to run. Tomcat runs
-on port 8080, so it doesn’t require root privileges at all. Some administrators
+on port 8080, so it doesn   t require root privileges at all. Some administrators
 still require tomcat to run as a proxy so tomcat needs to be configured to be
-an Apache proxy.<span style='mso-spacerun:yes'>  </span></p>
+an Apache proxy.<span style='mso-spacerun:yes'>   </span></p>
 
 <h2 style='margin-bottom:.25in;tab-stops:8.75in'><span style='font-size:12.0pt;
 font-weight:normal;mso-bidi-font-weight:bold'><a
