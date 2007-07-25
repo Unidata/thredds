@@ -1,124 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threddsConfig>
 
+  <!-- all options are commented out in standard install - meaning use default values -->
+  <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
+
   <!--
   The <catalogRoot> element:
   For catalogs you don't want visible from the /thredds/catalog.xml chain
   of catalogs, you can use catalogRoot elements. Each catalog root config
   catalog is crawled and used in configuring the TDS.
-  -->
-  <!-- E.g.,
+
   <catalogRoot>myExtraCatalog.xml</catalogRoot>
   <catalogRoot>myOtherExtraCatalog.xml</catalogRoot>
   -->
 
   <!--
-  The <NetcdfFileCache> element:
-  -->
-  <NetcdfFileCache>
-    <minFiles>100</minFiles>
-    <maxFiles>200</maxFiles>
-    <scour>10 min</scour>
-  </NetcdfFileCache>
+  Configuring the CDM (netcdf-java library)
+  see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html
 
-  <!--
-  The <NetcdfDatasetCache> element:
-  -->
-  <NetcdfDatasetCache>
-    <minFiles>100</minFiles>
-    <maxFiles>200</maxFiles>
-    <scour>10 min</scour>
-  </NetcdfDatasetCache>
-
-  <!--
-  The <HTTPFileCache> element:
-  -->
-  <HTTPFileCache>
-    <minFiles>25</minFiles>
-    <maxFiles>40</maxFiles>
-    <scour>10 min</scour>
-  </HTTPFileCache>
-
-  <!--
-  The <CdmValidatorService> element:
-  -->
-  <CdmValidatorService>
-    <allow>false</allow>
-    <dir>/data/tmp/thredds/cdmValidateCache/</dir>
-    <maxFileUploadSize>1 Gb</maxFileUploadSize>
-    <scour>24 hours</scour>
-    <maxAge>30 days</maxAge>
-  </CdmValidatorService>
-
-  <!--
-  The <NetcdfSubsetService> element:
-  -->
-  <NetcdfSubsetService>
-    <allow>false</allow>
-    <dir>/data/tmp/thredds/ncSubsetCache/</dir>
-    <scour>15 min</scour>
-    <maxAge>30 min</maxAge>
-  </NetcdfSubsetService>
-
-  <!--
-  The <WCS> element:
-  -->
-  <WCS>
-    <allow>false</allow>
-    <dir>/data/tmp/thredds/wcsCache/</dir>
-    <scour>15 min</scour>
-    <maxAge>30 min</maxAge>
-  </WCS>
-
-  <!--
-  The <Viewer> element:
-  -->
-  <!-- Viewer>my.package.MyViewer</Viewer -->
-
-  <!--
-  The <FmrcInventory> element:
-  -->
-  <FmrcInventory>
-    <openType>XML_ONLY</openType>
-  </FmrcInventory>
-
-  <!--
-  The <nj22Config> element:
-  -->
-  <!-- nj22Config
+  <nj22Config
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
     <coordSysBuilder convention="foo" class="test.Foo"/>
     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
     <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
     <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
     <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
-  </nj22Config -->
+  </nj22Config>
+  -->
 
   <!--
-  The <DiskCache> element:
-
+  CDM uses the DiskCache directory to store temporary files, like uncompressed files.
   <DiskCache>
     <alwaysUse>false</alwaysUse>
     <dir>/data/tmp/thredds/cache/</dir>
     <scour>1 hour</scour>
     <maxSize>1 Gb</maxSize>
-  </DiskCache>    -->
+  </DiskCache>
+  -->
 
   <!--
-  The <GribIndexing> element:
+  Caching open NetcdfFile objects.
+  default is to allow 200 - 400 open files, cleanup every 10 minutes
+  <NetcdfFileCache>
+    <minFiles>200</minFiles>
+    <maxFiles>400</maxFiles>
+    <scour>10 min</scour>
+  </NetcdfFileCache>
   -->
+
+  <!--
+  Caching open NetcdfDataset objects.
+   default allow 100 - 200 open datasets, cleanup every 10 minutes
+  <NetcdfDatasetCache>
+    <minFiles>100</minFiles>
+    <maxFiles>200</maxFiles>
+    <scour>10 min</scour>
+  </NetcdfDatasetCache>
+  -->
+
+  <!--
+  The <HTTPFileCache> element:
+  allow 20 - 40 open datasets, cleanup every 10 minutes
+  used by HTTP Range requests.
+  <HTTPFileCache>
+    <minFiles>20</minFiles>
+    <maxFiles>40</maxFiles>
+    <scour>10 min</scour>
+  </HTTPFileCache>
+  -->
+
+  <!--
+  Writing GRIB indexes.
   <GribIndexing>
     <setExtendIndex>false</setExtendIndex>
     <alwaysUseCache>false</alwaysUseCache>
   </GribIndexing>
+  -->
 
   <!--
-  The <AggregationCache> element:
-
+  Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 30 days
   <AggregationCache>
     <dir>/data/tmp/thredds/aggcache/</dir>
     <scour>24 hours</scour>
-    <maxAge>90 days</maxAge>
-  </AggregationCache>     -->
+    <maxAge>30 days</maxAge>
+  </AggregationCache>
+  -->
+
+  <!--
+  How to choose the template dataset for an aggregation. latest, random, or penultimate
+  <Aggregation>
+    <typicalDataset>random</typicalDataset>
+  </Aggregation>
+  -->
+
+  <!--
+  The CoordSys Validator Service is off by default.
+  <CdmValidatorService>
+    <allow>false</allow>
+    <dir>/data/tmp/thredds/cdmValidateCache/</dir>
+    <maxFileUploadSize>1 Gb</maxFileUploadSize>
+    <scour>10 mins</scour>
+    <maxAge>-1 days</maxAge>
+  </CdmValidatorService>
+  -->
+
+  <!--
+  The Netcdf Subset Service is off by default.
+  <NetcdfSubsetService>
+    <allow>false</allow>
+    <dir>/data/tmp/thredds/ncSubsetCache/</dir>
+    <scour>10 min</scour>
+    <maxAge>-1 min</maxAge>
+    <metarDataDir>/opt/tomcat/content/thredds/public/stn/</metarDataDir>
+    <metarRawDir>/data/ldm/pub/decoded/netcdf/surface/metar/</metarRawDir>
+  </NetcdfSubsetService>
+  -->
+
+  <!--
+  The WCS Service is off by default.
+  <WCS>
+    <allow>false</allow>
+    <dir>/data/tmp/thredds/wcsCache/</dir>
+    <scour>15 min</scour>
+    <maxAge>30 min</maxAge>
+  </WCS>
+  -->
+
+  <!--
+   Link to a Viewer application on the HTML page:
+   <Viewer>my.package.MyViewer</Viewer>
+   -->
+
+   <!--
+   Add a DataSource - essentially an IOSP with access to Servlet request parameters
+   <DatsetSource>my.package.DatsetSourceImpl</DatsetSource>
+   -->
+
+  <!--
+  Forecast Model Run Collection Inventory
+  <FmrcInventory>
+    <openType>XML_ONLY</openType>
+  </FmrcInventory>
+  -->
+
+  <!--
+  Modify Logging parameters. Normally use log4j.xml
+  <Logging>
+    <DatePattern></DatePattern>
+    <MaxFileSize></MaxFileSize>
+    <MaxFiles></MaxFiles>
+  </Logging>
+  -->
 
 </threddsConfig>

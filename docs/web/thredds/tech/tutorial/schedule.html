@@ -12,7 +12,7 @@ TDS Tutorial Schedule
 </h1>
 <hr>
 <h2>Monday</h2>
-<h3>8:30 Overview (John) 
+<h3>8:30 <a href="TDSOverview.ppt">Overview</a> (John) 
 </h3>
 <h3>9:30 <a href="GettingStarted.html">Getting Started</a> (Ethan) 
 </h3>
@@ -81,20 +81,35 @@ TDS Tutorial Schedule
 <h3>3:00 Break</h3>
             <h3>3:30 Tools for Managing TDS (John)</h3>
             <ul>
-              <li><a href="../reference/ThreddsConfigXMLFile.html">TDS Configuration with threddsConfig.xml</a> </li>
-              <li>TDS Remote Management</li>
-              <li>Examining Logs
+              <li><a href="../reference/ThreddsConfigXMLFile.html"> ToolsUI </a></li>
+              <li><a href="../reference/ThreddsConfigXMLFile.html">TDS Configuration with threddsConfig.xml</a> 
                 <ul>
-                  <li>can we show sawmill, whats the other tool? </li>
+                  <li>wheres the default directory for caching </li>
                 </ul>
               </li>
-              <li>Looking for status and errors </li>
+              <li>Logging                <ul>
+                  <li>(log4j.xml) <a href="https://www.qos.ch/shop/products/log4j/log4j-Manual.jsp">manual</a> what about the &lt;Logging&gt; element                 </li>
+                <li>threddsServlet.logs</li>
+                  <li>access logs
+                      <ul>
+                        <li>whats process of transferring the access logs? </li>
+                        <li>can we show sawmill, AWstats?</li>
+                        <li>http://www.logmx.com/</li>
+                      </ul>
+                  </li>
+              </ul>
+              </li>
+              <li>Using Remote Management (aka <a href="https://motherlode.ucar.edu:8443/thredds/debug">debug</a> page) </li>
+              <li>Looking for status and errors 
+                <ul>
+                  <li>threddsServlet.logs</li>
+                </ul>
+              </li>
               <ul>
                 <li>catalogErrors.log </li>
                 <li>catalina.out</li>
               </ul>
-              <li> ToolsUI
-            </li></ul>
+            </ul>
             <h2>Tuesday</h2>
             <h3>8:30 Enhanced Catalogs (Ethan) 
             </h3>

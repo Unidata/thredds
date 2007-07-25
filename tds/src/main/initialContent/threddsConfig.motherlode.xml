@@ -2,7 +2,6 @@
 <threddsConfig>
 
   <catalogRoot>topcatalog.xml</catalogRoot>
-
   <catalogRoot>idv/models.xml</catalogRoot>
   <catalogRoot>idv/latestModels.xml</catalogRoot>
   <catalogRoot>idv/rt-models.1.0.xml</catalogRoot>
@@ -59,6 +58,8 @@
     <dir>/data/tmp/thredds/ncSubsetCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
+    <metarDataDir>/opt/tomcat/content/thredds/public/stn/</metarDataDir>
+    <metarRawDir>/data/ldm/pub/decoded/netcdf/surface/metar/</metarRawDir>
   </NetcdfSubsetService>
 
   <WCS>

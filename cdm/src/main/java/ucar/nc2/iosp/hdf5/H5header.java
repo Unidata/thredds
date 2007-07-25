@@ -24,9 +24,7 @@ import ucar.unidata.util.Format;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.ma2.*;
 
 import java.util.*;
 import java.text.*;
@@ -61,6 +59,7 @@ class H5header {
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
   static private final String shead = new String(head);
   static private final long maxHeaderPos = 500000; // header's gotta be within this
+  static private boolean transformReference = true;
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     long pos = 0;
@@ -123,6 +122,13 @@ class H5header {
     }
     if (debugTracker) memTracker.report();
   }
+
+  private DataObject findDataObject( long id) {
+    for (DataObject dobj : obsList)
+      if (dobj.address == id) return dobj;
+    return null;
+  }
+
 
   private void readSuperBlock() throws IOException {
     byte versionSB, versionFSS = -1, versionGroup = -1, versionSHMF = -1;
@@ -1382,6 +1388,12 @@ class H5header {
       if (debugPos) debugOut.println("   *MessageAttribute dataPos= " + dataPos);
 
       // deal with reference type
+      /* Dataset region references are stored as a heap-ID which points to the following information within the file-heap:
+           an offset of the object pointed to,
+           number-type information (same format as header message),
+           dimensionality information (same format as header message),
+           sub-set start and end information (i.e. a coordinate location for each),
+           and field start and end names (i.e. a [pointer to the] string indicating the first field included and a [pointer to the] string name for the last field). */
       if (mdt.type == 7) { // reference
         // datapos points to a position of the refrenced object, i think
         raf.seek(dataPos);
@@ -2316,17 +2328,8 @@ class H5header {
       }
     }
 
-    /* deal with netCDF4
-    if (isNetCDF4 && name.startsWith("_ncvar_")) {
-      Vatt vatt = varTable.get(name);
-      v = new Variable(ncfile, null, null, vatt.name);
-      v.setDataType(vinfo.getNCDataType());
-      v.setDimensions(vatt.dimList);
-
-    } else */
-
     Variable v;
-    if (ndo.mdt.type == 6) {
+    if (ndo.mdt.type == 6) { // Compound
       String vname = NetcdfFile.createValidNetcdfObjectName(ndo.name); // look cannot search by name
       v = new Structure(ncfile, null, null, vname); // LOOK null group
       makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo);
@@ -2352,7 +2355,6 @@ class H5header {
         makeAttributes(ndo.name, matt, v.getAttributes());
       }
     }
-
     addSystemAttributes(ndo.messages, v.getAttributes());
     if (fillAttribute != null)
       v.addAttribute(fillAttribute);
@@ -2362,6 +2364,24 @@ class H5header {
 
     if (vinfo.isChunked) // make the data btree, but entries are not read in
       vinfo.btree = new DataBTree(dataPos, v.getShape(), vinfo.storageSize);
+
+    if (transformReference && (ndo.mdt.type == 7) && (ndo.mdt.referenceType == 0)) { // object reference
+      Array data = v.read();
+      IndexIterator ii = data.getIndexIterator();
+
+      Array newData = Array.factory(DataType.STRING,  v.getShape());
+      IndexIterator ii2 = newData.getIndexIterator();
+      while (ii.hasNext()) {
+        long objId = ii.getLongNext();
+        DataObject dobj = findDataObject(objId);
+        if (dobj == null) System.out.println("Cant find dobj= "+dobj);
+        else System.out.println(" Referenced object= "+dobj.getName());
+        ii2.setObjectNext(dobj.getName());
+      }
+      v.setDataType(DataType.STRING);
+      v.setCachedData(newData, true); // so H5iosp.read() is never called
+      v.addAttribute( new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
+    }
 
     // debugging
     vinfo.setOwner(v);
