@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Basic TDS Configuration</title></head>
-
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">Basic TDS Configuration<br>
  </h1>
@@ -77,9 +76,7 @@ the datasets in a directory that match the given wildcard pattern (3a),
 and (4) a catalog reference. It is provided as a quick test that the TDS is
 working as it should.<br>
 </p>
-<p>By default, all datasets to be served by the TDS must be defined in
-the tree of catalogs starting with the main TDS configuration catalog
-and branching out along <code>catalogRef</code> elements to other TDS configuration catalogs.<br>
+<p>When the TDS starts, this main configuration catalog is read as are all catalogs in the catalog tree defined by <code>catalogRef</code> elements. The TDS gathers configuration information on what datasets it should serve from the <code>datasetRoot</code> and <code>datasetScan</code> elements.<br>
 </p>
 <h3>Example: Fix Enhanced Catalog</h3>
 <ol>
@@ -120,7 +117,9 @@ Let's change it and see what happens:<br>
     <li><code>./shutdown.sh</code></li>
     <li><code>./startup.sh</code></li>
   </ul>
-  <li>Brows the catalog again</li>
+  <li>Look at catalogErrors.log file<br>
+</li><li>Browse the catalog again</li>
+
   <ul>
     <li>URL: <code><a href="http://localhost:8080/thredds/enhancedCatalog.html">http://localhost:8080/thredds/enhancedCatalog.html</a></code></li>
   </ul>
