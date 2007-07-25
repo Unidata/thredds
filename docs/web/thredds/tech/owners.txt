@@ -1,21 +1,20 @@
 thredds\docs\web\thredds\tech\owners.txt
 
+top directory
+
 ethan+john	Jul 25 11:16 catalog
 ethan		Oct  5  2006 dqcServlet
 john		Jul 25 11:16 interfaceSpec
 john		Jul 24 20:15 internal
 ethan		Oct  5  2006 dqc
-??		Oct  5  2006 server
+robb		Oct  5  2006 server
 ethan		Oct  5  2006 cataloggen
 
--rwx------+ 1 caron Domain Users  6641 Jul 25 11:16 TDS.html
--rwx------+ 1 caron Domain Users  5393 Jul 25 11:16 StatusReport.html
--rwx------+ 1 caron Domain Users   312 Jun 20 16:24 index.html
--rwx------+ 1 caron Domain Users 33441 Apr 26 16:53 TechSummary.htm
--rwx------+ 1 caron Domain Users 10742 Apr 26 16:42 indexOld.html
--rwx------+ 1 caron Domain Users 12015 Oct  5  2006 nj22.png
--rwx------+ 1 caron Domain Users  4643 Oct  5  2006 resourceControl.html
-
+john	  6641 Jul 25 11:16 TDS.html
+john	  5393 Jul 25 11:16 StatusReport.html
+john	   312 Jun 20 16:24 index.html
+john	 33441 Apr 26 16:53 TechSummary.htm
+john	 10742 Apr 26 16:42 indexOld.html
 
 
 reference
@@ -56,7 +55,7 @@ john	    7965 Jan 31 15:14 Viewers.html
 john	       0 Jan 29 16:52 TomcatTraining
 ethan	   10559 Jan 19  2007 EnhancedCatalogs.html
 john	    5212 Dec 19  2006 TomcatFAQ.html
-john	     982 Nov 22  2006 FmrcAggregation.html
+john	     982 Nov 22  2006 FmrcAggregation.html	// ??
 ??	     506 Nov 21  2006 Logging.html			// update with internal/logging ??
 tom	  810674 Nov 12  2006 LEADatTDSWorkshop.pdf
 tom	  170496 Nov 12  2006 TipsnTricksatTDSWorkshop.ppt
@@ -66,17 +65,13 @@ ethan	    2769 Nov 10  2006 CrDs.html
 ethan	   35829 Nov 10  2006 CrDsClassDiagram.png
 ethan	    1003 Nov  9  2006 TSF.html
 john	    4040 Nov  9  2006 Performance.html
-john	     315 Nov  9  2006 Debug.html
+john	     315 Nov  9  2006 Debug.html			// ?? internal ??
 john	    3652 Nov  6  2006 TroubleShooting.html
 ethan	    6094 Oct 30  2006 MetadataExtraction.html
 ethan	    1916 Oct 30  2006 MetadataStandards.html
 john	   16369 Oct 29  2006 CatalogPrimer.html
 ethan	    1846 Oct 29  2006 CatalogGen.html
-
--rwx------+ 1 caron Domain Users  165631 Oct 29  2006 catGenServlet.png
+ethan	  165631 Oct 29  2006 catGenServlet.png
 -rwx------+ 1 caron Domain Users    1733 Oct 28  2006 THREDDSlogo.jpg
--rwx------+ 1 caron Domain Users   55777 Oct 28  2006 modelAggs.jpg
 -rwx------+ 1 caron Domain Users     857 Oct 28  2006 exampleTDScatalog.xml
 -rwx------+ 1 caron Domain Users    1930 Oct 28  2006 exampleCatalog.xml
--rwx------+ 1 caron Domain Users    1020 Oct 24  2006 fileIcon.jpg
--rwx------+ 1 caron Domain Users   79689 Oct 24  2006 TUIthreddsTab.jpg

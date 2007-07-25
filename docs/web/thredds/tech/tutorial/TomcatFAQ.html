@@ -1,20 +1,17 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Configuration</title>
-  <link rel='stylesheet' href='/thredds/upc.css' type='text/css' />  
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Configuration</title>  
 </head>
 <body>
 
 <h1><img src="../images/THREDDSlogo.jpg" width="67" height="54">Tomcat FAQ </h1>
 <div class="head">
-  <address>
-  last update: Dec 12, 2006 
-  </address>
+  <address></address>
   <hr>
   <div class="head"></div>
   <p>The following are various Frequently Asked Questions and How-to's about using the Tomcat web server. If you solve a problem that others may be interested in, <a href="mailto:support@unidata.ucar.edu">send us a note</a> and we'll include it here.</p>
   <h3>Who is accessing my server? </h3>
-  <p>When you examine the <a href="/thredds/content/logs/threddsAccess.log">TDS access logs</a>, you can see who is accessing the TDS by IP address. Use <strong>nslookup &lt;ip address&gt;</strong> to find out the host name. </p>
+  <p>When you examine the TDS access logs, you can see who is accessing the TDS by IP address. Use <strong>nslookup &lt;ip address&gt;</strong> to find out the host name. </p>
   <h3>Restricting Web crawlers </h3>
   <p>Well-behaved web crawlers are supposed to look for a robots.txt file on the server and follow its instructions. To set up a robots.txt file that excludes web crawlers from crawling your server, follow <a href="GettingStarted.html#robots">these directions</a>. For more info, see <a href="http://www.robotstxt.org/">here</a>. </p>
   <h3>Restricting Access by IP address </h3>
@@ -43,16 +40,12 @@
   <pre>+++ServletUtil.initLogging<br>Dec 19, 2006 2:43:27 PM org.apache.catalina.startup.HostConfig deployWAR<br>INFO: Deploying web application archive thredds.war<br>Dec 19, 2006 2:43:41 PM org.apache.catalina.startup.HostConfig deployWAR<br>SEVERE: Error deploying web application archive thredds.war<br>java.lang.OutOfMemoryError: PermGen space<br>java.lang.reflect.InvocationTargetException<br>
   </pre>
   <h3>Resources</h3>
-  <ul>
-    <li><a href="/manager/status">Tomcat Server Status</a> page</li>
-    <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ</a> </li>
+  <ul><li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a> </li>
     <li><a href="http://tomcat.apache.org/tomcat-5.5-doc/index.html">Tomcat 5.5 documentation</a></li>
     <li><a href="http://www.coreservlets.com/Apache-Tomcat-Tutorial/">tutorial</a></li>
   </ul>
 </div>
 <hr width="100%">
-<p align="left"> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a> &nbsp;&nbsp; </span></i></p>
-<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../thredds.jpg" height="79" width="95"><br>
-</p>
+<p align="left"> <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jul 25, 2007 </p>
 </body>
 </html>
