@@ -15,7 +15,7 @@
 
   <hr>
 <h2>Java Virtual Machine </h2>
-<p>We recommend the latest version of JDK 1.5. This has significant performance improvements over 1.4, especially with the -server option. Anecdotal evidence is that JDK 1.6 is even better, feel free to give it a try. </p>
+<p>We recommend the latest version of JDK 1.6. This has significant performance improvements over 1.4, especially with the <em><strong>-server</strong></em> option. </p>
 </div>
 
 <ul>
@@ -32,7 +32,7 @@ export JAVA_OPTS</pre>
 <p>&nbsp;</p>
 <h2>Tomcat</h2>
 <h3>Version</h3>
-<p>We recommend the latest stable version of Tomcat 5.5, which supposedly has better stability and performance than Tomcat 5.0. Tomcat 5.5 requires JDK 1.5 or above. </p>
+<p>We recommend the latest stable version of Tomcat 6.0, which supposedly has better stability and performance than Tomcat 5.x. Tomcat 5.5 requires JDK 1.5 or above. </p>
 <h3>Automatic Startup </h3>
 <p>In a production environment, Tomcat should be automatically restarted when the machine starts. How to do this depends on what OS you are running. This <a href="http://wiki.apache.org/jakarta-tomcat/HowTo">FAQ</a> has a bit of info. </p>
 <h3>Miscellaneous</h3>
@@ -56,7 +56,7 @@ export JAVA_OPTS</pre>
 <p>The OPeNDAP-Java layer of the server currently has to read the entire data request into memory before sending it to the client (we hope to get a streaming I/O solution working eventually). Generally clients only request subsets of large files, but if you need to support large data requests, make sure that the <em><strong>-Xmx</strong></em> parameter above is set accordingly. </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 09, 2006
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 25, 2007 
 </address>
 <h3>&nbsp;</h3>
 </body></html>

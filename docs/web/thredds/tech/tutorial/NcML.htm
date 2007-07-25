@@ -14,7 +14,7 @@
   </address>
   <hr>
   <p>An <em><strong>NcML document</strong></em> is an XML document that uses the <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a> to define a NetCDF dataset. NcML can be embedded directly into the TDS catalogs to achieve a number of powerful features, shown below. This embedded NcML is only useful in the TDS server catalogs, it is not meaningful to a THREDDS client, and so is not included in the client catalogs. </p>
-  <p>One can put an NcML element inside a <strong>dataset element</strong>, in which case it is a self-contained NcML dataset, or inside a <strong>datasetScan element</strong>, where it modifies a regular dataset. In both cases, we call the result a<em><strong> virtual dataset</strong></em>, and <em><strong>you cannot serve a virtual dataset with a file-serving protocol like FTP or HTTP</strong></em>. However, you can use <em>subsetting services </em> like OPeNDAP, WCS and NetcdfServer. </p>
+  <p>One can put an NcML element inside a <strong>dataset element</strong>, in which case it is a self-contained NcML dataset, or inside a <strong>datasetScan element</strong>, where it modifies a regular dataset. In both cases, we call the result a<em><strong> virtual dataset</strong></em>, and <em><strong>you cannot serve a virtual dataset with a file-serving protocol like FTP or HTTP</strong></em>. However, you can use <em>subsetting services </em> like OPeNDAP, WCS and NetcdfSubset. </p>
   <h2>Using NcML in a dataset element </h2>
   <p> NcML embedded in a TDS <strong>dataset element</strong> creates a <em><strong>self-contained NcML</strong></em> <em><strong>  dataset</strong></em>. The TDS dataset does not refer to a data root, because the NcML contains its own location. The TDS dataset must have a unique URL path (this is true for all TDS datasets), but unlike a regular dataset, does not have to match a data root. </p>
   <h3>Modifying an existing dataset </h3>
@@ -94,7 +94,7 @@
   <h3>scan vs datasetScan </h3>
   <p>The <strong>scan</strong> element in the NcML aggregation is similar in purpose to the <strong>datasetScan</strong> element, but be careful not to confuse the two. The <strong>datasetScan</strong> element is more powerful, and has more options for filtering etc. Its job is to create nested <strong>dataset</strong> elements inside the datasetScan, and so has various options to  add information to those nested datasets. It has a generalized framework (CrawlableDataset) for crawling other things besides file directories. The <strong>scan</strong> element's job is to easily specify what files go into an NcML aggregation, and those individual files are hidden inside the aggregation dataset. It can only scan file directories. In the future, some of the capabilities of <strong>datasetScan</strong> will migrate into NcML <strong>scan</strong>. </p>
   <h3>Cant use HTTPServer</h3>
-  <p>Remember that you cant use <strong>HTTPServer</strong> for NcML datasets. Use only the <em>subsetting services </em><strong>OpenDAP</strong>, <strong>WCS</strong> and <strong>NetcdfServer.</strong></p>
+  <p>Remember that you cant use <strong>HTTPServer</strong> for NcML datasets. Use only the <em>subsetting services </em><strong>OpenDAP</strong>, <strong>WCS</strong> and <strong>NetcdfSubset.</strong></p>
   <h3><a name="debug"></a>Debugging tips</h3>
   <p>When things go wrong, its best to first debug the aggregation outside of the TDS: </p>
   <ol>
@@ -117,7 +117,7 @@
   </ul>
   <hr WIDTH="100%">
   <address>
-  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 02, 2007 
+  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 25, 2007 
   </address>
   <p></p>
 </div>

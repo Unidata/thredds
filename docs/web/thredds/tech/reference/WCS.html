@@ -9,15 +9,14 @@
   Web Coverage Server</h1>
 <div class="head">
       <address>
-  last update: June 5, 2006 
-  </address>
+      </address>
 </div>
 <hr>
 <p>The THREDDS WCS Server implements the <a href="http://www.opengeospatial.org/">OGC</a> Web Coverage Service 1.0.0 <a href="http://www.opengeospatial.org/docs/03-065r6.pdf">specification</a>. It serves out gridded data in <a href="http://www.remotesensing.org/geotiff/geotiff.html">GeoTIFF</a> or NetCDF format. </p>
 <h3>Which files can be served through the WCS server? </h3>
 <ol>
   <li>Data files must contain gridded data.</li>
-  <li>The NetCDF-Java Common Data Model must be able to identify the coordinates system used. Check this by opening in the Grid Panel of the ToolsUI application. There should be one or more variables shown as a GeoGrid.</li>
+  <li>The NetCDF-Java Common Data Model must be able to identify the coordinates system used. Check this by opening in the Grid Panel of the <a href="http://www.unidata.ucar.edu/content/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a> application. There should be one or more variables shown as a GeoGrid.</li>
   <li>Currently due to WCS and GeoTIFF limitations, the X,Y and (if it exists) Z axes must be regularly spaced.</li>
 </ol>
 <h3>Configuration</h3>
@@ -25,9 +24,8 @@
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
   xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; version=&quot;1.0.1&quot;&gt;</pre>
-<pre>  &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot; suffix=&quot;?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS&quot;/&gt;
-    &lt;datasetRoot path=&quot;testwcs&quot; dirLocation=&quot;/data/wcs/&quot; /&gt;
-  &lt;/service&gt;</pre>
+<pre>  &lt;<strong>datasetRoot</strong> path=&quot;testwcs&quot; dirLocation=&quot;/data/grids/&quot; /&gt;
+  &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot; suffix=&quot;?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS&quot;/&gt;</pre>
 <pre>  &lt;dataset name=&quot;GALEON Test Data&quot;&gt;</pre>
 <pre>    &lt;metadata inherited=&quot;true&quot;&gt;
       &lt;serviceName&gt;wcs&lt;/serviceName&gt;
@@ -41,7 +39,7 @@
     &lt;dataset name=&quot;RUC.nc&quot; urlPath=&quot;RUC.nc&quot; /&gt;</pre>
 <pre>  &lt;/dataset&gt;
 &lt;/catalog&gt;</pre>
-<p>The files named here all reside in the /data/wcs/ directory, named by the <strong>datasetRoot</strong> element in the service. You can also use a DatasetScan element to serve all the files in a directory tree. See <a href="../Configuration.html">TDS Configuration</a> for details. The only thing you need for WCS is to make the <strong>serviceType</strong> <em>WCS</em> and the <strong>base</strong> <em> /thredds/wcs/</em> . The optional <strong>suffix</strong> is added at the end of the URL, and forms the WCS <em>GetCapabilities</em> request URL. You may find it more convenient to not include the suffix. <br>
+<p>The files named here all reside in the <strong>/data/grids/ </strong>directory, named by the <strong>datasetRoot</strong> element in the service. You can also use a DatasetScan element to serve all the files in a directory tree. See <a href="../tutorial/TDSConfiguration.html">TDS Configuration</a> for details. The only thing you need for WCS is to make the <strong>serviceType</strong> <em>WCS</em> and the <strong>base</strong> <em> /thredds/wcs/</em> . The optional <strong>suffix</strong> is added at the end of the URL, and forms the WCS <em>GetCapabilities</em> request URL. You may find it more convenient to not include the suffix. <br>
 </p>
 <h3>WCS Dataset URLs</h3>
 <p>All THREDDS WCS requests start with </p>
@@ -88,6 +86,8 @@
 </p>
 <div class="head"></div>
 <hr width="100%">
-<p> <i><span class="head">Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> or <a href="mailto:support-thredds@support.unidata.ucar.edu">THREDDS support</a></span></i></p>
-<p><i>Go to: <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html">THREDDS Tech Page</a></i> or <i> <a href="http://www.unidata.ucar.edu/projects/THREDDS/">THREDDS Home Page</a></i> <img src="../../thredds.jpg" width="95" height="79"></p>
+<address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 24, 2007
+</address>
+<p align="center">&nbsp;</p>
 </body></html>
