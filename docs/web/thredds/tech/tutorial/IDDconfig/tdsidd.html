@@ -7,7 +7,7 @@
 	<META NAME="AUTHOR" CONTENT="Robb Kambic">
 	<META NAME="CREATED" CONTENT="20070423;13145900">
 	<META NAME="CHANGEDBY" CONTENT="Robb Kambic">
-	<META NAME="CHANGED" CONTENT="20070627;16342900">
+	<META NAME="CHANGED" CONTENT="20070726;16190500">
 	<META NAME="ProgId" CONTENT="Word.Document">
 	<META NAME="Originator" CONTENT="Microsoft Word 10">
 	<STYLE>
@@ -25,7 +25,7 @@
 <BODY LANG="en-US" TEXT="#000000" LINK="#0000ff" VLINK="#0000ff" DIR="LTR">
 <H1 ALIGN=CENTER>TDS/IDD Configuration</H1>
 <P STYLE="margin-bottom: 0.17in"><FONT SIZE=5><B>What is the IDD?</B></FONT></P>
-<P>Unidata has built a community-oriented network  to deliver data
+<P>Unidata has built a community-oriented network to deliver data
 over the internet called the <B>Internet Data Distribution system</B>
 (<A HREF="http://www.unidata.ucar.edu/software/idd"><B>IDD</B></A>).
 The <A HREF="realtime_idd.gif">IDD </A>system has been a driving
@@ -80,8 +80,8 @@ Get the TDS/IDD catalog from the distribution
 </P>
 <PRE STYLE="margin-bottom: 0.2in">% cd ${tomcat_home}/bin
 % ./shutdown.sh
-% ./startup.sh</PRE><H2>&nbsp;
-</H2>
+% ./startup.sh</PRE><H2>
+&nbsp;</H2>
 <H2>IDD/LDM configurations 
 </H2>
 <P>At this point, it is assumed that one has installed the <A HREF="http://www.unidata.ucar.edu/software/ldm">LDM
@@ -94,16 +94,17 @@ THREDDS's to create the correct directory structures and dataset
 names are now be in the LDM <B>etc</B> directory. The pqact &nbsp;files
 are: 
 </P>
-<PRE STYLE="margin-bottom: 0.2in"><B><U>pqact.thredds</U></B>       // create directories for model, text type products, plus others
-<B><U>pqact.threddsradar</U></B>    // create directories for level II and III radar data
-<U><B>pqact.threddsconduit</B> </U> // create directories for high resolution model data
+<PRE STYLE="margin-bottom: 0.2in"><A HREF="etc/pqact.thredds"><B><U>pqact.thredds</U></B></A>       // create directories for model, text type products, plus others
+<A HREF="etc/pqact.threddsradar"><B><U>pqact.threddsradar</U></B></A>    // create directories for level II and III radar data
+<U><A HREF="etc/pqact.threddsconduit"><B>pqact.threddsconduit</B></A> </U> // create directories for high resolution model data
 Edit the pqact.thredds file:
  Comment out the pqact entries that contain the line &quot;PIPE decoders&quot; because they require 
       the installation of the <A HREF="http://www.unidata.ucar.edu/software/decoders/">decoders</A> package. If one wants to receive these files the 
       decoder package must be installed and the binaries place in the LDM <B>decoders </B>directory.
      To comment out an entry, put a <B>#</B> as the first character in all the entry lines.</PRE><P>
-Edit the <B>ldmd.conf</B> file by adding the following 3 lines added
-around the other exec lines in the file: 
+Edit the <A HREF="etc/ldmd.conf"><B>ldmd.conf</B></A> file by
+adding the following 3 lines added around the other exec lines in the
+file: 
 </P>
 <PRE STYLE="margin-bottom: 0.2in"><B>exec</B> <B>&quot;pqact -f ANY-CONDUIT-NNEXRAD-CRAFT etc/pqact.thredds&quot;</B>
 <B>exec</B> <B>&quot;pqact -f NNEXRAD|CRAFT etc/pqact.threddsradar&quot;</B>
@@ -124,8 +125,9 @@ data is 500-750 gigabytes for a 7 day period.</P>
 <H3>Removing datasets</H3>
 <P>There is a script that runs once a day removing files older than
 the number of days specified in its configuration file. The script
-managFilesDirs.pl and its  configuration file manageFilesDirs.conf,
-both were downloaded in the zip file.  These files contain
+<A HREF="util/manageFilesDirs.pl">managFilesDirs.pl</A> and
+its configuration file <A HREF="etc/manageFilesDirs.conf">manageFilesDirs.conf</A>,
+both were downloaded in the zip file. These files contain
 documentation in the header explaining their usage. The
 manageFilesDirs.pl is located in the ~ldm/util directory and it takes
 about 1-2 hours to manage a large directory structure. The
@@ -139,24 +141,24 @@ worry.
 <P><B># files/dirs managing script</B></P>
 <P>30 21 * * * util/manageFilesDirs.pl -f etc/manageFilesDirs.conf &gt;
 /data/ldm/logs/manageFilesDirs.log 2&gt;/dev/null</P>
-<P><FONT SIZE=5><B>Performance Enhancements by Grib<a name="grib"></a> Indexing</B></FONT></P>
+<P><FONT SIZE=5><B>Performance Enhancements by Grib Indexing</B></FONT></P>
 <P>Since the IDD distributes GRIB files and the TDS requires a Grib
 Index to exist before it can open the files, there is a script to
-pre-index the files to speed up the access time. The GribInndexer.pl
-is used with the configuration GribIndexer.conf file, both were
-downloaded in the tdsidd.zip file. If the standard TDS/IDD setup
-configuration was implemented only a LDM crontab entry needs to be
-made.</P>
+pre-index the files to speed up the access time. The <A HREF="util/GribIndexer.pl">GribIndexer.pl</A>
+is used with the configuration <A HREF="etc/GribIndexer.conf">GribIndexer.conf
+</A>file, both were downloaded in the tdsidd.zip file. If the
+standard TDS/IDD setup configuration was implemented only a LDM
+crontab entry needs to be made.</P>
 <P>Here is an example LDM crontab entry to run the GribIndexer.pl</P>
 <P><B># GribIndexer script</B></P>
 <P>0,10,20,30,40,50 * * * * util/GribIndexer.pl -f
 etc/GribIndexer.conf &gt; /data/ldm/logs/GribIndexer.log 2&gt;/dev/null</P>
 <P>The GribIndexer.pl runs ever 10 minutes making sure the Grib
 Indexes are current and it also creates the log file <B>GribIndexer.log
-</B>for status.  GribIndexer.pl locks the directories so if 2
-indexers are running at the same time they don't step on each other.
-It's possible that a lock file can be left intact wrongly, so there
-is a <B>-c flag </B>that will clear all the locks in the directories.
+</B>for status. GribIndexer.pl locks the directories so if 2 indexers
+are running at the same time they don't step on each other. It's
+possible that a lock file can be left intact wrongly, so there is a
+<B>-c flag </B>that will clear all the locks in the directories. 
 </P>
 <P><FONT SIZE=4>Non Standard Configurations</FONT></P>
 <P>The script assumes that tomcat is installed at /<B>opt/tomcat</B>
@@ -169,7 +171,7 @@ with the configuration file location.</P>
 <P><FONT SIZE=4>Non Standard Sample</FONT> 
 </P>
 <P>% util/GribIndexer.pl -t /local/tomcat -j
-/opt/jdk1.5.0_08/bin/java -f /home/ldm/etc/GribIndexer.conf  [-c]</P>
+/opt/jdk1.5.0_08/bin/java -f /home/ldm/etc/GribIndexer.conf [-c]</P>
 <P><BR><BR>
 </P>
 </BODY>
