@@ -25,7 +25,7 @@
 <p>Unless you are on a private network, you need a firewall. A firewall restricts who is allowed to access network ports. Make the default setting to disallow all accesses, then enable just the ones that are needed. </p>
 <ul>
   <li>Port <strong>8080</strong>  should have unrestricted access. </li>
-  <li>If you are allowing <a href="RemoteManagement.htmlagement.html">remote management</a>, you must also open up port <strong>8443</strong>. </li>
+  <li>If you are allowing <a href="RemoteManagement.html">remote management</a>, you must also open up port <strong>8443</strong>. </li>
   <li>Tomcat also uses port <strong>8005</strong> to enable shutdown. However, shutdown can only be run from the same machine as Tomcat is running from. As long as untrusted users aren't running on your server machine, you shouldn't have to worry about this port being open. However, you might want to restrict public access to it so hackers aren't tempted. </li>
   <li>If you are also using Tomcat in conjunction with another web server like Apache to handle servlet/JSP requests, you need to allow that server access to port <strong>8009</strong>, but typically that can be restricted to accesses on the same machine or at least on your subnet. If you are running Tomcat only standalone (e.g. only running the THREDDS data server) then disable port 8009 in  <strong>${tomcat_home}/conf/server.xml file.</strong></li>
 </ul>
@@ -33,7 +33,7 @@
 <p>Tomcat ships with several default web applications, found in the <strong>${tomcat_home}/webapps</strong> directory. These defaults depend on the version of Tomcat and which installer you use. </p>
 <ul>
   <li>The <strong>ROOT</strong> application contains the server's main page. Any file that you add under <strong>${tomcat_home}/webapps/ROOT</strong> will be served.</li>
-  <li> The <strong>admin</strong> and <strong>manager</strong> applications are used for remote management. To use these applications, you must add users with roles <strong>admin</strong> and <strong>manager</strong>, respectively. The applications are then accessible from the main page, and can be used to add further users, start and stop webapps, etc. You should restrict the IP addresses that are allowed to run these applications by editing the files <strong>admin.xml</strong> and <strong>manager.xml</strong> in the <strong>${tomcat_home}/conf/Catalina/localhost/ </strong>directory. Follow<a href="RemoteManagement.html#tomcat"> these directions</a>. </li>
+  <li> The <strong>admin</strong> and <strong>manager</strong> applications are used for remote management. To use these applications, you must add users with roles <strong>admin</strong> and <strong>manager</strong>, respectively. The applications are then accessible from the main page, and can be used to add further users, start and stop webapps, etc. You should restrict the IP addresses that are allowed to run these applications by editing the files <strong>admin.xml</strong> and <strong>manager.xml</strong> in the <strong>${tomcat_home}/conf/Catalina/localhost/ </strong>directory. </li>
   <li>The <strong>servlets-examples</strong> and <strong>jsp-examples</strong> should probably be removed from a production server, to minimize security exposure. You can do this from the manager application or by deleting those directories from <strong>${tomcat_home}/webapps</strong>.</li>
   <li>The <strong>tomcat-docs, balancer </strong> and <strong>webdav</strong> applications are probably harmless, but can also be removed if you want. </li>
 </ul>

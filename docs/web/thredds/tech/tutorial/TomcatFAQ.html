@@ -13,7 +13,7 @@
   <h3>Who is accessing my server? </h3>
   <p>When you examine the TDS access logs, you can see who is accessing the TDS by IP address. Use <strong>nslookup &lt;ip address&gt;</strong> to find out the host name. </p>
   <h3>Restricting Web crawlers </h3>
-  <p>Well-behaved web crawlers are supposed to look for a robots.txt file on the server and follow its instructions. To set up a robots.txt file that excludes web crawlers from crawling your server, follow <a href="GettingStarted.html#robots">these directions</a>. For more info, see <a href="http://www.robotstxt.org/">here</a>. </p>
+  <p>Well-behaved web crawlers are supposed to look for a robots.txt file on the server and follow its instructions. To set up a robots.txt file that excludes web crawlers from crawling your server, follow <a href="Performance.html#robots">these directions</a>. For more info, see <a href="http://www.robotstxt.org/">here</a>. </p>
   <h3>Restricting Access by IP address </h3>
   <p>If you want to prevent some annoying person from accessing your server, its best to exclude them using their  IP address, to avoid having to do a reverse DNS lookup for each request. To do so, edit <strong>${tomcat_home}/conf/server.xml</strong>, find the following section and add the following Valve element:</p>
   <pre>  &lt;Host name=&quot;localhost&quot; debug=&quot;0&quot; appBase=&quot;webapps&quot; .. &gt; 
