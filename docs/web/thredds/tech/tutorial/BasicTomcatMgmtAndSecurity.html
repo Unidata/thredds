@@ -1,45 +1,43 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html><head>
-
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <title>Basic Tomcat Management and Security</title>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Basic Tomcat Management and Security</title>
 </head>
+
 <body>
 
-<h1><img src="THREDDSlogo.jpg" height="54" width="67">Basic Tomcat Management and Security </h1>
+<h1><img src="../THREDDSlogo.jpg" height="54" width="67">Basic Tomcat Management and Security </h1>
 <hr>
 
 At this point we assume that Tomcat is installed in
 <code> /home/workshop/tds/apache-tomcat-6.0.13 </code>
 and that you have an environment variable TOMCAT_HOME set to this value.
 <p>
-Check that this variable is set by with this command:
+    Check that this variable is set by with this command:
 <p>
-<code> echo $TOMCAT_HOME</code>
+    <code> echo $TOMCAT_HOME</code>
 <p>
 
-If the system indicates that the variable is not set, recall that you can
-set this variable in any window at any time by executing the command:
+    If the system indicates that the variable is not set, recall that you can
+    set this variable in any window at any time by executing the command:
 </p>
 <code> set TOMCAT_HOME /home/workshop/tds/apache-tomcat-6.0.13  </code>
 
 
 
 
+<a name="ImportantDirs" />
 <h2>Important Tomcat Directories </h2>
-
-Here we examine some Tomcat relevant directories, the directories .  Do
-<p>
-<code>cd $TOMCAT_HOME </code>
 
 <h3> The <code> webapps </code> Directory </h3>
 <p>
-The <code> webapps </code> directory is where web applications are placed to be
+    The <code> webapps </code> directory is where web applications are placed to be
     run by Tomcat.  Tomcat automatically monitors this directory and when it finds
     a new
     <code>.war</code> file it will attempt to install it as an application.  If
-there is an error in the deployment, such as a problem with the file, it will report
-that in the the log file <code> catalina.out </code>.
+    there is an error in the deployment, such as a problem with the file, it will report
+    that in the the log file <code> catalina.out</code>.
 <p>
     Do this:
 <p>
@@ -47,65 +45,233 @@ that in the the log file <code> catalina.out </code>.
 <p>
     Among other things, you should see the <code> thredds.war </code> file that was previously installed,
     and a directory called <code> thredds</code>.  This is the TDS code.
-    Tomcat installed the
-    TDS automatically when the <code>thredds.war</code> file was placed there.
-</p>
+    Tomcat installed the TDS automatically in a directory named
+    <code>thredds</code>when the <code>thredds.war</code> file was placed there.
 <p>
     You will also see a file here called <code>manager</code>.  This is the Manager
-    application that we will visit soon.      
-</p>
+    application that we will visit soon.
 
 <p>
 <h3> The <code> logs </code> Directory    </h3>
-The <code> logs </code> directory contains Tomcat log files.  Do this:
-    <p>
-        <code> ls $TOMCAT_HOME/logs </code>
-    </p>
-    <p>
-        Once Tomcat has been started it will generate some log files and put them in
-        the <code>logs </code> directory.  The files
-        that are generated depends on how the server is configured.  Here is an
-        example from one recent Tomcat installation using the default configuration:
-        <pre>
+<p>
+    Once Tomcat has been started it will generate some log files and put them in
+    the <code>logs </code> directory.  The files
+    that are generated depends on how the server is configured.  Here is an
+    example from one recent Tomcat installation using the default configuration:
+<pre>
 [tomcat@lead3 ~/logs]$ ls -lt
 total 12
--rw-r--r-- 1 tomcat leadstaff 2806 Jul 22 20:01 catalina.out
--rw-r--r-- 1 tomcat leadstaff  232 Jul 21 20:01 localhost.2007-07-21.log
--rw-r--r-- 1 tomcat leadstaff 1585 Jul 21 20:01 catalina.2007-07-21.log
--rw-r--r-- 1 tomcat leadstaff    0 Jul 21 20:00 admin.2007-07-21.log
--rw-r--r-- 1 tomcat leadstaff    0 Jul 21 20:00 host-manager.2007-07-21.log
--rw-r--r-- 1 tomcat leadstaff    0 Jul 21 20:00 manager.2007-07-21.log
+-rw-r--r-- 1 tomcat leadstaff  234 Jul 26 11:49 localhost.2007-07-26.log
+-rw-r--r-- 1 tomcat leadstaff 1597 Jul 26 11:49 catalina.2007-07-26.log
+-rw-r--r-- 1 tomcat leadstaff 1710 Jul 26 11:49 catalina.out
+-rw-r--r-- 1 tomcat leadstaff    0 Jul 26 11:49 localhost_access_log.2007-07-26.txt
+-rw-r--r-- 1 tomcat leadstaff    0 Jul 26 11:49 admin.2007-07-26.log
+-rw-r--r-- 1 tomcat leadstaff    0 Jul 26 11:49 host-manager.2007-07-26.log
+-rw-r--r-- 1 tomcat leadstaff    0 Jul 26 11:49 manager.2007-07-26.log
+</pre>
 
-        </pre>
-
-    </p>
-
-</p>
+The <code> logs </code> directory contains Tomcat log files.  Do this:
 <p>
+    <code> ls $TOMCAT_HOME/logs </code>
+</p>
+<p> The log file <code> <b>catalina.out</b> </code> is Tomcat's main log file and can be worth
+    watching when
+    Tomcat is started or when an web application is placed in the <code> webabbs </code> directory
+    to ensure that no errors occurred.  A successful launch of Tomcat generates lots of entries
+    in <code>catalina.out</code>, but that stream of entries generally ends with a line
+    like this, which indicates a successful start up:
+<pre>
+Jul 26, 2007 11:49:09 AM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 5080 ms
+</pre>
+
+<p>
+    Similarly, if there seems to a problem in the execution of Tomcat
+    or a web application, <code> catalina.out </code> is good place to look for an error.  Or, just check the
+    <code>logs </code> directory for the file most recently written and see if any errors are reported
+    there.</p>
+<p>
+    The <code> <b>localhost_access_log </b></code> file (such as
+    <code>localhost_access_log.2007-07-26.txt </code> in the example above)
+    is useful in both Tomcat and TDS administration because it tracks all requests made to the Tomcat
+    server and the response given by the server.   For example, this lines:
+<pre>
+128.117.156.28 - - [26/Jul/2007:11:59:54 -0700] "GET /thredds/tdr/storm/catalog.html HTTP/1.1" 200 2139
+</pre>
+shows that a request arrived from a host with the IP address 128.117.156.28
+on July 26 to retrieve the document
+/thredds/tdr/storm/catalog.html (relative to the Tomcat
+<code> content </code> directory, described below) using HTTP protocol
+version 1.1.  It also shows that the server returned the HTTP status code 200, which means <q>OK</q> and
+that the request succeeded, and the number of bytes sent.
+(See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions </a>
+for the meaning of response codes returned by HTTP.)
+
+
+<h3> The <code> content </code> Directory   </h3>
+The <code><b>content</b></code> directory is the place to put documents to
+be served by tomcat.  This includes TDS catalogs.  
+
+
 <h3> The <code> conf </code> Directory   </h3>
-</p>
+The <code><b>conf</b></code> directory holds files used to configure Tomcat.
+In this document we will focus on the files <code>tomcat-users.xml</code> and <code>server.xml</code>.
 <p>
-<h3> The <code> exec</code> Directory   </h3>
-</p>
+<code>tomcat-users.xml</code> holds information about users of the application served by
+tomcat.  It holds user names, passwords, and defines user <q>roles</q>, which can used
+to limit access to various pieces of functionality of a application.  It is discussed
+further below
+<p>
+
+
+
+<h3> The Configuration File <code>conf/server.xml</code> </h3>
+
+The file <code>server.xml</code> is used to configure Tomcat.  It is an XML file that contains
+elements to configure various aspects of Tomcat.
+See <a href="http://tomcat.apache.org/tomcat-5.0-doc/config/">Tomcat Server Configuration Reference </a>
+    for more information about <code>server.xml</code>.
+Here we will focus on a few select concepts and XML elements relevant to setting up a TDS.
+<p>
+The outermost element of <code>server.xml</code>  is a <code>Server</code> element,
+which represents the entire Tomcat servlet container and defines its
+    characteristics as a whole.
+<p>
+A <code>Service</code> element is a nested element with the <code>Server</code>
+    element.  It represents the combination of one or more <code>Connector</code>
+    components that share a single <code>Engine</code> component.
+    (An <code>Engine</code> represents the entire request processing machinery
+    associated with a <code>Service</code>.)
+    The <q>top</q> Tomcat service is named <q>Catalina</q>. (Hence the log
+file name of <q>catalina.out</q>.)
+
+
+<h4> Ports, Configured Via the Server and Some Connector Elements </h4>
+Tomcat listens for requests on port 8080 (which is why your local Tomcat
+splash page can be reached via
+<a href="http://locahost:8080/"> http://locahost:8080/</a>).  This is set
+via a <q>Connector</q> element in <code>server.xml</code>.  A Connector element
+represents the interface between external clients sending requests to
+and receiving responses from Tomcat.  This element can
+take additional attributes for further configuration.  Here is an example
+that came with a recent Tomcat installation:
+<pre>
+       &lt;Connector port="8080"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" redirectPort="8443" acceptCount="100"
+               debug="0" connectionTimeout="20000"
+               disableUploadTimeout="true" /&gt;
+</pre>
+
+<p>
+Tomcat listens for a shutdown command on port 8005.  Keeping
+the shutdown functionality on a separate port provides enhanced security in that
+shutdown commands can't be received externally.  This port is defined in
+the main <q>Server</q> element.  Here is the first line
+of that element, illustrating the shutdown port 8005:
+<pre>
+&lt;Server port="8005" shutdown="SHUTDOWN" debug="0"&gt;
+</pre>
+
+<p>
+
+The other important port for secure Tomcat and TDS management is port 8443, which
+    is the port
+on which Tomcat listens for secure connections.   Like port 8080, this
+is defined via a Connector attribute.   This particular connector may
+be commented out in a default installation.  We will make sure it is
+enabled when we configure Tomcat to use SSL encryption, below.  For
+illustration, here is an example of a Connector for port 8443:
+    <pre>
+    &lt;Connector port="8443"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" disableUploadTimeout="true"
+               acceptCount="100" debug="0" scheme="https" secure="true"
+               keystoreFile="/opt/tomcatlead2/jakarta-tomcat-5.0.28/conf/keystore-tomcat"
+               clientAuth="false" sslProtocol="TLS" /&gt;
+</pre>
+
+<h4> Access Logging, Configured Valve Elements </h4>
+
+A <code>Valve</code> element is a way to preprocess requests sent to Tomcat.
+Of particular interest here is the Access Log Valve, which creates log files
+to track client access information, as we saw in the access_log file above.
+As we saw, this valve can be used to a variety of information, including 
+page hit counts, user session activity, user authentication
+information, and other information.
+<p>
+Attributes to this valve are used to configure the information reported
+in the log file.  Here is an example of a simple Access Log Valve that came
+    with a recent Tomcat distribution:
+    <pre>
+&lt;Valve className="org.apache.catalina.valves.AccessLogValve"
+                 directory="logs"  prefix="localhost_access_log." suffix=".txt"
+                 pattern="common" resolveHosts="false"/&gt;
+</pre>
+This is the valve that produced the log entries we saw above.  The <code>pattern</code> attribute of this element defines a formatting layout.
+<q>common</q> is a standard format.  But these a pattern can also be defined as
+a literal text string.
+Here is an example of the version of the Access Log Valve used on our TDS
+server:
+<pre>
+&lt;Valve className="org.apache.catalina.valves.AccessLogValve"
+                 directory="logs"  prefix="access." suffix=".log"
+                 pattern="%h %l %u %t &quot;%r&quot; %s %b &quot;%{Referer}i&quot; &quot;%{User-Agent}i&quot; %D"
+                 resolveHosts="false"/>
+</pre>
+This produces log entries that look like this:
+<pre>
+ 128.117.126.9 - - [23/Jun/2007:23:52:42 -0600] "GET /thredds/catalog/fmrc/NCEP/GFS/Global_2p5deg/catalog.html HTTP/1.0" 200 4014 "null" "www.dlese.org,support@dlese.org" 30463
+</pre>
+
+<p>
+    For more  information about the pattern codes supported by the Access Log Valve, see
+<a href="http://tomcat.apache.org/tomcat-5.0-doc/config/valve.html"> The Valve Component </a>.
+
+
+ <h4> User Names and Passwords, Configured Via Realm Elements </h4>
+
+A <code>Realm</code> is a <q>database</q> of usernames and passwords that identify valid users
+of a web application (or set of web applications), plus an enumeration of the
+list of roles associated with each valid user. You can think of roles as similar
+to groups in Unix-like operating systems, because access to specific web
+application resources is granted to all users possessing a particular role
+(rather than enumerating the list of associated usernames). A particular user
+can have any number of roles associated with their username.
+
+<p>
+    We will use <code>Realm</code> elements below in configuring Tomcat to
+    use digested passwords.
+
+
 
 
 <h2>Tomcat Security</h2>
 
-We believe Tomcat to be secure enough for typical scientific uses. There are no known security exploits or weaknesses. However, the Internet is a wild place, and we are not security experts so caveat emptor.
+We believe Tomcat to be secure enough for typical scientific uses. There are no known security
+exploits or weaknesses. However, the Internet is a wild place, and we are not security experts so caveat emptor.
 
-
+<p>
+In this section we introduce Tomcat security by enabling authentication in order
+    to use the Tomcat Manager application, and also by enabling Secure Socket Layer
+    (SSL) encryption of requests to the TDS <q>debug</q> application.  The Tomcat Manager is
+    an application that is distributed with the Tomcat distribution, which provides a graphical user
+interface to manage Tomcat.  The TDS <q>debug</q> application provides an interface to manage
+the TDS remotely.  Because each application provides access to sensitive functionality,
+it is necessary to secure them by requiring users to authenticate to Tomcat and by requiring
+    SSL encryption of the information that is sent to Tomcat.
 
 
 <h3> Using Authentication to Restrict Access to Tomcat Applications</h3>
 
-Although by default tomcat does not require authentication to access the resources
+Although by default Tomcat does not require authentication to access the resources
 it controls, it can be configured to do so.   From a TDS perspective, authentication
 is required to 1) get access to the tomcat manager application, and 2) enable remote
 TDS management.
 <p>
-This section introduces the Tomcat authentication mechanism by describing how to
+    This section introduces the Tomcat authentication mechanism by describing how to
     enable authentication in order to use the Tomcat manager.   (Enabling remote
-    TDS management is described in Section X.)
+    TDS management is described under <q>Tools for Managing TDS, Using Remote Management</q>.)
 
 
 
@@ -114,39 +280,49 @@ This section introduces the Tomcat authentication mechanism by describing how to
 
 <h3> The Tomcat Manager </h3>
 
-The tomcat manager is an application that allows users to deploy, undeploy, or
+The Tomcat Manager is an application that allows users to deploy, undeploy, or
 reload an application such as the TDS without having to shut down and restart tomcat.
 The tomcat distribution contains this application, but for security reasons it is
 disabled by default.
 
 <p>
-Execution of the tomcat manager requires that users authenticate themselves and
-    be associated with the predefined role “manager”.  That is, users must provide
+    Execution of the tomcat manager requires that users authenticate themselves and
+    be associated with the predefined role <q>manager</q>.  That is, users must provide
     a user name and password, and their user name must be associated with the
     manager role.  By default, this information is stored in the file
-    ${tomcat_home}/conf/tomcat-users.xml.
+    <code>${TOMCAT_)HOME}/conf/tomcat-users.xml</code>.
+
+
+
+
 
 <h3> tomcat-users.xml</h3>
 
-A simple tomcat-users.xml file looks like this:
+Here is an example of a very simple <code>tomcat-users.xml</code> file:
 
-<tomcat-users>
-
-  <user name="Anne" password="secret" roles="tdrAdmin" />
-
-</tomcat-users>
+<pre>
+&lt;tomcat-users&gt;
+    &lt;role rolename="tdsConfig /&gt;
+    &lt;user name="Anne" password="secret" roles="tdsConfig" />
+&lt;/tomcat-users>
+</pre>
 
 There must be an entry in the file for each user that is required to authenticate.
-Each <user> entry defines the user name, password, and roles that are assigned to
-that user.
+Each <code>&lt;user&gt;</code> entry defines the user name, password, and roles that are assigned to
+that user. In this example there is one role defined, <q>tdsConfig</q>.  There
+is also one user, <q>Anne</q>, with the password <q>secret</q> and she is
+assigned the role <q>tdsConfig</q>.
 
 <p>
-Tomcat-users.xml is read once when Tomcat is started.  For this reason, changes to
-    tomcat-users.xml will not be recognized until Tomcat is restarted.  When a user
+    When a user
     attempts to access a protected resource for the first time, Tomcat will challenge
     the user for a user name and password.  Once the user has been authenticated, the
     relevant information, including the roles to which the user was assigned, is
-    cached for the duration of the user’s login.
+    cached for the duration of the user&#146;s login.
+<p>
+    <code>tomcat-users.xml</code> is read once when Tomcat is started.  For this reason, changes to
+    <code>tomcat-users.xml</code> will not be recognized until Tomcat is restarted.
+
 
 
 
@@ -157,41 +333,48 @@ Tomcat-users.xml is read once when Tomcat is started.  For this reason, changes 
 <h3> Configuring tomcat-users.xml to Allow a User to Execute the Manager </h3>
 
 In order to allow a user to execute the manager, the user's name and password must
-be added to the tomcat-users.xml file, and the user must be assigned the <q>manager</q>
+be added to the <code>tomcat-users.xml</code> file, and the user must be assigned the <q>manager</q>
 role, which is a predefined role in Tomcat.
 
 <p>
-Role names such as <code> manager </code> should be added to the <q>role</q>
+    Role names such as <code> manager </code> should be added to the <q>role</q>
     attribute of a
     <code> &lt;user&gt; </code>
-element.  The value of the role attribute can be a single value or a comma separated
-list of values.  For example, to add the manager role to the user “anne” in the above
-example, the result would look like this:
-
-<code>
-  <user name="Anne" password="secret" roles="tdrAdmin,manager" />
-</code>
-
-Exercise:  Modify the default tomcat-users.xml to add yourself as a user and give
-yourself the role of “manager”.  Start (or restart) Tomcat, and ensure that you can
-access the manager application.
+    element.  The value of the role attribute can be a single value or a comma separated
+    list of values.  For example, to add the manager role to the user <q>Anne</q> in the above
+    example, the result would look like this:
+<pre>
+    &lt;code&gt;
+        &lt;role rolename="tdsConfig /&gt;
+        &lt;role rolename="manager" /&gt;
+        &lt;user name="Anne" password="secret" roles="tdsConfig,manager" /&gt;
+    &lt;/code&gt;
+</pre>
+    <b>Exercise:</b>  Modify the default <code> tomcat-users.xml</code> to add yourself as a user and give
+    yourself the role of <q>manager</q>.  Start (or restart) Tomcat, and ensure that you can
+    access the manager application.
 
 <p>
-Test this change by pointing your browser to http://localhost:8080 and then click
-    on the “Manager” link in the left hand column.  You’ll see that you will not be
+    Test this change by pointing your browser to <a href="http://localhost:8080"> http://localhost:8080 </a>
+    and then click
+    on the <q>Manager</q> link in the left hand column.  You&#146;ll see that you will not be
     challenged on getting the Tomcat splash page, but you will be challenged when you
     try to access the manager.
 
 <p>
-Go to the directory ~tomcat/logs and list the files.  You might? Should? see a file
+    <b>TODO: move this to the server.xml section </b>
+<br>
+    Go to the directory <code>~tomcat/logs</code> and list the files.  You might? Should? see a file
     called something like localhost_accessLog.  Is this enabled on the machines?
     Tail the log (run “tail –f localhost_accessLog) and try to access the manager
     again.  This log will show you the HTTP status codes returned by tomcat.  You’ll
     see …
 
 <p>
-<b>Exercise:</b> This exercise is to help you learn to debug tomcat problems.
-    Modify tomcat-users.xml, but make sure there’s some problem with the XML format.
+    <b>TODO: skip? </b>
+<br>
+    <b>Exercise:</b> This exercise is to help you learn to debug tomcat problems.
+    Modify tomcat-users.xml, but make sure there&#146;s some problem with the XML format.
     For example, leave off a closing angle bracket.  In the logs directory
     (~tomcat/logs) tail the file catalina.out as you restart Tomcat.  The log
     file should report some kind of error that would, in theory, lead you to
@@ -206,38 +389,63 @@ Go to the directory ~tomcat/logs and list the files.  You might? Should? see a f
 By default, Tomcat expects user passwords to be stored in clear text.  As you can
 imagine, this is not very secure.  Tomcat also supports digested passwords, a type
 of encoding, but it must configured to use them.   This configuration is done in the
-Tomcat configuration file ${tomcat_home}/conf/server.xml.
+Tomcat configuration file <code>${TOMCAT_HOME}/conf/server.xml</code>.
 
 <p>
-There are several digest algorithms.  Here we will use the SHA algorithm.
+    There are several digest algorithms.  Here we will use the SHA (Secure Hash
+    Algorithm) algorithm.
 
 <p>
-In addition it is necessary to create the digested passwords.  Tomcat provides
-    a script, digest.sh, that creates a digested version of a password.  You must
-    then copy the digested version into tomcat-users in place of the clear text
+    In addition to configuring Tomcat to expect digested passwords,
+    it is also necessary to create and store the digested passwords.  Tomcat provides
+    a script, <code>digest.sh</code>, that creates a digested version of a password.  You must
+    then copy the digested version into <code>tomcat-users.xml</code> in place of the clear text
     password.
 
 <p>
-Tomcat will request that a browser client like Firefox provide a digested password.
-    The client must digest the password using the same algorithm.  Your browser
-    will do this for automatically.
+    Tomcat will request that a browser client like Firefox provide a digested password.
+    The client must digest the password using the same algorithm as .  Your browser
+    will do this automatically.
 
-Configuring Tomcat to Use Digested Passwords
+
+
+<h3> Configuring Tomcat to Use Digested Passwords </h3>
+In
+<p>
+We must edit
+<code>server.xml</code> in order to tell Tomcat to use digested passwords.
+    The Tomcat distribution comes with this Realm enabled:
+    <pre>
+
+           <!-- This Realm uses the UserDatabase configured in the global JNDI
+           resources under the key "UserDatabase".  Any edits
+           that are performed against this UserDatabase are immediately
+           available for use by the Realm.  -->
+      &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+             resourceName="UserDatabase"/&gt;
+
+</pre>
+We will not use this Realm and instead provide our own using the Tomcat
+<q>MemoryRealm</q>... WORKING HERE.
+<p>
+
+
+
+    You must add a <q>digest</q> attribute to
+    &lt;Realm&gt; element, like this:
+<pre>
+&lt;Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA" /&gt;
+</pre>
+<p>
+    (Find where this is on the workshop machines.)
+
+    say where.
+
 
 <p>
-Configure tomcat to use digested passwords by editing the file server.xml by
-adding a “digest” attribute to Tomcat’s <realm> element, like this:
-
-<Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA" />
-
-<p>
-(Find where this is on the workshop machines.)
-
-say where.
+    Restart the server for this change to take effect.
 
 
-
-Restart the server for this change to take effect.
 
 
 <h2> Enabling Secure Communication to Tomcat Via SSL Encryption </h2>
@@ -248,7 +456,7 @@ By enabling SSL on the server we require clients to SSL encode their requests.
 This prevents network sniffers from acquiring sensitive information.
 
 <p>
-Besides encoding information sent to the server, the SSL protocol also requires
+    Besides encoding information sent to the server, the SSL protocol also requires
     that the server authenticate to the client.  This is to prevent a spoof from
     pretending to be a trusted server and fraudulently obtaining sensitive
     information.  For this reason, to enable SSL it is first necessary to create
@@ -262,22 +470,22 @@ Besides encoding information sent to the server, the SSL protocol also requires
 
 <h3>Creating a Self-Signed Certificate </h3>
 
-To create a self-signed certificate, you must first create a “keystore” file
+To create a self-signed certificate, you must first create a <q>keystore</q> file
 where certificates are stored.  Java provides a tool, called keytool, that
 generates a self-signed certificate and puts in a keystore file.  The default
 keystore filename is ${user_home}/.keystore.  However, this example will use
-the filename ${tomcat_home}/conf/keystore-tomcat.
+the filename ${TOMCAT_HOME}/conf/keystore-tomcat.
 
 <p>
-To create a self-signed certificate and store it in
-    ${tomcat_home}/conf/keystore-tomcat, execute this command:
+    To create a self-signed certificate and store it in
+    ${TOMCAT_HOME}/conf/keystore-tomcat, execute this command:
 <p>
     <code>
-/usr/java/jdk1.5.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore $HOME/conf/keystore-tomcat
-</code>
+        /usr/java/jdk1.5.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore $HOME/conf/keystore-tomcat
+    </code>
 
 <p>
-You will receive this series of questions:
+    You will receive this series of questions:
 
 <pre>
 
@@ -322,62 +530,66 @@ Enter key password for <&lttomcat>
 </pre>
 
 <p>
-Say more here: “changeit”, hostname, validity option, etc.
+    Say more here: <q>changeit</q>, hostname, validity option, etc.
 
 <p>
-Exercise: Create the keystore file.
+    Exercise: Create the keystore file.
 
 
 <h3> Configure Tomcat to Use SSL Encryption     </h3>
 
-Next, it is necessary to configure the tomcat server to use this new keystore file.  This requires a modification to the Tomcat configuration file ${tomcat_home}/conf/server.xml.   A small section on server.xml here?
+Next, it is necessary to configure the tomcat server to use this new keystore file.  This requires a modification to the Tomcat configuration file ${TOMCAT_HOME}/conf/server.xml.   A small section on server.xml here?
 
 <p>
-In that file find the Connector element that uses port 8443, the SSL port.  Ensure that that Connector XML element is not commented out.  Also, to that element add the ?argument? keystoreFile and optionally the argument keystorePass if you are no longer using the default password so that it looks similar to this:
+    In that file find the Connector element that uses port 8443, the SSL port.
+    Ensure that that Connector XML element is
+    not commented out.  Also, to that element add the attribute <code>keystoreFile</code> and
+    optionally the attribute <code>keystorePass</code> if you are no longer using the default password so that it looks similar to this:
 
-<!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 -->
+    <!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 -->
 
 
-  <Connector port="8443"
+    <Connector port="8443"
 
-    maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
 
-    enableLookups="false" disableUploadTimeout="true"
+               enableLookups="false" disableUploadTimeout="true"
 
-    acceptCount="100" debug="0" scheme="https" secure="true"
+               acceptCount="100" debug="0" scheme="https" secure="true"
 
-    clientAuth="false" sslProtocol="TLS"
+               clientAuth="false" sslProtocol="TLS"
 
-    keystoreFile="${keystore_filename}"
+               keystoreFile="${keystore_filename}"
 
-    keystorePass="mypassword"/>
+               keystorePass="mypassword"/>
 
-from begonia:
+    from begonia:
 
-<!-- Define a SSL HTTP/1.1 Connector on port 8443 -->
+    <!-- Define a SSL HTTP/1.1 Connector on port 8443 -->
 
-  <Connector port="8443" maxHttpHeaderSize="8192"
+    <Connector port="8443" maxHttpHeaderSize="8192"
 
-    maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
 
-    enableLookups="false" disableUploadTimeout="true"
+               enableLookups="false" disableUploadTimeout="true"
 
-    acceptCount="100" scheme="https" secure="true"
+               acceptCount="100" scheme="https" secure="true"
 
-    clientAuth="false" sslProtocol="TLS"
+               clientAuth="false" sslProtocol="TLS"
 
-    keystoreFile="/opt/tomcat/conf/keystore-tomcat" />
+               keystoreFile="/opt/tomcat/conf/keystore-tomcat" />
 
 <p>
-Finally, restart the Tomcat server to pick up these changes.
+    Finally, restart the Tomcat server to pick up these changes.
 
 <p>
-Exercise: configure Tomcat to use SSL.  Restart Tomcat, and connect via your browser.
+    Exercise: configure Tomcat to use SSL.  Restart Tomcat, and connect via your browser.
 
 
     Other Tomcat Security Resources
 
 <p>
+    <pre>
 In any case, we strongly recommend that you also read and follow the Tomcat/TDS Security guidelines.
 
 Higher Security: You can also use an LDAP server or a Database to store users and roles, which may give you higher levels of security. Use of this feature is beyond the scope of this documentation, however.
@@ -401,7 +613,7 @@ TroubleShooting
 
 Running without SSL
 
-If you are on a secure network, and don't want to run with SSL enabled, edit ${tomcat_home}webapps/thredds/WEB-INF/web.xml and change all instances of CONFIDENTIAL to NONE.
+If you are on a secure network, and don't want to run with SSL enabled, edit ${TOMCAT_HOME}webapps/thredds/WEB-INF/web.xml and change all instances of CONFIDENTIAL to NONE.
 
 Password authentication will then be done without SSL encryption. You will have to repeat this whenever you reinstall or upgrade thredds.war.
 Resources
@@ -410,20 +622,18 @@ Resources
     * Java Secure Sockets Extension (JSSE) Reference Guide
     * JDK keytool application
 
-This document is maintained by Anne Wilson and was last updated on July 18, 2007
-
-
-
+ </pre>
 
 
 
 
 <hr width="100%">
-<strong><br>
-</strong>
-<address>
-<img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was last updated on July 23, 2007. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.<br>
 
+<address>
+    <img src="../images/thread.png" height="108" width="110">
+    This document is maintained by Anne Wilson and was last updated
+    on July 26, 2007.
+    Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 
 <p>&nbsp;</p>
