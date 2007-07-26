@@ -8,7 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../ui/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../ui/src/test/java" isTestSource="true" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.6.0_02" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module-library">
