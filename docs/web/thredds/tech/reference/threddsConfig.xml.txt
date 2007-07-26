@@ -12,18 +12,6 @@
   <catalogRoot>idd/catalog.xml</catalogRoot>
   <catalogRoot>catgen/subdir/enhancedCatalog-1.0.xml</catalogRoot>
 
-  <!--
-  Configuring the CDM (netcdf-java library)
-  see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html   -->
-  <nj22Config
-    <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
-    <coordSysBuilder convention="foo" class="test.Foo"/>
-    <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
-    <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
-    <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
-    <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
-  </nj22Config>
-
   <!-- CDM uses the DiskCache directory to store temporary files, like uncompressed files.  -->
   <DiskCache>
     <alwaysUse>false</alwaysUse>
@@ -210,5 +198,18 @@
   <Aggregation>
     <typicalDataset>latest</typicalDataset>
   </Aggregation>
+  
+  
+  <!--
+  Configuring the CDM (netcdf-java library)
+  see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html   -->
+  <nj22Config
+    <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
+    <coordSysBuilder convention="foo" class="test.Foo"/>
+    <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
+    <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
+    <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
+    <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
+  </nj22Config>
 
 </threddsConfig>

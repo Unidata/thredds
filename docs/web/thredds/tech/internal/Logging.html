@@ -7,25 +7,7 @@
 </head>
 
 <body>
-<table width="100%">
-  <tbody>
-    <tr>
-      <td align="left" height="95" width="95"><img src="../../unidataLogo.gif" height="93" width="95"> </td>
-      <td align="left" valign="top" width="701"><table width="303">
-          <tbody>
-            <tr>
-              <td align="left" height="22" valign="top" width="295"><h3><strong>Thredds Data Server</strong></h3></td>
-            </tr>
-          </tbody>
-      </table></td>
-    </tr>
-  </tbody>
-</table>
-
-
-<p><em>last updated May 30, 2006 </em>
-</p>
-<h2>TDS Logging</h2>
+<h1>TDS Logging</h1>
 <p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">log4j</a> library embedded in the <a href="http://www.slf4j.org/nlog4j/">NLOG4J</a> library. The NLOG4J library also implements the SLF4J logging facade, which the nj22 library needs. Users of the TDS can ignore the SLF4J facade, and need only deal with  log4j. </p>
 <p>The default log4j configuration file  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
 <p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the thredds configuration file <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
