@@ -1,798 +1,431 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html xmlns:v="urn:schemas-microsoft-com:vml"
-xmlns:o="urn:schemas-microsoft-com:office:office"
-xmlns:w="urn:schemas-microsoft-com:office:word"
-xmlns:st1="urn:schemas-microsoft-com:office:smarttags"
-xmlns="http://www.w3.org/TR/REC-html40">
+<html><head>
 
-<head>
-<meta http-equiv=Content-Type content="text/html; charset=iso-8859-1">
-<meta name=ProgId content=Word.Document>
-<meta name=Generator content="Microsoft Word 10">
-<meta name=Originator content="Microsoft Word 10">
-<link rel=File-List href="BasicTomcatMgmtAndSecurity_files/filelist.xml">
-<link rel=Edit-Time-Data href="BasicTomcatMgmtAndSecurity_files/editdata.mso">
-<!--[if !mso]>
-<style>
-v\:* {behavior:url(#default#VML);}
-o\:* {behavior:url(#default#VML);}
-w\:* {behavior:url(#default#VML);}
-.shape {behavior:url(#default#VML);}
-</style>
-<![endif]-->
-<title>Basic Tomcat Management and Security</title>
-<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
- name="date"/>
-<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
- name="State"/>
-<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
- name="City"/>
-<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
- name="place"/>
-<!--[if gte mso 9]><xml>
- <o:DocumentProperties>
-  <o:Author>anne</o:Author>
-  <o:Template>Normal</o:Template>
-  <o:LastAuthor>anne</o:LastAuthor>
-  <o:Revision>2</o:Revision>
-  <o:TotalTime>9264</o:TotalTime>
-  <o:LastPrinted>2007-07-19T15:54:00Z</o:LastPrinted>
-  <o:Created>2007-07-25T18:50:00Z</o:Created>
-  <o:LastSaved>2007-07-25T18:50:00Z</o:LastSaved>
-  <o:Pages>1</o:Pages>
-  <o:Words>2024</o:Words>
-  <o:Characters>11540</o:Characters>
-  <o:Company>Unidata/UCAR</o:Company>
-  <o:Lines>96</o:Lines>
-  <o:Paragraphs>27</o:Paragraphs>
-  <o:CharactersWithSpaces>13537</o:CharactersWithSpaces>
-  <o:Version>10.6830</o:Version>
- </o:DocumentProperties>
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <w:WordDocument>
-  <w:Zoom>150</w:Zoom>
-  <w:SpellingState>Clean</w:SpellingState>
-  <w:GrammarState>Clean</w:GrammarState>
-  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
- </w:WordDocument>
-</xml><![endif]--><!--[if !mso]><object
- classid="clsid:38481807-CA0E-42D2-BF39-B33AF135CC4D" id=ieooui></object>
-<style>
-st1\:*{behavior:url(#ieooui) }
-</style>
-<![endif]-->
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{mso-style-parent:"";
-	margin:0in;
-	margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	font-size:12.0pt;
-	font-family:"Times New Roman";
-	mso-fareast-font-family:"Times New Roman";}
-h1
-	{mso-margin-top-alt:auto;
-	margin-right:0in;
-	mso-margin-bottom-alt:auto;
-	margin-left:0in;
-	mso-pagination:widow-orphan;
-	mso-outline-level:1;
-	font-size:24.0pt;
-	font-family:"Times New Roman";
-	font-weight:bold;}
-h2
-	{mso-margin-top-alt:auto;
-	margin-right:0in;
-	mso-margin-bottom-alt:auto;
-	margin-left:0in;
-	mso-pagination:widow-orphan;
-	mso-outline-level:2;
-	font-size:18.0pt;
-	font-family:"Times New Roman";
-	font-weight:bold;}
-h3
-	{mso-margin-top-alt:auto;
-	margin-right:0in;
-	mso-margin-bottom-alt:auto;
-	margin-left:0in;
-	mso-pagination:widow-orphan;
-	mso-outline-level:3;
-	font-size:13.5pt;
-	font-family:"Times New Roman";
-	font-weight:bold;}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;
-	text-underline:single;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:blue;
-	text-decoration:underline;
-	text-underline:single;}
-p
-	{mso-margin-top-alt:auto;
-	margin-right:0in;
-	mso-margin-bottom-alt:auto;
-	margin-left:0in;
-	mso-pagination:widow-orphan;
-	font-size:12.0pt;
-	font-family:"Times New Roman";
-	mso-fareast-font-family:"Times New Roman";}
-address
-	{margin:0in;
-	margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	font-size:12.0pt;
-	font-family:"Times New Roman";
-	font-style:italic;}
-pre
-	{mso-style-link:"HTML Preformatted Char";
-	margin:0in;
-	margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt;
-	font-size:10.0pt;
-	font-family:"Courier New";
-	mso-fareast-font-family:"Times New Roman";}
-span.HTMLPreformattedChar
-	{mso-style-name:"HTML Preformatted Char";
-	mso-style-link:"HTML Preformatted";
-	font-family:"Courier New";
-	mso-ascii-font-family:"Courier New";
-	mso-hansi-font-family:"Courier New";
-	mso-bidi-font-family:"Courier New";
-	mso-ansi-language:EN-US;
-	mso-fareast-language:EN-US;
-	mso-bidi-language:AR-SA;}
-span.SpellE
-	{mso-style-name:"";
-	mso-spl-e:yes;}
-span.GramE
-	{mso-style-name:"";
-	mso-gram-e:yes;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;
-	mso-header-margin:.5in;
-	mso-footer-margin:.5in;
-	mso-paper-source:0;}
-div.Section1
-	{page:Section1;}
- /* List Definitions */
- @list l0
-	{mso-list-id:171996367;
-	mso-list-template-ids:-492155314;}
-@list l0:level1
-	{mso-level-number-format:bullet;
-	mso-level-text:\F0B7;
-	mso-level-tab-stop:.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;
-	mso-ansi-font-size:10.0pt;
-	font-family:Symbol;}
-@list l0:level2
-	{mso-level-tab-stop:1.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l0:level3
-	{mso-level-tab-stop:1.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l0:level4
-	{mso-level-tab-stop:2.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l0:level5
-	{mso-level-tab-stop:2.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l0:level6
-	{mso-level-tab-stop:3.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l0:level7
-	{mso-level-tab-stop:3.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l0:level8
-	{mso-level-tab-stop:4.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l0:level9
-	{mso-level-tab-stop:4.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l1
-	{mso-list-id:654340867;
-	mso-list-template-ids:80495990;}
-@list l1:level1
-	{mso-level-number-format:bullet;
-	mso-level-text:\F0B7;
-	mso-level-tab-stop:.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;
-	mso-ansi-font-size:10.0pt;
-	font-family:Symbol;}
-@list l1:level2
-	{mso-level-number-format:bullet;
-	mso-level-text:o;
-	mso-level-tab-stop:1.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;
-	mso-ansi-font-size:10.0pt;
-	font-family:"Courier New";
-	mso-bidi-font-family:"Times New Roman";}
-@list l1:level3
-	{mso-level-tab-stop:1.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l1:level4
-	{mso-level-tab-stop:2.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l1:level5
-	{mso-level-tab-stop:2.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l1:level6
-	{mso-level-tab-stop:3.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l1:level7
-	{mso-level-tab-stop:3.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l1:level8
-	{mso-level-tab-stop:4.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l1:level9
-	{mso-level-tab-stop:4.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;}
-@list l2
-	{mso-list-id:1346518533;
-	mso-list-template-ids:1055061722;}
-@list l2:level1
-	{mso-level-number-format:bullet;
-	mso-level-text:\F0B7;
-	mso-level-tab-stop:.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;
-	mso-ansi-font-size:10.0pt;
-	font-family:Symbol;}
-@list l2:level2
-	{mso-level-number-format:bullet;
-	mso-level-text:o;
-	mso-level-tab-stop:1.0in;
-	mso-level-number-position:left;
-	text-indent:-.25in;
-	mso-ansi-font-size:10.0pt;
-	font-family:"Courier New";
-	mso-bidi-font-family:"Times New Roman";}
-@list l3
-	{mso-list-id:1656059369;
-	mso-list-template-ids:-1867644720;}
-@list l3:level1
-	{mso-level-number-format:bullet;
-	mso-level-text:\F0B7;
-	mso-level-tab-stop:.5in;
-	mso-level-number-position:left;
-	text-indent:-.25in;
-	mso-ansi-font-size:10.0pt;
-	font-family:Symbol;}
-ol
-	{margin-bottom:0in;}
-ul
-	{margin-bottom:0in;}
--->
-</style>
-<!--[if gte mso 10]>
-<style>
- /* Style Definitions */
- table.MsoNormalTable
-	{mso-style-name:"Table Normal";
-	mso-tstyle-rowband-size:0;
-	mso-tstyle-colband-size:0;
-	mso-style-noshow:yes;
-	mso-style-parent:"";
-	mso-padding-alt:0in 5.4pt 0in 5.4pt;
-	mso-para-margin:0in;
-	mso-para-margin-bottom:.0001pt;
-	mso-pagination:widow-orphan;
-	font-size:10.0pt;
-	font-family:"Times New Roman";}
-</style>
-<![endif]--><!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext="edit" spidmax="4098"/>
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext="edit">
-  <o:idmap v:ext="edit" data="1"/>
- </o:shapelayout></xml><![endif]-->
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Basic Tomcat Management and Security</title>
 </head>
+<body>
 
-<body lang=EN-US link=blue vlink=blue style='tab-interval:.5in'>
+<h1><img src="THREDDSlogo.jpg" height="54" width="67">Basic Tomcat Management and Security </h1>
+<hr>
 
-<div class=Section1>
+At this point we assume that Tomcat is installed in
+<code> /home/workshop/tds/apache-tomcat-6.0.13 </code>
+and that you have an environment variable TOMCAT_HOME set to this value.
+<p>
+Check that this variable is set by with this command:
+<p>
+<code> echo $TOMCAT_HOME</code>
+<p>
 
-<div>
+If the system indicates that the variable is not set, recall that you can
+set this variable in any window at any time by executing the command:
+</p>
+<code> set TOMCAT_HOME /home/workshop/tds/apache-tomcat-6.0.13  </code>
 
-<h1>Basic Tomcat Management and Security<o:p></o:p></h1>
 
-<div class=MsoNormal align=center style='text-align:center'>
 
-<hr size=2 width="100%" align=center>
 
-</div>
+<h2>Important Tomcat Directories </h2>
 
-<p>We believe Tomcat to be secure enough for typical scientific uses. There are
-no known security exploits or weaknesses. However, the Internet is a wild
-place, and we are not security experts so <em>caveat emptor</em>. These are
-best practices for running Tomcat.</p>
+Here we examine some Tomcat relevant directories, the directories .  Do
+<p>
+<code>cd $TOMCAT_HOME </code>
 
-<h2>Create and Administer Tomcat as User &#8220;tomcat&#8221; </h2>
+<h3> The <code> webapps </code> Directory </h3>
+<p>
+The <code> webapps </code> directory is where web applications are placed to be
+    run by Tomcat.  Tomcat automatically monitors this directory and when it finds
+    a new
+    <code>.war</code> file it will attempt to install it as an application.  If
+there is an error in the deployment, such as a problem with the file, it will report
+that in the the log file <code> catalina.out </code>.
+<p>
+    Do this:
+<p>
+<code>ls $TOMCAT_HOME/webapps</code>
+<p>
+    Among other things, you should see the <code> thredds.war </code> file that was previously installed,
+    and a directory called <code> thredds</code>.  This is the TDS code.
+    Tomcat installed the
+    TDS automatically when the <code>thredds.war</code> file was placed there.
+</p>
+<p>
+    You will also see a file here called <code>manager</code>.  This is the Manager
+    application that we will visit soon.
+</p>
 
-<p>By default, tomcat runs on port 8080 and therefore does not need to be owned
-by root in order to run. Indeed, for security reasons it is important that
-tomcat files NOT be owned by root.<span style='mso-spacerun:yes'>  </span></p>
+<p>
+<h3> The <code> logs </code> Directory    </h3>
+The <code> logs </code> directory contains Tomcat log files.  Do this:
+    <p>
+        <code> ls $TOMCAT_HOME/logs </code>
+    </p>
+    <p>
+        Once Tomcat has been started it will generate some log files and put them in
+        the <code>logs </code> directory.  The files
+        that are generated depends on how the server is configured.  Here is an
+        example from one recent Tomcat installation using the default configuration:
+        <pre>
+[tomcat@lead3 ~/logs]$ ls -lt
+total 12
+-rw-r--r-- 1 tomcat leadstaff 2806 Jul 22 20:01 catalina.out
+-rw-r--r-- 1 tomcat leadstaff  232 Jul 21 20:01 localhost.2007-07-21.log
+-rw-r--r-- 1 tomcat leadstaff 1585 Jul 21 20:01 catalina.2007-07-21.log
+-rw-r--r-- 1 tomcat leadstaff    0 Jul 21 20:00 admin.2007-07-21.log
+-rw-r--r-- 1 tomcat leadstaff    0 Jul 21 20:00 host-manager.2007-07-21.log
+-rw-r--r-- 1 tomcat leadstaff    0 Jul 21 20:00 manager.2007-07-21.log
 
-<p>There should be a user named &quot;tomcat&quot;.<span
-style='mso-spacerun:yes'>  </span><strong><span style='font-weight:normal'>When
-admini</span></strong>stering tomcat, you should always first change user to
-user &#8220;tomcat&#8221; so that existing file permissions can be followed and
-new file permissions will be generated properly.<span
-style='mso-spacerun:yes'>  </span></p>
+        </pre>
 
-<p>The user &#8220;tomcat&#8221; should own everything under <strong><span
-style='font-weight:normal'>${<span class=SpellE>tomcat_home</span>}.<span
-style='mso-spacerun:yes'>   </span><span style='color:red'>(See Section X for
-how to create the user &#8220;tomcat&#8221;.)</span><span
-style='mso-spacerun:yes'>  </span></span></strong>The &#8220;tomcat<span
-class=GramE>&#8221;<span style='mso-spacerun:yes'>  </span>user</span> should
-have read access to <strong><span style='font-weight:normal'>${<span
-class=SpellE>tomcat_home</span>}</span></strong> and its subdirectories in
-order to run properly.<span style='mso-spacerun:yes'>  </span>In particular,
-the directory <strong>${<span class=SpellE>tomcat_home</span>}/conf/</strong>
-contains critical configuration files that should be readable only by the
-tomcat user.<span style='mso-spacerun:yes'>  </span>Several of the files in
-this directory also require write access for the tomcat user in order to modify
-its configuration.<span style='mso-spacerun:yes'>  </span></p>
+    </p>
 
-<p>Tomcat also requires read access to the data directories in order to server
-the data.<span style='mso-spacerun:yes'>  </span><em><span style='font-style:
-normal'>Do not give the tomcat user any rights in any other directories</span></em>.<span
-style='mso-spacerun:yes'>  </span></p>
+</p>
+<p>
+<h3> The <code> conf </code> Directory   </h3>
+</p>
+<p>
+<h3> The <code> exec</code> Directory   </h3>
+</p>
 
-<p>As an extra security precaution, if your operating system allows it (e.g. <span
-class=GramE>Unix</span>, Linux), you should also not allow the tomcat user to
-log in, requiring instead that you log in as yourself, then switch to being the
-tomcat user.<span style='mso-spacerun:yes'>   </span>This is done by &#8230;</p>
-
-<h2><span style='color:red'>Important Tomcat Directories<o:p></o:p></span></h2>
-
-<p>Here describe the conf dir, logs dir, <span class=SpellE>webapps</span> dir.</p>
-
-<h2><span style='color:red'>Starting and Stopping Tomcat<o:p></o:p></span></h2>
-
-<p>Here describe how to start and stop tomcat, watching the log files, how to
-start tomcat on boot, troubleshooting???<o:p></o:p></p>
 
 <h2>Tomcat Security</h2>
 
-<h2>Use a Firewall <span style='color:red'>(This is not tomcat specific, should
-I even keep it here?)</span></h2>
-
-<p>A firewall is necessary to restrict access to the ports on your server.<span
-style='mso-spacerun:yes'>  </span>However, creating a firewall is not part of
-Tomcat per se.<span style='mso-spacerun:yes'>  </span><span style='color:red'>See
-Section X for information about firewall configuration.<o:p></o:p></span></p>
-
-<h2>Using Authentication to Restrict Access to Tomcat Applications </h2>
-
-<p>Although by default tomcat does not require authentication to access the
-resources it controls, it can be configured to do so.<span
-style='mso-spacerun:yes'>   </span>From a TDS perspective, authentication is
-required to 1) get access to the tomcat manager application, and 2) enable
-remote TDS management.<span style='mso-spacerun:yes'>  </span></p>
-
-<p>This section introduces the tomcat authentication mechanism by describing
-how to enable authentication in order to use the Tomcat manager.<span
-style='mso-spacerun:yes'>   </span>(<span style='color:red'>Enabling remote TDS
-management is described in Section X.)<o:p></o:p></span></p>
-
-<h3>The Tomcat Manager</h3>
-
-<p>The tomcat manager is an application that allows users to deploy, <span
-class=SpellE>undeploy</span>, or reload an application such as the TDS without
-having to shut down and restart tomcat.<span style='mso-spacerun:yes'> 
-</span>The tomcat distribution contains this application, but for security
-reasons it is disabled by default.</p>
-
-<p>Execution of the tomcat manager requires that users authenticate themselves
-and be associated with the predefined role &#8220;manager&#8221;.<span
-style='mso-spacerun:yes'>  </span>That is, users must provide a user name and
-password, and their user name must be associated with the manager role.<span
-style='mso-spacerun:yes'>  </span>By default, this information is stored in the
-file ${<span class=SpellE>tomcat_home</span>}/conf/tomcat-<span class=SpellE>users.xml</span>.<span
-style='mso-spacerun:yes'>  </span></p>
-
-<h3>Tomcat-<span class=SpellE>user.xml</span></h3>
-
-<p>A simple tomcat-<span class=SpellE>users.xml</span> file looks like this:</p>
-
-<pre>&lt;<span class=GramE>tomcat-users</span>&gt;</pre><pre><span style='mso-spacerun:yes'>  </span>&lt;user name=&quot;Anne&quot; password=&quot;secret&quot; roles=&quot;<span
-class=SpellE>tdrAdmin</span>&quot; /&gt;</pre><pre>&lt;/tomcat-users&gt;</pre>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>There
-must be an entry in the file for each user that is required to
-authenticate.<span style='mso-spacerun:yes'>  </span>Each &lt;user&gt; entry
-defines the user name, password, and roles that are assigned to that user.<span
-style='mso-spacerun:yes'>   </span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Tomcat-<span
-class=SpellE>users.xml</span> is read once when Tomcat is started.<span
-style='mso-spacerun:yes'>  </span>For this reason, changes to tomcat-<span
-class=SpellE>users.xml</span> will not be recognized until Tomcat is
-restarted.<span style='mso-spacerun:yes'>  </span>When a user attempts to access
-a protected resource for the first time, Tomcat will challenge the user for a
-user name and password.<span style='mso-spacerun:yes'>  </span>Once the user
-has been authenticated, the relevant information, including the roles to which
-the user was assigned, is cached for the duration of the user&#8217;s login.</p>
-
-<h3 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Configuring
-tomcat-<span class=SpellE>users.xml</span> to <span class=GramE>Allow</span> a
-User to Execute the Manager</h3>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>In
-order to allow a user to execute the manager, the user&#8217;s name and
-password must be added to the tomcat-<span class=SpellE>users.xml</span> file,
-and the user must be assigned the &#8220;manager&#8221; role.<span
-style='mso-spacerun:yes'>   </span>The &#8220;manager&#8221; role is a
-predefined role in Tomcat.<span style='mso-spacerun:yes'>  </span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Role
-names such as &#8220;manager&#8221; should be added to the &#8220;role&#8221;
-attribute of a &lt;user&gt; element.<span style='mso-spacerun:yes'>  </span>The
-value of the role attribute can be a single value or a comma separated list of
-values.<span style='mso-spacerun:yes'>  </span>For example, to add the manager
-role to the user &#8220;anne&#8221; in the above example, the result would look
-like this:</p>
-
-<pre><span style='mso-spacerun:yes'>  </span>&lt;user name=&quot;Anne&quot; password=&quot;secret&quot; roles=&quot;<span
-class=SpellE>tdrAdmin<span class=GramE>,manager</span></span>&quot; /&gt;</pre>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><b
-style='mso-bidi-font-weight:normal'>Exercise:</b><span
-style='mso-spacerun:yes'>  </span>Modify the default tomcat-<span class=SpellE>users.xml</span>
-to add yourself as a user and give yourself the role of
-&#8220;manager&#8221;.<span style='mso-spacerun:yes'>  </span>Start (or
-restart) Tomcat, and ensure that you can access the manager application.<span
-style='mso-spacerun:yes'>  </span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Test
-this change by pointing your browser to <a href="http://localhost:8080/">http://localhost:8080</a>
-and then click on the &#8220;Manager&#8221; link in the left hand column.<span
-style='mso-spacerun:yes'>  </span>You&#8217;ll see that you will not be
-challenged on getting the Tomcat splash page, but you will be challenged when
-you try to access the manager.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Go
-to the directory ~tomcat/logs and list the files.<span
-style='mso-spacerun:yes'>  </span>You <span style='color:red'>might? Should?</span>
-<span class=GramE>see</span> a file called something like <span class=SpellE><span
-style='color:red'>localhost_accessLog</span></span>.<span
-style='mso-spacerun:yes'>  </span><span style='color:red'>Is this enabled on
-the machines?</span> Tail the log (run &#8220;tail &#8211;f <span class=SpellE>localhost_accessLog</span>)
-and try to access the manager again.<span style='mso-spacerun:yes'> 
-</span>This log will show you the HTTP status codes returned by tomcat.<span
-style='mso-spacerun:yes'>  </span>You&#8217;ll see &#8230;</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><b
-style='mso-bidi-font-weight:normal'>Exercise:</b> This exercise is to help you
-learn to debug tomcat problems.<span style='mso-spacerun:yes'>  </span>Modify
-tomcat-<span class=SpellE>users.xml</span>, but make sure there&#8217;s some
-problem with the XML format.<span style='mso-spacerun:yes'>  </span>For
-example, leave off a closing angle bracket.<span style='mso-spacerun:yes'> 
-</span>In the logs directory (~tomcat/logs) tail the file <span class=SpellE>catalina.out</span>
-as you restart Tomcat.<span style='mso-spacerun:yes'>  </span>The log file
-should report some kind of error that would, in theory, lead you to reexamine
-tomcat-<span class=SpellE>users.xml</span> and help you find the error.</p>
-
-<h3 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Using
-Digested Passwords</h3>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>By
-default, Tomcat expects user passwords to be stored in clear text.<span
-style='mso-spacerun:yes'>  </span>As you can imagine, this is not very
-secure.<span style='mso-spacerun:yes'>  </span>Tomcat also supports digested
-passwords, a type of encoding, but it must <span class=GramE>configured</span>
-to use them.<span style='mso-spacerun:yes'>   </span>This configuration is done
-in the Tomcat configuration file ${<span class=SpellE>tomcat_home</span>}/conf/<span
-class=SpellE>server.xml</span>.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>There
-are several digest algorithms.<span style='mso-spacerun:yes'>  </span>Here we
-will use the SHA algorithm.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>In
-addition it is necessary to create the digested passwords.<span
-style='mso-spacerun:yes'>  </span>Tomcat provides a script, <span class=SpellE><span
-class=GramE>digest.sh</span></span><span class=GramE>, that</span> creates a
-digested version of a password.<span style='mso-spacerun:yes'>  </span>You must
-then copy the digested version into tomcat-users in place of the clear text
-password.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Tomcat
-will request that a browser client like <span class=SpellE>Firefox</span>
-provide a digested password.<span style='mso-spacerun:yes'>  </span>The client
-must digest the password using the same algorithm.<span
-style='mso-spacerun:yes'>  </span>Your browser will do this for automatically. </p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Configuring
-Tomcat to Use Digested Passwords</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Configure
-tomcat to use digested passwords by editing the file <span class=SpellE>server.xml</span>
-by adding a &#8220;digest&#8221; attribute to Tomcat&#8217;s &lt;realm&gt;
-element, like this:</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>&lt;Realm
-<span class=SpellE>className</span>=&quot;<span class=SpellE>org.apache.catalina.realm.MemoryRealm</span>&quot;
-digest=&quot;SHA&quot; /&gt;</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
-style='color:red'>(Find where this is on the workshop machines.)<o:p></o:p></span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
-class=GramE>say</span> where.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><o:p>&nbsp;</o:p></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Restart
-the server for this change to take effect.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><o:p>&nbsp;</o:p></p>
-
-<h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Enabling
-Secure Communication to Tomcat Via SSL Encryption</h2>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Using
-digest passwords eliminates the problem of storing passwords in clear
-text.<span style='mso-spacerun:yes'>  </span>But it does not address the possibility
-of snooping on a connection to the server.<span style='mso-spacerun:yes'> 
-</span>By enabling SSL on the server we require clients to SSL encode their
-requests.<span style='mso-spacerun:yes'>  </span>This prevents network <span
-class=SpellE>sniffers</span> from acquiring sensitive information.<span
-style='mso-spacerun:yes'>  </span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Besides
-encoding information sent to the server, the SSL protocol also requires that
-the server authenticate to the client.<span style='mso-spacerun:yes'> 
-</span>This is to prevent a spoof from pretending to be a trusted server and
-fraudulently obtaining sensitive information.<span style='mso-spacerun:yes'> 
-</span>For this reason, to enable SSL it is first necessary to create an SSL
-certificate for the server.<span style='mso-spacerun:yes'>  </span>This is a
-credential that is passed to the client upon initiating a connection that
-certifies the <span class=GramE>servers</span> identity.<span
-style='mso-spacerun:yes'>  </span>Among trusted sites, it is sufficient for the
-server to send a &quot;self-signed&quot; certificate, the creation of which is
-described here.<span style='mso-spacerun:yes'>  </span><span style='color:red'>If
-you are interested in using more secure certificates, see the Section called <span
-class=GramE>Installing</span> a Certificate from a Certificate Authority in
-Section X.<o:p></o:p></span></p>
-
-<h3 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Creating
-a Self-Signed Certificate</h3>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>To
-create a self-signed certificate, you must first create a &#8220;<span
-class=SpellE>keystore</span>&#8221; file where certificates are stored.<span
-style='mso-spacerun:yes'>  </span>Java provides a tool, called <span
-class=SpellE><span class=GramE><span class=HTMLPreformattedChar>keytool</span></span></span><span
-class=GramE>, that</span> generates a self-signed certificate and puts in a <span
-class=SpellE>keystore</span> file.<span style='mso-spacerun:yes'>  </span>The
-default <span class=SpellE>keystore</span> filename is ${<span class=SpellE>user_home</span>}/.<span
-class=SpellE>keystore</span>.<span style='mso-spacerun:yes'>  </span>However,
-this example will use the filename ${<span class=SpellE>tomcat_home</span>}/conf/<span
-class=SpellE>keystore</span>-tomcat.<span style='mso-spacerun:yes'>  </span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>To
-create a self-signed certificate and store it in ${<span class=SpellE>tomcat_home</span>}/conf/<span
-class=SpellE>keystore</span>-tomcat, as user &#8220;<span class=SpellE>tomcate</span>&#8221;
-execute this command:</p>
-
-<pre>/usr/java/jdk1.5.0_10/bin/keytool -<span class=SpellE>genkey</span> -alias tomcat -<span
-class=SpellE>keyalg</span> RSA -validity 365 -<span class=SpellE>keystore</span> $HOME/conf/<span
-class=SpellE>keystore</span>-tomcat</pre>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>You
-will receive this series of questions:</p>
-
-<pre>Enter <span class=SpellE>keystore</span> password:<span style='mso-spacerun:yes'>  </span><span
-class=SpellE>changeit</span></pre><pre>What is your first and last name?</pre><pre><span style='mso-spacerun:yes'>  </span>[Unknown]:<span style='mso-spacerun:yes'>  </span><span
-class=SpellE>localhost</span></pre><pre>What is the name of your organizational unit?</pre><pre><span style='mso-spacerun:yes'>  </span>[Unknown]:<span style='mso-spacerun:yes'>  </span>tomcat server</pre><pre>What is the name of your organization?</pre><pre><span style='mso-spacerun:yes'>  </span>[Unknown]:<span style='mso-spacerun:yes'>  </span>Anne's Home</pre><pre>What is the name of your City or Locality?</pre><pre><span style='mso-spacerun:yes'>  </span>[Unknown]:<span style='mso-spacerun:yes'>  </span><st1:City><st1:place>Boulder</st1:place></st1:City></pre><pre>What is the name of your State or Province?</pre><pre><span style='mso-spacerun:yes'>  </span>[Unknown]:<span style='mso-spacerun:yes'>  </span><st1:State><st1:place>Colorado</st1:place></st1:State></pre><pre>What is the two-letter country code for this unit?</pre><pre><span style='mso-spacerun:yes'>  </span>!</pre><pre> [Unknown]:<span style='mso-spacerun:yes'>  </span>US</pre><pre>Is CN=<span
-class=SpellE>localhost</span>, OU=tomcat server, O=Anne's Home, L=<st1:City><st1:place>Boulder</st1:place></st1:City>, ST=<st1:State><st1:place>Colorado</st1:place></st1:State>, C=US correct?</pre><pre><span style='mso-spacerun:yes'>  </span>[<span
-class=GramE>no</span>]:<span style='mso-spacerun:yes'>  </span>yes</pre><pre><o:p>&nbsp;</o:p></pre><pre>Enter key password for &lt;tomcat&gt;</pre><pre><span style='mso-spacerun:yes'>        </span>(RETURN if same as <span
-class=SpellE>keystore</span> password):</pre><pre><o:p>&nbsp;</o:p></pre>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
-style='color:red'>Say more here: &#8220;<span class=SpellE>changeit</span>&#8221;,
-hostname, validity option, etc.<o:p></o:p></span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Exercise:
-Create the <span class=SpellE>keystore</span> file.</p>
-
-<h3 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Configure
-Tomcat to Use SSL Encryption</h3>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Next,
-it is necessary to configure the tomcat server to use this new <span
-class=SpellE>keystore</span> file.<span style='mso-spacerun:yes'>  </span>This
-requires a modification to the Tomcat configuration file ${<span class=SpellE>tomcat_home</span>}/conf/<span
-class=SpellE>server.xml</span>. <span style='mso-spacerun:yes'>  </span><span
-class=GramE><span style='color:red'>A small section on <span class=SpellE>server.xml</span>
-here?</span></span><span style='color:red'><span style='mso-spacerun:yes'> 
-</span><o:p></o:p></span></p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>In
-that file find the Connector element that uses port 8443, the SSL port.<span
-style='mso-spacerun:yes'>  </span>Ensure that that Connector XML element is not
-commented out.<span style='mso-spacerun:yes'>  </span>Also, to that element add
-<span class=GramE>the ?</span>argument? <span class=SpellE><span class=GramE>keystoreFile</span></span>
-and optionally the argument <span class=SpellE>keystorePass</span> if you are
-no longer using the default password so that it looks similar to this:</p>
-
-<pre><span class=GramE>&lt;!--</span> Define a SSL Coyote HTTP/1.1 Connector on port 8443 --&gt;</pre><pre><span style='mso-spacerun:yes'>  </span>&lt;Connector port=&quot;8443&quot; </pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>maxThreads</span></span>=&quot;150&quot; <span
-class=SpellE>minSpareThreads</span>=&quot;25&quot; <span class=SpellE>maxSpareThreads</span>=&quot;75&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>enableLookups</span></span>=&quot;false&quot; <span
-class=SpellE>disableUploadTimeout</span>=&quot;true&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>acceptCount</span></span>=&quot;100&quot; debug=&quot;0&quot; scheme=&quot;https&quot; secure=&quot;true&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>clientAuth</span></span>=&quot;false&quot; <span
-class=SpellE>sslProtocol</span>=&quot;TLS&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>keystoreFile</span></span>=&quot;${<span
-class=SpellE>keystore_filename</span>}&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>keystorePass</span></span>=&quot;<span
-class=SpellE>mypassword</span>&quot;/&gt;</pre>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
-class=GramE>from</span> begonia:</p>
-
-<pre><span class=GramE>&lt;!--</span> Define a SSL HTTP/1.1 Connector on port 8443 --&gt;</pre><pre><span style='mso-spacerun:yes'>  </span>&lt;Connector port=&quot;8443&quot; <span
-class=SpellE>maxHttpHeaderSize</span>=&quot;8192&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>maxThreads</span></span>=&quot;150&quot; <span
-class=SpellE>minSpareThreads</span>=&quot;25&quot; <span class=SpellE>maxSpareThreads</span>=&quot;75&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>enableLookups</span></span>=&quot;false&quot; <span
-class=SpellE>disableUploadTimeout</span>=&quot;true&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>acceptCount</span></span>=&quot;100&quot; scheme=&quot;https&quot; secure=&quot;true&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>clientAuth</span></span>=&quot;false&quot; <span
-class=SpellE>sslProtocol</span>=&quot;TLS&quot;</pre><pre><span style='mso-spacerun:yes'>    </span><span
-class=SpellE><span class=GramE>keystoreFile</span></span>=&quot;/opt/tomcat/conf/<span
-class=SpellE>keystore</span>-tomcat&quot; /&gt;</pre>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Finally,
-restart the Tomcat server to pick up these changes.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Exercise:
-configure Tomcat to use SSL.<span style='mso-spacerun:yes'>  </span>Restart
-Tomcat, and connect via your browser.</p>
-
-<h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Other
-Tomcat Security Resources</h2>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>In
-any case, we strongly recommend that you also read and follow the <a
-href="../../../../../../../TDR/TomcatSecurity.html">Tomcat/TDS Security
-guidelines</a>. </p>
-
-</div>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><strong>Higher
-Security: </strong>You can also use an LDAP server or a Database to store users
-and roles, which may give you higher levels of security. Use of this feature is
-beyond the scope of this documentation, however.</p>
-
-<div class=MsoNormal align=center style='text-align:center;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>
-
-<hr size=2 width="100%" align=center>
-
-</div>
-
-<h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Leftover
-Stuff <span class=GramE>To</span> Consider</h2>
-
-<h3 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Checking
-that the correct ports are enabled</h3>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>After
-restarting Tomcat, you can use <span class=SpellE><strong>netstat</strong></span><strong>
--<span class=GramE>an</span> </strong>command to check that the ports are
-correctly configured. You should see lines like:</p>
-
-<pre><span style='mso-spacerun:yes'>  </span>TCP<span style='mso-spacerun:yes'>    </span>127.0.0.1:8080<span style='mso-spacerun:yes'>         </span>0.0.0.0:0<span style='mso-spacerun:yes'>              </span>LISTENING</pre><pre><span style='mso-spacerun:yes'>  </span>TCP<span style='mso-spacerun:yes'>    </span>127.0.0.1:8443<span style='mso-spacerun:yes'>         </span>0.0.0.0:0<span style='mso-spacerun:yes'>              </span>LISTENING </pre>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>You
-also need to make sure that your firewall is allowing those ports through. </p>
-
-<h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
-class=SpellE>TroubleShooting</span></h2>
-
-<ul type=disc>
- <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
-     mso-list:l1 level1 lfo3;tab-stops:list .5in'><strong>Connection refused
-     when trying to access a restricted page</strong>. The SSL socket is not
-     enabled in the <span class=SpellE>server.xml</span> file, or you didn't
-     install a certificate in the <span class=SpellE>keystore</span>. </li>
- <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
-     mso-list:l1 level1 lfo3;tab-stops:list .5in'><strong>What's in the <span
-     class=SpellE>keystore</span>? </strong></li>
- <ul type=circle>
-  <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
-      auto;mso-list:l1 level2 lfo3;tab-stops:list 1.0in'>Look at the <a
-      href="http://localhost:8080/manager/status">Tomcat Server Status</a> page
-      and check the JVM Version.</li>
-  <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
-      auto;mso-list:l1 level2 lfo3;tab-stops:list 1.0in'>From command line,
-      make sure that this matches the results of <strong>'java -version'. </strong>If
-      not, then your Tomcat server is starting up with a different JVM. </li>
-  <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:
-      auto;mso-list:l1 level2 lfo3;tab-stops:list 1.0in'>From command line, <strong>'<span
-      class=SpellE>keytool</span> -list' </strong>will show you what's in the
-      default <span class=SpellE>keystore</span>. Standard is to have password <span
-      class=SpellE><em>changeit</em></span>. You need an entry named <em>tomcat</em>.
-      </li>
- </ul>
-</ul>
-
-<h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Running
-without SSL</h2>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>If
-you are on a secure network, and don't want to run with SSL enabled, edit <strong>${<span
-class=SpellE>tomcat_home</span>}<span class=SpellE>webapps/thredds/WEB-INF/web.xml</span></strong>
-and change all instances of CONFIDENTIAL to NONE.</p>
-
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Password
-authentication will then be done without SSL encryption. You will have to
-repeat this whenever you reinstall or upgrade <span class=SpellE>thredds.war</span>.</p>
-
-<h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Resources</h2>
-
-<ul type=disc>
- <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
-     mso-list:l0 level1 lfo6;tab-stops:list .5in'><a
-     href="http://jakarta.apache.org/tomcat/tomcat-5.0-doc/ssl-howto.html">Tomcat
-     SSL Configuration</a> </li>
- <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
-     mso-list:l0 level1 lfo6;tab-stops:list .5in'>Java Secure Sockets Extension
-     (JSSE) <a
-     href="http://java.sun.com/j2se/1.4.2/docs/guide/security/jsse/JSSERefGuide.html">Reference
-     Guide</a> </li>
- <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
-     mso-list:l0 level1 lfo6;tab-stops:list .5in'>JDK <a
-     href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/windows/keytool.html"><span
-     class=SpellE>keytool</span></a> application </li>
-</ul>
-
-<div class=MsoNormal align=center style='text-align:center;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>
-
-<hr size=2 width="100%" align=center>
-
-</div>
-
-<address style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><img
-border=0 width=110 height=108 id="_x0000_i1028"
-src="../images/thread.png">This document is maintained by <a
-href="mailto:anne@unidata.ucar.edu">Anne Wilson</a> and was last updated on <st1:date
-Month="7" Day="18" Year="2007">July 18, 2007</st1:date>
+We believe Tomcat to be secure enough for typical scientific uses. There are no known security exploits or weaknesses. However, the Internet is a wild place, and we are not security experts so caveat emptor.
+
+
+
+
+<h3> Using Authentication to Restrict Access to Tomcat Applications</h3>
+
+Although by default tomcat does not require authentication to access the resources
+it controls, it can be configured to do so.   From a TDS perspective, authentication
+is required to 1) get access to the tomcat manager application, and 2) enable remote
+TDS management.
+<p>
+This section introduces the Tomcat authentication mechanism by describing how to
+    enable authentication in order to use the Tomcat manager.   (Enabling remote
+    TDS management is described in Section X.)
+
+
+
+
+
+
+<h3> The Tomcat Manager </h3>
+
+The tomcat manager is an application that allows users to deploy, undeploy, or
+reload an application such as the TDS without having to shut down and restart tomcat.
+The tomcat distribution contains this application, but for security reasons it is
+disabled by default.
+
+<p>
+Execution of the tomcat manager requires that users authenticate themselves and
+    be associated with the predefined role â€œmanagerâ€.  That is, users must provide
+    a user name and password, and their user name must be associated with the
+    manager role.  By default, this information is stored in the file
+    ${tomcat_home}/conf/tomcat-users.xml.
+
+<h3> tomcat-users.xml</h3>
+
+A simple tomcat-users.xml file looks like this:
+
+<tomcat-users>
+
+  <user name="Anne" password="secret" roles="tdrAdmin" />
+
+</tomcat-users>
+
+There must be an entry in the file for each user that is required to authenticate.
+Each <user> entry defines the user name, password, and roles that are assigned to
+that user.
+
+<p>
+Tomcat-users.xml is read once when Tomcat is started.  For this reason, changes to
+    tomcat-users.xml will not be recognized until Tomcat is restarted.  When a user
+    attempts to access a protected resource for the first time, Tomcat will challenge
+    the user for a user name and password.  Once the user has been authenticated, the
+    relevant information, including the roles to which the user was assigned, is
+    cached for the duration of the userâ€™s login.
+
+
+
+
+
+
+
+<h3> Configuring tomcat-users.xml to Allow a User to Execute the Manager </h3>
+
+In order to allow a user to execute the manager, the user's name and password must
+be added to the tomcat-users.xml file, and the user must be assigned the <q>manager</q>
+role, which is a predefined role in Tomcat.
+
+<p>
+Role names such as <code> manager </code> should be added to the <q>role</q>
+    attribute of a
+    <code> &lt;user&gt; </code>
+element.  The value of the role attribute can be a single value or a comma separated
+list of values.  For example, to add the manager role to the user â€œanneâ€ in the above
+example, the result would look like this:
+
+<code>
+  <user name="Anne" password="secret" roles="tdrAdmin,manager" />
+</code>
+
+Exercise:  Modify the default tomcat-users.xml to add yourself as a user and give
+yourself the role of â€œmanagerâ€.  Start (or restart) Tomcat, and ensure that you can
+access the manager application.
+
+<p>
+Test this change by pointing your browser to http://localhost:8080 and then click
+    on the â€œManagerâ€ link in the left hand column.  Youâ€™ll see that you will not be
+    challenged on getting the Tomcat splash page, but you will be challenged when you
+    try to access the manager.
+
+<p>
+Go to the directory ~tomcat/logs and list the files.  You might? Should? see a file
+    called something like localhost_accessLog.  Is this enabled on the machines?
+    Tail the log (run â€œtail â€“f localhost_accessLog) and try to access the manager
+    again.  This log will show you the HTTP status codes returned by tomcat.  Youâ€™ll
+    see â€¦
+
+<p>
+<b>Exercise:</b> This exercise is to help you learn to debug tomcat problems.
+    Modify tomcat-users.xml, but make sure thereâ€™s some problem with the XML format.
+    For example, leave off a closing angle bracket.  In the logs directory
+    (~tomcat/logs) tail the file catalina.out as you restart Tomcat.  The log
+    file should report some kind of error that would, in theory, lead you to
+    reexamine tomcat-users.xml and help you find the error.
+
+
+
+
+
+<h3> Using Digested Passwords </h3>
+
+By default, Tomcat expects user passwords to be stored in clear text.  As you can
+imagine, this is not very secure.  Tomcat also supports digested passwords, a type
+of encoding, but it must configured to use them.   This configuration is done in the
+Tomcat configuration file ${tomcat_home}/conf/server.xml.
+
+<p>
+There are several digest algorithms.  Here we will use the SHA algorithm.
+
+<p>
+In addition it is necessary to create the digested passwords.  Tomcat provides
+    a script, digest.sh, that creates a digested version of a password.  You must
+    then copy the digested version into tomcat-users in place of the clear text
+    password.
+
+<p>
+Tomcat will request that a browser client like Firefox provide a digested password.
+    The client must digest the password using the same algorithm.  Your browser
+    will do this for automatically.
+
+Configuring Tomcat to Use Digested Passwords
+
+<p>
+Configure tomcat to use digested passwords by editing the file server.xml by
+adding a â€œdigestâ€ attribute to Tomcatâ€™s <realm> element, like this:
+
+<Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA" />
+
+<p>
+(Find where this is on the workshop machines.)
+
+say where.
+
+
+
+Restart the server for this change to take effect.
+
+
+<h2> Enabling Secure Communication to Tomcat Via SSL Encryption </h2>
+
+Using digest passwords eliminates the problem of storing passwords in clear text.
+But it does not address the possibility of snooping on a connection to the server.
+By enabling SSL on the server we require clients to SSL encode their requests.
+This prevents network sniffers from acquiring sensitive information.
+
+<p>
+Besides encoding information sent to the server, the SSL protocol also requires
+    that the server authenticate to the client.  This is to prevent a spoof from
+    pretending to be a trusted server and fraudulently obtaining sensitive
+    information.  For this reason, to enable SSL it is first necessary to create
+    an SSL certificate for the server.  This is a credential that is passed to
+    the client upon initiating a connection that certifies the servers identity.
+    Among trusted sites, it is sufficient for the server to send a "self-signed"
+    certificate, the creation of which is described here.  If you are interested
+    in using more secure certificates, see the Section called Installing a
+    Certificate from a Certificate Authority in Section X.
+
+
+<h3>Creating a Self-Signed Certificate </h3>
+
+To create a self-signed certificate, you must first create a â€œkeystoreâ€ file
+where certificates are stored.  Java provides a tool, called keytool, that
+generates a self-signed certificate and puts in a keystore file.  The default
+keystore filename is ${user_home}/.keystore.  However, this example will use
+the filename ${tomcat_home}/conf/keystore-tomcat.
+
+<p>
+To create a self-signed certificate and store it in
+    ${tomcat_home}/conf/keystore-tomcat, execute this command:
+<p>
+    <code>
+/usr/java/jdk1.5.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore $HOME/conf/keystore-tomcat
+</code>
+
+<p>
+You will receive this series of questions:
+
+<pre>
+
+Enter keystore password:  changeit
+
+What is your first and last name?
+
+  [Unknown]:  localhost
+
+What is the name of your organizational unit?
+
+  [Unknown]:  tomcat server
+
+What is the name of your organization?
+
+  [Unknown]:  Anne's Home
+
+What is the name of your City or Locality?
+
+  [Unknown]:  Boulder
+
+What is the name of your State or Province?
+
+  [Unknown]:  Colorado
+
+What is the two-letter country code for this unit?
+
+  !
+
+ [Unknown]:  US
+
+Is CN=localhost, OU=tomcat server, O=Anne's Home, L=Boulder, ST=Colorado, C=US correct?
+
+  [no]:  yes
+
+
+
+Enter key password for <&lttomcat>
+
+        (RETURN if same as keystore password):
+
+</pre>
+
+<p>
+Say more here: â€œchangeitâ€, hostname, validity option, etc.
+
+<p>
+Exercise: Create the keystore file.
+
+
+<h3> Configure Tomcat to Use SSL Encryption     </h3>
+
+Next, it is necessary to configure the tomcat server to use this new keystore file.  This requires a modification to the Tomcat configuration file ${tomcat_home}/conf/server.xml.   A small section on server.xml here?
+
+<p>
+In that file find the Connector element that uses port 8443, the SSL port.  Ensure that that Connector XML element is not commented out.  Also, to that element add the ?argument? keystoreFile and optionally the argument keystorePass if you are no longer using the default password so that it looks similar to this:
+
+<!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 -->
+
+
+  <Connector port="8443"
+
+    maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+
+    enableLookups="false" disableUploadTimeout="true"
+
+    acceptCount="100" debug="0" scheme="https" secure="true"
+
+    clientAuth="false" sslProtocol="TLS"
+
+    keystoreFile="${keystore_filename}"
+
+    keystorePass="mypassword"/>
+
+from begonia:
+
+<!-- Define a SSL HTTP/1.1 Connector on port 8443 -->
+
+  <Connector port="8443" maxHttpHeaderSize="8192"
+
+    maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+
+    enableLookups="false" disableUploadTimeout="true"
+
+    acceptCount="100" scheme="https" secure="true"
+
+    clientAuth="false" sslProtocol="TLS"
+
+    keystoreFile="/opt/tomcat/conf/keystore-tomcat" />
+
+<p>
+Finally, restart the Tomcat server to pick up these changes.
+
+<p>
+Exercise: configure Tomcat to use SSL.  Restart Tomcat, and connect via your browser.
+
+
+    Other Tomcat Security Resources
+
+<p>
+In any case, we strongly recommend that you also read and follow the Tomcat/TDS Security guidelines.
+
+Higher Security: You can also use an LDAP server or a Database to store users and roles, which may give you higher levels of security. Use of this feature is beyond the scope of this documentation, however.
+Leftover Stuff To Consider
+Checking that the correct ports are enabled
+
+After restarting Tomcat, you can use netstat -an command to check that the ports are correctly configured. You should see lines like:
+
+  TCP    127.0.0.1:8080         0.0.0.0:0              LISTENING
+
+  TCP    127.0.0.1:8443         0.0.0.0:0              LISTENING
+
+You also need to make sure that your firewall is allowing those ports through.
+TroubleShooting
+
+    * Connection refused when trying to access a restricted page. The SSL socket is not enabled in the server.xml file, or you didn't install a certificate in the keystore.
+    * What's in the keystore?
+          o Look at the Tomcat Server Status page and check the JVM Version.
+          o From command line, make sure that this matches the results of 'java -version'. If not, then your Tomcat server is starting up with a different JVM.
+          o From command line, 'keytool -list' will show you what's in the default keystore. Standard is to have password changeit. You need an entry named tomcat.
+
+Running without SSL
+
+If you are on a secure network, and don't want to run with SSL enabled, edit ${tomcat_home}webapps/thredds/WEB-INF/web.xml and change all instances of CONFIDENTIAL to NONE.
+
+Password authentication will then be done without SSL encryption. You will have to repeat this whenever you reinstall or upgrade thredds.war.
+Resources
+
+    * Tomcat SSL Configuration
+    * Java Secure Sockets Extension (JSSE) Reference Guide
+    * JDK keytool application
+
+This document is maintained by Anne Wilson and was last updated on July 18, 2007
+
+
+
+
+
+
+
+<hr width="100%">
+<strong><br>
+</strong>
+<address>
+<img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was last updated on July 23, 2007. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.<br>
+
 </address>
 
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>&nbsp;
-</p>
+<p>&nbsp;</p>
 
-</div>
-
-</body>
-
-</html>
+</body></html>
