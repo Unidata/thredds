@@ -33,7 +33,7 @@
   &lt;user username=&quot;tiggeUser&quot; password=&quot;flabulate&quot; roles=&quot;<strong>tiggeData,restrictedDatasetUser</strong>&quot;/&gt;
   &lt;user username=&quot;luci&quot; password=&quot;designated&quot; roles=&quot;<strong>fieldProject,tiggeData,restrictedDatasetUser</strong>&quot;/&gt;
 </pre>
-<p>Make sure that none of these <strong>restrictedDatasetUsers</strong> have any of the &quot;secure&quot; roles such as <em>tdsConfig, manager, </em>or<em> admin</em>. (Here's <a href="../tutorial/TomcatSecurity.html#Seperate">why</a>). In this example we are storing passwords in cleartext, but you are advised to <a href="../tutorial/TomcatSecurity.html#Digest">store passwords in digest form</a>.</p>
+<p>Make sure that none of these <strong>restrictedDatasetUsers</strong> have any of the &quot;secure&quot; roles such as <em>tdsConfig, manager, </em>or<em> admin</em>. (Here's <a href="TomcatSecurity.html#Seperate">why</a>). In this example we are storing passwords in cleartext, but you are advised to <a href="TomcatSecurity.html#Digest">store passwords in digest form</a>.</p>
 <p>You can also manage users and roles with the tomcat admin application, if you have<a href="http://wiki.apache.org/tomcat/HowTo#head-f50555909547d981d0e2b030323632b26047013e"> installed it</a>. </p>
 <p><strong>4</strong>. In the TDS configuration catalogs, add <strong>restrictAccess=<em>{security role}</em></strong>  attributes to the <strong>dataset</strong> or <strong>datasetScan</strong> elements. This will also restrict access to all children of those dataset. Example: </p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -69,8 +69,8 @@
 <h2><a name="SSL"></a>Requiring SSL authentication </h2>
 <p>To require authentication to be done over <a href="http://en.wikipedia.org/wiki/SSL">SSL</a>, do everything in the default configuration above, plus the following: </p>
 <h3>1. Enable Tomcat Security / SSL </h3>
-<p>You must  <a href="../tutorial/RemoteManagement.html#SSL">enable Secure Sockets</a>. See the <a href="../tutorial/RemoteManagement.html">TDS Remote Management</a> guide.</p>
-<p>We also recommend that you <a href="../tutorial/TomcatSecurity.html#Digest"> store Digest Passwords</a>. See the <a href="../tutorial/TomcatSecurity.html">Tomcat Security</a> guide. </p>
+<p>You must  <a href="RemoteManagement.html#SSL">enable Secure Sockets</a>. See the <a href="RemoteManagement.html">TDS Remote Management</a> guide.</p>
+<p>We also recommend that you <a href="TomcatSecurity.html#Digest"> store Digest Passwords</a>. See the <a href="TomcatSecurity.html">Tomcat Security</a> guide. </p>
 <h3>2. Modify the TDS web.xml file </h3>
 <p>After <em>thredds.war</em> is expanded, edit <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml</strong>.</p>
 <p><strong>2.1</strong> Find the following element: </p>
@@ -102,7 +102,7 @@
 <h3>3. Restart Tomcat and Test</h3>
 <h4>Troubleshooting:</h4>
 <ul>
-  <li>Your browser may tell you that your server certificate has expired. <a href="../tutorial/RemoteManagement.html#SSL">Create a new one</a>, and restart Tomcat.</li>
+  <li>Your browser may tell you that your server certificate has expired. <a href="RemoteManagement.html#SSL">Create a new one</a>, and restart Tomcat.</li>
 </ul>
 <h2>Unique Realm Name </h2>
  <p>If you are not using SSL, it is more secure to have a  Realm name unique to your server, then to use the default <em>THREDDS Data Server</em> Realm name, so we recommend that you change it in the web.xml file. This name is presented to the user during authentication, so it should be descriptive and include the hostname, for example:</p>

@@ -19,19 +19,24 @@ john	 10742 Apr 26 16:42 indexOld.html
 
 reference
 
++john	  	  1868 Jul 10 13:10 index.html
++*john	  2520 May 18 16:54 AccessLog.html
+john	  3626 May 18 16:54 CatalogConfiguration.html  	// incomplete
+john	   16369 Oct 29  2006 CatalogPrimer.html		// ??
++ethan	   24005 May 18 16:54 DatasetScan.html
++john		  3985 Feb 15 10:33 DatasetSource.html
++john		  8209 Apr  3 18:59 HTTPsecurityChallenge.html
+john	 23906 Feb 13 17:44 Paths.html	   		// should be internal ??
++*john	 11770 Jun  6 16:54 PluggableRestrictedAccess.htm
++*john	 11240 Apr 27 17:37 RestrictedAccess.html
+john	   14280 Apr 12 17:49 TDSConfiguration.html
 +*john	 13295 Jul 24 19:37 ThreddsConfigXMLFile.html
 +*john	  6749 Jul 24 19:22 threddsConfig.xml.txt
 +ethan	  3917 Jul 10 13:10 TomcatBehindProxyServer.html
-+john	  	  1868 Jul 10 13:10 index.html
-+*john	 11770 Jun  6 16:54 PluggableRestrictedAccess.htm
-+*john	  2520 May 18 16:54 AccessLog.html
-john	  3626 May 18 16:54 CatalogConfiguration.html  	// incomplete
-+*john	 11240 Apr 27 17:37 RestrictedAccess.html
-+john		  8209 Apr  3 18:59 HTTPsecurityChallenge.html
-+john		  3985 Feb 15 10:33 DatasetSource.html
-john	 23906 Feb 13 17:44 Paths.html	   // should be internal ??
-john	  3962 Feb 13 15:49 NetcdfServer.html // deprecated
++john	        7965 Jan 31 15:14 Viewers.html
 +john		  8563 Jul  5  2006 WCS.html          
+
+john	  3962 Feb 13 15:49 NetcdfServer.html // deprecated
 
 
 tutorial
@@ -48,12 +53,9 @@ robb	       0 Jun 28 16:48 docTomcat
 robb	       0 Jun 28 16:48 IDDconfig
 john	    3194 Jun 28 09:26 index.html
 ethan	    2188 Jun 19 17:46 DigitalLibraries.html
-ethan	   24005 May 18 16:54 DatasetScan.html
 john	   12467 Apr 27 17:37 TomcatSecurity.html
-john	   14280 Apr 12 17:49 TDSConfiguration.html
 john	   14261 Apr 12 17:25 RemoteManagement.html
 *john	   12922 Apr  2 16:23 NcML.htm
-*john	    7965 Jan 31 15:14 Viewers.html
 john	       0 Jan 29 16:52 TomcatTraining
 ethan	   10559 Jan 19  2007 EnhancedCatalogs.html
 john	    5212 Dec 19  2006 TomcatFAQ.html
@@ -71,7 +73,6 @@ john	     315 Nov  9  2006 Debug.html			// ?? internal ??
 *john	    3652 Nov  6  2006 TroubleShooting.html
 ethan	    6094 Oct 30  2006 MetadataExtraction.html
 ethan	    1916 Oct 30  2006 MetadataStandards.html
-john	   16369 Oct 29  2006 CatalogPrimer.html
 ethan	    1846 Oct 29  2006 CatalogGen.html
 ethan	  165631 Oct 29  2006 catGenServlet.png
 ?	     857 Oct 28  2006 exampleTDScatalog.xml

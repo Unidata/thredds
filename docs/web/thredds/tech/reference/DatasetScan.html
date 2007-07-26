@@ -4,8 +4,8 @@
   
   <meta content="Ethan Davis" name="author"></head>
 <body>
-<h1>TDS Config - datasetScan</h1>
-
+<h1><img src="../images/unidataLogo.png" width="73" height="75">Configuring TDS with DatasetScan</h1>
+<hr>
 <p>The <b>datasetScan</b> element specifies the data locations that the
 TDS will scan for datasets when generating catalogs. It also specifies
 which URLs will point to the data in those directories.<br>
@@ -423,5 +423,9 @@ determine the time coverage: </p>
 <p><a name="sample3"></a>Catalog with dataset size added:<br>
 </p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>    &lt;sort&gt;<br>      &lt;lexigraphicByName increasing="false" /&gt;<br>    &lt;/sort&gt;<br>    &lt;addDatasetSize/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
+<hr width="100%">
+<address>
+<img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:edavis@unidata.ucar.edu">Ethan Davis</a> and was last updated on July 25, 2007
+</address>
 <p></p>
 </body></html>
