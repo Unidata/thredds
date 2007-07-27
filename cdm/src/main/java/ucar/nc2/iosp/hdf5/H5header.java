@@ -535,9 +535,9 @@ class H5header {
   private Map<Long, GlobalHeap> heapMap = new HashMap<Long, GlobalHeap>();
 
   class HeapIdentifier {
-    int nelems; // "number of 'base type' elements in the sequence in the heap"
-    long heapAddress;
-    int index;
+    private int nelems; // "number of 'base type' elements in the sequence in the heap"
+    private long heapAddress;
+    private int index;
 
     HeapIdentifier(long address) throws IOException {
       // header information is in le byte order
@@ -562,6 +562,47 @@ class H5header {
       for (GlobalHeap.HeapObject ho : gheap.hos) {
         if (ho.id == index)
           return ho;
+      }
+      throw new IllegalStateException("cant find HeapObject");
+    }
+
+  } // HeapIdentifier
+
+  class RegionReference {
+    private long heapAddress;
+    private int index;
+
+    RegionReference(long fileOffset) throws IOException {
+      // header information is in le byte order
+      raf.order(RandomAccessFile.LITTLE_ENDIAN);
+      raf.seek(fileOffset);
+      heapAddress = readOffset();
+      index = raf.readInt();
+
+      GlobalHeap gheap;
+      if (null == (gheap = heapMap.get(heapAddress))) {
+        gheap = new GlobalHeap(heapAddress);
+        heapMap.put(heapAddress, gheap);
+      }
+
+      GlobalHeap.HeapObject want;
+      for (GlobalHeap.HeapObject ho : gheap.hos) {
+        if (ho.id == index) {
+          want = ho;
+          System.out.println(" found ho="+ho);
+ /* - The offset of the object header of the object (ie. dataset) pointed to (yes, an object ID)
+    - A serialized form of a dataspace _selection_ of elements (in the dataset pointed to).
+    I don't have a formal description of this information now, but it's encoded in the H5S_<foo>_serialize() routines in
+    src/H5S<foo>.c, where foo = {all, hyper, point, none}.
+    There is _no_ datatype information stored for these sort of selections currently. */
+          raf.seek(ho.dataPos);
+          long objId = raf.readLong();
+          DataObject ndo = findDataObject(objId);
+          String what = (ndo == null) ? "none" : ndo.getName();
+          System.out.println(" objId="+objId+" DataObject= "+what);
+
+          return;
+        }
       }
       throw new IllegalStateException("cant find HeapObject");
     }
@@ -2382,6 +2423,18 @@ class H5header {
       v.setCachedData(newData, true); // so H5iosp.read() is never called
       v.addAttribute( new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
     }
+
+    if (transformReference && (ndo.mdt.type == 7) && (ndo.mdt.referenceType == 1)) { // region reference
+
+      int nelems = (int) v.getSize();
+      int heapIdSize = 12;
+      for (int i=0; i< nelems; i++) {
+        H5header.RegionReference heapId = new RegionReference(vinfo.dataPos + heapIdSize*i);
+      }
+
+      v.addAttribute( new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
+    }
+
 
     // debugging
     vinfo.setOwner(v);
