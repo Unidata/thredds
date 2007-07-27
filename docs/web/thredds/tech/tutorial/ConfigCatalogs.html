@@ -1,15 +1,167 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>TDS Configuration - datasetScan</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>TDS Configuration Catalogs</title>
   
   <meta content="Ethan Davis" name="author"></head>
 <body>
 <h1>TDS Configuration Catalogs</h1><br>
 <hr size="2" width="100%">
 <h2>Overview</h2>
-<h2><code>service</code> Element</h2>
+<p>THREDDS catalogs were originally designed as simple catalogs of
+remote datasets. They associated human-readable names with data access
+URLs and allowed both a hierarchical organization and the addition of
+metadata. Thus providing client applications with information for
+accessing remote datasets (as we saw earlier with the ToolsUI and IDV
+applications). [More information is available from the THREDDS catalog <a href="../reference/CatalogPrimer.html">primer</a> and <a href="../catalog/v1.0.2/InvCatalogSpec.html">specification document</a>.]<br>
+</p>
+<p>In this section, we will take a look at the extensions to THREDDS
+catalogs that allow the TDS to use them for configuration. We call
+catalogs that use these extensions <strong>TDS Configuration Catalogs</strong> or <strong>Server-side Catalogs</strong>.
+They represent the top-level catalogs the TDS will serve, contain
+information detailing the datasets the TDS will serve, and indicate
+which services will be available for each dataset. All the
+configuration information is only needed by the server and is removed
+or transformed for the client view of the catalog.<br>
+</p>
+<h2><code></code></h2>
+<hr size="2" width="100%">
+<h2>Serving Datasets<br>
+</h2>
+<p>In a client-side catalog, an access URL can be constructed for a dataset if the dataset: 1) references a <code>service</code> element, and 2) has a <code>urlPath</code> attribute or <code>access</code> child element. The <code>service</code> element provides a way to factor out access information from <code>dataset</code> elements.<br>
+</p>
+<p>To handle a data access request, the TDS needs enough configuration
+information so that it can map an incoming request URL to a location on
+local disk. In the TDS configuration files, the <code>datasetRoot</code> and <code>datasetScan</code> elements perform this function.<br>
+</p>
+<h3>Associating a Dataset with a <code>service</code> Element<code></code></h3>
+
+<p>Looking at our main TDS config catalog, <code>catalog.xml</code>:<br>
+</p>
+
+<pre><strong>(1)</strong>  &lt;service name="<strong>thisDODS</strong>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>     ...<br><br><strong>(2a)</strong> &lt;dataset name="Test Single Dataset" ID="testDataset" <strong>serviceName="thisDODS"</strong><br><strong>(3a)</strong>          <strong>urlPath="test/testData.nc"</strong> /&gt;<br><br>     &lt;datasetScan name="NCEP GFS models" ID="model/NCEP/GFS"<br><strong>(3b)</strong>              <strong>path="model/NCEP/GFS"</strong> location="<code>/data/ldm/pub/native/grid/NCEP/GFS</code>"&gt;<br><br>       &lt;metadata inherited="true"&gt;<br><strong>(2b)</strong>     <strong>&lt;serviceName&gt;thisDODS&lt;/serviceName&gt;</strong><br>       &lt;/metadata&gt;<br><br>       ...<br>     &lt;/datasetScan&gt;<br></pre>
+
+<p>The service is defined at (1) with the name "thisDODS". The service is referenced at (2a) and (2b) using the <code>serviceName</code> attribute and element, respectively. Notice that the reference at (2b) is in an inherited <code>metadata</code> element which means any descendant <code>dataset</code>
+elements would also reference this service. The second part of making a
+dataset accessible is to specify the dataset URL that gets appended to
+the service base URL. In the above example, this is done at (3a) and
+(3b). Though (3b) is in a server-side <code>datasetScan</code> element so gets expanded when catalog requests are made to the server.<br>
+</p>
+<h3><code>datasetRoot</code> Element</h3>
+<p>The datasetRoot element provides a mapping between a request URL and data location that can be used with individual datasets.<br>
+</p>
+<p>Revisiting our current TDS configuration catalog:<br>
+</p>
+<pre>     &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><strong>(1)</strong>  &lt;datasetRoot path="<strong>test</strong>" location="content/testdata/"/&gt;<br><br>     &lt;dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS"<br><strong>(2)</strong>           urlPath="<strong>test</strong>/testData.nc"/&gt;<br></pre>
+<p>We can see that the dataset has an OPeNDAP access URL of <code>/thredds/dodsC/test/testData.nc</code>
+constructed from the service base URL and the dataset url path. The
+datasetRoot element defines the request URL segment ("test") that it is
+associating with the a location on local disk ("content/testdata/"
+which is a special shortcut to <code>${TOMCAT_HOME}/content/thredds/public/testdata/</code>).&nbsp; The TDS knows that the dataset uses the datasetRoot element because the <code>dataset</code> <code>urlPath</code> (2) starts with the <code>datasetRoot</code> <code>path</code> (1). <br>
+</p>
+<p>Let's try an example<br>
+</p>
+<ol>
+  <li>Take a look in the /data directory to find a single file to serve:</li>
+  <ul>
+    <li><code>ls /data</code></li>
+    <li><code>ls /data/idv</code></li>
+    <li><code>ls /data/idv/trajectory</code></li>
+    <li><code>cd ${TOMCAT_HOME}/content/thredds</code></li>
+    <li><code>vi catalog.xml</code></li>
+  </ul>
+  <li>Change the <code>datasetRoot</code> to point to the <code>/data/idv/trajectory</code> directory</li>
+  <li>Change the <code>dataset</code> to reference the trajectory data file.</li>
+  <li>Reinit the TDS</li>
+  <ul>
+    <li>URL: <a href="http://localhost:8080/thredds/debug"><code>http://localhost:8080/thredds/debug</code></a></li>
+    <li>In the "Catalogs" section, select "Reinitialize"</li>
+  </ul>
+  <li>Browse the catalog again</li>
+  <ul>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
+  </ul>
+</ol>
+<p>Note: Remember the value of the <code>location</code> attribute must be an absolute path (except for the special case of the "content" shortcut).<br>
+</p>
+<h3><code>datasetScan</code> Element</h3>
+<h3><code>service</code> Element<br>
+</h3>
+<p>The TDS provides the following dataset services:<br>
+</p>
+<ul>
+  <li>OPeNDAP,</li>
+  <li>HTTP bulk file downloads, and</li>
+  <li>WCS.</li>
+</ul>
+<p>The URLs to access these services start with the TDS <em>context name</em> ("thredds") and the appropriate <em>servelet name</em> (e.g., "dodsC"). Because of this, the <code>base</code> attribute of the corresponding <code>service</code> elements must be exactly as follows:<br>
+</p>
+<p><strong>OPeNDAP server</strong>: </p>
+
+  
+<pre>  &lt;service name="ncdods" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
+
+  
+<p><strong>HTTP bulk file server </strong>: </p>
+
+  
+<pre>  &lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> /&gt;</pre>
+
+  
+<p><strong>WCS Server </strong>: </p>
+
+  
+<pre>  &lt;service name="wcsServer" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" /&gt;</pre>
+<p>You can use whatever name you choose for the service, they only needs to match the ones used in the dataset <code>serviceName</code>. Note that the base URLs are relative, so your catalogs are independent of your server hostname and port.<br>
+</p>
+<br>
+<h3>Serving Datasets with Multiple Methods</h3>
+<p>Datasets can be made available through more than one access method by defining and then referencing a <strong>compound</strong> <code>service</code> element. For instance:<code></code><code></code><br>
+</p>
+<pre><strong>   </strong>  &lt;service name="<strong>multiService</strong>" serviceType="Compound" base="" &gt;<br><strong>   </strong>    &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>       &lt;service name="wcsServer" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>     &lt;/service&gt;<br></pre>
+<p>defines a compound service named "multiService" which contains two
+nested services. Any dataset that reference the compound service will
+have two access methods. So the dataset:<br>
+</p>
+<pre>    &lt;dataset name="cool data" serviceName="multiService" urlPath="so/cool/data.nc" /&gt;<br></pre>
+<p>would have these two access URLs:<br>
+</p>
+<ul>
+  <li><code>/thredds/dodsC/so/cool/data.nc</code></li>
+  <li><code>/thredds/wcs/so/cool/data.nc</code><br>
+  </li>
+</ul>
+<h3>Example: Add WCS service to GFS model data<br>
+</h3>
+<ol>
+  <li>Add a WCS service to our current OPeNDAP only GFS model data</li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li>
+    <li><code>vi catalog.xml</code></li>
+  </ul>
+  <li>Change the existing OPeNDAP service to a compound service similar to the one above</li>
+  <li>Restart tomcat</li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/bin</code></li>
+    <li><code>./shutdown.sh</code></li>
+    <li><code>./startup.sh</code></li>
+  </ul>
+  <li>Browse the catalog again</li>
+  <ul>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
+  </ul>
+</ol>
+
+<h2><code></code></h2>
+<hr size="2" width="100%">
 <h2><code>datasetRoot</code> Element</h2>
+<p>overview: what is it, how to use it<br>
+example: browse /data/idv and find an individual file add datasetRoot and dataset for that data file<br>
+</p>
+
+<h2><code></code></h2>
+<hr size="2" width="100%">
 <h2><code>datasetScan</code> Element</h2>
+
 <br>
 <br>
 <br>

@@ -117,7 +117,7 @@ Let's change it and see what happens:<br>
     <li><code>./shutdown.sh</code></li>
     <li><code>./startup.sh</code></li>
   </ul>
-  <li>Look at catalogErrors.log file<br>
+  <li>Look at <code>catalogErrors.log</code> file<br>
 </li><li>Browse the catalog again</li>
 
   <ul>
@@ -130,7 +130,7 @@ locate your data on a seperate disk partition from your configuration.<br>
 </p>
 <p> </p>
 
-<h3>Example: Add NCEP GFS Alaska 191km model data</h3>
+<h3>Example: Add NCEP GFS model data</h3>
 <p>Let's modify the main TDS configuration catalog to include some model data.<br>
 </p>
 <ol>
@@ -139,11 +139,12 @@ locate your data on a seperate disk partition from your configuration.<br>
     <li><code>cd ${TOMCAT_HOME}/content/thredds</code></li>
     <li><code>vi catalog.xml</code></li>
   </ul>
-  <li>Change the <code>datasetScan</code> element <code>location</code> attribute value to <code>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</code></li>
+  <li>Change the <code>datasetScan</code> element <code>location</code> attribute value to <code>/data/ldm/pub/native/grid/NCEP/GFS</code></li>
   <li>Change the <code>name</code>, <code>ID</code> and other items as appropriate. Does the filter pattern need to be changed?</li>
   <ul>
-    <li><code>ls /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</code></li>
-    <li>Yes, change it to "<code>GFS_*</code>" or "<code>GFS_*.grib1</code>"</li>
+    <li><code>ls /data/ldm/pub/native/grid/NCEP/GFS</code></li><li><code>ls /data/ldm/pub/native/grid/NCEP/GFS/*</code></li>
+
+    <li>Change the filter pattern to something like <code></code> "<code>GFS*.grib1</code>"</li>
   </ul>
   <li>Restart Tomcat so the TDS is reinitialized:</li>
   <ul>
@@ -151,7 +152,7 @@ locate your data on a seperate disk partition from your configuration.<br>
     <li><code>./shutdown.sh</code></li>
     <li><code>./startup.sh</code></li>
   </ul>
-  <li>Brows the catalog again</li>
+  <li>Browse the catalog again</li>
   <ul>
 <li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
   </ul>
@@ -168,10 +169,11 @@ we can serve:<br>
     <li>Webstart URL: <code><a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp">http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp</a></code></li>
   </ul>
   <li>Browse under the <code>/data</code> directory for a collection of datasets</li>
-  <li>Edit main TDS configuration catalog as above<br>
-  </li>
-</ol>
-<h3>View catalogs and datasets in ToolsUI and/or IDV</h3>
+  <li>Edit main TDS configuration catalog as above</li>
+</ol><br>
+<hr size="2" width="100%">
+<h2>View catalogs and datasets in ToolsUI and/or IDV</h2>
+
 <ol>
   <li>Open ToolsUI or IDV:</li>
   <ul>
