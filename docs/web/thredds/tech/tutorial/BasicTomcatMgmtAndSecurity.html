@@ -21,10 +21,12 @@ and that you have an environment variable TOMCAT_HOME set to this value.
 
     If the system indicates that the variable is not set, recall that you can
     set this variable in any window at any time by executing the command:
-</p>
+<p>
 <code> set TOMCAT_HOME /home/workshop/tds/apache-tomcat-6.0.13  </code>
-
-
+<p>
+(This command works under the UNIX bash shell, which is the shell running on
+our workshop machines.  You may need to use a different command if running
+under some other shell.)
 
 
 <a name="ImportantDirs" />
@@ -117,10 +119,10 @@ be served by tomcat.  This includes TDS catalogs.
 The <code><b>conf</b></code> directory holds files used to configure Tomcat.
 In this document we will focus on the files <code>tomcat-users.xml</code> and <code>server.xml</code>.
 <p>
-<code>tomcat-users.xml</code> holds information about users of the application served by
+<code>tomcat-users.xml</code> contains information about users of the application served by
 tomcat.  It holds user names, passwords, and defines user <q>roles</q>, which can used
 to limit access to various pieces of functionality of a application.  It is discussed
-further below
+further <a href="#Tomcat Manager"> below</a>.
 <p>
 
 
@@ -146,7 +148,8 @@ A <code>Service</code> element is a nested element with the <code>Server</code>
 file name of <q>catalina.out</q>.)
 
 
-<h4> Ports, Configured Via the Server and Some Connector Elements </h4>
+<h4> Ports, Configured Via the Server and Connector Elements </h4>
+
 Tomcat listens for requests on port 8080 (which is why your local Tomcat
 splash page can be reached via
 <a href="http://locahost:8080/"> http://locahost:8080/</a>).  This is set
@@ -231,17 +234,15 @@ This produces log entries that look like this:
 
  <h4> User Names and Passwords, Configured Via Realm Elements </h4>
 
-A <code>Realm</code> is a <q>database</q> of usernames and passwords that identify valid users
-of a web application (or set of web applications), plus an enumeration of the
-list of roles associated with each valid user. You can think of roles as similar
-to groups in Unix-like operating systems, because access to specific web
-application resources is granted to all users possessing a particular role
-(rather than enumerating the list of associated usernames). A particular user
-can have any number of roles associated with their username.
-
+Realms allow the protected resources on a server to be partitioned into a set of 
+protection spaces, each with its own authentication scheme and/or authorization
+database.
+A Tomcat <code>Realm</code> is implemented as a <q>database</q> of usernames and
+    passwords that identify valid users of a web application or set of web
+    applications. </p>
 <p>
-    We will use <code>Realm</code> elements below in configuring Tomcat to
-    use digested passwords.
+We will use <code>Realm</code> elements below in configuring Tomcat to
+use digested passwords.
 
 
 
@@ -278,7 +279,7 @@ TDS management.
 
 
 
-<h3> The Tomcat Manager </h3>
+<a name="Tomcat Manager" /><h3> The Tomcat Manager </h3>
 
 The Tomcat Manager is an application that allows users to deploy, undeploy, or
 reload an application such as the TDS without having to shut down and restart tomcat.
@@ -312,7 +313,13 @@ Each <code>&lt;user&gt;</code> entry defines the user name, password, and roles 
 that user. In this example there is one role defined, <q>tdsConfig</q>.  There
 is also one user, <q>Anne</q>, with the password <q>secret</q> and she is
 assigned the role <q>tdsConfig</q>.
-
+<p>
+    You can think of roles as similar
+to groups in Unix-like operating systems, because access to specific web
+application resources is granted to all users possessing a particular role
+(rather than enumerating the list of associated usernames). A particular user
+can have any number of roles associated with their username.
+</p>
 <p>
     When a user
     attempts to access a protected resource for the first time, Tomcat will challenge
@@ -388,64 +395,91 @@ role, which is a predefined role in Tomcat.
 
 By default, Tomcat expects user passwords to be stored in clear text.  As you can
 imagine, this is not very secure.  Tomcat also supports digested passwords, a type
-of encoding, but it must configured to use them.   This configuration is done in the
-Tomcat configuration file <code>${TOMCAT_HOME}/conf/server.xml</code>.
-
+of encoding, but it must configured to use them.  Then, when a
+client (like Firefox) makes a request, Tomcat will tell the client that a digested
+    password is required. Based on this dialog, the client
+    will automatically digest the password entered by the user.
 <p>
     There are several digest algorithms.  Here we will use the SHA (Secure Hash
     Algorithm) algorithm.
 
-<p>
-    In addition to configuring Tomcat to expect digested passwords,
-    it is also necessary to create and store the digested passwords.  Tomcat provides
-    a script, <code>digest.sh</code>, that creates a digested version of a password.  You must
-    then copy the digested version into <code>tomcat-users.xml</code> in place of the clear text
-    password.
-
-<p>
-    Tomcat will request that a browser client like Firefox provide a digested password.
-    The client must digest the password using the same algorithm as .  Your browser
-    will do this automatically.
 
 
 
 <h3> Configuring Tomcat to Use Digested Passwords </h3>
-In
-<p>
-We must edit
-<code>server.xml</code> in order to tell Tomcat to use digested passwords.
-    The Tomcat distribution comes with this Realm enabled:
-    <pre>
+There are three steps to configuring Tomcat use digested passwords:
+<ol>
+    <li> Configure <code>server.xml</code> to use digested passwords</li>
+    <li> Create the digested passwords and put them in <code>tomcat-users.xml</code></li>
+    <li> Restart Tomcat</li>
+</ol>
+<h4> Configure <code>server.xml</code> to Use Digested Passwords</h4>
 
-           <!-- This Realm uses the UserDatabase configured in the global JNDI
-           resources under the key "UserDatabase".  Any edits
-           that are performed against this UserDatabase are immediately
-           available for use by the Realm.  -->
-      &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-             resourceName="UserDatabase"/&gt;
-
-</pre>
-We will not use this Realm and instead provide our own using the Tomcat
-<q>MemoryRealm</q>... WORKING HERE.
-<p>
-
-
-
-    You must add a <q>digest</q> attribute to
-    &lt;Realm&gt; element, like this:
+    The Tomcat distribution comes with this Realm enabled in <code>server.xml</code>:
 <pre>
-&lt;Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA" /&gt;
+
+      &lt;!-- This Realm uses the UserDatabase configured in the global JNDI
+      resources under the key "UserDatabase".  Any edits
+      that are performed against this UserDatabase are immediately
+      available for use by the Realm.  --/&gt;
+      &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+             resourceName="UserDatabase"&gt;
+
+</pre>
+We will not use this Realm and instead create a new one using the Tomcat
+<q>MemoryRealm</q>.  Find the above Realm definition in <code>server.xml</code>,
+comment it out, and add this new Realm:
+<pre>
+      &lt;Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA" /&gt;
 </pre>
 <p>
-    (Find where this is on the workshop machines.)
+The result should look something like this:
+<pre>
+      &lt;!--Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+             resourceName="UserDatabase"/--/&gt;
 
-    say where.
+      &lt;!--  Added by Anne --/&gt;
+      &lt;Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA"/&gt;
+</pre>
 
+<h4> Create and Store the Digested Passwords</h4>
 
+Tomcat provides a script, <code>digest.sh</code>, that creates a digested
+version of a password.  The script takes an argument that specifies which digest algorithm
+to use.  It also takes an argument that is the password to be digested.  Here is
+an example of the command usage:
+
+<pre>
+    ${TOMCAT_HOME}/bin/digest.sh -a SHA secret
+</pre>
+This will produce output like this:
+<pre>
+    secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
+</pre>
+which shows the digested form of the password <q>secret</q>.
 <p>
-    Restart the server for this change to take effect.
+If you get output like this:
+<pre>
+    (anne) lead3: /opt/tomcat 6 % bin/digest.sh -a SHA secret
+    /opt/tomcat/bin/setclasspath.sh: line 58: [: =: unary operator expected
+    secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
+</pre>
+don&#146;t worry about the error.  The digested password is still correct.
+<p>
+You must the copy the digested password, the part to the right of the colon character,
+    into <code>tomcat-users.xml</code> in place of the clear text
+    password.
 
-
+<h4> Restart Tomcat</h4>
+    After you have modified <code>server.xml</code> and copied the digested
+    password into <code>tomcat-users.xml</code>, restart Tomcat for this change to take effect.
+<p>
+<b>Exercise:</b> Do the above for the clear text password that you added to
+    <code>tomcat-users.xml</code> earlier.  After you&#146;ve made the changes
+and restarted Tomcat, test the change by accessing the Manager application.
+The behavior of Tomcat should be the same as when you first added your password.
+You know, however, that the digested password is being used as that is what
+is stored in <code>tomcat-users.xml</code>.
 
 
 <h2> Enabling Secure Communication to Tomcat Via SSL Encryption </h2>
@@ -460,13 +494,21 @@ This prevents network sniffers from acquiring sensitive information.
     that the server authenticate to the client.  This is to prevent a spoof from
     pretending to be a trusted server and fraudulently obtaining sensitive
     information.  For this reason, to enable SSL it is first necessary to create
-    an SSL certificate for the server.  This is a credential that is passed to
-    the client upon initiating a connection that certifies the servers identity.
-    Among trusted sites, it is sufficient for the server to send a "self-signed"
-    certificate, the creation of which is described here.  If you are interested
-    in using more secure certificates, see the Section called Installing a
-    Certificate from a Certificate Authority in Section X.
+    an SSL certificate for the server, in this case Tomcat.  This is a credential that is passed to
+    the client upon initiating a connection that certifies the server&#146;s identity.
+    Among trusted sites, it is sufficient for the server to send a <q>self-signed</q>
+    certificate, the creation of which is described here.  A self-signed certificate
+    is not considered the most secure because there is no third party
+    certificate authority vouching for the site.  If you are interested
+    in using more secure certificates, see the subsection called <q>Upgrading SSL
+    security level by creating a CA (Certificate Authority) signed key</q> under
+    the Section
+    <a href="productionAdvanced.html">Production Installation - Advanced</a>.
 
+
+<p>
+    The page <a href="http://tomcat.apache.org/tomcat-4.1-doc/ssl-howto.html">SSL Configuration HOW-TO</a>
+    from the Tomcat documentation gives information about Tomcat and SSL. 
 
 <h3>Creating a Self-Signed Certificate </h3>
 
@@ -481,11 +523,18 @@ the filename ${TOMCAT_HOME}/conf/keystore-tomcat.
     ${TOMCAT_HOME}/conf/keystore-tomcat, execute this command:
 <p>
     <code>
-        /usr/java/jdk1.5.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore $HOME/conf/keystore-tomcat
+        /usr/java/jdk1.5.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore ${TOMCAT_HOME}/conf/keystore-tomcat
     </code>
+<p>
+    The arguments to this command tell <code>keytool</code> to generate a key,
+    make an entry for the keystore file identified by the alias "tomcat" (the
+    alias used by Tomcat),
+    use the RSA encryption algorithm,
+    create a certificate valid for 365 days,
+    and put it in the keystore file called <code>${TOMCAT_HOME}/conf/keystore-tomcat</code>.
 
 <p>
-    You will receive this series of questions:
+    This command will generate this series of questions:
 
 <pre>
 
@@ -501,7 +550,7 @@ What is the name of your organizational unit?
 
 What is the name of your organization?
 
-  [Unknown]:  Anne's Home
+  [Unknown]:  Anne&#146;s Home
 
 What is the name of your City or Locality?
 
@@ -513,38 +562,63 @@ What is the name of your State or Province?
 
 What is the two-letter country code for this unit?
 
-  !
-
  [Unknown]:  US
 
-Is CN=localhost, OU=tomcat server, O=Anne's Home, L=Boulder, ST=Colorado, C=US correct?
+Is CN=localhost, OU=tomcat server, O=Anne&#146;s Home, L=Boulder, ST=Colorado, C=US correct?
 
   [no]:  yes
 
 
 
-Enter key password for <&lttomcat>
+Enter key password for &lt;Anne&gt;
 
         (RETURN if same as keystore password):
 
 </pre>
 
 <p>
-    Say more here: <q>changeit</q>, hostname, validity option, etc.
+    The default <code>keytool</code> password is <q>changeit</q>.  You must use this same
+    password for both the keystore password and the key password for tomcat.
+    Although it's not obvious, the <q>first and last name</q> should be the name of the server host machine.
 
 <p>
+    Note: The above output was generated when keytool was run as special user "tomcat".
+In the context of this workshop we are running as user "workshop" so your output
+will reflect that difference.
+</p>
+    <p>
     Exercise: Create the keystore file.
 
 
 <h3> Configure Tomcat to Use SSL Encryption     </h3>
 
-Next, it is necessary to configure the tomcat server to use this new keystore file.  This requires a modification to the Tomcat configuration file ${TOMCAT_HOME}/conf/server.xml.   A small section on server.xml here?
+Next, it is necessary to configure the tomcat server to use this new keystore file.
+This requires another modification to <code>server.xml</code>.  In
+<code>server.xml</code>  we will
+<ol>
+    <li>Redirect requests to port 8080 to port 8443, the secure port</li>
+    <li>Create a Connector for port 8443</li>
+</ol>
+<p>
+    To redirect requests to port 8443, find the Connector that uses port
+    8080.
 
 <p>
-    In that file find the Connector element that uses port 8443, the SSL port.
+    In <code>server.xml</code> find the Connector element that uses port 8443,
+    the SSL port.  By default is commented out.  In a recent Tomcat installation
+    it looked like this:
+    <pre>
+    <!--Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" /-->    
+    </pre>
+
+
     Ensure that that Connector XML element is
-    not commented out.  Also, to that element add the attribute <code>keystoreFile</code> and
-    optionally the attribute <code>keystorePass</code> if you are no longer using the default password so that it looks similar to this:
+    not commented out.  Also, to that element add the attribute
+    <code>keystoreFile</code> and
+    optionally the attribute <code>keystorePass</code> if you are no longer
+    using the default password so that it looks similar to this:
 
     <!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 -->
 
@@ -605,8 +679,8 @@ After restarting Tomcat, you can use netstat -an command to check that the ports
 You also need to make sure that your firewall is allowing those ports through.
 TroubleShooting
 
-    * Connection refused when trying to access a restricted page. The SSL socket is not enabled in the server.xml file, or you didn't install a certificate in the keystore.
-    * What's in the keystore?
+    * Connection refused when trying to access a restricted page. The SSL socket is not enabled in the server.xml file, or you didn&#146;t install a certificate in the keystore.
+    * What&#146;s in the keystore?
           o Look at the Tomcat Server Status page and check the JVM Version.
           o From command line, make sure that this matches the results of 'java -version'. If not, then your Tomcat server is starting up with a different JVM.
           o From command line, 'keytool -list' will show you what's in the default keystore. Standard is to have password changeit. You need an entry named tomcat.
