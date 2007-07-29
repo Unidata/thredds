@@ -5,7 +5,7 @@
   <title>TDS Configuration Catalogs</title>
 
   
-  
+
   <meta content="Ethan Davis" name="author">
 </head>
 <body>
@@ -33,7 +33,6 @@ configuration information is only needed by the server and is removed
 or transformed for the client view of the catalog.<br>
 </p>
 
-<h2><code></code></h2>
 
 <hr size="2" width="100%">
 <h2>Serving Datasets<br>
@@ -111,10 +110,22 @@ which is a special shortcut to <code>${TOMCAT_HOME}/content/thredds/public/testd
   </ul>
 </ol>
 
-<p><strong>Note</strong>: Remember the value of the <code>location</code> attribute must be an absolute path (except for the special case of the "content" shortcut).<br>
-</p>
+
+
+
+<hr align="left" size="2" width="25%">
+<p><strong>Note</strong>: Remember the value of the <code>location</code> attribute
+must be an absolute path (except for the special case of the "content" shortcut).</p>
+
+
+<hr align="left" size="2" width="25%">
+
+
 
 <h3><code>datasetScan</code> Element</h3>
+
+
+
 
 <p>The <code>datasetScan</code> element provides a mapping between a
 base request URL and a data location that must reference an entire
@@ -126,10 +137,19 @@ requested the location directory is scanned, directories are
 represented as <code>catalogRef</code> elements and files are represented as <code>dataset</code> elements. The scanning of each subdirectory is defered till a request is made for the corresponding catalog.<br>
 </p>
 
+
+
+
 <p>Again, back to our current TDS configuraiton catalog:<br>
 </p>
 
+
+
+
 <pre><strong>   </strong>  &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>     ...<br><strong></strong>     &lt;datasetScan name="NCEP GFS models" ID="model/NCEP/GFS"<br><strong>(1) </strong>              <strong>path</strong>="model/NCEP/GFS" <strong>location</strong>="<code>/data/ldm/pub/native/grid/NCEP/GFS</code>"&gt;<br><strong>    </strong>     &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;<br>       ...<br>     &lt;/datasetScan&gt;<br></pre>
+
+
+
 
 The <code>path</code> attribute on the <code>datasetScan</code> element
 is the part of the URL that identifies this datasetScan and is used to
@@ -137,11 +157,23 @@ map data access URLs to a location on local disk. The <code>location</code>  att
 element provides the location of the dataset collection on the local
 file system (it must be a directory and should be an absolute path).<br>
 
+
+
+
 <br>
+
+
+
 
 Let's inspect the resulting catalogs:<br>
 
+
+
+
 <ol>
+
+
+
 
   <li>Look at the client-view of the catalog&nbsp; to see the <code>catalogRef</code> element that represents the data collection given by the location\</li>
   <ul>
@@ -155,10 +187,19 @@ Let's inspect the resulting catalogs:<br>
   </ul>
 </ol>
 
+
+
+
 <p>Now that we've seen the details of the resulting XML, let's look at the catalog structure generated:<br>
 </p>
 
+
+
+
 <ol>
+
+
+
 
   <li>Check out what is on disk</li>
   <ul>
@@ -171,16 +212,16 @@ Let's inspect the resulting catalogs:<br>
   </ul>
 </ol>
 
-<strong>Note</strong> that data root paths must be unique across a TDS. Because the TDS uses the set of all given path values to map URLs to
-datasets, each path value MUST be unique across all config catalogs on
-a given TDS installation. 
 
 
+<hr align="left" size="2" width="25%">
+<p><strong>Note</strong>: Data root paths must be unique across a TDS. Because the TDS
+uses the set of all given path values to map URLs to datasets, each path value MUST
+be unique across all config catalogs on a given TDS installation. Duplicates will
+cause warning messages in the <code>catalogErrors.log</code> file.</p>
 
 
-<p> </p>
-
-
+<hr align="left" size="2" width="25%"> 
 
 
 
@@ -190,91 +231,172 @@ a given TDS installation.
 <h3><code>service</code> Element<br>
 </h3>
 
+
+
+
 <p>The TDS provides the several data services including an
   OPeNDAP server, an HTTP bulk file download service, and a WCS service.</p>
+
+
+
 <p>The URLs to access these services start with the TDS <em>context name</em> ("thredds") and the appropriate <em>servelet name</em> (e.g., "dodsC"). Because of this, the <code>base</code> attribute of the corresponding <code>service</code> elements must be exactly as follows:<br>
 </p>
 
+
+
+
 <p><strong>OPeNDAP server</strong>: </p>
+
+
+
 
 
   
 <pre>  &lt;service name="ncdods" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
 
 
+
+
+
   
 <p><strong>HTTP bulk file server </strong>: </p>
+
+
+
 
 
   
 <pre>  &lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> /&gt;</pre>
 
 
+
+
+
   
 <p><strong>WCS Server </strong>: </p>
+
+
+
 
 
   
 <pre>  &lt;service name="wcsServer" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" /&gt;</pre>
 
+
+
+
 <p>You can use whatever name you choose for the service, they only needs to match the ones used in the dataset <code>serviceName</code>. Note that the base URLs are relative, so your catalogs are independent of your server hostname and port.<br>
 </p>
 
 
+
+
+
 <h3>Serving Datasets with Multiple Methods</h3>
+
+
+
 
 <p>Datasets can be made available through more than one access method by defining and then referencing a <strong>compound</strong> <code>service</code> element. For instance:<code></code><code></code><br>
 </p>
 
+
+
+
 <pre><strong>   </strong>  &lt;service name="<strong>multiService</strong>" serviceType="Compound" base="" &gt;<br><strong>   </strong>    &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>       &lt;service name="wcsServer" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>     &lt;/service&gt;<br></pre>
+
+
+
 
 <p>defines a compound service named "multiService" which contains two
 nested services. Any dataset that reference the compound service will
 have two access methods. So the dataset:<br>
 </p>
 
+
+
+
 <pre>    &lt;dataset name="cool data" serviceName="multiService" urlPath="so/cool/data.nc" /&gt;<br></pre>
+
+
+
 
 <p>would have these two access URLs:<br>
 </p>
 
+
+
+
 <ul>
+
+
+
 
   <li><code>/thredds/dodsC/so/cool/data.nc</code></li>
   <li><code>/thredds/wcs/so/cool/data.nc</code><br>
   </li>
 </ul>
 
-<h3>Example: Add WCS service to GFS model data<br>
+
+
+
+<h3>Exercise: Add WCS service to GFS model data<br>
 </h3>
 
+
+
+
 <ol>
+
+
+
 
   <li>Add a WCS service to our current OPeNDAP only GFS model data</li>
   <ul>
     <li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li>
     <li><code>vi catalog.xml</code></li>
   </ul>
-  <li>Change the existing OPeNDAP service to a compound service similar to the one above</li>
-  <li>Restart tomcat</li>
+  <li>Change the existing OPeNDAP service to a compound service similar to the one above</li><li>Reinit the TDS</li>
   <ul>
-    <li><code>cd ${TOMCAT_HOME}/bin</code></li>
-    <li><code>./shutdown.sh</code></li>
-    <li><code>./startup.sh</code></li>
+<li>URL: <a href="https://localhost:8443/thredds/debug?catalogs/reinit"><code>https://localhost:8443/thredds/debug?catalogs/reinit</code></a></li>
   </ul>
-  <li>Browse the catalog again</li>
+  <li>Check <code>catalogErrors.log</code><br>
+  </li>
+  <ul>
+    <li>URL: <a href="https://localhost:8443/thredds/content/logs/catalogErrors.log"><code>https://localhost:8443/thredds/content/logs/catalogErrors.log</code></a><br>
+    </li>
+  </ul>
+<li>Browse the catalog again</li>
   <ul>
 <li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
   </ul>
 </ol>
-<h2><code></code></h2>
+<a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html"><code></code></a>
+
+
+
+<hr align="left" size="2" width="25%">
+<p><strong>Note</strong>: In a given catalog, the names of <code>service</code> elements must be unique.<br>
+</p>
+
+
+
+
+
+
 
 <hr size="2" width="100%">
 <h2>More <code>datasetScan</code> Element<br>
 </h2>
 
 
+
+
+
 <h3>Including Only the Desired Files</h3>
+
+
+
 
 
 
@@ -288,7 +410,13 @@ element to your <code>datasetScan</code> element allows you to include (and/or e
 the files and directories as desired. We saw a simple example earlier when we configured our TDS to serve the GFS model data:<br>
 </p>
 
+
+
+
 <pre>      &lt;filter&gt;<br>        &lt;include wildcard="GFS*.grib1" /&gt;<br>      &lt;/filter&gt;<br></pre>
+
+
+
 
 <p>The <code>include</code> and <code>exclude</code> elements both determine which datasets they match on whether their wildcard pattern (given by the <code>wildcard</code> attribute) or <a href="http://www.regular-expressions.info/">regular expression</a> (given by the <code>regExp</code> attribute) match the dataset name. By default, includes and excludes apply only to
 regular files (atomic datasets). You can specify that they apply to
@@ -297,15 +425,49 @@ attributes. For example, I can exclude all the GFS Alaska 191km model
 data by adding the following exclude element to the above filter:<br>
 </p>
 
-<pre>        &lt;exclude wildcard="Alaska_191km" atomic="false" collection="true" /&gt;</pre>
+
+
+
+<pre>        &lt;exclude wildcard="Ensemble_1p25deg" atomic="false" collection="true" /&gt;</pre>
+
+
+
 
 <p> </p>
 
+
+
+
 <p>&nbsp;Let's try:</p>
+
+
+
 <ol>
-<li>Edit the main config catalog:</li><ul><li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li></ul><li>Add the above <code>exclude</code> element to the existing filter</li><li>Restart tomcat</li><ul><li><code>cd ${TOMCAT_HOME}/bin</code></li><li><code>./shutdown.sh</code></li><li><code>./startup.sh</code></li></ul><li>Browse the catalog again</li><ul><li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li></ul>
+
+
+
+<li>Edit the main config catalog:</li><ul><li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li></ul><li>Add the above <code>exclude</code> element to the existing filter</li><li>Reinit the TDS</li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/debug?catalogs/reinit"><code>https://localhost:8443/thredds/debug?catalogs/reinit</code></a></li>
+  </ul>
+  <li>Check <code>catalogErrors.log</code><br>
+  </li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/content/logs/catalogErrors.log"><code>https://localhost:8443/thredds/content/logs/catalogErrors.log</code></a><br>
+  </li>
+  </ul>
+  <li>Browse the catalog again</li>
+  <ul>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
+  </ul>
 </ol>
+
+
+
 <pre><strong></strong></pre>
+
+
+
 
 
 
@@ -316,23 +478,63 @@ data by adding the following exclude element to the above filter:<br>
 
 
 
+
+
+
 <p>All generated datasets are given an ID. The IDs are simply the path
 of the dataset appended to the datasetScan path value or, if one
 exists, the ID of the datasetScan element. So, for the <code>GFS/Alaska_191km</code> directory and our current configuration:<br>
 </p>
+
+
+
 <pre>     &lt;datasetScan name="NCEP GFS models" ID="<strong>model/NCEP/GFS</strong>"<br><strong>    </strong>              path="model/NCEP/GFS" location="<code>/data/ldm/pub/native/grid/NCEP/GFS</code>"&gt;<br></pre>
+
+
+
 <p>the value of the dataset ID would be "model/NCEP/GFS/Alaska_191km". <br>
 </p>
+
+
+
 <p>Let's try changing the ID for this dataset:<br>
 </p>
+
+
+
 <ol>
-<li>Edit the main config catalog:</li><ul><li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li></ul><li>Change the <code>ID</code> value</li><li>Restart tomcat</li><ul><li><code>cd ${TOMCAT_HOME}/bin</code></li><li><code>./shutdown.sh</code></li><li><code>./startup.sh</code></li></ul><li>Browse the catalog again</li><ul><li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li></ul>
+
+
+
+<li>Edit the main config catalog:</li><ul><li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li></ul><li>Change the <code>ID</code> value</li><li>Reinit the TDS</li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/debug?catalogs/reinit"><code>https://localhost:8443/thredds/debug?catalogs/reinit</code></a></li>
+  </ul>
+  <li>Check <code>catalogErrors.log</code><br>
+  </li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/content/logs/catalogErrors.log"><code>https://localhost:8443/thredds/content/logs/catalogErrors.log</code></a><br>
+  </li>
+  </ul>
+  <li>Browse the catalog again</li>
+  <ul>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
+  </ul>
 </ol>
+
+
+
 <h3>Naming Datasets</h3>
+<p>
+
+
 By default, all datasets are named with the corresponding
 file
 name. By adding a namer element, you can specify more human readable
-dataset names. The following namer looks for the dataset named "Alaska_191km" and renames it with the replace string:<br>
+dataset names. The following namer looks for the dataset named "Alaska_191km" and renames it with the replace string:</p>
+
+
+
 
 
 
@@ -344,8 +546,14 @@ dataset names. The following namer looks for the dataset named "Alaska_191km" an
 
 
 
+
+
+
 <p>More complex renaming is possible as well. The namer uses a <a href="http://www.regular-expressions.info/">regular expression</a> match on the dataset name. If the match succeeds, any regular expression <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used in the replacement string.<br>
 </p>
+
+
+
 
 
 
@@ -365,13 +573,22 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
 
 
 
-<p>Here's an example namer:???????????????</p>
+
+
+
+<p>Here's an example namer:</p>
 
 
 
 
 
-<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"<br>                replaceString="NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT"/&gt;<br>&lt;/namer</pre>
+
+
+
+<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="GFS_Alaska_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"<br>                replaceString="NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT"/&gt;<br>&lt;/namer</pre>
+
+
+
 
 
 
@@ -382,7 +599,13 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
 
 
 
+
+
+
 <ol>
+
+
+
 
 
 
@@ -392,6 +615,9 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
   </li><li>The third capturing group, "([0-9]{2})", captures two digits, in this case the day of the month.<br>
   </li><li>The fourth capturing group, "([0-9]{2})", captures two digits, in this case the hour of the day.</li><li>The fifth capturing group, "([0-9]{2})", captures two digits, in this case the minutes of the hour.</li>
 </ol>
+<p>
+
+
 
 
 
@@ -400,31 +626,93 @@ When applied to the dataset name
 "GFS_Alaska_191km_20051011_0000.grib1",&nbsp; the
 strings
 "2005", "10", "11", "00", and "00" are captured. After replacing the
-capturing group references in the replaceString attribute value, we get
-the name "NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT".
-So, when cataloged, this dataset would end up as something like this:<br>
+capturing group references in the <code>replaceString</code> attribute value, we get
+the name "NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT".<br>
+</p>
+<p>To try it on our <code>datasetScan</code> element:<br>
+</p>
+<ol>
+  <li>Edit the main config catalog:</li>
+  <ul>
+<li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li>
+  </ul>
+  <li>Add the above <code>namer</code> element to the <code>datasetScan</code> element.<code></code></li>
+  <li>Reinit the TDS</li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/debug?catalogs/reinit"><code>https://localhost:8443/thredds/debug?catalogs/reinit</code></a></li>
+  </ul>
+  <li>Check <code>catalogErrors.log</code><br>
+  </li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/content/logs/catalogErrors.log"><code>https://localhost:8443/thredds/content/logs/catalogErrors.log</code></a><br>
+  </li>
+  </ul>
+  <li>Browse the catalog again</li>
+  <ul>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html">http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html</a></code></li><li>Click on "Alaska_191km"</li>
+  </ul>
+</ol>
+<p>You could add namer elements for each subdirectory under GFS.
+However, that setup would causes every namer to be tried on every
+dataset under the GFS directory. One way to get around this problem
+would be to split the datasets out with a <code>datasetScan</code> element for each subdirectory.<br>
+</p>
+<p>So, we can:<br>
+</p>
+<ol>
+  <li>Edit the main config catalog:</li>
+  <ul>
+<li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li>
+  </ul>
+  <li>Copy the existing <code>datasetScan</code> element.</li>
+  <li>Change one of the <code>datasetScan</code> elements to serve the "Alaska_191km" dataset.<br>
+  </li>
+  <li>Add a filter to the existing <code>datasetScan</code> element to exclude the "Alaska_191km" data.</li>
+  <li>Reinit the TDS</li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/debug?catalogs/reinit"><code>https://localhost:8443/thredds/debug?catalogs/reinit</code></a></li>
+  </ul>
+  <li>Check <code>catalogErrors.log</code><br>
+  </li>
+  <ul>
+<li>URL: <a href="https://localhost:8443/thredds/content/logs/catalogErrors.log"><code>https://localhost:8443/thredds/content/logs/catalogErrors.log</code></a><br>
+  </li>
+  </ul>
+  <li>Browse the catalog again</li>
+  <ul>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html">http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html</a></code></li><li>Click on "Alaska_191km"</li>
+  </ul>
+</ol>
+<code></code>
+<a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html"><code></code></a>
+
+
+
+<hr align="left" size="2" width="25%">
+<p><strong>Note</strong>: Though the data root paths must be unique,
+they can be extensions of an existing path. The TDS looks for the path
+that has the longest match in a request URL.<br>
+<a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html"><code></code></a>
+
+
+
+</p>
+<hr align="left" size="2" width="25%">
+<h3>Sorting Datasets</h3>
 
 
 
 
-<pre>&lt;dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"<br>        &nbsp;urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/&gt;<strong></strong><br></pre>
 
 
 
 
+<p>A <code>sort</code> element can be added to a <code>datasetScan</code> to specify the order in which a collection of datasets are listed. Without a <code>sort</code> element, datasets at each collection level are listed
+in their "natural" order. Currently, the only supported sort algorithm sorts datasets lexigraphically by name either in inc<code></code>reasing or
+decreasing order. Here's what a <code>sort</code> element looks like:</p>
 
 
 
-<h2><a name="Sorting_Datasets"></a>Sorting Datasets</h2>
-
-
-
-
-
-<p>Without a sort element, datasets at each collection level are listed
-in their "natural" order. With a sort element you can specify that they
-are to be sorted by lexigraphic order by name either in increasing or
-decreasing order. For example:</p>
 
 
 
@@ -434,15 +722,28 @@ decreasing order. For example:</p>
 
 
 
-<p>Other sort order functionality will be looked at for future enhancements.</p>
 
 
 
-<p>Notes:</p>
-
-
-
+<p>Exercise:<br>
+</p>
 <ol>
+<li>Edit the main config catalog:</li><ul><li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li></ul><li>Add the above <code>sort</code> element to the "Alaska_191km" <code>datasetScan</code> element.</li><li>Reinit the TDS</li><ul><li>URL: <a href="https://localhost:8443/thredds/debug?catalogs/reinit"><code>https://localhost:8443/thredds/debug?catalogs/reinit</code></a></li></ul><li>Check <code>catalogErrors.log</code><br>
+  </li><ul><li>URL: <a href="https://localhost:8443/thredds/content/logs/catalogErrors.log"><code>https://localhost:8443/thredds/content/logs/catalogErrors.log</code></a><br>
+  </li></ul><li>Browse the catalog again</li><ul><li>URL: <code><a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html">http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html</a></code></li><li>Click on "Alaska_191km"</li></ul>
+</ol>
+
+<code></code>
+<a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html"><code></code></a>
+
+
+
+<hr align="left" size="2" width="25%">
+<strong>Notes</strong> (some underlying implementation details):
+<ol>
+
+
+
 
 
 <li>The "natural" order of the datasets is determined by the order returned by the listDatasets() method in CrawlableDataset.</li><li>The sort is done on the CrawlableDataset list. The naming discussed in
@@ -451,63 +752,94 @@ the naming discussed above does not affect the sort order.</li>
 </ol>
 
 
+<code></code>
+<a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html"><code></code></a>
 
-<h2><a name="Adding_Proxy_Datasets"></a>Adding Proxy Datasets</h2>
 
 
-The <strong>addProxies</strong> element provides a place for
-describing proxy datasets you want to add to the collection. Currently,
-two types of&nbsp; "latest" proxy datasets are all that is supported. The <strong>simpleLatest</strong> element adds the described dataset
-which proxies the existing dataset whose name is lexigraphically
+<hr align="left" size="2" width="25%">
+<strong></strong>
+
+
+
+
+
+<h3>Adding a "Latest" Proxy Datasets</h3>
+With a real-time archive, it is convenient to define a "proxy" dataset
+that always points to the most recent dataset in a collection. Other
+types of proxy datasets may be useful as well and the <code>addProxies</code> element <strong></strong>provides a place for
+describing proxy datasets. Currently,
+only two <code>addProxies</code> child elements are defined. They are both "Latest" proxy elements.<code></code> The <code>simpleLatest</code> element adds a proxy dataset which proxies the existing dataset whose name is lexigraphically
 greatest (which finds the latest dataset assuming a timestamp is part
-of the dataset name). The <strong>latestComplete</strong> element behaves similarly to <strong>simpleLatest</strong>
+of the dataset name). The <code>latestComplete</code> element behaves similarly to <code>simpleLatest</code>
 except that the proxied dataset does not include any datasets that have
-been modified more recently than a given limit, e.g., you could specify
+been modified more recently than a given time limit, e.g., you could specify
 you want the most recent (lexigraphically) dataset that hasn't been
-modified for 60 minutes. Both the simpleLatest and latestComplete
-elements must point to an existing service.<br>
+modified for 60 minutes. Both the <code>simpleLatest</code> and <code>latestComplete</code>
+elements must point to an existing <code>service</code> element.<br>
 
 
 
 
-<p>So, the datasetScan might
-look like this:</p>
+
+
+
+<p>To add a "Latest" dataset to our "Alaska_191km" dataset, we could add:<br>
+</p>
 
 
 
 
-<pre>  <strong>&lt;service name="latest" type="Resolver" base="" /&gt;</strong><br>  &lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver" &gt;<br>    <strong>&lt;addProxies&gt;<br>      &lt;simpleLatest /&gt;<br>      &lt;latestComplete name="latestComplete.xml" top="true" serviceName="latest" lastModifiedLimit="60" /&gt;<br>    &lt;/addProxies&gt;<br></strong>  &lt;/datasetScan&gt;</pre>
 
 
 
-<p>The <strong>latestComplete</strong> element includes a <strong>name</strong> attribute which provides the name of the proxy dataset, the <strong>serviceName</strong> attribute that references the service used by the proxy dataset, the <strong>top</strong>
+<pre>  &lt;service name="latest" type="Resolver" base="" /&gt;<br></pre>
+<p>to our catalog and<br>
+</p>
+<pre>    &lt;addProxies&gt;<br>      &lt;latestComplete name="latestComplete.xml" top="true" serviceName="latest" lastModifiedLimit="60" /&gt;<br>    &lt;/addProxies&gt;<br></pre>
+<p>to our "Alaska_191km" <code>datasetScan</code> element. This would result in the following dataset being at the top of the "Alaska_191km" collection of datasets:<br>
+</p>
+<pre><strong>    </strong>&lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</pre>
+
+
+
+
+
+
+<p>The <code>latestComplete</code> element includes a <code>name</code> attribute which provides the name of the proxy dataset, the <code>serviceName</code> attribute that references the service used by the proxy dataset, the <code>top</code>
 attribute which indicates if the proxy dataset should appear at the top
-or bottom of the list of datasets in this collection, and the <strong>lastModifiedLimit</strong> which feeds into the algorithm which determines which dataset is being proxied.<br>
+or bottom of the list of datasets in this collection, and the <code>lastModifiedLimit</code> which feeds into the algorithm which determines which dataset is being proxied.<br>
 </p>
 
 
 
-<p>The <strong>simpleLatest</strong> element allows for the same attributes as the <strong>latestComplete</strong> element minus the <strong>lastModifiedLimit</strong> attribute. In this case, all the attributes have default values: the <strong>name</strong> attribute defaults to "latest.xml", the <strong>top</strong> attribute defaults to "true", and the <strong>serviceName</strong> attribute defaults to "latest".<br>
+
+
+
+<p>The <code>simpleLatest</code> element allows for the same attributes as the <code>latestComplete</code> element minus the <code>lastModifiedLimit</code> attribute. In this case, all the attributes have default values: the <code>name</code> attribute defaults to "latest.xml", the <code>top</code> attribute defaults to "true", and the <code>serviceName</code> attribute defaults to "latest".<br>
+</p>
+<h3>Adding Dataset Size Information</h3>
+
+
+
+
+
+
+
+
+
+
+<p>The <code>addDatasetSize</code> element indicates that file size metadata should be added to all atomic datasets. Adding<br>
 </p>
 
 
 
-<p>The results would be something like: </p>
 
 
 
 
 
-
-<pre>  &lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br><strong>    &lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</strong><br><strong>    &lt;dataset name="latest.xml" serviceName="latest" urlPath="latest.xml" /&gt;</strong><strong></strong><br>    &lt;dataset name="200610130730.nc" urlPath="200610130730.nc" /&gt;<br>  <strong>&nbsp; </strong>&lt;dataset name="200406190916.nc" urlPath="200406190916.nc" /&gt;<strong><br></strong>  &lt;/dataset&gt;<br></pre>
-
-
-
-<p>More details are available in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.v1.0.1.server.html#addProxies_Element">Server-side InvCatalog specification</a> document.</p>
-
-
-
-<h2><a name="Adding_Dataset_Size_Information"></a>Adding Dataset Size Information</h2>
+<pre>&nbsp; &lt;addDatasetSize /&gt;<br></pre>
 
 
 
@@ -515,29 +847,9 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
-<p>The <strong>addDatasetSize</strong> element indicates that file size metadata should be added to all atomic datasets. Adding to the above example</p>
 
 
-
-
-
-<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt;<br>&nbsp; &lt;addDatasetSize /&gt;<br>&lt;/datasetScan&gt;</pre>
-
-
-
-
-
-
-<p>results in the addition of a dataSize element to each atomic dataset:</p>
-
-
-
-
-
-
-<pre>&lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br>  &lt;dataset name="data1.grib1" urlPath="data1.grib1"&gt;<br>    <strong>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;dataset name="data2.grib1" urlPath="data2.grib1"&gt;<br><strong>    &lt;dataSize units="Mbytes"&gt;4.961&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;catalogRef xlink:href="subdir/catalog.xml" xlink:title="subdir" /&gt;<br>&lt;/dataset&gt;<br></pre>
-
-<p>[Workshop: <a href="#sample3">Sample config catalog 3</a>.]</p>
+<p>to a <code>datasetScan</code> element results in the addition of a <code>dataSize</code> element to each atomic dataset:</p>
 
 
 
@@ -545,15 +857,21 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
-<h2><a name="addTimeCoverage"></a>Adding <em>timeCoverage</em> Elements</h2>
+
+
+<pre><br>    &lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;<br></pre>
+<h3>Adding <code>timeCoverage</code> Elements</h3>
+
+
+
 
 
 
 
 
 <p>
-A datasetScan element may contain an <em><strong>addTimeCoverage</strong></em> element. The
-addTimeCoverage element indicates that a timeCoverage metadata element
+A datasetScan element may contain an <code>addTimeCoverage</code> element. The
+<code>addTimeCoverage</code> element indicates that a <code>timeCoverage</code> metadata element
 should be added to each dataset in the collection and describes
 how to determine the time coverage for each datasets in the collection.</p>
 
@@ -561,9 +879,15 @@ how to determine the time coverage for each datasets in the collection.</p>
 
 
 
-<p>Currently, the addTimeCoverage element can only construct
-start/duration timeCoverage elements and uses the dataset name to determine the start time. As described in the <a href="../../../../../tds/src/main/webapp/resources/docs/datasetScan/index.html#Naming_Datasets">"Naming Datasets" section</a> above, the addTimeCoverage element applies a <a href="http://www.regular-expressions.info/">regular expression</a> match to the dataset name. If the match succeeds, any regular expression <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used in the start time replacement string to build the start time string.These attributes values are used to
+
+
+
+<p>Currently, the <code>addTimeCoverage</code> element can only construct
+start/duration <code>timeCoverage</code> elements and uses the dataset name to determine the start time. As described in the <a href="../../../../../tds/src/main/webapp/resources/docs/datasetScan/index.html#Naming_Datasets">"Naming Datasets" section</a> above, the addTimeCoverage element applies a <a href="http://www.regular-expressions.info/">regular expression</a> match to the dataset name. If the match succeeds, any regular expression <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used in the start time replacement string to build the start time string.These attributes values are used to
 determine the time coverage: </p>
+
+
+
 
 
 
@@ -572,12 +896,15 @@ determine the time coverage: </p>
 <ol>
 
 
-<li>The <em><strong>datasetNameMatchPattern</strong></em> attribute value
+
+
+
+<li>The <code>datasetNameMatchPattern</code> attribute value
     is used for a regular expression match on the dataset name. If a match is found, a <strong>timeCoverage</strong> element is added to the dataset. The
     match pattern should include <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> which allow the match to save substrings from the dataset name.<br>
- </li><li>The <em><strong>startTimeSubstitutionPattern</strong></em> attribute
+ </li><li>The <code>startTimeSubstitutionPattern</code> attribute
     value has all capture group references ("$n") replaced by the
-  corresponding substring that was captured during the match. The resulting string is used as the start value of the resulting <strong>timeCoverage</strong> element.</li><li>The <strong>duration</strong> attribute value is used as the duration value of the resulting <strong>timeCoverage</strong> element.<br>
+  corresponding substring that was captured during the match. The resulting string is used as the start value of the resulting <code>timeCoverage</code> element.</li><li>The <code>duration</code> attribute value is used as the duration value of the resulting <code>timeCoverage</code> element.<br>
   </li>
 </ol>
 
@@ -585,56 +912,47 @@ determine the time coverage: </p>
 
 
 
-<p>Example 1: The <strong>addTimeCoverage</strong> element,</p>
 
 
 
-
-
-<pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_</strong><strong>([0-9]{2})</strong><strong>([0-9]{2}).grib1$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
-
-
-
-
-
-<p>results in the following timeCoverage element:</p>
-
-
-
-
-
-
-<pre><strong>  &lt;timeCoverage&gt;<br>    &lt;start&gt;</strong>2005-07-18T12:00:00<strong>&lt;/start&gt;<br>    &lt;duration&gt;</strong>60 hours<strong>&lt;/duration&gt;<br>  &lt;/timeCoverage&gt;</strong></pre>
-
-
-
-
-
-<p>Future versions will allow more complex determinations of the timeCoverage element.<br>
+<p>Adding<br>
 </p>
 
-<h2>Inherited Metadata </h2>
 
 
 
 
 
 
-<p>The datasetScan element is an extension of a dataset element, and it
-can contain any of the metadata elements that a dataset can. Typically
-you want all of its contained datasets to inherit the metadata, so add
-an inherited metadata element contained in the datasetScan element: </p>
+
+<pre><strong>  </strong>&lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib1$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</pre>
 
 
 
 
 
 
-<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<strong>datasetScan</strong> name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/"&gt;<strong><br><br>    &lt;metadata inherited="true"&gt;<br></strong>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>      &lt;authority&gt;unidata.ucar.edu:&lt;/authority&gt;<br>      &lt;dataType&gt;Grid&lt;/dataType&gt;<strong><br>    &lt;/metadata&gt;<br><br></strong>  &lt;/<strong>datasetScan</strong>&gt;<br>&lt;/catalog&gt; </pre>
 
-<p><br>
-</p>
+
+<p>to a <code>datasetScan</code> element results in the following <code>timeCoverage</code> element:</p>
+
+
+
+
+
+
+
+
+
+<pre><strong>  </strong>&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>  &lt;/timeCoverage&gt;</pre>
+
+
+
 
 
 <hr size="2" width="100%">
+<address>
+<img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was last updated on July 20, 2007. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+</address>
+
 </body></html>
