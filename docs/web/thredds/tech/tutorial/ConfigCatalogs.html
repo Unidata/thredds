@@ -1,12 +1,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>TDS Configuration Catalogs</title>
   
-  <meta content="Ethan Davis" name="author"></head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>TDS Configuration Catalogs</title>
+
+  
+  
+  <meta content="Ethan Davis" name="author">
+</head>
 <body>
-<h1>TDS Configuration Catalogs</h1><br>
+<h1>TDS Configuration Catalogs</h1>
+<br>
+
 <hr size="2" width="100%">
 <h2>Overview</h2>
+
 <p>THREDDS catalogs were originally designed as simple catalogs of
 remote datasets. They associated human-readable names with data access
 URLs and allowed both a hierarchical organization and the addition of
@@ -14,6 +22,7 @@ metadata. Thus providing client applications with information for
 accessing remote datasets (as we saw earlier with the ToolsUI and IDV
 applications). [More information is available from the THREDDS catalog <a href="../reference/CatalogPrimer.html">primer</a> and <a href="../catalog/v1.0.2/InvCatalogSpec.html">specification document</a>.]<br>
 </p>
+
 <p>In this section, we will take a look at the extensions to THREDDS
 catalogs that allow the TDS to use them for configuration. We call
 catalogs that use these extensions <strong>TDS Configuration Catalogs</strong> or <strong>Server-side Catalogs</strong>.
@@ -23,22 +32,30 @@ which services will be available for each dataset. All the
 configuration information is only needed by the server and is removed
 or transformed for the client view of the catalog.<br>
 </p>
+
 <h2><code></code></h2>
+
 <hr size="2" width="100%">
 <h2>Serving Datasets<br>
 </h2>
+
 <p>In a client-side catalog, an access URL can be constructed for a dataset if the dataset: 1) references a <code>service</code> element, and 2) has a <code>urlPath</code> attribute or <code>access</code> child element. The <code>service</code> element provides a way to factor out access information from <code>dataset</code> elements.<br>
 </p>
+
 <p>To handle a data access request, the TDS needs enough configuration
 information so that it can map an incoming request URL to a location on
 local disk. In the TDS configuration files, the <code>datasetRoot</code> and <code>datasetScan</code> elements perform this function.<br>
 </p>
+
 <h3>Associating a Dataset with a <code>service</code> Element<code></code></h3>
+
 
 <p>Looking at our main TDS config catalog, <code>catalog.xml</code>:<br>
 </p>
 
+
 <pre><strong>(1)</strong>  &lt;service name="<strong>thisDODS</strong>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>     ...<br><br><strong>(2a)</strong> &lt;dataset name="Test Single Dataset" ID="testDataset" <strong>serviceName="thisDODS"</strong><br><strong>(3a)</strong>          <strong>urlPath="test/testData.nc"</strong> /&gt;<br><br>     &lt;datasetScan name="NCEP GFS models" ID="model/NCEP/GFS"<br><strong>(3b)</strong>              <strong>path="model/NCEP/GFS"</strong> location="<code>/data/ldm/pub/native/grid/NCEP/GFS</code>"&gt;<br><br>       &lt;metadata inherited="true"&gt;<br><strong>(2b)</strong>     <strong>&lt;serviceName&gt;thisDODS&lt;/serviceName&gt;</strong><br>       &lt;/metadata&gt;<br><br>       ...<br>     &lt;/datasetScan&gt;<br></pre>
+
 
 <p>The service is defined at (1) with the name "thisDODS". The service is referenced at (2a) and (2b) using the <code>serviceName</code> attribute and element, respectively. Notice that the reference at (2b) is in an inherited <code>metadata</code> element which means any descendant <code>dataset</code>
 elements would also reference this service. The second part of making a
@@ -46,21 +63,33 @@ dataset accessible is to specify the dataset URL that gets appended to
 the service base URL. In the above example, this is done at (3a) and
 (3b). Though (3b) is in a server-side <code>datasetScan</code> element so gets expanded when catalog requests are made to the server.<br>
 </p>
+
 <h3><code>datasetRoot</code> Element</h3>
-<p>The datasetRoot element provides a mapping between a request URL and data location that can be used with individual datasets.<br>
+
+<p>The <code>datasetRoot</code> element provides a mapping between a base request URL and a data location that can be used with individual datasets.<br>
 </p>
+
 <p>Revisiting our current TDS configuration catalog:<br>
 </p>
+
 <pre>     &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><strong>(1)</strong>  &lt;datasetRoot path="<strong>test</strong>" location="content/testdata/"/&gt;<br><br>     &lt;dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS"<br><strong>(2)</strong>           urlPath="<strong>test</strong>/testData.nc"/&gt;<br></pre>
+
 <p>We can see that the dataset has an OPeNDAP access URL of <code>/thredds/dodsC/test/testData.nc</code>
 constructed from the service base URL and the dataset url path. The
 datasetRoot element defines the request URL segment ("test") that it is
 associating with the a location on local disk ("content/testdata/"
-which is a special shortcut to <code>${TOMCAT_HOME}/content/thredds/public/testdata/</code>).&nbsp; The TDS knows that the dataset uses the datasetRoot element because the <code>dataset</code> <code>urlPath</code> (2) starts with the <code>datasetRoot</code> <code>path</code> (1). <br>
+which is a special shortcut to <code>${TOMCAT_HOME}/content/thredds/public/testdata/</code>).&nbsp; The TDS knows that the dataset uses the URL/location association defined by this <code>datasetRoot</code> element because the <code>urlPath</code> of the <code>dataset</code> (2) starts with the <code>path</code> of the <code>datasetRoot</code> (1). <br>
 </p>
+
+<p>Looking at the client-side view of the catalog (<a href="http://localhost:8080/thredds/catalog.xml"><code>http://localhost:8080/thredds/catalog.xml</code></a>), notice that the <code>datasetRoot</code> element is not included.<br>
+</p>
+
+
 <p>Let's try an example<br>
 </p>
+
 <ol>
+
   <li>Take a look in the /data directory to find a single file to serve:</li>
   <ul>
     <li><code>ls /data</code></li>
@@ -81,58 +110,146 @@ which is a special shortcut to <code>${TOMCAT_HOME}/content/thredds/public/testd
 <li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
   </ul>
 </ol>
-<p>Note: Remember the value of the <code>location</code> attribute must be an absolute path (except for the special case of the "content" shortcut).<br>
+
+<p><strong>Note</strong>: Remember the value of the <code>location</code> attribute must be an absolute path (except for the special case of the "content" shortcut).<br>
 </p>
+
 <h3><code>datasetScan</code> Element</h3>
+
+<p>The <code>datasetScan</code> element provides a mapping between a
+base request URL and a data location that must reference an entire
+collections of datasets (i.e., for a local disk, the location must
+reference a directory). In the client-view of the catalog, a <code>datasetScan</code> element is shown as a <code>catalogRef</code>
+element. The generation of the catalog for the collection is actually
+differed till a request is made for that catlaog. When the catalog is
+requested the location directory is scanned, directories are
+represented as <code>catalogRef</code> elements and files are represented as <code>dataset</code> elements. The scanning of each subdirectory is defered till a request is made for the corresponding catalog.<br>
+</p>
+
+<p>Again, back to our current TDS configuraiton catalog:<br>
+</p>
+
+<pre><strong>   </strong>  &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>     ...<br><strong></strong>     &lt;datasetScan name="NCEP GFS models" ID="model/NCEP/GFS"<br><strong>(1) </strong>              <strong>path</strong>="model/NCEP/GFS" <strong>location</strong>="<code>/data/ldm/pub/native/grid/NCEP/GFS</code>"&gt;<br><strong>    </strong>     &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;<br>       ...<br>     &lt;/datasetScan&gt;<br></pre>
+
+The <code>path</code> attribute on the <code>datasetScan</code> element
+is the part of the URL that identifies this datasetScan and is used to
+map data access URLs to a location on local disk. The <code>location</code>  attribute on the <code>datasetScan</code>
+element provides the location of the dataset collection on the local
+file system (it must be a directory and should be an absolute path).<br>
+
+<br>
+
+Let's inspect the resulting catalogs:<br>
+
+<ol>
+
+  <li>Look at the client-view of the catalog&nbsp; to see the <code>catalogRef</code> element that represents the data collection given by the location\</li>
+  <ul>
+    <li>URL: <a href="http://localhost:8080/thredds/catalog.xml"><code>http://localhost:8080/thredds/catalog.xml</code></a><br>
+    </li>
+  </ul>
+  <li>Follow the catalogRef link to the catalog for that collection</li>
+  <ul>
+    <li>Cut and paste the xlink:href attribute value into the URL, or</li>
+    <li>URL: <a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.xml"><code>http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.xml</code></a></li>
+  </ul>
+</ol>
+
+<p>Now that we've seen the details of the resulting XML, let's look at the catalog structure generated:<br>
+</p>
+
+<ol>
+
+  <li>Check out what is on disk</li>
+  <ul>
+    <li><code>ls /data/ldm/pub/native/grid/NCEP/GFS</code></li>
+    <li><code>ls /data/ldm/pub/native/grid/NCEP/GFS/*</code></li>
+  </ul>
+  <li>Browse the catalogs</li>
+  <ul>
+    <li>URL: <a href="http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html"><code>http://localhost:8080/thredds/catalog/model/NCEP/GFS/catalog.html</code></a></li>
+  </ul>
+</ol>
+
+<strong>Note</strong> that data root paths must be unique across a TDS. Because the TDS uses the set of all given path values to map URLs to
+datasets, each path value MUST be unique across all config catalogs on
+a given TDS installation. 
+
+
+
+
+<p> </p>
+
+
+
+
+
+
+
+
 <h3><code>service</code> Element<br>
 </h3>
-<p>The TDS provides the following dataset services:<br>
-</p>
-<ul>
-  <li>OPeNDAP,</li>
-  <li>HTTP bulk file downloads, and</li>
-  <li>WCS.</li>
-</ul>
+
+<p>The TDS provides the several data services including an
+  OPeNDAP server, an HTTP bulk file download service, and a WCS service.</p>
 <p>The URLs to access these services start with the TDS <em>context name</em> ("thredds") and the appropriate <em>servelet name</em> (e.g., "dodsC"). Because of this, the <code>base</code> attribute of the corresponding <code>service</code> elements must be exactly as follows:<br>
 </p>
+
 <p><strong>OPeNDAP server</strong>: </p>
+
 
   
 <pre>  &lt;service name="ncdods" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
 
+
   
 <p><strong>HTTP bulk file server </strong>: </p>
+
 
   
 <pre>  &lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> /&gt;</pre>
 
+
   
 <p><strong>WCS Server </strong>: </p>
 
+
   
 <pre>  &lt;service name="wcsServer" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" /&gt;</pre>
+
 <p>You can use whatever name you choose for the service, they only needs to match the ones used in the dataset <code>serviceName</code>. Note that the base URLs are relative, so your catalogs are independent of your server hostname and port.<br>
 </p>
-<br>
+
+
 <h3>Serving Datasets with Multiple Methods</h3>
+
 <p>Datasets can be made available through more than one access method by defining and then referencing a <strong>compound</strong> <code>service</code> element. For instance:<code></code><code></code><br>
 </p>
+
 <pre><strong>   </strong>  &lt;service name="<strong>multiService</strong>" serviceType="Compound" base="" &gt;<br><strong>   </strong>    &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>       &lt;service name="wcsServer" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>     &lt;/service&gt;<br></pre>
+
 <p>defines a compound service named "multiService" which contains two
 nested services. Any dataset that reference the compound service will
 have two access methods. So the dataset:<br>
 </p>
+
 <pre>    &lt;dataset name="cool data" serviceName="multiService" urlPath="so/cool/data.nc" /&gt;<br></pre>
+
 <p>would have these two access URLs:<br>
 </p>
+
 <ul>
+
   <li><code>/thredds/dodsC/so/cool/data.nc</code></li>
   <li><code>/thredds/wcs/so/cool/data.nc</code><br>
   </li>
 </ul>
+
 <h3>Example: Add WCS service to GFS model data<br>
 </h3>
+
 <ol>
+
   <li>Add a WCS service to our current OPeNDAP only GFS model data</li>
   <ul>
     <li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li>
@@ -150,222 +267,86 @@ have two access methods. So the dataset:<br>
 <li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
   </ul>
 </ol>
-
 <h2><code></code></h2>
+
 <hr size="2" width="100%">
-<h2><code>datasetRoot</code> Element</h2>
-<p>overview: what is it, how to use it<br>
-example: browse /data/idv and find an individual file add datasetRoot and dataset for that data file<br>
+<h2>More <code>datasetScan</code> Element<br>
+</h2>
+
+
+<h3>Including Only the Desired Files</h3>
+
+
+
+
+
+
+<p>A <code>datasetScan</code> element can specify which files and directories it will include with a <code>filter</code> element (see <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html#filter_Element">spec</a>
+for more details). When no <code>filter</code> element is given, all files and
+directories are included in the generated catalog(s). Adding a <code>filter</code>
+element to your <code>datasetScan</code> element allows you to include (and/or exclude)
+the files and directories as desired. We saw a simple example earlier when we configured our TDS to serve the GFS model data:<br>
 </p>
 
-<h2><code></code></h2>
-<hr size="2" width="100%">
-<h2><code>datasetScan</code> Element</h2>
+<pre>      &lt;filter&gt;<br>        &lt;include wildcard="GFS*.grib1" /&gt;<br>      &lt;/filter&gt;<br></pre>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-
-<p>The <b>datasetScan</b> element specifies the data locations that the
-TDS will scan for datasets when generating catalogs. It also specifies
-which URLs will point to the data in those directories.<br>
-</p>
-
-<h2>Example</h2>
-
-
-
-
-<p>Here is a  minimal catalog containing a datasetScan element:</p>
-
-
-
-
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<b>datasetScan</b> name="NCEP Data" <b>path</b>="ncep" <b>location</b>="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/<b>datasetScan</b> &gt;<br>&lt;/catalog&gt;</pre>
-
-
-
-
-
-<p>The main points are:</p>
-
-
-
-
-<ol>
-
-<li>The <strong>path</strong> attribute on the <strong>datasetScan</strong> element is the part of the URL that identifies this datasetScan and is used to map dataset URLs to a location.<br>
-</li><li>The <strong>location</strong>  attribute on the <strong>datasetScan</strong> element gives the location of the dataset collection on the local file system. </li>
-</ol>
-
-
-
-
-<p>In the catalog that the TDS server sends to any client,  the datasetScan element is shown as a <em><strong>catalog reference</strong></em>: </p>
-
-
-
-
-<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<strong></strong><br>  &lt;<b>catalogRef</b> xlink:href="/thredds/catalog/ncep/catalog.xml" xlink:title="NCEP Data" name="" /&gt;<br>&lt;/catalog&gt; </pre>
-
-
-
-
-<p>The catalog will be generated dynamically on the server when requested, by scanning the server's directory <strong>/data/ldm/pub/native/grid/NCEP/</strong>. For example, if the directory looked like:</p>
-
-
-
-
-
-<pre><strong>/data/ldm/pub/native/grid/NCEP/<br>  GFS/<br>    CONUS_191km/<br>      GFS_CONUS_191km_20061107_0000.grib1<br></strong><strong>      GFS_CONUS_191km_20061107_0000.grib1.gbx<br></strong><strong>     &nbsp;GFS_CONUS_191km_20061107_0600.grib1<br></strong><strong>      GFS_CONUS_191km_20061107_1200.grib1<br></strong><strong>    CONUS_80km/<br>      ...<br>    ...<br>  NAM/<br>    ...<br>  NDFD/<br>    ...</strong><strong></strong><strong><br></strong></pre>
-
-
-
-
-<p>The result of a request for "<b>/thredds/catalog/ncep/catalog.xml</b>" might look like: </p>
-
-
-
-
-<pre>&lt;catalog ...&gt;<br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;dataset name="NCEP Data"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>   &nbsp;&lt;/metadata&gt;<br>    &lt;catalogRef xlink:title="GFS" xlink:href="GFS/catalog.xml" name="" /&gt;<br>    &lt;catalogRef xlink:title="NAM" xlink:href="NAM/catalog.xml" name="" /&gt;<br>    &lt;catalogRef xlink:title="NDFD" xlink:href="NDFD/catalog.xml" name="" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
-<p>and for a "<b>/thredds/catalog/</b><b>ncep/GFS/CONUS_191km/catalog.xml</b>" request:<br>
-</p>
-<pre>&lt;catalog ...&gt;<br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;dataset name="ncep/GFS/CONUS_191km"&gt;<br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>   &nbsp;&lt;/metadata&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1.gbx"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1.gbx" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0600.grib1" /&gt;<br>    &lt;dataset name="GFS_CONUS_191km_20061107_0000.grib1"<br>            &nbsp;urlPath="ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_1200.grib1" /&gt;<br>  &lt;/dataset&gt;<br>&lt;/catalog&gt;<br></pre>
-
-
-
-
-
-<p> Note that: </p>
-
-
-
-
-<ol>
-
-<li>Files are turned into datasets, subdirectories are turned into nested catalogRef elements.</li><li>All the catalog URLs are relative. If the original catalog URL is <strong>http://server:8080/thredds/catalog.xml </strong>then the first catalogRef xlink:href value of "/thredds/catalog/ncep/catalog.xml" resolves to<strong> http://server:8080/thredds/catalog/ncep/catalog.xml</strong>. From that catalog, the catalogRef xlink:href value of "GFS/catalog.xml" resolves to <b>http://server:8080/thredds/catalog/ncep/GFS/catalog.xml</b>.</li><li>The dataset access URLs are built from the service base attribute and the dataset urlPath attribute (see the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html#constructingURLs">THREDDS URL construction</a> documentation). So the dataset URLs from the above catalog would be <strong>http://server:8080/thredds/dodsC/ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1</strong>.<strong> </strong>You don't have to worry about these URLs, as they are all generated for you. </li>
-<li>Each datasetScan element must reference a service element (whether directly, as above, or inherited).</li><li>Because the TDS uses the set of all given path values to map URLs to
-datasets, each path value MUST be unique across all config catalogs on
-a given TDS installation.</li>
-
-</ol>[Workshop: <a href="#sample1">Sample config catalog 1</a>.]<br>
-
-
-
-<h2>Inherited Metadata </h2>
-
-
-
-
-<p>The datasetScan element is an extension of a dataset element, and it
-can contain any of the metadata elements that a dataset can. Typically
-you want all of its contained datasets to inherit the metadata, so add
-an inherited metadata element contained in the datasetScan element: </p>
-
-
-
-
-<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<strong>datasetScan</strong> name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/"&gt;<strong><br><br>    &lt;metadata inherited="true"&gt;<br></strong>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>      &lt;authority&gt;unidata.ucar.edu:&lt;/authority&gt;<br>      &lt;dataType&gt;Grid&lt;/dataType&gt;<strong><br>    &lt;/metadata&gt;<br><br></strong>  &lt;/<strong>datasetScan</strong>&gt;<br>&lt;/catalog&gt; </pre>
-
-
-
-
-<h2><a name="Including_Only_the_Desired_Files"></a>Including Only the Desired Files</h2>
-
-
-
-
-<p>A <i>datasetScan</i> element can specify which files and directories it will include with a <i>filter</i> element (see <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec11.html#filter_Element">spec</a>
-for more details). When no filter element is given, all files and
-directories are included in the generated catalog(s). Adding a <strong>filter</strong>
-element to your datasetScan element allows you to include (and/or exclude)
-the files and directories as you desire. For instance, the following
-filter and selector elements will only
-include files that end in ".grib1" and exclude any file that ends with "*_0000.grib1". </p>
-
-
-
-
-<pre>&lt;filter&gt;<br>  &lt;include wildcard=<strong>"*.grib1"</strong>/&gt;<br>  &lt;exclude wildcard=<strong>"*_0000.grib1"</strong>/&gt;<br>&lt;/filter&gt;</pre>
-
-
-
-
-<p>You can specify which files to include or exclude using either wildcard patterns (with the <em><strong>wildcard</strong></em> attribute) or <a href="http://www.regular-expressions.info/">regular expressions</a> (using the <em><strong>regExp</strong></em> attribute).
-If the wildcard pattern (or the regular expression) matches the dataset name, the dataset is included or
-excluded as specified. By default, includes and excludes apply only to
+<p>The <code>include</code> and <code>exclude</code> elements both determine which datasets they match on whether their wildcard pattern (given by the <code>wildcard</code> attribute) or <a href="http://www.regular-expressions.info/">regular expression</a> (given by the <code>regExp</code> attribute) match the dataset name. By default, includes and excludes apply only to
 regular files (atomic datasets). You can specify that they apply to
-directories (collection datasets) as well by using the <em><strong>atomic</strong></em> and <em><strong>collection</strong></em> attributes. For instance, the additional
-selector in this filter element means that only directories that don't start with
-"CONUS" will be cataloged:</p>
-
-
-
-
-<pre>&lt;filter&gt;<br>  &lt;include wildcard="*.grib1"/&gt;<br>  &lt;exclude wildcard="*_0000.grib1"/&gt;<strong><br>  &lt;exclude wildcard="CONUS*" atomic="false" collection="true"/&gt;</strong><br>&lt;/filter&gt;</pre><p>Its a good idea to always include a filter element, so that if stray
-files accidentally get into your data directories, they wont generate
-erroneous catalog entries. A good choice for this datasetScan would be something like:<br>
+directories (collection datasets) as well by using the <code>atomic</code> and <code>collection</code>
+attributes. For example, I can exclude all the GFS Alaska 191km model
+data by adding the following exclude element to the above filter:<br>
 </p>
-<pre>&lt;filter&gt;<br>  &lt;include wildcard="*.grib1"/&gt;<br>  &lt;include wildcard="*.grib2"/&gt;<br>  &lt;exclude wildcard="*.gbx"/&gt;<br>&lt;/filter&gt;<br></pre>
-<p>[Workshop: <a href="#sample2">Sample config catalog 2</a>.]</p>
+
+<pre>        &lt;exclude wildcard="Alaska_191km" atomic="false" collection="true" /&gt;</pre>
+
+<p> </p>
+
+<p>&nbsp;Let's try:</p>
+<ol>
+<li>Edit the main config catalog:</li><ul><li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li></ul><li>Add the above <code>exclude</code> element to the existing filter</li><li>Restart tomcat</li><ul><li><code>cd ${TOMCAT_HOME}/bin</code></li><li><code>./shutdown.sh</code></li><li><code>./startup.sh</code></li></ul><li>Browse the catalog again</li><ul><li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li></ul>
+</ol>
 <pre><strong></strong></pre>
 
 
 
-<h2><a name="Generating_IDs"></a>Generating IDs</h2>
+
+<h3>Generating IDs</h3>
+
 
 
 
 
 <p>All generated datasets are given an ID. The IDs are simply the path
 of the dataset appended to the datasetScan path value or, if one
-exists, the ID of the datasetScan element. For the example above, the file
-"c:/data/grib2/data1.grib1" would result in a dataset with the ID
-"grib2/data1.grib1". By adding an ID of "my/data/model" to the datasetScan
-element, the resulting ID would change to "my/data/model/data1.grib1".</p>
-
-
-
-<h2><a name="Naming_Datasets"></a>Naming Datasets</h2>
-
-If no namer
-element is specified, all datasets are named with the corresponding
+exists, the ID of the datasetScan element. So, for the <code>GFS/Alaska_191km</code> directory and our current configuration:<br>
+</p>
+<pre>     &lt;datasetScan name="NCEP GFS models" ID="<strong>model/NCEP/GFS</strong>"<br><strong>    </strong>              path="model/NCEP/GFS" location="<code>/data/ldm/pub/native/grid/NCEP/GFS</code>"&gt;<br></pre>
+<p>the value of the dataset ID would be "model/NCEP/GFS/Alaska_191km". <br>
+</p>
+<p>Let's try changing the ID for this dataset:<br>
+</p>
+<ol>
+<li>Edit the main config catalog:</li><ul><li><code>cd ${TOMCAT_HOME}/content/thredds/</code></li><li><code>vi catalog.xml</code></li></ul><li>Change the <code>ID</code> value</li><li>Restart tomcat</li><ul><li><code>cd ${TOMCAT_HOME}/bin</code></li><li><code>./shutdown.sh</code></li><li><code>./startup.sh</code></li></ul><li>Browse the catalog again</li><ul><li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li></ul>
+</ol>
+<h3>Naming Datasets</h3>
+By default, all datasets are named with the corresponding
 file
 name. By adding a namer element, you can specify more human readable
-dataset names. The following namer looks for datasets named "GFS" or
-"NCEP" and renames them with the corresponding replace string:<br>
+dataset names. The following namer looks for the dataset named "Alaska_191km" and renames it with the replace string:<br>
 
 
 
 
-<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="GFS" replaceString="NCEP GFS model data" /&gt;<br>  &lt;regExpOnName regExp="NCEP" replaceString="NCEP model data"/&gt;<br>&lt;/namer&gt;</pre>
+
+<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="Alaska_191km" replaceString="NCEP GFS Alaska 191km model data" /&gt;<br>&lt;/namer&gt;</pre>
+
 
 
 
 
 <p>More complex renaming is possible as well. The namer uses a <a href="http://www.regular-expressions.info/">regular expression</a> match on the dataset name. If the match succeeds, any regular expression <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used in the replacement string.<br>
 </p>
+
 
 
 <p>A capturing group is a part of a regular expression enclosed in
@@ -383,7 +364,9 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
 
 
 
-<p>Here's an example namer:</p>
+
+<p>Here's an example namer:???????????????</p>
+
 
 
 
@@ -392,7 +375,9 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
 
 
 
+
 <p>the regular expression has five capturing groups</p>
+
 
 
 
@@ -401,11 +386,13 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
 
 
 
+
 <li>The first capturing group, "([0-9]{4})",&nbsp; captures four digits, in this case the year.<br>
   </li><li>The second capturing group, "([0-9]{2})", captures two digits, in this case the month.<br>
   </li><li>The third capturing group, "([0-9]{2})", captures two digits, in this case the day of the month.<br>
   </li><li>The fourth capturing group, "([0-9]{2})", captures two digits, in this case the hour of the day.</li><li>The fifth capturing group, "([0-9]{2})", captures two digits, in this case the minutes of the hour.</li>
 </ol>
+
 
 
 
@@ -419,6 +406,7 @@ So, when cataloged, this dataset would end up as something like this:<br>
 
 
 
+
 <pre>&lt;dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"<br>        &nbsp;urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/&gt;<strong></strong><br></pre>
 
 
@@ -426,7 +414,9 @@ So, when cataloged, this dataset would end up as something like this:<br>
 
 
 
+
 <h2><a name="Sorting_Datasets"></a>Sorting Datasets</h2>
+
 
 
 
@@ -439,16 +429,21 @@ decreasing order. For example:</p>
 
 
 
+
 <pre>&lt;sort&gt;<br>  &lt;lexigraphicByName increasing="false" /&gt;<br>&lt;/sort&gt;</pre>
+
 
 
 <p>Other sort order functionality will be looked at for future enhancements.</p>
 
 
+
 <p>Notes:</p>
 
 
+
 <ol>
+
 
 <li>The "natural" order of the datasets is determined by the order returned by the listDatasets() method in CrawlableDataset.</li><li>The sort is done on the CrawlableDataset list. The naming discussed in
 the previous section is done to the resulting InvDataset. Therefore,
@@ -456,7 +451,9 @@ the naming discussed above does not affect the sort order.</li>
 </ol>
 
 
+
 <h2><a name="Adding_Proxy_Datasets"></a>Adding Proxy Datasets</h2>
+
 
 The <strong>addProxies</strong> element provides a place for
 describing proxy datasets you want to add to the collection. Currently,
@@ -472,12 +469,15 @@ elements must point to an existing service.<br>
 
 
 
+
 <p>So, the datasetScan might
 look like this:</p>
 
 
 
+
 <pre>  <strong>&lt;service name="latest" type="Resolver" base="" /&gt;</strong><br>  &lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver" &gt;<br>    <strong>&lt;addProxies&gt;<br>      &lt;simpleLatest /&gt;<br>      &lt;latestComplete name="latestComplete.xml" top="true" serviceName="latest" lastModifiedLimit="60" /&gt;<br>    &lt;/addProxies&gt;<br></strong>  &lt;/datasetScan&gt;</pre>
+
 
 
 <p>The <strong>latestComplete</strong> element includes a <strong>name</strong> attribute which provides the name of the proxy dataset, the <strong>serviceName</strong> attribute that references the service used by the proxy dataset, the <strong>top</strong>
@@ -486,8 +486,10 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 </p>
 
 
+
 <p>The <strong>simpleLatest</strong> element allows for the same attributes as the <strong>latestComplete</strong> element minus the <strong>lastModifiedLimit</strong> attribute. In this case, all the attributes have default values: the <strong>name</strong> attribute defaults to "latest.xml", the <strong>top</strong> attribute defaults to "true", and the <strong>serviceName</strong> attribute defaults to "latest".<br>
 </p>
+
 
 
 <p>The results would be something like: </p>
@@ -496,13 +498,17 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
+
 <pre>  &lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br><strong>    &lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</strong><br><strong>    &lt;dataset name="latest.xml" serviceName="latest" urlPath="latest.xml" /&gt;</strong><strong></strong><br>    &lt;dataset name="200610130730.nc" urlPath="200610130730.nc" /&gt;<br>  <strong>&nbsp; </strong>&lt;dataset name="200406190916.nc" urlPath="200406190916.nc" /&gt;<strong><br></strong>  &lt;/dataset&gt;<br></pre>
+
 
 
 <p>More details are available in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.v1.0.1.server.html#addProxies_Element">Server-side InvCatalog specification</a> document.</p>
 
 
+
 <h2><a name="Adding_Dataset_Size_Information"></a>Adding Dataset Size Information</h2>
+
 
 
 
@@ -514,7 +520,9 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
+
 <pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt;<br>&nbsp; &lt;addDatasetSize /&gt;<br>&lt;/datasetScan&gt;</pre>
+
 
 
 
@@ -526,7 +534,9 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
+
 <pre>&lt;dataset name="GRIB2 Data" ID="testdata"&gt;<br>  &lt;dataset name="data1.grib1" urlPath="data1.grib1"&gt;<br>    <strong>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;dataset name="data2.grib1" urlPath="data2.grib1"&gt;<br><strong>    &lt;dataSize units="Mbytes"&gt;4.961&lt;/dataSize&gt;</strong><br>  &lt;/dataset&gt;<br>  &lt;catalogRef xlink:href="subdir/catalog.xml" xlink:title="subdir" /&gt;<br>&lt;/dataset&gt;<br></pre>
+
 <p>[Workshop: <a href="#sample3">Sample config catalog 3</a>.]</p>
 
 
@@ -534,7 +544,9 @@ or bottom of the list of datasets in this collection, and the <strong>lastModifi
 
 
 
+
 <h2><a name="addTimeCoverage"></a>Adding <em>timeCoverage</em> Elements</h2>
+
 
 
 
@@ -548,6 +560,7 @@ how to determine the time coverage for each datasets in the collection.</p>
 
 
 
+
 <p>Currently, the addTimeCoverage element can only construct
 start/duration timeCoverage elements and uses the dataset name to determine the start time. As described in the <a href="../../../../../tds/src/main/webapp/resources/docs/datasetScan/index.html#Naming_Datasets">"Naming Datasets" section</a> above, the addTimeCoverage element applies a <a href="http://www.regular-expressions.info/">regular expression</a> match to the dataset name. If the match succeeds, any regular expression <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg">capturing groups</a> are used in the start time replacement string to build the start time string.These attributes values are used to
 determine the time coverage: </p>
@@ -555,7 +568,9 @@ determine the time coverage: </p>
 
 
 
+
 <ol>
+
 
 <li>The <em><strong>datasetNameMatchPattern</strong></em> attribute value
     is used for a regular expression match on the dataset name. If a match is found, a <strong>timeCoverage</strong> element is added to the dataset. The
@@ -569,12 +584,15 @@ determine the time coverage: </p>
 
 
 
+
 <p>Example 1: The <strong>addTimeCoverage</strong> element,</p>
 
 
 
 
+
 <pre>&lt;datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"&gt; <br><strong>  &lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_</strong><strong>([0-9]{2})</strong><strong>([0-9]{2}).grib1$"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</strong><br>&lt;/datasetScan&gt;</pre>
+
 
 
 
@@ -585,24 +603,38 @@ determine the time coverage: </p>
 
 
 
+
 <pre><strong>  &lt;timeCoverage&gt;<br>    &lt;start&gt;</strong>2005-07-18T12:00:00<strong>&lt;/start&gt;<br>    &lt;duration&gt;</strong>60 hours<strong>&lt;/duration&gt;<br>  &lt;/timeCoverage&gt;</strong></pre>
+
 
 
 
 
 <p>Future versions will allow more complex determinations of the timeCoverage element.<br>
 </p>
-<hr size="2" width="100%">
-<h2>Sample Config Files</h2>
-<p><a name="sample1"></a>Basic catalog:<br>
-</p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>  &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
-<p><a name="sample2"></a>Catalog with filtering added:<br>
+
+<h2>Inherited Metadata </h2>
+
+
+
+
+
+
+<p>The datasetScan element is an extension of a dataset element, and it
+can contain any of the metadata elements that a dataset can. Typically
+you want all of its contained datasets to inherit the metadata, so add
+an inherited metadata element contained in the datasetScan element: </p>
+
+
+
+
+
+
+<pre>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;<strong>datasetScan</strong> name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/"&gt;<strong><br><br>    &lt;metadata inherited="true"&gt;<br></strong>      &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>      &lt;authority&gt;unidata.ucar.edu:&lt;/authority&gt;<br>      &lt;dataType&gt;Grid&lt;/dataType&gt;<strong><br>    &lt;/metadata&gt;<br><br></strong>  &lt;/<strong>datasetScan</strong>&gt;<br>&lt;/catalog&gt; </pre>
+
+<p><br>
 </p>
 
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;<br></pre>
-<p><a name="sample3"></a>Catalog with dataset size added:<br>
-</p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>    &lt;sort&gt;<br>      &lt;lexigraphicByName increasing="false" /&gt;<br>    &lt;/sort&gt;<br>    &lt;addDatasetSize/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
-<p></p>
+
+<hr size="2" width="100%">
 </body></html>
