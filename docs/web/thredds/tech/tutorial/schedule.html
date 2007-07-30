@@ -6,7 +6,7 @@
 	<meta name="CREATED" content="20070719;13103900">
 	<meta name="CHANGEDBY" content="Robb Kambic">
 	<meta name="CHANGED" content="20070719;13373000"></head>
-<body dir="ltr" lang="en-US">
+<body>
 <h1><img src="../images/THREDDSlogo.jpg" name="graphics1" alt="THREDDS" align="bottom" border="0" height="54" width="67">
 TDS Tutorial Schedule 
 </h1>
@@ -37,35 +37,24 @@ TDS Tutorial Schedule
 </ul>
 <h3>12:00 Lunch</h3>
 
-<h3>1:00 <a href="BasicTomcatMgmtAndSecurity.html"> Basic Tomcat Management and Security </a> (Anne) </h3>
+<h3>1:00 <a href="BasicTomcatTourAndSecurity.html"> Basic Tomcat Tour and Tomcat Security </a> (Anne) </h3>
 <ul>
-    <li> <a href="BasicTomcatMgmtAndSecurity.html#ImportantDirs"> Important Tomcat Directories: webapps, logs, content, conf  </a></li>
-    <li>Configuring Tomcat in server.xml
-	  <ul>
-		  <li>Ports: 8080, 8443, 8009??</li>
-          <li>Host localhost </li>
-          <li>Turning on Access Logging </li>
-      </ul>
-	</li>
-    <li>Tomcat Security Illustrated By Enabling the Tomcat Manager
+    <li> <a href="BasicTomcatTourAndSecurity.html#ImportantDirs"> Important Tomcat Directories: webapps, logs, content, conf  </a></li>
+    <li> <a href="BasicTomcatTourAndSecurity.html#conf/server.xml"> The Server Configuration file <code>conf/server.xml</code></a></li>
+    <li><a href="BasicTomcatTourAndSecurity.html#tomcat security"> Tomcat Security</a> </li>
     <ul>
-        <li>Use a Firewall (covered elsewhere) </li>
-        <li>Using Authentication to Restrict Access to Tomcat Applications </li>
+        <li><a href="BasicTomcatTourAndSecurity.html#authentication"> Using Authentication to Restrict Access to Tomcat Applications </a></li>
         <ul>
-            <li>The Tomcat Manager Application </li>
-            <li>tomcat-users.xml </li>
-            <li>Configuring tomcat-users to Allow a User to Execute the Manager </li>
-            <li>Starting and Stopping Tomcat: watching log files, simple start up troubleshooting </li>
-            <li>Using Digested Passwords </li>
+            <li><a href="BasicTomcatTourAndSecurity.html#Tomcat Manager">The Tomcat Manger Application</a></li>
+            <li><a href="BasicTomcatTourAndSecurity.html#tomcat-users">tomcat-users.xml</a></li>
         </ul>
-        <li>Enabling Secure Communication Via SSL
-        <ul>
-            <li>Creating a Self-Signed Certificate </li>
-            <li>Configure Tomcat to Use SSL Encryption: server.xml (again) </li>
-        </ul>
-    </li><li>Other Tomcat Security Resources </li>
+        <li><a href="BasicTomcatTourAndSecurity.html#digested passwords"> Using Digested Passwords </a></li>
+        <li><a href="BasicTomcatTourAndSecurity.html#ssl encryption"> Using SSL Encryption</a></li>
+        <li><a href="BasicTomcatTourAndSecurity.html#ssl tds remote mgmt"> Enable SSL for TDS Remote Management</a></li>
+        <li><a href="BasicTomcatTourAndSecurity.html#tds no ssl"> Running TDS Without SSL</a></li>
+        <li><a href="BasicTomcatTourAndSecurity.html#ssl for mgr app"> Enable SSL for the Manager Application</a></li>
     </ul>
-</li></ul>
+</ul>
 
 <h3>2:00  TDS Configuration Catalogs (Ethan) </h3>
 <ul><li><a href="ConfigCatalogs.html">TDS Configuration Catalogs</a></li>
@@ -76,11 +65,10 @@ TDS Tutorial Schedule
       <li><code>datasetRoot</code> Element</li>
 
       <li><code>datasetScan</code> Element</li>
-      <li><code>service</code> Element<br>
-      </li>
+      <li><code>service</code> Element</li>
     </ul>
     <li>More <code>datasetScan</code> Element</li>
-    
+
 
   </ul>
 <li><a href="CatalogGen.html">CatalogGen</a> </li>
@@ -101,9 +89,7 @@ TDS Tutorial Schedule
               <li><a href="../reference/AccessLog.html">HTTP Access Logs</a></li>
               <li><a href="../reference/ThreddsConfigXMLFile.html">TDS Configuration with threddsConfig.xml</a></li>
 </ul>
-            <p>&nbsp;</p>
             <h3>6 pm Dinner - TBD (optional) (no host)</h3>
-            <p>&nbsp;</p>
             <h2>Tuesday</h2>
             <h3>8:30 Enhanced Catalogs (Ethan) 
             </h3>
