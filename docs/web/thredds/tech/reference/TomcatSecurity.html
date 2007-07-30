@@ -57,7 +57,7 @@
   ...
 &lt;/Host&gt;
 </pre>
-<h2>Seperate<a name="Seperate"></a> User Roles For Restricted Datasets</h2>
+<h2>Separate<a name="Separate" id="Separate"></a> User Roles For Restricted Datasets</h2>
 <p>The <em>tdsConfig, manager </em>and<em> admin</em> roles allow access to secure parts of  Tomcat and TDS. These can only be accessed using HTTPS (TLS), and so are considered secure. If you are  <a href="RestrictedAccess.html">restricting access to datasets</a>, you will also add other users who will have the <strong>restrictedDatasetUser </strong>role<strong>. <em>Do not give any of these users (including yourself!) any of the </em>tdsConfig, manager <em>or</em> admin<em> roles - keep them strictly separate.</em> </strong>This is because <strong>restrictedDatasetUser </strong>usage can also use non-HTTPS URLs, and so is vulnerable to <a href="http://en.wikipedia.org/wiki/Session_hijacking">session hijacking</a>. By keeping the roles separate, you make sure that the worst that can happen is that someone can download some scientific data they shouldn't have access to.<br>
 </p>
 <h2>Restrict Access to Tomcat  Manager Applications </h2>

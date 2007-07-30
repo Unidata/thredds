@@ -607,7 +607,7 @@ class H5header {
       throw new IllegalStateException("cant find HeapObject");
     }
 
-  } // HeapIdentifier
+  } // RegionReference
 
   private class StructureMember {
     String name;

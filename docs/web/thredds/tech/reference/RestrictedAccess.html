@@ -33,7 +33,7 @@
   &lt;user username=&quot;tiggeUser&quot; password=&quot;flabulate&quot; roles=&quot;<strong>tiggeData,restrictedDatasetUser</strong>&quot;/&gt;
   &lt;user username=&quot;luci&quot; password=&quot;designated&quot; roles=&quot;<strong>fieldProject,tiggeData,restrictedDatasetUser</strong>&quot;/&gt;
 </pre>
-<p>Make sure that none of these <strong>restrictedDatasetUsers</strong> have any of the &quot;secure&quot; roles such as <em>tdsConfig, manager, </em>or<em> admin</em>. (Here's <a href="TomcatSecurity.html#Seperate">why</a>). In this example we are storing passwords in cleartext, but you are advised to <a href="TomcatSecurity.html#Digest">store passwords in digest form</a>.</p>
+<p>Make sure that none of these <strong>restrictedDatasetUsers</strong> have any of the &quot;secure&quot; roles such as <em>tdsConfig, manager, </em>or<em> admin</em>. (Here's <a href="TomcatSecurity.html#Separate">why</a>). In this example we are storing passwords in cleartext, but you are advised to <a href="TomcatSecurity.html#Digest">store passwords in digest form</a>.</p>
 <p>You can also manage users and roles with the tomcat admin application, if you have<a href="http://wiki.apache.org/tomcat/HowTo#head-f50555909547d981d0e2b030323632b26047013e"> installed it</a>. </p>
 <p><strong>4</strong>. In the TDS configuration catalogs, add <strong>restrictAccess=<em>{security role}</em></strong>  attributes to the <strong>dataset</strong> or <strong>datasetScan</strong> elements. This will also restrict access to all children of those dataset. Example: </p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -103,6 +103,7 @@
 <h4>Troubleshooting:</h4>
 <ul>
   <li>Your browser may tell you that your server certificate has expired. <a href="RemoteManagement.html#SSL">Create a new one</a>, and restart Tomcat.</li>
+  <li>The latest version of Firefox is not allowing circular redirects. No workaround yet (7/29/07). </li>
 </ul>
 <h2>Unique Realm Name </h2>
  <p>If you are not using SSL, it is more secure to have a  Realm name unique to your server, then to use the default <em>THREDDS Data Server</em> Realm name, so we recommend that you change it in the web.xml file. This name is presented to the user during authentication, so it should be descriptive and include the hostname, for example:</p>
@@ -110,7 +111,7 @@
   </pre>
 <hr>
  <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 27, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 29, 2007 
 </address>
 <p>&nbsp; </p>
 </body>
