@@ -7,7 +7,7 @@
 
 <body>
 
-<h1><img src="../THREDDSlogo.jpg" height="54" width="67">Basic Tomcat Tour and Tomcat Security </h1>
+<h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">Basic Tomcat Tour and Tomcat Security </h1>
 <hr>
 
 At this point we assume that Tomcat is installed in
@@ -142,7 +142,7 @@ In this document we will focus on the files <code>tomcat-users.xml</code> and <c
 <p>
     <b>Exercise:</b> Do this:
 
-    <pre>
+<pre>
         ls $TOMCAT_HOME/conf
     </pre>
 <code>tomcat-users.xml</code> contains information about users of the application served by
@@ -221,7 +221,7 @@ on which Tomcat listens for secure connections.   Like port 8080, this
 is defined via a Connector attribute.   This particular connector may
 be commented out in a default installation.  We will enable it when we configure Tomcat to use SSL encryption, below.  For
 illustration, here is an example of a Connector for port 8443:
-    <pre>
+<pre>
     &lt;Connector port="8443"
                maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
                enableLookups="false" disableUploadTimeout="true"
@@ -243,7 +243,7 @@ information, and other information.
 Attributes to this valve are used to configure the information reported
 in the log file.  Here is an example of a simple Access Log Valve that came
     with a recent Tomcat distribution:
-    <pre>
+<pre>
 &lt;Valve className="org.apache.catalina.valves.AccessLogValve"
                  directory="logs"  prefix="localhost_access_log." suffix=".txt"
                  pattern="common" resolveHosts="false"/&gt;
@@ -271,7 +271,7 @@ This produces log entries that look like this:
 <b>Exercise:</b> Enable this valve so that we can see Tomcat requests and responses.
 
     <a name="User Database Config" />
- <h3> User Database Configuration: Realm Elements </h3>
+<h3> User Database Configuration: Realm Elements </h3>
 
 Realms allow the protected resources on a server to be partitioned into a set of 
 protection spaces, each with its own authentication scheme and/or authorization
@@ -322,10 +322,10 @@ TDS management.
     <code>tomcat-users.xml</code>, then provide detailed information about the steps required
     to enable authentication.  In a nutshell,
     there are two steps required to enable authentication for the Tomcat Manager:
-    <ul>
+<ul>
     <li>Configure <code>tomcat-users.xml</code>with the required role and user information</li>
     <li>Restart Tomcat to pick up the changes</li>
-    </ul>
+</ul>
 
 
 
