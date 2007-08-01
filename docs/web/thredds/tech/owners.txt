@@ -45,31 +45,32 @@ john	  3962 Feb 13 15:49 NetcdfServer.html // deprecated
 
 tutorial
 
-*all	    7159 Jul 24 20:08 schedule.html
 
-*ethan	   11248 Jul 24 15:38 BasicConfig.html
-*anne	   42795 Jul 25 14:18 BasicTomcatMgmtAndSecurity.html
-*ethan    1846 Oct 29  2006   CatalogGen.html
-*john	   16369 Oct 29  2006 CatalogPrimer.html		
-*ethan   24323 Jul 25 17:18   ConfigCatalogs.html
-*ethan	    2188 Jun 19 17:46 DigitalLibraries.html
-*ethan	    3017 Jul 24 15:38 DirectoryLayout.html
-*ethan	   10559 Jan 19  2007 EnhancedCatalogs.html
-*ethan	    4173 Jul 24 15:38 GettingStarted.html
-*tom	  810674 Nov 12  2006 LEADatTDSWorkshop.pdf
-*tom	 1294336 Nov 12  2006 LEADatTDSWorkshop.ppt
-*ethan	    6094 Oct 30  2006 MetadataExtraction.html
-*ethan	    1916 Oct 30  2006 MetadataStandards.html
-*john	   12922 Apr  2 16:23 NcML.htm
-*john	    4040 Nov  9  2006 Performance.html
-*robb	   78550 Jul 25 12:37 productionAdvanced.html
-*john	 2908672 Jul 22 15:03 TDSOverview.ppt
-*john	    3652 Nov  6  2006 TroubleShooting.html
+*ethan	   BasicConfig.html
+*anne	   BasicTomcatTourAndSecurity.html
+*ethan     CatalogGen.html
+*john	   CatalogPrimer.html		
+*ethan     ConfigCatalogs.html
+*ethan	   DigitalLibraries.html
+*ethan	   DirectoryLayout.html
+*ethan	   EnhancedCatalogs.html
+*ethan	   GettingStarted.html
+robb	   IDDconfig
+*tom	   LEADatTDSWorkshop.pdf
+*tom	   LEADatTDSWorkshop.ppt
+*ethan	   MetadataExtraction.html
+*ethan	   MetadataStandards.html
+*john	   NcML.htm
+*john	   Performance.html
+*robb	   productionAdvanced.html
+*john	   schedule.html
+*john	   TDSOverview.ppt
+*john	   TroubleShooting.html
 
 
-robb	       0 Jun 28 16:48 IDDconfig
-john	    3194 Jun 28 09:26 index.html
-john	       0 Jan 29 16:52 TomcatTraining
+
+john	    3194 Jun 28 09:26 index.html  		// old
+john	       0 Jan 29 16:52 TomcatTraining   
 
 john	   14280 Apr 12 17:49 TDSConfiguration.html	// redundant remove ??
 john	    5212 Dec 19  2006 TomcatFAQ.html
