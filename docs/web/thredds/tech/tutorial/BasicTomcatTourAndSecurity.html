@@ -119,12 +119,12 @@ be served by tomcat.  This includes TDS catalogs.
 <p>
 <b>Exercise:</b> Do this:
 <pre>
-ls ${TOMCAT_HOME}/content
+ls $TOMCAT_HOME/content
 </pre>
 <p>
 You should see the <code>thredds</code>  directory.  Now do:
 <pre>
-ls ${TOMCAT_HOME}/thredds
+ls $TOMCAT_HOME/thredds
 </pre>
 <p>
 You should some default content placed when the TDS was installed in order
@@ -143,7 +143,7 @@ In this document we will focus on the files <code>tomcat-users.xml</code> and <c
     <b>Exercise:</b> Do this:
 
     <pre>
-        ls ${TOMCAT_HOME}/conf
+        ls $TOMCAT_HOME/conf
     </pre>
 <code>tomcat-users.xml</code> contains information about users of the application served by
 tomcat.  It holds user names, passwords, and defines user <q>roles</q>, which can used
@@ -163,7 +163,7 @@ Here we will focus on a few select concepts and XML elements relevant to setting
 <p>
 Changes to <code>server.xml</code>do not take effect until Tomcat is restarted.
 <p>
-    <b>Exercise:</b> View <code>${TOMCAT_HOME}/conf/server.xml</code> in your favorite
+    <b>Exercise:</b> View <code>$TOMCAT_HOME/conf/server.xml</code> in your favorite
     editor.   Find the elements below as we tour the file.
 
 
@@ -231,7 +231,7 @@ illustration, here is an example of a Connector for port 8443:
 </pre>
 
 <a name="Access Log Config" />
-<h3> Access Logging Configuration: Elements </h3>
+<h3> Access Logging Configuration: Valve Elements </h3>
 
 A <code>Valve</code> element is a way to preprocess requests sent to Tomcat.
 Of particular interest here is the Access Log Valve, which creates log files
@@ -267,7 +267,8 @@ This produces log entries that look like this:
 <p>
     For more  information about the pattern codes supported by the Access Log Valve, see
 <a href="http://tomcat.apache.org/tomcat-5.0-doc/config/valve.html"> The Valve Component </a>.
-
+<p>
+<b>Exercise:</b> Enable this valve so that we can see Tomcat requests and responses.
 
     <a name="User Database Config" />
  <h3> User Database Configuration: Realm Elements </h3>
@@ -345,7 +346,7 @@ disabled by default.
 The Tomcat manager is a <q>webapp</q>, just like TDS.  However being considered part
 of the Tomcat server, it resides in a different
 directory than the <code>webapps</code> directory we toured above, which exists for external applications.
-Instead, the Manager webapp is placed under <code>${TOMCAT_HOME}/server/webapps</code>.
+Instead, the Manager webapp is placed under <code>$TOMCAT_HOME/server/webapps</code>.
 
 <p>
     Execution of the tomcat manager requires that users authenticate themselves and
@@ -376,7 +377,7 @@ Here is an example of a very simple <code>tomcat-users.xml</code> file:
 &lt;tomcat-users&gt;
     &lt;role rolename="tdrAdmin /&gt;
     &lt;user name="Anne" password="secret" roles="tdrAdmin" />
-&lt;/tomcat-users>
+&lt;/tomcat-users&gt;
 </pre>
 
 There must be an entry in the file for each user that is required to authenticate.
@@ -423,11 +424,11 @@ role, which is a predefined role in Tomcat.
     list of values.  For example, to add the manager role to the user <q>Anne</q> in the above
     example, the result would look like this:
 <pre>
-    &lt;code&gt;
+    &lt;tomcat-users&gt;
         &lt;role rolename="tdrAdmin /&gt;
         &lt;role rolename="manager" /&gt;
         &lt;user name="Anne" password="secret" roles="tdrAdmin,manager" /&gt;
-    &lt;/code&gt;
+    &lt;/tomcat-users&gt;
 </pre>
 
 <h3>Restart Tomcat</h3>
@@ -443,7 +444,9 @@ Be sure to restart Tomcat for the changes to take effect.
     on the <q>Manager</q> link in the left hand column.  You&#146;ll see that you will not be
     challenged on getting the Tomcat splash page, but you will be challenged when you
     try to access the manager.
-
+<p>
+With access to the Manager enabled, you can now start, stop, and reload the TDS without having
+to start or stop Tomcat.
 <p>
     <b>Exercise:</b> This exercise is to help you learn to debug tomcat problems.
     Modify tomcat-users.xml, but make sure there&#146;s some problem with the XML format.
@@ -504,7 +507,7 @@ The result should look something like this:
       &lt;!--Realm className="org.apache.catalina.realm.UserDatabaseRealm"
              resourceName="UserDatabase"/--/&gt;
 
-      &lt;!--  Added by Anne --/&gt;
+      &lt;!--  Added by Anne --&gt;
       &lt;Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA"/&gt;
 </pre>
 
@@ -518,7 +521,7 @@ to use.  It also takes an argument that is the password to be digested.  Here is
 an example of the command usage:
 
 <pre>
-    ${TOMCAT_HOME}/bin/digest.sh -a SHA secret
+    $TOMCAT_HOME/bin/digest.sh -a SHA secret
 </pre>
 This will produce output like this:
 <pre>
@@ -545,7 +548,7 @@ You must the copy the digested password, the part to the right of the colon char
 <b>Exercise:</b> Do the above for the clear text password that you added to
     <code>tomcat-users.xml</code> earlier.  After you&#146;ve made the changes
 and restarted Tomcat, test the change by going to
-<a href="http://locahost:8080"> http://locahost:8080</a> and then
+<a href="http://localhost:8080"> http://localhost:8080</a> and then
 accessing the Manager application.
 The behavior of Tomcat should be the same as when you first added your password.
 You know, however, that the digested password is being used as that is what
@@ -595,14 +598,14 @@ To create a self-signed certificate, you must first create a <q>keystore</q> fil
 where certificates are stored.  Java provides a tool, called keytool, that
 generates a self-signed certificate and puts in a keystore file.  The default
 keystore filename is ${user_home}/.keystore.  However, this example will use
-the filename ${TOMCAT_HOME}/conf/keystore-tomcat.
+the filename $TOMCAT_HOME/conf/keystore-tomcat.
 
 <p>
     To create a self-signed certificate and store it in
-    ${TOMCAT_HOME}/conf/keystore-tomcat, execute this command:
+    $TOMCAT_HOME/conf/keystore-tomcat, execute this command:
 <p>
     <code>
-        /usr/java/jdk1.5.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore ${TOMCAT_HOME}/conf/keystore-tomcat
+        /usr/java/jdk1.5.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 -keystore $TOMCAT_HOME/conf/keystore-tomcat
     </code>
 <p>
     The arguments to this command tell <code>keytool</code> to generate a key,
@@ -610,7 +613,7 @@ the filename ${TOMCAT_HOME}/conf/keystore-tomcat.
     alias used by Tomcat),   
     use the RSA encryption algorithm,
     create a certificate valid for 365 days,
-    and put it in the keystore file called <code>${TOMCAT_HOME}/conf/keystore-tomcat</code>.
+    and put it in the keystore file called <code>$TOMCAT_HOME/conf/keystore-tomcat</code>.
 
 <p>
     This command will generate this series of questions:
@@ -724,7 +727,7 @@ value <q>8443</q>.  It should look something like this:
 <p>
 <b>Exercise:</b> Edit <code>server.xml</code> and configure Tomcat to use SSL.
 Restart Tomcat, and connect via your browser:
- <a href="http://locahost:8080"> http://locahost:8080</a>.
+ <a href="http://localhost:8080"> http://localhost:8080</a>.
 <p>
 Use of SSL is transparent, so you should see no difference.  If there is a problem,
 however, you will likely be unable to restart Tomcat or connect successfully afterwards.
@@ -732,7 +735,7 @@ however, you will likely be unable to restart Tomcat or connect successfully aft
 <a name="ssl tds remote mgmt"
 <h3> Enable SSL for TDS Remote Management</h3>
 Exercise: Go to
-<a href="http://locahost:8080/thredds/debug"> http://locahost:8080/thredds/debug</a>.
+<a href="http://localhost:8080/thredds/debug"> http://localhost:8080/thredds/debug</a>.
 <p>
     If you've been following the exercises in this document at this point
     you will be prevented from accesssing this page.  You should get a message
@@ -745,23 +748,24 @@ To provide access it is necessary to update the user database
 add that as a role to authorized users.   Make your <code>tomcat-users.xml</code>
 look something like this:
 <pre>
-    &lt;role rolename="tdsConf /&gt;
+&lt;tomcat-users&gt;
+    &lt;role rolename="tdsConfig /&gt;
     &lt;role rolename="tdrAdmin /&gt;
     &lt;role rolename="manager" /&gt;
-    &lt;user name="Anne" password="secret" roles="tdrAdmin,manager,tdsConf" /&gt;
-&lt;/code&gt;
+    &lt;user name="Anne" password="secret" roles="tdrAdmin,manager,tdsConfig" /&gt;
+&lt;/tomcat-users&gt;
 </pre>
 Then restart Tomcat for this change to take effect.
 <p>
 Exercise: Test this change by going to
-<a href="http://locahost:8080/thredds/debug"> http://locahost:8080/thredds/debug</a>.
+<a href="http://localhost:8080/thredds/debug"> http://localhost:8080/thredds/debug</a>.
 You should get the TDS debug page.
 
 <a name="tds no ssl"
 <h3>Running TDS without SSL</h3>
 
 If you are on a secure network and don't want to run with SSL enabled,
-    edit <code>${TOMCAT_HOME}webapps/thredds/WEB-INF/web.xml</code> and change all instances of
+    edit <code>$TOMCAT_HOMEwebapps/thredds/WEB-INF/web.xml</code> and change all instances of
     <q>CONFIDENTIAL</q> to <q>NONE</q>.
 <p>
 Password authentication will then be done without SSL encryption.
@@ -782,7 +786,7 @@ the application,
 called <code>&lt;application name&gt;/WEB-INF/web.xml</code> (relative to
 the <code>webapps</code> directory), which
 is provided with every application served by Tomcat.  For example, TDS provides
-the file <code>${TOMCAT_HOME}/webapps/thredds/WEB-INF/web.xml</code>, which is
+the file <code>$TOMCAT_HOME/webapps/thredds/WEB-INF/web.xml</code>, which is
 preconfigured to require SSL encryption to get the remote management page.
 The section of the file that does this is here:
 <pre>
