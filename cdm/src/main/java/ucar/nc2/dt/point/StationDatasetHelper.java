@@ -1,3 +1,22 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package ucar.nc2.dt.point;
 
 import ucar.unidata.geoloc.LatLonRect;
@@ -19,11 +38,11 @@ import java.io.IOException;
  * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class StationDatasetHelper {
   private StationObsDataset obsDataset;
-  private HashMap stationHash;
+  private Map<String,Station> stationHash;
+  private boolean debug = false;
 
   public StationDatasetHelper( StationObsDataset obsDataset) {
     this.obsDataset = obsDataset;
@@ -32,7 +51,7 @@ public class StationDatasetHelper {
   private LatLonRect rect;
   public LatLonRect getBoundingBox() {
     if (rect == null) {
-      List stations = null;
+      List stations;
       try {
         stations = obsDataset.getStations();
       } catch (IOException e) {
@@ -45,13 +64,13 @@ public class StationDatasetHelper {
       LatLonPointImpl llpt = new LatLonPointImpl();
       llpt.set( s.getLatitude(), s.getLongitude());
       rect = new LatLonRect(llpt, .001, .001);
-      System.out.println("start="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
+      if (debug) System.out.println("start="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
         s =  (Station) stations.get(i);
         llpt.set( s.getLatitude(), s.getLongitude());
         rect.extend( llpt);
-        System.out.println("add="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
+        if (debug) System.out.println("add="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
       }
     }
     if (rect.crossDateline() && rect.getWidth() > 350.0) { // call it global - less confusing
@@ -63,15 +82,14 @@ public class StationDatasetHelper {
     return rect;
   }
 
-  public List getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
+  public List<Station> getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
-    ArrayList result = new ArrayList();
-    List stations = obsDataset.getStations();
-    for (int i = 0; i < stations.size(); i++) {
-      Station s =  (Station) stations.get(i);
-      latlonPt.set( s.getLatitude(), s.getLongitude());
-      if (boundingBox.contains( latlonPt))
-        result.add( s);
+    List<Station> result = new ArrayList<Station>();
+    List<Station> stations = obsDataset.getStations();
+    for (Station s : stations) {
+      latlonPt.set(s.getLatitude(), s.getLongitude());
+      if (boundingBox.contains(latlonPt))
+        result.add(s);
       if ((cancel != null) && cancel.isCancel()) return null;
     }
     return result;
@@ -79,21 +97,20 @@ public class StationDatasetHelper {
 
   public Station getStation(String name) {
     if (stationHash == null) {
-      List stations = null;
+      List<Station> stations;
       try {
         stations = obsDataset.getStations();
       } catch (IOException e) {
         return null;
       }
 
-      stationHash = new HashMap( 2*stations.size());
-      for (int i = 0; i < stations.size(); i++) {
-        Station s =  (Station) stations.get(i);
-        stationHash.put( s.getName(), s);
+      stationHash = new HashMap<String,Station>( 2*stations.size());
+      for (Station s : stations) {
+        stationHash.put(s.getName(), s);
       }
     }
 
-    return (Station) stationHash.get( name);
+    return stationHash.get( name);
   }
 
   public List getStationObs(Station s, double startTime, double endTime, CancelTask cancel) throws IOException {
@@ -109,20 +126,20 @@ public class StationDatasetHelper {
     return result;
   }
 
-  public List getStationObs(List stations, CancelTask cancel) throws IOException {
+  public List getStationObs(List<Station> stations, CancelTask cancel) throws IOException {
     ArrayList result = new ArrayList();
     for (int i = 0; i < stations.size(); i++) {
-      Station s = (Station) stations.get(i);
+      Station s = stations.get(i);
       result.addAll( obsDataset.getData( s, cancel));
       if ((cancel != null) && cancel.isCancel()) return null;
     }
     return result;
   }
 
-  public List getStationObs(List stations, double startTime, double endTime, CancelTask cancel) throws IOException {
+  public List getStationObs(List<Station> stations, double startTime, double endTime, CancelTask cancel) throws IOException {
     ArrayList result = new ArrayList();
     for (int i = 0; i < stations.size(); i++) {
-      Station s = (Station) stations.get(i);
+      Station s = stations.get(i);
       result.addAll( getStationObs( s, startTime, endTime, cancel));
       if ((cancel != null) && cancel.isCancel()) return null;
     }
@@ -141,7 +158,7 @@ public class StationDatasetHelper {
     return getStationObs( stations, startTime, endTime, cancel);
   }
 
-  public void sortByTime(List stationObs) {
+  public void sortByTime(List<Station> stationObs) {
     Collections.sort( stationObs, new StationObsComparator());
   }
 

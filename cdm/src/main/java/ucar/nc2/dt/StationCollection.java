@@ -38,7 +38,7 @@ public interface StationCollection extends PointCollection {
    * @return List of Station
    * @throws java.io.IOException on io error
    */
-  public List getStations() throws IOException;
+  public List<Station> getStations() throws IOException;
 
   /**
    * Get all the Stations in the collection, allow user to cancel.
@@ -47,7 +47,7 @@ public interface StationCollection extends PointCollection {
    * @return List of Station
    * @throws java.io.IOException on io error
    */
-  public List getStations(ucar.nc2.util.CancelTask cancel) throws IOException;
+  public List<Station> getStations(ucar.nc2.util.CancelTask cancel) throws IOException;
 
   /**
    * Get all the Stations within a bounding box.

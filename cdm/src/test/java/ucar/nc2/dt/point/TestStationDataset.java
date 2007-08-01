@@ -25,6 +25,32 @@ public class TestStationDataset extends TestCase {
   }
 
 
+  public void testMadis() throws IOException {
+    String filename = ucar.nc2.TestAll.upcShareTestDataDir+"point/netcdf/madis.nc";
+    StringBuffer sbuff = new StringBuffer();
+    long start = System.currentTimeMillis();
+    PointObsDataset pods = (PointObsDataset) TypedDatasetFactory.open( thredds.catalog.DataType.POINT, filename, null, sbuff);
+    long took = System.currentTimeMillis() - start;
+    System.out.println(" open madis as point dataset "+filename+" "+sbuff+" took "+took);
+
+    start = System.currentTimeMillis();
+    int bufferSize = 163840;
+    Iterator  dataIterator = pods.getDataIterator(bufferSize);
+    while (dataIterator.hasNext()) {
+      dataIterator.next();
+    }
+    took = System.currentTimeMillis() - start;
+    System.out.println(" first ok took "+took+" with bufferSize "+bufferSize);
+
+    start = System.currentTimeMillis();
+    dataIterator = pods.getDataIterator(bufferSize);
+    while (dataIterator.hasNext()) {
+      dataIterator.next();
+    }
+    took = System.currentTimeMillis() - start;
+    System.out.println(" second ok took "+took);
+  }
+
   public void utestMultidimStationObsDataset() throws IOException {
     testAllMethods( topDir+"misc/multidim.nc");
   }

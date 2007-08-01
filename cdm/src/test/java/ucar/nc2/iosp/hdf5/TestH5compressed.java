@@ -19,8 +19,8 @@ public class TestH5compressed extends TestCase {
     // actually doesnt seem to be compressed ??
 
     NetcdfFile ncfile = TestH5.openH5("support/zip.h5");
-    Variable dset = null;
-    assert(null != (dset = ncfile.findVariable("Data/Compressed_Data")));
+    Variable dset = ncfile.findVariable("Data/Compressed_Data");
+    assert dset != null;
     assert(dset.getDataType() == DataType.INT);
 
     assert(dset.getRank() == 2);
@@ -28,16 +28,7 @@ public class TestH5compressed extends TestCase {
     assert(dset.getShape()[1] == 20);
 
     // read entire array
-    Array A = null;
-    try {
-      A = dset.read();
-    }
-    catch (IOException e) {
-      System.err.println("ERROR reading file ");
-      e.printStackTrace();
-      assert(false);
-      return;
-    }
+    Array A = dset.read();
     assert(A.getRank() == 2);
     assert(A.getShape()[0] == 1000);
     assert(A.getShape()[1] == 20);
@@ -54,9 +45,9 @@ public class TestH5compressed extends TestCase {
   public void testReadCompressedByte() throws IOException {
     // actually doesnt seem to be compressed ??
 
-    NetcdfFile ncfile = TestH5.openH5("support/MSG1_8bit_HRV.H5");
-    Variable dset = null;
-    assert(null != (dset = ncfile.findVariable("image1/image_preview")));
+    NetcdfFile ncfile = TestH5.openH5("msg/MSG1_8bit_HRV.H5");
+    Variable dset = ncfile.findVariable("image1/image_preview");
+    assert dset != null;
     assert(dset.getDataType() == DataType.BYTE);
 
     assert(dset.getRank() == 2);
@@ -64,16 +55,7 @@ public class TestH5compressed extends TestCase {
     assert(dset.getShape()[1] == 96);
 
     // read entire array
-    Array A = null;
-    try {
-      A = dset.read();
-    }
-    catch (IOException e) {
-      System.err.println("ERROR reading file ");
-      e.printStackTrace();
-      assert(false);
-      return;
-    }
+    Array A = dset.read();
     assert(A.getRank() == 2);
     assert(A.getShape()[0] == 64);
     assert(A.getShape()[1] == 96);

@@ -1239,6 +1239,7 @@ public class Variable implements VariableIF {
       resetShape();
       return;
     }
+    
     StringTokenizer stoke = new StringTokenizer(dimString);
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();

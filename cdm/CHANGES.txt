@@ -2,6 +2,13 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 4.0
+ Features
+  * Add RotatedPole projection
+ API
+ Bugs
+ Libraries
+
 Changes in version 2.2.21
  Features
   * VerticalPerspectiveView: projection overrides latlon2projBB, use in GeoGrid to calculate ranges

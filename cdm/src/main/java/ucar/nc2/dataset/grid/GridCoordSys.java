@@ -26,6 +26,7 @@ import ucar.nc2.util.NamedObject;
 import ucar.nc2.units.*;
 
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
 import ucar.units.ConversionException;
@@ -99,14 +100,19 @@ public class GridCoordSys extends CoordinateSystem {
     if (cs.isGeoXY()) {
       xaxis = cs.getXaxis();
       yaxis = cs.getYaxis();
-      if (!kmUnit.isCompatible(xaxis.getUnitsString())) {
-        sbuff.append(cs.getName()+" X axis units must be convertible to km\n");
-        return false;
+
+      ProjectionImpl p = cs.getProjection();     
+      if (!( p instanceof RotatedPole)) {
+        if (!kmUnit.isCompatible(xaxis.getUnitsString())) {
+          sbuff.append(cs.getName()+" X axis units must be convertible to km\n");
+          return false;
+        }
+        if (!kmUnit.isCompatible(yaxis.getUnitsString())) {
+          sbuff.append(cs.getName()+" Y axis units must be convertible to km\n");
+          return false;
+        }
       }
-      if (!kmUnit.isCompatible(yaxis.getUnitsString())) {
-        sbuff.append(cs.getName()+" Y axis units must be convertible to km\n");
-        return false;
-      }
+
     } else if (cs.isLatLon()) {
       xaxis = cs.getLonAxis();
       yaxis = cs.getLatAxis();
@@ -197,13 +203,18 @@ public class GridCoordSys extends CoordinateSystem {
     if (cs.isGeoXY()) {
       horizXaxis = xAxis = cs.getXaxis();
       horizYaxis = yAxis = cs.getYaxis();
-      // LOOK shold we make a copy of the axes here, so original CS stays intact ??
-      convertUnits( horizXaxis);
-      convertUnits( horizYaxis);
+
+      if (!(cs.getProjection() instanceof RotatedPole)) {
+        // LOOK shold we make a copy of the axes here, so original CS stays intact ??
+        convertUnits( horizXaxis);
+        convertUnits( horizYaxis);
+      }
+
     } else if (cs.isLatLon()) {
       horizXaxis = lonAxis = cs.getLonAxis();
       horizYaxis = latAxis = cs.getLatAxis();
       isLatLon = true;
+
     } else
       throw new IllegalArgumentException("CoordinateSystem is not geoReferencing");
 

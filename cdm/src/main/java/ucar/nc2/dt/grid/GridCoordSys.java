@@ -27,6 +27,7 @@ import ucar.nc2.units.*;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
+import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
 import ucar.units.ConversionException;
@@ -99,13 +100,17 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (cs.isGeoXY()) {
       xaxis = cs.getXaxis();
       yaxis = cs.getYaxis();
-      if (!kmUnit.isCompatible(xaxis.getUnitsString())) {
-        sbuff.append(cs.getName() + ": X axis units must be convertible to km\n");
-        return false;
-      }
-      if (!kmUnit.isCompatible(yaxis.getUnitsString())) {
-        sbuff.append(cs.getName() + ": Y axis units must be convertible to km\n");
-        return false;
+
+      ProjectionImpl p = cs.getProjection();
+      if (!(p instanceof RotatedPole)) {
+        if (!kmUnit.isCompatible(xaxis.getUnitsString())) {
+          if (sbuff != null) sbuff.append(cs.getName() + ": X axis units must be convertible to km\n");
+          return false;
+        }
+        if (!kmUnit.isCompatible(yaxis.getUnitsString())) {
+          if (sbuff != null) sbuff.append(cs.getName() + ": Y axis units must be convertible to km\n");
+          return false;
+        }
       }
     } else {
       xaxis = cs.getLonAxis();
@@ -219,13 +224,18 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (cs.isGeoXY()) {
       horizXaxis = xAxis = cs.getXaxis();
       horizYaxis = yAxis = cs.getYaxis();
-      // LOOK shold we make a copy of the axes here, so original CS stays intact ??
-      convertUnits(horizXaxis);
-      convertUnits(horizYaxis);
+
+      ProjectionImpl p = cs.getProjection();
+      if (!(p instanceof RotatedPole)) {
+        // LOOK shold we make a copy of the axes here, so original CS stays intact ??
+        convertUnits(horizXaxis);
+        convertUnits(horizYaxis);
+      }
     } else if (cs.isLatLon()) {
       horizXaxis = lonAxis = cs.getLonAxis();
       horizYaxis = latAxis = cs.getLatAxis();
       isLatLon = true;
+      
     } else
       throw new IllegalArgumentException("CoordinateSystem is not geoReferencing");
 
@@ -377,7 +387,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     coordAxes.add(horizXaxis);
     coordAxes.add(horizYaxis);
 
-        // set canonical area
+    // set canonical area
     ProjectionImpl projOrig = from.getProjection();
     if (projOrig != null) {
       proj = projOrig.constructCopy();
@@ -662,14 +672,14 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * Given a lat,lon point, find the x,y index in the coordinate system.
    *
-   * @param lat latitude position.
-   * @param lon longitude position.
-   * @param result  put result in here, may be null
+   * @param lat    latitude position.
+   * @param lon    longitude position.
+   * @param result put result in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
    */
   public int[] findXYindexFromLatLon(double lat, double lon, int[] result) {
     Projection dataProjection = getProjection();
-    ProjectionPoint pp = dataProjection.latLonToProj( new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
+    ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
 
     return findXYindexFromCoord(pp.getX(), pp.getY(), result);
   }
@@ -887,8 +897,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices
-   * @param xindex  x index
-   * @param yindex  y index
+   *
+   * @param xindex x index
+   * @param yindex y index
    * @return lat/lon coordinate of the midpoint of the cell
    */
   public LatLonPoint getLatLon(int xindex, int yindex) {
@@ -915,7 +926,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   public LatLonPoint getLatLon(double xcoord, double ycoord) {
     Projection dataProjection = getProjection();
-    return dataProjection.projToLatLon( new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
+    return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
   }
 
   private LatLonRect llbb = null;
@@ -998,7 +1009,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (proj != null && !(proj instanceof VerticalPerspectiveView)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();
-      rect = bb.intersect( rect);
+      rect = bb.intersect(rect);
       if (null == rect)
         throw new InvalidRangeException("Request Bounding box does not intersect Grid");
     }
@@ -1089,8 +1100,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
 
       ArrayList<Range> list = new ArrayList<Range>();
-        list.add(new Range(minj, maxj));
-        list.add(new Range(mini, maxi));
+      list.add(new Range(minj, maxj));
+      list.add(new Range(mini, maxi));
       return list;
 
     } else {

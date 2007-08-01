@@ -55,7 +55,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
    *
    * @param v       the variable
    * @param attname name of variable
-   * @return attribute value as a double
+   * @return attribute value as a double, else NaN if not found
    */
   protected double readAttributeDouble(Variable v, String attname) {
     Attribute att = v.findAttributeIgnoreCase(attname);
