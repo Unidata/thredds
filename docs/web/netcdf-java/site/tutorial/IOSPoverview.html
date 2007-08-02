@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h1>Writing an IOSP : Overview</h1>
+<h1><img src="../netcdfBig.gif" width="100" height="55">Writing an IOSP : Overview</h1>
 <p>To write an IOSP, you must implement the <strong>ucar.nc2.IOServiceProvider</strong> interface.</p>
 <pre>public interface <strong>ucar.nc2.IOServiceProvider</strong> {</pre>
 <pre>  // Check if this is a valid file for this IOServiceProvider.
@@ -54,7 +54,7 @@
     <h3>Allow user access to every interesting bit of information in the dataset </h3>
   </li>
   <li>
-    <h3>Hide details related to file format (eg links)</h3>
+    <h3>Hide details related to file format (eg links, file structure details)</h3>
   </li>
   <li>
     <h3>Try to mimic data access efficiency of netCDF-3</h3>
