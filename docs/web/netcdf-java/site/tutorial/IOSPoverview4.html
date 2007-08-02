@@ -13,20 +13,20 @@
 
 <body>
 <h1><img src="../netcdfBig.gif" width="100" height="55">Writing an IOSP for Netdf-Java version 4</h1>
-<p>To write an IOSP, you must implement the <strong>ucar.nc2.IOServiceProvider</strong> interface. Version 4.0 of Netcdf-Java has 2 new methods (in red), and one method has been removed:</p>
+<p>To write an IOSP, you must implement the <strong>ucar.nc2.IOServiceProvider</strong> interface. Version 4.0 of Netcdf-Java has 2 new methods (in red), and one method has been removed. It also uses <strong>Section</strong> objects instead of <strong>List&lt;Range&gt;</strong>. </p>
 <pre>public interface <strong>ucar.nc2.IOServiceProvider</strong> {</pre>
 <pre>  // Check if this is a valid file for this IOServiceProvider.
   public boolean <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile raf) throws IOException;</pre>
 <pre>  // Open existing file, and populate ncfile with it.
   public void <strong>open</strong>(ucar.unidata.io.RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;</pre>
 <pre>  // Read data from a top level Variable and return a memory resident Array.
-  public ucar.ma2.Array <strong>readData</strong>(ucar.nc2.Variable v2, List section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+  public ucar.ma2.Array <strong>readData</strong>(ucar.nc2.Variable v2, <span class="style3">Section section</span>) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
 <span class="style3">  // Read data from a top level Variable and send data to a WritableByteChannel.
   public long <strong>readData</strong>(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)<br>         throws java.io.IOException, ucar.ma2.InvalidRangeException;</span></pre>
 <pre>  // Read data from a Variable that is nested in one or more Structures.
   // If there are no Structures in the file, this will never be called.
-  public ucar.ma2.Array <strong>readNestedData</strong>(ucar.nc2.Variable v2, java.util.List section) throws IOException, ucar.ma2.InvalidRangeException;</pre>
+  public ucar.ma2.Array <strong>readNestedData</strong>(ucar.nc2.Variable v2, <span class="style3">Section section</span>) throws IOException, ucar.ma2.InvalidRangeException;</pre>
 <pre>  // Close the file.
   public void <strong>close</strong>() throws IOException;</pre>
 <pre>  // Extend the file if needed in a way that is compatible with the current metadata.
@@ -40,16 +40,21 @@
   public String <strong>toStringDebug</strong>(Object o);</pre>
 <pre>  // Show debug / underlying implementation details
   public String <strong>getDetailInfo</strong>();</pre>
-<pre>}</pre>
+<pre>}
+</pre>
+<p>A <strong>Section</strong> is a container for a <strong>List</strong> of <strong>Range</strong> objects:</p>
+<pre> public class <strong>ucar.ma2.Section</strong> {
+   public List&lt;Range&gt; <strong>getRanges</strong>();
+   public int[] <strong>getOrigin</strong>();<br>   public int[] <strong>getShape</strong>();<br>   public int[] <strong>getStride</strong>();
+   ...
+ }
+</pre>
 <p>Its best to extend <strong>ucar.nc2.iosp.AbstractIOServiceProvider. </strong>In the simplest case, you only ahave to implement 4 methods.</p>
-<pre>public class ExampleIosp <strong>extends</strong> <strong>AbstractIOServiceProvider</strong> {
-<br>  public boolean <strong>isValidFile</strong>(RandomAccessFile raf) throws IOException {<br>  }</pre>
-<pre>  public void <strong>open</strong>(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-  }</pre>
-<pre>  public Array <strong>readData</strong>(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
-  }</pre>
-<pre>  public void <strong>close</strong>() throws IOException {
-  }
+<pre>public class Example <strong>extends</strong> <strong>AbstractIOServiceProvider</strong> {
+<br>  public boolean <strong>isValidFile</strong>(RandomAccessFile raf) throws IOException {}</pre>
+<pre>  public void <strong>open</strong>(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {}</pre>
+<pre>  public Array <strong>readData</strong>(Variable v2, Section wantSection) throws IOException, InvalidRangeException {}</pre>
+<pre>  public void <strong>close</strong>() throws IOException {}
 }</pre>
 </body>
 </html>

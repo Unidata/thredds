@@ -2,27 +2,27 @@ IOSP workshop
 
 8:30  Netcdf-Java / CDM overview (John)
 
-9:30 IOSP Overview (John)
+9:30  IOSP Overview (John)
 
 10:00 Break
 
 10:30 Source code checkout, build CDM (Ethan)
 
-11:00 Creating an IOSP (1) (John)
+11:00 Things you want to know about Netcdf-Java for writing an IOSP (John)
 
 12:00 Lunch
 
-1:00 Creating an IOSP (2) (John)
+1:00 Creating an IOSP (1) (John)
 
 2:00 Case Study - DMSP (Ethan)
 
-2:30 Case Study - ?? (John)
+2:30 Case Study - BUFR (Robb)
 
 3:00 break
 
-3:30 Case Study - Radar (Yuan)
+3:20 Case Study - Radar (Yuan)
 
-4:00 Case Study - Grib (Robb)
+3:40 Creating an IOSP (2) (John)
 
 4:30 wrap-up / questions
 
