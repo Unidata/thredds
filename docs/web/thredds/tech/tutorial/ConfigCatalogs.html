@@ -1,13 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
   
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>TDS Configuration Catalogs</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>TDS Configuration Catalogs</title>
+  
 
   
 
-  <meta content="Ethan Davis" name="author">
-</head>
+  <meta content="Ethan Davis" name="author"></head>
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Configuration Catalogs</h1>
 <br>
@@ -340,8 +339,40 @@ have two access methods. So the dataset:<br>
 
 
 
+<h3>Available Services for a Given Dataset</h3>
+<p>Each of the available services has different requirements for the datasets they can serve:<br>
+</p>
+<ul>
+  <li><strong>HTTP</strong>: This bulk file transfer can serve any file.</li>
+  <li><strong>OPeNDAP</strong>: The OPeNDAP server can serve any dataset that the netCDF-Java library can open.</li>
+  <li><strong>WCS</strong>: The WCS server can serve datasets that:</li>
+  <ol>
+    <li>can be opened with the netCDF-Java library,</li>
+    <li>the library recognizes as gridded data, and</li>
+    <li>is on a regularly spaced grid.<br>
+    </li>
+  </ol>
+</ul>
+<p>To test a dataset for the OPeNDAP and WCS services, try to open it
+in the ToolsUI application. If it opens, it can be served by OPeNDAP.
+Cut and paste the URL into the "Grids" tab and hit return. If that
+succeeds, click onthe "WCS" button on the far right of the dataset/URL
+text box.<br>
+</p>
+<p>Let's try it out with a GFS dataset:<br>
+</p>
+<ol>
+  <li>Open the ToolsUI application</li>
+  <li>Open a GFS model data file in the "Viewer" tab. <strong>Success</strong>: it can be served with the OPeNDAP service.<br>
+  </li>
+  <li>Open the same GFS model data file in the "Grids" tab.</li>
+  <li>Click on the "WCS" button.</li>
+  <li>An XML document window should open with a <code>WCS_Capabilities</code> root element. <strong>Success</strong>: The dataset can be served with the WCS service.<br>
+  </li>
+</ol>
 <h3>Exercise: Add WCS service to GFS model data<br>
 </h3>
+
 
 
 
@@ -585,7 +616,7 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
 
 
 
-<pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="GFS_Alaska_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"<br>                replaceString="NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT"/&gt;<br>&lt;/namer</pre>
+<pre>  &lt;namer&gt;<br>    &lt;regExpOnName regExp="GFS_Alaska_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"<br>                     replaceString="NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT"/&gt;<br>  &lt;/namer&gt;<br></pre>
 
 
 
@@ -944,7 +975,13 @@ determine the time coverage: </p>
 
 
 
-<pre><strong>  </strong>&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>  &lt;/timeCoverage&gt;</pre>
+<pre><strong>  </strong>&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>  &lt;/timeCoverage&gt;<br></pre>
+<h3>The Order of <code>datasetScan</code> Child Elements</h3>
+<p>Unfortunately, the order of a <code>datasetScan</code> elements children elements does matter.<br>
+</p>
+<p>...???<br>
+</p>
+
 
 
 

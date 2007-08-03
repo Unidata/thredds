@@ -59,7 +59,7 @@ directory.Typically you will only be adding and modifying catalogs and configura
     <ul>
       <li><code>catalogErrors.xml</code> - messages from TDS configuration contains information on the TDS configuration catalogs<br>
       </li>
-      <li><code>threddsServlet.xml</code></li>
+      <li><code>threddsServlet.log</code></li>
     </ul>
   </ul>
 </ul>
@@ -140,12 +140,18 @@ locate your data on a seperate disk partition from your configuration.<br>
     <li><code>vi catalog.xml</code></li>
   </ul>
   <li>Change the <code>datasetScan</code> element <code>location</code> attribute value to <code>/data/ldm/pub/native/grid/NCEP/GFS</code></li>
-  <li>Change the <code>name</code>, <code>ID</code> and other items as appropriate. Does the filter pattern need to be changed?</li>
+  <li>Change the <code>name</code>, <code>ID</code> and other items as appropriate.</li><li>Change the filter <code>wildcard</code> pattern if needed</li>
+
   <ul>
     <li><code>ls /data/ldm/pub/native/grid/NCEP/GFS</code></li><li><code>ls /data/ldm/pub/native/grid/NCEP/GFS/*</code></li>
 
-    <li>Change the filter pattern to something like <code></code> "<code>GFS*.grib1</code>"</li>
+    <li>Change the wildcard pattern to something like <code></code> "<code>GFS*.grib1</code>"</li>
+  </ul><li>Add to the inherited <code>metadata</code> element (more on this below)</li>
+  <ul>
+    <li><code>&lt;dataType&gt;Grid&lt;/dataType&gt;</code><br>
+    </li>
   </ul>
+
   <li>Restart Tomcat so the TDS is reinitialized:</li>
   <ul>
     <li><code>cd ${TOMCAT_HOME}/bin</code></li>
@@ -154,9 +160,42 @@ locate your data on a seperate disk partition from your configuration.<br>
   </ul>
   <li>Browse the catalog again</li>
   <ul>
-<li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li>
+<li>URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li><li>Browse all the way to an accessible dataset</li>
+
+  </ul></ol>
+<p>Find the "Viewer" links at the bottom of the page. There should be
+one for ToolsUI and one for the IDV. These viewer links are generated
+automatically. The ToolsUI link is generated if the netCDF-Java library
+can open the dataset. The IDV link is generated if the dataset has a <code>dataType</code>
+of "Grid" [and the netCDF-Java library successfully opens it as a
+grid?]. Though the IDV can open other data types, the viewer code has
+not yet been updated to take advantage of this capability.<br>
+</p>
+<ol start="8">
+  <li>Open the selected dataset in ToolsUI or IDV</li>
+  <ul>
+    <li>Find the ToolsUI or IDV "Viewer" links at the bottom of the dataset page.</li>
+    <li>Select and click on one of the links.</li>
+  </ul>
+  <li>In ToolsUI</li>
+  <ul>
+    <li>The dataset page will open in ToolsUI</li>
+    <li>Click on the "Open Dataset" button.</li>
+    <li>Select a variable and click on the "red monster" icon from the menu to bring up the "Grid View" window</li>
+    <li>Set stride subset if appropriate.</li>
+    <li>Click on the "red monster" icon again to access and display data.<br>
+    </li>
+  </ul>
+  <li>In IDV</li>
+  <ul>
+    <li>In the "Dashboard" window, select the "Field Selector" tab (it should contain the dataset)</li>
+    <li>Select a field and a display.</li>
+    <li>Subset in time and set stride if appropriate.</li>
+    <li>Click "Create Display" button.<br>
+    </li>
   </ul>
 </ol>
+
 <h3>Example: Other Available Datasets</h3>
 <p>When configuring the TDS to serve your data, it is important to
 remember that the TDS can only serve data that is readable through the
@@ -164,12 +203,41 @@ netCDF-Java library. Let's take a look around for some more data that
 we can serve:<br>
 </p>
 <ol>
-  <li>Open the ToolsUI application:</li>
+  <li>If not already running ToolsUI, open the ToolsUI application:</li>
   <ul>
-    <li>Webstart URL: <code><a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp">http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/netCDFtools-2.2.jnlp</a></code></li>
+    <li>Go to the ToolsUI Webstart URL: <code><a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/">http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/</a></code></li><li>Click on "Launch netcdfTools with WebStart" link<br>
+    </li>
+
   </ul>
-  <li>Browse under the <code>/data</code> directory for a collection of datasets</li>
+  <li>In the "Viewer" tab, browse under the <code>/data</code> directory for a datasets that ToolsUI can open</li>
+  <ul>
+    <li>Click on the "folder" icon to the right of the URL window.</li>
+    <li>Browse through directories, select a dataset, and try to open. Repeat until find an accessible dataset.</li>
+    <li>Decide on possible <code>dataType</code> for dataset.<br>
+    </li>
+  </ul>
+
   <li>Edit main TDS configuration catalog as above</li>
+  <ul>
+    <li><code>cd ${TOMCAT_HOME}/content/thredds</code></li>
+    <li><code>vi catalog.xml</code></li>
+  </ul>
+  <li>Add selected dataset by modifying the existing <code>datasetRoot</code> and <code>dataset</code> element</li>
+  <ul>
+    <li>Change the <code>path</code> and <code>location</code> attributes in the <code>datasetRoot</code> element.</li>
+    <li>Change the <code>name</code>, <code>ID</code>, and <code>urlPath</code> attributes in the <code>dataset</code> as needed.</li>
+    <li>Add a <code>dataType</code> element to the dataset.</li>
+  </ul>
+  <li>Restart Tomcat so the TDS is reinitialized:</li>
+  <ul>
+<li><code>cd ${TOMCAT_HOME}/bin</code></li><li><code>./shutdown.sh</code></li><li><code>./startup.sh</code></li>
+  </ul>
+  <li>Open the dataset in ToolsUI or IDV:</li>
+  <ul>
+<li>Open catalog URL: <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li><li>Browse all the way to an accessible dataset</li><li>Click on ToolsUI or IDV "Viewer" link<br>
+    </li>
+  </ul>
+
 </ol><br>
 <hr size="2" width="100%">
 <h2>View catalogs and datasets in ToolsUI and/or IDV</h2>
