@@ -36,7 +36,7 @@ for defining
 the datasets to be cataloged and served; and 2) an API for accessing
 the configuration information, generating THREDDS catalogs, and
 responding to servlet requests. The configuration
-files are simply THREDDS catalog files that can contain <a href="../datasetScan/">datasetScan</a> and datasetRoot elements.<br>
+files are simply THREDDS catalog files that can contain <a href="../../old/datasetScan/">datasetScan</a> and datasetRoot elements.<br>
 <br>
 <h3>Related Documents</h3>
 <ul>
@@ -104,7 +104,7 @@ catalogs and recursively follows all relative <strong>catalogRef</strong>
 links to build a full list of the catalogs it will serve. (Remember,
 all these config catalogs must live under the content directory.) Each <strong>datasetRoot</strong> and <strong>datasetScan</strong>
 element found in these catalogs defines the location of a dataset
-collection and the mapping from URL path to dataset path, see the <a href="../datasetScan/">datasetScan documentation</a> for more
+collection and the mapping from URL path to dataset path, see the <a href="../../old/datasetScan/">datasetScan documentation</a> for more
 details.<br>
 
 <h3>Dataset Directories - Data Files<br>
@@ -113,7 +113,7 @@ details.<br>
 
 <p>The dataset directories are defined by the <strong>datasetRoot</strong> and <strong>datasetScan</strong> elements. The <strong>datasetScan</strong>
 element also defines the particulars of what datasets are served and
-what metadata is automatically added to the generated catalogs,more details are available in the  <a href="../datasetScan/">datasetScan documentation</a>.<br>
+what metadata is automatically added to the generated catalogs,more details are available in the  <a href="../../old/datasetScan/">datasetScan documentation</a>.<br>
 </p>
 
 <p>[Note: Datasets that are not file based can be supported by
@@ -315,7 +315,7 @@ change)<br>
 explicit requests for content directory files (i.e., paths starting
 with "/content/"). This allows direct access to configuration files so
 these requests should be covered by security constraints in the web.xml
-file (see the <a href="tsfRef.html#Web_Application_Deployment_Descriptor_-">"Web Application Deployment Descriptor" section</a> below for details).<br>
+file (see the <a href="#Web_Application_Deployment_Descriptor_-">"Web Application Deployment Descriptor" section</a> below for details).<br>
  </dd>
 </dl>
 <h4><a name="Root_Request"></a>Root Request</h4>
@@ -324,7 +324,7 @@ file (see the <a href="tsfRef.html#Web_Application_Deployment_Descriptor_-">"Web
 explicit requests for root directory files (i.e., paths starting
 with "/root/"). This allows direct access to all distribution files (including WEB-INF files) so
 these requests should be covered by security constraints in the web.xml
-file (see the <a href="tsfRef.html#Web_Application_Deployment_Descriptor_-">"Web Application Deployment Descriptor" section</a> below for details).</dd>
+file (see the <a href="#Web_Application_Deployment_Descriptor_-">"Web Application Deployment Descriptor" section</a> below for details).</dd>
 </dl>
 <h4><a name="Raw_File_Request"></a>Raw File Request</h4>
 <dl>
