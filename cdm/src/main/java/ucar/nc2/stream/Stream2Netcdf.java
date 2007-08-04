@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Write a netcdf stream to a NetCDF-3 file.
+ *
  * @author caron
  * @since Jul 18, 2007
  */
@@ -37,7 +38,7 @@ public class Stream2Netcdf {
   private NetcdfFileWriteable ncfile;
   private Structure record;
   private DataInputStream in;
-  private boolean debug = false;
+  private boolean debug = true;
 
   /**
    * Read a "stream format"  and write it to a Netcdf-3 file
@@ -53,35 +54,41 @@ public class Stream2Netcdf {
     byte[] magicb = new byte[8];
     readBytes(magicb);
     String magicS = new String(magicb);
-    if (!magicS.equals(StreamWriter.MAGIC_FILE))
+    if (!magicS.equals(StreamWriter.MAGIC_HEADER))
       throw new IllegalArgumentException("Not a NetCDF Stream file");
+    String magic = readHeader();
 
     while (true) {
-      String magic = readMagic();
 
-      if (magic.equals(StreamWriter.MAGIC_HEADER)) {
-        magic = readHeader(); // typically will return MAGIC_DATA
-      }
-
-      if (magic.equals(StreamWriter.MAGIC_DATA)) {
-        if (ncfile.isDefineMode()) {
-          ncfile.create(); // must leave define mode
-          if (record != null) {
-            ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);  // kludge - ncwrite should accept Structure ??
-            record = (Structure) ncfile.findVariable("record");
-          }
-          //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+      try {
+        if (magic.equals(StreamWriter.HEADER)) {
+          magic = readHeader(); // typically will return MAGIC_DATA
         }
 
-        readData();
+        if (magic.equals(StreamWriter.DATA)) {
+          if (ncfile.isDefineMode()) {
+            ncfile.create(); // must leave define mode
+            if (record != null) {
+              ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);  // kludge - ncwrite should accept Structure ??
+              record = (Structure) ncfile.findVariable("record");
+            }
+            //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+          }
 
-      } else if (magic.equals(StreamWriter.MAGIC_EOF)) {
-          break;
+          readData();
+          magic = readMagic();
 
-      } else {
-        throw new IllegalStateException("BAD MAGIC " + magic);
+          /* }  else if (magic.equals(StreamWriter.MAGIC_EOF)) {
+         break; */
+
+        } else {
+          throw new IllegalStateException("BAD MAGIC " + magic);
+        }
+      } catch (EOFException eof) {
+        break;
       }
     }
+
 
   }
 
@@ -89,7 +96,7 @@ public class Stream2Netcdf {
     byte[] magic = new byte[4];
     readBytes(magic);
     String magicS = new String(magic);
-    if (debug) System.out.println("Got magic= " + magicS);
+    if (magicS.equals(StreamWriter.MAGIC)) return readMagic();
     return magicS;
   }
 
@@ -100,7 +107,7 @@ public class Stream2Netcdf {
     while (true) {
       String magic = readMagic();
 
-      if (magic.equals(StreamWriter.MAGIC_HEADER))
+      if (magic.equals(StreamWriter.HEADER))
         magic = readMagic();
 
       if (magic.equals(StreamWriter.MAGIC_ATTS))
@@ -113,7 +120,6 @@ public class Stream2Netcdf {
         readVars(root.getVariables());
 
       else return magic;
-
     }
 
   }
@@ -190,13 +196,13 @@ public class Stream2Netcdf {
       String name = readString();
       int type = readVInt();
       DataType dt = StreamWriter.getDataType(type);
-      if (debug) System.out.println("  var= "+name+" type = "+type+" dataType = "+dt);
+      if (debug) System.out.println("  var= " + name + " type = " + type + " dataType = " + dt);
 
       List<Dimension> dims = new ArrayList<Dimension>();
       readDims(dims);
       List<Attribute> atts = new ArrayList<Attribute>();
       readAtts(atts);
-      
+
       if (dt == DataType.STRUCTURE) { // LOOK ties this to a netcdf-3 on the other end
         record = new Structure(ncfile, null, null, name);
         record.setDimensions(dims);
@@ -216,7 +222,7 @@ public class Stream2Netcdf {
         Dimension udim = record.getDimension(0);
         assert udim != null;
         assert udim.isUnlimited();
-        
+
         Variable v = new Variable(ncfile, null, null, shortName);
         v.setDataType(dt);
         dims.add(0, udim); // unlimited dimension is first
@@ -237,13 +243,15 @@ public class Stream2Netcdf {
 
   public void readData() throws IOException, InvalidRangeException {
     String name = readString();
+    int elemSize = readVInt();
     Section s = readSection();
 
     Variable v = name.equals("record") ? record : ncfile.findVariable(name);
     assert v != null : "cant find " + name;
     DataType dt = v.getDataType();
-    
-    if (debug) System.out.println("  var= "+name+" datatype = "+dt+" section = "+s);
+
+    if (debug)
+      System.out.println("  var= " + name + " datatype = " + dt + " elemSize= " + elemSize + " section = " + s);
 
     Array data;
     if (dt == DataType.STRUCTURE) {
@@ -271,7 +279,6 @@ public class Stream2Netcdf {
     ByteBuffer bb = ByteBuffer.wrap(ba);
     return new ArrayStructureBB(sm, s.getShape(), bb, 0);
   }
-
 
 
   public Section readSection() throws IOException, InvalidRangeException {

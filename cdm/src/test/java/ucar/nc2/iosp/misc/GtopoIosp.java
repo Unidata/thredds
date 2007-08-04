@@ -30,10 +30,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.ma2.Array;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.DataType;
+import ucar.ma2.*;
 
 import java.io.IOException;
 
@@ -89,6 +86,9 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("History", "Direct read by Netcdf-Java CDM library"));
     ncfile.addAttribute(null, new Attribute("Source", "http://eros.usgs.gov/products/elevation/gtopo30.html"));
 
+    ncfile.addAttribute(null, new Attribute("version", 42));
+    ncfile.addAttribute(null, new Attribute("missing_values", Array.factory(new double[]{999.0, -999.0})));
+
     ncfile.finish();
   }
 
@@ -106,10 +106,38 @@ public class GtopoIosp extends AbstractIOServiceProvider {
       raf.readShort(arr, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
     }
 
-    return Array.factory(DataType.SHORT.getPrimitiveClassType(), v2.getShape(), arr);
+    return Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), arr);
   }
 
-  void doNothing() {
+  private Array test(Variable v2, Section section) throws IOException, InvalidRangeException {
+    Array data2 = Array.factory(double.class, new int[] {128, 256});
+    Index index = data2.getIndex();
+    for (int j=0; j< 128; j++) {
+      index.set(0, j);
+      for (int i=0; i< 128; i++) {
+        index.set(1, i);
+        data2.setShort( index, raf.readShort());
+      }
+    }
+
+    ArrayDouble.D2 data3 = (ArrayDouble.D2) Array.factory(double.class, new int[] {128, 256});
+    for (int j=0; j< 128; j++)
+      for (int i=0; i< 128; i++)
+        data3.set( j, i, raf.readDouble());
+
+    raf.seek(0);
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+
+    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape());
+    IndexIterator ii = data.getIndexIterator();
+
+    int size = (int) v2.getSize();
+
+    int count = 0;
+    while (count < size) {
+      ii.setShortNext(raf.readShort());
+    }
+    return data.section(section.getRanges());
   }
 
   public void close() throws IOException {

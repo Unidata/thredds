@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.io.*;
 
 /**
- * file = magic_file, {segment}
+ * file = {segment}
  * segment = head_segment | data_segment
  * <p/>
  * head_segment = MAGIC_HEAD, {head_subsection}
@@ -39,11 +39,11 @@ import java.io.*;
  * vars = nvars, {var}
  * var = name, type, dims, atts
  * <p/>
- * data_segment = MAGIC_DATA, varname, section, vals
+ * data_segment = MAGIC_DATA, varname, elemSize, section, vals
  * section = nranges, {origin, size}
  * vals = {BYTE} | {SHORT} | {INT} | {LONG} | {FLOAT} | {DOUBLE} | {STRING}
  * <p/>
- * ndim, length, flags, natts, type, nvals, nvars, nranges, origin, size = VLEN4
+ * ndim, length, flags, natts, type, nvals, nvars, elemSize, nranges, origin, size = VLEN4
  * name, varname = STRING
  * type = TYPE_BYTE=1 | TYPE_SHORT=2 | TYPE_INT=3 | TYPE_FLOAT=4 | TYPE_DOUBLE=5 | TYPE_LONG=6 | TYPE_STRING=7
  *
@@ -51,10 +51,11 @@ import java.io.*;
  * @since Jul 12, 2007
  */
 public class StreamWriter {
-  static final String MAGIC_FILE = "CDFSver0";
-  static final String MAGIC_DATA = "CDFS";
-  static final String MAGIC_HEADER = "Head";
-  static final String MAGIC_EOF = "EOF\n";
+  static final String MAGIC_HEADER = new String( new byte[]{0x43, 0x44, 0x46, 0x53, (byte) 0xec, (byte) 0xce, (byte) 0xad, (byte) 0xa0});
+  static final String MAGIC = MAGIC_HEADER.substring(0,4);
+  static final String HEADER = MAGIC_HEADER.substring(4);
+  static final String MAGIC_DATA = new String( new byte[]{0x43, 0x44, 0x46, 0x53, (byte) 0xa1, (byte) 0x1a, (byte) 0xad, (byte) 0xa0});
+  static final String DATA = MAGIC_DATA.substring(4);
 
   static final String MAGIC_ATTS = "Atts";
   static final String MAGIC_DIMS = "Dims";
@@ -75,7 +76,7 @@ public class StreamWriter {
     this.ncfile = ncfile;
     this.out = out;
 
-    writeMagic(MAGIC_FILE);
+    //writeMagic(MAGIC_FILE);
 
     if (useRecord) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     writeHeader(useRecord);
@@ -88,7 +89,7 @@ public class StreamWriter {
     if (useRecord)
       writeRecordData();
 
-    writeMagic(MAGIC_EOF);
+    //writeMagic(MAGIC_EOF);
     out.flush();
   }
 
@@ -205,13 +206,13 @@ public class StreamWriter {
       count += writeString(att.getName());
 
       int type = getType(att.getDataType());
-      if (type == 2) type = 7;
+      if (type == 2) type = 8;
       count += writeVInt(type);
 
       int nelems = att.getLength();
       count += writeVInt(nelems);
 
-      if (type == 7) {
+      if (type == 8) {
         for (int j = 0; j < nelems; j++)
           count += writeString(att.getStringValue(j));
 
@@ -282,6 +283,7 @@ public class StreamWriter {
     if (debug) System.out.println("  var= " + v.getNameAndDimensions() + " section = " + v.getShapeAsSection());
 
     count += writeString(v.getName());
+    count += writeVInt(v.getElementSize());
     count += writeSection(v.getShapeAsSection());
     count += writeData(v.getDataType(), v.read());
     return count;
@@ -372,6 +374,7 @@ public class StreamWriter {
         if (debug) System.out.println("  var= " + record.getNameAndDimensions() + " start = " + recno+" nrecs="+need);
         count += writeMagic(MAGIC_DATA); // each record is its own data section - could also do multiples
         count += writeString(record.getName());
+        count += writeVInt(record.getElementSize());
         count += writeVInt(1);
         count += writeVInt(recno);
         count += writeVInt(need);

@@ -13,7 +13,7 @@
 
 <body>
 <h1><img src="../netcdfBig.gif" width="100" height="55">Writing an IOSP for Netdf-Java version 4</h1>
-<p>To write an IOSP, you must implement the <strong>ucar.nc2.IOServiceProvider</strong> interface. Version 4.0 of Netcdf-Java has 2 new methods (in red), and one method has been removed. It also uses <strong>Section</strong> objects instead of <strong>List&lt;Range&gt;</strong>. </p>
+<p>Version 4.0 of Netcdf-Java has two new methods (in red), and one method has been removed. It also uses <strong>Section</strong> objects instead of <strong>List&lt;Range&gt;</strong>. </p>
 <pre>public interface <strong>ucar.nc2.IOServiceProvider</strong> {</pre>
 <pre>  // Check if this is a valid file for this IOServiceProvider.
   public boolean <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile raf) throws IOException;</pre>
@@ -49,12 +49,17 @@
    ...
  }
 </pre>
-<p>Its best to extend <strong>ucar.nc2.iosp.AbstractIOServiceProvider. </strong>In the simplest case, you only ahave to implement 4 methods.</p>
+<p>Its best to extend <strong>ucar.nc2.iosp.AbstractIOServiceProvider. </strong>In the simplest case, you only have to implement 4 methods.</p>
 <pre>public class Example <strong>extends</strong> <strong>AbstractIOServiceProvider</strong> {
 <br>  public boolean <strong>isValidFile</strong>(RandomAccessFile raf) throws IOException {}</pre>
 <pre>  public void <strong>open</strong>(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {}</pre>
 <pre>  public Array <strong>readData</strong>(Variable v2, Section wantSection) throws IOException, InvalidRangeException {}</pre>
 <pre>  public void <strong>close</strong>() throws IOException {}
 }</pre>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on Aug 3, 2007
+</address>
+<p>&nbsp;</p>
 </body>
 </html>

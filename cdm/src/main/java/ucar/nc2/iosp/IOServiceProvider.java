@@ -36,6 +36,8 @@ public interface IOServiceProvider {
 
    /**
     * Check if this is a valid file for this IOServiceProvider.
+    * You must make this method thread safe, ie dont keep any state.
+    * 
     * @param raf RandomAccessFile
     * @return true if valid.
     * @throws java.io.IOException if read error

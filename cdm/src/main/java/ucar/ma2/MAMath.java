@@ -360,7 +360,7 @@ public class MAMath {
   }
 
   public static double getMaximum(Array a) {
-    IndexIterator iter = a.getIndexIterator();
+    IndexIterator iter = a.getIndexIteratorFast();
     double max = -Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
@@ -378,7 +378,7 @@ public class MAMath {
    * @return MinMax
    */
   public static MAMath.MinMax getMinMax(Array a) {
-    IndexIterator iter = a.getIndexIterator();
+    IndexIterator iter = a.getIndexIteratorFast();
     double max = -Double.MAX_VALUE;
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
@@ -393,7 +393,7 @@ public class MAMath {
   }
 
   public static double getMinimumSkipMissingData(Array a, double missingValue) {
-    IndexIterator iter = a.getIndexIterator();
+    IndexIterator iter = a.getIndexIteratorFast();
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
@@ -404,7 +404,7 @@ public class MAMath {
   }
 
   public static double getMaximumSkipMissingData(Array a, double missingValue) {
-    IndexIterator iter = a.getIndexIterator();
+    IndexIterator iter = a.getIndexIteratorFast();
     double max = -Double.MAX_VALUE;
     while (iter.hasNext()) {
       double val = iter.getDoubleNext();
@@ -415,7 +415,7 @@ public class MAMath {
   }
 
   public static MAMath.MinMax getMinMaxSkipMissingData(Array a, double missingValue) {
-    IndexIterator iter = a.getIndexIterator();
+    IndexIterator iter = a.getIndexIteratorFast();
     double max = -Double.MAX_VALUE;
     double min = Double.MAX_VALUE;
     while (iter.hasNext()) {
@@ -436,7 +436,7 @@ public class MAMath {
    * The value is converted to the element type of the array, if needed.
    */
   public static void setDouble(Array result, double val) {
-    IndexIterator iter = result.getIndexIterator();
+    IndexIterator iter = result.getIndexIteratorFast();
     while (iter.hasNext()) {
       iter.setDoubleNext(val);
     }
@@ -448,7 +448,7 @@ public class MAMath {
    */
   public static double sumDouble(Array a) {
     double sum = 0;
-    IndexIterator iterA = a.getIndexIterator();
+    IndexIterator iterA = a.getIndexIteratorFast();
     while (iterA.hasNext())
       sum += iterA.getDoubleNext();
     return sum;
@@ -460,7 +460,7 @@ public class MAMath {
    */
   public static double sumDoubleSkipMissingData(Array a, double missingValue) {
     double sum = 0;
-    IndexIterator iterA = a.getIndexIterator();
+    IndexIterator iterA = a.getIndexIteratorFast();
     while (iterA.hasNext()) {
       double val = iterA.getDoubleNext();
       if ((val == missingValue) || Double.isNaN(val))

@@ -263,7 +263,7 @@ public abstract class Array {
   protected final Index indexCalc;
   protected final int rank;
 
-  /** for subclasses only */
+  // for subclasses only
   protected Array(int [] shape) {
     rank = shape.length;
     indexCalc = Index.factory(shape);
@@ -276,11 +276,13 @@ public abstract class Array {
 
   /** Get an Index object used for indexed access of this Array.
    * @see Index
+   * @return an Index for this Array
    */
   public Index getIndex() { return (Index) indexCalc.clone(); }
 
   /** Get an index iterator for traversing the array in canonical order.
    * @see IndexIterator
+   * @return an IndexIterator for this Array
    */
   public IndexIterator getIndexIterator() { return indexCalc.getIndexIterator(this); }
 
@@ -311,32 +313,40 @@ public abstract class Array {
    *   A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
    *
    * @return an IndexIterator over the named range.
+   * @throws InvalidRangeException if ranges is invalid
    */
-  public IndexIterator getRangeIterator(List ranges) throws InvalidRangeException {
+  public IndexIterator getRangeIterator(List<Range> ranges) throws InvalidRangeException {
     return section(ranges).getIndexIterator();
   }
 
-  /** Do not use this unless you have complete control over the Array.
-   *  Use getIndexIterator(), which will return a fast iterator if possible.
+  /** Get an index iterator for traversing the array in arbitrary order.
+   *  Use this if you dont care what order the elements are returned, eg if you are summing an Array.
+   *  To get an iteration in order,  use getIndexIterator(), which returns a fast iterator if possible.
    * @see #getIndexIterator
+   * @return  an IndexIterator for traversing the array in arbitrary order.
    */
   public IndexIterator getIndexIteratorFast() {
     return indexCalc.getIndexIteratorFast(this);
   }
 
- /** Get the element class type of this Array */
+ /** Get the element class type of this Array
+  * @return the class of the element
+  */
   public abstract Class getElementType();
 
   /** create new Array with given Index and the same backing store
    * @param index use this Index
+   * @return a view of the Array using the given Index
    */
   abstract Array createView( Index index);
 
   /** Get underlying primitive array storage.
-   *  Exposed for efficiency, use at your own risk. */
+   *  Exposed for efficiency, use at your own risk.
+   * @return underlying primitive array storage
+   */
   public abstract Object getStorage();
 
- /** used to create Array from java array */
+  // used to create Array from java array
   abstract void copyFrom1DJavaArray(IndexIterator iter, Object javaArray);
   abstract void copyTo1DJavaArray(IndexIterator iter, Object javaArray);
 
@@ -348,8 +358,9 @@ public abstract class Array {
     *   A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
     *   If Range[dim].length == 1, then the rank of the resulting Array is reduced at that dimension.
     * @return the new Array
+    * @throws InvalidRangeException if ranges is invalid
     */
-  public Array section( List ranges) throws InvalidRangeException {
+  public Array section( List<Range> ranges) throws InvalidRangeException {
     return createView( indexCalc.section(ranges));
   }
 
@@ -362,6 +373,7 @@ public abstract class Array {
    *	This becomes the shape of the returned Array. Must be same rank as original Array.
    *   If shape[dim] == 1, then the rank of the resulting Array is reduced at that dimension.
    * @return the new Array
+   * @throws InvalidRangeException if ranges is invalid
    */
   public Array section( int [] origin, int [] shape) throws InvalidRangeException {
     return section( origin, shape, null);
@@ -377,6 +389,7 @@ public abstract class Array {
      *   If shape[dim] == 1, then the rank of the resulting Array is reduced at that dimension.
      * @param stride int array specifying the strides in each dimension. If null, assume all ones.
      * @return the new Array
+     * @throws InvalidRangeException if ranges is invalid
      */
    public Array section( int [] origin, int [] shape, int[] stride) throws InvalidRangeException {
     List<Range> ranges = new ArrayList<Range>( origin.length);
@@ -396,6 +409,7 @@ public abstract class Array {
     *   Must be same rank as original Array.
     *   A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
     * @return the new Array
+    * @throws InvalidRangeException if ranges is invalid
     */
   public Array sectionNoReduce( List<Range> ranges) throws InvalidRangeException {
     return createView( indexCalc.sectionNoReduce(ranges));
@@ -409,6 +423,7 @@ public abstract class Array {
     *	This becomes the shape of the returned Array. Must be same rank as original Array.
     * @param stride int array specifying the strides in each dimension. If null, assume all ones.
     * @return the new Array
+    * @throws InvalidRangeException if ranges is invalid
     */
   public Array sectionNoReduce( int [] origin, int [] shape, int[] stride) throws InvalidRangeException {
     List<Range> ranges = new ArrayList<Range>( origin.length);
@@ -712,7 +727,7 @@ public abstract class Array {
      */
   abstract  public void setObject(Index ima, Object value);
 
-  /** package private */
+  // package private
   //// these are for optimized access with no need to check index values
   //// elem is the index into the backing data
   abstract double getDouble(int elem);

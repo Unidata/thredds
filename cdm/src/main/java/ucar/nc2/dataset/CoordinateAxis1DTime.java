@@ -97,7 +97,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       Date d = DateUnit.getStandardOrISO( coordValue);
       if (d == null) {
         if (errMessages != null)
-          errMessages.append("DateUnit cannot parse String= "+coordValue+"\n");
+          errMessages.append("DateUnit cannot parse String= ").append(coordValue).append("\n");
         else
           System.out.println("DateUnit cannot parse String= "+coordValue+"\n");
 
@@ -179,7 +179,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         Date d = DateUnit.getStandardOrISO( coordValue);
         if (d == null) {
           if (errMessages != null)
-            errMessages.append("DateUnit cannot parse String= "+coordValue+"\n");
+            errMessages.append("DateUnit cannot parse String= ").append(coordValue).append("\n");
           else
             System.out.println("DateUnit cannot parse String= "+coordValue+"\n");
 

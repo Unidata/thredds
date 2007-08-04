@@ -47,7 +47,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
 
-  public boolean isValidFile( RandomAccessFile raf) {
+  public boolean isValidFile( RandomAccessFile raf) throws IOException {
     try {
       raf.seek(0);
       byte[] b = new byte[8];

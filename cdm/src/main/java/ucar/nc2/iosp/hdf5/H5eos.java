@@ -69,8 +69,30 @@ public class H5eos {
       rootg.addDimension(dim);
     }
 
-    // Variable Dimensions
     Group eos = rootg.findGroup("HDFEOS").findGroup("SWATHS");
+
+        // Geolocation Variables
+    Group gloc = eos.findGroup(swathName).findGroup("Geolocation_Fields");
+
+    Element floc = swath1.getChild("GeoField");
+    List<Element> varsLoc = (List<Element>) floc.getChildren();
+    for (Element elem : varsLoc) {
+      String varname = elem.getChild("GeoFieldName").getText();
+      varname = NetcdfFile.createValidNetcdfObjectName( varname);
+      Variable v = gloc.findVariable( varname);
+      assert v != null : varname;
+
+      StringBuffer sbuff = new StringBuffer();
+      Element dimList = elem.getChild("DimList");
+      List<Element> values = (List<Element>) dimList.getChildren("value");
+      for (Element value : values) {
+        sbuff.append( value.getText());
+        sbuff.append( " ");
+      }
+      v.setDimensions( sbuff.toString()); // livin dangerously
+    }
+
+    // Variable Dimensions
     Group g = eos.findGroup(swathName).findGroup("Data_Fields");
 
     Element f = swath1.getChild("DataField");
@@ -83,7 +105,7 @@ public class H5eos {
 
       StringBuffer sbuff = new StringBuffer();
       Element dimList = elem.getChild("DimList");
-      List<Element> values = dimList.getChildren("value");
+      List<Element> values = (List<Element>) dimList.getChildren("value");
       for (Element value : values) {
         sbuff.append( value.getText());
         sbuff.append( " ");

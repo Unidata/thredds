@@ -115,6 +115,8 @@ public class AxisType {
 
   /**
    * canonical ordering: (time, z, x, y) or (time, elevation, azimuth, distance)
+   * @param o compare to this  AxisType
+   * @return +1, 0, -1 if greater tham, equal to, or less than the given AxisType
    */
   public int compareTo(AxisType o) {
     return order - o.order;

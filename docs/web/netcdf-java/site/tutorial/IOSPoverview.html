@@ -8,7 +8,9 @@
 
 <body>
 <h1><img src="../netcdfBig.gif" width="100" height="55">Writing an IOSP : Overview</h1>
-<p>To write an IOSP, you must implement the <strong>ucar.nc2.IOServiceProvider</strong> interface.</p>
+<p>A client uses the <strong>NetcdfFile</strong>, <strong>NetcdfDataset</strong>, or one of the <strong>Scientific Dataset APIs</strong> to read data from a CDM file. These  provide a rich and sometimes complicated API to the client. Behind the scenes, when any of these APIs actually read from a dataset, however, they use a very  much simpler interface. The Netcdf Java library has many implementations of this interface, one for each different file format that it knows how to read. This design is called a <strong><em>Service Provider</em></strong> pattern; since the implementations are providing input/output, we call them <strong>I/O Service Providers</strong>, or <strong>IOSP</strong>s for short. </p>
+<p><strong>IOSPs</strong> are managed by the <strong>NetcdfFile</strong> class. When a client requests a dataset (by calling <strong>NetcdfFile.open</strong>), the file is opened as a <strong>ucar.unidata.io.RandomAccessFile</strong> (an improved version of <strong>java.io.RandomAccessFile)</strong>. Each registered IOSP is then asked &quot;is this your file?&quot; by calling <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile). The first one that returns true claims it. </p>
+<h3>The <strong>ucar.nc2.IOServiceProvider</strong> interface</h3>
 <pre>public interface <strong>ucar.nc2.IOServiceProvider</strong> {</pre>
 <pre>  // Check if this is a valid file for this IOServiceProvider.
   public boolean <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile raf) throws IOException;</pre>
@@ -34,7 +36,7 @@
 <pre>}</pre>
 <ol>
   <li>You must examine the file that is passed to you, and quickly and accurately determine if it is can be opened by this IOSP.</li>
-  <li>You will then be called again with the same file, and an empty NetcdfFile object, which you will fill. If you need to do a lot of I/O, you should periodically check<strong> cancelTask.isCancel()</strong>, and if its true, return immediately. This allows users to bail out of opening a file. </li>
+  <li>You will then be called again with the same file, and an empty NetcdfFile object, which you will fill. If you need to do a lot of I/O, you should periodically check<strong> cancelTask.isCancel()</strong>, and if its true, return immediately. This allows users to bail out of opening a file if its taking too long. </li>
   <li>Data will be read from Variable through this call. The section list is a list of <strong>ucar.ma2.Range</strong> which define the requested data subset.</li>
   <li>If you use Structures, data for Variables that are members of Structures are read through this method.</li>
   <li>Release all resources, for example, by calling <strong>RandomAccessFile.close</strong>().</li>
@@ -45,28 +47,28 @@
   <li>Here you can pass any information that is useful to debugging. It can be viewed through the ToolsUI. </li>
 </ol>
 <p>&nbsp;</p>
-<h2>Design goals for IOSP implementations</h2>
+<h3>Design goals for IOSP implementations</h3>
 <ul>
   <li>
-    <h3>Allow access to the dataset through the netCDF/CDM API</h3>
+    <h4>Allow access to the dataset through the netCDF/CDM API</h4>
   </li>
   <li>
-    <h3>Allow user access to every interesting bit of information in the dataset </h3>
+    <h4>Allow user access to every interesting bit of information in the dataset </h4>
   </li>
   <li>
-    <h3>Hide details related to file format (eg links, file structure details)</h3>
+    <h4>Hide details related to file format (eg links, file structure details)</h4>
   </li>
   <li>
-    <h3>Try to mimic data access efficiency of netCDF-3</h3>
+    <h4>Try to mimic data access efficiency of netCDF-3</h4>
   </li>
   <li>
-    <h3>Create good <em>use</em> <em>metadata</em>: accurate coordinate systems, enable classification by scientific data type</h3>
+    <h4>Create good <em>use</em> <em>metadata</em>: accurate coordinate systems, enable classification by scientific data type</h4>
   </li>
   <li>
-    <h3>Create good <em>discovery metadata</em> in the global attributes: title, creator, version, date created, etc. </h3>
+    <h4>Create good <em>discovery metadata</em> in the global attributes: title, creator, version, date created, etc. </h4>
   </li>
   <li>
-    <h3>Follow standards and good practices </h3>
+    <h4>Follow standards and good practices </h4>
   </li>
 </ul>
 <p>&nbsp;</p>
@@ -88,6 +90,10 @@
     <h3>What to do if dataset is not self contained : external tables, hardcoding? </h3>
   </li>
 </ul>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on Aug 3, 2007
+</address>
 <p>&nbsp; </p>
 </body>
 </html>

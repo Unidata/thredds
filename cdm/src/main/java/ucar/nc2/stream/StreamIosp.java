@@ -49,7 +49,7 @@ public class StreamIosp extends AbstractIOServiceProvider {
     byte[] magicb = new byte[8];
     readBytes(magicb);
     String magicS = new String(magicb);
-    return magicS.equals(StreamWriter.MAGIC_FILE);
+    return magicS.equals(StreamWriter.MAGIC_HEADER);
   }
 
   public void open(ucar.unidata.io.RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -67,8 +67,8 @@ public class StreamIosp extends AbstractIOServiceProvider {
       } else if (magic.equals(StreamWriter.MAGIC_DATA)) {
         readDataHeader();
 
-      } else if (magic.equals(StreamWriter.MAGIC_EOF)) {
-          break;
+      /* } else if (magic.equals(StreamWriter.MAGIC_EOF)) {
+          break; */
 
       } else {
         throw new IllegalStateException("BAD MAGIC " + magic);

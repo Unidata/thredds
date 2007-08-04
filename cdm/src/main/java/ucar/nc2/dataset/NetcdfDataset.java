@@ -23,7 +23,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLGWriter;
@@ -1087,7 +1086,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * debugging
+   * Debugging
+   * @param out write here
+   * @param ncd info about this
    */
   public static void debugDump(PrintStream out, NetcdfDataset ncd) {
     String referencedLocation = ncd.orgFile == null ? "(null)" : ncd.orgFile.getLocation();
@@ -1095,7 +1096,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     ncd.dumpClasses(ncd.getRootGroup(), out);
   }
 
-  /** debug */
+  /**
+   * Debugging
+   * @param arg arguments
+   */
   public static void main2(String arg[]) {
     //String urls = "file:///C:/data/buoy/cwindRM.xml";
     //String urls = "C:/data/conventions/wrf/wrf_masscore.nc";

@@ -48,11 +48,9 @@ public class Doradeiosp extends AbstractIOServiceProvider {
   public DoradeSweep mySweep = null;
   boolean littleEndian;
 
-  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
-    {
-        Doradeheader localHeader = new Doradeheader();
-        return( localHeader.isValidFile( raf ));
-    }
+  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
+    return (Doradeheader.isValidFile(raf));
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // reading

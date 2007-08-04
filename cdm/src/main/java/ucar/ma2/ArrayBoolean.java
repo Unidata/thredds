@@ -30,7 +30,7 @@ package ucar.ma2;
  */
 public class ArrayBoolean extends Array {
 
-  /** package private. use Array.factory() */
+  // package private. use Array.factory() */
   static ArrayBoolean factory(Index index) {
     return ArrayBoolean.factory(index, null);
   }

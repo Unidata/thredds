@@ -30,7 +30,7 @@ package ucar.ma2;
  */
 public class ArrayByte extends Array {
 
-  /** package private. use Array.factory() */
+  // package private. use Array.factory() */
   static ArrayByte factory(Index index) {
     return ArrayByte.factory(index, null);
   }

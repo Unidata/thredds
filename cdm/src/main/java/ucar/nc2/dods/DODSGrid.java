@@ -43,7 +43,7 @@ public class DODSGrid extends DODSVariable {
 
     this.dodsShortName = dodsShortName;
 
-    DodsV array = (DodsV) dodsV.children.get(0);
+    DodsV array = dodsV.children.get(0);
     /* if (!shortName.equals(array.bt.getName())) {
       this.shortName = shortName + "-" + array.bt.getName(); // LOOK whats this ??
     }
@@ -53,7 +53,7 @@ public class DODSGrid extends DODSVariable {
     List<Dimension> dims = new ArrayList<Dimension>();
     StringBuffer sbuff = new StringBuffer();
     for (int i = 1; i < dodsV.children.size(); i++) {
-      DodsV map = (DodsV) dodsV.children.get(i);
+      DodsV map = dodsV.children.get(i);
       String name = NetcdfFile.createValidNetcdfObjectName( StringUtil.unescape( map.bt.getName()));
       Dimension dim = parentGroup.findDimension(name);
       if (dim == null)

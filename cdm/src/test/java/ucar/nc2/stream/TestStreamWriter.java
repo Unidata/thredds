@@ -34,8 +34,8 @@ public class TestStreamWriter {
   static public void main(String args[]) throws IOException, InvalidRangeException {
 
     long start = System.currentTimeMillis();
-    String filenameIn = "C:/data/metars/Surface_METAR_20070329_0000.nc";
-    //String filenameIn = "C:/dev/thredds/cdm/src/test/data/testWriteRecord.nc";
+    //String filenameIn = "C:/data/metars/Surface_METAR_20070329_0000.nc";
+    String filenameIn = "C:/dev/thredds/cdm/src/test/data/testWriteRecord.nc";
     File f = new File(filenameIn);
     long size = f.length();
     //String filenameIn = "C:/data/test2.nc";

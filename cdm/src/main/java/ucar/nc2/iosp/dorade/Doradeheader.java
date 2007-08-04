@@ -41,7 +41,7 @@ public class Doradeheader {
   private HashMap paramMap;
   private float[] lat_min, lat_max, lon_min, lon_max, hi_max, hi_min;
 
-  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
+  static public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf )
   {
         try {
             //RandomAccessFile f = raf.;
