@@ -1,6 +1,5 @@
-// $Id:GribVariable.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,7 +34,6 @@ import java.util.List;
 /**
  * A Variable for a Grib dataset.
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GribVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribVariable.class);
@@ -49,7 +47,7 @@ public class GribVariable {
   private GribCoordSys vcs; // maximal strategy (old way)
   private GribTimeCoord tcs;
   private GribVertCoord vc;
-  private ArrayList records = new ArrayList(); // Index.GribRecord
+  private List<Index.GribRecord> records = new ArrayList<Index.GribRecord>(); // Index.GribRecord
 
   private int nlevels, ntimes;
   private Index.GribRecord[] recordTracker;
@@ -70,8 +68,8 @@ public class GribVariable {
     if (firstRecord == null) firstRecord = record;
   }
 
-  List getRecords() { return records; }
-  Index.GribRecord getFirstRecord() { return (Index.GribRecord) records.get(0); }
+  List<Index.GribRecord> getRecords() { return records; }
+  Index.GribRecord getFirstRecord() { return records.get(0); }
 
   GribHorizCoordSys getHorizCoordSys() { return hcs; }
   GribCoordSys getVertCoordSys() { return vcs; }
@@ -141,7 +139,7 @@ public class GribVariable {
 
     v.addAttribute(new Attribute("units", param.getUnit()));
     v.addAttribute(new Attribute("long_name", Index2NC.makeLongName(firstRecord, lookup)));
-    v.addAttribute(new Attribute("missing_value", new Float(lookup.getFirstMissingValue())));
+    v.addAttribute(new Attribute("missing_value", lookup.getFirstMissingValue()));
     if (!hcs.isLatLon()) {
       if (GribServiceProvider.addLatLon) v.addAttribute(new Attribute("coordinates", "lat lon"));
       v.addAttribute(new Attribute("grid_mapping", hcs.getGridName()));
@@ -150,9 +148,9 @@ public class GribVariable {
     int[] paramId = lookup.getParameterId(firstRecord);
     if (paramId[0] == 1) {
       v.addAttribute(new Attribute("GRIB_param_name", param.getDescription()));
-      v.addAttribute(new Attribute("GRIB_center_id", new Integer(paramId[1])));
-      v.addAttribute(new Attribute("GRIB_table_id", new Integer(paramId[2])));
-      v.addAttribute(new Attribute("GRIB_param_number", new Integer(paramId[3])));
+      v.addAttribute(new Attribute("GRIB_center_id", paramId[1]));
+      v.addAttribute(new Attribute("GRIB_table_id", paramId[2]));
+      v.addAttribute(new Attribute("GRIB_param_number", paramId[3]));
     } else {
       v.addAttribute(new Attribute("GRIB_param_discipline", lookup.getDisciplineName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_param_category", lookup.getCategoryName(firstRecord)));
@@ -160,7 +158,7 @@ public class GribVariable {
     }
     v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
     v.addAttribute(new Attribute("GRIB_product_definition_type", lookup.getProductDefinitionName(firstRecord)));
-    v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.levelType1)));
+    v.addAttribute(new Attribute("GRIB_level_type", firstRecord.levelType1));
 
     //if (pds.getTypeSecondFixedSurface() != 255 )
    //  v.addAttribute( new Attribute("GRIB2_type_of_second_fixed_surface", pds.getTypeSecondFixedSurfaceName()));
@@ -175,49 +173,48 @@ public class GribVariable {
       System.out.println("Variable "+getName());
 
     recordTracker = new Index.GribRecord[ntimes * nlevels];
-    for (int i = 0; i < records.size(); i++) {
-      Index.GribRecord p = (Index.GribRecord) records.get(i);
+    for (Index.GribRecord p : records) {
       if (showRecords)
-        System.out.println(" "+vc.getVariableName()+
-                " (type="+p.levelType1 + ","+p.levelType2+")  value="+p.levelValue1 + ","+p.levelValue2+
-                " # genProcess="+p.typeGenProcess);
+        System.out.println(" " + vc.getVariableName() +
+            " (type=" + p.levelType1 + "," + p.levelType2 + ")  value=" + p.levelValue1 + "," + p.levelValue2 +
+            " # genProcess=" + p.typeGenProcess);
       if (showGen && !isGrib1 && !p.typeGenProcess.equals("2"))
-        System.out.println(" "+getName()+ " genProcess="+p.typeGenProcess);
+        System.out.println(" " + getName() + " genProcess=" + p.typeGenProcess);
       //System.out.println(" "+getName()+ " genProcess="+p.typeGenProcess);
 
-      int level = getVertIndex( p);
+      int level = getVertIndex(p);
       if (!getVertIsUsed() && level > 0) {
-        log.warn("inconsistent level encoding="+level);
+        log.warn("inconsistent level encoding=" + level);
         level = 0; // inconsistent level encoding ??
       }
-      int time = tcs.getIndex( p);
+      int time = tcs.getIndex(p);
       // System.out.println("time="+time+" level="+level);
       if (level < 0) {
-        log.warn("NOT FOUND record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
-                +"   "+getVertLevelName()+" (type="+p.levelType1 + ","+p.levelType2+")  value="+p.levelValue1 + ","+p.levelValue2+"\n");
+        log.warn("NOT FOUND record; level=" + level + " time= " + time + " for " + getName() + " file=" + ncfile.getLocation() + "\n"
+            + "   " + getVertLevelName() + " (type=" + p.levelType1 + "," + p.levelType2 + ")  value=" + p.levelValue1 + "," + p.levelValue2 + "\n");
 
-        getVertIndex( p); // allow breakpoint
+        getVertIndex(p); // allow breakpoint
         continue;
       }
 
       if (time < 0) {
-        log.warn("NOT FOUND record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
-                +" forecastTime= "+p.forecastTime+ " date= "+tcs.getValidTime(p)+"\n");
+        log.warn("NOT FOUND record; level=" + level + " time= " + time + " for " + getName() + " file=" + ncfile.getLocation() + "\n"
+            + " forecastTime= " + p.forecastTime + " date= " + tcs.getValidTime(p) + "\n");
 
-        tcs.getIndex( p); // allow breakpoint
+        tcs.getIndex(p); // allow breakpoint
         continue;
       }
 
-      int recno = time*nlevels + level;
+      int recno = time * nlevels + level;
       if (recordTracker[recno] == null)
         recordTracker[recno] = p;
       else {
         Index.GribRecord q = recordTracker[recno];
         if (!p.typeGenProcess.equals(q.typeGenProcess)) {
-          log.warn("Duplicate record; level="+level+" time= "+time+" for "+getName()+" file="+ncfile.getLocation()+"\n"
-                +"   "+getVertLevelName()+" (type="+p.levelType1 + ","+p.levelType2+")  value="+p.levelValue1 + ","+p.levelValue2+"\n"
-                +"   already got (type="+q.levelType1 + ","+q.levelType2+")  value="+q.levelValue1 + ","+q.levelValue2+"\n"
-                +"   gen="+p.typeGenProcess+"   "+q.typeGenProcess);
+          log.warn("Duplicate record; level=" + level + " time= " + time + " for " + getName() + " file=" + ncfile.getLocation() + "\n"
+              + "   " + getVertLevelName() + " (type=" + p.levelType1 + "," + p.levelType2 + ")  value=" + p.levelValue1 + "," + p.levelValue2 + "\n"
+              + "   already got (type=" + q.levelType1 + "," + q.levelType2 + ")  value=" + q.levelValue1 + "," + q.levelValue2 + "\n"
+              + "   gen=" + p.typeGenProcess + "   " + q.typeGenProcess);
         }
         recordTracker[recno] = p; // replace it with latest one
         // System.out.println("   gen="+p.typeGenProcess+" "+q.typeGenProcess+"=="+lookup.getTypeGenProcessName(p));
@@ -284,14 +281,13 @@ public class GribVariable {
   public String dump() {
    DateFormatter formatter = new DateFormatter();
    StringBuffer sbuff = new StringBuffer();
-   sbuff.append(name+" "+records.size()+"\n");
-   for (int i = 0; i < records.size(); i++) {
-     Index.GribRecord record = (Index.GribRecord) records.get(i);
-     sbuff.append(" level = "+record.levelType1+ " "+ record.levelValue1);
-     if (null != record.getValidTime())
-       sbuff.append(" time = "+ formatter.toDateTimeString( record.getValidTime()));
-     sbuff.append("\n");
-   }
-   return sbuff.toString();
+    sbuff.append(name).append(" ").append(records.size()).append("\n");
+    for (Index.GribRecord record : records) {
+      sbuff.append(" level = ").append(record.levelType1).append(" ").append(record.levelValue1);
+      if (null != record.getValidTime())
+        sbuff.append(" time = ").append(formatter.toDateTimeString(record.getValidTime()));
+      sbuff.append("\n");
+    }
+    return sbuff.toString();
   }
 }

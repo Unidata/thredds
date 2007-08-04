@@ -1197,6 +1197,7 @@ public class Variable implements VariableIF {
 
   /**
    * Set the shape with a list of Dimensions. The Dimensions may be shared or not.
+   * Dimensions are in order, slowest varying first. Send a null for a scalar.
    * Technically you can use Dimensions from any group; pragmatically you should only use
    * Dimensions contained in the Variable's parent groups.
    *

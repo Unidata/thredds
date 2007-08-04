@@ -1,3 +1,22 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package ucar.nc2.iosp.grib;
 
 // import statements
@@ -17,7 +36,6 @@ import java.io.FileNotFoundException;   	// Extra utilities from sun
  *
  *
  * @author kambic
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  *
  ****************************************************************************/
 public class Grib2Netcdf {
@@ -26,9 +44,10 @@ public class Grib2Netcdf {
   /************************************************************************
     *
     * Grib2Netcdf usage of the class, if called without arguments
+    * @param className name of class
     *
-    ************************************************************************/
-   public void usage(String className) {
+    ***********************************************************************/
+  public void usage(String className) {
       System.out.println();
       System.out.println("Usage of " + className + ":");
       System.out.println( "Parameters:");
@@ -44,8 +63,8 @@ public class Grib2Netcdf {
     * Grib2Netcdf<br>
     *
     * @param  args input gribfile to read,  output Netcdf file 
-    *
-    *************************************************************************/
+    * @throws java.io.IOException on io error
+    */
    public static void main(String args[]) throws IOException {
 
       // Function References
@@ -70,21 +89,21 @@ public class Grib2Netcdf {
 
       // Reading of Grib files must be inside a try-catch block
       try {
-         RandomAccessFile raf = null;
+         RandomAccessFile raf;
          raf = new RandomAccessFile( args[0], "r" );
          raf.order( RandomAccessFile.BIG_ENDIAN ); 
          int version = GribChecker.getEdition( raf );
          IOServiceProvider iosp = null;
          if( version == 1 ) {
-            iosp = (IOServiceProvider) new Grib1ServiceProvider();
+            iosp = new Grib1ServiceProvider();
          } else if( version == 2 ) {
-            iosp = (IOServiceProvider) new Grib2ServiceProvider();
+            iosp = new Grib2ServiceProvider();
          } else {
              System.out.println( args[0] +" is not a Grib file" );
              System.exit( 1 );
          }
 
-         NetcdfFile ncfile = (NetcdfFile) new MakeNetcdfFile( iosp, raf, args[0], null );
+         NetcdfFile ncfile = new MakeNetcdfFile( iosp, raf, args[0], null );
          NetcdfFile nc = FileWriter.writeToFile( ncfile, args[1] );
          nc.close();
          raf.close();  // done reading

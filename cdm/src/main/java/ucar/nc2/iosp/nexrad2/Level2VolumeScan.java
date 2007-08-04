@@ -71,9 +71,9 @@ public class Level2VolumeScan {
   private boolean hasDifferentDopplarResolutions;
 
   // List of List of Level2Record
-  private ArrayList reflectivityGroups, dopplerGroups;
+  private List<List<Level2Record>>  reflectivityGroups, dopplerGroups;
 
-  private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false;
+  private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false, debugStats =  false;
 
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {
     this.raf = orgRaf;
@@ -173,10 +173,10 @@ public class Level2VolumeScan {
     dopplerGroups = sortScans("doppler", doppler);
   }
 
-  private ArrayList sortScans(String name, List<Level2Record> scans) {
+  private List<List<Level2Record>> sortScans(String name, List<Level2Record> scans) {
 
     // now group by elevation_num
-    Map<Short,List<Level2Record>> groupHash = new HashMap<Short,List<Level2Record>>(600);
+    Map<Short, List<Level2Record>> groupHash = new HashMap<Short,List<Level2Record>>(600);
     for (Level2Record record : scans) {
       List<Level2Record> group = groupHash.get(record.elevation_num);
       if (null == group) {
@@ -187,23 +187,21 @@ public class Level2VolumeScan {
     }
 
     // sort the groups by elevation_num
-    ArrayList groups = new ArrayList(groupHash.values());
+    List<List<Level2Record>> groups = new ArrayList<List<Level2Record>>(groupHash.values());
     Collections.sort(groups, new GroupComparator());
 
     // use the maximum radials
-    for (int i = 0; i < groups.size(); i++) {
-      ArrayList group = (ArrayList) groups.get(i);
+    for (List<Level2Record> group : groups) {
       testScan(name, group);
       max_radials = Math.max(max_radials, group.size());
       min_radials = Math.min(min_radials, group.size());
     }
     if (debugRadials) {
       System.out.println(name + " min_radials= " + min_radials + " max_radials= " + max_radials);
-      for (int i = 0; i < groups.size(); i++) {
-        ArrayList group = (ArrayList) groups.get(i);
-        Level2Record lastr = (Level2Record) group.get(0);
+      for (List<Level2Record> group : groups) {
+        Level2Record lastr = group.get(0);
         for (int j = 1; j < group.size(); j++) {
-          Level2Record r = (Level2Record) group.get(j);
+          Level2Record r = group.get(j);
           if (r.data_msecs < lastr.data_msecs)
             System.out.println(" out of order " + j);
           lastr = r;
@@ -237,9 +235,9 @@ public class Level2VolumeScan {
   private int MAX_RADIAL = 401;
   private int[] radial = new int[MAX_RADIAL];
 
-  private boolean testScan(String name, ArrayList group) {
+  private boolean testScan(String name, List<Level2Record> group) {
     int datatype = name.equals("reflect") ? Level2Record.REFLECTIVITY : Level2Record.VELOCITY_HI;
-    Level2Record first = (Level2Record) group.get(0);
+    Level2Record first = group.get(0);
 
     int n = group.size();
     if (debugScans) {
@@ -254,9 +252,7 @@ public class Level2VolumeScan {
     for (int i = 0; i < MAX_RADIAL; i++)
       radial[i] = 0;
 
-    for (int i = 0; i < group.size(); i++) {
-      Level2Record r = (Level2Record) group.get(i);
-
+    for (Level2Record r : group) {
       /* this appears to be common - seems to be ok, we put missing values in 
       if (r.getGateCount(datatype) != first.getGateCount(datatype)) {
         log.error(raf.getLocation()+" different number of gates ("+r.getGateCount(datatype)+
@@ -304,7 +300,7 @@ public class Level2VolumeScan {
 
     double avg = sum / n;
     double sd = Math.sqrt((n * sum2 - sum * sum) / (n * (n - 1)));
-    // System.out.println(" avg elev="+avg+" std.dev="+sd);
+    if (debugStats) System.out.println(" avg elev="+avg+" std.dev="+sd);
 
     return ok;
   }
@@ -364,7 +360,7 @@ public class Level2VolumeScan {
    *
    * @return List of type List of type Level2Record
    */
-  public List getReflectivityGroups() {
+  public List<List<Level2Record>>  getReflectivityGroups() {
     return reflectivityGroups;
   }
 
@@ -374,7 +370,7 @@ public class Level2VolumeScan {
    *
    * @return List of type List of type Level2Record
    */
-  public List getVelocityGroups() {
+  public List<List<Level2Record>> getVelocityGroups() {
     return dopplerGroups;
   }
 
@@ -638,15 +634,11 @@ public class Level2VolumeScan {
     return raf.getFilePointer();
   }
 
-  /**
-   * test
-   */
-  public static void main2(String[] args) throws IOException {
+  private static void main2(String[] args) throws IOException {
     File testDir = new File("C:/data/bad/radar2/");
 
     File[] files = testDir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
+    for (File file : files) {
       if (!file.getPath().endsWith(".ar2v")) continue;
       System.out.println(file.getPath() + " " + file.length());
       long pos = testValid(file.getPath());

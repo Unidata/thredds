@@ -25,6 +25,7 @@ import ucar.nc2.util.TableParser;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Map;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -38,21 +39,21 @@ import org.jdom.input.*;
 public class NexradStationDB {
 
   private static boolean showStations = false;
-  private static HashMap stationTableHash = null;
-  private static HashMap stationTableHash1 = null;
+  private static Map<String,Station> stationTableHash = null;
+  private static Map<String,Station> stationTableHash1 = null;
 
   public static synchronized void init() throws IOException {
     if (stationTableHash == null)
       readStationTableXML();
   }
 
-  public static Station get(String id) { return (Station) stationTableHash.get(id); }
+  public static Station get(String id) { return stationTableHash.get(id); }
 
-  public static Station getByIdNumber(String idn) { return (Station) stationTableHash1.get(idn); }
+  public static Station getByIdNumber(String idn) { return stationTableHash1.get(idn); }
 
   private static void readStationTableXML() throws IOException {
-    stationTableHash = new HashMap();
-    stationTableHash1 = new HashMap();
+    stationTableHash = new HashMap<String,Station>();
+    stationTableHash1 = new HashMap<String,Station>();
     ClassLoader cl = Level2VolumeScan.class.getClassLoader();
     InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexradstns.xml");
 
@@ -112,23 +113,22 @@ public class NexradStationDB {
 
   // this is the old Gempak table, not as precise
    private static void readStationTable() throws IOException {
-    stationTableHash = new HashMap();
+    stationTableHash = new HashMap<String,Station>();
 
     ClassLoader cl = Level2VolumeScan.class.getClassLoader();
     InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");
 
-    List recs = TableParser.readTable(is, "3,15,46, 54,60d,67d,73d", 50000);
-    for (int i = 0; i < recs.size(); i++) {
-      TableParser.Record record = (TableParser.Record) recs.get(i);
+    List<TableParser.Record> recs = TableParser.readTable(is, "3,15,46, 54,60d,67d,73d", 50000);
+    for (TableParser.Record record : recs) {
       Station s = new Station();
-      s.id = "K"+record.get(0);
+      s.id = "K" + record.get(0);
       s.name = record.get(2) + " " + record.get(3);
-      s.lat = ((Double) record.get(4)).doubleValue() * .01;
-      s.lon = ((Double) record.get(5)).doubleValue()* .01;
-      s.elev = ((Double) record.get(6)).doubleValue();
+      s.lat = (Double) record.get(4) * .01;
+      s.lon = (Double) record.get(5) * .01;
+      s.elev = (Double) record.get(6);
 
       stationTableHash.put(s.id, s);
-      if (showStations) System.out.println(" station= "+s);
+      if (showStations) System.out.println(" station= " + s);
     }
   }
 

@@ -1,6 +1,5 @@
-// $Id: GribVertCoord.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,7 +34,6 @@ import java.util.*;
  * A Vertical Coordinate variable for a Grib variable.
  *
  * @author caron
- * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
 public class GribVertCoord implements Comparable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVertCoord.class);
@@ -57,8 +55,8 @@ public class GribVertCoord implements Comparable {
     dontUseVertical = true;
   }
 
-  GribVertCoord(List records, String levelName, TableLookup lookup) {
-    this.typicalRecord = (Index.GribRecord) records.get(0);
+  GribVertCoord(List<Index.GribRecord> records, String levelName, TableLookup lookup) {
+    this.typicalRecord = records.get(0);
     this.levelName = levelName;
     this.lookup = lookup;
 
@@ -84,7 +82,7 @@ public class GribVertCoord implements Comparable {
     units = lookup.getLevelUnit(record);
     usesBounds = Index2NC.isLayer(this.typicalRecord, lookup);
 
-    levels = new ArrayList(level1.length);
+    levels = new ArrayList<LevelCoord>(level1.length);
     for (int i = 0; i < level1.length; i++) {
       levels.add(new LevelCoord(level1[i], (level2 == null) ? 0.0 : level2[i]));
     }
@@ -103,9 +101,8 @@ public class GribVertCoord implements Comparable {
   }
   int getNLevels() { return dontUseVertical ? 1 : levels.size(); }
 
-  void addLevels( List records) {
-    for (int i = 0; i < records.size(); i++) {
-      Index.GribRecord record = (Index.GribRecord) records.get(i);
+  void addLevels( List<Index.GribRecord> records) {
+    for (Index.GribRecord record : records) {
       /*if (record.levelValue2 != 0) {
         if (GribServiceProvider.debugVert)
           System.out.println(levelName+" has levelType= "+record.levelType1+" levelValues="+record.levelValue1+","+record.levelValue2);
@@ -113,10 +110,10 @@ public class GribVertCoord implements Comparable {
       } */
 
       if (coordIndex(record) < 0) {
-        levels.add( new LevelCoord(record.levelValue1, record.levelValue2));
+        levels.add(new LevelCoord(record.levelValue1, record.levelValue2));
         if (dontUseVertical && levels.size() > 1) {
           if (GribServiceProvider.debugVert)
-            logger.warn("GribCoordSys: unused level coordinate has > 1 levels = "+levelName+" "+record.levelType1+" "+levels.size());
+            logger.warn("GribCoordSys: unused level coordinate has > 1 levels = " + levelName + " " + record.levelType1 + " " + levels.size());
         }
       }
     }
@@ -126,12 +123,11 @@ public class GribVertCoord implements Comparable {
     }
   }
 
-  boolean matchLevels( List records) {
+  boolean matchLevels( List<Index.GribRecord> records) {
 
     // first create a new list
-    ArrayList levelList = new ArrayList( records.size());
-    for (int i = 0; i < records.size(); i++) {
-      Index.GribRecord record = (Index.GribRecord) records.get(i);
+    List<LevelCoord> levelList = new ArrayList<LevelCoord>( records.size());
+    for (Index.GribRecord record : records) {
       LevelCoord lc = new LevelCoord(record.levelValue1, record.levelValue2);
       if (!levelList.contains(lc))
         levelList.add(lc);
@@ -188,7 +184,7 @@ public class GribVertCoord implements Comparable {
     if (coordValues == null) {
       coordValues = new double[levels.size()];
       for (int i = 0; i < levels.size(); i++) {
-        LevelCoord lc = (LevelCoord) levels.get(i);
+        LevelCoord lc = levels.get(i);
         coordValues[i] = lc.mid;
       }
     }
@@ -217,7 +213,7 @@ public class GribVertCoord implements Comparable {
       Array boundsArray = Array.factory( DataType.DOUBLE.getClassType(), new int [] {coordValues.length, 2});
       ucar.ma2.Index ima = boundsArray.getIndex();
       for (int i=0; i<coordValues.length; i++) {
-        LevelCoord lc = (LevelCoord) levels.get(i);
+        LevelCoord lc = levels.get(i);
         boundsArray.setDouble(ima.set(i,0), lc.value1);
         boundsArray.setDouble(ima.set(i,1), lc.value2);
       }
@@ -237,7 +233,7 @@ public class GribVertCoord implements Comparable {
     return getLevelName().compareToIgnoreCase( gv.getLevelName());
   }
 
-  private ArrayList levels = new ArrayList(); // LevelCoord
+  private List<LevelCoord> levels = new ArrayList<LevelCoord>();
   private class LevelCoord implements Comparable {
     double mid;
     double value1, value2;
@@ -281,7 +277,7 @@ public class GribVertCoord implements Comparable {
     }
 
     for (int i = 0; i < levels.size(); i++) {
-      LevelCoord lc = (LevelCoord) levels.get(i);
+      LevelCoord lc = levels.get(i);
       if (usesBounds) {
         if (ucar.nc2.util.Misc.closeEnough(lc.value1, val) && ucar.nc2.util.Misc.closeEnough(lc.value2, val2))
           return i;

@@ -1,6 +1,5 @@
-// $Id:GribTimeCoord.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,7 +34,6 @@ import java.util.*;
 /**
  * A Time Coordinate for a Grib dataset.
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GribTimeCoord {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribTimeCoord.class);
@@ -46,7 +44,7 @@ public class GribTimeCoord {
 
   private String name;
   private TableLookup lookup;
-  private ArrayList times = new ArrayList(); //  Date
+  private List<Date> times = new ArrayList<Date>(); //  Date
   //private double[] offsetHours;
   private int seq = 0;
 
@@ -56,7 +54,7 @@ public class GribTimeCoord {
     calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
-  GribTimeCoord(List records, TableLookup lookup) {
+  GribTimeCoord(List<Index.GribRecord> records, TableLookup lookup) {
     this();
     this.lookup = lookup;
     addTimes( records);
@@ -73,36 +71,34 @@ public class GribTimeCoord {
     String refDate = formatter.toDateTimeStringISO( baseTime);
 
     // the offset hours are reletive to whatever the base date is
-    DateUnit convertUnit = null;
+    DateUnit convertUnit;
     try {
       convertUnit = new DateUnit("hours since "+ refDate);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("TimeCoord not added, cant make DateUnit from String 'hours since "+ refDate+"'",e);
+      return;
     }
 
     // now create a list of valid dates
-    times = new ArrayList( offsetHours.length);
-    for (int i = 0; i < offsetHours.length; i++) {
-      double offsetHour = offsetHours[i];
-      times.add( convertUnit.makeDate(offsetHour));
+    times = new ArrayList<Date>( offsetHours.length);
+    for (double offsetHour : offsetHours) {
+      times.add(convertUnit.makeDate(offsetHour));
     }
   }
 
-  void addTimes( List records) {
-    for (int i = 0; i < records.size(); i++) {
-      Index.GribRecord record = (Index.GribRecord) records.get(i);
-      Date validTime = getValidTime( record, lookup);
+  void addTimes( List<Index.GribRecord> records) {
+    for (Index.GribRecord record : records) {
+      Date validTime = getValidTime(record, lookup);
       if (!times.contains(validTime))
-        times.add( validTime);
+        times.add(validTime);
     }
   }
 
-  boolean matchLevels( List records) {
+  boolean matchLevels( List<Index.GribRecord> records) {
 
     // first create a new list
-    ArrayList timeList = new ArrayList( records.size());
-    for (int i = 0; i < records.size(); i++) {
-      Index.GribRecord record = (Index.GribRecord) records.get(i);
+    List<Date> timeList = new ArrayList<Date>( records.size());
+    for (Index.GribRecord record : records) {
       Date validTime = getValidTime(record, lookup);
       if (!timeList.contains(validTime))
         timeList.add(validTime);
@@ -136,16 +132,17 @@ public class GribTimeCoord {
     Date baseTime = lookup.getFirstBaseTime();
     String timeUnit =  lookup.getFirstTimeRangeUnitName();
     String refDate = formatter.toDateTimeStringISO( baseTime);
-    DateUnit dateUnit = null;
+    DateUnit dateUnit;
     try {
       dateUnit = new DateUnit(timeUnit+" since "+ refDate);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("TimeCoord not added, cant make DateUnit from String '"+timeUnit+" since "+ refDate+"'",e);
+      return;
     }
 
     // convert the date into the time unit.
     for (int i = 0; i < times.size(); i++) {
-      Date validTime = (Date) times.get(i);
+      Date validTime = times.get(i);
       data[i] = (int) dateUnit.makeValue( validTime);
     }
     Array dataArray = Array.factory( DataType.INT.getClassType(), new int [] {ntimes}, data);

@@ -1,6 +1,5 @@
-// $Id: GribHorizCoordSys.java 70 2006-07-13 15:16:05Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,9 +32,7 @@ import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.GaussianLatitudes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * A horizontal coordinate system created from a Grib2GridDefinitionSection.
@@ -48,7 +45,6 @@ import java.util.Collections;
  * <li>We dont currently use, assuming that the x and y are just fine as negetive numbers.
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class GribHorizCoordSys {
   private TableLookup lookup;
@@ -57,13 +53,13 @@ public class GribHorizCoordSys {
 
   private String grid_name, shape_name, id;
   private boolean isLatLon = true, isGaussian = false;
-  HashMap varHash = new HashMap(200); // GribVariables that have this GribHorizCoordSys
-  HashMap productHash = new HashMap(100); // List of GribVariable, sorted by product desc
+  Map<String,GribVariable> varHash = new HashMap<String,GribVariable>(200); // GribVariables that have this GribHorizCoordSys
+  Map<String, List<GribVariable>> productHash = new HashMap<String, List<GribVariable>>(100); // List of GribVariable, sorted by product desc
   HashMap vcsHash = new HashMap(30); // GribVertCoordSys
 
   private double startx, starty;
   private ProjectionImpl proj;
-  private ArrayList attributes = new ArrayList();
+  private List<Attribute> attributes = new ArrayList<Attribute>();
 
   GribHorizCoordSys(Index.GdsRecord gdsIndex, TableLookup lookup, Group g) {
     this.gdsIndex = gdsIndex;
@@ -318,20 +314,19 @@ public class GribHorizCoordSys {
 
     Variable v = new Variable(ncfile, g, null, grid_name);
     v.setDataType(DataType.CHAR);
-    v.setDimensions(new ArrayList()); // scalar
+    v.setDimensions(""); // scalar
     char[] data = new char[]{'d'};
     Array dataArray = Array.factory(DataType.CHAR.getClassType(), new int[0], data);
     v.setCachedData(dataArray, false);
 
-    for (int i = 0; i < attributes.size(); i++) {
-      Attribute att = (Attribute) attributes.get(i);
+    for (Attribute att : attributes) {
       v.addAttribute(att);
     }
 
     v.addAttribute(new Attribute("earth_shape", shape_name));
     //v.addAttribute(new Attribute("GRIB_earth_shape_code", new Integer(gdsIndex.grid_shape_code)));
     if (gdsIndex.grid_shape_code == 1) {
-      v.addAttribute(new Attribute("spherical_earth_radius_meters", new Double(gdsIndex.radius_spherical_earth)));
+      v.addAttribute(new Attribute("spherical_earth_radius_meters", gdsIndex.radius_spherical_earth));
     }
 
     addGDSparams(v);
@@ -340,21 +335,20 @@ public class GribHorizCoordSys {
 
   private void addGDSparams(Variable v) {
     // add all the gds parameters
-    java.util.Set keys = gdsIndex.params.keySet();
-    ArrayList keyList = new ArrayList(keys);
+    java.util.Set<String> keys = gdsIndex.params.keySet();
+    List<String> keyList = new ArrayList<String>(keys);
     Collections.sort(keyList);
-    for (int i = 0; i < keyList.size(); i++) {
-      String key = (String) keyList.get(i);
+    for (String key : keyList) {
       String name = NetcdfFile.createValidNetcdfObjectName("GRIB_param_" + key);
 
       String vals = (String) gdsIndex.params.get(key);
       try {
         int vali = Integer.parseInt(vals);
-        v.addAttribute(new Attribute(name, new Integer(vali)));
+        v.addAttribute(new Attribute(name, vali));
       } catch (Exception e) {
         try {
           double vald = Double.parseDouble(vals);
-          v.addAttribute(new Attribute(name, new Double(vald)));
+          v.addAttribute(new Attribute(name, vald));
         } catch (Exception e2) {
           v.addAttribute(new Attribute(name, vals));
         }
@@ -365,7 +359,7 @@ public class GribHorizCoordSys {
   private void addCoordSystemVariable(NetcdfFile ncfile, String name, String dims) {
     Variable v = new Variable(ncfile, g, null, name);
     v.setDataType(DataType.CHAR);
-    v.setDimensions(new ArrayList()); // scalar
+    v.setDimensions(""); // scalar
     Array dataArray = Array.factory(DataType.CHAR.getClassType(), new int[0], new char[]{'0'});
     v.setCachedData(dataArray, false);
     v.addAttribute(new Attribute(_Coordinate.Axes, dims));
@@ -403,14 +397,14 @@ public class GribHorizCoordSys {
 
     attributes.add(new Attribute("grid_mapping_name", "lambert_conformal_conic"));
     if (gdsIndex.latin1 == gdsIndex.latin2)
-      attributes.add(new Attribute("standard_parallel", new Double(gdsIndex.latin1)));
+      attributes.add(new Attribute("standard_parallel", gdsIndex.latin1));
     else {
       double[] data = new double[]{gdsIndex.latin1, gdsIndex.latin2};
       attributes.add(new Attribute("standard_parallel",
               Array.factory(DataType.DOUBLE.getClassType(), new int[]{2}, data)));
     }
-    attributes.add(new Attribute("longitude_of_central_meridian", new Double(gdsIndex.LoV)));
-    attributes.add(new Attribute("latitude_of_projection_origin", new Double(gdsIndex.latin1)));
+    attributes.add(new Attribute("longitude_of_central_meridian", gdsIndex.LoV));
+    attributes.add(new Attribute("latitude_of_projection_origin", gdsIndex.latin1));
     //attributes.add( new Attribute("false_easting", new Double(startx)));
     //attributes.add( new Attribute("false_northing", new Double(starty)));
   }
@@ -443,9 +437,9 @@ public class GribHorizCoordSys {
     }
 
     attributes.add(new Attribute("grid_mapping_name", "polar_stereographic"));
-    attributes.add(new Attribute("longitude_of_projection_origin", new Double(gdsIndex.LoV)));
-    attributes.add(new Attribute("scale_factor_at_projection_origin", new Double(scale)));
-    attributes.add(new Attribute("latitude_of_projection_origin", new Double(latOrigin)));
+    attributes.add(new Attribute("longitude_of_projection_origin", gdsIndex.LoV));
+    attributes.add(new Attribute("scale_factor_at_projection_origin", scale));
+    attributes.add(new Attribute("latitude_of_projection_origin", latOrigin));
   }
 
   // Mercator
@@ -466,9 +460,9 @@ public class GribHorizCoordSys {
     starty = 0;
 
     attributes.add(new Attribute("grid_mapping_name", "mercator"));
-    attributes.add(new Attribute("standard_parallel", new Double(Latin)));
-    attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lo1)));
-    attributes.add(new Attribute("latitude_of_projection_origin", new Double(La1)));
+    attributes.add(new Attribute("standard_parallel", Latin));
+    attributes.add(new Attribute("longitude_of_projection_origin", Lo1));
+    attributes.add(new Attribute("latitude_of_projection_origin", La1));
 
     if (GribServiceProvider.debugProj) {
       double Lo2 = gdsIndex.readDouble("Lo2") + 360.0;
@@ -518,8 +512,8 @@ public class GribHorizCoordSys {
       proj = new Orthographic(Lat0, Lon0, radius);
 
       attributes.add(new Attribute("grid_mapping_name", "orthographic"));
-      attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lon0)));
-      attributes.add(new Attribute("latitude_of_projection_origin", new Double(Lat0)));
+      attributes.add(new Attribute("longitude_of_projection_origin", Lon0));
+      attributes.add(new Attribute("latitude_of_projection_origin", Lat0));
 
     } else { // "space view perspective"
 
@@ -527,9 +521,9 @@ public class GribHorizCoordSys {
       proj = new VerticalPerspectiveView(Lat0, Lon0, radius, height);
 
       attributes.add(new Attribute("grid_mapping_name", "vertical_perspective"));
-      attributes.add(new Attribute("longitude_of_projection_origin", new Double(Lon0)));
-      attributes.add(new Attribute("latitude_of_projection_origin", new Double(Lat0)));
-      attributes.add(new Attribute("height_above_earth", new Double(height)));
+      attributes.add(new Attribute("longitude_of_projection_origin", Lon0));
+      attributes.add(new Attribute("latitude_of_projection_origin", Lat0));
+      attributes.add(new Attribute("height_above_earth", height));
     }
 
     if (GribServiceProvider.debugProj) {

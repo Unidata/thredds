@@ -1,6 +1,5 @@
-// $Id:GribCoordSys.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -40,7 +39,7 @@ public class GribCoordSys {
   private String verticalName;
   private TableLookup lookup;
 
-  private List levels;
+  private List<Double> levels;
   boolean dontUseVertical = false;
   String positive = "up";
   String units;
@@ -50,7 +49,7 @@ public class GribCoordSys {
     this.record = record;
     this.verticalName = name;
     this.lookup = lookup;
-    this.levels = new ArrayList();
+    this.levels = new ArrayList<Double>();
 
     dontUseVertical = !lookup.isVerticalCoordinate( record);
     positive = lookup.isPositiveUp(record) ? "up" :"down";
@@ -66,15 +65,14 @@ public class GribCoordSys {
   String getVerticalDesc() { return verticalName+"("+record.levelType1+")"; }
   int getNLevels() { return dontUseVertical ? 1 : levels.size(); }
 
-  void addLevels( List records) {
-    for (int i = 0; i < records.size(); i++) {
-      Index.GribRecord record = (Index.GribRecord) records.get(i);
-      Double d = new Double( record.levelValue1);
+  void addLevels( List<Index.GribRecord> records) {
+    for (Index.GribRecord record : records) {
+      Double d = (double) record.levelValue1;
       if (!levels.contains(d))
         levels.add(d);
       if (dontUseVertical && levels.size() > 1) {
         if (GribServiceProvider.debugVert)
-          System.out.println("GribCoordSys: unused level coordinate has > 1 levels = "+verticalName+" "+record.levelType1+" "+levels.size());
+          System.out.println("GribCoordSys: unused level coordinate has > 1 levels = " + verticalName + " " + record.levelType1 + " " + levels.size());
       }
     }
     Collections.sort( levels );
@@ -88,13 +86,12 @@ public class GribCoordSys {
     }
   }
 
-  boolean matchLevels( List records) {
+  boolean matchLevels( List<Index.GribRecord> records) {
 
     // first create a new list
-    ArrayList levelList = new ArrayList( records.size());
-    for (int i = 0; i < records.size(); i++) {
-      Index.GribRecord record = (Index.GribRecord) records.get(i);
-      Double d = new Double( record.levelValue1);
+    List<Double> levelList = new ArrayList<Double>( records.size());
+    for (Index.GribRecord record : records) {
+      Double d = (double) record.levelValue1;
       if (!levelList.contains(d))
         levelList.add(d);
     }
@@ -161,8 +158,7 @@ public class GribCoordSys {
 
     double[] data = new double[nlevs];
     for (int i = 0; i < levels.size(); i++) {
-      Double d = (Double) levels.get(i);
-      data[i] = d.doubleValue();
+      data[i] = levels.get(i);
     }
     Array dataArray = Array.factory( DataType.DOUBLE.getClassType(), new int [] {nlevs}, data);
 
@@ -179,21 +175,19 @@ public class GribCoordSys {
 
   void findCoordinateTransform (Group g, String nameStartsWith, int levelType) {
     // look for variable that uses this coordinate
-    List vars = g.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
+    List<Variable> vars = g.getVariables();
+    for (Variable v : vars) {
       if (v.getName().equals(nameStartsWith)) {
         Attribute att = v.findAttribute("GRIB_level_type");
         if ((att == null) || (att.getNumericValue().intValue() != levelType)) continue;
 
-        v.addAttribute( new Attribute(_Coordinate.TransformType, "Vertical"));
-        v.addAttribute( new Attribute("transform_name", "Existing3DField"));
+        v.addAttribute(new Attribute(_Coordinate.TransformType, "Vertical"));
+        v.addAttribute(new Attribute("transform_name", "Existing3DField"));
       }
     }
   }
 
   int getIndex(Index.GribRecord record) {
-    Double d = new Double( record.levelValue1);
-    return levels.indexOf( d);
+    return levels.indexOf( (double) record.levelValue1);
   }
 }

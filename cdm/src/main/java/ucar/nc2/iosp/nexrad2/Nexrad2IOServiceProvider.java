@@ -1,6 +1,5 @@
-// $Id:Nexrad2IOServiceProvider.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,6 +22,7 @@ package ucar.nc2.iosp.nexrad2;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import static ucar.nc2.iosp.nexrad2.Level2Record.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
@@ -38,9 +38,7 @@ import java.util.Date;
 /**
  * An IOServiceProvider for NEXRAD level II files.
  *
- *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Nexrad2IOServiceProvider.class);
@@ -74,25 +72,25 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     radialDim = new Dimension("radial", volScan.getMaxRadials(), true);
     ncfile.addDimension( null, radialDim);
 
-    makeVariable( ncfile, Level2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups());
-    int velocity_type =  (volScan.getDopplarResolution() == Level2Record.DOPPLER_RESOLUTION_HIGH_CODE) ? Level2Record.VELOCITY_HI : Level2Record.VELOCITY_LOW;
+    makeVariable( ncfile, REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups());
+    int velocity_type =  (volScan.getDopplarResolution() == DOPPLER_RESOLUTION_HIGH_CODE) ? VELOCITY_HI : VELOCITY_LOW;
     Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups());
-    makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v);
+    makeVariableNoCoords( ncfile, SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v);
 
     if (volScan.getStationId() != null) {
       ncfile.addAttribute(null, new Attribute("Station", volScan.getStationId()));
       ncfile.addAttribute(null, new Attribute("StationName", volScan.getStationName()));
-      ncfile.addAttribute(null, new Attribute("StationLatitude", new Double(volScan.getStationLatitude())));
-      ncfile.addAttribute(null, new Attribute("StationLongitude", new Double(volScan.getStationLongitude())));
-      ncfile.addAttribute(null, new Attribute("StationElevationInMeters", new Double(volScan.getStationElevation())));
+      ncfile.addAttribute(null, new Attribute("StationLatitude", volScan.getStationLatitude()));
+      ncfile.addAttribute(null, new Attribute("StationLongitude", volScan.getStationLongitude()));
+      ncfile.addAttribute(null, new Attribute("StationElevationInMeters", volScan.getStationElevation()));
 
       double latRadiusDegrees = Math.toDegrees( radarRadius / ucar.unidata.geoloc.Earth.getRadius());
-      ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Double(volScan.getStationLatitude() - latRadiusDegrees)));
-      ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Double(volScan.getStationLatitude() + latRadiusDegrees)));
+      ncfile.addAttribute(null, new Attribute("geospatial_lat_min", volScan.getStationLatitude() - latRadiusDegrees));
+      ncfile.addAttribute(null, new Attribute("geospatial_lat_max", volScan.getStationLatitude() + latRadiusDegrees));
       double cosLat = Math.cos( Math.toRadians(volScan.getStationLatitude()));
       double lonRadiusDegrees = Math.toDegrees( radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
-      ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Double(volScan.getStationLongitude() - lonRadiusDegrees)));
-      ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Double(volScan.getStationLongitude() + lonRadiusDegrees)));
+      ncfile.addAttribute(null, new Attribute("geospatial_lon_min", volScan.getStationLongitude() - lonRadiusDegrees));
+      ncfile.addAttribute(null, new Attribute("geospatial_lon_max", volScan.getStationLongitude() + lonRadiusDegrees));
 
 
           // add a radial coordinate transform (experimental)
@@ -100,9 +98,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       ct.setDataType(DataType.CHAR);
       ct.setDimensions(""); // scalar
       ct.addAttribute( new Attribute("transform_name", "Radial"));
-      ct.addAttribute( new Attribute("center_latitude", new Double(volScan.getStationLatitude())));
-      ct.addAttribute( new Attribute("center_longitude", new Double(volScan.getStationLongitude())));
-      ct.addAttribute( new Attribute("center_elevation", new Double(volScan.getStationElevation())));
+      ct.addAttribute( new Attribute("center_latitude", volScan.getStationLatitude()));
+      ct.addAttribute( new Attribute("center_longitude", volScan.getStationLongitude()));
+      ct.addAttribute( new Attribute("center_elevation", volScan.getStationElevation()));
       ct.addAttribute( new Attribute(_Coordinate.TransformType, "Radial"));
       ct.addAttribute( new Attribute(_Coordinate.AxisTypes, "RadialElevation RadialAzimuth RadialDistance"));
 
@@ -115,7 +113,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", volScan.getDataFormat()));
-    Date d = Level2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
+    Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
 
     ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(d)));
@@ -135,14 +133,14 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NEXRAD; Radar Level II; reflectivity; mean radial velocity; spectrum width"));
 
     ncfile.addAttribute(null, new Attribute("VolumeCoveragePatternName",
-      Level2Record.getVolumeCoveragePatternName(volScan.getVCP())));
-    ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", new Integer(volScan.getVCP())));
-    ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", new Double(Level2Record.HORIZONTAL_BEAM_WIDTH)));
+      getVolumeCoveragePatternName(volScan.getVCP())));
+    ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", volScan.getVCP()));
+    ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", (double) HORIZONTAL_BEAM_WIDTH));
 
     ncfile.finish();
   }
 
-  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List groups) throws IOException {
+  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List<List<Level2Record>> groups) throws IOException {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -150,8 +148,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     }
 
     // get representative record
-    List firstGroup =  (List) groups.get(0);
-    Level2Record firstRecord = (Level2Record) firstGroup.get(0);
+    List<Level2Record> firstGroup =  groups.get(0);
+    Level2Record firstRecord = firstGroup.get(0);
     int ngates = firstRecord.getGateCount(datatype);
 
     String scanDimName = "scan"+abbrev;
@@ -161,7 +159,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addDimension( null, scanDim);
     ncfile.addDimension( null, gateDim);
 
-    ArrayList dims = new ArrayList();
+    List<Dimension> dims = new ArrayList<Dimension>();
     dims.add( scanDim);
     dims.add( radialDim);
     dims.add( gateDim);
@@ -171,22 +169,22 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.setDimensions(dims);
     ncfile.addVariable(null, v);
 
-    v.addAttribute( new Attribute("units", Level2Record.getDatatypeUnits(datatype)));
+    v.addAttribute( new Attribute("units", getDatatypeUnits(datatype)));
     v.addAttribute( new Attribute("long_name", longName));
 
 
     byte[] b = new byte[2];
-    b[0] = Level2Record.MISSING_DATA;
-    b[1] = Level2Record.BELOW_THRESHOLD;
+    b[0] = MISSING_DATA;
+    b[1] = BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
 
     v.addAttribute( new Attribute("missing_value", missingArray));
-    v.addAttribute( new Attribute("signal_below_threshold", new Byte( Level2Record.BELOW_THRESHOLD)));
-    v.addAttribute( new Attribute("scale_factor", new Float( Level2Record.getDatatypeScaleFactor(datatype))));
-    v.addAttribute( new Attribute("add_offset", new Float( Level2Record.getDatatypeAddOffset(datatype))));
+    v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
+    v.addAttribute( new Attribute("scale_factor", getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute("add_offset", getDatatypeAddOffset(datatype)));
     v.addAttribute( new Attribute("_unsigned", "true"));
 
-    ArrayList dim2 = new ArrayList();
+    List<Dimension> dim2 = new ArrayList<Dimension>();
     dim2.add( scanDim);
     dim2.add( radialDim);
 
@@ -200,12 +198,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     // int julianDays = volScan.getTitleJulianDays();
     // Date d = Level2Record.getDate( julianDays, 0);
-    Date d = Level2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
+    Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     String units = "msecs since "+formatter.toDateTimeStringISO(d);
 
     timeVar.addAttribute( new Attribute("long_name", "time since base date"));
     timeVar.addAttribute( new Attribute("units", units));
-    timeVar.addAttribute( new Attribute("missing_value", new Integer(MISSING_INT)));
+    timeVar.addAttribute( new Attribute("missing_value", MISSING_INT));
     timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     // add elevation coordinate variable
@@ -217,7 +215,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     elevVar.addAttribute( new Attribute("units", "degrees"));
     elevVar.addAttribute( new Attribute("long_name", "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
-    elevVar.addAttribute( new Attribute("missing_value", new Float(MISSING_FLOAT)));
+    elevVar.addAttribute( new Attribute("missing_value", MISSING_FLOAT));
     elevVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
 
     // add azimuth coordinate variable
@@ -229,7 +227,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     aziVar.addAttribute( new Attribute("units", "degrees"));
     aziVar.addAttribute( new Attribute("long_name", "azimuth angle in degrees: 0 = true north, 90 = east"));
-    aziVar.addAttribute( new Attribute("missing_value", new Float(MISSING_FLOAT)));
+    aziVar.addAttribute( new Attribute("missing_value", MISSING_FLOAT));
     aziVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString()));
 
     // add gate coordinate variable
@@ -274,10 +272,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Level2Record[][] map = new Level2Record[nscans][nradials];
     for (int i = 0; i < groups.size(); i++) {
       Level2Record[] mapScan = map[i];
-      List group = (List) groups.get(i);
-      for (int j = 0; j < group.size(); j++) {
-        Level2Record r =  (Level2Record) group.get(j);
-        int radial = r.radial_num-1;
+      List<Level2Record> group = groups.get(i);
+      for (Level2Record r : group) {
+        int radial = r.radial_num - 1;
         mapScan[radial] = r;
       }
     }
@@ -295,18 +292,18 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.setDimensions( from.getDimensions());
     ncfile.addVariable(null, v);
 
-    v.addAttribute( new Attribute("units", Level2Record.getDatatypeUnits(datatype)));
+    v.addAttribute( new Attribute("units", getDatatypeUnits(datatype)));
     v.addAttribute( new Attribute("long_name", longName));
 
     byte[] b = new byte[2];
-    b[0] = Level2Record.MISSING_DATA;
-    b[1] = Level2Record.BELOW_THRESHOLD;
+    b[0] = MISSING_DATA;
+    b[1] = BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
 
     v.addAttribute( new Attribute("missing_value", missingArray));
-    v.addAttribute( new Attribute("signal_below_threshold", new Byte( Level2Record.BELOW_THRESHOLD)));
-    v.addAttribute( new Attribute("scale_factor", new Float( Level2Record.getDatatypeScaleFactor(datatype))));
-    v.addAttribute( new Attribute("add_offset", new Float( Level2Record.getDatatypeAddOffset(datatype))));
+    v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
+    v.addAttribute( new Attribute("scale_factor", getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute("add_offset", getDatatypeAddOffset(datatype)));
     v.addAttribute( new Attribute("_unsigned", "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
@@ -363,7 +360,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       }
 
       nradialsIter.setIntNext( nradials);
-      ngatesIter.setIntNext( first.getGateCount( datatype));
+      if (first != null) ngatesIter.setIntNext( first.getGateCount( datatype));
     }
 
     time.setCachedData( timeData, false);
@@ -426,7 +423,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       }
 
       nradialsIter.setIntNext( nradials);
-      ngatesIter.setIntNext( first.getGateCount( datatype));
+      if (first != null) ngatesIter.setIntNext( first.getGateCount( datatype));
     }
 
     time.setCachedData( timeData, false);
@@ -464,7 +461,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   private void readOneRadial(Level2Record r, int datatype, Range gateRange, IndexIterator ii) throws IOException {
     if (r == null) {
       for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride())
-        ii.setByteNext( Level2Record.MISSING_DATA);
+        ii.setByteNext( MISSING_DATA);
       return;
     }
     r.readData(volScan.raf, datatype, gateRange, ii);
