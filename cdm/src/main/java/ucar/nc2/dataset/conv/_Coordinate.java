@@ -40,5 +40,5 @@ public class _Coordinate {
   static public final String ZisPositive = "_CoordinateZisPositive";
 
   // class not interface, per Bloch item 17
-  private _Coordinate() {}; // disable instantiation
+  private _Coordinate() {} // disable instantiation
 }

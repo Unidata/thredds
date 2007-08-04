@@ -87,6 +87,7 @@ import java.util.*;
 
 public class CoordSysBuilder implements CoordSysBuilderIF {
   static public final String resourcesDir = "resources/nj22/coords/"; // resource path
+  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
 
   static private Map<String, Class> conventionHash = new HashMap<String, Class>();
   static private List<Convention> conventionList = new ArrayList<Convention>();

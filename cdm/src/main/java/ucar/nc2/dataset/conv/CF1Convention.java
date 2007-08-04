@@ -1,6 +1,5 @@
-// $Id:CF1Convention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -45,7 +44,6 @@ import java.io.IOException;
  * </i>
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class CF1Convention extends CSMConvention {
@@ -68,17 +66,15 @@ public class CF1Convention extends CSMConvention {
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
 
     // look for transforms
-    List vars = ds.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      Variable v = (Variable) vars.get(i);
-
+    List<Variable> vars = ds.getVariables();
+    for (Variable v : vars) {
       // look for special standard_names
       String sname = ds.findAttValueIgnoreCase(v, "standard_name", null);
       if (sname != null) {
         sname = sname.trim();
 
         if (sname.equalsIgnoreCase("atmosphere_ln_pressure_coordinate")) { // LOOK why isnt this with other Transforms?
-          makeAtmLnCoordinate( ds, v);
+          makeAtmLnCoordinate(ds, v);
           continue;
         }
 
@@ -92,11 +88,11 @@ public class CF1Convention extends CSMConvention {
           continue;
         }
 
-        for (int j = 0; j < vertical_coords.length; j++)
-          if (sname.equalsIgnoreCase(vertical_coords[j])) {
+        for (String vertical_coord : vertical_coords)
+          if (sname.equalsIgnoreCase(vertical_coord)) {
             v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
             if (v.findAttribute(_Coordinate.Axes) == null)
-              v.addAttribute( new Attribute(_Coordinate.Axes, v.getName())); // LOOK: may also be time dependent
+              v.addAttribute(new Attribute(_Coordinate.Axes, v.getName())); // LOOK: may also be time dependent
           }
       }
 
@@ -174,7 +170,7 @@ public class CF1Convention extends CSMConvention {
       ds.addVariable(null, p);
       //Dimension d = p.getDimension(0);
       //d.addCoordinateVariable(p);
-      parseInfo.append(" added Vertical Pressure coordinate "+p.getName()+"\n");
+      parseInfo.append(" added Vertical Pressure coordinate ").append(p.getName()).append("\n");
 
     } catch (IOException e) {
       String msg = " Unable to read variables from " + v.getName() + " formula_terms\n";
@@ -204,8 +200,8 @@ public class CF1Convention extends CSMConvention {
       if (sname.equalsIgnoreCase("projection_y_coordinate") || sname.equalsIgnoreCase("grid_latitude"))
         return AxisType.GeoY;
 
-      for (int i = 0; i < vertical_coords.length; i++)
-        if (sname.equalsIgnoreCase(vertical_coords[i]))
+      for (String vertical_coord : vertical_coords)
+        if (sname.equalsIgnoreCase(vertical_coord))
           return AxisType.GeoZ;
     }
 
@@ -255,7 +251,7 @@ public class CF1Convention extends CSMConvention {
       String varName = stoke.nextToken();
       Variable formulaV = ds.findVariable(varName);
       if (null == formulaV) {
-        parseInfo.append("*** Cant find formula variable="+varName+" for term="+what);
+        parseInfo.append("*** Cant find formula variable=").append(varName).append(" for term=").append(what);
         continue;
       }
       domain.addAll(formulaV.getDimensions());

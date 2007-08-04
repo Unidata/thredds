@@ -1,6 +1,5 @@
-// $Id:IFPSConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -36,12 +35,14 @@ import java.util.*;
 /**
  * IFPS Convention Allows Local NWS forecast office generated forecast datasets to be brought into IDV.
  * @author Burks
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class IFPSConvention extends CoordSysBuilder {
 
-  /** return true if we think this is a IFPS file. */
+  /**
+   * @param ncfile the NetcdfFile to test
+   * @return true if we think this is a IFPSConvention file.
+   */
   public static boolean isMine( NetcdfFile ncfile) {
     Variable v = ncfile.findVariable("latitude");
 
@@ -55,7 +56,7 @@ public class IFPSConvention extends CoordSysBuilder {
     this.conventionName = "IFPS";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     parseInfo.append("IFPS augmentDataset \n");
 
    // Figure out projection info. Assume the same for all variables
@@ -70,24 +71,17 @@ public class IFPSConvention extends CoordSysBuilder {
     String projName = ds.findAttValueIgnoreCase(projVar, "projectionType", null);
     if (projName.equals("LAMBERT_CONFORMAL")) {
       Projection proj = makeLCProjection( ds);
-
-      try {
-        makeXYcoords( ds, proj, latVar, lonVar);
-      } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      }
-
+      makeXYcoords( ds, proj, latVar, lonVar);
     }
 
     // figure out the time coordinate for each data variable
     // LOOK : always seperate; could try to discover if they are the same
-    Iterator vars = ds.getVariables().iterator();
-    while (vars.hasNext()) {
-        VariableDS ncvar = (VariableDS) vars.next();
+    List<Variable> vars = ds.getVariables();
+    for (Variable ncvar : vars) {
         //variables that are used but not displayable or have no data have DIM_0, also don't want history, since those are just how the person edited the grids
         if ((!ncvar.getDimension(0).getName().equals("DIM_0")) && !ncvar.getName().endsWith("History")
               && (ncvar.getRank() > 2) && !ncvar.getName().startsWith("Tool")) {
-            createTimeCoordinate(ds,ncvar);
+            createTimeCoordinate(ds, ncvar);
         } else if (ncvar.getName().equals("Topo")){
             //Deal with Topography variable
             ncvar.addAttribute(new Attribute("long_name", "Topography"));
@@ -98,9 +92,9 @@ public class IFPSConvention extends CoordSysBuilder {
     ds.finish();
   }
 
-  private void createTimeCoordinate(NetcdfDataset ds,VariableDS ncVar){
+  private void createTimeCoordinate(NetcdfDataset ds,Variable ncVar){
     //Time coordinate is stored in the attribute validTimes
-    //One caveat is that the times have two bounds and upper and a lower
+    //One caveat is that the times have two bounds an upper and a lower
 
     // get the times values
     Attribute timesAtt = ncVar.findAttribute("validTimes");
@@ -110,11 +104,11 @@ public class IFPSConvention extends CoordSysBuilder {
     // get every other one LOOK this is awkward
     try {
       int n = (int) timesArray.getSize();
-      ArrayList list = new ArrayList();
+      List<Range> list = new ArrayList<Range>();
       list.add(new Range(0, n-1, 2));
       timesArray = timesArray.section(list);
     } catch (InvalidRangeException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw new IllegalStateException(e);
     }
 
     // make sure it matches the dimension
@@ -125,8 +119,7 @@ public class IFPSConvention extends CoordSysBuilder {
     Dimension dimTime = ncVar.getDimension(0);
     int nTimesDim = dimTime.getLength();
     if (nTimesDim != nTimesAtt) {
-      parseInfo.append(" **error ntimes in attribute ("+nTimesAtt+") doesnt match dimension length ("+
-          nTimesDim+") for variable "+ ncVar.getName()+"\n");
+      parseInfo.append(" **error ntimes in attribute (").append(nTimesAtt).append(") doesnt match dimension length (").append(nTimesDim).append(") for variable ").append(ncVar.getName()).append("\n");
       return;
     }
 
@@ -146,10 +139,10 @@ public class IFPSConvention extends CoordSysBuilder {
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     ds.addCoordinateAxis(timeCoord);
 
-    parseInfo.append(" added coordinate variable "+ dimName+"\n");
+    parseInfo.append(" added coordinate variable ").append(dimName).append("\n");
 
     // now make the original variable use the new dimension
-    List dimsList = ncVar.getDimensions();
+    List<Dimension> dimsList = ncVar.getDimensions();
     dimsList.set(0, newDim);
     ncVar.setDimensions( dimsList);
 

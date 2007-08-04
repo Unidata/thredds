@@ -1,6 +1,5 @@
-// $Id:COARDSConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,19 +22,12 @@ package ucar.nc2.dataset.conv;
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
-import ucar.nc2.util.CancelTask;
-
-import java.util.List;
-import java.util.StringTokenizer;
-import java.io.IOException;
 
 /**
  * COARDS Convention.
  * see http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class COARDSConvention extends CoordSysBuilder {

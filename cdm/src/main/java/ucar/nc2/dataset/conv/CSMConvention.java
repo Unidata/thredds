@@ -1,6 +1,5 @@
-// $Id:CSMConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -49,17 +48,15 @@ public class CSMConvention extends COARDSConvention {
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
 
-    List vars = ds.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      VariableEnhanced ve = (VariableEnhanced) vars.get(i);
-      String unit = ve.getUnitsString();
+    List<Variable> vars = ds.getVariables();
+    for (Variable var : vars) {
+      String unit = var.getUnitsString();
       if (unit != null) {
         if (unit.equalsIgnoreCase("hybrid_sigma_pressure") || unit.equalsIgnoreCase("sigma_level")) {
           // both a coordinate axis and transform
-          Variable v = (Variable) ve;
-          v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
-          v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
-          v.addAttribute(new Attribute(_Coordinate.Axes, v.getName()));
+          var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
+          var.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
+          var.addAttribute(new Attribute(_Coordinate.Axes, var.getName()));
         }
       }
     }
@@ -72,8 +69,7 @@ public class CSMConvention extends COARDSConvention {
   protected void findCoordinateAxes(NetcdfDataset ds) {
 
     // coordinates is an alias for _CoordinateAxes
-    for (int i = 0; i < varList.size(); i++) {
-      VarProcess vp = (VarProcess) varList.get(i);
+    for (VarProcess vp : varList) {
       if (vp.coordAxes == null) { // dont override if already set
         String coordsString = ds.findAttValueIgnoreCase(vp.v, "coordinates", null);
         if (coordsString != null) {
@@ -122,7 +118,7 @@ public class CSMConvention extends COARDSConvention {
       if (!addParameter2(rs, HybridSigmaPressure.A, ds, ctv, "A_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.B, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", false)) return null;
-      parseInfo.append("CSMConvention made SigmaPressureCT " + ctv.getName() + "\n");
+      parseInfo.append("CSMConvention made SigmaPressureCT ").append(ctv.getName()).append("\n");
       return rs;
     }
 
@@ -147,7 +143,7 @@ public class CSMConvention extends COARDSConvention {
       if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.SIGMA, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", false)) return null;
-      parseInfo.append("CSMConvention made SigmaCT " + ctv.getName() + "\n");
+      parseInfo.append("CSMConvention made SigmaCT ").append(ctv.getName()).append("\n");
       return rs;
     }
 
@@ -172,14 +168,14 @@ public class CSMConvention extends COARDSConvention {
   protected boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, Variable v, String attName, boolean readData) {
     String varName;
     if (null == (varName = ds.findAttValueIgnoreCase(v, attName, null))) {
-      parseInfo.append("CSMConvention No Attribute named " + attName);
+      parseInfo.append("CSMConvention No Attribute named ").append(attName);
       return false;
     }
     varName = varName.trim();
 
     Variable dataVar;
     if (null == (dataVar = ds.findVariable(varName))) {
-      parseInfo.append("CSMConvention No Variable named " + varName);
+      parseInfo.append("CSMConvention No Variable named ").append(varName);
       return false;
     }
 
@@ -188,7 +184,7 @@ public class CSMConvention extends COARDSConvention {
       try {
         data = dataVar.read();
       } catch (IOException e) {
-        parseInfo.append("CSMConvention failed on read of " + varName + " err=" + e + "\n");
+        parseInfo.append("CSMConvention failed on read of ").append(varName).append(" err=").append(e).append("\n");
         return false;
       }
       double[] vals = (double []) data.get1DJavaArray(double.class);

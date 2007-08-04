@@ -1,6 +1,5 @@
-// $Id:M3IOConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -36,7 +35,6 @@ import java.util.*;
  *  is the standard data access library for both NCSC's EDSS project and EPA's Models-3.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @see "http://www.baronams.com/products/ioapi/index.html"
  */
 
@@ -47,7 +45,10 @@ public class M3IOConvention extends CoordSysBuilder {
     dateFormatOut.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
-  /** return true if we think this is a M3IO file. */
+  /**
+   * @param ncfile the NetcdfFile to test
+   * @return true if we think this is a M3IO file.
+   */
   public static boolean isMine( NetcdfFile ncfile) {
     return (null != ncfile.findGlobalAttribute("XORIG"))
       && (null != ncfile.findGlobalAttribute("YORIG"))
@@ -56,8 +57,6 @@ public class M3IOConvention extends CoordSysBuilder {
       && (null != ncfile.findGlobalAttribute("NCOLS"))
       && (null != ncfile.findGlobalAttribute("NROWS"));
   }
-
-  private boolean isLatLon = false;
 
   public M3IOConvention() {
     this.conventionName = "M3IO";
@@ -78,8 +77,8 @@ public class M3IOConvention extends CoordSysBuilder {
     int ny = dimy.getLength();
 
     int projType = findAttributeInt(ds, "GDTYP");
-    isLatLon = (projType == 1);
-    if (isLatLon) {
+    boolean latLon = (projType == 1);
+    if (latLon) {
       ds.addCoordinateAxis(  makeCoordAxis( ds, "lon", "COL", nx, "XORIG", "XCELL", "degrees east"));
       ds.addCoordinateAxis(  makeCoordAxis( ds, "lat", "ROW", ny, "YORIG", "YCELL", "degrees north"));
     } else {
@@ -154,7 +153,7 @@ public class M3IOConvention extends CoordSysBuilder {
   private void makeTimeCoordAxis( NetcdfDataset ds, String timeName) {
     int start_date = findAttributeInt(ds,  "SDATE");
     int start_time = findAttributeInt(ds,  "STIME");
-    int time_step = (int) findAttributeInt(ds,  "TSTEP");
+    int time_step = findAttributeInt(ds,  "TSTEP");
 
     int year = start_date / 1000;
     int doy = start_date % 1000;
@@ -205,9 +204,8 @@ public class M3IOConvention extends CoordSysBuilder {
     double lat0 = findAttributeDouble(ds,  "YCENT");
 
     LambertConformal lc = new LambertConformal(lat0, lon0, par1, par2);
-    CoordinateTransform ct = new ProjectionCT("LambertConformalProjection", "FGDC", lc);
 
-    return ct;
+    return new ProjectionCT("LambertConformalProjection", "FGDC", lc);
   }
 
   private CoordinateTransform makeTMProjection(NetcdfDataset ds) {
@@ -223,9 +221,8 @@ public class M3IOConvention extends CoordSysBuilder {
      * @param scale scale factor along the central meridian
      */
     TransverseMercator tm = new TransverseMercator(lat0, tangentLon, 1.0);
-    CoordinateTransform ct = new ProjectionCT("MercatorProjection", "FGDC", tm);
 
-    return ct;
+    return new ProjectionCT("MercatorProjection", "FGDC", tm);
   }
 
   private CoordinateTransform makeSTProjection(NetcdfDataset ds) {
@@ -241,9 +238,8 @@ public class M3IOConvention extends CoordSysBuilder {
      * @param scale scale factor at tangent point, "normally 1.0 but may be reduced"
      */
     Stereographic st= new Stereographic(latt, lont, 1.0);
-    CoordinateTransform ct = new ProjectionCT("StereographicProjection", "FGDC", st);
 
-    return ct;
+    return new ProjectionCT("StereographicProjection", "FGDC", st);
   }
 
   /////////////////////////////////////////////////////////////////////////

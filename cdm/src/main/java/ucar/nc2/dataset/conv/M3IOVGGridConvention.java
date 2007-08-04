@@ -11,7 +11,6 @@ NOTES:   These are similar to Vis5D data sets except that the data are
          The pressure-based levels are converted into approximate z in
          meters above mean sea level.
 HISTORY: 2003/06/26 @author plessel.todd@epa.gov, based on WRFConvention.java
-         @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
 STATUS:  unreviewed, untested.
 ******************************************************************************/
 
@@ -229,7 +228,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final double[] vglvls = doubleArrayAttribute( "VGLVLS" );
     double[] vgLevelsInMeters = convertVGLevels_( vgtyp, vgtop, vglvls );
     final int count = vgLevelsInMeters.length;
-    ArrayList vgArray = new ArrayList( count );
+    List<String> vgArray = new ArrayList<String>( count );
 
     for ( int index = 0; index < count; ++index ) {
       vgArray.add( Double.toString( vgLevelsInMeters[ index ] * 0.001 ) );
@@ -367,8 +366,8 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @post return.length == 1
    * @post return[ 0 ] == ct
    */
-  protected List getCoordinateTransforms( CoordinateSystem cs ) {
-    ArrayList list = new ArrayList();
+  protected List<CoordinateTransform> getCoordinateTransforms( CoordinateSystem cs ) {
+    List<CoordinateTransform> list = new ArrayList<CoordinateTransform>();
 
     if ( cs.getXaxis() != null && cs.getYaxis() != null ) {
       list.add( ct );
@@ -386,8 +385,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @post return == true
    */
   protected boolean hasMissingData( Variable v ) {
-    final boolean result = true;
-    return result;
+    return true;
   }
 
 
@@ -396,8 +394,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @post return == BADVAL3
    */
   protected double getMissingDataValue( Variable unused ) {
-    final double result = BADVAL3;
-    return result;
+    return BADVAL3;
   }
 
 
@@ -406,8 +403,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @pre name != null
    */
   private int intAttribute( String name ) {
-    final int result = intAttribute_( ncd, name );
-    return result;
+    return intAttribute_( ncd, name );
   }
 
 
@@ -416,8 +412,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @pre name != null
    */
   private double doubleAttribute( String name ) {
-    final double result = doubleAttribute_( ncd, name );
-    return result;
+    return doubleAttribute_( ncd, name );
   }
 
 
@@ -428,17 +423,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @post return.length > 0
    */
   private double[] doubleArrayAttribute( String name ) {
-    final double[] result = doubleArrayAttribute_( ncd, name );
-    return result;
-  }
-
-
-  /*
-   * Class invariant: Is this.ncfile a valid M3IO file?
-   */
-  private boolean isValidM3IOFile() {
-    final boolean result = isValidM3IOFile_( ncd );
-    return result;
+    return doubleArrayAttribute_( ncd, name );
   }
 
 
@@ -646,8 +631,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
   static private boolean hasStringAttribute_( NetcdfFile ncFile, String name,
                                               int length ) {
     Attribute a = ncFile.findGlobalAttribute( name );
-    final boolean result = a != null && a.isString() && a.getStringValue().length()==length;
-    return result;
+    return a != null && a.isString() && a.getStringValue().length()==length;
   }
 
 
@@ -717,8 +701,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    */
   static private int dimension_( NetcdfFile ncFile, String name ) {
     Dimension d = ncFile.findDimension( name );
-    final int result = d.getLength();
-    return result;
+    return d.getLength();
   }
 
 
@@ -828,9 +811,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final int mm     = mmss / 100;
     final int mm00   = mm   * 100;
     final int ss     = mmss - mm00;
-    final boolean result =
-      hh >= 0 && inRangeI_( mm, 0, 59 ) && inRangeI_( ss, 0, 59 );
-    return result;
+    return hh >= 0 && inRangeI_( mm, 0, 59 ) && inRangeI_( ss, 0, 59 );
   }
 
 
@@ -901,7 +882,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @pre vglvls != null
    */
   static private boolean isValidVG_(int vgtyp, double vgtop,double[] vglvls) {
-    boolean result = false;
+    boolean result;
 
     switch ( vgtyp ) {
     case VGSGPH3: // Hydrostatic sigma pressures.
@@ -951,7 +932,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
         computeZAtLevels ? vglvls[ level ]
                          : ( vglvls[ level ] + vglvls[ level + 1 ] ) * 0.5;
       final double HEIGHT_OF_TERRAIN_IN_METERS = 0.0;
-      double pressure = 0.0;
+      double pressure;
 
       switch ( vgtyp ) {
       case VGSGPH3: // Hydrostatic sigma-P
@@ -993,9 +974,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    */
   private static double pressureAtSigmaLevel_( double sigmaLevel,
                                                double pressureAtTop ) {
-    final double result =
-      pressureAtTop + sigmaLevel * ( SURFACE_PRESSURE_IN_MB - pressureAtTop );
-    return result;
+    return pressureAtTop + sigmaLevel * ( SURFACE_PRESSURE_IN_MB - pressureAtTop );
   }
 
 
@@ -1009,9 +988,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    */
   private static double heightAtPressure_( double pressure ) {
     final double pressureToHeightScaleFactor = -7.2 * 1000.0;
-    final double result =
-      pressureToHeightScaleFactor * Math.log(pressure/SURFACE_PRESSURE_IN_MB);
-    return result;
+    return pressureToHeightScaleFactor * Math.log(pressure/SURFACE_PRESSURE_IN_MB);
   }
 
 
@@ -1091,8 +1068,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * Is x within [min, max]?
    */
   private static boolean inRangeI_( int x, int min, int max ) {
-    final boolean result = x >= min && x <= max;
-    return result;
+    return x >= min && x <= max;
   }
 
 
@@ -1100,8 +1076,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * Is x within [min, max]?
    */
   private static boolean inRange_( double x, double min, double max ) {
-    final boolean result = x >= min && x <= max;
-    return result;
+    return x >= min && x <= max;
   }
 }
 

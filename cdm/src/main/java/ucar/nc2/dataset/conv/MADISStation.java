@@ -1,6 +1,5 @@
-// $Id:MADISStation.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,7 +36,6 @@ import java.util.StringTokenizer;
  * MADIS Station Convention.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class MADISStation extends CoordSysBuilder {
@@ -55,7 +53,7 @@ public class MADISStation extends CoordSysBuilder {
       if (v != null) {
         v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
       } else {
-        parseInfo.append(" cant find time variable "+vname);
+        parseInfo.append(" cant find time variable ").append(vname);
       }
     }
 
@@ -69,7 +67,7 @@ public class MADISStation extends CoordSysBuilder {
         AxisType atype = count == 0 ? AxisType.Lat : count == 1 ? AxisType.Lon : AxisType.Height;
         v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));
       } else {
-        parseInfo.append(" cant find time variable "+vname);
+        parseInfo.append(" cant find time variable ").append(vname);
       }
       count++;
     }

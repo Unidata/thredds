@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -148,7 +148,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   // take a combined level variable and create multiple levels out of it
   // return the list of Dimensions that were created
   private List<Dimension> breakupLevels( NetcdfDataset ds, Variable levelVar) {
-    if (debugBreakup)  parseInfo.append("breakupLevels = "+levelVar.getName()+"\n");
+    if (debugBreakup) parseInfo.append("breakupLevels = ").append(levelVar.getName()).append("\n");
     List<Dimension> dimList = new ArrayList<Dimension>();
 
     ArrayChar levelVarData;
@@ -163,7 +163,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     ArrayChar.StringIterator iter = levelVarData.getStringIterator();
     while (iter.hasNext()) {
       String s = iter.next();
-      if (debugBreakup)  parseInfo.append("   "+s+"\n");
+      if (debugBreakup) parseInfo.append("   ").append(s).append("\n");
       StringTokenizer stoke = new StringTokenizer(s);
 
       // first token is the unit
@@ -203,7 +203,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     Dimension dim;
     if (null != (dim = ds.getRootGroup().findDimension(name))) {
       if (dim.getLength() == len) {
-        if (debugBreakup) parseInfo.append("  use existing dim"+dim);
+        if (debugBreakup) parseInfo.append("  use existing dim").append(dim);
         return dim;
       }
     }
@@ -211,11 +211,13 @@ public class AWIPSConvention extends CoordSysBuilder {
     // create new one
     dim = new Dimension(name, len, true);
     ds.addDimension( null, dim);
-    if (debugBreakup)  parseInfo.append("  make Dimension = "+name+ " length = "+len+"\n");
+    if (debugBreakup) parseInfo.append("  make Dimension = ").append(name).append(" length = ").append(len).append("\n");
 
     // if (len < 2) return dim; // skip 1D
 
-    if (debugBreakup)  parseInfo.append("  make ZCoordAxis = "+name+ " length = "+len+"\n");
+    if (debugBreakup) {
+      parseInfo.append("  make ZCoordAxis = ").append(name).append(" length = ").append(len).append("\n");
+    }
 
     CoordinateAxis v = new CoordinateAxis1D( ds, null, name, DataType.DOUBLE, name,
        makeUnitsName( units), makeLongName(name));
@@ -372,7 +374,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     double lat0 = findAttributeDouble( ds, "lat00");
     double lon0 = findAttributeDouble( ds, "lon00");
     ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj( new LatLonPointImpl( lat0, lon0));
-    if (debugProj)  parseInfo.append("getLCProjection start at proj coord "+start+"\n");
+    if (debugProj) parseInfo.append("getLCProjection start at proj coord ").append(start).append("\n");
     startx = start.getX();
     starty = start.getY();
 
@@ -401,13 +403,13 @@ public class AWIPSConvention extends CoordSysBuilder {
     starty = start.getY();
 
     // projection info
-    parseInfo.append("---makeStereoProjection start at proj coord "+start+"\n");
+    parseInfo.append("---makeStereoProjection start at proj coord ").append(start).append("\n");
 
     double latN = findAttributeDouble( ds, "latNxNy");
     double lonN = findAttributeDouble( ds, "lonNxNy");
     ProjectionPointImpl pt = (ProjectionPointImpl) proj.latLonToProj( new LatLonPointImpl( latN, lonN));
-    parseInfo.append("                        end at proj coord "+pt+"\n");
-    parseInfo.append("                        scale= "+scale+"\n");
+    parseInfo.append("                        end at proj coord ").append(pt).append("\n");
+    parseInfo.append("                        scale= ").append(scale).append("\n");
 
     return new ProjectionCT(name, "FGDC", proj);
   }
@@ -445,7 +447,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     double maxCalc = min + d * n;
-    parseInfo.append("Created Lon Coordinate Axis (max calc= "+maxCalc+" should be "+max+") ");
+    parseInfo.append("Created Lon Coordinate Axis (max calc= ").append(maxCalc).append(" should be ").append(max).append(") ");
     v.getNameAndDimensions(parseInfo, true, false);
     parseInfo.append("\n");
 
@@ -461,7 +463,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     double maxCalc = min + d * n;
-    parseInfo.append("Created Lat Coordinate Axis (max calc= "+maxCalc+" should be "+max+") ");
+    parseInfo.append("Created Lat Coordinate Axis (max calc= ").append(maxCalc).append(" should be ").append(max).append(") ");
     v.getNameAndDimensions(parseInfo, true, false);
     parseInfo.append("\n");
 

@@ -1,4 +1,3 @@
-// $Id:VAtmHybridHeight.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -18,10 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
-
 package ucar.nc2.dataset.transform;
-
 
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -32,7 +28,6 @@ import ucar.unidata.geoloc.vertical.HybridHeight;
 import ucar.unidata.util.Parameter;
 
 import java.util.StringTokenizer;
-
 
 /**
  * Create a atmosphere_hybrid_height_coordinate Vertical Transform from

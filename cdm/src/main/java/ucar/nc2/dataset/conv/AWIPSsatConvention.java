@@ -1,6 +1,5 @@
-// $Id:AWIPSsatConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,7 +36,6 @@ import java.util.*;
  * AWIPS netcdf output.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  *
  * @see "http://www-md.fsl.noaa.gov/eft/AWIPS/16c/onlinehelp/ifpServerSatelliteNETCDF.html"
  * @see "http://www.nws.noaa.gov/mdl/awips/aifmdocs/sec_4_e.htm"
@@ -45,7 +43,10 @@ import java.util.*;
 
 public class AWIPSsatConvention extends CoordSysBuilder {
 
-  /** return true if we think this is a AWIPS file. */
+  /**
+   * @param ncfile the NetcdfFile to test
+   * @return true if we think this is a AWIPSsatConvention file.
+   */
   public static boolean isMine( NetcdfFile ncfile) {
     return (null != ncfile.findGlobalAttribute("projName")) &&
        (null != ncfile.findGlobalAttribute("lon00")) &&
@@ -166,7 +167,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     double lat0 = findAttributeDouble( ds, "lat00");
     double lon0 = findAttributeDouble( ds, "lon00");
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj( new LatLonPointImpl( lat0, lon0));
-    if (debugProj)  parseInfo.append("getLCProjection start at proj coord "+start+"\n");
+    if (debugProj) parseInfo.append("getLCProjection start at proj coord ").append(start).append("\n");
     startx = start.getX();
     starty = start.getY();
 
@@ -178,12 +179,12 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     dy = (end.getY() - starty) / ny;
 
     if (debugProj) {
-      parseInfo.append("  makeProjectionLC start at proj coord "+startx+" "+starty+"\n");
-      parseInfo.append("  makeProjectionLC end at proj coord "+end.getX()+" "+end.getY()+"\n");
+      parseInfo.append("  makeProjectionLC start at proj coord ").append(startx).append(" ").append(starty).append("\n");
+      parseInfo.append("  makeProjectionLC end at proj coord ").append(end.getX()).append(" ").append(end.getY()).append("\n");
       double fdx = findAttributeDouble(ds, "dxKm");
       double fdy = findAttributeDouble(ds, "dyKm");
-      parseInfo.append("  makeProjectionLC calc dx= "+dx+" file dx= "+fdx+"\n");
-      parseInfo.append("  makeProjectionLC calc dy= "+dy+" file dy= "+fdy+"\n");
+      parseInfo.append("  makeProjectionLC calc dx= ").append(dx).append(" file dx= ").append(fdx).append("\n");
+      parseInfo.append("  makeProjectionLC calc dy= ").append(dy).append(" file dy= ").append(fdy).append("\n");
     }
 
     return new ProjectionCT(name, "FGDC", proj);
@@ -218,16 +219,15 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     dy = (end.getY() - starty) / ny;
 
     if (debugProj) {
-      parseInfo.append("  makeProjectionMercator start at proj coord "+startx+" "+starty+"\n");
-      parseInfo.append("  makeProjectionMercator end at proj coord "+end.getX()+" "+end.getY()+"\n");
+      parseInfo.append("  makeProjectionMercator start at proj coord ").append(startx).append(" ").append(starty).append("\n");
+      parseInfo.append("  makeProjectionMercator end at proj coord ").append(end.getX()).append(" ").append(end.getY()).append("\n");
       double fdx = findAttributeDouble(ds, "dxKm");
       double fdy = findAttributeDouble(ds, "dyKm");
-      parseInfo.append("  makeProjectionMercator calc dx= "+dx+" file dx= "+fdx+"\n");
-      parseInfo.append("  makeProjectionMercator calc dy= "+dy+" file dy= "+fdy+"\n");
+      parseInfo.append("  makeProjectionMercator calc dx= ").append(dx).append(" file dx= ").append(fdx).append("\n");
+      parseInfo.append("  makeProjectionMercator calc dy= ").append(dy).append(" file dy= ").append(fdy).append("\n");
     }
 
-    ProjectionCT ct = new ProjectionCT(name, "FGDC", proj);
-    return ct;
+    return new ProjectionCT(name, "FGDC", proj);
   }
 
   private CoordinateAxis makeXCoordAxis(NetcdfDataset ds, int nx, String xname) {
@@ -238,7 +238,8 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     v.getNameAndDimensions(parseInfo, true, false);
     parseInfo.append("\n");
 
-    if (debugProj)  parseInfo.append("  makeXCoordAxis ending x "+(startx+nx*dx)+" nx= "+nx+" dx= "+dx+"\n");
+    if (debugProj)
+      parseInfo.append("  makeXCoordAxis ending x ").append(startx + nx * dx).append(" nx= ").append(nx).append(" dx= ").append(dx).append("\n");
     return v;
   }
 
@@ -250,7 +251,8 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     v.getNameAndDimensions(parseInfo, true, false);
     parseInfo.append("\n");
 
-    if (debugProj) parseInfo.append("  makeYCoordAxis ending y "+(starty+ny*dy)+" ny= "+ny+" dy= "+dy+"\n");
+    if (debugProj)
+      parseInfo.append("  makeYCoordAxis ending y ").append(starty + ny * dy).append(" ny= ").append(ny).append(" dy= ").append(dy).append("\n");
     return v;
   }
 

@@ -1,4 +1,3 @@
-// $Id:ZebraConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -33,14 +32,16 @@ import java.io.IOException;
  * Zebra ATD files.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class ZebraConvention extends ATDRadarConvention {
 
-  /** return true if we think this is a ZebraConvention file. */
-  public static boolean isMine( NetcdfFile ncfile) {
-    String s =  ncfile.findAttValueIgnoreCase(null, "Convention", "none");
+  /**
+   * @param ncfile the NetcdfFile to test
+   * @return true if we think this is a Zebra file.
+   */
+  public static boolean isMine(NetcdfFile ncfile) {
+    String s = ncfile.findAttValueIgnoreCase(null, "Convention", "none");
     return s.startsWith("Zebra");
   }
 
@@ -48,8 +49,8 @@ public class ZebraConvention extends ATDRadarConvention {
     this.conventionName = "Zebra";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    NcMLReader.wrapNcMLresource( ds, CoordSysBuilder.resourcesDir+"Zebra.ncml", cancelTask);
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    NcMLReader.wrapNcMLresource(ds, CoordSysBuilder.resourcesDir + "Zebra.ncml", cancelTask);
 
     // special time handling
     // the time coord var is created in the NcML
@@ -63,7 +64,7 @@ public class ZebraConvention extends ATDRadarConvention {
 
     Attribute att = base_time.findAttribute("units");
     String units = (att != null) ? att.getStringValue() : "seconds since 1970-01-01 00:00 UTC";
-    time.addAttribute( new Attribute("units", units));
+    time.addAttribute(new Attribute("units", units));
 
     Array data;
     try {
@@ -72,45 +73,44 @@ public class ZebraConvention extends ATDRadarConvention {
       data = time_offset.read();
       IndexIterator iter = data.getIndexIterator();
       while (iter.hasNext())
-        iter.setDoubleCurrent( iter.getDoubleNext() + baseValue);
+        iter.setDoubleCurrent(iter.getDoubleNext() + baseValue);
 
     } catch (java.io.IOException ioe) {
-      parseInfo.append("ZebraConvention failed to create time Coord Axis for file "+
-        ds.getLocation()+"\n"+ioe+"\n");
+      parseInfo.append("ZebraConvention failed to create time Coord Axis for file ").append(ds.getLocation()).append("\n").append(ioe).append("\n");
       return;
     }
 
-    time.setCachedData( data, true);
+    time.setCachedData(data, true);
   }
 
   /**
    * Search for netcdf variables with "coord_axis" pointing to a Dimension
    * construct coordAxes from them, add to collection of CoordAxisImpl.
    *
-  protected void addCoordAxesFromAliasVariables() {
+   protected void addCoordAxesFromAliasVariables() {
 
-    // look for aliased variables
-    Iterator vars = netcdf.getVariableIterator();
-    while (vars.hasNext()) {
-      Variable ncvar = (Variable) vars.next();
-      String dimName = netcdf.findAttValueIgnoreCase(ncvar, "coord_axis", null);
-      if (null == dimName)
-        continue;
-      Dimension dim = netcdf.findDimension( dimName);
-      if (null != dim)
-        addCoordAxisFromVariable( dim, ncvar);
-    }
-  }
+   // look for aliased variables
+   Iterator vars = netcdf.getVariableIterator();
+   while (vars.hasNext()) {
+   Variable ncvar = (Variable) vars.next();
+   String dimName = netcdf.findAttValueIgnoreCase(ncvar, "coord_axis", null);
+   if (null == dimName)
+   continue;
+   Dimension dim = netcdf.findDimension( dimName);
+   if (null != dim)
+   addCoordAxisFromVariable( dim, ncvar);
+   }
+   }
 
 
-  // look for an coord_alias attribute
-  private String findAlias( DimCoordAxis dc) {
-    if (dc.mid != null)
-      return netcdf.findAttValueIgnoreCase(dc.mid, "coord_alias", "");
-    if (dc.edge != null)
-      return netcdf.findAttValueIgnoreCase(dc.edge, "coord_alias", "");
-    return "";
-  } */
+   // look for an coord_alias attribute
+   private String findAlias( DimCoordAxis dc) {
+   if (dc.mid != null)
+   return netcdf.findAttValueIgnoreCase(dc.mid, "coord_alias", "");
+   if (dc.edge != null)
+   return netcdf.findAttValueIgnoreCase(dc.edge, "coord_alias", "");
+   return "";
+   } */
 
 
 }

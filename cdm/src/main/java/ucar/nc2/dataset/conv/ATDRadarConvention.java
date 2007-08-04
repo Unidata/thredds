@@ -1,6 +1,5 @@
-// $Id:ATDRadarConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,15 +30,17 @@ import java.io.IOException;
  * ATD Radar file (ad hoc guesses).
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class ATDRadarConvention extends CoordSysBuilder {
 
-  /** return true if we think this is a ATDRadarConvention file. */
-  public static boolean isMine( NetcdfFile ncfile) {
+  /**
+   * @param ncfile test this NetcdfFile
+   * @return true if we think this is a ATDRadarConvention file.
+   */
+  public static boolean isMine(NetcdfFile ncfile) {
     // not really sure until we can examine more files
-    String s =  ncfile.findAttValueIgnoreCase(null, "sensor_name", "none");
+    String s = ncfile.findAttValueIgnoreCase(null, "sensor_name", "none");
     return s.equalsIgnoreCase("CRAFT/NEXRAD");
   }
 
@@ -47,8 +48,8 @@ public class ATDRadarConvention extends CoordSysBuilder {
     this.conventionName = "ATDRadar";
   }
 
-  public void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
-    NcMLReader.wrapNcMLresource( ncDataset, CoordSysBuilder.resourcesDir+"ATDRadar.ncml", cancelTask);
+  public void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
+    NcMLReader.wrapNcMLresource(ncDataset, CoordSysBuilder.resourcesDir + "ATDRadar.ncml", cancelTask);
   }
 
 }

@@ -1,6 +1,5 @@
-// $Id:AbstractCoordTransBuilder.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,18 +25,15 @@ import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
-import ucar.ma2.Array;
 import ucar.unidata.util.Parameter;
 
 import java.util.StringTokenizer;
 import java.util.List;
-import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of CoordTransBuilderIF.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.CoordTransBuilderIF {
   protected StringBuffer errBuffer = null;
@@ -99,28 +95,13 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
    * @return true if success, false is failed
    */
   protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varName) {
-    Variable dataVar;
-    if (null == (dataVar = ds.findVariable(varName))) {
+    if (null == (ds.findVariable(varName))) {
       if (null != errBuffer)
-        errBuffer.append("CoordTransBuilder " + getTransformName() + ": no Variable named " + varName);
+        errBuffer.append("CoordTransBuilder ").append(getTransformName()).append(": no Variable named ").append(varName);
       return false;
     }
 
-    /* if (readData) {
-      Array data;
-      try {
-        data = dataVar.read();
-      } catch (IOException e) {
-        if (null != errBuffer)
-          errBuffer.append("CoordTransBuilder " + getTransformName() + ": failed on read of " + varName + " err=" + e + "\n");
-        return false;
-      }
-      double[] vals = (double []) data.get1DJavaArray(double.class);
-      rs.addParameter(new Parameter(paramName, vals));
-
-    } else */
-      rs.addParameter(new Parameter(paramName, varName));
-
+    rs.addParameter(new Parameter(paramName, varName));
     return true;
   }
 
@@ -128,8 +109,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     String formula = ds.findAttValueIgnoreCase(ctv, "formula_terms", null);
     if (null == formula) {
       if (null != errBuffer)
-        errBuffer.append("CoordTransBuilder " + getTransformName() + ": needs attribute 'formula_terms' on Variable "
-                + ctv.getName() + "\n");
+        errBuffer.append("CoordTransBuilder ").append(getTransformName()).append(": needs attribute 'formula_terms' on Variable ").append(ctv.getName()).append("\n");
       return null;
     }
     return formula;
@@ -137,9 +117,8 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
 
   protected String getUnits(NetcdfDataset ds) {
         // kind o' kludge
-    List axes = ds.getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis =  (CoordinateAxis) axes.get(i);
+    List<CoordinateAxis> axes = ds.getCoordinateAxes();
+    for (CoordinateAxis axis : axes) {
       if (axis.getAxisType() == AxisType.GeoX) {
         return axis.getUnitsString();
       }

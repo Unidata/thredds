@@ -1,4 +1,3 @@
-// $Id:UnidataObsConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -36,7 +35,6 @@ import java.util.StringTokenizer;
 /**
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class UnidataObsConvention extends CoordSysBuilder {
 
@@ -123,9 +121,8 @@ public class UnidataObsConvention extends CoordSysBuilder {
   }
 
   private boolean hasAxisType(NetcdfDataset ds, AxisType a) {
-    List varList = ds.getVariables();
-    for (int i = 0; i < varList.size(); i++) {
-      Variable v = (Variable) varList.get(i);
+    List<Variable> varList = ds.getVariables();
+    for (Variable v : varList) {
       String axisType = ds.findAttValueIgnoreCase(v, "CoordinateAxisType", null);
       if ((axisType != null) && axisType.equals(a.toString()))
         return true;
@@ -134,17 +131,16 @@ public class UnidataObsConvention extends CoordSysBuilder {
   }
 
   private Variable hasUnits(NetcdfDataset ds, String unitList) {
-    List varList = ds.getVariables();
+    List<Variable> varList = ds.getVariables();
     StringTokenizer stoker = new StringTokenizer(unitList, ",");
     while (stoker.hasMoreTokens()) {
       String unit = stoker.nextToken();
 
-      for (int i = 0; i < varList.size(); i++) {
-        VariableEnhanced ve = (VariableEnhanced) varList.get(i);
+      for (Variable ve : varList) {
         String hasUnit = ve.getUnitsString();
         if (hasUnit == null) continue;
         if (hasUnit.equalsIgnoreCase(unit))
-          return (Variable) ve;
+          return ve;
       }
     }
     return null;

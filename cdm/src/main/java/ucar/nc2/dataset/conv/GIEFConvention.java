@@ -1,6 +1,5 @@
-// $Id:GIEFConvention.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,11 +32,9 @@ import java.io.IOException;
  * https://www.metnet.navy.mil/~hofschnr/GIEF-F/1.2/
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class GIEFConvention extends CoordSysBuilder {
-  private Attribute translation, affine;
 
   public GIEFConvention() {
     this.conventionName = "GIEF";
@@ -59,18 +56,17 @@ public class GIEFConvention extends CoordSysBuilder {
     // may be 1 or 2 data variables
     String unit_name = ds.findAttValueIgnoreCase(null, "unit_name", null);
     String parameter_name = ds.findAttValueIgnoreCase(null, "parameter_name", null);
-    List vlist = ds.getVariables();
-    for (int i = 0; i < vlist.size(); i++) {
-      Variable v =  (Variable) vlist.get(i);
+    List<Variable> vlist = ds.getVariables();
+    for (Variable v : vlist) {
       if (v.getRank() > 1) {
-        v.addAttribute( new Attribute( "units", unit_name));
-        v.addAttribute( new Attribute( "long_name", v.getName()+" "+parameter_name));
-        v.addAttribute( new Attribute( _Coordinate.Axes, "time level latitude longitude"));
+        v.addAttribute(new Attribute("units", unit_name));
+        v.addAttribute(new Attribute("long_name", v.getName() + " " + parameter_name));
+        v.addAttribute(new Attribute(_Coordinate.Axes, "time level latitude longitude"));
       }
     }
 
-    translation = ds.findGlobalAttributeIgnoreCase("translation");
-    affine = ds.findGlobalAttributeIgnoreCase("affine_transformation");
+    Attribute translation = ds.findGlobalAttributeIgnoreCase("translation");
+    Attribute affine = ds.findGlobalAttributeIgnoreCase("affine_transformation");
 
     // LOOK only handling the 1D case
     // add lat

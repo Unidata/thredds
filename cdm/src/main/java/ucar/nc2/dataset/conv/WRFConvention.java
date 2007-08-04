@@ -25,6 +25,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.geoloc.*;
@@ -35,9 +36,9 @@ import java.util.*;
 
 /**
  * WRF netcdf output files.
- *
+ * <p/>
  * Note: Apparently WRF netcdf files before version 2 didnt output the projection origin, so
- *  we cant properly georeference them.
+ * we cant properly georeference them.
  *
  * @author caron
  */
@@ -45,15 +46,19 @@ import java.util.*;
 public class WRFConvention extends CoordSysBuilder {
 
   static private java.text.SimpleDateFormat dateFormat;
+
   static {
     dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
     dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
-  /** return true if we think this is a WRF file. */
-  public static boolean isMine( NetcdfFile ncfile) {
+  /**
+   * @param ncfile the NetcdfFile to test
+   * @return true if we think this is a WRF file.
+   */
+  public static boolean isMine(NetcdfFile ncfile) {
     return (null != ncfile.findGlobalAttribute("MAP_PROJ")) &&
-           (null != ncfile.findDimension("south_north"));
+        (null != ncfile.findDimension("south_north"));
   }
 
   private double centerX = 0.0, centerY = 0.0;
@@ -116,20 +121,20 @@ may be set to different values.
 180->180) that is parallel to the y-axis of your grid, (sometimes referred to as the
 orientation of the grid). This should be set equal to the center longitude in most cases.
 */
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
 
     // kludge in fixing the units
-    List vlist = ds.getVariables();
-    for (int i=0; i<vlist.size(); i++) {
-      Variable v = (Variable) vlist.get(i);
-      Attribute att = v.findAttributeIgnoreCase( "units");
+    List<Variable> vlist = ds.getVariables();
+    for (Variable v : vlist) {
+      Attribute att = v.findAttributeIgnoreCase("units");
       if (att != null) {
         String units = att.getStringValue();
-        v.addAttribute( new Attribute( "units", normalize( units))); // removes the old
+        v.addAttribute(new Attribute("units", normalize(units))); // removes the old
       }
     }
 
-        // make projection transform
+    // make projection transform
     Attribute att = ds.findGlobalAttribute("MAP_PROJ");
     int projType = att.getNumericValue().intValue();
 
@@ -141,36 +146,36 @@ orientation of the grid). This should be set equal to the center longitude in mo
       ds.addCoordinateAxis( makeLatCoordAxis( ds, "latitude", ds.findDimension("south_north")));  */
 
       Variable glat = ds.findVariable("GLAT");
-      glat.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
       glat.setDimensions("south_north west_east");
       glat.setCachedData(convertToDegrees(glat), false);
-      glat.addAttribute( new Attribute("units", "degrees_north"));
+      glat.addAttribute(new Attribute("units", "degrees_north"));
 
       Variable glon = ds.findVariable("GLON");
-      glon.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       glon.setDimensions("south_north west_east");
       glon.setCachedData(convertToDegrees(glon), false);
-      glon.addAttribute( new Attribute("units", "degrees_east"));
+      glon.addAttribute(new Attribute("units", "degrees_east"));
 
-      VariableDS v = new VariableDS( ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
-      v.addAttribute( new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
-      Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[] {}, new char[] {' '});
+      VariableDS v = new VariableDS(ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
+      v.addAttribute(new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
+      Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[]{}, new char[]{' '});
       v.setCachedData(data, true);
-      ds.addVariable( null, v);
+      ds.addVariable(null, v);
 
       Variable dataVar = ds.findVariable("LANDMASK");
-      dataVar.addAttribute( new Attribute(_Coordinate.Systems, "LatLonCoordSys"));
+      dataVar.addAttribute(new Attribute(_Coordinate.Systems, "LatLonCoordSys"));
 
-    }  else {
+    } else {
 
 
-      double lat1 = findAttributeDouble( ds, "TRUELAT1");
-      double lat2 = findAttributeDouble( ds, "TRUELAT2");
-      double centralLat = findAttributeDouble( ds, "CEN_LAT");  // center of grid
-      double centralLon = findAttributeDouble( ds, "CEN_LON");  // center of grid
+      double lat1 = findAttributeDouble(ds, "TRUELAT1");
+      double lat2 = findAttributeDouble(ds, "TRUELAT2");
+      double centralLat = findAttributeDouble(ds, "CEN_LAT");  // center of grid
+      double centralLon = findAttributeDouble(ds, "CEN_LON");  // center of grid
 
-      double standardLon = findAttributeDouble( ds, "STAND_LON"); // true longitude
-      double standardLat = findAttributeDouble( ds, "MOAD_CEN_LAT");
+      double standardLon = findAttributeDouble(ds, "STAND_LON"); // true longitude
+      double standardLat = findAttributeDouble(ds, "MOAD_CEN_LAT");
 
       ProjectionImpl proj = null;
       switch (projType) {
@@ -182,7 +187,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
         case 2:
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
-          double scaleFactor = (1+Math.sin(Math.toRadians(lat1)))/2.;
+          double scaleFactor = (1 + Math.sin(Math.toRadians(lat1))) / 2.;
           proj = new Stereographic(lat2, lon0, scaleFactor);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
@@ -193,29 +198,28 @@ orientation of the grid). This should be set equal to the center longitude in mo
           //projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
           break;
         default:
-          parseInfo.append("ERROR: unknown projection type = "+projType);
+          parseInfo.append("ERROR: unknown projection type = ").append(projType);
           break;
       }
 
       if (proj != null) {
-        LatLonPointImpl lpt1 = new LatLonPointImpl( centralLat,  centralLon); // center of the grid
+        LatLonPointImpl lpt1 = new LatLonPointImpl(centralLat, centralLon); // center of the grid
         ProjectionPoint ppt1 = proj.latLonToProj(lpt1, new ProjectionPointImpl());
         centerX = ppt1.getX();
         centerY = ppt1.getY();
         if (debug) {
-          System.out.println("centerX="+centerX);
-          System.out.println("centerY="+centerY);
+          System.out.println("centerX=" + centerX);
+          System.out.println("centerY=" + centerY);
         }
       }
 
-
       // make axes
-      ds.addCoordinateAxis( makeXCoordAxis( ds, "x", ds.findDimension("west_east")));
-      ds.addCoordinateAxis( makeXCoordAxis( ds, "x_stag", ds.findDimension("west_east_stag")));
-      ds.addCoordinateAxis( makeYCoordAxis( ds, "y", ds.findDimension("south_north")));
-      ds.addCoordinateAxis( makeYCoordAxis( ds, "y_stag", ds.findDimension("south_north_stag")));
-      ds.addCoordinateAxis( makeZCoordAxis( ds, "z", ds.findDimension("bottom_top")));
-      ds.addCoordinateAxis( makeZCoordAxis( ds, "z_stag", ds.findDimension("bottom_top_stag")));
+      ds.addCoordinateAxis(makeXCoordAxis(ds, "x", ds.findDimension("west_east")));
+      ds.addCoordinateAxis(makeXCoordAxis(ds, "x_stag", ds.findDimension("west_east_stag")));
+      ds.addCoordinateAxis(makeYCoordAxis(ds, "y", ds.findDimension("south_north")));
+      ds.addCoordinateAxis(makeYCoordAxis(ds, "y_stag", ds.findDimension("south_north_stag")));
+      ds.addCoordinateAxis(makeZCoordAxis(ds, "z", ds.findDimension("bottom_top")));
+      ds.addCoordinateAxis(makeZCoordAxis(ds, "z_stag", ds.findDimension("bottom_top_stag")));
 
       if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
@@ -226,14 +230,14 @@ orientation of the grid). This should be set equal to the center longitude in mo
 
     // time coordinate variations
     if (ds.findVariable("Time") == null) { // Can skip this if its already there, eg from NcML
-      CoordinateAxis taxis = makeTimeCoordAxis( ds, "Time", ds.findDimension("Time"));
+      CoordinateAxis taxis = makeTimeCoordAxis(ds, "Time", ds.findDimension("Time"));
       if (taxis == null)
-        taxis = makeTimeCoordAxis( ds, "Time", ds.findDimension("Times"));
+        taxis = makeTimeCoordAxis(ds, "Time", ds.findDimension("Times"));
       if (taxis != null)
-        ds.addCoordinateAxis( taxis);
+        ds.addCoordinateAxis(taxis);
     }
 
-    ds.addCoordinateAxis( makeSoilDepthCoordAxis( ds, "ZS"));
+    ds.addCoordinateAxis(makeSoilDepthCoordAxis(ds, "ZS"));
 
     ds.finish();
   }
@@ -244,44 +248,44 @@ orientation of the grid). This should be set equal to the center longitude in mo
       data = v.read();
       data = data.reduce();
     } catch (IOException ioe) {
-      throw new RuntimeException("data read failed on "+v.getName()+"="+ioe.getMessage());
+      throw new RuntimeException("data read failed on " + v.getName() + "=" + ioe.getMessage());
     }
     IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext()) {
-      ii.setDoubleCurrent( Math.toDegrees(ii.getDoubleNext()));
+      ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
     }
     return data;
   }
 
   // pretty much WRF specific
-  private String normalize( String units) {
-    if (units.equals("fraction")) units="";
-    else if (units.equals("dimensionless")) units="";
-    else if (units.equals("NA")) units="";
-    else if (units.equals("-")) units="";
+  private String normalize(String units) {
+    if (units.equals("fraction")) units = "";
+    else if (units.equals("dimensionless")) units = "";
+    else if (units.equals("NA")) units = "";
+    else if (units.equals("-")) units = "";
     else {
-      units = StringUtil.substitute( units, "**", "^");
-      units = StringUtil.remove( units, '}');
-      units = StringUtil.remove( units, '{');
+      units = StringUtil.substitute(units, "**", "^");
+      units = StringUtil.remove(units, '}');
+      units = StringUtil.remove(units, '{');
     }
     return units;
   }
-   /////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-  protected void makeCoordinateTransforms( NetcdfDataset ds) {
+  protected void makeCoordinateTransforms(NetcdfDataset ds) {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName());
       vp.isCoordinateTransform = true;
       vp.ct = projCT;
     }
-    super.makeCoordinateTransforms( ds);
+    super.makeCoordinateTransforms(ds);
   }
 
-  protected AxisType getAxisType( NetcdfDataset ds, VariableEnhanced ve) {
+  protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
     Variable v = (Variable) ve;
     String vname = v.getName();
 
-   if (vname.equalsIgnoreCase("x") || vname.equalsIgnoreCase("x_stag"))
+    if (vname.equalsIgnoreCase("x") || vname.equalsIgnoreCase("x_stag"))
       return AxisType.GeoX;
 
     if (vname.equalsIgnoreCase("lon"))
@@ -297,106 +301,109 @@ orientation of the grid). This should be set equal to the center longitude in mo
       return AxisType.GeoZ;
 
     if (vname.equalsIgnoreCase("Z"))
-       return AxisType.Height;
+      return AxisType.Height;
 
     if (vname.equalsIgnoreCase("time") || vname.equalsIgnoreCase("times"))
       return AxisType.Time;
 
     String unit = ve.getUnitsString();
     if (unit != null) {
-      if ( SimpleUnit.isCompatible("millibar", unit))
+      if (SimpleUnit.isCompatible("millibar", unit))
         return AxisType.Pressure;
 
-      if ( SimpleUnit.isCompatible("m", unit))
+      if (SimpleUnit.isCompatible("m", unit))
         return AxisType.Height;
     }
-    
+
 
     return null;
   }
 
-  /**  Does increasing values of Z go vertical  up?
-    * @return "up" if this is a Vertical (z) coordinate axis which goes up as coords get bigger,
-    * else return "down" */
-  public String getZisPositive( CoordinateAxis v) {
-  	return "down"; //eta coords decrease upward
+  /**
+   * Does increasing values of Z go vertical  up?
+   *
+   * @param v for thsi axis
+   * @return "up" if this is a Vertical (z) coordinate axis which goes up as coords get bigger,
+   *         else return "down"
+   */
+  public String getZisPositive(CoordinateAxis v) {
+    return "down"; //eta coords decrease upward
   }
-
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  private CoordinateAxis makeLonCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
-     if (dim == null) return null;
-     double dx = 4 * findAttributeDouble( ds, "DX");
-     int nx = dim.getLength();
-     double startx = centerX - dx * (nx-1) / 2;
-
-     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_east", "synthesized longitude coordinate");
-     ds.setValues( v, nx, startx, dx);
-     v.addAttribute( new Attribute(_Coordinate.AxisType, "Lon"));
-     if (!axisName.equals( dim.getName()) )
-       v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
-
-     return v;
-   }
-
-  private CoordinateAxis makeLatCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
-     if (dim == null) return null;
-     double dy = findAttributeDouble( ds, "DY");
-     int ny = dim.getLength();
-     double starty = centerY - dy * (ny-1) / 2;
-
-     CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_north", "synthesized latitude coordinate");
-     ds.setValues( v, ny, starty, dy);
-     v.addAttribute( new Attribute(_Coordinate.AxisType, "Lat"));
-     if (!axisName.equals( dim.getName()) )
-       v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
-
-     return v;
-   }
-
-   private CoordinateAxis makeXCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+  private CoordinateAxis makeLonCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
-    double dx = findAttributeDouble( ds, "DX") / 1000.0; // km ya just gotta know
+    double dx = 4 * findAttributeDouble(ds, "DX");
     int nx = dim.getLength();
-    double startx = centerX - dx * (nx-1) / 2; // ya just gotta know
+    double startx = centerX - dx * (nx - 1) / 2;
+
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_east", "synthesized longitude coordinate");
+    ds.setValues(v, nx, startx, dx);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
+    if (!axisName.equals(dim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+
+    return v;
+  }
+
+  private CoordinateAxis makeLatCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
+    if (dim == null) return null;
+    double dy = findAttributeDouble(ds, "DY");
+    int ny = dim.getLength();
+    double starty = centerY - dy * (ny - 1) / 2;
+
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "degrees_north", "synthesized latitude coordinate");
+    ds.setValues(v, ny, starty, dy);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
+    if (!axisName.equals(dim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+
+    return v;
+  }
+
+  private CoordinateAxis makeXCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
+    if (dim == null) return null;
+    double dx = findAttributeDouble(ds, "DX") / 1000.0; // km ya just gotta know
+    int nx = dim.getLength();
+    double startx = centerX - dx * (nx - 1) / 2; // ya just gotta know
     //System.out.println(" originX= "+originX+" startx= "+startx);
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoX coordinate from DX attribute");
-    ds.setValues( v, nx, startx, dx);
-    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
-    if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoX coordinate from DX attribute");
+    ds.setValues(v, nx, startx, dx);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
+    if (!axisName.equals(dim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
     //ADD: is staggered grid being dealt with?
     return v;
   }
 
-  private CoordinateAxis makeYCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+  private CoordinateAxis makeYCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
-    double dy = findAttributeDouble( ds, "DY") / 1000.0;
+    double dy = findAttributeDouble(ds, "DY") / 1000.0;
     int ny = dim.getLength();
-    double starty = centerY - dy * (ny-1) / 2; // - dy/2; // ya just gotta know
+    double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
     //System.out.println(" originY= "+originY+" starty= "+starty);
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoY coordinate from DY attribute");
-    ds.setValues( v, ny, starty, dy);
-    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
-    if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoY coordinate from DY attribute");
+    ds.setValues(v, ny, starty, dy);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
+    if (!axisName.equals(dim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
     //ADD: is staggered grid being dealt with?
     return v;
   }
 
-  private CoordinateAxis makeZCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+  private CoordinateAxis makeZCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
 
     String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.SHORT, dim.getName(),"", "eta values from variable "+fromWhere);
-    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
-    if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.SHORT, dim.getName(), "", "eta values from variable " + fromWhere);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
+    if (!axisName.equals(dim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
     // create eta values from file variables: ZNU, ZNW
     // But they are a function of time though the values are the same in the sample file
@@ -405,16 +412,16 @@ orientation of the grid). This should be set equal to the center longitude in mo
     if (etaVar == null) return makeFakeCoordAxis(ds, axisName, dim);
 
     int n = etaVar.getShape()[1];//number of eta levels
-    int[] origin = new int[] {0,0};
-    int[] shape = new int[] {1,n};
+    int[] origin = new int[]{0, 0};
+    int[] shape = new int[]{1, n};
     try {
       Array array = etaVar.read(origin, shape);//read first time slice
       ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
       IndexIterator it = array.getIndexIterator();
       int count = 0;
       while (it.hasNext()) {
-      	double d = it.getDoubleNext();
-      	newArray.set(count++, d);
+        double d = it.getDoubleNext();
+        newArray.set(count++, d);
       }
       v.setCachedData(newArray, true);
     } catch (Exception e) {
@@ -424,18 +431,18 @@ orientation of the grid). This should be set equal to the center longitude in mo
     return v;
   }
 
-  private CoordinateAxis makeFakeCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+  private CoordinateAxis makeFakeCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.SHORT, dim.getName(), "", "synthesized coordinate: only an index");
-    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
-    if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.SHORT, dim.getName(), "", "synthesized coordinate: only an index");
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
+    if (!axisName.equals(dim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
-    ds.setValues( v, dim.getLength(), 0, 1);
+    ds.setValues(v, dim.getLength(), 0, 1);
     return v;
   }
 
-  private CoordinateAxis makeTimeCoordAxis( NetcdfDataset ds, String axisName, Dimension dim) {
+  private CoordinateAxis makeTimeCoordAxis(NetcdfDataset ds, String axisName, Dimension dim) {
     if (dim == null) return null;
     int nt = dim.getLength();
     Variable timeV = ds.findVariable("Times");
@@ -448,7 +455,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
       return null;
     }
 
-    ArrayDouble.D1 values = new ArrayDouble.D1( nt);
+    ArrayDouble.D1 values = new ArrayDouble.D1(nt);
     int count = 0;
 
     if (timeData instanceof ArrayChar) {
@@ -459,18 +466,16 @@ orientation of the grid). This should be set equal to the center longitude in mo
           Date d = dateFormat.parse(dateS);
           values.set(count++, (double) d.getTime() / 1000);
         } catch (java.text.ParseException e) {
-          parseInfo.append("ERROR: cant parse Time string = <" + dateS+
-              "> err="+e.getMessage()+"\n");
+          parseInfo.append("ERROR: cant parse Time string = <").append(dateS).append("> err=").append(e.getMessage()).append("\n");
 
           // one more try
-          String startAtt = ds.findAttValueIgnoreCase(null,"START_DATE",null);
+          String startAtt = ds.findAttValueIgnoreCase(null, "START_DATE", null);
           if ((nt == 1) && (null != startAtt)) {
             try {
               Date d = dateFormat.parse(startAtt);
               values.set(0, (double) d.getTime() / 1000);
             } catch (java.text.ParseException e2) {
-              parseInfo.append("ERROR: cant parse global attribute START_DATE = <" + startAtt+
-                  "> err="+e2.getMessage()+"\n");
+              parseInfo.append("ERROR: cant parse global attribute START_DATE = <").append(startAtt).append("> err=").append(e2.getMessage()).append("\n");
             }
           }
         }
@@ -483,31 +488,30 @@ orientation of the grid). This should be set equal to the center longitude in mo
           Date d = dateFormat.parse(dateS);
           values.set(count++, (double) d.getTime() / 1000);
         } catch (java.text.ParseException e) {
-          parseInfo.append("ERROR: cant parse Time string = " + dateS);
+          parseInfo.append("ERROR: cant parse Time string = ").append(dateS);
         }
       }
 
     }
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, axisName, DataType.DOUBLE, dim.getName(),
-      "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
-    v.addAttribute( new Attribute(_Coordinate.AxisType, "Time"));
-    if (!axisName.equals( dim.getName()) )
-      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, dim.getName()));
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(),
+        "secs since 1970-01-01 00:00:00", "synthesized time coordinate from Times(time)");
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+    if (!axisName.equals(dim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
-    v.setCachedData( values, true);
+    v.setCachedData(values, true);
     return v;
   }
 
-  private VariableDS makeSoilDepthCoordAxis( NetcdfDataset ds, String coordVarName) {
+  private VariableDS makeSoilDepthCoordAxis(NetcdfDataset ds, String coordVarName) {
     Variable coordVar = ds.findVariable(coordVarName);
     if (null == coordVar)
       return null;
 
     Dimension soilDim = null;
-    List dims = coordVar.getDimensions();
-    for (int i = 0; i < dims.size(); i++) {
-      Dimension d = (Dimension) dims.get(i);
+    List<Dimension> dims = coordVar.getDimensions();
+    for (Dimension d : dims) {
       if (d.getName().startsWith("soil_layers"))
         soilDim = d;
     }
@@ -515,32 +519,32 @@ orientation of the grid). This should be set equal to the center longitude in mo
       return null;
 
     if (coordVar.getRank() == 1) {
-      coordVar.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
-      if (!coordVarName.equals( soilDim.getName()) )
-        coordVar.addAttribute( new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
+      coordVar.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
+      if (!coordVarName.equals(soilDim.getName()))
+        coordVar.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
       return (VariableDS) coordVar;
     }
 
     String units = ds.findAttValueIgnoreCase(coordVar, "units", "");
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, "soilDepth", DataType.SHORT, soilDim.getName(), units, "soil depth");
-    v.addAttribute( new Attribute(_Coordinate.AxisType, "GeoZ"));
-    v.addAttribute( new Attribute("units", "units"));
-    if (!v.getShortName().equals( soilDim.getName()) )
-      v.addAttribute( new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.SHORT, soilDim.getName(), units, "soil depth");
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
+    v.addAttribute(new Attribute("units", "units"));
+    if (!v.getShortName().equals(soilDim.getName()))
+      v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
 
     //read first time slice
     int n = coordVar.getShape()[1];
-    int[] origin = new int[] {0,0};
-    int[] shape = new int[] {1,n};
+    int[] origin = new int[]{0, 0};
+    int[] shape = new int[]{1, n};
     try {
       Array array = coordVar.read(origin, shape);
       ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
       IndexIterator it = array.getIndexIterator();
       int count = 0;
       while (it.hasNext()) {
-      	double d = it.getDoubleNext();
-      	newArray.set(count++, d);
+        double d = it.getDoubleNext();
+        newArray.set(count++, d);
       }
       v.setCachedData(newArray, true);
     } catch (Exception e) {
@@ -550,7 +554,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
     return v;
   }
 
-  private double findAttributeDouble( NetcdfDataset ds, String attname) {
+  private double findAttributeDouble(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
     if (att == null) return Double.NaN;
     return att.getNumericValue().doubleValue();
@@ -563,16 +567,15 @@ orientation of the grid). This should be set equal to the center longitude in mo
     super.assignCoordinateTransforms(ncDataset);
 
     // any cs whose got a vertical coordinate with no units
-    List csys = ncDataset.getCoordinateSystems();
-    for (int i = 0; i < csys.size(); i++) {
-      CoordinateSystem cs = (CoordinateSystem) csys.get(i);
+    List<CoordinateSystem> csys = ncDataset.getCoordinateSystems();
+    for (CoordinateSystem cs : csys) {
       if (cs.getZaxis() != null) {
         String units = cs.getZaxis().getUnitsString();
         if ((units == null) || (units.trim().length() == 0)) {
           VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
           if (vct != null)
             cs.addCoordinateTransform(vct);
-          parseInfo.append("***Added WRFEta verticalCoordinateTransform to " + cs.getName() + "\n");
+          parseInfo.append("***Added WRFEta verticalCoordinateTransform to ").append(cs.getName()).append("\n");
         }
       }
     }
@@ -642,17 +645,17 @@ orientation of the grid). This should be set equal to the center longitude in mo
     Array glatData = glat.read();
     IndexIterator ii = glatData.getIndexIterator();
     while (ii.hasNext()) {
-      ii.setDoubleCurrent( Math.toDegrees(ii.getDoubleNext()));
+      ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
     }
-    NCdump.printArray(glatData, "GLAT",System.out, null);
+    NCdump.printArray(glatData, "GLAT", System.out, null);
 
     Variable glon = ncd.findVariable("GLON");
     Array glonData = glon.read();
     ii = glonData.getIndexIterator();
     while (ii.hasNext()) {
-      ii.setDoubleCurrent( Math.toDegrees(ii.getDoubleNext()));
+      ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
     }
-    NCdump.printArray(glonData, "GLON",System.out, null);
+    NCdump.printArray(glonData, "GLON", System.out, null);
 
 
     Index index = glatData.getIndex();
@@ -662,21 +665,21 @@ orientation of the grid). This should be set equal to the center longitude in mo
     int ny = vshape[1];
     int nx = vshape[2];
 
-    ArrayDouble.D1 diff_y = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {ny});
-    ArrayDouble.D1 diff_x = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {nx});
+    ArrayDouble.D1 diff_y = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[]{ny});
+    ArrayDouble.D1 diff_x = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[]{nx});
 
-    for (int y=0;y<ny-1;y++) {
-      double val = glatData.getDouble( index.set(0,y,0)) - glatData.getDouble( index2.set(0,y+1,0));
+    for (int y = 0; y < ny - 1; y++) {
+      double val = glatData.getDouble(index.set(0, y, 0)) - glatData.getDouble(index2.set(0, y + 1, 0));
       diff_y.set(y, val);
     }
 
-      for (int x=0;x<nx-1;x++) {
-        double val = glatData.getDouble( index.set(0,0,x)) - glatData.getDouble( index2.set(0,0,x+1));
-        diff_x.set( x, val);
-      }
+    for (int x = 0; x < nx - 1; x++) {
+      double val = glatData.getDouble(index.set(0, 0, x)) - glatData.getDouble(index2.set(0, 0, x + 1));
+      diff_x.set(x, val);
+    }
 
-    NCdump.printArray(diff_y, "diff_y",System.out, null);
-    NCdump.printArray(diff_x, "diff_x",System.out, null);
+    NCdump.printArray(diff_y, "diff_y", System.out, null);
+    NCdump.printArray(diff_x, "diff_x", System.out, null);
     ncd.close();
 
   }
