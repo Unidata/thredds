@@ -91,11 +91,13 @@ public class Structure extends Variable {
   }
 
   /** Caching is not allowed */
+  @Override
   public boolean isCaching() {
     return false;
   }
 
   /** Caching is not allowed */
+  @Override
   public void setCaching(boolean caching) {
     this.cache.isCaching = false;
     this.cache.cachingSet = true;

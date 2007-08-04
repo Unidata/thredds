@@ -122,7 +122,8 @@ public class StructurePseudo extends Structure {
    * Not allowed.
    * @throws InvalidRangeException
    */
-  protected Array _readMemberData(List section, boolean flatten) throws IOException, InvalidRangeException  {
+  @Override
+  protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException  {
     throw new UnsupportedOperationException();
   }
 
