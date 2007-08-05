@@ -1,82 +1,154 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>NetCDF-Java: Building From Source</title><meta content="Ethan Davis" name="author"></head>
 <body>
-<h1>Tutorial: Building From Source</h1>
-<h2>Subversion</h2>
+<h1>Getting Source, Build, and Run ToolsUI</h1>
+<hr size="2" width="100%">
+<p>In preperation for some hands on IOServiceProvider work, we need a
+few things setup and ready to go. First, we'll look at how to get the
+netCDF-Java/CDM code. Second, <br>
+</p>
+<h2>Getting Source</h2>
+<h3>Distribution</h3>
+<p>The current stable release code distribution can be found on the netCDF-Java home page:<br>
+</p>
+<p><a href="http://www.unidata.ucar.edu/software/netcdf-java/"><code>http://www.unidata.ucar.edu/software/netcdf-java/</code></a><br>
+</p>
+<h3>Subversion Repository</h3>
+<p>The public subversion repository is broken, DO NOT USEhttp://svn.unidata.ucar.edu/repos/thredds/<br>
+</p>
+<p>Broken, <strong>DO NOT USE<br>
+</strong></p>
 <p>The netCDF-java source code is available from the Subversion server at:<br>
 </p>
-<ul>
-  <li>[Available for Workshop] svn://zero/thredds/trunk/</li>
-  <li>[Not yet available] <a href="http://www.unidata.ucar.edu/svn/thredds/trunk/">http://www.unidata.ucar.edu/svn/thredds/trunk/</a></li>
-</ul>
-<p>This is the main trunk of the THREDDS project code repository which
-contains the netCDF-java, ToolsUI, and THREDDS Data Server code.<br>
-</p>
-<h3>Check out code</h3>
-<p>To check out all the code from the trunk of the THREDDS subversion repositoryproject code, run the following command:<br>
-</p>
 
 <ul>
-  <li><code>svn co svn://zero/thredds/trunk /your/working/directory</code><br>
-  </li>
-</ul>
-<h3>Workshop Update<br>
-</h3>
-<p>Working directories have already been checked out on the workshop
-machines at "/home/workshop/TDS/code/thredds". To update that code, run these two commands:<br>
-</p>
-<ul>
-  <li><code>cd /home/workshop/TDS/code/thredds</code></li>
-  <li><code>svn update</code><br>
-  </li>
+<li>[Available for Workshop] svn://zero/thredds/trunk/</li><li>[Not yet available] <a href="http://www.unidata.ucar.edu/svn/thredds/trunk/">http://www.unidata.ucar.edu/svn/thredds/trunk/</a></li>
 </ul>
 
-<h2>Main Ant Targets</h2>
+This is the main trunk of the THREDDS project code repository which
+contains the netCDF-java, ToolsUI, and THREDDS Data Server code.
+<h3>Source for Workshop</h3>
+<p>The required source is available from a tar file at <code>/data/nj/nj22WkshpCode.tar.gz</code>. Unpack this in your home directory:<br>
+</p>
+<ol>
+  <li>Make a directory to unpack into <br>
+  </li>
+  <ul>
+    <li><code>cd ~/ncj</code></li>
+    <li><code>mkdir nj-2.2.22</code></li>
+    <li><code>cd nj-2.2.22</code></li>
+  </ul>
+  <li>Unpack the code</li>
+  <ul>
+    <li><code>tar xvzf /data/nj/nj22WkshpCode.tar.gz</code><br>
+    </li>
+  </ul>
+</ol>
+<code></code>
+<h2>Build from Source</h2>
+<h3>Build Using Ant</h3>
+<p>To build the netCDF-Java library (CDM) and ToolsUI application:<br>
+</p>
+<ol>
+  <li>Move into the cdm directory, the location of the Ant script</li>
+  <ul>
+    <li><code>cd cdm</code></li>
+  </ul>
+  <li>Clean your working directory</li>
+  <ul>
+    <li><code>ant clean</code></li>
+  </ul>
+  <li>Build CDM and the ToolsUI</li>
+  <ul>
+    <li><code>ant compileUI</code></li>
+  </ul>
+</ol>
+Other Ant targets of interest:<br>
 <ul>
   <li><code>compile</code> - compiles the netCDF-Java/CDM code<br>
   </li>
-  
-
   <li><code>makeJar</code>
 - builds the minimal netCDF library, ncCore-*.jar, which reads netCDF-3
 files; and the full netCDF library, netcdf-*.jar, which implements the
-full CDM.</li><li><code>compileUI</code> - compiles the netCDF-Java/CDM and ToolsUI code</li>
+full CDM.</li>
+  <li><code>compileUI</code> - compiles the netCDF-Java/CDM and ToolsUI code</li>
   <li><code>makeJarUI</code>
 - builds the netCDF ToolsUI library, netcdfUI-*.jar, which includes the
 netCDF library plus the user interface classes for the netCDF ToolsUI
-application.<br>
-  </li>
-
-
+application.</li>
 </ul>
-<h2>Build</h2>
-<p>To build the code needed to run the ToolsUI, run these two commands:<br>
+<p>Now let's run the netCDF ToolsUI application:<br>
+</p>
+<ol>
+  <li>Run script at <code>target/runToolsUI</code></li>
+  <ul>
+    <li><code>chmod +x target/runToolsUI</code></li>
+    <li><code>target/runToolsUI</code><br>
+    </li>
+  </ul>
+</ol>
+<p>
 </p>
 
+
+<p>This script runs the following command (with the classpath expanded):</p>
+
 <ul>
-  <li><code>cd cdm</code></li><li><code>ant clean<br>
-    </code></li>
-
-  <li><code>ant compileUI</code><br>
-  </li>
+<li><code>java -Xmx512m -classpath &lt;classpath&gt; ucar.nc2.ui.ToolsUI</code></li>
 </ul>
-
-<h2>Run ToolsUI</h2>
-<p>To run the netCDF ToolsUI application, run the following script:<br>
+<h3>Build Using IntelliJ IDEA</h3>
+<p>Most of our netCDF-Java and THREDDS team uses IntelliJ IDEA. So, we
+have IntelliJ project files available. If you know IntelliJ (or just
+want to try it), we have the latest distribution available at <code>/data/ncj/idea-6.0.5.tar.gz</code>. It's easy and no license is required for a 30 day trail.<br>
 </p>
-
-<ul>
-  <li><code>target/runToolsUI</code></li></ul>which runs the following command (with the classpath expanded):<br>
-<ul>
-  <li><code>java -Xmx512m -classpath &lt;classpath&gt; ucar.nc2.ui.ToolsUI</code></li>
-
-
-</ul>
-<h2>Subversion Organization</h2>
-<ul>
-  <li><code>svn://zero/thredds/trunk/</code> - Development code</li>
-  <li><code>svn://zero/thredds/tag/</code> - Stable release versions</li>
-  <li><code>svn://zero/thredds/branch/</code> - Stable release bug fix branches (and other branches someday)<br>
+<ol>
+  <li>Install IntelliJ IDEA in your home directory</li>
+  <ul>
+    <li><code>cd ~/nj</code></li>
+    <li><code>tar xvzf /data/nj/idea-6.0.5.tar.gz</code></li>
+  </ul>
+  <li>Set <code>JDK_HOME</code> environment variable</li>
+  <ul>
+    <li><code>vi ~/.bashrc</code></li>
+  </ul>
+  <li>Change memory settings for IDEA</li>
+  <ul>
+    <li><code>cd idea-6180/bin</code></li>
+    <li><code>vi idea.vmoptions</code></li>
+    <li>Set <code>-Xms</code> option to <code>-Xms256m</code></li>
+    <li>Set <code>-Xmx</code> option to <code>-Xmx512m</code></li>
+  </ul>
+  <li>Run IDEA<br>
   </li>
-</ul>
-</body></html>
+  <ul>
+    <li><code>./idea.sh &amp;</code></li>
+  </ul>
+  <li>Open Project: <code>intelliJ/thredds.ipr</code></li>
+  <li>Open project window</li>
+  <li>Set default VCS to subversion<br>
+  </li>
+  <li>Set up JDK (<code>/usr/java/jdk1.5.0_12</code>)</li>
+  <li>Build project<br>
+  </li>
+  <li>Setup to run ToolsUI</li>
+  <li>Run ToolsUI<br>
+  </li>
+</ol>
+<h3>Build Using Eclipse<br>
+</h3>
+<p>Sorry, you are on your own with Eclipse. Not many Eclipse users at Unidata.<br>
+</p>
+<h3>Build Using NetBeans</h3>
+<p>Sorry, once again you are on your own if you want to use NetBeans.<br>
+</p>
+<h2>Excercise: Unpack Source, Build, and Run ToolsUI</h2>
+<p>We'll take the next 15 minutes so you can get this setup on your machines.<br>
+</p>
+<ol>
+  <li>Unpack the source</li>
+  <li>Build using Ant</li>
+  <li>Run ToolsUI</li>
+</ol>
+<p>Once you've got that working, feel free to try installing a development environment. We will be working in IntelliJ IDEA.<br>
+</p>
+<hr size="2" width="100%"></body></html>
