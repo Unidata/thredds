@@ -409,10 +409,10 @@
   <target name="makeSrc-TDS" description="create TDS source release">
     <jar jarfile="${build.dir}/${tdsSrcRelease.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
-        <include name="cdm" />
-        <include name="lib" />
-        <include name="intelliJ" />
-        <include name="tds" />
+        <include name="cdm/**" />
+        <include name="lib/**" />
+        <include name="intelliJ/**" />
+        <include name="tds/**" />
 
         <exclude name="cdm/doc/**" />
         <exclude name="cdm/target/**" />

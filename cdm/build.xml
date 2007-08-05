@@ -325,23 +325,23 @@
 
   <property name="cdmSrcRelease.jar" value="cdmSrc-${release.version}.jar"/>
   <target name="makeSrc-CDM" description="create CDM source release">
+
     <jar jarfile="${build.dir}/${cdmSrcRelease.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
-        <include name="cdm" />
-        <include name="lib" />
-        <include name="intelliJ" />
-        <include name="ui" />
+        <include name="cdm/**" />
+        <include name="lib/**" />
+        <include name="intelliJ/**" />
+        <include name="ui/**" />
 
         <exclude name="cdm/doc/**" />
         <exclude name="cdm/target/**" />
         <exclude name="ui/target/**" />
-        <exclude name="docs/**" />
       </fileset>
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime2}"/>
-        <attribute name="Implementation-Title" value="netCDF-Java/CDM Source (CDM, ToolsUI)"/>
+        <attribute name="Implementation-Title" value="netCDF-Java/CDM and ToolsUI Source"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>
