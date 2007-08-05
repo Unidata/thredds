@@ -404,6 +404,32 @@
 
   </target>
 
+  <!-- Make source release. -->
+  <property name="tdsSrcRelease.jar" value="tdsSrc-${release.version}.jar"/>
+  <target name="makeSrc-TDS" description="create TDS source release">
+    <jar jarfile="${build.dir}/${tdsSrcRelease.jar}" index="true" duplicate="preserve">
+      <fileset dir="${root.dir}/..">
+        <include name="cdm" />
+        <include name="lib" />
+        <include name="intelliJ" />
+        <include name="tds" />
+
+        <exclude name="cdm/doc/**" />
+        <exclude name="cdm/target/**" />
+        <exclude name="tds/target/**" />
+      </fileset>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime2}"/>
+        <attribute name="Implementation-Title" value="THREDDS Data Server (TDS) Source"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+
+  </target>
+
   <!-- ********** Javadoc Realease ********** -->
   <!-- Build the Javadocs  -->
   <target name="javadoc" description="make the javadocs">
