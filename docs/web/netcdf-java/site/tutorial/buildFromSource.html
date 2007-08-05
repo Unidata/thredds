@@ -5,28 +5,20 @@
 <hr size="2" width="100%">
 <p>In preperation for some hands on IOServiceProvider work, we need a
 few things setup and ready to go. First, we'll look at how to get the
-netCDF-Java/CDM code. Second, <br>
+netCDF-Java/CDM code. Second, we'll build it with Ant. And, Finally, we'll run the ToolsUI application.<br>
 </p>
 <h2>Getting Source</h2>
 <h3>Distribution</h3>
-<p>The current stable release code distribution can be found on the netCDF-Java home page:<br>
+<p>The current stable release code distribution can be found on<br>
 </p>
-<p><a href="http://www.unidata.ucar.edu/software/netcdf-java/"><code>http://www.unidata.ucar.edu/software/netcdf-java/</code></a><br>
-</p>
-<h3>Subversion Repository</h3>
-<p>The public subversion repository is broken, DO NOT USEhttp://svn.unidata.ucar.edu/repos/thredds/<br>
-</p>
-<p>Broken, <strong>DO NOT USE<br>
-</strong></p>
-<p>The netCDF-java source code is available from the Subversion server at:<br>
-</p>
-
 <ul>
-<li>[Available for Workshop] svn://zero/thredds/trunk/</li><li>[Not yet available] <a href="http://www.unidata.ucar.edu/svn/thredds/trunk/">http://www.unidata.ucar.edu/svn/thredds/trunk/</a></li>
+  <li>The netCDF-Java home page:  <a href="http://www.unidata.ucar.edu/software/netcdf-java/"><code>http://www.unidata.ucar.edu/software/netcdf-java/</code></a></li>
+  <li>The netCDF-Java FTP site: <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/"><code>ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/</code></a></li>
 </ul>
+<p>
+</p>
 
-This is the main trunk of the THREDDS project code repository which
-contains the netCDF-java, ToolsUI, and THREDDS Data Server code.
+
 <h3>Source for Workshop</h3>
 <p>The required source is available from a tar file at <code>/data/nj/nj22WkshpCode.tar.gz</code>. Unpack this in your home directory:<br>
 </p>
@@ -46,7 +38,7 @@ contains the netCDF-java, ToolsUI, and THREDDS Data Server code.
 </ol>
 <code></code>
 <h2>Build from Source</h2>
-<h3>Build Using Ant</h3>
+
 <p>To build the netCDF-Java library (CDM) and ToolsUI application:<br>
 </p>
 <ol>
@@ -96,7 +88,19 @@ application.</li>
 <ul>
 <li><code>java -Xmx512m -classpath &lt;classpath&gt; ucar.nc2.ui.ToolsUI</code></li>
 </ul>
+<h2>Excercise: Unpack Source, Build, and Run ToolsUI</h2>
+
+<p>We'll take the next 15 minutes so you can get this setup on your machines.<br>
+</p>
+
+<ol>
+<li>Unpack the source</li><li>Build using Ant</li><li>Run ToolsUI</li>
+</ol>
+
+Once you've got that working, feel free to try installing a development environment. We will be working in IntelliJ IDEA.
+<hr size="2" width="100%">
 <h3>Build Using IntelliJ IDEA</h3>
+
 <p>Most of our netCDF-Java and THREDDS team uses IntelliJ IDEA. So, we
 have IntelliJ project files available. If you know IntelliJ (or just
 want to try it), we have the latest distribution available at <code>/data/ncj/idea-6.0.5.tar.gz</code>. It's easy and no license is required for a 30 day trail.<br>
@@ -131,6 +135,17 @@ want to try it), we have the latest distribution available at <code>/data/ncj/id
   <li>Build project<br>
   </li>
   <li>Setup to run ToolsUI</li>
+  <ol>
+    <li>Select menu item: "Run" - "Edit Configurations"</li>
+    <li>Add new configuration by selecting the "+" icon and "Application"</li>
+    <li>Set name to "ToolsUI"</li>
+    <li>Set main class to "ucar.nc2.ui.ToolsUI"</li>
+    <li>Set VM parameters to "-Xmx256 -ea"</li>
+    <li>Set working directory to the "ui" rather than "intelliJ" directory</li>
+    <li>Click on the OK button<br>
+    </li>
+  </ol>
+
   <li>Run ToolsUI<br>
   </li>
 </ol>
@@ -140,15 +155,5 @@ want to try it), we have the latest distribution available at <code>/data/ncj/id
 </p>
 <h3>Build Using NetBeans</h3>
 <p>Sorry, once again you are on your own if you want to use NetBeans.<br>
-</p>
-<h2>Excercise: Unpack Source, Build, and Run ToolsUI</h2>
-<p>We'll take the next 15 minutes so you can get this setup on your machines.<br>
-</p>
-<ol>
-  <li>Unpack the source</li>
-  <li>Build using Ant</li>
-  <li>Run ToolsUI</li>
-</ol>
-<p>Once you've got that working, feel free to try installing a development environment. We will be working in IntelliJ IDEA.<br>
-</p>
+</p><br>
 <hr size="2" width="100%"></body></html>
