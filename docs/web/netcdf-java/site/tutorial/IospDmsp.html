@@ -55,13 +55,7 @@ by making the unlimited dimension represent the number of records.<br>
 <pre> dimensions:<br>   numScans = UNLIMITED;   // (691 currently)<br>   numSamplesPerScan = 1465;<br> variables:<br>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>   byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br></pre>
 <p>The time and satellite ephemeris data:<br>
 </p>
-<pre>   int year(numScans=691);<br>   int dayOfYear(numScans=691);<br>   double secondsOfDay(numScans=691);<br><br>   float satEphemLatitude(numScans=691);<br>   float satEphemLongitude(numScans=691);<br>   float satEphemAltitude(numScans=691);<br>   float satEphemHeading(numScans=691);<br></pre>
-<p>The variables above are not enough for existing coordinate axes
-conventions. So, we will calculate a more standard time coordinate as
-well as latitude and longitude for every pixel in the imagery:<br>
-</p>
-<pre>   float time(numScans=691);<br>   float latitude(numScans=691, numSamplesPerScan=1465);<br>   float longitude(numScans=691, numSamplesPerScan=1465);<br></pre>
-<p>The remaining data from the dataset maps into the netCDF data model easily (<a href="IospDmsp.sample.cdl">resulting CDL</a>).<br>
+<pre>   int year(numScans=691);<br>   int dayOfYear(numScans=691);<br>   double secondsOfDay(numScans=691);<br><br>   float satEphemLatitude(numScans=691);<br>   float satEphemLongitude(numScans=691);<br>   float satEphemAltitude(numScans=691);<br>   float satEphemHeading(numScans=691);<br></pre><p>The remaining data from the dataset maps into the netCDF data model easily (<a href="IospDmsp.sample.cdl">resulting CDL</a>).<br>
 </p>
 <h2>Mapping the Data into a netCDF-3 Convention</h2>
 <p>Whether the information is in the data files or in the format
@@ -75,6 +69,15 @@ which describes attributes for describing more general coordinate
 systems than supported by coordinate variables as defined in the netCDF
 Users Guide.<br>
 </p>
+<p>The variables above are not enough for existing coordinate axes
+conventions. So, we will calculate a more standard time coordinate as
+well as latitude and longitude for every pixel in the imagery:<br>
+</p>
+
+<pre>   float time(numScans=691);<br>   float latitude(numScans=691, numSamplesPerScan=1465);<br>   float longitude(numScans=691, numSamplesPerScan=1465);</pre>
+<p>
+</p>
+
 <p>
 </p>
 
