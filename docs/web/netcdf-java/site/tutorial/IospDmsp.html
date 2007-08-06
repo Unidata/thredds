@@ -14,50 +14,45 @@ noon/midnight. The OLS instrument is a scanning imager.<br>
 </p>
 
 More information is available at http://dmsp.ngdc.noaa.gov/.<br>
-<h2>Sample DMSP OIS Dataset<br>
-</h2>
-<p>
+<h2>Structure of Dataset</h2><p>The data files contain one or more text header records followed by a
+number of binary data records.<br>
+</p>
+<pre>======<br>HEADER<br>======<br>RECORD 1 : VARIABLE 1, VARIABLE 2, ..., VARIABLE N<br>======<br>RECORD 2 : VARIABLE 1, VARIABLE 2, ..., VARIABLE N<br>======<br>...<br>======<br>RECORD 3 : VARIABLE 1, VARIABLE 2, ..., VARIABLE N<br>======<br></pre>
+<p>The header record contains metadata
+describing the dataset including the size of the records and the number
+of data records (<a href="IospDmsp.sampleHeader.txt">sample header record</a>):<br>
+</p>
+<pre>    file ID: /dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp<br><strong>(1)</strong> data set ID: DMSP F14 OLS LS &amp; TS<strong><br>    </strong>record bytes: 3040<br>    number of header records: 1<br><strong>(2)</strong> number of records: 692<br>    suborbit history: F14200307192230.OIS (1,691)<br>    ...<br>    % daylight: 0.0<br>    % full moon: 57.8<br>    % terminator evident: 0.0<br>    end header<br></pre>
+<p>The structure of all the NGDC DMSP data types are described in an XDR descriptor file (<a href="IospDmsp.dda.x.txt">dda.x</a>). Here is a summary of the OIS data record description:</p>
+<pre>    short  Year;                             /* 4 digit year                   */<br><strong>(3)</strong> short  DayOfYear;                        /* day of year (January 1 = 1)    */<br>    double SecondsOfDay;                     /* seconds of day [0.0 - 86400.0) */<br><br>    float Latitude;                          /* Geodetic Latitude in degrees   */<br><strong>(4)</strong> float Longitude;                         /* Longitude in degrees (0 - 360) */<br>    float Altitude;                          /* Altitude in kilometers         */<br>    float Heading;                           /* Heading west of north          */<br><br>    ...<br>   &nbsp;<i>solar and lunar conditions</i><br>    <i>calibration<br></i>    ...<br><br>    struct {<br>      u_int QualityFlag;                     /* scan line quality flag */<br><strong>(5)</strong>   opaque Pixels [ 1465 ];                /* scan line pixels       */<br>    } LightVideoData;                        /* pixels = 6 bit visible data */<br>    struct {<br>      u_int QualityFlag;                     /* scan line quality flag */<br><strong>(6)</strong>   opaque Pixels [ 1465 ];                /* scan line pixels       */<br>    } ThermalVideoData;                      /* pixels = 8 bit thermal data */<br></pre>
+<p>So each data record contains the time (3), the satellite location
+(4), a visible scan and quality flag (5), and a thermal/IR scan and
+quality flag (6).<br>
+</p>
+<p>From the header, we get the number of records (2) which will
+become the unlimited dimension -- after subtracting the number of header
+records. Another functoin of the header is to identify the dataset as NGDC DMSP OIS data (1).<br>
 </p>
 
-<p>Look at structure of the example dataset in ToolsUI:<br>
-</p>
-<ul>
-  <li>Start ToolsUI (<a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev/">webstart</a>)<br>
-  </li>
-  <li>In Viewer, open "/data/nj22/dmsp/F14200307192230.n.OIS"</li>
-  <li>Select "infraredImagery" variable, then right-click, then select "Ncdump Data".</li>
-  <li>Click on "Image".</li>
-</ul>
-<p>Look at the example dataset as a grid:<br>
-</p>
-<ul>
-  <li>In ToolsUI, open the "Grid" tab</li>
-  <li>Open the example dataset</li>
-  <li>View Grid</li>
-</ul>
-<h2>Data Structure<br>
+<pre></pre>
+<p></p>
+<h2>Mapping the Data into the netCDF-3 Data Model<br>
 </h2>
-<p>The data files contain one or more text header records followed by a
-number of binary data records. The header record contains metadata
-describing the dataset including the size of the records and the number
-of data records (<a href="IospDmsp.sampleHeader.txt">sample header record</a>). Each data record contains the information for a single scan of the OLS instrument which includes:<br>
+<p>A few things to remember:<br>
 </p>
-<ol>
-  <li>The nominal time of the scan: year, day of year, and seconds of day.</li>
-  <li>Satellite ephemeris for the scan: latitude, longitude, altitude, heading.</li>
-  <li>Solar and lunar elevation, azimuth, phase.</li>
-  <li>Gain and calibration</li>
-  <li>Quality control</li>
-  <li>Visible scan data</li>
-  <li>Infrared scan data<br>
+<ul>
+  <li>An unlimited dimensions mean that all data for a point in that dimension are written together (record oriented).</li>
+  <li>The order of dimensions in a variable matter -- outer dimension increments fastest<br>
   </li>
-</ol>
-<h2>Decide How to Represent Data in netCDF Data Model</h2>
-<p>For our initial implementation, we decide not to use structures.<br>
+</ul>
+<p>Since a netCDF-3 data file with an unlimited dimension looks similar
+in structure to our DMSP data, we will better represent the DMSP data
+by making the unlimited dimension represent the number of records.<br>
 </p>
+
 <p>The visible and infrared data can be contained in two dimensional arrays:<br>
 </p>
-<pre> dimensions:<br>   numScans = 691;<br>   numSamplesPerScan = 1465;<br> variables:<br>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>   byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br></pre>
+<pre> dimensions:<br>   numScans = UNLIMITED;   // (691 currently)<br>   numSamplesPerScan = 1465;<br> variables:<br>   byte visibleImagery(numScans=691, numSamplesPerScan=1465);<br>   byte infraredImagery(numScans=691, numSamplesPerScan=1465);<br></pre>
 <p>The time and satellite ephemeris data:<br>
 </p>
 <pre>   int year(numScans=691);<br>   int dayOfYear(numScans=691);<br>   double secondsOfDay(numScans=691);<br><br>   float satEphemLatitude(numScans=691);<br>   float satEphemLongitude(numScans=691);<br>   float satEphemAltitude(numScans=691);<br>   float satEphemHeading(numScans=691);<br></pre>
@@ -68,6 +63,44 @@ well as latitude and longitude for every pixel in the imagery:<br>
 <pre>   float time(numScans=691);<br>   float latitude(numScans=691, numSamplesPerScan=1465);<br>   float longitude(numScans=691, numSamplesPerScan=1465);<br></pre>
 <p>The remaining data from the dataset maps into the netCDF data model easily (<a href="IospDmsp.sample.cdl">resulting CDL</a>).<br>
 </p>
+<h2>Mapping the Data into a netCDF-3 Convention</h2>
+<p>Whether the information is in the data files or in the format
+specification, we need to gather enough information and map it into the
+netCDF file format to make the netCDF data view we are developing
+useful to other netCDF users. To accomplish this, it is important to
+select and follow appropriate conventions.<br>
+</p>
+<p>We will follow the basic attribute conventions from the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/">netCDF Users Guide</a> with the "long_name", "units", "scale_offset", and "add_offset" attributes. We will also follow the more recent <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html">Coordinate attribute convention</a>
+which describes attributes for describing more general coordinate
+systems than supported by coordinate variables as defined in the netCDF
+Users Guide.<br>
+</p>
+<p>
+</p>
+
+<h2>Sample DMSP OIS Dataset<br>
+</h2>
+
+
+<p>
+</p>
+
+
+<p>Look at structure of the example dataset in ToolsUI:<br>
+</p>
+
+<ul>
+<li>Start ToolsUI (<a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev/">webstart</a>)<br>
+  </li><li>In Viewer, open "/data/nj22/dmsp/F14200307192230.n.OIS"</li><li>Select "infraredImagery" variable, then right-click, then select "Ncdump Data".</li><li>Click on "Image".</li>
+</ul>
+
+<p>Look at the example dataset as a grid:<br>
+</p>
+
+<ul>
+<li>In ToolsUI, open the "Grid" tab</li><li>Open the example dataset</li><li>View Grid</li>
+</ul>
+
 <h2>IOSP Details</h2>
 
 <p>The DMSP IOSP code is located in thredds/cdm/src/main/java/ucar/nc2/iosp/dmsp/DMSPiosp.java.<br>
@@ -96,10 +129,7 @@ objects is contained in the header record.<br>
   <li>For the "infraredImagery" variable, define the "_CoordinateAxes" attribute<br>
   </li>
 </ol>
-<p>Here we are following the basic attribute conventions from the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/">netCDF Users Guide</a> with the "long_name", "units", "scale_offset", and "add_offset" attributes. We are also following the more recent <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html">Coordinate attribute convention</a>
-which describes attributes for describing more general coordinate
-systems than supported by coordinate variables as defined in the netCDF
-Users Guide.<br>
+<p><br>
 </p>
 <h3>public Array readData( Variable v2, List section ) throws IOException, InvalidRangeException;<br>
 </h3>
@@ -147,8 +177,9 @@ here is a key aspect. This could be represented with the addition of
 <p>For those of us used to thinking in terms of standard netCDF
 coordinate variables, this can seem misleading since the number of
 dimensions is different than the number of coordinate axes. However, if
-we remember that a coordinate system really just means that every data point in the Variable has a corresponding coordinate value for 
-  each of the CoordinateAxis.<br>
+we remember that a coordinate system really just means that every data
+point in the Variable has a corresponding coordinate value for each of
+the CoordinateAxis.<br>
 </p>
 <p>The problem with this representation is that we don't know of any
 applications that understand what this means. Besides which, we're not
