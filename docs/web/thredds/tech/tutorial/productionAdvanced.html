@@ -552,7 +552,7 @@ Tomcat run more efficiently. At this time there are no known security risks in
 the Tomcat architecture but that doesn't mean that there will not be any in the
 future, so it's better to tighten the installation now so if a security
 break-in does occur then the damage will be minimum. Why do you think Tomcat
-has security risks? Security risks are limited by restricting the tomcat permissions,
+has security risks? The following installation conventions limit security risks by restricting the tomcat permissions,
 the machine ports open to the internet, and the IPs accessing the TDS. UCAR
 break in example. <span style='mso-spacerun:yes'>  </span></p>
 
@@ -579,7 +579,7 @@ command. One should create a tomcat group when using the <a
 href="http://linux.about.com/od/commands/l/blcmdl8_adduser.htm">adduser</a> command
 to make the user tomcat. </p>
 
-<pre>% adduser tomcat -u 91 -d /opt/tomcat -g tomcat -p &lt;passwd&gt;</pre><pre><o:p>&nbsp;</o:p></pre>
+<pre>% adduser tomcat -u 91 -d /opt/tomcat -g tomcat</pre><pre><o:p>&nbsp;</o:p></pre>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>The
 default home for tomcat is /opt/tomcat but in reality, it's a link to the
@@ -676,7 +676,7 @@ accesses on the same machine or at least on your subnet. If you are running
 Tomcat only standalone (e.g. only running the THREDDS data server) then disable
 port 8009 in ${tomcat_home}/conf/server.xml file. </p>
 
-<pre>Firewall file: /etc/sysconfig/iptables</pre><pre><o:p>&nbsp;</o:p></pre><pre><o:p>&nbsp;</o:p></pre><pre>*filter</pre><pre>:INPUT ACCEPT [0:0]</pre><pre>:FORWARD DROP [0:0]</pre><pre>:OUTPUT ACCEPT [0:0]</pre><pre>:EXTERNAL - [0:0]</pre><pre>:UNIDATA - [0:0]</pre><pre>#</pre><pre># Route INPUT to appropriate bins</pre><pre>#</pre><pre>-A INPUT -i lo -j ACCEPT</pre><pre>-A INPUT -p icmp --icmp-type any -j ACCEPT</pre><pre>-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT</pre><pre>-A INPUT -s 128.117.47.200/32 -j UNIDATA</pre><pre>-A INPUT -s 128.117.140.0/24 -j UNIDATA</pre><pre>-A INPUT -s 128.117.156.0/24 -j UNIDATA</pre><pre>-A INPUT -j EXTERNAL</pre><pre>#</pre><pre># Handle external connections</pre><pre>#</pre><pre>-A EXTERNAL -j REJECT</pre><pre># Handle internal connections</pre><pre>#</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 22 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 112 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 388 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 8080 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 8443 -j ACCEPT</pre><pre>-A UNIDATA -j REJECT</pre><pre>#</pre><pre># Mark outgoing packets for keeping state</pre><pre>#</pre><pre>-A OUTPUT -d 127.0.0.1 -j ACCEPT</pre><pre>-A OUTPUT -m state --state NEW -p tcp -j ACCEPT</pre><pre>-A OUTPUT -m state --state NEW -p udp -j ACCEPT</pre><pre>COMMIT</pre>
+<pre>Firewall file: /etc/sysconfig/iptables</pre><pre><o:p>&nbsp;</o:p></pre><pre><o:p>&nbsp;</o:p></pre><pre>*filter</pre><pre>:INPUT ACCEPT [0:0]</pre><pre>:FORWARD DROP [0:0]</pre><pre>:OUTPUT ACCEPT [0:0]</pre><pre>:EXTERNAL - [0:0]</pre><pre>:UNIDATA - [0:0]</pre><pre>#</pre><pre># Route INPUT to appropriate bins</pre><pre>#</pre><pre>-A INPUT -i lo -j ACCEPT</pre><pre>-A INPUT -p icmp --icmp-type any -j ACCEPT</pre><pre>-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT</pre><pre>-A INPUT -s 128.117.47.200/32 -j UNIDATA</pre><pre>-A INPUT -s 128.117.140.0/24 -j UNIDATA</pre><pre>-A INPUT -s 128.117.156.0/24 -j UNIDATA</pre><pre>-A INPUT -j EXTERNAL</pre><pre>#</pre><pre># Handle external connections</pre><pre>#</pre><pre>-A EXTERNAL -j REJECT</pre><pre># Handle internal connections</pre><pre>#</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 22 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 112 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 388 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 500 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 503 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 5900 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 8080 -j ACCEPT</pre><pre>-A UNIDATA -m state --state NEW -p tcp --dport 8443 -j ACCEPT</pre><pre>-A UNIDATA -j REJECT</pre><pre>#</pre><pre># Mark outgoing packets for keeping state</pre><pre>#</pre><pre>-A OUTPUT -d 127.0.0.1 -j ACCEPT</pre><pre>-A OUTPUT -m state --state NEW -p tcp -j ACCEPT</pre><pre>-A OUTPUT -m state --state NEW -p udp -j ACCEPT</pre><pre>COMMIT</pre>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>Resources:</p>
 
@@ -709,9 +709,10 @@ conf/server.xml configuration file.</p>
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>&lt;Engine
 name=&quot;Catalina&quot; defaultHost=&quot;localhost&quot;&gt;</p>
 
-<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>&lt;Valve
-className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot;
-deny=&quot;18.83.0.150,69.25.71.12,218.62.41.106,70.42.51.20&quot; /&gt;</p>
+<pre>    &lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; deny=&quot;18.83.0.150,69.25.71.12&quot; /&gt;
+    ...
+    ...
+</pre>
 
 <p style='margin-bottom:12.0pt;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><a
 href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html">valve</a>
@@ -1060,6 +1061,8 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
     style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span></span></span><![endif]>Download a Chain Certificate from the
     Certificate Authority you obtained the Certificate from.<br>
+    For RapdidSSL certificates go to:<br>
+    http://www.rapidssl.com/index_ssl.htm<br>
     For Verisign.com commercial certificates go to:
     http://www.verisign.com/support/install/intermediate.html<br>
     For Verisign.com trial certificates go to:
@@ -1099,26 +1102,6 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
        <v:imagedata src="productionAdvanced_files/image001.gif" o:href="http://tomcat.apache.org/tomcat-6.0-doc/images/void.gif"/>
       </v:shape><![endif]--><![if !vml]><img border=0 width=1 height=1
       src="productionAdvanced_files/image001.gif" v:shapes="_x0000_i1043"><![endif]></p>
-      </td>
-     </tr>
-     <tr style='mso-yfti-irow:1;height:.75pt'>
-      <td width=10 style='width:.1in;background:#023264;padding:0in 0in 0in 0in;
-      height:.75pt'>
-      <p class=MsoNormal><!--[if gte vml 1]><v:shape id="_x0000_i1044" type="#_x0000_t75"
-       alt="" style='width:.75pt;height:.75pt'>
-       <v:imagedata src="productionAdvanced_files/image001.gif" o:href="http://tomcat.apache.org/tomcat-6.0-doc/images/void.gif"/>
-      </v:shape><![endif]--><![if !vml]><img border=0 width=1 height=1
-      src="productionAdvanced_files/image001.gif" v:shapes="_x0000_i1044"><![endif]></p>
-      </td>
-      <td style='background:white;padding:0in 0in 0in 0in;height:.75pt'><pre>keytool -import -alias root -keystore &lt;your_keystore_filename&gt; \</pre><pre
-      style='mso-line-height-alt:.75pt'><span style='mso-tab-count:1'>               </span>-trustcacerts -file &lt;filename_of_the_chain_certificate&gt;</pre></td>
-      <td width=10 style='width:.1in;background:#023264;padding:0in 0in 0in 0in;
-      height:.75pt'>
-      <p class=MsoNormal style='mso-line-height-alt:.75pt;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><!--[if gte vml 1]><v:shape
-       id="_x0000_i1045" type="#_x0000_t75" alt="" style='width:.75pt;height:.75pt'>
-       <v:imagedata src="productionAdvanced_files/image001.gif" o:href="http://tomcat.apache.org/tomcat-6.0-doc/images/void.gif"/>
-      </v:shape><![endif]--><![if !vml]><img border=0 width=1 height=1
-      src="productionAdvanced_files/image001.gif" v:shapes="_x0000_i1045"><![endif]></p>
       </td>
      </tr>
      <tr style='mso-yfti-irow:2;mso-yfti-lastrow:yes;height:.75pt'>
@@ -1257,17 +1240,7 @@ style='display:none;mso-hide:all'><o:p>&nbsp;</o:p></span></p>
   <td style='padding:1.5pt 1.5pt 1.5pt 1.5pt'>
   <p>Here is a list of common problems that you may encounter when setting up SSL
   communications, and what to do about them.</p>
-  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
-  margin-left:1.0in;text-indent:-.25in;mso-list:l7 level1 lfo15;tab-stops:list .5in'><![if !supportLists]><span
-  style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
-  mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol'><span
-  style='mso-list:Ignore'>  <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  </span></span></span><![endif]>I get
-  &quot;java.security.NoSuchAlgorithmException&quot; errors in my log files. </p>
-  <p style='margin-left:.5in'>The JVM cannot find the JSSE JAR files. Follow
-  all of the directions to <a
-  href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html#Download%20and%20Install%20JSSE">download
-  and install JSSE</a>.</p>
+
   <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
   margin-left:1.0in;text-indent:-.25in;mso-list:l7 level1 lfo15;tab-stops:list .5in'><![if !supportLists]><span
   style='font-size:10.0pt;mso-bidi-font-size:12.0pt;font-family:Symbol;
@@ -1345,7 +1318,7 @@ href="http://java.sun.com/javase/6/docs/technotes/tools/solaris/keytool.html">ke
 <h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>-
 Configure Tomcat start/stop scripts</h2>
 
-<pre>- Go to bin directory<span style='mso-spacerun:yes'>   </span></pre><pre>% cd /opt/tomcat/bin</pre><pre> </pre><pre>% edit catalina.sh</pre><pre><o:p>&nbsp;</o:p></pre><pre>- enter the following environment variables. </pre><pre>#<span style='mso-spacerun:yes'>     </span>CATALINA_HOME<span style='mso-spacerun:yes'>     </span>Points at your ${tomcat-home} directory.</pre><pre>#<span style='mso-spacerun:yes'>     </span>JAVA_HOME<span style='mso-spacerun:yes'>             </span>Must point at your Java Development Kit installation.</pre><pre>#<span style='mso-spacerun:yes'>     </span>JAVA_OPTS<span style='mso-spacerun:yes'>             </span>Java runtime options used when the &quot;start&quot;,</pre><pre>#</pre><pre><o:p>&nbsp;</o:p></pre><pre> </pre><pre>#!/bin/sh</pre><pre># -----------------------------------------------------------------------------</pre><pre>#</pre><pre># $Id: catalina.sh 385888 2006-03-14 <st1:time
+<pre>- Go to bin directory<span style='mso-spacerun:yes'>   </span></pre><pre>% cd /opt/tomcat/bin</pre><pre> </pre><pre>% edit catalina.sh</pre><pre><o:p>&nbsp;</o:p></pre><pre>- enter the following environment variables. </pre><pre>#<span style='mso-spacerun:yes'>     </span>CATALINA_HOME<span style='mso-spacerun:yes'>     </span>Points at your ${tomcat-home} directory.</pre><pre>#<span style='mso-spacerun:yes'>     </span>JAVA_HOME<span style='mso-spacerun:yes'>             </span>Must point at your Java Development Kit installation.</pre><pre>#<span style='mso-spacerun:yes'>     </span>JAVA_OPTS<span style='mso-spacerun:yes'>             </span>Java runtime options used when the &quot;start&quot;,</pre><pre>#</pre><pre><o:p>&nbsp;</o:p></pre><pre> </pre><pre>#!/bin/sh</pre><pre># -----------------------------------------------------------------------------</pre><pre># Start/Stop Script for the CATALINA Server</pre><pre>#</pre><pre># $Id: catalina.sh 385888 2006-03-14 <st1:time
 Minute="4" Hour="21">21:04</st1:time>:40Z keith $</pre><pre># -----------------------------------------------------------------------------</pre><pre><o:p>&nbsp;</o:p></pre><pre>CATALINA_HOME=&quot;/opt/tomcat&quot;</pre><pre>export CATALINA_HOME</pre><pre>JAVA_HOME=&quot;/opt/jdk1.6.0&quot;</pre><pre>export JAVA_HOME</pre><pre>JAVA_OPTS&quot;-Xmx2048m -Xms512m -server&quot;</pre><pre>export JAVA_OPTS</pre><pre><o:p>&nbsp;</o:p></pre><pre>...</pre><pre>...</pre><pre><span style='mso-spacerun:yes'>               </span></pre>
 
 <h2 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><strong>-
@@ -1381,12 +1354,16 @@ Apache/Tomcat architecture</b></span></p>
 
 <p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>It
 use to be that the Apache server was much faster at serving up static html
-pages then tomcat, so tomcat was installed inside Apache as a proxy. This isn't
+pages then tomcat, so tomcat was installed inside Apache as a proxy. This isn   t
 the case anymore, so it's better to install tomcat as a standalone process
 especially since Apache runs on port 80 which requires root to run. Tomcat runs
 on port 8080, so it doesn   t require root privileges at all. Some administrators
 still require tomcat to run as a proxy so tomcat needs to be configured to be
 an Apache proxy.<span style='mso-spacerun:yes'>   </span></p>
+
+<h2 style='margin-bottom:.25in;tab-stops:8.75in'><span style='font-size:12.0pt;
+font-weight:normal;mso-bidi-font-weight:bold'><a
+href="http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/TomcatBehindProxyServer.html">Proxy</a> configuration.<o:p></o:p></span></h2>
 
 <h2 style='margin-bottom:.25in;tab-stops:8.75in'><span style='font-size:12.0pt;
 font-weight:normal;mso-bidi-font-weight:bold'><a
