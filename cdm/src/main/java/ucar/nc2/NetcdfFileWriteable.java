@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -537,12 +537,11 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @param componentType type of underlying element: String, double or Double, etc.
    * @param dims          array of Dimensions for the variable, must already have been added.
    * @deprecated use addVariable(String varName, DataType dataType, ArrayList dims);
+   * @return the Varible added
    */
   public Variable addVariable(String varName, Class componentType, Dimension[] dims) {
-    ArrayList list = new ArrayList();
-    for (int i = 0; i < dims.length; i++)
-      list.add(dims[i]);
-
+    List<Dimension> list = new ArrayList<Dimension>();
+    for (Dimension dim : dims) list.add(dim);
     return addVariable(varName, DataType.getType(componentType), list);
   }
 

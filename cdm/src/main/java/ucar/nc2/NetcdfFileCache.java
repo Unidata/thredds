@@ -54,7 +54,6 @@ import java.util.*;
  *
  * @see ucar.nc2.dataset.NetcdfDataset#acquireFile
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class NetcdfFileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileCache.class);

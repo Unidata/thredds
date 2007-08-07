@@ -1,6 +1,5 @@
-// $Id:ImageDatasetFactory.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,8 +24,6 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.IOException;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -36,15 +33,13 @@ import ucar.ma2.Array;
 
 /**
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ImageDatasetFactory {
 
   private StringBuffer log;
   public String getErrorMessages() { return log == null ? "" : log.toString(); }
   private File currentFile, currentDir = null;
-  //private File[] currentDirFiles = null;
-  private java.util.List currentDirFileList;
+  private java.util.List<File> currentDirFileList;
   private int currentDirFileNo = 0;
 
   // grid stuff
@@ -67,9 +62,9 @@ public class ImageDatasetFactory {
    *   adde: use  AddeImage.factory()
    *   http: use javax.imageio.ImageIO.read()
    *   file: javax.imageio.ImageIO.read()
-   * @param location
+   * @param location open from this location
    * @return a BufferedImage
-   * @throws java.io.IOException
+   * @throws java.io.IOException on read error
    */
   public BufferedImage open( String location) throws java.io.IOException {
     log = new StringBuffer();
@@ -134,7 +129,7 @@ public class ImageDatasetFactory {
 
   /**
    * This assumes you have opened a file. looks in the parent directory.
-   * @param forward
+   * @param forward if true got to next, else previous
    * @return  next file in the directory, as a BufferedImage.
    */
   public BufferedImage getNextImage(boolean forward) {
@@ -163,12 +158,12 @@ public class ImageDatasetFactory {
     if (currentDir == null) {
       currentDirFileNo = 0;
       currentDir = currentFile.getParentFile();
-      currentDirFileList = new ArrayList();
+      currentDirFileList = new ArrayList<File>();
       addToList( currentDir, currentDirFileList);
       //Arrays.asList(currentDir.listFiles());
       //Collections.sort(currentDirFileList);
       for (int i = 0; i < currentDirFileList.size(); i++) {
-        File file = (File) currentDirFileList.get(i);
+        File file = currentDirFileList.get(i);
         if (file.equals(currentFile))
           currentDirFileNo = i;
       }
@@ -184,7 +179,7 @@ public class ImageDatasetFactory {
         currentDirFileNo = currentDirFileList.size()-1;
     }
 
-    File nextFile = (File) currentDirFileList.get(currentDirFileNo);
+    File nextFile = currentDirFileList.get(currentDirFileNo);
     try {
       return javax.imageio.ImageIO.read(nextFile);
     } catch (IOException e) {
@@ -194,14 +189,12 @@ public class ImageDatasetFactory {
 
   }
 
-  private void addToList( File dir, List list) {
-    File[] files = dir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
+  private void addToList( File dir, List<File> list) {
+    for (File file : dir.listFiles()) {
       if (file.isDirectory())
         addToList(file, list);
       else if (file.getName().endsWith(".jpg"))
-        list.add( file);
+        list.add(file);
     }
   }
 

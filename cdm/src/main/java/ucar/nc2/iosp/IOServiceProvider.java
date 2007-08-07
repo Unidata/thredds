@@ -1,4 +1,3 @@
-// $Id:IOServiceProvider.java 51 2006-07-12 17:13:13Z caron $
 /*
  * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -20,7 +19,6 @@
  */
 package ucar.nc2.iosp;
 
-import ucar.ma2.Range;
 import ucar.ma2.Section;
 
 import java.io.IOException;

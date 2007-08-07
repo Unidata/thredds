@@ -1,6 +1,5 @@
-// $Id:MetadataExtractor.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +27,6 @@ import thredds.catalog.DataFormatType;
 import thredds.datatype.DateRange;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Date;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -43,7 +41,6 @@ import ucar.unidata.geoloc.LatLonRect;
  * Extract THREDDS metadata from the underlying CDM dataset.
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class MetadataExtractor {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MetadataExtractor.class);
@@ -52,7 +49,7 @@ public class MetadataExtractor {
    * Extract the lat/lon/alt bounding boxes from the dataset.
    * @param threddsDataset open this dataset
    * @return ThreddsMetadata.GeospatialCoverage, or null if unable.
-   * @throws IOException
+   * @throws IOException on read error
    */
   static public ThreddsMetadata.GeospatialCoverage extractGeospatial(InvDatasetImpl threddsDataset) throws IOException {
     ThreddsDataFactory.Result result = null;
@@ -92,6 +89,7 @@ public class MetadataExtractor {
         if ((result != null) && (result.tds != null))
           result.tds.close();
       } catch (IOException ioe) {
+        logger.error("Closing dataset "+result.tds, ioe);
       }
     }
 
@@ -103,9 +101,7 @@ public class MetadataExtractor {
     LatLonRect llbb = null;
     CoordinateAxis1D vaxis = null;
 
-    Iterator gridsets = gridDataset.getGridsets().iterator();
-    while (gridsets.hasNext()) {
-      GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
+    for(GridDataset.Gridset gridset : gridDataset.getGridsets()) {
       GridCoordSystem gsys = gridset.getGeoCoordSystem();
       if (llbb == null)
         llbb = gsys.getLatLonBoundingBox();
@@ -127,7 +123,7 @@ public class MetadataExtractor {
    * Extract a list of data variables (and their canonical names if possible) from the dataset.
    * @param threddsDataset open this dataset
    * @return ThreddsMetadata.Variables, or null if unable.
-   * @throws IOException
+   * @throws IOException on read error
    */
   static public ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset) throws IOException {
     ThreddsDataFactory.Result result = null;
@@ -147,9 +143,7 @@ public class MetadataExtractor {
       } else if ((result.dataType == DataType.STATION) || (result.dataType == DataType.POINT)) {
         PointObsDataset pobsDataset = (PointObsDataset) result.tds;
         ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
-        java.util.List varList = pobsDataset.getDataVariables();
-        for (int i = 0; i < varList.size(); i++) {
-          VariableSimpleIF vs = (VariableSimpleIF) varList.get(i);
+        for (VariableSimpleIF vs  : pobsDataset.getDataVariables()) {
           ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
           vars.addVariable( v);
 
@@ -169,6 +163,7 @@ public class MetadataExtractor {
         if ((result != null) && (result.tds != null))
           result.tds.close();
       } catch (IOException ioe) {
+        logger.error("Closing dataset "+result.tds, ioe);
       }
     }
 
@@ -182,9 +177,7 @@ public class MetadataExtractor {
         (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2))) {
       boolean isGrib1 = fileFormat.equals(DataFormatType.GRIB1);
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
-      java.util.List grids = gridDataset.getGrids();
-      for (int i = 0; i < grids.size(); i++) {
-        GridDatatype grid = (GridDatatype) grids.get(i);
+      for (GridDatatype grid : gridDataset.getGrids()) {
         ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
         v.setName(grid.getName());
         v.setDescription(grid.getDescription());
@@ -209,9 +202,7 @@ public class MetadataExtractor {
 
     } else { // GRID but not GRIB
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
-      java.util.List grids = gridDataset.getGrids();
-      for (int i = 0; i < grids.size(); i++) {
-        GridDatatype grid = (GridDatatype) grids.get(i);
+      for (GridDatatype grid : gridDataset.getGrids()) {
         ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
         vars.addVariable(v);
 
@@ -231,9 +222,7 @@ public class MetadataExtractor {
   static public DateRange extractDateRange(GridDataset gridDataset) {
     DateRange maxDateRange = null;
 
-    Iterator gridsets = gridDataset.getGridsets().iterator();
-    while (gridsets.hasNext()) {
-      GridDataset.Gridset gridset = (GridDataset.Gridset) gridsets.next();
+    for (GridDataset.Gridset gridset : gridDataset.getGridsets()) {
       GridCoordSystem gsys = gridset.getGeoCoordSystem();
       DateRange dateRange;
 

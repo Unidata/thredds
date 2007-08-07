@@ -119,7 +119,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   public String getSuffixFilter() { return suffixFilter; }
 
-  public List getRunSequences() { return runSequences; }
+  public List<RunSeq> getRunSequences() { return runSequences; }
 
   public boolean hasVariable(String searchName) {
     return findGridByName( searchName) != null;
@@ -565,13 +565,12 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     suffixFilter = rootElem.getAttributeValue("suffixFilter");
 
     vertTimeCoords = new ArrayList<VertTimeCoord>();
-    java.util.List vList = rootElem.getChildren("vertCoord");
-    for (int i=0; i< vList.size(); i++) {
-      Element vcElem = (Element) vList.get(i);
+    java.util.List<Element> vList = rootElem.getChildren("vertCoord");
+    for (Element vcElem : vList) {
       ForecastModelRunInventory.VertCoord vc = new ForecastModelRunInventory.VertCoord();
-      vc.setId( vcElem.getAttributeValue("id"));
-      vc.setName( vcElem.getAttributeValue("name"));
-      vc.setUnits( vcElem.getAttributeValue("units"));
+      vc.setId(vcElem.getAttributeValue("id"));
+      vc.setName(vcElem.getAttributeValue("name"));
+      vc.setUnits(vcElem.getAttributeValue("units"));
 
       /* parse the values
       String values = vcElem.getText();
@@ -584,7 +583,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       }
       vc.setValues( vals); */
 
-            // parse the values
+      // parse the values
       String values = vcElem.getText();
       StringTokenizer stoke = new StringTokenizer(values);
       int n = stoke.countTokens();
@@ -595,33 +594,32 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         String toke = stoke.nextToken();
         int pos = toke.indexOf(',');
         if (pos < 0)
-          values1[count] = Double.parseDouble( toke);
+          values1[count] = Double.parseDouble(toke);
         else {
           if (values2 == null)
             values2 = new double[n];
-          String val1 = toke.substring(0,pos);
-          String val2 = toke.substring(pos+1);
-          values1[count] = Double.parseDouble( val1);
-          values2[count] = Double.parseDouble( val2);
+          String val1 = toke.substring(0, pos);
+          String val2 = toke.substring(pos + 1);
+          values1[count] = Double.parseDouble(val1);
+          values2[count] = Double.parseDouble(val2);
         }
         count++;
       }
-      vc.setValues1( values1);
+      vc.setValues1(values1);
       if (values2 != null)
-        vc.setValues2( values2);
+        vc.setValues2(values2);
 
       // wrap it as a VertTimeCoord
       VertTimeCoord vtc = new VertTimeCoord(vc);
-      vertTimeCoords.add( vtc);
+      vertTimeCoords.add(vtc);
     }
 
     timeCoords = new ArrayList<ForecastModelRunInventory.TimeCoord>();
-    java.util.List tList = rootElem.getChildren("offsetHours");
-    for (int i=0; i< tList.size(); i++) {
-      Element timeElem = (Element) tList.get(i);
+    java.util.List<Element> tList = rootElem.getChildren("offsetHours");
+    for (Element timeElem : tList) {
       ForecastModelRunInventory.TimeCoord tc = new ForecastModelRunInventory.TimeCoord();
-      timeCoords.add( tc);
-      tc.setId( timeElem.getAttributeValue("id"));
+      timeCoords.add(tc);
+      tc.setId(timeElem.getAttributeValue("id"));
 
       // parse the values
       String values = timeElem.getText();
@@ -630,60 +628,56 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       double[] offset = new double[n];
       int count = 0;
       while (stoke.hasMoreTokens()) {
-        offset[count++] = Double.parseDouble( stoke.nextToken());
+        offset[count++] = Double.parseDouble(stoke.nextToken());
       }
-      tc.setOffsetHours( offset);
+      tc.setOffsetHours(offset);
     }
 
     runSequences = new ArrayList<RunSeq>();
-    java.util.List runseqList = rootElem.getChildren("runSequence");
-    for (int i=0; i< runseqList.size(); i++) {
-      Element runseqElem = (Element) runseqList.get(i);
+    java.util.List<Element> runseqList = rootElem.getChildren("runSequence");
+    for (Element runseqElem : runseqList) {
       RunSeq rseq;
 
       String allUseId = runseqElem.getAttributeValue("allUseSeq");
       if (allUseId != null) {
-        rseq = new RunSeq( allUseId);
+        rseq = new RunSeq(allUseId);
       } else {
         List<Run> runs = new ArrayList<Run>();
-        java.util.List runList = runseqElem.getChildren("run");
-        for (int j=0; j< runList.size(); j++) {
-          Element runElem = (Element) runList.get(j);
+        List<Element> runList = runseqElem.getChildren("run");
+        for (Element runElem : runList) {
           String id = runElem.getAttributeValue("offsetHourSeq");
-          ForecastModelRunInventory.TimeCoord tc = findTimeCoord( id);
+          ForecastModelRunInventory.TimeCoord tc = findTimeCoord(id);
           String hour = runElem.getAttributeValue("runHour");
 
-          Run run = new Run(tc, Double.parseDouble( hour));
-          runs.add( run);
+          Run run = new Run(tc, Double.parseDouble(hour));
+          runs.add(run);
         }
-        rseq = new RunSeq( runs);
+        rseq = new RunSeq(runs);
       }
 
-      runSequences.add( rseq);
+      runSequences.add(rseq);
 
-      java.util.List varList = runseqElem.getChildren("variable");
-      for (int j=0; j< varList.size(); j++) {
-        Element varElem = (Element) varList.get(j);
+      List<Element> varList = runseqElem.getChildren("variable");
+      for (Element varElem : varList) {
         String name = varElem.getAttributeValue("name");
         Grid grid = new Grid(name);
-        rseq.vars.add( grid);
-        grid.vtc = findVertCoord( varElem.getAttributeValue("vertCoord"));
+        rseq.vars.add(grid);
+        grid.vtc = findVertCoord(varElem.getAttributeValue("vertCoord"));
 
         // look for time dependent vert coordinates - always specific to one variable
-        java.util.List rList = varElem.getChildren("vertTimeCoord");
+        List<Element> rList = varElem.getChildren("vertTimeCoord");
         // gotta be inside a useAllSeq runSeq
         if (rList.size() > 0) {
-          grid.vtc = new VertTimeCoord( grid.vtc.vc, rseq);
+          grid.vtc = new VertTimeCoord(grid.vtc.vc, rseq);
 
-          for (int k = 0; k < rList.size(); k++) {
-            Element vtElem = (Element) rList.get(k);
+          for (Element vtElem : rList) {
             String vertCoords = vtElem.getAttributeValue("restrict");
             String timeCoords = vtElem.getText();
             grid.vtc.addRestriction(vertCoords, timeCoords);
           }
         }
       }
-      Collections.sort( rseq.vars);
+      Collections.sort(rseq.vars);
 
     }
 

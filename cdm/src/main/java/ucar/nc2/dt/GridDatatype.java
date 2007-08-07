@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author caron
  */
-public interface GridDatatype {
+public interface GridDatatype extends Comparable<GridDatatype> {
 
   /**
    * Get the name of the Grid
@@ -76,7 +76,7 @@ public interface GridDatatype {
    * Get a List of Attribute specific to the Grid
    * @return a List of Attribute
    */
-  public List getAttributes();
+  public List<Attribute> getAttributes();
 
   /**
    * Convenience function; lookup Attribute by name.
@@ -104,7 +104,7 @@ public interface GridDatatype {
    *
    * @return List with objects of type Dimension, in canonical order.
    */
-  public List getDimensions();
+  public List<Dimension> getDimensions();
 
   /**
    * get the ith dimension
@@ -244,13 +244,27 @@ public interface GridDatatype {
   public Array readDataSlice(int rt_index, int e_index, int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
 
   /**
+   * This reads an arbitrary data slice, returning the data in
+   * canonical order (t-z-y-x). If any dimension does not exist, ignore it.
    * For backwards compatibility for grids with no runtime or ensemble dimensions.
+   *
+   * @param t_index  if < 0, get all of time dim; if valid index, fix slice to that value.
+   * @param z_index  if < 0, get all of z dim; if valid index, fix slice to that value.
+   * @param y_index  if < 0, get all of y dim; if valid index, fix slice to that value.
+   * @param x_index  if < 0, get all of x dim; if valid index, fix slice to that value.
+   * @return data[rt,e,t,z,y,x], eliminating missing or fixed dimension.
    * @throws java.io.IOException on io error
    */
   public Array readDataSlice(int t_index, int z_index, int y_index, int x_index) throws java.io.IOException;
 
   /**
-   * For backwards compatibility for grids with no runtime or ensemble dimensions.
+   * Reads in the data "volume" at the given time index.
+   * If its a product set, put into canonical order (z-y-x).
+   * If not a product set, reorder to (z,i,j), where i, j are from the
+   * original
+   *
+   * @param t_index time index; ignored if no time axis.
+   * @return data[z,y,x] or data[y,x] if no z axis.
    * @throws java.io.IOException on io error
    */
   public Array readVolumeData(int t_index) throws java.io.IOException;

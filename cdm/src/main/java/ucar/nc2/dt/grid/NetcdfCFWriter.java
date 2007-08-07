@@ -52,22 +52,22 @@ public class NetcdfCFWriter {
   /**
    * Write a CF compliant Netcdf-3 file from any gridded dataset.
    *
-   * @param location write to this location on disk
-   * @param gds A gridded dataset
-   * @param gridList the list of grid names to be written, must not be empty.
-   * @param llbb optional lat/lon bounding box
-   * @param range optional time range
-   * @param addLatLon should 2D lat/lon variables be added, if its a projection coordainte system?
+   * @param location    write to this location on disk
+   * @param gds         A gridded dataset
+   * @param gridList    the list of grid names to be written, must not be empty.
+   * @param llbb        optional lat/lon bounding box
+   * @param range       optional time range
+   * @param addLatLon   should 2D lat/lon variables be added, if its a projection coordainte system?
    * @param horizStride x,y stride
-   * @param stride_z not implemented yet
+   * @param stride_z    not implemented yet
    * @param stride_time not implemented yet
-   * @throws IOException if write or read error
+   * @throws IOException           if write or read error
    * @throws InvalidRangeException if subset is illegal
    */
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          LatLonRect llbb, DateRange range,
-          boolean addLatLon,
-          int horizStride, int stride_z, int stride_time) throws IOException, InvalidRangeException {
+                       LatLonRect llbb, DateRange range,
+                       boolean addLatLon,
+                       int horizStride, int stride_z, int stride_time) throws IOException, InvalidRangeException {
 
 
     FileWriter writer = new FileWriter(location, false);
@@ -79,8 +79,8 @@ public class NetcdfCFWriter {
 
     writer.writeGlobalAttribute(new Attribute("Conventions", "CF-1.0"));
     writer.writeGlobalAttribute(new Attribute("History",
-            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
-                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
+        "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
+            "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
 
     ArrayList<Variable> varList = new ArrayList<Variable>();
     ArrayList<String> varNameList = new ArrayList<String>();
@@ -114,9 +114,7 @@ public class NetcdfCFWriter {
 
       // add coordinate axes
       GridCoordSystem gcs = grid.getCoordinateSystem();
-      List<CoordinateAxis> axes = gcs.getCoordinateAxes();
-      for (int j = 0; j < axes.size(); j++) {
-        CoordinateAxis axis = axes.get(j);
+      for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
         if (!varNameList.contains(axis.getName())) {
           varNameList.add(axis.getName());
           varList.add(axis); // LOOK dont we have to subset these ??
@@ -125,9 +123,7 @@ public class NetcdfCFWriter {
       }
 
       // add coordinate transform variables
-      List ctList = gcs.getCoordinateTransforms();
-      for (int j = 0; j < ctList.size(); j++) {
-        CoordinateTransform ct = (CoordinateTransform) ctList.get(j);
+      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
         Variable v = ncd.findVariable(ct.getName());
         if (!varNameList.contains(ct.getName()) && (null != v)) {
           varNameList.add(ct.getName());
@@ -156,19 +152,15 @@ public class NetcdfCFWriter {
       // annotate Variable for CF
       StringBuffer sbuff = new StringBuffer();
       GridCoordSystem gcs = grid.getCoordinateSystem();
-      List axes = gcs.getCoordinateAxes();
-      for (int j = 0; j < axes.size(); j++) {
-        Variable axis = (Variable) axes.get(j);
-        sbuff.append(axis.getName() + " ");
+      for (Variable axis : gcs.getCoordinateAxes()) {
+        sbuff.append(axis.getName()).append(" ");
       }
       if (addLatLon)
         sbuff.append("lat lon");
       newV.addAttribute(new Attribute("coordinates", sbuff.toString()));
 
       // looking for coordinate transform variables
-      List ctList = gcs.getCoordinateTransforms();
-      for (int j = 0; j < ctList.size(); j++) {
-        CoordinateTransform ct = (CoordinateTransform) ctList.get(j);
+      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
         Variable v = ncd.findVariable(ct.getName());
         if (ct.getTransformType() == TransformType.Projection)
           newV.addAttribute(new Attribute("grid_mapping", v.getName()));
@@ -199,7 +191,7 @@ public class NetcdfCFWriter {
   }
 
   private void addLatLon2D(NetcdfFile ncfile, List<Variable> varList, Projection proj,
-          CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
+                           CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
 
     double[] xData = (double[]) xaxis.read().get1DJavaArray(double.class);
     double[] yData = (double[]) yaxis.read().get1DJavaArray(double.class);
@@ -267,10 +259,10 @@ public class NetcdfCFWriter {
     Date end = format.isoDateTimeFormat("2005-12-07T18:00:00Z");
 
     writer.makeFile(fileOut, gds, gridList,
-          new LatLonRect(new LatLonPointImpl(37,-109), 400, 7),
-          new DateRange(start,end),
-          true,
-          1, 1, 1);
+        new LatLonRect(new LatLonPointImpl(37, -109), 400, 7),
+        new DateRange(start, end),
+        true,
+        1, 1, 1);
 
   }
 

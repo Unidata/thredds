@@ -20,7 +20,9 @@
 package ucar.nc2.dt;
 
 import ucar.nc2.dataset.*;
+import ucar.nc2.Dimension;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.unidata.geoloc.LatLonPoint;
 
 import java.util.List;
@@ -56,7 +58,7 @@ public interface GridCoordSystem {
    * Get the list of dimensions used by any of the Axes in the Coordinate System.
    * @return List of Dimension
    */
-  public List getDomain();
+  public List<Dimension> getDomain();
 
   // axes
 
@@ -64,7 +66,7 @@ public interface GridCoordSystem {
    * Get the list of all axes.
    * @return List of CoordinateAxis.
    */
-  public List getCoordinateAxes();
+  public List<CoordinateAxis> getCoordinateAxes();
 
   /**
    * True if all axes are 1 dimensional.
@@ -120,7 +122,7 @@ public interface GridCoordSystem {
    * Get the list of all CoordinateTransforms.
    * @return List of CoordinateTransform.
    */
-  public List getCoordinateTransforms();
+  public List<CoordinateTransform> getCoordinateTransforms();
 
   /**
    * Get the Projection CoordinateTransform. It must exist if !isLatLon().
@@ -186,7 +188,7 @@ public interface GridCoordSystem {
    * @return list of 2 Range objects, first y then x.
    * @throws ucar.ma2.InvalidRangeException if llbb generates bad ranges
    */
-  public java.util.List getRangesFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
+  public java.util.List<Range> getRangesFromLatLonRect(ucar.unidata.geoloc.LatLonRect llbb) throws InvalidRangeException;
 
   /**
    * Given a point in x,y coordinate space, find the x,y indices.

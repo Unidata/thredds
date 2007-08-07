@@ -1,6 +1,5 @@
-// $Id: H5chunkIndexer.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -49,7 +48,6 @@ import java.io.IOException;
  * </pre>
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 class H5chunkIndexer extends Indexer {
 
@@ -79,7 +77,8 @@ class H5chunkIndexer extends Indexer {
    * @param v2 Variable to index over; assumes that vinfo is the data object
    * @param wantOrigin want subset origin
    * @param wantShape want subset shape
-   * @throws InvalidRangeException
+   * @throws InvalidRangeException if origin, shape is invalid
+   * @throws java.io.IOException on read error
    */
   H5chunkIndexer( Variable v2, int[] wantOrigin, int[] wantShape) throws InvalidRangeException, IOException {
     debug = H5iosp.debugChunkIndexer;
@@ -100,7 +99,7 @@ class H5chunkIndexer extends Indexer {
 
     // heres the subset that we want
     this.wantOrigin = wantOrigin;
-    this.wantShape = (int []) wantShape.clone();
+    this.wantShape = wantShape.clone();
     // compute total elements in the subset
     this.totalNelems = 1;
     for (int ii = 0; ii < varRank; ii++)

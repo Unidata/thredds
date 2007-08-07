@@ -1,6 +1,5 @@
-// $Id:ThreddsDataFactory.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -30,8 +29,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 
 import thredds.catalog.*;
-import thredds.catalog.query.DqcFactory;
-import thredds.catalog.query.QueryCapability;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -56,7 +53,6 @@ import java.io.IOException;
  * You can reuse a ThreddsDataFactory, but do not share across threads.
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class ThreddsDataFactory {
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -102,7 +98,7 @@ public class ThreddsDataFactory {
    * @param location [thredds:]catalog.xml#datasetId
    * @param task     may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
-   * @throws java.io.IOException
+   * @throws java.io.IOException on read error
    */
   public ThreddsDataFactory.Result openDatatype(String location, ucar.nc2.util.CancelTask task) throws java.io.IOException {
 
@@ -151,7 +147,7 @@ public class ThreddsDataFactory {
     invDataset = catalog.findDatasetByID(datasetId);
     if (invDataset == null) {
       result.fatalError = true;
-      result.errLog.append("Could not find dataset " + datasetId + " in " + catalogLocation + "\n");
+      result.errLog.append("Could not find dataset ").append(datasetId).append(" in ").append(catalogLocation).append("\n");
       return null;
     }
 
@@ -161,10 +157,10 @@ public class ThreddsDataFactory {
   /**
    * Open a TypedDataset from an InvDataset object, deciding on which InvAccess to use.
    *
-   * @param invDataset
-   * @param task       may be null
+   * @param invDataset use this to figure out what type, how to open, etc
+   * @param task allow user to cancel; may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
-   * @throws IOException
+   * @throws IOException on read error
    */
   public ThreddsDataFactory.Result openDatatype(InvDataset invDataset, ucar.nc2.util.CancelTask task) throws IOException {
     return openDatatype(invDataset, task, new Result());
@@ -203,7 +199,7 @@ public class ThreddsDataFactory {
         result.fatalError = (result.tds == null);
 
       } else {
-        result.errLog.append("DQC must be station DQC, dataset = "+invDataset.getName());
+        result.errLog.append("DQC must be station DQC, dataset = ").append(invDataset.getName());
         result.fatalError = true;
       }
 
@@ -232,7 +228,7 @@ public class ThreddsDataFactory {
    * @param access use this InvAccess.
    * @param task   may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
-   * @throws IOException
+   * @throws IOException on read error
    */
   public ThreddsDataFactory.Result openDatatype(InvAccess access, ucar.nc2.util.CancelTask task) throws IOException {
     return openDatatype(access, task, new Result());
@@ -299,8 +295,9 @@ public class ThreddsDataFactory {
    * @param location catalog.xml#datasetId, may optionally start with "thredds:"
    * @param task     may be null
    * @param log      error messages gp here, may be null
+   * @param acquire if true, aquire the dataset, else open it
    * @return NetcdfDataset
-   * @throws java.io.IOException
+   * @throws java.io.IOException on read error
    */
   public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
     Result result = new Result();
@@ -317,10 +314,11 @@ public class ThreddsDataFactory {
    * Try to open as a NetcdfDataset.
    *
    * @param invDataset open this
+   * @param acquire if true, aquire the dataset, else open it
    * @param task       may be null
    * @param log        error message, may be null
    * @return NetcdfDataset or null if failure
-   * @throws IOException
+   * @throws IOException on read error
    */
   public NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
     Result result = new Result();
@@ -333,13 +331,13 @@ public class ThreddsDataFactory {
 
     IOException saveException = null;
 
-    List accessList = new ArrayList(invDataset.getAccess()); // a list of all the accesses
+    List<InvAccess> accessList = new ArrayList<InvAccess>(invDataset.getAccess()); // a list of all the accesses
     while (accessList.size() > 0) {
       InvAccess access = chooseDatasetAccess(accessList);
 
       // no valid access
       if (access == null) {
-        result.errLog.append("No access that could be used in dataset " + invDataset + "\n");
+        result.errLog.append("No access that could be used in dataset ").append(invDataset).append("\n");
         if (saveException != null)
           throw saveException;
         return null;
@@ -354,7 +352,7 @@ public class ThreddsDataFactory {
       if (serviceType == ServiceType.RESOLVER) {
         InvDatasetImpl rds = openResolver(datasetLocation, task, result);
         if (rds == null) return null;
-        accessList = new ArrayList(rds.getAccess());
+        accessList = new ArrayList<InvAccess>(rds.getAccess());
         continue;
       }
 
@@ -366,7 +364,7 @@ public class ThreddsDataFactory {
         ds = openDataset(access, acquire, task, result);
 
       } catch (IOException e) {
-        result.errLog.append("Cant open  " + datasetLocation + "\n");
+        result.errLog.append("Cant open  ").append(datasetLocation).append("\n");
         if (debugOpen) {
           System.out.println("Cant open= " + datasetLocation + " " + serviceType);
           e.printStackTrace();
@@ -389,10 +387,11 @@ public class ThreddsDataFactory {
    * Try to open invAccess as a NetcdfDataset.
    *
    * @param access open this InvAccess
+   * @param acquire if true, aquire the dataset, else open it
    * @param task   may be null
    * @param log    error message, may be null
    * @return NetcdfDataset or null if failure
-   * @throws IOException
+   * @throws IOException on read error
    */
   public NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
     Result result = new Result();
@@ -467,7 +466,7 @@ public class ThreddsDataFactory {
    * @param accessList choose from this list.
    * @return best access method.
    */
-  public InvAccess chooseDatasetAccess(List accessList) {
+  public InvAccess chooseDatasetAccess(List<InvAccess> accessList) {
     if (accessList.size() == 0)
       return null;
 
@@ -517,12 +516,12 @@ public class ThreddsDataFactory {
   private InvDatasetImpl openResolver(String urlString, ucar.nc2.util.CancelTask task, Result result) {
     InvCatalogImpl catalog = catFactory.readXML(urlString);
     if (catalog == null) {
-      result.errLog.append("Couldnt open Resolver  " + urlString + "\n");
+      result.errLog.append("Couldnt open Resolver  ").append(urlString).append("\n");
       return null;
     }
     StringBuffer buff = new StringBuffer();
     if (!catalog.check(buff)) {
-      result.errLog.append("Invalid catalog from Resolver <" + urlString + ">\n");
+      result.errLog.append("Invalid catalog from Resolver <").append(urlString).append(">\n");
       result.errLog.append(buff.toString());
       result.fatalError = true;
       return null;
@@ -547,9 +546,7 @@ public class ThreddsDataFactory {
     ncDataset.setId(ds.getID());
 
 // add properties as global attributes
-    java.util.List list = ds.getProperties();
-    for (int i = 0; i < list.size(); i++) {
-      InvProperty p = (InvProperty) list.get(i);
+    for (InvProperty p : ds.getProperties()) {
       String name = p.getName();
       if (null == ncDataset.findGlobalAttribute(name)) {
         ncDataset.addAttribute(null, new Attribute(name, p.getValue()));
@@ -620,7 +617,7 @@ return PointObsDatasetFactory.open( access, task, result.errLog);
 
   private InvAccess getImageAccess(InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result) {
 
-    List accessList = new ArrayList(invDataset.getAccess()); // a list of all the accesses
+    List<InvAccess> accessList = new ArrayList<InvAccess>(invDataset.getAccess()); // a list of all the accesses
     while (accessList.size() > 0) {
       InvAccess access = chooseImageAccess(accessList);
       if (access != null) return access;
@@ -630,7 +627,7 @@ return PointObsDatasetFactory.open( access, task, result.errLog);
 
 // no valid access
       if (access == null) {
-        result.errLog.append("No access that could be used for Image Type " + invDataset + "\n");
+        result.errLog.append("No access that could be used for Image Type ").append(invDataset).append("\n");
         return null;
       }
 
@@ -641,13 +638,13 @@ return PointObsDatasetFactory.open( access, task, result.errLog);
         return null;
 
 // use the access list from the resolved dataset
-      accessList = new ArrayList(invDataset.getAccess());
+      accessList = new ArrayList<InvAccess>(invDataset.getAccess());
     } // loop over accesses
 
     return null;
   }
 
-  private InvAccess chooseImageAccess(List accessList) {
+  private InvAccess chooseImageAccess(List<InvAccess> accessList) {
     InvAccess access;
 
     access = findAccessByDataFormatType(accessList, DataFormatType.JPEG);
@@ -673,9 +670,8 @@ return PointObsDatasetFactory.open( access, task, result.errLog);
 
 // works against the accessList instead of the dataset list, so we can remove and try again
 
-  private InvAccess findAccessByServiceType(List accessList, ServiceType type) {
-    for (int i = 0; i < accessList.size(); i++) {
-      InvAccess a = (InvAccess) accessList.get(i);
+  private InvAccess findAccessByServiceType(List<InvAccess> accessList, ServiceType type) {
+    for (InvAccess a : accessList) {
       if (type.toString().equalsIgnoreCase(a.getService().getServiceType().toString()))
         return a;
     }
@@ -684,9 +680,8 @@ return PointObsDatasetFactory.open( access, task, result.errLog);
 
 // works against the accessList instead of the dataset list, so we can remove and try again
 
-  private InvAccess findAccessByDataFormatType(List accessList, DataFormatType type) {
-    for (int i = 0; i < accessList.size(); i++) {
-      InvAccess a = (InvAccess) accessList.get(i);
+  private InvAccess findAccessByDataFormatType(List<InvAccess> accessList, DataFormatType type) {
+    for (InvAccess a : accessList) {
       if (type.toString().equalsIgnoreCase(a.getDataFormatType().toString()))
         return a;
     }

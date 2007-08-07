@@ -1,6 +1,5 @@
-// $Id: GridDatasetInfo.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,11 +22,12 @@ package ucar.nc2.dt.grid;
 
 import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
+import ucar.nc2.Attribute;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.*;
+import ucar.nc2.dt.GridDataset;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.util.Parameter;
@@ -45,11 +45,10 @@ import java.io.FileOutputStream;
 /**
  * A helper class to GridDataset; creates a GridDataset XML document.
  * This is a candidate for the XML representation of the Grid SDT.
- *
+ * <p/>
  * ForecastModelRunInventory.makeDocument is currently being used in NetcdfServer.
  *
  * @author caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 public class GridDatasetInfo {
   private ucar.nc2.dt.GridDataset gds;
@@ -62,12 +61,22 @@ public class GridDatasetInfo {
 
   /**
    * Write the information as an XML document
+   *
+   * @param doc write XML for this Document
+   * @return String output
    */
   public String writeXML(Document doc) {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     return fmt.outputString(doc);
   }
 
+  /**
+   * Write the information as an XML document
+   *
+   * @param doc write XML for this Document
+   * @param os  write to this output stream
+   * @throws java.io.IOException on write error
+   */
   public void writeXML(Document doc, OutputStream os) throws IOException {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(doc, os);
@@ -75,6 +84,8 @@ public class GridDatasetInfo {
 
   /**
    * Create the "Dataset Description" XML document from this GridDataset
+   *
+   * @return a JDOM Document
    */
   public Document makeDatasetDescription() {
     Element rootElem = new Element("gridDataset");
@@ -91,9 +102,7 @@ public class GridDatasetInfo {
     } */
 
     // coordinate axes
-    List coordAxes = getCoordAxes(gds);
-    for (int i = 0; i < coordAxes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) coordAxes.get(i);
+    for (CoordinateAxis axis : getCoordAxes(gds)) {
       rootElem.addContent(writeAxis(axis));
     }
 
@@ -113,17 +122,14 @@ public class GridDatasetInfo {
     } */
 
     // gridSets
-    List gridSets = gds.getGridsets();
-    Collections.sort( gridSets, new GridSetComparator());
-    for (int i = 0; i < gridSets.size(); i++) {
-      GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
+    List<GridDataset.Gridset> gridSets = gds.getGridsets();
+    Collections.sort(gridSets, new GridSetComparator());
+    for (GridDataset.Gridset gridset : gridSets) {
       rootElem.addContent(writeGridSet(gridset));
     }
 
     // coordinate transforms
-    List coordTransforms = getCoordTransforms(gds);
-    for (int i = 0; i < coordTransforms.size(); i++) {
-      CoordinateTransform ct = (CoordinateTransform) coordTransforms.get(i);
+    for (CoordinateTransform ct : getCoordTransforms(gds)) {
       rootElem.addContent(writeCoordTransform(ct));
     }
 
@@ -134,20 +140,20 @@ public class GridDatasetInfo {
       rootElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     } */
 
-        // add lat/lon bounding box
+    // add lat/lon bounding box
     LatLonRect bb = gds.getBoundingBox();
     if (bb != null)
-      rootElem.addContent( writeBoundingBox( bb));
+      rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    Date start  = gds.getStartDate();
-    Date end  = gds.getEndDate();
+    Date start = gds.getStartDate();
+    Date end = gds.getEndDate();
     if ((start != null) && (end != null)) {
       DateFormatter format = new DateFormatter();
       Element dateRange = new Element("TimeSpan");
       dateRange.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
       dateRange.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
-      rootElem.addContent( dateRange);
+      rootElem.addContent(dateRange);
     }
 
     // add accept list
@@ -162,6 +168,8 @@ public class GridDatasetInfo {
   /**
    * Create the "Grid Form" XML document from this GridDataset.
    * Used to create the Grid HTML form, cause I dont know XSLT
+   *
+   * @return the JDOM Document
    */
   public Document makeGridForm() {
     Element rootElem = new Element("gridForm");
@@ -171,7 +179,7 @@ public class GridDatasetInfo {
       rootElem.setAttribute("path", path);
 
     // its all about grids
-    List grids = gds.getGrids();
+    List<GridDatatype> grids = gds.getGrids();
     Collections.sort(grids, new GridComparator()); // sort by time axis, vert axis, grid name
 
 
@@ -179,7 +187,7 @@ public class GridDatasetInfo {
     CoordinateAxis currentVert = null;
     Element timeElem = null;
     Element vertElem = null;
-    boolean newTime = true;
+    boolean newTime;
 
     for (int i = 0; i < grids.size(); i++) {
       GeoGrid grid = (GeoGrid) grids.get(i);
@@ -215,20 +223,20 @@ public class GridDatasetInfo {
       vertElem.addContent(writeGrid(grid));
     }
 
-        // add lat/lon bounding box
+    // add lat/lon bounding box
     LatLonRect bb = gds.getBoundingBox();
     if (bb != null)
-      rootElem.addContent( writeBoundingBox( bb));
+      rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    Date start  = gds.getStartDate();
-    Date end  = gds.getEndDate();
+    Date start = gds.getStartDate();
+    Date end = gds.getEndDate();
     if ((start != null) && (end != null)) {
       DateFormatter format = new DateFormatter();
       Element dateRange = new Element("TimeSpan");
       dateRange.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
       dateRange.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
-      rootElem.addContent( dateRange);
+      rootElem.addContent(dateRange);
     }
 
     // add accept list
@@ -255,11 +263,8 @@ public class GridDatasetInfo {
       varElem.setAttribute("axisType", axisType.toString());
 
     // attributes
-    Iterator atts = axis.getAttributes().iterator();
-    while (atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+    for (Attribute att : axis.getAttributes())
       varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
-    }
 
     Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, false);
     values.setAttribute("npts", Long.toString(axis.getSize()));
@@ -268,37 +273,35 @@ public class GridDatasetInfo {
     return varElem;
   }
 
-    private boolean compareAxis(CoordinateAxis axis1, CoordinateAxis axis2) {
-      if (axis1 == axis2)
-        return true;
+  private boolean compareAxis(CoordinateAxis axis1, CoordinateAxis axis2) {
+    if (axis1 == axis2)
+      return true;
 
-      if (axis1 == null) return false;
-      if (axis2 == null) return false;
+    if (axis1 == null) return false;
+    if (axis2 == null) return false;
 
-      return axis1.equals( axis2);
-    }
+    return axis1.equals(axis2);
+  }
 
   // sort by time, then vert, then name
-  private class GridComparator implements Comparator {
+  private class GridComparator implements Comparator<GridDatatype> {
 
     // Returns a -1, 0, 1 if the first argument is less than, equal to, or greater than the second.
-    public int compare(Object o1, Object o2) {
-      GeoGrid grid1 = (GeoGrid) o1;
-      GeoGrid grid2 = (GeoGrid) o2;
+    public int compare(GridDatatype grid1, GridDatatype grid2) {
       GridCoordSystem gcs1 = grid1.getCoordinateSystem();
       GridCoordSystem gcs2 = grid2.getCoordinateSystem();
 
       CoordinateAxis time1 = gcs1.getTimeAxis();
       CoordinateAxis time2 = gcs2.getTimeAxis();
-      int ret = compareAxis( time1, time2);
+      int ret = compareAxis(time1, time2);
       if (ret != 0) return ret;
 
       CoordinateAxis vert1 = gcs1.getVerticalAxis();
       CoordinateAxis vert2 = gcs2.getVerticalAxis();
-      ret = compareAxis( vert1, vert2);
+      ret = compareAxis(vert1, vert2);
       if (ret != 0) return ret;
 
-      return grid1.getName().compareTo( grid2.getName());
+      return grid1.getName().compareTo(grid2.getName());
     }
 
     private int compareAxis(CoordinateAxis axis1, CoordinateAxis axis2) {
@@ -308,44 +311,40 @@ public class GridDatasetInfo {
       if (axis1 == null) return -1;
       if (axis2 == null) return 1;
 
-      return axis1.getName().compareTo( axis2.getName());
+      return axis1.getName().compareTo(axis2.getName());
     }
 
   }
 
-  private List getCoordAxes(ucar.nc2.dt.GridDataset gds) {
-    HashSet axesHash = new HashSet();
-    List gridSets = gds.getGridsets();
-    for (int i = 0; i < gridSets.size(); i++) {
-      GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
+  private List<CoordinateAxis> getCoordAxes(ucar.nc2.dt.GridDataset gds) {
+    Set<CoordinateAxis> axesHash = new HashSet<CoordinateAxis>();
+
+    for (ucar.nc2.dt.GridDataset.Gridset gridset : gds.getGridsets()) {
       GridCoordSystem gcs = gridset.getGeoCoordSystem();
-      List axes = gcs.getCoordinateAxes();
-      for (int j = 0; j < axes.size(); j++)
-        axesHash.add(axes.get(j));
+      for (CoordinateAxis axe : gcs.getCoordinateAxes())
+        axesHash.add(axe);
     }
 
-    List list = Arrays.asList(axesHash.toArray());
+    List<CoordinateAxis> list = Arrays.asList((CoordinateAxis[]) axesHash.toArray());
     Collections.sort(list);
     return list;
   }
 
-  private List getCoordTransforms(ucar.nc2.dt.GridDataset gds) {
-    HashSet ctHash = new HashSet();
-    List gridSets = gds.getGridsets();
-    for (int i = 0; i < gridSets.size(); i++) {
-      GridDataset.Gridset gridset = (GridDataset.Gridset) gridSets.get(i);
+  private List<CoordinateTransform> getCoordTransforms(ucar.nc2.dt.GridDataset gds) {
+    Set<CoordinateTransform> ctHash = new HashSet<CoordinateTransform>();
+
+    for (ucar.nc2.dt.GridDataset.Gridset gridset : gds.getGridsets()) {
       GridCoordSystem gcs = gridset.getGeoCoordSystem();
-      List ct = gcs.getCoordinateTransforms();
-      for (int j = 0; j < ct.size(); j++)
-        ctHash.add(ct.get(j));
+      for (CoordinateTransform axe : gcs.getCoordinateTransforms())
+        ctHash.add(axe);
     }
 
-    List list = Arrays.asList(ctHash.toArray());
+    List<CoordinateTransform> list = Arrays.asList((CoordinateTransform[]) ctHash.toArray());
     Collections.sort(list);
     return list;
   }
 
-  private List getDimensions(ucar.nc2.dt.GridDataset gds) {
+  /* private List getDimensions(ucar.nc2.dt.GridDataset gds) {
     HashSet dimHash = new HashSet();
     List grids = gds.getGrids();
     for (int i = 0; i < grids.size(); i++) {
@@ -359,7 +358,7 @@ public class GridDatasetInfo {
     List list = Arrays.asList(dimHash.toArray());
     Collections.sort(list);
     return list;
-  }
+  }  */
 
   private Element writeAxis(CoordinateAxis axis) {
 
@@ -375,9 +374,7 @@ public class GridDatasetInfo {
       varElem.setAttribute("axisType", axisType.toString());
 
     // attributes
-    Iterator atts = axis.getAttributes().iterator();
-    while (atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+    for (Attribute att : axis.getAttributes()) {
       varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
@@ -390,16 +387,15 @@ public class GridDatasetInfo {
     return varElem;
   }
 
-  /** display name plus the dimensions */
-   public String getShapeString(int[] shape) {
+  // display name plus the dimensions
+  private String getShapeString(int[] shape) {
     StringBuffer buf = new StringBuffer();
-     for (int i=0; i<shape.length; i++) {
-       if (i!=0) buf.append(" ");
-       buf.append(shape[i]);
-
-     }
-     return buf.toString();
-   }
+    for (int i = 0; i < shape.length; i++) {
+      if (i != 0) buf.append(" ");
+      buf.append(shape[i]);
+    }
+    return buf.toString();
+  }
 
 
   private Element writeBoundingBox(LatLonRect bb) {
@@ -415,36 +411,31 @@ public class GridDatasetInfo {
 
   private Element writeGridSet(GridDataset.Gridset gridset) {
     Element csElem = new Element("gridSet");
-    GridCoordSystem cs =  gridset.getGeoCoordSystem();
+    GridCoordSystem cs = gridset.getGeoCoordSystem();
 
     csElem.setAttribute("name", cs.getName());
-    List axes = cs.getCoordinateAxes();
-    for (int i = 0; i < axes.size(); i++) {
-      CoordinateAxis axis = (CoordinateAxis) axes.get(i);
+    for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       Element axisElem = new Element("axisRef");
       axisElem.setAttribute("name", axis.getName());
       csElem.addContent(axisElem);
     }
 
-    List cts = cs.getCoordinateTransforms();
-    for (int j = 0; j < cts.size(); j++) {
-      CoordinateTransform ct = (CoordinateTransform) cts.get(j);
+    for (CoordinateTransform ct : cs.getCoordinateTransforms()) {
       Element elem = new Element("coordTransRef");
       elem.setAttribute("name", ct.getName());
       csElem.addContent(elem);
     }
 
-    List grids = gridset.getGrids();
+    List<GridDatatype> grids = gridset.getGrids();
     Collections.sort(grids);
-    for (int i = 0; i < grids.size(); i++) {
-      GeoGrid grid = (GeoGrid) grids.get(i);
+    for (GridDatatype grid : grids) {
       csElem.addContent(writeGrid(grid));
     }
 
     return csElem;
   }
 
-  private Element writeCoordSys(GridCoordSystem cs) {
+  /* private Element writeCoordSys(GridCoordSystem cs) {
     Element csElem = new Element("coordSys");
     csElem.setAttribute("name", cs.getName());
     List axes = cs.getCoordinateAxes();
@@ -462,15 +453,13 @@ public class GridDatasetInfo {
       csElem.addContent(elem);
     }
     return csElem;
-  }
+  } */
 
   private Element writeCoordTransform(CoordinateTransform ct) {
     Element ctElem = new Element("coordTransform");
     ctElem.setAttribute("name", ct.getName());
     ctElem.setAttribute("transformType", ct.getTransformType().toString());
-    List params = ct.getParameters();
-    for (int i = 0; i < params.size(); i++) {
-      Parameter param = (Parameter) params.get(i);
+    for (Parameter param : ct.getParameters()) {
       Element pElem = new Element("parameter");
       pElem.setAttribute("name", param.getName());
       pElem.setAttribute("value", param.getStringValue());
@@ -505,9 +494,7 @@ public class GridDatasetInfo {
     //varElem.setAttribute("coordSys", cs.getName());
 
     // attributes
-    Iterator atts = grid.getAttributes().iterator();
-    while (atts.hasNext()) {
-      ucar.nc2.Attribute att = (ucar.nc2.Attribute) atts.next();
+    for (ucar.nc2.Attribute att : grid.getAttributes()) {
       varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
@@ -515,13 +502,11 @@ public class GridDatasetInfo {
   }
 
   // sort by domain size, then name
-  private class GridSetComparator implements Comparator {
+  private class GridSetComparator implements Comparator<GridDataset.Gridset> {
 
-    public int compare(Object o1, Object o2) {
-      GridDataset.Gridset gridset1 = (GridDataset.Gridset) o1;
-      GridDataset.Gridset gridset2 = (GridDataset.Gridset) o2;
-      GridCoordSystem cs1 =  gridset1.getGeoCoordSystem();
-      GridCoordSystem cs2 =  gridset2.getGeoCoordSystem();
+    public int compare(GridDataset.Gridset gridset1, GridDataset.Gridset gridset2) {
+      GridCoordSystem cs1 = gridset1.getGeoCoordSystem();
+      GridCoordSystem cs2 = gridset2.getGeoCoordSystem();
       if (cs1.getDomain().size() != cs2.getDomain().size())
         return cs1.getDomain().size() - cs2.getDomain().size();
       return cs1.getName().compareTo(cs2.getName());
@@ -531,6 +516,9 @@ public class GridDatasetInfo {
 
   /**
    * debug
+   *
+   * @param args ignored
+   * @throws java.io.IOException on io error
    */
   public static void main(String args[]) throws IOException {
     // String url = "C:/data/test2.nc";
@@ -539,10 +527,10 @@ public class GridDatasetInfo {
 
     // String url = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NDFD/CONUS_5km/NDFD-CONUS_5km_best.ncd";
 
-    GridDataset ncd = GridDataset.open(url);
+    GridDataset ncd = ucar.nc2.dt.grid.GridDataset.open(url);
     GridDatasetInfo info = new GridDatasetInfo(ncd, null);
     FileOutputStream fos2 = new FileOutputStream("C:/TEMP/gridInfo.xml");
-    info.writeXML( info.makeGridForm(), fos2);
+    info.writeXML(info.makeGridForm(), fos2);
     fos2.close();
 
     String infoString = info.writeXML(info.makeGridForm());

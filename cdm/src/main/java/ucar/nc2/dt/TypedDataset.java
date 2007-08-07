@@ -52,7 +52,7 @@ public interface TypedDataset {
   /** @return End date for the entire dataset. */
   public Date getEndDate();
 
-  /** @return he boundingBox for the entire dataset. */
+  /** @return the boundingBox for the entire dataset. */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /** List of global attributes.

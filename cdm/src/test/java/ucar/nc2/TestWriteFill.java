@@ -9,11 +9,7 @@ import ucar.ma2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Jan 9, 2006
- * Time: 4:02:24 PM
- * To change this template use File | Settings | File Templates.
+ * Test writing with fill values
  */
 public class TestWriteFill  extends TestCase {
   private boolean show = false;

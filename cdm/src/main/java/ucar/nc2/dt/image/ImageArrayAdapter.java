@@ -1,6 +1,5 @@
-// $Id:ImageArrayAdapter.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,7 +33,6 @@ import javax.swing.*;
  * Makes a 2D Array into a java.awt.image.BufferedImage
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class ImageArrayAdapter {
 
@@ -42,6 +40,7 @@ public class ImageArrayAdapter {
    * Adapt a rank 2 array into a java.awt.image.BufferedImage.
    * If passed a rank 3 array, take first 2D slice.
    * @param ma rank 2 or 3 array.
+   * @return BufferedImage
    */
   public static java.awt.image.BufferedImage makeGrayscaleImage( Array ma) {
 

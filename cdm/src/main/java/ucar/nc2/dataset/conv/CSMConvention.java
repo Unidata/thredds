@@ -35,7 +35,6 @@ import java.util.*;
  * CSM-1 Convention. Deprecated: use CF
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class CSMConvention extends COARDSConvention {

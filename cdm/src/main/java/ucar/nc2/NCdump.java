@@ -1,6 +1,5 @@
-// $Id:NCdump.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,7 +34,6 @@ import java.util.*;
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)
  *
  * @author Russ Rew, John Caron
- * @version $Id:NCdump.java 51 2006-07-12 17:13:13Z caron $
  */
 
 public class NCdump {
@@ -385,7 +383,7 @@ public class NCdump {
    * @return section specification String.
    * @throws InvalidRangeException is specified section doesnt match variable shape
    */
-  public static String makeSectionString(VariableIF v, List ranges) throws InvalidRangeException {
+  public static String makeSectionString(VariableIF v, List<Range> ranges) throws InvalidRangeException {
     StringBuffer sb = new StringBuffer();
     makeSpec(sb, v, ranges);
     return sb.toString();
@@ -869,7 +867,7 @@ public class NCdump {
     if (att.isString()) {
       for (int i=0; i<att.getLength(); i++) {
         if (i > 0) out.print("\\, "); // ??
-        out.print( att.getStringValue(i));
+        out.print( StringUtil.quoteXmlAttribute(att.getStringValue(i)));
       }
     } else {
      for (int i=0; i<att.getLength(); i++) {

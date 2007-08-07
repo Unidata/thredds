@@ -238,10 +238,8 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /** Standard  sort on Coordinate Axes */
-  static public class AxisComparator implements java.util.Comparator {
-    public int compare(Object o1, Object o2) {
-      CoordinateAxis c1 = (CoordinateAxis) o1;
-      CoordinateAxis c2 = (CoordinateAxis) o2;
+  static public class AxisComparator implements java.util.Comparator<CoordinateAxis> {
+    public int compare(CoordinateAxis c1, CoordinateAxis c2) {
 
       AxisType t1 = c1.getAxisType();
       AxisType t2 = c2.getAxisType();

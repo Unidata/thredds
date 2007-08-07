@@ -34,108 +34,98 @@ import thredds.datatype.DateRange;
 
 /**
  * Make a NetcdfDataset into a collection of GeoGrids with Georeferencing coordinate systems.
- *
- * <p>
+ * <p/>
+ * <p/>
  * A variable will be made into a GeoGrid if it has a Georeferencing coordinate system,
- *   using GridCoordSys.isGridCoordSys(), and it has no extra dimensions, ie
- *   GridCoordSys.isComplete( var) is true.
+ * using GridCoordSys.isGridCoordSys(), and it has no extra dimensions, ie
+ * GridCoordSys.isComplete( var) is true.
  * If it has multiple Georeferencing coordinate systems, any one that is a product set will be given preference.
- *
+ * <p/>
  * Example:
- *
+ * <p/>
  * <pre>
-    GridDataset gridDs = GridDataset.open (uriString);
-    List grids = gridDs.getGrids();
-    for (int i=0; i&lt;grids.size(); i++) {
-      GeoGrid grid = (Geogrid) grids.get(i);
-    }
-   </pre>
+ * GridDataset gridDs = GridDataset.open (uriString);
+ * List grids = gridDs.getGrids();
+ * for (int i=0; i&lt;grids.size(); i++) {
+ * GeoGrid grid = (Geogrid) grids.get(i);
+ * }
+ * </pre>
  *
  * @author caron
  */
 
 public class GridDataset implements ucar.nc2.dt.GridDataset {
   private NetcdfDataset ds;
-  private ArrayList<GeoGrid> grids = new ArrayList<GeoGrid>();  // GeoGrid
-  private HashMap gridsetHash = new HashMap();
+  private ArrayList<GeoGrid> grids = new ArrayList<GeoGrid>();
+  private Map<String, Gridset> gridsetHash = new HashMap<String, Gridset>();
 
   /**
    * Open a netcdf dataset, parse Conventions, find all the geoGrids, return a GridDataset.
    *
    * @param netcdfFileURI netcdf dataset to open. May have a dods:, http: or file: prefix,
-   *  or just a local filename. If it ends with ".xml", its assumed to be a NetcdfDataset Definition XML file
+   *                      or just a local filename. If it ends with ".xml", its assumed to be a NetcdfDataset Definition XML file
    * @return GridDataset
-   * @throws java.io.IOException
+   * @throws java.io.IOException on read error
    * @see ucar.nc2.dataset.NetcdfDataset#open
    */
-  static public GridDataset open( String netcdfFileURI) throws java.io.IOException {
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasetCache.acquire( netcdfFileURI, null);
+  static public GridDataset open(String netcdfFileURI) throws java.io.IOException {
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasetCache.acquire(netcdfFileURI, null);
     return new GridDataset(ds);
   }
 
   /**
-   * Open a netcdf dataset, parse Conventions, find all the geoGrids, return a GridDataset.
-   * @deprecated : use GridDataset.open().
-   */
-  static public GridDataset factory( String netcdfFileURI) throws java.io.IOException {
-    return open( netcdfFileURI);
-    }
-
-  /**
    * Create a GridDataset from a NetcdfDataset.
+   *
    * @param ds underlying NetcdfDataset.
    */
-  public GridDataset( NetcdfDataset ds) {
+  public GridDataset(NetcdfDataset ds) {
     this.ds = ds;
 
     // look for geoGrids
     parseInfo.append("GridDataset look for GeoGrids\n");
-    List vars  = ds.getVariables();
-    for (int i=0; i< vars.size(); i++) {
-      VariableEnhanced varDS = (VariableEnhanced) vars.get(i);
-      constructCoordinateSystems( ds, varDS);
+    List<Variable> vars = ds.getVariables();
+    for (Variable var : vars) {
+      VariableEnhanced varDS = (VariableEnhanced) var;
+      constructCoordinateSystems(ds, varDS);
     }
 
   }
 
   private void constructCoordinateSystems(NetcdfDataset ds, VariableEnhanced v) {
 
-      if (v instanceof StructureDS) {
-        StructureDS s = (StructureDS) v;
-        List members = s.getVariables();
-        for (int i = 0; i < members.size(); i++) {
-          VariableEnhanced nested =  (VariableEnhanced) members.get(i);
-          // LOOK flatten here ??
-          constructCoordinateSystems( ds, nested);
-        }
-      } else {
+    if (v instanceof StructureDS) {
+      StructureDS s = (StructureDS) v;
+      List<Variable> members = s.getVariables();
+      for (Variable nested : members) {
+        // LOOK flatten here ??
+        constructCoordinateSystems(ds, (VariableEnhanced) nested);
+      }
+    } else {
 
-        // see if it has a GridCS
-        // LOOK: should add geogrid it multiple times if there are multiple geoCS ??
-        GridCoordSys gcs = null;
-        List<CoordinateSystem> csys  = v.getCoordinateSystems();
-        for (CoordinateSystem cs : csys) {
-          GridCoordSys gcsTry = GridCoordSys.makeGridCoordSys(parseInfo, cs, v);
-          if (gcsTry != null) {
-            gcs = gcsTry;
-            if (gcsTry.isProductSet()) break;
-          }
+      // see if it has a GridCS
+      // LOOK: should add geogrid it multiple times if there are multiple geoCS ??
+      GridCoordSys gcs = null;
+      List<CoordinateSystem> csys = v.getCoordinateSystems();
+      for (CoordinateSystem cs : csys) {
+        GridCoordSys gcsTry = GridCoordSys.makeGridCoordSys(parseInfo, cs, v);
+        if (gcsTry != null) {
+          gcs = gcsTry;
+          if (gcsTry.isProductSet()) break;
         }
+      }
 
-        if (gcs != null)
-          addGeoGrid( v, gcs);
-        }
+      if (gcs != null)
+        addGeoGrid(v, gcs);
+    }
 
-   }
+  }
 
   private LatLonRect llbbMax = null;
   private DateRange dateRangeMax = null;
 
   private void makeRanges() {
 
-    java.util.Iterator iter = getGridsets().iterator();
-    while (iter.hasNext()) {
-      GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
+    for (ucar.nc2.dt.GridDataset.Gridset gset : getGridsets()) {
       GridCoordSystem gcs = gset.getGeoCoordSystem();
 
       LatLonRect llbb = gcs.getLatLonBoundingBox();
@@ -192,82 +182,106 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
   }
 
   public Attribute findGlobalAttributeIgnoreCase(String name) {
-    return ds.findGlobalAttributeIgnoreCase( name);
+    return ds.findGlobalAttributeIgnoreCase(name);
   }
 
-  public List getDataVariables() {
-    return ds.getVariables();
+  public List<VariableSimpleIF> getDataVariables() {
+    return new ArrayList<VariableSimpleIF>(ds.getVariables());
   }
 
   public VariableSimpleIF getDataVariable(String shortName) {
-    return (VariableSimpleIF) ds.findTopVariable( shortName);
+    return ds.findTopVariable(shortName);
   }
 
-  public NetcdfFile getNetcdfFile() { return ds; }
+  public NetcdfFile getNetcdfFile() {
+    return ds;
+  }
 
-  /** Close all resources associated with this dataset. */
+  /**
+   * Close all resources associated with this dataset.
+   */
   public void close() throws java.io.IOException {
     ds.close();
   }
 
-  private void addGeoGrid( VariableEnhanced varDS, GridCoordSys gcs) {
+  private void addGeoGrid(VariableEnhanced varDS, GridCoordSys gcs) {
     Gridset gridset;
-    if (null == (gridset = (Gridset) gridsetHash.get( gcs.getName()))) {
-      gridset = new Gridset( gcs);
-      gridsetHash.put( gcs.getName(), gridset);
-      parseInfo.append(" -make new GridCoordSys= "+gcs.getName()+"\n");
-      gcs.makeVerticalTransform( this, parseInfo); // delayed until now
+    if (null == (gridset = gridsetHash.get(gcs.getName()))) {
+      gridset = new Gridset(gcs);
+      gridsetHash.put(gcs.getName(), gridset);
+      parseInfo.append(" -make new GridCoordSys= ").append(gcs.getName()).append("\n");
+      gcs.makeVerticalTransform(this, parseInfo); // delayed until now
     }
 
-    GeoGrid geogrid = new GeoGrid( this, varDS, gridset.gcc);
-    grids.add( geogrid);
-    gridset.add( geogrid);
+    GeoGrid geogrid = new GeoGrid(this, varDS, gridset.gcc);
+    grids.add(geogrid);
+    gridset.add(geogrid);
   }
 
-    /** the name of the dataset */
-  public String getName() { return ds.getLocation(); }
-    /** the underlying NetcdfDataset */
-  public NetcdfDataset getNetcdfDataset() { return ds; }
-    /** get the list of GeoGrid objects contained in this dataset. */
-  public List getGrids(){ return grids; }
+  /**
+   * @return the name of the dataset
+   */
+  public String getName() {
+    return ds.getLocation();
+  }
+
+  /**
+   * @return the underlying NetcdfDataset
+   */
+  public NetcdfDataset getNetcdfDataset() {
+    return ds;
+  }
+
+  /**
+   * @return the list of GeoGrid objects contained in this dataset.
+   */
+  public List<GridDatatype> getGrids() {
+    return new ArrayList<GridDatatype>(grids);
+  }
 
   public GridDatatype findGridDatatype(String name) {
-    return findGridByName( name);
+    return findGridByName(name);
   }
 
   /**
    * Return GridDatatype objects grouped by GridCoordSys. All GridDatatype in a Gridset
-   *   have the same GridCoordSystem.
+   * have the same GridCoordSystem.
+   *
    * @return List of type ucar.nc2.dt.GridDataset.Gridset
    */
-  public List getGridsets(){ return new ArrayList( gridsetHash.values()); }
+  public List<ucar.nc2.dt.GridDataset.Gridset> getGridsets() {
+    return new ArrayList<ucar.nc2.dt.GridDataset.Gridset>(gridsetHash.values());
+  }
 
-  /** find the named GeoGrid. */
-  public GeoGrid findGridByName( String name) {
-    Iterator iter = getGrids().iterator();
-    while (iter.hasNext()) {
-      GeoGrid ggi = (GeoGrid) iter.next();
-      if (name.equals( ggi.getName()))
+  /**
+   * find the named GeoGrid.
+   *
+   * @param name find this GeoGrid by name
+   * @return the named GeoGrid, or null if not found
+   */
+  public GeoGrid findGridByName(String name) {
+    for (GeoGrid ggi : grids) {
+      if (name.equals(ggi.getName()))
         return ggi;
     }
     return null;
   }
 
-    /** Show Grids and coordinate systems. */
+  /**
+   * Show Grids and coordinate systems.
+   *
+   * @return info about this GridDataset
+   */
   public String getInfo() {
     StringBuffer buf = new StringBuffer(20000);
     int countGridset = 0;
     buf.setLength(0);
 
-    Iterator gsets = gridsetHash.values().iterator();
-    while (gsets.hasNext()) {
-      Gridset gs = (Gridset) gsets.next();
+    for (Gridset gs : gridsetHash.values()) {
 
-      buf.append("\nGridset "+ countGridset+" coordSys "+gs.getGeoCoordSys()+"\n");
+      buf.append("\nGridset ").append(countGridset).append(" coordSys ").append(gs.getGeoCoordSystem()).append("\n");
       buf.append("Name___________Unit___________hasMissing_____Description\n");
-      Iterator grids = gs.getGrids().iterator();
-      while (grids.hasNext()) {
-        GeoGrid grid = (GeoGrid) grids.next();
+      for (GeoGrid grid : grids) {
         buf.append(grid.getInfo());
         buf.append("\n");
       }
@@ -276,30 +290,33 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     }
 
     buf.append("\nGeoReferencing Coordinate Axes\n");
-    buf.append(   "Name___________Len__Unit________________Type___Description\n");
-    Iterator iter = ds.getCoordinateAxes().iterator();
-    while (iter.hasNext()) {
-      CoordinateAxis axis = (CoordinateAxis) iter.next();
+    buf.append("Name___________Len__Unit________________Type___Description\n");
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
       if (axis.getAxisType() == null) continue;
-      buf.append( axis.getInfo());
-      buf.append( "\n");
+      buf.append(axis.getInfo());
+      buf.append("\n");
     }
     return buf.toString();
   }
 
   private StringBuffer parseInfo = new StringBuffer(); // debugging
-  public StringBuffer getParseInfo() { return parseInfo; }
 
-    /** Get Details about the dataset. */
+  public StringBuffer getParseInfo() {
+    return parseInfo;
+  }
+
+  /**
+   * Get Details about the dataset.
+   */
   public String getDetailInfo() {
     StringBuffer buff = new StringBuffer(5000);
-    buff.append( ds.toString());
-    buff.append( "\n\n----------------------------------------------------\n");
-    buff.append( getInfo());
-    buff.append( "\n\n----------------------------------------------------\n");
-    buff.append( ds.getInfo().getParseInfo());
-    buff.append( "\n\n----------------------------------------------------\n");
-    buff.append( parseInfo.toString());
+    buff.append(ds.toString());
+    buff.append("\n\n----------------------------------------------------\n");
+    buff.append(getInfo());
+    buff.append("\n\n----------------------------------------------------\n");
+    buff.append(ds.getInfo().getParseInfo());
+    buff.append("\n\n----------------------------------------------------\n");
+    buff.append(parseInfo.toString());
 
     return buff.toString();
   }
@@ -310,36 +327,71 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
   public class Gridset implements ucar.nc2.dt.GridDataset.Gridset {
 
     private GridCoordSys gcc;
-    private ArrayList grids = new ArrayList();
+    private List<GridDatatype> grids = new ArrayList<GridDatatype>();
 
-    private Gridset ( GridCoordSys gcc) { this.gcc = gcc; }
-    private void add( GeoGrid grid) { grids.add( grid); }
+    private Gridset(GridCoordSys gcc) {
+      this.gcc = gcc;
+    }
 
-    /** Get list of GeoGrid objects */
-    public List getGrids() { return grids; }
+    private void add(GeoGrid grid) {
+      grids.add(grid);
+    }
 
-    /** all GeoGrids point to this GeoCoordSysImpl.
+    /**
+     * Get list of GeoGrid objects
+     */
+    public List<GridDatatype> getGrids() {
+      return grids;
+    }
+
+    /**
+     * all GridDatatype point to this GridCoordSystem
+     */
+    public GridCoordSystem getGeoCoordSystem() {
+      return gcc;
+    }
+
+    /**
+     * all GeoGrids point to this GeoCoordSysImpl.
+     *
      * @deprecated use getGeoCoordSystem() if possible.
      */
-    public GridCoordSys getGeoCoordSys() { return gcc; }
+    public GridCoordSys getGeoCoordSys() {
+      return gcc;
+    }
 
-    /** all GridDatatype point to this GridCoordSystem */
-    public GridCoordSystem getGeoCoordSystem() { return gcc; }
   }
 
-  /** testing */
-  public static void main( String arg[]) {
+  /////////////////////////////
+  // deprecated
+
+
+  /**
+   * Open a netcdf dataset, parse Conventions, find all the geoGrids, return a GridDataset.
+   *
+   * @deprecated : use GridDataset.open().
+   */
+  static public GridDataset factory(String netcdfFileURI) throws java.io.IOException {
+    return open(netcdfFileURI);
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * testing
+   */
+  public static void main(String arg[]) {
     String defaultFilename = "R:/testdata/grid/netcdf/cf/mississippi.nc";
     String filename = (arg.length > 0) ? arg[0] : defaultFilename;
     try {
-      GridDataset gridDs = GridDataset.open (filename);
+      GridDataset gridDs = GridDataset.open(filename);
       //System.out.println(gridDs.getDetailInfo());
 
       String outFilename = "C:/data/writeGrid.nc";
       GeoGrid gg = gridDs.findGridByName("cape_sfc");
       gg.writeFile(outFilename);
 
-      gridDs = GridDataset.open (outFilename);
+      gridDs = GridDataset.open(outFilename);
       System.out.println(gridDs.getDetailInfo());
     } catch (Exception ioe) {
       ioe.printStackTrace();

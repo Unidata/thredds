@@ -143,7 +143,7 @@ public abstract class InvDataset {
    * This list will expand any compound services.
    * @return List of InvAccess objects. List may not be null, may be empty.
    */
-  public java.util.List getAccess() { return access; }
+  public java.util.List<InvAccess> getAccess() { return access; }
 
   /**
    * Get access element of the specified service type for this dataset.
@@ -229,14 +229,14 @@ public abstract class InvDataset {
   /** Get list of documentation elements for this dataset.
    *  @return list of InvDocumentation objects. May be empty, not null.
    */
-  public java.util.List getDocumentation() { return docs; }
+  public java.util.List<InvDocumentation> getDocumentation() { return docs; }
 
   /**
    * Get all properties for this dataset. These may have been specified
    * in the dataset or an enclosing parent element.
    * @return List of type InvProperty. May be empty, not null.
    */
-  public java.util.List getProperties() { return properties; }
+  public java.util.List<InvProperty> getProperties() { return properties; }
 
   /**
    * Find named property. This may have been specified

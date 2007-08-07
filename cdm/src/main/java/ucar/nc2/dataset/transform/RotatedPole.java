@@ -27,10 +27,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
 
 /**
- * Create a Stereographic Projection from the information in the Coordinate Transform Variable.
+ * Create a RotatedPole Projection from the information in the Coordinate Transform Variable.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class RotatedPole extends AbstractCoordTransBuilder {
 

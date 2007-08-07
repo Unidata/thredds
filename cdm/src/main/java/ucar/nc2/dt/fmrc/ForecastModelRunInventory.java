@@ -1,6 +1,5 @@
-// $Id: ForecastModelRun.java 70 2006-07-13 15:16:05Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -75,7 +74,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * </pre>
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class ForecastModelRunInventory {
   public static final int OPEN_NORMAL = 1; // try to open XML, if fail, open dataset and write XML
@@ -801,9 +799,8 @@ public class ForecastModelRunInventory {
     DateFormatter formatter = new DateFormatter();
     fmr.runDate = formatter.getISODate(fmr.runTime);
 
-    java.util.List vList = rootElem.getChildren("vertCoord");
-    for (int i = 0; i < vList.size(); i++) {
-      Element vertElem = (Element) vList.get(i);
+    java.util.List<Element> vList = rootElem.getChildren("vertCoord");
+    for (Element vertElem : vList) {
       VertCoord vc = new VertCoord();
       fmr.vaxes.add(vc);
       vc.id = vertElem.getAttributeValue("id");
@@ -833,9 +830,8 @@ public class ForecastModelRunInventory {
       }
     }
 
-    java.util.List tList = rootElem.getChildren("offsetHours");
-    for (int i = 0; i < tList.size(); i++) {
-      Element timeElem = (Element) tList.get(i);
+    java.util.List<Element> tList = rootElem.getChildren("offsetHours");
+    for (Element timeElem : tList) {
       TimeCoord tc = new TimeCoord();
       fmr.times.add(tc);
       tc.id = timeElem.getAttributeValue("id");
@@ -851,17 +847,15 @@ public class ForecastModelRunInventory {
       }
 
       //get the variable names
-      java.util.List varList = timeElem.getChildren("variable");
-      for (int j = 0; j < varList.size(); j++) {
-        Element vElem = (Element) varList.get(j);
+      List<Element> varList = timeElem.getChildren("variable");
+      for (Element vElem : varList) {
         Grid grid = new Grid(vElem.getAttributeValue("name"));
         grid.vc = fmr.getVertCoordinate(vElem.getAttributeValue("vert_id"));
         tc.vars.add(grid);
         grid.parent = tc;
 
-        java.util.List mList = vElem.getChildren("missing");
-        for (int k = 0; k < mList.size(); k++) {
-          Element mElem = (Element) mList.get(k);
+        List<Element> mList = vElem.getChildren("missing");
+        for (Element mElem : mList) {
           grid.missing = new ArrayList<Missing>();
 
           // parse the values
