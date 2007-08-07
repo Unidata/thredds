@@ -128,7 +128,7 @@
    raf.order(RandomAccessFile.BIG_ENDIAN);</pre>
 <pre>   int size = (int) v2.getSize();
    short[] arr = new short[size];</pre>
-<pre>   RegularLayout indexer = new RegularLayout(0, v2.getElementSize(), -1, v2.getShape(), wantSection);
+<pre>   RegularIndexer indexer = new RegularIndexer(0, v2.getElementSize(), -1, v2.getShape(), wantSection);
    while (indexer.hasNext()) {
      Indexer.Chunk chunk = indexer.next();
      raf.seek(chunk.getFilePos());
