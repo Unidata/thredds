@@ -1,0 +1,101 @@
+netcdf /upc/share/testdata/point/bufr/data/5900.20040101.winds {
+ dimensions:
+   stns = 33;
+   obs = UNLIMITED;   // (775 currently)
+   levels = UNKNOWN;
+ variables:
+   int number_stations;
+     :long_name = "number of stations";
+   String station_id(stns=33);
+     :long_name = "Station Identification";
+   int firstChild(stns=33);
+     :long_name = "firstChild for this station";
+   int numChildren(stns=33);
+     :long_name = "number of obs for this station";
+   float latitude(stns=33);
+     :long_name = "latitude for this station";
+     :_CoordinateAxisType = "Lat";
+   float longitude(stns=33);
+     :long_name = "longitude for this station";
+     :_CoordinateAxisType = "Lon";
+   int altitude(stns=33);
+     :long_name = "altitude for this station";
+     :_CoordinateAxisType = "Height";
+   Structure {
+     int parent_index;
+       :long_name = "index of this station for the record";
+     int time_observation;
+       :_CoordinateAxisType = "Time";
+       :Bufr_key = "0-4-250";
+       :units = "seconds since 1970-01-01";
+     float WMO_block_number;
+       :Bufr_key = "0-1-1";
+       :MissingValue = "-9999";
+     float WMO_station_number;
+       :Bufr_key = "0-1-2";
+       :MissingValue = "-9999";
+     float Type_of_station;
+       :Bufr_key = "0-2-1";
+       :MissingValue = "-9999";
+       :units = "Code_Table";
+     float Type_of_measuring_equipment_used;
+       :Bufr_key = "0-2-3";
+       :MissingValue = "-9999";
+       :units = "Code_Table";
+     float Mean_frequency;
+       :Bufr_key = "0-2-121";
+       :MissingValue = "-9999";
+       :units = "Hz";
+     float Time_significance;
+       :Bufr_key = "0-8-21";
+       :MissingValue = "-9999";
+       :units = "Code_Table";
+     float Time_period_or_displacement;
+       :Bufr_key = "0-4-26";
+       :MissingValue = "-9999";
+       :units = "Second";
+     Structure {
+       float Height_above_station;
+         :Bufr_key = "0-7-6";
+         :MissingValue = "-9999";
+         :units = "m";
+       float Wind_profiler_quality_control_test_results;
+         :Bufr_key = "0-25-34";
+         :MissingValue = "-9999";
+         :units = "Flag_Table";
+       float Wind_direction;
+         :Bufr_key = "0-11-1";
+         :MissingValue = "-9999";
+         :units = "Degree_true";
+       float Wind_speed;
+         :Bufr_key = "0-11-2";
+         :MissingValue = "-9999";
+         :units = "m s-1";
+       float Standard_deviation_of_horizontal_wind_speed;
+         :Bufr_key = "0-11-50";
+         :MissingValue = "-9999";
+         :units = "m s-1";
+       float w-component;
+         :Bufr_key = "0-11-6";
+         :MissingValue = "-9999";
+         :units = "m s-1";
+       float Standard_deviation_of_vertical_wind_speed;
+         :Bufr_key = "0-11-51";
+         :MissingValue = "-9999";
+         :units = "m s-1";
+     } level(*);
+   } record(obs);
+
+ :Conventions = "Unidata Observation Dataset v1.0";
+ :observationDimension = "obs";
+ :stationsDimension = "stns";
+ :parent_index_coordinate = "record.parent_index";
+ :time_coverage_start = "2003-12-31T01:00:00Z";
+ :time_coverage_end = "2004-01-01T00:00:00Z";
+ :geospatial_lat_max = "90";
+ :geospatial_lat_min = "-90";
+ :geospatial_lon_max = "360";
+ :geospatial_lon_min = "0";
+ :cdm_data_type = "Station";
+}
+

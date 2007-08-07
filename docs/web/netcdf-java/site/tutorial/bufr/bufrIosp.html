@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>BUFR IOSP Tutorial</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Unix)">
+	<META NAME="CREATED" CONTENT="20070719;13103900">
+	<META NAME="CHANGEDBY" CONTENT="Robb Kambic">
+	<META NAME="CHANGED" CONTENT="20070802;16334400">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<FONT SIZE=7 STYLE="font-size: 32pt">BUFR IOSP Design</FONT></H1>
+<HR>
+<P><FONT SIZE=6><B>BUFR Data</B></FONT></P>
+<P><FONT SIZE=5>BUFR data is mostly point/station type of data. The NWS uses
+BUFR as it's internal format, so many of the datasets at some time
+have been in BUFR before it has reached it's final format. Many other organizations
+use BUFR as the final format when converting an adhoc data scheme for the data
+centers. My aim was to write a generic BUFR IOSP to handle these different 
+variations of BUFR datasets.  
+</FONT>
+</P>
+<P><FONT SIZE=6><B>BUFR Format</B></FONT></P>
+<P><FONT SIZE=5>
+
+BUFR format in a nutshell is a unrestricted data packing
+scheme where the packing criteria is included with the data. So, two
+identical datasets could have different packing schemes depending on
+the internal packing information. This free for all scheme makes BUFR
+the most flexible packing scheme but also the most complex to write a
+generic decoder. 
+<p>The variables are table entries that consist of:
+<pre>
+F; X; Y; SCALE; REFERENCE; WIDTH; UNITS; DESCRIPTION
+</pre>
+<P><FONT SIZE=5>
+One example table <A href="B3M-000-012-B">B3M-000-012-B</a>
+</P>
+<p>
+</p>
+Another variation of packing, instead of having the observations is sequential 
+order, the fields values are all grouped together for all the observations. So to 
+get the 5th observation, the whole record has to be unpacked and the 4th value of
+each field must be extracted to get the 5th observation. Also the number of bits
+to pack a value can change in the middle of decoding, ie 11 -> 6 bits. There are
+other options to change the data packing scheme, one can now understand why the
+BUFR format is a widely used packing scheme.
+<p>
+</p>
+Because of these complexities, most NWS departments have a separate decoder for
+their own data because of the diversity in the packing schemes.  Some of the
+datasets are complex because some of the fields are nested structures
+that required nested netCDF object structures also. The bottom line,
+BUFR data is hard to handle in a generic sense but that doesn't mean
+that a BUFR IOSP could not be written. 
+</FONT>
+</P>
+<P><FONT SIZE=6><B>Creating a BUFR reader</B></FONT></P>
+<P><FONT SIZE=5>
+It's necessary to have a data reader to support your
+IOSPs. On complex formats, it's worth your time to  build a
+standalone package to test your datasets verses trying to test the
+data values inside the IOSP. For BUFR, there is a Java standalone
+decoder that has 4 main routines:</FONT></P>
+<UL>
+	<LI><P><FONT SIZE=5>isValidFile   returns true if this is a valid
+	BUFR file</FONT></P>
+	<LI><P><FONT SIZE=5>BufrDump    dumps the contents of a BUFR file to
+	STDOUT</FONT></P>
+	<LI><P><FONT SIZE=5>BufrIndexer   creates an <A href="IndexFormat.txt">index</A> of all the
+	records in the file plus auxiliary location information. Example <A href="PROFILER_2.bufr.bfx">index</A></FONT></P>
+	<LI><P><FONT SIZE=5>BufrGetData  satisfies a data request, returns a
+	data array. </FONT>
+	</P>
+</UL>
+<P><FONT SIZE=5>
+<A href="run">Sample command line calls</a>
+</P>
+<P><FONT SIZE=5>The isValidFile, BufrIndexer, and the BufrGetData
+routines are used for the API between the BUFR IOSP and the BUFR
+reader. </FONT>
+</P>
+<P><FONT SIZE=6><B>BUFR IOSP</B></FONT></P>
+<P><FONT SIZE=5>The IOSPs are called when nj22 wants to open a file. The library 
+checks what type file it is by routine, isValidFile that is implemented by all IOSPs. 
+If the check returns true then that ISOP is called to open the file, the result is
+a netCDF object.  When the user request data, the IOSP data routines are called to
+return the data.
+</FONT></P>
+<P><FONT SIZE=5>Let's look at the Java code <A href="BufrIosp.java">BufrIosp.java</A></FONT></P>
+<P><FONT SIZE=5>Code to make a netCDF object <A href="Index2NC.java">Index2NC.java</A></FONT></P>
+<P><FONT SIZE=5>
+<A href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev/index.html">ToolsUI </a>webstart
+</P>
+<P><FONT SIZE=5>
+<A href="bufrHeader">BUFR netCDFHeader</a>
+</P>
+<P><FONT SIZE=6><B>Conclusion</B></FONT></P>
+<P><FONT SIZE=5>Creating IOSPs makes the CDM library flexible for adding new types of
+data. If a data provider creates a standalone library for their dataset with the
+APIs isValidFile, open, and readData then the IOSP should not be hard to create.  
+</FONT></P>
+<P><BR><BR>
+</P>
+<P><BR><BR>
+</P>
+<P><BR><BR>
+</P>
+<P><BR><BR>
+</P>
+</ADDRESS>
+<P>&nbsp; 
+</P>
+</BODY>
+</HTML>
