@@ -1241,9 +1241,10 @@ class H5header {
 
       if ((version <= 1) || (fillDefined != 0)) {
         size = raf.readInt();
-        value = new byte[size];
-        if (size > 0)
+        if (size > 0) {
+          value = new byte[size];
           raf.read(value);
+        }
       }
 
       if (debug1) debugOut.println(this);

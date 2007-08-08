@@ -1,0 +1,111 @@
+package ucar.nc2.iosp.misc;
+
+import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.CancelTask;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.DataType;
+import ucar.ma2.Range;
+
+import java.io.IOException;
+import java.util.List;
+
+
+public class GtopoIosp {
+    
+    public boolean isValidFile(RandomAccessFile raf) throws IOException {
+        return raf.getLocation().endsWith(".DEM");
+    }
+
+    private RandomAccessFile raf;
+
+    public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+      this.raf = raf;
+
+        Dimension latd = new Dimension("lat", 6000, true);
+        Dimension lond = new Dimension("lon", 4800, true);
+        ncfile.addDimension(ncfile.getRootGroup(), latd);
+        ncfile.addDimension(null, lond);
+
+        ncfile.addAttribute( null, new Attribute("Conventions", "CF-1.0"));
+
+
+        Variable elev = new Variable(ncfile, null, null, "elevation");
+        elev.setDataType( DataType.SHORT);
+        elev.setDimensions( "lat lon");
+        ncfile.addVariable(null, elev);
+
+        elev.addAttribute( new Attribute("missing_value", (short) -9999));
+        elev.addAttribute( new Attribute("units", "m"));
+        elev.addAttribute( new Attribute("units_desc", "meters above sea level"));
+        elev.addAttribute( new Attribute("long_name", "elevation four GTOPO modell"));
+
+        Variable lat = new Variable(ncfile, null, null, "lat");
+        lat.setDataType( DataType.FLOAT);
+        lat.setDimensions( "lat");
+        ncfile.addVariable(null, lat);
+        lat.addAttribute( new Attribute("units", "degrees_north"));
+
+        Variable lon = new Variable(ncfile, null, null, "lon");
+        lon.setDataType( DataType.FLOAT);
+        lon.setDimensions( "lon");
+        ncfile.addVariable(null, lon);
+        lon.addAttribute( new Attribute("units", "degrees_east"));
+
+        Array lonData = NetcdfDataset.makeArray(DataType.FLOAT, 4800, -139.99583333333334, 0.00833333333333);
+        lon.setCachedData(lonData, true);
+
+        Array latData = NetcdfDataset.makeArray(DataType.FLOAT, 6000, 89.99583333333334, -0.00833333333333);
+        lat.setCachedData(latData, true);
+    }
+
+    public Array readData(Variable v2, List section) throws IOException, InvalidRangeException {
+      int size = (int) Range.computeSize( section);
+      short[] data = new short[size];
+
+      raf.seek(0);
+      raf.order(RandomAccessFile.BIG_ENDIAN);
+
+      RegularIndexer index = new RegularIndexer(v2.getShape(), v2.getElementSize(), 0, section, -1);
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        raf.seek ( chunk.getFilePos());
+        raf.readShort( data, chunk.getIndexPos(), chunk.getNelems()); // copy into primitive array
+      }
+
+      return Array.factory(v2.getDataType().getPrimitiveClassType(), Range.getShape( section), data);
+
+    }
+
+     public void close() throws IOException {
+       raf.close();
+    }
+
+
+
+    public Array readNestedData(Variable v2, List section) throws IOException, InvalidRangeException {
+         return null;  //To change body of implemented methods use File | Settings | File Templates.
+     }
+
+    public boolean syncExtend() throws IOException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean sync() throws IOException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setSpecial(Object special) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String toStringDebug(Object o) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getDetailInfo() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+}

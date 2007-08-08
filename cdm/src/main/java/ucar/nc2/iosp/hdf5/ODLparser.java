@@ -35,7 +35,7 @@ public class ODLparser {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
 
   private Document doc;
-  private boolean debug = false;
+  private boolean debug = true;
 
   void parseFile(String filename) throws IOException {
     String text = new String(thredds.util.IO.readFileToByteArray(filename));

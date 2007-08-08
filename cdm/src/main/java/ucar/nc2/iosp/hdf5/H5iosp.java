@@ -94,7 +94,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     Group root = ncfile.getRootGroup();
     Group eos = root.findGroup("HDFEOS_INFORMATION");
     if (null != eos)
-      H5eos.parse( ncfile);
+      H5eos.parse( ncfile); 
 
     ncfile.finish();
   }
