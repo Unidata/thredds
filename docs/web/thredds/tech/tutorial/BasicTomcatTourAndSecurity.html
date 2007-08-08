@@ -103,9 +103,7 @@ INFO: Server startup in 5080 ms
 </pre>
 shows that a request arrived from a host with the IP address 128.117.156.28
 on July 26 to retrieve the document
-/thredds/tdr/storm/catalog.html (relative to the Tomcat
-<a href="# content Dir"><code> content</code> </a> directory, described below)
-using HTTP protocol
+/thredds/tdr/storm/catalog.html using HTTP protocol
 version 1.1.  It also shows that the server returned the HTTP status code 200, which means <q>OK</q> and
 that the request succeeded, and the number of bytes sent.
 (See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions </a>
@@ -490,7 +488,7 @@ There are three tasks required to configure Tomcat use digested passwords:
       &lt;!-- This Realm uses the UserDatabase configured in the global JNDI
       resources under the key "UserDatabase".  Any edits
       that are performed against this UserDatabase are immediately
-      available for use by the Realm.  --/&gt;
+      available for use by the Realm.  --&gt;
       &lt;Realm className="org.apache.catalina.realm.UserDatabaseRealm"
              resourceName="UserDatabase"&gt;
 
@@ -505,7 +503,7 @@ comment it out, and add this new Realm:
 The result should look something like this:
 <pre>
       &lt;!--Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-             resourceName="UserDatabase"/--/&gt;
+             resourceName="UserDatabase"/--&gt;
 
       &lt;!--  Added by Anne --&gt;
       &lt;Realm className="org.apache.catalina.realm.MemoryRealm" digest="SHA"/&gt;
@@ -681,6 +679,7 @@ This requires another modification to <code>server.xml</code>.  In
     <li>Redirect requests to port 8080 to port 8443, the secure port</li>
     <li>Create a Connector for port 8443</li>
 </ol>
+
 <p>
     To redirect requests to port 8443, find the Connector that uses port
     8080 and ensure that it has a <q>redirectPort</q> attribute having the
@@ -712,8 +711,39 @@ value <q>8443</q>.  It should look something like this:
                clientAuth="false" sslProtocol="TLS"
                keystoreFile="/opt/tomcat/conf/keystore-tomcat" /&gt;
 </pre>
+Note that links are not followed in the specification of the location of the
+keystore file.  If Tomcat can't actually find the keystore file, it will
+likely throw a <code>java.io.FileNotFoundException</code>, reported in the logs.
 
 <p>
+<b>Note, regarding Tomcat 6:</b> There is a difference between Tomcat 5 and Tomcat 6
+    regarding enabling SSL.  Tomcat 6 uses the Apache Portable Runtime Library
+    (APR) to <q>provide superior scalability, performance, and better integration
+    with native server technologies</q>.  (See
+    <a href="http://tomcat.apache.org/tomcat-6.0-doc/apr.html">
+    Tomcat 6: Apache Portable Runtime and Tomcat</a> for more information.)
+Use of the APR requires an additional element in <code>server.xml</code> to define
+which SSL engine to use (or to disable SSL), like this:
+<pre>
+&lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;
+</pre>
+Note that this Listener is not used in Tomcat 5, so copying <code>server.xml</code> from a
+Tomcat 5 to a Tomcat 6 installation is not recommended.
+<p>
+Furthermore, in Tomcat 6  the Connector element for port 8443 requires the <q>SSLEnabled</q> attribute be
+set to true, like this:
+<pre>
+    &lt;Connector port="8443"  SSLEnabled="true" maxHttpHeaderSize="8192"
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" disableUploadTimeout="true"
+               acceptCount="100" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS"
+               keystoreFile="/opt/tomcat/conf/keystore-tomcat" /&gt;
+</pre>
+The <q>SSLEnabled</q> attribute is not used in Tomcat 5, so copying the entire Connector element
+from a Tomcat 5 to a Tomcat 6 installation will not enable SSL, and may (and has) produce mysterious
+behavior around access to protected resources.
+
 <h4> Restart Tomcat    </h4>
     Finally, restart the Tomcat server to pick up these changes.
 <p>
@@ -732,7 +762,7 @@ Restart Tomcat, and connect via your browser:
 Use of SSL is transparent, so you should see no difference.  If there is a problem,
 however, you will likely be unable to restart Tomcat or connect successfully afterwards.
 
-<a name="ssl tds remote mgmt"
+<a name="ssl tds remote mgmt" />
 <h3> Enable SSL for TDS Remote Management</h3>
 Exercise: Go to
 <a href="http://localhost:8080/thredds/debug"> http://localhost:8080/thredds/debug</a>.
