@@ -27,7 +27,7 @@ package ucar.unidata.util;
  * @author caron
  */
 
-public class Parameter {
+public class Parameter implements java.io.Serializable {
 
     /** _more_ */
     private String name;
