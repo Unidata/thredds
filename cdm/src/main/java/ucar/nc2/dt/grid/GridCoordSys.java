@@ -302,7 +302,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
           coordAxes.add(timeTaxis);
           timeDim = t.getDimension(0);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
           if (sbuff != null)
             sbuff.append("Error reading time coord= ").append(t.getName()).append(" ").append(e.getMessage());
         }

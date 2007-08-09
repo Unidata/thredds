@@ -245,7 +245,7 @@ public class N3header {
     // ncfile.finish();
   }
 
-  boolean addRecordStructure() {
+  synchronized boolean addRecordStructure() {
     // create record structure
     if (uvars.size() > 0) {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
@@ -263,6 +263,7 @@ public class N3header {
         recordStructure.addMemberVariable(memberV);
       }
 
+      uvars.add(recordStructure);
       ncfile.getRootGroup().addVariable( recordStructure);
       ncfile.finish();
       return true;
@@ -751,7 +752,6 @@ public class N3header {
 
   synchronized boolean synchNumrecs() throws IOException {
     // check number of records in the header
-
     // gotta bypass the RAF buffer
     int n = raf.readIntUnbuffered(4);
     if (n == this.numrecs)
@@ -766,7 +766,7 @@ public class N3header {
     // set it in all of the record variables
     for (Variable uvar : uvars) {
       uvar.resetShape();
-      uvar.setCachedData(null, false);
+      uvar.invalidateCache();
     }
 
     return true;

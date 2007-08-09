@@ -1,6 +1,5 @@
-// $Id: NcDDS.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,7 +33,6 @@ import java.util.*;
  * NcDDS is a specialization of ServerDDS for netcdf files.
  * This creates a ServerDDS from the netcdf file.
  *
- *   @version $Revision: 51 $
  *   @author jcaron
  */
 
@@ -55,10 +53,9 @@ public class NcDDS extends ServerDDS implements Cloneable {
     // LOOK: this should get optimized to store data once
     for (Object o : ncfile.getDimensions()) {
       Dimension dim = (Dimension) o;
-      List cvs = dim.getCoordinateVariables();
-      if (cvs.size() > 0) {
-        Variable cv = (Variable) cvs.get(0); // just taking the first one
-        BaseType bt = new NcSDArray(cv, createScalarVariable(cv));
+      Variable cv = ncfile.findVariable(dim.getName());
+      if ((cv != null) && cv.isCoordinateVariable()) {
+        BaseType bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
         if ((cv.getDataType() == DataType.CHAR) && (cv.getRank() > 1))
           bt = new NcSDCharArray(cv);
         dimHash.put(dim.getName(), bt);
@@ -79,17 +76,17 @@ public class NcDDS extends ServerDDS implements Cloneable {
       }
 
       if (bt == null)
-        bt = createVariable(v);
+        bt = createVariable(ncfile, v);
       addVariable(bt);
     }
   }
 
   // turn Variable into opendap variable
-  private BaseType createVariable(Variable v) {
+  private BaseType createVariable(NetcdfFile ncfile, Variable v) {
     BaseType bt;
 
     if (v.getRank() == 0)  // scalar
-      bt = createScalarVariable(v);
+      bt = createScalarVariable(ncfile, v);
 
     else if (v.getDataType() == DataType.CHAR) {
       if (v.getRank() > 1)
@@ -104,13 +101,13 @@ public class NcDDS extends ServerDDS implements Cloneable {
         bt = new NcSDArray(v, new NcSDString(v));
 
     } else  // non-char multidim array
-      bt = createArray(v);
+      bt = createArray(ncfile, v);
 
     return bt;
 
   }
 
-  private BaseType createScalarVariable( Variable v) {
+  private BaseType createScalarVariable( NetcdfFile ncfile, Variable v) {
     DataType dt = v.getDataType();
     if (dt == DataType.DOUBLE)
        return new NcSDFloat64(v);
@@ -127,27 +124,23 @@ public class NcDDS extends ServerDDS implements Cloneable {
     else if (dt == DataType.STRING)
       return new NcSDString(v);
     else if (dt == DataType.STRUCTURE)
-      return createStructure((Structure) v);
+      return createStructure(ncfile, (Structure) v);
     else
       throw new UnsupportedOperationException("NcDDS Variable data type = "+dt);
   }
 
-  private BaseType createArray( Variable v) {
+  private BaseType createArray( NetcdfFile ncfile, Variable v) {
     // all dimensions must have coord vars to be a grid, also must have the same name
     boolean isGrid = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
     Iterator iter = v.getDimensions().iterator();
     while (isGrid && iter.hasNext()) {
       Dimension dim = (Dimension) iter.next();
-      if (dim.getCoordinateVariables().size() == 0)
+      Variable cv = ncfile.findVariable(dim.getName());
+      if ((cv == null) || !cv.isCoordinateVariable())
         isGrid = false;
-      else {
-        Variable cv = (Variable) dim.getCoordinateVariables().get(0);
-        if (!cv.getName().equals(dim.getName()))
-          isGrid = false;
-      }
     }
 
-    NcSDArray arr = new NcSDArray( v, createScalarVariable(v));
+    NcSDArray arr = new NcSDArray( v, createScalarVariable(ncfile, v));
     if (!isGrid)
       return arr;
 
@@ -162,11 +155,11 @@ public class NcDDS extends ServerDDS implements Cloneable {
     return new NcSDGrid( v.getShortName(), list);
   }
 
-  private BaseType createStructure( Structure s) {
+  private BaseType createStructure( NetcdfFile ncfile, Structure s) {
     ArrayList<BaseType> list = new ArrayList<BaseType>();
     for (Object o : s.getVariables()) {
       Variable nested = (Variable) o;
-      list.add(createVariable(nested));
+      list.add(createVariable(ncfile, nested));
     }
     return new NcSDStructure( s, list);
   }

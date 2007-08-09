@@ -157,7 +157,7 @@ public class CrawlableDatasetFile implements CrawlableDataset
     return new CrawlableDatasetFile( this, relativePath );
   }
 
-  public List listDatasets() throws IOException
+  public List<CrawlableDataset> listDatasets() throws IOException
   {
     if ( ! this.isCollection() )
     {
@@ -166,11 +166,9 @@ public class CrawlableDatasetFile implements CrawlableDataset
       throw new IllegalStateException( tmpMsg );
     }
 
-    File[] allFiles = this.file.listFiles();
-    List list = new ArrayList();
-    for ( int i = 0; i < allFiles.length; i++ )
-    {
-      list.add( new CrawlableDatasetFile( this, allFiles[i].getName() ) );
+    List<CrawlableDataset> list = new ArrayList<CrawlableDataset>();
+    for (File allFile : this.file.listFiles()) {
+      list.add(new CrawlableDatasetFile(this, allFile.getName()));
     }
 
     return ( list );

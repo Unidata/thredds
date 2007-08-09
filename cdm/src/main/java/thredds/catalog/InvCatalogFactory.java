@@ -139,9 +139,9 @@ public class InvCatalogFactory {
 
   private void setDefaults() {
     try {
-      Class fac6 = Class.forName("thredds.catalog.parser.jdom.InvCatalogFactory6");
+      /* Class fac6 = Class.forName("thredds.catalog.parser.jdom.InvCatalogFactory6");
       Object fac6o = fac6.newInstance();
-      registerCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_06, (InvCatalogConvertIF) fac6o);
+      registerCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_06, (InvCatalogConvertIF) fac6o);  */
 
       Class fac1 = Class.forName("thredds.catalog.parser.jdom.InvCatalogFactory10");
       Object fac1o = fac1.newInstance();

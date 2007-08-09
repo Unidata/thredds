@@ -6,8 +6,15 @@ Changes in version 4.0
  Features
   * Add RotatedPole projection
  API
- Bugs
  Libraries
+
+Changes in version 2.2.22
+ API
+  * make Indexer, RegularIndexer public so can be used by IOSP
+ Bugs
+  * If adding recordStructure, add to N3headers uvars list, so gets updated on a syncExtend.
+  * quote special XML chars correctly in NcML
+  * add "file:" prefix to reletive URLs when writing NcML location
 
 Changes in version 2.2.21
  Features

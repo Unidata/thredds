@@ -20,6 +20,7 @@
 package ucar.nc2;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A Dimension is used to define the array shape of a Variable.
@@ -273,32 +274,21 @@ public class Dimension implements Comparable {
 
   //////////////////////////////////////////////////////////////////////
   // deprecated
-  private List<Variable> coordVars = null; // new ArrayList<Variable>();
+  //private List<Variable> coordVars = null; // new ArrayList<Variable>();
 
-  /** Add a coordinate variable or coordinate variable alias.
-   * Remove previous if matches full name.
-   * @param v list this as a Coordinate Varibale for this Dimension
+  /**
    * @deprecated - do not use
+   * @param v coord var
    */
   synchronized public void addCoordinateVariable( Variable v) {
-    /* if (immutable) throw new IllegalStateException("Cant modify");
-    for (int i = 0; i < coordVars.size(); i++) {
-      Variable cv = coordVars.get(i);
-      if (v.getName().equals(cv.getName())) {
-        coordVars.remove(cv);
-        break;
-      }
-    }
-    coordVars.add(v); */
   }
 
   /**
-   * Get the coordinate variables or coordinate variable aliases if the dimension has any, else return an empty list.
-   * A coordinate variable has this as its single dimension, and names this Dimensions's the coordinates.
-   * A coordinate variable alias is the same as a coordinate variable, but its name must match the dimension name.
-   * If numeric, coordinate axis must be strictly monotonically increasing or decreasing.
-   * @return List of Variable
+   * Use
+   *  Variable cv = ncfile.findVariable(dim.getName());
+   *  if ((cv != null) && cv.isCoordinateVariable()) ...
    * @deprecated - do not use
+   * @return an empty list
    */
-  public List<Variable> getCoordinateVariables() { return coordVars; }
+  public List<Variable> getCoordinateVariables() { return new ArrayList<Variable>(); }
 }

@@ -118,7 +118,7 @@ public class NcMLWriter {
       location = ncd.getLocation();
 
     if (null != location) {
-      rootElem.setAttribute("location", NetworkUtils.canonicalize(location));
+      rootElem.setAttribute("location", NetworkUtils.canonicalizeWrite(location));
     }
 
     if (null != ncd.getId())
@@ -206,12 +206,12 @@ public class NcMLWriter {
 
     if (att.isString()) {
       String value = att.getStringValue();
-      String err = org.jdom.Verifier.checkCharacterData(value);
+      /* String err = org.jdom.Verifier.checkCharacterData(value);
       if (err != null) {
         value = "NcMLWriter invalid attribute value, err= " + err;
         System.out.println(value);
-      }
-      attElem.setAttribute("value", StringUtil.quoteXmlAttribute(value));
+      } */
+      attElem.setAttribute("value", value);
     } else {
 
       StringBuffer buff = new StringBuffer();

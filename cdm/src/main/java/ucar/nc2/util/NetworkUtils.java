@@ -60,7 +60,7 @@ public class NetworkUtils {
     if ((baseUrl == null) || (relativeUrl == null))
       return relativeUrl;
 
-    relativeUrl = canonicalize( relativeUrl);
+    relativeUrl = canonicalizeRead( relativeUrl);
     URI refURI = URI.create(relativeUrl);
     if (refURI.isAbsolute())
       return relativeUrl;
@@ -85,8 +85,8 @@ public class NetworkUtils {
     return resolvedURI.toASCIIString();
   }
 
-  /// try to figure out if we need to add file: to the location
-  static public String canonicalize(String location) {
+  /// try to figure out if we need to add file: to the location when reading
+  static public String canonicalizeRead(String location) {
     try {
       URI refURI = URI.create(location);
       if (refURI.isAbsolute())
@@ -95,6 +95,18 @@ public class NetworkUtils {
       return "file:" + location;
     }
     return location;
+  }
+
+  /// try to figure out if we need to add file: to the location when writing
+  static public String canonicalizeWrite(String location) {
+    try {
+      URI refURI = URI.create(location);
+      if (refURI.isAbsolute())
+        return location;
+    } catch (Exception e)  {
+      //return "file:" + location;
+    }
+    return "file:" + location;
   }
 
   public static String resolveFile( String baseDir, String filepath) {

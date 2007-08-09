@@ -260,14 +260,14 @@ public class StringUtil {
         return unreplace(x, xmlOut, xmlIn);
     }
 
-    /** these chars must get replaced */
+    /** these chars must get replaced in XML */
     private static char[] xmlIn = {
-        '&', '"', '\'', '<', '>', '\r', '\n'
+        '&', '"', '\'', '<', '>', '\r', '\n', '\t'
     };
 
     /** replacement strings */
     private static String[] xmlOut = {
-        "&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "&#13;", "&#10;"
+        "&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "&#xD;", "&#xA;", "&#x9;"
     };
 
     /**

@@ -1,6 +1,5 @@
-// $Id: NcSDArray.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,8 +31,8 @@ import opendap.dap.PrimitiveVector;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.DataOutputStream;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wraps a netcdf variable with rank > 0 as an SDArray.
@@ -60,9 +59,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     this.ncVar = v;
 
     // set dimensions
-    Iterator iter = v.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension dim = (Dimension) iter.next();
+    for (Dimension dim : v.getDimensions()) {
       appendDim(dim.getLength(), dim.getName());
     }
 
@@ -72,7 +69,9 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     this.elemType = bt;
   }
 
-  public Variable getVariable() { return ncVar; }
+  public Variable getVariable() {
+    return ncVar;
+  }
 
   /**
    * Read the data values (parameters are ignored).
@@ -84,7 +83,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
    * @throws IOException
    * @throws EOFException
    */
-  public boolean read(String datasetName, Object specialO) throws IOException, EOFException {
+  public boolean read(String datasetName, Object specialO) throws IOException {
     long tstart = System.currentTimeMillis();
 
     Array a;
@@ -94,19 +93,20 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 
       // set up the netcdf read
       int n = numDimensions();
-      ArrayList ranges = new ArrayList(n);
+      List<Range> ranges = new ArrayList<Range>(n);
       for (int i = 0; i < n; i++)
-        ranges.add( new Range(getStart(i), getStop(i), getStride(i)));
+        ranges.add(new Range(getStart(i), getStop(i), getStride(i)));
 
       try {
         a = ncVar.read(ranges);
 
-       } catch (java.lang.ArrayIndexOutOfBoundsException t) {
+      } catch (java.lang.ArrayIndexOutOfBoundsException t) {
         log.error(getRequestedRange(), t);
-        throw new RuntimeException("NcSDArray ArrayIndexOutOfBoundsException="+t.getMessage());
+        throw new RuntimeException("NcSDArray ArrayIndexOutOfBoundsException=" + t.getMessage());
       }
 
-      if (debug) System.out.println("  NcSDArray Read " + getName() + " " + a.getSize() + " elems of type = " + a.getElementType());
+      if (debug)
+        System.out.println("  NcSDArray Read " + getName() + " " + a.getSize() + " elems of type = " + a.getElementType());
       if (debugRead) System.out.println("  Read = " + a.getSize() + " elems of type = " + a.getElementType());
       if (log.isDebugEnabled()) {
         long tookTime = System.currentTimeMillis() - tstart;
@@ -115,16 +115,16 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 
     } catch (InvalidParameterException e) {
       log.error(getRequestedRange(), e);
-      throw new IllegalStateException("NcSDArray InvalidParameterException="+e.getMessage());
+      throw new IllegalStateException("NcSDArray InvalidParameterException=" + e.getMessage());
 
     } catch (InvalidRangeException e) {
       log.error(getRequestedRange(), e);
-      throw new IllegalStateException("NcSDArray InvalidRangeException="+e.getMessage());
+      throw new IllegalStateException("NcSDArray InvalidRangeException=" + e.getMessage());
     }
     setData(a);
 
     if (debugRead) System.out.println(" PrimitiveVector len = " + getPrimitiveVector().getLength() +
-        " type = " + getPrimitiveVector().getTemplate());
+            " type = " + getPrimitiveVector().getTemplate());
 
     return (false);
   }
@@ -149,7 +149,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     PrimitiveVector pv = getPrimitiveVector();
     if (debugRead)
       System.out.println(" PrimitiveVector type = " + pv.getTemplate() +
-          " pv type = " + pv.getClass().getName());
+              " pv type = " + pv.getClass().getName());
 
     if (ncVar.getDataType() == DataType.STRING) {
       int size = (int) data.getSize();
@@ -187,11 +187,11 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     setRead(true);
   }
 
-   public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
-     long tstart = System.currentTimeMillis();
+  public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
+    long tstart = System.currentTimeMillis();
 
-     setData( sdata.getArray( m));
-     externalize( sink);
+    setData(sdata.getArray(m));
+    externalize(sink);
 
     if (log.isDebugEnabled()) {
       long tookTime = System.currentTimeMillis() - tstart;
