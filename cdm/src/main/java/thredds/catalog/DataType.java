@@ -38,6 +38,7 @@ public final class DataType {
     public final static DataType STATION = new DataType("Station");
     public final static DataType SWATH = new DataType("Swath");
     public final static DataType TRAJECTORY = new DataType("Trajectory");
+    public final static DataType OTHER_UNKNOWN = new DataType("other/unknown");
 
     private String name;
     public DataType(String s) {
