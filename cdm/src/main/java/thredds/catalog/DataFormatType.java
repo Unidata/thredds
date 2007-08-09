@@ -43,6 +43,7 @@ public final class DataFormatType {
     public final static DataFormatType NEXRAD2 = new DataFormatType("NEXRAD2");
     public final static DataFormatType NCML = new DataFormatType("NcML");
     public final static DataFormatType NIDS = new DataFormatType("NIDS");
+    public final static DataFormatType MCIDAS_AREA = new DataFormatType("McIDAS-AREA");
 
     public final static DataFormatType GIF = new DataFormatType("image/gif");
     public final static DataFormatType JPEG = new DataFormatType("image/jpeg");
@@ -55,6 +56,7 @@ public final class DataFormatType {
     public final static DataFormatType MPEG = new DataFormatType("video/mpeg");
     public final static DataFormatType QUICKTIME = new DataFormatType("video/quicktime");
     public final static DataFormatType REALTIME = new DataFormatType("video/realtime");
+    public final static DataFormatType OTHER_UNKNOWN = new DataFormatType("other/unknown");
 
     private String name;
     public DataFormatType(String s) {
