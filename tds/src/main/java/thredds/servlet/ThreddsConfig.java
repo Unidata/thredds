@@ -1,6 +1,5 @@
-// $Id: ThreddsConfig.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -45,7 +44,7 @@ public class ThreddsConfig {
   private static Element rootElem;
 
   //private static HashMap paramHash;
-  private static ArrayList catalogRoots;
+  private static List<String> catalogRoots;
 
   static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
     _context = context;
@@ -56,7 +55,7 @@ public class ThreddsConfig {
 
   static void readConfig(org.slf4j.Logger log) {
     //paramHash = new HashMap();
-    catalogRoots = new ArrayList();
+    catalogRoots = new ArrayList<String>();
 
     File file = new File(_filename);
     if (!file.exists()) return;
@@ -90,9 +89,8 @@ public class ThreddsConfig {
       //System.out.println("param= "+ name + " " + value);
     } */
 
-    List rootList = rootElem.getChildren("catalogRoot");
-    for (int j = 0; j < rootList.size(); j++) {
-      Element catrootElem = (Element) rootList.get(j);
+    List<Element> rootList = rootElem.getChildren("catalogRoot");
+    for (Element catrootElem : rootList) {
       String location = catrootElem.getText().trim();
       if (location.length() > 0) {
         catalogRoots.add(location);
@@ -101,17 +99,15 @@ public class ThreddsConfig {
     }
 
     // viewer plug-in
-    List viewerList = rootElem.getChildren("Viewer");
-    for (int j = 0; j < viewerList.size(); j++) {
-      Element elem = (Element) viewerList.get(j);
+    List<Element> viewerList = rootElem.getChildren("Viewer");
+    for (Element elem : viewerList) {
       String className = elem.getText().trim();
       ViewServlet.registerViewer(className);
     }
 
     // datasetSource plug-in
-    List sourceList = rootElem.getChildren("datasetSource");
-    for (int j = 0; j < sourceList.size(); j++) {
-      Element elem = (Element) sourceList.get(j);
+    List<Element> sourceList = rootElem.getChildren("datasetSource");
+    for (Element elem : sourceList) {
       String className = elem.getText().trim();
       DatasetHandler.registerDatasetSource(className);
     }
@@ -128,7 +124,7 @@ public class ThreddsConfig {
   }
 
 
-  static void getCatalogRoots(List extraList) {
+  static void getCatalogRoots(List<String> extraList) {
     extraList.addAll( catalogRoots);
   }
 
@@ -163,7 +159,7 @@ public class ThreddsConfig {
     if (s == null) return defValue;
 
     try {
-      return Boolean.valueOf(s).booleanValue(); // Boolean.parseBoolean();  (1.5)
+      return Boolean.parseBoolean(s);
     } catch (Exception e) {
       log.error("ThreddsConfig: param "+paramName+" not a boolean: " + e.getMessage());
     }

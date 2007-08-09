@@ -1,6 +1,5 @@
-// $Id: AbstractServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,15 +26,16 @@ import javax.servlet.http.*;
 /**
  * Abstract superclass for THREDDS servlets.
  * Provides some common services for servlets: debugging, logging, and file serving.
+ *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public abstract class AbstractServlet extends HttpServlet {
   protected org.slf4j.Logger log;
   protected String rootPath, contentPath;
 
   // must end with "/"
-  protected abstract String getPath(); 
+  protected abstract String getPath();
+
   protected abstract void makeDebugActions();
 
   public void init() throws javax.servlet.ServletException {
@@ -46,25 +46,25 @@ public abstract class AbstractServlet extends HttpServlet {
     // init logging
     ServletUtil.initLogging(this);
     log = org.slf4j.LoggerFactory.getLogger(getClass());
-    ServletUtil.logServerSetup( this.getClass().getName() + ".init()" );
+    ServletUtil.logServerSetup(this.getClass().getName() + ".init()");
 
     // debug actions
     makeDebugActions();
 
-    log.info("--- initialized "+getClass().getName());
+    log.info("--- initialized " + getClass().getName());
   }
 
   protected void initContent() throws javax.servlet.ServletException {
 
     // first time, create content directory
     String initialContentPath = ServletUtil.getInitialContentPath(this) + getPath();
-    File initialContentFile = new File( initialContentPath);
+    File initialContentFile = new File(initialContentPath);
     if (initialContentFile.exists()) {
       try {
         if (ServletUtil.copyDir(initialContentPath, contentPath))
-          log.info("copyDir "+initialContentPath+" to "+contentPath);
+          log.info("copyDir " + initialContentPath + " to " + contentPath);
       } catch (IOException ioe) {
-        log.error("failed to copyDir "+initialContentPath+" to "+contentPath, ioe);
+        log.error("failed to copyDir " + initialContentPath + " to " + contentPath, ioe);
       }
     }
 

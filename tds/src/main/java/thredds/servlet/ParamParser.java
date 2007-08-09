@@ -1,6 +1,5 @@
-// $Id: ParamParser.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,11 +31,8 @@ import java.util.Date;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Apr 2, 2006
- * Time: 2:37:31 PM
- * To change this template use File | Settings | File Templates.
+ * Parse Servlet Parameters
+ * doesnt seem to be used
  */
 public class ParamParser {
 

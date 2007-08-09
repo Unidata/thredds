@@ -1,6 +1,5 @@
-// $Id: Debug.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,13 +20,14 @@
 package thredds.servlet;
 
 import java.util.TreeMap;
+import java.util.Map;
 
 /**
  * A minimal implementation of a globally-accessible set of Debug flags.
  */
 
 public class Debug {
-  static private TreeMap map = new TreeMap();
+  static private Map<String, Boolean> map = new TreeMap<String, Boolean>();
   static private boolean debug = false, changed = true;
 
   /**
@@ -39,12 +39,12 @@ public class Debug {
     Object val;
     if (null == (val = map.get(flagName))) {
       //if (debug) println("Debug.isSet new "+ flagName);
-      map.put(flagName, new Boolean(false));
+      map.put(flagName, false);
       changed = true;
       return false;
     }
 
-    return ((Boolean)val).booleanValue();
+    return (Boolean) val;
   }
 
   /**
@@ -53,11 +53,10 @@ public class Debug {
    * @param value : to this boolean value
    */
   static public void set(String flagName, boolean value) {
-    Object val;
-    if (null == (val = map.get(flagName))) {
+    if (null == map.get(flagName)) {
       changed = true;
     }
-    map.put(flagName, new Boolean(value));
+    map.put(flagName, value);
     //if (debug) println("  Debug.set "+ flagName+" "+value);
   }
 
@@ -65,16 +64,16 @@ public class Debug {
    * Clear all flags; none are defined after this is called.
    */
   static public void clear() {
-   map = new TreeMap();
+   map = new TreeMap<String, Boolean>();
   }
 
   /**
    * Get the set of flag names as a Set of Strings.
    * @return Set of flag names.
    */
-  static public java.util.Set keySet() { return map.keySet(); }
+  static public java.util.Set<String> keySet() { return map.keySet(); }
 
-  /**
+  /*
    * Send a global log message if flag is set.
    * @param flagName
    * @param s : message
@@ -94,32 +93,3 @@ public class Debug {
   } */
 
 }
-
-/**
- * $Log: Debug.java,v $
- * Revision 1.3  2005/01/07 02:08:45  caron
- * use nj22, commons logging, clean up javadoc
- *
- * Revision 1.2  2004/11/30 22:41:25  edavis
- * Make changes for package change of Debug, Log, and StringUtil classes.
- *
- * Revision 1.1  2004/09/24 03:26:33  caron
- * merge nj22
- *
- * Revision 1.5  2004/03/05 23:44:21  caron
- * javadoc
- *
- * Revision 1.4  2004/02/20 05:02:54  caron
- * release 1.3
- *
- *
- * Revision 1.2  2002/09/13 21:12:08  caron
- * add keySet()
- *
- * Revision 1.1  2001/10/24 22:51:42  ndp
- * *** empty log message ***
- *
- * Revision 1.1.1.1  2001/09/26 15:36:47  caron
- * checkin beta1
- *
- */

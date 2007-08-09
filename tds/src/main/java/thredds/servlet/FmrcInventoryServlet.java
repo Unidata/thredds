@@ -1,6 +1,5 @@
-// $Id: ForecastModelRunServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -41,7 +40,6 @@ import thredds.catalog.InvDatasetFmrc;
 /**
  * Servlet shows Forecast Model Run Collection Inventory.
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class FmrcInventoryServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
@@ -196,25 +194,25 @@ public class FmrcInventoryServlet extends AbstractServlet {
     PrintStream ps = new PrintStream( out);
 
     String[] paths = getDatasetPaths();
-    for (int i = 0; i < paths.length; i++) {
-      String path = "http://motherlode.ucar.edu:8080" + paths[i];
+    for (String path1 : paths) {
+      String path = "http://motherlode.ucar.edu:8080" + path1;
 
       int pos = path.indexOf("model/");
-      String path2 = path.substring(pos+6);
+      String path2 = path.substring(pos + 6);
       String name = StringUtil.replace(path2, '/', "-");
       if (name.startsWith("-")) name = name.substring(1);
-      if (name.endsWith("-")) name = name.substring(0, name.length()-1);
+      if (name.endsWith("-")) name = name.substring(0, name.length() - 1);
       String dir = "/data/ldm/pub/native/grid/" + path2;
 
       //System.out.println("  fmrcDefinitionPath="+contentPath+" name="+name+" dir="+dir);
       ps.println("\n*******Dataset" + dir);
       FmrcInventory fmrc = FmrcInventory.make(contentPath, name, fmrCache, dir, ".grib1",
-              ForecastModelRunInventory.OPEN_XML_ONLY);
+          ForecastModelRunInventory.OPEN_XML_ONLY);
       if (null == fmrc) {
         ps.println("  ERROR - no files were found");
-      }  else {
+      } else {
         FmrcReport report = new FmrcReport();
-        report.report( fmrc, ps, showMissing);
+        report.report(fmrc, ps, showMissing);
       }
       ps.flush();
     }

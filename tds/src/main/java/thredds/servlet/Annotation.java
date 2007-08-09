@@ -1,6 +1,5 @@
-// $Id: Annotation.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,21 +23,23 @@ package thredds.servlet;
 import java.util.*;
 
 public class Annotation {
-  static private ArrayList annotations = new ArrayList();
+  static private List<Annotation> annotations = new ArrayList<Annotation>();
+
   static {
     add(new Annotation("cat", "id", "Title", "If this worked you would see something here", "IDV65002.jnlp", "IDV"));
   }
 
-  static void add( Annotation v) {
+  static void add(Annotation v) {
     annotations.add(v);
   }
 
-  static List getAnnotations() { return annotations; }
+  static List<Annotation> getAnnotations() {
+    return annotations;
+  }
 
-  static List findAnnotation(String cat, String ds, String viewer) {
-    ArrayList result = new ArrayList();
-    for (int i = 0; i < annotations.size(); i++) {
-      Annotation v = (Annotation) annotations.get(i);
+  static List<Annotation> findAnnotation(String cat, String ds, String viewer) {
+    List<Annotation> result = new ArrayList<Annotation>();
+    for (Annotation v : annotations) {
       if (v.catalog.equals(cat) && v.datasetID.equals(ds) &&
           v.viewer.equals(viewer))
         result.add(v);
@@ -55,7 +56,7 @@ public class Annotation {
   String viewer;
 
   Annotation(String catalog, String datasetID, String title, String desc,
-       String jnlpFilename, String viewer) {
+             String jnlpFilename, String viewer) {
     this.catalog = catalog;
     this.datasetID = datasetID;
     this.title = title;
@@ -108,7 +109,6 @@ public class Annotation {
   } */
 
   void writeHtml(StringBuffer sbuff) {
-    sbuff.append("   <li> <a href='views/" + jnlpFilename + "'>" + title +
-                 "</a> : "+desc+"\n");
+    sbuff.append("   <li> <a href='views/").append(jnlpFilename).append("'>").append(title).append("</a> : ").append(desc).append("\n");
   }
 }

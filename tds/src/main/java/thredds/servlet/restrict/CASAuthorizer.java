@@ -211,7 +211,7 @@ public class CASAuthorizer implements Authorizer {
    * List of ProxyTicketReceptor URLs of services authorized to proxy to the path
    * behind this filter.
    */
-  private List authorizedProxies = new ArrayList();
+  private List<String> authorizedProxies = new ArrayList<String>();
 
   //*********************************************************************
   // Initialization

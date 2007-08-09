@@ -1,6 +1,5 @@
-// $Id: NetcdfServlet.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -59,13 +58,12 @@ import org.jdom.transform.XSLTransformer;
 /**
  * Netcdf Grid subsetting.
  *
+ * @deprecated - see thredds.server.ncss
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 public class NetcdfServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 diskCache = null;
   private boolean allow = false, deleteImmediately = true;
-  private long maxFileDownloadSize;
 
   // must end with "/"
   protected String getPath() {
@@ -86,7 +84,7 @@ public class NetcdfServlet extends AbstractServlet {
   </NetcdfSubsetService> */
 
     allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
-    maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
+    long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("NetcdfSubsetService.dir", contentPath + "/cache");
     File cacheDir = new File(cache);
     cacheDir.mkdirs();
@@ -174,11 +172,11 @@ public class NetcdfServlet extends AbstractServlet {
       // parse the parameters
 
       // allowed form: grid=gridName or grid=gridName;gridName;gridName;...
-      ArrayList varList = new ArrayList();
+      List<String> varList = new ArrayList<String>();
       String[] vars = ServletUtil.getParameterValuesIgnoreCase(req, "grid");
       if (vars != null) {
-        for (int i = 0; i < vars.length; i++) {
-          StringTokenizer stoke = new StringTokenizer(vars[i], ";");
+        for (String var : vars) {
+          StringTokenizer stoke = new StringTokenizer(var, ";");
           while (stoke.hasMoreTokens()) {
             String gridName = StringUtil.unescape(stoke.nextToken());
             varList.add(gridName);
@@ -189,8 +187,7 @@ public class NetcdfServlet extends AbstractServlet {
       // make sure all requested variables exist
       int count = 0;
       StringBuffer buff = new StringBuffer();
-      for (int i = 0; i < varList.size(); i++) {
-        String varName = (String) varList.get(i);
+      for (String varName : varList) {
         if (null == gds.findGridDatatype(varName)) {
           buff.append(varName);
           if (count > 0) buff.append(";");

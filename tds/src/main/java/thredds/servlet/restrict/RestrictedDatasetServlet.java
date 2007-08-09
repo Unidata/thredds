@@ -1,4 +1,3 @@
-// $Id: $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -35,7 +34,6 @@ import java.io.IOException;
  * Its a servlet in case you want to use /thredds/restrictedDataset/* as a "guard page".
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class RestrictedDatasetServlet extends HttpServlet {
   private static org.slf4j.Logger log;

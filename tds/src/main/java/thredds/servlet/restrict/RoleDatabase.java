@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,7 +34,6 @@ import java.util.HashMap;
  * Class Description.
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class RoleDatabase implements RoleSource {
   private HashMap<String, User> users = new HashMap<String, User>();
@@ -84,8 +82,8 @@ public class RoleDatabase implements RoleSource {
   public boolean hasRole( String username, String role)  {
     User user = users.get( username);
     if (user == null) return false;
-    for (int i = 0; i < user.roles.size(); i++) {
-      if (role.equals(user.roles.get(i)))
+    for (String role1 : user.roles) {
+      if (role.equals(role1))
         return true;
     }
     return false;

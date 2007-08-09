@@ -1,3 +1,22 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package thredds.servlet;
 
 import java.io.*;
@@ -7,11 +26,10 @@ import javax.servlet.http.*;
 
 public class DebugHandler {
 
-  static private ArrayList dhList = new ArrayList();
+  static private List<DebugHandler> dhList = new ArrayList<DebugHandler>();
 
   static public DebugHandler get( String name) {
-    for (int i = 0; i < dhList.size(); i++) {
-      DebugHandler dh = (DebugHandler) dhList.get(i);
+    for (DebugHandler dh : dhList) {
       if (name.equals( dh.name)) return dh;
     }
     return new DebugHandler(name);
@@ -64,7 +82,7 @@ public class DebugHandler {
         if (dh == null) {
           pw.println(" Unknown DebugHandler="+dhName+"=");
         } else {
-          Action action = (Action) dh.actions.get( cmd);
+          Action action = dh.actions.get( cmd);
           if (action == null)
             pw.println(" Unknown action="+cmd+"=");
           else
@@ -85,26 +103,20 @@ public class DebugHandler {
   }
 
   static private void showDebugActions(HttpServletRequest req, HttpServletResponse res, PrintStream pw) {
-    Iterator dhIter = dhList.iterator();
-    while (dhIter.hasNext()) {
-      DebugHandler dh =  (DebugHandler) dhIter.next();
-      pw.println("<h2>"+dh.name+"</h2>");
+    for (DebugHandler dh : dhList) {
+      pw.println("<h2>" + dh.name + "</h2>");
 
-      Iterator actIter = dh.actions.values().iterator();
-      while (actIter.hasNext()) {
-        Action act = (Action) actIter.next();
+      for (Action act : dh.actions.values()) {
         if (act.desc == null) continue;
 
-        String url = req.getRequestURI() + "?" + dh.name+"/"+act.name;
-        pw.println("   <a href='" +url+"'>"+act.desc+"</a>");
+        String url = req.getRequestURI() + "?" + dh.name + "/" + act.name;
+        pw.println("   <a href='" + url + "'>" + act.desc + "</a>");
       }
     }
   }
 
   static private DebugHandler find(String name) {
-    Iterator dhIter = dhList.iterator();
-    while (dhIter.hasNext()) {
-      DebugHandler dh =  (DebugHandler) dhIter.next();
+    for (DebugHandler dh : dhList) {
       if (dh.name.equals(name))
         return dh;
     }
@@ -112,7 +124,7 @@ public class DebugHandler {
   }
 
   //////////////////////////////////////////////////////
-  private LinkedHashMap actions = new LinkedHashMap();
+  private Map<String, Action> actions = new LinkedHashMap<String, Action>();
   private String name;
 
   private DebugHandler( String name) {
