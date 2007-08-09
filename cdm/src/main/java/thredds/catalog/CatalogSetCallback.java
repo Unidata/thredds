@@ -1,6 +1,5 @@
-// $Id: CatalogSetCallback.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,21 +25,15 @@ package thredds.catalog;
  * When the catalog is read, setCatalog() is called, else failed() is called.
  */
 public interface CatalogSetCallback {
-  /** Called when the catalog is done being read */
+
+  /**
+   * Called when the catalog is done being read.
+   * @param catalog the catalog that was just read in.
+   */
   public void setCatalog(InvCatalogImpl catalog);
-  /** Called if the catalog reading fails */
+
+  /**
+   * Called if the catalog reading fails
+   */
   public void failed();
 }
-
-/* Change History:
-   $Log: CatalogSetCallback.java,v $
-   Revision 1.3  2004/09/24 03:26:27  caron
-   merge nj22
-
-   Revision 1.2  2004/06/09 00:27:24  caron
-   version 2.0a release; cleanup javadoc
-
-   Revision 1.1  2004/03/02 21:45:21  caron
-   v 1.3.1
-
-*/

@@ -1,6 +1,5 @@
-// $Id: MetadataConverterIF.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,7 +26,6 @@ package thredds.catalog;
  * @see InvCatalogConvertIF
  * @see InvCatalogFactory
  * @author John Caron
- * @version $Id: MetadataConverterIF.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public interface MetadataConverterIF {
@@ -48,7 +46,7 @@ public interface MetadataConverterIF {
    * @param uri : the URI that the XML doc is at.
    * @return an object representing the metadata content. The type depends on the metadata handler.
    *
-   * @throws java.io.IOException
+   * @throws java.io.IOException on read error
    */
   public Object readMetadataContentFromURL( InvDataset dataset, java.net.URI uri) throws java.io.IOException;
 

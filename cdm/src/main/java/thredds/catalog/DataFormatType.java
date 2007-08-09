@@ -1,6 +1,5 @@
-// $Id: DataFormatType.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,11 +24,10 @@ package thredds.catalog;
  * Type-safe enumeration of THREDDS data format types.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public final class DataFormatType {
-      private static java.util.ArrayList members = new java.util.ArrayList(20);
+    private static java.util.List<DataFormatType> members = new java.util.ArrayList<DataFormatType>(20);
 
     public final static DataFormatType NONE = new DataFormatType("");
 
@@ -65,7 +63,7 @@ public final class DataFormatType {
     }
 
     /** Return all DataFormatType objects */
-    public static java.util.Collection getAllTypes() { return members; }
+    public static java.util.Collection<DataFormatType> getAllTypes() { return members; }
 
     /**
      * Find the DataFormatType that matches this name, ignore case.
@@ -74,8 +72,7 @@ public final class DataFormatType {
      */
     public static DataFormatType getType(String name) {
       if (name == null) return null;
-      for (int i = 0; i < members.size(); i++) {
-        DataFormatType m = (DataFormatType) members.get(i);
+      for (DataFormatType m : members) {
         if (m.name.equalsIgnoreCase( name))
           return m;
       }
@@ -98,44 +95,3 @@ public final class DataFormatType {
     }
 
 }
-
-/**
- * $Log: DataFormatType.java,v $
- * Revision 1.6  2006/02/13 19:52:21  caron
- * javadoc
- *
- * Revision 1.5  2006/01/17 01:46:52  caron
- * use jdom instead of dom everywhere
- *
- * Revision 1.4  2005/07/21 18:50:47  caron
- * no message
- *
- * Revision 1.3  2005/04/28 16:46:33  caron
- * server cleanup
- *
- * Revision 1.2  2004/06/04 00:51:53  caron
- * release 2.0b
- *
- * Revision 1.1  2004/05/11 23:30:26  caron
- * release 2.0a
- *
- * Revision 1.6  2004/02/20 00:49:51  caron
- * 1.3 changes
- *
- * Revision 1.5  2003/05/29 22:51:37  john
- * add NcML
- *
- * Revision 1.4  2003/05/01 17:47:56  edavis
- * Added Resolver instance.
- *
- * Revision 1.3  2003/03/17 21:29:15  john
- * fix bugs
- *
- * Revision 1.2  2003/03/07 21:12:52  edavis
- * Added HTTP instance.
- *
- * Revision 1.1.1.1  2002/11/23 17:49:45  caron
- * thredds reorg
- *
- *
- */

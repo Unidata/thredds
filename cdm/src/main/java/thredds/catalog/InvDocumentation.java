@@ -1,6 +1,5 @@
-// $Id: InvDocumentation.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,7 +30,6 @@ import java.net.URISyntaxException;
  * TODO: XHTML
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 
@@ -42,55 +40,88 @@ public class InvDocumentation {
 
   /**
    * Constructor.
-   * @param href :  href of documentation, may be null.
-   * @param uri : resolved URL, or null
-   * @param title : Xlink title, may be null.
-   * @param type : user-defined InvDocumentation type
+   *
+   * @param href          :  href of documentation, may be null.
+   * @param uri           : resolved URL, or null
+   * @param title         : Xlink title, may be null.
+   * @param type          : user-defined InvDocumentation type
    * @param inlineContent : optional inline contents.
    */
-  public InvDocumentation( String href, URI uri, String title, String type, String inlineContent) {
+  public InvDocumentation(String href, URI uri, String title, String type, String inlineContent) {
     this.href = href;
     this.uri = uri;
     this.title = title;
     this.type = type;
     this.inlineContent = inlineContent;
 
-    if ((uri !=null) && (title == null))
+    if ((uri != null) && (title == null))
       this.title = uri.toString();
   }
 
-  /** user defined type */
-  public String getType() { return type; }
+  /**
+   * @return documentation type
+   */
+  public String getType() {
+    return type;
+  }
+
   public void setType(String type) {
     this.type = type;
     hashCode = 0;
   }
 
-  /** if it has an XLink */
-  public boolean hasXlink() { return uri != null; }
+  /**
+   * @return true if it has an XLink
+   */
+  public boolean hasXlink() {
+    return uri != null;
+  }
 
-  /** if its a XLink, get the absolute URI */
-  public URI getURI() { return uri; }
+  /**
+   * if its a XLink, get the absolute URI
+   * @return the XLink URI, else null
+   */
+  public URI getURI() {
+    return uri;
+  }
 
-  /** if its a XLink, get the title, to display the link to the user. */
-  public String getXlinkTitle() { return title; }
-  public void setXlinkTitle(String title) { this.title = title; }
+  /**
+   * if its a XLink, get the title, to display the link to the user.
+   * @return the XLink title, else null
+   */
+  public String getXlinkTitle() {
+    return title;
+  }
 
-  /** if its a XLink, get the href, to display the link to the user. */
-  public String getXlinkHref() { return href; }
+  public void setXlinkTitle(String title) {
+    this.title = title;
+  }
+
+  /**
+   * if its a XLink, get the href, to display the link to the user.
+   * @return the XLink href, or null
+   */
+  public String getXlinkHref() {
+    return href;
+  }
+
   public void setXlinkHref(String href) throws URISyntaxException {
     this.href = href;
     this.uri = new URI(href);
   }
 
-  /** if its a XLink, get its content. This triggers a URL read the first time. */
-  public String getXlinkContent() throws java.net.MalformedURLException, java.io.IOException {
+  /**
+   * if its a XLink, get its content. This triggers a URL read the first time.
+   * @return the XLink content
+   * @throws java.io.IOException on read error
+   */
+  public String getXlinkContent() throws java.io.IOException {
     if (content != null) return content;
     if (uri == null) return "";
 
-    URL url =  uri.toURL();
+    URL url = uri.toURL();
     InputStream is = url.openStream();
-    ByteArrayOutputStream  os = new ByteArrayOutputStream( is.available());
+    ByteArrayOutputStream os = new ByteArrayOutputStream(is.available());
 
     // copy to string
     byte[] buffer = new byte[1024];
@@ -104,50 +135,71 @@ public class InvDocumentation {
     content = os.toString();
     return content;
   }
+
   private String content = null;
 
-  /** Get inline content as a string, else null if there is none*/
-  public String getInlineContent() { return inlineContent; }
+  /**
+   * Get inline content as a string, else null if there is none
+   * @return  inline content as a string, else null
+   */
+  public String getInlineContent() {
+    return inlineContent;
+  }
+
   public void setInlineContent(String s) {
     this.inlineContent = s;
     hashCode = 0;
   }
 
-  /** string representation */
+  /**
+   * string representation
+   */
   public String toString() {
     if (hasXlink())
-      return "<"+uri+"> <"+title+"> <"+type+">" + ((content == null) ? "" : " <"+content+">");
+      return "<" + uri + "> <" + title + "> <" + type + ">" + ((content == null) ? "" : " <" + content + ">");
     else
-      return "<"+inlineContent+">";
+      return "<" + inlineContent + ">";
   }
 
-  /** InvDocumentation elements with same values are equal. */
-   public boolean equals(Object o) {
-     if (this == o) return true;
-     if (!(o instanceof InvDocumentation)) return false;
-     return o.hashCode() == this.hashCode();
+  /**
+   * InvDocumentation elements with same values are equal.
+   */
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof InvDocumentation)) return false;
+    return o.hashCode() == this.hashCode();
   }
 
-  /** Override Object.hashCode() to implement equals. */
+  /**
+   * Override Object.hashCode() to implement equals.
+   */
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
       if (null != getURI())
-        result = 37*result + getURI().hashCode();
+        result = 37 * result + getURI().hashCode();
       if (null != getInlineContent())
-        result = 37*result + getInlineContent().hashCode();
+        result = 37 * result + getInlineContent().hashCode();
       if (null != getXlinkTitle())
-        result = 37*result + getXlinkTitle().hashCode();
+        result = 37 * result + getXlinkTitle().hashCode();
       if (null != getType())
-        result = 37*result + getType().hashCode();
+        result = 37 * result + getType().hashCode();
       hashCode = result;
     }
     return hashCode;
   }
+
   private volatile int hashCode = 0; // Bloch, item 8
 
   // for bean editing
-  public InvDocumentation() {}
-  static public String hiddenProperties() { return "inlineContent type URI xlinkContent"; }
-  static public String editableProperties() { return "xlinkTitle xlinkHref"; }
+  public InvDocumentation() {
+  }
+
+  static public String hiddenProperties() {
+    return "inlineContent type URI xlinkContent";
+  }
+
+  static public String editableProperties() {
+    return "xlinkTitle xlinkHref";
+  }
 }

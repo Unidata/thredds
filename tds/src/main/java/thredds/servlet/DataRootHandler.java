@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -233,19 +233,14 @@ public class DataRootHandler {
       cl.configCatalog( cat);
 
     // look for datasetRoots
-    Iterator roots = cat.getDatasetRoots().iterator();
-    while ( roots.hasNext() ) {
-      InvProperty p = (InvProperty) roots.next();
-      addRoot( p.getName(), p.getValue(), true );
+    for (InvProperty p : cat.getDatasetRoots()) {
+      addRoot(p.getName(), p.getValue(), true);
     }
 
-    Iterator services = cat.getServices().iterator();
-    while ( services.hasNext() ) {
-      InvService s = (InvService) services.next();
-      roots = s.getDatasetRoots().iterator();
-      while ( roots.hasNext() ) {
-        InvProperty p = (InvProperty) roots.next();
-        addRoot( p.getName(), p.getValue(), true );
+    // old style - in the service elements
+    for (InvService s : cat.getServices()) {
+      for (InvProperty p : s.getDatasetRoots()) {
+        addRoot(p.getName(), p.getValue(), true);
       }
     }
 
@@ -303,7 +298,8 @@ public class DataRootHandler {
 
     }
     catch (Throwable t) {
-      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage()+"\n log="+cat.getLog(), t);
+      String msg = (cat == null) ? "null catalog" : cat.getLog();
+      log.error("readCatalog(): Exception on catalog=" + catalogFullPath + " " + t.getMessage()+"\n log="+msg, t);
       return null;
     }
     finally {
@@ -326,9 +322,11 @@ public class DataRootHandler {
    * Only called by synchronized methods.
    * @param dsList the list of InvDatasetImpl
    */
-  private void initSpecialDatasets( List<InvDatasetImpl> dsList) {
+  private void initSpecialDatasets( List<InvDataset> dsList) {
 
-    for (InvDatasetImpl invDataset : dsList) {
+    for (InvDataset invds : dsList) {
+      InvDatasetImpl  invDataset = (InvDatasetImpl) invds;
+
       // look for duplicate ids
       String id = invDataset.getUniqueID();
       if (id != null) {
@@ -377,41 +375,37 @@ public class DataRootHandler {
   }
 
   // Only called by synchronized methods
- private void initFollowCatrefs(String dirPath, List datasets)  throws IOException {
-   Iterator iter = datasets.iterator();
-   while (iter.hasNext()) {
-     InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
+ private void initFollowCatrefs(String dirPath, List<InvDataset> datasets)  throws IOException {
+    for (InvDataset invDataset : datasets) {
 
-     if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
-       InvCatalogRef catref = (InvCatalogRef) invDataset;
-       String href = catref.getXlinkHref();
-       if (log.isDebugEnabled()) log.debug("  catref.getXlinkHref=" + href);
+      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+        InvCatalogRef catref = (InvCatalogRef) invDataset;
+        String href = catref.getXlinkHref();
+        if (log.isDebugEnabled()) log.debug("  catref.getXlinkHref=" + href);
 
-       // Check that catRef is relative
-       if (!href.startsWith("http:")) {
-         // Clean up relative URLs that start with "./"
-         if ( href.startsWith( "./" ) ) {
-           href = href.substring( 2 );
-         }
+        // Check that catRef is relative
+        if (!href.startsWith("http:")) {
+          // Clean up relative URLs that start with "./"
+          if (href.startsWith("./")) {
+            href = href.substring(2);
+          }
 
-         String path;
-         if ( href.startsWith( "/thredds/" ) ) {
-           path = href.substring( 9 ); // absolute starting from content root
-         } else {
-           path = dirPath + href;  // reletive starting from current directory
-         }
+          String path;
+          if (href.startsWith("/thredds/")) {
+            path = href.substring(9); // absolute starting from content root
+          } else {
+            path = dirPath + href;  // reletive starting from current directory
+          }
 
-         initCatalog(path, true );
-       }
+          initCatalog(path, true);
+        }
 
-     }
-     else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc))
-     {
-       // recurse through nested datasets
-       initFollowCatrefs(dirPath, invDataset.getDatasets());
-     }
-   }
- }
+      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+        // recurse through nested datasets
+        initFollowCatrefs(dirPath, invDataset.getDatasets());
+      }
+    }
+  }
   // Only called by synchronized methods
   private boolean addRoot(InvDatasetScan dscan) {
     // check for duplicates
@@ -885,7 +879,7 @@ public class DataRootHandler {
     res.getOutputStream().write( result.getBytes() );
   }
 
-  /**
+  /*
    * DO NOT USE, this is Ethan's attempt at designing a generic way to handle data requests.
    *
    * Only used is in ExampleThreddsServlet.
@@ -1065,8 +1059,8 @@ public class DataRootHandler {
    * @param req     the request
    * @param res     the response
    * @return true if request was handled
-   * @throws IOException
-   * @throws ServletException
+   * @throws IOException on I/O error
+   * @throws ServletException on other errors
    */
   public boolean processReqForCatalog( HttpServletRequest req, HttpServletResponse res)
           throws IOException, ServletException {
@@ -1277,7 +1271,7 @@ public class DataRootHandler {
       addRoot( p.getName(), p.getValue(), false );
     }  */
 
-    if (cat != null) cat.setBaseURI(baseURI);
+    cat.setBaseURI(baseURI);
     return cat;
   }
 
@@ -1530,11 +1524,10 @@ public class DataRootHandler {
        StringBuffer sbuff = new StringBuffer();
        synchronized ( DataRootHandler.this )
        {
-         list = new ArrayList( staticCatalogHash.keySet());
+         list = new ArrayList<String>( staticCatalogHash.keySet());
          Collections.sort(list);
-         for (int i = 0; i < list.size(); i++) {
-           String catPath = (String) list.get(i);
-           sbuff.append( " catalog= " ).append( catPath ).append( "\n" );
+         for (String catPath : list) {
+           sbuff.append(" catalog= ").append(catPath).append("\n");
          }
        }
        e.pw.println( StringUtil.quoteHtmlContent( "\n"+sbuff.toString()));

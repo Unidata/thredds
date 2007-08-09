@@ -1,4 +1,3 @@
-// $Id: CollectionType.java 48 2006-07-12 16:15:40Z caron $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -25,11 +24,10 @@ package thredds.catalog;
  * Type-safe enumeration of THREDDS coherent collection types.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public final class CollectionType {
-    private static java.util.ArrayList members = new java.util.ArrayList(20);
+    private static java.util.ArrayList<CollectionType> members = new java.util.ArrayList<CollectionType>(20);
 
     public final static CollectionType NONE = new CollectionType("");
     public final static CollectionType TIMESERIES = new CollectionType("TimeSeries");
@@ -42,8 +40,8 @@ public final class CollectionType {
       members.add(this);
     }
 
-    /** Return all CollectionType objects */
-    public static java.util.Collection getAllTypes() { return members; }
+    /** @return all CollectionType objects */
+    public static java.util.Collection<CollectionType> getAllTypes() { return members; }
 
     /**
      * Find the CollectionType that matches this name, ignore case.
@@ -52,8 +50,7 @@ public final class CollectionType {
      */
     public static CollectionType getType(String name) {
       if (name == null) return null;
-      for (int i = 0; i < members.size(); i++) {
-        CollectionType m = (CollectionType) members.get(i);
+      for (CollectionType m : members) {
         if (m.name.equalsIgnoreCase( name))
           return m;
       }

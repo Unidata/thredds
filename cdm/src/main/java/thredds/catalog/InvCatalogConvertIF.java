@@ -1,6 +1,5 @@
-// $Id: InvCatalogConvertIF.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,7 +28,6 @@ import java.io.IOException;
  *
  * @see InvCatalogFactory
  * @author John Caron
- * @version $Id: InvCatalogConvertIF.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public interface InvCatalogConvertIF {
@@ -37,6 +35,7 @@ public interface InvCatalogConvertIF {
   /**
    * Create an InvCatalogImpl from a parsed document tree.
    *
+   * @param fac use this factory
    * @param doc : a parsed document tree.
    * @param uri : the URI for the document.
    * @return an InvCatalog object

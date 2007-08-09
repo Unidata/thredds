@@ -1,6 +1,26 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 package thredds.catalog;
 
 import thredds.datatype.DateRange;
+import thredds.datatype.DateType;
 
 /**
  * Proxy an InvDatasetImpl to another InvDatasetImpl.
@@ -73,11 +93,11 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getAccess( p0);
   }
 
-  public java.util.List getAccess() {
+  public java.util.List<InvAccess> getAccess() {
     return proxy.getAccess();
   }
 
-  public java.util.List getAccessLocal() {
+  public java.util.List<InvAccess> getAccessLocal() {
     return proxy.getAccessLocal();
   }
 
@@ -93,11 +113,11 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getCollectionType();
   }
 
-  public java.util.List getContributors() {
+  public java.util.List<ThreddsMetadata.Contributor> getContributors() {
     return proxy.getContributors();
   }
 
-  public java.util.List getCreators() {
+  public java.util.List<ThreddsMetadata.Source> getCreators() {
     return proxy.getCreators();
   }
 
@@ -109,15 +129,15 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getDataType();
   }
 
-  public java.util.List getDatasets() {
+  public java.util.List<InvDataset> getDatasets() {
     return proxy.getDatasets();
   }
 
-  public java.util.List getDates() {
+  public java.util.List<DateType> getDates() {
     return proxy.getDates();
   }
 
-  public java.util.List getDocumentation() {
+  public java.util.List<InvDocumentation> getDocumentation() {
     return proxy.getDocumentation();
   }
 
@@ -137,7 +157,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getID();
   }
 
-  public java.util.List getKeywords() {
+  public java.util.List<ThreddsMetadata.Vocab> getKeywords() {
     return proxy.getKeywords();
   }
 
@@ -149,11 +169,11 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getMark();
   }
 
-  public java.util.List getMetadata(thredds.catalog.MetadataType p0) {
+  public java.util.List<InvMetadata> getMetadata(thredds.catalog.MetadataType p0) {
     return proxy.getMetadata( p0);
   }
 
-  public java.util.List getMetadata() {
+  public java.util.List<InvMetadata> getMetadata() {
     return proxy.getMetadata();
   }
 
@@ -169,15 +189,15 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getParentCatalog();
   }
 
-  public java.util.List getProjects() {
+  public java.util.List<ThreddsMetadata.Vocab> getProjects() {
     return proxy.getProjects();
   }
 
-  public java.util.List getProperties() {
+  public java.util.List<InvProperty> getProperties() {
     return proxy.getProperties();
   }
 
-  public java.util.List getPublishers() {
+  public java.util.List<ThreddsMetadata.Source> getPublishers() {
     return proxy.getPublishers();
   }
 
@@ -185,7 +205,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getServiceDefault();
   }
 
-  public java.util.List getServicesLocal() {
+  public java.util.List<InvService> getServicesLocal() {
     return proxy.getServicesLocal();
   }
 
@@ -205,7 +225,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getUserProperty( p0);
   }
 
-  public java.util.List getVariables() {
+  public java.util.List<ThreddsMetadata.Variables> getVariables() {
     return proxy.getVariables();
   }
 
@@ -249,7 +269,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     proxy.setCollectionType( p0);
   }
 
-  public void setContributors(java.util.ArrayList p0) {
+  public void setContributors(java.util.List<ThreddsMetadata.Contributor> p0) {
     proxy.setContributors( p0);
   }
 
@@ -265,7 +285,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     proxy.setID( p0);
   }
 
-  public void setKeywords(java.util.ArrayList p0) {
+  public void setKeywords(java.util.List<ThreddsMetadata.Vocab> p0) {
     proxy.setKeywords( p0);
   }
 
@@ -285,15 +305,15 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     proxy.setParent( p0);
   }
 
-  public void setProjects(java.util.ArrayList p0) {
+  public void setProjects(java.util.List<ThreddsMetadata.Vocab> p0) {
     proxy.setProjects( p0);
   }
 
-  public void setPublishers(java.util.ArrayList p0) {
+  public void setPublishers(java.util.List<ThreddsMetadata.Source> p0) {
     proxy.setPublishers( p0);
   }
 
-  public void setServicesLocal(java.util.ArrayList p0) {
+  public void setServicesLocal(java.util.List<InvService> p0) {
     proxy.setServicesLocal( p0);
   }
 

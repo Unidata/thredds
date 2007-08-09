@@ -1,6 +1,5 @@
-// $Id: DataType.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -25,11 +24,10 @@ package thredds.catalog;
  * Type-safe enumeration of THREDDS Data types.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public final class DataType {
-    private static java.util.ArrayList members = new java.util.ArrayList(20);
+    private static java.util.List<DataType> members = new java.util.ArrayList<DataType>(20);
 
     public final static DataType NONE = new DataType("");
 
@@ -47,8 +45,8 @@ public final class DataType {
       members.add(this);
     }
 
-    /** Return all DataType objects */
-    public static java.util.Collection getAllTypes() { return members; }
+    /** @return all DataType objects */
+    public static java.util.Collection<DataType> getAllTypes() { return members; }
 
     /**
      * Find the DataType that matches this name, ignore case.
@@ -57,8 +55,7 @@ public final class DataType {
      */
     public static DataType getType(String name) {
       if (name == null) return null;
-      for (int i = 0; i < members.size(); i++) {
-        DataType m = (DataType) members.get(i);
+      for (DataType m : members) {
         if (m.name.equalsIgnoreCase( name))
           return m;
       }
@@ -77,39 +74,3 @@ public final class DataType {
        return o.hashCode() == this.hashCode();
     }
 }
-
-
-/**
- * $Log: DataType.java,v $
- * Revision 1.10  2006/02/13 19:52:21  caron
- * javadoc
- *
- * Revision 1.9  2005/07/21 18:50:47  caron
- * no message
- *
- * Revision 1.8  2005/04/26 15:22:09  caron
- * consolidate Debug handling
- * clean up initialContent catalogs
- *
- * Revision 1.7  2005/01/24 16:56:58  caron
- * *** empty log message ***
- *
- * Revision 1.6  2004/05/11 23:30:26  caron
- * release 2.0a
- *
- * Revision 1.5  2004/02/20 00:49:49  caron
- * 1.3 changes
- *
- * Revision 1.4  2003/05/29 21:22:42  john
- * getAllTypes()
- *
- * Revision 1.3  2003/03/17 21:29:14  john
- * fix bugs
- *
- * Revision 1.2  2003/03/07 21:12:34  edavis
- * Added GIF instance.
- *
- * Revision 1.1.1.1  2002/11/23 17:49:45  caron
- * thredds reorg
- *
- */

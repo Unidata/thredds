@@ -43,6 +43,7 @@ public class H5eos {
 
     Group eosInfo = rootg.findGroup("HDFEOS_INFORMATION");
     Variable structMetadata = eosInfo.findVariable("StructMetadata.0");
+    if (structMetadata == null) return;
 
     // read entire array
     Array A = structMetadata.read();
@@ -50,8 +51,8 @@ public class H5eos {
     ArrayChar ca = (ArrayChar) A;
     String sval = ca.getString();
 
-    ODLparser parser = new ODLparser();
-    Element root = parser.parseString(sval);
+    ODLparser2 parser = new ODLparser2();
+    Element root = parser.parseFromString(sval);
 
     // LOOK could use XPath
     Element swathStructure = root.getChild("SwathStructure");
@@ -114,81 +115,5 @@ public class H5eos {
       v.setDimensions( sbuff.toString()); // livin dangerously
     }
   }
-
-  /* static void parse2(NetcdfFile ncfile) throws IOException {
-    Group rootg = ncfile.getRootGroup();
-
-    Group eosInfo = rootg.findGroup("HDFEOS_INFORMATION");
-    Variable structMetadata = eosInfo.findVariable("StructMetadata.0");
-
-    // read entire array
-    Array A = structMetadata.read();
-
-    ArrayChar ca = (ArrayChar) A;
-    String sval = ca.getString();
-
-    ODLparser parser = new ODLparser();
-    Element root = parser.parseString(sval);
-
-    // LOOK could use XPath
-    Element swathStructure = root.getChild("SwathStructure");
-    Element swath1 = swathStructure.getChild("SWATH_1");
-    String swathName = swath1.getChild("SwathName").getText();
-
-    // global Dimensions
-    Element d = swath1.getChild("Dimension");
-    List<Element> dims = (List<Element>) d.getChildren();
-    for (Element elem : dims) {
-      String name = elem.getChild("DimensionName").getText();
-      String sizeS = elem.getChild("Size").getText();
-      int length = Integer.parseInt(sizeS);
-      Dimension dim = new Dimension(name, length, true);
-      rootg.addDimension(dim);
-    }
-
-    //Group eos = rootg.findGroup("HDFEOS").findGroup("SWATHS");
-
-        // Geolocation Variables
-    //Group gloc = eos.findGroup(swathName).findGroup("Geolocation_Fields");
-
-    Element floc = swath1.getChild("GeoField");
-    List<Element> varsLoc = (List<Element>) floc.getChildren();
-    for (Element elem : varsLoc) {
-      String varname = elem.getChild("GeoFieldName").getText();
-      varname = NetcdfFile.createValidNetcdfObjectName( varname);
-      Variable v = gloc.findVariable( varname);
-      assert v != null : varname;
-
-      StringBuffer sbuff = new StringBuffer();
-      Element dimList = elem.getChild("DimList");
-      List<Element> values = (List<Element>) dimList.getChildren("value");
-      for (Element value : values) {
-        sbuff.append( value.getText());
-        sbuff.append( " ");
-      }
-      v.setDimensions( sbuff.toString()); // livin dangerously
-    }
-
-    // Variable Dimensions
-    //Group g = eos.findGroup(swathName).findGroup("Data_Fields");
-
-    Element f = swath1.getChild("DataField");
-    List<Element> vars = (List<Element>) f.getChildren();
-    for (Element elem : vars) {
-      String varname = elem.getChild("DataFieldName").getText();
-      varname = NetcdfFile.createValidNetcdfObjectName( varname);
-      Variable v = g.findVariable( varname);
-      assert v != null : varname;
-
-      StringBuffer sbuff = new StringBuffer();
-      Element dimList = elem.getChild("DimList");
-      List<Element> values = (List<Element>) dimList.getChildren("value");
-      for (Element value : values) {
-        sbuff.append( value.getText());
-        sbuff.append( " ");
-      }
-      v.setDimensions( sbuff.toString()); // livin dangerously
-    }
-  }  */
 
 }

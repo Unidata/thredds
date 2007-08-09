@@ -70,6 +70,7 @@
   <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened reletive to the working directory. </li>
   <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
 </ul>
+<p><em><strong>Always use forward slashes</strong></em> in your paths, even when on a Windows machine. This makes NcML portable across platforms. </p>
 <h2><br>
 ucar.nc2.dt.TypedDatasetFactory</h2>
 <p>The TypedDatasetFactory creates <em><strong>Scientific Typed Datasets</strong></em> such as GridDatasets, PointObsDatasets, RadialDatasetSweep, etc. Usually (but not always) these are based on NetcdfDataset objects. </p>
@@ -89,7 +90,7 @@ ucar.nc2.dt.TypedDatasetFactory</h2>
 <p>&nbsp; </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 20, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Aug 08, 2007 
 </address>
 <p>&nbsp;</p>
 </body>

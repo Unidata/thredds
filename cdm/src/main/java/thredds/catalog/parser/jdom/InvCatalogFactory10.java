@@ -2045,7 +2045,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     // thredds metadata
     writeThreddsMetadata( dsElem, ds.getLocalMetadata());
     writeInheritedMetadata( dsElem, ds.getLocalMetadataInheritable());
-    writeInheritedMetadata( dsElem, ds.getCat6Metadata()); // LOOK can we get rid of this?
+    // writeInheritedMetadata( dsElem, ds.getCat6Metadata()); // LOOK can we get rid of this?
 
     // access  (local only)
     Iterator access = ds.getAccessLocal().iterator();

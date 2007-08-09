@@ -1,6 +1,5 @@
-// $Id: InvAccessImpl.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,7 +25,6 @@ package thredds.catalog;
  * @see InvAccess
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public class InvAccessImpl extends InvAccess {
@@ -77,8 +75,7 @@ public class InvAccessImpl extends InvAccess {
     // may define an anonymous service
     if (typeName != null) {
       if (serviceName != null)
-        log.append("**InvAccess in ("+dataset.getFullName()+"):cannot declare both service ("+serviceName+")"+
-          " and serviceType <"+typeName+">\n");
+        log.append("**InvAccess in (").append(dataset.getFullName()).append("):cannot declare both service (").append(serviceName).append(")" + " and serviceType <").append(typeName).append(">\n");
       else {
         this.service = new InvService("", typeName, "", "", null); // "anonymous" service
         //if ((uri != null) && !uri.isAbsolute())
@@ -95,15 +92,14 @@ public class InvAccessImpl extends InvAccess {
     if (serviceName != null) {
       this.service = dataset.findService(serviceName);
       if (this.service == null)
-        log.append("**InvAccess in ("+dataset.getFullName()+"): has unknown service named ("+ serviceName+")\n");
+        log.append("**InvAccess in (").append(dataset.getFullName()).append("): has unknown service named (").append(serviceName).append(")\n");
     }
 
       // check urlPath is ok
     try {
       new java.net.URI(urlPath);
     } catch (java.net.URISyntaxException e) {
-      log.append("**InvAccess in ("+dataset.getFullName()+"):\n"+
-        "   urlPath= "+urlPath+")\n  URISyntaxException="+e.getMessage());
+      log.append("**InvAccess in (").append(dataset.getFullName()).append("):\n" + "   urlPath= ").append(urlPath).append(")\n  URISyntaxException=").append(e.getMessage());
     }
 
     return true;
@@ -114,11 +110,11 @@ public class InvAccessImpl extends InvAccess {
     return "service:("+service.getName()+") path:("+urlPath+")";
   }
 
-    /** Get the service name if specified */
+    /** @return the service name if specified */
   public String getServiceName() { return serviceName; }
-    /** Get the service type name if specified */
+    /** @return the service type name if specified */
   public String getServiceType() { return serviceTypeName; }
-    /** Get the data format type name if specified */
+    /** @return the data format type name if specified */
   public String getDataFormatName() { return dataFormatName; }
 
   public void setSize( double dataSize) { this.dataSize = dataSize; }
@@ -156,14 +152,12 @@ public class InvAccessImpl extends InvAccess {
     }
 
     if (getService() == null) {
-      out.append("**InvAccess in ("+dataset.getFullName()+"): with urlPath= ("+urlPath+
-        ") has no valid service\n");
+      out.append("**InvAccess in (").append(dataset.getFullName()).append("): with urlPath= (").append(urlPath).append(") has no valid service\n");
       isValid = false;
     }
 
     else if (getStandardUrlName() == null) {
-      out.append("**InvAccess in ("+dataset.getFullName()+"): with urlPath= ("+urlPath+
-        ") has invalid URL\n");
+      out.append("**InvAccess in (").append(dataset.getFullName()).append("): with urlPath= (").append(urlPath).append(") has invalid URL\n");
       isValid = false;
     }
 

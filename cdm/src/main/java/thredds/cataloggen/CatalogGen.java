@@ -226,7 +226,7 @@ public class CatalogGen
     String invCatDTD = "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd";
     log.debug( "writeCatalog(): set the catalogs DTD (" + invCatDTD + ").");
     // Set the catalogs DTD.
-    ( (InvCatalogImpl) catalog).setDTDid( invCatDTD);
+    // ( (InvCatalogImpl) catalog).setDTDid( invCatDTD);  LOOK !!
 
     // Print the catalog as an XML document.
     if ( outFileName == null)

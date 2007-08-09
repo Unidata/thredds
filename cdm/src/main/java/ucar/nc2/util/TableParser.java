@@ -26,6 +26,40 @@ import java.net.URL;
 
 /**
  * Utility class to read and parse a fixed length table.
+ * Each line of the table becomes a "Record". Each Record has a set of Fields described by the format string.
+ *
+ <pre>
+    List<TableParser.Record> recs = TableParser.readTable(is, "3,15,46,54,60d,67d,73d", 50000);
+    for (TableParser.Record record : recs) {
+      Station s = new Station();
+      s.id = "K" + record.get(0);
+      s.name = record.get(2) + " " + record.get(3);
+      s.lat = (Double) record.get(4) * .01;
+      s.lon = (Double) record.get(5) * .01;
+      s.elev = (Double) record.get(6);
+
+      stationTableHash.put(s.id, s);
+      if (showStations) System.out.println(" station= " + s);
+    }
+
+Example Table:
+TLX      000001 OKLAHOMA_CITY/Norman             OK US  3532  -9727   370  0 NWS
+AMA      000313 AMARILLO/Amarillo                TX US  3523 -10170  1093  0 NWS
+HGX      000378 HOUSTON/GALVESTON/Dickinson      TX US  2947  -9507     5  0 NWS
+MLB      000302 MELBOURNE/Melbourne              FL US  2810  -8065    11  0 NWS
+
+ format:
+ "3,15,54,60d,67d,73d"
+
+ grammer:
+  format = {field,}
+  field = endPos type
+  endPos = ending pos in the line
+  type = i=integer, d=double else String
+  field[0] goes from 0 to endPos[0]
+  field[i] goes from endPos[i-1]+1 to endPos[i]
+
+</pre>
  *
  * @author caron
  */
@@ -36,6 +70,11 @@ public class TableParser {
    *
    * @param urlString starts with http, read URL contenets, else read file.
    * @see #readTable(InputStream ios, String format, int maxLines)
+   * @param format describe format of each line.
+   * @param maxLines maximum number of lines to parse, set to < 0 to read all
+   * @return List of TableParser.Record
+   * @throws IOException on read error
+   * @throws NumberFormatException  on parse number error
    */
   static public List<Record> readTable(String urlString, String format, int maxLines) throws IOException, NumberFormatException {
 
@@ -73,7 +112,7 @@ public class TableParser {
       char last = tok.charAt(tok.length()-1);
       if (last == 'i') type = int.class;
       if (last == 'd') type = double.class;
-      if (type!= String.class) tok = tok.substring(0, tok.length()-1);
+      if (type != String.class) tok = tok.substring(0, tok.length()-1);
 
       int end = Integer.parseInt( tok);
       fields.add( new Field( start, end, type));
@@ -153,7 +192,7 @@ public class TableParser {
   static String testName = "C:/data/station/adde/STNDB.TXT";
   //static String testName = "M:/temp/STNDB.TXT";
   static String testName2 = "http://localhost:8080/test/STNDB.TXT";
-  static String testName3 = "C:/dev/netcdf-java-2.2/resources/resources/nj22/tables/nexrad.tbl";
+  static String testName3 = "C:/dev/thredds/cdm/src/main/resources/resources/nj22/tables/nexrad.tbl";
 
   static public void main( String[] args) throws IOException {
     List recs = TableParser.readTable(testName3, "3,15,54,60d,67d,73d", 50000);

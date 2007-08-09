@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -118,7 +117,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
         TimeUnit tu = new TimeUnit(olderThanS);
         this.params.lastModifiedLimit  = (long) (1000 * tu.getValueInSeconds());
       } catch (Exception e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        logger.error("Invalid TimeUnit = "+olderThanS);
+        throw new IllegalArgumentException("Invalid TimeUnit = "+olderThanS);
       }
     }
   }
@@ -139,9 +139,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
   /**
    * Create the FMRC catalog, or one of its nested catalogs.
-   * @param match which catalog, one of null, RUNS, OFFSET, FORECAST, or SCAN
-   * @param orgPath
-   * @param baseURI
+   * @param match which catalog: one of null, RUNS, OFFSET, FORECAST, or SCAN
+   * @param orgPath the path for the requested catalog.
+   * @param baseURI the base URI for the catalog, used to resolve relative URLs.
    * @return the requested catalog
    */
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI ) {
@@ -165,9 +165,9 @@ public class InvDatasetFmrc extends InvCatalogRef {
     }
   }
 
-  public java.util.List getDatasets() {
+  public java.util.List<InvDataset> getDatasets() {
     if (!madeDatasets) {
-      ArrayList datasets = new ArrayList();
+      List<InvDataset> datasets = new ArrayList<InvDataset>();
 
       if (runsOnly) {
         InvDatasetImpl ds = new InvCatalogRef(this, TITLE_RUNS, getCatalogHref(RUNS));
@@ -265,8 +265,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
    *
    * @param baseURI base URI of the request
    * @return the top FMRC catalog
-   * @throws IOException
-   * @throws URISyntaxException
+   * @throws IOException on I/O error
+   * @throws URISyntaxException if path is misformed
    */
   private InvCatalogImpl makeCatalog(URI baseURI) throws IOException, URISyntaxException {
 
@@ -318,18 +318,14 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
       // any referenced services need to be local
       List serviceLocal = getServicesLocal();
-      List serviceAll = parentCatalog.getServices();
-      for (int i = 0; i < serviceAll.size(); i++) {
-        InvService service = (InvService) serviceAll.get(i);
+      for (InvService service : parentCatalog.getServices()) {
         if (!serviceLocal.contains(service))
           mainCatalog.addService(service);
       }
-      findDODSService(serviceAll); // LOOK kludgey
+      findDODSService(parentCatalog.getServices()); // LOOK kludgey
 
-      List datasets = getDatasets();
-      for (int i = 0; i < datasets.size(); i++) {
-        InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
-        top.addDataset(ds);
+      for (InvDataset ds : getDatasets()) {
+        top.addDataset((InvDatasetImpl) ds);
       }
       mainCatalog.finish();
       this.catalog = mainCatalog;
@@ -338,9 +334,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalog;
   }
 
-  private void findDODSService(List services) {
-    for (int i = 0; i < services.size(); i++) {
-      InvService service = (InvService) services.get(i);
+  private void findDODSService(List<InvService> services) {
+    for (InvService service : services) {
       if ((dodsService == null) && (service.getServiceType() == ServiceType.OPENDAP)) {
         dodsService = service.getName();
         return;
@@ -363,14 +358,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
       runCatalog.addDataset(top);
 
       // any referenced services need to be local
-      ArrayList services = new ArrayList( getServicesLocal());
+      List<InvService> services = new ArrayList<InvService>( getServicesLocal());
       InvService service = getServiceDefault();
       if ((service != null) && !services.contains(service))
         runCatalog.addService(service);
 
-      List datasets = makeRunDatasets();
-      for (int i = 0; i < datasets.size(); i++) {
-        InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
+      for (InvDatasetImpl ds : makeRunDatasets()) {
         top.addDataset(ds);
       }
       runCatalog.finish();
@@ -394,14 +387,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
       offCatalog.addDataset(top);
 
       // any referenced services need to be local
-      ArrayList services = new ArrayList( getServicesLocal());
+      List<InvService> services = getServicesLocal();
       InvService service = getServiceDefault();
       if ((service != null) && !services.contains(service))
         offCatalog.addService(service);
 
-      List datasets = makeOffsetDatasets();
-      for (int i = 0; i < datasets.size(); i++) {
-        InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
+      for (InvDatasetImpl ds : makeOffsetDatasets()) {
         top.addDataset(ds);
       }
       offCatalog.finish();
@@ -423,14 +414,12 @@ public class InvDatasetFmrc extends InvCatalogRef {
       foreCatalog.addDataset(top);
 
       // any referenced services need to be local
-      ArrayList services = new ArrayList( getServicesLocal());
+      List<InvService> services = getServicesLocal();
       InvService service = getServiceDefault();
       if ((service != null) && !services.contains(service))
         foreCatalog.addService(service);
 
-      List datasets = makeForecastDatasets();
-      for (int i = 0; i < datasets.size(); i++) {
-        InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
+      for (InvDatasetImpl ds : makeForecastDatasets()) {
         top.addDataset(ds);
       }
       foreCatalog.finish();
@@ -461,19 +450,17 @@ public class InvDatasetFmrc extends InvCatalogRef {
     madeFmrc = true;
   }
 
-  private List makeRunDatasets() throws IOException {
+  private List<InvDatasetImpl> makeRunDatasets() throws IOException {
     makeFmrc();
 
-    ArrayList datasets = new ArrayList();
+    List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
     DateFormatter formatter = new DateFormatter();
 
     String id = getID();
     if (id == null)
       id = getPath();
 
-    List runs = fmrc.getRunDates();
-    for (int i = 0; i < runs.size(); i++) {
-      Date runDate = (Date) runs.get(i);
+    for (Date runDate : fmrc.getRunDates()) {
       //String name = StringUtil.escape(formatter.toDateTimeStringISO( runDate), "");
       String name = getName()+"_"+RUN_NAME+formatter.toDateTimeStringISO( runDate);
       name = StringUtil.replace(name, ' ', "_");
@@ -489,18 +476,16 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return datasets;
   }
 
-  private List makeOffsetDatasets() throws IOException {
+  private List<InvDatasetImpl> makeOffsetDatasets() throws IOException {
     makeFmrc();
 
-    ArrayList datasets = new ArrayList();
+    List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
 
     String id = getID();
     if (id == null)
       id = getPath();
 
-     List offsets = fmrc.getForecastOffsets();
-     for (int i = 0; i < offsets.size(); i++) {
-       Double offset = (Double) offsets.get(i);
+     for (Double offset : fmrc.getForecastOffsets()) {
        String name = getName()+"_"+OFFSET_NAME+offset+"hr";
        name = StringUtil.replace(name, ' ', "_");
        InvDatasetImpl nested = new InvDatasetImpl(this, name);
@@ -514,19 +499,17 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return datasets;
   }
 
-  private List makeForecastDatasets() throws IOException {
+  private List<InvDatasetImpl> makeForecastDatasets() throws IOException {
     makeFmrc();
 
-    ArrayList datasets = new ArrayList();
+    List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
     DateFormatter formatter = new DateFormatter();
 
     String id = getID();
     if (id == null)
       id = getPath();
 
-     List forecasts = fmrc.getForecastDates();
-     for (int i = 0; i < forecasts.size(); i++) {
-       Date forecastDate = (Date) forecasts.get(i);
+     for (Date forecastDate : fmrc.getForecastDates()) {
        String name = getName()+"_"+FORECAST_NAME+formatter.toDateTimeStringISO( forecastDate);
        name = StringUtil.replace(name, ' ', "_");
        InvDatasetImpl nested = new InvDatasetImpl(this, name);

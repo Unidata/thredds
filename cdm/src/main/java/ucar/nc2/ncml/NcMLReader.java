@@ -411,13 +411,19 @@ public class NcMLReader {
   private void readAtt(Object parent, Object refParent, Element attElem) {
     String name = attElem.getAttributeValue("name");
     if (name == null) {
-      log.info("NcML Attribute name is required ("+attElem+")");
+      log.warn("NcML Attribute name is required ("+attElem+")");
       hasFatalError = true;
       return;
     }
     String nameInFile = attElem.getAttributeValue("orgName");
     boolean newName =  (nameInFile != null) && !nameInFile.equals(name);
-    if (nameInFile == null) nameInFile = name;
+    if (nameInFile == null)
+      nameInFile = name;
+    else if (null == findAttribute(refParent, nameInFile)) { // has to exists
+      log.warn("NcML attribute orgName '"+nameInFile+"' doesnt exist. att="+name+" in="+parent);
+      hasFatalError = true;
+      return;
+    }
 
     // see if its new
     ucar.nc2.Attribute att = findAttribute(refParent, nameInFile);
@@ -427,7 +433,7 @@ public class NcMLReader {
         ucar.ma2.Array values = readAttributeValues(attElem);
         addAttribute(parent, new ucar.nc2.Attribute(name, values));
       } catch (RuntimeException e) {
-        log.info("NcML Attribute Exception: "+e.getMessage()+" ("+attElem+")");
+        log.warn("NcML new Attribute Exception: "+e.getMessage()+" att="+name+" in="+parent);
         hasFatalError = true;
       }
 
@@ -440,7 +446,7 @@ public class NcMLReader {
           ucar.ma2.Array values = readAttributeValues(attElem);
           addAttribute(parent, new ucar.nc2.Attribute(name, values));
         } catch (RuntimeException e) {
-          log.info("NcML Attribute Exception: "+e.getMessage()+" ("+attElem+")");
+          log.warn("NcML existing Attribute Exception: "+e.getMessage()+" att="+name+" in="+parent);
           hasFatalError = true;
           return;
         }

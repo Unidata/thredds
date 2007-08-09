@@ -499,11 +499,13 @@ public class TestAll extends TestCase
    * @param onlyRelativeUrls only include catalogRefs with relative HREF URLs if true, otherwise include all catalogRef datasets
    * @return the list of catalogRef datasets
    */
-  private static List<InvCatalogRef> findAllCatRefs( List<InvDatasetImpl> datasets, StringBuffer log, boolean onlyRelativeUrls )
+  private static List<InvCatalogRef> findAllCatRefs( List<InvDataset> datasets, StringBuffer log, boolean onlyRelativeUrls )
   {
     List<InvCatalogRef> catRefList = new ArrayList<InvCatalogRef>();
-    for ( InvDatasetImpl curDs : datasets )
+    for ( InvDataset invds : datasets )
     {
+      InvDatasetImpl curDs = (InvDatasetImpl) invds;
+
       if ( curDs instanceof InvDatasetScan ) continue;
       if ( curDs instanceof InvDatasetFmrc ) continue;
 

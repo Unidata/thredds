@@ -1,6 +1,5 @@
-// $Id: InvMetadata.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,10 +23,8 @@ package thredds.catalog;
 /**
  * A metadata element: structured XML element containing info about associated dataset or catalog.
  *
- * @see InvMetadata for public interface
- *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
+ * @see InvMetadata for public interface
  */
 
 public class InvMetadata {
@@ -43,24 +40,23 @@ public class InvMetadata {
   private ThreddsMetadata tm = null;
 
   private StringBuffer log = new StringBuffer();
-  private boolean debug = false;
 
   /**
    * Constructor for elements with Xlinks.
    *
-   * @param dataset : dataset that contains the metadata.
-   * @param xlinkHref : URI of xlink, may be null.
-   * @param title : xlink title, may be null.
-   * @param type : metadata type
-   * @param namespaceURI : namespace URI string of the element, use null for THREDDS
-   * @param prefix : namespace prefix of the element, use null for THREDDS
-   * @param inherited : if inherited
+   * @param dataset           : dataset that contains the metadata.
+   * @param xlinkHref         : URI of xlink, may be null.
+   * @param title             : xlink title, may be null.
+   * @param type              : metadata type
+   * @param namespaceURI      : namespace URI string of the element, use null for THREDDS
+   * @param prefix            : namespace prefix of the element, use null for THREDDS
+   * @param inherited         : if inherited
    * @param isThreddsMetadata : is threddsMetadata
-   * @param converter : converter for creating the content object, may be null
+   * @param converter         : converter for creating the content object, may be null
    */
-  public InvMetadata( InvDataset dataset, String xlinkHref, String title, String type,
-                      String namespaceURI, String prefix, boolean inherited, boolean isThreddsMetadata,
-                      MetadataConverterIF converter) {
+  public InvMetadata(InvDataset dataset, String xlinkHref, String title, String type,
+                     String namespaceURI, String prefix, boolean inherited, boolean isThreddsMetadata,
+                     MetadataConverterIF converter) {
     this.dataset = dataset;
     this.xlinkHref = xlinkHref;
 
@@ -76,101 +72,181 @@ public class InvMetadata {
   /**
    * Constructor for elements with inline content.
    *
-   * @param dataset : dataset that contains the metadata.
-   * @param mtype : metadata type
-   * @param namespaceURI : namespace URI string of the element, can use null for THREDDS
-   * @param namespacePrefix : namespace prefix of the element, use null for THREDDS
-   * @param inherited : if inherited
+   * @param dataset           : dataset that contains the metadata.
+   * @param mtype             : metadata type
+   * @param namespaceURI      : namespace URI string of the element, can use null for THREDDS
+   * @param namespacePrefix   : namespace prefix of the element, use null for THREDDS
+   * @param inherited         : if inherited
    * @param isThreddsMetadata : is threddsMetadata
-   * @param converter : the metadata converter.
-   * @param contentObject : content object.
+   * @param converter         : the metadata converter.
+   * @param contentObject     : content object.
    */
   public InvMetadata(InvDataset dataset, String mtype, String namespaceURI,
                      String namespacePrefix, boolean inherited, boolean isThreddsMetadata,
-                     MetadataConverterIF converter, Object contentObject )  {
-     this.dataset = dataset;
-     this.type = mtype;
-     this.namespaceURI = namespaceURI;
-     this.prefix = namespacePrefix;
-     this.isInherited = inherited;
-     this.isThreddsMetadata = isThreddsMetadata;
-     this.converter = converter;
-     this.contentObject = contentObject;
-     if (isThreddsMetadata)
-       tm = (ThreddsMetadata) contentObject;
-     init = true;
+                     MetadataConverterIF converter, Object contentObject) {
+    this.dataset = dataset;
+    this.type = mtype;
+    this.namespaceURI = namespaceURI;
+    this.prefix = namespacePrefix;
+    this.isInherited = inherited;
+    this.isThreddsMetadata = isThreddsMetadata;
+    this.converter = converter;
+    this.contentObject = contentObject;
+    if (isThreddsMetadata)
+      tm = (ThreddsMetadata) contentObject;
+    init = true;
   }
 
-   /**
+  /**
    * Constructor using an existing ThreddsMetadata object.
    *
-   * @param dataset : dataset that contains the metadata.
+   * @param dataset   : dataset that contains the metadata.
    * @param inherited : if inherited
-   * @param tm : content object.
+   * @param tm        : content object.
    */
-  public InvMetadata(InvDataset dataset, boolean inherited, ThreddsMetadata tm )  {
-     this.dataset = dataset;
-     this.isInherited = inherited;
-     this.isThreddsMetadata = true;
-     this.contentObject = tm;
-     this.tm = tm;
-     init = true;
+  public InvMetadata(InvDataset dataset, boolean inherited, ThreddsMetadata tm) {
+    this.dataset = dataset;
+    this.isInherited = inherited;
+    this.isThreddsMetadata = true;
+    this.contentObject = tm;
+    this.tm = tm;
+    init = true;
   }
 
-  /** Return the parent dataset of this InvMetadata */
-  public InvDataset getParentDataset() { return this.dataset; }
+  /**
+   * Get the parent dataset of this InvMetadata
+   * @return the parent dataset of this InvMetadata
+   */
+  public InvDataset getParentDataset() {
+    return this.dataset;
+  }
 
-    /** Get the converter; may be null. */
-  public MetadataConverterIF getConverter() { return converter; }
+  /**
+   * Get the converter; may be null.
+   * @return the converter or null
+   */
+  public MetadataConverterIF getConverter() {
+    return converter;
+  }
 
-    /** Get the metadata type. */
-  public String getMetadataType() { return type; }
+  /**
+   * Get the metadata type.
+   * @return the metadata type.
+   */
+  public String getMetadataType() {
+    return type;
+  }
 
-    /** Get the namespace. */
-  public String getNamespaceURI() { return namespaceURI; }
+  /**
+   * Get the namespace.
+   * @return the namespace.
+   */
+  public String getNamespaceURI() {
+    return namespaceURI;
+  }
 
-    /** Get the prefix mapped to the namespace. */
-  public String getNamespacePrefix() { return prefix; }
+  /**
+   * Get the prefix mapped to the namespace.
+   * @return the prefix mapped to the namespace.
+   */
+  public String getNamespacePrefix() {
+    return prefix;
+  }
 
-    /** if it has an XLink */
-  public boolean hasXlink() { return xlinkHref != null; }
+  /**
+   * if it has an XLink
+   * @return true if it has an XLink
+   */
+  public boolean hasXlink() {
+    return xlinkHref != null;
+  }
 
-  /** if its a XLink, get the xlink:href as an absolute URI; may be null */
-  public String getXlinkHref() {  return xlinkHref; }
+  /**
+   * if its a XLink, get the xlink:href String
+   * @return the xlink:href or null
+   */
+  public String getXlinkHref() {
+    return xlinkHref;
+  }
 
-  /** if its a XLink, get the xlink:href as an absolute URI; may be null */
-  public java.net.URI getXlinkURI() {  return xlinkUri; }
+  /**
+   * if its a XLink, get the xlink:href as an absolute URI; may be null
+   * @return the xlink:href as an absolute URI, or null
+   */
+  public java.net.URI getXlinkURI() {
+    return xlinkUri;
+  }
 
-  /** if its a XLink, get the xlink:title attribute */
-  public String getXlinkTitle() { return title; }
+  /**
+   * if its a XLink, get the xlink:title attribute
+   * @return xlink:title or null
+   */
+  public String getXlinkTitle() {
+    return title;
+  }
 
-    /** if it is inherited */
-  public boolean isInherited() { return isInherited; }
+  /**
+   * if it is inherited
+   * @return true if it is inherited
+   */
+  public boolean isInherited() {
+    return isInherited;
+  }
 
-    /** if this element contains ThreddsMetadata */
-  public boolean isThreddsMetadata() { return isThreddsMetadata; }
-    /** set if this element contains ThreddsMetadata */
-  public void setThreddsMetadata(boolean isThreddsMetadata) { this.isThreddsMetadata = isThreddsMetadata; }
-    /** set the namespace URI */
+  /**
+   * if this element contains ThreddsMetadata
+   * @return true if this element contains ThreddsMetadata
+   */
+  public boolean isThreddsMetadata() {
+    return isThreddsMetadata;
+  }
+
+  /**
+   * set if this element contains ThreddsMetadata
+   * @param isThreddsMetadata true if this element contains ThreddsMetadata
+   */
+  public void setThreddsMetadata(boolean isThreddsMetadata) {
+    this.isThreddsMetadata = isThreddsMetadata;
+  }
+
+  /**
+   * set the namespace URI
+   * @param namespaceURI set the namespace URI
+   */
   public void setNamespaceURI(String namespaceURI) {
     this.namespaceURI = namespaceURI;
     hashCode = 0;
   }
 
-  /** get the content object, may be null */
+  /**
+   * get the content object, may be null
+   * @return the content object, or null
+   */
   public Object getContentObject() {
     finish();
     return contentObject;
   }
 
-  /** set the internal ThreddsMetadata; this holds elements from THREDDS namespace */
-  public void setThreddsMetadata(ThreddsMetadata tmd) { tm = tmd; }
-  /** get the internal ThreddsMetadata, may be null */
-  public ThreddsMetadata getThreddsMetadata() { return tm; }
+  /**
+   * set the internal ThreddsMetadata; this holds elements from THREDDS namespace
+   * @param tmd the internal ThreddsMetadata object
+   */
+  public void setThreddsMetadata(ThreddsMetadata tmd) {
+    tm = tmd;
+  }
+
+  /**
+   * get the internal ThreddsMetadata, if isThreddsMetadata() is true
+   * @return  the internal ThreddsMetadata, or null
+   */
+  public ThreddsMetadata getThreddsMetadata() {
+    return tm;
+  }
 
 
-  /** Finish getting the metadata if necessary.
-   *  If this is an XLink, this will trigger a read of the href the first time called.
+  /**
+   * Finish getting the metadata if necessary.
+   * If this is an XLink, this will trigger a read of the href the first time called.
    */
   public void finish() {
     if (init) return;
@@ -180,27 +256,28 @@ public class InvMetadata {
     xlinkHref = xlinkHref.trim();
     try {
       this.xlinkUri = dataset.getParentCatalog().resolveUri(xlinkHref);
-    } catch ( java.net.URISyntaxException e) {
-      log.append(" ** Error: Bad URL in metadata href = "+xlinkHref+"\n");
+    } catch (java.net.URISyntaxException e) {
+      log.append(" ** Error: Bad URL in metadata href = ").append(xlinkHref).append("\n");
       return;
     }
 
     // open and read the referenced catalog XML
     try {
       if (converter == null) {
-        log.append("  **InvMetadata on = ("+this+"): has no converter\n");
+        log.append("  **InvMetadata on = (").append(this).append("): has no converter\n");
         return;
       }
 
-      contentObject = converter.readMetadataContentFromURL( dataset, xlinkUri);
+      contentObject = converter.readMetadataContentFromURL(dataset, xlinkUri);
       if (isThreddsMetadata)
         tm = (ThreddsMetadata) contentObject;
 
     } catch (java.io.IOException e) {
-      log.append("  **InvMetadata on = ("+xlinkUri+"): Exception ("+e.getMessage()+")\n");
+      log.append("  **InvMetadata on = (").append(xlinkUri).append("): Exception (").append(e.getMessage()).append(")\n");
       // e.printStackTrace();
     }
   }
+
   private boolean init = false;
 
   boolean check(StringBuffer out) {
@@ -208,7 +285,7 @@ public class InvMetadata {
 
     if (log.length() > 0) {
       isValid = false;
-      out.append( log);
+      out.append(log);
     }
 
     if ((contentObject != null) && (converter != null))
@@ -217,81 +294,43 @@ public class InvMetadata {
     return isValid;
   }
 
-  /** InvMetadata elements with same values are equal. */
-   public boolean equals(Object o) {
-     if (this == o) return true;
-     if (!(o instanceof InvMetadata)) return false;
-     return o.hashCode() == this.hashCode();
+  /**
+   * InvMetadata elements with same values are equal.
+   */
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof InvMetadata)) return false;
+    return o.hashCode() == this.hashCode();
   }
 
-  /** Override Object.hashCode() to implement equals. */
+  /**
+   * Override Object.hashCode() to implement equals.
+   */
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
       if (null != getNamespaceURI())
-        result = 37*result + getNamespaceURI().hashCode();
+        result = 37 * result + getNamespaceURI().hashCode();
       if (null != getXlinkHref())
-        result = 37*result + getXlinkHref().hashCode();
+        result = 37 * result + getXlinkHref().hashCode();
       if (null != getXlinkTitle())
-        result = 37*result + getXlinkTitle().hashCode();
+        result = 37 * result + getXlinkTitle().hashCode();
       if (null != getMetadataType())
-        result = 37*result + getMetadataType().hashCode();
-      result = 37*result + (isInherited() ? 1 : 0);
+        result = 37 * result + getMetadataType().hashCode();
+      result = 37 * result + (isInherited() ? 1 : 0);
       // if (isThreddsMetadata)
       //  result = 37*result + getThreddsMetadata().hashCode();
       hashCode = result;
     }
     return hashCode;
   }
+
   private volatile int hashCode = 0; // Bloch, item 8
 
   /** String representation
-  public String toString() {
-    return " xlink = "+getXlinkHref()+" mtype= "+type+" namespaceURI="+namespaceURI
-        +" isThredds= "+isThreddsMetadata  +" inherit= "+isInherited();
-  } */
+   public String toString() {
+   return " xlink = "+getXlinkHref()+" mtype= "+type+" namespaceURI="+namespaceURI
+   +" isThredds= "+isThreddsMetadata  +" inherit= "+isInherited();
+   } */
 
 }
-
-/**
- * $Log: InvMetadata.java,v $
- * Revision 1.14  2005/04/27 21:34:09  caron
- * cleanup DirectoryScanner, InvDatasetScan
- *
- * Revision 1.13  2005/04/20 00:05:36  caron
- * *** empty log message ***
- *
- * Revision 1.12  2004/12/15 00:11:45  caron
- * 2.2.05
- *
- * Revision 1.11  2004/11/30 23:08:45  edavis
- * Add ToDo comment.
- *
- * Revision 1.10  2004/06/09 00:27:25  caron
- * version 2.0a release; cleanup javadoc
- *
- * Revision 1.9  2004/06/04 22:28:44  caron
- * convertTover1; get ver 06 inheritence right
- *
- * Revision 1.8  2004/05/21 05:57:31  caron
- * release 2.0b
- *
- * Revision 1.7  2004/05/20 22:45:52  edavis
- * Add new constructor that takes a contentObject.
- *
- * Revision 1.6  2004/05/13 15:58:00  caron
- * release 2.0a
- *
- * Revision 1.5  2004/05/11 23:30:28  caron
- * release 2.0a
- *
- * Revision 1.4  2004/03/19 20:12:52  caron
- * trim URLs
- *
- * Revision 1.3  2004/03/05 23:35:47  caron
- * rel 1.3.1 javadoc
- *
- * Revision 1.2  2004/02/20 00:49:50  caron
- * 1.3 changes
- *
- */

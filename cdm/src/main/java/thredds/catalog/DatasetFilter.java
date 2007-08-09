@@ -1,6 +1,5 @@
-// $Id: DatasetFilter.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,14 +20,11 @@
 
 package thredds.catalog;
 
-import java.util.*;
-
 /**
  * Abstract class to filter datasets.
  * @see InvCatalog#filter
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 public abstract class DatasetFilter {
@@ -48,17 +44,13 @@ public abstract class DatasetFilter {
     public ByServiceType( ServiceType type) { this.type = type; }
 
     public int accept( InvDataset d) {
-      List access = d.getAccess();
-
       // check all access for any that has this servicee
-      for (int i=0; i<access.size(); i++) {
-         InvAccess a = (InvAccess) access.get(i);
+      for (InvAccess a : d.getAccess()) {
          if (a.getService().getServiceType() == type) return 1;
        }
 
        // cant tell about DQC and resolvers !!
-       for (int i=0; i<access.size(); i++) {
-         InvAccess a = (InvAccess) access.get(i);
+       for (InvAccess a : d.getAccess()) {
          if (a.getService().getServiceType() == ServiceType.QC) return 0;
          if (a.getService().getServiceType() == ServiceType.RESOLVER) return 0;
        }
@@ -81,13 +73,3 @@ public abstract class DatasetFilter {
   }
 
 }
-
-/**
- * $Log: DatasetFilter.java,v $
- * Revision 1.2  2004/03/11 23:35:20  caron
- * minor bugs
- *
- * Revision 1.1  2004/02/20 00:49:49  caron
- * 1.3 changes
- *
- */

@@ -389,11 +389,11 @@ public class FmrcImpl implements ForecastModelRunCollection {
     }
   }
 
-  private class InvRuntimeComparator implements Comparator<Inventory> {
+  /* private class InvRuntimeComparator implements Comparator<Inventory> {
     public int compare(Inventory inv1, Inventory inv2) {
       return inv1.runTime.compareTo(inv2.runTime);
     }
-  }
+  } */
 
   private interface InventoryGetter {
     public List<Inventory> get(Gridset gridset);
@@ -615,7 +615,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     newds.addVariable(newds.getRootGroup(), offsetCoordinate);
   }
 
-  private void addTimeCoordinates(NetcdfDataset newds, Gridset gridset, List invList, String type) {
+  /* private void addTimeCoordinates(NetcdfDataset newds, Gridset gridset, List invList, String type) {
     DateFormatter formatter = new DateFormatter();
     boolean useRun = type.equals(FORECAST);
 
@@ -684,7 +684,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       otherCoordinate.addAttribute(new Attribute("standard_name", "forecast_period"));
     }
     newds.addVariable(newds.getRootGroup(), otherCoordinate);
-  }
+  } */
 
   /////////////////////////////
   // assumes any Variable coming here has one time dimension, and orgVar has 2
@@ -704,8 +704,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       int rank = orgVar.getRank()-1;
       int[] varShape = new int[rank];
       varShape[0] = invList.size();
-      for (int i=1; i<rank;i++)
-        varShape[i] = orgVarShape[i+1];
+      System.arraycopy(orgVarShape, 2, varShape, 1, rank - 1);
 
       Array allData = Array.factory(mainv.getDataType(), varShape);
       int destPos = 0;

@@ -1,6 +1,5 @@
-// $Id: InvCatalogFactory.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,43 +31,43 @@ import thredds.util.IO;
 
 /**
  * Reads an XML document and constructs thredds.catalog object.
- *
+ * <p/>
  * <h3>Example of normal use:</h3>
- *
+ * <p/>
  * <pre>
-    InvCatalogFactory factory = new InvCatalogFactory("default", validate);
-    InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML( catalogURI);
-    StringBuffer buff = new StringBuffer();
-    if (!catalog.check( buff)) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog <"+ catalogURI+">\n"+
-        buff.toString());
-    }
-   </pre>
-  *
-  * <h3>To write out a catalog to XML:</h3>
-  *
-  <pre>
-    // write out catalog to String
-    try {
-      System.out.println("\Catalog in XML=\n" + factory.writeXML( catalog));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    // write out catalog to a file
-    if (!factory.writeXML( catalog, filename))
-      System.out.println("Catalog failed to write to file=" + filename);
-
-    // write out catalog to a stream, catch exceptions
-    try {
-      BufferedOutputStream os = new BufferedOutputStream (new FileOutputStream(filename));
-      factory.writeXML( catalog, os);
-      os.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  </pre>
- *
+ * InvCatalogFactory factory = new InvCatalogFactory("default", validate);
+ * InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML( catalogURI);
+ * StringBuffer buff = new StringBuffer();
+ * if (!catalog.check( buff)) {
+ * javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog <"+ catalogURI+">\n"+
+ * buff.toString());
+ * }
+ * </pre>
+ * <p/>
+ * <h3>To write out a catalog to XML:</h3>
+ * <p/>
+ * <pre>
+ * // write out catalog to String
+ * try {
+ * System.out.println("\Catalog in XML=\n" + factory.writeXML( catalog));
+ * } catch (IOException e) {
+ * e.printStackTrace();
+ * }
+ * <p/>
+ * // write out catalog to a file
+ * if (!factory.writeXML( catalog, filename))
+ * System.out.println("Catalog failed to write to file=" + filename);
+ * <p/>
+ * // write out catalog to a stream, catch exceptions
+ * try {
+ * BufferedOutputStream os = new BufferedOutputStream (new FileOutputStream(filename));
+ * factory.writeXML( catalog, os);
+ * os.close();
+ * } catch (IOException e) {
+ * e.printStackTrace();
+ * }
+ * </pre>
+ * <p/>
  * <strong>Implementation details: </strong> Uses JDOM to read XML documents.
  * Uses a pluggable InvCatalogConvertIF to transform the JDOM tree to the thredds.catalog objects.
  * The converters are registered based on the namespace used. We are supporting: <ul>
@@ -78,10 +77,11 @@ import thredds.util.IO;
  * The schemas are read from a local resource, see XMLEntityResolver
  *
  * @author John Caron
- * @version $Id: InvCatalogFactory.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public class InvCatalogFactory {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(InvCatalogFactory.class);
+
   public static boolean debugURL = false, debugOpen = false, debugVersion = false;
   public static boolean showParsedXML = false, showStackTrace = false;
 
@@ -91,7 +91,9 @@ public class InvCatalogFactory {
   /**
    * Get new Factory for reading and writing catalogs.
    * For multithreading, get seperate InvCatalogFactory for each thread.
+   *
    * @param validate : do XML validation or not.
+   * @return default factory
    */
   public static InvCatalogFactory getDefaultFactory(boolean validate) {
     return new InvCatalogFactory("default", validate);
@@ -101,19 +103,26 @@ public class InvCatalogFactory {
 
   /**
    * An InvCatalogFactory may have a name, in case you need to manage several of them.
+   *
+   * @return name of factory
    */
-  public String getName() { return ( this.name ); }
+  public String getName() {
+    return (this.name);
+  }
+
   private String name;
   private InvCatalogConvertIF defaultConverter;
   private SAXBuilder saxBuilder;
   private StringBuffer warnMessages, errMessages, fatalMessages;
 
-  private HashMap converters = new HashMap(10);
-  private HashMap metadataConverters = new HashMap(10);
+  private Map<String, InvCatalogConvertIF> converters = new HashMap<String, InvCatalogConvertIF>(10);
+  private Map<String, MetadataConverterIF> metadataConverters = new HashMap<String, MetadataConverterIF>(10);
 
-  /** Constructor.
+  /**
+   * Constructor.
    * Can use this to read as many catalogs as you want, but only use in single thread.
-   * @param name : optional name to keep track of factories
+   *
+   * @param name     : optional name to keep track of factories
    * @param validate : do XML validation or not.
    */
   public InvCatalogFactory(String name, boolean validate) {
@@ -132,21 +141,21 @@ public class InvCatalogFactory {
     try {
       Class fac6 = Class.forName("thredds.catalog.parser.jdom.InvCatalogFactory6");
       Object fac6o = fac6.newInstance();
-      registerCatalogConverter( XMLEntityResolver.CATALOG_NAMESPACE_06, (InvCatalogConvertIF) fac6o);
+      registerCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_06, (InvCatalogConvertIF) fac6o);
 
       Class fac1 = Class.forName("thredds.catalog.parser.jdom.InvCatalogFactory10");
       Object fac1o = fac1.newInstance();
       defaultConverter = (InvCatalogConvertIF) fac1o;
-      registerCatalogConverter( XMLEntityResolver.CATALOG_NAMESPACE_10, (InvCatalogConvertIF) fac1o);
+      registerCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10, (InvCatalogConvertIF) fac1o);
 
       // registerMetadataConverter( JaxpFactory.CATALOG_NAMESPACE_10, (MetadataConverterIF) fac1o);
       // registerMetadataConverter( MetadataType.THREDDS, new ThreddsMetadata.Parser());
-    } catch ( ClassNotFoundException e) {
-      throw new RuntimeException("InvCatalogFactory: no implementing class found: "+e.getMessage());
-    } catch ( InstantiationException e) {
-      throw new RuntimeException("InvCatalogFactory: instantition failed: "+e.getMessage());
-    } catch ( IllegalAccessException e) {
-      throw new RuntimeException("InvCatalogFactory: access failed: "+e.getMessage());
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException("InvCatalogFactory: no implementing class found: " + e.getMessage());
+    } catch (InstantiationException e) {
+      throw new RuntimeException("InvCatalogFactory: instantition failed: " + e.getMessage());
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException("InvCatalogFactory: access failed: " + e.getMessage());
     }
   }
 
@@ -158,64 +167,70 @@ public class InvCatalogFactory {
    * @param converter : use this factory for this version
    */
   public void registerCatalogConverter(String namespace, InvCatalogConvertIF converter) {
-    converters.put( namespace, converter);
+    converters.put(namespace, converter);
   }
 
-    /** Find the InvCatalogConvertIF registered for this namespace. May return null. */
+  /**
+   * Find the InvCatalogConvertIF registered for this namespace.
+   * @param namespace : find InvCatalogConvertIF for this namespace
+   * @return the InvCatalogConvertIF registered for this namespace, or null
+   */
   public InvCatalogConvertIF getCatalogConverter(String namespace) {
-    return (InvCatalogConvertIF) converters.get(namespace);
+    return converters.get(namespace);
   }
 
   /**
    * Find the InvCatalogConvertIF registered for this namespace, and set it into the catalog.
+   * @param cat set InvCatalogConvertIF on this catalog
+   * @param namespace find InvCatalogConvertIF for this namespace
    */
   public void setCatalogConverter(InvCatalogImpl cat, String namespace) {
-    cat.setCatalogConverter( getCatalogConverter(namespace));
+    cat.setCatalogConverter(getCatalogConverter(namespace));
   }
 
   /**
    * Register metadata converters for reading metadata objects of a certain type or namespace.
    * This allows allows extensible metadata processing.
    *
-   * @param key : namespace or metadata type string
+   * @param key       : namespace or metadata type string
    * @param converter : use this MetadataConverterIF for the given key
    * @see InvMetadata
    */
   public void registerMetadataConverter(String key, MetadataConverterIF converter) {
-    metadataConverters.put( key, converter);
+    metadataConverters.put(key, converter);
   }
 
   /**
    * This allows the possibility of reading a catalog in another thread. The default
-   *  implementation does not do that, but a subclass may override and implement.
-   *  If the catalog is read successfully, it is passed on to the callback.
-   * @param uriString : read this catalog.
-   * @param callback : call this if successfully read.
+   * implementation does not do that, but a subclass may override and implement.
+   * If the catalog is read successfully, it is passed on to the callback.
    *
+   * @param uriString : read this catalog.
+   * @param callback  : call this if successfully read.
    * @see CatalogSetCallback
    */
-  public void readXMLasynch( String uriString, CatalogSetCallback callback) {
-    InvCatalogImpl cat = readXML( uriString);
-    callback.setCatalog( cat);
+  public void readXMLasynch(String uriString, CatalogSetCallback callback) {
+    InvCatalogImpl cat = readXML(uriString);
+    callback.setCatalog(cat);
   }
 
   /**
    * Create an InvCatalog from an XML document at a named URL.
-   *   Failures and exceptions are handled
-   *   by causing validate() to fail. Therefore, be sure to call validate() before trying
-   *   to use the InvCatalog object.
+   * Failures and exceptions are handled
+   * by causing validate() to fail. Therefore, be sure to call validate() before trying
+   * to use the InvCatalog object.
    *
    * @param uriString : the URI name that the XML doc is at.
    * @return an InvCatalogImpl object
    */
-  public InvCatalogImpl readXML( String uriString) {
+  public InvCatalogImpl readXML(String uriString) {
     URI uri;
     try {
-      uri = new URI( uriString);
+      uri = new URI(uriString);
     } catch (URISyntaxException e) {
-      InvCatalogImpl cat = new InvCatalogImpl( uriString, null, null);
-      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML URISyntaxException on URL ("+
-        uriString+") "+e.getMessage()+"\n", true);
+      InvCatalogImpl cat = new InvCatalogImpl(uriString, null, null);
+      cat.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML URISyntaxException on URL (" +
+          uriString + ") " + e.getMessage() + "\n", true);
       return cat;
     }
 
@@ -224,14 +239,14 @@ public class InvCatalogFactory {
 
   /**
    * Read an InvCatalog from an a URI.
-   *   Failures and exceptions are handled
-   *   by causing validate() to fail. Therefore, be sure to call validate() before trying
-   *   to use the InvCatalog object.
+   * Failures and exceptions are handled
+   * by causing validate() to fail. Therefore, be sure to call validate() before trying
+   * to use the InvCatalog object.
    *
    * @param uri : the URI of the document, used for resolving reletive references.
    * @return an InvCatalogImpl object
    */
-  public InvCatalogImpl readXML( URI uri) {
+  public InvCatalogImpl readXML(URI uri) {
     // get ready for XML parsing
     warnMessages.setLength(0);
     errMessages.setLength(0);
@@ -239,37 +254,38 @@ public class InvCatalogFactory {
 
     org.jdom.Document jdomDoc;
     try {
-      jdomDoc = saxBuilder.build( uri.toURL());
+      jdomDoc = saxBuilder.build(uri.toURL());
     } catch (Exception e) {
-      InvCatalogImpl cat = new InvCatalogImpl( uri.toString(), null, null);
-      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML failed"
-        +"\n Exception= "+e.getClass().getName()+" "+e.getMessage()
-        +"\n fatalMessages= " +fatalMessages.toString()
-        +"\n errMessages= " +errMessages.toString()
-        +"\n warnMessages= " +warnMessages.toString()+"\n", true);
+      InvCatalogImpl cat = new InvCatalogImpl(uri.toString(), null, null);
+      cat.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML failed"
+          + "\n Exception= " + e.getClass().getName() + " " + e.getMessage()
+          + "\n fatalMessages= " + fatalMessages.toString()
+          + "\n errMessages= " + errMessages.toString()
+          + "\n warnMessages= " + warnMessages.toString() + "\n", true);
       return cat;
     }
 
     if (fatalMessages.length() > 0) {
-      InvCatalogImpl cat = new InvCatalogImpl( uri.toString(), null, null);
-      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML XML Fatal error(s) =\n"+
-        fatalMessages.toString()+"\n", true);
+      InvCatalogImpl cat = new InvCatalogImpl(uri.toString(), null, null);
+      cat.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML XML Fatal error(s) =\n" +
+          fatalMessages.toString() + "\n", true);
       return cat;
     }
 
-    return readXML( jdomDoc, uri);
+    return readXML(jdomDoc, uri);
   }
 
   /**
    * Create an InvCatalog from an InputStream.
-   *   Failures and exceptions are handled
-   *   by causing validate() to fail. Therefore, be sure to call validate() before trying
-   *   to use the InvCatalog object.
+   * Failures and exceptions are handled
+   * by causing validate() to fail. Therefore, be sure to call validate() before trying
+   * to use the InvCatalog object.
    *
    * @param docIs : the InputStream to read from
+   * @param uri : the URI of the document, used for resolving reletive references.
    * @return an InvCatalogImpl object
    */
-  public InvCatalogImpl readXML( InputStream docIs, URI uri) {
+  public InvCatalogImpl readXML(InputStream docIs, URI uri) {
 
     // get ready for XML parsing
     warnMessages.setLength(0);
@@ -278,37 +294,38 @@ public class InvCatalogFactory {
 
     org.jdom.Document jdomDoc;
     try {
-      jdomDoc = saxBuilder.build( docIs);
+      jdomDoc = saxBuilder.build(docIs);
     } catch (Exception e) {
-      InvCatalogImpl cat = new InvCatalogImpl( uri.toString(), null, uri);
-      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML failed"
-        +"\n Exception= "+e.getClass().getName()+" "+e.getMessage()
-        +"\n fatalMessages= " +fatalMessages.toString()
-        +"\n errMessages= " +errMessages.toString()
-        +"\n warnMessages= " +warnMessages.toString()+"\n", true);
+      InvCatalogImpl cat = new InvCatalogImpl(uri.toString(), null, uri);
+      cat.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML failed"
+          + "\n Exception= " + e.getClass().getName() + " " + e.getMessage()
+          + "\n fatalMessages= " + fatalMessages.toString()
+          + "\n errMessages= " + errMessages.toString()
+          + "\n warnMessages= " + warnMessages.toString() + "\n", true);
       return cat;
     }
 
     if (fatalMessages.length() > 0) {
-      InvCatalogImpl cat = new InvCatalogImpl( uri.toString(), null, uri);
-      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML XML Fatal error(s) =\n"+
-        fatalMessages.toString()+"\n", true);
+      InvCatalogImpl cat = new InvCatalogImpl(uri.toString(), null, uri);
+      cat.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML XML Fatal error(s) =\n" +
+          fatalMessages.toString() + "\n", true);
       return cat;
     }
 
-    return readXML( jdomDoc, uri);
+    return readXML(jdomDoc, uri);
   }
 
   /**
-   * Create an InvCatalog from an a DOM tree.
-   *   Failures and exceptions are handled
-   *   by causing validate() to fail. Therefore, be sure to call validate() before trying
-   *   to use the InvCatalog object.
+   * Create an InvCatalog from a JDOM document.
+   * Failures and exceptions are handled
+   * by causing validate() to fail. Therefore, be sure to call validate() before trying
+   * to use the InvCatalog object.
    *
+   * @param jdomDoc a parsed JDOM Document
    * @param uri : the URI of the document, used for resolving reletive references.
    * @return an InvCatalogImpl object
    */
-  public InvCatalogImpl readXML( org.jdom.Document jdomDoc, URI uri) {
+  public InvCatalogImpl readXML(org.jdom.Document jdomDoc, URI uri) {
 
     // decide on converter based on namespace
     Element root = jdomDoc.getRootElement();
@@ -316,24 +333,29 @@ public class InvCatalogFactory {
       throw new IllegalArgumentException("not a catalog");
     }
     String namespace = root.getNamespaceURI();
-    InvCatalogConvertIF fac = (InvCatalogConvertIF) converters.get( namespace);
+    InvCatalogConvertIF fac = converters.get(namespace);
     if (fac == null) {
       fac = defaultConverter; // LOOK
-      if (debugVersion) System.out.println("use default converter "+fac.getClass().getName()+"; no namespace "+namespace);
-    } else
-      if (debugVersion) System.out.println("use converter "+fac.getClass().getName()+" based on namespace "+namespace);
+      if (debugVersion)
+        System.out.println("use default converter " + fac.getClass().getName() + "; no namespace " + namespace);
+    } else if (debugVersion)
+      System.out.println("use converter " + fac.getClass().getName() + " based on namespace " + namespace);
 
 
-    InvCatalogImpl cat =  fac.parseXML( this, jdomDoc, uri);
-    cat.setCreateFrom( uri.toString());
-    cat.setCatalogFactory( this);
-    cat.setCatalogConverter( fac);
+    InvCatalogImpl cat = fac.parseXML(this, jdomDoc, uri);
+    cat.setCreateFrom(uri.toString());
+    cat.setCatalogFactory(this);
+    cat.setCatalogConverter(fac);
     cat.finish();
 
     if (showCatalogXML) {
-      System.out.println ("*** catalog/showCatalogXML");
-      try { writeXML(cat, System.out); }
-      catch (IOException ex) { }
+      System.out.println("*** catalog/showCatalogXML");
+      try {
+        writeXML(cat, System.out);
+      }
+      catch (IOException ex) {
+        log.warn("Error writing catalog for debugging", ex);
+      }
     }
 
     if (fatalMessages.length() > 0)
@@ -361,51 +383,54 @@ public class InvCatalogFactory {
 
   /**
    * Write the catalog as an XML document to a String.
+   *
    * @param catalog write this catalog
    * @return string containing XML representation
-   * @throws IOException
+   * @throws IOException on write error
    */
   public String writeXML(InvCatalogImpl catalog) throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
-    writeXML( catalog, os);
+    writeXML(catalog, os);
     return os.toString();
   }
 
   /**
-    * Write the catalog as an XML document to the specified stream.
-    *
-    * @param catalog write this catalog
-    * @param os write to this OutputStream
-    * @throws IOException on an error.
-    */
-   public void writeXML(InvCatalogImpl catalog, OutputStream os) throws IOException {
-     InvCatalogConvertIF fac = catalog.getCatalogConverter();
-     if (fac == null) fac = defaultConverter;
-     fac.writeXML( catalog, os);
-   }
+   * Write the catalog as an XML document to the specified stream.
+   *
+   * @param catalog write this catalog
+   * @param os      write to this OutputStream
+   * @throws IOException on an error.
+   */
+  public void writeXML(InvCatalogImpl catalog, OutputStream os) throws IOException {
+    InvCatalogConvertIF fac = catalog.getCatalogConverter();
+    if (fac == null) fac = defaultConverter;
+    fac.writeXML(catalog, os);
+  }
 
   /**
-    * Write the catalog as an XML document to the specified stream.
-    *
-    * @param catalog write this catalog
-    * @param os write to this OutputStream
-    * @throws IOException on an error.
-    */
-   public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException {
-     InvCatalogConvertIF fac = catalog.getCatalogConverter();
-     if (fac == null) fac = defaultConverter;
-     fac.writeXML( catalog, os, raw);
-   }
+   * Write the catalog as an XML document to the specified stream.
+   *
+   * @param catalog write this catalog
+   * @param os      write to this OutputStream
+   * @param raw set true for "server side" catalogs, false is default, shows "client side" catalogs
+   * @throws IOException on an error.
+   */
+  public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException {
+    InvCatalogConvertIF fac = catalog.getCatalogConverter();
+    if (fac == null) fac = defaultConverter;
+    fac.writeXML(catalog, os, raw);
+  }
 
   /**
    * Write the catalog as an XML document to the specified filename.
    *
-   * @param catalog write this catalog
+   * @param catalog  write this catalog
    * @param filename write to this filename
+   * @throws IOException on an error.
    */
   public void writeXML(InvCatalogImpl catalog, String filename) throws IOException {
-    BufferedOutputStream os = new BufferedOutputStream (new FileOutputStream(filename));
-    writeXML( catalog, os);
+    BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(filename));
+    writeXML(catalog, os);
     os.close();
   }
 
@@ -414,14 +439,13 @@ public class InvCatalogFactory {
    *
    * @param catalog - the catalog to be written
    * @return a String containing the XML representation
-   * @throws IOException when the OutputStream can't be written
+   * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 1.0 document.
    */
-  public String writeXML_1_0( InvCatalogImpl catalog )
-          throws IOException
-  {
-    ByteArrayOutputStream os = new ByteArrayOutputStream( 10000 );
-    writeXML_1_0( catalog, os );
+  public String writeXML_1_0(InvCatalogImpl catalog)
+      throws IOException {
+    ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
+    writeXML_1_0(catalog, os);
     return os.toString();
   }
 
@@ -433,11 +457,10 @@ public class InvCatalogFactory {
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 0.6 document.
    */
-  public String writeXML_0_6( InvCatalogImpl catalog )
-          throws IOException
-  {
-    ByteArrayOutputStream os = new ByteArrayOutputStream( 10000 );
-    writeXML_0_6( catalog, os );
+  public String writeXML_0_6(InvCatalogImpl catalog)
+      throws IOException {
+    ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
+    writeXML_0_6(catalog, os);
     return os.toString();
   }
 
@@ -449,10 +472,9 @@ public class InvCatalogFactory {
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 1.0 document.
    */
-  public void writeXML_1_0( InvCatalogImpl catalog, OutputStream os )
-          throws IOException
-  {
-    this.writeXML_ver( XMLEntityResolver.CATALOG_NAMESPACE_10, catalog, os );
+  public void writeXML_1_0(InvCatalogImpl catalog, OutputStream os)
+      throws IOException {
+    this.writeXML_ver(XMLEntityResolver.CATALOG_NAMESPACE_10, catalog, os);
   }
 
   /**
@@ -463,69 +485,90 @@ public class InvCatalogFactory {
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 0.6 document.
    */
-  public void writeXML_0_6( InvCatalogImpl catalog, OutputStream os )
-          throws IOException
-  {
-    this.writeXML_ver( XMLEntityResolver.CATALOG_NAMESPACE_06, catalog, os );
+  public void writeXML_0_6(InvCatalogImpl catalog, OutputStream os)
+      throws IOException {
+    this.writeXML_ver(XMLEntityResolver.CATALOG_NAMESPACE_06, catalog, os);
   }
 
   /**
    * Write an InvCatalogImpl to an OutputStream as an InvCatalog document using the given namespace.
    *
    * @param namespace - the namespace of the version of InvCatalog document to be written
-   * @param catalog - the catalog to be written
-   * @param os      - the OutputStream to write to
+   * @param catalog   - the catalog to be written
+   * @param os        - the OutputStream to write to
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write the version of document requested.
    */
-  private void writeXML_ver( String namespace, InvCatalogImpl catalog, OutputStream os)
-          throws IOException
-{
-    InvCatalogConvertIF converter = this.getCatalogConverter( namespace );
-    if ( converter == null )
-    {
+  private void writeXML_ver(String namespace, InvCatalogImpl catalog, OutputStream os)
+      throws IOException {
+    InvCatalogConvertIF converter = this.getCatalogConverter(namespace);
+    if (converter == null) {
       String tmpMsg = "This Factory <" + this.getName() + "> does not have a converter for the requested namespace <" + namespace + ">.";
-      throw new IllegalStateException( tmpMsg );
+      throw new IllegalStateException(tmpMsg);
     }
-    converter.writeXML( catalog, os );
+    converter.writeXML(catalog, os);
   }
 
-  /** append an error message. Used by the InvCatalogConvertIF */
-  public void appendErr( String err) { errMessages.append( err); }
-   /** append a fatal error message */
-  public void appendFatalErr( String err) { fatalMessages.append( err); }
-   /** append a warning message */
-  public void appendWarning( String err) { warnMessages.append( err); }
+  /**
+   * append an error message. Used by the InvCatalogConvertIF
+   * @param err append this error message
+   */
+  public void appendErr(String err) {
+    errMessages.append(err);
+  }
 
-  /** Find the MetadataConverterIF registered for this key */
-  public MetadataConverterIF getMetadataConverter( String key) {
+  /**
+   * append a fatal error message
+   * @param err append this error message
+   */
+  public void appendFatalErr(String err) {
+    fatalMessages.append(err);
+  }
+
+  /**
+   * append a warning message
+   * @param err append this error message
+   */
+  public void appendWarning(String err) {
+    warnMessages.append(err);
+  }
+
+  /**
+   * Find the MetadataConverterIF registered for this key
+   * @param key search on this key
+   * @return  MetadataConverterIF else null
+   */
+  public MetadataConverterIF getMetadataConverter(String key) {
     if (key == null) return null;
-    return (MetadataConverterIF) metadataConverters.get( key);
+    return metadataConverters.get(key);
   }
 
-  /************************************************************************/
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing
 
-  private static InvCatalogImpl doOne( InvCatalogFactory fac, String urlString, boolean show) {
-    System.out.println("***read "+urlString);
+  private static InvCatalogImpl doOne(InvCatalogFactory fac, String urlString, boolean show) {
+    System.out.println("***read " + urlString);
     if (show) System.out.println(" original catalog=\n" + IO.readURLcontents(urlString));
     try {
-        InvCatalogImpl cat = fac.readXML( new URI( urlString));
-        StringBuffer buff = new StringBuffer();
-        boolean isValid = cat.check( buff, false);
-        System.out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
-        System.out.println(" validation output=\n" + buff);
-        if (show) System.out.println(" parsed catalog=\n" + fac.writeXML(cat));
-        //System.out.println(" -----\n"+cat.dump());
-        return cat;
-      } catch (Exception e) {
-        e.printStackTrace();
-        return null;
-      }
+      InvCatalogImpl cat = fac.readXML(new URI(urlString));
+      StringBuffer buff = new StringBuffer();
+      boolean isValid = cat.check(buff, false);
+      System.out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
+      System.out.println(" validation output=\n" + buff);
+      if (show) System.out.println(" parsed catalog=\n" + fac.writeXML(cat));
+      //System.out.println(" -----\n"+cat.dump());
+      return cat;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
 
   }
 
-   /** testing */
-  public static void main (String[] args) throws Exception {
+  /**
+   * testing
+   */
+  public static void main(String[] args) throws Exception {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     //InvCatalogFactory catFactoryNo = InvCatalogFactory.getDefaultFactory(false);
 
@@ -542,17 +585,17 @@ public class InvCatalogFactory {
     //doOne(catFactory, "http://motherlode.ucar.edu:8088/thredds/catalog.xml"); // */
     //doOne(catFactoryNo, "http://motherlode.ucar.edu:8088/thredds/catalog.xml"); // */
 
-   // 1.1
-   //doOne(catFactory, "file:C:/data/catalog/obsData.xml", false);
-   doOne(catFactory, "http://www.unidata.ucar.edu/staff/edavis/work/testTDSConfig2.xml", false);
-   /* InvCatalogImpl cat = doOne(catFactory, "file:///C:/dev/thredds/resourceswar/initialContent/dodsC/catalog3.xml");
-   InvDatasetScan dsScan = (InvDatasetScan) cat.findDatasetByID("testScan");
-   InvCatalogImpl catScan = dsScan.makeCatalogForDirectory("reqURL", "model/test/", "serviceId", "latestServiceId");
-   System.out.println(" scanned catalog=\n" + catFactory.writeXML(catScan)); */
+    // 1.1
+    //doOne(catFactory, "file:C:/data/catalog/obsData.xml", false);
+    doOne(catFactory, "http://www.unidata.ucar.edu/staff/edavis/work/testTDSConfig2.xml", false);
+    /* InvCatalogImpl cat = doOne(catFactory, "file:///C:/dev/thredds/resourceswar/initialContent/dodsC/catalog3.xml");
+InvDatasetScan dsScan = (InvDatasetScan) cat.findDatasetByID("testScan");
+InvCatalogImpl catScan = dsScan.makeCatalogForDirectory("reqURL", "model/test/", "serviceId", "latestServiceId");
+System.out.println(" scanned catalog=\n" + catFactory.writeXML(catScan)); */
 
-   //doOne(catFactory, "http://whoopee:8080/thredds/dodsC/model/test/catalog.xml");
+    //doOne(catFactory, "http://whoopee:8080/thredds/dodsC/model/test/catalog.xml");
 
-   // catgen
+    // catgen
     //catFactory.registerMetadataConverter( MetadataType.CATALOG_GEN_CONFIG.toString(),
     //                                         new CatGenConfigMetadataFactory());
     //doOne(catFactory, "file:///C:/dev/thredds/test/data/thredds/cataloggen/test.xml");

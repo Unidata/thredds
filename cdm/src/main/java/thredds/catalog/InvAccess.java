@@ -1,6 +1,5 @@
-// $Id: InvAccess.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,7 +26,6 @@ import java.net.URI;
  * Public interface to an access element, defining how to access a specific web resource.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  */
 
 abstract public class InvAccess {
@@ -39,34 +37,58 @@ abstract public class InvAccess {
   protected String urlPath;
   protected double dataSize = Double.NaN;
 
-  /** Get the parent dataset. Should not be null. */
-  public thredds.catalog.InvDataset getDataset() { return dataset; }
+  /**
+   * @return the parent dataset. Should not be null.
+   */
+  public thredds.catalog.InvDataset getDataset() {
+    return dataset;
+  }
 
-  /** Get the service. Should not be null. */
-  public thredds.catalog.InvService getService() { return service; }
+  /**
+   * @return the service. Should not be null.
+   */
+  public thredds.catalog.InvService getService() {
+    return service;
+  }
 
-    /** Get the urlPath. Should not be null. */
-  public String getUrlPath() { return urlPath; }
+  /**
+   * @return the urlPath. Should not be null.
+   */
+  public String getUrlPath() {
+    return urlPath;
+  }
 
-    /** Get the dataFormatType; may be null, or inherited from dataset. */
+  /**
+   * @return the dataFormatType; may be null, or inherited from dataset.
+   */
   public DataFormatType getDataFormatType() {
     return (dataFormat != null) ? dataFormat : dataset.getDataFormatType();
   }
 
-  /** Get the size in bytes. A value of 0.0 or Double.NaN means unknown. */
-  public double getDataSize() { return dataSize; }
+  /**
+   * @return the size in bytes. A value of 0.0 or Double.NaN means unknown.
+   */
+  public double getDataSize() {
+    return dataSize;
+  }
 
-  /** Return true if it has valid data size info */
-  public boolean hasDataSize() { return dataSize != 0.0 && !Double.isNaN( dataSize); }
+  /**
+   * @return true if it has valid data size info
+   */
+  public boolean hasDataSize() {
+    return dataSize != 0.0 && !Double.isNaN(dataSize);
+  }
 
-  /** Get the standard URL, with resolution if the URL is reletive.
-   *  catalog.resolveURI( getUnresolvedUrlName())
-   *  @return URL string, or null if error.
+  /**
+   * Get the standard URL, with resolution if the URL is reletive.
+   * catalog.resolveURI( getUnresolvedUrlName())
+   *
+   * @return URL string, or null if error.
    */
   public String getStandardUrlName() {
     URI uri = getStandardUri();
     if (uri == null) return null;
-    return wrap( uri.toString());
+    return wrap(uri.toString());
   }
 
   /**
@@ -84,19 +106,21 @@ abstract public class InvAccess {
       return cat.resolveUri(getUnresolvedUrlName());
 
     } catch (java.net.URISyntaxException e) {
-      System.err.println("Error parsing URL= "+getUnresolvedUrlName());
+      System.err.println("Error parsing URL= " + getUnresolvedUrlName());
       return null;
     }
   }
 
-  /** Construct "unresolved" URL: service.getBase() + getUrlPath() + service.getSuffix().
-   *  It is not resolved, so it may be a reletive URL.
+  /**
+   * Construct "unresolved" URL: service.getBase() + getUrlPath() + service.getSuffix().
+   * It is not resolved, so it may be a reletive URL.
+   * @return Unresolved Url as a String
    */
   public String getUnresolvedUrlName() {
     return service.getBase() + getUrlPath() + service.getSuffix();
   }
 
-  private String wrap( String url) {
+  private String wrap(String url) {
     if (service.getServiceType() == ServiceType.THREDDS)
       return "thredds:" + url;
     return url;

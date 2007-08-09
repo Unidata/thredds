@@ -1,6 +1,5 @@
-// $Id: InvDatasetImpl.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,7 +32,6 @@ import ucar.unidata.util.Format;
  * Concrete implementation of a thredds Dataset, for reading and writing from XML.
  *
  * @author john caron
- * @version $Revision: 48 $ $Date: 2006-07-12 16:15:40Z $
  * @see InvDataset
  */
 
@@ -56,10 +54,10 @@ public class InvDatasetImpl extends InvDataset {
   private String alias;
   private double size = 0.0;
 
-  private ArrayList accessLocal = new ArrayList();
-  private ArrayList servicesLocal = new ArrayList();
+  private List<InvAccess> accessLocal = new ArrayList<InvAccess>();
+  private List<InvService> servicesLocal = new ArrayList<InvService>();
   protected ThreddsMetadata tm = new ThreddsMetadata(false); // all local metadata kept here. This may include
-                                                             // inheritable InvMetadata
+  // inheritable InvMetadata
   protected ThreddsMetadata tmi = new ThreddsMetadata(true); // local inheritable metadata (canonicalization)
   protected ThreddsMetadata tmi6 = new ThreddsMetadata(true); // local catalog 0.6 inheritable metadata
   protected org.jdom.Element ncmlElement;
@@ -110,17 +108,17 @@ public class InvDatasetImpl extends InvDataset {
 
     gc = null;
     tc = null;
-    docs = new ArrayList();
-    metadata = new ArrayList();
-    properties = new ArrayList();
+    docs = new ArrayList<InvDocumentation>();
+    metadata = new ArrayList<InvMetadata>();
+    properties = new ArrayList<InvProperty>();
 
-    creators = new ArrayList();
-    contributors = new ArrayList();
-    dates = new ArrayList();
-    keywords = new ArrayList();
-    projects = new ArrayList();
-    publishers = new ArrayList();
-    variables = new ArrayList();
+    creators = new ArrayList<ThreddsMetadata.Source>();
+    contributors = new ArrayList<ThreddsMetadata.Contributor>();
+    dates = new ArrayList<DateType>();
+    keywords = new ArrayList<ThreddsMetadata.Vocab>();
+    projects = new ArrayList<ThreddsMetadata.Vocab>();
+    publishers = new ArrayList<ThreddsMetadata.Source>();
+    variables = new ArrayList<ThreddsMetadata.Variables>();
 
     canonicalize(); // canonicalize thredds metadata
     transfer2PublicMetadata(tm, true); // add local metadata
@@ -129,7 +127,7 @@ public class InvDatasetImpl extends InvDataset {
     transferInheritable2PublicMetadata((InvDatasetImpl) getParent()); // add inheritable metadata from parents
 
     // build the expanded access list
-    access = new ArrayList();
+    access = new ArrayList<InvAccess>();
 
     // add access element if urlPath is specified
     if ((urlPath != null) && (getServiceDefault() != null)) {
@@ -149,9 +147,8 @@ public class InvDatasetImpl extends InvDataset {
 
     // recurse into child datasets.
     if (!(this instanceof InvCatalogRef)) {
-      java.util.Iterator dsIter = this.getDatasets().iterator();
-      while (dsIter.hasNext()) {
-        InvDatasetImpl curDs = (InvDatasetImpl) dsIter.next();
+      for (InvDataset invDataset : this.getDatasets()) {
+        InvDatasetImpl curDs = (InvDatasetImpl) invDataset;
         ok &= curDs.finish();
       }
     }
@@ -163,14 +160,14 @@ public class InvDatasetImpl extends InvDataset {
    * Look for InvMetadata elements in the parent that need to be added to the public metadata of this dataset.
    * Recurse up through all ancestors.
    *
-   * @param parent
+   * @param parent transfer from here
    */
   private void transferInheritable2PublicMetadata(InvDatasetImpl parent) {
     if (parent == null) return;
     if (debugInherit) System.out.println(" inheritFromParent= " + parent.getID());
 
     transfer2PublicMetadata(parent.getLocalMetadataInheritable(), true);
-    transfer2PublicMetadata(parent.getCat6Metadata(), true);
+    //transfer2PublicMetadata(parent.getCat6Metadata(), true);
 
     /* look through local metadata, find inherited InvMetadata elements
     ThreddsMetadata tmd = parent.getLocalMetadata();
@@ -193,11 +190,11 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   /**
-   * take all elements from tmg and add to the public metadata of this dataset.
+   * take all elements from tmd and add to the public metadata of this dataset.
    * for InvMetadata elements, only add if inheritAll || InvMetadata.isInherited().
    *
-   * @param tmd
-   * @param inheritAll
+   * @param tmd        tahe metadata from here
+   * @param inheritAll true if all should be inherited, else only those which are specifically mareked
    */
   private void transfer2PublicMetadata(ThreddsMetadata tmd, boolean inheritAll) {
     if (tmd == null) return;
@@ -231,9 +228,7 @@ public class InvDatasetImpl extends InvDataset {
     if (tc == null)
       tc = tmd.getTimeCoverage();
 
-    Iterator iter = tmd.getProperties().iterator();
-    while (iter.hasNext()) {
-      Object item = iter.next();
+    for (InvProperty item : tmd.getProperties()) {
       if (!properties.contains(item)) { // dont add properties with same name
         if (debugInherit) System.out.println("  add Property " + item + " to " + getID());
         properties.add(item);
@@ -249,9 +244,7 @@ public class InvDatasetImpl extends InvDataset {
     publishers.addAll(tmd.getPublishers());
     variables.addAll(tmd.getVariables());
 
-    iter = tmd.getMetadata().iterator();
-    while (iter.hasNext()) {
-      InvMetadata meta = (InvMetadata) iter.next();
+    for (InvMetadata meta : tmd.getMetadata()) {
       if (meta.isInherited() || inheritAll) {
         if (!meta.isThreddsMetadata()) {
           metadata.add(meta);
@@ -267,7 +260,6 @@ public class InvDatasetImpl extends InvDataset {
   }
 
 
-
   /**
    * Transfer all inheritable metadata from fromDs to the local metadata of this dataset.
    * Called by InvDatasetScan to transfer inheritable metaddata to the nested catalogRef
@@ -277,20 +269,24 @@ public class InvDatasetImpl extends InvDataset {
   public void transferMetadata(InvDatasetImpl fromDs) {
     if (debugInherit2) System.out.println(" transferMetadata= " + fromDs.getName());
 
-    if ( this != fromDs )
-      getLocalMetadata().add( fromDs.getLocalMetadata(), false);
-    
+    if (this != fromDs)
+      getLocalMetadata().add(fromDs.getLocalMetadata(), false);
+
     transferInheritableMetadata(fromDs, getLocalMetadataInheritable());
 
-    setResourceControl( fromDs.getRestrictAccess());
+    setResourceControl(fromDs.getRestrictAccess());
   }
 
-  /** transfer inherited metadata, consolidating it into target */
+  /**
+   * transfer inherited metadata, consolidating it into target
+   * @param fromDs transfer from here, plus its parents
+   * @param target transfer to here
+   */
   private void transferInheritableMetadata(InvDatasetImpl fromDs, ThreddsMetadata target) {
     if (fromDs == null) return;
     if (debugInherit2) System.out.println(" transferInheritedMetadata= " + fromDs.getName());
 
-    target.add( fromDs.getLocalMetadataInheritable(), true);
+    target.add(fromDs.getLocalMetadataInheritable(), true);
 
     /* look through local metadata, find inherited InvMetadata elements
     ThreddsMetadata tmd = fromDs.getLocalMetadata();
@@ -322,9 +318,7 @@ public class InvDatasetImpl extends InvDataset {
 
     if (service.getServiceType() == ServiceType.COMPOUND) {
       // if its a compound service, expand it
-      java.util.List serviceList = service.getServices();
-      for (int i = 0; i < serviceList.size(); i++) {
-        InvService nestedService = (InvService) serviceList.get(i);
+      for (InvService nestedService : service.getServices()) {
         InvAccessImpl nestedAccess = new InvAccessImpl(this, a.getUrlPath(), nestedService);
         addExpandedAccess(nestedAccess); // i guess it could recurse
       }
@@ -343,22 +337,22 @@ public class InvDatasetImpl extends InvDataset {
 
     // transfer all non-inherited thredds metadata to tm
     Iterator iter = tm.metadata.iterator();
-    while(iter.hasNext()) {
+    while (iter.hasNext()) {
       InvMetadata m = (InvMetadata) iter.next();
       if (m.isThreddsMetadata() && !m.isInherited() && !m.hasXlink()) {
         ThreddsMetadata nested = m.getThreddsMetadata();
-        tm.add( nested, false);
+        tm.add(nested, false);
         iter.remove();
       }
     }
 
     // transfer all inherited thredds metadata to tmi
     iter = tm.metadata.iterator();
-    while(iter.hasNext()) {
+    while (iter.hasNext()) {
       InvMetadata m = (InvMetadata) iter.next();
       if (m.isThreddsMetadata() && m.isInherited() && !m.hasXlink()) {
         ThreddsMetadata nested = m.getThreddsMetadata();
-        tmi.add( nested, true);
+        tmi.add(nested, true);
         iter.remove();
       }
     }
@@ -389,16 +383,19 @@ public class InvDatasetImpl extends InvDataset {
     super(parent, name);
   }
 
-  /** copy constructor */
+  /**
+   * copy constructor
+   * @param from copy from here
+   */
   public InvDatasetImpl(InvDatasetImpl from) {
     super(from.getParent(), from.getName());
 
     // steal everything
-    this.tm = new ThreddsMetadata( from.getLocalMetadata());
-    this.tmi =  new ThreddsMetadata( from.getLocalMetadataInheritable());
-    this.accessLocal = new ArrayList( from.getAccessLocal());
-    this.servicesLocal = new ArrayList( from.getServicesLocal());
-    
+    this.tm = new ThreddsMetadata(from.getLocalMetadata());
+    this.tmi = new ThreddsMetadata(from.getLocalMetadataInheritable());
+    this.accessLocal = new ArrayList<InvAccess>(from.getAccessLocal());
+    this.servicesLocal = new ArrayList<InvService>(from.getServicesLocal());
+
     this.harvest = from.harvest;
     this.collectionType = from.collectionType;
   }
@@ -407,12 +404,15 @@ public class InvDatasetImpl extends InvDataset {
   // get/set local properties
 
   /**
-   * Get alias for this Dataset, if it exists
+   * @return alias for this Dataset, if there is one
    */
-  public String getAlias() { return alias; }
+  public String getAlias() {
+    return alias;
+  }
 
   /**
    * Set alias for this Dataset
+   * @param alias ID of another Dataset
    */
   public void setAlias(String alias) {
     this.alias = alias;
@@ -421,24 +421,33 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set the containing catalog; use only for top level dataset.
+   * @param catalog the containing catalog for the top level dataset.
    */
   public void setCatalog(InvCatalog catalog) {
     this.catalog = catalog;
     hashCode = 0;
   }
 
-  /** Get real parent dataset, no proxies
-   *  @return parent dataset. If top dataset, return null.
+  /**
+   * Get real parent dataset, no proxies
+   *
+   * @return parent dataset. If top dataset, return null.
    */
-  public InvDataset getParentReal() { return parent; }
+  public InvDataset getParentReal() {
+    return parent;
+  }
 
   /**
    * Get urlPath for this Dataset
+   * @return urlPath for this Dataset
    */
-  public String getUrlPath() { return urlPath; }
+  public String getUrlPath() {
+    return urlPath;
+  }
 
   /**
    * Set the urlPath for this InvDatasetImpl
+   * @param urlPath the urlPath for this InvDatasetImpl
    */
   public void setUrlPath(String urlPath) {
     this.urlPath = urlPath;
@@ -447,6 +456,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set authorityName for this Dataset
+   * @param authorityName for this Dataset
    */
   public void setAuthority(String authorityName) {
     tm.setAuthority(authorityName);
@@ -458,6 +468,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set collectionType
+   * @param collectionType the collection type
    */
   public void setCollectionType(CollectionType collectionType) {
     this.collectionType = collectionType;
@@ -466,6 +477,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set harvest
+   * @param harvest true if this dataset should be harvested for Digital Libraries
    */
   public void setHarvest(boolean harvest) {
     this.harvest = harvest;
@@ -474,6 +486,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set the ID for this Dataset
+   * @param id unique ID
    */
   public void setID(String id) {
     this.id = id;
@@ -482,6 +495,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set name of this Dataset.
+   * @param name of the dataset
    */
   public void setName(String name) {
     this.name = name;
@@ -490,6 +504,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set the parent dataset.
+   * @param parent parent dataset
    */
   public void setParent(InvDatasetImpl parent) {
     this.parent = parent;
@@ -501,6 +516,7 @@ public class InvDatasetImpl extends InvDataset {
   // these are not inherited, only InvMetadata objects are inheritable.
 
   // LOOK these are probably wrong
+
   public void setGeospatialCoverage(ThreddsMetadata.GeospatialCoverage gc) {
     tm.setGeospatialCoverage(gc);
     hashCode = 0;
@@ -521,60 +537,51 @@ public class InvDatasetImpl extends InvDataset {
     hashCode = 0;
   }
 
-  public double getDataSize( ) {
+  public double getDataSize() {
     return tm.getDataSize();
   }
 
-  public void setDataSize( double dataSize ) {
-    tm.setDataSize( dataSize );
+  public void setDataSize(double dataSize) {
+    tm.setDataSize(dataSize);
     hashCode = 0;
   }
 
-  public DateType getLastModifiedDate()
-  {
+  public DateType getLastModifiedDate() {
     // Look for a last modified date.
-    for ( Iterator it = tm.getDates().iterator(); it.hasNext(); )
-    {
-      DateType curDateType = (DateType) it.next();
-
-      if ( curDateType.getType() != null && curDateType.getType().equals( "modified"))
-      {
-        return curDateType;
+    for (DateType dateType : tm.getDates()) {
+      if ((dateType.getType() != null) && dateType.getType().equals("modified")) {
+        return dateType;
       }
     }
     return null;
   }
 
-  public void setLastModifiedDate( DateType lastModDate )
-  {
-    if ( lastModDate == null )
-      throw new IllegalArgumentException( "Last modified date can't be null.");
-    if ( lastModDate.getType() == null || ! lastModDate.getType().equals( "modified" ) )
-    {
-      throw new IllegalArgumentException( "Date type must be \"modified\" (was \"" + lastModDate.getType() + "\").");
+  public void setLastModifiedDate(DateType lastModDate) {
+    if (lastModDate == null)
+      throw new IllegalArgumentException("Last modified date can't be null.");
+    if (lastModDate.getType() == null || !lastModDate.getType().equals("modified")) {
+      throw new IllegalArgumentException("Date type must be \"modified\" (was \"" + lastModDate.getType() + "\").");
     }
 
     // Check for existing last modified date and remove if one exists.
     DateType curLastModDateType = this.getLastModifiedDate();
-    if ( curLastModDateType != null )
-    {
-      tm.getDates().remove( curLastModDateType );
+    if (curLastModDateType != null) {
+      tm.getDates().remove(curLastModDateType);
     }
 
     // Set the last modified date with the given DateType.
-    tm.addDate( lastModDate );
+    tm.addDate(lastModDate);
     hashCode = 0;
   }
 
-  public void setLastModifiedDate( Date lastModDate )
-  {
-    if ( lastModDate == null )
-      throw new IllegalArgumentException( "Last modified date can't be null." );
+  public void setLastModifiedDate(Date lastModDate) {
+    if (lastModDate == null)
+      throw new IllegalArgumentException("Last modified date can't be null.");
 
     // Set the last modified date with the given Date.
-    DateType lastModDateType = new DateType( false, lastModDate );
-    lastModDateType.setType( "modified" );
-    setLastModifiedDate( lastModDateType );
+    DateType lastModDateType = new DateType(false, lastModDate);
+    lastModDateType.setType("modified");
+    setLastModifiedDate(lastModDateType);
   }
 
   public void setServiceName(String serviceName) {
@@ -583,47 +590,43 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   // LOOK these are wrong
-  public void setContributors(ArrayList a) {
-    List dest = tm.getContributors();
-    for (Iterator iter = a.iterator(); iter.hasNext();) {
-      ThreddsMetadata.Contributor item = (ThreddsMetadata.Contributor) iter.next();
+  public void setContributors(List<ThreddsMetadata.Contributor> a) {
+    List<ThreddsMetadata.Contributor> dest = tm.getContributors();
+    for (ThreddsMetadata.Contributor item : a) {
       if (!dest.contains(item))
         dest.add(item);
     }
     hashCode = 0;
   }
 
-  public void setKeywords(ArrayList a) {
-    List dest = tm.getKeywords();
-    for (Iterator iter = a.iterator(); iter.hasNext();) {
-      ThreddsMetadata.Vocab item = (ThreddsMetadata.Vocab) iter.next();
+  public void setKeywords(List<ThreddsMetadata.Vocab> a) {
+    List<ThreddsMetadata.Vocab> dest = tm.getKeywords();
+    for (ThreddsMetadata.Vocab item : a) {
       if (!dest.contains(item))
         dest.add(item);
     }
     hashCode = 0;
   }
 
-  public void setProjects(ArrayList a) {
-    List dest = tm.getProjects();
-    for (Iterator iter = a.iterator(); iter.hasNext();) {
-      ThreddsMetadata.Vocab item = (ThreddsMetadata.Vocab) iter.next();
+  public void setProjects(List<ThreddsMetadata.Vocab> a) {
+    List<ThreddsMetadata.Vocab> dest = tm.getProjects();
+    for (ThreddsMetadata.Vocab item : a) {
       if (!dest.contains(item))
         dest.add(item);
     }
     hashCode = 0;
   }
 
-  public void setPublishers(ArrayList a) {
-    List dest = tm.getPublishers();
-    for (Iterator iter = a.iterator(); iter.hasNext();) {
-      ThreddsMetadata.Source item = (ThreddsMetadata.Source) iter.next();
+  public void setPublishers(List<ThreddsMetadata.Source> a) {
+    List<ThreddsMetadata.Source> dest = tm.getPublishers();
+    for (ThreddsMetadata.Source item : a) {
       if (!dest.contains(item))
         dest.add(item);
     }
     hashCode = 0;
   }
 
-  public void setResourceControl( String restrictAccess) {
+  public void setResourceControl(String restrictAccess) {
     this.restrictAccess = restrictAccess;
   }
 
@@ -632,6 +635,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add InvAccess element to this dataset.
+   * @param a add dthis
    */
   public void addAccess(InvAccess a) {
     accessLocal.add(a);
@@ -640,25 +644,34 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a list of InvAccess elements to this dataset.
+   * @param a add all of these
    */
-  public void addAccess(List a) {
+  public void addAccess(List<InvAccess> a) {
     accessLocal.addAll(a);
     hashCode = 0;
   }
 
   /**
-   * Get the non-expanded access elements.
+   * @return the local access (non-expanded) elements.
    */
-  public java.util.List getAccessLocal() { return accessLocal; }
+  public java.util.List<InvAccess> getAccessLocal() {
+    return accessLocal;
+  }
 
   /**
-   * Get ncml element if it exists, else return null.
+   * @return the ncml element if it exists, else return null.
    */
-  public org.jdom.Element getNcmlElement( ) { return ncmlElement; }
-  public void setNcmlElement( org.jdom.Element ncmlElement) { this.ncmlElement = ncmlElement; }
+  public org.jdom.Element getNcmlElement() {
+    return ncmlElement;
+  }
+
+  public void setNcmlElement(org.jdom.Element ncmlElement) {
+    this.ncmlElement = ncmlElement;
+  }
 
   /**
    * Add a nested dataset.
+   * @param ds add this
    */
   public void addDataset(InvDatasetImpl ds) {
     if (ds == null) return;
@@ -669,11 +682,13 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a nested dataset at the location indicated by index.
+   * @param index add at this position
+   * @param ds add this
    */
-  public void addDataset( int index, InvDatasetImpl ds) {
+  public void addDataset(int index, InvDatasetImpl ds) {
     if (ds == null) return;
     ds.setParent(this);
-    datasets.add( index, ds);
+    datasets.add(index, ds);
     hashCode = 0;
   }
 
@@ -688,7 +703,7 @@ public class InvDatasetImpl extends InvDataset {
       ds.setParent(null);
       InvCatalogImpl cat = (InvCatalogImpl) getParentCatalog();
       if (cat != null)
-        cat.removeDatasetByID( ds);
+        cat.removeDatasetByID(ds);
       return (true);
     }
     return (false);
@@ -698,27 +713,28 @@ public class InvDatasetImpl extends InvDataset {
    * Replace the given dataset if it is a nesetd dataset.
    *
    * @param remove - the dataset element to be removed
-   * @param add - the dataset element to be added
+   * @param add    - the dataset element to be added
    * @return true on success
    */
   public boolean replaceDataset(InvDatasetImpl remove, InvDatasetImpl add) {
     for (int i = 0; i < datasets.size(); i++) {
-      InvDataset dataset = (InvDataset) datasets.get(i);
-       if (dataset.equals(remove)) {
-         datasets.set(i, add);
-         InvCatalogImpl cat = (InvCatalogImpl) getParentCatalog();
-         if (cat != null) {
-           cat.removeDatasetByID( remove);
-           cat.addDatasetByID( add);
-         }
-         return true;
-       }
+      InvDataset dataset = datasets.get(i);
+      if (dataset.equals(remove)) {
+        datasets.set(i, add);
+        InvCatalogImpl cat = (InvCatalogImpl) getParentCatalog();
+        if (cat != null) {
+          cat.removeDatasetByID(remove);
+          cat.addDatasetByID(add);
+        }
+        return true;
+      }
     }
     return false;
   }
 
   /**
    * Add documentation element to this dataset.
+   * @param doc add this
    */
   public void addDocumentation(InvDocumentation doc) {
     tm.addDocumentation(doc);
@@ -727,6 +743,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a property to this dataset
+   * @param p add this
    */
   public void addProperty(InvProperty p) {
     tm.addProperty(p);
@@ -735,6 +752,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a service to this dataset.
+   * @param service add this
    *
    * @deprecated put services in catalog
    */
@@ -743,9 +761,7 @@ public class InvDatasetImpl extends InvDataset {
     servicesLocal.add(service);
     services.add(service);
     // add nested servers
-    java.util.List serviceList = service.getServices();
-    for (int k = 0; k < serviceList.size(); k++) {
-      InvService nested = (InvService) serviceList.get(k);
+    for (InvService nested : service.getServices()) {
       services.add(nested);
       // System.out.println("--add expanded service= "+nested.getName());
     }
@@ -756,14 +772,13 @@ public class InvDatasetImpl extends InvDataset {
    * Remove a service from this dataset.
    *
    * @deprecated put services in catalog
+   * @param service remove this
    */
   public void removeService(InvService service) {
     servicesLocal.remove(service);
     services.remove(service);
     // remove nested servers
-    java.util.List serviceList = service.getServices();
-    for (int k = 0; k < serviceList.size(); k++) {
-      InvService nested = (InvService) serviceList.get(k);
+    for (InvService nested : service.getServices()) {
       services.remove(nested);
     }
   }
@@ -773,7 +788,9 @@ public class InvDatasetImpl extends InvDataset {
    *
    * @return List of type InvService. May be empty, but not null.
    */
-  public java.util.List getServicesLocal() { return servicesLocal; }
+  public java.util.List<InvService> getServicesLocal() {
+    return servicesLocal;
+  }
 
   /**
    * Set the list of services attached specifically to this dataset.
@@ -781,20 +798,24 @@ public class InvDatasetImpl extends InvDataset {
    *
    * @param s list of services.
    */
-  public void setServicesLocal(java.util.ArrayList s) {
-    this.services = new ArrayList();
-    this.servicesLocal = new ArrayList();
+  public void setServicesLocal(java.util.List<InvService> s) {
+    this.services = new ArrayList<InvService>();
+    this.servicesLocal = new ArrayList<InvService>();
 
-    for (int i = 0; i < s.size(); i++) {
-      InvService elem = (InvService) s.get(i);
+    for (InvService elem : s) {
       addService(elem);
     }
     hashCode = 0;
   }
 
-  /** Get the metadata stored in this dataset element.
-   * Inherited metadata only in an InvMetadata object. */
-  public ThreddsMetadata getLocalMetadata() { return tm; }
+  /**
+   * Get the metadata stored in this dataset element.
+   * Inherited metadata only in an InvMetadata object.
+   * @return the metadata stored in this dataset element.
+   */
+  public ThreddsMetadata getLocalMetadata() {
+    return tm;
+  }
 
   public void setLocalMetadata(ThreddsMetadata tm) {
     // look this is wrong.
@@ -807,20 +828,25 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * local metadata that should be inherited by this dataset's children.
+   * @return local metadata that should be inherited by this dataset's children.
    */
-  public ThreddsMetadata getLocalMetadataInheritable() { return tmi; }
+  public ThreddsMetadata getLocalMetadataInheritable() {
+    return tmi;
+  }
 
 
-  /**
+  /*
    * local metadata that should be inherited by this dataset's children.
-   */
-  public ThreddsMetadata getCat6Metadata() { return tmi6; }
+   *
+  public ThreddsMetadata getCat6Metadata() {
+    return tmi6;
+  } */
 
 
   /**
    * Remove the given InvMetadata from the set of metadata local to this dataset.
    *
-   * @param metadata
+   * @param metadata remove this
    * @return true if an InvMetadata is removed, false otherwise.
    */
   public boolean removeLocalMetadata(InvMetadata metadata) {
@@ -841,27 +867,36 @@ public class InvDatasetImpl extends InvDataset {
     return null;
   }
 
-    /** get Documentation that are xlinks */
+  /*
+   * get Documentation that are xlinks
+   *
   public List getDocumentationLinks() {
     ArrayList result = new ArrayList();
     java.util.List docs = getDocumentation();
-    for (int i=0; i<docs.size(); i++) {
+    for (int i = 0; i < docs.size(); i++) {
       InvDocumentation doc = (InvDocumentation) docs.get(i);
       if (doc.hasXlink())
         result.add(doc);
     }
     return result;
-  }
+  } */
 
   /**
    * Filtering
+   * @return true if this is "marked"
    */
-  protected boolean getMark() { return mark; }
+  protected boolean getMark() {
+    return mark;
+  }
 
-  protected void setMark(boolean mark) { this.mark = mark; }
+  protected void setMark(boolean mark) {
+    this.mark = mark;
+  }
 
   /**
-   * User properties
+   * Look up the User property having the given key
+   * @param key property key
+   * @return User property having the given key, or null
    */
   public Object getUserProperty(Object key) {
     if (userMap == null) return null;
@@ -869,13 +904,15 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   public void setUserProperty(Object key, Object value) {
-    if (userMap == null) userMap = new HashMap();
+    if (userMap == null) userMap = new HashMap<Object, Object>();
     userMap.put(key, value);
   }
 
-  private HashMap userMap = null;
+  private HashMap<Object, Object> userMap = null;
 
-  public String toString() { return getName(); }
+  public String toString() {
+    return getName();
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -890,83 +927,81 @@ public class InvDatasetImpl extends InvDataset {
    * @param ds            the dataset.
    * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
    * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
-   * <li> append "html" to DODS Access URLs
-   * </ul>
+   *                      <li> append "html" to DODS Access URLs
+   *                      </ul>
    * @param datasetEvents if true, prepend "dataset:" to any dataset access URLS
    * @param catrefEvents  if true, prepend "catref:" to any catref URLS
    */
 
   static public void writeHtmlDescription(StringBuffer buff, InvDatasetImpl ds,
-      boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents) {
+                                          boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents) {
 
     if (ds == null) return;
 
     if (complete) {
-      buff.append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
-          .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
-          .append( "<html>\n" );
+      buff.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n")
+          .append("        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
+          .append("<html>\n");
       buff.append("<head>");
       buff.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
       buff.append("</head>");
       buff.append("<body>\n");
     }
 
-    buff.append( "<h2>Dataset: " ).append( ds.getFullName() ).append( "</h2>\n<ul>\n" );
+    buff.append("<h2>Dataset: ").append(ds.getFullName()).append("</h2>\n<ul>\n");
     if ((ds.getDataFormatType() != null) && (ds.getDataFormatType() != DataFormatType.NONE))
-      buff.append( " <li><em>Data format: </em>" ).append( StringUtil.quoteHtmlContent( ds.getDataFormatType().toString() ) ).append( "</li>\n" );
+      buff.append(" <li><em>Data format: </em>").append(StringUtil.quoteHtmlContent(ds.getDataFormatType().toString())).append("</li>\n");
 
-    if ((ds.getDataSize() != 0.0) && !Double.isNaN( ds.getDataSize()))
-      buff.append( " <li><em>Data size: </em>" ).append( Format.formatByteSize( ds.getDataSize() ) ).append( "</li>\n" );
+    if ((ds.getDataSize() != 0.0) && !Double.isNaN(ds.getDataSize()))
+      buff.append(" <li><em>Data size: </em>").append(Format.formatByteSize(ds.getDataSize())).append("</li>\n");
 
     if ((ds.getDataType() != null) && (ds.getDataType() != DataType.NONE))
-      buff.append( " <li><em>Data type: </em>" ).append( StringUtil.quoteHtmlContent( ds.getDataType().toString() ) ).append( "</li>\n" );
+      buff.append(" <li><em>Data type: </em>").append(StringUtil.quoteHtmlContent(ds.getDataType().toString())).append("</li>\n");
 
     if ((ds.getCollectionType() != null) && (ds.getCollectionType() != CollectionType.NONE))
-      buff.append( " <li><em>Collection type: </em>" ).append( StringUtil.quoteHtmlContent( ds.getCollectionType().toString() ) ).append( "</li>\n" );
+      buff.append(" <li><em>Collection type: </em>").append(StringUtil.quoteHtmlContent(ds.getCollectionType().toString())).append("</li>\n");
 
     if (ds.isHarvest())
-      buff.append( " <li><em>Harvest: </em>" ).append( ds.isHarvest() ).append( "</li>\n" );
+      buff.append(" <li><em>Harvest: </em>").append(ds.isHarvest()).append("</li>\n");
 
     if (ds.getAuthority() != null)
-      buff.append( " <li><em>Naming Authority: </em>" ).append( StringUtil.quoteHtmlContent( ds.getAuthority() ) ).append( "</li>\n" );
+      buff.append(" <li><em>Naming Authority: </em>").append(StringUtil.quoteHtmlContent(ds.getAuthority())).append("</li>\n");
 
     if (ds.getID() != null)
-      buff.append( " <li><em>ID: </em>" ).append( StringUtil.quoteHtmlContent( ds.getID() ) ).append( "</li>\n" );
+      buff.append(" <li><em>ID: </em>").append(StringUtil.quoteHtmlContent(ds.getID())).append("</li>\n");
 
     if (ds.getRestrictAccess() != null)
-      buff.append( " <li><em>RestrictAccess: </em>" ).append( StringUtil.quoteHtmlContent( ds.getRestrictAccess() ) ).append( "</li>\n" );
+      buff.append(" <li><em>RestrictAccess: </em>").append(StringUtil.quoteHtmlContent(ds.getRestrictAccess())).append("</li>\n");
 
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
       String href = resolve(ds, catref.getXlinkHref());
       if (catrefEvents) href = "catref:" + href;
-      buff.append( " <li><em>CatalogRef: </em>" ).append( makeHref( href, null ) ).append( "</li>\n" );
+      buff.append(" <li><em>CatalogRef: </em>").append(makeHref(href, null)).append("</li>\n");
     }
 
     buff.append("</ul>\n");
 
-    java.util.List docs = ds.getDocumentation();
+    java.util.List<InvDocumentation> docs = ds.getDocumentation();
     if (docs.size() > 0) {
       buff.append("<h3>Documentation:</h3>\n<ul>\n");
-      for (int i = 0; i < docs.size(); i++) {
-        InvDocumentation doc = (InvDocumentation) docs.get(i);
-        String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil.quoteHtmlContent( doc.getType()) + ":</strong> ";
+      for (InvDocumentation doc : docs) {
+        String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil.quoteHtmlContent(doc.getType()) + ":</strong> ";
         String inline = doc.getInlineContent();
         if ((inline != null) && (inline.length() > 0))
-          buff.append( " <li>" ).append( type ).append( StringUtil.quoteHtmlContent( inline ) ).append( "</li>\n" );
+          buff.append(" <li>").append(type).append(StringUtil.quoteHtmlContent(inline)).append("</li>\n");
         if (doc.hasXlink()) {
           // buff.append(" <li>" + type + makeHrefResolve(ds, uri.toString(), doc.getXlinkTitle()) + "</a>\n");
-          buff.append( " <li>" ).append( type ).append( makeHref( doc.getXlinkHref(), doc.getXlinkTitle() ) ).append( "</li>\n" );
+          buff.append(" <li>").append(type).append(makeHref(doc.getXlinkHref(), doc.getXlinkTitle())).append("</li>\n");
         }
       }
       buff.append("</ul>");
     }
 
-    java.util.List access = ds.getAccess();
+    java.util.List<InvAccess> access = ds.getAccess();
     if (access.size() > 0) {
       buff.append("<h3>Access:</h3>\n<ol>\n");
-      for (int i = 0; i < access.size(); i++) {
-        InvAccess a = (InvAccess) access.get(i);
+      for (InvAccess a : access) {
         InvService s = a.getService();
         String urlString = a.getStandardUrlName();
         if (datasetEvents) urlString = "dataset:" + urlString;
@@ -979,109 +1014,101 @@ public class InvDatasetImpl extends InvDataset {
           else if (stype == ServiceType.NetcdfServer)
             urlString = urlString + "?showForm";
         }
-        buff.append( " <li> <b>" ).append( StringUtil.quoteHtmlContent( s.getServiceType().toString() ) );
-        buff.append( ":</b> " ).append( makeHref( urlString, a.getStandardUrlName() ) ).append( "</li>\n" );
+        buff.append(" <li> <b>").append(StringUtil.quoteHtmlContent(s.getServiceType().toString()));
+        buff.append(":</b> ").append(makeHref(urlString, a.getStandardUrlName())).append("</li>\n");
       }
       buff.append("</ol>\n");
     }
 
-    java.util.List list = ds.getContributors();
-    if (list.size() > 0) {
+    java.util.List<ThreddsMetadata.Contributor> contributors = ds.getContributors();
+    if (contributors.size() > 0) {
       buff.append("<h3>Contributors:</h3>\n<ul>\n");
-      for (int i = 0; i < list.size(); i++) {
-        ThreddsMetadata.Contributor t = (ThreddsMetadata.Contributor) list.get(i);
-        String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil.quoteHtmlContent( t.getRole()) + ")</strong> ";
-        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( t.getName() ) ).append( role ).append( "</li>\n" );
+      for (ThreddsMetadata.Contributor t : contributors) {
+        String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil.quoteHtmlContent(t.getRole()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getName())).append(role).append("</li>\n");
       }
       buff.append("</ul>");
     }
 
-    list = ds.getKeywords();
-    if (list.size() > 0) {
+    java.util.List<ThreddsMetadata.Vocab> keywords = ds.getKeywords();
+    if (keywords.size() > 0) {
       buff.append("<h3>Keywords:</h3>\n<ul>\n");
-      for (int i = 0; i < list.size(); i++) {
-        ThreddsMetadata.Vocab t = (ThreddsMetadata.Vocab) list.get(i);
-        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent( t.getVocabulary()) + ")</strong> ";
-        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( t.getText() ) ).append( vocab ).append( "</li>\n" );
+      for (ThreddsMetadata.Vocab t : keywords) {
+        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
       }
       buff.append("</ul>");
     }
 
-    list = ds.getDates();
-    if (list.size() > 0) {
+    java.util.List<DateType> dates = ds.getDates();
+    if (dates.size() > 0) {
       buff.append("<h3>Dates:</h3>\n<ul>\n");
-      for (int i = 0; i < list.size(); i++) {
-        DateType d = (DateType) list.get(i);
-        String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent( d.getType()) + ")</strong> ";
-        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( d.getText() ) ).append( type ).append( "</li>\n" );
+      for (DateType d : dates) {
+        String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(d.getType()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil.quoteHtmlContent(d.getText())).append(type).append("</li>\n");
       }
       buff.append("</ul>");
     }
 
-    list = ds.getProjects();
-    if (list.size() > 0) {
+    java.util.List<ThreddsMetadata.Vocab> projects = ds.getProjects();
+    if (projects.size() > 0) {
       buff.append("<h3>Projects:</h3>\n<ul>\n");
-      for (int i = 0; i < list.size(); i++) {
-        ThreddsMetadata.Vocab t = (ThreddsMetadata.Vocab) list.get(i);
-        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent( t.getVocabulary()) + ")</strong> ";
-        buff.append( " <li>" ).append( StringUtil.quoteHtmlContent( t.getText() ) ).append( vocab ).append( "</li>\n" );
+      for (ThreddsMetadata.Vocab t : projects) {
+        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
       }
       buff.append("</ul>");
     }
 
-    list = ds.getCreators();
-    if (list.size() > 0) {
+    java.util.List<ThreddsMetadata.Source> creators = ds.getCreators();
+    if (creators.size() > 0) {
       buff.append("<h3>Creators:</h3>\n<ul>\n");
-      for (int i = 0; i < list.size(); i++) {
-        ThreddsMetadata.Source t = (ThreddsMetadata.Source) list.get(i);
-        buff.append( " <li><strong>" ).append( StringUtil.quoteHtmlContent( t.getName() ) ).append( "</strong><ul>\n" );
-        buff.append( " <li><em>email: </em>" ).append( StringUtil.quoteHtmlContent( t.getEmail() ) ).append( "</li>\n" );
+      for (ThreddsMetadata.Source t : creators) {
+        buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
+        buff.append(" <li><em>email: </em>").append(StringUtil.quoteHtmlContent(t.getEmail())).append("</li>\n");
         if (t.getUrl() != null) {
-          buff.append( " <li> <em>" ).append( makeHrefResolve( ds, t.getUrl(), null ) ).append( "</em></li>\n" );
+          buff.append(" <li> <em>").append(makeHrefResolve(ds, t.getUrl(), null)).append("</em></li>\n");
         }
         buff.append(" </ul></li>\n");
       }
       buff.append("</ul>");
     }
 
-    list = ds.getPublishers();
-    if (list.size() > 0) {
+    java.util.List<ThreddsMetadata.Source> publishers = ds.getPublishers();
+    if (publishers.size() > 0) {
       buff.append("<h3>Publishers:</h3>\n<ul>\n");
-      for (int i = 0; i < list.size(); i++) {
-        ThreddsMetadata.Source t = (ThreddsMetadata.Source) list.get(i);
-        buff.append(" <li><strong>" + StringUtil.quoteHtmlContent( t.getName()) + "</strong><ul>\n");
-        buff.append(" <li><em>email: </em>" + StringUtil.quoteHtmlContent( t.getEmail()) + "\n");
+      for (ThreddsMetadata.Source t : publishers) {
+        buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
+        buff.append(" <li><em>email: </em>").append(StringUtil.quoteHtmlContent(t.getEmail())).append("\n");
         if (t.getUrl() != null) {
-          buff.append(" <li> <em>" + makeHrefResolve(ds, t.getUrl(), null) + "</em>\n");
+          buff.append(" <li> <em>").append(makeHrefResolve(ds, t.getUrl(), null)).append("</em>\n");
         }
         buff.append(" </ul>\n");
       }
       buff.append("</ul>");
     }
 
-    list = ds.getVariables();
-    if (list.size() > 0) {
+    java.util.List<ThreddsMetadata.Variables> vars = ds.getVariables();
+    if (vars.size() > 0) {
       buff.append("<h3>Variables:</h3>\n<ul>\n");
-      for (int i = 0; i < list.size(); i++) {
-        ThreddsMetadata.Variables t = (ThreddsMetadata.Variables) list.get(i);
+      for (ThreddsMetadata.Variables t : vars) {
 
         if (t.getVocabUri() != null) {
           URI uri = t.getVocabUri();
-          buff.append(" <li>" + makeHrefResolve(ds, uri.toString(), t.getVocabulary()) + "</li>");
+          buff.append(" <li>").append(makeHrefResolve(ds, uri.toString(), t.getVocabulary())).append("</li>");
         } else {
-          buff.append(" <li>" + StringUtil.quoteHtmlContent( t.getVocabulary()));
+          buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getVocabulary()));
         }
         buff.append(" <em>vocabulary:</em> <ul>\n");
 
-        java.util.List vlist = t.getVariableList();
+        java.util.List<ThreddsMetadata.Variable> vlist = t.getVariableList();
         if (vlist.size() > 0) {
-          for (int j = 0; j < vlist.size(); j++) {
-            ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vlist.get(j);
-            buff.append(" <li><strong>" + StringUtil.quoteHtmlContent( v.getName()) + "</strong> = ");
-            String desc = (v.getDescription() == null) ? "" : " <i>" +StringUtil.quoteHtmlContent( v.getDescription())+"</i> = ";
+          for (ThreddsMetadata.Variable v : vlist) {
+            buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(v.getName())).append("</strong> = ");
+            String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil.quoteHtmlContent(v.getDescription()) + "</i> = ";
             buff.append(desc);
             String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
-            buff.append(StringUtil.quoteHtmlContent( v.getVocabularyName() + units) + "\n");
+            buff.append(StringUtil.quoteHtmlContent(v.getVocabularyName() + units)).append("\n");
           }
           buff.append(" </ul>\n");
         }
@@ -1095,18 +1122,17 @@ public class InvDatasetImpl extends InvDataset {
       if (gc.isGlobal())
         buff.append(" <li><em> Global </em></ul>\n");
       else {
-        buff.append(" <li><em> Longitude: </em> " + rangeString(gc.getEastWestRange()) + "</li>\n");
-        buff.append(" <li><em> Latitude: </em> " + rangeString(gc.getNorthSouthRange()) + "</li>\n");
-        if (gc.getUpDownRange() != null)
-          buff.append(" <li><em> Altitude: </em> " + rangeString(gc.getUpDownRange()) +
-              " (positive is <strong>" + StringUtil.quoteHtmlContent( gc.getZPositive()) + ")</strong></li>\n");
+        buff.append(" <li><em> Longitude: </em> ").append(rangeString(gc.getEastWestRange())).append("</li>\n");
+        buff.append(" <li><em> Latitude: </em> ").append(rangeString(gc.getNorthSouthRange())).append("</li>\n");
+        if (gc.getUpDownRange() != null) {
+          buff.append(" <li><em> Altitude: </em> ").append(rangeString(gc.getUpDownRange())).append(" (positive is <strong>").append(StringUtil.quoteHtmlContent(gc.getZPositive())).append(")</strong></li>\n");
+        }
 
-        java.util.List nlist = gc.getNames();
+        java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
         if ((nlist != null) && (nlist.size() > 0)) {
           buff.append(" <li><em>  Names: </em> <ul>\n");
-          for (int i = 0; i < nlist.size(); i++) {
-            ThreddsMetadata.Vocab elem = (ThreddsMetadata.Vocab) nlist.get(i);
-            buff.append(" <li>" + StringUtil.quoteHtmlContent( elem.getText()) + "\n");
+          for (ThreddsMetadata.Vocab elem : nlist) {
+            buff.append(" <li>").append(StringUtil.quoteHtmlContent(elem.getText())).append("\n");
           }
           buff.append(" </ul>\n");
         }
@@ -1119,34 +1145,34 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("<h3>TimeCoverage:</h3>\n<ul>\n");
       DateType start = tc.getStart();
       if ((start != null) && !start.isBlank())
-        buff.append(" <li><em>  Start: </em> " + start.toDateTimeString() + "\n");
+        buff.append(" <li><em>  Start: </em> ").append(start.toDateTimeString()).append("\n");
       DateType end = tc.getEnd();
-      if ((end != null) && !end.isBlank())
-        buff.append(" <li><em>  End: </em> " + end.toDateTimeString() + "\n");
+      if ((end != null) && !end.isBlank()) {
+        buff.append(" <li><em>  End: </em> ").append(end.toDateTimeString()).append("\n");
+      }
       TimeDuration duration = tc.getDuration();
       if ((duration != null) && !duration.isBlank())
-        buff.append(" <li><em>  Duration: </em> " + StringUtil.quoteHtmlContent( duration.toString()) + "\n");
+        buff.append(" <li><em>  Duration: </em> ").append(StringUtil.quoteHtmlContent(duration.toString())).append("\n");
       TimeDuration resolution = tc.getResolution();
-      if (tc.useResolution() && (resolution != null) && !resolution.isBlank())
-        buff.append(" <li><em>  Resolution: </em> " + StringUtil.quoteHtmlContent( resolution.toString()) + "\n");
+      if (tc.useResolution() && (resolution != null) && !resolution.isBlank()) {
+        buff.append(" <li><em>  Resolution: </em> ").append(StringUtil.quoteHtmlContent(resolution.toString())).append("\n");
+      }
       buff.append(" </ul>\n");
     }
 
-    java.util.List metadata = ds.getMetadata();
+    java.util.List<InvMetadata> metadata = ds.getMetadata();
     boolean gotSomeMetadata = false;
-    for (int i = 0; i < metadata.size(); i++) {
-      InvMetadata m = (InvMetadata) metadata.get(i);
+    for (InvMetadata m : metadata) {
       if (m.hasXlink()) gotSomeMetadata = true;
     }
 
     if (gotSomeMetadata) {
       buff.append("<h3>Metadata:</h3>\n<ul>\n");
-      for (int i = 0; i < metadata.size(); i++) {
-        InvMetadata m = (InvMetadata) metadata.get(i);
+      for (InvMetadata m : metadata) {
         String type = (m.getMetadataType() == null) ? "" : m.getMetadataType();
         if (m.hasXlink()) {
           String title = (m.getXlinkTitle() == null) ? "Type " + type : m.getXlinkTitle();
-          buff.append(" <li> " + makeHrefResolve(ds, m.getXlinkHref(), title) + "\n");
+          buff.append(" <li> ").append(makeHrefResolve(ds, m.getXlinkHref(), title)).append("\n");
         } //else {
         //buff.append(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>\n");
         //}
@@ -1154,15 +1180,15 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("</ul>");
     }
 
-    java.util.List props = ds.getProperties();
+    java.util.List<InvProperty> props = ds.getProperties();
     if (props.size() > 0) {
       buff.append("<h3>Properties:</h3>\n<ul>\n");
-      for (int i = 0; i < props.size(); i++) {
-        InvProperty p = (InvProperty) props.get(i);
+      for (InvProperty p : props) {
         if (p.getName().equals("attachments")) // LOOK whats this ?
-          buff.append(" <li>" + makeHrefResolve(ds, p.getValue(), p.getName()) + "\n");
-        else
-          buff.append(" <li>" + StringUtil.quoteHtmlContent( p.getName() + " = \"" + p.getValue()) + "\"\n");
+          buff.append(" <li>").append(makeHrefResolve(ds, p.getValue(), p.getName())).append("\n");
+        else {
+          buff.append(" <li>").append(StringUtil.quoteHtmlContent(p.getName() + " = \"" + p.getValue())).append("\"\n");
+        }
       }
       buff.append("</ul>");
     }
@@ -1174,7 +1200,7 @@ public class InvDatasetImpl extends InvDataset {
     if (r == null) return "";
     String units = (r.getUnits() == null) ? "" : " " + r.getUnits();
     String resolution = r.hasResolution() ? " Resolution=" + r.getResolution() : "";
-    return StringUtil.quoteHtmlContent( r.getStart() + " to " + (r.getStart() + r.getSize()) + resolution + units);
+    return StringUtil.quoteHtmlContent(r.getStart() + " to " + (r.getStart() + r.getSize()) + resolution + units);
   }
 
   /**
@@ -1199,7 +1225,7 @@ public class InvDatasetImpl extends InvDataset {
 
   static private String makeHref(String href, String title) {
     if (title == null) title = href;
-    return "<a href='" + StringUtil.quoteHtmlContent( href) + "'>" + StringUtil.quoteHtmlContent( title) + "</a>";
+    return "<a href='" + StringUtil.quoteHtmlContent(href) + "'>" + StringUtil.quoteHtmlContent(title) + "</a>";
   }
 
   static private String makeHrefResolve(InvDatasetImpl ds, String href, String title) {
@@ -1211,31 +1237,33 @@ public class InvDatasetImpl extends InvDataset {
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * debugging info
+   * @return debugging info
    */
-  public String dump() { return dump(0); }
+  public String dump() {
+    return dump(0);
+  }
 
   String dump(int n) {
     StringBuffer buff = new StringBuffer(100);
 
     buff.append(indent(n));
-    buff.append("Dataset name:<" + getName());
-    if (dataType != null)
-      buff.append("> dataType:<" + dataType);
+    buff.append("Dataset name:<").append(getName());
+    if (dataType != null) {
+      buff.append("> dataType:<").append(dataType);
+    }
     if (urlPath != null)
-      buff.append("> urlPath:<" + urlPath);
+      buff.append("> urlPath:<").append(urlPath);
     if (defaultService != null)
-      buff.append("> defaultService <" + defaultService);
-    buff.append("> uID:<" + getUniqueID());
+      buff.append("> defaultService <").append(defaultService);
+    buff.append("> uID:<").append(getUniqueID());
     buff.append(">\n");
 
-    List svcs = getServicesLocal();
+    List<InvService> svcs = getServicesLocal();
     if (svcs.size() > 0) {
       String indent = indent(n + 2);
       buff.append(indent);
       buff.append("Services:\n");
-      for (int i = 0; i < svcs.size(); i++) {
-        InvService s = (InvService) svcs.get(i);
+      for (InvService s : svcs) {
         buff.append(s.dump(n + 4));
       }
     }
@@ -1244,30 +1272,29 @@ public class InvDatasetImpl extends InvDataset {
       String indent = indent(n + 2);
       buff.append(indent);
       if (access.size() == 1) {
-        buff.append("Access: " + access.get(0) + "\n");
+        buff.append("Access: ").append(access.get(0)).append("\n");
       } else if (access.size() > 1) {
         buff.append("Access:\n");
-        for (int i = 0; i < access.size(); i++) {
-          InvAccess a = (InvAccessImpl) access.get(i);
-          buff.append(indent(n + 4) + a + "\n");
+        for (InvAccess a : access) {
+          buff.append(indent(n + 4)).append(a).append("\n");
         }
       }
     }
 
-    buff.append(indent(n)+"Thredds Metadata\n");
-    buff.append(tm.dump(n+4) + "\n");
-    buff.append(indent(n)+"Thredds Metadata Inherited\n");
-    buff.append(tmi.dump(n+4) + "\n");
-    buff.append(indent(n)+"Thredds Metadata Cat6\n");
-    buff.append(tmi6.dump(n+4) + "\n");
+    buff.append(indent(n)).append("Thredds Metadata\n");
+    buff.append(tm.dump(n + 4)).append("\n");
+    buff.append(indent(n)).append("Thredds Metadata Inherited\n");
+    buff.append(tmi.dump(n + 4)).append("\n");
+    buff.append(indent(n)).append("Thredds Metadata Cat6\n");
+    buff.append(tmi6.dump(n + 4)).append("\n");
 
     if (datasets.size() > 0) {
       String indent = indent(n + 2);
       buff.append(indent);
       buff.append("Datasets:\n");
-      for (int i = 0; i < datasets.size(); i++) {
-        InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
-        buff.append(ds.dump(n + 4));
+      for (InvDataset ds : datasets) {
+        InvDatasetImpl dsi = (InvDatasetImpl) ds;
+        buff.append(dsi.dump(n + 4));
       }
     }
     return buff.toString();
@@ -1295,34 +1322,30 @@ public class InvDatasetImpl extends InvDataset {
       }
     } */
 
-    for (int i = 0; i < access.size(); i++) {
-      InvAccessImpl a = (InvAccessImpl) access.get(i);
+    for (InvAccess acces : access) {
+      InvAccessImpl a = (InvAccessImpl) acces;
       isValid &= a.check(out, show);
     }
 
-    for (int i = 0; i < datasets.size(); i++) {
-      InvDatasetImpl ds = (InvDatasetImpl) datasets.get(i);
+    for (InvDataset dataset : datasets) {
+      InvDatasetImpl ds = (InvDatasetImpl) dataset;
       isValid &= ds.check(out, show);
     }
 
-    List mdata = getMetadata();
-    for (int i = 0; i < mdata.size(); i++) {
-      InvMetadata m = (InvMetadata) mdata.get(i);
+    for (InvMetadata m : getMetadata()) {
       m.check(out);
     }
 
-    List services = getServicesLocal();
-    for (int i = 0; i < services.size(); i++) {
-      InvService s = (InvService) services.get(i);
+    for (InvService s : getServicesLocal()) {
       isValid &= s.check(out);
     }
 
     if (hasAccess() && (getDataType() == null)) {
-      out.append("**Warning: Dataset (" + getFullName() + "): is selectable but no data type declared in it or in a parent element\n");
+      out.append("**Warning: Dataset (").append(getFullName()).append("): is selectable but no data type declared in it or in a parent element\n");
     }
 
     if (!hasAccess() && !hasNestedDatasets()) {
-      out.append("**Warning: Dataset (" + getFullName() + "): is not selectable and does not have nested datasets\n");
+      out.append("**Warning: Dataset (").append(getFullName()).append("): is not selectable and does not have nested datasets\n");
     }
 
     if (show) System.out.println("  dataset " + name + " valid = " + isValid);

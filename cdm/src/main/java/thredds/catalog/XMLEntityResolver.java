@@ -1,6 +1,5 @@
-// $Id: XMLEntityResolver.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,7 +36,6 @@ import java.util.*;
  * The Crimson parser wont do schema validation.
  *
  * @author John Caron
- * @version $Id: XMLEntityResolver.java 48 2006-07-12 16:15:40Z caron $
  */
 
 /*
@@ -147,8 +145,7 @@ Add these to the jnlp file: (see Viewer.jnlp):
 
 public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   static private boolean debugEntityResolution = false; //, debugFactory = false, debugMessages = false;
-  // static private final DocumentBuilderFactory docBuilderFactory;
-  static private HashMap entityHash = new HashMap();
+  static private Map<String, String> entityHash = new HashMap<String, String>();
 
   // schema validation
   static private boolean schemaValidationOk = true;
@@ -268,7 +265,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
    * Add an entity for resolution. Specify a local resource, and/or a URL. Look
    * for the local Resource first.
    *
-   * @param entityName
+   * @param entityName name of entity, eg the namespace String
    * @param resourceName resolve using this Resource, found on the class path
    * @param urlName resolve using this Resource, found on the class path
    */
@@ -406,14 +403,14 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   // we read the DTD/schema locally if we can.
   public org.xml.sax.InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
     if (debugEntityResolution) System.out.print("  publicId="+publicId+" systemId="+systemId);
-    String entity = (String) entityHash.get( systemId);
+    String entity = entityHash.get( systemId);
     if (entity != null) {
       if (debugEntityResolution) System.out.println(" *** resolved  with local copy");
       return new MyInputSource(entity);
     }
 
     if (systemId.indexOf("InvCatalog.0.6.dtd") >= 0) {
-      entity = (String) entityHash.get( "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd");
+      entity = entityHash.get( "http://www.unidata.ucar.edu/projects/THREDDS/xml/InvCatalog.0.6.dtd");
       if (entity != null) {
         if (debugEntityResolution) System.out.println(" *** resolved2 with local copy");
         return new MyInputSource(entity);
@@ -428,15 +425,15 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   private class MyErrorHandler implements org.xml.sax.ErrorHandler {
 
     public void warning(SAXParseException e) throws SAXException {
-      warnMessages.append("*** XML parser warning "+showError(e)+"\n");
+      warnMessages.append("*** XML parser warning ").append(showError(e)).append("\n");
     }
 
     public void error(SAXParseException e) throws SAXException {
-      errMessages.append("*** XML parser error "+showError(e)+"\n");
+      errMessages.append("*** XML parser error ").append(showError(e)).append("\n");
     }
 
     public void fatalError(SAXParseException e) throws SAXException {
-      fatalMessages.append("*** XML parser fatalError "+showError(e)+"\n");
+      fatalMessages.append("*** XML parser fatalError ").append(showError(e)).append("\n");
     }
 
     private String showError( SAXParseException e) {

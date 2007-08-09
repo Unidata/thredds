@@ -201,6 +201,7 @@
       <xsd:enumeration value="joinExisting"/>
       <xsd:enumeration value="joinExistingOne"/>
       <xsd:enumeration value="joinNew"/>
+      <xsd:enumeration value="tile"/>
       <xsd:enumeration value="union"/>
     </xsd:restriction>
   </xsd:simpleType>
