@@ -31,7 +31,7 @@ public class RegExpMatchOnNameFilter implements CrawlableDatasetFilter
   public boolean accept( CrawlableDataset dataset )
   {
     java.util.regex.Matcher matcher = this.pattern.matcher( dataset.getName() );
-    if ( matcher.matches() ) return true;
+    if ( matcher.find() ) return true;
     return false;
   }
 }
