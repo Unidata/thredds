@@ -38,7 +38,9 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
 
   static public boolean isValidFile( NetcdfDataset ds)
   {
-    Attribute conventionsAtt = ds.findGlobalAttributeIgnoreCase( "Conventions");
+    Attribute conventionsAtt = ds.findGlobalAttribute( "Conventions");
+    if ( conventionsAtt == null)
+      conventionsAtt = ds.findGlobalAttributeIgnoreCase( "Conventions");
     if ( conventionsAtt == null) return( false);
     if ( ! conventionsAtt.isString()) return( false);
     if ( ! conventionsAtt.getStringValue().equals( "NCAR-RAF/nimbus" ) ) return( false );
@@ -74,7 +76,11 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
   {
     super( ncf );
 
-    Attribute conventionsAtt = ncf.findGlobalAttributeIgnoreCase( "Conventions" );
+    Attribute conventionsAtt = ncf.findGlobalAttribute( "Conventions" );
+    if ( conventionsAtt == null )
+      conventionsAtt = ncf.findGlobalAttributeIgnoreCase( "Conventions" );
+    if ( conventionsAtt == null)
+      throw new IllegalArgumentException( "File <" + ncf.getId() + "> not a \"NCAR-RAF/nimbus\" convention file." );
     if ( ! conventionsAtt.getStringValue().equals( "NCAR-RAF/nimbus" ) )
       throw new IllegalArgumentException( "File <" + ncf.getId() + "> not a \"NCAR-RAF/nimbus\" convention file." );
 
