@@ -1,4 +1,3 @@
-// $Id: RegExpMatchOnNameFilter.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.crawlabledataset.filter;
 
 import thredds.crawlabledataset.CrawlableDatasetFilter;
@@ -11,27 +10,28 @@ import thredds.crawlabledataset.CrawlableDataset;
  * @author edavis
  * @since Nov 5, 2005 12:51:56 PM
  */
-public class RegExpMatchOnNameFilter implements CrawlableDatasetFilter
-{
+public class RegExpMatchOnNameFilter implements CrawlableDatasetFilter {
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( RegExpMatchOnNameFilter.class );
 
   private String regExpString;
-  private java.util.regex.Pattern pattern;
+  protected java.util.regex.Pattern pattern;
 
-  public RegExpMatchOnNameFilter( String regExpString )
-  {
+  public RegExpMatchOnNameFilter(String regExpString) {
     this.regExpString = regExpString;
-    this.pattern = java.util.regex.Pattern.compile( regExpString );
+    this.pattern = java.util.regex.Pattern.compile(regExpString);
   }
 
-  public Object getConfigObject() { return regExpString; }
-  public String getRegExpString() { return regExpString; }
+  public Object getConfigObject() {
+    return regExpString;
+  }
 
-  public boolean accept( CrawlableDataset dataset )
-  {
-    java.util.regex.Matcher matcher = this.pattern.matcher( dataset.getName() );
-    if ( matcher.find() ) return true;
-    return false;
+  public String getRegExpString() {
+    return regExpString;
+  }
+
+  public boolean accept(CrawlableDataset dataset) {
+    java.util.regex.Matcher matcher = this.pattern.matcher(dataset.getName());
+    return matcher.matches();
   }
 }

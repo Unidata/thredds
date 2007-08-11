@@ -641,34 +641,33 @@ public class NcMLReader {
     }
 
     // look for attributes
-    java.util.List attList = groupElem.getChildren("attribute", ncNS);
-    for (int j = 0; j < attList.size(); j++) {
-      readAtt(g, refg, (Element) attList.get(j));
+    java.util.List<Element> attList = groupElem.getChildren("attribute", ncNS);
+    for (Element attElem : attList) {
+      readAtt(g, refg, attElem);
     }
 
     // look for dimensions
-    java.util.List dimList = groupElem.getChildren("dimension", ncNS);
-    for (int j = 0; j < dimList.size(); j++) {
-      readDim(g, refg, (Element) dimList.get(j));
+    java.util.List<Element> dimList = groupElem.getChildren("dimension", ncNS);
+    for (Element dimElem : dimList) {
+      readDim(g, refg, dimElem);
     }
 
     // look for variables
-    java.util.List varList = groupElem.getChildren("variable", ncNS);
-    for (int j = 0; j < varList.size(); j++) {
-      readVariable(newds, g, refg, (Element) varList.get(j));
+    java.util.List<Element> varList = groupElem.getChildren("variable", ncNS);
+    for (Element varElem : varList) {
+      readVariable(newds, g, refg, varElem);
     }
 
     // process remove command
-    java.util.List removeList = groupElem.getChildren("remove", ncNS);
-    for (int j = 0; j < removeList.size(); j++) {
-      Element e = (Element) removeList.get(j);
+    java.util.List<Element> removeList = groupElem.getChildren("remove", ncNS);
+    for (Element e : removeList) {
       cmdRemove(g, e.getAttributeValue("type"), e.getAttributeValue("name"));
     }
 
     // look for nested groups
-    java.util.List groupList = groupElem.getChildren("group", ncNS);
-    for (int j = 0; j < groupList.size(); j++) {
-      readGroup(newds, refds, g, refg, (Element) groupList.get(j));
+    java.util.List<Element> groupList = groupElem.getChildren("group", ncNS);
+    for (Element gElem : groupList) {
+      readGroup(newds, refds, g, refg, gElem);
       if (debugConstruct) System.out.println(" add group = " + g.getName());
     }
   }
@@ -767,25 +766,24 @@ public class NcMLReader {
       g.addVariable(v);
     }
 
-    java.util.List attList = varElem.getChildren("attribute", ncNS);
-    for (int j = 0; j < attList.size(); j++) {
-      readAtt(v, refv, (Element) attList.get(j));
+    java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
+    for (Element attElem : attList) {
+      readAtt(v, refv, attElem);
     }
 
     // process remove command
-    java.util.List removeList = varElem.getChildren("remove", ncNS);
-    for (int j = 0; j < removeList.size(); j++) {
-      Element e = (Element) removeList.get(j);
-      cmdRemove(v, e.getAttributeValue("type"), e.getAttributeValue("name"));
+    java.util.List<Element> removeList = varElem.getChildren("remove", ncNS);
+    for (Element remElem : removeList) {
+      cmdRemove(v, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
     }
 
     if (v.getDataType() == DataType.STRUCTURE) {
       // deal with nested variables
       StructureDS s = (StructureDS) v;
       StructureDS refS = (StructureDS) refv;
-      java.util.List varList = varElem.getChildren("variable", ncNS);
-      for (int j = 0; j < varList.size(); j++) {
-        readVariableNested(ds, s, refS, (Element) varList.get(j));
+      java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
+      for (Element vElem : varList) {
+        readVariableNested(ds, s, refS, vElem);
       }
 
     } else {
@@ -847,14 +845,13 @@ public class NcMLReader {
       StructureDS s = new StructureDS(ds, g, parentS, name, shape, null, null);
       v = s;
       // look for nested variables
-      java.util.List varList = varElem.getChildren("variable", ncNS);
-      for (int j = 0; j < varList.size(); j++) {
-        readVariableNested(ds, s, s, (Element) varList.get(j));
+      java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
+      for (Element vElem : varList) {
+        readVariableNested(ds, s, s, vElem);
       }
 
     } else {
-      VariableDS vs = new VariableDS(ds, g, parentS, name, dtype, shape, null, null);
-      v = vs;
+      v = new VariableDS(ds, g, parentS, name, dtype, shape, null, null);
 
       // deal with values
       Element valueElem = varElem.getChild("values", ncNS);
@@ -864,9 +861,9 @@ public class NcMLReader {
     }
 
     // look for attributes
-    java.util.List attList = varElem.getChildren("attribute", ncNS);
-    for (int j = 0; j < attList.size(); j++)
-      readAtt(v, null, (Element) attList.get(j));
+    java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
+    for (Element attElem : attList)
+      readAtt(v, null, attElem);
 
     /* now that we have attributes finalized, redo the enhance
     if (enhance && (v instanceof VariableDS))
@@ -941,25 +938,24 @@ public class NcMLReader {
       v.setDimensions(shape);
     }
 
-    java.util.List attList = varElem.getChildren("attribute", ncNS);
-    for (int j = 0; j < attList.size(); j++) {
-      readAtt(v, refv, (Element) attList.get(j));
+    java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
+    for (Element attElem : attList) {
+      readAtt(v, refv, attElem);
     }
 
     // process remove command
-    java.util.List removeList = varElem.getChildren("remove", ncNS);
-    for (int j = 0; j < removeList.size(); j++) {
-      Element e = (Element) removeList.get(j);
-      cmdRemove(v, e.getAttributeValue("type"), e.getAttributeValue("name"));
+    java.util.List<Element> removeList = varElem.getChildren("remove", ncNS);
+    for (Element remElem : removeList) {
+      cmdRemove(v, remElem.getAttributeValue("type"), remElem.getAttributeValue("name"));
     }
 
     if (v.getDataType() == DataType.STRUCTURE) {
       // deal with nested variables
       StructureDS s = (StructureDS) v;
       StructureDS refS = (StructureDS) refv;
-      java.util.List varList = varElem.getChildren("variable", ncNS);
-      for (int j = 0; j < varList.size(); j++) {
-        readVariableNested(ds, s, refS, (Element) varList.get(j));
+      java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
+      for (Element vElem : varList) {
+        readVariableNested(ds, s, refS, vElem);
       }
 
     } else {
@@ -1023,7 +1019,7 @@ public class NcMLReader {
     String type = aggElem.getAttributeValue("type");
     String recheck = aggElem.getAttributeValue("recheckEvery");
 
-    Aggregation agg = null;
+    Aggregation agg;
     if (type.equals("joinExisting")) {
       agg = new AggregationExisting(newds, dimName, recheck);
 
@@ -1061,9 +1057,8 @@ public class NcMLReader {
         aggh.setInventoryDefinition(fmrcDefinition);
 
       // nested scan2 elements
-      java.util.List scan2List = aggElem.getChildren("scanFmrc", ncNS);
-      for (int j = 0; j < scan2List.size(); j++) {
-        Element scanElem = (Element) scan2List.get(j);
+      java.util.List<Element> scan2List = aggElem.getChildren("scanFmrc", ncNS);
+      for (Element scanElem : scan2List) {
         String dirLocation = scanElem.getAttributeValue("location");
         String suffix = scanElem.getAttributeValue("suffix");
         String regexpPatternString = scanElem.getAttributeValue("regExp");
@@ -1085,17 +1080,15 @@ public class NcMLReader {
     }
 
     // look for variable names
-    java.util.List list = aggElem.getChildren("variableAgg", ncNS);
-    for (int j = 0; j < list.size(); j++) {
-      Element e = (Element) list.get(j);
-      String varName = e.getAttributeValue("name");
+    java.util.List<Element> list = aggElem.getChildren("variableAgg", ncNS);
+    for (Element vaggElem : list) {
+      String varName = vaggElem.getAttributeValue("name");
       agg.addVariable(varName);
     }
 
     // nested netcdf elements
-    java.util.List ncList = aggElem.getChildren("netcdf", ncNS);
-    for (int j = 0; j < ncList.size(); j++) {
-      Element netcdfElemNested = (Element) ncList.get(j);
+    java.util.List<Element> ncList = aggElem.getChildren("netcdf", ncNS);
+    for (Element netcdfElemNested : ncList) {
       String location = netcdfElemNested.getAttributeValue("location");
       if (location == null)
         location = netcdfElemNested.getAttributeValue("uri");
@@ -1117,9 +1110,8 @@ public class NcMLReader {
     }
 
     // nested scan elements
-    java.util.List dirList = aggElem.getChildren("scan", ncNS);
-    for (int j = 0; j < dirList.size(); j++) {
-      Element scanElem = (Element) dirList.get(j);
+    java.util.List<Element> dirList = aggElem.getChildren("scan", ncNS);
+    for (Element scanElem : dirList) {
       String dirLocation = scanElem.getAttributeValue("location");
       String suffix = scanElem.getAttributeValue("suffix");
       String regexpPatternString = scanElem.getAttributeValue("regExp");
@@ -1258,41 +1250,6 @@ public class NcMLReader {
   /////////////////////////////////////////////
   // command procesing
 
-  /**
-   * Copy contents of "from" to "to", as long as "to" doesnt already have
-   * an elements of that name.
-   * <p/>
-   * protected void addElements(NetcdfFile from, NetcdfDataset ds) {
-   * <p/>
-   * // transfer everything from existing file into this dataset
-   * // that doesnt already exist
-   * Iterator iterDim = from.getDimensions().iterator();
-   * while (iterDim.hasNext()) {
-   * Dimension d = (Dimension) iterDim.next();
-   * if (!ds.dimensions().contains(d)) {
-   * ds.dimensions().add( d);
-   * }
-   * }
-   * <p/>
-   * Iterator iterVar = from.getVariables().iterator();
-   * while (iterVar.hasNext()) {
-   * Variable v = (Variable) iterVar.next();
-   * if (!ds.variables().contains(v)) {
-   * ds.variables().add( v);
-   * if (debugAgg) System.out.println(" copy var "+v.getName());
-   * }
-   * }
-   * <p/>
-   * Iterator iterAtt = from.getGlobalAttributes().iterator();
-   * while (iterAtt.hasNext()) {
-   * ucar.nc2.Attribute a = (ucar.nc2.Attribute) iterAtt.next();
-   * if (!ds.globalAttributes().contains(a))
-   * ds.globalAttributes().add( a);
-   * }
-   * }
-   * <p/>
-   */
-
   private void cmdRemove(Group g, String type, String name) {
     if (type.equals("dimension")) {
       Dimension dim = g.findDimension(name);
@@ -1406,7 +1363,7 @@ public class NcMLReader {
    *
    * @param ncmlLocation read this NcML file
    * @param fileOutName  write to this local file
-   * @throws IOException
+   * @throws IOException on write error
    * @see ucar.nc2.FileWriter#writeToFile
    */
   public static void writeNcMLToFile(String ncmlLocation, String fileOutName) throws IOException {
@@ -1452,68 +1409,3 @@ public class NcMLReader {
   }
 
 }
-
-/* protected VariableDS readCoordAxis( NetcdfDataset ds, Group g, Structure parentStructure, Element varElem) {
-    VariableDS vds = readVariable( ds, g, parentStructure,  varElem);
-    CoordinateAxis axis = CoordinateAxis.factory(ds, vds);
-
-    String axisType = varElem.getAttributeValue("axisType");
-    String positive = varElem.getAttributeValue("positive");
-    String boundaryRef = varElem.getAttributeValue("boundaryRef");
-
-    if (axisType != null)
-      axis.setAxisType(AxisType.getType(axisType));
-    if (positive != null)
-      axis.setPositive(positive);
-    if (boundaryRef != null)
-      axis.setBoundaryRef(boundaryRef);
-
-    return axis;
-  }
-
-  protected CoordinateSystem readCoordSystem( NetcdfDataset ds, Element csElem) {
-    ArrayList axes = new ArrayList();
-    ArrayList coordTrans = new ArrayList();
-
-    // look for coordinate axis references
-    java.util.List list = csElem.getChildren("coordinateAxisRef", ncNS);
-    for (int j=0; j< list.size(); j++) {
-     Element elem = (Element) list.get(j);
-     String axisName = elem.getAttributeValue("ref");
-     CoordinateAxis axis = ds.findCoordinateAxis(axisName);
-     axes.add( axis);
-     if (debug) System.out.println(" add coordinateAxisRef = "+axisName);
-    }
-
-     // look for coordinate transforms
-    list = csElem.getChildren("coordinateTransform", ncNS);
-    for (int j=0; j< list.size(); j++) {
-     CoordinateTransform ct = readCoordTransform(ds, (Element) list.get(j));
-     ds.addCoordinateTransform( ct);
-     coordTrans.add( ct);
-     if (debug) System.out.println(" add coordinateTransforms = "+ct.getName());
-    }
-
-    // look for coordinate transform references
-    list = csElem.getChildren("coordinateTransformRef", ncNS);
-    for (int j=0; j< list.size(); j++) {
-     Element elem = (Element) list.get(j);
-     String name = elem.getAttributeValue("ref");
-     CoordinateTransform axis = ds.findCoordinateTransform(name);
-     coordTrans.add( axis);
-     if (debug) System.out.println(" add coordinateTransformRef = "+name);
-    }
-
-    return new CoordinateSystem(axes, coordTrans);
-  }
-
-  protected CoordinateTransform readCoordTransform( NetcdfDataset ds, Element ctElem) {
-    String name = ctElem.getAttributeValue("name");
-    String authority = ctElem.getAttributeValue("authority");
-    String typeS = ctElem.getAttributeValue("type");
-
-    TransformType type = (typeS == null) ? null : TransformType.getType( typeS);
-    CoordinateTransform ct = new CoordinateTransform (name, authority, type);
-
-    return ct;
-  } */

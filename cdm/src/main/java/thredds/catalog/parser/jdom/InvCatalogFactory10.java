@@ -1,6 +1,5 @@
-// $Id: InvCatalogFactory10.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -86,7 +85,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
 
-  private HashMap metadataHash = new HashMap(10);
+  private Map<MetadataType, MetadataConverterIF> metadataHash = new HashMap<MetadataType, MetadataConverterIF>(10);
   public void registerMetadataConverter(MetadataType type, MetadataConverterIF converter) {
     metadataHash.put(type, converter);
   }
@@ -126,28 +125,28 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     InvCatalogImpl catalog = new InvCatalogImpl( name, version, makeDateType(expires, null, null), baseURI );
 
     // read top-level services
-    java.util.List sList = catalogElem.getChildren("service", defNS);
+    java.util.List<Element> sList = catalogElem.getChildren("service", defNS);
     for (int j=0; j< sList.size(); j++) {
       InvService s = readService((Element) sList.get(j), baseURI );
       catalog.addService(s);
     }
 
     // read top-level properties
-    java.util.List pList = catalogElem.getChildren("property", defNS);
+    java.util.List<Element> pList = catalogElem.getChildren("property", defNS);
     for (int j=0; j< pList.size(); j++) {
       InvProperty s = readProperty((Element) pList.get(j));
       catalog.addProperty(s);
     }
 
     // read top-level dataroots
-    java.util.List rootList = catalogElem.getChildren("datasetRoot", defNS);
+    java.util.List<Element> rootList = catalogElem.getChildren("datasetRoot", defNS);
     for (int j=0; j< rootList.size(); j++) {
       InvProperty root = readDatasetRoot((Element) rootList.get(j));
       catalog.addDatasetRoot( root);
     }
 
      // look for top-level dataset and catalogRefs elements (keep them in order)
-    java.util.List allChildren = catalogElem.getChildren();
+    java.util.List<Element> allChildren = catalogElem.getChildren();
     for (int j=0; j< allChildren.size(); j++) {
       Element e = (Element) allChildren.get(j);
       if (e.getName().equals("dataset")) {
@@ -248,7 +247,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     catalog.addDatasetByID( dataset); // need to do immed for alias processing
 
         // look for services
-    java.util.List serviceList = dsElem.getChildren("service", defNS);
+    java.util.List<Element> serviceList = dsElem.getChildren("service", defNS);
     for (int j=0; j< serviceList.size(); j++) {
       InvService s = readService( (Element) serviceList.get(j), base);
       dataset.addService( s);
@@ -259,7 +258,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     readThreddsMetadata( catalog, dataset, dsElem, tmg);
 
       // look for access elements
-    java.util.List aList = dsElem.getChildren("access", defNS);
+    java.util.List<Element> aList = dsElem.getChildren("access", defNS);
     for (int j=0; j< aList.size(); j++) {
       InvAccessImpl a = readAccess( dataset, (Element) aList.get(j));
       dataset.addAccess( a);
@@ -274,7 +273,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
 
      // look for nested dataset and catalogRefs elements (keep them in order)
-    java.util.List allChildren = dsElem.getChildren();
+    java.util.List<Element> allChildren = dsElem.getChildren();
     for (int j=0; j< allChildren.size(); j++) {
       Element e = (Element) allChildren.get(j);
       if (e.getName().equals("dataset")) {

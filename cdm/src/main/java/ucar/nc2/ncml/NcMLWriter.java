@@ -130,7 +130,7 @@ public class NcMLWriter {
     if (ncd.isEnhanced())
       rootElem.setAttribute("enhance", "true");
 
-    Aggregation agg = ncd.getAggregation();
+    AggregationIF agg = ncd.getAggregation();
     if (agg != null) {
       String aggDimensionName = agg.getDimensionName();
       aggCoord = ncd.findVariable(aggDimensionName);
@@ -150,14 +150,14 @@ public class NcMLWriter {
 
     writeGroup(rootElem, rootGroup);
 
-    if (agg != null) {
-      rootElem.addContent(writeAggregation(agg));
-    }
+    //if (agg != null) { LOOK ncml3
+    //  rootElem.addContent(writeAggregation(agg));
+    //}
 
     return doc;
   }
 
-  private Element writeAggregation(Aggregation agg) throws IOException {
+  /* private Element writeAggregation(AggregationIF agg) throws IOException {
     Element aggElem = new Element("aggregation", ncNS);
     Aggregation.Type type = agg.getType();
     aggElem.setAttribute("type", type.toString());
@@ -194,7 +194,7 @@ public class NcMLWriter {
     }
 
     return aggElem;
-  }
+  } LOOK ncml3 */
 
   public static Element writeAttribute(ucar.nc2.Attribute att, String elementName, Namespace ns) {
     Element attElem = new Element(elementName, ns);

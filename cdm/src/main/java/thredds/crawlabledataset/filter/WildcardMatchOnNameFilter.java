@@ -1,4 +1,3 @@
-// $Id: WildcardMatchOnNameFilter.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.crawlabledataset.filter;
 
 import thredds.crawlabledataset.CrawlableDatasetFilter;
@@ -13,47 +12,47 @@ import thredds.crawlabledataset.CrawlableDataset;
  * @author edavis
  * @since Nov 5, 2005 12:51:56 PM
  */
-public class WildcardMatchOnNameFilter implements CrawlableDatasetFilter
-{
+public class WildcardMatchOnNameFilter implements CrawlableDatasetFilter {
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( WildcardMatchOnNameFilter.class );
 
   protected String wildcardString;
   protected java.util.regex.Pattern pattern;
 
-  public WildcardMatchOnNameFilter( String wildcardString )
-  {
+  public WildcardMatchOnNameFilter(String wildcardString) {
     // Keep original wildcard string.
     this.wildcardString = wildcardString;
 
     // Map wildcard to regular expresion.
-    String regExp = mapWildcardToRegExp( wildcardString);
+    String regExp = mapWildcardToRegExp(wildcardString);
 
     // Compile regular expression pattern
-    this.pattern = java.util.regex.Pattern.compile( regExp );
+    this.pattern = java.util.regex.Pattern.compile(regExp);
   }
 
-  private String mapWildcardToRegExp( String wildcardString )
-  {
+  private String mapWildcardToRegExp(String wildcardString) {
     // Replace "." with "\.".
-    wildcardString = wildcardString.replaceAll( "\\.", "\\\\." );
+    wildcardString = wildcardString.replaceAll("\\.", "\\\\.");
 
     // Replace "*" with ".*".
-    wildcardString = wildcardString.replaceAll( "\\*", ".*");
+    wildcardString = wildcardString.replaceAll("\\*", ".*");
 
     // Replace "?" with ".?".
-    wildcardString = wildcardString.replaceAll( "\\?", ".?");
-    
+    wildcardString = wildcardString.replaceAll("\\?", ".?");
+
     return wildcardString;
   }
 
-  public Object getConfigObject() { return wildcardString; }
-  public String getWildcardString() { return wildcardString; }
+  public Object getConfigObject() {
+    return wildcardString;
+  }
 
-  public boolean accept( CrawlableDataset dataset )
-  {
-    java.util.regex.Matcher matcher = this.pattern.matcher( dataset.getName() );
-    if ( matcher.matches() ) return true;
-    return false;
+  public String getWildcardString() {
+    return wildcardString;
+  }
+
+  public boolean accept(CrawlableDataset dataset) {
+    java.util.regex.Matcher matcher = this.pattern.matcher(dataset.getName());
+    return matcher.matches();
   }
 }

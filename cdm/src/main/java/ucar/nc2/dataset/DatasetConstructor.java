@@ -20,35 +20,33 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
-import ucar.nc2.ncml.ReplaceVariableCheck;
 
 /**
+ * Helper methods for constructing NetcdfDatasets.
  * @author caron
  * @since Jul 6, 2007
  */
 public class DatasetConstructor {
 
   /**
-   * Copy contents of "src" to "target".
+   * Copy contents of "src" to "target". skip ones that already exist (by name).
    * Dimensions and Variables are replaced with equivalent elements, but unlimited dimensions are not allowed.
    * Attribute doesnt have to be replaced because its immutable, so its copied by reference.
    *
    * @param src copy from here
    * @param target to here
-   * @param replaceCheck if null, only add if a Variable of the same name doesnt already exist, otherwise
+   * @param replaceCheck if null, add if a Variable of the same name doesnt already exist, otherwise
+   *   replace if replaceCheck.replace( Variable v) is true
    */
   static public void transferDataset(NetcdfFile src, NetcdfDataset target, ReplaceVariableCheck replaceCheck) {
     transferGroup(src, src.getRootGroup(), target.getRootGroup(), replaceCheck);
   }
 
   static private void transferGroup(NetcdfFile ds, Group src, Group target, ReplaceVariableCheck replaceCheck) {
-    boolean unlimitedOK = false; // LOOK
+    boolean unlimitedOK = false; // LOOK why?
 
     // group attributes
-    for (Attribute a : src.getAttributes()) {
-      if (null == target.findAttribute(a.getName()))
-        target.addAttribute(a);
-    }
+    transferGroupAttributes(src, target);
 
     // dimensions
     for (Dimension d : src.getDimensions()) {
@@ -64,8 +62,13 @@ public class DatasetConstructor {
       VariableEnhanced targetVe = (VariableEnhanced) targetV;
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v);
 
-      if (replace || (null == targetV)) {
-        if (!(v instanceof VariableDS)) v = new VariableDS(target, v, false); // LOOK will fail on Structure
+      if (replace || (null == targetV)) { // replace it
+        if ((v instanceof Structure) && !(v instanceof StructureDS)) {
+           v = new StructureDS(target, (Structure) v, false);
+
+        } else if (!(v instanceof VariableDS)) {
+          v = new VariableDS(target, v, false);
+        }
 
         if (null != targetV) target.remove(targetV);
         target.addVariable(v); // reparent
@@ -86,6 +89,11 @@ public class DatasetConstructor {
     }
   }
 
+  /**
+   * Copy attributes from src to target, skip ones that already exist (by name)
+   * @param src copy from here
+   * @param target copy to here
+   */
   static public void transferVariableAttributes(Variable src, Variable target) {
     for (Attribute a : src.getAttributes()) {
       if (null == target.findAttribute(a.getName()))
@@ -93,6 +101,11 @@ public class DatasetConstructor {
     }
   }
 
+  /**
+   * Copy attributes from src to target, skip ones that already exist (by name)
+   * @param src copy from here
+   * @param target copy to here
+   */
   static public void transferGroupAttributes(Group src, Group target) {
     for (Attribute a : src.getAttributes()) {
       if (null == target.findAttribute(a.getName()))

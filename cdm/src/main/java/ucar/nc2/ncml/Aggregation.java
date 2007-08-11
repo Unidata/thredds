@@ -70,7 +70,7 @@ import thredds.util.DateFromString;
  *
  * @author caron
  */
-public abstract class Aggregation implements ProxyReader2 {
+public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   static protected int TYPICAL_DATASET_RANDOM = 0;
   static protected int TYPICAL_DATASET_LATEST = 1;
   static protected int TYPICAL_DATASET_PENULTIMATE = 2;
@@ -1303,68 +1303,6 @@ public abstract class Aggregation implements ProxyReader2 {
       } finally {
         if (ncfile != null) ncfile.close();
       }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  public static class Type {
-    private static ArrayList<Type> members = new ArrayList<Type>(20);
-
-    public final static Type JOIN_EXISTING_ONE = new Type("joinExistingOne");
-    public final static Type JOIN_EXISTING = new Type("joinExisting");
-    public final static Type JOIN_NEW = new Type("joinNew");
-    public final static Type UNION = new Type("union");
-    public final static Type FORECAST_MODEL = new Type("forecastModelRun");
-    public final static Type FORECAST_MODEL_COLLECTION = new Type("forecastModelRunCollection");
-    public final static Type FORECAST_MODEL_SINGLE = new Type("forecastModelRunSingleCollection");
-
-    private String name;
-
-    public Type(String s) {
-      this.name = s;
-      members.add(this);
-    }
-
-    public static Collection getAllTypes() {
-      return members;
-    }
-
-    /**
-     * Find the CollectionType that matches this name, ignore case.
-     *
-     * @param name : match this name
-     * @return CollectionType or null if no match.
-     */
-    public static Type getType(String name) {
-      if (name == null) return null;
-      for (Type m : members) {
-        if (m.name.equalsIgnoreCase(name))
-          return m;
-      }
-      return null;
-    }
-
-    /**
-     * @return the string name.
-     */
-    public String toString() {
-      return name;
-    }
-
-    /**
-     * Override Object.hashCode() to be consistent with this equals.
-     */
-    public int hashCode() {
-      return name.hashCode();
-    }
-
-    /**
-     * CollectionType with same name are equal.
-     */
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Type)) return false;
-      return o.hashCode() == this.hashCode();
     }
   }
 

@@ -4,7 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.0
  Features
-  * Add RotatedPole projection
+  geoloc
+   * Add RotatedPole projection
+  NcML
+   * Union now accepts scan
  API
  Libraries
 

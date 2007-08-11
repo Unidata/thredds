@@ -23,7 +23,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml3.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLGWriter;
 
@@ -422,19 +422,19 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private boolean coordSysWereAdded = false;
 
   // If its an aggregation
-  private ucar.nc2.ncml.Aggregation agg = null; // used to close underlying files
+  private ucar.nc2.ncml.AggregationIF agg = null; // used to close underlying files
 
   /** If its an NcML aggregation, it has an Aggregation object associated.
    *  This is public for use by NcmlWriter.
    *
    * @return  Aggregation or null
    */
-  public ucar.nc2.ncml.Aggregation getAggregation() { return agg; }
+  public ucar.nc2.ncml.AggregationIF getAggregation() { return agg; }
 
   /** Set the Aggregation object associated with this NcML dataset
    * @param agg the Aggregation object
    */
-  public void setAggregation(ucar.nc2.ncml.Aggregation agg) {
+  public void setAggregation(ucar.nc2.ncml.AggregationIF agg) {
     this.agg = agg;
   }
 
