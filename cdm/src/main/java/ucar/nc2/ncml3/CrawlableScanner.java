@@ -1,0 +1,159 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+package ucar.nc2.ncml3;
+
+import thredds.crawlabledataset.CrawlableDataset;
+import thredds.crawlabledataset.CrawlableDatasetFactory;
+import thredds.crawlabledataset.CrawlableDatasetFilter;
+import thredds.crawlabledataset.filter.RegExpMatchOnPathFilter;
+import thredds.crawlabledataset.filter.WildcardMatchOnPathFilter;
+import thredds.util.DateFromString;
+import thredds.catalog.ServiceType;
+
+import java.util.List;
+import java.util.Date;
+import java.util.ArrayList;
+import java.io.IOException;
+
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.ncml.AggregationIF;
+import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.DateFormatter;
+
+/**
+ * @author caron
+ * @since Aug 10, 2007
+ */
+public class CrawlableScanner implements Scanner {
+  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CrawlableScanner.class);
+
+  private CrawlableDataset crawler;
+  private CrawlableDatasetFilter filter;
+
+  private String dirName, dateFormatMark;
+  private String runMatcher, forecastMatcher, offsetMatcher; // scan2
+  private boolean enhance = false, isDate = false;
+  private boolean wantSubdirs = true;
+
+  // filters
+  private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
+
+  private DateFormatter formatter = new DateFormatter();
+  private boolean debugScan = true;
+
+
+  CrawlableScanner(AggregationIF.Type type, String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirsS, String olderS) {
+
+    String crawlerClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
+    Object crawlerObject = null;
+
+    if (dirName.startsWith("thredds:")) {
+      crawlerClassName = "thredds.catalog.CrawlableCatalog";
+      dirName = dirName.substring(8);
+      crawlerObject = ServiceType.OPENDAP;
+    }
+
+    try {
+      crawler = CrawlableDatasetFactory.createCrawlableDataset(dirName, crawlerClassName, crawlerObject);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (null != regexpPatternString)
+      filter = new RegExpMatchOnPathFilter( regexpPatternString);
+    else if (suffix != null)
+      filter = new WildcardMatchOnPathFilter( "*"+suffix);
+
+
+    this.dateFormatMark = dateFormatMark;
+    if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
+      enhance = true;
+    if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
+      wantSubdirs = false;
+    if (type == AggregationIF.Type.FORECAST_MODEL_COLLECTION)
+      enhance = true;
+
+    if (olderS != null) {
+      try {
+        TimeUnit tu = new TimeUnit(olderS);
+        this.olderThan_msecs = (long) (1000 * tu.getValueInSeconds());
+      } catch (Exception e) {
+        logger.error("Invalid time unit for olderThan = {}", olderS);
+      }
+    }
+
+    if (dateFormatMark != null)
+      isDate = true;
+  }
+
+  public boolean isEnhance() { return enhance; }
+  public String getDateFormatMark() { return dateFormatMark; }
+
+  public void scanDirectory(List<MyFile> result, CancelTask cancelTask) throws IOException {
+    scanDirectory(crawler, new Date().getTime(), result, cancelTask);
+  }
+
+  private void scanDirectory(CrawlableDataset cd, long now, List<MyFile> result, CancelTask cancelTask) throws IOException {
+    List<CrawlableDataset> children = cd.listDatasets();
+
+    for (CrawlableDataset child : children) {
+      //CrawlableDatasetFile cdf = (CrawlableDatasetFile) child;
+      //File f = cdf.getFile();
+
+      if (child.isCollection()) {
+        if (wantSubdirs) scanDirectory(child, now, result, cancelTask);
+
+      } else if ((filter == null) || filter.accept(child)) {
+
+        // dont allow recently modified
+        if (olderThan_msecs > 0) {
+          Date lastModifiedDate = child.lastModified();
+          if (lastModifiedDate != null) {
+            long lastModifiedMsecs = lastModifiedDate.getTime();
+            if (now - lastModifiedMsecs < olderThan_msecs)
+              continue;
+          }
+        }
+
+        // add to result
+        MyFile myf = new MyFile(this, child);
+        result.add(myf);
+
+        if (null != myf.dir.getDateFormatMark()) {
+          String filename = myf.file.getName();
+          myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, myf.dir.getDateFormatMark(), '#');
+          myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
+          if (debugScan) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
+        } else {
+          if (debugScan) System.out.println("  adding " + myf.file.getPath());
+        }
+      }
+
+      if ((cancelTask != null) && cancelTask.isCancel())
+        return;
+    }
+  }
+
+  static public void main( String args[]) throws IOException {
+    String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070810/catalog.xml";
+    CrawlableScanner crawl = new CrawlableScanner(AggregationIF.Type.UNION, "thredds:"+cat, null, null, null, null, "true", null);
+    crawl.scanDirectory( new ArrayList<MyFile>(), null);
+  }
+}
