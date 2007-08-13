@@ -20,19 +20,16 @@ public class LexigraphicByNameSorter implements CrawlableDatasetSorter
 //          org.apache.commons.logging.LogFactory.getLog( LexigraphicByNameSorter.class );
 
   private boolean increasingOrder = false;
-  private Comparator comparator;
+  private Comparator<CrawlableDataset> comparator;
 
   public LexigraphicByNameSorter( boolean increasingOrder )
   {
     this.increasingOrder = increasingOrder;
-    this.comparator = new java.util.Comparator()
+    this.comparator = new java.util.Comparator<CrawlableDataset>()
     {
-      public int compare( Object obj1, Object obj2 )
+      public int compare( CrawlableDataset crDs1, CrawlableDataset crDs2 )
       {
-        CrawlableDataset ds1 = (CrawlableDataset) obj1;
-        CrawlableDataset ds2 = (CrawlableDataset) obj2;
-
-        int compareVal = ds1.getName().compareTo( ds2.getName() );
+        int compareVal = crDs1.getName().compareTo( crDs2.getName() );
 
         return ( LexigraphicByNameSorter.this.increasingOrder ? compareVal : -compareVal );
       }
@@ -43,7 +40,7 @@ public class LexigraphicByNameSorter implements CrawlableDatasetSorter
   
   public boolean isIncreasing() { return increasingOrder; }
 
-  public void sort( List datasetList )
+  public void sort( List<CrawlableDataset> datasetList )
   {
     Collections.sort( datasetList, this.comparator );
   }

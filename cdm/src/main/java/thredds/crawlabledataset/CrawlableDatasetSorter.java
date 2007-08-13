@@ -24,7 +24,7 @@ public interface CrawlableDatasetSorter
    * @throws ClassCastException if the list contains elements that are not CrawlableDatasets.
    * @throws UnsupportedOperationException if the given list does not allow the necessary list manipulation.
    */
-  public void sort( List datasetList );
+  public void sort( List<CrawlableDataset> datasetList );
 
   /**
    * Return the configuration object.

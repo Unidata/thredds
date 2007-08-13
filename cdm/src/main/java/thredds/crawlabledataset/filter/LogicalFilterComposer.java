@@ -26,8 +26,8 @@ import thredds.crawlabledataset.CrawlableDataset;
  */
 public class LogicalFilterComposer
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( LogicalFilterComposer.class );
+//  private org.slf4j.Logger logger =
+//          org.slf4j.LoggerFactory.getLogger( LogicalFilterComposer.class );
 
   public static CrawlableDatasetFilter getAndFilter( CrawlableDatasetFilter filter1,
                                                      CrawlableDatasetFilter filter2 )

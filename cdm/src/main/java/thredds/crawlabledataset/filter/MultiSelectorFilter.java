@@ -19,9 +19,9 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( MultiSelectorFilter.class );
 
-  private List selectorGroup;
+  private List<Selector> selectorGroup;
 
-  public MultiSelectorFilter( List selectorGroup )
+  public MultiSelectorFilter( List<Selector> selectorGroup )
   {
     if ( selectorGroup == null )
       throw new IllegalArgumentException( "Selector group parameter must not be null." );
@@ -31,7 +31,7 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
   public MultiSelectorFilter( Selector selector)
   {                         
     if ( selector == null )
-      selectorGroup = Collections.EMPTY_LIST;
+      selectorGroup = Collections.emptyList();
     else
       selectorGroup = Collections.singletonList( selector);
   }
@@ -52,10 +52,8 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     boolean accept = false;
     boolean doAnyIncludersApply = false;
     boolean doAnySelectorsApply = false;
-    for ( Iterator it = selectorGroup.iterator(); it.hasNext(); )
+    for ( Selector curSelector: selectorGroup )
     {
-      Selector curSelector = (Selector) it.next();
-
       if ( curSelector.isApplicable( dataset ) )
       {
         doAnySelectorsApply = true;
@@ -139,6 +137,9 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
 
     /**
      * Determine if the given dataset matches this selector.
+     *
+     * @return true if the given dataset matches this selector, otherwise false.
+     * @param dataset the CrawlableDataset to test if this selector matches.
      */
     public boolean match( CrawlableDataset dataset )
     {
@@ -159,13 +160,20 @@ public class MultiSelectorFilter implements CrawlableDatasetFilter
     }
 
     /**
-     * If true, this selector includes any matching dataset.
+     * Return true if this selector is an inclusion rather than exclusion selector.
+     * 
+     * @return true if this selector is an inclusion selector.
      */
     public boolean isIncluder()
     {
       return includer;
     }
 
+    /**
+     * Return true if this selector is an exclusion rather than inclusion selector.
+     *
+     * @return true if this selector is an exclusion selector.
+     */
     public boolean isExcluder()
     {
       return !includer;

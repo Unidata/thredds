@@ -121,13 +121,13 @@ public class CrawlableDatasetAlias implements CrawlableDataset
 
   public CrawlableDataset getParentDataset()
   {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 
-  public List listDatasets() throws IOException
+  public List<CrawlableDataset> listDatasets() throws IOException
   {
     // Get list of files in pre-wildcard directory that match the wildcard pattern.
-    List curMatchDatasets = startDs.listDatasets( new CrawlableDatasetAlias.MyFilter( wildcardPattern, postWildcardPath != null ) );
+    List<CrawlableDataset> curMatchDatasets = startDs.listDatasets( new CrawlableDatasetAlias.MyFilter( wildcardPattern, postWildcardPath != null ) );
 
     // The wildcard is in the last part of the alias path, so
     // the list from startDs is what we want.
@@ -138,11 +138,9 @@ public class CrawlableDatasetAlias implements CrawlableDataset
     //
     else
     {
-      List list = new ArrayList();
-      for ( Iterator it = curMatchDatasets.iterator(); it.hasNext(); )
+      List<CrawlableDataset> list = new ArrayList<CrawlableDataset>();
+      for( CrawlableDataset curDs : curMatchDatasets)
       {
-        CrawlableDataset curDs = (CrawlableDataset) it.next();
-
         // Append the remaining path to the end of the current dataset path.
         String curMatchPathName = curDs.getPath() + "/" + postWildcardPath;
 
@@ -176,13 +174,12 @@ public class CrawlableDatasetAlias implements CrawlableDataset
     }
   }
 
-  public List listDatasets( CrawlableDatasetFilter filter ) throws IOException
+  public List<CrawlableDataset> listDatasets( CrawlableDatasetFilter filter ) throws IOException
   {
-    List list = this.listDatasets();
+    List<CrawlableDataset> list = this.listDatasets();
     if ( filter == null ) return list;
-    for ( Iterator it = list.iterator(); it.hasNext(); )
+    for ( CrawlableDataset curDs: list )
     {
-      CrawlableDataset curDs = (CrawlableDataset) it.next();
       if ( !filter.accept( curDs ) )
       {
         // @todo concurrency problems, remove from iterator or build new list

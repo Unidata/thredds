@@ -107,14 +107,15 @@ public class CrawlableDatasetFile implements CrawlableDataset
     // NOTE: Both String and Pattern escape backslash, so need four backslashes to find one.
     // NOTE: No longer replace multiple backslashes with one slash, which allows for UNC pathnames (Windows LAN addresses).
     //       Was path.replaceAll( "\\\\+", "/");
-    String newPath = path.replaceAll( "\\\\", "/" );
+    return path.replaceAll( "\\\\", "/" );
 
+//    String newPath = path.replaceAll( "\\\\", "/" );
     // Note: No longer remove trailing slashes as new File() removes slashes for us.
 //    // Remove trailing slashes.
 //    while ( newPath.endsWith( "/" ) && ! newPath.equals( "/" ) )
 //      newPath = newPath.substring( 0, newPath.length() - 1 );
-
-    return newPath;
+//
+//    return newPath;
   }
 
   /**
@@ -174,14 +175,13 @@ public class CrawlableDatasetFile implements CrawlableDataset
     return ( list );
   }
 
-  public List listDatasets( CrawlableDatasetFilter filter ) throws IOException
+  public List<CrawlableDataset> listDatasets( CrawlableDatasetFilter filter ) throws IOException
   {
-    List list = this.listDatasets();
+    List<CrawlableDataset> list = this.listDatasets();
     if ( filter == null ) return list;
-    List retList = new ArrayList();
-    for ( Iterator it = list.iterator(); it.hasNext(); )
+    List<CrawlableDataset> retList = new ArrayList<CrawlableDataset>();
+    for ( CrawlableDataset curDs: list )
     {
-      CrawlableDataset curDs = (CrawlableDataset) it.next();
       if ( filter.accept( curDs ) )
       {
         retList.add( curDs );

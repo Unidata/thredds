@@ -2,7 +2,6 @@
 package thredds.crawlabledataset;
 
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * _more_
@@ -15,23 +14,21 @@ public class MultiLabeler implements CrawlableDatasetLabeler
 //  private static org.apache.commons.logging.Log log =
 //          org.apache.commons.logging.LogFactory.getLog( MultiLabeler.class );
 
-  private List labelerList;
+  private List<CrawlableDatasetLabeler> labelerList;
 
-  public MultiLabeler( List labelerList )
+  public MultiLabeler( List<CrawlableDatasetLabeler> labelerList )
   {
     this.labelerList = labelerList;
   }
 
   public Object getConfigObject() { return null; }
-  public List getLabelerList() { return labelerList; }
+  public List<CrawlableDatasetLabeler> getLabelerList() { return labelerList; }
 
   public String getLabel( CrawlableDataset dataset )
   {
     String name;
-    for ( Iterator it = labelerList.iterator(); it.hasNext(); )
+    for ( CrawlableDatasetLabeler curNamer: labelerList )
     {
-      CrawlableDatasetLabeler curNamer = (CrawlableDatasetLabeler) it.next();
-
       name = curNamer.getLabel( dataset );
       if ( name != null ) return name;
     }
