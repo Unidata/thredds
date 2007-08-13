@@ -1,4 +1,4 @@
-package thredds.wcs.servlet;
+package thredds.server.wcs;
 
 import thredds.wcs.WcsDataset;
 import thredds.wcs.GetCoverageRequest;

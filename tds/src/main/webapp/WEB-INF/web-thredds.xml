@@ -231,7 +231,7 @@
   <!-- OGC Web Coverage server -->
   <servlet>
     <servlet-name>WCS</servlet-name>
-    <servlet-class>thredds.wcs.servlet.WCSServlet</servlet-class>
+    <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
 

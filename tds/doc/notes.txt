@@ -76,7 +76,7 @@ NetcdfDODS dods.servers.netcdf.NcDODSServlet
 =================================================
 "WCS Server"
 
-WCS thredds.wcs.servlet.WCSServlet
+WCS thredds.server.wcs.WCSServlet
 /wcs/*
 
 read <tomcat>/content/thredds/wcs/wcsConfig.xml
