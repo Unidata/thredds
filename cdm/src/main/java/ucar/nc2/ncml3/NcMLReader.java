@@ -1032,7 +1032,7 @@ public class NcMLReader {
     }  else if (type.equals("union")) {
       agg = new AggregationUnion(newds, dimName, recheck);
 
-    /* }  else if (type.equals("forecastModelRunCollection")) {
+    }  else if (type.equals("forecastModelRunCollection")) {
       AggregationFmrc aggc = new AggregationFmrc(newds, dimName, recheck);
       agg = aggc;
 
@@ -1044,7 +1044,7 @@ public class NcMLReader {
       if (fmrcDefinition != null)
         aggc.setInventoryDefinition(fmrcDefinition);
 
-    } else if (type.equals("forecastModelRunSingleCollection")) {
+    /* } else if (type.equals("forecastModelRunSingleCollection")) {
       AggregationFmrcSingle aggh = new AggregationFmrcSingle(newds, dimName, recheck);
       agg = aggh;
 

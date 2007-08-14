@@ -29,7 +29,6 @@ import java.util.Date;
 import java.io.File;
 
 import thredds.util.DateFromString;
-import thredds.crawlabledataset.CrawlableDataset;
 
 /**
  * Encapsolate a "scan" or "scan2" element: a directory that we want to scan.
@@ -99,11 +98,11 @@ public class DirectoryScan implements Scanner {
    * @param result     add MyFile objects to this list
    * @param cancelTask user can cancel
    */
-  public void scanDirectory(List<MyFile> result, CancelTask cancelTask) {
+  public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) {
     scanDirectory(dirName, new Date().getTime(), result, cancelTask);
   }
 
-  private void scanDirectory(String dirName, long now, List<MyFile> result, CancelTask cancelTask) {
+  private void scanDirectory(String dirName, long now, List<MyCrawlableDataset> result, CancelTask cancelTask) {
     File allDir = new File(dirName);
     if (!allDir.exists()) {
       String tmpMsg = "Non-existent scan location <" + dirName;
@@ -126,7 +125,7 @@ public class DirectoryScan implements Scanner {
         }
 
         // add to result
-        MyFile myf = new MyFile(this, f);
+        MyCrawlableDataset myf = new MyCrawlableDataset(this, f);
         result.add(myf);
 
         if (null != myf.dir.getDateFormatMark()) {

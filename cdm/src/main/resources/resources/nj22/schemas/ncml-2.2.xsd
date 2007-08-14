@@ -37,7 +37,6 @@
       <!-- for aggregations -->
       <xsd:attribute name="ncoords" type="xsd:string"/>
       <xsd:attribute name="coordValue" type="xsd:string"/>
-      <xsd:attribute name="fmrcDefinition" type="xsd:string" />
     </xsd:complexType>
   </xsd:element>
 

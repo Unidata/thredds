@@ -75,7 +75,7 @@ netcdf TestUnion.ncml {
  variables:
   float T(time, lat, lon);
 }</pre>
-<p>When the library opens the above NcML dataset, it has to read through all nested datasets, in order to find out the length of the time dimension. For large aggregations, this can be slow. In the example below, we have added the optional <em>ncoords</em> attribute on the nested datasets. In this case, only one dataset has to be opened immediatley, and the others as needed dureing a data read request.</p>
+<p>When the library opens the above NcML dataset, it has to read through all nested datasets, in order to find out the length of the time dimension. For large aggregations, this can be slow. In the example below, we have added the optional <em>ncoords</em> attribute on the nested datasets. In this case, only one dataset has to be opened immediatley, and the others as needed for a data read request.</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
     &lt;netcdf location=&quot;file:/test/temperature/jan.nc&quot; <strong>ncoords=&quot;31&quot;</strong>/&gt;
     &lt;netcdf location=&quot;file:/test/temperature/feb.nc&quot; <strong>ncoords=&quot;28&quot;</strong>/&gt;

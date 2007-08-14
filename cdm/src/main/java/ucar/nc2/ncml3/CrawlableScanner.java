@@ -24,7 +24,6 @@ import thredds.crawlabledataset.CrawlableDatasetFactory;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.crawlabledataset.filter.RegExpMatchOnPathFilter;
 import thredds.crawlabledataset.filter.WildcardMatchOnPathFilter;
-import thredds.util.DateFromString;
 import thredds.catalog.ServiceType;
 
 import java.util.List;
@@ -35,7 +34,6 @@ import java.io.IOException;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.ncml.AggregationIF;
 import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.DateFormatter;
 
 /**
  * @author caron
@@ -47,19 +45,16 @@ public class CrawlableScanner implements Scanner {
   private CrawlableDataset crawler;
   private CrawlableDatasetFilter filter;
 
-  private String dirName, dateFormatMark;
-  private String runMatcher, forecastMatcher, offsetMatcher; // scan2
-  private boolean enhance = false, isDate = false;
+  private String dirName;
   private boolean wantSubdirs = true;
 
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
 
-  private DateFormatter formatter = new DateFormatter();
   private boolean debugScan = true;
 
 
-  CrawlableScanner(AggregationIF.Type type, String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirsS, String olderS) {
+  CrawlableScanner(AggregationIF.Type type, String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
 
     String crawlerClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
     Object crawlerObject = null;
@@ -82,13 +77,8 @@ public class CrawlableScanner implements Scanner {
       filter = new WildcardMatchOnPathFilter( "*"+suffix);
 
 
-    this.dateFormatMark = dateFormatMark;
-    if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
-      enhance = true;
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
-    if (type == AggregationIF.Type.FORECAST_MODEL_COLLECTION)
-      enhance = true;
 
     if (olderS != null) {
       try {
@@ -98,19 +88,16 @@ public class CrawlableScanner implements Scanner {
         logger.error("Invalid time unit for olderThan = {}", olderS);
       }
     }
-
-    if (dateFormatMark != null)
-      isDate = true;
   }
 
-  public boolean isEnhance() { return enhance; }
-  public String getDateFormatMark() { return dateFormatMark; }
+  /* public boolean isEnhance() { return enhance; }
+  public String getDateFormatMark() { return dateFormatMark; } */
 
-  public void scanDirectory(List<MyFile> result, CancelTask cancelTask) throws IOException {
+  public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
     scanDirectory(crawler, new Date().getTime(), result, cancelTask);
   }
 
-  private void scanDirectory(CrawlableDataset cd, long now, List<MyFile> result, CancelTask cancelTask) throws IOException {
+  private void scanDirectory(CrawlableDataset cd, long now, List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
     List<CrawlableDataset> children = cd.listDatasets();
 
     for (CrawlableDataset child : children) {
@@ -133,17 +120,8 @@ public class CrawlableScanner implements Scanner {
         }
 
         // add to result
-        MyFile myf = new MyFile(this, child);
+        MyCrawlableDataset myf = new MyCrawlableDataset(this, child);
         result.add(myf);
-
-        if (null != myf.dir.getDateFormatMark()) {
-          String filename = myf.file.getName();
-          myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, myf.dir.getDateFormatMark(), '#');
-          myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
-          if (debugScan) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
-        } else {
-          if (debugScan) System.out.println("  adding " + myf.file.getPath());
-        }
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
@@ -153,7 +131,7 @@ public class CrawlableScanner implements Scanner {
 
   static public void main( String args[]) throws IOException {
     String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070810/catalog.xml";
-    CrawlableScanner crawl = new CrawlableScanner(AggregationIF.Type.UNION, "thredds:"+cat, null, null, null, null, "true", null);
-    crawl.scanDirectory( new ArrayList<MyFile>(), null);
+    CrawlableScanner crawl = new CrawlableScanner(AggregationIF.Type.UNION, "thredds:"+cat, null, null, "true", null);
+    crawl.scanDirectory( new ArrayList<MyCrawlableDataset>(), null);
   }
 }

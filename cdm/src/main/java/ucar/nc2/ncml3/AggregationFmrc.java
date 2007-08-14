@@ -47,8 +47,6 @@ public class AggregationFmrc extends AggregationOuterDimension {
     definitionDir = defDir;
   }
 
-  private DateFormatter formatter = new DateFormatter();
-  
   private FmrcDefinition fmrcDefinition;
   private boolean debug = false;
   private boolean timeUnitsChange = false;
@@ -97,7 +95,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     buildDataset( typicalDataset, typicalGds, cancelTask);
   }
 
-  // split out so FmrcSingle call call seperayely
+  // split out so FmrcSingle call call seperately
   protected void buildDataset(Dataset typicalDataset, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
     DatasetConstructor.transferDataset( typicalGds.getNetcdfFile(), ncDataset, null);
@@ -126,7 +124,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     // add its data
     if (true) { // LOOK detect if we have the info
       ArrayObject.D1 runData = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {nruns});
-      List<Dataset> nestedDatasets = datasetManager.getDatasets();
+      List<Dataset> nestedDatasets = getDatasets();
       for (int j = 0; j < nestedDatasets.size(); j++) {
         Dataset dataset = nestedDatasets.get(j);
         runData.set(j, dataset.getCoordValueString());
@@ -147,7 +145,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
         // whats the maximum size ?
         boolean isRagged = false;
         int max_times = 0;
-        List<Dataset> nestedDatasets = datasetManager.getDatasets();
+        List<Dataset> nestedDatasets = getDatasets();
         for (Dataset dataset : nestedDatasets) {
           ForecastModelRunInventory.TimeCoord timeCoord = seq.findTimeCoordByRuntime(dataset.getCoordValueDate());
           double[] offsets = timeCoord.getOffsetHours();
@@ -282,7 +280,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
-      List<Dataset> nestedDatasets = datasetManager.getDatasets();
+      List<Dataset> nestedDatasets = getDatasets();
       for (Dataset vnested : nestedDatasets) {
         Array varData = vnested.read(mainv, cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel())
@@ -326,7 +324,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     long fullSize = Range.computeSize( innerSection); // may not be the same as the data returned !!
     if (debug) System.out.println("   agg wants range=" + mainv.getName()+"("+joinRange+")");
 
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
+    List<Dataset> nestedDatasets = getDatasets();
     for (Dataset nested : nestedDatasets) {
       if (!nested.isNeeded(joinRange))
         continue;
@@ -362,7 +360,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     runtimeCoord.setDimensions( runtimeCoord.getDimensionsString());
     if (true) { // LOOK detect if we have the info
       ArrayObject.D1 runData = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {nruns});
-      List<Dataset> nestedDatasets = datasetManager.getDatasets();
+      List<Dataset> nestedDatasets = getDatasets();
       for (int j = 0; j < nestedDatasets.size(); j++) {
         Dataset dataset = nestedDatasets.get(j);
         runData.set(j, dataset.getCoordValueString());
@@ -378,7 +376,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
         // whats the maximum size ?
         int max_times = 0;
-        List<Dataset> nestedDatasets = datasetManager.getDatasets();
+        List<Dataset> nestedDatasets = getDatasets();
         for (Dataset dataset : nestedDatasets) {
           ForecastModelRunInventory.TimeCoord timeCoord = seq.findTimeCoordByRuntime(dataset.getCoordValueDate());
           double[] offsets = timeCoord.getOffsetHours();
@@ -452,7 +450,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     int maxTimes = 0;
     String units = null;
 
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
+    List<Dataset> nestedDatasets = getDatasets();
     for (int i = 0; i < nestedDatasets.size(); i++) {
       Dataset dataset;
       NetcdfDataset ncfile = null;
@@ -529,7 +527,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
         // compute the coordinates
     ArrayDouble.D2 coordValues = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[]{nruns, max_times});
     Date baseDate = null;
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
+    List<Dataset> nestedDatasets = getDatasets();
     for (int j = 0; j < nestedDatasets.size(); j++) {
       Dataset dataset = nestedDatasets.get(j);
       Date runTime = dataset.getCoordValueDate();

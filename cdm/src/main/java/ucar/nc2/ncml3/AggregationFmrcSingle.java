@@ -26,6 +26,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+import ucar.nc2.ncml.AggregationIF;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -47,8 +48,6 @@ import thredds.util.DateFromString;
  */
 public class AggregationFmrcSingle extends AggregationFmrc {
   private Calendar cal = new GregorianCalendar(); // for date computations
-  private List<DirectoryScan> scanFmrcList = new ArrayList<DirectoryScan>(); // current set of DirectoryScan for scanFmrc elements
-  private List<MyFile> currentFiles;  // current set of MyFile in the aggregation
 
   private Map<Date,List<Dataset>> runHash = new HashMap<Date,List<Dataset>>();
   private List<Date> runs; // list of run dates
@@ -56,7 +55,10 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   private CoordinateAxis1D timeAxis = null;
   private int max_times = 0;
   private Dataset typicalDataset = null;
+  private GridDataset typicalGridDataset = null;
   private boolean debug = false;
+
+  private String runMatcher, forecastMatcher, offsetMatcher; // scanFmrc
 
   public AggregationFmrcSingle(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.FORECAST_MODEL_SINGLE, recheckS);
@@ -64,97 +66,107 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
   public void addDirectoryScanFmrc(String dirName, String suffix, String regexpPatternString, String subdirs, String olderThan,
           String runMatcher, String forecastMatcher, String offsetMatcher) throws IOException {
-    DirectoryScan d = new DirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, runMatcher, forecastMatcher, offsetMatcher);
-    scanFmrcList.add(d);
+
+    this.runMatcher = runMatcher;
+    this.forecastMatcher = forecastMatcher;
+    this.offsetMatcher = offsetMatcher;
+
+    this.enhance = true;
     isDate = true;
+
+    CrawlableScanner d = new CrawlableScanner(type, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    datasetManager.addDirectoryScan(d);
+
+    //DirectoryScan d = new DirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, runMatcher, forecastMatcher, offsetMatcher);
+    //scanFmrcList.add(d);
   }
 
-  @Override
-  protected boolean rescan() throws IOException  {
-
-    // ok were gonna recheck
-    lastChecked = System.currentTimeMillis();
-    if (debug) System.out.println(" *Sync at "+new Date());
-
-        // scan the directories
-    List<MyFile> fileList = new ArrayList<MyFile>();
-    for (DirectoryScan dir : scanFmrcList) {
-      dir.scanDirectory(fileList, null);
+  protected void closeDatasets() throws IOException {
+    if (typicalGridDataset != null) {
+      typicalGridDataset.close();
     }
-
-    // did any change ??
-    boolean changed = fileList.size() != currentFiles.size();
-    if (!changed) { // check for additions
-      for (MyFile newFile : fileList) {
-        if (currentFiles.indexOf(newFile) < 0) {
-          changed = true;
-          if (debugSyncDetail) System.out.println("  rescan found new file= "+newFile.file.getPath());
-          break;
-        }
-      }
-    }
-
-    if (!changed) { // check for deletions
-      for (MyFile oldFile : currentFiles) {
-        if (fileList.indexOf(oldFile) < 0) {
-          changed = true;
-          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= "+oldFile.file.getPath());
-          break;
-        }
-      }
-    }
-
-    if (changed)
-      scanFmrc(null);
-
-    return changed;
+    super.closeDatasets();
   }
 
   protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
-    GridDataset typicalGds = scanFmrc(cancelTask);
-    if (typicalGds == null) return;
-    buildDataset( typicalDataset, typicalGds, cancelTask);
+    buildDataset( typicalDataset, typicalGridDataset, cancelTask);
   }
 
-  private GridDataset scanFmrc(CancelTask cancelTask) throws IOException {
+  protected void makeDatasets() throws IOException {
 
-    // scan the directories
-    currentFiles = new ArrayList<MyFile>();
-    for (DirectoryScan dir : scanFmrcList) {
-      dir.scanDirectory(currentFiles, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
+    List<MyCrawlableDataset> fileList = datasetManager.getFiles();
+    for (MyCrawlableDataset myf : fileList) {
+      // optionally parse for date
+      if (null != dateFormatMark) {
+        String filename = myf.file.getName();
+        myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
+        myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
+        if (debugDateParse) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
+      } else {
+        if (debugDateParse) System.out.println("  adding " + myf.file.getPath());
+      }
     }
+
+    // Sort by date if it exists, else filename.
+    Collections.sort(fileList, new Comparator<MyCrawlableDataset>() {
+      public int compare(MyCrawlableDataset mf1, MyCrawlableDataset mf2) {
+        if (mf1.dateCoord != null) // LOOK
+          return mf1.dateCoord.compareTo(mf2.dateCoord);
+        else
+          return mf1.file.getName().compareTo(mf2.file.getName());
+      }
+    });
+
+    // create new list of Datasets
+    datasets = new ArrayList<Dataset>();
+    for (Aggregation.Dataset dataset : explicitDatasets) {
+      if (dataset.checkOK(null))
+        datasets.add(dataset);
+    }
+
+    // now add the ordered list of Datasets to the result List
+    for (MyCrawlableDataset myf : fileList) {
+      String location = myf.file.getPath();
+      String coordValue = (type == AggregationIF.Type.JOIN_NEW) || (type == AggregationIF.Type.JOIN_EXISTING_ONE) || (type == AggregationIF.Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
+      Aggregation.Dataset ds = makeDataset(location, location, null, coordValue, enhance, null);
+      ds.coordValueDate = myf.dateCoord;
+      datasets.add(ds);
+    }
+  }
+
+  protected void makeDatasets(CancelTask cancelTask) throws IOException {
 
     // find the runtime, forecast time coordinates, put in list
     runHash = new HashMap<Date,List<Dataset>>();
-    for (MyFile myf : currentFiles) {
-      String location = StringUtil.replace(myf.file.getAbsolutePath(), '\\', "/");
+
+    List<MyCrawlableDataset> fileList = datasetManager.getFiles();
+    for (MyCrawlableDataset myf : fileList) {
+      String location = StringUtil.replace(myf.file.getPath(), '\\', "/");
 
       // parse for rundate
-      if (myf.dir.runMatcher != null) {
-        myf.runDate = DateFromString.getDateUsingDemarkatedMatch(location, myf.dir.runMatcher, '#');
+      if (runMatcher != null) {
+        myf.runDate = DateFromString.getDateUsingDemarkatedMatch(location, runMatcher, '#');
         if (null == myf.runDate) {
-          logger.error("Cant extract rundate from =" + location + " using format " + myf.dir.runMatcher);
+          logger.error("Cant extract rundate from =" + location + " using format " + runMatcher);
           continue;
         }
       }
 
       // parse for forecast date
-      if (myf.dir.forecastMatcher != null) {
-        myf.dateCoord = DateFromString.getDateUsingDemarkatedMatch(location, myf.dir.forecastMatcher, '#');
+      if (forecastMatcher != null) {
+        myf.dateCoord = DateFromString.getDateUsingDemarkatedMatch(location, forecastMatcher, '#');
         if (null == myf.dateCoord) {
-          logger.error("Cant extract forecast date from =" + location + " using format " + myf.dir.forecastMatcher);
+          logger.error("Cant extract forecast date from =" + location + " using format " + forecastMatcher);
           continue;
         }
         myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
       }
 
       // parse for forecast offset
-      if (myf.dir.offsetMatcher != null) {
-        myf.offset = DateFromString.getHourUsingDemarkatedMatch(location, myf.dir.offsetMatcher, '#');
+      if (offsetMatcher != null) {
+        myf.offset = DateFromString.getHourUsingDemarkatedMatch(location, offsetMatcher, '#');
         if (null == myf.offset) {
-          logger.error("Cant extract forecast offset from =" + location + " using format " + myf.dir.offsetMatcher);
+          logger.error("Cant extract forecast offset from =" + location + " using format " + offsetMatcher);
           continue;
         }
         myf.dateCoord = addHour(myf.runDate, myf.offset);
@@ -172,8 +184,8 @@ public class AggregationFmrcSingle extends AggregationFmrc {
         runDatasets = new ArrayList<Dataset>();
         runHash.put(myf.runDate, runDatasets);
       }
-      if (debugScan)
-        System.out.println("  adding " + myf.file.getAbsolutePath() + " forecast date= " + myf.dateCoordS + "(" + myf.dateCoord + ")"
+      if (debug)
+        System.out.println("  adding " + myf.file.getPath() + " forecast date= " + myf.dateCoordS + "(" + myf.dateCoord + ")"
                 + " run date= " + formatter.toDateTimeStringISO(myf.runDate));
       runDatasets.add(ds);
       if (typicalDataset == null)
@@ -198,10 +210,15 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     if (timeAxis == null)
       throw new IllegalStateException("No time variable");
 
+    // create new list of Datasets
+    datasets = new ArrayList<Dataset>();
+    for (Aggregation.Dataset dataset : explicitDatasets) {
+      if (dataset.checkOK(null))
+        datasets.add(dataset);
+    }
+
     // loop over the runs; each becomes a nested dataset
     max_times = 0;
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
-    nestedDatasets = new ArrayList<Dataset>();
     runs = new ArrayList<Date>( runHash.keySet());
     Collections.sort(runs);
     for (Date runDate : runs) {
@@ -221,21 +238,21 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       NetcdfDataset ncd = new NetcdfDataset();
       ncd.setLocation("Run" + runDateS);
       DateFormatter format = new DateFormatter();
-      if (debugScan) System.out.println("Run" + format.toDateTimeString(runDate));
+      if (debug) System.out.println("Run" + format.toDateTimeString(runDate));
 
       AggregationExisting agg = new AggregationExisting(ncd, timeAxis.getName(), null); // LOOK: dim name, existing vs new ??
       for (Dataset dataset : runDatasets) {
         agg.addDataset(dataset);
-        if (debugScan)
+        if (debug)
           System.out.println("  adding Forecast " + format.toDateTimeString(dataset.coordValueDate) + " " + dataset.getLocation());
       }
       ncd.setAggregation(agg);
       agg.finish(cancelTask);
 
-      nestedDatasets.add(new OpenDataset(ncd, runDate, runDateS));
+      datasets.add(new OpenDataset(ncd, runDate, runDateS));
     }
 
-    return gds;
+    typicalGridDataset = gds;
   }
 
   private Date addHour( Date d, double hour) {

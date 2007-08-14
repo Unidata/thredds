@@ -70,7 +70,7 @@ public class AggregationNew extends AggregationOuterDimension {
     }
     joinAggCoord.setProxyReader2(this);
 
-    if (isDate()) {
+    if (isDate) {
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
     }
 

@@ -148,7 +148,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         out.print("recheckEvery='" + datasetManager.getRecheck() + "' ");
       out.print(">\n");
 
-      List<Dataset> nestedDatasets = datasetManager.getDatasets();
+      List<Dataset> nestedDatasets = getDatasets();
       for (Dataset dataset : nestedDatasets) {
         out.print("  <netcdf location='" + dataset.getLocation() + "' ");
         out.print("ncoords='" + dataset.getNcoords(null) + "' ");
@@ -219,7 +219,7 @@ public class AggregationExisting extends AggregationOuterDimension {
 
   // find a dataset in the nestedDatasets by location
   private Dataset findDataset(String location) {
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
+    List<Dataset> nestedDatasets = getDatasets();
     for (Dataset ds : nestedDatasets) {
       if (location.equals(ds.getLocation()))
         return ds;

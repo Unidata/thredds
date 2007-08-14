@@ -31,7 +31,7 @@ import java.util.Date;
  * Encapsolate a file that was scanned.
  * Created in scanDirectory()
  */
-class MyFile {
+class MyCrawlableDataset {
   Scanner dir;
   CrawlableDataset file;
 
@@ -41,7 +41,7 @@ class MyFile {
   Date runDate; // fmrcHourly only
   Double offset;
 
-  MyFile(Scanner dir, CrawlableDataset file) {
+  MyCrawlableDataset(Scanner dir, CrawlableDataset file) {
     this.dir = dir;
     this.file = file;
   }
@@ -49,8 +49,8 @@ class MyFile {
   // MyFile with the same file are equal
   public boolean equals(Object oo) {
     if (this == oo) return true;
-    if (!(oo instanceof MyFile)) return false;
-    MyFile other = (MyFile) oo;
+    if (!(oo instanceof MyCrawlableDataset)) return false;
+    MyCrawlableDataset other = (MyCrawlableDataset) oo;
     return file.equals(other.file);
   }
 

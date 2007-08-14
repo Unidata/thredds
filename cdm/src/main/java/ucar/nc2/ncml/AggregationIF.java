@@ -43,13 +43,14 @@ public interface AggregationIF {
   public static class Type {
     private static ArrayList<Type> members = new ArrayList<Type>(20);
 
-    public final static Type JOIN_EXISTING_ONE = new Type("joinExistingOne");
-    public final static Type JOIN_EXISTING = new Type("joinExisting");
-    public final static Type JOIN_NEW = new Type("joinNew");
-    public final static Type UNION = new Type("union");
-    public final static Type FORECAST_MODEL = new Type("forecastModelRun"); // deprecated
     public final static Type FORECAST_MODEL_COLLECTION = new Type("forecastModelRunCollection");
     public final static Type FORECAST_MODEL_SINGLE = new Type("forecastModelRunSingleCollection");
+    public final static Type JOIN_EXISTING = new Type("joinExisting");
+    public final static Type JOIN_EXISTING_ONE = new Type("joinExistingOne");
+    public final static Type JOIN_NEW = new Type("joinNew");
+    public final static Type TILED = new Type("tiled");
+    public final static Type UNION = new Type("union");
+
 
     private String name;
 
@@ -82,22 +83,6 @@ public interface AggregationIF {
      */
     public String toString() {
       return name;
-    }
-
-    /**
-     * Override Object.hashCode() to be consistent with this equals.
-     */
-    public int hashCode() {
-      return name.hashCode();
-    }
-
-    /**
-     * CollectionType with same name are equal.
-     */
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Type)) return false;
-      return o.hashCode() == this.hashCode();
     }
   }
 

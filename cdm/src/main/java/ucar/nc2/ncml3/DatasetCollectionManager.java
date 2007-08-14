@@ -20,37 +20,31 @@
 package ucar.nc2.ncml3;
 
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.ncml.AggregationIF;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.TimeUnit;
 
 import java.util.*;
 import java.io.IOException;
 
-import thredds.util.DateFromString;
-
 /**
+ * Manages a list of Scanners that find files (actually CrawlableDataset).
+ * Wraps these in Aggregation.Dataset objects.
+ * Tracks when they need to be rescanned.
+ *
  * @author caron
  * @since Aug 10, 2007
  */
 public class DatasetCollectionManager {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
 
-  private AggregationIF.Type type;
+  private List<Scanner> scanList = new ArrayList<Scanner>(); // current set of DirectoryScan for scan elements
+  private List<MyCrawlableDataset> files;
 
-  protected List<Scanner> scanList = new ArrayList<Scanner>(); // current set of DirectoryScan for scan elements
-  protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
-  protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // explicitly and scanned
-
-  protected TimeUnit recheck; // how often to recheck
-  protected long lastChecked; // last time checked
-  protected boolean isDate = false;  // has a dateFormatMark, so agg coordinate variable is a Date
+  private TimeUnit recheck; // how often to recheck
+  private long lastChecked; // last time checked
 
   private boolean debugSync = false, debugSyncDetail = false;
 
-  public DatasetCollectionManager(AggregationIF.Type type, String recheckS) {
-    this.type = type;
-
+  public DatasetCollectionManager(String recheckS) {
     if (recheckS != null) {
       try {
         this.recheck = new TimeUnit(recheckS);
@@ -60,30 +54,24 @@ public class DatasetCollectionManager {
     }
   }
 
-  public void addDirectoryScan(Scanner scan) { scanList.add( scan); }
-
-  public void addExplicitDataset( Aggregation.Dataset d) { explicitDatasets.add( d); }
+  public void addDirectoryScan(Scanner scan) {
+    scanList.add(scan);
+  }
 
   public void scan(Aggregation agg, CancelTask cancelTask) throws IOException {
-    datasets = new ArrayList< Aggregation.Dataset>();
-
-    for (Aggregation.Dataset dataset : explicitDatasets) {
-      if (dataset.checkOK(cancelTask))
-        datasets.add(dataset);
-    }
-
-    scan(agg, datasets, cancelTask);
-
+    files = new ArrayList<MyCrawlableDataset>();
+    scan( files, cancelTask);
     this.lastChecked = System.currentTimeMillis();
   }
 
   /**
    * Rescan if recheckEvery time has passed
+   *
    * @return if theres new datasets, put new datasets into nestedDatasets
    */
   public boolean timeToRescan() {
-    if (type == Aggregation.Type.UNION) {
-      if (debugSyncDetail) System.out.println(" *Sync not needed for Union");
+    if (scanList.isEmpty()) {
+      if (debugSyncDetail) System.out.println(" *Sync not needed, no scanners");
       return false;
     }
 
@@ -95,7 +83,7 @@ public class DatasetCollectionManager {
 
     Date now = new Date();
     Date lastCheckedDate = new Date(lastChecked);
-    Date need = recheck.add( lastCheckedDate);
+    Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
       if (debugSync) System.out.println(" *Sync not needed, last= " + lastCheckedDate + " now = " + now);
       return false;
@@ -111,106 +99,69 @@ public class DatasetCollectionManager {
     if (debugSync) System.out.println(" *Sync at " + new Date());
 
     // rescan
-    List<Aggregation.Dataset> newDatasets = new ArrayList<Aggregation.Dataset>();
-    scan(agg, newDatasets, null);
+    List<MyCrawlableDataset> newDatasets = new ArrayList<MyCrawlableDataset>();
+    scan(newDatasets, null);
 
     // replace with previous datasets if they exist
     boolean changed = false;
     for (int i = 0; i < newDatasets.size(); i++) {
-      Aggregation.Dataset newDataset = newDatasets.get(i);
-      int index = datasets.indexOf(newDataset); // equal if location is equal
+      MyCrawlableDataset newDataset = newDatasets.get(i);
+      int index = files.indexOf(newDataset); // equal if location is equal
       if (index >= 0) {
-        newDatasets.set(i, datasets.get(index));
-        if (debugSyncDetail) System.out.println("  sync using old Dataset= " + newDataset.getLocation());
+        newDatasets.set(i, files.get(index));
+        if (debugSyncDetail) System.out.println("  sync using old Dataset= " + newDataset.file.getPath());
       } else {
         changed = true;
-        if (debugSyncDetail) System.out.println("  sync found new Dataset= " + newDataset.getLocation());
+        if (debugSyncDetail) System.out.println("  sync found new Dataset= " + newDataset.file.getPath());
       }
     }
 
     if (!changed) { // check for deletions
-      for (Aggregation.Dataset oldDataset : datasets) {
-        if ((newDatasets.indexOf(oldDataset) < 0) && (explicitDatasets.indexOf(oldDataset) < 0)) {
+      for (MyCrawlableDataset oldDataset : files) {
+        if (newDatasets.indexOf(oldDataset) < 0) {
           changed = true;
-          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + oldDataset.getLocation());
+          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + oldDataset.file.getPath());
         }
       }
     }
 
-    if (!changed) return false;
-
-    // recreate the list of datasets
-    datasets = new ArrayList<Aggregation.Dataset>();
-    datasets.addAll(explicitDatasets);
-    datasets.addAll(newDatasets);
-
-    return true;
+    return changed;
   }
 
-  public TimeUnit getRecheck() { return recheck; }
-  public long getLastChecked()  { return lastChecked; }
+  public TimeUnit getRecheck() {
+    return recheck;
+  }
 
-  public List<Aggregation.Dataset> getDatasets() { return datasets; }
+  public long getLastChecked() {
+    return lastChecked;
+  }
+
+  /* public List<Aggregation.Dataset> getDatasets() {
+    return datasets;
+  } */
+
+  public List<MyCrawlableDataset> getFiles() {
+    return files;
+  }
 
 
-   /**
-   * Scan the directory(ies) and create nested Aggregation.Dataset objects.
+  /**
+   * Scan the directory(ies) and create MyCrawlableDataset objects.
    * Directories are scanned recursively, by calling File.listFiles().
    * Sort by date if it exists, else filename.
    *
-   * @param result     add to this List objects of type Aggregation.Dataset
+   * @param result place results here
    * @param cancelTask allow user to cancel
    * @throws java.io.IOException if io error
    */
-  private void scan( Aggregation agg, List<Aggregation.Dataset> result, CancelTask cancelTask) throws IOException {
+  private void scan( List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
 
-    // run through all scanners and collect MyFile instances
-    List<MyFile> fileList = new ArrayList<MyFile>();
+    // run through all scanners and collect MyCrawlableDataset instances
     for (Scanner scanner : scanList) {
-      scanner.scanDirectory(fileList, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return;
-    }
-
-    /* extract date if possible, before sorting
-    for (MyFile myf : fileList) {
-      // optionally parse for date
-      if (null != myf.dir.dateFormatMark) {
-        String filename = myf.file.getName();
-        myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, myf.dir.dateFormatMark, '#');
-        myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
-        if (debugScan) System.out.println("  adding " + myf.file.getAbsolutePath() + " date= " + myf.dateCoordS);
-      } else {
-        if (debugScan) System.out.println("  adding " + myf.file.getAbsolutePath());
-      }
-    } */
-
-    // Sort by date if it exists, else filename.
-    Collections.sort(fileList, new Comparator<MyFile>() {
-      public int compare(MyFile mf1, MyFile mf2) {
-        if (mf1.dateCoord != null) // LOOK
-          return mf1.dateCoord.compareTo(mf2.dateCoord);
-        else
-          return mf1.file.getName().compareTo(mf2.file.getName());
-      }
-    });
-
-    // now add the ordered list of Datasets to the result List
-    for (MyFile myf : fileList) {
-      String location = myf.file.getPath();
-      String coordValue = (type == AggregationIF.Type.JOIN_NEW) || (type == AggregationIF.Type.JOIN_EXISTING_ONE) || (type == AggregationIF.Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
-      Aggregation.Dataset ds = agg.makeDataset(location, location, null, coordValue, myf.dir.isEnhance(), null);
-      ds.coordValueDate = myf.dateCoord;
-      result.add(ds);
-
+      scanner.scanDirectory(result, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return;
     }
   }
 
-  public void close() throws IOException {
-    for (Aggregation.Dataset ds : datasets) {
-      ds.close();
-    }
-  }
 }

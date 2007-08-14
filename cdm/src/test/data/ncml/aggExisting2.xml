@@ -7,10 +7,9 @@
    </variable>
 
   <aggregation type='joinExisting' dimName='time' >
-    <variableAgg name="CGusfc" />
-    <netcdf location='file:src/test/data/ncml/nc/cg/CG2006158_120000h_usfc.nc' ncoords='1' coordValue='12' />
-    <netcdf location='file:src/test/data/ncml/nc/cg/CG2006158_130000h_usfc.nc' ncoords='1' coordValue='13' />
-    <netcdf location='file:src/test/data/ncml/nc/cg/CG2006158_140000h_usfc.nc' ncoords='1' coordValue='14' />
+    <netcdf location='nc/cg/CG2006158_120000h_usfc.nc' ncoords='1' coordValue='12' />
+    <netcdf location='nc/cg/CG2006158_130000h_usfc.nc' ncoords='1' coordValue='13' />
+    <netcdf location='nc/cg/CG2006158_140000h_usfc.nc' ncoords='1' coordValue='14' />
   </aggregation>
 
 </netcdf>

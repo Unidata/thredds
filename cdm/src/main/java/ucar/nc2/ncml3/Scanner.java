@@ -30,9 +30,9 @@ import java.io.IOException;
  */
 public interface Scanner {
 
-  public void scanDirectory(List<MyFile> result, CancelTask cancelTask) throws IOException;
+  public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException;
 
-  public String getDateFormatMark();
-  public boolean isEnhance();
+  //public String getDateFormatMark();
+  //public boolean isEnhance();
 
 }

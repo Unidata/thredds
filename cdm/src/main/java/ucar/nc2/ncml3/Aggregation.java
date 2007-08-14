@@ -21,6 +21,7 @@ package ucar.nc2.ncml3;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.ncml.AggregationIF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
@@ -29,6 +30,8 @@ import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.io.*;
+
+import thredds.util.DateFromString;
 
 /**
  * Implement NcML Aggregation.
@@ -99,12 +102,18 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   protected Type type; // the aggregation type
   protected Object spiObject;
 
-  //protected List<Dataset> nestedDatasets; // working set of Aggregation.Dataset
+  protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
+  protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // explicitly and scanned
   protected DatasetCollectionManager datasetManager;
   protected boolean wasChanged = true; // something changed since last aggCache persist file was written
 
+  // experimental
+  protected String dateFormatMark;
+  protected boolean enhance = false, isDate = false;
+  protected DateFormatter formatter = new DateFormatter();
+
   protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
-          debugRead = false;
+      debugRead = false, debugDateParse = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -119,11 +128,11 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
-    datasetManager = new DatasetCollectionManager(type, recheckS);
+    datasetManager = new DatasetCollectionManager(recheckS);
   }
 
   /**
-   * Add a nested dataset (other than a union), specified by an explicit netcdf element.
+   * Add a nested dataset, specified by an explicit netcdf element.
    * enhance is handled by the reader, so its always false here.
    *
    * @param cacheName   a unique name to use for caching
@@ -134,13 +143,12 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    * @param cancelTask  user may cancel, may be null
    */
   public void addExplicitDataset(String cacheName, String location, String ncoordS, String coordValueS, NetcdfFileFactory reader, CancelTask cancelTask) {
-    // boolean enhance = (enhanceS != null) && enhanceS.equalsIgnoreCase("true");
     Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, false, reader);
-    datasetManager.addExplicitDataset(nested);
+    explicitDatasets.add(nested);
   }
 
   public void addDataset(Dataset nested) {
-    datasetManager.addExplicitDataset(nested);
+    explicitDatasets.add(nested);
   }
 
   /**
@@ -150,14 +158,18 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    * @param suffix              filter on this suffix (may be null)
    * @param regexpPatternString include if full name matches this regular expression (may be null)
    * @param dateFormatMark      create dates from the filename (may be null)
-   * @param enhance             should files bne enhanced?
+   * @param enhanceS            should files bne enhanced?
    * @param subdirs             equals "false" if should not descend into subdirectories
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    * @throws IOException if I/O error
    */
-  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhance, String subdirs, String olderThan) throws IOException {
+  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirs, String olderThan) throws IOException {
+    this.dateFormatMark = dateFormatMark;
+    if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
+      enhance = true;
+
     //DirectoryScan d = new DirectoryScan(type, dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
-    CrawlableScanner d = new CrawlableScanner(type, dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
+    CrawlableScanner d = new CrawlableScanner(type, dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
   }
 
@@ -180,6 +192,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * Get the list of aggregation variables: variables whose data spans multiple files.
+   *
    * @return the list of aggregation variable names
    */
   public List<String> getVariables() {
@@ -188,10 +201,11 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * What is the data type of the aggregation coordinate ?
+   *
    * @return the data type of the aggregation coordinate
    */
   public DataType getCoordinateType() {
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
+    List<Dataset> nestedDatasets = getDatasets();
     Dataset first = nestedDatasets.get(0);
     return first.isStringValued ? DataType.STRING : DataType.DOUBLE;
   }
@@ -202,11 +216,20 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    */
   public void close() throws IOException {
     persist();
-    datasetManager.close();
+    closeDatasets();
+  }
+
+  protected void closeDatasets() throws IOException {
+    if (datasets != null) {
+      for (Aggregation.Dataset ds : datasets)
+        ds.close();
+    }
+    datasets = null;
   }
 
   /**
    * Allow information to be make persistent. Overridden in AggregationExisting
+   *
    * @throws IOException on error
    */
   public void persist() throws IOException {
@@ -223,6 +246,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   public void finish(CancelTask cancelTask) throws IOException {
     datasetManager.scan(this, cancelTask);
     wasChanged = true;
+    closeDatasets();
+    makeDatasets(cancelTask);
 
     // check persistence info
     persistRead();
@@ -230,12 +255,57 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     //ucar.unidata.io.RandomAccessFile.setDebugAccess( true);
     buildDataset(true, cancelTask);
     //ucar.unidata.io.RandomAccessFile.setDebugAccess( false);
+  }
 
+  protected List<Dataset> getDatasets() {
+    return datasets;
+  }
+
+  protected void makeDatasets(CancelTask cancelTask) throws IOException {
+    List<MyCrawlableDataset> fileList = datasetManager.getFiles();
+    for (MyCrawlableDataset myf : fileList) {
+      // optionally parse for date
+      if (null != dateFormatMark) {
+        String filename = myf.file.getName();
+        myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
+        myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
+        if (debugDateParse) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
+      } else {
+        if (debugDateParse) System.out.println("  adding " + myf.file.getPath());
+      }
+    }
+
+    // Sort by date if it exists, else filename.
+    Collections.sort(fileList, new Comparator<MyCrawlableDataset>() {
+      public int compare(MyCrawlableDataset mf1, MyCrawlableDataset mf2) {
+        if (mf1.dateCoord != null) // LOOK
+          return mf1.dateCoord.compareTo(mf2.dateCoord);
+        else
+          return mf1.file.getName().compareTo(mf2.file.getName());
+      }
+    });
+
+    // create new list of Datasets
+    datasets = new ArrayList<Dataset>();
+    for (Aggregation.Dataset dataset : explicitDatasets) {
+      if (dataset.checkOK(null))
+        datasets.add(dataset);
+    }
+
+    // now add the ordered list of Datasets to the result List
+    for (MyCrawlableDataset myf : fileList) {
+      String location = myf.file.getPath();
+      String coordValue = (type == AggregationIF.Type.JOIN_NEW) || (type == AggregationIF.Type.JOIN_EXISTING_ONE) || (type == AggregationIF.Type.FORECAST_MODEL_COLLECTION) ? myf.dateCoordS : null;
+      Aggregation.Dataset ds = makeDataset(location, location, null, coordValue, enhance, null);
+      ds.coordValueDate = myf.dateCoord;
+      datasets.add(ds);
+    }
   }
 
   /**
    * Call this to build the dataset objects
-   * @param isNew true when called for the first time
+   *
+   * @param isNew      true when called for the first time
    * @param cancelTask maybe cancel
    * @throws IOException on read error
    */
@@ -257,6 +327,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     if (!datasetManager.rescan(this))
       return false;
     wasChanged = true;
+    closeDatasets();
+    makeDatasets(null);
 
     // only the set of datasets may have changed
     if ((getType() == Aggregation.Type.FORECAST_MODEL_COLLECTION) || (getType() == Aggregation.Type.FORECAST_MODEL_SINGLE)) {
@@ -292,6 +364,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     if (!datasetManager.rescan(this))
       return false;
     wasChanged = true;
+    closeDatasets();
+    makeDatasets(null);
 
     //ncd.empty(); LOOK not emptying !!
 
@@ -313,11 +387,12 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
+   *
    * @return a typical Dataset
    * @throws FileNotFoundException if there are no datasets
    */
   protected Dataset getTypicalDataset() throws IOException {
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
+    List<Dataset> nestedDatasets = getDatasets();
     int n = nestedDatasets.size();
     if (n == 0)
       throw new FileNotFoundException("No datasets in this aggregation");
@@ -372,7 +447,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    */
   public abstract Array read(Variable mainv, CancelTask cancelTask) throws IOException;
 
-   /**
+  /**
    * Read a section of an aggregation variable.
    *
    * @param mainv      the aggregation variable
@@ -404,22 +479,23 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    * public for NcMLWriter
    */
-  public class Dataset {
-    private String location; // location attribute on the netcdf element
-    private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
+  class Dataset {
+    protected String location; // location attribute on the netcdf element
 
     // deferred opening
-    private String cacheName;
-    private NetcdfFileFactory reader;
-    private boolean enhance;
+    protected String cacheName;
+    protected NetcdfFileFactory reader;
+    protected boolean enhance;
 
     protected int ncoord; // number of coordinates in outer dimension for this dataset; joinExisting
     protected String coordValue;  // if theres a coordValue on the netcdf element
     protected Date coordValueDate;  // if its a date
     private boolean isStringValued = false;
+    private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
 
     /**
      * For subclasses.
+     *
      * @param location location attribute on the netcdf element
      */
     protected Dataset(String location) {
@@ -478,6 +554,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
     /**
      * Get the coordinate value(s) as a String for this Dataset
+     *
      * @return the coordinate value(s) as a String
      */
     public String getCoordValueString() {
@@ -486,6 +563,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
     /**
      * Get the coordinate value as a Date for this Dataset; may be null
+     *
      * @return the coordinate value as a Date, or null
      */
     public Date getCoordValueDate() {
@@ -494,6 +572,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
     /**
      * Get the location of this Dataset
+     *
      * @return the location of this Dataset
      */
     public String getLocation() {
@@ -503,6 +582,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     /**
      * Get number of coordinates in this Dataset.
      * If not already set, open the file and get it from the aggregation dimension.
+     *
      * @param cancelTask allow cancellation
      * @return number of coordinates in this Dataset.
      * @throws java.io.IOException if io error
@@ -677,8 +757,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
       return location.hashCode();
     }
 
-    protected boolean checkOK(CancelTask cancelTask) throws IOException {
-      return true;
+    protected boolean checkOK(CancelTask cancelTask) {
+      return true;  // LOOK ??
     }
 
     // allow subclasses to override

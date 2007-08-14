@@ -47,8 +47,8 @@ public class AggregationUnion extends Aggregation {
   @Override
   protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
 
-    // each dataset just gets "transferred" into this dataset
-    List<Dataset> nestedDatasets = datasetManager.getDatasets();
+    // each Dataset just gets "transferred" into the resulting NetcdfDataset
+    List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       NetcdfFile ncfile = vnested.acquireFile(cancelTask);
       DatasetConstructor.transferDataset(ncfile, ncDataset, null);
