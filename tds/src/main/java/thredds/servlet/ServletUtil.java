@@ -42,6 +42,13 @@ public class ServletUtil {
 
   public static final String CONTENT_TEXT = "text/plain; charset=iso-8859-1";
 
+  /**
+   * Initialize THREDDS servlet debugging.
+   *
+   * @see thredds.servlet.Debug
+   *
+   * @param servlet the servlet on which to initialze debugging.
+   */
   public static void initDebugging(HttpServlet servlet) {
     if (isDebugInit) return;
     isDebugInit = true;
@@ -204,6 +211,12 @@ public class ServletUtil {
     log.info("Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration);
   }
 
+  /**
+   * Return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
+   *
+   * @param servlet the HttpServlet whose root path is to be mapped.
+   * @return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
+   */
   public static String getRootPath(HttpServlet servlet) {
     ServletContext sc = servlet.getServletContext();
     String rootPath = sc.getRealPath("/");
@@ -211,6 +224,13 @@ public class ServletUtil {
     return rootPath;
   }
 
+  /**
+   * Return the real path on the servers file system that corresponds to the given path on the given servlet.
+   *
+   * @param servlet the HttpServlet whose path is to be mapped.
+   * @param path the virtual/URL path to map to the servers file system.
+   * @return the real path on the servers file system that corresponds to the given path on the given servlet.
+   */
   public static String getPath(HttpServlet servlet, String path) {
     ServletContext sc = servlet.getServletContext();
     String spath = sc.getRealPath(path);
@@ -226,6 +246,13 @@ public class ServletUtil {
 
   private static String contextPath = null;
 
+  /**
+   * Return the context path for the given servlet.
+   * Note - ToDo: Why not just use ServletContext.getServletContextName()?
+   *
+   * @param servlet the HttpServlet whose context path is returned.
+   * @return the context path for the given servlet.
+   */
   public static String getContextPath(HttpServlet servlet) {
     if (contextPath == null) {
       ServletContext servletContext = servlet.getServletContext();
@@ -238,6 +265,12 @@ public class ServletUtil {
 
   private static String contentPath = null;
 
+  /**
+   * Return the content path for the given servlet.
+   *
+   * @param servlet the HttpServlet whose content path is returned.
+   * @return the content path for the given servlet.
+   */
   public static String getContentPath(HttpServlet servlet) {
     if (contentPath == null) {
       String tmpContentPath = "../../content" + getContextPath(servlet) + "/";
@@ -253,10 +286,30 @@ public class ServletUtil {
     return contentPath;
   }
 
+  /**
+   * Return the default/initial content path for the given servlet. The
+   * content of which is copied to the content path when the web app
+   * is first installed.
+   *
+   * @param servlet the HttpServlet whose initial content path is returned.
+   * @return the default/initial content path for the given servlet.
+   */
   public static String getInitialContentPath(HttpServlet servlet) {
     return getRootPath(servlet) + "WEB-INF/initialContent/";
   }
 
+  /**
+   * Return the file path dealing with leading and trailing path
+   * seperators (which must be a slash ("/")) for the given directory
+   * and file paths.
+   *
+   * Note: Dealing with path strings is fragile.
+   * ToDo: Switch from using path strings to java.io.Files.
+   *
+   * @param dirPath the directory path.
+   * @param filePath the file path.
+   * @return a full file path with the given directory and file paths.
+   */
   public static String formFilename(String dirPath, String filePath) {
     if ((dirPath == null) || (filePath == null))
       return null;
@@ -711,8 +764,16 @@ public class ServletUtil {
     }
   }
 
+  /**
+   * Send given content string as the HTTP response.
+   *
+   * @param contents the string to return as the HTTP response.
+   * @param res the HttpServletResponse
+   * @throws IOException if an I/O error occurs while writing the response.
+   */
   public static void returnString(String contents, HttpServletResponse res)
-      throws IOException {
+      throws IOException
+  {
 
     try {
       ServletOutputStream out = res.getOutputStream();
@@ -726,10 +787,24 @@ public class ServletUtil {
     }
   }
 
+  /**
+   * Return the request URL relative to the server (i.e., starting with the context path).
+   *
+   * @param req
+   * @return
+   */
   public static String getReletiveURL(HttpServletRequest req) {
     return req.getContextPath() + req.getServletPath() + req.getPathInfo();
   }
 
+  /**
+   * Forward this request to the CatalogServices servlet ("/catalog.html").
+   * 
+   * @param req
+   * @param res
+   * @throws IOException
+   * @throws ServletException
+   */
   public static void forwardToCatalogServices(HttpServletRequest req, HttpServletResponse res)
       throws IOException, ServletException {
 
@@ -973,6 +1048,15 @@ public class ServletUtil {
     return getRequestBase(req) + (query == null ? "" : "?" + req.getQueryString());
   }
 
+  /**
+   * Return the value of the given parameter for the given request. Should
+   * only be used if the parameter is known to only have one value. If used
+   * on a multi-valued parameter, the first value is returned.
+   *
+   * @param req the HttpServletRequest
+   * @param paramName the name of the parameter to find.
+   * @return the value of the given parameter for the given request.
+   */
   public static String getParameterIgnoreCase(HttpServletRequest req, String paramName) {
     Enumeration e = req.getParameterNames();
     while (e.hasMoreElements()) {
@@ -983,6 +1067,13 @@ public class ServletUtil {
     return null;
   }
 
+  /**
+   * Return the values of the given parameter (ignoring case) for the given request.
+   *
+   * @param req the HttpServletRequest
+   * @param paramName the name of the parameter to find.
+   * @return the values of the given parameter for the given request.
+   */
   public static String[] getParameterValuesIgnoreCase(HttpServletRequest req, String paramName) {
     Enumeration e = req.getParameterNames();
     while (e.hasMoreElements()) {
