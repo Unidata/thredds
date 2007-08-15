@@ -124,18 +124,18 @@ public class DirectoryScan implements Scanner {
             continue;
         }
 
-        // add to result
+        /* add to result
         MyCrawlableDataset myf = new MyCrawlableDataset(this, f);
         result.add(myf);
 
-        if (null != myf.dir.getDateFormatMark()) {
+        /* if (null != myf.dir.getDateFormatMark()) {
           String filename = myf.file.getName();
           myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, myf.dir.getDateFormatMark(), '#');
           myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
           if (debugScan) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
         } else {
           if (debugScan) System.out.println("  adding " + myf.file.getPath());
-        }
+        } */
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
