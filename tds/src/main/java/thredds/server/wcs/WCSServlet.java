@@ -21,11 +21,14 @@ public class WCSServlet extends AbstractServlet {
   private boolean allow = false, deleteImmediately = true;
   private long maxFileDownloadSize;
 
+  private VersionHandler versionHandler;
+
   // must end with "/"
   protected String getPath() { return "wcs/"; }
   protected void makeDebugActions() {}
 
-  public void init() throws ServletException {
+  public void init() throws ServletException
+  {
     super.init();
 
     allow = ThreddsConfig.getBoolean("WCS.allow", false);
@@ -44,197 +47,55 @@ public class WCSServlet extends AbstractServlet {
     WcsDataset.setDiskCache(diskCache);
   }
 
-  public void destroy() {
+  public void destroy()
+  {
     if (diskCache != null)
       diskCache.exit();
     super.destroy();
   }
 
-  private WcsDataset openWcsDataset(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    String datasetURL = ServletUtil.getParameterIgnoreCase(req, "dataset");
-    boolean isRemote = (datasetURL != null);
-    String datasetPath = isRemote ? datasetURL : req.getPathInfo();
-
-    // convert to a GridDataset
-    GridDataset gd = isRemote ? ucar.nc2.dt.grid.GridDataset.open(datasetPath) : DatasetHandler.openGridDataset( req, res, datasetPath);
-    if (gd == null) return null;
-
-    // convert to a WcsDataset
-    WcsDataset ds = new WcsDataset(gd, datasetPath, isRemote);
-    String setServerBase = ServletUtil.getRequestBase( req);
-    ds.setServerBase( setServerBase);
-
-    return ds;
-  }
-
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res)
+          throws ServletException, IOException
+  {
     if (!allow) {
+      // ToDo - Server not configured to support WCS. Should response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       return;
     }
 
     ServletUtil.logServerAccessSetup( req );
 
-    if (Debug.isSet("showRequest"))
-      log.debug("**WCS req=" + ServletUtil.getRequest(req));
-    if (Debug.isSet("showRequestDetail"))
-      log.debug( ServletUtil.showRequestDetail(this, req));
-
-    // check on static or dynamic catalogs
-    //if (DataRootHandler.getInstance().processReqForCatalog( req, res))
-    // return;
-
-    // wcs request
-    WcsDataset wcsDataset = null;
-    try {
-      String request = ServletUtil.getParameterIgnoreCase(req, "REQUEST");
-
-      if (request == null) {
-        makeServiceException( res, "MissingParameterValue", "REQUEST parameter missing");
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1);
-        return;
-      }
-
-      wcsDataset = openWcsDataset( req, res);
-      if (wcsDataset == null) return;
-
-      if (request.equals("GetCapabilities")) {
-
-        SectionType sectionType = null;
-        String section = ServletUtil.getParameterIgnoreCase(req, "SECTION");
-
-        if (section != null) {
-          sectionType  = SectionType.getType(section);
-          if (sectionType == null) {
-            makeServiceException( res, "InvalidParameterValue", "Unknown GetCapabilities section = "+section);
-            return;
-          }
-        }
-
-        OutputStream os= res.getOutputStream();
-        res.setContentType("text/xml");
-        res.setStatus( HttpServletResponse.SC_OK );
-        int len = wcsDataset.getCapabilities(os, sectionType);
-
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
-        os.flush();
-
-      } else if (request.equals("DescribeCoverage")) {
-
-        String[] coverages = ServletUtil.getParameterValuesIgnoreCase(req, "COVERAGE");
-        if (coverages != null) {
-          for (int i=0; i<coverages.length; i++) {
-            if ( !wcsDataset.hasCoverage( coverages[i])) {
-              makeServiceException( res, "CoverageNotDefined", "Unknown Coverage = "+coverages[i]);
-              return;
-            }
-          }
-        }
-
-        OutputStream os= res.getOutputStream();
-        res.setContentType("text/xml");
-        res.setStatus( HttpServletResponse.SC_OK );
-        int len = wcsDataset.describeCoverage(os, coverages);
-
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
-        os.flush();
-
-      } else if (request.equals("GetCoverage")) {
-
-        String coverage = ServletUtil.getParameterIgnoreCase(req, "COVERAGE");
-        if (!wcsDataset.hasCoverage(coverage)) {
-          makeServiceException(res, "CoverageNotDefined", "Unknown Coverage = " + coverage);
-          return;
-        }
-
-        String bbox = ServletUtil.getParameterIgnoreCase(req, "BBOX");
-        String time = ServletUtil.getParameterIgnoreCase(req, "TIME");
-        String vertical = ServletUtil.getParameterIgnoreCase(req, "Vertical");
-        String format = ServletUtil.getParameterIgnoreCase(req, "FORMAT");
-        GetCoverageRequest r;
-        try {
-          r = new GetCoverageRequest( coverage, bbox, time, vertical, format);
-        } catch (Exception e) {
-          makeServiceException(res, "InvalidParameterValue", "query="+req.getQueryString());
-          return;
-        }
-
-        if ((r.getFormat() == null) || (r.getFormat() == GetCoverageRequest.Format.NONE)) {
-          makeServiceException(res, "InvalidFormat", "Invalid Format = " + format);
-          return;
-        }
-
-        String errMessage;
-        if (null != (errMessage = wcsDataset.checkCoverageParameters( r))) {
-          makeServiceException(res, "InvalidParameterValue", errMessage);
-          return;
-        }
-
-        File result = wcsDataset.getCoverage( r);
-        ServletUtil.returnFile(this, "", result.getPath(), req, res, null);
-        if (deleteImmediately) result.delete();
-
-      } else {
-        makeServiceException( res, "InvalidParameterValue", "Unknown request=" +request);
-        return;
-      }
-
-    } catch (IOException ioe) {
-      makeServiceException( res, "Invalid Dataset", ioe);
+    if ( req.getParameterMap().size() == 0 )
+    {
+      res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET request not a WCS KVP request." );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
       return;
-
-    } catch (Throwable t) {
-      makeServiceException( res, "Server Error", t);
-      t.printStackTrace();
-      return;
-
-    } finally {
-      if (wcsDataset != null) {
-        try {
-          wcsDataset.close();
-        } catch (IOException ioe) {
-          log.error("Failed to close ", ioe);
-        }
-      }
     }
-  }
+    
+    String service = ServletUtil.getParameterIgnoreCase( req, "Service");
+    if ( service == null || ! service.equals( "WCS"))
+    {
+      res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET WCS KVP request missing SERVICE parameter.");
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
+      return;
+    }
 
-  private void makeServiceException(HttpServletResponse res, String code, String message) throws IOException {
-    res.setContentType("application/vnd.ogc.se_xml");
-    PrintStream ps= new PrintStream(res.getOutputStream());
-
-    ps.println("<ServiceExceptionReport version='1.2.0'>");
-    ps.println("  <ServiceException code='"+code+"'>");
-    ps.println("    "+message);
-    ps.println("  </ServiceException>");
-    ps.println("</ServiceExceptionReport>");
-
-    ps.flush();
-    ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1); // LOOK, actual return is 200 = OK !
-  }
-
-  private void makeServiceException(HttpServletResponse res, String code, Throwable t) throws IOException {
-    res.setContentType("application/vnd.ogc.se_xml");
-    PrintStream ps= new PrintStream(res.getOutputStream());
-
-    ps.println("<ServiceExceptionReport version='1.2.0'>");
-    ps.println("  <ServiceException code='"+code+"'>");
-
-    if (Debug.isSet("trustedMode")) // security issue: only show stack if trusted
-      t.printStackTrace(ps);
+    // Decide on requested version.
+    String versions = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions");
+    String version = ServletUtil.getParameterIgnoreCase( req, "Version");
+    if ( version != null)
+      if ( version.equals( "1.0.0"))
+        versionHandler = new WCS_1_0();
+      else if ( version.equals( "1.1.0"))
+        versionHandler = new WCS_1_1_0();
+      else
+        versionHandler = new WCS_1_1_0();
+    else if (versions != null)
+      versionHandler = new WCS_1_1_0();
     else
-      ps.println(t.getMessage());
+      versionHandler = new WCS_1_1_0();
 
-    ps.println("  </ServiceException>");
-    ps.println("</ServiceExceptionReport>");
 
-    ps.flush();
-    if (t instanceof FileNotFoundException)
-      log.info("makeServiceException", t.getMessage()); // dont clutter up log files
-    else
-      log.info("makeServiceException", t);
-    ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1); // LOOK, actual return is 200 = OK !
+    versionHandler.handleKVP( this, req, res);
   }
-
-
 }
