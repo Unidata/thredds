@@ -20,6 +20,9 @@
 package ucar.nc2.util;
 
 import java.net.URI;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.io.File;
 
 /**
@@ -32,7 +35,7 @@ public class NetworkUtils {
   public static void initProtocolHandler() {
     // test setting the http protocol handler
     try {
-      new java.net.URL( null, "http://motherlode.ucar.edu:8080/", new sun.net.www.protocol.http.Handler());
+      new java.net.URL(null, "http://motherlode.ucar.edu:8080/", new sun.net.www.protocol.http.Handler());
     } catch (java.net.MalformedURLException e) {
       e.printStackTrace();
     }
@@ -46,13 +49,14 @@ public class NetworkUtils {
    * <p> For file: baseURLS: only reletive URLS not starting with / are supported. This is
    * apparently different from the behavior of URI.resolve(), so may be trouble,
    * but it allows NcML absolute location to be specified without the file: prefix.
-   *
+   * <p/>
    * Example : <pre>
    * base:     file://my/guide/collections/designfaq.ncml
    * ref:      sub/my.nc
    * resolved: file://my/guide/collections/sub/my.nc
    * </pre>
-   * @param baseUrl base URL as a Strng
+   *
+   * @param baseUrl     base URL as a Strng
    * @param relativeUrl reletive URL, as a String
    * @return the resolved URL as a String
    */
@@ -60,7 +64,7 @@ public class NetworkUtils {
     if ((baseUrl == null) || (relativeUrl == null))
       return relativeUrl;
 
-    relativeUrl = canonicalizeRead( relativeUrl);
+    relativeUrl = canonicalizeRead(relativeUrl);
     URI refURI = URI.create(relativeUrl);
     if (refURI.isAbsolute())
       return relativeUrl;
@@ -70,8 +74,8 @@ public class NetworkUtils {
       if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '#'))
         return baseUrl + relativeUrl;
 
-    if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '/'))
-      return relativeUrl;
+      if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '/'))
+        return relativeUrl;
 
       int pos = baseUrl.lastIndexOf('/');
       if (pos > 0) {
@@ -91,7 +95,7 @@ public class NetworkUtils {
       URI refURI = URI.create(location);
       if (refURI.isAbsolute())
         return location;
-    } catch (Exception e)  {
+    } catch (Exception e) {
       return "file:" + location;
     }
     return location;
@@ -103,19 +107,19 @@ public class NetworkUtils {
       URI refURI = URI.create(location);
       if (refURI.isAbsolute())
         return location;
-    } catch (Exception e)  {
+    } catch (Exception e) {
       //return "file:" + location;
     }
     return "file:" + location;
   }
 
-  public static String resolveFile( String baseDir, String filepath) {
+  public static String resolveFile(String baseDir, String filepath) {
     if (baseDir == null) return filepath;
     File file = new File(filepath);
     if (file.isAbsolute()) return filepath;
     return baseDir + filepath;
   }
-  
+
   ///////////////////////////////////////////////////////////////////
 
   private static void test(String uriS) {
@@ -124,10 +128,10 @@ public class NetworkUtils {
     //System.out.println(uriS);
 
     URI uri = URI.create(uriS);
-    System.out.println(" scheme="+uri.getScheme());
-    System.out.println(" getSchemeSpecificPart="+uri.getSchemeSpecificPart());
-    System.out.println(" getAuthority="+uri.getAuthority());
-    System.out.println(" getPath="+uri.getPath());
+    System.out.println(" scheme=" + uri.getScheme());
+    System.out.println(" getSchemeSpecificPart=" + uri.getSchemeSpecificPart());
+    System.out.println(" getAuthority=" + uri.getAuthority());
+    System.out.println(" getPath=" + uri.getPath());
     System.out.println();
   }
 
@@ -142,23 +146,34 @@ public class NetworkUtils {
   }
 
   private static void testResolve(String base, String rel, String result) {
-    System.out.println("\nbase= "+base);
-    System.out.println("rel= "+rel);
-    System.out.println("resolve= "+resolve(base,rel));
+    System.out.println("\nbase= " + base);
+    System.out.println("rel= " + rel);
+    System.out.println("resolve= " + resolve(base, rel));
     if (result != null)
-      assert resolve(base,rel).equals(result);
+      assert resolve(base, rel).equals(result);
   }
+
+  public static void main3(String args[]) {
+    testResolve("http://test/me/", "wanna", "http://test/me/wanna");
+    testResolve("http://test/me/", "/wanna", "http://test/wanna");
+    testResolve("file:/test/me/", "wanna", "file:/test/me/wanna");
+    testResolve("file:/test/me/", "/wanna", "/wanna");  // LOOK doesnt work for URI.resolve() directly.
+
+    testResolve("file://test/me/", "http:/wanna", "http:/wanna");
+    testResolve("file://test/me/", "file:/wanna", "file:/wanna");
+    testResolve("file://test/me/", "C:/wanna", "C:/wanna");
+    testResolve("http://test/me/", "file:wanna", "file:wanna");
+  }
+
+
   public static void main(String args[]) {
-    testResolve( "http://test/me/", "wanna", "http://test/me/wanna");
-    testResolve( "http://test/me/", "/wanna", "http://test/wanna");
-    testResolve( "file:/test/me/", "wanna", "file:/test/me/wanna");
-    testResolve( "file:/test/me/", "/wanna", "/wanna");  // LOOK doesnt work for URI.resolve() directly.
-
-    testResolve( "file://test/me/", "http:/wanna", "http:/wanna");
-    testResolve( "file://test/me/", "file:/wanna", "file:/wanna");
-    testResolve( "file://test/me/", "C:/wanna", "C:/wanna");
-    testResolve( "http://test/me/", "file:wanna", "file:wanna");
+    try {
+      URL url = new URL("file:src/test/data/ncml/nc/");
+      URI uri = new URI("file:src/test/data/ncml/nc/");
+      File f = new File(uri);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
-
 
 }

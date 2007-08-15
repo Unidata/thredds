@@ -1,4 +1,4 @@
-package ucar.nc2.ncml3;
+package ucar.nc2.ncml4;
 
 import junit.framework.*;
 
@@ -20,7 +20,7 @@ public class TestNcmlUnionSimple extends TestCase {
 
   public void setUp() {
     if (ncfile != null) return;
-    String filename = "file:./"+TestNcML.topDir + "aggUnionScan.xml";
+    String filename = "file:./"+TestNcML.topDir + "aggUnionSimple.xml";
 
     try {
       ncfile = NcMLReader.readNcML(filename, null);

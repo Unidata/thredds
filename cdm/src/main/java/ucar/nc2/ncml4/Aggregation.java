@@ -17,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ncml3;
+package ucar.nc2.ncml4;
 
 import ucar.ma2.*;
 import ucar.nc2.*;

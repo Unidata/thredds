@@ -42,13 +42,14 @@ public class CrawlableDatasetFile implements CrawlableDataset
    * @param path the path of the CrawlableDataset being constructed.
    * @param configObj the configuration object required by CrawlableDatasetFactory; it is ignored.
    */
-  CrawlableDatasetFile( String path, Object configObj )
+  public CrawlableDatasetFile( String path, Object configObj )
   {
     if ( path.startsWith( "file:" ) )
     {
       try
       {
-        this.file = new File( new URI( path ) );
+        URI uri = new URI( path );
+        this.file = new File( uri );
       }
       catch ( URISyntaxException e )
       {

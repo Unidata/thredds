@@ -17,39 +17,19 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ncml2;
+package ucar.nc2.ncml4;
 
-import java.io.File;
-import java.util.Date;
+import ucar.nc2.util.CancelTask;
+
+import java.util.List;
+import java.io.IOException;
 
 /**
  * @author caron
- * @since Aug 9, 2007
+ * @since Aug 10, 2007
  */
-public class DatasetFile {
-  DirectoryScanner dir;
-  File file;
+public interface Scanner {
 
-  Date dateCoord; // will have both or neither
-  String dateCoordS;
+  public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException;
 
-  Date runDate; // fmrcHourly only
-  Double offset;
-
-  DatasetFile(DirectoryScanner dir, File file) {
-    this.dir = dir;
-    this.file = file;
-  }
-
-  // MyFile with the same file are equal
-  public boolean equals(Object oo) {
-    if (this == oo) return true;
-    if (!(oo instanceof DatasetFile)) return false;
-    DatasetFile other = (DatasetFile) oo;
-    return file.equals(other.file);
-  }
-
-  public int hashCode() {
-    return file.hashCode();
-  }
 }

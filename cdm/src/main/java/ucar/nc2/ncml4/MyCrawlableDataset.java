@@ -17,19 +17,41 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ncml3;
+package ucar.nc2.ncml4;
 
-import ucar.nc2.util.CancelTask;
+import thredds.crawlabledataset.CrawlableDataset;
 
-import java.util.List;
-import java.io.IOException;
+import java.util.Date;
 
 /**
+ * Encapsolate a CrawlableDataset.
  * @author caron
  * @since Aug 10, 2007
  */
-public interface Scanner {
+class MyCrawlableDataset {
+  Scanner dir;
+  CrawlableDataset file;
 
-  public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException;
+  Date dateCoord; // will have both or neither
+  String dateCoordS;
 
+  Date runDate; // fmrcHourly only
+  Double offset;
+
+  MyCrawlableDataset(Scanner dir, CrawlableDataset file) {
+    this.dir = dir;
+    this.file = file;
+  }
+
+  // MyCrawlableDataset with the same CrawlableDataset.path are equal
+  public boolean equals(Object oo) {
+    if (this == oo) return true;
+    if (!(oo instanceof MyCrawlableDataset)) return false;
+    MyCrawlableDataset other = (MyCrawlableDataset) oo;
+    return file.getPath().equals(other.file.getPath());
+  }
+
+  public int hashCode() {
+    return file.getPath().hashCode();
+  }
 }

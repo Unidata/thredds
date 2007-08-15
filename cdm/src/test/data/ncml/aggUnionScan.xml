@@ -4,7 +4,7 @@
 	<attribute name="title" type="string" value="Union cldc and lflx"/>
 
   <aggregation type="union">
-    <scan location="C:/temp/data/" suffix=".nc"/> 
+    <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/> 
   </aggregation>
 
 </netcdf>
