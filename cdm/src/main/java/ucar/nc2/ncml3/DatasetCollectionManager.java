@@ -26,8 +26,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Manages a list of Scanners that find files (actually CrawlableDataset).
- * Wraps these in Aggregation.Dataset objects.
+ * Manage a list of Scanners that find files (actually CrawlableDataset).
  * Tracks when they need to be rescanned.
  *
  * @author caron
@@ -40,7 +39,7 @@ public class DatasetCollectionManager {
   private List<MyCrawlableDataset> files;
 
   private TimeUnit recheck; // how often to recheck
-  private long lastChecked; // last time checked
+  private long lastScanned; // last time scanned
 
   private boolean debugSync = false, debugSyncDetail = false;
 
@@ -58,16 +57,23 @@ public class DatasetCollectionManager {
     scanList.add(scan);
   }
 
-  public void scan(Aggregation agg, CancelTask cancelTask) throws IOException {
+  /**
+   * Scan the directory(ies) and create MyCrawlableDataset objects.
+   * Get the results from getFiles()
+   * @param cancelTask allow user to cancel
+   * @throws java.io.IOException if io error
+   */
+  public void scan( CancelTask cancelTask) throws IOException {
     files = new ArrayList<MyCrawlableDataset>();
     scan( files, cancelTask);
-    this.lastChecked = System.currentTimeMillis();
+    this.lastScanned = System.currentTimeMillis();
   }
 
   /**
-   * Rescan if recheckEvery time has passed
+   * Compute if rescan is needed.
+   * True if scanList not empty, recheckEvery not null, and recheckEvery time has passed since last scanned.
    *
-   * @return if theres new datasets, put new datasets into nestedDatasets
+   * @return true is rescan time has passed
    */
   public boolean timeToRescan() {
     if (scanList.isEmpty()) {
@@ -82,7 +88,7 @@ public class DatasetCollectionManager {
     }
 
     Date now = new Date();
-    Date lastCheckedDate = new Date(lastChecked);
+    Date lastCheckedDate = new Date(lastScanned);
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
       if (debugSync) System.out.println(" *Sync not needed, last= " + lastCheckedDate + " now = " + now);
@@ -92,23 +98,29 @@ public class DatasetCollectionManager {
     return true;
   }
 
-  // protected by synch
-  public boolean rescan(Aggregation agg) throws IOException {
-    // ok were gonna recheck
-    lastChecked = System.currentTimeMillis();
+  /**
+   * Rescan directories. Files may be deleted or added.
+   * If the MyCrawlableDataset already exists in the current list, leave it in the list.
+   * If returns true, get the results from getFiles(), otherwise nothing has changed.
+   *
+   * @return true if anything actually changed.
+   * @throws IOException on I/O error
+   */
+  public boolean rescan() throws IOException {
     if (debugSync) System.out.println(" *Sync at " + new Date());
+    lastScanned = System.currentTimeMillis();
 
     // rescan
-    List<MyCrawlableDataset> newDatasets = new ArrayList<MyCrawlableDataset>();
-    scan(newDatasets, null);
+    List<MyCrawlableDataset> newFiles = new ArrayList<MyCrawlableDataset>();
+    scan(newFiles, null);
 
     // replace with previous datasets if they exist
     boolean changed = false;
-    for (int i = 0; i < newDatasets.size(); i++) {
-      MyCrawlableDataset newDataset = newDatasets.get(i);
-      int index = files.indexOf(newDataset); // equal if location is equal
+    for (int i = 0; i < newFiles.size(); i++) {
+      MyCrawlableDataset newDataset = newFiles.get(i);
+      int index = files.indexOf(newDataset); // equal if crawlableDataset.path is equal
       if (index >= 0) {
-        newDatasets.set(i, files.get(index));
+        newFiles.set(i, files.get(index));
         if (debugSyncDetail) System.out.println("  sync using old Dataset= " + newDataset.file.getPath());
       } else {
         changed = true;
@@ -118,42 +130,43 @@ public class DatasetCollectionManager {
 
     if (!changed) { // check for deletions
       for (MyCrawlableDataset oldDataset : files) {
-        if (newDatasets.indexOf(oldDataset) < 0) {
+        if (newFiles.indexOf(oldDataset) < 0) {
           changed = true;
           if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + oldDataset.file.getPath());
         }
       }
     }
 
+    if (changed)
+      files = newFiles;
+
     return changed;
   }
 
+  /**
+   * Get how often to rescan
+   * @return time dureation of rescan period, or null if none.
+   */
   public TimeUnit getRecheck() {
     return recheck;
   }
 
-  public long getLastChecked() {
-    return lastChecked;
+  /**
+   * Get the last time scanned
+   * @return msecs since 1970
+   */
+  public long getLastScanned() {
+    return lastScanned;
   }
 
-  /* public List<Aggregation.Dataset> getDatasets() {
-    return datasets;
-  } */
-
+  /**
+   * Get the current list of MyCrawlableDataset, since last scan or rescan.
+   * @return current list of MyCrawlableDataset
+   */
   public List<MyCrawlableDataset> getFiles() {
     return files;
   }
 
-
-  /**
-   * Scan the directory(ies) and create MyCrawlableDataset objects.
-   * Directories are scanned recursively, by calling File.listFiles().
-   * Sort by date if it exists, else filename.
-   *
-   * @param result place results here
-   * @param cancelTask allow user to cancel
-   * @throws java.io.IOException if io error
-   */
   private void scan( List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
 
     // run through all scanners and collect MyCrawlableDataset instances

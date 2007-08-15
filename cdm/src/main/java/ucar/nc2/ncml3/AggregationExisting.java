@@ -73,7 +73,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
 
-    // now we can create the real aggExisting variables
+    // now create the agg variables
     // all variables with the named aggregation dimension
     for (Variable v : typical.getVariables()) {
       if (v.getRank() < 1)
@@ -84,7 +84,7 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
           v.getDimensionsString(), null, null);
-      vagg.setProxyReader2(this);
+      vagg.setProxyReader2(this); // do the reading here
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
       ncDataset.removeVariable(null, v.getShortName());
@@ -120,7 +120,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
 
       // only write out if something changed after the cache file was last written
-      if (!wasChanged)
+      if (!cacheDirty)
         return;
 
       // Get a file channel for the file
@@ -162,11 +162,11 @@ public class AggregationExisting extends AggregationOuterDimension {
       out.print("</aggregation>\n");
       out.close(); // this also closes the  channel and releases the lock
 
-      cacheFile.setLastModified(datasetManager.getLastChecked());
-      wasChanged = false;
+      cacheFile.setLastModified(datasetManager.getLastScanned());
+      cacheDirty = false;
 
       if (debug)
-        System.out.println("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(datasetManager.getLastChecked()));
+        System.out.println("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(datasetManager.getLastScanned()));
 
     } finally {
       if (channel != null)

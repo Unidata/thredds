@@ -95,7 +95,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     buildDataset( typicalDataset, typicalGds, cancelTask);
   }
 
-  // split out so FmrcSingle call call seperately
+  // split out so FmrcSingle can call seperately
   protected void buildDataset(Dataset typicalDataset, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
     DatasetConstructor.transferDataset( typicalGds.getNetcdfFile(), ncDataset, null);

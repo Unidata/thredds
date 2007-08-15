@@ -64,7 +64,7 @@ public class AggregationNew extends AggregationOuterDimension {
       coordType = getCoordinateType();
       joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
       ncDataset.addVariable(null, joinAggCoord);
-    } else { // LOOK what is this ? probably left over from when we parsed NcML before aggregation element
+    } else { // if theres already a coordinate variable - perhaps illegal ?
       joinAggCoord.setDimensions(dimName); // reset its dimension
       joinAggCoord.invalidateCache(); // get rid of any cached data, since its now wrong
     }
@@ -76,7 +76,7 @@ public class AggregationNew extends AggregationOuterDimension {
 
     // now we can create all the aggNew variables
     // use only named variables
-    for (String varname : getVariables()) {
+    for (String varname : getAggVariableNames()) {
       Variable aggVar = ncDataset.getRootGroup().findVariable(varname);
       if (aggVar == null) {
         logger.error(ncDataset.getLocation() + " aggNewDimension cant find variable " + varname);

@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.ncml.AggregationIF;
 import ucar.nc2.units.TimeUnit;
 
 /**
@@ -54,7 +53,8 @@ public class CrawlableScanner implements Scanner {
   private boolean debugScan = true;
 
 
-  CrawlableScanner(AggregationIF.Type type, String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
+  CrawlableScanner(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
+    this.dirName = dirName;
 
     String crawlerClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
     Object crawlerObject = null;
@@ -76,7 +76,6 @@ public class CrawlableScanner implements Scanner {
     else if (suffix != null)
       filter = new WildcardMatchOnPathFilter( "*"+suffix);
 
-
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
 
@@ -89,9 +88,6 @@ public class CrawlableScanner implements Scanner {
       }
     }
   }
-
-  /* public boolean isEnhance() { return enhance; }
-  public String getDateFormatMark() { return dateFormatMark; } */
 
   public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
     scanDirectory(crawler, new Date().getTime(), result, cancelTask);
@@ -131,7 +127,7 @@ public class CrawlableScanner implements Scanner {
 
   static public void main( String args[]) throws IOException {
     String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070810/catalog.xml";
-    CrawlableScanner crawl = new CrawlableScanner(AggregationIF.Type.UNION, "thredds:"+cat, null, null, "true", null);
+    CrawlableScanner crawl = new CrawlableScanner("thredds:"+cat, null, null, "true", null);
     crawl.scanDirectory( new ArrayList<MyCrawlableDataset>(), null);
   }
 }

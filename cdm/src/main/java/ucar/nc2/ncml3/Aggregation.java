@@ -97,15 +97,16 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   //////////////////////////////////////////////////////////////////////////////////////////
 
   protected NetcdfDataset ncDataset; // the aggregation belongs to this dataset
-  protected String dimName; // the aggregation dimension name
-  private List<String> vars = new ArrayList<String>(); // variable names (String)
   protected Type type; // the aggregation type
   protected Object spiObject;
 
   protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
-  protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // explicitly and scanned
-  protected DatasetCollectionManager datasetManager;
-  protected boolean wasChanged = true; // something changed since last aggCache persist file was written
+  protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // all : explicit and scanned
+  protected DatasetCollectionManager datasetManager; // manages scanning
+  protected boolean cacheDirty = true; // aggCache persist file needs updating
+
+  protected String dimName; // the aggregation dimension name
+  protected List<String> aggVarNames = new ArrayList<String>(); // joinNew
 
   // experimental
   protected String dateFormatMark;
@@ -169,34 +170,42 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
       enhance = true;
 
     //DirectoryScan d = new DirectoryScan(type, dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
-    CrawlableScanner d = new CrawlableScanner(type, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    CrawlableScanner d = new CrawlableScanner( dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
   }
 
   /**
    * Add a name from a variableAgg element
    *
-   * @param varName name of variable to add
+   * @param varName name of agg variable
    */
   public void addVariable(String varName) {
-    vars.add(varName);
+    aggVarNames.add(varName);
   }
 
+  /**
+   * Get type of aggregation
+   * @return type of aggregation
+   */
   public Type getType() {
     return type;
   }
 
+  /**
+   * Get dimension name to join on
+   * @return dimension name or null if type union/tiled
+   */
   public String getDimensionName() {
     return dimName;
   }
 
   /**
-   * Get the list of aggregation variables: variables whose data spans multiple files.
-   *
+   * Get the list of aggregation variable names: variables whose data spans multiple files.
+   * For type joinNew only.
    * @return the list of aggregation variable names
    */
-  public List<String> getVariables() {
-    return vars;
+  List<String> getAggVariableNames() {
+    return aggVarNames;
   }
 
   /**
@@ -235,7 +244,9 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   public void persist() throws IOException {
   }
 
-  // read info from the persistent XML file, if it exists; overridden in AggregationExisting
+  /**
+   * read info from the persistent XML file, if it exists; overridden in AggregationExisting
+   */
   protected void persistRead() {
   }
 
@@ -244,8 +255,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   // all elements are processed, finish construction
 
   public void finish(CancelTask cancelTask) throws IOException {
-    datasetManager.scan(this, cancelTask);
-    wasChanged = true;
+    datasetManager.scan( cancelTask);
+    cacheDirty = true;
     closeDatasets();
     makeDatasets(cancelTask);
 
@@ -261,6 +272,11 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     return datasets;
   }
 
+  /**
+   * Make the Dataset objects.
+   * @param cancelTask user can cancel
+   * @throws IOException on i/o error
+   */
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
     List<MyCrawlableDataset> fileList = datasetManager.getFiles();
     for (MyCrawlableDataset myf : fileList) {
@@ -285,7 +301,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
       }
     });
 
-    // create new list of Datasets
+    // create new list of Datasets, transfer explicit in order
     datasets = new ArrayList<Dataset>();
     for (Aggregation.Dataset dataset : explicitDatasets) {
       if (dataset.checkOK(null))
@@ -324,9 +340,9 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   public synchronized boolean syncExtend(boolean force) throws IOException {
     if (!force && !datasetManager.timeToRescan())
       return false;
-    if (!datasetManager.rescan(this))
+    if (!datasetManager.rescan())
       return false;
-    wasChanged = true;
+    cacheDirty = true;
     closeDatasets();
     makeDatasets(null);
 
@@ -361,9 +377,9 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   public synchronized boolean sync() throws IOException {
     if (!datasetManager.timeToRescan())
       return false;
-    if (!datasetManager.rescan(this))
+    if (!datasetManager.rescan())
       return false;
-    wasChanged = true;
+    cacheDirty = true;
     closeDatasets();
     makeDatasets(null);
 
@@ -406,33 +422,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
       select = (n < 2) ? 0 : new Random().nextInt(n);
 
     return nestedDatasets.get(select);
-  }
-
-  protected void makeProxies(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
-
-    // all normal variables must use a proxy to lock the file
-    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
-    List<Variable> allVars = newds.getVariables();
-    for (Variable v : allVars) {
-      VariableEnhanced ve = (VariableEnhanced) v; // need this for getProxyReader2()
-      if (ve.getProxyReader2() != null) {
-        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + ve.getName());
-        continue; // dont mess with agg variables
-      }
-
-      if (v.isCaching()) {  // cache the small ones
-        if (!v.hasCachedData()) {
-          ve.read();
-          if (debugProxy) System.out.println(" debugProxy: cached " + ve.getName());
-        } else {
-          if (debugProxy) System.out.println(" debugProxy: already cached " + ve.getName());
-        }
-
-      } else if (null == ve.getProxyReader2()) { // put proxy on the rest
-        ve.setProxyReader2(proxy);
-        if (debugProxy) System.out.println(" debugProxy: proxy on " + ve.getName());
-      }
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,6 +476,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     protected NetcdfFileFactory reader;
     protected boolean enhance;
 
+    // used by AggregatinOuterDimension
     protected int ncoord; // number of coordinates in outer dimension for this dataset; joinExisting
     protected String coordValue;  // if theres a coordValue on the netcdf element
     protected Date coordValueDate;  // if its a date
@@ -779,6 +769,42 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     }
   }
 
+
+  /**
+   * All non-agg variables use a proxy to acquire the file before reading.
+   * If the variable is caching, read data into cache now.
+   *
+   * @param typicalDataset read from a "typical dataset"
+   * @param newds containing dataset
+   * @throws IOException on i/o error
+   */
+  protected void makeProxies(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
+
+    // all normal variables must use a proxy to lock the file
+    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
+    List<Variable> allVars = newds.getVariables();
+    for (Variable v : allVars) {
+      VariableEnhanced ve = (VariableEnhanced) v; // need this for getProxyReader2()
+      if (ve.getProxyReader2() != null) {
+        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + ve.getName());
+        continue; // dont mess with agg variables
+      }
+
+      if (v.isCaching()) {  // cache the small ones
+        if (!v.hasCachedData()) {
+          ve.read();
+          if (debugProxy) System.out.println(" debugProxy: cached " + ve.getName());
+        } else {
+          if (debugProxy) System.out.println(" debugProxy: already cached " + ve.getName());
+        }
+
+      } else if (null == ve.getProxyReader2()) { // put proxy on the rest
+        ve.setProxyReader2(proxy);
+        if (debugProxy) System.out.println(" debugProxy: proxy on " + ve.getName());
+      }
+    }
+  }
+
   protected class DatasetProxyReader implements ProxyReader2 {
     Dataset dataset;
 
@@ -839,7 +865,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    * @return true if the named variable is an aggregation variable
    */
   private boolean isAggVariable(String name) {
-    for (String vname : vars) {
+    for (String vname : aggVarNames) {
       if (vname.equals(name))
         return true;
     }

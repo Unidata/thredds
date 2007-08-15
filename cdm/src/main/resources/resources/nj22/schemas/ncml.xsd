@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-4.0"
+<xsd:schema targetNamespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-4.0"
+            xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml"
             elementFormDefault="qualified">
 
   <!-- XML encoding of Netcdf container object -->

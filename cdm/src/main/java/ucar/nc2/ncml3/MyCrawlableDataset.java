@@ -24,12 +24,9 @@ import thredds.crawlabledataset.CrawlableDataset;
 import java.util.Date;
 
 /**
+ * Encapsolate a CrawlableDataset.
  * @author caron
  * @since Aug 10, 2007
- */
-/**
- * Encapsolate a file that was scanned.
- * Created in scanDirectory()
  */
 class MyCrawlableDataset {
   Scanner dir;
@@ -46,15 +43,15 @@ class MyCrawlableDataset {
     this.file = file;
   }
 
-  // MyFile with the same file are equal
+  // MyCrawlableDataset with the same CrawlableDataset.path are equal
   public boolean equals(Object oo) {
     if (this == oo) return true;
     if (!(oo instanceof MyCrawlableDataset)) return false;
     MyCrawlableDataset other = (MyCrawlableDataset) oo;
-    return file.equals(other.file);
+    return file.getPath().equals(other.file.getPath());
   }
 
   public int hashCode() {
-    return file.hashCode();
+    return file.getPath().hashCode();
   }
 }

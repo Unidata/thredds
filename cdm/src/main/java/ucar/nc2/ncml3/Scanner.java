@@ -32,7 +32,4 @@ public interface Scanner {
 
   public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException;
 
-  //public String getDateFormatMark();
-  //public boolean isEnhance();
-
 }

@@ -74,7 +74,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     this.enhance = true;
     isDate = true;
 
-    CrawlableScanner d = new CrawlableScanner(type, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    CrawlableScanner d = new CrawlableScanner( dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
 
     //DirectoryScan d = new DirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, runMatcher, forecastMatcher, offsetMatcher);
