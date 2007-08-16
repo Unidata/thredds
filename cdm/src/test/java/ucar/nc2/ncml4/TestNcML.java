@@ -35,16 +35,6 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestNcmlAggSynthetic.class)); //
     suite.addTest(new TestSuite(TestNcmlAggSynGrid.class));
 
-    suite.addTest(new TestSuite(TestNcmlAggDirectory.class));  //
-    suite.addTest(new TestSuite(TestNcmlAggDirDateFormat.class));  //
-
-    // deprecated suite.addTest(new TestSuite(TestAggForecastModel.class));  //  old, deprecated
-    /* suite.addTest(new TestSuite(TestAggFmrcNetcdf.class));  //
-    suite.addTest(new TestSuite(TestAggFmrcGrib.class));  //
-    suite.addTest(new TestSuite(TestAggFmrcNonuniform.class));  //
-
-    suite.addTest(new TestSuite(TestNcmlReadGridDataset.class)); */
-
     return suite;
   }
 

@@ -50,8 +50,7 @@ public class CrawlableScanner implements Scanner {
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
 
-  private boolean debugScan = true;
-
+  private boolean debugScan = false;
 
   CrawlableScanner(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
     this.dirName = dirName;
@@ -118,6 +117,7 @@ public class CrawlableScanner implements Scanner {
         // add to result
         MyCrawlableDataset myf = new MyCrawlableDataset(this, child);
         result.add(myf);
+        if (debugScan) System.out.println("added "+myf.file.getPath());
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())

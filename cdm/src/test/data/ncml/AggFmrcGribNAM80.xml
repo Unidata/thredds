@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-  <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true"
-               fmrcDefinition="//zero/share/testdata/motherlode/grid/inv/new/NCEP-NAM-CONUS_80km.fmrcDefinition.xml">
-    <scan location="C:/data/grib/nam/conus80/" suffix=".grib1" enhance="true"
-          dateFormatMark="NAM_CONUS_80km_#yyyyMMdd_HHmm"/>
-  </aggregation>
-</netcdf>

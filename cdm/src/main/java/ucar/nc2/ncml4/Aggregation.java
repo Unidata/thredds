@@ -166,8 +166,11 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    */
   public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirs, String olderThan) throws IOException {
     this.dateFormatMark = dateFormatMark;
+    
     if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
       enhance = true;
+    if (dateFormatMark != null)
+      isDate = true;    
 
     //DirectoryScan d = new DirectoryScan(type, dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
     CrawlableScanner d = new CrawlableScanner( dirName, suffix, regexpPatternString, subdirs, olderThan);
@@ -447,6 +450,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    */
   public abstract Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Dataset factory, so subclasses can override
    *
@@ -462,7 +467,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     return new Dataset(cacheName, location, ncoordS, coordValueS, enhance, reader);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Encapsolates a NetcdfFile that is a component of the aggregation.
@@ -769,6 +773,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * All non-agg variables use a proxy to acquire the file before reading.

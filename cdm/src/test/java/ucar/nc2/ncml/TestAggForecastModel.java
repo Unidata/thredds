@@ -13,27 +13,28 @@ import ucar.nc2.units.DateFormatter;
 
 public class TestAggForecastModel extends TestCase {
   private int nfore = 11;
+  private int nruns = 15;
   public TestAggForecastModel( String name) {
     super(name);
   }
 
   public void testForecastModel() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggForecastModel.xml";
+    String filename = "file:./"+TestNcML.topDir + "offsite/aggForecastModel.xml";
 
     NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
 
-    testDimensions(ncfile, 14);
+    testDimensions(ncfile, nruns);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 14);
-    testReadData(ncfile, 14, nfore);
+    testAggCoordVar(ncfile, nruns);
+    testReadData(ncfile, nruns, nfore);
     testReadSlice(ncfile);
 
     ncfile.close();
   }
 
   public void testForecastModelExtend() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggForecastModel.xml";
+    String filename = "file:./"+TestNcML.topDir + "offsite/aggForecastModel.xml";
     String newModel = "C:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc";
     String newModelsave = "C:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc.save";
     File newModelFile = new File(newModel);
@@ -54,10 +55,10 @@ public class TestAggForecastModel extends TestCase {
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
 
-    testDimensions(ncfile, 14);
+    testDimensions(ncfile, nruns-1);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 14);
-    testReadData(ncfile, 14, nfore);
+    testAggCoordVar(ncfile, nruns-1);
+    testReadData(ncfile, nruns-1, nfore);
     testReadSlice(ncfile);
 
     // new file arrives
@@ -66,44 +67,15 @@ public class TestAggForecastModel extends TestCase {
 
     ncfile.sync();
 
-    testDimensions(ncfile, 15);
+    testDimensions(ncfile, nruns);
     testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15);
-    testReadData(ncfile, 15, nfore);
+    testAggCoordVar(ncfile, nruns);
+    testReadData(ncfile, nruns, nfore);
     testReadSlice(ncfile);
 
     ncfile.close();
   }
 
-  public void testForecastConstant() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggForecastConstant.xml";
-
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-    System.out.println(" aggForecastConstant.open "+ filename);
-
-    testDimensions(ncfile, 6);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 6);
-    testReadData(ncfile, 6, nfore);
-    testReadSlice(ncfile);
-
-    ncfile.close();
-  }
-
-  public void testForecastOffset() throws IOException, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggForecastOffset.xml";
-
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-    System.out.println(" aggForecastOffset.open "+ filename);
-
-    testDimensions(ncfile, 15);
-    testCoordVar(ncfile);
-    testAggCoordVar(ncfile, 15);
-    testReadData(ncfile, 15, nfore);
-    testReadSlice(ncfile);
-
-    ncfile.close();
-  }
 
   public void testDimensions(NetcdfFile ncfile, int nagg) {
     Dimension latDim = ncfile.findDimension("x");

@@ -117,6 +117,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
+    ncDataset.removeVariable(null, runtimeCoordVar.getShortName());
     ncDataset.addVariable(null, runtimeCoordVar);
     if (debug) System.out.println("FmrcAggregation: added runtimeCoordVar " + runtimeCoordVar.getName());
 

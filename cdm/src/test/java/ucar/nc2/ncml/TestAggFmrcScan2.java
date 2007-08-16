@@ -38,8 +38,8 @@ public class TestAggFmrcScan2 extends TestCase {
     super(name);
   }
 
-  public void testOpen() throws Exception, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggFmrcScan2.xml";
+  public void testOpen() throws Exception {
+    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcScan2.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
@@ -48,8 +48,8 @@ public class TestAggFmrcScan2 extends TestCase {
     ncfile.close();
   }
 
-  public void testOpenNomads() throws Exception, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "aggFmrcNomads.xml";
+  public void testOpenNomads() throws Exception {
+    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcNomads.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
