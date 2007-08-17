@@ -229,6 +229,27 @@ public class Section {
   }
 
   /**
+   * Create a new Section by union with another Section
+   *
+   * @param other Section other section
+   * @return new Section, union of the two
+   * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
+   */
+  public Section union(Section other) throws InvalidRangeException {
+    if (other.getRank() != getRank())
+      throw new InvalidRangeException("Invalid Section rank");
+
+    List<Range> results = new ArrayList<Range>(getRank());
+    for (int j = 0; j < list.size(); j++) {
+      Range base = list.get(j);
+      Range r = other.getRange(j);
+      results.add(base.union(r));
+    }
+
+    return new Section(results);
+  }
+
+  /**
    * Create a new Section by shifting each range by shift.first()
    *
    * @param shift Section subtract shift.first()
@@ -365,6 +386,22 @@ public class Section {
   public Section appendRange(int first, int last, int stride) throws InvalidRangeException {
     if (immutable) throw new IllegalStateException("Cant modify");
     list.add(new Range(first, last, stride));
+    return this;
+  }
+
+  /**
+   * Append a new Range(name,first,last,stride) to the Section
+   *
+   * @param name   name of Range
+   * @param first  starting index
+   * @param last   last index, inclusive
+   * @param stride stride
+   * @return this
+   * @throws InvalidRangeException if last < first
+   */
+  public Section appendRange(String name, int first, int last, int stride) throws InvalidRangeException {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    list.add(new Range(name, first, last, stride));
     return this;
   }
 
@@ -555,6 +592,32 @@ public class Section {
   }
 
   /**
+   * Find a Range by its name.
+   *
+   * @param rangeName find this Range
+   * @return named Range or null
+   */
+  public Range find(String rangeName) {
+    for (Range r : list) {
+      if (rangeName.equals(r.getName())) return r;
+    }
+    return null;
+  }
+
+  public Section addRangeNames(List<String> rangeNames) throws InvalidRangeException {
+    if (rangeNames.size() != getRank())
+      throw new InvalidRangeException("Invalid number of Range Names");
+
+    int count = 0;
+    Section result = new Section();
+    for (Range r : getRanges()) {
+      Range nr = new Range(rangeNames.get(count++), r);
+      result.appendRange(nr);
+    }
+    return result;
+  }
+
+  /**
    * Check if this Section is legal for the given shape.
    *
    * @param shape range must fit within this shape, rank must match.
@@ -577,6 +640,7 @@ public class Section {
   /**
    * Is this section equivilent to the given shape.
    * All non-null ranges must have origin 0 and length = shape[i]
+   *
    * @param shape the given shape.
    * @return true if equivilent
    * @throws InvalidRangeException if setion rank doesnt match shape length
@@ -586,11 +650,11 @@ public class Section {
       throw new InvalidRangeException("Invalid Section rank");
 
     for (int i = 0; i < list.size(); i++) {
-       Range r = list.get(i);
-       if (r == null) continue;
-       if (r.first() != 0) return false;
-       if (r.length() != shape[i]) return false;
-     }
+      Range r = list.get(i);
+      if (r == null) continue;
+      if (r.first() != 0) return false;
+      if (r.length() != shape[i]) return false;
+    }
     return true;
   }
 

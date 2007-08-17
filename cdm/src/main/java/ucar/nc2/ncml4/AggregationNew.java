@@ -32,6 +32,7 @@ import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * JoinNew Aggregation.
@@ -39,17 +40,18 @@ import java.io.IOException;
  * @author caron
  */
 public class AggregationNew extends AggregationOuterDimension {
+
   public AggregationNew(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.JOIN_NEW, recheckS);
   }
 
-  protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
+  protected void buildDataset(CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
 
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(null);
-    DatasetConstructor.transferDataset(typical, ncDataset, isNew ? null : new MyReplaceVariableCheck());
+    DatasetConstructor.transferDataset(typical, ncDataset, null);
 
     // create aggregation dimension
     String dimName = getDimensionName();
@@ -58,21 +60,12 @@ public class AggregationNew extends AggregationOuterDimension {
     ncDataset.addDimension(null, aggDim);
 
     // create aggregation coordinate variable
-    DataType coordType;
-    VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
-    if (joinAggCoord == null) {
-      coordType = getCoordinateType();
-      joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
-      ncDataset.addVariable(null, joinAggCoord);
-    } else { // if theres already a coordinate variable - perhaps illegal ?
-      joinAggCoord.setDimensions(dimName); // reset its dimension
-      joinAggCoord.invalidateCache(); // get rid of any cached data, since its now wrong
-    }
+    DataType coordType = getCoordinateType();
+    VariableDS joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
+    ncDataset.addVariable(null, joinAggCoord);
     joinAggCoord.setProxyReader2(this);
-
-    if (isDate) {
+    if (isDate)
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
-    }
 
     // now we can create all the aggNew variables
     // use only named variables
@@ -83,7 +76,7 @@ public class AggregationNew extends AggregationOuterDimension {
         continue;
       }
 
-      // construct new variable, replace old one
+      // construct new variable, replace old one LOOK what about Structures?
       VariableDS vagg = new VariableDS(ncDataset, null, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
       vagg.setProxyReader2(this);
@@ -98,13 +91,24 @@ public class AggregationNew extends AggregationOuterDimension {
 
       ncDataset.removeVariable(null, aggVar.getShortName());
       ncDataset.addVariable(null, vagg);
+      aggVars.add( vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-    ncDataset.finish();
-    makeProxies(typicalDataset, ncDataset);
+    setDatasetAcquireProxy(typicalDataset, ncDataset);
     typical.close(); // close it because we use DatasetProxyReader to acquire
+  }
+
+  /**
+   * What is the data type of the aggregation coordinate ?
+   *
+   * @return the data type of the aggregation coordinate
+   */
+  private DataType getCoordinateType() {
+    List<Dataset> nestedDatasets = getDatasets();
+    DatasetOuterDimension first = (DatasetOuterDimension) nestedDatasets.get(0);
+    return first.isStringValued ? DataType.STRING : DataType.DOUBLE;
   }
 
 }

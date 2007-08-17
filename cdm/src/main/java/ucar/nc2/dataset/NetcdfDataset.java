@@ -939,14 +939,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Generate the list of values from a starting value and an increment.
+   * Will reshape to variable if needed.
    *
    * @param v for this variable
-   * @param npts  number of values
+   * @param npts  number of values, must = v.getSize()
    * @param start starting value
    * @param incr  increment
    */
   public void setValues(Variable v, int npts, double start, double incr) {
-    v.setCachedData(makeArray(v.getDataType(), npts, start, incr), true);
+    if (npts != v.getSize())
+      throw new IllegalArgumentException("bad npts = "+npts+" should be "+v.getSize());
+    Array data = makeArray(v.getDataType(), npts, start, incr);
+    if (v.getRank() > 1)
+      data  = data.reshape(v.getShape());
+    v.setCachedData(data, true);
   }
 
   /**
@@ -961,9 +967,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (data.getSize() != v.getSize())
       throw new IllegalArgumentException("Incorrect number of values specified for the Variable "+v.getName()+
-        " given= "+v.getSize()+" needed="+data.getSize());
+        " needed= "+v.getSize()+" given="+data.getSize());
 
-    if (v.getRank() != 1)
+    if (v.getRank() > 1) // dont have to reshape for rank < 2
       data = data.reshape(v.getShape());
 
     v.setCachedData(data, true);

@@ -55,7 +55,7 @@ public final class Range {
   private int n; // number of elements
   private int first; // first value in range
   private int stride = 1; // stride, must be >= 1
-  //private String name; // optional name
+  private String name; // optional name
 
   /**
    * Used for EMPTY
@@ -70,7 +70,11 @@ public final class Range {
      @exception InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range(int first, int last) throws InvalidRangeException {
-    this( first, last, 1);
+    this( null, first, last, 1);
+  }
+
+  public Range(String name, int first, int last) throws InvalidRangeException {
+    this( name, first, last, 1);
   }
 
 
@@ -82,6 +86,10 @@ public final class Range {
      @exception InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride >= 1
    */
   public Range(int first, int last, int stride) throws InvalidRangeException {
+    this(null, first, last, stride);
+  }
+
+  public Range(String name, int first, int last, int stride) throws InvalidRangeException {
     if (first < 0)
       throw new InvalidRangeException("first must be >= 0");
     if (last < first)
@@ -89,6 +97,7 @@ public final class Range {
     if (stride < 1)
       throw new InvalidRangeException("stride must be > 0");
 
+    this.name = name;
     this.first = first;
     this.stride = stride;
     this.n = Math.max( 1 + (last - first) / stride, 1);
@@ -102,7 +111,19 @@ public final class Range {
     first = r.first();
     n = r.length();
     stride = r.stride();
-    //setName( r.getName());
+    name = r.getName();
+  }
+
+  /**
+   * Copy Constructor with name
+   * @param name result name
+   * @param r copy from here
+   */
+  public Range(String name, Range r) {
+    this.name = name;
+    first = r.first();
+    n = r.length();
+    stride = r.stride();
   }
 
 
@@ -119,7 +140,7 @@ public final class Range {
     int first = element( r.first());
     int stride = stride() * r.stride();
     int last = element(r.last());
-    return new Range(first, last, stride);
+    return new Range(name, first, last, stride);
   }
 
   /**
@@ -132,18 +153,8 @@ public final class Range {
     int first = first() - origin;
     int stride = stride();
     int last = last() - origin;
-    return new Range(first, last, stride);
+    return new Range(name, first, last, stride);
   }
-
-  /** Get name
-   * @return name, or null if none
-   *
-  public String getName() { return name; }
-
-  /** Set name; used to track Dimensions
-   * @param name name of Range
-   *
-  public void setName( String name) { this.name = name; } */
 
   /**
      Create a new Range by intersecting with a Range using same interval as this Range.
@@ -183,7 +194,26 @@ public final class Range {
 
     if (first > last)
       return EMPTY;
-    return new Range(first, last, stride);
+    return new Range(name, first, last, stride);
+  }
+
+    /**
+     Create a new Range by making the union with a Range using same interval as this Range.
+     NOTE: no strides
+     @param r	range to add
+     @return intersected Range, may be EMPTY
+     @exception InvalidRangeException elements must be nonnegative
+   */
+  public Range union(Range r) throws InvalidRangeException {
+    if (length() == 0)
+      return r;
+
+    if (r.length() == 0)
+      return this;
+
+    int first = Math.min(this.first(), r.first());
+    int last = Math.max(this.last(), r.last());
+    return new Range(name, first, last);
   }
 
   /**
@@ -240,6 +270,12 @@ public final class Range {
 
   /** @return stride, must be >= 1*/
   public int stride() { return stride;  }
+
+
+  /** Get name
+   * @return name, or null if none
+   */
+  public String getName() { return name; }
 
   /**
    * Iterate over Range index

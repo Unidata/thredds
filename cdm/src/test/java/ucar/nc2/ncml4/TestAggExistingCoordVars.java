@@ -179,4 +179,47 @@ public class TestAggExistingCoordVars extends TestCase {
     ncfile.close();
   }
 
+  public void testWithDateFormatMark() throws IOException, InvalidRangeException {
+    String filename = "file:"+TestNcML.topDir + "aggExistingOne.xml";
+
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+
+    assert time.getName().equals("time");
+    assert time.getRank() == 1;
+    assert time.getSize() == 3;
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.STRING;
+
+    assert time.getDimension(0) == ncfile.findDimension("time");
+
+    String[] result = new String[] {"2006-06-07T12:00:00Z",   "2006-06-07T13:00:00Z",   "2006-06-07T14:00:00Z"};
+    try {
+      Array data = time.read();
+      assert data.getRank() == 1;
+      assert data.getSize() == 3;
+      assert data.getShape()[0] == 3;
+      assert data.getElementType() == String.class;
+
+      NCdump.printArray(data, "time coord", System.out, null);
+
+      int count = 0;
+      IndexIterator dataI = data.getIndexIterator();
+      while (dataI.hasNext()) {
+        String s = (String) dataI.getObjectNext();
+        assert s.equals( result[count]) : s;
+        count++;
+      }
+
+    } catch (IOException io) {
+      io.printStackTrace();
+      assert false;
+    }
+
+    ncfile.close();
+  }
+
+
 }

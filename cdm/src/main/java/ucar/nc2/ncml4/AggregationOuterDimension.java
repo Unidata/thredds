@@ -19,16 +19,17 @@
  */
 package ucar.nc2.ncml4;
 
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
 import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.Date;
 
 /**
  * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc
@@ -37,29 +38,80 @@ import java.util.StringTokenizer;
  */
 public abstract class AggregationOuterDimension extends Aggregation {
 
+  protected List<VariableDS> aggVars = new ArrayList<VariableDS>();
+  private int totalCoords = 0;  // the aggregation dimension size
+
+
+  /**
+   * Create an Aggregation for the given NetcdfDataset.
+   * The following addXXXX methods are called, then finish(), before the object is ready for use.
+   *
+   * @param ncd      Aggregation belongs to this NetcdfDataset
+   * @param dimName  the aggregation dimension name
+   * @param type     the Aggregation.Type
+   * @param recheckS how often to check if files have changes
+   */
   protected AggregationOuterDimension(NetcdfDataset ncd, String dimName, Type type, String recheckS) {
     super(ncd, dimName, type, recheckS);
   }
 
-  private int totalCoords = 0;  // the aggregation dimension size
+  /**
+   * Get dimension name to join on
+   * @return dimension name or null if type union/tiled
+   */
+  public String getDimensionName() {
+    return dimName;
+  }
   
   protected void buildCoords(CancelTask cancelTask) throws IOException {
     List<Dataset> nestedDatasets = getDatasets();
 
     if (type == Type.FORECAST_MODEL_COLLECTION) {
       for (Dataset nested : nestedDatasets) {
-        nested.ncoord = 1;
+        DatasetOuterDimension dod = (DatasetOuterDimension) nested;
+        dod.ncoord = 1;
       }
     }
 
     totalCoords = 0;
     for (Dataset nested : nestedDatasets) {
-      totalCoords += nested.setStartEnd(totalCoords, cancelTask);
+      DatasetOuterDimension dod = (DatasetOuterDimension) nested;
+      totalCoords += dod.setStartEnd(totalCoords, cancelTask);
     }
   }
 
   protected int getTotalCoords() {
     return totalCoords;
+  }
+
+  protected void rebuildDataset() throws IOException {
+    buildCoords(null);
+
+    // reset dimension length
+    Dimension aggDim = ncDataset.findDimension(dimName);
+    aggDim.setLength( getTotalCoords());
+
+    // reset coordinate var
+    VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
+    joinAggCoord.setDimensions(dimName); // reset its dimension
+    joinAggCoord.invalidateCache(); // get rid of any cached data, since its now wrong
+
+    // reset agg variables
+    for (Variable aggVar : aggVars) {
+      aggVar.setDimensions(dimName); // reset its dimension
+      aggVar.invalidateCache(); // get rid of any cached data, since its now wrong
+    }
+
+    // reset the typical dataset, where non-agg variables live
+    Dataset typicalDataset = getTypicalDataset();
+    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
+    for (Variable var : ncDataset.getRootGroup().getVariables()) {
+      if (aggVars.contains(var))
+        continue;
+      VariableEnhanced ve = (VariableEnhanced) var; // need this for getProxyReader2()
+      ve.setProxyReader2(proxy);
+    }
+    typicalDataset.close();
   }
 
   /**
@@ -72,8 +124,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
    */
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
 
-    // the case of the agg coordinate var LOOK all but AggregationFmrcSingle ??
-    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
+    // the case of the agg coordinate var
+    if (mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, cancelTask);
 
     // read the original type - if its been promoted to a new type, the conversion happens after this read
@@ -104,7 +156,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     for (Dataset vnested : nestedDatasets) {
 
       try {
-        readAggCoord(aggCoord, cancelTask, vnested, dtype, result, null, null, null);
+        readAggCoord(aggCoord, cancelTask, (DatasetOuterDimension) vnested, dtype, result, null, null, null);
       } catch (InvalidRangeException e) {
         e.printStackTrace();  // cant happen
       }
@@ -134,8 +186,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
-    // the case of the agg coordinate var LOOK all but AggregationFmrcSingle ??
-    if (((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) && mainv.getShortName().equals(dimName))
+    // the case of the agg coordinate var
+    if (mainv.getShortName().equals(dimName))
       return readAggCoord(mainv, section, cancelTask);
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
@@ -151,7 +203,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset nested : nestedDatasets) {
-      Range nestedJoinRange = nested.getNestedJoinRange(joinRange);
+      DatasetOuterDimension dod = (DatasetOuterDimension) nested;
+      Range nestedJoinRange = dod.getNestedJoinRange(joinRange);
       if (nestedJoinRange == null)
         continue;
       //if (debug)
@@ -187,13 +240,14 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
-      Range nestedJoinRange = vnested.getNestedJoinRange(joinRange);
+      DatasetOuterDimension dod = (DatasetOuterDimension) vnested;
+      Range nestedJoinRange = dod.getNestedJoinRange(joinRange);
       if (nestedJoinRange == null)
         continue;
       //if (debug)
       //  System.out.println("   agg use " + vnested.aggStart + ":" + vnested.aggEnd + " range= " + nestedJoinRange + " file " + vnested.getLocation());
 
-      readAggCoord(aggCoord, cancelTask, vnested, dtype, result, nestedJoinRange, nestedSection, innerSection);
+      readAggCoord(aggCoord, cancelTask, dod, dtype, result, nestedJoinRange, nestedSection, innerSection);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -203,14 +257,14 @@ public abstract class AggregationOuterDimension extends Aggregation {
   }
 
   // handle the case of cached agg coordinate variables
-  private void readAggCoord(Variable aggCoord, CancelTask cancelTask, Dataset vnested, DataType dtype, IndexIterator result,
+  private void readAggCoord(Variable aggCoord, CancelTask cancelTask, DatasetOuterDimension vnested, DataType dtype, IndexIterator result,
           Range nestedJoinRange, List<Range> nestedSection, List<Range> innerSection) throws IOException, InvalidRangeException {
 
     // we have the coordinates as a String
     if (vnested.coordValue != null) {
 
-      // joinNew, fmrc only can have 1 coord
-      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      // if theres only one coord
+      if (vnested.ncoord == 1) {
         if (dtype == DataType.STRING) {
           result.setObjectNext(vnested.coordValue);
         } else {
@@ -248,7 +302,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         varData = vnested.read(aggCoord, cancelTask);
 
       } else
-      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         varData = vnested.read(aggCoord, cancelTask, innerSection);
       } else {
         nestedSection.set(0, nestedJoinRange);
@@ -261,5 +315,302 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   }
 
-  //////////////////////////////////////////////////////////////////
+  // time units change - must read in time coords and convert, cache the results
+  // must be able to be made into a CoordinateAxis1DTime
+  protected void readTimeCoordinates(VariableDS timeAxis, CancelTask cancelTask) throws IOException {
+    List<Date[]> dateList = new ArrayList<Date[]>();
+    int maxTimes = 0;
+    String units = null;
+
+    List<Dataset> nestedDatasets = getDatasets();
+    for (int i = 0; i < nestedDatasets.size(); i++) {
+      Dataset dataset;
+      NetcdfDataset ncfile = null;
+      try {
+        dataset = nestedDatasets.get(i);
+        ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
+        VariableDS v = (VariableDS) ncfile.findVariable(timeAxis.getName());
+        if (v == null) {
+          logger.warn("readTimeCoordinates: variable = " + timeAxis.getName() + " not found in file " + dataset.getLocation());
+          return;
+        }
+        CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, v, null);
+        java.util.Date[] dates = timeCoordVar.getTimeDates();
+        maxTimes = Math.max(maxTimes, dates.length);
+        dateList.add(dates);
+        //dataset.setNumberFmrcTimeCoords(dates.length);
+
+        if (i == 0)
+          units = v.getUnitsString();
+
+      } finally {
+        if (ncfile != null) ncfile.close();
+      }
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
+
+    int[] shape = timeAxis.getShape();
+    int ntimes = shape[1];
+    if (ntimes != maxTimes) {  // LOOK!!
+      shape[1] = maxTimes;
+      Dimension d = timeAxis.getDimension(1);
+      d.setLength(maxTimes);
+      timeAxis.setDimensions(timeAxis.getDimensionsString());
+    }
+
+    Array timeCoordVals = Array.factory(timeAxis.getDataType(), shape);
+    Index ima = timeCoordVals.getIndex();
+    timeAxis.setCachedData(timeCoordVals, false);
+
+    // check if its a String or a udunit
+    if (timeAxis.getDataType() == DataType.STRING) {
+
+      for (int i = 0; i < dateList.size(); i++) {
+        Date[] dates = dateList.get(i);
+        for (int j = 0; j < dates.length; j++) {
+          Date date = dates[j];
+          timeCoordVals.setObject(ima.set(i, j), formatter.toDateTimeStringISO(date));
+        }
+      }
+
+    } else {
+
+      DateUnit du;
+      try {
+        du = new DateUnit(units);
+      } catch (Exception e) {
+        throw new IOException(e.getMessage());
+      }
+      timeAxis.addAttribute(new Attribute("units", units));
+
+      for (int i = 0; i < dateList.size(); i++) {
+        Date[] dates = dateList.get(i);
+        for (int j = 0; j < dates.length; j++) {
+          Date date = dates[j];
+          double val = du.makeValue(date);
+          timeCoordVals.setDouble(ima.set(i, j), val);
+        }
+      }
+    }
+
+  }
+
+  @Override
+  protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec, boolean enhance, NetcdfFileFactory reader) {
+    return new DatasetOuterDimension(cacheName, location, ncoordS, coordValueS, enhance, reader);
+  }
+
+  /**
+   * Encapsolates a NetcdfFile that is a component of the aggregation.
+   */
+  class DatasetOuterDimension extends Dataset {
+
+    protected int ncoord; // number of coordinates in outer dimension for this dataset; joinExisting
+    protected String coordValue;  // if theres a coordValue on the netcdf element - may be multiple, blank seperated
+    protected Date coordValueDate;  // if its a date
+    protected boolean isStringValued = false;
+    private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
+
+    protected DatasetOuterDimension(String location) {
+      super( location);
+    }
+
+    /**
+     * Dataset constructor.
+     * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
+     * Used with explicit netcdf elements, and scanned files.
+     *
+     * @param cacheName   a unique name to use for caching
+     * @param location    attribute "location" on the netcdf element
+     * @param ncoordS     attribute "ncoords" on the netcdf element
+     * @param coordValueS attribute "coordValue" on the netcdf element
+     * @param enhance     open dataset in enhance mode
+     * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
+     */
+    protected DatasetOuterDimension(String cacheName, String location, String ncoordS, String coordValueS,
+                      boolean enhance, NetcdfFileFactory reader) {
+      super(cacheName, location, enhance, reader);
+      this.coordValue = coordValueS;
+
+      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE)) {
+        this.ncoord = 1;
+      } else if (ncoordS != null) {
+        try {
+          this.ncoord = Integer.parseInt(ncoordS);
+        } catch (NumberFormatException e) {
+          logger.error("bad ncoord attribute on dataset=" + location);
+        }
+      }
+
+      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+        if (coordValueS == null) {
+          int pos = this.location.lastIndexOf("/");
+          this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
+          this.isStringValued = true;
+        } else {
+          try {
+            Double.parseDouble(coordValueS);
+          } catch (NumberFormatException e) {
+            this.isStringValued = true;
+          }
+        }
+      }
+
+      // allow coordValue attribute on JOIN_EXISTING, may be multiple values seperated by blanks or commas
+      if ((type == Type.JOIN_EXISTING) && (coordValueS != null)) {
+        StringTokenizer stoker = new StringTokenizer(coordValueS, " ,");
+        this.ncoord = stoker.countTokens();
+      }
+    }
+
+    protected void setInfo( MyCrawlableDataset myf) {
+      coordValueDate = myf.dateCoord;
+      // LOOK why not dateCoordS etc ??
+    }
+
+
+    /**
+     * Get the coordinate value(s) as a String for this Dataset
+     *
+     * @return the coordinate value(s) as a String
+     */
+    public String getCoordValueString() {
+      return coordValue;
+    }
+
+    /**
+     * Get the coordinate value as a Date for this Dataset; may be null
+     *
+     * @return the coordinate value as a Date, or null
+     */
+    public Date getCoordValueDate() {
+      return coordValueDate;
+    }
+
+    /**
+     * Get number of coordinates in this Dataset.
+     * If not already set, open the file and get it from the aggregation dimension.
+     *
+     * @param cancelTask allow cancellation
+     * @return number of coordinates in this Dataset.
+     * @throws java.io.IOException if io error
+     */
+    public int getNcoords(CancelTask cancelTask) throws IOException {
+      if (ncoord <= 0) {
+        NetcdfFile ncd = acquireFile(cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel()) return 0;
+
+        Dimension d = ncd.getRootGroup().findDimension(dimName);
+        if (d != null)
+          ncoord = d.getLength();
+        ncd.close();
+      }
+      return ncoord;
+    }
+
+    /**
+     * Set the starting and ending index into the aggregation dimension
+     *
+     * @param aggStart   starting index
+     * @param cancelTask allow to bail out
+     * @return number of coordinates in this dataset
+     * @throws IOException if io error
+     */
+    protected int setStartEnd(int aggStart, CancelTask cancelTask) throws IOException {
+      this.aggStart = aggStart;
+      this.aggEnd = aggStart + getNcoords(cancelTask);
+      return ncoord;
+    }
+
+    /**
+     * Get the desired Range, reletive to this Dataset, if no overlap, return null.
+     * <p> wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd.
+     * if this overlaps, set the Range required for the nested dataset.
+     * note this should handle strides ok.
+     *
+     * @param totalRange desired range, reletive to aggregated dimension.
+     * @return desired Range or null if theres nothing wanted from this datase.
+     * @throws InvalidRangeException if invalid range request
+     */
+    protected Range getNestedJoinRange(Range totalRange) throws InvalidRangeException {
+      int wantStart = totalRange.first();
+      int wantStop = totalRange.last() + 1; // Range has last inclusive, we use last exclusive
+
+      // see if this dataset is needed
+      if (!isNeeded(wantStart, wantStop))
+        return null;
+
+      int firstInInterval = totalRange.getFirstInInterval(aggStart);
+      if ((firstInInterval < 0) || (firstInInterval >= aggEnd))
+        return null;
+
+      int start = Math.max(aggStart, wantStart) - aggStart;
+      int stop = Math.min(aggEnd, wantStop) - aggStart;
+
+      return new Range(start, stop - 1, totalRange.stride()); // Range has last inclusive
+    }
+
+    protected boolean isNeeded(Range totalRange) {
+      int wantStart = totalRange.first();
+      int wantStop = totalRange.last() + 1; // Range has last inclusive, we use last exclusive
+      return isNeeded(wantStart, wantStop);
+    }
+
+    // wantStart, wantStop are the indices in the aggregated dataset, wantStart <= i < wantEnd
+    // find out if this overlaps this nested Dataset indices
+    private boolean isNeeded(int wantStart, int wantStop) {
+      if (wantStart >= wantStop)
+        return false;
+      if ((wantStart >= aggEnd) || (wantStop <= aggStart))
+        return false;
+
+      return true;
+    }
+
+    @Override
+    protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
+      if (coordValue != null) return;
+
+      Variable coordVar = ncfile.findVariable(dimName);
+      if (coordVar != null) {
+        Array data = coordVar.read();
+        coordValue = data.toString();
+      }
+    }
+
+   @Override
+   protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
+      NetcdfFile ncd = null;
+      try {
+        ncd = acquireFile(cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return null;
+
+        if (debugRead) {
+          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation());
+          for (Range range : section)
+            System.out.print(" " + range + ":");
+          System.out.println("");
+        }
+
+        Variable v = ncd.findVariable(mainv.getName());
+
+        // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
+        // so we need to read only what is there
+        Range fullRange = v.getRanges().get(0);
+        Range want = section.get(0);
+        if (fullRange.last() < want.last()) {
+          Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
+          section = new ArrayList<Range>(section); // make a copy
+          section.set(0, limitRange);
+        }
+
+        return v.read(section);
+
+      } finally {
+        if (ncd != null) ncd.close();
+      }
+    }
+
+  }
 }

@@ -23,10 +23,13 @@ package ucar.nc2.ncml4;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
+import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+import ucar.nc2.Attribute;
+import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.io.File;
@@ -57,13 +60,13 @@ public class AggregationExisting extends AggregationOuterDimension {
     super(ncd, dimName, type, recheckS);
   }
 
-  protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
+  protected void buildDataset( CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
 
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(null);
-    DatasetConstructor.transferDataset(typical, ncDataset, isNew ? null : new MyReplaceVariableCheck());
+    DatasetConstructor.transferDataset(typical, ncDataset, null);
 
     // LOOK not dealing with groups
 
@@ -89,14 +92,39 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       ncDataset.removeVariable(null, v.getShortName());
       ncDataset.addVariable(null, vagg);
+      aggVars.add( vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
-    ncDataset.finish();
-    makeProxies(typicalDataset, ncDataset);
+    if (type == Type.JOIN_EXISTING_ONE) {
+      // replace aggregation coordinate variable
+      VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
+      joinAggCoord.setDataType( DataType.STRING);
+      joinAggCoord.getAttributes().clear();
+      joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
+      joinAggCoord.addAttribute(new Attribute("long_name", "time coordinate"));
+      joinAggCoord.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
+    }
+
+    if (timeUnitsChange) {
+      VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
+      readTimeCoordinates(joinAggCoord, cancelTask);
+    }
+
+    setDatasetAcquireProxy(typicalDataset, ncDataset);
     typical.close();
   }
+
+  protected void rebuildDataset() throws IOException {
+    super.rebuildDataset();
+
+    if (timeUnitsChange) {
+      VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
+      readTimeCoordinates(joinAggCoord, null);
+    }
+  }
+
 
   /**
    * Persist info (nccords, coorValues) from joinExisting, since that can be expensive to recreate.
@@ -150,11 +178,13 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       List<Dataset> nestedDatasets = getDatasets();
       for (Dataset dataset : nestedDatasets) {
-        out.print("  <netcdf location='" + dataset.getLocation() + "' ");
-        out.print("ncoords='" + dataset.getNcoords(null) + "' ");
+        DatasetOuterDimension dod = (DatasetOuterDimension) dataset;
 
-        if (dataset.coordValue != null)
-          out.print("coordValue='" + dataset.coordValue + "' ");
+        out.print("  <netcdf location='" + dataset.getLocation() + "' ");
+        out.print("ncoords='" + dod.getNcoords(null) + "' ");
+
+        if (dod.coordValue != null)
+          out.print("coordValue='" + dod.coordValue + "' ");
 
         out.print("/>\n");
       }
@@ -197,19 +227,20 @@ public class AggregationExisting extends AggregationOuterDimension {
     List<Element> ncList = aggElem.getChildren("netcdf", NcMLReader.ncNS);
     for (Element netcdfElemNested : ncList) {
       String location = netcdfElemNested.getAttributeValue("location");
-      Dataset ds = findDataset(location);
-      if ((null != ds) && (ds.ncoord == 0)) {
+      DatasetOuterDimension dod = (DatasetOuterDimension) findDataset(location);
+
+      if ((null != dod) && (dod.ncoord == 0)) {
         if (debugCacheDetail) System.out.println("  use cache for " + location);
         String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
         try {
-          ds.ncoord = Integer.parseInt(ncoordsS);
+          dod.ncoord = Integer.parseInt(ncoordsS);
         } catch (NumberFormatException e) {
           logger.error("bad ncoord attribute on dataset=" + location);
         }
 
         String coordValue = netcdfElemNested.getAttributeValue("coordValue");
         if (coordValue != null) {
-          ds.coordValue = coordValue;
+          dod.coordValue = coordValue;
         }
 
       }

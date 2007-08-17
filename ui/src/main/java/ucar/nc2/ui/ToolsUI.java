@@ -24,8 +24,8 @@ package ucar.nc2.ui;
 import ucar.nc2.*;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.ncml4.NcMLReader;
+import ucar.nc2.ncml4.Aggregation;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
@@ -490,7 +490,7 @@ public class ToolsUI extends JPanel {
     if (debug) System.out.println("checkDebugFlags ");
     NetcdfFile.setDebugFlags(debugFlags);
     H5iosp.setDebugFlags(debugFlags);
-    ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
+    ucar.nc2.ncml4.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     ucar.nc2.iosp.grib.GribServiceProvider.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
@@ -1502,7 +1502,13 @@ public class ToolsUI extends JPanel {
 
       AbstractAction netcdfAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          String filename = fileChooser.chooseFilenameToSave(null);
+          String location = (ds == null) ? ncmlLocation : ds.getLocation();
+          if (location == null) location = "test";
+          int pos = location.lastIndexOf(".");
+          if (pos > 0)
+            location = location.substring(0, pos);
+
+          String filename = fileChooser.chooseFilenameToSave(location + ".nc");
           if (filename == null) return;
           doWriteNetCDF(ta.getText(), filename);
         }
@@ -1580,7 +1586,7 @@ public class ToolsUI extends JPanel {
         ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());
         NcMLReader.writeNcMLToFile(bis, filename);
         JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (IOException ioe) {
+      } catch (Exception ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
         ioe.printStackTrace();
       }

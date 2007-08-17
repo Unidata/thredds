@@ -344,7 +344,12 @@ public class Variable implements VariableIF {
   public Section getShapeAsSection() {
     if (shapeAsSection == null) {
       try {
-        shapeAsSection = new Section(shape).setImmutable();
+        List<Range> list = new ArrayList<Range>();
+        for (Dimension d : dimensions) {
+          int len = d.getLength();
+          list.add(len > 0 ? new Range(d.getName(), 0, len - 1) : Range.EMPTY); // LOOK empty not named
+        }
+        shapeAsSection = new Section(list).setImmutable();
       } catch (InvalidRangeException e) {
         log.error("Bad shape in variable " + getName(), e);
         throw new IllegalStateException(e.getMessage());
@@ -1193,6 +1198,18 @@ public class Variable implements VariableIF {
   public boolean remove(Attribute a) {
     if (immutable) throw new IllegalStateException("Cant modify");
     return a != null && attributes.remove(a);
+  }
+
+  /**
+   * Remove an Attribute by name.
+   *
+   * @param attName if exists, remove this attribute
+   * @return true if was found and removed
+   */
+  public boolean remove(String attName) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    Attribute att = findAttribute(attName);
+    return att != null && attributes.remove(att);
   }
 
   /**

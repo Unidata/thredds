@@ -37,6 +37,7 @@
       <!-- for aggregations -->
       <xsd:attribute name="ncoords" type="xsd:string"/>
       <xsd:attribute name="coordValue" type="xsd:string"/>
+      <xsd:attribute name="section" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -184,10 +185,10 @@
       <xsd:attribute name="type" type="AggregationType" use="required"/>
       <xsd:attribute name="dimName" type="xsd:token" />
       <xsd:attribute name="recheckEvery" type="xsd:string" />
+      <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
 
       <!-- fmrc only  -->
       <xsd:attribute name="fmrcDefinition" type="xsd:string" />
-      <xsd:attribute name="timeUnitsChange" type="xsd:boolean" />
 
     </xsd:complexType>
   </xsd:element>
@@ -198,9 +199,8 @@
       <xsd:enumeration value="forecastModelRunCollection"/>
       <xsd:enumeration value="forecastModelRunSingleCollection"/>
       <xsd:enumeration value="joinExisting"/>
-      <xsd:enumeration value="joinExistingOne"/>
       <xsd:enumeration value="joinNew"/>
-      <xsd:enumeration value="tile"/>
+      <xsd:enumeration value="tiled"/>
       <xsd:enumeration value="union"/>
     </xsd:restriction>
   </xsd:simpleType>

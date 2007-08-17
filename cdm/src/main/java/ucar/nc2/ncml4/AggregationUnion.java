@@ -44,21 +44,26 @@ public class AggregationUnion extends Aggregation {
   }
 
   @Override
-  protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
-
+  protected void buildDataset(CancelTask cancelTask) throws IOException {
     // each Dataset just gets "transferred" into the resulting NetcdfDataset
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       NetcdfFile ncfile = vnested.acquireFile(cancelTask);
       DatasetConstructor.transferDataset(ncfile, ncDataset, null);
+      // do not close - all stay open. Could use Proxy if need to open only as needed.
     }
+  }
+
+  @Override
+  protected void rebuildDataset() throws IOException {
+    ncDataset.empty();
+    buildDataset( null);
   }
 
   @Override
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
     throw new IllegalStateException(); // should never be called
   }
-
 
   @Override
   public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {

@@ -269,7 +269,7 @@ public class FileWriter {
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
-      throw new IOException(e.getMessage());
+      throw new IOException(e.getMessage()+" for Variable "+oldVar.getName());
     }
   }
 

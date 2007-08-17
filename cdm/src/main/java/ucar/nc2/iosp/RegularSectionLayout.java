@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Assume that the data is divided into sections, described by dataSection. All the data within a dataSection is
- * stored contiguously, in a regular layout. Assume dataSection strides must be = 1.
+ * Assume that the data is stored divided into sections, described by dataSection. All the data within a dataSection is
+ * stored contiguously, in a regular layout. Assume dataSection strides must be = 1, that is the stored data is not strided.
  * <p/>
  * The user asks for some section, wantSection (may have strides).
  * For each dataSection that intersects wantSection, a RegularSectionLayout is created, which

@@ -84,7 +84,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
    * @throws IOException
    */
   public boolean sync() throws IOException {
-    boolean changed = ncd_2dtime.syncExtend();
+    boolean changed = ncd_2dtime.sync();
     if (changed) {
       if (debugSync) System.out.println("sync Fmrc "+ncd_2dtime.getLocation());
       init(ncd_2dtime);

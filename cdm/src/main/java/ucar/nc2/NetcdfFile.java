@@ -950,9 +950,9 @@ public class NetcdfFile {
   }
 
   /**
-   * Extend the file if needed in a way that is compatible with the current metadata, that is,
+   * Extend the file if needed, in a way that is compatible with the current metadata, that is,
    * does not invalidate structural metadata held by the application.
-   * For example, if the unlimited dimension has grown.
+   * For example, ok if dimension lengths, data has changed.
    * All previous object references (variables, dimensions, etc) remain valid.
    *
    * @return true if file was extended.

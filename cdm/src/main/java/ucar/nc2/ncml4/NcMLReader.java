@@ -1023,11 +1023,12 @@ public class NcMLReader {
     if (type.equals("joinExisting")) {
       agg = new AggregationExisting(newds, dimName, recheck);
 
-    } else if (type.equals("joinExistingOne")) {
-      agg = new AggregationExistingOne(newds, dimName, recheck);
-
      } else if (type.equals("joinNew")) {
       agg = new AggregationNew(newds, dimName, recheck);
+
+    }  else if (type.equals("tiled")) {
+      AggregationTiled aggt = new AggregationTiled(newds, dimName, recheck);
+      agg = aggt;
 
     }  else if (type.equals("union")) {
       agg = new AggregationUnion(newds, dimName, recheck);
@@ -1036,15 +1037,11 @@ public class NcMLReader {
       AggregationFmrc aggc = new AggregationFmrc(newds, dimName, recheck);
       agg = aggc;
 
-      String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
-      if (timeUnitsChange != null)
-        aggc.setTimeUnitsChange(timeUnitsChange.equalsIgnoreCase("true"));
-
       String fmrcDefinition = aggElem.getAttributeValue("fmrcDefinition");
       if (fmrcDefinition != null)
         aggc.setInventoryDefinition(fmrcDefinition);
 
-    /* } else if (type.equals("forecastModelRunSingleCollection")) {
+    } else if (type.equals("forecastModelRunSingleCollection")) {
       AggregationFmrcSingle aggh = new AggregationFmrcSingle(newds, dimName, recheck);
       agg = aggh;
 
@@ -1073,11 +1070,15 @@ public class NcMLReader {
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
         if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
-      } */
+      }
 
     } else {
       throw new IllegalArgumentException("Unknown aggregation type="+type);
     }
+
+    String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
+    if (timeUnitsChange != null)
+      agg.setTimeUnitsChange(timeUnitsChange.equalsIgnoreCase("true"));
 
     // look for variable names
     java.util.List<Element> list = aggElem.getChildren("variableAgg", ncNS);
@@ -1093,17 +1094,14 @@ public class NcMLReader {
       if (location == null)
         location = netcdfElemNested.getAttributeValue("uri");
 
-      /* if (agg.getType() == Aggregation.Type.UNION) {
-        NetcdfDataset unionDs = readNcML(ncmlLocation, location, netcdfElemNested, cancelTask);
-        ((AggregationUnion) agg).addUnionDataset(unionDs);
-        DatasetConstructor.transferDataset(unionDs, newds, null);
-      } else { */
         String ncoords = netcdfElemNested.getAttributeValue("ncoords");
         String coordValueS = netcdfElemNested.getAttributeValue("coordValue");
+        String sectionSpec = netcdfElemNested.getAttributeValue("section");
+
         NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
         String cacheName = ncmlLocation + "#" + Integer.toString(netcdfElemNested.hashCode());
-        agg.addExplicitDataset(cacheName, location, ncoords, coordValueS, reader, cancelTask);
-      //}
+        agg.addExplicitDataset(cacheName, location, ncoords, coordValueS, sectionSpec, reader, cancelTask);
+
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
       if (debugAggDetail) System.out.println(" debugAgg: nested dataset = " + location);
