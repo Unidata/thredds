@@ -11,10 +11,10 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 
-public class TestAggForecastModel extends TestCase {
+public class TestOffAggForecastModel extends TestCase {
   private int nruns = 15;
   private int nfore = 11;
-  public TestAggForecastModel( String name) {
+  public TestOffAggForecastModel( String name) {
     super(name);
   }
 

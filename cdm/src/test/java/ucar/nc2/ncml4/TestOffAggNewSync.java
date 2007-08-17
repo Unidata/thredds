@@ -13,9 +13,9 @@ import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 
-public class TestNcmlAggNewSync extends TestCase {
+public class TestOffAggNewSync extends TestCase {
 
-  public TestNcmlAggNewSync(String name) {
+  public TestOffAggNewSync(String name) {
     super(name);
   }
 

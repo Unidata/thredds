@@ -16,9 +16,9 @@ import ucar.nc2.util.DiskCache2;
 
 /** Test TestNcml - AggExisting  in the JUnit framework. */
 
-public class TestNcmlAggExistingCached extends TestCase {
+public class TestAggExistingCached extends TestCase {
 
-  public TestNcmlAggExistingCached( String name) {
+  public TestAggExistingCached( String name) {
     super(name);
   }
 

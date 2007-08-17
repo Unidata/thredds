@@ -23,13 +23,17 @@ package ucar.nc2.ncml4;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.units.DateUnit;
 import ucar.ma2.DataType;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
 
 import java.io.IOException;
 import java.io.File;
@@ -37,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Date;
+import java.util.ArrayList;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -60,7 +65,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     super(ncd, dimName, type, recheckS);
   }
 
-  protected void buildDataset( CancelTask cancelTask) throws IOException {
+  protected void buildDataset(CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
 
     // open a "typical"  nested dataset and copy it to newds
@@ -86,13 +91,13 @@ public class AggregationExisting extends AggregationOuterDimension {
         continue;
 
       VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
-          v.getDimensionsString(), null, null);
+              v.getDimensionsString(), null, null);
       vagg.setProxyReader2(this); // do the reading here
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
       ncDataset.removeVariable(null, v.getShortName());
       ncDataset.addVariable(null, vagg);
-      aggVars.add( vagg);
+      aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
@@ -100,7 +105,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (type == Type.JOIN_EXISTING_ONE) {
       // replace aggregation coordinate variable
       VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
-      joinAggCoord.setDataType( DataType.STRING);
+      joinAggCoord.setDataType(DataType.STRING);
       joinAggCoord.getAttributes().clear();
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
       joinAggCoord.addAttribute(new Attribute("long_name", "time coordinate"));
@@ -125,6 +130,66 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
   }
 
+  // time units change - must read in time coords and convert, cache the results
+  // must be able to be made into a CoordinateAxis1DTime
+  protected void readTimeCoordinates(VariableDS timeAxis, CancelTask cancelTask) throws IOException {
+    List<Date> dateList = new ArrayList<Date>();
+    String units = null;
+
+    for (Dataset dataset : getDatasets()) {
+      NetcdfDataset ncfile = null;
+      try {
+        ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
+        VariableDS v = (VariableDS) ncfile.findVariable(timeAxis.getName());
+        if (v == null) {
+          logger.warn("readTimeCoordinates: variable = " + timeAxis.getName() + " not found in file " + dataset.getLocation());
+          return;
+        }
+        CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, v, null);
+        java.util.Date[] dates = timeCoordVar.getTimeDates();
+        for (Date d : dates)
+          dateList.add(d);
+
+        if (units == null)
+          units = v.getUnitsString();
+
+      } finally {
+        if (ncfile != null) ncfile.close();
+      }
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
+
+    int[] shape = timeAxis.getShape();
+    int ntimes = shape[0];
+    assert (ntimes == dateList.size());
+
+    Array timeCoordVals = Array.factory(timeAxis.getDataType(), shape);
+    IndexIterator ii = timeCoordVals.getIndexIterator();
+    timeAxis.setCachedData(timeCoordVals, false);
+
+    // check if its a String or a udunit
+    if (timeAxis.getDataType() == DataType.STRING) {
+
+      for (Date date : dateList) {
+        ii.setObjectNext(formatter.toDateTimeStringISO(date));
+      }
+
+    } else {
+
+      DateUnit du;
+      try {
+        du = new DateUnit(units);
+      } catch (Exception e) {
+        throw new IOException(e.getMessage());
+      }
+      timeAxis.addAttribute(new Attribute("units", units));
+
+      for (Date date : dateList) {
+        double val = du.makeValue(date);
+        ii.setDoubleNext(val);
+      }
+    }
+  }
 
   /**
    * Persist info (nccords, coorValues) from joinExisting, since that can be expensive to recreate.
@@ -151,12 +216,12 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (!cacheDirty)
         return;
 
-      // Get a file channel for the file
+// Get a file channel for the file
       FileOutputStream fos = new FileOutputStream(cacheFile);
       channel = fos.getChannel();
 
-      // Try acquiring the lock without blocking. This method returns
-      // null or throws an exception if the file is already locked.
+// Try acquiring the lock without blocking. This method returns
+// null or throws an exception if the file is already locked.
       FileLock lock;
       try {
         lock = channel.tryLock();
@@ -258,8 +323,9 @@ public class AggregationExisting extends AggregationOuterDimension {
     return null;
   }
 
-  // name to use in the DiskCache2 for the persistent XML info.
-  // Document root is aggregation
+// name to use in the DiskCache2 for the persistent XML info.
+// Document root is aggregation
+
   // has the name getCacheName()
   private String getCacheName() {
     String cacheName = ncDataset.getLocation();

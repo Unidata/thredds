@@ -11,9 +11,9 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 
-public class TestAggFmrcNonuniform extends TestCase {
+public class TestOffAggFmrcNonuniform extends TestCase {
 
-  public TestAggFmrcNonuniform( String name) {
+  public TestOffAggFmrcNonuniform( String name) {
     super(name);
   }
 

@@ -24,23 +24,39 @@ package ucar.nc2.ncml4;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.io.File;
+import java.util.Date;
 
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
+import ucar.ma2.*;
+import ucar.nc2.*;
+import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateUnit;
 
-public class TestExistingSSTA extends TestCase {
+public class TestOffAggFmrcScan2 extends TestCase {
 
-  public TestExistingSSTA( String name) {
+  public TestOffAggFmrcScan2( String name) {
     super(name);
   }
 
-  public void testSSTA() throws IOException, InvalidRangeException {
-    String filename = "file:"+TestNcML.topDir + "offsite/aggExistingSSTA.xml";
+  public void testOpen() throws Exception {
+    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcScan2.xml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
-    System.out.println(" "+ncfile);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    System.out.println(" TestAggForecastModel.open "+ filename);
+    System.out.println("file="+ncfile);
 
     ncfile.close();
   }
+
+  public void testOpenNomads() throws Exception {
+    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcNomads.xml";
+
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    System.out.println(" TestAggForecastModel.open "+ filename);
+    System.out.println("file="+ncfile);
+
+    ncfile.close();
+  }
+
+
 }

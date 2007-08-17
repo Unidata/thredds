@@ -11,9 +11,9 @@ import java.io.IOException;
 
 /** Test netcdf dataset in the JUnit framework. */
 
-public class TestNcmlAggSynthetic extends TestCase {
+public class TestAggSynthetic extends TestCase {
 
-  public TestNcmlAggSynthetic( String name) {
+  public TestAggSynthetic( String name) {
     super(name);
   }
 

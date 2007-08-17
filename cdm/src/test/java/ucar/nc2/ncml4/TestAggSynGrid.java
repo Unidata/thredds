@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-public class TestNcmlAggSynGrid extends TestCase {
+public class TestAggSynGrid extends TestCase {
 
-    public TestNcmlAggSynGrid( String name) {
+    public TestAggSynGrid( String name) {
       super(name);
     }
 

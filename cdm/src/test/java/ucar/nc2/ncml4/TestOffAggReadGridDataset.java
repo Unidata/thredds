@@ -9,9 +9,9 @@ import java.io.IOException;
 
 /** Test netcdf dataset in the JUnit framework. */
 
-public class TestNcmlReadGridDataset extends TestCase {
+public class TestOffAggReadGridDataset extends TestCase {
 
-  public TestNcmlReadGridDataset( String name) {
+  public TestOffAggReadGridDataset( String name) {
     super(name);
   }
 
@@ -21,7 +21,6 @@ public class TestNcmlReadGridDataset extends TestCase {
   public void setUp() {
     try {
       gds = GridDataset.open(location);
-      //System.out.println("ncfile opened = "+location);
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = "+e);
     } catch (IOException e) {

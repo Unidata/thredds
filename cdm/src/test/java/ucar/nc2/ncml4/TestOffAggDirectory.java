@@ -10,9 +10,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.ma2.*;
 
-public class TestNcmlAggDirectory extends TestCase {
+public class TestOffAggDirectory extends TestCase {
 
-  public TestNcmlAggDirectory( String name) {
+  public TestOffAggDirectory( String name) {
     super(name);
   }
 

@@ -11,9 +11,9 @@ import java.io.IOException;
 
 /** Test TestNcml - AggExisting  in the JUnit framework. */
 
-public class TestNcmlAggExisting extends TestCase {
+public class TestAggExisting extends TestCase {
 
-  public TestNcmlAggExisting( String name) {
+  public TestAggExisting( String name) {
     super(name);
   }
 

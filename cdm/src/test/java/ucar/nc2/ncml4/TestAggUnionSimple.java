@@ -10,9 +10,9 @@ import java.io.IOException;
 
 /** Test netcdf dataset in the JUnit framework. */
 
-public class TestNcmlUnionSimple extends TestCase {
+public class TestAggUnionSimple extends TestCase {
 
-  public TestNcmlUnionSimple( String name) {
+  public TestAggUnionSimple( String name) {
     super(name);
   }
 

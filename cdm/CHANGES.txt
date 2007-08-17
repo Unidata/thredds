@@ -7,7 +7,9 @@ Changes in version 4.0
   geoloc
    * Add RotatedPole projection
   NcML
-   * Union now accepts scan
+   * Tiled
+   * Existing accepts timeUnitsChange
+   * Union accepts scan
  API
  Libraries
 

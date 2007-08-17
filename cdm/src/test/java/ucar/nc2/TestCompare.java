@@ -50,8 +50,8 @@ public class TestCompare {
     showEach = _showEach;
     compareData = _compareData;
 
-    System.out.println("Original= "+org);
-    System.out.println("Copy= "+copy);
+    //System.out.println("Original= "+org);
+    //System.out.println("Copy= "+copy);
 
     if ((org.getId() != null) || (copy.getId() != null))
       assert org.getId().equals( copy.getId());

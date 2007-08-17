@@ -10,9 +10,9 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 
-public class TestAggFmrcNetcdf extends TestCase {
+public class TestOffAggFmrcNetcdf extends TestCase {
 
-  public TestAggFmrcNetcdf( String name) {
+  public TestOffAggFmrcNetcdf( String name) {
     super(name);
   }
 

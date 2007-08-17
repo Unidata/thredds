@@ -12,9 +12,9 @@ import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 
-public class TestNcmlAggDirDateFormat extends TestCase {
+public class TestOffAggDirDateFormat extends TestCase {
 
-  public TestNcmlAggDirDateFormat( String name) {
+  public TestOffAggDirDateFormat( String name) {
     super(name);
   }
 

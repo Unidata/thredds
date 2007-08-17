@@ -21,6 +21,7 @@ package ucar.nc2.ncml4;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -377,7 +378,6 @@ public class AggregationFmrc extends AggregationOuterDimension {
     }
 
     if (fmrcDefinition != null) {
-
       List<FmrcDefinition.RunSeq> runSeq = fmrcDefinition.getRunSequences();
       for (FmrcDefinition.RunSeq seq : runSeq) { // each runSeq generates a 2D time coordinate
         String timeDimName = seq.getName();
@@ -476,6 +476,87 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     return coordValues;
   }
+
+  // time units change - must read in time coords and convert, cache the results
+  // must be able to be made into a CoordinateAxis1DTime
+  protected void readTimeCoordinates(VariableDS timeAxis, CancelTask cancelTask) throws IOException {
+    List<Date[]> dateList = new ArrayList<Date[]>();
+    int maxTimes = 0;
+    String units = null;
+
+    List<Dataset> nestedDatasets = getDatasets();
+    for (int i = 0; i < nestedDatasets.size(); i++) {
+      Dataset dataset;
+      NetcdfDataset ncfile = null;
+      try {
+        dataset = nestedDatasets.get(i);
+        ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
+        VariableDS v = (VariableDS) ncfile.findVariable(timeAxis.getName());
+        if (v == null) {
+          logger.warn("readTimeCoordinates: variable = " + timeAxis.getName() + " not found in file " + dataset.getLocation());
+          return;
+        }
+        CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, v, null);
+        java.util.Date[] dates = timeCoordVar.getTimeDates();
+        maxTimes = Math.max(maxTimes, dates.length);
+        dateList.add(dates);
+        //dataset.setNumberFmrcTimeCoords(dates.length);
+
+        if (i == 0)
+          units = v.getUnitsString();
+
+      } finally {
+        if (ncfile != null) ncfile.close();
+      }
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
+
+    int[] shape = timeAxis.getShape();
+    int ntimes = shape[1];
+    if (ntimes != maxTimes) {  // make max lengt for time dimension
+      shape[1] = maxTimes;
+      Dimension d = timeAxis.getDimension(1);
+      d.setLength(maxTimes);
+      timeAxis.setDimensions(timeAxis.getDimensionsString());
+    }
+
+    Array timeCoordVals = Array.factory(timeAxis.getDataType(), shape);
+    Index ima = timeCoordVals.getIndex();
+    timeAxis.setCachedData(timeCoordVals, false);
+
+    // check if its a String or a udunit
+    if (timeAxis.getDataType() == DataType.STRING) {
+
+      for (int i = 0; i < dateList.size(); i++) {
+        Date[] dates = dateList.get(i);
+        for (int j = 0; j < dates.length; j++) {
+          Date date = dates[j];
+          timeCoordVals.setObject(ima.set(i, j), formatter.toDateTimeStringISO(date));
+        }
+      }
+
+    } else {
+
+      DateUnit du;
+      try {
+        du = new DateUnit(units);
+      } catch (Exception e) {
+        throw new IOException(e.getMessage());
+      }
+      timeAxis.addAttribute(new Attribute("units", units));
+
+      for (int i = 0; i < dateList.size(); i++) {
+        Date[] dates = dateList.get(i);
+        for (int j = 0; j < dates.length; j++) {
+          Date date = dates[j];
+          double val = du.makeValue(date);
+          timeCoordVals.setDouble(ima.set(i, j), val);
+        }
+      }
+    }
+
+  }
+
 
   /**
    * testing

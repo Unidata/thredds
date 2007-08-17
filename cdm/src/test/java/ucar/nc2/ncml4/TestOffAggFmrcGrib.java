@@ -11,10 +11,10 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 
-public class TestAggFmrcGrib extends TestCase {
+public class TestOffAggFmrcGrib extends TestCase {
   private boolean showValues = false;
 
-  public TestAggFmrcGrib( String name) {
+  public TestOffAggFmrcGrib( String name) {
     super(name);
   }
 
