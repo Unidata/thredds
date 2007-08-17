@@ -66,7 +66,8 @@ public class RegularSectionLayout extends Indexer {
    * @param startFilePos starting address of the dataSection
    * @param elemSize     size of an element in bytes.
    * @param dataSection  the section of data we actually have. must have all ranges with stride = 1.
-   * @param wantSection  the wanted section of data
+   * @param wantSection  the wanted section of data, it will be intersected with dataSection.
+   *   dataSection.intersects(wantSection) should be true
    * @throws InvalidRangeException if ranges are misformed
    */
   public RegularSectionLayout(long startFilePos, int elemSize, Section dataSection, Section wantSection) throws InvalidRangeException {

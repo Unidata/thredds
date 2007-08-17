@@ -48,7 +48,7 @@ public class AggregationTiled extends Aggregation {
     // parse the tiling dimension names
     StringTokenizer stoke = new StringTokenizer(dimName);
     while (stoke.hasMoreTokens()) {
-      dimNames.add( stoke.nextToken());
+      dimNames.add(stoke.nextToken());
     }
   }
 
@@ -61,7 +61,7 @@ public class AggregationTiled extends Aggregation {
     DatasetConstructor.transferDataset(typical, ncDataset, null);
 
     // find the tiling dimensions
-    for ( String dimName : dimNames) {
+    for (String dimName : dimNames) {
       Dimension dim = ncDataset.getRootGroup().findDimension(dimName); // dimension is from new dataset
       if (null != dim)
         dims.add(dim);
@@ -75,7 +75,7 @@ public class AggregationTiled extends Aggregation {
     for (Dataset d : datasets) {
       DatasetTiled dt = (DatasetTiled) d;
       try {
-        dt.section = dt.section.addRangeNames( dimNames);
+        dt.section = dt.section.addRangeNames(dimNames);
         result = (result == null) ? dt.section : result.union(dt.section);
       } catch (InvalidRangeException e) {
         throw new IllegalArgumentException(e);
@@ -102,7 +102,7 @@ public class AggregationTiled extends Aggregation {
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
         VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
-            v.getDimensionsString(), null, null);
+                v.getDimensionsString(), null, null);
         vagg.setProxyReader2(this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
@@ -169,30 +169,25 @@ public class AggregationTiled extends Aggregation {
     for (Dataset vnested : nestedDatasets) {
       DatasetTiled dtiled = (DatasetTiled) vnested;
 
+      Section totalSection = mainv.getShapeAsSection();
       // construct the "dataSection" by replacing the tiled dimensions
-      Section vSection = mainv.getShapeAsSection();
-      Section dataSection = new Section();
-      for (Range r : vSection.getRanges()) {
-        Range rr = dtiled.section.find( r.getName());
-        dataSection.appendRange(rr != null ? rr : r);
-      }
+      Section localSection = dtiled.makeVarSection(mainv);
 
       // now use a RegularSectionLayout to figure out how to "distribute" it to the result array
       Indexer index;
       try {
-        index = RegularSectionLayout.factory(0, dtype.getSize(), dataSection, vSection);
+        index = RegularSectionLayout.factory(0, dtype.getSize(), localSection, totalSection);
       } catch (InvalidRangeException e) {
         throw new IOException(e.getMessage());
       }
 
       // read in the entire data from this nested dataset
       Array varData = dtiled.read(mainv, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
 
+      // distribute it
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
-        System.out.println(" chunk: " + chunk+" for var "+ mainv.getName());
+        System.out.println(" chunk: " + chunk + " for var " + mainv.getName());
 
         // the dest array (allData) is the "want" Section
         // the src array (varData) acts as the "file", but file pos is in bytes, need to convert to elements
@@ -200,6 +195,9 @@ public class AggregationTiled extends Aggregation {
         int resultPos = (int) chunk.getStartElem();
         Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
       }
+
+      if ((cancelTask != null) && cancelTask.isCancel())
+        return null;
     }
 
     return allData;
@@ -215,46 +213,43 @@ public class AggregationTiled extends Aggregation {
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, wantSection.getShape()); // LOOK need fill
 
+    // run through all the datasets
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       DatasetTiled dtiled = (DatasetTiled) vnested;
-      if (!dtiled.isNeeded(wantSection))
-        continue;
-
-      // construct the "dataSection" by replacing the tiled dimensions
-      int count = 0;
-      Section dataSection = new Section();
-      for (Range r : wantSection.getRanges()) {
-        Dimension d = mainv.getDimension(count++);
-        Range rr = dtiled.section.find( d.getName());
-        if (rr == null) rr = r;
-          rr = rr.intersect(r);
-        dataSection.appendRange(rr);
-      }
-
-      // now use a RegularSectionLayout to figure out how to "distribute" it to the result array
+      Section localSection = dtiled.makeVarSection(mainv);
       Indexer index;
+      Array varData;
+
       try {
-        index = RegularSectionLayout.factory(0, dtype.getSize(), dataSection, wantSection);
+        if (!localSection.intersects(wantSection))
+          continue;
+
+        index = RegularSectionLayout.factory(0, dtype.getSize(), localSection, wantSection);
+
+        // read in the desired section of data from this nested dataset
+        Section needToRead = localSection.intersect(wantSection); // the part we need to read
+        Section localNeed = needToRead.shiftOrigin(localSection); // shifted to the local section
+        varData = dtiled.read(mainv, cancelTask, localNeed.getRanges());
+
       } catch (InvalidRangeException e) {
-        throw new IOException(e.getMessage());
+        throw new IllegalArgumentException(e.getMessage());
       }
 
-      // read in the entire data from this nested dataset
-      Array varData = dt.read(mainv, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
-
+      int srcPos = 0;
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
-        System.out.println(" chunk: " + chunk+" for var "+ mainv.getName());
+        System.out.println(" chunk: " + chunk + " for var " + mainv.getName());
 
-        // the dest array (allData) is the "want" Section
-        // the src array (varData) acts as the "file", but file pos is in bytes, need to convert to elements
-        int srcPos = (int) chunk.getFilePos() / dtype.getSize();
+        // RegularSectionLayout assumes you are reading to a file. We have already done so, and put the
+        // data, now contiguous into varData. So we just let RegularSectionLayout tell us where it goes.
         int resultPos = (int) chunk.getStartElem();
         Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
+        srcPos += chunk.getNelems();
       }
+
+      if ((cancelTask != null) && cancelTask.isCancel())
+        return null;
     }
 
     return allData;
@@ -294,8 +289,19 @@ public class AggregationTiled extends Aggregation {
       }
     }
 
-    protected boolean isNeeded(Section wantSection) {
-      return false;
+    boolean isNeeded(Section wantSection) throws InvalidRangeException {
+      return section.intersects(wantSection);
+    }
+
+    // construct the Variable section pertaining to this Datatset by replacing the tiled dimensions
+    Section makeVarSection(Variable mainv) {
+      Section vSection = mainv.getShapeAsSection();
+      Section dataSection = new Section();
+      for (Range r : vSection.getRanges()) {
+        Range rr = section.find(r.getName());
+        dataSection.appendRange(rr != null ? rr : r);
+      }
+      return vSection;
     }
   }
 }

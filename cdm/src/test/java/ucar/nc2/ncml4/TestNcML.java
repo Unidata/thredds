@@ -30,10 +30,12 @@ public class TestNcML {
 
     suite.addTest(new TestSuite(TestAggExistingCoordVars.class));
     suite.addTest(new TestSuite(TestNcmlAggExisting.class));
-    //suite.addTest(new TestSuite(TestExistingSSTA.class));
+    suite.addTest(new TestSuite(TestExistingSSTA.class));
 
     suite.addTest(new TestSuite(TestNcmlAggSynthetic.class)); //
     suite.addTest(new TestSuite(TestNcmlAggSynGrid.class));
+
+    suite.addTest(new TestSuite(TestAggTiled.class));
 
     return suite;
   }

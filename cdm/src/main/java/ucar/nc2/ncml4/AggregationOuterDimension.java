@@ -108,7 +108,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     Dataset typicalDataset = getTypicalDataset();
     DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
     for (Variable var : ncDataset.getRootGroup().getVariables()) {
-      if (aggVars.contains(var))
+      if (aggVars.contains(var) || dimName.equals( var.getName()))
         continue;
       VariableEnhanced ve = (VariableEnhanced) var; // need this for getProxyReader2()
       ve.setProxyReader2(proxy);

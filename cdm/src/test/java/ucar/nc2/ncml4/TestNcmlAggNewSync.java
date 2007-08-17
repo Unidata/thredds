@@ -15,42 +15,74 @@ import ucar.ma2.IndexIterator;
 
 public class TestNcmlAggNewSync extends TestCase {
 
-  public TestNcmlAggNewSync( String name) {
+  public TestNcmlAggNewSync(String name) {
     super(name);
   }
 
   String dataDir = "//zero/share/testdata/image/testSync/";
 
   public void testMove() throws IOException, InterruptedException {
-     move(dataDir+"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-     String filename = "file:./"+TestNcML.topDir + "offsite/aggNewSync.xml";
-     NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-     testAggCoordVar( ncfile, 7);
-     ncfile.close();
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    testAggCoordVar(ncfile, 7);
+    ncfile.close();
 
-     moveBack(dataDir+"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-     ncfile = new NcMLReader().readNcML(filename, null);
-     testAggCoordVar( ncfile, 8);
-     ncfile.close();
+    ncfile = new NcMLReader().readNcML(filename, null);
+    testAggCoordVar(ncfile, 8);
+    ncfile.close();
+  }
 
-   }
+  public void testRemove() throws IOException, InterruptedException {
+
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    testAggCoordVar(ncfile, 8);
+    System.out.println("");
+    ncfile.close();
+
+    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+
+    ncfile = new NcMLReader().readNcML(filename, null);
+    testAggCoordVar(ncfile, 7);
+    ncfile.close();
+
+    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+  }
 
   public void testSync() throws IOException, InterruptedException {
-     move(dataDir+"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-     String filename = "file:./"+TestNcML.topDir + "offsite/aggNewSync.xml";
-     NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-     testAggCoordVar( ncfile, 7);
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    testAggCoordVar(ncfile, 7);
 
-     moveBack(dataDir+"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
-     Thread.currentThread().sleep(2000);
+    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    Thread.currentThread().sleep(2000);
 
-     ncfile.sync();
-     testAggCoordVar( ncfile, 8);
-     ncfile.close();
-   }
+    ncfile.sync();
+    testAggCoordVar(ncfile, 8);
+    ncfile.close();
+  }
+
+  public void testSyncRemove() throws IOException, InterruptedException {
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    testAggCoordVar(ncfile, 8);
+    System.out.println("");
+
+    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    Thread.currentThread().sleep(2000);
+
+    ncfile.sync();
+    testAggCoordVar(ncfile, 7);
+    ncfile.close();
+
+    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+  }
 
 
   public void testAggCoordVar(NetcdfFile ncfile, int n) throws IOException {
@@ -74,21 +106,21 @@ public class TestNcmlAggNewSync extends TestCase {
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext()) {
       String curr = (String) dataI.getObjectNext();
-      System.out.println(" coord="+curr);
-      assert (prev == null) || prev.compareTo( curr) < 0;
+      System.out.println(" coord=" + curr);
+      assert (prev == null) || prev.compareTo(curr) < 0;
       prev = curr;
     }
   }
 
-  void move( String filename) {
-    File f = new File( filename);
+  void move(String filename) {
+    File f = new File(filename);
     if (f.exists())
-      f.renameTo( new File(filename+".save"));
+      f.renameTo(new File(filename + ".save"));
   }
 
-  void moveBack( String filename) {
-    File f = new File( filename+".save");
-    f.renameTo( new File(filename));
+  void moveBack(String filename) {
+    File f = new File(filename + ".save");
+    f.renameTo(new File(filename));
   }
 
 }
