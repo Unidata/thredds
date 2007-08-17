@@ -52,6 +52,7 @@ public class AggregationTiled extends Aggregation {
     }
   }
 
+  @Override
   protected void buildDataset(CancelTask cancelTask) throws IOException {
 
     // open a "typical"  nested dataset and copy it to newds
@@ -127,6 +128,7 @@ public class AggregationTiled extends Aggregation {
     return false;
   }
 
+  @Override
   protected void rebuildDataset() throws IOException {
     /* buildCoords(null);
 
@@ -157,20 +159,21 @@ public class AggregationTiled extends Aggregation {
     typicalDataset.close(); */
   }
 
+  @Override
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
-    Array allData = Array.factory(dtype, mainv.getShape());
+    Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
 
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
-      DatasetTiled dt = (DatasetTiled) vnested;
+      DatasetTiled dtiled = (DatasetTiled) vnested;
 
       // construct the "dataSection" by replacing the tiled dimensions
       Section vSection = mainv.getShapeAsSection();
       Section dataSection = new Section();
       for (Range r : vSection.getRanges()) {
-        Range rr = dt.section.find( r.getName());
+        Range rr = dtiled.section.find( r.getName());
         dataSection.appendRange(rr != null ? rr : r);
       }
 
@@ -183,7 +186,7 @@ public class AggregationTiled extends Aggregation {
       }
 
       // read in the entire data from this nested dataset
-      Array varData = vnested.read(mainv, cancelTask);
+      Array varData = dtiled.read(mainv, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
 
@@ -202,112 +205,60 @@ public class AggregationTiled extends Aggregation {
     return allData;
   }
 
-  private Array read1D(Variable mainv, CancelTask cancelTask) throws IOException {
-    String vdname = mainv.getDimension(0).getName();
-
-    DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
-    Array allData = Array.factory(dtype, mainv.getShape());
-    int destPos = 0;
-
-    List<Dataset> nestedDatasets = getDatasets();
-    for (Dataset vnested : nestedDatasets) {
-      DatasetTiled dt = (DatasetTiled) vnested;
-      Array varData = vnested.read(mainv, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
-
-      // arraycopy( Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len)
-      Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
-      destPos += varData.getSize();
-    }
-
-    return allData;
-  }
-
-
-  /**
-   * Read a section of an aggregation variable.
-   *
-   * @param mainv      the aggregation variable
-   * @param cancelTask allow the user to cancel
-   * @param section    read just this section of the data, array of Range
-   * @return the data array section
-   * @throws IOException
-   */
-  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-    // If its full sized, then use full read, so that data gets cached.
-    long size = section.computeSize();
+  @Override
+  public Array read(Variable mainv, Section wantSection, CancelTask cancelTask) throws IOException {
+    // If its full sized, then use full read, so that data might get cached.
+    long size = wantSection.computeSize();
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
-    // the case of the agg coordinate var
-    if (mainv.getShortName().equals(dimName))
-      return readAggCoord(mainv, section, cancelTask);
-
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
-    Array sectionData = Array.factory(dtype, section.getShape());
-    int destPos = 0;
-
-    List<Range> ranges = section.getRanges();
-    Range joinRange = section.getRange(0);
-    List<Range> nestedSection = new ArrayList<Range>(ranges); // get copy
-    List<Range> innerSection = ranges.subList(1, ranges.size());
-
-    if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
-
-    List<Dataset> nestedDatasets = getDatasets();
-    for (Dataset nested : nestedDatasets) {
-      DatasetTiled dod = (DatasetTiled) nested;
-      if (!dod.isNeeded(null))
-        continue;
-      //if (debug)
-      //  System.out.println("   agg use " + nested.aggStart + ":" + nested.aggEnd + " range= " + nestedJoinRange + " file " + nested.getLocation());
-
-      Array varData;
-      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
-        varData = nested.read(mainv, cancelTask, innerSection);
-      } else {
-        nestedSection.set(0, null);
-        varData = nested.read(mainv, cancelTask, nestedSection);
-      }
-
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
-
-      Array.arraycopy(varData, 0, sectionData, destPos, (int) varData.getSize());
-      destPos += varData.getSize();
-    }
-
-    return sectionData;
-  }
-
-  protected Array readAggCoord(Variable aggCoord, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-    DataType dtype = aggCoord.getDataType();
-    Array allData = Array.factory(dtype, section.getShape());
-    IndexIterator result = allData.getIndexIterator();
-
-    List<Range> ranges = section.getRanges();
-    Range joinRange = section.getRange(0);
-    List<Range> nestedSection = new ArrayList<Range>(ranges); // get copy
-    List<Range> innerSection = ranges.subList(1, ranges.size());
+    Array allData = Array.factory(dtype, wantSection.getShape()); // LOOK need fill
 
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
-      DatasetTiled dod = (DatasetTiled) vnested;
-      if (!dod.isNeeded(null))
+      DatasetTiled dtiled = (DatasetTiled) vnested;
+      if (!dtiled.isNeeded(wantSection))
         continue;
-      //if (debug)
-      //  System.out.println("   agg use " + vnested.aggStart + ":" + vnested.aggEnd + " range= " + nestedJoinRange + " file " + vnested.getLocation());
 
-      //readAggCoord(aggCoord, cancelTask, dod, dtype, result, nestedJoinRange, nestedSection, innerSection);
+      // construct the "dataSection" by replacing the tiled dimensions
+      int count = 0;
+      Section dataSection = new Section();
+      for (Range r : wantSection.getRanges()) {
+        Dimension d = mainv.getDimension(count++);
+        Range rr = dtiled.section.find( d.getName());
+        if (rr == null) rr = r;
+          rr = rr.intersect(r);
+        dataSection.appendRange(rr);
+      }
 
+      // now use a RegularSectionLayout to figure out how to "distribute" it to the result array
+      Indexer index;
+      try {
+        index = RegularSectionLayout.factory(0, dtype.getSize(), dataSection, wantSection);
+      } catch (InvalidRangeException e) {
+        throw new IOException(e.getMessage());
+      }
+
+      // read in the entire data from this nested dataset
+      Array varData = dt.read(mainv, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
+
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        System.out.println(" chunk: " + chunk+" for var "+ mainv.getName());
+
+        // the dest array (allData) is the "want" Section
+        // the src array (varData) acts as the "file", but file pos is in bytes, need to convert to elements
+        int srcPos = (int) chunk.getFilePos() / dtype.getSize();
+        int resultPos = (int) chunk.getStartElem();
+        Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
+      }
     }
 
     return allData;
   }
-
 
   @Override
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec, boolean enhance, NetcdfFileFactory reader) {
@@ -318,10 +269,8 @@ public class AggregationTiled extends Aggregation {
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    */
   class DatasetTiled extends Dataset {
-
     protected String sectionSpec;
     protected Section section;
-
 
     /**
      * Dataset constructor.
@@ -345,43 +294,8 @@ public class AggregationTiled extends Aggregation {
       }
     }
 
-    protected boolean isNeeded(Range totalRange) {
+    protected boolean isNeeded(Section wantSection) {
       return false;
     }
-
-    @Override
-    protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
-      NetcdfFile ncd = null;
-      try {
-        ncd = acquireFile(cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
-
-        if (debugRead) {
-          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation());
-          for (Range range : section)
-            System.out.print(" " + range + ":");
-          System.out.println("");
-        }
-
-        Variable v = ncd.findVariable(mainv.getName());
-
-        // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
-        // so we need to read only what is there
-        Range fullRange = v.getRanges().get(0);
-        Range want = section.get(0);
-        if (fullRange.last() < want.last()) {
-          Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
-          section = new ArrayList<Range>(section); // make a copy
-          section.set(0, limitRange);
-        }
-
-        return v.read(section);
-
-      } finally {
-        if (ncd != null) ncd.close();
-      }
-    }
-
   }
 }

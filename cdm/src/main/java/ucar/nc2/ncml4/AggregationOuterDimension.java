@@ -33,6 +33,7 @@ import java.util.Date;
 
 /**
  * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc
+ *
  * @author caron
  * @since Aug 10, 2007
  */
@@ -57,12 +58,13 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   /**
    * Get dimension name to join on
+   *
    * @return dimension name or null if type union/tiled
    */
   public String getDimensionName() {
     return dimName;
   }
-  
+
   protected void buildCoords(CancelTask cancelTask) throws IOException {
     List<Dataset> nestedDatasets = getDatasets();
 
@@ -89,7 +91,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     // reset dimension length
     Dimension aggDim = ncDataset.findDimension(dimName);
-    aggDim.setLength( getTotalCoords());
+    aggDim.setLength(getTotalCoords());
 
     // reset coordinate var
     VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
@@ -212,10 +214,10 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       Array varData;
       if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
-        varData = nested.read(mainv, cancelTask, innerSection);
+        varData = dod.read(mainv, cancelTask, innerSection);
       } else {
         nestedSection.set(0, nestedJoinRange);
-        varData = nested.read(mainv, cancelTask, nestedSection);
+        varData = dod.read(mainv, cancelTask, nestedSection);
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
@@ -258,7 +260,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   // handle the case of cached agg coordinate variables
   private void readAggCoord(Variable aggCoord, CancelTask cancelTask, DatasetOuterDimension vnested, DataType dtype, IndexIterator result,
-          Range nestedJoinRange, List<Range> nestedSection, List<Range> innerSection) throws IOException, InvalidRangeException {
+                            Range nestedJoinRange, List<Range> nestedSection, List<Range> innerSection) throws IOException, InvalidRangeException {
 
     // we have the coordinates as a String
     if (vnested.coordValue != null) {
@@ -301,8 +303,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (nestedJoinRange == null) {  // all data
         varData = vnested.read(aggCoord, cancelTask);
 
-      } else
-      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      } else if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
         varData = vnested.read(aggCoord, cancelTask, innerSection);
       } else {
         nestedSection.set(0, nestedJoinRange);
@@ -412,7 +413,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
 
     protected DatasetOuterDimension(String location) {
-      super( location);
+      super(location);
     }
 
     /**
@@ -428,7 +429,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected DatasetOuterDimension(String cacheName, String location, String ncoordS, String coordValueS,
-                      boolean enhance, NetcdfFileFactory reader) {
+                                    boolean enhance, NetcdfFileFactory reader) {
       super(cacheName, location, enhance, reader);
       this.coordValue = coordValueS;
 
@@ -463,7 +464,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       }
     }
 
-    protected void setInfo( MyCrawlableDataset myf) {
+    protected void setInfo(MyCrawlableDataset myf) {
       coordValueDate = myf.dateCoord;
       // LOOK why not dateCoordS etc ??
     }
@@ -578,8 +579,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
       }
     }
 
-   @Override
-   protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
+    @Override
+    protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);

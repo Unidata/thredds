@@ -169,7 +169,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    */
   public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirs, String olderThan) throws IOException {
     this.dateFormatMark = dateFormatMark;
-    
+
     if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
       enhance = true;
 
@@ -179,7 +179,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     }
 
     //DirectoryScan d = new DirectoryScan(type, dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
-    CrawlableScanner d = new CrawlableScanner( dirName, suffix, regexpPatternString, subdirs, olderThan);
+    CrawlableScanner d = new CrawlableScanner(dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
   }
 
@@ -194,6 +194,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * Set if time units can change. Implies isDate
+   *
    * @param timeUnitsChange true if time units can change
    */
   public void setTimeUnitsChange(boolean timeUnitsChange) {
@@ -203,6 +204,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * Get type of aggregation
+   *
    * @return type of aggregation
    */
   public Type getType() {
@@ -211,6 +213,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * Get dimension name to join on
+   *
    * @return dimension name or null if type union/tiled
    */
   public String getDimensionName() {
@@ -220,6 +223,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   /**
    * Get the list of aggregation variable names: variables whose data spans multiple files.
    * For type joinNew only.
+   *
    * @return the list of aggregation variable names
    */
   List<String> getAggVariableNames() {
@@ -228,6 +232,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * Release all resources associated with the aggregation
+   *
    * @throws IOException on error
    */
   public void close() throws IOException {
@@ -262,7 +267,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
   // all elements are processed, finish construction
 
   public void finish(CancelTask cancelTask) throws IOException {
-    datasetManager.scan( cancelTask);
+    datasetManager.scan(cancelTask);
     cacheDirty = true;
     closeDatasets();
     makeDatasets(cancelTask);
@@ -281,6 +286,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
   /**
    * Make the Dataset objects.
+   *
    * @param cancelTask user can cancel
    * @throws IOException on i/o error
    */
@@ -365,7 +371,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
       return false; // nothing changed LOOK what about grib extention ??
     cacheDirty = true;
     closeDatasets();
-    makeDatasets( null);
+    makeDatasets(null);
 
     // rebuild the metadata
     rebuildDataset();
@@ -378,7 +384,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
 
     return true;
   }
-
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -423,7 +428,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    *
    * @param mainv      the aggregation variable
    * @param cancelTask allow the user to cancel
-   * @param section    read just this section of the data, array of Range
+   * @param section    read just this section of the data, refers to aggregated Variable's section.
    * @return the data array section
    * @throws IOException
    */
@@ -470,24 +475,22 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
       this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
     }
 
-     /**
+    /**
      * Dataset constructor.
      * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
      * Used with explicit netcdf elements, and scanned files.
      *
-     * @param cacheName   a unique name to use for caching
-     * @param location    attribute "location" on the netcdf element
-     * @param enhance     open dataset in enhance mode
-     * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
+     * @param cacheName a unique name to use for caching
+     * @param location  attribute "location" on the netcdf element
+     * @param enhance   open dataset in enhance mode
+     * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected Dataset(String cacheName, String location, boolean enhance, NetcdfFileFactory reader) {
       this(location);
       this.cacheName = cacheName;
       this.enhance = enhance;
       this.reader = (reader != null) ? reader : new PolymorphicReader();
-     }
-
-    protected void setInfo( MyCrawlableDataset cd) { }
+    }
 
     /**
      * Get the location of this Dataset
@@ -526,14 +529,15 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     }
 
     // overridden in DatasetOuterDimension
-    protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
-    }
+    protected void cacheCoordValues(NetcdfFile ncfile) throws IOException { }
+
+    // overridden in DatasetOuterDimension
+    protected void setInfo(MyCrawlableDataset cd) { }
 
     protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);
-
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
 
@@ -545,42 +549,32 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
       }
     }
 
+    /**
+     * Read a section of the local Variable.
+     * @param mainv aggregated Variable
+     * @param cancelTask let user cancel
+     * @param section reletive to the local Variable
+     * @return
+     * @throws IOException on I/O error
+     * @throws InvalidRangeException on section error
+     */
     protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
-      throw new IllegalStateException();
-    }
-
-    /* {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
 
-        if (debugRead) {
-          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation());
-          for (Range range : section)
-            System.out.print(" " + range + ":");
-          System.out.println("");
-        }
+        if (debugRead)
+          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation()+" "+Range.toString(section));
 
         Variable v = ncd.findVariable(mainv.getName());
-
-        // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
-        // so we need to read only what is there
-        Range fullRange = v.getRanges().get(0);
-        Range want = section.get(0);
-        if (fullRange.last() < want.last()) {
-          Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
-          section = new ArrayList<Range>(section); // make a copy
-          section.set(0, limitRange);
-        }
-
         return v.read(section);
 
       } finally {
         if (ncd != null) ncd.close();
       }
-    } */
+    }
 
     // Datasets with the same locations are equal
     public boolean equals(Object oo) {
@@ -614,7 +608,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
    * If the variable is caching, read data into cache now.
    *
    * @param typicalDataset read from a "typical dataset"
-   * @param newds containing dataset
+   * @param newds          containing dataset
    * @throws IOException on i/o error
    */
   protected void setDatasetAcquireProxy(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
