@@ -25,7 +25,7 @@ public class TestAggUnion extends TestCase {
     String filename = "file:./" + TestNcML.topDir + "aggUnion.xml";
 
     try {
-      ncfile = new NcMLReader().readNcML(filename, null);
+      ncfile = NcMLReader.readNcML(filename, null);
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = " + e);
     } catch (IOException e) {

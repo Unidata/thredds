@@ -4,13 +4,12 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 
 /**
- * Test TestNcml - AggExisting  in the JUnit framework.
+ * Test tiled aggregation
  */
 
 public class TestAggTiled extends TestCase {
@@ -24,14 +23,18 @@ public class TestAggTiled extends TestCase {
   public void testNcmlDirect() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcML.topDir + "tiled/testAggTiled.ncml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestNcmlAggExisting.open " + ncfile);
 
     testDimensions(ncfile);
     testCoordVar(ncfile, "lat", nlat, DataType.DOUBLE);
     testCoordVar(ncfile, "lon", nlon, DataType.FLOAT);
     testReadData(ncfile);
-    //testReadSlice(ncfile);
+
+    Variable v = ncfile.findVariable("temperature");
+    testReadDataSection(v, v.getShapeAsSection());
+    testReadDataSection(v, new Section("0:5,6:18"));
+
     ncfile.close();
   }
 
@@ -103,10 +106,7 @@ public class TestAggTiled extends TestCase {
       for (int row = 0; row < shape[0]; row++)
         for (int col = 0; col < shape[1]; col++) {
           double val = data.getDouble( tIndex.set(row, col));
-
-          double truth = (col < 12 ) ? row * 12 + col : 72 + row * 12 + (col-12);
-
-          // System.out.println(" "+val);
+          double truth = getVal(row, col);
           assert TestUtils.close(val, truth) : val + "!=" + truth+"("+row+","+col+")";
         }
 
@@ -115,6 +115,40 @@ public class TestAggTiled extends TestCase {
       assert false;
     }
   }
+
+  private double getVal(int row, int col) {
+    return (col < 12 ) ? row * 12 + col : 72 + row * 12 + (col-12);
+  }
+
+  public void testReadDataSection(Variable v, Section s) throws InvalidRangeException {
+    System.out.println("Read Section "+s);
+
+    try {
+      Array data = v.read(s);
+      assert data.getRank() == 2;
+      assert data.getSize() == s.computeSize();
+      assert data.getShape()[0] == s.getShape(0);
+      assert data.getShape()[1] == s.getShape(1);
+      assert data.getElementType() == double.class;
+
+      int startRow = s.getOrigin(0);
+      int startCol = s.getOrigin(1);
+
+      int[] shape = data.getShape();
+      Index tIndex = data.getIndex();
+      for (int row = 0; row < shape[0]; row++)
+        for (int col = 0; col < shape[1]; col++) {
+          double val = data.getDouble( tIndex.set(row, col));
+          double truth = getVal(startRow + row, startCol + col);
+          assert TestUtils.close(val, truth) : val + "!=" + truth+"("+row+","+col+")";
+        }
+
+    } catch (IOException io) {
+      io.printStackTrace();
+      assert false;
+    }
+  }
+
 
   public void testReadSlice(NetcdfFile ncfile, int[] origin, int[] shape) throws IOException, InvalidRangeException {
 

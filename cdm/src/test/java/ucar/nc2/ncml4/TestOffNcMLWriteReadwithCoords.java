@@ -22,11 +22,11 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
     super(name);
   }
 
-  private ArrayList files;
+  private ArrayList<String> files;
   private String griddir = TestAll.upcShareTestDataDir + "grid/netcdf/";
 
   public void setUp() {
-    files = new ArrayList();
+    files = new ArrayList<String>();
 
     files.add( griddir+"atd-radar/rgg.20020411.000000.lel.ll.nc");
     files.add( griddir+"cf/ccsm2.nc"); //
@@ -53,8 +53,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
 
 
   public void testReadAsNcdataset() throws Exception {
-    for (int i = 0; i < files.size(); i++) {
-      String s = (String) files.get(i);
+    for (String s : files) {
       convertAsNcdataset(s);
     }
   }

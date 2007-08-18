@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.File;
 
 import ucar.nc2.*;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
@@ -25,13 +22,13 @@ public class TestOffAggNewSync extends TestCase {
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
     String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 7);
     ncfile.close();
 
     moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-    ncfile = new NcMLReader().readNcML(filename, null);
+    ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 8);
     ncfile.close();
   }
@@ -39,14 +36,14 @@ public class TestOffAggNewSync extends TestCase {
   public void testRemove() throws IOException, InterruptedException {
 
     String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 8);
     System.out.println("");
     ncfile.close();
 
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-    ncfile = new NcMLReader().readNcML(filename, null);
+    ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 7);
     ncfile.close();
 
@@ -57,11 +54,11 @@ public class TestOffAggNewSync extends TestCase {
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
     String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 7);
 
     moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
-    Thread.currentThread().sleep(2000);
+    Thread.sleep(2000);
 
     ncfile.sync();
     testAggCoordVar(ncfile, 8);
@@ -70,12 +67,12 @@ public class TestOffAggNewSync extends TestCase {
 
   public void testSyncRemove() throws IOException, InterruptedException {
     String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 8);
     System.out.println("");
 
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
-    Thread.currentThread().sleep(2000);
+    Thread.sleep(2000);
 
     ncfile.sync();
     testAggCoordVar(ncfile, 7);

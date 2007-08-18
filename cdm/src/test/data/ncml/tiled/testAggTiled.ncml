@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+
+  <aggregation dimName="lat lon" type="tiled">
+    <netcdf location="file:src/test/data/ncml/tiled/testWriteTile1.nc" section="0:5,0:11"/>
+    <netcdf location="file:src/test/data/ncml/tiled/testWriteTile2.nc" section="0:5,12:23"/>
+  </aggregation>
+	
+</netcdf>

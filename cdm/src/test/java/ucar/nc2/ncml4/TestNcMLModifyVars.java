@@ -23,7 +23,7 @@ public class TestNcMLModifyVars extends TestCase {
     String filename = "file:"+TestNcML.topDir + "modifyVars.xml";
 
     try {
-      ncfile = new NcMLReader().readNcML(filename, null);
+      ncfile = NcMLReader.readNcML(filename, null);
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = "+e);
     } catch (IOException e) {
@@ -302,20 +302,6 @@ public class TestNcMLModifyVars extends TestCase {
   boolean close( double d1, double d2) {
     //System.out.println(d1+" "+d2);
     return Math.abs((d1-d2)/d1) < 1.0e-5;
-  }
-
-  public static void main(String[] args) {
-    try {
-      String filename = "file:///E:/dev/NCdataset/xml/override.xml";
-      NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
-
-      System.out.println("\nncfile = "+ncfile);
-    } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
-    } catch (IOException e) {
-      System.out.println("IO error = "+e);
-      e.printStackTrace();
-    }
   }
 
 }

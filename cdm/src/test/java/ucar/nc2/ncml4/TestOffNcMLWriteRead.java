@@ -22,11 +22,11 @@ public class TestOffNcMLWriteRead extends TestCase {
     super(name);
   }
 
-  private ArrayList files;
+  private ArrayList<String> files;
   private String datadir = TestAll.upcShareTestDataDir + "grid/netcdf/";
 
   public void setUp() {
-    files = new ArrayList();
+    files = new ArrayList<String>();
 
     files.add( datadir+"atd-radar/rgg.20020411.000000.lel.ll.nc");
     files.add( datadir+"awips/19981109_1200.nc");
@@ -43,29 +43,25 @@ public class TestOffNcMLWriteRead extends TestCase {
   }
 
   public void testReadAsNcfile() throws Exception {
-    for (int i = 0; i < files.size(); i++) {
-      String s = (String) files.get(i);
+    for (String s : files) {
       convertAsNcfile(s, false);
     }
   }
 
   public void testReadAsNcfileWithRecords() throws Exception {
-    for (int i = 0; i < files.size(); i++) {
-      String s = (String) files.get(i);
+    for (String s : files) {
       convertAsNcfile(s, true);
     }
   }
 
   public void testReadAsNcdataset() throws Exception {
-    for (int i = 0; i < files.size(); i++) {
-      String s = (String) files.get(i);
+    for (String s : files) {
       convertAsNcdataset(s, false);
     }
   }
 
   public void testReadAsNcdatasetWithRecords() throws Exception {
-    for (int i = 0; i < files.size(); i++) {
-      String s = (String) files.get(i);
+    for (String s : files) {
       convertAsNcdataset(s, true);
     }
   }
@@ -79,15 +75,14 @@ public class TestOffNcMLWriteRead extends TestCase {
     File allDir = new File( dirName);
     File[] allFiles = allDir.listFiles();
 
-    for (int i = 0; i < allFiles.length; i++) {
-      String name = allFiles[i].getAbsolutePath();
+    for (File allFile : allFiles) {
+      String name = allFile.getAbsolutePath();
       convertAsNcfile(name, false);
     }
 
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
+    for (File f : allFiles) {
       if (f.isDirectory())
-        readAllDir(allFiles[i].getAbsolutePath());
+        readAllDir(f.getAbsolutePath());
     }
 
   }

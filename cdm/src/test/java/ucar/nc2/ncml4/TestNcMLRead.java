@@ -22,7 +22,7 @@ public class TestNcMLRead extends TestCase {
 
   public void setUp() {
     try {
-      ncfile = new NcMLReader().readNcML(location, null);
+      ncfile = NcMLReader.readNcML(location, null);
       //System.out.println("ncfile opened = "+location);
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = "+e);
@@ -54,8 +54,8 @@ public class TestNcMLRead extends TestCase {
     assert !att.isString();
     assert att.getDataType() == DataType.FLOAT;
     assert att.getStringValue() == null;
-    assert att.getNumericValue().equals(new Float(1.0f));
-    assert att.getNumericValue(3).equals(new Float(4.0f));
+    assert att.getNumericValue().equals(1.0f);
+    assert att.getNumericValue(3).equals(4.0f);
 
     Dimension latDim = ncfile.findDimension("lat");
     assert null != latDim;

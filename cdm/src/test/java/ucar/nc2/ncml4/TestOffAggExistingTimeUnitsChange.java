@@ -22,7 +22,6 @@ package ucar.nc2.ncml4;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestAll;
 
 import java.io.IOException;
 
@@ -45,7 +44,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
   public void testNarr() throws IOException, InvalidRangeException {
     System.out.println(" TestOffAggExistingTimeUnitsChange.open "+ location);
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(location, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(location, null);
     System.out.println(" "+ncfile);
 
     ncfile.close();

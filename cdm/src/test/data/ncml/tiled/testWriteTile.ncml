@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  
+  <dimension name="lat" length="6" />
+  <dimension name="lon" length="12" />
+
+  <variable name="temperature" shape="lat lon" type="double">
+    <attribute name="units" value="K" />
+    <attribute name="_FillValue" type="double" value="-999.9" />
+    <values start="72" increment="1"/>
+  </variable>
+
+  <variable name="lat" shape="lat" type="double">
+     <values start="0" increment="1"/>
+  </variable>
+
+ <variable name="lon" shape="lon" type="float">
+    <values start="12" increment="1"/>
+  </variable>
+
+</netcdf>
+

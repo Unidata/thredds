@@ -2,7 +2,6 @@ package ucar.nc2.ncml4;
 
 import junit.framework.*;
 
-import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;

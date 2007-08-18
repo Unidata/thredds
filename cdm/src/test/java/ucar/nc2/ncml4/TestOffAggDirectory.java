@@ -19,7 +19,7 @@ public class TestOffAggDirectory extends TestCase {
   public void testNcmlDirect() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggDirectory.xml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestNcmlAggDirectory.open "+ filename);
 
     testDimensions(ncfile);

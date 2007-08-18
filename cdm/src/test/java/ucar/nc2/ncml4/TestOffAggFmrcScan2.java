@@ -23,14 +23,7 @@ package ucar.nc2.ncml4;
 
 import junit.framework.TestCase;
 
-import java.io.IOException;
-import java.io.File;
-import java.util.Date;
-
-import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateUnit;
 
 public class TestOffAggFmrcScan2 extends TestCase {
 

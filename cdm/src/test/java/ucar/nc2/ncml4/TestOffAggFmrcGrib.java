@@ -3,7 +3,6 @@ package ucar.nc2.ncml4;
 import junit.framework.TestCase;
 
 import java.io.IOException;
-import java.io.File;
 import java.util.Date;
 
 import ucar.ma2.*;
@@ -42,7 +41,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     ncfile.close();    
   }
 
-  public void utestRunseq() throws Exception, InvalidRangeException {
+  public void utestRunseq() throws Exception {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcGribRunseq.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -83,7 +82,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert runDim.getLength() == nagg : nagg +" != "+ runDim.getLength();
   }
 
- private void testCoordVar(NetcdfFile ncfile, int n) {
+ private void testCoordVar(NetcdfFile ncfile, int n) throws IOException {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
@@ -105,7 +104,6 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    try {
       Array data = lat.read();
       assert data.getRank() == 1;
       assert data.getSize() == n;
@@ -116,7 +114,6 @@ public class TestOffAggFmrcGrib extends TestCase {
       assert TestUtils.close(dataI.getDoubleNext(), -832.6982610175637);
       assert TestUtils.close(dataI.getDoubleNext(), -812.3802610175637);
       assert TestUtils.close(dataI.getDoubleNext(), -792.0622610175637);
-    } catch (IOException io) {}
 
   }
 

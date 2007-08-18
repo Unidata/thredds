@@ -8,7 +8,6 @@ import java.text.ParseException;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 
 public class TestOffAggForecastModel extends TestCase {
@@ -21,7 +20,7 @@ public class TestOffAggForecastModel extends TestCase {
   public void testForecastModel() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggForecastModel.xml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
 
     testDimensions(ncfile, nruns);
@@ -95,7 +94,7 @@ public class TestOffAggForecastModel extends TestCase {
     assert timeDim.getLength() == nagg : timeDim.getLength();
   }
 
- public void testCoordVar(NetcdfFile ncfile) {
+ public void testCoordVar(NetcdfFile ncfile) throws IOException {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
@@ -117,7 +116,6 @@ public class TestOffAggForecastModel extends TestCase {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    try {
       Array data = lat.read();
       assert data.getRank() == 1;
       assert data.getSize() == 65;
@@ -128,7 +126,6 @@ public class TestOffAggForecastModel extends TestCase {
       assert TestUtils.close(dataI.getDoubleNext(), -832.6983183345455);
       assert TestUtils.close(dataI.getDoubleNext(), -751.4273183345456);
       assert TestUtils.close(dataI.getDoubleNext(), -670.1563183345455);
-    } catch (IOException io) {}
 
   }
 

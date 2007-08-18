@@ -24,7 +24,7 @@ public class TestNcMLRenameVar extends TestCase {
     if (ncfile != null) return;
 
     try {
-      ncfile = new NcMLReader().readNcML(filename, null);
+      ncfile = NcMLReader.readNcML(filename, null);
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = "+e);
     } catch (IOException e) {
@@ -55,8 +55,8 @@ public class TestNcMLRenameVar extends TestCase {
     assert !att.isString();
     assert att.getDataType() == DataType.FLOAT;
     assert att.getStringValue() == null;
-    assert att.getNumericValue().equals(new Float(1.0f));
-    assert att.getNumericValue(3).equals(new Float(4.0f));
+    assert att.getNumericValue().equals(1.0f);
+    assert att.getNumericValue(3).equals(4.0f);
 
     Dimension latDim = ncfile.findDimension("lat");
     assert null != latDim;

@@ -301,7 +301,7 @@ public class AggregationTiled extends Aggregation {
         Range rr = section.find(r.getName());
         dataSection.appendRange(rr != null ? rr : r);
       }
-      return vSection;
+      return dataSection;
     }
   }
 }

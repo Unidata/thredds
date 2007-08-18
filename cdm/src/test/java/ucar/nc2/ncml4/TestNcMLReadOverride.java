@@ -24,7 +24,7 @@ public class TestNcMLReadOverride extends TestCase {
     String filename = "file:./"+TestNcML.topDir + "testReadOverride.xml";
 
     try {
-      ncfile = new NcMLReader().readNcML(filename, null);
+      ncfile = NcMLReader.readNcML(filename, null);
       //System.out.println("ncfile = "+ncfile);
     } catch (java.net.MalformedURLException e) {
       System.out.println("bad URL error = "+e);

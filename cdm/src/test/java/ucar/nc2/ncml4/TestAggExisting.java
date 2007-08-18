@@ -20,7 +20,7 @@ public class TestAggExisting extends TestCase {
   public void testNcmlDirect() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
 
-    NetcdfFile ncfile = new NcMLReader().readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestNcmlAggExisting.open "+ filename);
 
     testDimensions(ncfile);
@@ -105,7 +105,7 @@ public class TestAggExisting extends TestCase {
     assert timeDim.getLength() == 59;
   }
 
- public void testCoordVar(NetcdfFile ncfile) {
+ public void testCoordVar(NetcdfFile ncfile) throws IOException {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
@@ -127,7 +127,6 @@ public class TestAggExisting extends TestCase {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    try {
       Array data = lat.read();
       assert data.getRank() == 1;
       assert data.getSize() == 3;
@@ -138,7 +137,6 @@ public class TestAggExisting extends TestCase {
       assert TestUtils.close(dataI.getDoubleNext(), 41.0);
       assert TestUtils.close(dataI.getDoubleNext(), 40.0);
       assert TestUtils.close(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {}
 
   }
 

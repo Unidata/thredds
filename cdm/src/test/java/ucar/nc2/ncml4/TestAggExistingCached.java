@@ -54,9 +54,9 @@ public class TestAggExistingCached extends TestCase {
     ncfile.close();
 
     try {
-      Thread.currentThread().sleep(5000);
+      Thread.sleep(5000);
     } catch (InterruptedException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();  
     }
     System.out.println("\n TestNcmlAggExistingCached.acquire after sleeping "+ new Date());
     ncfile = NetcdfDataset.acquireDataset(filename, null);

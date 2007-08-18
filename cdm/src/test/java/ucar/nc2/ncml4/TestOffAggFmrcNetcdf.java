@@ -3,7 +3,6 @@ package ucar.nc2.ncml4;
 import junit.framework.TestCase;
 
 import java.io.IOException;
-import java.io.File;
 import java.util.Date;
 
 import ucar.ma2.*;
@@ -53,7 +52,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     assert timeDim.getLength() == nagg : timeDim.getLength();
   }
 
- private void testYCoordVar(NetcdfFile ncfile) {
+ private void testYCoordVar(NetcdfFile ncfile) throws IOException {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
@@ -75,7 +74,6 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    try {
       Array data = lat.read();
       assert data.getRank() == 1;
       assert data.getSize() == 65;
@@ -86,7 +84,6 @@ public class TestOffAggFmrcNetcdf extends TestCase {
       assert TestUtils.close(dataI.getDoubleNext(), -832.6983183345455);
       assert TestUtils.close(dataI.getDoubleNext(), -751.4273183345456);
       assert TestUtils.close(dataI.getDoubleNext(), -670.1563183345455);
-    } catch (IOException io) {}
 
   }
 
