@@ -14,13 +14,13 @@ import java.io.IOException;
 
 public class TestAggTiled extends TestCase {
   int nlon = 24;
-  int nlat = 6;
+  int nlat = 12;
 
   public TestAggTiled(String name) {
     super(name);
   }
 
-  public void testNcmlDirect() throws IOException, InvalidRangeException {
+  public void testTiled4() throws IOException, InvalidRangeException {
     String filename = "file:./" + TestNcML.topDir + "tiled/testAggTiled.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -29,11 +29,26 @@ public class TestAggTiled extends TestCase {
     testDimensions(ncfile);
     testCoordVar(ncfile, "lat", nlat, DataType.DOUBLE);
     testCoordVar(ncfile, "lon", nlon, DataType.FLOAT);
-    testReadData(ncfile);
+
 
     Variable v = ncfile.findVariable("temperature");
+    v.setCaching(false);
+
+    testReadData(ncfile, v);
     testReadDataSection(v, v.getShapeAsSection());
+
     testReadDataSection(v, new Section("0:5,6:18"));
+    testReadDataSection(v, new Section("3:9,6:18"));
+    testReadDataSection(v, new Section("6:11,6:18"));
+
+    testReadDataSection(v, new Section("2:4,3:9"));
+    testReadDataSection(v, new Section("2:4,14:20"));
+    testReadDataSection(v, new Section("8:10,3:9"));
+    testReadDataSection(v, new Section("8:10,14:20"));
+
+    testReadDataSection(v, new Section("8:10,22"));
+    testReadDataSection(v, new Section("11,22"));
+    testReadDataSection(v, new Section("9,14:20"));
 
     ncfile.close();
   }
@@ -78,9 +93,7 @@ public class TestAggTiled extends TestCase {
 
   }
 
-  public void testReadData(NetcdfFile ncfile) {
-    Variable v = ncfile.findVariable("temperature");
-    assert null != v;
+  public void testReadData(NetcdfFile ncfile, Variable v) {
     assert v.getName().equals("temperature");
     assert v.getRank() == 2;
     assert v.getSize() == nlon * nlat : v.getSize();
@@ -117,7 +130,10 @@ public class TestAggTiled extends TestCase {
   }
 
   private double getVal(int row, int col) {
-    return (col < 12 ) ? row * 12 + col : 72 + row * 12 + (col-12);
+    if (row < 6)
+      return (col < 12 ) ? row * 12 + col : 72 + row * 12 + (col-12);
+    else
+      return (col < 12 ) ? 144 + (row-6) * 12 + col : 216 + (row-6) * 12 + (col-12);
   }
 
   public void testReadDataSection(Variable v, Section s) throws InvalidRangeException {

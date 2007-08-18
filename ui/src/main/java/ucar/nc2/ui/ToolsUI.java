@@ -2584,7 +2584,7 @@ public class ToolsUI extends JPanel {
       JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
               "<h1>Netcdf 2.2 Toolset</h1>" +
               "<b>" + getVersion() + "</b>" +
-              "<br><i>http://www.unidata.ucar.edu/packages/netcdf-java/</i>" +
+              "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
               "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
               "</center>" +
               "<br><br>With thanks to these <b>Open Source</b> contributers:" +
