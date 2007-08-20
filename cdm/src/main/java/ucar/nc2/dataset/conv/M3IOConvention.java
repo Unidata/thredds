@@ -63,6 +63,9 @@ public class M3IOConvention extends CoordSysBuilder {
   }
 
   public void augmentDataset( NetcdfDataset ncd, CancelTask cancelTask) {
+    if (null != ncd.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
+    if (null != ncd.findVariable("lon")) return; // check if its already been done - aggregating enhanced datasets.
+
     constructCoordAxes( ncd);
     ncd.finish();
   }

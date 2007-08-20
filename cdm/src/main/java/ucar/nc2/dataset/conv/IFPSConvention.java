@@ -57,6 +57,8 @@ public class IFPSConvention extends CoordSysBuilder {
   }
 
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    if (null != ds.findVariable("xCoord")) return; // check if its already been done - aggregating enhanced datasets.
+
     parseInfo.append("IFPS augmentDataset \n");
 
    // Figure out projection info. Assume the same for all variables

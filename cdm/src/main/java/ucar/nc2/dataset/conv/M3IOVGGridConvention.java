@@ -110,6 +110,8 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
    * @post ct != null
    */
   protected void constructCoordAxes( NetcdfDataset ds ) {
+    if (null != ncd.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
+
    // super.constructCoordAxes( ds );
 
     // Set the projection:

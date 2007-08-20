@@ -53,6 +53,7 @@ public class ADASConvention extends CoordSysBuilder {
    * create a NetcdfDataset out of this NetcdfFile, adding coordinates etc.
    */
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
 
     // old way
     Attribute att = ds.findGlobalAttribute("MAPPROJ");

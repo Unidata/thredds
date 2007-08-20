@@ -123,6 +123,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
 */
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
+    if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
 
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();

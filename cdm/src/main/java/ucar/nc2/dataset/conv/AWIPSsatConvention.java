@@ -70,6 +70,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
   }
 
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+    if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
 
     Dimension dimx = ds.findDimension("x");
     int nx = dimx.getLength();
