@@ -134,7 +134,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     this.proxyReader2 = vds.proxyReader2;
     this.smProxy = vds.smProxy;
 
-    //decouyple coordinate systems
+    //decouple coordinate systems
     this.proxy = new EnhancementsImpl( this);
 
   }
@@ -145,7 +145,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return new VariableDS( this);
   }
 
-  /** recalc any enhancement info */
+  /** recalc scale/offset/missing value. This may change the DataType */
   public void enhance() {
     this.smProxy = new EnhanceScaleMissingImpl( this);
     if (smProxy.hasScaleOffset() && (smProxy.getConvertedDataType() != getDataType()))

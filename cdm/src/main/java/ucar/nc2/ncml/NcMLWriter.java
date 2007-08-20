@@ -127,8 +127,8 @@ public class NcMLWriter {
     if (null != ncd.getTitle())
       rootElem.setAttribute("title", ncd.getTitle());
 
-    if (ncd.isEnhanced())
-      rootElem.setAttribute("enhance", "true");
+    if (ncd.getEnhanceMode() != NetcdfDataset.EnhanceMode.None)
+      rootElem.setAttribute("enhance", ncd.getEnhanceMode().toString());
 
     AggregationIF agg = ncd.getAggregation();
     if (agg != null) {
@@ -139,14 +139,13 @@ public class NcMLWriter {
 
     Group rootGroup = ncd.getRootGroup();
 
-    if (ncd.getCoordSysWereAdded()) {
+    /* if (ncd.getCoordSysWereAdded()) {
       String conv = ncd.findAttValueIgnoreCase(null, "Conventions", null);
       if (conv == null)
         rootGroup.addAttribute(new Attribute("Conventions", _Coordinate.Convention));
       else
         rootGroup.addAttribute(new Attribute("Conventions", conv + ", " + _Coordinate.Convention));
-
-    }
+    } */
 
     writeGroup(rootElem, rootGroup);
 

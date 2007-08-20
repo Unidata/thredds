@@ -103,7 +103,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
   private void init(NetcdfDataset ncd) throws IOException {
     this.ncd_2dtime = ncd;
-    if (!ncd.isEnhanced())
+    if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
       ncd.enhance();
     // ncd.setCached(3); // dont allow a normal close LOOK why ?? who is managing ??
 

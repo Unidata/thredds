@@ -84,7 +84,7 @@ public class AggregationFmrc extends Aggregation {
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical =  typicalDataset.acquireFile( cancelTask);
     NetcdfDataset typicalDS = (typical instanceof NetcdfDataset) ? (NetcdfDataset) typical : new NetcdfDataset( typical);
-    if (!typicalDS.isEnhanced())
+    if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
       typicalDS.enhance();
 
     // work with a GridDataset

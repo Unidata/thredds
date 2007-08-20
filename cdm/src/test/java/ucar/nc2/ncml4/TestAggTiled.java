@@ -30,7 +30,6 @@ public class TestAggTiled extends TestCase {
     testCoordVar(ncfile, "lat", nlat, DataType.DOUBLE);
     testCoordVar(ncfile, "lon", nlon, DataType.FLOAT);
 
-
     Variable v = ncfile.findVariable("temperature");
     v.setCaching(false);
 

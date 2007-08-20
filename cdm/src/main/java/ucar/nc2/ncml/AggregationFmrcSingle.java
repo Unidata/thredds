@@ -183,7 +183,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     // open a "typical" dataset and make a GridDataset
     NetcdfFile typicalFile =  typicalDataset.acquireFile( cancelTask);
     NetcdfDataset typicalDS = (typicalFile instanceof NetcdfDataset) ? (NetcdfDataset) typicalFile : new NetcdfDataset( typicalFile);
-    if (!typicalDS.isEnhanced())
+    if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
       typicalDS.enhance();
     GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
 

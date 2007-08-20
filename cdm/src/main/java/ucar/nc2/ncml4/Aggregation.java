@@ -376,9 +376,9 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     // rebuild the metadata
     rebuildDataset();
     ncDataset.finish();
-    if (ncDataset.isEnhanced()) { // force recreation of the coordinate systems
-      ncDataset.setCoordSysWereAdded(false);
-      ncDataset.enhance();
+    if (ncDataset.getEnhanceMode() != NetcdfDataset.EnhanceMode.None) { // force recreation of the coordinate systems
+      ncDataset.clearCoordinateSystems();
+      ncDataset.enhance( ncDataset.getEnhanceMode());
       ncDataset.finish();
     }
 

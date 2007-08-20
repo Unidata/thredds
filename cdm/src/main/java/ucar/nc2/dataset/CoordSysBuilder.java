@@ -125,6 +125,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("MADIS surface observations, v1.0", MADISStation.class);
     registerConvention("epic-insitu-1.0", EpicInsitu.class);
 
+    // new
+    registerConvention("NSSL National Reflectivity Mosaic", NsslRadarMosaicConvention.class);
+
+
     // further calls to registerConvention are by the user
     userMode = true;
   }
@@ -214,8 +218,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @throws java.io.IOException on io error
    */
   static public void addCoordinateSystems(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    if (ds.getCoordSysWereAdded()) return; // ??
-
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (convName == null)
@@ -431,7 +433,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     info.addParseInfo(parseInfo.toString());
     info.addUserAdvice(userAdvice.toString());
 
-    ncDataset.setCoordSysWereAdded(true);
     if (debug) System.out.println("parseInfo = \n" + parseInfo.toString());
   }
 

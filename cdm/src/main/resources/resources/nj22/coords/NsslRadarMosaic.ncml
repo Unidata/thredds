@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="C:/data/nssl/mosaic2d_nc/tile1/20070803-2300.netcdf">
+
+  <attribute name="Conventions" value="NSSL National Reflectivity Mosaic" />
+
+  <variable name="cref" >
+    <attribute name="long_name" value="composite reflectivity" />
+  </variable>
+
+  <variable name="hgt_cref" >
+    <attribute name="long_name" value="height associated with the composite reflectivity" />
+  </variable>
+
+  <variable name="etp18" >
+    <attribute name="long_name" value="echo top" />
+  </variable>
+
+  <variable name="shi" >
+    <attribute name="long_name" value="severe hail index" />
+  </variable>
+
+  <variable name="posh">
+    <attribute name="long_name" value="probability of severe hail" />
+  </variable>
+
+  <variable name="mehs" >
+    <attribute name="long_name" value="maximum estimated hail size" />
+  </variable>
+
+  <variable name="hsr" >
+    <attribute name="long_name" value="hybrid scan reflectivity" />
+  </variable>
+
+  <variable name="hsrh" >
+    <attribute name="long_name" value="height associated with the hybrid scan reflectivity" />
+  </variable>
+
+  <variable name="vil" >
+    <attribute name="long_name" value="vertically integrated liquid" />
+  </variable>
+
+  <variable name="vilD">
+    <attribute name="long_name" value="vertically integrated liquid density" />
+  </variable>
+
+  <variable name="pcp_flag" >
+    <attribute name="long_name" value="Radar precipitation flag" />
+  </variable>
+
+  <variable name="pcp_type" >
+    <attribute name="long_name" value="Surface precipitation type" />
+  </variable>
+</netcdf>
+

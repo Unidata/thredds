@@ -29,7 +29,6 @@ public class TestNcML {
 
     suite.addTest(new TestSuite(TestAggExistingCoordVars.class));
     suite.addTest(new TestSuite(TestAggExisting.class));
-    suite.addTest(new TestSuite(TestOffAggExistingSSTA.class));
 
     suite.addTest(new TestSuite(TestAggSynthetic.class)); //
     suite.addTest(new TestSuite(TestAggSynGrid.class));

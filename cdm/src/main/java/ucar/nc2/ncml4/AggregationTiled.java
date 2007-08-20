@@ -102,7 +102,7 @@ public class AggregationTiled extends Aggregation {
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
         VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
-                v.getDimensionsString(), null, null);
+            v.getDimensionsString(), null, null);
         vagg.setProxyReader2(this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
@@ -164,6 +164,11 @@ public class AggregationTiled extends Aggregation {
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
+    try {
+      System.out.println(dtype+" allData allocated: " + new Section(allData.getShape()));
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
 
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
@@ -172,6 +177,8 @@ public class AggregationTiled extends Aggregation {
       Section totalSection = mainv.getShapeAsSection();
       // construct the "dataSection" by replacing the tiled dimensions
       Section localSection = dtiled.makeVarSection(mainv);
+      System.out.println("totalSection: " + totalSection);
+      System.out.println("localSection: " + localSection);
 
       // now use a RegularSectionLayout to figure out how to "distribute" it to the result array
       Indexer index;
@@ -183,17 +190,28 @@ public class AggregationTiled extends Aggregation {
 
       // read in the entire data from this nested dataset
       Array varData = dtiled.read(mainv, cancelTask);
+      try {
+        System.out.println(" varData read: " + new Section(varData.getShape()));
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+      }
 
       // distribute it
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
-        System.out.println(" chunk: " + chunk + " for var " + mainv.getName());
+        //System.out.println(" chunk: " + chunk + " for var " + mainv.getName());
 
         // the dest array (allData) is the "want" Section
         // the src array (varData) acts as the "file", but file pos is in bytes, need to convert to elements
         int srcPos = (int) chunk.getFilePos() / dtype.getSize();
         int resultPos = (int) chunk.getStartElem();
-        Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
+
+        try {
+          Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
+        } catch (RuntimeException e) {
+          System.out.println(" nElems: " + chunk.getNelems() + " srcPos: " + srcPos + " resultPos: " + resultPos + " for var " + mainv.getName());
+          throw e;
+        }
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
