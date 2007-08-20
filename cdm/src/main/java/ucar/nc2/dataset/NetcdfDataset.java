@@ -741,6 +741,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (mode == EnhanceMode.All || mode == EnhanceMode.CoordSystems) {
       ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(this, null);
+      rootGroup = new Group(this, null, "");
+      convertGroup(rootGroup, ncfile.getRootGroup());
       finish(); // rebuild global lists
     }
   }
