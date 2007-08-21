@@ -102,7 +102,7 @@ public class AggregationTiled extends Aggregation {
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
         VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
-            v.getDimensionsString(), null, null);
+                v.getDimensionsString(), null, null);
         vagg.setProxyReader2(this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
@@ -165,7 +165,7 @@ public class AggregationTiled extends Aggregation {
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
     try {
-      System.out.println(dtype+" allData allocated: " + new Section(allData.getShape()));
+      System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
     } catch (InvalidRangeException e) {
       e.printStackTrace();
     }
@@ -230,6 +230,11 @@ public class AggregationTiled extends Aggregation {
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, wantSection.getShape()); // LOOK need fill
+    try {
+      System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
 
     // run through all the datasets
     List<Dataset> nestedDatasets = getDatasets();
@@ -249,6 +254,7 @@ public class AggregationTiled extends Aggregation {
         Section needToRead = localSection.intersect(wantSection); // the part we need to read
         Section localNeed = needToRead.shiftOrigin(localSection); // shifted to the local section
         varData = dtiled.read(mainv, cancelTask, localNeed.getRanges());
+        System.out.println(" varData read: " + new Section(varData.getShape()));
 
       } catch (InvalidRangeException e) {
         throw new IllegalArgumentException(e.getMessage());
@@ -262,7 +268,12 @@ public class AggregationTiled extends Aggregation {
         // RegularSectionLayout assumes you are reading to a file. We have already done so, and put the
         // data, now contiguous into varData. So we just let RegularSectionLayout tell us where it goes.
         int resultPos = (int) chunk.getStartElem();
-        Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
+        try {
+          Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
+        } catch (RuntimeException e) {
+          System.out.println(" nElems: " + chunk.getNelems() + " srcPos: " + srcPos + " resultPos: " + resultPos + " for var " + mainv.getName());
+          throw e;
+        }
         srcPos += chunk.getNelems();
       }
 
