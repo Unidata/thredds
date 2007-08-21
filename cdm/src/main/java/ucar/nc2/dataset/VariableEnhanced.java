@@ -19,6 +19,8 @@
  */
 package ucar.nc2.dataset;
 
+import ucar.nc2.ProxyReader;
+
 /**
  * Public interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package.
  * @author john caron
@@ -29,8 +31,8 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, Enh
   public ucar.nc2.Variable getOriginalVariable();
   public void setOriginalVariable(ucar.nc2.Variable orgVar);
 
-  public ProxyReader2 getProxyReader2();
-  public void setProxyReader2( ProxyReader2 proxyReader2);
+  public ProxyReader getProxyReader();
+  public void setProxyReader( ProxyReader proxyReader);
 
   /**
    * Process scale/offset/missing value

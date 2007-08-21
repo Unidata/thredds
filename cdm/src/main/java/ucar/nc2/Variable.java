@@ -61,7 +61,7 @@ public class Variable implements VariableIF {
   protected int sizeToCache = defaultSizeToCache; // bytes
 
   protected Structure parent = null; // for variables inside Structure
-  protected ProxyReader proxyReader;
+  protected ProxyReader preReader, postReader;
 
 
   /**
@@ -574,7 +574,7 @@ public class Variable implements VariableIF {
 
     // create a copy of this variable with a proxy reader
     Variable sectionV = copy(); // subclasses must override
-    sectionV.proxyReader = new SectionReader(this, subsection);
+    sectionV.preReader = new SectionReader(this, subsection);
     sectionV.shape = subsection.getShape();
 
     // replace dimensions if needed !! LOOK not shared
@@ -612,7 +612,7 @@ public class Variable implements VariableIF {
     Variable sliceV = copy(); // subclasses must override
     Section slice = getShapeAsSection();
     slice.replaceRange(dim, new Range(value, value)).setImmutable();
-    sliceV.proxyReader = new SliceReader(this, dim, slice);
+    sliceV.preReader = new SliceReader(this, dim, slice);
 
     // remove that dimension - reduce rank
     sliceV.dimensions.remove(dim);
@@ -841,9 +841,9 @@ public class Variable implements VariableIF {
   // non-structure-member Variables.
 
   protected Array _read() throws IOException {
-    // has a proxy
-    if (proxyReader != null)
-      return proxyReader.read();
+    // has a pre-reader proxy
+    if (preReader != null)
+      return preReader.read(this, null);
 
     if (isMemberOfStructure()) {
       try {
@@ -894,8 +894,8 @@ public class Variable implements VariableIF {
       throw new InvalidRangeException(err); */
 
     // has a proxy
-    if (proxyReader != null)
-      return proxyReader.read(section);
+    if (preReader != null)
+      return preReader.read(this, section, null);
 
     if (isMemberOfStructure()) {
       return readMemberOfStructureFlatten(section);
@@ -1093,7 +1093,8 @@ public class Variable implements VariableIF {
     this.isVlen = from.isVlen;
     this.ncfile = from.ncfile;
     this.parent = from.parent;
-    this.proxyReader = from.proxyReader;
+    this.preReader = from.preReader;
+    this.postReader = from.postReader;
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;

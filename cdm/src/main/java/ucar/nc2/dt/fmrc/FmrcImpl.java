@@ -530,7 +530,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
         VariableDS v = new VariableDS(target, orgVar, false);
         v.setDimensions(gridset.makeDimensions(v.getDimensions()));
-        v.setProxyReader2(subs);
+        v.setProxyReader(subs);
         v.remove(v.findAttribute(_Coordinate.Axes));
         v.remove(v.findAttribute("coordinates"));
         //v.addAttribute(new Attribute("coordinates", grid.getGridCoordSystem().getName()));
@@ -689,7 +689,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
   /////////////////////////////
   // assumes any Variable coming here has one time dimension, and orgVar has 2
 
-  private class Subsetter implements ProxyReader2 {
+  private class Subsetter implements ProxyReader {
     List<Inventory> invList;
 
     Subsetter(List<Inventory> invList) {

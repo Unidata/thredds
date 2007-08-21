@@ -23,6 +23,7 @@ package ucar.nc2;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
+import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
 
@@ -36,10 +37,12 @@ public interface ProxyReader {
   /**
    * Read all the data for a Variable.
    * The Array has the same element type and shape as the Variable.
+   * @param mainv the Variable
+   * @param cancelTask allow user to cancel, may be null.
    * @return memory resident Array containing the data. Will have same shape as the Variable.
    * @throws IOException on error
    */
-  public Array read() throws IOException;
+  public Array read(Variable mainv, CancelTask cancelTask) throws IOException;
 
   /**
    * Read a section of the data for a Variable and return a memory resident Array.
@@ -47,14 +50,13 @@ public interface ProxyReader {
    * Note that this does not do rank reduction, so the returned Array has the same rank
    *  as the Variable. Use Array.reduce() for rank reduction.
    *
+   * @param mainv the Variable
    * @param section the section of data to read.
-   *   Must be null or same rank as variable.
-   *   If list is null, assume all data.
-   *   Each Range corresponds to a Dimension. If the Range object is null, it means use the entire dimension.
+   * @param cancelTask allow user to cancel, may be null.
    *
    * @return memory resident Array containing the data. Will have same shape as the Variable.
    * @throws IOException on error
    * @throws ucar.ma2.InvalidRangeException if section is incorrect rank or shape.
    */
-  public Array read(Section section) throws IOException, InvalidRangeException;
+  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
 }

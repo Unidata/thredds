@@ -20,6 +20,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
 
@@ -43,7 +44,7 @@ class SliceReader implements ProxyReader {
     this.slice = slice;
   }
 
-  public Array read() throws IOException {
+  public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
     Array data;
     try {
       data = orgVar._read( slice);
@@ -55,7 +56,7 @@ class SliceReader implements ProxyReader {
     return data;
   }
 
-  public Array read(Section section) throws IOException, InvalidRangeException {
+  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     Section orgSection = new Section(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
     Array data = orgVar._read( orgSection);

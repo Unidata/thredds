@@ -44,7 +44,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
   protected Variable orgVar; // wrap this Variable
   private DataType orgDataType; // keep seperate for the case where there is no ioVar.
-  private ProxyReader2 proxyReader2 = null;
+  //private ProxyReader2 proxyReader2 = null;
 
   /**
    * Constructor when there's no underlying variable.
@@ -90,7 +90,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
    *
    * @param g logical container, if null use orgVar's group
    * @param orgVar the original Variable to wrap.
-   * @param enhance if true, handle scale/offset/missing values; this can change DataType and data values. You can also call enhance() later.
+   * @param enhance if true, handle scale/offset/missing values; this can change DataType and data values.
+   *   You can also call enhance() later.
    */
   public VariableDS( Group g, Variable orgVar, boolean enhance) {
     super(orgVar);
@@ -101,7 +102,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     // dont share cache, iosp
     this.ncfile = null;
     this.spiObject = null;
-    this.proxyReader = null;
+    this.preReader = null;
+    this.postReader = null;
     createNewCache();
 
     this.orgVar = orgVar;
@@ -110,7 +112,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
     if (orgVar instanceof VariableDS) {
       VariableDS ncVarDS = (VariableDS) orgVar;
-      this.proxyReader2 = ncVarDS.proxyReader2;
     }
 
     this.proxy = new EnhancementsImpl( this);
@@ -131,7 +132,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     this.isEnhanced = vds.isEnhanced;
     this.orgVar = vds.orgVar;
     this.orgDataType = vds.orgDataType;
-    //this.proxyReader2 = vds.proxyReader2;
     this.smProxy = vds.smProxy;
 
     //decouple coordinate systems
@@ -298,16 +298,16 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   /** Set the proxy reader.
-   * @param proxyReader2 set to this
+   * @param proxyReader set to this
    */
-  public void setProxyReader2( ProxyReader2 proxyReader2) {
-    this.proxyReader2 = proxyReader2;
+  public void setProxyReader( ProxyReader proxyReader) {
+    this.postReader = proxyReader;
   }
 
   /** Get the proxy reader, or null.
    * @return return the proxy reader, if any
    */
-  public ProxyReader2 getProxyReader2() { return this.proxyReader2; }
+  public ProxyReader getProxyReader() { return this.postReader; }
 
   public String toStringDebug() {
     return (orgVar != null) ? orgVar.toStringDebug() : "";
@@ -318,12 +318,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   protected Array _read() throws IOException {
     Array result;
 
-    if (hasCachedData())
+    // has a pre-reader proxy
+    if (preReader != null)
+      return preReader.read(this, null);
+    else if (hasCachedData())
       result = super._read();
-    else if (proxyReader2 != null)
-      result = proxyReader2.read( this, null);
-    else if (proxyReader != null)
-      result = proxyReader.read();
+    else if (postReader != null)
+      result = postReader.read( this, null);
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
@@ -351,12 +352,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   protected Array _read(Section section) throws IOException, InvalidRangeException  {
     Array result;
     
-    if (hasCachedData())
+    // has a pre-reader proxy
+    if (preReader != null)
+      return preReader.read(this, section, null);
+    else if (hasCachedData())
       result = super._read(section);
-    else if (proxyReader2 != null)
-      result = proxyReader2.read( this, section, null);
-    else if (proxyReader != null)
-      result = proxyReader.read( section);
+    else if (postReader != null)
+      result = postReader.read( this, section, null);
     else if (orgVar != null)
       result = orgVar.read(section);
     else  { // return fill value in a "constant array"

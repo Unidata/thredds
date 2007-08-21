@@ -128,7 +128,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       }
       runtimeCoordVar.setCachedData(runData, true);
     } else {
-      runtimeCoordVar.setProxyReader2(this);
+      runtimeCoordVar.setProxyReader(this);
     }
 
     // handle the 2D forecast time coordinates and dimensions
@@ -149,7 +149,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
       // construct new variable, replace old one
       VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-      vagg.setProxyReader2(this);
+      vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
       // we need to explicitly list the coordinate axes, because time coord is now 2D
@@ -257,7 +257,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
       if (!timeUnitsChange)
         // Case 1: assume the units are all the same, so its just another agg variable
-        vagg.setProxyReader2(this);
+        vagg.setProxyReader(this);
       else {
         // Case 2: assume the time units differ for each nested file
         readTimeCoordinates(vagg, cancelTask);
@@ -435,9 +435,9 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
       } else {
         VariableEnhanced ve = (VariableDS) v;
-        ProxyReader2 proxy = ve.getProxyReader2();
+        ProxyReader proxy = ve.getProxyReader();
         if (proxy instanceof DatasetProxyReader)
-          ve.setProxyReader2(typicalDatasetProxy);
+          ve.setProxyReader(typicalDatasetProxy);
       }
 
     }

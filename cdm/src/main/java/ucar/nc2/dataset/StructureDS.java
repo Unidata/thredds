@@ -37,7 +37,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   private boolean isEnhanced = false;
 
   protected Structure orgVar; // wrap this Variable
-  private ProxyReader2 proxyReader2 = null;
+  //private ProxyReader2 proxyReader2 = null;
 
   /**
    * Constructor when theres no underlying variable. You better set the values too!
@@ -105,16 +105,16 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /** Set the proxy reader.
-   * @param proxyReader2 set to this
+   * @param proxyReader set to this
    */
-  public void setProxyReader2( ProxyReader2 proxyReader2) {
-    this.proxyReader2 = proxyReader2;
+  public void setProxyReader( ProxyReader proxyReader) {
+    this.postReader = proxyReader;
   }
 
   /** Get the proxy reader, or null.
    * @return return the proxy reader, if any
    */
-  public ProxyReader2 getProxyReader2() { return this.proxyReader2; }
+  public ProxyReader getProxyReader() { return this.postReader; }
 
     // regular Variables.
   @Override
@@ -125,8 +125,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
     if (hasCachedData())
       result = super._read();
-    else if (proxyReader2 != null)
-      result = proxyReader2.read( this, null);
+    else if (postReader != null)
+      result = postReader.read( this, null);
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
@@ -146,8 +146,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
     if (hasCachedData())
       result = super._read(section);
-    else if (proxyReader2 != null)
-      result = proxyReader2.read( this, section, null);
+    else if (postReader != null)
+      result = postReader.read( this, section, null);
     else if (orgVar != null)
       result = orgVar.read(section);
     else  { // return fill value in a "constant array"

@@ -111,7 +111,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (aggVars.contains(var) || dimName.equals( var.getName()))
         continue;
       VariableEnhanced ve = (VariableEnhanced) var; // need this for getProxyReader2()
-      ve.setProxyReader2(proxy);
+      ve.setProxyReader(proxy);
     }
     typicalDataset.close();
   }

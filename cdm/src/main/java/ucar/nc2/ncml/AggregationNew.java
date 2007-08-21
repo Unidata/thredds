@@ -69,7 +69,7 @@ public class AggregationNew extends Aggregation {
       joinAggCoord.setDimensions(dimName); // reset its dimension
       if (!isNew) joinAggCoord.setCachedData(null, false); // get rid of any cached data, since its now wrong
     }
-    joinAggCoord.setProxyReader2(this);
+    joinAggCoord.setProxyReader(this);
 
     if (isDate()) {
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
@@ -87,7 +87,7 @@ public class AggregationNew extends Aggregation {
       // construct new variable, replace old one
       VariableDS vagg = new VariableDS(ncDataset, null, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
-      vagg.setProxyReader2(this);
+      vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(aggVar, vagg);
 
       // _CoordinateAxes if it exists must be modified

@@ -63,7 +63,7 @@ public class AggregationNew extends AggregationOuterDimension {
     DataType coordType = getCoordinateType();
     VariableDS joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
     ncDataset.addVariable(null, joinAggCoord);
-    joinAggCoord.setProxyReader2(this);
+    joinAggCoord.setProxyReader(this);
     if (isDate)
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
 
@@ -79,7 +79,7 @@ public class AggregationNew extends AggregationOuterDimension {
       // construct new variable, replace old one LOOK what about Structures?
       VariableDS vagg = new VariableDS(ncDataset, null, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
-      vagg.setProxyReader2(this);
+      vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(aggVar, vagg);
 
       // _CoordinateAxes if it exists must be modified

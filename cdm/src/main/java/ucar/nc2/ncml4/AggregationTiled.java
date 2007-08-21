@@ -102,8 +102,8 @@ public class AggregationTiled extends Aggregation {
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
         VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
-            v.getDimensionsString(), null, null);
-        vagg.setProxyReader2(this); // do the reading here
+                v.getDimensionsString(), null, null);
+        vagg.setProxyReader(this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
         ncDataset.removeVariable(null, v.getShortName());
@@ -164,52 +164,35 @@ public class AggregationTiled extends Aggregation {
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
-    try {
-      System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-    }
+    Section wantSection = mainv.getShapeAsSection();
+    System.out.println("wantSection: " + wantSection+" for var "+mainv.getName());
 
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       DatasetTiled dtiled = (DatasetTiled) vnested;
 
-      Section totalSection = mainv.getShapeAsSection();
       // construct the "dataSection" by replacing the tiled dimensions
-      Section localSection = dtiled.makeVarSection(mainv);
-      System.out.println("totalSection: " + totalSection);
-      System.out.println("localSection: " + localSection);
+      Section tiledSection = dtiled.makeVarSection(mainv);
+      //System.out.println(" tiledSection: " + tiledSection);
 
-      // now use a RegularSectionLayout to figure out how to "distribute" it to the result array
-      Indexer index;
+      // now use a TileLayout to figure out how to "distribute" it to the result array
+      Array varData;
+      TileLayout index;
       try {
-        index = RegularSectionLayout.factory(0, dtype.getSize(), localSection, totalSection);
-      } catch (InvalidRangeException e) {
-        throw new IOException(e.getMessage());
-      }
+        // read in the entire data from this nested dataset
+        varData = dtiled.read(mainv, cancelTask);
+        index = new TileLayout(tiledSection, wantSection);
 
-      // read in the entire data from this nested dataset
-      Array varData = dtiled.read(mainv, cancelTask);
-      try {
         System.out.println(" varData read: " + new Section(varData.getShape()));
       } catch (InvalidRangeException e) {
-        e.printStackTrace();
+        throw new IllegalArgumentException(e.getMessage());
       }
 
-      // distribute it
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        System.out.println(" chunk: " + chunk + " for var " + mainv.getName());
-
-        // the dest array (allData) is the "want" Section
-        // the src array (varData) acts as the "file", but file pos is in bytes, need to convert to elements
-        int srcPos = (int) chunk.getFilePos() / dtype.getSize();
-        int resultPos = (int) chunk.getStartElem();
-
         try {
-          Array.arraycopy(varData, srcPos, allData, resultPos, chunk.getNelems());
+          Array.arraycopy(varData, index.srcPos, allData, index.resultPos, index.nelems);
         } catch (RuntimeException e) {
-          System.out.println(" nElems: " + chunk.getNelems() + " srcPos: " + srcPos + " resultPos: " + resultPos + " for var " + mainv.getName());
+          System.out.println(index.toString());
           throw e;
         }
       }
@@ -251,7 +234,7 @@ public class AggregationTiled extends Aggregation {
         // read in the desired section of data from this nested dataset
         Section needToRead = tiledSection.intersect(wantSection); // the part we need to read
 
-        System.out.println(" tiledSection: " + tiledSection);
+        System.out.println(" tiledSection: " + tiledSection+" from file "+dtiled.getLocation());
         System.out.println(" intersection: " + needToRead);
 
         Section localNeed = needToRead.shiftOrigin(tiledSection); // shifted to the tiled section
@@ -265,9 +248,10 @@ public class AggregationTiled extends Aggregation {
 
       while (index.hasNext()) {
         try {
-          System.out.println(index.toString());
           Array.arraycopy(varData, index.srcPos, allData, index.resultPos, index.nelems);
         } catch (RuntimeException e) {
+          System.out.println(" tiledSection: " + tiledSection);
+          System.out.println(index.toString());
           throw e;
         }
       }
@@ -309,19 +293,20 @@ public class AggregationTiled extends Aggregation {
       // we will use an Index object to keep track of the chunks
       // last range length is nelems; reduce index rank
       nelems = localSection.getShape(rank - 1);
-      int[] stride = new int[rank-1];
-      int[] shape = new int[rank-1];
+      int[] stride = new int[rank - 1];
+      int[] shape = new int[rank - 1];
 
-      product = resultSection.getShape(rank-1);
+      product = resultSection.getShape(rank - 1);
       for (int ii = rank - 2; ii >= 0; ii--) {
         stride[ii] = (int) product;
         shape[ii] = dataSection.getShape(ii);
         product *= resultSection.getShape(ii);
       }
-      index = new Index( shape, stride);
+      index = new Index(shape, stride);
     }
 
     boolean first = true;
+
     boolean hasNext() {
       if (first) {
         first = false;

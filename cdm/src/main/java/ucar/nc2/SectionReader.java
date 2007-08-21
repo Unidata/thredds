@@ -20,6 +20,8 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.util.CancelTask;
+
 import java.io.IOException;
 
 /**
@@ -40,7 +42,7 @@ class SectionReader implements ProxyReader {
     this.orgSection = section.isImmutable() ? section : new Section(section.getRanges());
   }
 
-  public Array read() throws IOException {
+  public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
     try {
       return orgVar._read(orgSection);
     } catch (InvalidRangeException e) {
@@ -49,7 +51,7 @@ class SectionReader implements ProxyReader {
     }
   }
 
-  public Array read(Section section) throws IOException, InvalidRangeException {
+  public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     Section want = orgSection.compose( section);
     return orgVar._read(want);
   }

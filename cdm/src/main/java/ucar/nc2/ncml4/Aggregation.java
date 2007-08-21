@@ -70,7 +70,7 @@ import thredds.util.DateFromString;
  *
  * @author caron
  */
-public abstract class Aggregation implements AggregationIF, ProxyReader2 {
+public abstract class Aggregation implements AggregationIF, ProxyReader {
   static protected int TYPICAL_DATASET_RANDOM = 0;
   static protected int TYPICAL_DATASET_LATEST = 1;
   static protected int TYPICAL_DATASET_PENULTIMATE = 2;
@@ -619,7 +619,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
     for (Variable v : allVars) {
       VariableEnhanced ve = (VariableEnhanced) v; // need this for getProxyReader2()
 
-      if (ve.getProxyReader2() != null) {
+      if (ve.getProxyReader() != null) {
         if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + ve.getName());
         continue; // dont mess with agg variables
       }
@@ -632,14 +632,14 @@ public abstract class Aggregation implements AggregationIF, ProxyReader2 {
           if (debugProxy) System.out.println(" debugProxy: already cached " + ve.getName());
         }
 
-      } else if (null == ve.getProxyReader2()) { // put proxy on the rest
-        ve.setProxyReader2(proxy);
+      } else if (null == ve.getProxyReader()) { // put proxy on the rest
+        ve.setProxyReader(proxy);
         if (debugProxy) System.out.println(" debugProxy: proxy on " + ve.getName());
       }
     }
   }
 
-  protected class DatasetProxyReader implements ProxyReader2 {
+  protected class DatasetProxyReader implements ProxyReader {
     Dataset dataset;
 
     DatasetProxyReader(Dataset dataset) {

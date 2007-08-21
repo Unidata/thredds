@@ -81,7 +81,7 @@ public class AggregationExisting extends Aggregation {
 
       VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
           v.getDimensionsString(), null, null);
-      vagg.setProxyReader2(this);
+      vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
       ncDataset.removeVariable(null, v.getShortName());
