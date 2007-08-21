@@ -131,12 +131,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     this.isEnhanced = vds.isEnhanced;
     this.orgVar = vds.orgVar;
     this.orgDataType = vds.orgDataType;
-    this.proxyReader2 = vds.proxyReader2;
+    //this.proxyReader2 = vds.proxyReader2;
     this.smProxy = vds.smProxy;
 
     //decouple coordinate systems
     this.proxy = new EnhancementsImpl( this);
-
   }
 
   // for section and slice

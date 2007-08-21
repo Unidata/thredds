@@ -199,7 +199,7 @@ public class AggregationTiled extends Aggregation {
       // distribute it
       while (index.hasNext()) {
         Indexer.Chunk chunk = index.next();
-        //System.out.println(" chunk: " + chunk + " for var " + mainv.getName());
+        System.out.println(" chunk: " + chunk + " for var " + mainv.getName());
 
         // the dest array (allData) is the "want" Section
         // the src array (varData) acts as the "file", but file pos is in bytes, need to convert to elements

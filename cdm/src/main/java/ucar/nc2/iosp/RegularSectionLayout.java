@@ -80,6 +80,8 @@ public class RegularSectionLayout extends Indexer {
     // The actual wanted data we can get from this section
     Section intersect = dataSection.intersect(wantSection);
     this.total = intersect.computeSize();
+    if (total <= 0)
+      System.out.println("hey");
     assert total > 0;
     int varRank = intersect.getRank();
 

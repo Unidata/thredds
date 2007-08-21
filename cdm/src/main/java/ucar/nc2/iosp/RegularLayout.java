@@ -68,7 +68,6 @@ public class RegularLayout extends Indexer {
     this(startPos, elemSize, recSize, varShape, new Section(ranges));
   }
 
-
   /**
    * Constructor.
    *

@@ -33,6 +33,8 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
 
 import java.io.IOException;
+import java.io.File;
+import java.util.StringTokenizer;
 
 /**
  * Class Description.
@@ -40,19 +42,29 @@ import java.io.IOException;
  * @author caron
  */
 public class GtopoIosp extends AbstractIOServiceProvider {
+
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    return raf.getLocation().endsWith(".DEM");
+    String location = raf.getLocation();
+    if (!location.endsWith(".DEM")) return false;
+
+    int pos = location.lastIndexOf(".");
+    String stub = location.substring(0, pos);
+    File hdrFile = new File( stub+".HDR");
+    return hdrFile.exists();
   }
 
 
-  int nlats = 6000;
-  int nlons = 4800;
-  float incr = .008333333333333333f;
+  private int nlats = 6000;
+  private int nlons = 4800;
+  private float incr = .008333333333333333f;
+  private float startx, starty;
 
   private RandomAccessFile raf;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
+
+    readHDR();
 
     ncfile.addDimension(null, new Dimension("lat", nlats, true));
     ncfile.addDimension(null, new Dimension("lon", nlons, true));
@@ -62,6 +74,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     elev.setDimensions("lat lon");
 
     elev.addAttribute(new Attribute("units", "m"));
+    elev.addAttribute( new Attribute("units_desc", "meters above sea level"));
     elev.addAttribute(new Attribute("long_name", "digital elevation in meters above mean sea level"));
     elev.addAttribute(new Attribute("missing_value", (short) -9999));
     ncfile.addVariable(null, elev);
@@ -71,7 +84,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     lat.setDimensions("lat");
     lat.addAttribute(new Attribute("units", "degrees_north"));
     ncfile.addVariable(null, lat);
-    Array data = NetcdfDataset.makeArray(DataType.FLOAT, nlats, 90.0, -incr);
+    Array data = NetcdfDataset.makeArray(DataType.FLOAT, nlats, starty, -incr);
     lat.setCachedData(data, false);
 
     Variable lon = new Variable(ncfile, null, null, "lon");
@@ -79,24 +92,38 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     lon.setDimensions("lon");
     lon.addAttribute(new Attribute("units", "degrees_east"));
     ncfile.addVariable(null, lon);
-    Array lonData = NetcdfDataset.makeArray(DataType.FLOAT, nlons, -140.0, incr);
+    Array lonData = NetcdfDataset.makeArray(DataType.FLOAT, nlons, startx, incr);
     lon.setCachedData(lonData, false);
 
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
     ncfile.addAttribute(null, new Attribute("History", "Direct read by Netcdf-Java CDM library"));
     ncfile.addAttribute(null, new Attribute("Source", "http://eros.usgs.gov/products/elevation/gtopo30.html"));
 
-    ncfile.addAttribute(null, new Attribute("version", 42));
-    ncfile.addAttribute(null, new Attribute("missing_values", Array.factory(new double[]{999.0, -999.0})));
-
     ncfile.finish();
   }
 
+  private void readHDR() throws IOException {
+    String location = raf.getLocation();
+    int pos = location.lastIndexOf(".");
+    String HDRname = location.substring(0, pos)+".HDR";
+    String HDRcontents = thredds.util.IO.readFile(HDRname);
+    StringTokenizer stoke = new StringTokenizer(HDRcontents);
+    while (stoke.hasMoreTokens()) {
+      String key = stoke.nextToken();
+      if (key.equals("ULXMAP"))
+        startx = Float.parseFloat(stoke.nextToken());
+      else if (key.equals("ULYMAP"))
+        starty = Float.parseFloat(stoke.nextToken());
+      else
+        stoke.nextToken();
+    }
+  }
+
   public Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
-    raf.seek(0);
+    // raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
 
-    int size = (int) v2.getSize();
+    int size = (int) wantSection.computeSize();
     short[] arr = new short[size];
 
     RegularLayout indexer = new RegularLayout(0, v2.getElementSize(), -1, v2.getShape(), wantSection);
@@ -106,38 +133,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
       raf.readShort(arr, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
     }
 
-    return Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), arr);
-  }
-
-  private Array test(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Array data2 = Array.factory(double.class, new int[] {128, 256});
-    Index index = data2.getIndex();
-    for (int j=0; j< 128; j++) {
-      index.set(0, j);
-      for (int i=0; i< 128; i++) {
-        index.set(1, i);
-        data2.setShort( index, raf.readShort());
-      }
-    }
-
-    ArrayDouble.D2 data3 = (ArrayDouble.D2) Array.factory(double.class, new int[] {128, 256});
-    for (int j=0; j< 128; j++)
-      for (int i=0; i< 128; i++)
-        data3.set( j, i, raf.readDouble());
-
-    raf.seek(0);
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-
-    Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape());
-    IndexIterator ii = data.getIndexIterator();
-
-    int size = (int) v2.getSize();
-
-    int count = 0;
-    while (count < size) {
-      ii.setShortNext(raf.readShort());
-    }
-    return data.section(section.getRanges());
+    return Array.factory(v2.getDataType().getPrimitiveClassType(), wantSection.getShape(), arr);
   }
 
   public void close() throws IOException {

@@ -137,6 +137,11 @@ public class NetcdfFile {
     } catch (Throwable e) {
       log.warn("Cant load class: " + e);
     }
+    try {
+      registerIOProvider("ucar.nc2.iosp.misc.GtopoIosp");
+    } catch (Throwable e) {
+      log.warn("Cant load class: " + e);
+    }
   }
 
   static public final String reserved = ".!*'();:@&=+$,/?%#[]";
