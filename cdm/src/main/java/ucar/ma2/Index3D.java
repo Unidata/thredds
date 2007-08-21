@@ -69,7 +69,7 @@ public class Index3D extends Index {
     return offset + curr0*stride0 + curr1*stride1 + curr2*stride2;
   }
 
-  protected int incr() {
+  public int incr() {
     if (++curr2 >= shape2) {
       curr2 = 0;
       if (++curr1 >= shape1) {

@@ -36,7 +36,7 @@ public class Index0D extends Index {
     return offset;
   }
 
-  protected int incr() {
+  public int incr() {
     return offset;
   }
 

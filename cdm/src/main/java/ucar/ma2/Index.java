@@ -98,9 +98,9 @@ public class Index implements Cloneable {
   }
 
   /**
-   * constructor for subclasses only.
+   * constructor that lets you set the strides yourself.
    */
-  protected Index(int[] _shape, int[] _stride) {
+  public Index(int[] _shape, int[] _stride) {
     this.shape = new int[_shape.length];  // optimization over clone
     System.arraycopy(_shape, 0, this.shape, 0, _shape.length);
 
@@ -447,7 +447,7 @@ public class Index implements Cloneable {
    *
    * @return currentElement()
    */
-  protected int incr() {
+  public int incr() {
     int digit = rank - 1;
     while (digit >= 0) {
       current[digit]++;

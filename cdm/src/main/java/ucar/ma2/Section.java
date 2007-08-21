@@ -178,6 +178,22 @@ public class Section {
   }
 
   /**
+   * Create a new Section by compacting each Range.
+   * first = first/stride, last=last/stride, stride=1.
+   *
+   * @return compacted Section
+   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   */
+  public Section compact() throws InvalidRangeException {
+    List<Range> results = new ArrayList<Range>(getRank());
+    for (Range r : list) {
+      results.add(r.compact());
+    }
+    return new Section(results);
+  }
+
+
+  /**
    * Create a new Section by composing with a Section that is reletive to this Section.
    *
    * @param want Section reletive to this one. If null, return this. If individual ranges are null, use corresponding Range in this.
@@ -250,21 +266,21 @@ public class Section {
   }
 
   /**
-   * Create a new Section by shifting each range by shift.first()
-   *
-   * @param shift Section subtract shift.first()
+   * Create a new Section by shifting each range by newOrigin.first()
+   * The result is then a reletive offset from the newOrigin.
+   * @param newOrigin this becomes the origin of the result
    * @return new Section, shifted
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
    */
-  public Section shiftOrigin(Section shift) throws InvalidRangeException {
-    if (shift.getRank() != getRank())
+  public Section shiftOrigin(Section newOrigin) throws InvalidRangeException {
+    if (newOrigin.getRank() != getRank())
       throw new InvalidRangeException("Invalid Section rank");
 
     // check individual nulls
     List<Range> results = new ArrayList<Range>(getRank());
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
-      Range r = shift.getRange(j);
+      Range r = newOrigin.getRange(j);
       results.add(base.shiftOrigin(r.first()));
     }
 
@@ -416,6 +432,19 @@ public class Section {
   public Section insertRange(int index, Range r) {
     if (immutable) throw new IllegalStateException("Cant modify");
     list.add(index, r);
+    return this;
+  }
+
+  /**
+   * Remove a range at the specified index in the list.
+   *
+   * @param index remove here in the list, existing ranges after this index get shifted by one
+   * @return this
+   * @throws IndexOutOfBoundsException if bad index
+   */
+  public Section removeRange(int index) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    list.remove(index);
     return this;
   }
 
@@ -645,7 +674,7 @@ public class Section {
    * @return true if equivilent
    * @throws InvalidRangeException if setion rank doesnt match shape length
    */
-  public boolean equivilent(int[] shape) throws InvalidRangeException {
+  public boolean equivalent(int[] shape) throws InvalidRangeException {
     if (getRank() != shape.length)
       throw new InvalidRangeException("Invalid Section rank");
 

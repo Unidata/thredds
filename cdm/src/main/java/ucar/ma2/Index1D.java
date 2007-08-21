@@ -59,7 +59,7 @@ public class Index1D extends Index {
     return offset + curr0*stride0;
   }
 
-  protected int incr() {
+  public int incr() {
     if (++curr0 >= shape0)
       curr0 = 0;    // rollover !
     return offset + curr0*stride0;

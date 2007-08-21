@@ -107,18 +107,6 @@ public abstract class Indexer {
     public String toString() { return " filePos="+ filePos +" nelems="+nelems+" startElem="+ startElem; }
   }
 
-  // used by subclasses to keep track of which element we are on
-  // need access to protected methods
-  protected class MyIndex extends ucar.ma2.Index {
-    MyIndex(int[] shape, int[] stride) {
-      super(shape, stride);
-    }
-
-    protected int incr() {
-      return super.incr();
-    }
-  }
-
   // debugging
   protected String printa(int[] a) {
     StringBuffer sbuff = new StringBuffer();

@@ -40,7 +40,7 @@ import java.util.ArrayList;
  */
 public class RegularSectionLayout extends Indexer {
   private List<Dim> dimList = new ArrayList<Dim>();
-  private MyIndex dataIndex, wantIndex;
+  private Index dataIndex, wantIndex;
 
   private int elemSize; // size of each element
   private long startPos; // starting address
@@ -171,8 +171,8 @@ public class RegularSectionLayout extends Indexer {
       printa(" wantStride=", wantStrides);
       System.out.println(" indexChunks=" + Index.computeSize(shape));
     }
-    dataIndex = new MyIndex(shape, dataStrides);
-    wantIndex = new MyIndex(shape, wantStrides);
+    dataIndex = new Index(shape, dataStrides);
+    wantIndex = new Index(shape, wantStrides);
 
     // sanity checks
     long nchunks = Index.computeSize(shape);
@@ -232,7 +232,6 @@ public class RegularSectionLayout extends Indexer {
     // Get the current element's byte index from the start of the file
     chunk.setFilePos(startPos + elemSize * dataIndex.currentElement());
 
-    int w = wantIndex.currentElement();
     chunk.setStartElem(startElem + wantIndex.currentElement());
 
     if (debugNext)

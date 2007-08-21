@@ -86,7 +86,7 @@ public class Index7D extends Index {
         + curr3*stride3 + curr4*stride4 + curr5*stride5 + curr6*stride6;
   }
 
-  protected int incr() {
+  public int incr() {
     if (++curr6 >= shape6) {
       curr6 = 0;
       if (++curr5 >= shape5) {

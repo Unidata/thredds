@@ -65,7 +65,7 @@ public class Index2D extends Index {
     return offset + curr0*stride0 + curr1*stride1;
   }
 
-  protected int incr() {
+  public int incr() {
       if (++curr1 >= shape1) {
         curr1 = 0;
         if (++curr0 >= shape0) {

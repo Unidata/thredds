@@ -26,8 +26,9 @@ import java.util.StringTokenizer;
 
 
 /**
-   Represents a range of integers, used as an index set for arrays.
+   Represents a set of integers, used as an index for arrays.
    It should be considered as a subset of the interval of integers [0, length-1] inclusive.
+   For example Range(1:11:3) represents the set of integers {1,4,7,10}
    Immutable.
    <p>
    Ranges are monotonically increasing.
@@ -144,6 +145,19 @@ public final class Range {
   }
 
   /**
+     Create a new Range by compacting this Range by removing the stride.
+     first = first/stride, last=last/stride, stride=1.
+     @return compacted Range
+     @exception InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   */
+  public Range compact() throws InvalidRangeException {
+    if (stride() == 1) return this;
+    int first = first() / stride();
+    int last = first + length() - 1;
+    return new Range(name, first, last, 1);
+  }
+
+  /**
      Create a new Range shifting this range by a constant factor.
      @param origin subtract this from first, last
      @return shiften range
@@ -170,31 +184,37 @@ public final class Range {
     int last = Math.min(this.last(), r.last());
     int stride = stride() * r.stride();
 
-    int first;
+    int useFirst;
     if (stride == 1) {
-      first = Math.max(this.first(), r.first());
+      useFirst = Math.max(this.first(), r.first());
 
     } else if (stride() == 1) { // then r has a stride
-      first = this.first();
-      int rem = first % stride;
-      if (rem > 0) // round up to multiple of stride
-        first += stride - rem;
-      first = Math.max(first, r.first());
+
+      if (r.first() >= first() )
+        useFirst = r.first();
+      else {
+        int incr = (first() - r.first()) / stride;
+        useFirst = r.first() + incr * stride;
+        if (useFirst < first()) useFirst += stride;
+      }
 
     } else if (r.stride() == 1) { // then this has a stride
-      first = r.first();
-      int rem = first % stride;
-      if (rem > 0) // round up to multiple of stride
-        first += stride - rem;
-      first = Math.max(first, this.first());
+      
+      if (first() >= r.first() )
+        useFirst = first();
+      else {
+        int incr = (r.first() - first()) / stride;
+        useFirst = first() + incr * stride;
+        if (useFirst < r.first()) useFirst += stride;
+      }
 
     } else {
       throw new UnsupportedOperationException("Intersection when both ranges have a stride");
     }
 
-    if (first > last)
+    if (useFirst > last)
       return EMPTY;
-    return new Range(name, first, last, stride);
+    return new Range(name, useFirst, last, stride);
   }
 
     /**

@@ -74,7 +74,7 @@ public class Index4D extends Index {
         + curr3*stride3;
   }
 
-  protected int incr() {
+  public int incr() {
     if (++curr3 >= shape3) {
       curr3 = 0;
       if (++curr2 >= shape2) {

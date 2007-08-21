@@ -49,8 +49,30 @@ public class TestAggTiled extends TestCase {
     testReadDataSection(v, new Section("11,22"));
     testReadDataSection(v, new Section("9,14:20"));
 
+    testReadDataSection(v, new Section("0:5:2,6:18:2"));
+    testReadDataSection(v, new Section("2:4:2,3:9:2"));
+    testReadDataSection(v, new Section("9,14:20:3"));
+    testReadDataSection(v, new Section("1:11:2,22"));
+    testReadDataSection(v, new Section("1:11:22,22"));
+    testReadDataSection(v, new Section("1:9:4,3:19:3"));
+
     ncfile.close();
   }
+
+  public void testStride() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "tiled/testAggTiled.ncml";
+
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    System.out.println(" TestNcmlAggExisting.open " + ncfile);
+
+    Variable v = ncfile.findVariable("temperature");
+    v.setCaching(false);
+
+    testReadDataSection(v, new Section("1:9:4,3:19:3"));
+
+    ncfile.close();
+  }
+
 
   public void testDimensions(NetcdfFile ncfile) {
     Dimension latDim = ncfile.findDimension("lat");
@@ -148,13 +170,15 @@ public class TestAggTiled extends TestCase {
 
       int startRow = s.getOrigin(0);
       int startCol = s.getOrigin(1);
+      int strideRow = s.getStride(0);
+      int strideCol = s.getStride(1);
 
       int[] shape = data.getShape();
       Index tIndex = data.getIndex();
       for (int row = 0; row < shape[0]; row++)
         for (int col = 0; col < shape[1]; col++) {
           double val = data.getDouble( tIndex.set(row, col));
-          double truth = getVal(startRow + row, startCol + col);
+          double truth = getVal(startRow + row*strideRow, startCol + col*strideCol);
           assert TestUtils.close(val, truth) : val + "!=" + truth+"("+row+","+col+")";
         }
 
@@ -164,34 +188,4 @@ public class TestAggTiled extends TestCase {
     }
   }
 
-
-  public void testReadSlice(NetcdfFile ncfile, int[] origin, int[] shape) throws IOException, InvalidRangeException {
-
-    Variable v = ncfile.findVariable("T");
-
-    Array data = v.read(origin, shape);
-    assert data.getRank() == 3;
-    assert data.getSize() == shape[0] * shape[1] * shape[2];
-    assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
-    assert data.getShape()[1] == shape[1];
-    assert data.getShape()[2] == shape[2];
-    assert data.getElementType() == double.class;
-
-    Index tIndex = data.getIndex();
-    for (int i = 0; i < shape[0]; i++)
-      for (int j = 0; j < shape[1]; j++)
-        for (int k = 0; k < shape[2]; k++) {
-          double val = data.getDouble(tIndex.set(i, j, k));
-          //System.out.println(" "+val);
-          assert TestUtils.close(val, 100 * (i + origin[0]) + 10 * j + k) : val;
-        }
-
-  }
-
-  public void testReadSlice(NetcdfFile ncfile) throws IOException, InvalidRangeException {
-    testReadSlice(ncfile, new int[]{0, 0, 0}, new int[]{59, 3, 4});
-    testReadSlice(ncfile, new int[]{0, 0, 0}, new int[]{2, 3, 2});
-    testReadSlice(ncfile, new int[]{25, 0, 0}, new int[]{10, 3, 4});
-    testReadSlice(ncfile, new int[]{44, 0, 0}, new int[]{10, 2, 3});
-  }
 }
