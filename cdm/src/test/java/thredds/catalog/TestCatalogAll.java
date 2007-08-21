@@ -90,12 +90,12 @@ public class TestCatalogAll extends TestCase {
 
     TestSuite suite= new TestSuite();
     suite.addTest(new TestSuite(TestURL.class));
-    suite.addTest(new TestSuite(TestOpen.class));
+    // suite.addTest(new TestSuite(TestOpen.class)); // 0.6 catalogs
     suite.addTest(new TestSuite(TestRead.class));
     suite.addTest(new TestSuite(TestAliasID.class));
-    suite.addTest(new TestSuite(TestProperty.class)); //
-    suite.addTest(new TestSuite(TestDatasets.class)); //
-    suite.addTest(new TestSuite(TestInherit6.class)); //
+    // suite.addTest(new TestSuite(TestProperty.class)); // 0.6 catalogs
+    //suite.addTest(new TestSuite(TestDatasets.class)); // 0.6 catalogs
+    // suite.addTest(new TestSuite(TestInherit6.class)); // 0.6 catalogs
     suite.addTest(new TestSuite(TestInherit1.class)); //
     suite.addTest(new TestSuite(TestResolve1.class)); //
     suite.addTest(new TestSuite(TestMetadata.class)); //

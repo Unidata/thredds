@@ -582,7 +582,7 @@ public class NetcdfFile {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   protected String location, id, title, cacheName;
-  protected Group rootGroup = new Group(this, null, "");
+  protected Group rootGroup = makeRootGroup();
   protected boolean isClosed = false;
   private boolean immutable = false;
 
@@ -1300,9 +1300,14 @@ public class NetcdfFile {
     variables = new ArrayList<Variable>();
     gattributes = new ArrayList<Attribute>();
     dimensions = new ArrayList<Dimension>();
-    rootGroup = null; // dorky - need this for following call
-    rootGroup = new Group(this, null, "");
+    rootGroup = makeRootGroup();
     // addedRecordStructure = false;
+  }
+
+  protected Group makeRootGroup() {
+    Group root = new Group(this, null, "");
+    root.parent = null;
+    return root;
   }
 
   /**

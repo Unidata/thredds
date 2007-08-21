@@ -127,8 +127,8 @@ public class NcMLWriter {
     if (null != ncd.getTitle())
       rootElem.setAttribute("title", ncd.getTitle());
 
-    if (ncd.getEnhanceMode() != NetcdfDataset.EnhanceMode.None)
-      rootElem.setAttribute("enhance", ncd.getEnhanceMode().toString());
+    //if (ncd.getEnhanceMode() != NetcdfDataset.EnhanceMode.None)
+    //  rootElem.setAttribute("enhance", ncd.getEnhanceMode().toString());
 
     AggregationIF agg = ncd.getAggregation();
     if (agg != null) {

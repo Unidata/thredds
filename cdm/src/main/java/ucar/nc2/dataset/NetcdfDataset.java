@@ -212,9 +212,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     NetcdfDataset ds;
     if (ncfile instanceof NetcdfDataset) {
       ds = (NetcdfDataset) ncfile;
-      enhance(ds, enhanceMode, cancelTask);
+      enhance(ds, enhanceMode, cancelTask); // enhance "in place", eg modify the NetcdfDataset
     } else {
-      ds = new NetcdfDataset(ncfile, enhanceMode);
+      ds = new NetcdfDataset(ncfile, enhanceMode); // enhance when wrapping
     }
 
     return ds;
@@ -733,18 +733,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public NetcdfDataset(NetcdfFile ncfile, EnhanceMode mode) throws IOException {
     super(ncfile);
-    this.isEnhanced = mode;
 
     this.orgFile = ncfile;
     convertGroup(getRootGroup(), ncfile.getRootGroup());
     finish(); // build global lists
 
-    if (mode == EnhanceMode.All || mode == EnhanceMode.CoordSystems) {
-      ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(this, null);
-      rootGroup = new Group(this, null, "");
-      convertGroup(rootGroup, ncfile.getRootGroup());
-      finish(); // rebuild global lists
-    }
+    enhance( this, mode, null);
   }
 
   private void convertGroup(Group g, Group from) {
@@ -770,7 +764,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       newVar = new StructureDS(g, (Structure) v, false);
       convertStructure(g, (Structure) newVar);
     } else {
-      newVar = new VariableDS(g, v, isEnhancedScaleOffset());
+      newVar = new VariableDS(g, v, false); // enhancement done later
     }
     return newVar;
   }
@@ -785,7 +779,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         newVar = new StructureDS(g, (Structure) v, false);
         convertStructure(g, (Structure) newVar);
       } else {
-        newVar = new VariableDS(g, v, isEnhancedScaleOffset());
+        newVar = new VariableDS(g, v, false); // enhancement done later
       }
 
       newList.add(newVar);

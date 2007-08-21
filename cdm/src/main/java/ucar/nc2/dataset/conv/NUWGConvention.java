@@ -52,7 +52,9 @@ public class NUWGConvention extends CoordSysBuilder {
   }
 
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
-
+    if (null != ds.findGlobalAttribute("_enhanced")) return; // check if its already been done - aggregating enhanced datasets.
+    ds.addAttribute(null, new Attribute("_enhanced", ""));
+    
     // find all variables that have the nav dimension
     // put them into a NavInfoList
     // make their data into metadata
@@ -292,7 +294,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
 
   protected void makeCoordinateTransforms( NetcdfDataset ds) {
-    if (grib.ct != null) {
+    if ((grib != null) && (grib.ct != null)) {
       VarProcess vp = findVarProcess(grib.ct.getName());
       vp.isCoordinateTransform = true;
       vp.ct = grib.ct;

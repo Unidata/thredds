@@ -25,7 +25,7 @@ public class TestH5aura extends TestCase {
   }
 
   public void test2() throws IOException {
-    NetcdfFile ncfile = TestH5.open("C:/data/testdata/hdf5/auraData/HIRDLS2-AFGL_b027_na.he5");
+    NetcdfFile ncfile = TestH5.open(TestAll.upcShareTestDataDir+"hdf5/auraData/HIRDLS2-AFGL_b027_na.he5");
     Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
     
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree"));

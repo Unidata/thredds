@@ -289,7 +289,7 @@ public class Group {
   public void addDimension( Dimension d) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
-    if (findDimension(d.getName()) != null)
+    if (findDimensionLocal(d.getName()) != null)
       throw new IllegalArgumentException("Variable name (" + d.getName() + ") must be unique within Group " + getName());
 
     dimensions.add( d);
