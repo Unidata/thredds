@@ -80,6 +80,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     //scanFmrcList.add(d);
   }
 
+  @Override
   protected void closeDatasets() throws IOException {
     if (typicalGridDataset != null) {
       typicalGridDataset.close();
@@ -87,6 +88,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     super.closeDatasets();
   }
 
+  @Override
   protected void buildDataset(CancelTask cancelTask) throws IOException {
     buildDataset(typicalDataset, typicalGridDataset, cancelTask);
   }
@@ -224,11 +226,13 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   }
 
   // used in buildDataset
+  @Override
   protected Dataset getTypicalDataset() throws IOException {
     return typicalDataset;
   }
 
   // for the case that we dont have a fmrcDefinition.
+  @Override
   protected void makeTimeCoordinate(GridDataset gds, CancelTask cancelTask) throws IOException {
     String innerDimName = timeAxis.getName();
     Dimension innerDim = new Dimension(innerDimName, max_times, true);
@@ -272,6 +276,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   }
 
   // the timeAxis will be 2D, and there's only one
+  @Override
   protected void readTimeCoordinates(VariableDS timeAxis, CancelTask cancelTask) throws IOException {
 
     // redo the time dimension, makes things easier if you dont replace Dimension, just modify the length
@@ -313,198 +318,11 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     timeAxis.addAttribute(new Attribute("units", units));
   }
 
-  /* protected void buildDataset(boolean isNew, CancelTask cancelTask) throws IOException {
-/* buildCoords(cancelTask);
-
-// open a "typical"  nested dataset and copy it to newds
-Dataset typicalDataset = getTypicalDataset();
-NetcdfFile typical =  typicalDataset.acquireFile(null);
-NcMLReader.transferDataset(typical, ncDataset, null); // isNew ? null : new MyReplaceVariableCheck());
-
-// some additional global attributes
-Group root = ncDataset.getRootGroup();
-root.addAttribute(new Attribute("Conventions", "CF-1.0, "+ _Coordinate.Convention));
-root.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
-
-// create runtime aggregation dimension
-String dimName = getDimensionName();
-int nruns = getTotalCoords(); // same as  nestedDatasets.size()
-Dimension aggDim = new Dimension(dimName, nruns, true);
-ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
-ncDataset.addDimension(null, aggDim);
-
-// create runtime aggregation coordinate variable
-DataType  coordType = getCoordinateType();
-VariableDS  runtimeCoordVar = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
-runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
-runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
-runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
-ncDataset.addVariable(null, runtimeCoordVar);
-if (debug) System.out.println("FmrcAggregation: added runtimeCoordVar " + runtimeCoordVar.getName());
-
-// add its data
-if (true) { // LOOK detect if we have the info
-ArrayObject.D1 runData = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {nruns});
-for (int j = 0; j < nestedDatasets.size(); j++) {
-Dataset dataset = (Dataset) nestedDatasets.get(j);
-runData.set(j, dataset.getCoordValueString());
-}
-runtimeCoordVar.setCachedData(runData, true);
-} else {
-runtimeCoordVar.setProxyReader( this);
-}
-
-// work with a GridDataset
-NetcdfDataset typicalDS;
-if (typical instanceof NetcdfDataset)
-typicalDS = (NetcdfDataset) typical;
-else
-typicalDS = new NetcdfDataset( typical);
-if (!typicalDS.isEnhanced())
-typicalDS.enhance();
-
-GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
-
-// handle the 2D time coordinates and dimensions
-// for the case that we have a fmrcDefinition, there may be time coordinates that dont show up in the typical dataset
-if (fmrcDefinition != null) {
-
-List runSeq = fmrcDefinition.getRunSequences();
-for (int i = 0; i < runSeq.size(); i++) { // each runSeq generates a 2D time coordinate
-FmrcDefinition.RunSeq seq = (FmrcDefinition.RunSeq) runSeq.get(i);
-String timeDimName = seq.getName();
-
-// whats the maximum size ?
-boolean isRagged = false;
-int max_times = 0;
-for (int j = 0; j < nestedDatasets.size(); j++) {
-Dataset dataset = (Dataset) nestedDatasets.get(j);
-ForecastModelRunInventory.TimeCoord timeCoord = seq.findTimeCoordByRuntime(dataset.getCoordValueDate());
-double[] offsets = timeCoord.getOffsetHours();
-max_times = Math.max(max_times, offsets.length);
-if (max_times != offsets.length)
-isRagged = true;
-}
-
-// create time dimension
-Dimension timeDim = new Dimension(timeDimName, max_times, true);
-ncDataset.removeDimension(null, timeDimName); // remove previous declaration, if any
-ncDataset.addDimension(null, timeDim);
-
-Dataset firstDataset = (Dataset) nestedDatasets.get(0);
-Date baseDate = firstDataset.getCoordValueDate();
-String desc = "Coordinate variable for " + timeDimName + " dimension";
-String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
-
-String dims = getDimensionName() + " " + timeDimName;
-Variable newV = new VariableDS(ncDataset, null, null, timeDimName, DataType.DOUBLE, dims, desc, units);
-
-// do we already have the coordinate variable ?
-Variable oldV = ncDataset.getRootGroup().findVariable(timeDimName);
-if (null != oldV) {
-//NcMLReader.transferVariableAttributes(oldV, newV);
-//Attribute att = newV.findAttribute(_Coordinate.AliasForDimension);  // ??
-//if (att != null) newV.remove(att);
-ncDataset.removeVariable(null, timeDimName);
-}
-ncDataset.addVariable(null, newV);
-
-newV.addAttribute(new Attribute("units", units));
-newV.addAttribute(new Attribute("long_name", desc));
-newV.addAttribute(new Attribute("standard_name", "time"));
-newV.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-if (isRagged)
-newV.addAttribute(new ucar.nc2.Attribute("missing_value", new Double(Double.NaN)));
-
-// compute the coordinates
-Array coordValues = calcTimeCoordinateFromDef(nruns, max_times, seq);
-newV.setCachedData(coordValues, true);
-}
-
-ncDataset.finish();
-
-} else {
-// for the case that we dont have a fmrcDefinition
-
-// LOOK how do we set the length of the time dimension(s), if its ragged?
-// Here we are just using the typical dataset !!!
-// For now, we dont handle ragged time coordinates.
-
-// find time axes
-HashSet timeAxes = new HashSet();
-List grids = gds.getGrids();
-for (int i = 0; i < grids.size(); i++) {
-GridDatatype grid = (GridDatatype) grids.get(i);
-GridCoordSystem gcc = grid.getCoordinateSystem();
-CoordinateAxis1D timeAxis = gcc.getTimeAxis1D();
-if (null != timeAxis)
-timeAxes.add(timeAxis);
-}
-
-// promote the time coordinate(s) to 2D, read in values if we have to
-Iterator iter = timeAxes.iterator();
-while( iter.hasNext()) {
-CoordinateAxis1DTime v = (CoordinateAxis1DTime) iter.next();
-
-// construct new variable, replace old one
-String dims = dimName + " " + v.getDimensionsString();
-VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-NcMLReader.transferVariableAttributes(v, vagg);
-Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
-if (att != null) vagg.remove(att);
-
-ncDataset.removeVariable(null, v.getShortName());
-ncDataset.addVariable(null, vagg);
-
-if (!timeUnitsChange)
-// Case 1: assume the units are all the same, so its just another agg variable
-vagg.setProxyReader(this);
-else {
-// Case 2: assume the time units differ for each nested file
-readTimeCoordinates( vagg, cancelTask);
-}
-
-if (debug) System.out.println("FmrcAggregation: promoted timeCoord " + v.getName());
-if (cancelTask != null && cancelTask.isCancel()) return;
-}
-}
-
-// promote all grid variables
-List grids = gds.getGrids();
-for (int i = 0; i < grids.size(); i++) {
-GridDatatype grid = (GridDatatype) grids.get(i);
-Variable v = (Variable) grid.getVariable();
-
-// add new dimension
-String dims = dimName + " " + v.getDimensionsString();
-
-// construct new variable, replace old one
-VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
-vagg.setProxyReader(this);
-NcMLReader.transferVariableAttributes(v, vagg);
-
-// we need to explicitly list the coordinate axes, because time coord is now 2D
-vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getCoordinateSystem().getName()));
-vagg.addAttribute(new Attribute("coordinates", dimName + " " + grid.getCoordinateSystem().getName())); // CF
-
-ncDataset.removeVariable(null, v.getShortName());
-ncDataset.addVariable(null, vagg);
-if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());
-}
-
-ncDataset.finish();
-makeProxies(typicalDataset, ncDataset);
-ncDataset.enhance();
-
-typical.close();
-}                  */
-
   /**
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    * public for NcMLWriter
    */
   public class OpenDataset extends DatasetOuterDimension {
-
     private NetcdfFile openFile;
 
     /**

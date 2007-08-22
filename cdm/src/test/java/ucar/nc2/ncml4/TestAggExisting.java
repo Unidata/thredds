@@ -166,7 +166,7 @@ public class TestAggExisting extends TestCase {
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext())
-        assert dataI.getIntNext() == count++;
+        assert dataI.getIntNext() == count++ : dataI.getIntCurrent();
 
     } catch (IOException io) {
       io.printStackTrace();

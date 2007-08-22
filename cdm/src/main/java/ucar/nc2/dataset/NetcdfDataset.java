@@ -245,6 +245,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       ds.isEnhanced = EnhanceMode.CoordSystems;
     else if (ds.scaleOffsetWasAdded)
       ds.isEnhanced = EnhanceMode.ScaleMissing;
+    else
+      ds.isEnhanced = EnhanceMode.None;
   }
 
   /**

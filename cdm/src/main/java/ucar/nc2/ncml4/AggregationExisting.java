@@ -60,11 +60,6 @@ public class AggregationExisting extends AggregationOuterDimension {
     super(ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);
   }
 
-  // for AggregationExistingOne
-  protected AggregationExisting(NetcdfDataset ncd, String dimName, Aggregation.Type type, String recheckS) {
-    super(ncd, dimName, type, recheckS);
-  }
-
   protected void buildDataset(CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
 

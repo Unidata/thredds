@@ -27,7 +27,7 @@
       <xsd:attribute name="location" type="xsd:anyURI"/>
       <xsd:attribute name="id" type="xsd:string"/>
       <xsd:attribute name="title" type="xsd:string"/>
-      <xsd:attribute name="enhance" type="xsd:boolean"/>
+      <xsd:attribute name="enhance" type="xsd:string"/>
       <xsd:attribute name="addRecords" type="xsd:boolean"/>
 
       <xsd:attribute name="iosp" type="xsd:string"/>     <!-- iosp class name -->

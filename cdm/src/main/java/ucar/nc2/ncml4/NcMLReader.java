@@ -384,12 +384,20 @@ public class NcMLReader {
     // transfer from groups to global conatiners
     targetDS.finish();
 
-    // enhance means do scale/offset and add CoordSystems
+    // enhance means do scale/offset and/or add CoordSystems
     String enhanceS = netcdfElem.getAttributeValue("enhance");
-    boolean enhance = (enhanceS != null) && enhanceS.equalsIgnoreCase("true");
-    if (enhance) {
-      targetDS.enhance();
-      targetDS.finish();
+    if (enhanceS != null)  {
+      NetcdfDataset.EnhanceMode mode = NetcdfDataset.EnhanceMode.None;
+      if (enhanceS.equalsIgnoreCase("true"))
+        mode = NetcdfDataset.EnhanceMode.All;
+      else if (enhanceS.equalsIgnoreCase("All"))
+        mode = NetcdfDataset.EnhanceMode.All;
+      else if (enhanceS.equalsIgnoreCase("ScaleMissing"))
+        mode = NetcdfDataset.EnhanceMode.ScaleMissing;
+      else if (enhanceS.equalsIgnoreCase("CoordSystems"))
+        mode = NetcdfDataset.EnhanceMode.CoordSystems;
+      
+      targetDS.enhance( mode);
     }
 
     // optionally add record structure to netcdf-3
@@ -1044,10 +1052,6 @@ public class NcMLReader {
     } else if (type.equals("forecastModelRunSingleCollection")) {
       AggregationFmrcSingle aggh = new AggregationFmrcSingle(newds, dimName, recheck);
       agg = aggh;
-
-      String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
-      if (timeUnitsChange != null)
-        aggh.setTimeUnitsChange(timeUnitsChange.equalsIgnoreCase("true"));
 
       String fmrcDefinition = aggElem.getAttributeValue("fmrcDefinition");
       if (fmrcDefinition != null)

@@ -24,6 +24,7 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.ma2.DataType;
+import ucar.ma2.Array;
 
 import java.io.IOException;
 
@@ -90,6 +91,9 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
       if (!Float.isNaN(scale_factor)) val *= scale_factor;
       var.addAttribute(new Attribute("missing_value", (short) val));
     }
+    // hack
+    Array missingData = Array.factory(DataType.SHORT.getClassType(), new int[] {2}, new short[] {-990, -9990});
+    var.addAttribute(new Attribute("missing_value", missingData));    
     var.addAttribute(new Attribute(_Coordinate.Axes, "Height Lat Lon"));
 
   }
