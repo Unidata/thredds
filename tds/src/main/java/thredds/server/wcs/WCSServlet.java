@@ -1,15 +1,14 @@
 package thredds.server.wcs;
 
 import thredds.wcs.WcsDataset;
-import thredds.wcs.GetCoverageRequest;
-import thredds.wcs.SectionType;
 import thredds.servlet.*;
 
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.util.DiskCache2;
 
 /**
@@ -21,7 +20,7 @@ public class WCSServlet extends AbstractServlet {
   private boolean allow = false, deleteImmediately = true;
   private long maxFileDownloadSize;
 
-  private VersionHandler versionHandler;
+  private List<VersionHandler> versionHandlers;
 
   // must end with "/"
   protected String getPath() { return "wcs/"; }
@@ -45,6 +44,10 @@ public class WCSServlet extends AbstractServlet {
     // LOOK: what happens if we are still downloading when the disk scour starts?
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
     WcsDataset.setDiskCache(diskCache);
+
+    versionHandlers = new ArrayList<VersionHandler>(2);
+    versionHandlers.add( new WCS_1_0());
+    versionHandlers.add( new WCS_1_1_0());
   }
 
   public void destroy()
@@ -60,6 +63,7 @@ public class WCSServlet extends AbstractServlet {
     if (!allow) {
       // ToDo - Server not configured to support WCS. Should response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, -1 );
       return;
     }
 
@@ -81,21 +85,49 @@ public class WCSServlet extends AbstractServlet {
     }
 
     // Decide on requested version.
-    String versions = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions");
-    String version = ServletUtil.getParameterIgnoreCase( req, "Version");
-    if ( version != null)
-      if ( version.equals( "1.0.0"))
-        versionHandler = new WCS_1_0();
-      else if ( version.equals( "1.1.0"))
-        versionHandler = new WCS_1_1_0();
+    String acceptableVersionsString = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions");
+    String reqVersionString = ServletUtil.getParameterIgnoreCase( req, "Version");
+    VersionHandler targetHandler = null;
+
+    // If "Version" given, use it or fail if invalid.
+    // Otherwise, step through list in "AcceptVersions" and use first one that matches.
+    if ( reqVersionString != null)
+    {
+      Version reqVersion = null;
+      try
+      {
+        reqVersion = new Version( reqVersionString );
+      }
+      catch ( IllegalArgumentException e )
+      {
+        // ToDo return exception XML for invalid Version attribute value.
+        res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Bad value for \"Version\" attribute <" + reqVersionString +">." );
+        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
+        return;
+      }
+      int loc = versionHandlers.indexOf( reqVersion);
+      if ( loc != -1 )
+      {
+        targetHandler = versionHandlers.get( loc);
+      }
       else
-        versionHandler = new WCS_1_1_0();
-    else if (versions != null)
-      versionHandler = new WCS_1_1_0();
-    else
-      versionHandler = new WCS_1_1_0();
+      {
+        VersionHandler lowestVerHandler = versionHandlers.get( 0 );
+        VersionHandler highestVerHandler = versionHandlers.get( versionHandlers.size() - 1 );
+        if ( reqVersion.lessThan( lowestVerHandler.getVersion()))
+          targetHandler = lowestVerHandler;
+        else if ( reqVersion.greaterThan( highestVerHandler.getVersion()))
+          targetHandler = highestVerHandler;
+        else
+        {
+          // ToDo figure this out! The version is in between available versions.
+          res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Bad value for \"Version\" attribute <" + reqVersionString + ">." );
+          ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 );
+          return;
+        }
+      }
+    }
 
-
-    versionHandler.handleKVP( this, req, res);
+    targetHandler.handleKVP( this, req, res);
   }
 }

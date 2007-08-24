@@ -14,6 +14,8 @@ import java.io.IOException;
  */
 public interface VersionHandler
 {
+  public Version getVersion();
+  
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
           throws ServletException, IOException;
 }

@@ -22,10 +22,20 @@ public class WCS_1_1_0 implements VersionHandler
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( WCS_1_1_0.class );
 
+  private Version version;
+
   /**
    * Declare the default constructor to be package private.
    */
-  WCS_1_1_0() { }
+  WCS_1_1_0()
+  {
+    this.version = new Version( "1.1.0" );
+  }
+
+  public Version getVersion()
+  {
+    return this.version;  
+  }
 
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
           throws ServletException, IOException

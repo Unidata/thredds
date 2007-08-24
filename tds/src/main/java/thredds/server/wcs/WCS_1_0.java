@@ -22,10 +22,15 @@ public class WCS_1_0 implements VersionHandler
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( WCS_1_0.class );
 
+  private Version version;
+
   /**
    * Declare the default constructor to be package private.
    */
-  WCS_1_0() { }
+  WCS_1_0()
+  {
+    this.version = new Version( "1.0.0");
+  }
 
   private WcsDataset openWcsDataset( HttpServletRequest req, HttpServletResponse res) throws IOException
   {
@@ -43,6 +48,11 @@ public class WCS_1_0 implements VersionHandler
     ds.setServerBase( setServerBase);
 
     return ds;
+  }
+
+  public Version getVersion()
+  {
+    return this.version;  
   }
 
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
