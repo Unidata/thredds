@@ -22,14 +22,10 @@ package ucar.nc2.ncml4;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
-import ucar.nc2.units.DateUnit;
 import ucar.ma2.*;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc
@@ -42,6 +38,11 @@ public abstract class AggregationOuterDimension extends Aggregation {
   protected List<VariableDS> aggVars = new ArrayList<VariableDS>();
   private int totalCoords = 0;  // the aggregation dimension size
 
+  protected List<String> aggVarNames = new ArrayList<String>(); // joinNew
+  protected List<CacheVar> cacheList = new ArrayList<CacheVar>(); // promote global attribute to variable
+  protected boolean timeUnitsChange = false;
+
+  protected boolean debugCache = true;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -57,12 +58,63 @@ public abstract class AggregationOuterDimension extends Aggregation {
   }
 
   /**
+   * Set if time units can change. Implies isDate
+   *
+   * @param timeUnitsChange true if time units can change
+   */
+  void setTimeUnitsChange(boolean timeUnitsChange) {
+    this.timeUnitsChange = timeUnitsChange;
+    if (timeUnitsChange) isDate = true;
+  }
+
+
+  /**
+   * Add a name for a variableAgg element
+   *
+   * @param varName name of agg variable
+   */
+  public void addVariable(String varName) {
+    aggVarNames.add(varName);
+  }
+
+  /**
+   * Promote a global attribute to a variable
+   *
+   * @param varName name of agg variable
+   * @param orgName name of global attribute, if different from the variable
+   */
+  void addVariableFromGlobalAttribute(String varName, String orgName) {
+    cacheList.add(new PromoteVar(varName, orgName));
+  }
+
+  /**
+   * Cache a variable (for efficiency).
+   * Useful for Variables that are used a lot, and not too large, like coordinate variables.
+   *
+   * @param varName name of variable to cache. must exist.
+   */
+  void addCacheVariable(String varName) {
+    cacheList.add(new CacheVar(varName));
+  }
+
+   /**
    * Get dimension name to join on
    *
    * @return dimension name or null if type union/tiled
    */
   public String getDimensionName() {
     return dimName;
+  }
+
+
+  /**
+   * Get the list of aggregation variable names: variables whose data spans multiple files.
+   * For type joinNew only.
+   *
+   * @return the list of aggregation variable names
+   */
+  List<String> getAggVariableNames() {
+    return aggVarNames;
   }
 
   protected void buildCoords(CancelTask cancelTask) throws IOException {
@@ -84,6 +136,21 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   protected int getTotalCoords() {
     return totalCoords;
+  }
+
+  protected void promoteGlobalAttributes(DatasetOuterDimension typicalDataset) throws IOException {   
+
+    for (CacheVar cv : cacheList) {
+      if (!(cv instanceof PromoteVar)) continue;
+      PromoteVar pv = (PromoteVar) cv;
+
+      Array data = pv.read( typicalDataset);
+      pv.dtype = DataType.getType(data.getElementType());
+      VariableDS promotedVar = new VariableDS(ncDataset, null, null, pv.varName, pv.dtype, dimName, null, null);
+      ncDataset.addVariable(null, promotedVar);
+      promotedVar.setProxyReader(this);
+      promotedVar.setSPobject( pv);
+    }
   }
 
   protected void rebuildDataset() throws IOException {
@@ -108,12 +175,12 @@ public abstract class AggregationOuterDimension extends Aggregation {
     Dataset typicalDataset = getTypicalDataset();
     DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
     for (Variable var : ncDataset.getRootGroup().getVariables()) {
-      if (aggVars.contains(var) || dimName.equals( var.getName()))
+      VariableDS varDS = (VariableDS) var;
+      if (aggVars.contains(varDS) || dimName.equals(var.getName()))
         continue;
       VariableEnhanced ve = (VariableEnhanced) var;
       ve.setProxyReader(proxy);
     }
-    typicalDataset.close();
   }
 
   /**
@@ -126,9 +193,20 @@ public abstract class AggregationOuterDimension extends Aggregation {
    */
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
 
+    Object spObj = mainv.getSPobject();
+    if (spObj != null && spObj instanceof CacheVar) {
+      CacheVar pv = (CacheVar) spObj;
+      try {
+        return pv.read(mainv.getShapeAsSection(), cancelTask);
+      } catch (InvalidRangeException e) {
+        logger.error("readAgg " + getLocation(), e);
+        throw new IllegalArgumentException("readAgg " + getLocation(), e);
+      }
+    }
+
     // the case of the agg coordinate var
-    if (mainv.getShortName().equals(dimName))
-      return readAggCoord(mainv, cancelTask);
+    //if (mainv.getShortName().equals(dimName))
+    //  return readAggCoord(mainv, cancelTask);
 
     // read the original type - if its been promoted to a new type, the conversion happens after this read
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
@@ -149,7 +227,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     return allData;
   }
 
-  protected Array readAggCoord(Variable aggCoord, CancelTask cancelTask) throws IOException {
+  /* protected Array readAggCoord(Variable aggCoord, CancelTask cancelTask) throws IOException {
     DataType dtype = aggCoord.getDataType();
     Array allData = Array.factory(dtype, aggCoord.getShape());
     IndexIterator result = allData.getIndexIterator();
@@ -171,7 +249,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     aggCoord.setCachedData(allData, false);
 
     return allData;
-  }
+  } */
 
   /**
    * Read a section of an aggregation variable.
@@ -188,9 +266,15 @@ public abstract class AggregationOuterDimension extends Aggregation {
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
+    Object spObj = mainv.getSPobject();
+    if (spObj != null && spObj instanceof CacheVar) {
+      CacheVar pv = (CacheVar) spObj;
+      return pv.read(mainv.getShapeAsSection(), cancelTask);
+    }
+
     // the case of the agg coordinate var
-    if (mainv.getShortName().equals(dimName))
-      return readAggCoord(mainv, section, cancelTask);
+    //if (mainv.getShortName().equals(dimName))
+    //  return readAggCoord(mainv, section, cancelTask);
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array sectionData = Array.factory(dtype, section.getShape());
@@ -230,7 +314,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     return sectionData;
   }
 
-  protected Array readAggCoord(Variable aggCoord, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+  /* protected Array readAggCoord(Variable aggCoord, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     DataType dtype = aggCoord.getDataType();
     Array allData = Array.factory(dtype, section.getShape());
     IndexIterator result = allData.getIndexIterator();
@@ -314,7 +398,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       MAMath.copy(dtype, varData.getIndexIterator(), result);
     }
 
-  }
+  } */
 
   @Override
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec, boolean enhance, NetcdfFileFactory reader) {
@@ -418,13 +502,17 @@ public abstract class AggregationOuterDimension extends Aggregation {
      */
     public int getNcoords(CancelTask cancelTask) throws IOException {
       if (ncoord <= 0) {
-        NetcdfFile ncd = acquireFile(cancelTask);
-        if ((cancelTask != null) && cancelTask.isCancel()) return 0;
+        NetcdfFile ncd = null;
+        try {
+          ncd = acquireFile(cancelTask);
+          if ((cancelTask != null) && cancelTask.isCancel()) return 0;
 
-        Dimension d = ncd.getRootGroup().findDimension(dimName);
-        if (d != null)
-          ncoord = d.getLength();
-        ncd.close();
+          Dimension d = ncd.getRootGroup().findDimension(dimName);
+          if (d != null)
+            ncoord = d.getLength();
+        } finally {
+          close(ncd);
+        }
       }
       return ncoord;
     }
@@ -488,7 +576,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       return true;
     }
 
-    @Override
+    /* @Override
     protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
       if (coordValue != null) return;
 
@@ -496,6 +584,16 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (coordVar != null) {
         Array data = coordVar.read();
         coordValue = data.toString();
+      }
+
+    } */
+
+    // read any cached variables that need it
+
+    @Override
+    protected void cacheVariables(NetcdfFile ncfile) throws IOException {
+      for (CacheVar pv : cacheList) {
+        pv.read(this);
       }
     }
 
@@ -529,9 +627,178 @@ public abstract class AggregationOuterDimension extends Aggregation {
         return v.read(section);
 
       } finally {
-        if (ncd != null) ncd.close();
+        close(ncd);
       }
     }
 
   }
+
+  /////////////////////////////////////////////
+  // vars that should be cached across the agg for efficiency
+  class CacheVar {
+    String varName;
+    DataType dtype;
+    Map<String, Array> dataMap = new HashMap<String, Array>(); // LOOK HashMap could just keep growing
+
+    CacheVar(String varName) {
+      this.varName = varName;
+    }
+
+    Array read(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+      if (debugCache) System.out.println("caching "+varName+" section= "+section);
+      Array allData = Array.factory(dtype, section.getShape());
+
+      List<Range> ranges = section.getRanges();
+      Range joinRange = section.getRange(0);
+      Section innerSection = null;
+      if (section.getRank() > 1)
+        innerSection = new Section(ranges.subList(1, ranges.size()));
+
+      int resultPos = 0;
+      List<Dataset> nestedDatasets = getDatasets();
+      for (Dataset vnested : nestedDatasets) {
+        DatasetOuterDimension dod = (DatasetOuterDimension) vnested;
+
+        // can we skip ?
+        Range nestedJoinRange = dod.getNestedJoinRange(joinRange);
+        if (nestedJoinRange == null)
+          continue;
+
+        Array varData = read(dod);
+        if ((innerSection != null) && (varData.getSize() != innerSection.computeSize())) // do we need to subset the data array ?
+          varData = varData.section(innerSection.getRanges());
+
+        // copy to result array
+        int nelems = (int) varData.getSize();
+        Array.arraycopy(varData, 0, allData, resultPos, nelems);
+        resultPos += nelems;
+
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return null;
+      }
+
+      return allData;
+    }
+
+    protected void setData(Dataset dset, Array data) {
+      dataMap.put(dset.getLocation(), data);
+    }
+
+    protected Array getData(Dataset dset) {
+      return dataMap.get(dset.getLocation());
+    }
+
+    // get the Array of data for this var in this dataset
+    protected Array read(DatasetOuterDimension dset) throws IOException {
+      Array data = getData(dset);
+      if (data != null) return data;
+
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = dset.acquireFile(null);
+        Variable v = ncfile.findVariable(varName);
+        data = v.read();
+        setData(dset, data);
+        return data;
+
+      } finally {
+        dset.close(ncfile);
+      }
+    }
+  }
+
+  /////////////////////////////////////////////
+  // data values might be specified by Dataset.coordValue
+  class CoordValueVar extends CacheVar {
+    Variable v;
+    Section innerSection;
+
+    CoordValueVar(Variable v) {
+      super(v.getName());
+      dtype = v.getDataType();
+
+      List<Range> ranges = v.getShapeAsSection().getRanges();
+      innerSection = new Section(ranges.subList(1, ranges.size()));
+    }
+
+    protected Array read(DatasetOuterDimension dset) throws IOException {
+      Array data = getData(dset);
+      if (data != null) return data;
+
+      data = Array.factory(dtype, innerSection.getShape());
+      IndexIterator ii = data.getIndexIterator();
+
+      // we have the coordinates as a String
+      if (dset.coordValue != null) {
+
+        // if theres only one coord
+        if (dset.ncoord == 1) {
+          if (dtype == DataType.STRING) {
+            ii.setObjectNext(dset.coordValue);
+          } else {
+            double val = Double.parseDouble(dset.coordValue);
+            ii.setDoubleNext(val);
+          }
+
+        } else {
+
+          // multiple coords
+          int count = 0;
+          StringTokenizer stoker = new StringTokenizer(dset.coordValue, " ,");
+          while (stoker.hasMoreTokens()) {
+            String toke = stoker.nextToken();
+
+            if (dtype == DataType.STRING) {
+              ii.setObjectNext(toke);
+            } else {
+              double val = Double.parseDouble(toke);
+              ii.setDoubleNext(val);
+            }
+            count++;
+          }
+
+          if (count != dset.ncoord) {
+            logger.error("readAggCoord incorrect number of coordinates dataset=" + dset.getLocation());
+            throw new IllegalArgumentException("readAggCoord incorrect number of coordinates dataset=" + dset.getLocation());
+          }
+        }
+
+        setData(dset, data);
+        return data;
+      }
+
+      return super.read(dset);
+    }
+  }
+
+  /////////////////////////////////////////////
+  // global attributes promoted to variables
+  class PromoteVar extends CacheVar {
+    String orgName;
+
+    PromoteVar(String varName, String orgName) {
+      super(varName);
+      this.orgName = orgName != null ? orgName : varName;
+    }
+
+    protected Array read(DatasetOuterDimension dset) throws IOException {
+      Array data = getData(dset);
+      if (data != null) return data;
+
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = dset.acquireFile(null);
+        Attribute att = ncfile.findGlobalAttribute(orgName);
+        data = att.getValues();
+        setData(dset, data);
+        return data;
+
+      } finally {
+        dset.close(ncfile);
+      }
+    }
+
+  }
+
+
 }

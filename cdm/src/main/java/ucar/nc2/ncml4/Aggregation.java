@@ -110,7 +110,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
   protected String dimName; // the aggregation dimension name
-  protected List<String> aggVarNames = new ArrayList<String>(); // joinNew
 
   // experimental
   protected boolean timeUnitsChange = false;
@@ -118,7 +117,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   protected boolean enhance = false, isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
-  protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
+  protected boolean debug = false, debugOpenFile = true, debugSyncDetail = false, debugProxy = false,
       debugRead = false, debugDateParse = false;
 
   /**
@@ -188,25 +187,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   }
 
   /**
-   * Add a name from a variableAgg element
-   *
-   * @param varName name of agg variable
-   */
-  public void addVariable(String varName) {
-    aggVarNames.add(varName);
-  }
-
-  /**
-   * Set if time units can change. Implies isDate
-   *
-   * @param timeUnitsChange true if time units can change
-   */
-  public void setTimeUnitsChange(boolean timeUnitsChange) {
-    this.timeUnitsChange = timeUnitsChange;
-    if (timeUnitsChange) isDate = true;
-  }
-
-  /**
    * Get type of aggregation
    *
    * @return type of aggregation
@@ -225,16 +205,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   }
 
   /**
-   * Get the list of aggregation variable names: variables whose data spans multiple files.
-   * For type joinNew only.
-   *
-   * @return the list of aggregation variable names
-   */
-  List<String> getAggVariableNames() {
-    return aggVarNames;
-  }
-
-  /**
    * Release all resources associated with the aggregation
    *
    * @throws IOException on error
@@ -245,10 +215,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   }
 
   protected void closeDatasets() throws IOException {
-    if (datasets != null) {
-      for (Aggregation.Dataset ds : datasets)
-        ds.close();
-    }
     datasets = null;
   }
 
@@ -299,7 +265,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
     for (MyCrawlableDataset myf : fileList) {
       // optionally parse for date
       if (null != dateFormatMark) {
-        String filename = myf.file.getPath();
+        String filename = myf.file.getName();
         myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
         myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
         if (debugDateParse) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
@@ -392,6 +358,9 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   /////////////////////////////////////////////////////////////////////////
 
 
+  protected String getLocation() {
+    return ncDataset.getLocation();
+  }
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
    *
@@ -506,14 +475,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
     }
 
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
-      try {
-        return _acquireFile(cancelTask);
-      } catch (IOException ioe) { // dataset was deleted ??
-        throw ioe;
-      }
-    }
-
-    private NetcdfFile _acquireFile(CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile;
       long start = System.currentTimeMillis();
       if (debugOpenFile) System.out.println(" try to acquire " + cacheName);
@@ -523,17 +484,25 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
         ncfile = NetcdfFileCache.acquire(cacheName, -1, cancelTask, spiObject, reader);
 
       if (debugOpenFile) System.out.println(" acquire " + cacheName + " took " + (System.currentTimeMillis() - start));
-      if (type == Type.JOIN_EXISTING) // LOOK should others use this?
-        cacheCoordValues(ncfile);
+      //if (type == Type.JOIN_EXISTING) // LOOK should others use this?
+      //  cacheCoordValues(ncfile);
+      // cacheVariables(ncfile); infinite loop
+
       return ncfile;
     }
 
-    protected void close() throws IOException {
-      // nothing to close - always acquire the NetcdfFile when needed
+    protected void close(NetcdfFile ncfile) throws IOException {
+      if (ncfile == null) return;
+      cacheVariables(ncfile);
+      ncfile.close();
     }
 
     // overridden in DatasetOuterDimension
-    protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
+    //protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
+    //}
+
+        // overridden in DatasetOuterDimension
+    protected void cacheVariables(NetcdfFile ncfile) throws IOException {
     }
 
     // overridden in DatasetOuterDimension
@@ -551,7 +520,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
         return v.read();
 
       } finally {
-        if (ncd != null) ncd.close();
+        close( ncd);
       }
     }
 
@@ -579,7 +548,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
         return v.read(section);
 
       } finally {
-        if (ncd != null) ncd.close();
+        close( ncd);
       }
     }
 
@@ -661,7 +630,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
         Variable proxyV = ncfile.findVariable(mainV.getName());  // LOOK assumes they have the same name - may have been renamed in NcML!
         return proxyV.read();
       } finally {
-        if (ncfile != null) ncfile.close();
+        dataset.close( ncfile);
       }
     }
 
@@ -673,18 +642,17 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
       } finally {
-        if (ncfile != null) ncfile.close();
+        dataset.close( ncfile);
       }
     }
   }
 
-
-  /**
+  /*
    * Argument to DatasetConstructor.transferDataset(ncfile, ncDataset, MyReplaceVariableCheck);
    * Used only on a rescan.
    * For JOIN_NEW, its replaced if its a listed aggregation variable
    * For JOIN_EXISTING, its replaced if its NOT an aggregation variable (!!??)
-   */
+   *
   protected class MyReplaceVariableCheck implements ReplaceVariableCheck {
     public boolean replace(Variable v) {
 
@@ -699,18 +667,16 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
     }
   }
 
-  /**
    * Is the named variable an "aggregation variable" ?
    *
    * @param name variable name
    * @return true if the named variable is an aggregation variable
-   */
   private boolean isAggVariable(String name) {
     for (String vname : aggVarNames) {
       if (vname.equals(name))
         return true;
     }
     return false;
-  }
+  } */
 
 }

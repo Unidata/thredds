@@ -54,6 +54,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   private CoordinateAxis1D timeAxis = null;
   private int max_times = 0;
   private Dataset typicalDataset = null;
+  private NetcdfFile typicalFile;
   private GridDataset typicalGridDataset = null;
   private boolean debug = false;
 
@@ -90,7 +91,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
   @Override
   protected void buildDataset(CancelTask cancelTask) throws IOException {
-    buildDataset(typicalDataset, typicalGridDataset, cancelTask);
+    buildDataset(typicalDataset, typicalFile, typicalGridDataset, cancelTask);
   }
 
   @Override
@@ -154,7 +155,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     }
 
     // open a "typical" dataset and make a GridDataset
-    NetcdfFile typicalFile = typicalDataset.acquireFile(cancelTask);
+    typicalFile = typicalDataset.acquireFile(cancelTask);
     NetcdfDataset typicalDS = (typicalFile instanceof NetcdfDataset) ? (NetcdfDataset) typicalFile : new NetcdfDataset(typicalFile);
     if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
       typicalDS.enhance();

@@ -54,7 +54,7 @@ import org.jdom.Element;
  * @author caron
  */
 public class AggregationExisting extends AggregationOuterDimension {
-  private boolean debugCache = false, debugCacheDetail = false;
+  private boolean debugPersist = false, debugPersistDetail = false;
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);
@@ -75,6 +75,8 @@ public class AggregationExisting extends AggregationOuterDimension {
     Dimension aggDim = new Dimension(dimName, getTotalCoords(), true);
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
+
+    promoteGlobalAttributes( (DatasetOuterDimension) typicalDataset);
 
     // now create the agg variables
     // all variables with the named aggregation dimension
@@ -97,9 +99,13 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
+    VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
+    if (joinAggCoord == null) {
+      throw new IllegalArgumentException("No existing coordinate variable for joinExisting on "+getLocation());
+    }
+
     if (type == Type.JOIN_EXISTING_ONE) {
       // replace aggregation coordinate variable
-      VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
       joinAggCoord.setDataType(DataType.STRING);
       joinAggCoord.getAttributes().clear();
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
@@ -108,12 +114,16 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     if (timeUnitsChange) {
-      VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
       readTimeCoordinates(joinAggCoord, cancelTask);
     }
 
+    // make it a cacheVar
+    CacheVar cv = new CoordValueVar(joinAggCoord);
+    joinAggCoord.setSPobject( cv);
+    cacheList.add(cv);
+
     setDatasetAcquireProxy(typicalDataset, ncDataset);
-    typical.close();
+    typicalDataset.close( typical);
   }
 
   protected void rebuildDataset() throws IOException {
@@ -149,7 +159,7 @@ public class AggregationExisting extends AggregationOuterDimension {
           units = v.getUnitsString();
 
       } finally {
-        if (ncfile != null) ncfile.close();
+        dataset.close( ncfile);
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
@@ -290,7 +300,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       DatasetOuterDimension dod = (DatasetOuterDimension) findDataset(location);
 
       if ((null != dod) && (dod.ncoord == 0)) {
-        if (debugCacheDetail) System.out.println("  use cache for " + location);
+        if (debugPersistDetail) System.out.println("  use cache for " + location);
         String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
         try {
           dod.ncoord = Integer.parseInt(ncoordsS);

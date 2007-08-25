@@ -148,6 +148,14 @@
     <xsd:complexType>
       <xsd:sequence>
 
+        <xsd:element name="variableAgg" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+
+        <xsd:element ref="promoteGlobalAttribute" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="cacheVariable" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="netcdf" minOccurs="0" maxOccurs="unbounded"/>
 
         <xsd:element name="scan" minOccurs="0" maxOccurs="unbounded">
@@ -178,13 +186,6 @@
             <xsd:attribute name="runDateMatcher" type="xsd:string"/>
             <xsd:attribute name="forecastDateMatcher" type="xsd:string"/>
             <xsd:attribute name="forecastOffsetMatcher" type="xsd:string"/>
-          </xsd:complexType>
-        </xsd:element>
-
-
-        <xsd:element name="variableAgg" minOccurs="0" maxOccurs="unbounded">
-          <xsd:complexType>
-            <xsd:attribute name="name" type="xsd:string" use="required"/>
           </xsd:complexType>
         </xsd:element>
 
@@ -230,4 +231,19 @@
     </xsd:complexType>
   </xsd:element>
 
-</xsd:schema>
+  <!-- promote global attribute to variable -->
+ <xsd:element name="promoteGlobalAttribute">
+   <xsd:complexType>
+     <xsd:attribute name="name" type="xsd:token" use="required"/>
+     <xsd:attribute name="orgName" type="xsd:string"/>
+   </xsd:complexType>
+ </xsd:element>
+
+  <!-- cache a Variable for efficiency -->
+ <xsd:element name="cacheVariable">
+   <xsd:complexType>
+     <xsd:attribute name="name" type="xsd:token" use="required"/>
+   </xsd:complexType>
+ </xsd:element>
+
+ </xsd:schema>

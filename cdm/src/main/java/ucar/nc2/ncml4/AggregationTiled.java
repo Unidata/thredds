@@ -115,7 +115,7 @@ public class AggregationTiled extends Aggregation {
     }
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
-    typical.close(); // close it because we use DatasetProxyReader to acquire    */
+    typicalDataset.close(typical); // close it because we use DatasetProxyReader to acquire    */
   }
 
   // a variable is tiled if any of its dimensions are tiled

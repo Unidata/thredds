@@ -30,6 +30,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
+import ucar.ma2.Array;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,6 +60,8 @@ public class AggregationNew extends AggregationOuterDimension {
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
 
+    promoteGlobalAttributes( (DatasetOuterDimension) typicalDataset);
+
     // create aggregation coordinate variable
     DataType coordType = getCoordinateType();
     VariableDS joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
@@ -66,6 +69,9 @@ public class AggregationNew extends AggregationOuterDimension {
     joinAggCoord.setProxyReader(this);
     if (isDate)
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
+    CacheVar cv = new CoordValueVar(joinAggCoord);
+    joinAggCoord.setSPobject( cv);
+    cacheList.add(cv);
 
     // now we can create all the aggNew variables
     // use only named variables
@@ -91,13 +97,13 @@ public class AggregationNew extends AggregationOuterDimension {
 
       ncDataset.removeVariable(null, aggVar.getShortName());
       ncDataset.addVariable(null, vagg);
-      aggVars.add( vagg);
+      aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
-    typical.close(); // close it because we use DatasetProxyReader to acquire
+    typicalDataset.close( typical); // close it because we use DatasetProxyReader to acquire
   }
 
   /**

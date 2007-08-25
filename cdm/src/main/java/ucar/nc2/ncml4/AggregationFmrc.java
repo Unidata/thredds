@@ -88,11 +88,11 @@ public class AggregationFmrc extends AggregationOuterDimension {
     GridDataset typicalGds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
 
     // finish the work
-    buildDataset(typicalDataset, typicalGds, cancelTask);
+    buildDataset(typicalDataset, typical, typicalGds, cancelTask);
   }
 
   // split out so FmrcSingle can call seperately
-  protected void buildDataset(Dataset typicalDataset, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
+  protected void buildDataset(Dataset typicalDataset, NetcdfFile typical, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
     DatasetConstructor.transferDataset(typicalGds.getNetcdfFile(), ncDataset, null);
 
@@ -107,6 +107,9 @@ public class AggregationFmrc extends AggregationOuterDimension {
     Dimension aggDim = new Dimension(dimName, nruns, true);
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
+
+    // deal with promoteGlobalAttribute
+    promoteGlobalAttributes( (DatasetOuterDimension) typicalDataset);
 
     // create runtime aggregation coordinate variable
     DataType coordType = DataType.STRING; // LOOK getCoordinateType();
@@ -166,6 +169,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
     ncDataset.finish();
     setDatasetAcquireProxy(typicalDataset, ncDataset);
     ncDataset.enhance();
+
+    typicalDataset.close( typical);
     typicalGds.close();
   }
 
@@ -373,8 +378,17 @@ public class AggregationFmrc extends AggregationOuterDimension {
   // All variables that come through here have both the runtime and time dimensions
   @Override
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-    if (mainv.getShortName().equals(dimName))
-      return readAggCoord(mainv, cancelTask);
+
+    Object spObj = mainv.getSPobject();
+    if (spObj != null && spObj instanceof CacheVar) {
+      CacheVar pv = (CacheVar) spObj;
+      try {
+        return pv.read(mainv.getShapeAsSection(), cancelTask);
+      } catch (InvalidRangeException e) {
+        logger.error("readAgg " + getLocation(), e);
+        throw new IllegalArgumentException("readAgg " + getLocation(), e);
+       }
+    }
 
     // remove first dimension, calculate size
     List<Range> ranges = mainv.getRanges();
@@ -417,8 +431,17 @@ public class AggregationFmrc extends AggregationOuterDimension {
     if (size == mainv.getSize())
       return read(mainv, cancelTask);
 
-    if (mainv.getShortName().equals(dimName))
-      return readAggCoord(mainv, section, cancelTask);
+
+    Object spObj = mainv.getSPobject();
+    if (spObj != null && spObj instanceof CacheVar) {
+      CacheVar pv = (CacheVar) spObj;
+      try {
+        return pv.read(section, cancelTask);
+      } catch (InvalidRangeException e) {
+        logger.error("readAgg " + getLocation(), e);
+        throw new IllegalArgumentException("readAgg " + getLocation(), e);
+       }
+    }
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array sectionData = Array.factory(dtype, section.getShape());
@@ -483,10 +506,9 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     List<Dataset> nestedDatasets = getDatasets();
     for (int i = 0; i < nestedDatasets.size(); i++) {
-      Dataset dataset;
+      Dataset dataset = nestedDatasets.get(i);
       NetcdfDataset ncfile = null;
       try {
-        dataset = nestedDatasets.get(i);
         ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
         VariableDS v = (VariableDS) ncfile.findVariable(timeAxis.getName());
         if (v == null) {
@@ -503,7 +525,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
           units = v.getUnitsString();
 
       } finally {
-        if (ncfile != null) ncfile.close();
+        dataset.close(ncfile);
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }

@@ -3,7 +3,7 @@
 
 	<aggregation dimName="time" type="joinNew">
     <scan location="http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070825/catalog.xml"
-          dateFormatMark="http://motherlode.ucar.edu:8080/thredds/dodsC/satellite/12.0/WEST-CONUS_4km/20070825/WEST-CONUS_4km_12.0_#yyyyMMdd_HHmm">
+          dateFormatMark="WEST-CONUS_4km_12.0_#yyyyMMdd_HHmm">
 
       <crawlableDatasetImpl className="thredds.catalog.CrawlableCatalog">
         <serviceType>OPENDAP</serviceType>
