@@ -181,6 +181,11 @@ public abstract class AggregationOuterDimension extends Aggregation {
       VariableEnhanced ve = (VariableEnhanced) var;
       ve.setProxyReader(proxy);
     }
+
+    // reset cacheVars
+    for (CacheVar cv : cacheList) {
+      cv.reset();
+    }
   }
 
   /**
@@ -638,10 +643,22 @@ public abstract class AggregationOuterDimension extends Aggregation {
   class CacheVar {
     String varName;
     DataType dtype;
-    Map<String, Array> dataMap = new HashMap<String, Array>(); // LOOK HashMap could just keep growing
+    Map<String, Array> dataMap = new HashMap<String, Array>();
 
     CacheVar(String varName) {
       this.varName = varName;
+    }
+
+    // clear out old stuff from the Hash, so it doesnt grow forever
+    void reset() {
+      Map<String, Array> newMap = new HashMap<String, Array>();
+      for (Dataset ds : datasets) {
+        String location = ds.getLocation();
+        Array data = dataMap.get(location);
+        if (data != null)
+          newMap.put(location, data);
+      }
+      dataMap = newMap;
     }
 
     Array read(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {

@@ -30,7 +30,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
-import ucar.ma2.Array;
 
 import java.io.IOException;
 import java.util.List;

@@ -131,33 +131,9 @@ public class AggregationTiled extends Aggregation {
 
   @Override
   protected void rebuildDataset() throws IOException {
-    /* buildCoords(null);
-
-    // reset dimension length
-    Dimension aggDim = ncDataset.findDimension(dimName);
-    aggDim.setLength( getTotalCoords());
-
-    // reset coordiante var
-    VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
-    joinAggCoord.setDimensions(dimName); // reset its dimension
-    joinAggCoord.invalidateCache(); // get rid of any cached data, since its now wrong
-
-    // reset agg variables
-    for (Variable aggVar : aggVars) {
-      aggVar.setDimensions(dimName); // reset its dimension
-      aggVar.invalidateCache(); // get rid of any cached data, since its now wrong
-    }
-
-    // reset the typical dataset, where non-agg variables live
-    Dataset typicalDataset = getTypicalDataset();
-    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
-    for (Variable var : ncDataset.getRootGroup().getVariables()) {
-      if (aggVars.contains(var))
-        continue;
-      VariableEnhanced ve = (VariableEnhanced) var; // need this for getProxyReader2()
-      ve.setProxyReader2(proxy);
-    }
-    typicalDataset.close(); */
+    ncDataset.empty();
+    dims = new ArrayList<Dimension>();
+    buildDataset(null);
   }
 
   @Override

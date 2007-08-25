@@ -34,7 +34,6 @@ import java.io.IOException;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
 import org.jdom.Element;
-import org.jdom.Document;
 
 /**
  * Use CrawlableDataset to scan for datasets in an aggreggation.
@@ -48,7 +47,6 @@ public class CrawlableScanner implements Scanner {
   private CrawlableDataset crawler;
   private CrawlableDatasetFilter filter;
 
-  private String dirName;
   private boolean wantSubdirs = true;
 
   // filters

@@ -117,7 +117,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   protected boolean enhance = false, isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
-  protected boolean debug = false, debugOpenFile = true, debugSyncDetail = false, debugProxy = false,
+  protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
       debugRead = false, debugDateParse = false;
 
   /**
@@ -497,10 +497,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
       ncfile.close();
     }
 
-    // overridden in DatasetOuterDimension
-    //protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
-    //}
-
         // overridden in DatasetOuterDimension
     protected void cacheVariables(NetcdfFile ncfile) throws IOException {
     }
@@ -530,7 +526,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
      * @param mainv      aggregated Variable
      * @param cancelTask let user cancel
      * @param section    reletive to the local Variable
-     * @return
+     * @return the complete Array for mainv
      * @throws IOException           on I/O error
      * @throws InvalidRangeException on section error
      */

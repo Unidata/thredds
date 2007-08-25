@@ -76,9 +76,6 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
     CrawlableScanner d = new CrawlableScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
-
-    //DirectoryScan d = new DirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, runMatcher, forecastMatcher, offsetMatcher);
-    //scanFmrcList.add(d);
   }
 
   @Override
@@ -86,7 +83,12 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     if (typicalGridDataset != null) {
       typicalGridDataset.close();
     }
-    super.closeDatasets();
+
+    for (Dataset ds : datasets) {
+      OpenDataset ods = (OpenDataset) ds;
+      if (ods.openFile != null)
+        ods.openFile.close();
+    }
   }
 
   @Override
@@ -342,12 +344,15 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       this.coordValue = coordValue;
     }
 
+    @Override
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
       return openFile;
     }
 
-    protected void close() throws IOException {
-      openFile.close(); // LOOK dunno
+    @Override
+    protected void close(NetcdfFile ncfile) throws IOException {
+      if (ncfile == null) return;
+      cacheVariables(ncfile);
     }
 
   }
