@@ -21,8 +21,6 @@ package ucar.nc2.ncml4;
 
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
-import ucar.nc2.iosp.RegularSectionLayout;
-import ucar.nc2.iosp.Indexer;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
@@ -34,6 +32,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
+ * Tiled Aggregation.
  * @author caron
  * @since Aug 16, 2007
  */
@@ -41,6 +40,8 @@ public class AggregationTiled extends Aggregation {
   private List<String> dimNames = new ArrayList<String>();
   private List<Dimension> dims = new ArrayList<Dimension>();
   private Section section;
+
+  private boolean debug = false;
 
   public AggregationTiled(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.TILED, recheckS);
@@ -165,7 +166,7 @@ public class AggregationTiled extends Aggregation {
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
     Section wantSection = mainv.getShapeAsSection();
-    System.out.println("wantSection: " + wantSection+" for var "+mainv.getName());
+    if (debug) System.out.println("wantSection: " + wantSection+" for var "+mainv.getName());
 
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
@@ -183,7 +184,7 @@ public class AggregationTiled extends Aggregation {
         varData = dtiled.read(mainv, cancelTask);
         index = new TileLayout(tiledSection, wantSection);
 
-        System.out.println(" varData read: " + new Section(varData.getShape()));
+        if (debug) System.out.println(" varData read: " + new Section(varData.getShape()));
       } catch (InvalidRangeException e) {
         throw new IllegalArgumentException(e.getMessage());
       }
@@ -196,6 +197,10 @@ public class AggregationTiled extends Aggregation {
           throw e;
         }
       }
+
+      // covers the case of coordinate variables for a 1 row or 1 col tiling.
+      // doesnt eliminate duplicate reading in general
+      if (varData.getSize() == mainv.getSize()) break;
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -213,10 +218,12 @@ public class AggregationTiled extends Aggregation {
 
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, wantSection.getShape()); // LOOK need fill
+    if (debug) {
     try {
       System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
     } catch (InvalidRangeException e) {
       e.printStackTrace();
+    }
     }
 
     // run through all the datasets
@@ -234,8 +241,8 @@ public class AggregationTiled extends Aggregation {
         // read in the desired section of data from this nested dataset
         Section needToRead = tiledSection.intersect(wantSection); // the part we need to read
 
-        System.out.println(" tiledSection: " + tiledSection+" from file "+dtiled.getLocation());
-        System.out.println(" intersection: " + needToRead);
+        if (debug) System.out.println(" tiledSection: " + tiledSection+" from file "+dtiled.getLocation());
+        if (debug) System.out.println(" intersection: " + needToRead);
 
         Section localNeed = needToRead.shiftOrigin(tiledSection); // shifted to the tiled section
         varData = dtiled.read(mainv, cancelTask, localNeed.getRanges());
@@ -255,6 +262,10 @@ public class AggregationTiled extends Aggregation {
           throw e;
         }
       }
+
+      // covers the case of coordinate variables for a 1 row or 1 col tiling.
+      // doesnt eliminate duplicate reading in general
+      if (varData.getSize() == mainv.getSize()) break;
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;

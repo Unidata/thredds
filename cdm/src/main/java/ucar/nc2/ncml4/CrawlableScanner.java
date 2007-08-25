@@ -33,8 +33,12 @@ import java.io.IOException;
 
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
+import org.jdom.Element;
+import org.jdom.Document;
 
 /**
+ * Use CrawlableDataset to scan for datasets in an aggreggation.
+ *
  * @author caron
  * @since Aug 10, 2007
  */
@@ -50,18 +54,17 @@ public class CrawlableScanner implements Scanner {
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
 
-  private boolean debugScan = false;
+  private boolean debugScan = true;
 
-  CrawlableScanner(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
-    this.dirName = dirName;
-
-    String crawlerClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
+  CrawlableScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
+    String crawlerClassName;
     Object crawlerObject = null;
 
-    if (dirName.startsWith("thredds:")) {
-      crawlerClassName = "thredds.catalog.CrawlableCatalog";
-      dirName = dirName.substring(8);
-      crawlerObject = ServiceType.OPENDAP;
+    if (null != crawlableDatasetElement) {
+      crawlerClassName = crawlableDatasetElement.getAttributeValue("className");
+      crawlerObject = crawlableDatasetElement;
+    } else {
+      crawlerClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
     }
 
     try {
@@ -71,9 +74,9 @@ public class CrawlableScanner implements Scanner {
     }
 
     if (null != regexpPatternString)
-      filter = new RegExpMatchOnPathFilter( regexpPatternString);
+      filter = new RegExpMatchOnPathFilter(regexpPatternString);
     else if (suffix != null)
-      filter = new WildcardMatchOnPathFilter( "*"+suffix);
+      filter = new WildcardMatchOnPathFilter("*" + suffix);
 
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
@@ -117,7 +120,7 @@ public class CrawlableScanner implements Scanner {
         // add to result
         MyCrawlableDataset myf = new MyCrawlableDataset(this, child);
         result.add(myf);
-        if (debugScan) System.out.println("added "+myf.file.getPath());
+        if (debugScan) System.out.println("added " + myf.file.getPath());
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
@@ -125,9 +128,17 @@ public class CrawlableScanner implements Scanner {
     }
   }
 
-  static public void main( String args[]) throws IOException {
-    String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070810/catalog.xml";
-    CrawlableScanner crawl = new CrawlableScanner("thredds:"+cat, null, null, "true", null);
-    crawl.scanDirectory( new ArrayList<MyCrawlableDataset>(), null);
+  static public void main(String args[]) throws IOException {
+    String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070825/catalog.xml";
+    Element config = new Element("config");
+    config.setAttribute("className","thredds.catalog.CrawlableCatalog");
+    
+    Element serviceType =  new Element("serviceType");
+    serviceType.addContent( ServiceType.OPENDAP.toString());
+
+    config.addContent( serviceType);
+
+    CrawlableScanner crawl = new CrawlableScanner(config, cat, null, null, "true", null);
+    crawl.scanDirectory(new ArrayList<MyCrawlableDataset>(), null);
   }
 }

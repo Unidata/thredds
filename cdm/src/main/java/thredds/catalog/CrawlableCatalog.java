@@ -28,6 +28,9 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.io.IOException;
 
+import org.jdom.Element;
+import ucar.nc2.ncml4.NcMLReader;
+
 /**
  * @author caron
  * @since Aug 10, 2007
@@ -42,11 +45,28 @@ public class CrawlableCatalog implements CrawlableDataset {
   private CrawlableCatalog parent;
   private boolean isCollection;
 
+  /**
+   * Constructor.
+   * @param catalogURL the catalog URL
+   * @param configObj a JDOM Element, example:
+   *  <pre>
+   *    <any>
+   *      <serviceType>OPENDAP</serviceType>
+   *    </any>
+   *  </pre>
+   */
   public CrawlableCatalog(String catalogURL, Object configObj) {
     this.catalogURL = catalogURL;
+    
     this.configObj = configObj;
-    if (configObj instanceof ServiceType)
-      serviceType = (ServiceType) configObj;
+    if (configObj instanceof Element) {
+      Element configElement = (Element) configObj;
+      Element serviceElement = configElement.getChild("serviceType", NcMLReader.ncNS);
+      if (null != serviceElement) {
+        String service = serviceElement.getTextTrim();
+        serviceType = ServiceType.getType(service);
+      }
+    }
 
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     catalog = catFactory.readXML(catalogURL);

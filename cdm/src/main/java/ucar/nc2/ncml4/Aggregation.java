@@ -32,10 +32,15 @@ import java.util.*;
 import java.io.*;
 
 import thredds.util.DateFromString;
+import org.jdom.Element;
 
 /**
- * Implement NcML Aggregation.
- * <p/>
+ * Superclass for NcML Aggregation.
+ *
+ * @author caron
+ */
+
+/* May be out of date
  * <h2>Implementation Notes</h2>
  * <h3>Caching</h3>
  * <ul>
@@ -67,8 +72,7 @@ import thredds.util.DateFromString;
  * <li> If not, the coordinate value(s) is cached when the dataset is opened.
  * <li> agg.read() uses those if they exist, else reads and caches.
  * </ol>
- *
- * @author caron
+
  */
 public abstract class Aggregation implements AggregationIF, ProxyReader {
   static protected int TYPICAL_DATASET_RANDOM = 0;
@@ -156,8 +160,9 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   }
 
   /**
-   * Add a scan elemnt
+   * Add a crawlable dataset scan
    *
+   * @param crawlableDatasetElement defines a CrawlableDataset, or null
    * @param dirName             scan this directory
    * @param suffix              filter on this suffix (may be null)
    * @param regexpPatternString include if full name matches this regular expression (may be null)
@@ -167,7 +172,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    * @throws IOException if I/O error
    */
-  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirs, String olderThan) throws IOException {
+  public void addCrawlableDatasetScan(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirs, String olderThan) throws IOException {
     this.dateFormatMark = dateFormatMark;
 
     if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
@@ -178,8 +183,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
       if (type == Type.JOIN_EXISTING) type = Type.JOIN_EXISTING_ONE; // tricky
     }
 
-    //DirectoryScan d = new DirectoryScan(type, dirName, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderThan);
-    CrawlableScanner d = new CrawlableScanner(dirName, suffix, regexpPatternString, subdirs, olderThan);
+    CrawlableScanner d = new CrawlableScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
   }
 
@@ -295,7 +299,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
     for (MyCrawlableDataset myf : fileList) {
       // optionally parse for date
       if (null != dateFormatMark) {
-        String filename = myf.file.getName();
+        String filename = myf.file.getPath();
         myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
         myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
         if (debugDateParse) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
@@ -378,7 +382,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
     ncDataset.finish();
     if (ncDataset.getEnhanceMode() != NetcdfDataset.EnhanceMode.None) { // force recreation of the coordinate systems
       ncDataset.clearCoordinateSystems();
-      ncDataset.enhance( ncDataset.getEnhanceMode());
+      ncDataset.enhance(ncDataset.getEnhanceMode());
       ncDataset.finish();
     }
 
@@ -529,10 +533,12 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
     }
 
     // overridden in DatasetOuterDimension
-    protected void cacheCoordValues(NetcdfFile ncfile) throws IOException { }
+    protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
+    }
 
     // overridden in DatasetOuterDimension
-    protected void setInfo(MyCrawlableDataset cd) { }
+    protected void setInfo(MyCrawlableDataset cd) {
+    }
 
     protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
       NetcdfFile ncd = null;
@@ -551,11 +557,12 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
 
     /**
      * Read a section of the local Variable.
-     * @param mainv aggregated Variable
+     *
+     * @param mainv      aggregated Variable
      * @param cancelTask let user cancel
-     * @param section reletive to the local Variable
+     * @param section    reletive to the local Variable
      * @return
-     * @throws IOException on I/O error
+     * @throws IOException           on I/O error
      * @throws InvalidRangeException on section error
      */
     protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
@@ -566,7 +573,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
           return null;
 
         if (debugRead)
-          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation()+" "+Range.toString(section));
+          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation() + " " + Range.toString(section));
 
         Variable v = ncd.findVariable(mainv.getName());
         return v.read(section);

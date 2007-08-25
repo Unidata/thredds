@@ -25,6 +25,7 @@ import java.util.List;
 import java.io.IOException;
 
 /**
+ * SOmething that knows how to scan and return MyCrawlableDataset.
  * @author caron
  * @since Aug 10, 2007
  */

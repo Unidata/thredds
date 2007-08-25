@@ -1035,8 +1035,7 @@ public class NcMLReader {
       agg = new AggregationNew(newds, dimName, recheck);
 
     }  else if (type.equals("tiled")) {
-      AggregationTiled aggt = new AggregationTiled(newds, dimName, recheck);
-      agg = aggt;
+      agg = new AggregationTiled(newds, dimName, recheck);
 
     }  else if (type.equals("union")) {
       agg = new AggregationUnion(newds, dimName, recheck);
@@ -1122,7 +1121,8 @@ public class NcMLReader {
       String subdirs = scanElem.getAttributeValue("subdirs");
       String olderS = scanElem.getAttributeValue("olderThan");
 
-      agg.addDirectoryScan(dirLocation, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderS);
+      Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
+      agg.addCrawlableDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderS);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
