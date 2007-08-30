@@ -3,21 +3,30 @@
         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
         xmlns:xlink="http://www.w3.org/1999/xlink">
 
-  <service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" />
-  <datasetRoot path="test" location="content/testdata/"/>
+  <service name="allServices" base="" serviceType="compound">
+    <service name="dapService" serviceType="OpenDAP" base="/thredds/dodsC/" />
+    <service name="httpService" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <!--service name="wcsService" serviceType="WCS" base="/thredds/wcs/" /-->
+    <!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" suffix="/dataset.html" /-->
+  </service>
 
-  <dataset name="Test Single Dataset" ID="testDataset" serviceName="thisDODS"
-           urlPath="test/testData.nc"/>
+  <datasetRoot path="test" location="content/testdata/" />
+
+  <dataset name="Test Single Dataset" ID="testDataset" serviceName="dapService"
+           urlPath="test/testData.nc" dataType="Grid"/>
+  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="dapService"
+           urlPath="test/testData2.nc" dataType="Grid"/>
 
   <datasetScan name="Test all files in a directory" ID="testDatasetScan"
                path="testAll" location="content/testdata">
 
     <metadata inherited="true">
-      <serviceName>thisDODS</serviceName>
+      <serviceName>allServices</serviceName>
+      <dataType>Grid</dataType>
     </metadata>
 
     <filter>
-      <include wildcard="*.nc"/>
+      <include wildcard="*eta_211.nc"/>
     </filter>
 
   </datasetScan>

@@ -43,13 +43,14 @@ public class WCS_1_1_0 implements VersionHandler
 
   }
 
-  private void makeServiceException( HttpServletResponse res, String code, String locator, String message ) throws IOException
+  void makeServiceException( HttpServletResponse res, String code, String locator, String message ) throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
     PrintStream ps = new PrintStream( res.getOutputStream() );
 
+    ps.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
     ps.println( "<ExceptionReport version='1.0.0'>" );
     ps.println( "  <Exception code='" + code + ( ( locator != null ) ? "locator='" + locator + "'" : "" ) + "'>" );
     ps.println( "   <ExceptionText>" );
@@ -62,13 +63,14 @@ public class WCS_1_1_0 implements VersionHandler
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 
-  private void makeServiceException( HttpServletResponse res, String code, String locator, Throwable t ) throws IOException
+  void makeServiceException( HttpServletResponse res, String code, String locator, Throwable t ) throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
     PrintStream ps = new PrintStream( res.getOutputStream() );
 
+    ps.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
     ps.println( "<ExceptionReport xmlns='http://www.opengis.net/ows' version='1.0.0'>" );
     ps.println( "  <Exception code='" + code + ((locator != null) ? "locator='" + locator + "'" : "") + "'>" );
     ps.println( "   <ExceptionText>" );

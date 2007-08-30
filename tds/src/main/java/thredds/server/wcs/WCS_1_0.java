@@ -183,12 +183,13 @@ public class WCS_1_0 implements VersionHandler
     }
   }
 
-  private void makeServiceException(HttpServletResponse res, String code, String message) throws IOException {
+  void makeServiceException(HttpServletResponse res, String code, String message) throws IOException {
     res.setContentType("application/vnd.ogc.se_xml");
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
     PrintStream ps= new PrintStream(res.getOutputStream());
 
+    ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     ps.println("<ServiceExceptionReport version='1.2.0'>");
     ps.println("  <ServiceException code='"+code+"'>");
     ps.println("    "+message);
@@ -199,12 +200,13 @@ public class WCS_1_0 implements VersionHandler
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 
-  private void makeServiceException(HttpServletResponse res, String code, Throwable t) throws IOException {
+  void makeServiceException(HttpServletResponse res, String code, Throwable t) throws IOException {
     res.setContentType("application/vnd.ogc.se_xml");
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
     PrintStream ps= new PrintStream(res.getOutputStream());
 
+    ps.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
     ps.println("<ServiceExceptionReport version='1.2.0'>");
     ps.println("  <ServiceException code='"+code+"'>");
 
