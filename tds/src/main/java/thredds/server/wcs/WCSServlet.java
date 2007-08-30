@@ -6,6 +6,7 @@ import thredds.servlet.*;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -20,6 +21,7 @@ public class WCSServlet extends AbstractServlet {
   private boolean allow = false, deleteImmediately = true;
   private long maxFileDownloadSize;
 
+  // ToDo Consider using a SortedMap to contain handlers.
   private List<VersionHandler> versionHandlers;
 
   // must end with "/"
@@ -45,6 +47,7 @@ public class WCSServlet extends AbstractServlet {
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
     WcsDataset.setDiskCache(diskCache);
 
+    // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>(2);
     versionHandlers.add( new WCS_1_0());
     versionHandlers.add( new WCS_1_1_0());
@@ -93,41 +96,60 @@ public class WCSServlet extends AbstractServlet {
     // Otherwise, step through list in "AcceptVersions" and use first one that matches.
     if ( reqVersionString != null)
     {
-      Version reqVersion = null;
-      try
-      {
-        reqVersion = new Version( reqVersionString );
-      }
-      catch ( IllegalArgumentException e )
-      {
-        // ToDo return exception XML for invalid Version attribute value.
-        res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Bad value for \"Version\" attribute <" + reqVersionString +">." );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
-        return;
-      }
-      int loc = versionHandlers.indexOf( reqVersion);
-      if ( loc != -1 )
-      {
-        targetHandler = versionHandlers.get( loc);
-      }
-      else
-      {
-        VersionHandler lowestVerHandler = versionHandlers.get( 0 );
-        VersionHandler highestVerHandler = versionHandlers.get( versionHandlers.size() - 1 );
-        if ( reqVersion.lessThan( lowestVerHandler.getVersion()))
-          targetHandler = lowestVerHandler;
-        else if ( reqVersion.greaterThan( highestVerHandler.getVersion()))
-          targetHandler = highestVerHandler;
-        else
-        {
-          // ToDo figure this out! The version is in between available versions.
-          res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Bad value for \"Version\" attribute <" + reqVersionString + ">." );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 );
-          return;
-        }
-      }
+      targetHandler = getVersionHandler( reqVersionString, res, targetHandler );
     }
+    else if ( acceptableVersionsString != null)
+    {
+
+    }
+    else
+      targetHandler = versionHandlers.get( 0); // Lowest version.
+
 
     targetHandler.handleKVP( this, req, res);
+  }
+
+  private VersionHandler getVersionHandler( String reqVersionString, HttpServletResponse res, VersionHandler targetHandler )
+          throws IOException
+  {
+    Version reqVersion = null;
+    try
+      {
+        reqVersion = new Version( reqVersionString );
+    }
+    catch ( IllegalArgumentException e )
+    {
+      // ToDo return exception XML for invalid Version attribute value.
+      res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Bad value for \"Version\" attribute <" + reqVersionString +">." );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
+      //return;
+    }
+
+    for ( VersionHandler vh: versionHandlers)
+    {
+
+    }
+    int loc = versionHandlers.indexOf( reqVersion);
+    if ( loc != -1 )
+    {
+      targetHandler = versionHandlers.get( loc);
+    }
+    else
+    {
+      VersionHandler lowestVerHandler = versionHandlers.get( 0 );
+      VersionHandler highestVerHandler = versionHandlers.get( versionHandlers.size() - 1 );
+      if ( reqVersion.lessThan( lowestVerHandler.getVersion()))
+        targetHandler = lowestVerHandler;
+      else if ( reqVersion.greaterThan( highestVerHandler.getVersion()))
+        targetHandler = highestVerHandler;
+      else
+      {
+        // ToDo figure this out! The version is in between available versions.
+        res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Unrecognized value for \"Version\" attribute <" + reqVersionString + ">." );
+        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
+        //return;
+      }
+    }
+    return targetHandler;
   }
 }
