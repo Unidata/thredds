@@ -11,23 +11,22 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import java.io.*;
 
-import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 
 /**
  * Servlet handles serving data via WCS 1.0.
  *
  */
-public class WCS_1_0 implements VersionHandler
+public class WCS_1_0_0 implements VersionHandler
 {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( WCS_1_0.class );
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( WCS_1_0_0.class );
 
   private Version version;
 
   /**
    * Declare the default constructor to be package private.
    */
-  WCS_1_0()
+  WCS_1_0_0()
   {
     this.version = new Version( "1.0.0");
   }
