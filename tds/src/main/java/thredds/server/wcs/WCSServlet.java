@@ -6,7 +6,6 @@ import thredds.servlet.*;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -23,6 +22,7 @@ public class WCSServlet extends AbstractServlet {
 
   // ToDo Consider using a SortedMap to contain handlers.
   private List<VersionHandler> versionHandlers;
+  private String supportedVersionsString;
 
   // must end with "/"
   protected String getPath() { return "wcs/"; }
@@ -51,6 +51,10 @@ public class WCSServlet extends AbstractServlet {
     versionHandlers = new ArrayList<VersionHandler>();
     versionHandlers.add( new WCS_1_0());
     versionHandlers.add( new WCS_1_1_0());
+    for ( VersionHandler vh: versionHandlers)
+    {
+      supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();
+    }
   }
 
   public void destroy()
@@ -96,15 +100,27 @@ public class WCSServlet extends AbstractServlet {
     // Otherwise, step through list in "AcceptVersions" and use first one that matches.
     if ( reqVersionString != null)
     {
-      try { targetHandler = getVersionHandler( reqVersionString ); }
+      try { targetHandler = getVersionHandler_1_0_0( reqVersionString ); }
       catch (IllegalArgumentException e)
       {
-        //versionHandlers.get( versionHandlers.size() - 1).makeServiceException();
+        versionHandlers.get( versionHandlers.size() - 1).makeServiceException( res, "InvalidParameterValue", "Version", "Invalid \"Version\" parameter value <" + reqVersionString + ">.");
       }
     }
     else if ( acceptableVersionsString != null)
     {
-
+      String acceptableVersions[] = acceptableVersionsString.split( ",");
+      for ( String curVerString: acceptableVersions )
+      {
+        try { targetHandler = getVersionHandler_1_1_0( curVerString); }
+        catch ( IllegalArgumentException e )
+        {
+          versionHandlers.get( versionHandlers.size() - 1 ).makeServiceException( res, "InvalidParameterValue", "AcceptVersions", "Invalid \"AcceptVersions\" parameter value <" + acceptableVersionsString + ">." );
+        }
+      }
+      if ( targetHandler == null )
+      {
+        versionHandlers.get( versionHandlers.size() - 1 ).makeServiceException( res, "VersionNegotiationFailed", "", "The \"AcceptVersions\" parameter value <" + acceptableVersionsString + "> did not match any supported versions <" + supportedVersionsString + ">." );
+      }
     }
     else
       targetHandler = versionHandlers.get( 0); // Lowest version.
@@ -114,12 +130,14 @@ public class WCSServlet extends AbstractServlet {
   }
 
   /**
+   * Given a version string, determine the appropriate version according to
+   * WCS 1.0.0 version negotiation rules.
    *
    * @param reqVersionString the requested version string
-   * @return the appropriate VersionHandler for the requested version string (as per WCS 1.1 version negotiation).  
+   * @return the appropriate VersionHandler for the requested version string (as per WCS 1.0 version negotiation).  
    * @throws IllegalArgumentException if reqVersionString is null or an invalid version string.
    */
-  private VersionHandler getVersionHandler( String reqVersionString )
+  private VersionHandler getVersionHandler_1_0_0( String reqVersionString )
   {
     Version reqVersion = new Version( reqVersionString );
 
@@ -153,6 +171,32 @@ public class WCSServlet extends AbstractServlet {
     {
       // Request greater than largest version, use largest version.
       targetHandler = prevVh;
+    }
+
+    return targetHandler;
+  }
+  /**
+   * Given a version string, determine the appropriate version according to
+   * WCS 1.1.0 version negotiation rules.
+   *
+   * @param reqVersionString the requested version string
+   * @return the appropriate VersionHandler for the requested version string (as per WCS 1.0 version negotiation).
+   * @throws IllegalArgumentException if reqVersionString is null or an invalid version string.
+   */
+  private VersionHandler getVersionHandler_1_1_0( String reqVersionString )
+  {
+    Version reqVersion = new Version( reqVersionString );
+
+    VersionHandler targetHandler = null;
+
+    for ( VersionHandler curVh: versionHandlers)
+    {
+      if ( reqVersion.equals( curVh.getVersion()) )
+      {
+        // Matching version found.
+        targetHandler = curVh;
+        break;
+      }
     }
 
     return targetHandler;

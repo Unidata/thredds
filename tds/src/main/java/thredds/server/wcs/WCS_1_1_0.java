@@ -43,7 +43,7 @@ public class WCS_1_1_0 implements VersionHandler
 
   }
 
-  void makeServiceException( HttpServletResponse res, String code, String locator, String message ) throws IOException
+  public void makeServiceException( HttpServletResponse res, String code, String locator, String message ) throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
@@ -63,7 +63,7 @@ public class WCS_1_1_0 implements VersionHandler
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 
-  void makeServiceException( HttpServletResponse res, String code, String locator, Throwable t ) throws IOException
+  public void makeServiceException( HttpServletResponse res, String code, String locator, Throwable t ) throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );

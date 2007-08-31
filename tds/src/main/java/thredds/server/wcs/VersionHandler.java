@@ -16,6 +16,19 @@ public interface VersionHandler
 {
   public Version getVersion();
   
-  public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
+  public void handleKVP( HttpServlet servlet,
+                         HttpServletRequest req,
+                         HttpServletResponse res )
           throws ServletException, IOException;
+
+  public void makeServiceException( HttpServletResponse res,
+                                    String code, String locator,
+                                    String message )
+          throws IOException;
+
+  public void makeServiceException( HttpServletResponse res,
+                                    String code, String locator,
+                                    Throwable t )
+          throws IOException;
+
 }
