@@ -43,7 +43,7 @@ public class WCS_1_1_0 implements VersionHandler
 
   }
 
-  public void makeServiceException( HttpServletResponse res, String code, String locator, String message ) throws IOException
+  public void handleExceptionReport( HttpServletResponse res, String code, String locator, String message ) throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
@@ -63,7 +63,7 @@ public class WCS_1_1_0 implements VersionHandler
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 
-  public void makeServiceException( HttpServletResponse res, String code, String locator, Throwable t ) throws IOException
+  public void handleExceptionReport( HttpServletResponse res, String code, String locator, Throwable t ) throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
@@ -86,9 +86,9 @@ public class WCS_1_1_0 implements VersionHandler
 
     ps.flush();
     if ( t instanceof FileNotFoundException )
-      log.info( "makeServiceException", t.getMessage() ); // dont clutter up log files
+      log.info( "handleExceptionReport", t.getMessage() ); // dont clutter up log files
     else
-      log.info( "makeServiceException", t );
+      log.info( "handleExceptionReport", t );
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 

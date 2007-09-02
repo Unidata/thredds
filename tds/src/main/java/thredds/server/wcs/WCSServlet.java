@@ -103,7 +103,7 @@ public class WCSServlet extends AbstractServlet {
       try { targetHandler = getVersionHandler_1_0_0( reqVersionString ); }
       catch (IllegalArgumentException e)
       {
-        versionHandlers.get( versionHandlers.size() - 1).makeServiceException( res, "InvalidParameterValue", "Version", "Invalid \"Version\" parameter value <" + reqVersionString + ">.");
+        versionHandlers.get( versionHandlers.size() - 1).handleExceptionReport( res, "InvalidParameterValue", "Version", "Invalid \"Version\" parameter value <" + reqVersionString + ">.");
       }
     }
     else if ( acceptableVersionsString != null)
@@ -114,12 +114,12 @@ public class WCSServlet extends AbstractServlet {
         try { targetHandler = getVersionHandler_1_1_0( curVerString); }
         catch ( IllegalArgumentException e )
         {
-          versionHandlers.get( versionHandlers.size() - 1 ).makeServiceException( res, "InvalidParameterValue", "AcceptVersions", "Invalid \"AcceptVersions\" parameter value <" + acceptableVersionsString + ">." );
+          versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "AcceptVersions", "Invalid \"AcceptVersions\" parameter value <" + acceptableVersionsString + ">." );
         }
       }
       if ( targetHandler == null )
       {
-        versionHandlers.get( versionHandlers.size() - 1 ).makeServiceException( res, "VersionNegotiationFailed", "", "The \"AcceptVersions\" parameter value <" + acceptableVersionsString + "> did not match any supported versions <" + supportedVersionsString + ">." );
+        versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "VersionNegotiationFailed", "", "The \"AcceptVersions\" parameter value <" + acceptableVersionsString + "> did not match any supported versions <" + supportedVersionsString + ">." );
       }
     }
     else

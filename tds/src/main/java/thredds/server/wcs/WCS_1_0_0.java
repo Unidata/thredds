@@ -73,7 +73,7 @@ public class WCS_1_0_0 implements VersionHandler
       String request = ServletUtil.getParameterIgnoreCase(req, "REQUEST");
 
       if (request == null) {
-        makeServiceException( res, "MissingParameterValue", null, "REQUEST parameter missing");
+        handleExceptionReport( res, "MissingParameterValue", null, "REQUEST parameter missing");
         ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1);
         return;
       }
@@ -89,7 +89,7 @@ public class WCS_1_0_0 implements VersionHandler
         if (section != null) {
           sectionType  = SectionType.getType(section);
           if (sectionType == null) {
-            makeServiceException( res, "InvalidParameterValue", null, "Unknown GetCapabilities section = "+section);
+            handleExceptionReport( res, "InvalidParameterValue", null, "Unknown GetCapabilities section = "+section);
             return;
           }
         }
@@ -108,7 +108,7 @@ public class WCS_1_0_0 implements VersionHandler
         if (coverages != null) {
           for (int i=0; i<coverages.length; i++) {
             if ( !wcsDataset.hasCoverage( coverages[i])) {
-              makeServiceException( res, "CoverageNotDefined", null, "Unknown Coverage = "+coverages[i]);
+              handleExceptionReport( res, "CoverageNotDefined", null, "Unknown Coverage = "+coverages[i]);
               return;
             }
           }
@@ -126,7 +126,7 @@ public class WCS_1_0_0 implements VersionHandler
 
         String coverage = ServletUtil.getParameterIgnoreCase(req, "COVERAGE");
         if (!wcsDataset.hasCoverage(coverage)) {
-          makeServiceException(res, "CoverageNotDefined", null, "Unknown Coverage = " + coverage);
+          handleExceptionReport(res, "CoverageNotDefined", null, "Unknown Coverage = " + coverage);
           return;
         }
 
@@ -138,18 +138,18 @@ public class WCS_1_0_0 implements VersionHandler
         try {
           r = new GetCoverageRequest( coverage, bbox, time, vertical, format);
         } catch (Exception e) {
-          makeServiceException(res, "InvalidParameterValue", null, "query="+req.getQueryString());
+          handleExceptionReport(res, "InvalidParameterValue", null, "query="+req.getQueryString());
           return;
         }
 
         if ((r.getFormat() == null) || (r.getFormat() == GetCoverageRequest.Format.NONE)) {
-          makeServiceException(res, "InvalidFormat", null, "Invalid Format = " + format);
+          handleExceptionReport(res, "InvalidFormat", null, "Invalid Format = " + format);
           return;
         }
 
         String errMessage;
         if (null != (errMessage = wcsDataset.checkCoverageParameters( r))) {
-          makeServiceException(res, "InvalidParameterValue", null, errMessage);
+          handleExceptionReport(res, "InvalidParameterValue", null, errMessage);
           return;
         }
 
@@ -158,16 +158,16 @@ public class WCS_1_0_0 implements VersionHandler
        // if (deleteImmediately) result.delete();
 
       } else {
-        makeServiceException( res, "InvalidParameterValue", null, "Unknown request=" +request);
+        handleExceptionReport( res, "InvalidParameterValue", null, "Unknown request=" +request);
         return;
       }
 
     } catch (IOException ioe) {
-      makeServiceException( res, "Invalid Dataset", null, ioe);
+      handleExceptionReport( res, "Invalid Dataset", null, ioe);
       return;
 
     } catch (Throwable t) {
-      makeServiceException( res, "Server Error",null,  t);
+      handleExceptionReport( res, "Server Error",null,  t);
       t.printStackTrace();
       return;
 
@@ -182,7 +182,7 @@ public class WCS_1_0_0 implements VersionHandler
     }
   }
 
-  public void makeServiceException(HttpServletResponse res, String code, String locator, String message) throws IOException {
+  public void handleExceptionReport(HttpServletResponse res, String code, String locator, String message) throws IOException {
     res.setContentType("application/vnd.ogc.se_xml");
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
@@ -199,7 +199,7 @@ public class WCS_1_0_0 implements VersionHandler
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 
-  public void makeServiceException(HttpServletResponse res, String code, String locator, Throwable t) throws IOException {
+  public void handleExceptionReport(HttpServletResponse res, String code, String locator, Throwable t) throws IOException {
     res.setContentType("application/vnd.ogc.se_xml");
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
@@ -219,9 +219,9 @@ public class WCS_1_0_0 implements VersionHandler
 
     ps.flush();
     if (t instanceof FileNotFoundException )
-      log.info("makeServiceException", t.getMessage()); // dont clutter up log files
+      log.info("handleExceptionReport", t.getMessage()); // dont clutter up log files
     else
-      log.info("makeServiceException", t);
+      log.info("handleExceptionReport", t);
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1); // LOOK, actual return is 200 = OK !
   }
 

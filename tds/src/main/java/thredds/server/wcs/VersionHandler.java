@@ -21,14 +21,14 @@ public interface VersionHandler
                          HttpServletResponse res )
           throws ServletException, IOException;
 
-  public void makeServiceException( HttpServletResponse res,
-                                    String code, String locator,
-                                    String message )
+  public void handleExceptionReport( HttpServletResponse res,
+                                     String code, String locator,
+                                     String message )
           throws IOException;
 
-  public void makeServiceException( HttpServletResponse res,
-                                    String code, String locator,
-                                    Throwable t )
+  public void handleExceptionReport( HttpServletResponse res,
+                                     String code, String locator,
+                                     Throwable t )
           throws IOException;
 
 }
