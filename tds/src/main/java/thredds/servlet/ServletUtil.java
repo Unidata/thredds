@@ -693,12 +693,12 @@ public class ServletUtil {
 
     // set content length
     long fileSize = file.length();
-    int contentLength = (int) fileSize;
+    long contentLength = fileSize;
     if (isRangeRequest) {
       endPos = Math.min(endPos, fileSize);
-      contentLength = (int) (endPos - startPos);
+      contentLength = endPos - startPos;
     }
-    res.setContentLength(contentLength);
+    res.setContentLength( (int) contentLength);
 
     boolean debugRequest = Debug.isSet("returnFile");
     if (debugRequest) log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
