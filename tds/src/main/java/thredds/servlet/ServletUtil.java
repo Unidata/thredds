@@ -702,7 +702,7 @@ public class ServletUtil {
 
     boolean debugRequest = Debug.isSet("returnFile");
     if (debugRequest) log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
-        " contentLength = " + file.length());
+        " contentLength = " + contentLength);
 
     // indicate we allow Range Requests
     res.addHeader("Accept-Ranges", "bytes");
