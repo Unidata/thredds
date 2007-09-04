@@ -1,4 +1,3 @@
-// $Id:WcsDataset.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -26,7 +25,7 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.Array;
@@ -39,6 +38,11 @@ import org.jdom.Document;
 
 import java.io.*;
 import java.util.List;
+import java.util.Collections;
+import java.text.ParseException;
+
+import thredds.datatype.DateRange;
+import thredds.datatype.DateType;
 
 /**
  * Encapsolates a GridDataset, making it into something to be served through WCS.
@@ -161,11 +165,23 @@ public class WcsDataset {
     GridCoordSystem gcs = geogrid.getCoordinateSystem();
     Range t_range = null, z_range = null;
     Range y_range = null, x_range = null;
+    DateRange dateRange = null;
 
     String time = req.getTime();
     if (time != null) {
       int t = findTimeIndex( gcs, time);
       t_range = new Range(t,t);
+
+      DateType date = null;
+      try
+      {
+        date = new DateType( time, null, null );
+      }
+      catch ( ParseException e )
+      {
+        throw new InvalidRangeException( "Invalid time request <" + time + ">: " + e.getMessage());
+      }
+      dateRange = new DateRange( date, date, null, null );
     }
 
     String vertical = req.getVertical();
@@ -207,8 +223,10 @@ public class WcsDataset {
       File ncFile = getDiskCache().getCacheFile(datasetPath+"-"+vname+".nc");
       if (debug) System.out.println(" ncFile="+ncFile.getPath());
 
-      // LOOK - break encapsolation
-      ((GeoGrid)subset).writeFile( ncFile.getPath());
+      NetcdfCFWriter writer = new NetcdfCFWriter();
+      writer.makeFile( ncFile.getPath(), gridDataset, Collections.singletonList( req.getCoverage() ),
+                       req.getBoundingBox(), dateRange,
+                       true, 1, 1, 1 );
       return ncFile;
 
     } else
