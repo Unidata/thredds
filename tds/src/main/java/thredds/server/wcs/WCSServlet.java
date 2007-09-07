@@ -67,6 +67,9 @@ public class WCSServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException
   {
+    ServletUtil.logServerAccessSetup( req );
+
+    // Check whether TDS is configured to support WCS.
     if (!allow) {
       // ToDo - Server not configured to support WCS. Should response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
@@ -74,72 +77,121 @@ public class WCSServlet extends AbstractServlet {
       return;
     }
 
-    ServletUtil.logServerAccessSetup( req );
+    // Get parameters needed to determine version.
+    String serviceParam = ServletUtil.getParameterIgnoreCase( req, "Service");
+    String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
+    String acceptVersionsParam = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions" );
+    String versionParam = ServletUtil.getParameterIgnoreCase( req, "Version" );
 
-    if ( req.getParameterMap().size() == 0 )
+    // Make sure this is a WCS KVP request.
+    if ( serviceParam == null || ! serviceParam.equals( "WCS"))
     {
-      res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET request not a WCS KVP request." );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
-      return;
-    }
-    
-    String service = ServletUtil.getParameterIgnoreCase( req, "Service");
-    if ( service == null || ! service.equals( "WCS"))
-    {
-      res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET WCS KVP request missing SERVICE parameter.");
+      res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET request not a WCS KVP requestParam (missing or bad SERVICE parameter).");
       ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
       return;
     }
 
     // Decide on requested version.
-    String acceptableVersionsString = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions");
-    String reqVersionString = ServletUtil.getParameterIgnoreCase( req, "Version");
     VersionHandler targetHandler = null;
-
-    // If "Version" given, use it or fail if invalid.
-    // Otherwise, step through list in "AcceptVersions" and use first one that matches.
-    if ( reqVersionString != null)
+    if ( requestParam == null )
     {
-      try { targetHandler = getVersionHandler_1_0_0( reqVersionString ); }
-      catch (IllegalArgumentException e)
-      {
-        versionHandlers.get( versionHandlers.size() - 1).handleExceptionReport( res, "InvalidParameterValue", "Version", "Invalid \"Version\" parameter value <" + reqVersionString + ">.");
-      }
+      versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "MissingParameterValue", "Request", "" );
+      return;
     }
-    else if ( acceptableVersionsString != null)
+    else if ( requestParam.equals( "GetCapabilities"))
     {
-      String acceptableVersions[] = acceptableVersionsString.split( ",");
-      for ( String curVerString: acceptableVersions )
+      // Version negotiation using "acceptVersions" parameter.
+      if ( acceptVersionsParam != null )
       {
-        try { targetHandler = getVersionHandler_1_1_0( curVerString); }
-        catch ( IllegalArgumentException e )
+        if ( versionParam != null )
         {
-          versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "AcceptVersions", "Invalid \"AcceptVersions\" parameter value <" + acceptableVersionsString + ">." );
+          versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "NoApplicableCode", "", "Request included both \"Version\" and \"AcceptVersions\" parameters." );
+          return;
+        }
+        String acceptableVersions[] = acceptVersionsParam.split( "," );
+        for ( String curVerString : acceptableVersions )
+        {
+          try { targetHandler = getVersionHandler( curVerString ); }
+          catch ( IllegalArgumentException e )
+          {
+            versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "AcceptVersions", "Invalid \"AcceptVersions\" parameter value <" + acceptVersionsParam + ">." );
+          }
+        }
+        if ( targetHandler == null )
+        {
+          versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "VersionNegotiationFailed", "", "The \"AcceptVersions\" parameter value <" + acceptVersionsParam + "> did not match any supported versions <" + supportedVersionsString + ">." );
         }
       }
-      if ( targetHandler == null )
+      else if ( versionParam != null )
       {
-        versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "VersionNegotiationFailed", "", "The \"AcceptVersions\" parameter value <" + acceptableVersionsString + "> did not match any supported versions <" + supportedVersionsString + ">." );
+        // Version negotiation using WCS 1.0.0 spec (uses "Version" parameter).
+        try { targetHandler = getVersionHandler_1_0_0( versionParam); }
+        catch ( IllegalArgumentException e )
+        {
+          versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Version", "Invalid \"Version\" parameter value <" + versionParam + ">." );
+          return;
+        }
+      }
+      else
+      {
+        // No version specified, use latest version.
+        targetHandler = versionHandlers.get( versionHandlers.size() - 1);
       }
     }
     else
-      targetHandler = versionHandlers.get( 0); // Lowest version.
-
+    {
+      // Find requested version (no negotiation for "DescribeCoverage" and "GetCoverage" requests).
+      if ( ! requestParam.equals( "DescribeCoverage") && ! requestParam.equals( "GetCoverage") )
+      {
+        versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Request", "Invalid \"Request\" parameter value <" + requestParam + ">." );
+        return;
+      }
+      if ( versionParam == null )
+      {
+        versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "MissingParameterValue", "Version", "" );
+        return;
+      }
+      else
+      {
+        try { targetHandler = getVersionHandler( versionParam); }
+        catch ( IllegalArgumentException e )
+        {
+          versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Version", "Invalid \"Version\" parameter value <" + versionParam + ">." );
+          return;
+        }
+        if ( targetHandler == null )
+        {
+          versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Version", "Invalid \"Version\" parameter value <" + versionParam + ">." );
+          return;
+        }
+      }
+    }
 
     targetHandler.handleKVP( this, req, res);
   }
 
-  /**
-   * Given a version string, determine the appropriate version according to
-   * WCS 1.0.0 version negotiation rules.
-   *
-   * @param reqVersionString the requested version string
-   * @return the appropriate VersionHandler for the requested version string (as per WCS 1.0 version negotiation).  
-   * @throws IllegalArgumentException if reqVersionString is null or an invalid version string.
-   */
-  private VersionHandler getVersionHandler_1_0_0( String reqVersionString )
+  protected void doPost( HttpServletRequest req, HttpServletResponse res )
+          throws ServletException, IOException
   {
-    Version reqVersion = new Version( reqVersionString );
+    ServletUtil.logServerAccessSetup( req );
+
+    res.setStatus( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
+    res.setHeader( "Allow", "GET");
+    ServletUtil.logServerAccess( HttpServletResponse.SC_METHOD_NOT_ALLOWED, -1 );
+    return;
+  }
+
+  /**
+   * Return the VersionHandler appropriate for the given version number
+   * using the WCS 1.0.0 version number negotiation rules.
+
+   * @param versionNumber the requested version string
+   * @return the appropriate VersionHandler for the requested version string (as per WCS 1.0 version negotiation).  
+   * @throws IllegalArgumentException if versionNumber is null or an invalid version string.
+   */
+  private VersionHandler getVersionHandler_1_0_0( String versionNumber )
+  {
+    Version reqVersion = new Version( versionNumber );
 
     VersionHandler targetHandler = null;
 
@@ -175,17 +227,18 @@ public class WCSServlet extends AbstractServlet {
 
     return targetHandler;
   }
+
   /**
-   * Given a version string, determine the appropriate version according to
-   * WCS 1.1.0 version negotiation rules.
+   * Return the VersionHandler that supports the given version number or null
+   * if the given version number is not supported.
    *
-   * @param reqVersionString the requested version string
-   * @return the appropriate VersionHandler for the requested version string (as per WCS 1.0 version negotiation).
-   * @throws IllegalArgumentException if reqVersionString is null or an invalid version string.
+   * @param versionNumber the requested version string
+   * @return the VersionHandler that supports the requested version string or null.
+   * @throws IllegalArgumentException if versionNumber is null or an invalid version string.
    */
-  private VersionHandler getVersionHandler_1_1_0( String reqVersionString )
+  private VersionHandler getVersionHandler( String versionNumber )
   {
-    Version reqVersion = new Version( reqVersionString );
+    Version reqVersion = new Version( versionNumber );
 
     VersionHandler targetHandler = null;
 

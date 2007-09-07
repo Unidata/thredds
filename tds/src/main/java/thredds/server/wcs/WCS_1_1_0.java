@@ -2,6 +2,7 @@ package thredds.server.wcs;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.Debug;
+import thredds.wcs.XMLwriter_1_1_0;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ public class WCS_1_1_0 implements VersionHandler
           org.slf4j.LoggerFactory.getLogger( WCS_1_1_0.class );
 
   private Version version;
+  private XMLwriter_1_1_0 xmlWriter;
 
   /**
    * Declare the default constructor to be package private.
@@ -30,6 +32,8 @@ public class WCS_1_1_0 implements VersionHandler
   WCS_1_1_0()
   {
     this.version = new Version( "1.1.0" );
+    this.xmlWriter = new XMLwriter_1_1_0();
+
   }
 
   public Version getVersion()
@@ -40,10 +44,10 @@ public class WCS_1_1_0 implements VersionHandler
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
           throws ServletException, IOException
   {
-
   }
 
-  public void handleExceptionReport( HttpServletResponse res, String code, String locator, String message ) throws IOException
+  public void handleExceptionReport( HttpServletResponse res, String code, String locator, String message )
+          throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
@@ -53,9 +57,12 @@ public class WCS_1_1_0 implements VersionHandler
     ps.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
     ps.println( "<ExceptionReport version='1.0.0'>" );
     ps.println( "  <Exception code='" + code + ( ( locator != null ) ? "locator='" + locator + "'" : "" ) + "'>" );
-    ps.println( "   <ExceptionText>" );
-    ps.println( "     " + message );
-    ps.println( "   </ExceptionText>" );
+    if ( message != null )
+    {
+      ps.println( "   <ExceptionText>" );
+      ps.println( "     " + message );
+      ps.println( "   </ExceptionText>" );
+    }
     ps.println( "  </Exception>" );
     ps.println( "</ExceptionReport>" );
 
@@ -63,7 +70,8 @@ public class WCS_1_1_0 implements VersionHandler
     ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 
-  public void handleExceptionReport( HttpServletResponse res, String code, String locator, Throwable t ) throws IOException
+  public void handleExceptionReport( HttpServletResponse res, String code, String locator, Throwable t )
+          throws IOException
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
