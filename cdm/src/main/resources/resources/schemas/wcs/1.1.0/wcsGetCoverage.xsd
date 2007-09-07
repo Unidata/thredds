@@ -18,7 +18,7 @@
         includes and imports	
 	============================================================== -->
 	<include schemaLocation="wcsCommon.xsd"/>
-	<include schemaLocation="wcsGridCRS.xsd"/>
+	<include schemaLocation="../../../wcs/1.1.0/schemas/wcsGridCRS.xsd"/>
 	<import namespace="http://www.opengis.net/ows" schemaLocation="../../ows/1.0.0/owsCommon.xsd"/>
 	<import namespace="http://www.opengis.net/wcs/1.1/ows" schemaLocation="owcsAll.xsd"/>
 	<import namespace="http://www.opengis.net/gml" schemaLocation="../../gml/3.1.1/base/gml.xsd"/>

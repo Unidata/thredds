@@ -12,7 +12,7 @@ elementFormDefault="qualified" version="1.1.0" xml:lang="en">
 	<!-- ==============================================================
            includes and imports
 	============================================================== -->
-	<include schemaLocation="owsGetCapabilities.xsd"/>
-	<include schemaLocation="owsCoverages.xsd"/>
-	<include schemaLocation="owsInterpolationMethod.xsd"/>
+	<include schemaLocation="../../../wcs/1.1.0/schemas/owsGetCapabilities.xsd"/>
+	<include schemaLocation="../../../wcs/1.1.0/schemas/owsCoverages.xsd"/>
+	<include schemaLocation="../../../wcs/1.1.0/schemas/owsInterpolationMethod.xsd"/>
 </schema>
