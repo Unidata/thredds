@@ -1,4 +1,4 @@
-package thredds.wcs;
+package thredds.wcs.v1_1_0;
 
 import org.jdom.Namespace;
 import org.jdom.Document;
@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import thredds.catalog.XMLEntityResolver;
+import thredds.wcs.SectionType;
 
 /**
  * Generates WCS 1.1.0 XML responses.
