@@ -1,6 +1,5 @@
-// $Id: DataIterator.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,18 +25,28 @@ package ucar.nc2.dt2;
  *
  * @author caron
  */
-public interface DataIterator extends java.util.Iterator {
+public interface DataIterator  {
 
-  /** true if another Feature object is available */
-  public boolean hasNext();
+  /**
+   * true if another Feature object is available
+   * @return true if another Feature object is available
+   * @throws java.io.IOException on i/o error
+   */
+  public boolean hasNext() throws java.io.IOException;
 
-  /** Returns the next Feature object */
+  /**
+   * Returns the next Feature object
+   * @return the next Feature object
+   * @throws java.io.IOException on i/o error
+   */
   public Object nextData() throws java.io.IOException;
 
-  /** Returns the next Feature object.
+  /*
+   * Returns the next Feature object.
+   *
    * @throws RuntimeException (unchecked) instead of IOException.
    * @deprecated use nextData()
-   */
-  public Object next();
+   *
+  public Object next();   */
 
 }

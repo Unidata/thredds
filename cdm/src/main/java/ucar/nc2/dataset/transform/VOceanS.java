@@ -84,7 +84,7 @@ public class VOceanS extends AbstractCoordTransBuilder {
   }
 
   public String toString() {
-    return "OceanS:" + " s:"+s + " eta:"+eta + " depth_c:"+depth + " a:"+a + " b:"+b;    
+    return "OceanS:" + " s:"+s + " eta:"+eta + " depth:"+depth + " a:"+a + " b:"+b+" depth_c:"+depth_c;    
 
   }
 

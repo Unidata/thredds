@@ -1,6 +1,5 @@
-// $Id: $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,12 +21,14 @@ package ucar.nc2.dt2;
 
 /**
  * An estimate of the cost of performing a data access operation.
+ *
  * @author caron
  */
 public interface DataCost {
 
   /**
    * Estimated number of data objects this operation will return
+   *
    * @return number of data objects or -1 if unknown
    */
   int estimateDataCount();
@@ -35,6 +36,7 @@ public interface DataCost {
   /**
    * Estimated number of seconds this operation will take.
    * Zero means data is memory resident.
+   *
    * @return number of seconds or -1 if unknown
    */
   int estimateTimeCostInSeconds();

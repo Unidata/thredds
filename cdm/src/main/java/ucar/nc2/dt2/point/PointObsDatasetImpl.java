@@ -17,13 +17,33 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2;
+package ucar.nc2.dt2.point;
+
+import ucar.nc2.dt2.*;
+import ucar.unidata.geoloc.LatLonRect;
+
+import java.util.Date;
+import java.io.IOException;
 
 /**
- * A collection of Stations with StationObsFeature objects.
- *
  * @author caron
+ * @since Sep 7, 2007
  */
-public interface StationObsDataset extends PointObsDataset, StationCollection {
+public abstract class PointObsDatasetImpl extends FeatureDatasetImpl implements PointObsDataset {
 
+  public Class getFeatureClass() {
+    return PointObsFeature.class;
+  }
+
+  public PointCollection subset(LatLonRect boundingBox, Date start, Date end) throws IOException {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public DataIterator getDataIterator(int bufferSize) throws IOException {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public DataCost getDataCost() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
 }

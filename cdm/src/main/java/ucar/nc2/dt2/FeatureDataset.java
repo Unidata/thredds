@@ -1,3 +1,23 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 package ucar.nc2.dt2;
 
 import ucar.nc2.VariableSimpleIF;
@@ -6,60 +26,98 @@ import java.util.*;
 
 /**
  * Superclass for "scientific type" datasets.
- *
+ * <p/>
  * This interface defines general "discovery metadata".
  * Its subtypes define type-specific information.
  * Implementations may or may not have a NetcdfFile underneath.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public interface FeatureDataset {
 
-  /** Title of the dataset. */
+  /**
+   * Title of the dataset.
+   * @return the title of the dataset, or null
+   */
   public String getTitle();
 
-  /** Text information about this dataset. */
+  /**
+   * Text information about this dataset.
+   * @return any text information about this dataset, or null.
+   */
   public String getDescription();
 
-  /** The URI location of the dataset */
+  /**
+   * The URI location of the dataset
+   * @return the URI location of the dataset, or null
+   */
   public String getLocationURI();
 
-  /** Start date for the entire dataset. */
+  /**
+   * Start date for the entire dataset.
+   * @return the start date for the entire dataset,, or null
+   */
   public Date getStartDate();
 
-  /** End date for the entire dataset. */
+  /**
+   * End date for the entire dataset.
+   * @return the end date for the entire dataset, or null
+   */
   public Date getEndDate();
 
-  /** The boundingBox for the entire dataset. */
+  /**
+   * The boundingBox for the entire dataset.
+   * @return the lat/lon boundingBox for the entire dataset, or null.
+   */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
-  /** List of global attributes.
-   * @return List of type ucar.nc2.Attribute */
+  /**
+   * List of global attributes.
+   * @return List of type ucar.nc2.Attribute, may be empty but not null
+   */
   public List getGlobalAttributes();
 
-  /** Return the global attribute with the given name, ingnoring case. */
-  public ucar.nc2.Attribute findGlobalAttributeIgnoreCase( String name );
+  /**
+   * Return the global attribute with the given name, ignoring case.
+   * @param name attribute name
+   * @return the global attribute, or null
+   */
+  public ucar.nc2.Attribute findGlobalAttributeIgnoreCase(String name);
 
-  /** The data Variables available in this dataset.
+  /**
+   * The data Variables available in this dataset.
    * Should just be data variable others might be searching for, not metadata or coordinate
    * system variables, etc.
-   * The shape of this VariableSimpleIF does not necessarily match the 
-   * @return List of type VariableSimpleIF */
+   * The shape of this VariableSimpleIF does not necessarily match the
+   *
+   * @return List of type VariableSimpleIF, may be empty but not null
+   */
   public List<VariableSimpleIF> getDataVariables();
 
-  /** Get the named data Variable.
+  /**
+   * Get the named data Variable.
+   *
    * @param shortName of data Variable.
-   * @return VariableSimpleIF or null. */
-  public VariableSimpleIF getDataVariable( String shortName);
+   * @return VariableSimpleIF or null if not found
+   */
+  public VariableSimpleIF getDataVariable(String shortName);
 
-  /** Return underlying NetcdfFile, or null if none. */
+  /**
+   * Return underlying NetcdfFile, or null if none.
+   * @return the underlying NetcdfFile, or null if none.
+   */
   public ucar.nc2.NetcdfFile getNetcdfFile();
 
-  /** Close all resources associated with this dataset. */
+  /**
+   * Close all resources associated with this dataset.
+   * @throws java.io.IOException on i/o error
+   */
   public void close() throws java.io.IOException;
 
-  /** Show debug / underlying implementation details */
+  /**
+   * Show debug / underlying implementation details
+   * @return any debug / underlying implementation details, or null
+   */
   public String getDetailInfo();
 }
