@@ -14,9 +14,8 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 
-import java.util.Date;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
+import java.net.URI;
 
 import thredds.catalog.XMLEntityResolver;
 import thredds.wcs.SectionType;
@@ -27,7 +26,7 @@ import thredds.wcs.SectionType;
  * @author edavis
  * @author caron
  */
-public class XMLwriter_1_1_0
+public class XMLwriter
 {
   protected static final Namespace owsNS = Namespace.getNamespace( "http://www.opengis.net/ows");
 
@@ -42,7 +41,7 @@ public class XMLwriter_1_1_0
 
   private XMLOutputter xmlOutputter;
 
-  public XMLwriter_1_1_0 ()
+  public XMLwriter()
   {
     xmlOutputter = new XMLOutputter( Format.getPrettyFormat() );
   }
@@ -55,16 +54,11 @@ public class XMLwriter_1_1_0
   }
   //////////////////////////////////////////////////////////////////////////////////
 
-  public String generateExceptionReportAsString( String code, String locator, String message)
-  {
-    return xmlOutputter.outputString( generateExceptionReport( code, locator, message));
-  }
-
   public Document generateExceptionReport( String code, String locator, String message)
   {
     Element rootElem = new Element( "ExceptionReport", owsNS);
 
-    rootElem.addNamespaceDeclaration( wcsNS );
+    rootElem.addNamespaceDeclaration( owsNS );
     rootElem.setAttribute( "version", "1.0.0" );
     // rootElem.setAttribute( "language", "en" );
 
@@ -83,6 +77,93 @@ public class XMLwriter_1_1_0
     rootElem.addContent( exceptionElem);
 
     return new Document( rootElem );
+  }
+
+  public Element generateServiceIdentification( String title, String abs,
+                                                List<String> keywords,
+                                                String serviceType,
+                                                List<String> serviceTypeVersion,
+                                                String fees,
+                                                List<String> accessConstraints)
+  {
+    Element serviceIdElem = new Element( "ServiceIdentification", owsNS );
+
+    if ( title != null )
+    {
+      Element titleElem = new Element( "Title", owsNS);
+      titleElem.addContent( title);
+      serviceIdElem.addContent( titleElem);
+    }
+
+    if ( abs != null )
+    {
+      Element abstractElem = new Element( "Abstract", owsNS);
+      abstractElem.addContent( abs);
+      serviceIdElem.addContent( abstractElem);
+    }
+
+    if ( keywords != null && keywords.size() > 0 )
+    {
+      Element keywordsElem = new Element( "Keywords", owsNS );
+      for ( String curKey : keywords)
+      {
+        Element keywordElem = new Element( "Keyword", owsNS);
+        keywordElem.addContent( curKey);
+        keywordsElem.addContent( keywordElem);
+      }
+    }
+
+    if ( serviceType != null )
+    {
+      Element serviceTypeElem = new Element( "ServiceType", owsNS );
+      serviceTypeElem.addContent( serviceType );
+      serviceIdElem.addContent( serviceTypeElem );
+    }
+
+    if ( serviceTypeVersion != null && serviceTypeVersion.size() > 0 )
+    {
+      for ( String curVer : serviceTypeVersion )
+      {
+        Element serviceTypeVersionElem = new Element( "ServiceTypeVersion", owsNS );
+        serviceTypeVersionElem.addContent( curVer );
+        serviceIdElem.addContent( serviceTypeVersionElem );
+      }
+    }
+
+    if ( fees != null )
+    {
+      Element feesElem = new Element( "Fees", owsNS);
+      feesElem.addContent( fees);
+      serviceIdElem.addContent( feesElem);
+    }
+
+    if ( accessConstraints != null && accessConstraints.size() > 0 )
+    {
+      for ( String curAC : accessConstraints)
+      {
+        Element accessConstraintsElem = new Element( "AccessConstraints", owsNS);
+        accessConstraintsElem.addContent( curAC);
+        serviceIdElem.addContent( accessConstraintsElem);
+      }
+    }
+
+    return serviceIdElem;
+  }
+  public static class Keywords
+  {
+    private String type;
+    private URI codeSpace;
+    private List<String> keywords;
+    public Keywords( String type, URI codeSpace, List<String> keywords )
+    {
+      this.type = type;
+      this.codeSpace = codeSpace;
+      this.keywords = new ArrayList<String>( keywords.size());
+      Collections.copy( this.keywords, keywords);
+    }
+    public String getType() {return this.type;}
+    public URI getCodeSpace() {return this.codeSpace;}
+    public List<String> getKeywords() {return this.keywords; }
   }
 
   private boolean useTimeRange = false;

@@ -2,7 +2,7 @@ package thredds.server.wcs;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.Debug;
-import thredds.wcs.XMLwriter_1_1_0;
+import thredds.wcs.v1_1_0.XMLwriter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ public class WCS_1_1_0 implements VersionHandler
           org.slf4j.LoggerFactory.getLogger( WCS_1_1_0.class );
 
   private Version version;
-  private XMLwriter_1_1_0 xmlWriter;
+  private XMLwriter xmlWriter;
 
   /**
    * Declare the default constructor to be package private.
@@ -32,7 +32,7 @@ public class WCS_1_1_0 implements VersionHandler
   WCS_1_1_0()
   {
     this.version = new Version( "1.1.0" );
-    this.xmlWriter = new XMLwriter_1_1_0();
+    this.xmlWriter = new XMLwriter();
 
   }
 
