@@ -25,26 +25,21 @@ public class GetCapabilities
   protected static final Namespace owcsNS = Namespace.getNamespace( "owcs", "http://www.opengis.net/wcs/1.1/ows" );
   protected static final Namespace owsNS = Namespace.getNamespace( "ows", "http://www.opengis.net/ows" );
 
-  private String serviceIdTitle;
-  private String serviceIdAbstract;
-  private List<String> serviceIdKeywords;
-  private String serviceType;
-  private List<String> serviceTypeVersion;
-  private String fees;
-  private List<String> accessConstraints;
+  private ServiceId serviceId;
 
-  public GetCapabilities()
+  public GetCapabilities( ServiceId serviceId )
   {
-    serviceIdTitle = "need a title";
-    serviceIdAbstract = "need an abstract";
-    serviceIdKeywords = new ArrayList<String>();
-    serviceIdKeywords.add( "need keywords");
-    serviceType = "OGC WCS";
-    serviceTypeVersion = new ArrayList<String>();
-    serviceTypeVersion.add("1.1.0");
-    fees = "NONE";
-    accessConstraints = new ArrayList<String>();
-    accessConstraints.add( "NONE");
+    this.serviceId = serviceId;
+//    serviceIdTitle = "need a title";
+//    serviceIdAbstract = "need an abstract";
+//    serviceIdKeywords = new ArrayList<String>();
+//    serviceIdKeywords.add( "need keywords");
+//    serviceType = "OGC WCS";
+//    serviceTypeVersion = new ArrayList<String>();
+//    serviceTypeVersion.add("1.1.0");
+//    fees = "NONE";
+//    accessConstraints = new ArrayList<String>();
+//    accessConstraints.add( "NONE");
   }
 
   public Document generateCapabilities( URI serverURI, GridDataset gds, List<Section> sections )
@@ -227,11 +222,29 @@ public class GetCapabilities
      private String fees;
      private List<String> accessConstraints;
 
-     public ServiceId( String title, String abst, List<String> keywords,
-                       String serviceType, List<String> serviceTypeVersion,
-                       String fees, List<String> accessConstraints )
+     public ServiceId( String title, String anAbstract, List<String> keywords, String serviceType, List<String> serviceTypeVersion, String fees, List<String> accessConstraints )
      {
-
+       this.title = title;
+       this._abstract = anAbstract;
+       this.keywords = keywords;
+       this.serviceType = serviceType;
+       this.serviceTypeVersion = serviceTypeVersion;
+       this.fees = fees;
+       this.accessConstraints = accessConstraints;
      }
+
+     public String getTitle() { return title; }
+
+     public String getAbstract() { return _abstract; }
+
+     public List<String> getKeywords() { return keywords; }
+
+     public String getServiceType() { return serviceType; }
+
+     public List<String> getServiceTypeVersion() { return serviceTypeVersion; }
+
+     public String getFees() { return fees; }
+
+     public List<String> getAccessConstraints() { return accessConstraints; }
    }
 }

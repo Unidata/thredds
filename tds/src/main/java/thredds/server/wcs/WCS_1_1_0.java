@@ -3,6 +3,7 @@ package thredds.server.wcs;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.Debug;
 import thredds.wcs.v1_1_0.XMLwriter;
+import thredds.wcs.v1_1_0.ExceptionReport;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 /**
  * _more_
@@ -49,55 +51,27 @@ public class WCS_1_1_0 implements VersionHandler
   public void handleExceptionReport( HttpServletResponse res, String code, String locator, String message )
           throws IOException
   {
-    res.setContentType( "application/vnd.ogc.se_xml" );
+    res.setContentType( "text/xml" ); // 1.0.0 was ("application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
 
+    PrintWriter pw = res.getWriter();
     PrintStream ps = new PrintStream( res.getOutputStream() );
+    ExceptionReport exceptionReport = new ExceptionReport( ExceptionReport.Code.valueOf( code ), locator, message);
+    exceptionReport.writeExceptionReport( pw );
+    pw.flush();
 
-    ps.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
-    ps.println( "<ExceptionReport version='1.0.0'>" );
-    ps.println( "  <Exception code='" + code + ( ( locator != null ) ? "locator='" + locator + "'" : "" ) + "'>" );
-    if ( message != null )
-    {
-      ps.println( "   <ExceptionText>" );
-      ps.println( "     " + message );
-      ps.println( "   </ExceptionText>" );
-    }
-    ps.println( "  </Exception>" );
-    ps.println( "</ExceptionReport>" );
-
-    ps.flush();
-    ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
+    ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
   }
 
   public void handleExceptionReport( HttpServletResponse res, String code, String locator, Throwable t )
           throws IOException
   {
-    res.setContentType( "application/vnd.ogc.se_xml" );
-    res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+    handleExceptionReport( res, code, locator, t.getMessage());
 
-    PrintStream ps = new PrintStream( res.getOutputStream() );
-
-    ps.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
-    ps.println( "<ExceptionReport xmlns='http://www.opengis.net/ows' version='1.0.0'>" );
-    ps.println( "  <Exception code='" + code + ((locator != null) ? "locator='" + locator + "'" : "") + "'>" );
-    ps.println( "   <ExceptionText>" );
-
-    if ( Debug.isSet( "trustedMode" ) ) // security issue: only show stack if trusted
-      t.printStackTrace( ps );
-    else
-      ps.println( t.getMessage() );
-
-    ps.println( "   </ExceptionText>" );
-    ps.println( "  </Exception>" );
-    ps.println( "</ExceptionReport>" );
-
-    ps.flush();
     if ( t instanceof FileNotFoundException )
       log.info( "handleExceptionReport", t.getMessage() ); // dont clutter up log files
     else
       log.info( "handleExceptionReport", t );
-    ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 ); // LOOK, actual return is 200 = OK !
   }
 
 }

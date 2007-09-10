@@ -98,7 +98,7 @@ public class WCSServlet extends AbstractServlet {
       versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "MissingParameterValue", "Request", "" );
       return;
     }
-    else if ( requestParam.equals( "GetCapabilities"))
+    else if ( requestParam.equals( WcsRequest.Operation.GetCapabilities.toString()))
     {
       // Version negotiation using "acceptVersions" parameter.
       if ( acceptVersionsParam != null )
@@ -141,9 +141,10 @@ public class WCSServlet extends AbstractServlet {
     else
     {
       // Find requested version (no negotiation for "DescribeCoverage" and "GetCoverage" requests).
-      if ( ! requestParam.equals( "DescribeCoverage") && ! requestParam.equals( "GetCoverage") )
+      if ( ! requestParam.equals( WcsRequest.Operation.DescribeCoverage.toString()) &&
+           ! requestParam.equals( WcsRequest.Operation.GetCoverage.toString()) )
       {
-        versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Request", "Invalid \"Request\" parameter value <" + requestParam + ">." );
+        versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Request", "Invalid \"Operation\" parameter value <" + requestParam + ">." );
         return;
       }
       if ( versionParam == null )
