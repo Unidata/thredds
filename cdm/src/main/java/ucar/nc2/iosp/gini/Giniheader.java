@@ -22,7 +22,9 @@ package ucar.nc2.iosp.gini;
 
 
 import ucar.nc2.*;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.dataset.AxisType;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
@@ -253,6 +255,22 @@ class Giniheader {
     cal.set(gyear, gmonth-1, gday, ghour, gminute, gsecond);
     String dstring = dformat.format(cal.getTime());
 
+    Dimension dimT  = new Dimension( "time", 1, true, false, false);
+    ncfile.addDimension( null, dimT);
+
+    String timeCoordName = "time";
+    Variable taxis = new Variable(ncfile, null, null, timeCoordName);
+    taxis.setDataType(DataType.DOUBLE);
+    taxis.setDimensions("time");
+    taxis.addAttribute( new Attribute("long_name", "time since base date"));
+    taxis.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    double [] tdata = new double[1];
+    tdata[0] = cal.getTimeInMillis();
+    Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, tdata);
+    taxis.setCachedData( dataA, false);
+    DateFormatter formatter = new DateFormatter();
+    taxis.addAttribute( new Attribute("units", "msecs since "+formatter.toDateTimeStringISO(new Date(0))));
+    ncfile.addVariable(null, taxis);
 
     //att = new Attribute( "Time", dstring);
     //this.ncfile.addAttribute(null, att);
@@ -312,7 +330,11 @@ class Giniheader {
 
         bos.get(b3, 0, 3);
         nn = getInt( b3, 3);
-        nd = new Double(((double) nn) / 10000.0 * (-1));
+        int b33 = (int)(b3[0] & (1<< 7));
+      //  if( b33 == 128)      //west longitude
+      //      nd = new Double(((double) nn) / 10000.0 * (-1));
+      //  else
+            nd = new Double(((double) nn) / 10000.0 );
         lon1 = nd.doubleValue();
         att = new Attribute( "Longitude0", nd);
         this.ncfile.addAttribute(null, att);
@@ -329,7 +351,11 @@ class Giniheader {
 
         bos.get(b3, 0, 3);
         nn = getInt( b3, 3);
-        nd = new Double(((double) nn) / 10000.0 * (-1));
+        b33 = (int)(b3[0] & (1<< 7));
+       // if( b33 == 128)      //west longitude
+      //      nd = new Double(((double) nn) / 10000.0 * (-1));
+      //  else
+            nd = new Double(((double) nn) / 10000.0 );
         lon2 = nd.doubleValue();
         att = new Attribute( "LongitudeN", nd);
         this.ncfile.addAttribute(null, att);
@@ -338,11 +364,13 @@ class Giniheader {
         ** Hack to catch incorrect sign of lon2 in header.
         */
 
-        if ( lon1 > 0.0 && lon2 < 0.0 ) lon2 *= -1;
-        if ( lon1 < 0 ) lon1 += 360.0;
-        if ( lon2 < 0 ) lon2 += 360.0;
+    //    if ( lon1 > 0.0 && lon2 < 0.0 ) lon2 *= -1;
+        double lon_1 = lon1;
+        double lon_2 = lon2;
+        if ( lon1 < 0 ) lon_1 += 360.0;
+        if ( lon2 < 0 ) lon_2 += 360.0;
 
-        lonv = lon1 - (lon1 - lon2) / 2.0;
+        lonv = lon_1 - (lon_1 - lon_2) / 2.0;
 
         if ( lonv >  180.0 ) lonv -= 360.0;
         if ( lonv < -180.0 ) lonv += 360.0;
@@ -353,7 +381,7 @@ class Giniheader {
         ** at which the image resolution is that defined by octet 41.
         */
         bos.getInt(); /* skip 4 bytes */
-        bos.get();
+        bos.get();    /* skip 1 byte */
 
         bos.get(b3, 0, 3);
         nn = getInt( b3, 3);
@@ -366,8 +394,12 @@ class Giniheader {
 
         latt = 0.0; // this is not corrected
 
-        dyKm =  Math.cos( DEG_TO_RAD*latt);
-        dxKm =  DEG_TO_RAD * EARTH_RAD_KMETERS * (lon1-lon2) / (ny-1);
+       // dyKm =  Math.cos( DEG_TO_RAD*latt);
+       // dxKm = DEG_TO_RAD * EARTH_RAD_KMETERS * Math.abs((lon_1-lon_2) / (nx-1));
+      //  double dy  =  EARTH_RAD_KMETERS * Math.cos(DEG_TO_RAD*latt) / (ny - 1);
+      //  dyKm = dy *( Math.log( Math.tan(DEG_TO_RAD*( (lat2-latt)/2.0 + 45.0 ) ) )
+      //                  -Math.log( Math.tan(DEG_TO_RAD*( (lat1-latt)/2.0 + 45.0 ) ) ) );
+      //  dxKm = DEG_TO_RAD * EARTH_RAD_KMETERS * Math.abs(lon1-lon2) / (ny-1);
         projection = new Mercator(latt, lonv, latin) ;
         break;
 
@@ -502,8 +534,8 @@ class Giniheader {
     nv = new Byte( ( bos.get() ) );      /* Res [km] */
     att = new Attribute( "imageResolution", nv);
     this.ncfile.addAttribute(null, att);
-    if(proj == 1)
-        dyKm = nv.doubleValue()/dyKm;
+   // if(proj == 1)
+   //     dyKm = nv.doubleValue()/dyKm;
     /* compression flag */
 
     nv = new Byte( ( bos.get() ));      /* Res [km] */
@@ -536,7 +568,7 @@ class Giniheader {
     ncfile.addDimension( null, dimX);
 
     velems = dimX.getLength() * dimY.getLength();
-
+    dims.add( dimT);
     dims.add( dimY);
     dims.add( dimX);
 
@@ -546,13 +578,16 @@ class Giniheader {
     var.setDataType( DataType.BYTE);
     var.addAttribute(new Attribute("_unsigned", "true"));
     var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
+    var.addAttribute( new Attribute("scale_factor", new Short((short)(1))));
+    var.addAttribute( new Attribute("add_offset", new Short((short)(0))));
 
       // size and beginning data position in file
     int vsize = velems;
     long begin = dataStart ;
     if (debug) out.println(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
     var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny));
-
+    String coordinates = "x y time";
+    var.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
     ncfile.addVariable(null, var);
 
     // add coordinate information. we need:
@@ -574,9 +609,25 @@ class Giniheader {
     xaxis.addAttribute( new Attribute("units", "km"));
     xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
     double[] data = new double[nx];
-    for (int i = 0; i < data.length; i++)
-      data[i] = startx + i*dxKm;
-    Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {nx}, data);
+    if( proj == 1 ) {
+        double lon_1 = lon1;
+        double lon_2 = lon2;
+        if ( lon1 < 0 ) lon_1 += 360.0;
+        if ( lon2 < 0 ) lon_2 += 360.0;
+        double dx = (lon_2 - lon_1) /(nx-1);
+
+        for (int i = 0; i < data.length; i++) {
+          double ln = lon1 + i * dx;
+          ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj( new LatLonPointImpl( lat1, ln));
+          data[i] = pt.getX();  // startx + i*dx;
+        }
+    }
+    else {
+        for (int i = 0; i < data.length; i++)
+          data[i] = startx + i*dxKm;
+    }
+
+    dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {nx}, data);
     xaxis.setCachedData( dataA, false);
     ncfile.addVariable(null, xaxis);
 
@@ -587,9 +638,19 @@ class Giniheader {
     yaxis.addAttribute( new Attribute("units", "km"));
     yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
     data = new double[ny];
-    double endy = starty + dyKm * data.length; // apparently lat1,lon1 is always the lower ledt, but data is upper left
-    for (int i = 0; i < data.length; i++)
-      data[i] = endy - i*dyKm;
+    double endy = starty + dyKm * (data.length - 1); // apparently lat1,lon1 is always the lower ledt, but data is upper left
+    if(proj == 1) {
+        double dy = (lat2 - lat1 ) / (ny-1);
+        for (int i = 0; i < data.length; i++) {
+          double la = lat2 - i*dy;
+          ProjectionPointImpl pt = (ProjectionPointImpl) projection.latLonToProj( new LatLonPointImpl( la, lon1));
+          data[i] = pt.getY();  //endyy - i*dy;
+        }
+    }
+    else {
+        for (int i = 0; i < data.length; i++)
+          data[i] = endy - i*dyKm;
+    }
     dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {ny}, data);
     yaxis.setCachedData( dataA, false);
     ncfile.addVariable(null, yaxis);
