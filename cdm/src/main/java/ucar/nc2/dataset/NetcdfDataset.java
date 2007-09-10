@@ -550,7 +550,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     coordTransforms = new ArrayList<CoordinateTransform>();
     coordSysWereAdded = false;
   }
+   /**
+   * Set whether Coordinate System metadata has been added.
+   */
+  public void setCoordSysWereAdded(boolean coordSysWereAdded) {
+    this.coordSysWereAdded = coordSysWereAdded;
 
+  }
   /**
    * Retrieve the CoordinateAxis with the specified name.
    *
