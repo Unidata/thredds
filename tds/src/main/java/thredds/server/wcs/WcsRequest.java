@@ -1,14 +1,15 @@
 package thredds.server.wcs;
 
 import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * _more_
+ * Represent the incoming WCS 1.1.0 request.
  *
  * @author edavis
- * @since Sep 4, 2007 4:00:10 PM
+ * @since 4.0
  */
 public class WcsRequest
 {
@@ -22,6 +23,12 @@ public class WcsRequest
   public WcsRequest( HttpServletRequest req )
   {
     String request = ServletUtil.getParameterIgnoreCase( req, "REQUEST" );
+
+    if ( request.equals( Request.GetCapabilities))
+    {
+      String serviceIdTitle = ThreddsConfig.get( "WCS.serviceIdTitle", null );
+
+    }
 
   }
 

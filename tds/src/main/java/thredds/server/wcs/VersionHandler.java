@@ -10,7 +10,7 @@ import java.io.IOException;
  * Each implementation handles a different version of WCS requests. 
  *
  * @author edavis
- * @since Aug 14, 2007 2:10:12 PM
+ * @since 4.0
  */
 public interface VersionHandler
 {

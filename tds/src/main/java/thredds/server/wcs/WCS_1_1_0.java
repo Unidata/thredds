@@ -16,7 +16,7 @@ import java.io.FileNotFoundException;
  * _more_
  *
  * @author edavis
- * @since Aug 14, 2007 1:20:49 PM
+ * @since 4.0
  */
 public class WCS_1_1_0 implements VersionHandler
 {
