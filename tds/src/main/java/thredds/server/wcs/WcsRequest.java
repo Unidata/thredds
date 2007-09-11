@@ -2,13 +2,16 @@ package thredds.server.wcs;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
+import thredds.servlet.DatasetHandler;
 import thredds.wcs.v1_1_0.WcsException;
 import thredds.wcs.v1_1_0.GetCapabilities;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.io.IOException;
 
 import ucar.nc2.dt.GridDataset;
 
@@ -57,7 +60,7 @@ public class WcsRequest
 
   public enum Format { NONE, GeoTIFF, GeoTIFF_Float, NetCDF3 }
 
-  public WcsRequest( HttpServletRequest req )
+  public WcsRequest( HttpServletRequest req, HttpServletResponse res )
           throws WcsException
   {
     this.req = req;
@@ -108,7 +111,29 @@ public class WcsRequest
     }
 
     // Find the dataset.
-    dataset = null;
+    String datasetPath = req.getPathInfo();
+    try
+    {
+      dataset = DatasetHandler.openGridDataset( req, res, datasetPath );
+    }
+    catch ( IOException e )
+    {
+      log.warn( "WcsRequest(): Failed to open dataset <" + datasetPath + ">: " + e.getMessage());
+      throw new WcsException( WcsException.Code.NoApplicableCode, null, "Failed to open dataset, \"" + datasetPath + "\"." );
+    }
+    if ( dataset == null )
+    {
+      log.debug( "WcsRequest(): Unknown dataset <" + datasetPath + ">.");
+      throw new WcsException( WcsException.Code.NoApplicableCode, null, "Unknown dataset, \"" + datasetPath + "\"." );
+    }
+
+//    String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
+//    boolean isRemote = ( datasetURL != null );
+//    String datasetPath = isRemote ? datasetURL : req.getPathInfo();
+//
+//    // convert to a GridDataset
+//    GridDataset gd = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : DatasetHandler.openGridDataset( req, res, datasetPath );
+//    if ( gd == null ) return null;
   }
 
 

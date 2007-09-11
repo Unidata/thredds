@@ -144,6 +144,9 @@ public class GetCapabilities
 //      profileElem.addContent( curAppProfileId.toString());
 //      serviceIdElem.addContent( profileElem);
 //    }
+    // "WCS 1.1 Application Profile for [Format] [formatVersion] encoding, [profileVersion]"
+    // "WCS 1.1 Application Profile for CF/1.0 netCDF 3 encoding, [profileVersion]"
+    // "WCS 1.1 Application Profile for CF-netCDF 1.0/3 encoding, [profileVersion]"
 
     if ( serviceId.getFees() != null )
     {
