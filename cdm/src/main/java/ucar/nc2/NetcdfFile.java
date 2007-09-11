@@ -1214,6 +1214,7 @@ public class NetcdfFile {
       if (gotit) {
         rootGroup.remove( v);
         variables.remove( v);
+        removeRecordStructure();
       }
       return (gotit);
     }
@@ -1236,6 +1237,16 @@ public class NetcdfFile {
     Boolean didit = false;
     if ((spi instanceof N3iosp) && hasUnlimitedDimension()) {
       didit = (Boolean) spi.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    }
+    return didit;
+  }
+
+  protected Boolean removeRecordStructure() {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
+    Boolean didit = false;
+    if (spi instanceof N3iosp) {
+      didit = (Boolean) spi.sendIospMessage(IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
     }
     return didit;
   }

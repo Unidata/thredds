@@ -166,7 +166,7 @@ public class NetworkUtils {
   }
 
 
-  public static void main(String args[]) {
+  public static void main4(String args[]) {
     try {
       URL url = new URL("file:src/test/data/ncml/nc/");
       URI uri = new URI("file:src/test/data/ncml/nc/");
@@ -175,5 +175,11 @@ public class NetworkUtils {
       e.printStackTrace();
     }
   }
+
+  public static void main(String args[]) throws URISyntaxException {
+    String uriString = "http://dods.coas.oregonstate.edu:8080/dods/dts/test.53.dods?types[0:1:9]";
+    URI uri = new URI(uriString);
+  }
+
 
 }

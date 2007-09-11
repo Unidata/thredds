@@ -188,7 +188,8 @@ orientation of the grid). This should be set equal to the center longitude in mo
         case 2:
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
-          double scaleFactor = (1 + Math.sin(Math.toRadians(lat1))) / 2.;
+          double scaleFactor = (1+Math.abs(Math.sin(Math.toRadians(lat1))))/2.;  // R Schmunk 9/10/07
+          //double scaleFactor = (1 + Math.sin(Math.toRadians(lat1))) / 2.;
           proj = new Stereographic(lat2, lon0, scaleFactor);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;

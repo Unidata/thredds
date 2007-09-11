@@ -75,24 +75,18 @@
 
   <!-- Project libraries needed for compile. -->
   <property name="bufr.jar" value="release/bufr-1.1.00.jar"/>
-  <property name="netcdf.jar" value="release/netcdf-2.2.21.jar"/>
+  <property name="netcdf.jar" value="release/netcdf-4.0.jar"/>
   <property name="grib.jar" value="release/grib-6.0.jar"/>
   <property name="prefs.jar" value="release/prefsAll.jar"/>
-  <property name="opendap.jar" value="release/opendap-2.0.jar"/>
+  <property name="opendap.jar" value="release/opendap-2.1.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
   <property name="cas.jar" value="external/casclient-2.1.1.jar"/>
   <property name="fileupload.jar" value="external/commons-fileupload-1.1.1.jar"/>
-  <property name="httpclient.jar" value="external/commons-httpclient-3.0.1.jar"/>
+  <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="logging.jar" value="external/nlog4j-1.2.25.jar"/>
-
-  <!-- Third-party database libraries needed for compile. -->
-  <property name="bloat.jar" value="external/bloat-1.0.jar"/>
-  <property name="db4o-db4ounit.jar" value="external/db4o-6.0-db4ounit.jar"/>
-  <property name="db4o-java5.jar" value="external/db4o-6.0-java5.jar"/>
-  <property name="db4o-nqopt.jar" value="external/db4o-6.0-nqopt.jar"/>
 
   <!-- Third-party libraries needed for runtime. -->
   <property name="commons-io.jar" value="external/commons-io-1.2.jar"/>

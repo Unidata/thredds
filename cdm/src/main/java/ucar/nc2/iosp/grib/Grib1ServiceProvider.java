@@ -108,7 +108,7 @@ public class Grib1ServiceProvider extends GribServiceProvider {
       //System.out.println("dataOffset1="+ dataOffset1 +" scale ="+ decimalScale +" bmsE ="+ bmsExists );
       return dataReader.getData( dataOffset1, decimalScale, bmsExists );
     } catch (NotSupportedException e) {
-      throw new IOException(e);
+      throw new IOException(e.getMessage());
     }
   }
 

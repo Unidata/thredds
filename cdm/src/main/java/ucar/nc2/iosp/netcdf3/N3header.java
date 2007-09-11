@@ -195,7 +195,7 @@ public class N3header {
       long begin = useLongOffset ? raf.readLong() : (long) raf.readInt();
       if (debug)
         out.println(" name= " + name + " type=" + type + " vsize=" + vsize + " velems=" + velems + " begin= " + begin +
-            " isRecord=" + isRecord + " attsPos= "+varAttsPos+"\n");
+                " isRecord=" + isRecord + " attsPos= " + varAttsPos + "\n");
       var.setSPobject(new Vinfo(vsize, begin, isRecord, varAttsPos));
 
       // track how big each record is
@@ -245,15 +245,30 @@ public class N3header {
     // ncfile.finish();
   }
 
+  synchronized boolean removeRecordStructure() {
+    boolean found = false;
+    for (Variable v : uvars) {
+      if (v.getName().equals("record")) {
+        uvars.remove(v);
+        ncfile.getRootGroup().getVariables().remove(v);
+        found = true;
+        break;
+      }
+    }
+
+    ncfile.finish();
+    return found;
+  }
+
   synchronized boolean addRecordStructure() {
     // create record structure
     if (uvars.size() > 0) {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
-      recordStructure.setDimensions( udim.getName());
+      recordStructure.setDimensions(udim.getName());
       for (Variable v : uvars) {
         Variable memberV = new Variable(v);
         memberV.setParentStructure(recordStructure);
-        memberV.createNewCache(); // decouple caching - LOOK could use this ??
+        //memberV.createNewCache(); // decouple caching - LOOK could use this ??
 
         //remove record dimension
         List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
@@ -264,7 +279,7 @@ public class N3header {
       }
 
       uvars.add(recordStructure);
-      ncfile.getRootGroup().addVariable( recordStructure);
+      ncfile.getRootGroup().addVariable(recordStructure);
       ncfile.finish();
       return true;
     }
@@ -431,7 +446,7 @@ public class N3header {
       case 6:
         return DataType.DOUBLE;
     }
-    throw new IllegalStateException("unknown type == " + type);
+    throw new IllegalArgumentException("unknown type == " + type);
   }
 
   static int getType(DataType dt) {
@@ -442,16 +457,16 @@ public class N3header {
     else if (dt == DataType.FLOAT) return 5;
     else if (dt == DataType.DOUBLE) return 6;
 
-    throw new IllegalStateException("unknown DataType == " + dt);
+    throw new IllegalArgumentException("unknown DataType == " + dt);
   }
 
   /**
    * Write the header out, based on ncfile structures.
    *
-   * @param raf write to this <Dimension>
+   * @param raf    write to this <Dimension>
    * @param ncfile the header of this NetcdfFile
-   * @param fill use fill or not
-   * @param out debugging output
+   * @param fill   use fill or not
+   * @param out    debugging output
    * @throws IOException on write error
    */
   void create(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile, boolean fill, PrintStream out) throws IOException {
@@ -504,7 +519,7 @@ public class N3header {
       Vinfo vinfo = (Vinfo) var.getSPobject();
       if (!vinfo.isRecord) {
         raf.seek(vinfo.begin);
-        raf.writeInt( (int) pos); // LOOK int not long
+        raf.writeInt((int) pos); // LOOK int not long
         vinfo.begin = pos;
         if (debugVariablePos)
           System.out.println(var.getName() + " begin at = " + vinfo.begin + " end=" + (vinfo.begin + vinfo.vsize));
@@ -519,7 +534,7 @@ public class N3header {
       Vinfo vinfo = (Vinfo) var.getSPobject();
       if (vinfo.isRecord) {
         raf.seek(vinfo.begin);
-        raf.writeInt( (int) pos);   // LOOK int not long
+        raf.writeInt((int) pos);   // LOOK int not long
         vinfo.begin = pos;
         if (debug) System.out.println(var.getName() + " record begin at = " + dataStart);
         pos += vinfo.vsize;
@@ -540,11 +555,11 @@ public class N3header {
 
     raf.seek(pos);
     int type = raf.readInt();
-    DataType have = getDataType( type);
+    DataType have = getDataType(type);
     DataType want = att.getDataType();
     if (want == DataType.STRING) want = DataType.CHAR;
     if (want != have)
-       throw new IllegalArgumentException("Update Attribute must have same type or original = "+have);
+      throw new IllegalArgumentException("Update Attribute must have same type or original = " + have);
 
     if (type == 2) {  // String
       String s = att.getStringValue();
@@ -570,7 +585,7 @@ public class N3header {
   }
 
   private long findAtt(long start_pos, String want) throws IOException {
-    raf.seek(start_pos+4);
+    raf.seek(start_pos + 4);
 
     int natts = raf.readInt();
     for (int i = 0; i < natts; i++) {

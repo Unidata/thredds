@@ -39,9 +39,7 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.List;
-import java.util.Date;
-import java.util.ArrayList;
+import java.util.*;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -285,19 +283,26 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (!cacheFile.exists())
       return;
 
-    if (debug) System.out.println(" *Read cache " + cacheFile.getPath());
+    if (debugCache) System.out.println(" Try to Read cache " + cacheFile.getPath());
 
     Element aggElem;
     try {
-      aggElem = ucar.nc2.util.xml.Parse.readRootElement(cacheFile.getPath());
+      aggElem = ucar.nc2.util.xml.Parse.readRootElement("file:"+cacheFile.getPath());
     } catch (IOException e) {
+      if (debugCache) System.out.println(" No cache for " + cacheName+" - "+e.getMessage());
       return;
+    }
+
+    // use a map to find datasets to avoid O(n**2) searching
+    Map<String,Dataset> map = new HashMap<String,Dataset>();
+    for (Dataset ds : getDatasets()) {
+      map.put(ds.getLocation(), ds);
     }
 
     List<Element> ncList = aggElem.getChildren("netcdf", NcMLReader.ncNS);
     for (Element netcdfElemNested : ncList) {
       String location = netcdfElemNested.getAttributeValue("location");
-      DatasetOuterDimension dod = (DatasetOuterDimension) findDataset(location);
+      DatasetOuterDimension dod = (DatasetOuterDimension) map.get(location);
 
       if ((null != dod) && (dod.ncoord == 0)) {
         if (debugPersistDetail) System.out.println("  use cache for " + location);
@@ -316,16 +321,6 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
     }
 
-  }
-
-  // find a dataset in the nestedDatasets by location
-  private Dataset findDataset(String location) {
-    List<Dataset> nestedDatasets = getDatasets();
-    for (Dataset ds : nestedDatasets) {
-      if (location.equals(ds.getLocation()))
-        return ds;
-    }
-    return null;
   }
 
 // name to use in the DiskCache2 for the persistent XML info.

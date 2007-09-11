@@ -88,7 +88,7 @@ public class ADASConvention extends CoordSysBuilder {
     String units = ds.findAttValueIgnoreCase(coord_var, "units", null);
 
     ProjectionImpl proj = null;
-    if (projName.equalsIgnoreCase("lambert_conformal_conic")) {
+    if ((projName != null) && projName.equalsIgnoreCase("lambert_conformal_conic")) {
       proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing, units);
       projCT = new ProjectionCT("Projection", "FGDC", proj);
       if (false_easting == 0.0) calcCenterPoints(ds, proj); // old way
@@ -97,7 +97,7 @@ public class ADASConvention extends CoordSysBuilder {
     }
 
     if (debugProj) {
-      System.out.println(" using LC " + proj.paramsToString());
+      if (proj != null) System.out.println(" using LC " + proj.paramsToString());
       double lat_check = findAttributeDouble(ds, "CTRLAT");
       double lon_check = findAttributeDouble(ds, "CTRLON");
 

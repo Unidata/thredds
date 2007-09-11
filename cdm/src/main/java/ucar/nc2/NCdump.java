@@ -816,10 +816,8 @@ public class NCdump {
       // any attributes ?
       java.util.List<Attribute> atts = v.getAttributes();
       if (atts.size() > 0) {
-        if (!closed) {
-           out.print(" >\n");
-           closed = true;
-        }
+        out.print(" >\n");
+        closed = true;
         for (Attribute att : atts) {
           writeNcMLAtt(att, out, indent);
         }

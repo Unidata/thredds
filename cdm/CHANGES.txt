@@ -13,13 +13,21 @@ Changes in version 4.0
  API
  Libraries
 
-Changes in version 2.2.22
+ Changes in version 2.2.22
  API
   * make Indexer, RegularIndexer public so can be used by IOSP
  Bugs
+  * AWIPS, WRF Stereographic projection needs abs() in scale calculation (thanks to R. Schmunk)
+  * OceanS case when a = 0.
+  * opendap DConnect2 : escape query strings
+  * CoordSysBuilder was putting non-CoordinateAxis into axis list, getting a ClassCast Error
   * If adding recordStructure, add to N3headers uvars list, so gets updated on a syncExtend.
   * quote special XML chars correctly in NcML
   * add "file:" prefix to reletive URLs when writing NcML location
+ Library
+  * httpClient 3.1
+  * opendap 2.1 fix for struct.member
+  * use grib 6.0 for fix of mixed table use
 
 Changes in version 2.2.21
  Features

@@ -24,7 +24,7 @@ public class TestReadAndCountDods extends TestCase {
 
     // IDV netcdf files, one from each model
     String base = "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/";
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?nam_211", 40, 6, 8, 4);
+    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?nam_211", 41, 7, 9, 5);
     TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_211", 31, 6, 8, 4);
     TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_37-44", 31, 4, 8, 4);
     TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_25-26", 4, 2, 5, 1);

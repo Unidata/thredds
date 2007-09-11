@@ -8,6 +8,9 @@
     <content url="file://$MODULE_DIR$/../../java-dap/src">
       <sourceFolder url="file://$MODULE_DIR$/../../java-dap/src" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/../../lib/commons-httpclient-3.1-rc1/src/java">
+      <sourceFolder url="file://$MODULE_DIR$/../../lib/commons-httpclient-3.1-rc1/src/java" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/../cdm">
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../cdm/src/test/java" isTestSource="true" />
@@ -29,7 +32,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/bufr-1.1.00.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/external/nlog4j-1.2.25.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -38,9 +41,20 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/commons-httpclient-3.0.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/grib-6.0.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/jdom.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://www.jdom.org/docs/apidocs/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
@@ -59,17 +73,6 @@
           <root url="jar://$MODULE_DIR$/../lib/external/commons-logging-1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/jdom.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="http://www.jdom.org/docs/apidocs/" />
-        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
@@ -96,7 +99,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/nlog4j-1.2.25.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/visadNoDods.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -105,7 +108,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/visadNoDods.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/release/bufr-1.1.00.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -115,15 +118,6 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/external/tomcat-5.5.20_servlet-api.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/release/grib-5.1.04.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

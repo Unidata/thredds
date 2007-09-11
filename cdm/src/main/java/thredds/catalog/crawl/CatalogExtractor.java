@@ -218,9 +218,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         System.out.println("  **Open " + result.dataType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
       out.println("  **Open " + result.dataType + " " + result.location + " (" + ds.getName() + ") " + took + " msecs");
 
-      if (result == null)
-        ok = false;
-      else if (result.location == null)
+      if (result.location == null)
         ok = false;
       else if (result.dataType == DataType.GRID)
         extractGridDataset(out, (GridDataset) result.tds);

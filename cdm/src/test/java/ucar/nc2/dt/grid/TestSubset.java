@@ -351,9 +351,8 @@ public class TestSubset extends TestCase {
     assert data.getRank() == 2;
         
     int [] shape = data.getShape();
-    assert Math.abs(org_shape[0] - 2 * shape[0]) < 2 : org_shape[0]+" != "+ (2 * shape[0]);
-    assert Math.abs(org_shape[1] - 3 * shape[1]) < 3 : org_shape[1]+" != "+ (3 * shape[1]);
-
+    assert Math.abs(org_shape[1] - 2 * shape[0]) < 2 : org_shape[2]+" != "+ (2 * shape[0]);
+    assert Math.abs(org_shape[2] - 3 * shape[1]) < 3 : org_shape[2]+" != "+ (3 * shape[1]);
     dataset.close();
   }
 

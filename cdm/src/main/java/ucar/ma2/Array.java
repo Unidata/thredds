@@ -60,7 +60,7 @@ import java.util.ArrayList;
  * @author caron
  */
 public abstract class Array {
-    public static Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared
+    public static final Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared
 
 /* implementation notes.
   Could create interface for Ranges, ScatterIndex and pass array of that (?)
@@ -505,7 +505,7 @@ public abstract class Array {
       javaArray = java.lang.reflect.Array.newInstance(getElementType(), getShape());
     } catch (Exception e) {
       throw new IllegalArgumentException();
-    } // cant happen
+    }
 
     // copy data
     IndexIterator iter = getIndexIterator();

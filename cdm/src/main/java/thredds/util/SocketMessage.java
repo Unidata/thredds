@@ -105,6 +105,7 @@ public class SocketMessage {
         } catch (IOException e) {
           System.out.println("SocketMessage accept= " + e);
           e.printStackTrace();
+          return;
         }
 
         try {

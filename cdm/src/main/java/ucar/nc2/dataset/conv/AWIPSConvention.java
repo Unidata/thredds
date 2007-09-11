@@ -159,7 +159,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       return dimList;
     }
 
-    List<String> values = null;
+    List<String> values = new ArrayList<String>();
     String currentUnits = null;
     ArrayChar.StringIterator iter = levelVarData.getStringIterator();
     while (iter.hasNext()) {
@@ -391,7 +391,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     // then to make scale = 1 at lat, k0 = (1+sin(lat))/2
     double latDxDy = findAttributeDouble( ds, "latDxDy");
     double latR = Math.toRadians( latDxDy);
-    double scale = (1.0 + Math.sin( latR)) / 2;
+    double scale = (1.0 + Math.abs(Math.sin( latR))) / 2;  // thanks to R Schmunk
 
     // Stereographic(double latt, double lont, double scale)
 

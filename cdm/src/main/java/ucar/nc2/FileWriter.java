@@ -179,6 +179,7 @@ public class FileWriter {
     ncfile.flush();
     if (debug) System.out.println("FileWriter done total bytes = " + total);
 
+    fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
     return ncfile;
   }
 

@@ -2416,9 +2416,12 @@ class H5header {
       while (ii.hasNext()) {
         long objId = ii.getLongNext();
         DataObject dobj = findDataObject(objId);
-        if (dobj == null) System.out.println("Cant find dobj= "+dobj);
-        else System.out.println(" Referenced object= "+dobj.getName());
-        ii2.setObjectNext(dobj.getName());
+        if (dobj == null)
+          System.out.println("Cant find dobj= "+dobj);
+        else {
+          System.out.println(" Referenced object= "+dobj.getName());
+          ii2.setObjectNext(dobj.getName());
+        }
       }
       v.setDataType(DataType.STRING);
       v.setCachedData(newData, true); // so H5iosp.read() is never called

@@ -526,9 +526,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);
       return false;
     }
-
+    
     // extract the bounds
     int n = shape[0];
+    if (n < 2) return false;
     double[] value1 = new double[n];
     double[] value2 = new double[n];
     int[] shape = data.getShape();
@@ -594,6 +595,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   private void makeBoundsFromEdges() {
     int size = (int) getSize();
+    if (size == 0) return;
+    
     bound1 = new double[size];
     bound2 = new double[size];
     for(int i=0; i<size; i++) {

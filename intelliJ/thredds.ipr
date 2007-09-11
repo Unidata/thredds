@@ -897,6 +897,11 @@
         <inspection_tool class="FinalPrivateMethod" level="WARNING" enabled="false" />
         <inspection_tool class="ContinueOrBreakFromFinallyBlock" level="WARNING" enabled="false" />
         <inspection_tool class="SynchronizeOnNonFinalField" level="WARNING" enabled="false" />
+        <inspection_tool class="ObjectEquality" level="WARNING" enabled="true">
+          <option name="m_ignoreEnums" value="true" />
+          <option name="m_ignoreClassObjects" value="true" />
+          <option name="m_ignorePrivateConstructors" value="true" />
+        </inspection_tool>
       </profile>
     </profiles>
   </component>
@@ -1069,7 +1074,7 @@
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6.0_02" project-jdk-type="JavaSDK" />
   <component name="ProjectRunConfigurationManager" />
   <component name="RmicSettings">
     <option name="IS_EANABLED" value="false" />

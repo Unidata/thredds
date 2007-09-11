@@ -608,9 +608,10 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   }
 
   public Object sendIospMessage(Object message) {
-    if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
+    if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
       return headerParser.addRecordStructure();
-    }
+    else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
+      return headerParser.removeRecordStructure();
     return null;
   }
 
