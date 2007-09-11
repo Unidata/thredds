@@ -7,43 +7,27 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.io.PrintWriter;
 import java.io.IOException;
 
 /**
- * _more_
+ * Generates a WCS 1.1.0 Exception Report.
  *
  * @author edavis
  * @since 4.0
  */
 public class ExceptionReport
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( ExceptionReport.class );
-
   protected static final Namespace owsNS = Namespace.getNamespace( "http://www.opengis.net/ows" );
 
-  public enum Code
-  {
-    OperationNotSupported,
-    MissingParameterValue,
-    InvalidParameterValue,
-    VersionNegotiationFailed, // GetCapabilities only
-    InvalidUpdateSequence,
-    NoApplicableCode,
-    UnsupportedCombination,   // GetCoverage only
-    NotEnoughStorage          // GetCoverage only
-  }
-
   private Document exceptionReport;
-  public ExceptionReport( Code code, String locator, String message)
+  public ExceptionReport( WcsException exception)
   {
-    this( Collections.singletonList( new Exception(code, locator, Collections.singletonList( message))));
+    this( Collections.singletonList( exception));
   }
 
-  public ExceptionReport( List<Exception> exceptions )
+  public ExceptionReport( List<WcsException> exceptions )
   {
     Element rootElem = new Element( "ExceptionReport", owsNS );
     rootElem.addNamespaceDeclaration( owsNS );
@@ -51,16 +35,16 @@ public class ExceptionReport
     // rootElem.setAttribute( "language", "en" );
 
     if ( exceptions != null )
-      for ( Exception curException : exceptions )
+      for ( WcsException curException : exceptions )
       {
         Element exceptionElem = new Element( "Exception", owsNS );
         exceptionElem.setAttribute( "code", curException.getCode().toString() );
         if ( curException.getLocator() != null && ! curException.getLocator().equals( "" ) )
           exceptionElem.setAttribute( "locator", curException.getLocator() );
 
-        if ( curException.getMessages() != null )
+        if ( curException.getTextMessages() != null )
         {
-          for ( String curMessage : curException.getMessages() )
+          for ( String curMessage : curException.getTextMessages() )
           {
             Element excTextElem = new Element( "ExceptionText", owsNS );
             excTextElem.addContent( curMessage );
@@ -80,24 +64,5 @@ public class ExceptionReport
   {
     XMLOutputter xmlOutputter = new XMLOutputter( Format.getPrettyFormat() );
     xmlOutputter.output( exceptionReport, pw);
-  }
-
-  public static class Exception
-  {
-    private Code code;
-    private String locator;
-    private List<String> messages;
-
-    public Exception( Code code, String locator, List<String> messages )
-    {
-      this.code = code;
-      this.locator = locator;
-      this.messages = new ArrayList<String>(messages.size());
-      Collections.copy( this.messages, messages);
-    }
-
-    public Code getCode() { return code; }
-    public String getLocator() { return locator; }
-    public List<String> getMessages() { return Collections.unmodifiableList( messages); }
   }
 }

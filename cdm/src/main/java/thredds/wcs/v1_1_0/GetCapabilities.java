@@ -4,6 +4,7 @@ import ucar.nc2.dt.GridDataset;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.net.URI;
 
 import org.jdom.Document;
@@ -25,11 +26,21 @@ public class GetCapabilities
   protected static final Namespace owcsNS = Namespace.getNamespace( "owcs", "http://www.opengis.net/wcs/1.1/ows" );
   protected static final Namespace owsNS = Namespace.getNamespace( "ows", "http://www.opengis.net/ows" );
 
-  private ServiceId serviceId;
+  public enum Section
+  {
+    ServiceIdentification, ServiceProvider,
+    OperationsMetadata, Contents, All
+  }
 
-  public GetCapabilities( ServiceId serviceId )
+  private ServiceId serviceId;
+  private GridDataset dataset;
+
+  private Document capabilitiesReport;
+
+  public GetCapabilities( ServiceId serviceId, GridDataset dataset )
   {
     this.serviceId = serviceId;
+    this.dataset = dataset;
 //    serviceIdTitle = "need a title";
 //    serviceIdAbstract = "need an abstract";
 //    serviceIdKeywords = new ArrayList<String>();
@@ -76,44 +87,29 @@ public class GetCapabilities
     return new Document( capabilitiesElem );
   }
 
-  public enum Section
-  {
-    ServiceIdentification, ServiceProvider, OperationsMetadata, Contents,
-    All
-  }
-
-  public String junk()
-  {
-    return Section.valueOf( "ServiceIdentification").toString();
-  }
-
-  public Element generateServiceIdentification( String title, String abs,
-                                                List<String> keywords,
-                                                String serviceType,
-                                                List<String> serviceTypeVersion,
-                                                String fees,
-                                                List<String> accessConstraints )
+  public Element generateServiceIdentification( ServiceId serviceId )
   {
     Element serviceIdElem = new Element( "ServiceIdentification", owcsNS );
 
-    if ( title != null )
+    if ( serviceId.getTitle() != null )
     {
       Element titleElem = new Element( "Title", owsNS );
-      titleElem.addContent( title );
+      titleElem.addContent( serviceId.getTitle() );
       serviceIdElem.addContent( titleElem );
     }
 
-    if ( abs != null )
+    if ( serviceId.getAbstract() != null )
     {
       Element abstractElem = new Element( "Abstract", owsNS );
-      abstractElem.addContent( abs );
+      abstractElem.addContent( serviceId.getAbstract() );
       serviceIdElem.addContent( abstractElem );
     }
 
-    if ( keywords != null && keywords.size() > 0 )
+    if ( serviceId.getKeywords() != null &&
+         serviceId.getKeywords().size() > 0 )
     {
       Element keywordsElem = new Element( "Keywords", owsNS );
-      for ( String curKey : keywords )
+      for ( String curKey : serviceId.getKeywords() )
       {
         Element keywordElem = new Element( "Keyword", owsNS );
         keywordElem.addContent( curKey );
@@ -122,16 +118,17 @@ public class GetCapabilities
       serviceIdElem.addContent( keywordsElem );
     }
 
-    if ( serviceType != null )
+    if ( serviceId.getServiceType() != null )
     {
       Element serviceTypeElem = new Element( "ServiceType", owcsNS );
-      serviceTypeElem.addContent( serviceType );
+      serviceTypeElem.addContent( serviceId.getServiceType() );
       serviceIdElem.addContent( serviceTypeElem );
     }
 
-    if ( serviceTypeVersion != null && serviceTypeVersion.size() > 0 )
+    if ( serviceId.getServiceTypeVersion() != null &&
+         serviceId.getServiceTypeVersion().size() > 0 )
     {
-      for ( String curVer : serviceTypeVersion )
+      for ( String curVer : serviceId.getServiceTypeVersion() )
       {
         Element serviceTypeVersionElem = new Element( "ServiceTypeVersion", owcsNS );
         serviceTypeVersionElem.addContent( curVer );
@@ -148,16 +145,17 @@ public class GetCapabilities
 //      serviceIdElem.addContent( profileElem);
 //    }
 
-    if ( fees != null )
+    if ( serviceId.getFees() != null )
     {
       Element feesElem = new Element( "Fees", owcsNS );
-      feesElem.addContent( fees );
+      feesElem.addContent( serviceId.getFees() );
       serviceIdElem.addContent( feesElem );
     }
 
-    if ( accessConstraints != null && accessConstraints.size() > 0 )
+    if ( serviceId.getAccessConstraints() != null &&
+         serviceId.getAccessConstraints().size() > 0 )
     {
-      for ( String curAC : accessConstraints )
+      for ( String curAC : serviceId.getAccessConstraints() )
       {
         Element accessConstraintsElem = new Element( "AccessConstraints", owcsNS );
         accessConstraintsElem.addContent( curAC );
@@ -213,7 +211,7 @@ public class GetCapabilities
     return contentElem;
   }
 
-   public class ServiceId
+   public static class ServiceId
    {
      private String title, _abstract;
      private List<String> keywords;
@@ -226,25 +224,22 @@ public class GetCapabilities
      {
        this.title = title;
        this._abstract = anAbstract;
-       this.keywords = keywords;
+       this.keywords = new ArrayList<String>(keywords.size());
+       Collections.copy( this.keywords, keywords);
        this.serviceType = serviceType;
-       this.serviceTypeVersion = serviceTypeVersion;
+       this.serviceTypeVersion = new ArrayList<String>( serviceTypeVersion.size() );
+       Collections.copy( this.serviceTypeVersion, serviceTypeVersion);
        this.fees = fees;
-       this.accessConstraints = accessConstraints;
+       this.accessConstraints = new ArrayList<String>( accessConstraints.size() );
+       Collections.copy(this.accessConstraints, accessConstraints);
      }
 
      public String getTitle() { return title; }
-
      public String getAbstract() { return _abstract; }
-
-     public List<String> getKeywords() { return keywords; }
-
+     public List<String> getKeywords() { return Collections.unmodifiableList( keywords); }
      public String getServiceType() { return serviceType; }
-
-     public List<String> getServiceTypeVersion() { return serviceTypeVersion; }
-
+     public List<String> getServiceTypeVersion() { return Collections.unmodifiableList( serviceTypeVersion); }
      public String getFees() { return fees; }
-
-     public List<String> getAccessConstraints() { return accessConstraints; }
+     public List<String> getAccessConstraints() { return Collections.unmodifiableList( accessConstraints); }
    }
 }

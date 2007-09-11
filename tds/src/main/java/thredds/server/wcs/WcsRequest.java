@@ -2,11 +2,15 @@ package thredds.server.wcs;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
-import thredds.wcs.v1_1_0.ExceptionReport;
 import thredds.wcs.v1_1_0.WcsException;
+import thredds.wcs.v1_1_0.GetCapabilities;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collections;
+
+import ucar.nc2.dt.GridDataset;
 
 /**
  * Represent the incoming WCS 1.1.0 request.
@@ -27,13 +31,24 @@ public class WcsRequest
   private String versionParam;
   private String acceptVersionsParam;
 
+  private Operation operation;
+  private String negotiatedVersion;
+
   // GetCapabilities parameters
   private String sectionsParam;
   private String updateSequenceParam;
   private String acceptFormatsParam;
 
-  private String negotiatedVersion;
-  private Operation operation;
+  private List<GetCapabilities.Section> sections;
+  private GetCapabilities.ServiceId serviceId;
+
+  // DescribeCoverage parameters
+
+  // GetCoverage parameters
+
+  // Dataset
+  private GridDataset dataset;
+
 
   public enum Operation
   { GetCapabilities, DescribeCoverage, GetCoverage }
@@ -58,8 +73,7 @@ public class WcsRequest
     }
     catch ( IllegalArgumentException e )
     {
-      ExceptionReport.Exception excep = new ExceptionReport.Exception( ExceptionReport.Code.OperationNotSupported, requestParam, Collections.singletonList( "") );
-      throw new WcsException( "", excep);
+      throw new WcsException( WcsException.Code.OperationNotSupported, requestParam, "");
     }
 
     if ( operation.equals( Operation.GetCapabilities))
@@ -68,17 +82,20 @@ public class WcsRequest
       updateSequenceParam = ServletUtil.getParameterIgnoreCase( req, "UpdateSequence" );
       acceptFormatsParam = ServletUtil.getParameterIgnoreCase( req, "AccpetFormats" );
 
-      String serviceIdTitle = ThreddsConfig.get( "WCS.serviceIdTitle", null );
-//      serviceIdTitle = "need a title";
-//      serviceIdAbstract = "need an abstract";
-//      serviceIdKeywords = new ArrayList<String>();
-//      serviceIdKeywords.add( "need keywords");
-//      serviceType = "OGC WCS";
-//      serviceTypeVersion = new ArrayList<String>();
-//      serviceTypeVersion.add("1.1.0");
-//      fees = "NONE";
-//      accessConstraints = new ArrayList<String>();
-//      accessConstraints.add( "NONE");
+      if ( sectionsParam != null )
+      {
+        String[] sectionArray = sectionsParam.split( ",");
+        sections = new ArrayList<GetCapabilities.Section>( sectionArray.length);
+        for ( String curSection : sectionArray )
+        {
+          sections.add( GetCapabilities.Section.valueOf( curSection ));
+        }
+      }
+
+      serviceId = null;
+//      serviceId = new GetCapabilities.ServiceId( ThreddsConfig.get( "WCS.serviceId.title", null ),
+//                                                 ThreddsConfig.get( "WCS.serviceId.abstract", null),
+//                                                 )
 
     }
     else if ( operation.equals( Operation.DescribeCoverage ) )
@@ -89,10 +106,9 @@ public class WcsRequest
     {
 
     }
-    else
-    {
-    }
 
+    // Find the dataset.
+    dataset = null;
   }
 
 
@@ -102,5 +118,8 @@ public class WcsRequest
   public String getAcceptVersionsParam() { return acceptVersionsParam; }
 
   public Operation getOperation() { return operation; }
+  public List<GetCapabilities.Section> getSections() { return Collections.unmodifiableList( sections); }
+  public GetCapabilities.ServiceId getServiceId() { return this.serviceId; }
 
+  public GridDataset getDataset() { return dataset; }
 }
