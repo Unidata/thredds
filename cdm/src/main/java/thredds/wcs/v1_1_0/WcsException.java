@@ -1,6 +1,4 @@
-package thredds.server.wcs;
-
-import thredds.wcs.v1_1_0.ExceptionReport;
+package thredds.wcs.v1_1_0;
 
 /**
  * _more_

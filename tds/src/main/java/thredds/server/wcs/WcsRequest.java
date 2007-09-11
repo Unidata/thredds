@@ -3,6 +3,7 @@ package thredds.server.wcs;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import thredds.wcs.v1_1_0.ExceptionReport;
+import thredds.wcs.v1_1_0.WcsException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
