@@ -199,7 +199,8 @@ public class TestReadStrides extends TestCase {
      Array allData = v.read();
 
      int[] shape = v.getShape();
-
+     if(shape.length < 5)
+         return;
      for (int first=0;first<3;first++) {
        for (int stride=2;stride<5;stride++) {
 
