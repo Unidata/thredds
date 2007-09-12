@@ -32,13 +32,20 @@ public class GetCapabilities
     OperationsMetadata, Contents, All
   }
 
+  private URI serverURI;
+
+  private List<Section> sections;
   private ServiceId serviceId;
   private GridDataset dataset;
 
   private Document capabilitiesReport;
 
-  public GetCapabilities( ServiceId serviceId, GridDataset dataset )
+  public GetCapabilities( URI serverURI, List<Section> sections,
+                          ServiceId serviceId,
+                          GridDataset dataset )
   {
+    this.serverURI = serverURI;
+    this.sections = sections;
     this.serviceId = serviceId;
     this.dataset = dataset;
 //    serviceIdTitle = "need a title";
@@ -53,7 +60,7 @@ public class GetCapabilities
 //    accessConstraints.add( "NONE");
   }
 
-  public Document generateCapabilities( URI serverURI, GridDataset gds, List<Section> sections )
+  public Document generateCapabilities()
   {
     Element capabilitiesElem = new Element( "Capabilities", wcsNS );
     capabilitiesElem.addNamespaceDeclaration( owcsNS );
