@@ -269,4 +269,18 @@ public class GetCapabilities
      public String getFees() { return fees; }
      public List<String> getAccessConstraints() { return Collections.unmodifiableList( accessConstraints); }
    }
+
+  public static class ServiceProvider
+  {
+    public String providerName;
+    public URI providerSiteLink;
+    public String providerSiteTitle;
+    private String serviceContact_IndividualName;
+    private String serviceContact_PositionName;
+    private String sericeContact_ContactInfo_Phone;
+    
+    private String sericeContact_Role; // ???
+
+  }
+
 }
