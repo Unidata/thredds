@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -47,10 +49,20 @@ public class WCS_1_1_0 implements VersionHandler
   {
     try
     {
-      WcsRequest wcsRequest = new WcsRequest( req);
+      URI serverURI = new URI( req.getRequestURL().toString());
+      WcsRequest wcsRequest = new WcsRequest( req, res);
       if ( wcsRequest.getOperation().equals( WcsRequest.Operation.GetCapabilities))
       {
-        new GetCapabilities( wcsRequest.getServiceId(), wcsRequest.getDataset() );
+        GetCapabilities getCapabilities =
+                new GetCapabilities( serverURI, wcsRequest.getSections(),
+                                     wcsRequest.getServiceId(), wcsRequest.getDataset() );
+        res.setContentType( "text/xml" );
+        res.setStatus( HttpServletResponse.SC_OK );
+        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+
+        PrintWriter pw = res.getWriter();
+        getCapabilities.writeCapabilitiesReport( pw );
+        pw.flush();
       }
       else if ( wcsRequest.getOperation().equals( WcsRequest.Operation.DescribeCoverage ) )
       {
@@ -60,13 +72,14 @@ public class WCS_1_1_0 implements VersionHandler
       {
 
       }
-
-      // Do everything in here.
-      throw new WcsException();
     }
     catch ( WcsException e)
     {
       handleExceptionReport( res, e);
+    }
+    catch ( URISyntaxException e )
+    {
+      handleExceptionReport( res, new WcsException( "Bad URI: " + e.getMessage()));
     }
   }
 

@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.net.URI;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 
 /**
  * _more_
@@ -60,6 +64,16 @@ public class GetCapabilities
 //    accessConstraints.add( "NONE");
   }
 
+  public Document getCapabilitiesReport() { return capabilitiesReport; }
+
+  public void writeCapabilitiesReport( PrintWriter pw )
+          throws IOException
+  {
+    XMLOutputter xmlOutputter = new XMLOutputter( Format.getPrettyFormat() );
+    xmlOutputter.output( capabilitiesReport, pw );
+  }
+
+
   public Document generateCapabilities()
   {
     Element capabilitiesElem = new Element( "Capabilities", wcsNS );
@@ -98,52 +112,54 @@ public class GetCapabilities
   {
     Element serviceIdElem = new Element( "ServiceIdentification", owcsNS );
 
-    if ( serviceId.getTitle() != null )
+    if ( serviceId != null  )
     {
-      Element titleElem = new Element( "Title", owsNS );
-      titleElem.addContent( serviceId.getTitle() );
-      serviceIdElem.addContent( titleElem );
-    }
-
-    if ( serviceId.getAbstract() != null )
-    {
-      Element abstractElem = new Element( "Abstract", owsNS );
-      abstractElem.addContent( serviceId.getAbstract() );
-      serviceIdElem.addContent( abstractElem );
-    }
-
-    if ( serviceId.getKeywords() != null &&
-         serviceId.getKeywords().size() > 0 )
-    {
-      Element keywordsElem = new Element( "Keywords", owsNS );
-      for ( String curKey : serviceId.getKeywords() )
+      if ( serviceId.getTitle() != null )
       {
-        Element keywordElem = new Element( "Keyword", owsNS );
-        keywordElem.addContent( curKey );
-        keywordsElem.addContent( keywordElem );
+        Element titleElem = new Element( "Title", owsNS );
+        titleElem.addContent( serviceId.getTitle() );
+        serviceIdElem.addContent( titleElem );
       }
-      serviceIdElem.addContent( keywordsElem );
-    }
 
-    if ( serviceId.getServiceType() != null )
-    {
-      Element serviceTypeElem = new Element( "ServiceType", owcsNS );
-      serviceTypeElem.addContent( serviceId.getServiceType() );
-      serviceIdElem.addContent( serviceTypeElem );
-    }
-
-    if ( serviceId.getServiceTypeVersion() != null &&
-         serviceId.getServiceTypeVersion().size() > 0 )
-    {
-      for ( String curVer : serviceId.getServiceTypeVersion() )
+      if ( serviceId.getAbstract() != null )
       {
-        Element serviceTypeVersionElem = new Element( "ServiceTypeVersion", owcsNS );
-        serviceTypeVersionElem.addContent( curVer );
-        serviceIdElem.addContent( serviceTypeVersionElem );
+        Element abstractElem = new Element( "Abstract", owsNS );
+        abstractElem.addContent( serviceId.getAbstract() );
+        serviceIdElem.addContent( abstractElem );
       }
-    }
 
-    // ToDo When would this be needed? What are Application Profiles? GML profiles?
+      if ( serviceId.getKeywords() != null &&
+           serviceId.getKeywords().size() > 0 )
+      {
+        Element keywordsElem = new Element( "Keywords", owsNS );
+        for ( String curKey : serviceId.getKeywords() )
+        {
+          Element keywordElem = new Element( "Keyword", owsNS );
+          keywordElem.addContent( curKey );
+          keywordsElem.addContent( keywordElem );
+        }
+        serviceIdElem.addContent( keywordsElem );
+      }
+
+      if ( serviceId.getServiceType() != null )
+      {
+        Element serviceTypeElem = new Element( "ServiceType", owcsNS );
+        serviceTypeElem.addContent( serviceId.getServiceType() );
+        serviceIdElem.addContent( serviceTypeElem );
+      }
+
+      if ( serviceId.getServiceTypeVersion() != null &&
+           serviceId.getServiceTypeVersion().size() > 0 )
+      {
+        for ( String curVer : serviceId.getServiceTypeVersion() )
+        {
+          Element serviceTypeVersionElem = new Element( "ServiceTypeVersion", owcsNS );
+          serviceTypeVersionElem.addContent( curVer );
+          serviceIdElem.addContent( serviceTypeVersionElem );
+        }
+      }
+
+      // ToDo When would this be needed? What are Application Profiles? GML profiles?
 //    List<URI> appProfileIds;
 //    for ( URI curAppProfileId : appProfileIds)
 //    {
@@ -151,25 +167,26 @@ public class GetCapabilities
 //      profileElem.addContent( curAppProfileId.toString());
 //      serviceIdElem.addContent( profileElem);
 //    }
-    // "WCS 1.1 Application Profile for [Format] [formatVersion] encoding, [profileVersion]"
-    // "WCS 1.1 Application Profile for CF/1.0 netCDF 3 encoding, [profileVersion]"
-    // "WCS 1.1 Application Profile for CF-netCDF 1.0/3 encoding, [profileVersion]"
+      // "WCS 1.1 Application Profile for [Format] [formatVersion] encoding, [profileVersion]"
+      // "WCS 1.1 Application Profile for CF/1.0 netCDF 3 encoding, [profileVersion]"
+      // "WCS 1.1 Application Profile for CF-netCDF 1.0/3 encoding, [profileVersion]"
 
-    if ( serviceId.getFees() != null )
-    {
-      Element feesElem = new Element( "Fees", owcsNS );
-      feesElem.addContent( serviceId.getFees() );
-      serviceIdElem.addContent( feesElem );
-    }
-
-    if ( serviceId.getAccessConstraints() != null &&
-         serviceId.getAccessConstraints().size() > 0 )
-    {
-      for ( String curAC : serviceId.getAccessConstraints() )
+      if ( serviceId.getFees() != null )
       {
-        Element accessConstraintsElem = new Element( "AccessConstraints", owcsNS );
-        accessConstraintsElem.addContent( curAC );
-        serviceIdElem.addContent( accessConstraintsElem );
+        Element feesElem = new Element( "Fees", owcsNS );
+        feesElem.addContent( serviceId.getFees() );
+        serviceIdElem.addContent( feesElem );
+      }
+
+      if ( serviceId.getAccessConstraints() != null &&
+           serviceId.getAccessConstraints().size() > 0 )
+      {
+        for ( String curAC : serviceId.getAccessConstraints() )
+        {
+          Element accessConstraintsElem = new Element( "AccessConstraints", owcsNS );
+          accessConstraintsElem.addContent( curAC );
+          serviceIdElem.addContent( accessConstraintsElem );
+        }
       }
     }
 
