@@ -55,7 +55,8 @@ public class WCS_1_1_0 implements VersionHandler
       {
         GetCapabilities getCapabilities =
                 new GetCapabilities( serverURI, wcsRequest.getSections(),
-                                     wcsRequest.getServiceId(), wcsRequest.getDataset() );
+                                     wcsRequest.getServiceId(), wcsRequest.getServiceProvider(),
+                                     wcsRequest.getDataset() );
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
         ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );

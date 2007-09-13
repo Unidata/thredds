@@ -44,6 +44,7 @@ public class WcsRequest
 
   private List<GetCapabilities.Section> sections;
   private GetCapabilities.ServiceId serviceId;
+  private GetCapabilities.ServiceProvider serviceProvider;
 
   // DescribeCoverage parameters
 
@@ -96,6 +97,7 @@ public class WcsRequest
       }
 
       serviceId = null;
+      serviceProvider = null;
 //      serviceId = new GetCapabilities.ServiceId( ThreddsConfig.get( "WCS.serviceId.title", null ),
 //                                                 ThreddsConfig.get( "WCS.serviceId.abstract", null),
 //                                                 )
@@ -145,6 +147,7 @@ public class WcsRequest
   public Operation getOperation() { return operation; }
   public List<GetCapabilities.Section> getSections() { return Collections.unmodifiableList( sections); }
   public GetCapabilities.ServiceId getServiceId() { return this.serviceId; }
+  public GetCapabilities.ServiceProvider getServiceProvider() { return this.serviceProvider; }
 
   public GridDataset getDataset() { return dataset; }
 }
