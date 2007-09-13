@@ -40,17 +40,19 @@ public class GetCapabilities
 
   private List<Section> sections;
   private ServiceId serviceId;
+  private ServiceProvider serviceProvider;
   private GridDataset dataset;
 
   private Document capabilitiesReport;
 
   public GetCapabilities( URI serverURI, List<Section> sections,
-                          ServiceId serviceId,
+                          ServiceId serviceId, ServiceProvider serviceProvider,
                           GridDataset dataset )
   {
     this.serverURI = serverURI;
     this.sections = sections;
     this.serviceId = serviceId;
+    this.serviceProvider = serviceProvider;
     this.dataset = dataset;
 //    serviceIdTitle = "need a title";
 //    serviceIdAbstract = "need an abstract";
@@ -73,36 +75,34 @@ public class GetCapabilities
     xmlOutputter.output( capabilitiesReport, pw );
   }
 
-
   public Document generateCapabilities()
   {
     Element capabilitiesElem = new Element( "Capabilities", wcsNS );
     capabilitiesElem.addNamespaceDeclaration( owcsNS );
     capabilitiesElem.addNamespaceDeclaration( owsNS );
 
+    boolean allSections = false;
     if ( sections == null || sections.size() == 0 ||
          ( sections.size() == 1 && sections.get( 0 ).equals( Section.All ) ) )
     {
-
+      allSections = true;
     }
-    else
+
+    if ( sections.contains( Section.ServiceIdentification))
     {
-//      if ( sections.contains( Section.ServiceIdentification))
-//      {
-//        capabilitiesElem.addContent( generateServiceIdentification( "need a title", "need an abstract",  ));
-//      }
-      if ( sections.contains( Section.ServiceProvider))
-      {
-        capabilitiesElem.addContent( generateServiceProvider("") );
-      }
-      if ( sections.contains( Section.OperationsMetadata ))
-      {
-        capabilitiesElem.addContent( generateOperationsMetadata());
-      }
-      if (sections.contains( Section.Contents))
-      {
-        capabilitiesElem.addContent( generateContent());
-      }
+      capabilitiesElem.addContent( generateServiceIdentification( serviceId  ));
+    }
+    if ( allSections || sections.contains( Section.ServiceProvider))
+    {
+      capabilitiesElem.addContent( generateServiceProvider( serviceProvider) );
+    }
+    if ( allSections || sections.contains( Section.OperationsMetadata ))
+    {
+      capabilitiesElem.addContent( generateOperationsMetadata());
+    }
+    if ( allSections || sections.contains( Section.Contents))
+    {
+      capabilitiesElem.addContent( generateContent());
     }
 
     return new Document( capabilitiesElem );
@@ -193,34 +193,103 @@ public class GetCapabilities
     return serviceIdElem;
   }
 
-  public Element generateServiceProvider( String providerName )
+  public Element generateServiceProvider( ServiceProvider serviceProvider )
   {
+    // ServiceProvider [0..1]
     Element servProvElem = new Element( "ServiceProvider", owsNS );
 
-    Element provNameElem = new Element( "ProviderName", owsNS );
-    provNameElem.addContent( providerName );
-    servProvElem.addContent( provNameElem );
+    if ( serviceProvider != null )
+    {
+      if ( serviceProvider.name != null )
+      {
+        // ServiceProvider/ProviderName [0..1]
+        Element provNameElem = new Element( "ProviderName", owsNS );
+        provNameElem.addContent( serviceProvider.name );
+        servProvElem.addContent( provNameElem );
+      }
 
-    Element provSiteElem = new Element( "ProviderSite", owsNS );
-    provSiteElem.setAttribute( "type", "simple" );
-    provSiteElem.setAttribute( "xlink:title", "" );
-    provSiteElem.setAttribute( "xlink:href", "" );
-    servProvElem.addContent( provSiteElem );
+      if ( serviceProvider.site != null )
+      {
+        // ServiceProvider/ProviderSite [0..1]
+        Element provSiteElem = new Element( "ProviderSite", owsNS );
+        provSiteElem.setAttribute( "type", "simple" );
+        if ( serviceProvider.site.title != null)
+          provSiteElem.setAttribute( "xlink:title", serviceProvider.site.title );
+        if ( serviceProvider.site.link != null )
+          provSiteElem.setAttribute( "xlink:href", serviceProvider.site.link.toString() );
+        servProvElem.addContent( provSiteElem );
+      }
 
-    Element servContactElem = new Element( "ServiceContact", owsNS );
-    // ...
-    // IndividualName [0..1]
-    // PositionName [0..1]
-    // ContactInfo {0..1]
-    //   Phone [0..1]
-    //   Address [0..1]
-    //   OnlineResource [0..1]
-    //   HoursOfService [0..1]
-    //   ContactInstructions [0..1]
-    // Role [0..1]
-    // ...
-    servProvElem.addContent( servContactElem );
 
+      if ( serviceProvider.contact != null )
+      {
+        // ServiceProvider/ServiceContact [0..1]
+        Element servContactElem = new Element( "ServiceContact", owsNS );
+
+        if ( serviceProvider.contact.individualName != null )
+        {
+          // ServiceProvider/ServiceContact/IndividualName [0..1]
+          Element individualNameElem = new Element( "IndividualName", owsNS);
+          individualNameElem.addContent( serviceProvider.contact.individualName);
+          servContactElem.addContent( individualNameElem);
+        }
+
+        if ( serviceProvider.contact.positionName != null )
+        {
+          // ServiceProvider/ServiceContact/PositionName [0..1]
+          Element positionNameElem = new Element( "PositionName", owsNS);
+          positionNameElem.addContent( serviceProvider.contact.positionName );
+          servContactElem.addContent( positionNameElem );
+        }
+
+        if ( serviceProvider.contact.contactInfo != null )
+        {
+          // ServiceProvider/ServiceContact/ContactInfo [0..1]
+          Element contactInfoElem = new Element( "ContactInfo", owsNS);
+          if ( serviceProvider.contact.contactInfo.voicePhone != null ||
+                  serviceProvider.contact.contactInfo.faxPhone != null )
+          {
+            // ServiceProvider/ServiceContact/ContactInfo/Phone [0..1]
+            Element phoneElem = new Element( "Phone", owsNS);
+            if ( serviceProvider.contact.contactInfo.voicePhone != null )
+              for (String curPhone : serviceProvider.contact.contactInfo.voicePhone)
+                // ServiceProvider/ServiceContact/ContactInfo/Phone/Voice [0..*]
+                phoneElem.addContent( new Element( "Voice", owsNS ).addContent( curPhone ));
+            if ( serviceProvider.contact.contactInfo.faxPhone != null )
+              for (String curPhone : serviceProvider.contact.contactInfo.faxPhone)
+                // ServiceProvider/ServiceContact/ContactInfo/Phone/Facsimile [0..*]
+                phoneElem.addContent( new Element( "Facsimile", owsNS ).addContent( curPhone ));
+            contactInfoElem.addContent( phoneElem);
+          }
+
+          if ( serviceProvider.contact.contactInfo.address != null )
+          {
+            // ServiceProvider/ServiceContact/ContactInfo/Address/DeliveryPoint [0..1]
+            // ServiceProvider/ServiceContact/ContactInfo/Address/City [0..1]
+            // ServiceProvider/ServiceContact/ContactInfo/Address/AdministrativeArea [0..1]
+            // ServiceProvider/ServiceContact/ContactInfo/Address/PostalCode [0..1]
+            // ServiceProvider/ServiceContact/ContactInfo/Address/Country [0..1]
+            // ServiceProvider/ServiceContact/ContactInfo/Address/ElectronicMailAddress [0..*]
+
+          }
+
+          // ServiceProvider/ServiceContact/ContactInfo/OnlineResource [0..1]
+          // ServiceProvider/ServiceContact/ContactInfo/HoursOfService [0..1]
+          // ServiceProvider/ServiceContact/ContactInfo/ContactInstructions [0..1]
+          servContactElem.addContent( contactInfoElem);
+        }
+
+        if ( serviceProvider.contact.role != null )
+        {
+          // ServiceProvider/ServiceContact/Role [0..1]
+          Element roleElem = new Element( "Role", owsNS );
+          roleElem.addContent( serviceProvider.contact.role);
+          servContactElem.addContent( roleElem);
+        }
+
+        servProvElem.addContent( servContactElem );
+      }
+    }
     return servProvElem;
   }
 
@@ -272,15 +341,40 @@ public class GetCapabilities
 
   public static class ServiceProvider
   {
-    public String providerName;
-    public URI providerSiteLink;
-    public String providerSiteTitle;
-    private String serviceContact_IndividualName;
-    private String serviceContact_PositionName;
-    private String sericeContact_ContactInfo_Phone;
-    
-    private String sericeContact_Role; // ???
+    public String name;
+    public OnlineResource site;
+    public ServiceContact contact;
 
+    public class OnlineResource
+    {
+      public URI link;
+      public String title;
+    }
+    public class ServiceContact
+    {
+      public String individualName;
+      public String positionName;
+      public ContactInfo contactInfo;
+      public String role;
+    }
+    public class ContactInfo
+    {
+      public List<String> voicePhone;
+      public List<String> faxPhone;
+      public Address address;
+      public OnlineResource onlineResource;
+      public String hoursOfService;
+      public String contactInstructions;
+    }
+    public class Address
+    {
+      public String deliveryPoint;
+      public String city;
+      public String AdminArea;
+      public String postalCode;
+      public String country;
+      public List<String> email;
+    }
   }
 
 }
