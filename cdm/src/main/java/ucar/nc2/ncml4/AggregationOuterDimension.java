@@ -474,6 +474,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     }
 
     protected void setInfo(MyCrawlableDataset myf) {
+      super.setInfo(myf);
       coordValueDate = myf.dateCoord;
       // LOOK why not dateCoordS etc ??
     }

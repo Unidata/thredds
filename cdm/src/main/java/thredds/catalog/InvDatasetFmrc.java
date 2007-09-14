@@ -32,7 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URI;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml4.NcMLReader;
 import ucar.nc2.dt.fmrc.ForecastModelRunCollection;
 import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.nc2.units.DateFormatter;

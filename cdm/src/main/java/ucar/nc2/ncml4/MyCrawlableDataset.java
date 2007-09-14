@@ -24,7 +24,8 @@ import thredds.crawlabledataset.CrawlableDataset;
 import java.util.Date;
 
 /**
- * Encapsolate a CrawlableDataset.
+ * Encapsolate a CrawlableDataset, which encapsolates a File.
+ *
  * @author caron
  * @since Aug 10, 2007
  */

@@ -34,6 +34,8 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -191,6 +193,7 @@ public class AggregationExisting extends Aggregation {
     for (int j = 0; j < ncList.size(); j++) {
       Element netcdfElemNested = (Element) ncList.get(j);
       String location = netcdfElemNested.getAttributeValue("location");
+
       Dataset ds = findDataset(location);
       if ((null != ds) && (ds.ncoord == 0)) {
         if (debugCacheDetail) System.out.println("  use cache for " + location);

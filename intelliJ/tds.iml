@@ -118,6 +118,11 @@
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.1.jar" />
+      <url>jar://$MODULE_DIR$/../lib/external/commons-httpclient-3.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/commons-io-1.2.jar" />
       <url>jar://$MODULE_DIR$/../lib/external/commons-io-1.2.jar!/</url>
     </containerElement>
@@ -172,7 +177,7 @@
       <url>jar://$MODULE_DIR$/../lib/release/grib-5.1.04.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
-      <attribute name="method" value="0" />
+      <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/grib-6.0.jar" />
       <url>jar://$MODULE_DIR$/../lib/release/grib-6.0.jar!/</url>
     </containerElement>

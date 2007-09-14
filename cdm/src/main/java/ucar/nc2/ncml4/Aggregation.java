@@ -117,7 +117,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   protected boolean enhance = false, isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
-  protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
+  protected boolean debug = false, debugOpenFile = true, debugSyncDetail = false, debugProxy = false,
       debugRead = false, debugDateParse = false;
 
   /**
@@ -261,7 +261,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
    * @throws IOException on i/o error
    */
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
-    List<MyCrawlableDataset> fileList = datasetManager.getFiles();
+    Collection<MyCrawlableDataset> fileList = datasetManager.getFiles();
     for (MyCrawlableDataset myf : fileList) {
       // optionally parse for date
       if (null != dateFormatMark) {
@@ -273,16 +273,6 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
         if (debugDateParse) System.out.println("  adding " + myf.file.getPath());
       }
     }
-
-    // Sort by date if it exists, else filename.
-    Collections.sort(fileList, new Comparator<MyCrawlableDataset>() {
-      public int compare(MyCrawlableDataset mf1, MyCrawlableDataset mf2) {
-        if (mf1.dateCoord != null) // LOOK can we generalize
-          return mf1.dateCoord.compareTo(mf2.dateCoord);
-        else
-          return mf1.file.getName().compareTo(mf2.file.getName());
-      }
-    });
 
     // create new list of Datasets, transfer explicit first
     datasets = new ArrayList<Dataset>();
@@ -297,6 +287,17 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
       ds.setInfo(myf);
       datasets.add(ds);
     }
+
+    // Sort by date if it exists, else filename.
+    Collections.sort(datasets, new Comparator<Aggregation.Dataset>() {
+      public int compare(Aggregation.Dataset ds1, Aggregation.Dataset ds2) {
+        if (ds1.cd.dateCoord != null) // LOOK can we generalize
+          return ds1.cd.dateCoord.compareTo(ds2.cd.dateCoord);
+        else
+          return ds1.cd.file.getName().compareTo(ds2.cd.file.getName());
+      }
+    });
+
   }
 
   /**
@@ -433,6 +434,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
    */
   class Dataset {
     protected String location; // location attribute on the netcdf element
+    protected MyCrawlableDataset cd;
 
     // deferred opening
     protected String cacheName;
@@ -503,6 +505,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
 
     // overridden in DatasetOuterDimension
     protected void setInfo(MyCrawlableDataset cd) {
+      this.cd = cd;
     }
 
     protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {

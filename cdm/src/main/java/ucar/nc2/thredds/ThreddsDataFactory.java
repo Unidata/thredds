@@ -26,7 +26,7 @@ import ucar.nc2.dt.*;
 
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml4.NcMLReader;
 
 import thredds.catalog.*;
 

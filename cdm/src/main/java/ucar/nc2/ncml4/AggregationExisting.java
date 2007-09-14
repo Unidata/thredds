@@ -203,6 +203,10 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (diskCache2 == null)
       return;
 
+    // only write out if something changed after the cache file was last written
+    if (!cacheDirty)
+      return;
+
     FileChannel channel = null;
     try {
       String cacheName = getCacheName();
@@ -215,16 +219,12 @@ public class AggregationExisting extends AggregationOuterDimension {
         dir.mkdirs();
       }
 
-      // only write out if something changed after the cache file was last written
-      if (!cacheDirty)
-        return;
-
-// Get a file channel for the file
+      // Get a file channel for the file
       FileOutputStream fos = new FileOutputStream(cacheFile);
       channel = fos.getChannel();
 
-// Try acquiring the lock without blocking. This method returns
-// null or throws an exception if the file is already locked.
+      // Try acquiring the lock without blocking. This method returns
+      // null or throws an exception if the file is already locked.
       FileLock lock;
       try {
         lock = channel.tryLock();

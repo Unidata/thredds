@@ -35,8 +35,9 @@ import java.io.IOException;
 public class DatasetCollectionManager {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
 
-  private List<Scanner> scanList = new ArrayList<Scanner>(); // current set of DirectoryScan for scan elements
-  private List<MyCrawlableDataset> files;
+  private List<Scanner> scanList = new ArrayList<Scanner>();
+  // private List<MyCrawlableDataset> files; // current list of MyCrawlableDataset
+  private Map<String, MyCrawlableDataset> map; // current map of MyCrawlableDataset
 
   private TimeUnit recheck; // how often to recheck
   private long lastScanned; // last time scanned
@@ -60,12 +61,14 @@ public class DatasetCollectionManager {
   /**
    * Scan the directory(ies) and create MyCrawlableDataset objects.
    * Get the results from getFiles()
+   *
    * @param cancelTask allow user to cancel
    * @throws java.io.IOException if io error
    */
-  public void scan( CancelTask cancelTask) throws IOException {
-    files = new ArrayList<MyCrawlableDataset>();
-    scan( files, cancelTask);
+  public void scan(CancelTask cancelTask) throws IOException {
+    Map<String, MyCrawlableDataset> newMap = new HashMap<String, MyCrawlableDataset>();
+    scan(newMap, cancelTask);
+    map = newMap;
     this.lastScanned = System.currentTimeMillis();
   }
 
@@ -111,40 +114,44 @@ public class DatasetCollectionManager {
     lastScanned = System.currentTimeMillis();
 
     // rescan
-    List<MyCrawlableDataset> newFiles = new ArrayList<MyCrawlableDataset>();
-    scan(newFiles, null);
+    Map<String, MyCrawlableDataset> newMap = new HashMap<String, MyCrawlableDataset>();
+    scan(newMap, null);
 
     // replace with previous datasets if they exist
     boolean changed = false;
-    for (int i = 0; i < newFiles.size(); i++) {
-      MyCrawlableDataset newDataset = newFiles.get(i);
-      int index = files.indexOf(newDataset); // equal if crawlableDataset.path is equal
-      if (index >= 0) {
-        newFiles.set(i, files.get(index));
-        if (debugSyncDetail) System.out.println("  sync using old Dataset= " + newDataset.file.getPath());
+    for (MyCrawlableDataset newDataset : newMap.values()) {
+      String path = newDataset.file.getPath();
+      MyCrawlableDataset oldDataset = map.get( path);
+      if (oldDataset != null) {
+        newMap.put(path, oldDataset);
+        if (debugSyncDetail) System.out.println("  sync using old Dataset= " + path);
       } else {
         changed = true;
-        if (debugSyncDetail) System.out.println("  sync found new Dataset= " + newDataset.file.getPath());
+        if (debugSyncDetail) System.out.println("  sync found new Dataset= " + path);
       }
     }
 
     if (!changed) { // check for deletions
-      for (MyCrawlableDataset oldDataset : files) {
-        if (newFiles.indexOf(oldDataset) < 0) {
+      for (MyCrawlableDataset oldDataset : map.values()) {
+        String path = oldDataset.file.getPath();
+        MyCrawlableDataset newDataset = newMap.get( path);
+        if (newDataset == null) {
           changed = true;
-          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + oldDataset.file.getPath());
+          if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + path);
+          break;
         }
       }
     }
 
     if (changed)
-      files = newFiles;
+      map = newMap;
 
     return changed;
   }
 
   /**
    * Get how often to rescan
+   *
    * @return time dureation of rescan period, or null if none.
    */
   public TimeUnit getRecheck() {
@@ -153,6 +160,7 @@ public class DatasetCollectionManager {
 
   /**
    * Get the last time scanned
+   *
    * @return msecs since 1970
    */
   public long getLastScanned() {
@@ -160,18 +168,19 @@ public class DatasetCollectionManager {
   }
 
   /**
-   * Get the current list of MyCrawlableDataset, since last scan or rescan.
+   * Get the current collection of MyCrawlableDataset, since last scan or rescan.
+   *
    * @return current list of MyCrawlableDataset
    */
-  public List<MyCrawlableDataset> getFiles() {
-    return files;
+  public Collection<MyCrawlableDataset> getFiles() {
+    return map.values();
   }
 
-  private void scan( List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
+  private void scan(java.util.Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
 
     // run through all scanners and collect MyCrawlableDataset instances
     for (Scanner scanner : scanList) {
-      scanner.scanDirectory(result, cancelTask);
+      scanner.scanDirectory(map, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return;
     }

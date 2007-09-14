@@ -25,7 +25,7 @@ import ucar.nc2.dataset.AxisType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml4.NcMLReader;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;

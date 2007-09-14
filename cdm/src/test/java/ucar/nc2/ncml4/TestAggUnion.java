@@ -4,7 +4,7 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.TestNcML;
+import ucar.nc2.ncml4.TestNcML;
 
 import java.io.IOException;
 

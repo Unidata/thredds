@@ -21,7 +21,7 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml4.NcMLReader;
 import ucar.nc2.dataset.conv.*;
 import ucar.ma2.DataType;
 
@@ -98,11 +98,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   // search in the order added
   static { // wont get loaded unless explicitly called
     registerConvention(_Coordinate.Convention, CoordSysBuilder.class);
-    registerConvention("Unidata Observation Dataset v1.0", UnidataObsConvention.class);
 
+    registerConvention("CF-1.0", CF1Convention.class);
     registerConvention("COARDS", COARDSConvention.class);
     registerConvention("NCAR-CSM", CSMConvention.class);
-    registerConvention("CF-1.0", CF1Convention.class);
+    registerConvention("Unidata Observation Dataset v1.0", UnidataObsConvention.class);
     registerConvention("GDV", GDVConvention.class);
 
     registerConvention("ATDRadar", ATDRadarConvention.class);
@@ -127,7 +127,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     // new
     registerConvention("NSSL National Reflectivity Mosaic", NsslRadarMosaicConvention.class);
-
 
     // further calls to registerConvention are by the user
     userMode = true;

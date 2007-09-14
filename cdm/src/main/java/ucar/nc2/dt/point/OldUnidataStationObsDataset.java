@@ -25,7 +25,7 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordSysBuilder;
-import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml4.NcMLReader;
 
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;

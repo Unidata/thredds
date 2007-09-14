@@ -26,9 +26,7 @@ import thredds.crawlabledataset.filter.RegExpMatchOnPathFilter;
 import thredds.crawlabledataset.filter.WildcardMatchOnPathFilter;
 import thredds.catalog.ServiceType;
 
-import java.util.List;
-import java.util.Date;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.IOException;
 
 import ucar.nc2.util.CancelTask;
@@ -52,7 +50,7 @@ public class CrawlableScanner implements Scanner {
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
 
-  private boolean debugScan = true;
+  private boolean debugScan = false;
 
   CrawlableScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
     String crawlerClassName;
@@ -89,11 +87,11 @@ public class CrawlableScanner implements Scanner {
     }
   }
 
-  public void scanDirectory(List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
-    scanDirectory(crawler, new Date().getTime(), result, cancelTask);
+  public void scanDirectory(Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
+    scanDirectory(crawler, new Date().getTime(), map, cancelTask);
   }
 
-  private void scanDirectory(CrawlableDataset cd, long now, List<MyCrawlableDataset> result, CancelTask cancelTask) throws IOException {
+  private void scanDirectory(CrawlableDataset cd, long now, Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
     List<CrawlableDataset> children = cd.listDatasets();
 
     for (CrawlableDataset child : children) {
@@ -101,7 +99,7 @@ public class CrawlableScanner implements Scanner {
       //File f = cdf.getFile();
 
       if (child.isCollection()) {
-        if (wantSubdirs) scanDirectory(child, now, result, cancelTask);
+        if (wantSubdirs) scanDirectory(child, now, map, cancelTask);
 
       } else if ((filter == null) || filter.accept(child)) {
 
@@ -117,7 +115,7 @@ public class CrawlableScanner implements Scanner {
 
         // add to result
         MyCrawlableDataset myf = new MyCrawlableDataset(this, child);
-        result.add(myf);
+        map.put(child.getPath(), myf);
         if (debugScan) System.out.println("added " + myf.file.getPath());
       }
 
@@ -137,6 +135,6 @@ public class CrawlableScanner implements Scanner {
     config.addContent( serviceType);
 
     CrawlableScanner crawl = new CrawlableScanner(config, cat, null, null, "true", null);
-    crawl.scanDirectory(new ArrayList<MyCrawlableDataset>(), null);
+    crawl.scanDirectory(new HashMap<String, MyCrawlableDataset>(), null);
   }
 }

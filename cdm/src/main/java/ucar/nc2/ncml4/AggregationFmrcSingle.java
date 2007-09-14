@@ -102,7 +102,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     // find the runtime, forecast time coordinates, put in list
     runHash = new HashMap<Date, List<DatasetOuterDimension>>();
 
-    List<MyCrawlableDataset> fileList = datasetManager.getFiles();
+    Collection<MyCrawlableDataset> fileList = datasetManager.getFiles();
     for (MyCrawlableDataset myf : fileList) {
       String location = StringUtil.replace(myf.file.getPath(), '\\', "/");
 

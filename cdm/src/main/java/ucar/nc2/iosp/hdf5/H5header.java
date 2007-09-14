@@ -36,7 +36,7 @@ class H5header {
 
   // debugging
   static private boolean debugEnum = false;
-  static private boolean debug1 = true, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
+  static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSymbolTable = false;
   static private boolean warnings = true, debugReference = false, debugCreationOrder = false;
@@ -204,7 +204,7 @@ class H5header {
     versionSHMF = raf.readByte();
     if (debugDetail)
       debugOut.println(" versionSB= " + versionSB + " versionFSS= " + versionFSS + " versionGroup= " + versionGroup +
-          " versionSHMF= " + versionSHMF);
+              " versionSHMF= " + versionSHMF);
 
     sizeOffsets = raf.readByte();
     isOffsetLong = (sizeOffsets == 8);
@@ -331,8 +331,8 @@ class H5header {
     boolean signed = true;
     int byteSize, vpad;
     int[] storageSize;  // for type 1 (continuous) : (varDims, elemSize)
-    // for type 2 (chunked)    : (chunkDim, elemSize)
-    // null for attributs
+                        // for type 2 (chunked)    : (chunkDim, elemSize)
+                        // null for attributs
 
     // chunked stuff
     boolean isChunked = false;
@@ -363,7 +363,7 @@ class H5header {
       }
 
       this.isChunked = (ndo.msl.type == 2); // chunked vs. continuous storage
-      this.storageSize = ndo.msl.storageSize;
+      this.storageSize = (isChunked) ? ndo.msl.chunkSize : ndo.msd.dimLength;
 
       // figure out the data type
       calcNCtype(ndo.mdt);
@@ -667,12 +667,22 @@ There is _no_ datatype information stored for these sort of selections currently
     byte dims;
     MessageDatatype mdt;
 
-    StructureMember(int version) throws IOException {
+    StructureMember(int version, int byteSize) throws IOException {
       if (debugPos) debugOut.println("   *StructureMember now at position=" + raf.getFilePointer());
 
-      name = readString(raf, -1);
-      raf.skipBytes(padding(name.length() + 1, 8)); // barf
-      offset = raf.readInt();
+      name = readString(raf);
+      if (version < 3) {
+        raf.skipBytes(padding(name.length() + 1, 8));
+        offset = raf.readInt();
+      } else {
+        int size = 0;
+        while (byteSize != 0) {
+          size++;
+          byteSize >>>= 8;  // right shift with zero extension
+        }
+        offset = (int) readVariableSize(size);
+      }
+
       if (debug1) debugOut.println("   Member name=" + name + " offset= " + offset);
       if (version == 1) {
         dims = raf.readByte();
@@ -722,8 +732,8 @@ There is _no_ datatype information stored for these sort of selections currently
     // or
     boolean isVariable;
     MessageDatatype mdt = null;
-    MessageSimpleDataspace msd = null;
-    MessageStorageLayout msl = null;
+    MessageDataspace msd = null;
+    MessageLayout msl = null;
     MessageFilter mfp = null;
 
     DataObject(Group parent, String name, long address) {
@@ -808,7 +818,7 @@ There is _no_ datatype information stored for these sort of selections currently
           short minDenseAttributes = raf.readShort();
         }
 
-        long sizeOfChunk = readVariableSize( flags & 3);
+        long sizeOfChunk = readVariableSizeFactor(flags & 3);
 
         if (debugDetail) debugOut.println(" sizeOfChunk=" + sizeOfChunk);
 
@@ -825,11 +835,11 @@ There is _no_ datatype information stored for these sort of selections currently
         if (debugTracker) memTracker.addByLen("Message (" + displayName + ") " + mess.mtype, mess.start, mess.size + 8);
 
         if (mess.mtype == MessageType.SimpleDataspace)
-          msd = (MessageSimpleDataspace) mess.messData;
+          msd = (MessageDataspace) mess.messData;
         else if (mess.mtype == MessageType.Datatype)
           mdt = (MessageDatatype) mess.messData;
         else if (mess.mtype == MessageType.Layout)
-          msl = (MessageStorageLayout) mess.messData;
+          msl = (MessageLayout) mess.messData;
         else if (mess.mtype == MessageType.Group)
           groupMessage = (MessageGroup) mess.messData;
         else if (mess.mtype == MessageType.FilterPipeline)
@@ -925,12 +935,12 @@ There is _no_ datatype information stored for these sort of selections currently
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation--- ");
           long posContinuationBlock = getFileOffset(c.offset);
           raf.seek(posContinuationBlock);
-          String sig = readString(4);
+          String sig = readStringFixedLength(4);
           if (!sig.equals("OCHK")) {
             throw new IllegalStateException(" ObjectHeaderContinuation Missing signature");
           }
 
-          count += readMessagesVersion2(posContinuationBlock+4, (int) c.length-8, creationOrderPresent);
+          count += readMessagesVersion2(posContinuationBlock + 4, (int) c.length - 8, creationOrderPresent);
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation return --- ");
         } else if (mess.mtype != MessageType.NIL) {
           messages.add(mess);
@@ -1079,13 +1089,14 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debugPos) debugOut.println("  --> Message Data starts at=" + raf.getFilePointer());
 
       if ((flags & 2) != 0) { // shared
-      }
+        debugOut.println("****SHARED MESSAGE type = " + mtype + " raw = " + type);
+        throw new UnsupportedOperationException("****SHARED MESSAGE type = " + mtype + " raw = " + type);
 
-      if (mtype == MessageType.NIL) { // 0
+      } else if (mtype == MessageType.NIL) { // 0
         // dont do nuttin
 
       } else if (mtype == MessageType.SimpleDataspace) { // 1
-        MessageSimpleDataspace data = new MessageSimpleDataspace();
+        MessageDataspace data = new MessageDataspace();
         data.read();
         messData = data;
 
@@ -1115,7 +1126,7 @@ There is _no_ datatype information stored for these sort of selections currently
         messData = data;
 
       } else if (mtype == MessageType.Layout) { // 8
-        MessageStorageLayout data = new MessageStorageLayout();
+        MessageLayout data = new MessageLayout();
         data.read();
         messData = data;
 
@@ -1166,6 +1177,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       } else {
         debugOut.println("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
+        throw new UnsupportedOperationException("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
       }
 
       return header_length + size;
@@ -1181,15 +1193,15 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   // Message Type 1 (p 23) : "Simple Dataspace" = dimension list / shape
-  private class MessageSimpleDataspace {
-    byte version, ndims, flags;
-    int[] dim, maxLength, permute;
+  private class MessageDataspace {
+    byte ndims, flags, type;
+    int[] dimLength, maxLength, permute;
     boolean isPermuted;
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append(" length=(");
-      for (int size : dim) sbuff.append(size).append(",");
+      for (int size : dimLength) sbuff.append(size).append(",");
       sbuff.append(") max=(");
       for (int aMaxLength : maxLength) sbuff.append(aMaxLength).append(",");
       sbuff.append(") permute=(");
@@ -1200,17 +1212,29 @@ There is _no_ datatype information stored for these sort of selections currently
 
     void read() throws IOException {
       if (debugPos) debugOut.println("   *MessageSimpleDataspace start pos= " + raf.getFilePointer());
+
       byte version = raf.readByte();
-      byte ndims = raf.readByte();
-      byte flags = raf.readByte();
-      raf.skipBytes(5); // skip 5 bytes
+      if (version == 1) {
+        ndims = raf.readByte();
+        flags = raf.readByte();
+        type = (byte) ((ndims == 0) ? 0 : 1);
+        raf.skipBytes(5); // skip 5 bytes
 
-      if (debug1) debugOut.println("   SimpleDataspace version= " + version + " flags = " +
-          flags + " ndims=" + ndims);
+      } else if (version == 2) {
+        ndims = raf.readByte();
+        flags = raf.readByte();
+        type = raf.readByte();
 
-      dim = new int[ndims];
+      } else {
+        throw new IllegalStateException("MessageDataspace: unknown version= " + version);
+      }
+
+      if (debug1) debugOut.println("   SimpleDataspace version= " + version + " flags=" +
+              Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
+
+      dimLength = new int[ndims];
       for (int i = 0; i < ndims; i++)
-        dim[i] = (int) readLength();
+        dimLength[i] = (int) readLength();
 
       boolean hasMax = (flags & 0x01) != 0;
       maxLength = new int[ndims];
@@ -1218,7 +1242,7 @@ There is _no_ datatype information stored for these sort of selections currently
         for (int i = 0; i < ndims; i++)
           maxLength[i] = (int) readLength();
       } else {
-        System.arraycopy(dim, 0, maxLength, 0, ndims);
+        System.arraycopy(dimLength, 0, maxLength, 0, ndims);
       }
 
       isPermuted = (flags & 0x02) != 0;
@@ -1230,12 +1254,12 @@ There is _no_ datatype information stored for these sort of selections currently
 
       if (debug1) {
         for (int i = 0; i < ndims; i++)
-          debugOut.println("    dim length = " + dim[i] + " max = " + maxLength[i] + " permute = " + permute[i]);
+          debugOut.println("    dim length = " + dimLength[i] + " max = " + maxLength[i]);
       }
     }
   }
 
-    // Message Type 17/0x11 ( p 58) "Group" : makes this object into a Group
+  // Message Type 17/0x11 ( p 58) "Group" : makes this object into a Group
   private class MessageGroup {
     long btreeAddress, nameHeapAddress;
 
@@ -1357,19 +1381,20 @@ There is _no_ datatype information stored for these sort of selections currently
         encoding = raf.readByte();
       }
 
-      int linkNameLength = (int) readVariableSize( flags & 3);
-      byte[] b = new byte[ linkNameLength];
+      int linkNameLength = (int) readVariableSizeFactor(flags & 3);
+      byte[] b = new byte[linkNameLength];
       raf.read(b);
       linkName = new String(b);
 
       if (linkType == 1) {
         short len = raf.readShort();
-        b = new byte[ len];
+        b = new byte[len];
         raf.read(b);
         link = new String(b);
       }
 
-      if (debug1) debugOut.println("   MessageLink version= " + version + " flags = " + Integer.toBinaryString(flags) + this);
+      if (debug1)
+        debugOut.println("   MessageLink version= " + version + " flags = " + Integer.toBinaryString(flags) + this);
     }
   }
 
@@ -1406,13 +1431,14 @@ There is _no_ datatype information stored for these sort of selections currently
       byte tandv = raf.readByte();
       type = (tandv & 0xf);
       version = ((tandv & 0xf0) >> 4);
+
       raf.read(flags);
       byteSize = raf.readInt();
       byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       if (debug1) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
-          flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
-          + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
+              flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
+              + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
 
       if (type == 0) {  // fixed point
         short bitOffset = raf.readShort();
@@ -1431,8 +1457,8 @@ There is _no_ datatype information stored for these sort of selections currently
         int expBias = raf.readInt();
         if (debug1)
           debugOut.println("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision +
-              " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
-              " manSize= " + manSize + " expBias= " + expBias);
+                  " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
+                  " manSize= " + manSize + " expBias= " + expBias);
 
       } else if (type == 2) {  // time
         short bitPrecision = raf.readShort();
@@ -1448,7 +1474,7 @@ There is _no_ datatype information stored for these sort of selections currently
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
 
       } else if (type == 5) { // opaque
-        String desc = readString(raf, -1);
+        String desc = readString(raf);
         if (debug1) debugOut.println("   type 5 (opaque): desc= " + desc);
 
       } else if (type == 6) { // compound
@@ -1456,7 +1482,7 @@ There is _no_ datatype information stored for these sort of selections currently
         if (debug1) debugOut.println("   --type 6(compound): nmembers=" + nmembers);
         members = new ArrayList<StructureMember>();
         for (int i = 0; i < nmembers; i++) {
-          members.add(new StructureMember(version));
+          members.add(new StructureMember(version, byteSize));
         }
         if (debugDetail) debugOut.println("   --done with compound type");
 
@@ -1475,15 +1501,22 @@ There is _no_ datatype information stored for these sort of selections currently
         parent.read();
         debugDetail = saveDebugDetail;
 
+        // read the enum names
         String[] enumName = new String[nmembers];
         int[] enumValue = new int[nmembers];
         for (int i = 0; i < nmembers; i++) {
-          enumName[i] = readString8(raf);
+          if (version < 3)
+            enumName[i] = readString8(raf); //padding
+          else
+            enumName[i] = readString(raf); // no padding
         }
-        raf.order(parent.byteOrder); // !! unbelievable
+
+        // read the values; must switch to parent byte order (!)
+        raf.order(parent.byteOrder);
         for (int i = 0; i < nmembers; i++)
-          enumValue[i] = raf.readInt();
+          enumValue[i] = (int) readVariableSize(parent.byteSize); // assume unsigned integer type, fits into int
         raf.order(RandomAccessFile.LITTLE_ENDIAN);
+
         if (debugEnum) {
           for (int i = 0; i < nmembers; i++)
             debugOut.println("   " + enumValue[i] + "=" + enumName[i]);
@@ -1499,15 +1532,19 @@ There is _no_ datatype information stored for these sort of selections currently
       } else if (type == 10) { // array
         if (debug1) debugOut.print("   type 10(array) lengths= ");
         int ndims = (int) raf.readByte();
-        raf.skipBytes(3);
+        if (version < 3) raf.skipBytes(3);
+
         dim = new int[ndims];
         for (int i = 0; i < ndims; i++) {
           dim[i] = raf.readInt();
           if (debug1) debugOut.print(" " + dim[i]);
         }
-        int[] pdim = new int[ndims];
-        for (int i = 0; i < ndims; i++)
-          pdim[i] = raf.readInt();
+
+        if (version < 3) {  // not present in version 3, never used anyway
+          int[] pdim = new int[ndims];
+          for (int i = 0; i < ndims; i++)
+            pdim[i] = raf.readInt();
+        }
         if (debug1) debugOut.println();
 
         parent = new MessageDatatype(); // base type
@@ -1581,11 +1618,12 @@ There is _no_ datatype information stored for these sort of selections currently
 
   }
 
-  // Message Type 8 ( p 44) "Data Storage Layout" : regular, chunked, or compact (stored with the message)
-  private class MessageStorageLayout {
-    byte version, ndims, type;
-    long dataAddress = -1;
-    int[] storageSize;
+  // Message Type 8 ( p 44) "Data Storage Layout" : regular (contiguous), chunked, or compact (stored with the message)
+  private class MessageLayout {
+    byte type; // 0 = Compact, 1 = Contiguous, 2 = Chunked
+    long dataAddress = -1; // -1 means "not allocated"
+    long contiguousSize; // size of data allocated contiguous
+    int[] chunkSize;  // only for chunked, otherwise must use Dataspace
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
@@ -1603,56 +1641,72 @@ There is _no_ datatype information stored for these sort of selections currently
           sbuff.append("unkown type= ").append(type);
       }
       sbuff.append(" storageSize = (");
-      for (int i = 0; i < ndims; i++) {
+      for (int i = 0; i < chunkSize.length; i++) {
         if (i > 0) sbuff.append(",");
-        sbuff.append(storageSize[i]);
+        sbuff.append(chunkSize[i]);
       }
       sbuff.append(") dataAddress=").append(dataAddress);
       return sbuff.toString();
     }
 
     void read() throws IOException {
-      version = raf.readByte();
-      ndims = raf.readByte();
-      type = raf.readByte();
-      raf.skipBytes(5); // skip 5 bytes
+      int ndims;
 
-      boolean isCompact = (type == 0) || (type == 3);
-      if (debug1) debugOut.print("   StorageLayout version= " + version + " type = " +
-          type + (isCompact ? " (isCompact)" : "") + " ndims=" + ndims + ":");
+      byte version = raf.readByte();
+      if (version < 3) {
+        ndims = raf.readByte();
+        type = raf.readByte();
+        raf.skipBytes(5); // skip 5 bytes
 
-      if (!isCompact) dataAddress = readOffset();
+        boolean isCompact = (type == 0);
+        if (!isCompact) dataAddress = readOffset();
+        chunkSize = new int[ndims];
+        for (int i = 0; i < ndims; i++)
+          chunkSize[i] = raf.readInt();
 
-      storageSize = new int[ndims];
-      for (int i = 0; i < ndims; i++) {
-        storageSize[i] = raf.readInt();
-        if (debug1) debugOut.print(" " + storageSize[i]);
+        if (isCompact) {
+          int dataSize = raf.readInt();
+          dataAddress = raf.getFilePointer();
+        }
+
+      } else {
+        type = raf.readByte();
+
+        if (type  == 0 ) {
+          int dataSize = raf.readShort();
+          dataAddress = raf.getFilePointer();
+
+        } else if (type == 1) {
+          dataAddress = readOffset();
+          contiguousSize = readLength();
+
+        } else if (type == 2) {
+          ndims = raf.readByte();
+          dataAddress = readOffset();
+          chunkSize = new int[ndims];
+          for (int i = 0; i < ndims; i++)
+            chunkSize[i] = raf.readInt();
+        }
       }
 
-      if (isCompact) {
-        int dataSize = raf.readInt();
-        dataAddress = raf.getFilePointer();
-      }
-
-      if (debug1) debugOut.println(" dataAddress= " + dataAddress);
+      if (debug1) debugOut.print("   StorageLayout version= " + version + this);
     }
   }
 
   // Message Type 11/0xB ( p 50) "Filter Pipeline" : apply a filter to the "data stream"
   class MessageFilter {
-    byte version, nfilters;
     Filter[] filters;
 
     void read() throws IOException {
-      version = raf.readByte();
-      nfilters = raf.readByte();
-      raf.skipBytes(6); // skip byte
-      if (debug1) debugOut.println("   MessageFilter version=" + version + " nfilters=" + nfilters);
+      byte version = raf.readByte();
+      byte nfilters = raf.readByte();
+      if (version == 1) raf.skipBytes(6); 
 
       filters = new Filter[nfilters];
-      for (int i = 0; i < nfilters; i++) {
-        filters[i] = new Filter();
-      }
+      for (int i = 0; i < nfilters; i++)
+        filters[i] = new Filter(version);
+
+      if (debug1) debugOut.println("   MessageFilter version=" + version + this);
     }
 
     public Filter[] getFilters() {
@@ -1661,7 +1715,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("   MessageFilter version=").append(version).append(" nfilters=").append(nfilters).append("\n");
+      sbuff.append("   MessageFilter filters=\n");
       for (Filter f : filters)
         sbuff.append(" ").append(f).append("\n");
       return sbuff.toString();
@@ -1669,22 +1723,21 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   class Filter {
-    short id;
+    short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
     short flags;
     String name;
     short nValues;
     int[] data;
 
-    Filter() throws IOException {
+    Filter(byte version) throws IOException {
       this.id = raf.readShort();
       short nameSize = raf.readShort();
       this.flags = raf.readShort();
       nValues = raf.readShort();
-
-      long pos = raf.getFilePointer();
-      this.name = readString(raf, -1); // read at current pos
-      nameSize += padding(nameSize, 8);
-      raf.seek(pos + nameSize); // make it more robust for errors
+      if (version == 1)
+        this.name = (nameSize > 0) ? readString8(raf) : "N/A"; // null terminated, pad to 8 bytes
+      else
+        this.name = (nameSize > 0) ? readStringFixedLength(nameSize) : "N/A"; // non-null terminated, pad to 8 bytes
 
       data = new int[nValues];
       for (int i = 0; i < nValues; i++)
@@ -1711,7 +1764,7 @@ There is _no_ datatype information stored for these sort of selections currently
     //short typeSize, spaceSize;
     String name;
     MessageDatatype mdt = new MessageDatatype();
-    MessageSimpleDataspace mds = new MessageSimpleDataspace();
+    MessageDataspace mds = new MessageDataspace();
     long dataPos; // pointer to the attribute data section, must be absolute file position
 
     public String toString() {
@@ -1742,13 +1795,13 @@ There is _no_ datatype information stored for these sort of selections currently
 
       // read the name
       long pos = raf.getFilePointer();
-      name = readString(raf, -1); // read at current pos
+      name = readString(raf); // read at current pos
       if (version == 1) nameSize += padding(nameSize, 8);
       raf.seek(pos + nameSize); // make it more robust for errors
 
       if (debug1)
         debugOut.println("   MessageAttribute version= " + version + " flags = " + Integer.toBinaryString(flags) +
-            " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
+                " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
 
       // read the datatype
       pos = raf.getFilePointer();
@@ -1830,7 +1883,7 @@ There is _no_ datatype information stored for these sort of selections currently
     String name;
 
     void read() throws IOException {
-      name = readString(raf, -1);
+      name = readString(raf);
     }
 
     public String toString() {
@@ -1990,7 +2043,7 @@ There is _no_ datatype information stored for these sort of selections currently
       long entryPos = raf.getFilePointer();
       if (debugGroupBtree)
         debugOut.println("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
-            " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
+                " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
 
       // read all entries in this Btree "Node"
       List<Entry> myEntries = new ArrayList<Entry>();
@@ -2135,7 +2188,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       Node(long address, long parent) throws IOException {
         if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
-            " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
+                " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
 
         raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
         raf.seek(address);
@@ -2162,7 +2215,7 @@ There is _no_ datatype information stored for these sort of selections currently
         long rightAddress = readOffset();
         if (debugDataBtree)
           debugOut.println("    leftAddress=" + leftAddress + " =0x" + Long.toHexString(leftAddress) +
-              " rightAddress=" + rightAddress + " =0x" + Long.toHexString(rightAddress));
+                  " rightAddress=" + rightAddress + " =0x" + Long.toHexString(rightAddress));
 
 
         if (level == 0) {
@@ -2344,7 +2397,7 @@ There is _no_ datatype information stored for these sort of selections currently
         o.dataPos = raf.getFilePointer();
         if (debugDetail)
           debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
-              " dataSize = " + o.dataSize + " dataPos = " + o.dataPos);
+                  " dataSize = " + o.dataSize + " dataPos = " + o.dataPos);
         if (o.id == 0) break;
 
         int nskip = ((int) o.dataSize) + padding((int) o.dataSize, 8);
@@ -2639,7 +2692,7 @@ There is _no_ datatype information stored for these sort of selections currently
     if (debug1) debugOut.println("makeNC4Variable " + matt.name);
   } */
 
-  private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageSimpleDataspace mds, long dataPos) throws IOException {
+  private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
     attName = NetcdfFile.createValidNetcdfObjectName(attName); // look cannot search by name
     Variable v = new Variable(ncfile, null, null, attName); // LOOK null group
     Vinfo vinfo = new Vinfo(mdt, dataPos);
@@ -2765,9 +2818,9 @@ There is _no_ datatype information stored for these sort of selections currently
         long objId = ii.getLongNext();
         DataObject dobj = findDataObject(objId);
         if (dobj == null)
-          System.out.println("Cant find dobj= "+dobj);
+          System.out.println("Cant find dobj= " + dobj);
         else {
-          System.out.println(" Referenced object= "+dobj.getName());
+          System.out.println(" Referenced object= " + dobj.getName());
           ii2.setObjectNext(dobj.getName());
         }
       }
@@ -2799,7 +2852,7 @@ There is _no_ datatype information stored for these sort of selections currently
      Used for Structure Members
   */
   private Variable makeMemberVariable(String name, long dataPos, MessageDatatype mdt)
-      throws IOException {
+          throws IOException {
 
     Variable v;
     Vinfo vinfo = new Vinfo(mdt, dataPos);
@@ -2879,9 +2932,9 @@ There is _no_ datatype information stored for these sort of selections currently
     }
   }
 
-  private boolean makeVariableShapeAndType(Variable v, MessageDatatype mdt, MessageSimpleDataspace msd, Vinfo vinfo) {
+  private boolean makeVariableShapeAndType(Variable v, MessageDatatype mdt, MessageDataspace msd, Vinfo vinfo) {
 
-    int[] dim = (msd != null) ? msd.dim : new int[0];
+    int[] dim = (msd != null) ? msd.dimLength : new int[0];
     if (mdt.type == 10) {
       int len = dim.length + mdt.dim.length;
       int[] combinedDim = new int[len];
@@ -2934,15 +2987,11 @@ There is _no_ datatype information stored for these sort of selections currently
    * Read a zero terminated String. Leave file positioned after zero terminator byte.
    *
    * @param raf from this file
-   * @param pos starting here; if -1 then start at the current file position
    * @return String (dont include zero terminator)
    * @throws java.io.IOException on io error
    */
-  static String readString(RandomAccessFile raf, long pos) throws IOException {
-    if (pos >= 0)
-      raf.seek(pos);
-    else
-      pos = raf.getFilePointer();
+  static String readString(RandomAccessFile raf) throws IOException {
+    long pos = raf.getFilePointer();
 
     int count = 0;
     while (raf.readByte() != 0) count++;
@@ -2986,7 +3035,7 @@ There is _no_ datatype information stored for these sort of selections currently
    * @return String result
    * @throws java.io.IOException on io error
    */
-  String readString(int size) throws IOException {
+  String readStringFixedLength(int size) throws IOException {
     byte[] s = new byte[size];
     raf.read(s);
     return new String(s);
@@ -3001,9 +3050,13 @@ There is _no_ datatype information stored for these sort of selections currently
     return isOffsetLong ? raf.readLong() : (long) raf.readInt();
   }
 
-  private long readVariableSize(int sizeFactor) throws IOException {
-    long vv;
+  private long readVariableSizeFactor(int sizeFactor) throws IOException {
     int size = (int) Math.pow(2, sizeFactor);
+    return readVariableSize(size);
+  }
+
+  private long readVariableSize(int size) throws IOException {
+    long vv;
     if (size == 1) {
       vv = DataType.unsignedByteToShort(raf.readByte());
     } else if (size == 2) {
