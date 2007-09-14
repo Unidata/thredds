@@ -104,7 +104,7 @@ public class GetCapabilities
     }
     if ( allSections || sections.contains( Section.Contents))
     {
-      capabilitiesElem.addContent( generateContent());
+      capabilitiesElem.addContent( generateContents());
     }
 
     return new Document( capabilitiesElem );
@@ -362,7 +362,7 @@ public class GetCapabilities
     return opsMetadataElem;
   }
 
-  public Element generateContent()
+  public Element generateContents()
   {
     // Contents (wcs) [0..1]
     Element contentElem = new Element( "Contents", wcsNS );
@@ -373,6 +373,8 @@ public class GetCapabilities
     // Contents/CoverageSummary/Abstract (ows) [0..1]
     // Contents/CoverageSummary/Keywords (ows) [0..*]
     // Contents/CoverageSummary/Metadata/... (ows) [0..*]
+    //     [[NOTE: Either xlink simple type or a concrete AbstractMetaData element.]]
+    //     [[NOTE: We are going to support xlink simple type only but probably the TDS won't use this element.]]
     // Contents/CoverageSummary/WGS84BoundingBox/... (ows) [0..*]
     // Contents/CoverageSummary/SupportedCRS (ows) [0..*] - URI
     // Contents/CoverageSummary/SupportedFormatS (ows) [0..*] - MIME type
