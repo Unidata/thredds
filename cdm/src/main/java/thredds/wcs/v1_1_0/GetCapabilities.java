@@ -80,6 +80,8 @@ public class GetCapabilities
     Element capabilitiesElem = new Element( "Capabilities", wcsNS );
     capabilitiesElem.addNamespaceDeclaration( owcsNS );
     capabilitiesElem.addNamespaceDeclaration( owsNS );
+    capabilitiesElem.setAttribute( "version", "");           // ToDo
+    capabilitiesElem.setAttribute( "updateSequence", "");    // ToDo
 
     boolean allSections = false;
     if ( sections == null || sections.size() == 0 ||
@@ -163,13 +165,14 @@ public class GetCapabilities
 //    List<URI> appProfileIds;
 //    for ( URI curAppProfileId : appProfileIds)
 //    {
-//      Element profileElem = new Element( "Profile", owcsNS);
-//      profileElem.addContent( curAppProfileId.toString());
-//      serviceIdElem.addContent( profileElem);
+//      serviceIdElem.addContent( new Element( "Profile", owcsNS).addContent( curAppProfileId.toString()));
 //    }
-      // "WCS 1.1 Application Profile for [Format] [formatVersion] encoding, [profileVersion]"
-      // "WCS 1.1 Application Profile for CF/1.0 netCDF 3 encoding, [profileVersion]"
-      // "WCS 1.1 Application Profile for CF-netCDF 1.0/3 encoding, [profileVersion]"
+      // 1) WCS spec says that encoding format application profile spec has title of the form:
+      //    "WCS 1.1 Application Profile for [Format] [formatVersion] encoding, [profileVersion]"
+      //    [[Here's the CF-NetCDF title:
+      //          "WCS 1.1 Application Profile for CF-netCDF (1.0-3.0) Coverage Encoding, 1.0" (OGC 06-082r1)]]
+      //    but it doesn't say anything about a URI for such an Application Profile.
+      // 2) Whereas, the WCS Capabilities doc has a place to identify supported App Profiles by using a URI.
 
       if ( serviceId.getFees() != null )
       {
@@ -195,14 +198,14 @@ public class GetCapabilities
 
   public Element generateServiceProvider( ServiceProvider serviceProvider )
   {
-    // ServiceProvider [0..1]
+    // ServiceProvider (ows) [0..1]
     Element servProvElem = new Element( "ServiceProvider", owsNS );
 
     if ( serviceProvider != null )
     {
       if ( serviceProvider.name != null )
       {
-        // ServiceProvider/ProviderName [0..1]
+        // ServiceProvider/ProviderName (ows) [0..1]
         Element provNameElem = new Element( "ProviderName", owsNS );
         provNameElem.addContent( serviceProvider.name );
         servProvElem.addContent( provNameElem );
@@ -210,7 +213,7 @@ public class GetCapabilities
 
       if ( serviceProvider.site != null )
       {
-        // ServiceProvider/ProviderSite [0..1]
+        // ServiceProvider/ProviderSite (ows) [0..1]
         Element provSiteElem = new Element( "ProviderSite", owsNS );
         provSiteElem.setAttribute( "type", "simple" );
         if ( serviceProvider.site.title != null)
@@ -223,12 +226,12 @@ public class GetCapabilities
 
       if ( serviceProvider.contact != null )
       {
-        // ServiceProvider/ServiceContact [0..1]
+        // ServiceProvider/ServiceContact (ows) [0..1]
         Element servContactElem = new Element( "ServiceContact", owsNS );
 
         if ( serviceProvider.contact.individualName != null )
         {
-          // ServiceProvider/ServiceContact/IndividualName [0..1]
+          // ServiceProvider/ServiceContact/IndividualName (ows) [0..1]
           Element individualNameElem = new Element( "IndividualName", owsNS);
           individualNameElem.addContent( serviceProvider.contact.individualName);
           servContactElem.addContent( individualNameElem);
@@ -236,7 +239,7 @@ public class GetCapabilities
 
         if ( serviceProvider.contact.positionName != null )
         {
-          // ServiceProvider/ServiceContact/PositionName [0..1]
+          // ServiceProvider/ServiceContact/PositionName (ows) [0..1]
           Element positionNameElem = new Element( "PositionName", owsNS);
           positionNameElem.addContent( serviceProvider.contact.positionName );
           servContactElem.addContent( positionNameElem );
@@ -244,47 +247,105 @@ public class GetCapabilities
 
         if ( serviceProvider.contact.contactInfo != null )
         {
-          // ServiceProvider/ServiceContact/ContactInfo [0..1]
+          // ServiceProvider/ServiceContact/ContactInfo (ows)[0..1]
           Element contactInfoElem = new Element( "ContactInfo", owsNS);
           if ( serviceProvider.contact.contactInfo.voicePhone != null ||
                   serviceProvider.contact.contactInfo.faxPhone != null )
           {
-            // ServiceProvider/ServiceContact/ContactInfo/Phone [0..1]
+            // ServiceProvider/ServiceContact/ContactInfo/Phone (ows)[0..1]
             Element phoneElem = new Element( "Phone", owsNS);
             if ( serviceProvider.contact.contactInfo.voicePhone != null )
               for (String curPhone : serviceProvider.contact.contactInfo.voicePhone)
-                // ServiceProvider/ServiceContact/ContactInfo/Phone/Voice [0..*]
+                // ServiceProvider/ServiceContact/ContactInfo/Phone/Voice (ows)[0..*]
                 phoneElem.addContent( new Element( "Voice", owsNS ).addContent( curPhone ));
             if ( serviceProvider.contact.contactInfo.faxPhone != null )
               for (String curPhone : serviceProvider.contact.contactInfo.faxPhone)
-                // ServiceProvider/ServiceContact/ContactInfo/Phone/Facsimile [0..*]
+                // ServiceProvider/ServiceContact/ContactInfo/Phone/Facsimile (ows)[0..*]
                 phoneElem.addContent( new Element( "Facsimile", owsNS ).addContent( curPhone ));
             contactInfoElem.addContent( phoneElem);
           }
 
           if ( serviceProvider.contact.contactInfo.address != null )
           {
-            // ServiceProvider/ServiceContact/ContactInfo/Address/DeliveryPoint [0..1]
-            // ServiceProvider/ServiceContact/ContactInfo/Address/City [0..1]
-            // ServiceProvider/ServiceContact/ContactInfo/Address/AdministrativeArea [0..1]
-            // ServiceProvider/ServiceContact/ContactInfo/Address/PostalCode [0..1]
-            // ServiceProvider/ServiceContact/ContactInfo/Address/Country [0..1]
-            // ServiceProvider/ServiceContact/ContactInfo/Address/ElectronicMailAddress [0..*]
+            // ServiceProvider/ServiceContact/ContactInfo/Address (ows) [0..1]
+            Element addressElem = new Element( "Address", owsNS);
+            if ( serviceProvider.contact.contactInfo.address.deliveryPoint != null )
+            {
+              for ( String curDP : serviceProvider.contact.contactInfo.address.deliveryPoint)
+              {
+                // ServiceProvider/ServiceContact/ContactInfo/Address/DeliveryPoint (ows) [0..*]
+                addressElem.addContent( new Element( "DeliveryPoint", owsNS).addContent( curDP));
+              }
+            }
+            if ( serviceProvider.contact.contactInfo.address.city != null )
+            {
+              // ServiceProvider/ServiceContact/ContactInfo/Address/City (ows) [0..1]
+              addressElem.addContent( new Element( "City", owsNS)
+                      .addContent( serviceProvider.contact.contactInfo.address.city));
+            }
+            if ( serviceProvider.contact.contactInfo.address.adminArea != null )
+            {
+              // ServiceProvider/ServiceContact/ContactInfo/Address/AdministrativeArea (ows) [0..1]
+              addressElem.addContent( new Element( "AdministrativeArea", owsNS )
+                      .addContent( serviceProvider.contact.contactInfo.address.adminArea ) );
+            }
+            if ( serviceProvider.contact.contactInfo.address.postalCode != null )
+            {
+              // ServiceProvider/ServiceContact/ContactInfo/Address/PostalCode (ows) [0..1]
+              addressElem.addContent( new Element( "PostalCode", owsNS )
+                      .addContent( serviceProvider.contact.contactInfo.address.postalCode ) );
+            }
+            if ( serviceProvider.contact.contactInfo.address.country != null)
+            {
+              // ServiceProvider/ServiceContact/ContactInfo/Address/Country (ows) [0..1]
+              addressElem.addContent( new Element( "Country", owsNS )
+                      .addContent( serviceProvider.contact.contactInfo.address.country ) );
+            }
+            if ( serviceProvider.contact.contactInfo.address.email != null )
+            {
+              for ( String curEmail : serviceProvider.contact.contactInfo.address.email )
+              {
+                // ServiceProvider/ServiceContact/ContactInfo/Address/ElectronicMailAddress (ows) [0..*]
+                addressElem.addContent( new Element( "ElectronicMailAddress", owsNS )
+                        .addContent( curEmail ) );
+              }
+            }
 
+            contactInfoElem.addContent( addressElem);
           }
 
-          // ServiceProvider/ServiceContact/ContactInfo/OnlineResource [0..1]
-          // ServiceProvider/ServiceContact/ContactInfo/HoursOfService [0..1]
-          // ServiceProvider/ServiceContact/ContactInfo/ContactInstructions [0..1]
+
+          if ( serviceProvider.contact.contactInfo.onlineResource != null )
+          {
+            // ServiceProvider/ServiceContact/ContactInfo/OnlineResource (ows) [0..1]
+            Element onlineResourceElem = new Element( "OnlineResource", owsNS);
+            onlineResourceElem.setAttribute( "type", "simple");
+            if ( serviceProvider.contact.contactInfo.onlineResource.title != null )
+              onlineResourceElem.setAttribute( "xlink:title", serviceProvider.contact.contactInfo.onlineResource.title );
+            if ( serviceProvider.contact.contactInfo.onlineResource.link != null )
+              onlineResourceElem.setAttribute( "xlink:href", serviceProvider.contact.contactInfo.onlineResource.link.toString() );
+
+            contactInfoElem.addContent( onlineResourceElem);
+          }
+
+          if ( serviceProvider.contact.contactInfo.hoursOfService != null )
+            // ServiceProvider/ServiceContact/ContactInfo/HoursOfService (ows) [0..1]
+            contactInfoElem.addContent( new Element( "HoursOfService", owsNS)
+                    .addContent( serviceProvider.contact.contactInfo.hoursOfService));
+
+          if ( serviceProvider.contact.contactInfo.contactInstructions != null )
+            // ServiceProvider/ServiceContact/ContactInfo/ContactInstructions (ows) [0..1]
+            contactInfoElem.addContent( new Element( "ContactInstructions", owsNS )
+                    .addContent( serviceProvider.contact.contactInfo.contactInstructions ) );
+
           servContactElem.addContent( contactInfoElem);
         }
 
         if ( serviceProvider.contact.role != null )
         {
-          // ServiceProvider/ServiceContact/Role [0..1]
-          Element roleElem = new Element( "Role", owsNS );
-          roleElem.addContent( serviceProvider.contact.role);
-          servContactElem.addContent( roleElem);
+          // ServiceProvider/ServiceContact/Role (ows) [0..1]
+          servContactElem.addContent( new Element( "Role", owsNS )
+                  .addContent( serviceProvider.contact.role));
         }
 
         servProvElem.addContent( servContactElem );
@@ -295,18 +356,48 @@ public class GetCapabilities
 
   public Element generateOperationsMetadata()
   {
-    Element opsMetadataElem = new Element( "OperationsMetadata", owsNS );
+    // OperationsMetadata (owcs) [0..1]
+    Element opsMetadataElem = new Element( "OperationsMetadata", owcsNS );
 
     return opsMetadataElem;
   }
 
   public Element generateContent()
   {
-    Element contentElem = new Element( "Content", owsNS );
+    // Contents (wcs) [0..1]
+    Element contentElem = new Element( "Contents", wcsNS );
+
+    // Contents/CoverageSummary (wcs) [0..1]
+    //      [[NOTE(1): unless info can be found in OtherSources.]]
+    // Contents/CoverageSummary/Title (ows) [0..1]
+    // Contents/CoverageSummary/Abstract (ows) [0..1]
+    // Contents/CoverageSummary/Keywords (ows) [0..*]
+    // Contents/CoverageSummary/Metadata/... (ows) [0..*]
+    // Contents/CoverageSummary/WGS84BoundingBox/... (ows) [0..*]
+    // Contents/CoverageSummary/SupportedCRS (ows) [0..*] - URI
+    // Contents/CoverageSummary/SupportedFormatS (ows) [0..*] - MIME type
+    // ----
+    //      [[NOTE: This coverage must contain lowerl-level coverages and/or an identifier.]]
+    // Contents/CoverageSummary/CoverageSummary/... (wcs) [1..*]
+    //      [[NOTE: Indicates that the parent coverage contains lower-level coverages.]]
+    // Contents/CoverageSummary/Identifier (wcs) [0..1]
+    //      [[NOTE: Indicates that this coverage can be accessed directly by GetCoverage and DescribeCoverage.]]
+    //      [[NOTE: this ID must be unique to this WCS server.]]
+    // ----
+    // Contents/SupportedCRS (wcs) [0..*] - URI
+    //      [[NOTE: union of all SupportedCRS from nested CoverageSummary-s]]
+    // Contents/SupportedFormat (wcs) [0..*] - MIME type
+    //      [[NOTE: union of all SupportedFormat from nested CoverageSummary-s]]
+    // Contents/OtherSource (wcs) [0..*] - @type=simple, @xlink:title, @xlink:href
+    //      [[NOTE(1): unless info can be found in sibling CoverageSummary elements.]]
+
 
     return contentElem;
   }
 
+  /**
+   * Contain the content needed for a GetCapabilities ServiceIdentification section.
+   */
    public static class ServiceId
    {
      private String title, _abstract;
@@ -339,6 +430,9 @@ public class GetCapabilities
      public List<String> getAccessConstraints() { return Collections.unmodifiableList( accessConstraints); }
    }
 
+  /**
+   * Contain content needed for a GetCapabilities ServiceProvider section.
+   */
   public static class ServiceProvider
   {
     public String name;
@@ -368,9 +462,9 @@ public class GetCapabilities
     }
     public class Address
     {
-      public String deliveryPoint;
+      public List<String> deliveryPoint;
       public String city;
-      public String AdminArea;
+      public String adminArea;
       public String postalCode;
       public String country;
       public List<String> email;
