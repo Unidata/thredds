@@ -54,25 +54,26 @@ public class GetCapabilities
     this.serviceId = serviceId;
     this.serviceProvider = serviceProvider;
     this.dataset = dataset;
-//    serviceIdTitle = "need a title";
-//    serviceIdAbstract = "need an abstract";
-//    serviceIdKeywords = new ArrayList<String>();
-//    serviceIdKeywords.add( "need keywords");
-//    serviceType = "OGC WCS";
-//    serviceTypeVersion = new ArrayList<String>();
-//    serviceTypeVersion.add("1.1.0");
-//    fees = "NONE";
-//    accessConstraints = new ArrayList<String>();
-//    accessConstraints.add( "NONE");
+    if ( this.serverURI == null )
+      throw new IllegalArgumentException( "Non-null server URI required.");
+    if ( this.sections == null )
+      throw new IllegalArgumentException( "Non-null sections list required (may be empty).");
+    if ( this.dataset == null )
+      throw new IllegalArgumentException( "Non-null dataset required.");
   }
 
-  public Document getCapabilitiesReport() { return capabilitiesReport; }
+  public Document getCapabilitiesReport()
+  {
+    if ( this.capabilitiesReport == null )
+      capabilitiesReport = generateCapabilities();
+    return capabilitiesReport;
+  }
 
   public void writeCapabilitiesReport( PrintWriter pw )
           throws IOException
   {
     XMLOutputter xmlOutputter = new XMLOutputter( Format.getPrettyFormat() );
-    xmlOutputter.output( capabilitiesReport, pw );
+    xmlOutputter.output( getCapabilitiesReport(), pw );
   }
 
   public Document generateCapabilities()
@@ -90,7 +91,7 @@ public class GetCapabilities
       allSections = true;
     }
 
-    if ( sections.contains( Section.ServiceIdentification))
+    if ( allSections || sections.contains( Section.ServiceIdentification))
     {
       capabilitiesElem.addContent( generateServiceIdentification( serviceId  ));
     }
@@ -367,25 +368,31 @@ public class GetCapabilities
     // Contents (wcs) [0..1]
     Element contentElem = new Element( "Contents", wcsNS );
 
-    // Contents/CoverageSummary (wcs) [0..1]
-    //      [[NOTE(1): unless info can be found in OtherSources.]]
-    // Contents/CoverageSummary/Title (ows) [0..1]
-    // Contents/CoverageSummary/Abstract (ows) [0..1]
-    // Contents/CoverageSummary/Keywords (ows) [0..*]
-    // Contents/CoverageSummary/Metadata/... (ows) [0..*]
-    //     [[NOTE: Either xlink simple type or a concrete AbstractMetaData element.]]
-    //     [[NOTE: We are going to support xlink simple type only but probably the TDS won't use this element.]]
-    // Contents/CoverageSummary/WGS84BoundingBox/... (ows) [0..*]
-    // Contents/CoverageSummary/SupportedCRS (ows) [0..*] - URI
-    // Contents/CoverageSummary/SupportedFormatS (ows) [0..*] - MIME type
-    // ----
-    //      [[NOTE: This coverage must contain lowerl-level coverages and/or an identifier.]]
-    // Contents/CoverageSummary/CoverageSummary/... (wcs) [1..*]
-    //      [[NOTE: Indicates that the parent coverage contains lower-level coverages.]]
-    // Contents/CoverageSummary/Identifier (wcs) [0..1]
-    //      [[NOTE: Indicates that this coverage can be accessed directly by GetCoverage and DescribeCoverage.]]
-    //      [[NOTE: this ID must be unique to this WCS server.]]
-    // ----
+    for ( GridDataset.Gridset gs : this.dataset.getGridsets())
+    {
+      Element curCovSum = new Element( "CoverageSummary", wcsNS);
+      // Contents/CoverageSummary (wcs) [0..1]
+      //      [[NOTE(1): use unless info can be found in Contents/OtherSources.]]
+      // Contents/CoverageSummary/Title (ows) [0..1]
+      // Contents/CoverageSummary/Abstract (ows) [0..1]
+      // Contents/CoverageSummary/Keywords (ows) [0..*]
+      // Contents/CoverageSummary/Metadata/... (ows) [0..*]
+      //     [[NOTE: Either xlink simple type or a concrete AbstractMetaData element.]]
+      //     [[NOTE: We are going to support xlink simple type only but probably the TDS won't use this element.]]
+      // Contents/CoverageSummary/WGS84BoundingBox/... (ows) [0..*]
+      // Contents/CoverageSummary/SupportedCRS (ows) [0..*] - URI
+      // Contents/CoverageSummary/SupportedFormatS (ows) [0..*] - MIME type
+      // ----
+      //      [[NOTE: This coverage must contain lowerl-level coverages and/or an identifier.]]
+      // Contents/CoverageSummary/CoverageSummary/... (wcs) [1..*]
+      //      [[NOTE: Indicates that the parent coverage contains lower-level coverages.]]
+      // Contents/CoverageSummary/Identifier (wcs) [0..1]
+      //      [[NOTE: Indicates that this coverage can be accessed directly by GetCoverage and DescribeCoverage.]]
+      //      [[NOTE: this ID must be unique to this WCS server.]]
+      // ----
+
+      contentElem.addContent( curCovSum);
+    }
     // Contents/SupportedCRS (wcs) [0..*] - URI
     //      [[NOTE: union of all SupportedCRS from nested CoverageSummary-s]]
     // Contents/SupportedFormat (wcs) [0..*] - MIME type

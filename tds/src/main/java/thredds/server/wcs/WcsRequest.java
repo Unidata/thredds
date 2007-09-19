@@ -95,6 +95,8 @@ public class WcsRequest
           sections.add( GetCapabilities.Section.valueOf( curSection ));
         }
       }
+      else
+        sections = Collections.emptyList();
 
       serviceId = null;
       serviceProvider = null;
