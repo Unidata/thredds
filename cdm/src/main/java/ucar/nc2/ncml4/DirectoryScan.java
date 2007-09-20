@@ -26,7 +26,9 @@ import ucar.nc2.util.CancelTask;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Map;
 import java.io.File;
+import java.io.IOException;
 
 import thredds.util.DateFromString;
 
@@ -152,4 +154,7 @@ public class DirectoryScan implements Scanner {
     return (suffix == null) || location.endsWith(suffix);
   }
 
+  public void scanDirectory(Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
 }
