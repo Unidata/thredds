@@ -43,11 +43,11 @@ import thredds.datatype.DateType;
  *
  * @author caron
  */
-class QueryParams {
-  static final String RAW = "text/plain";
-  static final String XML = "application/xml";
-  static final String CSV = "text/csv";
-  static final String NETCDF = "application/x-netcdf";
+public class QueryParams {
+  static public final String RAW = "text/plain";
+  static public final String XML = "application/xml";
+  static public final String CSV = "text/csv";
+  static public final String NETCDF = "application/x-netcdf";
 
   // the first in the list is the canonical name, the others are aliases
   static String[][] validAccept = new String[][]{
@@ -415,7 +415,7 @@ class QueryParams {
     return true;
   }
 
-  LatLonRect getBB() {
+  public LatLonRect getBB() {
     return new LatLonRect(new LatLonPointImpl(south, west), new LatLonPointImpl(north, east));
   }
 
@@ -467,11 +467,11 @@ class QueryParams {
 
   }
 
-  DateRange getDateRange() {
+  public DateRange getDateRange() {
     return hasDateRange ? new DateRange(time_start, time_end, time_duration, null) : null;
   }
 
-  void writeErr(HttpServletResponse res, String s, int code) throws IOException {
+  public void writeErr(HttpServletResponse res, String s, int code) throws IOException {
     ServletUtil.logServerAccess(code, 0);
     res.setStatus(code);
     if (s.length() > 0) {
