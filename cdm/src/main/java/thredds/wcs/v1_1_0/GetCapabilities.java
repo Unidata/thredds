@@ -360,6 +360,18 @@ public class GetCapabilities
     // OperationsMetadata (owcs) [0..1]
     Element opsMetadataElem = new Element( "OperationsMetadata", owcsNS );
 
+    // OperationsMetadata/Operation (owcs) [2..*]
+    // OperationsMetadata/Operation/.. (owcs) [2..*]
+
+    // OperationsMetadata/Parameter (owcs) [0..*]
+    // OperationsMetadata/Parameter/.. (owcs) [0..*]
+
+    // OperationsMetadata/Constraint (owcs) [0..*]
+    // OperationsMetadata/Constraint/.. (owcs) [0..*]
+
+    // OperationsMetadata/ExtendedCapabilities (owcs) [0..1]
+    // OperationsMetadata/ExtendedCapabilities/.. (owcs) [0..1]
+    //
     return opsMetadataElem;
   }
 
