@@ -1,6 +1,7 @@
 package thredds.server.wcs;
 
 import thredds.wcs.WcsDataset;
+import thredds.wcs.v1_1_0.Request;
 import thredds.servlet.*;
 
 import java.io.*;
@@ -98,7 +99,7 @@ public class WCSServlet extends AbstractServlet {
       versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "MissingParameterValue", "Request", "" );
       return;
     }
-    else if ( requestParam.equals( WcsRequest.Operation.GetCapabilities.toString()))
+    else if ( requestParam.equals( Request.Operation.GetCapabilities.toString()))
     {
       // Version negotiation using "acceptVersions" parameter.
       if ( acceptVersionsParam != null )
@@ -141,8 +142,8 @@ public class WCSServlet extends AbstractServlet {
     else
     {
       // Find requested version (no negotiation for "DescribeCoverage" and "GetCoverage" requests).
-      if ( ! requestParam.equals( WcsRequest.Operation.DescribeCoverage.toString()) &&
-           ! requestParam.equals( WcsRequest.Operation.GetCoverage.toString()) )
+      if ( ! requestParam.equals( Request.Operation.DescribeCoverage.toString()) &&
+           ! requestParam.equals( Request.Operation.GetCoverage.toString()) )
       {
         versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Request", "Invalid \"Operation\" parameter value <" + requestParam + ">." );
         return;

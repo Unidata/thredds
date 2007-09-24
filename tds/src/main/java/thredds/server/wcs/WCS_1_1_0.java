@@ -1,18 +1,13 @@
 package thredds.server.wcs;
 
 import thredds.servlet.ServletUtil;
-import thredds.servlet.Debug;
-import thredds.wcs.v1_1_0.XMLwriter;
-import thredds.wcs.v1_1_0.ExceptionReport;
-import thredds.wcs.v1_1_0.WcsException;
-import thredds.wcs.v1_1_0.GetCapabilities;
+import thredds.wcs.v1_1_0.*;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -50,13 +45,13 @@ public class WCS_1_1_0 implements VersionHandler
     try
     {
       URI serverURI = new URI( req.getRequestURL().toString());
-      WcsRequest wcsRequest = new WcsRequest( req, res);
-      if ( wcsRequest.getOperation().equals( WcsRequest.Operation.GetCapabilities))
+      Request request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(), req, res);
+      if ( request.getOperation().equals( Request.Operation.GetCapabilities))
       {
         GetCapabilities getCapabilities =
-                new GetCapabilities( serverURI, wcsRequest.getSections(),
-                                     wcsRequest.getServiceId(), wcsRequest.getServiceProvider(),
-                                     wcsRequest.getDataset() );
+                new GetCapabilities( serverURI, request.getSections(),
+                                     request.getServiceId(), request.getServiceProvider(),
+                                     request.getDataset() );
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
         ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
@@ -65,11 +60,11 @@ public class WCS_1_1_0 implements VersionHandler
         getCapabilities.writeCapabilitiesReport( pw );
         pw.flush();
       }
-      else if ( wcsRequest.getOperation().equals( WcsRequest.Operation.DescribeCoverage ) )
+      else if ( request.getOperation().equals( Request.Operation.DescribeCoverage ) )
       {
 
       }
-      else if ( wcsRequest.getOperation().equals( WcsRequest.Operation.GetCoverage ) )
+      else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
       {
 
       }

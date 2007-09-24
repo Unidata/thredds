@@ -39,6 +39,8 @@ public class GetCapabilities
   private URI serverURI;
 
   private List<Section> sections;
+
+  private String version = "1.1.0";
   private ServiceId serviceId;
   private ServiceProvider serviceProvider;
   private GridDataset dataset;
@@ -81,8 +83,8 @@ public class GetCapabilities
     Element capabilitiesElem = new Element( "Capabilities", wcsNS );
     capabilitiesElem.addNamespaceDeclaration( owcsNS );
     capabilitiesElem.addNamespaceDeclaration( owsNS );
-    capabilitiesElem.setAttribute( "version", "");           // ToDo
-    capabilitiesElem.setAttribute( "updateSequence", "");    // ToDo
+    capabilitiesElem.setAttribute( "version", this.version);           // ToDo
+    //capabilitiesElem.setAttribute( "updateSequence", "");    // ToDo
 
     boolean allSections = false;
     if ( sections == null || sections.size() == 0 ||
@@ -315,7 +317,6 @@ public class GetCapabilities
             contactInfoElem.addContent( addressElem);
           }
 
-
           if ( serviceProvider.contact.contactInfo.onlineResource != null )
           {
             // ServiceProvider/ServiceContact/ContactInfo/OnlineResource (ows) [0..1]
@@ -361,10 +362,54 @@ public class GetCapabilities
     Element opsMetadataElem = new Element( "OperationsMetadata", owcsNS );
 
     // OperationsMetadata/Operation (owcs) [2..*]
-    // OperationsMetadata/Operation/.. (owcs) [2..*]
+    // OperationsMetadata/Operation@name - e.g., "GetCapabilities"
+    Element getCapOpsElem = new Element ( "Operation", owcsNS);
+    getCapOpsElem.setAttribute( "name", Request.Operation.GetCapabilities.toString());
+
+    // OperationsMetadata/Operation/DCP (owcs) [1..*]
+    // OperationsMetadata/Operation/DCP/HTTP (owcs) [1]
+    // OperationsMetadata/Operation/DCP/HTTP/{GET|POST} (owcs) [1..*]
+    //                       -  @type=simple, @xlink:title, @xlink:href
+    //                       -  /Constraint/..(?) (owcs) [0..*]
+    // OperationsMetadata/Operation/Parameter (owcs) [1..*]
+    // OperationsMetadata/Operation/Constraint (owcs) [1..*]
+    // OperationsMetadata/Operation/Metadata (ows) [1..*]
+
+    getCapOpsElem.addContent(
+            new Element( "DCP", owcsNS).addContent(
+                    new Element( "HTTP", owcsNS).addContent(
+                            new Element( "GET", owcsNS ).setAttribute(
+                                    "xlink:href", serverURI.toString()))));
+    getCapOpsElem.addContent( genParamElement( "service", Collections.singletonList( "WCS") ));
+    getCapOpsElem.addContent( genParamElement( "version", Collections.singletonList( "1.1.0") ));
+    List<String> allowedValList = new ArrayList<String>();
+    allowedValList.add( "1.1.0");
+    allowedValList.add( "1.0.0");
+    getCapOpsElem.addContent( genParamElement( "AcceptVersions", allowedValList ));
+
+    List<String> sectList = new ArrayList<String>();
+    sectList.add( "ServiceIdentification" );
+    sectList.add( "ServiceProvider" );
+    sectList.add( "OperationsMetadata" );
+    sectList.add( "Content" );
+    sectList.add( "All" );
+    getCapOpsElem.addContent( genParamElement( "Sections", sectList ) );
+
+
+    opsMetadataElem.addContent( getCapOpsElem);
+
+    Element descCovOpsElem = new Element( "Operation", owcsNS );
+    descCovOpsElem.setAttribute( "name", Request.Operation.DescribeCoverage.toString() );
+    // ...
+    opsMetadataElem.addContent( descCovOpsElem);
+
+    Element getCovOpsElem = new Element( "Operation", owcsNS );
+    getCovOpsElem.setAttribute( "name", Request.Operation.GetCoverage.toString() );
+    // ...
+    opsMetadataElem.addContent( getCovOpsElem);
 
     // OperationsMetadata/Parameter (owcs) [0..*]
-    // OperationsMetadata/Parameter/.. (owcs) [0..*]
+    // OperationsMetadata/Parameter/..(?) (owcs) [0..*]
 
     // OperationsMetadata/Constraint (owcs) [0..*]
     // OperationsMetadata/Constraint/.. (owcs) [0..*]
@@ -373,6 +418,16 @@ public class GetCapabilities
     // OperationsMetadata/ExtendedCapabilities/.. (owcs) [0..1]
     //
     return opsMetadataElem;
+  }
+
+  private Element genParamElement( String name, List<String> allowedValues )
+  {
+    Element paramElem = new Element( "Parameter", owcsNS ).setAttribute( "name", name );
+    Element allowedValuesElem = new Element( "AllowedValues", owcsNS );
+    for ( String curVal : allowedValues )
+      allowedValuesElem.addContent( new Element( "Value", curVal ) );
+
+    return paramElem.addContent( allowedValuesElem);
   }
 
   public Element generateContents()
