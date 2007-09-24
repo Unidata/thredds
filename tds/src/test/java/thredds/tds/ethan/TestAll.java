@@ -171,9 +171,16 @@ public class TestAll extends TestCase
     boolean pass = true;
     StringBuffer log = new StringBuffer();
 
-    for ( int i = 0; i < catalogList.length; i++ )
+    try
     {
-      pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], log, verbose );
+      for ( int i = 0; i < catalogList.length; i++ )
+      {
+        pass &= TestAll.crawlCatalogOpenRandomDataset( targetTdsUrl + catalogList[i], log, verbose );
+      }
+    }
+    catch ( Exception e )
+    {
+      e.printStackTrace();
     }
 
     assertTrue( "Failed to open dataset(s):\n========================================\n" +
@@ -400,6 +407,11 @@ public class TestAll extends TestCase
       failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] I/O error opening dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
       return false;
     }
+    catch ( Exception e )
+    {
+      failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Exception opening dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
+      return false;
+    }
 
     if ( ncd == null )
     {
@@ -419,6 +431,12 @@ public class TestAll extends TestCase
       failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] I/O error opening typed dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
       return false;
     }
+    catch ( Exception e )
+    {
+      failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Exception opening typed dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
+      return false;
+    }
+
     if ( typedDs == null )
     {
       failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Failed to open typed dataset <" + curResolvedDsPath + ">." );
@@ -449,6 +467,11 @@ public class TestAll extends TestCase
         catch ( IOException e )
         {
           failureMsgs.put( ds.getName(), "I/O error while trying to open: " + e.getMessage() + (localLog.length() > 0 ? "\n" + localLog.toString() : "") );
+          return;
+        }
+        catch ( Exception e )
+        {
+          failureMsgs.put( ds.getName(), "Exception while trying to open: " + e.getMessage() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
           return;
         }
 
