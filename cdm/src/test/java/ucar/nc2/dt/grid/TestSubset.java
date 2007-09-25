@@ -318,15 +318,15 @@ public class TestSubset extends TestCase {
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
-    assert grid.getRank() == 2;
+    assert grid.getRank() == 3;
     int[] org_shape = grid.getShape();
 
     Array data_org = grid.readDataSlice(0, 0, -1, -1);
     assert data_org != null;
     assert data_org.getRank() == 2;
     int [] data_shape = data_org.getShape();
-    assert org_shape[0]  == data_shape[0];
-    assert org_shape[1]  == data_shape[1];
+    assert org_shape[1]  == data_shape[0];
+    assert org_shape[2]  == data_shape[1];
 
     System.out.println("original bbox= "+gcs.getBoundingBox());
 
@@ -339,7 +339,7 @@ public class TestSubset extends TestCase {
     GeoGrid grid_section = grid.subset(null, null, bbox, 1, 2, 3);
     GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
     assert null != gcs2;
-    assert grid_section.getRank() == 2;
+    assert grid_section.getRank() == 3;
 
     ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
     System.out.println(" resulting bbox= "+subset_prect);

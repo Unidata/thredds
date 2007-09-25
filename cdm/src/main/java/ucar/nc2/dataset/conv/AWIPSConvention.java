@@ -159,7 +159,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       return dimList;
     }
 
-    List<String> values = new ArrayList<String>();
+    List<String> values = null;
     String currentUnits = null;
     ArrayChar.StringIterator iter = levelVarData.getStringIterator();
     while (iter.hasNext()) {
