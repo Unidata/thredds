@@ -6,6 +6,7 @@ import java.util.*;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -409,7 +410,11 @@ public class TestAll extends TestCase
     }
     catch ( Exception e )
     {
-      failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Exception opening dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      PrintStream ps = new PrintStream( os );
+      e.printStackTrace( ps );
+      ps.close();
+      failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Exception opening dataset <" + curResolvedDsPath + ">: " + os.toString() );
       return false;
     }
 
@@ -433,7 +438,11 @@ public class TestAll extends TestCase
     }
     catch ( Exception e )
     {
-      failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Exception opening typed dataset <" + curResolvedDsPath + ">: " + e.getMessage() );
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      PrintStream ps = new PrintStream( os );
+      e.printStackTrace( ps );
+      ps.close();
+      failureMsgs.put( curResolvedDsPath, "[" + curSysTimeAsString + "] Exception opening typed dataset <" + curResolvedDsPath + ">: " + os.toString() );
       return false;
     }
 
@@ -471,7 +480,11 @@ public class TestAll extends TestCase
         }
         catch ( Exception e )
         {
-          failureMsgs.put( ds.getName(), "Exception while trying to open: " + e.getMessage() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          ByteArrayOutputStream os = new ByteArrayOutputStream();
+          PrintStream ps = new PrintStream( os );
+          e.printStackTrace( ps);
+          ps.close();
+          failureMsgs.put( ds.getName(), "Exception while trying to open: " + os.toString() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
           return;
         }
 
