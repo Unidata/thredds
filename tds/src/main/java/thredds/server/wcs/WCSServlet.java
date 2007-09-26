@@ -51,7 +51,7 @@ public class WCSServlet extends AbstractServlet {
     // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>();
     versionHandlers.add( new WCS_1_0_0());
-    //versionHandlers.add( new WCS_1_1_0());
+    versionHandlers.add( new WCS_1_1_0());
     for ( VersionHandler vh: versionHandlers)
     {
       supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();
@@ -117,6 +117,8 @@ public class WCSServlet extends AbstractServlet {
           {
             versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "AcceptVersions", "Invalid \"AcceptVersions\" parameter value <" + acceptVersionsParam + ">." );
           }
+          if ( targetHandler != null )
+            break;
         }
         if ( targetHandler == null )
         {

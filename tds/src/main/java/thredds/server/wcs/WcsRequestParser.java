@@ -89,11 +89,19 @@ public class WcsRequestParser
     // Handle "DescribeCoverage" request.
     else if ( operation.equals( Request.Operation.DescribeCoverage ) )
     {
+      // The parameter is "Identifier" but the KVP endocing of the parameter is "Identifiers".
+      // So, deal with both.
+      String identifiers = ServletUtil.getParameterIgnoreCase( req, "Identifiers" );
+      if ( identifiers == null )
+        identifiers = ServletUtil.getParameterIgnoreCase( req, "Identifier");
+
       request = new Request();
     }
     // Handle "GetCoverage" request.
     else if ( operation.equals( Request.Operation.GetCoverage ) )
     {
+      String identifier = ServletUtil.getParameterIgnoreCase( req, "Identifier" );
+
       request = new Request();
     }
     else

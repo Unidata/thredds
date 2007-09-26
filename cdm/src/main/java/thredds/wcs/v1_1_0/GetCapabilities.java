@@ -29,6 +29,7 @@ public class GetCapabilities
   protected static final Namespace wcsNS = Namespace.getNamespace( "http://www.opengis.net/wcs/1.1" );
   protected static final Namespace owcsNS = Namespace.getNamespace( "owcs", "http://www.opengis.net/wcs/1.1/ows" );
   protected static final Namespace owsNS = Namespace.getNamespace( "ows", "http://www.opengis.net/ows" );
+  protected static final Namespace xlinkNS = Namespace.getNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
   public enum Section
   {
@@ -83,6 +84,7 @@ public class GetCapabilities
     Element capabilitiesElem = new Element( "Capabilities", wcsNS );
     capabilitiesElem.addNamespaceDeclaration( owcsNS );
     capabilitiesElem.addNamespaceDeclaration( owsNS );
+    capabilitiesElem.addNamespaceDeclaration( xlinkNS );
     capabilitiesElem.setAttribute( "version", this.version);           // ToDo
     //capabilitiesElem.setAttribute( "updateSequence", "");    // ToDo
 
@@ -220,9 +222,9 @@ public class GetCapabilities
         Element provSiteElem = new Element( "ProviderSite", owsNS );
         provSiteElem.setAttribute( "type", "simple" );
         if ( serviceProvider.site.title != null)
-          provSiteElem.setAttribute( "xlink:title", serviceProvider.site.title );
+          provSiteElem.setAttribute( "title", serviceProvider.site.title, xlinkNS );
         if ( serviceProvider.site.link != null )
-          provSiteElem.setAttribute( "xlink:href", serviceProvider.site.link.toString() );
+          provSiteElem.setAttribute( "href", serviceProvider.site.link.toString(), xlinkNS );
         servProvElem.addContent( provSiteElem );
       }
 
@@ -323,9 +325,9 @@ public class GetCapabilities
             Element onlineResourceElem = new Element( "OnlineResource", owsNS);
             onlineResourceElem.setAttribute( "type", "simple");
             if ( serviceProvider.contact.contactInfo.onlineResource.title != null )
-              onlineResourceElem.setAttribute( "xlink:title", serviceProvider.contact.contactInfo.onlineResource.title );
+              onlineResourceElem.setAttribute( "title", serviceProvider.contact.contactInfo.onlineResource.title, xlinkNS );
             if ( serviceProvider.contact.contactInfo.onlineResource.link != null )
-              onlineResourceElem.setAttribute( "xlink:href", serviceProvider.contact.contactInfo.onlineResource.link.toString() );
+              onlineResourceElem.setAttribute( "href", serviceProvider.contact.contactInfo.onlineResource.link.toString(), xlinkNS );
 
             contactInfoElem.addContent( onlineResourceElem);
           }
@@ -362,51 +364,11 @@ public class GetCapabilities
     Element opsMetadataElem = new Element( "OperationsMetadata", owcsNS );
 
     // OperationsMetadata/Operation (owcs) [2..*]
-    // OperationsMetadata/Operation@name - e.g., "GetCapabilities"
-    Element getCapOpsElem = new Element ( "Operation", owcsNS);
-    getCapOpsElem.setAttribute( "name", Request.Operation.GetCapabilities.toString());
-
-    // OperationsMetadata/Operation/DCP (owcs) [1..*]
-    // OperationsMetadata/Operation/DCP/HTTP (owcs) [1]
-    // OperationsMetadata/Operation/DCP/HTTP/{GET|POST} (owcs) [1..*]
-    //                       -  @type=simple, @xlink:title, @xlink:href
-    //                       -  /Constraint/..(?) (owcs) [0..*]
-    // OperationsMetadata/Operation/Parameter (owcs) [1..*]
-    // OperationsMetadata/Operation/Constraint (owcs) [1..*]
-    // OperationsMetadata/Operation/Metadata (ows) [1..*]
-
-    getCapOpsElem.addContent(
-            new Element( "DCP", owcsNS).addContent(
-                    new Element( "HTTP", owcsNS).addContent(
-                            new Element( "GET", owcsNS ).setAttribute(
-                                    "xlink:href", serverURI.toString()))));
-    getCapOpsElem.addContent( genParamElement( "service", Collections.singletonList( "WCS") ));
-    getCapOpsElem.addContent( genParamElement( "version", Collections.singletonList( "1.1.0") ));
-    List<String> allowedValList = new ArrayList<String>();
-    allowedValList.add( "1.1.0");
-    allowedValList.add( "1.0.0");
-    getCapOpsElem.addContent( genParamElement( "AcceptVersions", allowedValList ));
-
-    List<String> sectList = new ArrayList<String>();
-    sectList.add( "ServiceIdentification" );
-    sectList.add( "ServiceProvider" );
-    sectList.add( "OperationsMetadata" );
-    sectList.add( "Content" );
-    sectList.add( "All" );
-    getCapOpsElem.addContent( genParamElement( "Sections", sectList ) );
-
-
-    opsMetadataElem.addContent( getCapOpsElem);
-
-    Element descCovOpsElem = new Element( "Operation", owcsNS );
-    descCovOpsElem.setAttribute( "name", Request.Operation.DescribeCoverage.toString() );
-    // ...
-    opsMetadataElem.addContent( descCovOpsElem);
-
-    Element getCovOpsElem = new Element( "Operation", owcsNS );
-    getCovOpsElem.setAttribute( "name", Request.Operation.GetCoverage.toString() );
-    // ...
-    opsMetadataElem.addContent( getCovOpsElem);
+    // OperationsMetadata/Operation@name - i.e., "GetCapabilities" or "DescribeCoverage" or "GetCoverage"
+    // OperationsMetadata/Operation/...
+    opsMetadataElem.addContent( genGetCapOpsElement());
+    opsMetadataElem.addContent( genDescCovOpsElement());
+    opsMetadataElem.addContent( genGetCovOpsElement());
 
     // OperationsMetadata/Parameter (owcs) [0..*]
     // OperationsMetadata/Parameter/..(?) (owcs) [0..*]
@@ -420,12 +382,119 @@ public class GetCapabilities
     return opsMetadataElem;
   }
 
+  private Element genGetCapOpsElement()
+  {
+    // OperationsMetadata/Operation (owcs) @name="GetCapabilities"
+    Element getCapOpsElem = new Element( "Operation", owcsNS );
+    getCapOpsElem.setAttribute( "name", Request.Operation.GetCapabilities.toString() );
+
+    // Add DCP/HTTP/GET element with xlink to this server.
+    // OperationsMetadata/Operation/DCP/HTTP/{GET|POST} (owcs) [1..*]
+    //                       -  @type=simple, @xlink:title, @xlink:href
+    getCapOpsElem.addContent(
+            new Element( "DCP", owcsNS ).addContent(
+                    new Element( "HTTP", owcsNS ).addContent(
+                            new Element( "GET", owcsNS ).setAttribute(
+                                    "href", serverURI.toString(), xlinkNS ) ) ) );
+
+    // Add the "Service", "AcceptVersions", and "Sections" parameters.
+    // OperationsMetadata/Operation/Parameter (owcs) [0..*]
+    getCapOpsElem.addContent( genParamElement( "service", Collections.singletonList( "WCS" ) ) );
+    List<String> allowedValList = new ArrayList<String>();
+    allowedValList.add( "1.1.0" );
+    allowedValList.add( "1.0.0" );
+    getCapOpsElem.addContent( genParamElement( "AcceptVersions", allowedValList ) );
+
+    List<String> sectList = new ArrayList<String>();
+    sectList.add( "ServiceIdentification" );
+    sectList.add( "ServiceProvider" );
+    sectList.add( "OperationsMetadata" );
+    sectList.add( "Content" );
+    sectList.add( "All" );
+    getCapOpsElem.addContent( genParamElement( "Sections", sectList ) );
+
+    // No constraints or metadata for this operation.
+    // OperationsMetadata/Operation/Constraint (owcs) [0..*]
+    // OperationsMetadata/Operation/Metadata (ows) [0..*]
+
+    return getCapOpsElem;
+  }
+
+  private Element genDescCovOpsElement()
+  {
+    // OperationsMetadata/Operation (owcs) @name="DescribeCoverage"
+    Element descCovOpsElem = new Element( "Operation", owcsNS );
+    descCovOpsElem.setAttribute( "name", Request.Operation.DescribeCoverage.toString() );
+
+    // Add DCP/HTTP/GET element with xlink to this server.
+    // OperationsMetadata/Operation/DCP/HTTP/{GET|POST} (owcs) [1..*]
+    //                       -  @type=simple, @xlink:title, @xlink:href
+    descCovOpsElem.addContent(
+            new Element( "DCP", owcsNS ).addContent(
+                    new Element( "HTTP", owcsNS ).addContent(
+                            new Element( "GET", owcsNS ).setAttribute(
+                                    "href", serverURI.toString(), xlinkNS ) ) ) );
+
+    // Add the "Service", "Version", "AcceptVersions", and "Sections" parameters.
+    // OperationsMetadata/Operation/Parameter (owcs) [0..*]
+    descCovOpsElem.addContent( genParamElement( "service", Collections.singletonList( "WCS" ) ) );
+    descCovOpsElem.addContent( genParamElement( "version", Collections.singletonList( "1.1.0" ) ) );
+
+    List<String> idList = new ArrayList<String>();
+    for ( GridDataset.Gridset gs : this.dataset.getGridsets() )
+    {
+      idList.add( gs.getGeoCoordSystem().getName());
+    }
+    descCovOpsElem.addContent( genParamElement( "Identifier", idList ) );
+
+    // No constraints or metadata for this operation.
+    // OperationsMetadata/Operation/Constraint (owcs) [0..*]
+    // OperationsMetadata/Operation/Metadata (ows) [0..*]
+
+    return descCovOpsElem;
+  }
+
+  private Element genGetCovOpsElement()
+  {
+    // OperationsMetadata/Operation (owcs) @name="GetCoverage"
+    Element getCovOpsElem = new Element( "Operation", owcsNS );
+    getCovOpsElem.setAttribute( "name", Request.Operation.GetCoverage.toString() );
+
+    // Add DCP/HTTP/GET element with xlink to this server.
+    // OperationsMetadata/Operation/DCP/HTTP/{GET|POST} (owcs) [1..*]
+    //                       -  @type=simple, @xlink:title, @xlink:href
+    getCovOpsElem.addContent(
+            new Element( "DCP", owcsNS ).addContent(
+                    new Element( "HTTP", owcsNS ).addContent(
+                            new Element( "GET", owcsNS ).setAttribute(
+                                    "href", serverURI.toString(), xlinkNS ) ) ) );
+
+    // Add the "Service", "Version", "AcceptVersions", and "Sections" parameters.
+    // OperationsMetadata/Operation/Parameter (owcs) [0..*]
+    getCovOpsElem.addContent( genParamElement( "service", Collections.singletonList( "WCS" ) ) );
+    getCovOpsElem.addContent( genParamElement( "version", Collections.singletonList( "1.1.0" ) ) );
+    getCovOpsElem.addContent( genParamElement( "store", Collections.singletonList( "False" ) ) );
+
+    List<String> idList = new ArrayList<String>();
+    for ( GridDataset.Gridset gs : this.dataset.getGridsets() )
+    {
+      idList.add( gs.getGeoCoordSystem().getName() );
+    }
+    getCovOpsElem.addContent( genParamElement( "Identifier", idList ) );
+
+    // No constraints or metadata for this operation.
+    // OperationsMetadata/Operation/Constraint (owcs) [0..*]
+    // OperationsMetadata/Operation/Metadata (ows) [0..*]
+
+    return getCovOpsElem;
+  }
+
   private Element genParamElement( String name, List<String> allowedValues )
   {
     Element paramElem = new Element( "Parameter", owcsNS ).setAttribute( "name", name );
     Element allowedValuesElem = new Element( "AllowedValues", owcsNS );
     for ( String curVal : allowedValues )
-      allowedValuesElem.addContent( new Element( "Value", curVal ) );
+      allowedValuesElem.addContent( new Element( "Value", owcsNS).addContent( curVal ) );
 
     return paramElem.addContent( allowedValuesElem);
   }
@@ -437,10 +506,13 @@ public class GetCapabilities
 
     for ( GridDataset.Gridset gs : this.dataset.getGridsets())
     {
-      Element curCovSum = new Element( "CoverageSummary", wcsNS);
       // Contents/CoverageSummary (wcs) [0..1]
       //      [[NOTE(1): use unless info can be found in Contents/OtherSources.]]
+      Element curCovSum = new Element( "CoverageSummary", wcsNS);
+
       // Contents/CoverageSummary/Title (ows) [0..1]
+      curCovSum.addContent( new Element( "Title", owsNS).addContent( gs.getGeoCoordSystem().getName()));
+
       // Contents/CoverageSummary/Abstract (ows) [0..1]
       // Contents/CoverageSummary/Keywords (ows) [0..*]
       // Contents/CoverageSummary/Metadata/... (ows) [0..*]
@@ -448,7 +520,9 @@ public class GetCapabilities
       //     [[NOTE: We are going to support xlink simple type only but probably the TDS won't use this element.]]
       // Contents/CoverageSummary/WGS84BoundingBox/... (ows) [0..*]
       // Contents/CoverageSummary/SupportedCRS (ows) [0..*] - URI
-      // Contents/CoverageSummary/SupportedFormatS (ows) [0..*] - MIME type
+      // Contents/CoverageSummary/SupportedFormats (ows) [0..*] - MIME type
+      curCovSum.addContent( new Element( "SupportedFormats", owsNS).addContent("application/x-netcdf"));
+
       // ----
       //      [[NOTE: This coverage must contain lowerl-level coverages and/or an identifier.]]
       // Contents/CoverageSummary/CoverageSummary/... (wcs) [1..*]
@@ -456,6 +530,7 @@ public class GetCapabilities
       // Contents/CoverageSummary/Identifier (wcs) [0..1]
       //      [[NOTE: Indicates that this coverage can be accessed directly by GetCoverage and DescribeCoverage.]]
       //      [[NOTE: this ID must be unique to this WCS server.]]
+      curCovSum.addContent( new Element( "Identifier", wcsNS).addContent( gs.getGeoCoordSystem().getName()));
       // ----
 
       contentElem.addContent( curCovSum);
