@@ -56,6 +56,12 @@ public class InMemoryRandomAccessFile extends RandomAccessFile {
     return dataEnd;
   }
 
+  protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
+    // copy out of buffer
+    System.arraycopy(buffer, (int) pos, b, offset, len);
+    return len;
+  }
+
   /**
    * Read up to <code>nbytes</code> bytes, at a specified offset, send to a WritableByteChannel.
    * This will block until all bytes are read.

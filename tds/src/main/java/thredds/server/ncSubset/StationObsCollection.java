@@ -188,8 +188,10 @@ public class StationObsCollection {
       // make this one the operational one
       datasetList = newList;
       int n = datasetList.size();
-      start = datasetList.get(0).time_start;
-      end = datasetList.get(n - 1).time_end;
+      if (n > 0) {
+        start = datasetList.get(0).time_start;
+        end = datasetList.get(n - 1).time_end;
+      }
 
     } finally {
       lock.writeLock().unlock();

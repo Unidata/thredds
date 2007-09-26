@@ -84,7 +84,7 @@ public class CollectionManager {
   public List<MyFile> after( Date date) {
     ArrayList<MyFile> result = new ArrayList<MyFile>();
     for (MyFile f : scanList) {
-      if (f.date.after(date))
+      if ((date == null) || f.date.after(date))
         result.add(f);
     }
     return result;
