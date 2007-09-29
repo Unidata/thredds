@@ -28,7 +28,7 @@ public class TestN4 extends TestCase {
     //String filename = TestAll.upcShareTestDataDir + "netcdf4/nc4_pres_temp_4D.nc";
     String filename = "C:/data/netcdf4/c0_4.nc";
     NetcdfFile ncfile = TestNC2.open( filename);
-    System.out.println( "**** testReadNetcdf4 done "+ncfile);
+    System.out.println( "\n**** testReadNetcdf4 done\n "+ncfile);
     ncfile.close();
   }
 

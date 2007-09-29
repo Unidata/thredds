@@ -31,13 +31,23 @@ import java.text.*;
 import java.io.IOException;
 import java.nio.*;
 
+/**
+ * Read all of the metadata of an HD5 file.
+ *
+ * @author caron
+ */
+
+/* Implementation notes
+ * any field called address is actually reletive to the base address.
+ * any field called filePos or dataPos is a byte offset withing the file.
+ */
 class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // debugging
   static private boolean debugEnum = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
-  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false;
+  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = true, debugFractalHeap= true;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSymbolTable = false;
   static private boolean warnings = true, debugReference = false, debugCreationOrder = false;
   static java.io.PrintStream debugOut = System.out;
@@ -62,18 +72,18 @@ class H5header {
   static private boolean transformReference = true;
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    long pos = 0;
+    long filePos = 0;
     long size = raf.length();
     byte[] b = new byte[8];
 
     // search forward for the header
-    while ((pos < size) && (pos < maxHeaderPos)) {
-      raf.seek(pos);
+    while ((filePos < size) && (filePos < maxHeaderPos)) {
+      raf.seek(filePos);
       raf.read(b);
       String magic = new String(b);
       if (magic.equals(shead))
         return true;
-      pos = (pos == 0) ? 512 : 2 * pos;
+      filePos = (filePos == 0) ? 512 : 2 * filePos;
     }
 
     return false;
@@ -204,7 +214,7 @@ class H5header {
     versionSHMF = raf.readByte();
     if (debugDetail)
       debugOut.println(" versionSB= " + versionSB + " versionFSS= " + versionFSS + " versionGroup= " + versionGroup +
-              " versionSHMF= " + versionSHMF);
+          " versionSHMF= " + versionSHMF);
 
     sizeOffsets = raf.readByte();
     isOffsetLong = (sizeOffsets == 8);
@@ -264,12 +274,12 @@ class H5header {
     long rootObjectAddress = rootEntry.getObjectAddress();
     rootObject = new DataObject(null, "", rootObjectAddress);
     rootObject.read();
+
+    // LOOK what is this ??
     if (rootObject.group == null) {
       // if the root object doesnt have a group message, check if the rootEntry is cache type 2
-      // LOOK this is crappy - refactor
       if (rootEntry.btreeAddress != 0) {
-        rootObject.group = new Group(null, "", rootEntry.btreeAddress, rootEntry.nameHeapAddress);
-        rootObject.group.read();
+        rootObject.group = new GroupOld(null, "", rootEntry.btreeAddress, rootEntry.nameHeapAddress);
       } else {
         throw new IllegalStateException("root object not a group");
       }
@@ -321,8 +331,7 @@ class H5header {
     Variable owner; // debugging
     DataObject ndo; // debugging
 
-    //long address = -1;  // data object address, aka id
-    long dataPos; // LOOK for regular variables, needs to be absolute, with baseAddress added if needed
+    long dataPos; // for regular variables, needs to be absolute, with baseAddress added if needed
     // for member variables, is the offset from start of structure
 
     int hdfType;
@@ -331,8 +340,8 @@ class H5header {
     boolean signed = true;
     int byteSize, vpad;
     int[] storageSize;  // for type 1 (continuous) : (varDims, elemSize)
-                        // for type 2 (chunked)    : (chunkDim, elemSize)
-                        // null for attributs
+    // for type 2 (chunked)    : (chunkDim, elemSize)
+    // null for attributs
 
     // chunked stuff
     boolean isChunked = false;
@@ -624,10 +633,10 @@ class H5header {
     private long heapAddress;
     private int index;
 
-    RegionReference(long fileOffset) throws IOException {
+    RegionReference(long filePos) throws IOException {
       // header information is in le byte order
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(fileOffset);
+      raf.seek(filePos);
       heapAddress = readOffset();
       index = raf.readInt();
 
@@ -675,12 +684,7 @@ There is _no_ datatype information stored for these sort of selections currently
         raf.skipBytes(padding(name.length() + 1, 8));
         offset = raf.readInt();
       } else {
-        int size = 0;
-        while (byteSize != 0) {
-          size++;
-          byteSize >>>= 8;  // right shift with zero extension
-        }
-        offset = (int) readVariableSize(size);
+        offset = (int) readVariableSizeMax(byteSize);
       }
 
       if (debug1) debugOut.println("   Member name=" + name + " offset= " + offset);
@@ -724,7 +728,7 @@ There is _no_ datatype information stored for these sort of selections currently
     //long headerSize;
 
     // its a
-    Group group;
+    private Group group;
 
     // or link
     String linkName = null;
@@ -830,6 +834,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       // look for group or a datatype/dataspace/layout message
       MessageGroup groupMessage = null;
+      MessageGroupNew groupNewMessage = null;
 
       for (Message mess : messages) {
         if (debugTracker) memTracker.addByLen("Message (" + displayName + ") " + mess.mtype, mess.start, mess.size + 8);
@@ -842,6 +847,8 @@ There is _no_ datatype information stored for these sort of selections currently
           msl = (MessageLayout) mess.messData;
         else if (mess.mtype == MessageType.Group)
           groupMessage = (MessageGroup) mess.messData;
+        else if (mess.mtype == MessageType.GroupNew)
+          groupNewMessage = (MessageGroupNew) mess.messData;
         else if (mess.mtype == MessageType.FilterPipeline)
           mfp = (MessageFilter) mess.messData;
       }
@@ -860,8 +867,12 @@ There is _no_ datatype information stored for these sort of selections currently
         }
 
         // read the group, and its contained data objects.
-        group = new Group(parent, name, groupMessage.btreeAddress, groupMessage.nameHeapAddress); // LOOK munge later
-        group.read();
+        group = new GroupOld(parent, name, groupMessage.btreeAddress, groupMessage.nameHeapAddress); // LOOK munge later
+
+      }  // if has a "groupNewmessage", then its a groupNew
+      else if (groupNewMessage != null) {
+        // read the group, and its contained data objects.
+        group = new GroupNew(parent, name, groupNewMessage);
       }
 
       // if it has a Datatype and a StorageLayout, then its a Variable
@@ -910,9 +921,9 @@ There is _no_ datatype information stored for these sort of selections currently
       return count;
     }
 
-    private int readMessagesVersion2(long pos, long maxBytes, boolean creationOrderPresent) throws IOException {
+    private int readMessagesVersion2(long filePos, long maxBytes, boolean creationOrderPresent) throws IOException {
       if (debugContinueMessage)
-        debugOut.println(" readMessages start at =" + pos + " maxBytes= " + maxBytes);
+        debugOut.println(" readMessages start at =" + filePos + " maxBytes= " + maxBytes);
 
       int count = 0;
       int bytesRead = 0;
@@ -923,8 +934,8 @@ There is _no_ datatype information stored for these sort of selections currently
 
         Message mess = new Message();
         //messages.add( mess);
-        int n = mess.read(pos, 2, creationOrderPresent);
-        pos += n;
+        int n = mess.read(filePos, 2, creationOrderPresent);
+        filePos += n;
         bytesRead += n;
         count++;
         if (debugContinueMessage) debugOut.println("   mess size=" + n + " bytesRead=" + bytesRead);
@@ -933,14 +944,14 @@ There is _no_ datatype information stored for these sort of selections currently
         if (mess.mtype == MessageType.ObjectHeaderContinuation) {
           MessageContinue c = (MessageContinue) mess.messData;
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation--- ");
-          long posContinuationBlock = getFileOffset(c.offset);
-          raf.seek(posContinuationBlock);
+          long continuationBlockFilePos = getFileOffset(c.offset);
+          raf.seek(continuationBlockFilePos);
           String sig = readStringFixedLength(4);
           if (!sig.equals("OCHK")) {
             throw new IllegalStateException(" ObjectHeaderContinuation Missing signature");
           }
 
-          count += readMessagesVersion2(posContinuationBlock + 4, (int) c.length - 8, creationOrderPresent);
+          count += readMessagesVersion2(continuationBlockFilePos + 4, (int) c.length - 8, creationOrderPresent);
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation return --- ");
         } else if (mess.mtype != MessageType.NIL) {
           messages.add(mess);
@@ -1059,9 +1070,9 @@ There is _no_ datatype information stored for these sort of selections currently
 
     short creationOrder = -1;
 
-    int read(long pos, int version, boolean creationOrderPresent) throws IOException {
-      this.start = pos;
-      raf.seek(pos);
+    int read(long filePos, int version, boolean creationOrderPresent) throws IOException {
+      this.start = filePos;
+      raf.seek(filePos);
       if (debugPos) debugOut.println("  --> Message Header starts at =" + raf.getFilePointer());
 
       if (version == 1) {
@@ -1230,7 +1241,7 @@ There is _no_ datatype information stored for these sort of selections currently
       }
 
       if (debug1) debugOut.println("   SimpleDataspace version= " + version + " flags=" +
-              Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
+          Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
 
       dimLength = new int[ndims];
       for (int i = 0; i < ndims; i++)
@@ -1437,8 +1448,8 @@ There is _no_ datatype information stored for these sort of selections currently
       byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       if (debug1) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
-              flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
-              + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
+          flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
+          + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
 
       if (type == 0) {  // fixed point
         short bitOffset = raf.readShort();
@@ -1457,8 +1468,8 @@ There is _no_ datatype information stored for these sort of selections currently
         int expBias = raf.readInt();
         if (debug1)
           debugOut.println("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision +
-                  " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
-                  " manSize= " + manSize + " expBias= " + expBias);
+              " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
+              " manSize= " + manSize + " expBias= " + expBias);
 
       } else if (type == 2) {  // time
         short bitPrecision = raf.readShort();
@@ -1672,7 +1683,7 @@ There is _no_ datatype information stored for these sort of selections currently
       } else {
         type = raf.readByte();
 
-        if (type  == 0 ) {
+        if (type == 0) {
           int dataSize = raf.readShort();
           dataAddress = raf.getFilePointer();
 
@@ -1700,7 +1711,7 @@ There is _no_ datatype information stored for these sort of selections currently
     void read() throws IOException {
       byte version = raf.readByte();
       byte nfilters = raf.readByte();
-      if (version == 1) raf.skipBytes(6); 
+      if (version == 1) raf.skipBytes(6);
 
       filters = new Filter[nfilters];
       for (int i = 0; i < nfilters; i++)
@@ -1731,13 +1742,13 @@ There is _no_ datatype information stored for these sort of selections currently
 
     Filter(byte version) throws IOException {
       this.id = raf.readShort();
-      short nameSize = raf.readShort();
+      short nameSize = ((version > 1) && (id < 256)) ? 0 : raf.readShort(); // if the filter id < 256 then this field is not stored
       this.flags = raf.readShort();
       nValues = raf.readShort();
       if (version == 1)
-        this.name = (nameSize > 0) ? readString8(raf) : "N/A"; // null terminated, pad to 8 bytes
+        this.name = (nameSize > 0) ? readString8(raf) : "StandardFilter " + id; // null terminated, pad to 8 bytes
       else
-        this.name = (nameSize > 0) ? readStringFixedLength(nameSize) : "N/A"; // non-null terminated, pad to 8 bytes
+        this.name = (nameSize > 0) ? readStringFixedLength(nameSize) : "StandardFilter " + id; // non-null terminated
 
       data = new int[nValues];
       for (int i = 0; i < nValues; i++)
@@ -1794,28 +1805,28 @@ There is _no_ datatype information stored for these sort of selections currently
       }
 
       // read the name
-      long pos = raf.getFilePointer();
+      long filePos = raf.getFilePointer();
       name = readString(raf); // read at current pos
       if (version == 1) nameSize += padding(nameSize, 8);
-      raf.seek(pos + nameSize); // make it more robust for errors
+      raf.seek(filePos + nameSize); // make it more robust for errors
 
       if (debug1)
         debugOut.println("   MessageAttribute version= " + version + " flags = " + Integer.toBinaryString(flags) +
-                " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
+            " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
 
       // read the datatype
-      pos = raf.getFilePointer();
-      if (debugPos) debugOut.println("   *MessageAttribute before mdt pos= " + raf.getFilePointer());
+      filePos = raf.getFilePointer();
+      if (debugPos) debugOut.println("   *MessageAttribute before mdt pos= " + filePos);
       mdt.read();
       if (version == 1) typeSize += padding(typeSize, 8);
-      raf.seek(pos + typeSize); // make it more robust for errors
+      raf.seek(filePos + typeSize); // make it more robust for errors
 
       // read the dataspace
-      pos = raf.getFilePointer();
-      if (debugPos) debugOut.println("   *MessageAttribute before mds = " + raf.getFilePointer());
+      filePos = raf.getFilePointer();
+      if (debugPos) debugOut.println("   *MessageAttribute before mds = " + filePos);
       mds.read();
       if (version == 1) spaceSize += padding(spaceSize, 8);
-      raf.seek(pos + spaceSize); // make it more robust for errors
+      raf.seek(filePos + spaceSize); // make it more robust for errors
 
       // heres where the data starts
       dataPos = raf.getFilePointer();
@@ -1839,7 +1850,7 @@ There is _no_ datatype information stored for these sort of selections currently
         referencedObject.read();
         mdt = referencedObject.mdt;
         mds = referencedObject.msd;
-        dataPos = referencedObject.msl.dataAddress;
+        dataPos = referencedObject.msl.dataAddress; // LOOK - should this be converted to filePos?
       }
     }
   }
@@ -1919,33 +1930,91 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Groups
+
+  private abstract class Group {
+    Group parent;
+    String name, dname;
+    List<DataObject> nestedObjects = new ArrayList<DataObject>(); // nested data objects
+
+    public Group(Group parent, String name) {
+      this.parent = parent;
+      this.name = name;
+      this.dname = (name.length() == 0) ? "root" : name;
+    }
+
+    String getName() {
+      return (parent == null) ? name : parent.getName() + "/" + name;
+    }
+
+    // is this a child of that ?
+    boolean isChildOf(Group that) {
+      if (parent == that) return true;
+      if (parent == null) return false;
+      return parent.isChildOf(that);
+    }
+  }
+
+  private class GroupNew extends Group {
+    private FractalHeap fractalHeap;
+    private BTree2 btree;
+    private MessageGroupNew groupNewMessage;
+
+    public GroupNew(Group parent, String name, MessageGroupNew groupNewMessage) throws IOException {
+      super(parent, name);
+      this.groupNewMessage = groupNewMessage;
+
+      if (debug1) debugOut.println("\n--> GroupNew read <" + dname + ">");
+      this.fractalHeap = new FractalHeap(this, groupNewMessage.fractalHeapAddress);
+      this.btree = new BTree2(dname, groupNewMessage.v2BtreeAddress);
+
+      for (BTree2.Entry2 e : this.btree.entryList) {
+        BTree2.Record5 r5 = (BTree2.Record5) e.record;
+        this.fractalHeap.get( r5.id);
+      }
+
+      /* now read all the entries in the btree
+      for (SymbolTableEntry s : btree.getSymbolTableEntries()) {
+        String sname = nameHeap.getString((int) s.getNameOffset());
+        if (debugSymbolTable) debugOut.println("\n   Symbol name=" + sname);
+
+        DataObject o;
+        if (s.cacheType == 2) {
+          String linkName = nameHeap.getString(s.linkOffset);
+          if (debugSymbolTable) debugOut.println("   Symbolic link name=" + linkName);
+          o = new DataObject(this, sname, linkName);
+
+        } else {
+          o = new DataObject(this, sname, s.getObjectAddress());
+          o.read();
+        }
+        nestedObjects.add(o);
+        hashDataObjects.put(o.getName(), o); // to look up symbolic links
+      } */
+      if (debug1) debugOut.println("<-- end Group read <" + dname + ">");
+    }
+
+
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////
   // Group structures: Group, Btree, LocalHeap, SymbolTableEntry
   // these are all read before any data
 
-  private class Group {
-    private Group parent;
-    private String name, dname;
+  private class GroupOld extends Group {
     private LocalHeap nameHeap;
     private GroupBTree btree;
     private long btreeAddress, nameHeapAddress;
 
-    private List<DataObject> nestedObjects = new ArrayList<DataObject>(); // nested data objects
-
-    public Group(Group parent, String name, long btreeAddress, long nameHeapAddress) {
-      this.parent = parent;
-      this.name = name;
-      this.dname = (name.length() == 0) ? "root" : name;
+    public GroupOld(Group parent, String name, long btreeAddress, long nameHeapAddress) throws IOException {
+      super(parent, name);
       this.btreeAddress = btreeAddress;
       this.nameHeapAddress = nameHeapAddress;
-      //isNetCDF4 = name.equals("_netCDF");
 
       // track by address for hard links
       hashGroups.put(btreeAddress, this);
-      //debugOut.println("HEY group address added = "+btreeAddress);
-    }
 
-    void read() throws IOException {
-      if (debug1) debugOut.println("\n--> Group read <" + dname + ">");
+      if (debug1) debugOut.println("\n--> GroupOld read <" + dname + ">");
       this.nameHeap = new LocalHeap(this, nameHeapAddress);
       this.btree = new GroupBTree(dname, btreeAddress);
 
@@ -1970,18 +2039,7 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debug1) debugOut.println("<-- end Group read <" + dname + ">");
     }
 
-    private String getName() {
-      return (parent == null) ? name : parent.getName() + "/" + name;
-    }
-
-    // is this a child of that ?
-    private boolean isChildOf(Group that) {
-      if (parent == that) return true;
-      if (parent == null) return false;
-      return parent.isChildOf(that);
-    }
-
-  } // Group
+  } // GroupOld
 
   // Level 1A (Section III.A p 9)
   // this just reads in all the entries into a list
@@ -2043,7 +2101,7 @@ There is _no_ datatype information stored for these sort of selections currently
       long entryPos = raf.getFilePointer();
       if (debugGroupBtree)
         debugOut.println("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
-                " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
+            " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
 
       // read all entries in this Btree "Node"
       List<Entry> myEntries = new ArrayList<Entry>();
@@ -2117,9 +2175,349 @@ There is _no_ datatype information stored for these sort of selections currently
 
   } // GroupBTree
 
-  //DataBTree getDataBTreeAt(String owner, long pos, int ndim) throws IOException {
-  //  return new DataBTree(owner, pos, ndim);
-  //}
+  // Level 1A2
+  private class BTree2 {
+    String owner;
+    byte type;
+    int nodeSize;
+    short recordSize, treeDepth, numRecordsRootNode;
+    long rootNodeAddress;
+
+    List<Entry2> entryList = new ArrayList<Entry2>();
+
+    BTree2(String owner, long address) throws IOException {
+      this.owner = owner;
+
+      raf.seek(getFileOffset(address));
+
+      // header
+      byte[] heapname = new byte[4];
+      raf.read(heapname);
+      String nameS = new String(heapname);
+      if (!nameS.equals("BTHD"))
+        throw new IllegalStateException();
+
+      byte version = raf.readByte();
+      type = raf.readByte();
+      nodeSize = raf.readInt();
+      recordSize = raf.readShort();
+      treeDepth = raf.readShort();
+      byte split = raf.readByte();
+      byte merge = raf.readByte();
+      rootNodeAddress = readOffset();
+      numRecordsRootNode = raf.readShort();
+      long numRecords = readLength();
+      int checksum = raf.readInt();
+
+      if (debugBtree2) {
+        debugOut.println("BTree2 version=" + version + " type=" + type + " treeDepth=" + treeDepth);
+        debugOut.println(" nodeSize=" + nodeSize + " recordSize=" + recordSize + " numRecordsRootNode="
+            + numRecordsRootNode + " numRecords=" + numRecords + " rootNodeAddress=" + rootNodeAddress);
+      }
+
+      readAllEntries();
+    }
+
+    protected void readAllEntries() throws IOException {
+      InternalNode node = new InternalNode(rootNodeAddress, numRecordsRootNode, recordSize, treeDepth);
+      node.recurse();
+    }
+
+    /* recursively read all entries, place them in order in list
+    protected void readAllEntries(long address, short nrecs, short recSize, short depth) throws IOException {
+      InternalNode node = new InternalNode(address, nrecs, recSize, depth);
+
+      /* raf.seek(getFileOffset(address));
+      if (debugGroupBtree) debugOut.println("\n--> GroupBTree read tree at position=" + raf.getFilePointer());
+
+      byte[] name = new byte[4];
+      raf.read(name);
+      String nameS = new String(name);
+      if (!nameS.equals("TREE"))
+        throw new IllegalStateException("BtreeGroup doesnt start with TREE");
+
+      int type = raf.readByte();
+      int level = raf.readByte();
+      int nentries = raf.readShort();
+      if (debugGroupBtree)
+        debugOut.println("    type=" + type + " level=" + level + " nentries=" + nentries);
+      if (type != wantType)
+        throw new IllegalStateException("BtreeGroup must be type " + wantType);
+
+      long size = 8 + 2 * sizeOffsets + nentries * (sizeOffsets + sizeLengths);
+      if (debugTracker) memTracker.addByLen("Group BTree (" + owner + ")", address, size);
+
+      long leftAddress = readOffset();
+      long rightAddress = readOffset();
+      long entryPos = raf.getFilePointer();
+      if (debugGroupBtree)
+        debugOut.println("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
+            " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
+
+      // read all entries in this Btree "Node"
+      List<Entry> myEntries = new ArrayList<Entry>();
+      for (int i = 0; i < nentries; i++) {
+        myEntries.add(new Entry());
+      }
+
+      if (level == 0)
+        entries.addAll(myEntries);
+      else {
+        for (Entry entry : myEntries) {
+          if (debugDataBtree) debugOut.println("  nonzero node entry at =" + entry.address);
+          readAllEntries(entry.address);
+        }
+      }
+
+    }  */
+
+    // these are part of the level 1A data structure, type = 0
+    class Entry2 {
+      long childAddress, nrecords, totNrecords;
+      Object record;
+    }
+
+    class InternalNode {
+      Entry2[] entries;
+      int depth;
+
+      InternalNode(long address, short nentries, short recordSize, int depth) throws IOException {
+        this.depth = depth;
+        raf.seek(getFileOffset(address));
+
+        if (debugPos) debugOut.println("--Btree2 InternalNode position=" + raf.getFilePointer());
+
+        // header
+        byte[] sig = new byte[4];
+        raf.read(sig);
+        String nameS = new String(sig);
+        if (!nameS.equals("BTIN"))
+          throw new IllegalStateException();
+
+        byte version = raf.readByte();
+        byte nodeType = raf.readByte();
+        if (nodeType != type)
+          throw new IllegalStateException();
+
+        if (debugBtree2)
+          debugOut.println("InternalNode version=" + version + " type=" + nodeType + " nentries=" + nentries);
+
+        entries = new Entry2[nentries];
+        for (int i = 0; i < nentries; i++) {
+          entries[i] = new Entry2();
+          entries[i].record = readRecord(type);
+        }
+
+        for (int i = 0; i < nentries; i++) {
+          Entry2 e = entries[i];
+          e.childAddress = readOffset();
+          e.nrecords = readVariableSizeMax(numRecordsRootNode);
+          if (depth > 1)
+          e.totNrecords = readVariableSizeMax(numRecordsRootNode);
+
+          if (debugBtree2)
+            debugOut.println("  entry childAddress=" + e.childAddress + " nrecords=" + e.nrecords + " totNrecords=" + e.totNrecords);
+         }
+
+        int checksum = raf.readInt();
+      }
+
+      void recurse() throws IOException {
+        for (int i=0; i<entries.length; i++) {
+          Entry2 e = entries[i];
+          if (depth > 1) {
+            InternalNode node = new InternalNode(e.childAddress, (short) e.nrecords, recordSize, depth-1);
+            node.recurse();
+          } else {
+            LeafNode leaf = new LeafNode(e.childAddress, (short) e.nrecords);
+            leaf.addEntries( entryList);
+          }
+
+        }
+      }
+    }
+
+    class LeafNode {
+      Entry2[] entries;
+
+      LeafNode(long address, short nentries) throws IOException {
+        raf.seek(getFileOffset(address));
+
+        if (debugPos) debugOut.println("--Btree2 InternalNode position=" + raf.getFilePointer());
+
+        // header
+        byte[] sig = new byte[4];
+        raf.read(sig);
+        String nameS = new String(sig);
+        if (!nameS.equals("BTLF"))
+          throw new IllegalStateException();
+
+        byte version = raf.readByte();
+        byte nodeType = raf.readByte();
+        if (nodeType != type)
+          throw new IllegalStateException();
+
+        entries = new Entry2[nentries];
+        for (int i = 0; i < nentries; i++) {
+          entries[i] = new Entry2();
+          entries[i].record = readRecord(type);
+        }
+
+        int checksum = raf.readInt();
+      }
+
+      void addEntries(List<Entry2> list) {
+        for (int i = 0; i < entries.length; i++) {
+          list.add(entries[i]);
+        }
+
+      }
+    }
+
+    Object readRecord(int type) throws IOException {
+      switch (type) {
+        case 1:
+          return new Record1();
+        case 2:
+          return new Record2();
+        case 3:
+          return new Record3();
+        case 4:
+          return new Record4();
+        case 5:
+          return new Record5();
+        case 6:
+          return new Record6();
+        case 7: {
+          return new Record70();  // LOOK wrong
+        }
+        case 8:
+          return new Record8();
+        case 9:
+          return new Record9();
+        default:
+          throw new IllegalStateException();
+      }
+    }
+
+    class Record1 {
+      long hugeObjectAddress, hugeObjectLength, hugeObjectID;
+
+      Record1() throws IOException {
+        hugeObjectAddress = readOffset();
+        hugeObjectLength = readLength();
+        hugeObjectID = readLength();
+      }
+    }
+
+    class Record2 {
+      long hugeObjectAddress, hugeObjectLength, hugeObjectID, hugeObjectSize;
+      int filterMask;
+
+      Record2() throws IOException {
+        hugeObjectAddress = readOffset();
+        hugeObjectLength = readLength();
+        filterMask = raf.readInt();
+        hugeObjectSize = readLength();
+        hugeObjectID = readLength();
+      }
+    }
+
+    class Record3 {
+      long hugeObjectAddress, hugeObjectLength;
+
+      Record3() throws IOException {
+        hugeObjectAddress = readOffset();
+        hugeObjectLength = readLength();
+      }
+    }
+
+    class Record4 {
+      long hugeObjectAddress, hugeObjectLength, hugeObjectID, hugeObjectSize;
+      int filterMask;
+
+      Record4() throws IOException {
+        hugeObjectAddress = readOffset();
+        hugeObjectLength = readLength();
+        filterMask = raf.readInt();
+        hugeObjectSize = readLength();
+      }
+    }
+
+    class Record5 {
+      int nameHash;
+      byte[] id = new byte[7];
+
+      Record5() throws IOException {
+        nameHash = raf.readInt();
+        raf.read(id);
+        if (debugBtree2)
+          debugOut.println("  record5 nameHash=" + nameHash + " id=" + id);
+      }
+    }
+
+    class Record6 {
+      long creationOrder;
+      byte[] id = new byte[7];
+
+      Record6() throws IOException {
+        creationOrder = raf.readLong();
+        raf.read(id);
+      }
+    }
+
+    class Record70 {
+      byte location;
+      int refCount;
+      byte[] id = new byte[8];
+
+      Record70() throws IOException {
+        location = raf.readByte();
+        refCount = raf.readInt();
+        raf.read(id);
+      }
+    }
+
+    class Record71 {
+      byte location, messtype;
+      short index;
+      long address;
+
+      Record71() throws IOException {
+        location = raf.readByte();
+        raf.readByte(); // skip a byte
+        messtype = raf.readByte();
+        index = raf.readShort();
+        address = readOffset();
+      }
+    }
+
+    class Record8 {
+      byte flags;
+      int creationOrder, nameHash;
+      byte[] id = new byte[8];
+
+      Record8() throws IOException {
+        raf.read(id);
+        flags = raf.readByte();
+        creationOrder = raf.readInt();
+        nameHash = raf.readInt();
+      }
+    }
+
+    class Record9 {
+      byte flags;
+      int creationOrder;
+      byte[] id = new byte[8];
+
+      Record9() throws IOException {
+        raf.read(id);
+        flags = raf.readByte();
+        creationOrder = raf.readInt();
+      }
+    }
+
+  } // BTree2
 
   /**
    * This holds info for chunked data storage.
@@ -2188,10 +2586,10 @@ There is _no_ datatype information stored for these sort of selections currently
 
       Node(long address, long parent) throws IOException {
         if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
-                " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
+            " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
 
         raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
-        raf.seek(address);
+        raf.seek(getFileOffset(address));
         this.address = address;
 
         byte[] name = new byte[4];
@@ -2215,7 +2613,7 @@ There is _no_ datatype information stored for these sort of selections currently
         long rightAddress = readOffset();
         if (debugDataBtree)
           debugOut.println("    leftAddress=" + leftAddress + " =0x" + Long.toHexString(leftAddress) +
-                  " rightAddress=" + rightAddress + " =0x" + Long.toHexString(rightAddress));
+              " rightAddress=" + rightAddress + " =0x" + Long.toHexString(rightAddress));
 
 
         if (level == 0) {
@@ -2306,7 +2704,7 @@ There is _no_ datatype information stored for these sort of selections currently
             HeapIdentifier heapId = new HeapIdentifier(node.address);
             GlobalHeap.HeapObject ho = heapId.getHeapObject();
             byte[] pa = new byte[(int) ho.dataSize];
-            raf.seek(getFileOffset(ho.dataPos));
+            raf.seek(ho.dataPos);
             raf.read(pa);
             debugOut.println(" data at " + ho.dataPos + " = " + new String(pa));
           }
@@ -2360,7 +2758,10 @@ There is _no_ datatype information stored for these sort of selections currently
 
   } // DataBtree
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   // level 1E
+
   class GlobalHeap {
     byte version;
     int size;
@@ -2397,7 +2798,7 @@ There is _no_ datatype information stored for these sort of selections currently
         o.dataPos = raf.getFilePointer();
         if (debugDetail)
           debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
-                  " dataSize = " + o.dataSize + " dataPos = " + o.dataPos);
+              " dataSize = " + o.dataSize + " dataPos = " + o.dataPos);
         if (o.id == 0) break;
 
         int nskip = ((int) o.dataSize) + padding((int) o.dataSize, 8);
@@ -2485,8 +2886,8 @@ There is _no_ datatype information stored for these sort of selections currently
 
     boolean isSymbolicLink = false;
 
-    SymbolTableEntry(long pos) throws IOException {
-      raf.seek(pos);
+    SymbolTableEntry(long filePos) throws IOException {
+      raf.seek(filePos);
       if (debugSymbolTable) debugOut.println("--> readSymbolTableEntry position=" + raf.getFilePointer());
 
       nameOffset = readOffset();
@@ -2539,7 +2940,7 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debugSymbolTable)
         debugOut.println("<-- end readSymbolTableEntry position=" + raf.getFilePointer());
 
-      memTracker.add("SymbolTableEntry", pos, posData + 16);
+      memTracker.add("SymbolTableEntry", filePos, posData + 16);
     }
 
     public int getSize() {
@@ -2554,6 +2955,172 @@ There is _no_ datatype information stored for these sort of selections currently
       return nameOffset;
     }
   } // SymbolTable
+
+  // level 1E "Fractal Heap" used for both Global and Local heaps in 1.8.0+
+  private class FractalHeap {
+    Group group;
+    short heapIdLen;
+    byte flags;
+    int maxSizeOfObjects;
+    long nextHugeObjectId, freeSpace, managedSpace, allocatedManagedSpace, offsetDirectBlock,
+        nManagedObjects, sizeHugeObjects, nHugeObjects, sizeTinyObjects, nTinyObjects;
+    long btreeAddress, freeSpaceTrackerAddress;
+
+    //doubling table
+    short tableWidth, maxHeapSize, startingNumRows, currentNumRows;
+    long startingBlockSize, maxDirectBlockSize, rootBlockAddress;
+
+    // filters
+    short ioFilterLen;
+    long sizeFilteredRootDirectBlock;
+    int ioFilterMask;
+    byte[] ioFilterInfo;
+
+    FractalHeap(Group group, long address) throws IOException {
+      this.group = group;
+
+      // header information is in le byte order
+      raf.order(RandomAccessFile.LITTLE_ENDIAN);
+      raf.seek(getFileOffset(address));
+
+      if (debugDetail) debugOut.println("-- readFractalHeap position=" + raf.getFilePointer());
+
+      // header
+      byte[] heapname = new byte[4];
+      raf.read(heapname);
+      String nameS = new String(heapname);
+      if (!nameS.equals("FRHP"))
+        throw new IllegalStateException();
+
+      byte version = raf.readByte();
+      heapIdLen = raf.readShort(); // bytes
+      ioFilterLen = raf.readShort();  // bytes
+      flags = raf.readByte();
+
+      maxSizeOfObjects = raf.readInt(); // greater than this are huge objects
+      nextHugeObjectId = readLength(); // next id to use for a huge object
+      btreeAddress = readOffset(); // v2 btee to track huge objects
+      freeSpace = readLength();  // total free space in managed direct blocks
+      freeSpaceTrackerAddress = readOffset();
+      managedSpace = readLength(); // total amount of managed space in the heap
+      allocatedManagedSpace = readLength(); // total amount of managed space in the heap actually allocated
+      offsetDirectBlock = readLength(); // linear heap offset where next direct clock should be allocated
+      nManagedObjects = readLength();  // number of managed objects in the heap
+      sizeHugeObjects = readLength(); // total size of huge objects in the heap (in bytes)
+      nHugeObjects = readLength(); // number huge objects in the heap
+      sizeTinyObjects = readLength(); // total size of tiny objects packed in heap Ids (in bytes)
+      nTinyObjects = readLength(); // number of tiny objects packed in heap Ids
+
+      tableWidth = raf.readShort(); // number of columns in the doubling table for managed blocks, must be power of 2
+      startingBlockSize = readLength(); // starting block size in bytes, power of 2
+      maxDirectBlockSize = readLength(); // maximum block size in bytes, power of 2
+      maxHeapSize = raf.readShort(); // log2 of the maximum size of heap's linear address space, in bytes
+      startingNumRows = raf.readShort(); // starting number of rows of the root indirect block, 0 = maximum needed
+      rootBlockAddress = readOffset(); // can be undefined if no data
+      currentNumRows = raf.readShort(); // starting number of rows of the root indirect block, 0 = direct block
+
+      boolean hasFilters = (ioFilterLen > 0);
+      if (hasFilters) {
+        sizeFilteredRootDirectBlock = readLength();
+        ioFilterMask = raf.readInt();
+        ioFilterInfo = new byte[ioFilterLen];
+        raf.read(ioFilterInfo);
+      }
+      int checksum = raf.readInt();
+
+      if (debugDetail || debugFractalHeap) {
+        debugOut.println(" version=" + version + " heapIdLen=" + heapIdLen + " ioFilterLen=" + ioFilterLen + " flags= " + flags);
+        debugOut.println(" maxSizeOfObjects=" + maxSizeOfObjects + " nextHugeObjectId=" + nextHugeObjectId + " btreeAddress="
+            + btreeAddress + " managedSpace=" + managedSpace + " allocatedManagedSpace=" + allocatedManagedSpace + " offsetDirectBlock=" + offsetDirectBlock);
+        debugOut.println(" nManagedObjects=" + nManagedObjects + " nHugeObjects= " + nHugeObjects + " nTinyObjects=" + nTinyObjects);
+        debugOut.println(" tableWidth=" + tableWidth + " startingBlockSize=" + startingBlockSize + " maxDirectBlockSize=" + maxDirectBlockSize
+            + " maxHeapSize= 2^" + maxHeapSize + " startingNumRows=" + startingNumRows + " rootBlockAddress=" + rootBlockAddress + " currentNumRows=" + currentNumRows);
+      }
+      if (debugPos) debugOut.println("    *now at position=" + raf.getFilePointer());
+
+
+      long pos = raf.getFilePointer();
+      if (debugDetail) debugOut.println("-- end FractalHeap position=" + raf.getFilePointer());
+      int hsize = 8 + 2 * sizeLengths + sizeOffsets;
+      if (debugTracker) memTracker.add("Group FractalHeap (" + group.dname + ")", address, pos);
+
+      // data
+      if (currentNumRows == 0)
+        new DirectBlock(getFileOffset(rootBlockAddress), address);
+      else
+        new IndirectBlock(getFileOffset(rootBlockAddress), address, hasFilters, 1, 0);
+      //if (debugTracker) memTracker.addByLen("Group FractalHeapData (" + group.dname + ")", dataAddress, size);
+    }
+
+    private class DirectBlock {
+      DirectBlock(long pos, long heapAddress) throws IOException {
+        raf.seek(pos);
+
+        // header
+        byte[] heapname = new byte[4];
+        raf.read(heapname);
+        String nameS = new String(heapname);
+        if (!nameS.equals("FHDB"))
+          throw new IllegalStateException();
+
+        byte version = raf.readByte();
+        long heapHeaderAddress = readOffset();
+        if (heapAddress != heapHeaderAddress)
+          throw new IllegalStateException();
+
+        int nbytes = maxHeapSize / 8;
+        if (maxHeapSize % 8 != 0) nbytes++;
+        byte[] dummy = new byte[nbytes];
+        raf.read(dummy);
+      }
+    }
+
+    private class IndirectBlock {
+      IndirectBlock(long pos, long heapAddress, boolean hasFilter, int nDirectChildren, int nIndirectChildren) throws IOException {
+        raf.seek(pos);
+
+        // header
+        byte[] heapname = new byte[4];
+        raf.read(heapname);
+        String nameS = new String(heapname);
+        if (!nameS.equals("FHIB"))
+          throw new IllegalStateException();
+
+        byte version = raf.readByte();
+        long heapHeaderAddress = readOffset();
+        if (heapAddress != heapHeaderAddress)
+          throw new IllegalStateException();
+
+        int nbytes = maxHeapSize / 8;
+        if (maxHeapSize % 8 != 0) nbytes++;
+        byte[] dummy = new byte[nbytes];
+        raf.read(dummy);
+
+        long npow = raf.getFilePointer();
+        if (debugPos) debugOut.println("    *now at position=" + raf.getFilePointer());
+
+        for (int i = 0; i < nDirectChildren; i++) {
+          long childAddress = readOffset();
+          if (hasFilter) {
+            long sizeFilteredDirectBlock = readLength();
+            int filterMask = raf.readInt();
+          }
+          new DirectBlock(getFileOffset(childAddress), heapAddress);
+        }
+
+        for (int i = 0; i < nIndirectChildren; i++) {
+          long childAddress = readOffset();
+          // new IndirectBlock(getFileOffset(childAddress), heapAddress, hasFilter, nDirectChildren, nIndirectChildren);
+        }
+
+      }
+    }
+
+    void get(byte[] id) {
+      printBytes("Heap id = ", id, id.length, false);
+    }
+
+  } // FractalHeap
 
   ///////////////////////////////////////////////////////////////
   // construct netcdf objects
@@ -2852,7 +3419,7 @@ There is _no_ datatype information stored for these sort of selections currently
      Used for Structure Members
   */
   private Variable makeMemberVariable(String name, long dataPos, MessageDatatype mdt)
-          throws IOException {
+      throws IOException {
 
     Variable v;
     Vinfo vinfo = new Vinfo(mdt, dataPos);
@@ -2991,12 +3558,12 @@ There is _no_ datatype information stored for these sort of selections currently
    * @throws java.io.IOException on io error
    */
   static String readString(RandomAccessFile raf) throws IOException {
-    long pos = raf.getFilePointer();
+    long filePos = raf.getFilePointer();
 
     int count = 0;
     while (raf.readByte() != 0) count++;
 
-    raf.seek(pos);
+    raf.seek(filePos);
     byte[] s = new byte[count];
     raf.read(s);
     raf.readByte(); // skip the zero byte!
@@ -3011,19 +3578,19 @@ There is _no_ datatype information stored for these sort of selections currently
    * @throws java.io.IOException on io error
    */
   static String readString8(RandomAccessFile raf) throws IOException {
-    long pos = raf.getFilePointer();
+    long filePos = raf.getFilePointer();
 
     int count = 0;
     while (raf.readByte() != 0) count++;
 
-    raf.seek(pos);
+    raf.seek(filePos);
     byte[] s = new byte[count];
     raf.read(s);
 
     // skip to 8 byte boundary, note zero byte is skipped
     count++;
     count += padding(count, 8);
-    raf.seek(pos + count);
+    raf.seek(filePos + count);
 
     return new String(s);
   }
@@ -3048,6 +3615,16 @@ There is _no_ datatype information stored for these sort of selections currently
 
   private long readOffset() throws IOException {
     return isOffsetLong ? raf.readLong() : (long) raf.readInt();
+  }
+
+  // size of data depends on "maximum possible number"
+  private long readVariableSizeMax(int maxNumber) throws IOException {
+    int size = 0;
+    while (maxNumber != 0) {
+      size++;
+      maxNumber >>>= 8;  // right shift with zero extension
+    }
+    return readVariableSize(size);
   }
 
   private long readVariableSizeFactor(int sizeFactor) throws IOException {
@@ -3084,9 +3661,9 @@ There is _no_ datatype information stored for these sort of selections currently
     return pad;
   }
 
-  void dump(String head, long pos, int nbytes, boolean count) throws IOException {
+  void dump(String head, long filePos, int nbytes, boolean count) throws IOException {
     long savePos = raf.getFilePointer();
-    if (pos >= 0) raf.seek(pos);
+    if (filePos >= 0) raf.seek(filePos);
     byte[] mess = new byte[nbytes];
     raf.read(mess);
     printBytes(head, mess, nbytes, false);
