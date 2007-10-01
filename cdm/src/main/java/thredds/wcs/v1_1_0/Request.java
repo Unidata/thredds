@@ -28,10 +28,13 @@ public class Request
   private GetCapabilities.ServiceProvider serviceProvider;
 
   // DescribeCoverage request info
+  private List<String> identifierList;
 
   // GetCoverage request info
+  private String identifier;
 
   // Dataset
+  private String datasetPath;
   private GridDataset dataset;
 
 
@@ -50,40 +53,98 @@ public class Request
     NONE, GeoTIFF, GeoTIFF_Float, NetCDF3
   }
 
-  public Request() {}
-  public Request( Operation operation, String negotiatedVersion,
-                  List<GetCapabilities.Section> sections,
-                  GetCapabilities.ServiceId serviceId,
-                  GetCapabilities.ServiceProvider serviceProvider,
-                  GridDataset dataset )
+  static public Request getGetCapabilitiesRequest( Operation operation,
+                                                   String negotiatedVersion,
+                                                   List<GetCapabilities.Section> sections,
+                                                   GetCapabilities.ServiceId serviceId,
+                                                   GetCapabilities.ServiceProvider serviceProvider,
+                                                   String datasetPath,
+                                                   GridDataset dataset)
+  {
+    Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
+    if ( ! operation.equals( Operation.GetCapabilities ) )
+      throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method.");
+    req.sections = sections;
+    req.serviceId = serviceId;
+    req.serviceProvider = serviceProvider;
+
+    if ( req.sections == null )
+      throw new IllegalArgumentException( "Non-null section list required.");
+    if ( req.serviceId == null )
+      throw new IllegalArgumentException( "Non-null service ID required.");
+    if ( req.serviceProvider == null )
+      throw new IllegalArgumentException( "Non-null service provider expected.");
+
+    return req;
+  }
+
+  static public Request getDescribeCoverageRequest( Operation operation,
+                                                    String negotiatedVersion,
+                                                    List<String> identifiers,
+                                                    String datasetPath,
+                                                    GridDataset dataset)
+  {
+    Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
+    if ( !operation.equals( Operation.DescribeCoverage ) )
+      throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method." );
+    req.identifierList = identifiers;
+
+    return req;
+  }
+
+  static public Request getGetCoverageRequest( Operation operation,
+                                               String negotiatedVersion,
+                                               String identifier,
+                                               String datasetPath,
+                                               GridDataset dataset)
+  {
+    Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
+    if ( !operation.equals( Operation.GetCoverage ) )
+      throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method." );
+    req.identifier = identifier;
+
+    return req;
+  }
+
+  Request( Operation operation, String negotiatedVersion, String datasetPath, GridDataset dataset)
   {
     this.operation = operation;
     this.negotiatedVersion = negotiatedVersion;
-    this.sections = sections;
-    this.serviceId = serviceId;
-    this.serviceProvider = serviceProvider;
+    this.datasetPath = datasetPath;
     this.dataset = dataset;
+
+    if ( operation == null )
+      throw new IllegalArgumentException( "Non-null operation required." );
+    if ( this.negotiatedVersion == null )
+      throw new IllegalArgumentException( "Non-null negotiated version required." );
+    if ( ! this.negotiatedVersion.equals( expectedVersion) )
+      throw new IllegalArgumentException( "Version <" + negotiatedVersion + "> not as expected <" + expectedVersion + ">." );
+    if ( this.datasetPath == null )
+      throw new IllegalArgumentException( "Non-null dataset path required." );
+    if ( this.dataset == null )
+      throw new IllegalArgumentException( "Non-null dataset required." );
   }
 
+  // ---------- General getters
   public Operation getOperation() { return operation; }
 
+  public String getDatasetPath() { return datasetPath; }
+  public GridDataset getDataset() { return dataset; }
+
+
+  // ---------- GetCapabilities getters
   public List<GetCapabilities.Section> getSections()
   {
     return Collections.unmodifiableList( sections );
   }
 
-  public GetCapabilities.ServiceId getServiceId()
-  {
-    return this.serviceId;
-  }
+  public GetCapabilities.ServiceId getServiceId() { return serviceId; }
+  public GetCapabilities.ServiceProvider getServiceProvider() { return serviceProvider; }
 
-  public GetCapabilities.ServiceProvider getServiceProvider()
-  {
-    return this.serviceProvider;
-  }
+  // ---------- DescribeCoverage getters
+  public List<String> getIdentifierList() { return identifierList; }
 
-  public GridDataset getDataset()
-  {
-    return dataset;
-  }
+  // ---------- GetCoverage getters
+  public String getIdentifier() { return identifier; }
+
 }

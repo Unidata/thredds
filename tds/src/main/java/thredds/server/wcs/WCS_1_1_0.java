@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 
 /**
  * _more_
@@ -48,9 +49,18 @@ public class WCS_1_1_0 implements VersionHandler
       Request request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(), req, res);
       if ( request.getOperation().equals( Request.Operation.GetCapabilities))
       {
+        GetCapabilities.ServiceId sid =
+                new GetCapabilities.ServiceId("title", "abstract",
+                                              Collections.singletonList( "keyword" ),
+                                              "WCS", Collections.singletonList("1.1.0"),
+                                              "", Collections.singletonList( "") );
+        GetCapabilities.ServiceProvider sp =
+                new GetCapabilities.ServiceProvider();
         GetCapabilities getCapabilities =
                 new GetCapabilities( serverURI, request.getSections(),
-                                     request.getServiceId(), request.getServiceProvider(),
+                                     getServiceId(), getServiceProvider(),
+                                     // ToDo Remove serviceId and serviceProvider from Requst
+                                     //request.getServiceId(), request.getServiceProvider(),
                                      request.getDataset() );
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
@@ -62,11 +72,30 @@ public class WCS_1_1_0 implements VersionHandler
       }
       else if ( request.getOperation().equals( Request.Operation.DescribeCoverage ) )
       {
+        DescribeCoverage descCoverage =
+                new DescribeCoverage( serverURI, request.getIdentifierList(),
+                                      request.getDataset() );
+        res.setContentType( "text/xml" );
+        res.setStatus( HttpServletResponse.SC_OK );
+        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
 
+        PrintWriter pw = res.getWriter();
+        descCoverage.writeDescribeCoverageDoc( pw );
+        pw.flush();
       }
       else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
       {
+        GetCoverage getCoverage =
+                new GetCoverage( serverURI, request.getIdentifier(),
+                                 request.getDatasetPath(),
+                                 request.getDataset() );
+        res.setContentType( "text/xml" );
+        res.setStatus( HttpServletResponse.SC_OK );
+        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
 
+        PrintWriter pw = res.getWriter();
+        getCoverage.writeGetCoverageDoc( pw );
+        pw.flush();
       }
     }
     catch ( WcsException e)
@@ -77,6 +106,33 @@ public class WCS_1_1_0 implements VersionHandler
     {
       handleExceptionReport( res, new WcsException( "Bad URI: " + e.getMessage()));
     }
+  }
+
+  private GetCapabilities.ServiceId getServiceId()
+  {
+    // Todo Figure out how to configure serviceId info.
+    GetCapabilities.ServiceId sid;
+    sid = new GetCapabilities.ServiceId( "title", "abstract",
+                                          Collections.singletonList( "keyword" ),
+                                          "WCS", Collections.singletonList( "1.1.0" ),
+                                          "", Collections.singletonList( "" ) );
+
+    return sid;
+  }
+  private GetCapabilities.ServiceProvider getServiceProvider()
+  {
+    // Todo Figure out how to configure serviceProvider info.
+    GetCapabilities.ServiceProvider sp =
+            new GetCapabilities.ServiceProvider();
+    sp.name = "sp name";
+    sp.site.link = null; //new URI( "");
+    sp.site.title = "a link";
+    sp.contact.individualName = "";
+    sp.contact.positionName = "";
+    sp.contact.contactInfo = null;
+    sp.contact.role = "";
+
+    return sp;
   }
 
   public void handleExceptionReport( HttpServletResponse res, WcsException exception )

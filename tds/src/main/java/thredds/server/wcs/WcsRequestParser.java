@@ -37,6 +37,7 @@ public class WcsRequestParser
     // General request info
     Request request; // The Request object to be built and returned.
     Request.Operation operation;
+    String datasetPath = req.getPathInfo();
     GridDataset dataset = openDataset( req, res );
 
     // GetCapabilities request info
@@ -83,31 +84,43 @@ public class WcsRequestParser
 //      serviceId = new GetCapabilities.ServiceId( ThreddsConfig.get( "WCS.serviceId.title", null ),
 //                                                 ThreddsConfig.get( "WCS.serviceId.abstract", null),
 //                                                 )
-      request = new Request( operation, version, sections, serviceId, serviceProvider, dataset );
-
+      request = Request.getGetCapabilitiesRequest( operation, version,
+                                                   sections, serviceId, serviceProvider,
+                                                   datasetPath, dataset );
     }
     // Handle "DescribeCoverage" request.
     else if ( operation.equals( Request.Operation.DescribeCoverage ) )
     {
-      // The parameter is "Identifier" but the KVP endocing of the parameter is "Identifiers".
-      // So, deal with both.
+      // The "Identifier" parameter is KVP encoded as "Identifiers", handle both.
       String identifiers = ServletUtil.getParameterIgnoreCase( req, "Identifiers" );
       if ( identifiers == null )
         identifiers = ServletUtil.getParameterIgnoreCase( req, "Identifier");
+      List<String> idList = splitCommaSeperatedList( identifiers );
 
-      request = new Request();
+      request = Request.getDescribeCoverageRequest( operation, version, idList, datasetPath, dataset );
     }
     // Handle "GetCoverage" request.
     else if ( operation.equals( Request.Operation.GetCoverage ) )
     {
       String identifier = ServletUtil.getParameterIgnoreCase( req, "Identifier" );
 
-      request = new Request();
+      request = Request.getGetCoverageRequest( operation, version, identifier, datasetPath ,dataset );
     }
     else
       throw new WcsException( WcsException.Code.OperationNotSupported, requestParam, "" );
 
     return request;
+  }
+
+  private static List<String> splitCommaSeperatedList( String identifiers )
+  {
+    List<String> idList = new ArrayList<String>();
+    String[] idArray = identifiers.split( ",");
+    for ( int i = 0; i < idArray.length; i++ )
+    {
+      idList.add( idArray[i].trim());
+    }
+    return idList;
   }
 
   private static GridDataset openDataset( HttpServletRequest req, HttpServletResponse res )
