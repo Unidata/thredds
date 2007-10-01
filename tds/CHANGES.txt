@@ -2,6 +2,10 @@ CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 4.0
+ Features
+  * Use Stax for metars ncss xml writing - for now rely on using 1.6
+
 Changes in version 3.16
  Features
   * Netcdf Subset for Metars, Grids, Grids as Points
@@ -10,6 +14,8 @@ Changes in version 3.16
   * Documentation link on catalog.html pages points to unidata web site.
   * Default is allow=false for CdmValidator, WCS, NetcdfSubset.
  Bugs
+  * metar ncss : escape content in XML.
+  * AggExisting persistRead O(n**2) searching
   * Fmrc : set cache=3 to prevent closing agg
   * Aggregation.sync : clear out coordinates systems so they can be rebuilt correctly
   * ncss/metars: reinit at 1 am local time

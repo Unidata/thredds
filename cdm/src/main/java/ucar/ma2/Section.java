@@ -71,6 +71,16 @@ public class Section {
   }
 
   /**
+   * Copy Constructor.
+   * Returned copy is mutable
+   *
+   * @param from the Section to copy
+   */
+  public Section(Section from) {
+    list = new ArrayList<Range>(from.getRanges());
+  }
+
+  /**
    * Create Section from a List<Range>.
    *
    * @param from  the list of Range

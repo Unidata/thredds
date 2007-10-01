@@ -109,7 +109,6 @@
     <variable name="Minimum_temperature" vertCoord="5" />
     <variable name="Momentum_flux_u_component" />
     <variable name="Momentum_flux_v_component" />
-    <variable name="Potential_Evaporation_Rate" />
     <variable name="Precipitation_rate" />
     <variable name="Pressure_high_cloud_bottom" />
     <variable name="Pressure_high_cloud_top" />
@@ -135,6 +134,7 @@
     <variable name="Zonal_Flux_of_Gravity_Wave_Stress" />
   </runSequence>
   <runSequence allUseSeq="2">
+    <variable name="Potential_Evaporation_Rate" />
     <variable name="Pressure_convective_cloud_top" />
     <variable name="Pressure_convective_cloud_bottom" />
   </runSequence>

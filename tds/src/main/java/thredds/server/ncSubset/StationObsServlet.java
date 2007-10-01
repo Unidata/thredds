@@ -46,7 +46,7 @@ public class StationObsServlet extends AbstractServlet {
 
   private boolean allow = false;
   private StationObsCollection soc;
-  private boolean debug = false;
+  private boolean debug = true;
 
   // must end with "/"
   protected String getPath() {
@@ -168,6 +168,7 @@ public class StationObsServlet extends AbstractServlet {
         qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
         return;
       }
+      if (debug) System.out.println(" date range= "+dr);
     }
 
     boolean useAllTimes = (!qp.hasTimePoint && !qp.hasDateRange);

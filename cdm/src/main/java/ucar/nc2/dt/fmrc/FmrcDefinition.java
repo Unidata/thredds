@@ -356,7 +356,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         for (Run run : runSeq.runs) {
           addValues(valueSet, run.tc.getOffsetHours());
         }
-        List<Double> valueList = Arrays.asList( (Double[]) valueSet.toArray());
+        List<Double> valueList = Arrays.asList( (Double[]) valueSet.toArray( new Double[valueSet.size()]));
         Collections.sort( valueList);
         double[] values = new double[valueList.size()];
         for (int i = 0; i < valueList.size(); i++) {

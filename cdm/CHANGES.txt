@@ -17,6 +17,7 @@ Changes in version 4.0
  API
   * make Indexer, RegularIndexer public so can be used by IOSP
  Bugs
+  * UnidataStationObsDataset : check that obs links point to station
   * AWIPS, WRF Stereographic projection needs abs() in scale calculation (thanks to R. Schmunk)
   * OceanS case when a = 0.
   * opendap DConnect2 : escape query strings

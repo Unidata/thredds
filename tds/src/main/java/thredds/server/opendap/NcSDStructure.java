@@ -25,7 +25,6 @@ import opendap.dap.BaseType;
 import opendap.dap.NoSuchVariableException;
 
 import java.io.IOException;
-import java.io.EOFException;
 import java.io.DataOutputStream;
 import java.util.List;
 import ucar.nc2.Variable;
@@ -44,7 +43,7 @@ public class NcSDStructure extends SDStructure  {
   static private Logger log = LoggerFactory.getLogger(NcSDStructure.class);
 
   private Structure ncVar = null;
-  protected List memberBTlist;
+  protected List<BaseType> memberBTlist;
 
   protected NcSDStructure org;
   protected StructureData sdata;
@@ -53,12 +52,11 @@ public class NcSDStructure extends SDStructure  {
    *  @param s the netcdf Structure
    *  @param list of the member variables
    */
-  public NcSDStructure( Structure s, List list) {
+  public NcSDStructure( Structure s, List<BaseType> list) {
     super( NcDDS.escapeName(s.getShortName()));
     this.ncVar = s;
 
-    for (int i=0; i<list.size(); i++)
-      addVariable( (BaseType) list.get(i), 0);
+    for (BaseType aList : list) addVariable(aList, 0);
     memberBTlist = list;
   }
 
@@ -72,7 +70,7 @@ public class NcSDStructure extends SDStructure  {
 
   // called if its scalar
   public boolean read(String datasetName, Object specialO) throws NoSuchVariableException,
-    IOException, EOFException {
+    IOException {
 
     // read the scalar structure into memory
     StructureData sdata = ncVar.readStructure();

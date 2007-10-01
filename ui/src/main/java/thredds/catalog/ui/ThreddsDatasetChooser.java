@@ -32,6 +32,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -346,7 +347,8 @@ public class ThreddsDatasetChooser extends JPanel {
         if (top.hasAccess())
           firePropertyChangeEvent(new PropertyChangeEvent(this, "Dataset", null, top));
         else {
-          Object[] dsa = top.getDatasets().toArray();
+          List<InvDataset> dsets = top.getDatasets();
+          InvDataset[] dsa = (InvDataset[]) dsets.toArray( new InvDataset[dsets.size()] );
           firePropertyChangeEvent(new PropertyChangeEvent(this, "Datasets", null, dsa));
         }
         return;

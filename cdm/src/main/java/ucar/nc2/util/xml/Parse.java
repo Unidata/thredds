@@ -25,9 +25,12 @@ import org.jdom.input.SAXBuilder;
 
 import java.io.IOException;
 
+import ucar.unidata.util.StringUtil;
+
 /**
  * Miscellaneous XML parsing methods
  * created Jul 3, 2007
+ *
  * @author caron
  */
 public class Parse {
@@ -50,4 +53,70 @@ public class Parse {
 
     return doc.getRootElement();
   }
+
+  /**
+   * Make sure that text is XML safe
+   * @param text check this
+   * @return original text if ok, else with bad characters removed
+   */
+  static public String cleanCharacterData(String text) {
+    if (text == null) return text;
+
+    boolean bad = false;
+    for (int i = 0, len = text.length(); i < len; i++) {
+      int ch = text.charAt(i);
+      if (!org.jdom.Verifier.isXMLCharacter(ch)) {
+        bad = true;
+        break;
+      }
+    }
+
+    if (!bad) return text;
+
+    StringBuffer sbuff = new StringBuffer(text.length());
+    for (int i = 0, len = text.length(); i < len; i++) {
+      int ch = text.charAt(i);
+      if (org.jdom.Verifier.isXMLCharacter(ch))
+        sbuff.append(ch);
+    }
+    return sbuff.toString();
+  }
+
+
+  /// probably not needed  - use Stax or Jdom
+
+    /**
+   * Replace special characters with entities for XML attributes.
+   * special: '&', '<', '>', '\'', '"', '\r', '\n'
+   *
+   * @param x string to quote
+   * @return equivilent string using entities for any special chars
+   */
+  static public String quoteXmlContent(String x) {
+    return StringUtil.replace(x, xmlInC, xmlOutC);
+  }
+
+  /**
+   * Reverse XML quoting to recover the original string.
+   *
+   * @param x string to quote
+   * @return equivilent string
+   */
+  static public String unquoteXmlContent(String x) {
+    return StringUtil.unreplace(x, xmlOutC, xmlInC);
+  }
+
+  /**
+   * these chars must get replaced in XML
+   */
+  private static char[] xmlInC = {
+          '&', '<', '>'
+  };
+
+  /**
+   * replacement strings
+   */
+  private static String[] xmlOutC = {
+          "&amp;", "&lt;", "&gt;"
+  };
 }

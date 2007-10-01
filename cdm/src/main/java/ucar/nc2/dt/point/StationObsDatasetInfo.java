@@ -193,7 +193,7 @@ public class StationObsDatasetInfo {
     return list;
   } */
 
-  private List getDimensions(StationObsDataset gds) {
+  /* private List getDimensions(StationObsDataset gds) {
     HashSet dimHash = new HashSet();
     List vars = gds.getDataVariables();
     for (int i = 0; i < vars.size(); i++) {
@@ -233,7 +233,7 @@ public class StationObsDatasetInfo {
       varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true));
 
     return varElem;
-  }
+  } */
 
   private Element writeBoundingBox(LatLonRect bb) {
     Element bbElem = new Element("LatLonBox");

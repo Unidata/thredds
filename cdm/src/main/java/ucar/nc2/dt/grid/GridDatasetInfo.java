@@ -325,7 +325,7 @@ public class GridDatasetInfo {
         axesHash.add(axe);
     }
 
-    List<CoordinateAxis> list = Arrays.asList((CoordinateAxis[]) axesHash.toArray());
+    List<CoordinateAxis> list = Arrays.asList((CoordinateAxis[]) axesHash.toArray( new CoordinateAxis[ axesHash.size()]));
     Collections.sort(list);
     return list;
   }
@@ -339,7 +339,7 @@ public class GridDatasetInfo {
         ctHash.add(axe);
     }
 
-    List<CoordinateTransform> list = Arrays.asList((CoordinateTransform[]) ctHash.toArray());
+    List<CoordinateTransform> list = Arrays.asList((CoordinateTransform[]) ctHash.toArray( new CoordinateTransform[ ctHash.size()]));
     Collections.sort(list);
     return list;
   }

@@ -323,6 +323,8 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
 
   public boolean isMissingXY(Variable v2, int timeIdx, int levIdx) throws InvalidRangeException {
     GribVariable pv = (GribVariable) v2.getSPobject();
+    if (null == pv)
+      System.out.println("HEY");
     if ((timeIdx < 0) || (timeIdx >= pv.getNTimes()))
       throw new InvalidRangeException( "timeIdx="+timeIdx);
     if ((levIdx < 0) || (levIdx >= pv.getVertNlevels()))

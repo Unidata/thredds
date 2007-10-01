@@ -234,15 +234,15 @@ public class FmrcInventory {
     Collections.sort(varList);
 
     // create the overall list of run times
-    runTimeList = Arrays.asList((Date[]) runTimeHash.toArray());
+    runTimeList = Arrays.asList((Date[]) runTimeHash.toArray( new Date[ runTimeHash.size()]));
     Collections.sort(runTimeList);
 
     // create the overall list of forecast times
-    forecastTimeList = Arrays.asList((Date[]) forecastTimeHash.toArray());
+    forecastTimeList = Arrays.asList((Date[]) forecastTimeHash.toArray( new Date[ forecastTimeHash.size()]));
     Collections.sort(forecastTimeList);
 
     // create the overall list of offsets
-    offsetList = Arrays.asList((Double[]) offsetHash.toArray());
+    offsetList = Arrays.asList((Double[]) offsetHash.toArray( new Double[ offsetHash.size()]));
     Collections.sort(offsetList);
 
     // finish the variables, assign to a RunSeq
@@ -527,7 +527,7 @@ public class FmrcInventory {
       }
 
       // now create a sorted list, transfer to values array
-      List<LevelCoord> valueList = Arrays.asList( (LevelCoord[]) valueSet.toArray());
+      List<LevelCoord> valueList = Arrays.asList( (LevelCoord[]) valueSet.toArray( new LevelCoord[ valueSet.size()]));
       Collections.sort( valueList);
       double[] values1 = new double[valueList.size()];
       double[] values2 = new double[valueList.size()];

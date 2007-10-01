@@ -34,6 +34,7 @@ import ucar.ma2.InvalidRangeException;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.conv._Coordinate;
 
 import ucar.nc2.units.DateUnit;
@@ -126,7 +127,9 @@ public class ForecastModelRunInventory {
     for (GridDatatype gg : gds.getGrids()) {
       GridCoordSystem gcs = gg.getCoordinateSystem();
       Grid grid = new Grid(gg.getName());
-      addMissing((Variable) gg.getVariable(), gcs, grid);
+      VariableEnhanced ve = gg.getVariable();
+      Variable v = ve.getOriginalVariable();
+      addMissing(v, gcs, grid);
 
       // LOOK: Note this assumes a dense coordinate system
       CoordinateAxis1D axis = gcs.getTimeAxis1D();

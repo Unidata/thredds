@@ -354,6 +354,9 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 
       public Object nextData() throws IOException {
         RecordDatasetHelper.RecordStationObs sobs = makeObs(nextRecno, true, null);
+        if (!sobs.getStation().getName().equals(getName()))
+          throw new IllegalStateException("BAD Station link ("+nextRecno+") station name="+sobs.getStation().getName()+" should be "+getName());
+
         if (isContiguousList) {
           nextRecno++;
           if (nextRecno > last)

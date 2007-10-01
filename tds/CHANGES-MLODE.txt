@@ -1,4 +1,9 @@
-6/20/2007
+9/29/07 (john)
+ both mlode and modev were hung. mlode needed a kill -9. not sure why. restarted.
+ install version 3.16.19 on motherlode : fix a few bugs in metar ncss
+ remove OPenDAP server for BUFR data (Station/Vertical Soundings) until we can deal with nested sequences.
+
+6/20/2007 (john)
  add idd/rtmodels.xml (chiz WRF models), but dont link into catalog until we can deal with moving horiz domain
  add metar aggregation : rewriting files into ${tomcat}/content/thredds/public/stn/
  change NetcdfService to NetcdfSubset everywhere

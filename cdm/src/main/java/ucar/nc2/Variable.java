@@ -610,7 +610,7 @@ public class Variable implements VariableIF {
 
     // create a copy of this variable with a proxy reader
     Variable sliceV = copy(); // subclasses must override
-    Section slice = getShapeAsSection();
+    Section slice = new Section( getShapeAsSection());
     slice.replaceRange(dim, new Range(value, value)).setImmutable();
     sliceV.preReader = new SliceReader(this, dim, slice);
 

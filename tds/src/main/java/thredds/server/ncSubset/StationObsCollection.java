@@ -31,6 +31,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
@@ -42,6 +43,10 @@ import thredds.datatype.DateType;
 import thredds.catalog.XMLEntityResolver;
 import org.jdom.Document;
 import org.jdom.Element;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
 
 public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
@@ -106,7 +111,7 @@ public class StationObsCollection {
 
   private class ReinitTask extends TimerTask {
     public void run() {
-      cacheLogger.info("StationObsCollection.reinit to "+archiveDir+" from " +realtimeDir+" at " + format.toDateTimeString(new Date()));
+      cacheLogger.info("StationObsCollection.reinit to " + archiveDir + " from " + realtimeDir + " at " + format.toDateTimeString(new Date()));
       init();
     }
   }
@@ -115,7 +120,9 @@ public class StationObsCollection {
     return archiveDir + "/" + realtimeDir;
   }
 
-  public boolean isReady() { return isReady; }
+  public boolean isReady() {
+    return isReady;
+  }
 
   public ArrayList<Dataset> getDatasets() {
     return datasetList;
@@ -123,7 +130,7 @@ public class StationObsCollection {
 
   // read archive files - these have been rewritten for efficiency, and dont change in realtime
   private void initArchiveOnly() {
-    CollectionManager archive = new CollectionManager( archiveDir, ff, dateFormatString);
+    CollectionManager archive = new CollectionManager(archiveDir, ff, dateFormatString);
     datasetList = new ArrayList<Dataset>();
     stationList = null;
     variableList = null;
@@ -169,8 +176,8 @@ public class StationObsCollection {
   private FileFilter ff = new org.apache.commons.io.filefilter.SuffixFileFilter(".nc");
 
   private void init() {
-    CollectionManager archive = new CollectionManager( archiveDir, ff, dateFormatString);
-    CollectionManager realtime = new CollectionManager( realtimeDir, ff, dateFormatString);
+    CollectionManager archive = new CollectionManager(archiveDir, ff, dateFormatString);
+    CollectionManager realtime = new CollectionManager(realtimeDir, ff, dateFormatString);
 
     makeArchiveFiles(archive, realtime);
     try {
@@ -205,7 +212,7 @@ public class StationObsCollection {
   private void makeArchiveFiles(CollectionManager archive, CollectionManager realtime) {
 
     // the set of files in realtime collection that come after the archive files
-    List<CollectionManager.MyFile> realtimeList = realtime.after( archive.getLatest());
+    List<CollectionManager.MyFile> realtimeList = realtime.after(archive.getLatest());
     if (realtimeList.size() < 2)
       return;
 
@@ -226,7 +233,7 @@ public class StationObsCollection {
         WriterStationObsDataset.rewrite(fileIn, fileOut);
         archive.add(new File(fileOut), myfile.date);
         long took = System.currentTimeMillis() - start;
-        cacheLogger.info("  that took= " + (took/1000)+" secs");
+        cacheLogger.info("  that took= " + (took / 1000) + " secs");
       } catch (IOException e) {
         cacheLogger.error("StationObsCollection: write failed (" + fileIn + " to archive " + fileOut + ")", e);
       }
@@ -254,7 +261,7 @@ public class StationObsCollection {
       if (myfile.date.before(firstDate)) {
         myfile.file.delete();
         boolean ok = archive.remove(myfile);
-        cacheLogger.info("StationObsCollection: Deleted archive file " + myfile+" ok= "+ok);
+        cacheLogger.info("StationObsCollection: Deleted archive file " + myfile + " ok= " + ok);
         continue;
       }
 
@@ -286,7 +293,7 @@ public class StationObsCollection {
     long size = 0;
     int count = 0;
 
-    List<CollectionManager.MyFile> realtimeList = realtime.after( archive.getLatest());
+    List<CollectionManager.MyFile> realtimeList = realtime.after(archive.getLatest());
     if (realtimeList.size() == 0)
       return;
 
@@ -304,7 +311,7 @@ public class StationObsCollection {
 
         if (null == variableList)
           variableList = new ArrayList<VariableSimpleIF>(ds.sod.getDataVariables());
-        
+
       } catch (IOException e) {
         cacheLogger.error("Cant open " + myfile, e);
       }
@@ -499,6 +506,7 @@ public class StationObsCollection {
   // scanning
 
   // scan all data in the file, records that pass the dateRange and predicate match are acted on
+
   private void scanAll(Dataset ds, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
     StringBuffer sbuff = new StringBuffer();
     StationObsDataset sod = ds.get();
@@ -527,6 +535,7 @@ public class StationObsCollection {
 
       limit.count++;
       if (limit.count > limit.limit) break;
+      if (debug && (limit.count % 10000 == 0)) System.out.println(" did " + limit.count);
     }
 
   }
@@ -639,7 +648,7 @@ public class StationObsCollection {
       this.sobs = sobs;
       this.timeDiff = timeDiff;
     }
-  }                                  
+  }
 
 
   // scan data for the list of stations, in order
@@ -828,7 +837,9 @@ public class StationObsCollection {
 
   abstract class Writer {
     abstract void header(List<String> stns);
+
     abstract Action getAction();
+
     abstract void trailer();
 
     QueryParams qp;
@@ -864,7 +875,7 @@ public class StationObsCollection {
       super(qp, varNames, writer);
 
       netcdfResult = File.createTempFile("ncss", ".nc");
-      sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(),"Extracted data from Unidata/TDS Metar dataset");
+      sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(), "Extracted data from Unidata/TDS Metar dataset");
 
       if ((varNames == null) || (varNames.size() == 0)) {
         varList = variableList;
@@ -930,6 +941,8 @@ public class StationObsCollection {
     Action getAction() {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
+          writer.print( format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
+          writer.print( ": ");
           String report = sdata.getScalarString("report");
           writer.println(report);
           count++;
@@ -939,18 +952,43 @@ public class StationObsCollection {
   }
 
   class WriterXML extends Writer {
+    XMLStreamWriter staxWriter;
 
     WriterXML(QueryParams qp, List<String> vars, final java.io.PrintWriter writer) {
       super(qp, vars, writer);
+      XMLOutputFactory f = XMLOutputFactory.newInstance();
+      try {
+        staxWriter = f.createXMLStreamWriter(writer);
+      } catch (XMLStreamException e) {
+        throw new RuntimeException(e.getMessage());
+      }
     }
 
     public void header(List<String> stns) {
-      writer.println("<?xml version='1.0' encoding='UTF-8'?>");
-      writer.println("<metarCollection dataset='"+datasetName+"'>\n");
+      try {
+        staxWriter.writeStartDocument("UTF-8", "1.0");
+        staxWriter.writeCharacters("\n");        
+        staxWriter.writeStartElement("metarCollection");
+        staxWriter.writeAttribute("dataset", datasetName);
+        staxWriter.writeCharacters("\n ");
+      } catch (XMLStreamException e) {
+        throw new RuntimeException(e.getMessage());
+      }
+
+      //writer.println("<?xml version='1.0' encoding='UTF-8'?>");
+      //writer.println("<metarCollection dataset='"+datasetName+"'>\n");
     }
 
     public void trailer() {
-      writer.println("</metarCollection>");
+      try {
+        staxWriter.writeEndElement();
+        staxWriter.writeCharacters("\n");
+        staxWriter.writeEndDocument();
+        staxWriter.close();
+      } catch (XMLStreamException e) {
+        throw new RuntimeException(e.getMessage());
+      }
+      // writer.println("</metarCollection>");
     }
 
     Action getAction() {
@@ -958,34 +996,45 @@ public class StationObsCollection {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
           Station s = sobs.getStation();
 
-          writer.print("  <metar date='");
-          writer.print(format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
-          writer.println("'>");
+          try {
+            staxWriter.writeStartElement("metar");
+            staxWriter.writeAttribute("date", format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
+            staxWriter.writeCharacters("\n  ");
 
-          writer.print("    <station name='" + s.getName() +
-                  "' latitude='" + Format.dfrac(s.getLatitude(), 3) +
-                  "' longitude='" + Format.dfrac(s.getLongitude(), 3));
-          if (!Double.isNaN(s.getAltitude()))
-            writer.print("' altitude='" + Format.dfrac(s.getAltitude(), 0));
-          if (s.getDescription() != null) {
-            writer.println("'>");
-            writer.print(s.getDescription());
-            writer.println("</station>");
-          } else {
-            writer.println("'/>");
-          }
+            staxWriter.writeStartElement("station");
+            staxWriter.writeAttribute("name", s.getName());
+            staxWriter.writeAttribute("latitude", Format.dfrac(s.getLatitude(), 3));
+            staxWriter.writeAttribute("longitude", Format.dfrac(s.getLongitude(), 3));
+            if (!Double.isNaN(s.getAltitude()))
+              staxWriter.writeAttribute("altitude", Format.dfrac(s.getAltitude(), 0));
+            if (s.getDescription() != null)
+              staxWriter.writeCharacters(s.getDescription());
+            staxWriter.writeEndElement();
+            staxWriter.writeCharacters("\n ");
 
-          List<VariableSimpleIF> vars = getVars(varNames, sod.getDataVariables());
-          for (VariableSimpleIF var : vars) {
-            writer.print("    <data name='" + var.getName());
-            if (var.getUnitsString() != null)
-              writer.print("' units='" + var.getUnitsString());
-            writer.print("'>");
-            Array sdataArray = sdata.getArray(var.getName());
-            writer.println(sdataArray.toString() + "</data>");
+            List<VariableSimpleIF> vars = getVars(varNames, sod.getDataVariables());
+            for (VariableSimpleIF var : vars) {
+              staxWriter.writeCharacters(" ");
+              staxWriter.writeStartElement("data");
+              staxWriter.writeAttribute("name", var.getName());
+              if (var.getUnitsString() != null)
+                staxWriter.writeAttribute("units", var.getUnitsString());
+
+              Array sdataArray = sdata.getArray(var.getName());
+              String ss = sdataArray.toString();
+              Class elemType = sdataArray.getElementType();
+              if ((elemType == String.class) || (elemType == char.class) || (elemType == StructureData.class))
+                ss = ucar.nc2.util.xml.Parse.cleanCharacterData(ss); // make sure no bad chars
+              staxWriter.writeCharacters(ss);
+              staxWriter.writeEndElement();
+              staxWriter.writeCharacters("\n ");
+            }
+            staxWriter.writeEndElement();
+            staxWriter.writeCharacters("\n");
+            count++;
+          } catch (XMLStreamException e) {
+            throw new RuntimeException(e.getMessage());
           }
-          writer.println("  </metar>");
-          count++;
         }
       };
     }
@@ -1014,8 +1063,8 @@ public class StationObsCollection {
             for (VariableSimpleIF var : validVars) {
               writer.print(",");
               writer.print(var.getName());
-              if (var.getUnitsString()!=null)
-                writer.print("[unit=\""+var.getUnitsString()+"\"]");
+              if (var.getUnitsString() != null)
+                writer.print("[unit=\"" + var.getUnitsString() + "\"]");
             }
             writer.println();
             headerWritten = true;
