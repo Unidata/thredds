@@ -391,9 +391,20 @@ public class DataRootHandler {
           }
 
           String path;
-          if (href.startsWith("/thredds/")) {
-            path = href.substring(9); // absolute starting from content root
-          } else {
+          //if ( href.startsWith( "/thredds/" ) ) {
+          if ( href.startsWith( this.servletContextPath + "/" ) )
+          {
+            path = href.substring( 9 ); // absolute starting from content root
+          }
+          else if ( href.startsWith( "/" ) )
+          {
+            // Drop the catRef because it points to a non-TDS served catalog.
+            log.warn( "**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path <" + this.servletContextPath + "/" + ">. " +
+                      "Parent catalog info: Name=\"" + catref.getParentCatalog().getName() + "\"; Base URI=\"" + catref.getParentCatalog().getUriString() + "\"; dirPath=\"" + dirPath + "\"." );
+            continue;
+          }
+          else
+          {
             path = dirPath + href;  // reletive starting from current directory
           }
 
