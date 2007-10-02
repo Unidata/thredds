@@ -1012,10 +1012,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   @Override
-  public void addVariable(Group g, Variable v) {
+  public Variable addVariable(Group g, Variable v) {
     if (!(v instanceof VariableDS) && !(v instanceof StructureDS))
       throw new IllegalArgumentException("NetcdfDataset variables must be VariableEnhanced objects");
-    super.addVariable(g, v);
+    return super.addVariable(g, v);
   }
 
   /**
