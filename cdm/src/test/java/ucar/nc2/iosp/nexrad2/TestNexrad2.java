@@ -98,7 +98,7 @@ public class TestNexrad2 extends TestCase {
     Dimension scanV = nexrad2.findDimension("scanV");
     assert null != scanV;
 
-    assert scanR.getLength() == scanR.getLength();
+    assert scanR.getLength() == scanV.getLength();
 
     Variable elevR =  nexrad2.findVariable("elevationR");
     assert elevR != null;
