@@ -541,7 +541,7 @@ public class DMSPHeader
     numSamplesPerBand = Integer.parseInt( (String) headerInfo.get( HeaderInfoTitle.SAMPLES_PER_BAND.toString()) );
     numSamplesPerBandDim = new Dimension(
             this.numSamplesPerBandDimName,
-            numSamplesPerBand, true);
+            numSamplesPerBand);
 
     // Read nominal resolution information
     nominalResolutionAtt = new Attribute( nominalResolutionAttName,

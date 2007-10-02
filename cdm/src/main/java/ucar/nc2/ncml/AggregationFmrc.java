@@ -107,7 +107,7 @@ public class AggregationFmrc extends Aggregation {
     // create runtime aggregation dimension
     String dimName = getDimensionName();
     int nruns = getTotalCoords(); // same as  nestedDatasets.size()
-    Dimension aggDim = new Dimension(dimName, nruns, true);
+    Dimension aggDim = new Dimension(dimName, nruns);
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
 
@@ -153,7 +153,7 @@ public class AggregationFmrc extends Aggregation {
         }
 
         // create time dimension
-        Dimension timeDim = new Dimension(timeDimName, max_times, true);
+        Dimension timeDim = new Dimension(timeDimName, max_times);
         ncDataset.removeDimension(null, timeDimName); // remove previous declaration, if any
         ncDataset.addDimension(null, timeDim);
 

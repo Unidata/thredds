@@ -127,7 +127,7 @@ public class IFPSConvention extends CoordSysBuilder {
 
     // add the dimension
     String dimName = ncVar.getName()+"_timeCoord";
-    Dimension newDim = new Dimension(dimName, nTimesDim, true);
+    Dimension newDim = new Dimension(dimName, nTimesDim);
     ds.addDimension( null, newDim);
 
     // add the coordinate variable

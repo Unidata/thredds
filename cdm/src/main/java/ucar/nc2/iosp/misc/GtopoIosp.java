@@ -66,8 +66,8 @@ public class GtopoIosp extends AbstractIOServiceProvider {
 
     readHDR();
 
-    ncfile.addDimension(null, new Dimension("lat", nlats, true));
-    ncfile.addDimension(null, new Dimension("lon", nlons, true));
+    ncfile.addDimension(null, new Dimension("lat", nlats));
+    ncfile.addDimension(null, new Dimension("lon", nlons));
 
     Variable elev = new Variable(ncfile, null, null, "elevation");
     elev.setDataType(DataType.SHORT);

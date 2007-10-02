@@ -68,7 +68,7 @@ public class AggregationExisting extends Aggregation {
 
     // create aggregation dimension
     String dimName = getDimensionName();
-    Dimension aggDim = new Dimension(dimName, getTotalCoords(), true);
+    Dimension aggDim = new Dimension(dimName, getTotalCoords());
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
 

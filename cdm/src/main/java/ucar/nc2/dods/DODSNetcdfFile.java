@@ -462,7 +462,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           opendap.dap.Attribute att = attTable.getAttribute(attName);
           DODSAttribute ncatt = new DODSAttribute(attName, att);
           int length = ncatt.getNumericValue().intValue();
-          Dimension extraDim = new Dimension(attName, length, true);
+          Dimension extraDim = new Dimension(attName, length);
           addDimension(null, extraDim);
         }
 
@@ -667,7 +667,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     // replace in Variable
     Dimension oldDimension = v.getDimension(0);
-    Dimension newDimension = new Dimension(name, oldDimension.getLength(), true);
+    Dimension newDimension = new Dimension(name, oldDimension.getLength());
     // newDimension.setCoordinateAxis( v); calcCoordinateVaribale will do this
     v.setDimension(0, newDimension);
 
@@ -875,7 +875,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       } else { // see if shared
         myd = group.findDimension(name);
         if (myd == null) { // add as shared
-          myd = new Dimension(name, dad.getSize(), true);
+          myd = new Dimension(name, dad.getSize());
           group.addDimension(myd);
         } else if (myd.getLength() != dad.getSize()) { // make a non-shared dimension
           myd = new Dimension(name, dad.getSize(), false);

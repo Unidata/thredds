@@ -77,7 +77,7 @@ public class UspLightning3  extends AbstractIOServiceProvider {
       throw new IOException("bad data");
     }
 
-    Dimension recordDim = new Dimension("record", n, true);
+    Dimension recordDim = new Dimension("record", n);
     ncfile.addDimension(null, recordDim);
 
     Structure struct = new Structure(ncfile, null, null, "record");

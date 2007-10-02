@@ -160,6 +160,16 @@ public class Dimension implements Comparable {
   /**
    * Constructor
    * @param name name must be unique within group
+   * @param length length of Dimension
+   */
+  public Dimension(String name, int length) {
+    this.name = name;
+    setLength(length);
+  }
+
+  /**
+   * Constructor
+   * @param name name must be unique within group
    * @param length length, or UNLIMITED.length or UNKNOWN.length
    * @param isShared whether its shared or local to Variable.
    */

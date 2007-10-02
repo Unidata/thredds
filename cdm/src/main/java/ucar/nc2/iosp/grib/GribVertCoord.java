@@ -144,7 +144,7 @@ public class GribVertCoord implements Comparable {
   void addDimensionsToNetcdfFile( NetcdfFile ncfile, Group g) {
     if (dontUseVertical) return;
     int nlevs = levels.size();
-    ncfile.addDimension(g, new Dimension(getVariableName(), nlevs, true));
+    ncfile.addDimension(g, new Dimension(getVariableName(), nlevs));
   }
 
   void addToNetcdfFile( NetcdfFile ncfile, Group g) {
@@ -198,7 +198,7 @@ public class GribVertCoord implements Comparable {
     if (usesBounds) {
       String boundsDimName = "bounds_dim";
       if (g.findDimension(boundsDimName) == null)
-        ncfile.addDimension(g, new Dimension(boundsDimName, 2, true));
+        ncfile.addDimension(g, new Dimension(boundsDimName, 2));
 
       String bname = getVariableName() +"_bounds";
       v.addAttribute( new Attribute("bounds", bname));

@@ -210,7 +210,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     }
 
     // create new one
-    dim = new Dimension(name, len, true);
+    dim = new Dimension(name, len);
     ds.addDimension( null, dim);
     if (debugBreakup) parseInfo.append("  make Dimension = ").append(name).append(" length = ").append(len).append("\n");
 

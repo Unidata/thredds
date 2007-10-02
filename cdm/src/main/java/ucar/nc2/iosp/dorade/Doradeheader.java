@@ -73,7 +73,7 @@ public class Doradeheader {
         try {
             int j = i + 1;
             ncells[i] = mySweep.getNCells(i);
-            gateDim[i] = new Dimension("gate_"+j, ncells[i], true);
+            gateDim[i] = new Dimension("gate_"+j, ncells[i]);
             ncfile.addDimension( null, gateDim[i]);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -88,7 +88,7 @@ public class Doradeheader {
 
   //  Dimension sensorDim = new Dimension("sensor", numSensor, true);
   //  ncfile.addDimension( null, sensorDim);
-    Dimension radialDim = new Dimension("radial", nRays, true);
+    Dimension radialDim = new Dimension("radial", nRays);
     ncfile.addDimension( null, radialDim);
 
 
@@ -274,7 +274,7 @@ public class Doradeheader {
   {
       int j = 0;
       for(int i = 0; i < numSensor; i++) {
-          Dimension d = new Dimension("gate_"+i, cell, true);
+          Dimension d = new Dimension("gate_"+i, cell);
           if( dList[i].equals(d)) {
               j = i;
               break;

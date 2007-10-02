@@ -124,11 +124,11 @@ public class GribHorizCoordSys {
   void addDimensionsToNetcdfFile(NetcdfFile ncfile) {
 
     if (isLatLon) {
-      ncfile.addDimension(g, new Dimension("lat", gdsIndex.ny, true));
-      ncfile.addDimension(g, new Dimension("lon", gdsIndex.nx, true));
+      ncfile.addDimension(g, new Dimension("lat", gdsIndex.ny));
+      ncfile.addDimension(g, new Dimension("lon", gdsIndex.nx));
     } else {
-      ncfile.addDimension(g, new Dimension("y", gdsIndex.ny, true));
-      ncfile.addDimension(g, new Dimension("x", gdsIndex.nx, true));
+      ncfile.addDimension(g, new Dimension("y", gdsIndex.ny));
+      ncfile.addDimension(g, new Dimension("x", gdsIndex.nx));
     }
   }
 

@@ -153,7 +153,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     ds.addVariable(null, v);
 
     // add time
-    ds.addDimension(null, new Dimension("Time", 1, true));
+    ds.addDimension(null, new Dimension("Time", 1));
     v = new CoordinateAxis1D(ds, null, "Time", DataType.INT, "Time", "seconds since 1970-1-1 00:00:00", "time coordinate");
     ds.setValues(v, 1, time, 1);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));

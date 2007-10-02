@@ -67,7 +67,7 @@ public class H5eos {
       String name = elem.getChild("DimensionName").getText();
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
-      Dimension dim = new Dimension(name, length, true);
+      Dimension dim = new Dimension(name, length);
       rootg.addDimension(dim);
     }
 

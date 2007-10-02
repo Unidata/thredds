@@ -559,7 +559,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
     Group g = newds.getRootGroup();
     g.remove(g.findDimension(dimName));
-    g.addDimension(new Dimension(dimName, n, true));
+    g.addDimension(new Dimension(dimName, n));
 
     // make the time coordinate variable data
     ArrayDouble.D1 offsetData = new ArrayDouble.D1(n);

@@ -238,7 +238,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   @Override
   protected void makeTimeCoordinate(GridDataset gds, CancelTask cancelTask) throws IOException {
     String innerDimName = timeAxis.getName();
-    Dimension innerDim = new Dimension(innerDimName, max_times, true);
+    Dimension innerDim = new Dimension(innerDimName, max_times);
     ncDataset.removeDimension(null, innerDimName); // remove previous declaration, if any
     ncDataset.addDimension(null, innerDim);
 

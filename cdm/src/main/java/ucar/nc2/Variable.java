@@ -1177,17 +1177,19 @@ public class Variable implements VariableIF {
    * Add new or replace old if has same name
    *
    * @param att add this Attribute
+   * @return the added attribute
    */
-  public void addAttribute(Attribute att) {
+  public Attribute addAttribute(Attribute att) {
     if (immutable) throw new IllegalStateException("Cant modify");
     for (int i = 0; i < attributes.size(); i++) {
       Attribute a = attributes.get(i);
       if (att.getName().equals(a.getName())) {
         attributes.set(i, att); // replace
-        return;
+        return att;
       }
     }
     attributes.add(att);
+    return att;
   }
 
   /**

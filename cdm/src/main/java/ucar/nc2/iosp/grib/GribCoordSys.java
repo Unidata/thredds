@@ -107,7 +107,7 @@ public class GribCoordSys {
   void addDimensionsToNetcdfFile( NetcdfFile ncfile, Group g) {
     if (dontUseVertical) return;
     int nlevs = levels.size();
-    ncfile.addDimension(g, new Dimension(verticalName, nlevs, true));
+    ncfile.addDimension(g, new Dimension(verticalName, nlevs));
   }
 
   void addToNetcdfFile( NetcdfFile ncfile, Group g) {

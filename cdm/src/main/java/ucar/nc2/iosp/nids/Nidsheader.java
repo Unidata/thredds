@@ -625,7 +625,7 @@ class Nidsheader{
          int ppos =  bos.position();
 
          ArrayList dims =  new ArrayList();
-         Dimension tbDim = new Dimension("pageNumber", npage, true);
+         Dimension tbDim = new Dimension("pageNumber", npage);
          ncfile.addDimension( null, tbDim);
          dims.add( tbDim);
          Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
@@ -768,7 +768,7 @@ class Nidsheader{
         }
 
         ArrayList dims =  new ArrayList();
-        Dimension sDim = new Dimension("graphicSymbolSize", vlen, true);
+        Dimension sDim = new Dimension("graphicSymbolSize", vlen);
         ncfile.addDimension( null, sDim);
         dims.add( sDim);
 
@@ -812,7 +812,7 @@ class Nidsheader{
 
       ArrayList dims =  new ArrayList();
 
-      Dimension sDim = new Dimension("circleSize", len, true);
+      Dimension sDim = new Dimension("circleSize", len);
       ncfile.addDimension( null, sDim);
       dims.add( sDim);
 
@@ -861,7 +861,7 @@ class Nidsheader{
            vlen = vlen + dlen[i];
       }
 
-      Dimension sDim = new Dimension(vname+"Size", vlen, true);
+      Dimension sDim = new Dimension(vname+"Size", vlen);
       ncfile.addDimension( null, sDim);
       dims.add( sDim);
 
@@ -911,7 +911,7 @@ class Nidsheader{
       ArrayList dims =  new ArrayList();
       //int vlen =len;
 
-      Dimension sDim = new Dimension("windBarbSize", len, true);
+      Dimension sDim = new Dimension("windBarbSize", len);
       ncfile.addDimension( null, sDim);
       dims.add( sDim);
 
@@ -993,7 +993,7 @@ class Nidsheader{
       ArrayList dims =  new ArrayList();
       //int vlen =len;
 
-      Dimension sDim = new Dimension("windBarbSize", len, true);
+      Dimension sDim = new Dimension("windBarbSize", len);
       ncfile.addDimension( null, sDim);
       dims.add( sDim);
 
@@ -1049,7 +1049,7 @@ class Nidsheader{
         //int vlen = len;
 
         ArrayList dims =  new ArrayList();
-        Dimension sDim = new Dimension("textStringSize", len, true);
+        Dimension sDim = new Dimension("textStringSize", len);
         ncfile.addDimension( null, sDim);
         dims.add( sDim);
 
@@ -1106,7 +1106,7 @@ class Nidsheader{
            vlen = vlen + dlen[i];
         }
 
-        Dimension sDim = new Dimension("unlinkedVectorSize", vlen, true);
+        Dimension sDim = new Dimension("unlinkedVectorSize", vlen);
         ncfile.addDimension( null, sDim);
         dims.add( sDim);
 
@@ -1171,8 +1171,8 @@ class Nidsheader{
         numX0 = 0;
         numX = numBox;
         numY = numRow;
-        Dimension jDim = new Dimension("Row", numY, true);
-        Dimension iDim = new Dimension("Box", numX, true);
+        Dimension jDim = new Dimension("Row", numY);
+        Dimension iDim = new Dimension("Box", numX);
 
         dims.add( jDim);
         dims.add( iDim);
@@ -1390,10 +1390,10 @@ class Nidsheader{
         //prod_info_size = 2 * (int) (num_bin * scale + 0.5);
         //dimensions: radial, bin
         ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.RADIAL.toString()));
-        Dimension radialDim = new Dimension("azimuth", num_radials, true);
+        Dimension radialDim = new Dimension("azimuth", num_radials);
         ncfile.addDimension( null, radialDim);
 
-        Dimension binDim = new Dimension("gate", num_bin, true);
+        Dimension binDim = new Dimension("gate", num_bin);
         ncfile.addDimension( null, binDim);
         dims.add( radialDim);
         dims.add( binDim);

@@ -1108,10 +1108,11 @@ public class NetcdfFile {
    * @param parent add to this group. If group is null, use root group
    * @param att add this attribute
    */
-  public void addAttribute(Group parent, Attribute att) {
+  public Attribute addAttribute(Group parent, Attribute att) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (parent == null) parent = rootGroup;
     parent.addAttribute(att);
+    return att;
   }
 
   /**
@@ -1119,10 +1120,11 @@ public class NetcdfFile {
    * @param parent add to this group. If group is null, use root group
    * @param g add this group
    */
-  public void addGroup(Group parent, Group g) {
+  public Group addGroup(Group parent, Group g) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (parent == null) parent = rootGroup;
     parent.addGroup(g);
+    return g;
   }
 
   /**
@@ -1130,10 +1132,11 @@ public class NetcdfFile {
    * @param parent add to this group. If group is null, use root group
    * @param d add this Dimension
    */
-  public void addDimension(Group parent, Dimension d) {
+  public Dimension addDimension(Group parent, Dimension d) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (parent == null) parent = rootGroup;
     parent.addDimension(d);
+    return d;
   }
 
   /**
@@ -1153,10 +1156,26 @@ public class NetcdfFile {
    * @param g add to this group. If group is null, use root group
    * @param v add this Variable
    */
-  public void addVariable(Group g, Variable v) {
+  public Variable addVariable(Group g, Variable v) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (g == null) g = rootGroup;
     if (v != null) g.addVariable(v);
+    return v;
+  }
+
+  /**
+   * Add a Variable to the given group.
+   * @param g add to this group. If group is null, use root group
+   * @param v add this Variable
+   */
+  public Variable addVariable(Group g, String shortName, DataType dtype, String dims) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    if (g == null) g = rootGroup;
+    Variable v = new Variable(this, g, null, shortName);
+    v.setDataType( dtype);
+    v.setDimensions( dims);
+    g.addVariable(v);
+    return v;
   }
 
   /**
@@ -1176,8 +1195,8 @@ public class NetcdfFile {
    * @param v add to this Variable.
    * @param att add this attribute
    */
-  public void addVariableAttribute(Variable v, Attribute att) {
-    v.addAttribute(att);
+  public Attribute addVariableAttribute(Variable v, Attribute att) {
+    return v.addAttribute(att);
   }
 
   /*

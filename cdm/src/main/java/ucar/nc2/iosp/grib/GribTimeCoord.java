@@ -117,7 +117,7 @@ public class GribTimeCoord {
 
   void addDimensionsToNetcdfFile( NetcdfFile ncfile, Group g) {
     Collections.sort( times);
-    ncfile.addDimension(g, new Dimension(getName(), getNTimes(), true));
+    ncfile.addDimension(g, new Dimension(getName(), getNTimes()));
   }
 
   void addToNetcdfFile( NetcdfFile ncfile, Group g) {

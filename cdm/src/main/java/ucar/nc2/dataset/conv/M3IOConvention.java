@@ -142,7 +142,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
     // layer edges
     String edge_name = "layer";
-    Dimension lay_edge = new Dimension( edge_name, nz+1, true);
+    Dimension lay_edge = new Dimension( edge_name, nz+1);
     ds.addDimension( null, lay_edge);
     CoordinateAxis vedge = new CoordinateAxis1D( ds, null, edge_name, DataType.DOUBLE, edge_name, unitName,
        "synthesized coordinate from "+levelsName+" global attributes");

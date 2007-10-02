@@ -133,7 +133,7 @@ these are long-range detections.
     }
     raf.close();
 
-    Dimension recordDim = new Dimension("record", n, true);
+    Dimension recordDim = new Dimension("record", n);
     ncfile.addDimension( null, recordDim);
 
     Variable date = new Variable(ncfile, null, null, "date");

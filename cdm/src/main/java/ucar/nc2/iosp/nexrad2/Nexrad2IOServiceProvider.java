@@ -69,7 +69,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     if (volScan.hasDifferentDopplarResolutions())
       throw new IllegalStateException("volScan.hasDifferentDopplarResolutions");
 
-    radialDim = new Dimension("radial", volScan.getMaxRadials(), true);
+    radialDim = new Dimension("radial", volScan.getMaxRadials());
     ncfile.addDimension( null, radialDim);
 
     makeVariable( ncfile, REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups());
@@ -154,8 +154,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     String scanDimName = "scan"+abbrev;
     String gateDimName = "gate"+abbrev;
-    Dimension scanDim = new Dimension(scanDimName, nscans, true);
-    Dimension gateDim = new Dimension(gateDimName, ngates, true);
+    Dimension scanDim = new Dimension(scanDimName, nscans);
+    Dimension gateDim = new Dimension(gateDimName, ngates);
     ncfile.addDimension( null, scanDim);
     ncfile.addDimension( null, gateDim);
 
