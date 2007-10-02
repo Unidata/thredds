@@ -469,15 +469,20 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     List childEnhancerList = new ArrayList();
     Element addTimeCovElem = dsElem.getChild( "addTimeCoverage", defNS );
     if ( addTimeCovElem != null )
-      childEnhancerList.add( readDatasetScanAddTimeCoverage( addTimeCovElem));
+    {
+      DatasetEnhancer addTimeCovEnhancer = readDatasetScanAddTimeCoverage( addTimeCovElem );
+      if ( addTimeCovEnhancer != null )
+        childEnhancerList.add( addTimeCovEnhancer );
+    }
 
     // Read datasetEnhancerImpl elements (user defined implementations of DatasetEnhancer)
     List dsEnhancerElemList = dsElem.getChildren( "datasetEnhancerImpl", defNS );
     for ( Iterator it = dsEnhancerElemList.iterator(); it.hasNext(); )
     {
-      childEnhancerList.add(
-              readDatasetScanUserDefined( (Element) it.next(),
-                                          DatasetEnhancer.class ) );
+      Object o = readDatasetScanUserDefined( (Element) it.next(),
+                                             DatasetEnhancer.class );
+      if ( o != null )
+        childEnhancerList.add( o );
     }
 
     // Read catalogRefExpander element
