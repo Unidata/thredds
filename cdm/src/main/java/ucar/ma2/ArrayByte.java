@@ -19,6 +19,8 @@
  */
 package ucar.ma2;
 
+import java.nio.ByteBuffer;
+
 /**
  * Concrete implementation of Array specialized for bytes.
  * Data storage is with 1D java array of bytes.
@@ -107,6 +109,9 @@ public class ArrayByte extends Array {
       ja[i] = iter.getByteNext();
   }
 
+  public ByteBuffer getDataAsByteBuffer() {
+    return ByteBuffer.wrap((byte[]) get1DJavaArray(byte.class));
+  }
 
  /** Return the element class type */
   public Class getElementType() { return byte.class; }

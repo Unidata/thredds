@@ -401,7 +401,7 @@ public class ThreddsDataFactory {
   }
 
   private NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws java.io.IOException {
-    InvDataset invDataset = access.getDataset();
+     InvDataset invDataset = access.getDataset();
     String datasetId = invDataset.getID();
     String title = invDataset.getName();
 

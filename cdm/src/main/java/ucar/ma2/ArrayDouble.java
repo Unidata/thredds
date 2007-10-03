@@ -19,6 +19,10 @@
  */
 package ucar.ma2;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.DoubleBuffer;
+
 /**
  * Concrete implementation of Array specialized for doubles.
  * Data storage is with 1D java array of doubles.
@@ -103,6 +107,13 @@ public class ArrayDouble extends Array {
     double[] ja = (double []) javaArray;
     for (int i=0; i<ja.length; i++)
       ja[i] = iter.getDoubleNext();
+  }
+
+  public ByteBuffer getDataAsByteBuffer() {
+    ByteBuffer bb = ByteBuffer.allocate((int)(8*getSize()));
+    DoubleBuffer ib = bb.asDoubleBuffer();
+    ib.put( (double[]) get1DJavaArray(double.class)); // make sure its in canonical order
+    return bb;
   }
 
  /** Return the element class type */

@@ -124,7 +124,7 @@ public class StationObsServlet extends AbstractServlet {
 
     // parse the input
     QueryParams qp = new QueryParams();
-    if (!qp.parseQuery(req, res, new String[]{QueryParams.RAW, QueryParams.CSV, QueryParams.XML, QueryParams.NETCDF}))
+    if (!qp.parseQuery(req, res, new String[]{QueryParams.RAW, QueryParams.CSV, QueryParams.XML, QueryParams.NETCDF, QueryParams.NETCDFS}))
       return; // has sent the error message
 
     if (qp.hasBB) {
@@ -195,7 +195,7 @@ public class StationObsServlet extends AbstractServlet {
       return;
     }
 
-    soc.write(qp, res.getWriter());
+    soc.write(qp, res);
 
     long took = System.currentTimeMillis() - start;
     System.out.println("\ntotal response took = " + took + " msecs");

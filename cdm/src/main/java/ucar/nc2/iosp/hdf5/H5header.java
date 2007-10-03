@@ -21,6 +21,7 @@ package ucar.nc2.iosp.hdf5;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
+import ucar.unidata.util.SpecialMathFunction;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
@@ -1971,7 +1972,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       for (BTree2.Entry2 e : this.btree.entryList) {
         BTree2.Record5 r5 = (BTree2.Record5) e.record;
-        //this.fractalHeap.get( r5.heapId);
+        this.fractalHeap.get( r5.heapId);
       }
 
       /* now read all the entries in the btree
@@ -2449,15 +2450,14 @@ There is _no_ datatype information stored for these sort of selections currently
 
     class Record5 {
       int nameHash;
-      long heapId;
+      byte[] heapId = new byte[7];
 
       Record5() throws IOException {
         nameHash = raf.readInt();
-        heapId = read7ByteHeapId( raf);
+        raf.read( heapId);
 
-        if (debugBtree2) {
-          debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + heapId);
-        }
+        //if (debugBtree2)
+        //  debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + showBytes(heapId));
       }
     }
 
@@ -3053,37 +3053,18 @@ There is _no_ datatype information stored for these sort of selections currently
       // data
       if (currentNumRows == 0)
         new DirectBlock(getFileOffset(rootBlockAddress), address);
-      else
+      else {
+        //int nrows = SpecialMathFunction.log2(iblock_size - SpecialMathFunction.log2(startingBlockSize*tableWidth))+1;
+        int maxrows_directBlocks = (int) (SpecialMathFunction.log2(maxDirectBlockSize) - SpecialMathFunction.log2(startingBlockSize)) + 2;
+
         new IndirectBlock(getFileOffset(rootBlockAddress), address, hasFilters, 1, 0);
+      }
       //if (debugTracker) memTracker.addByLen("Group FractalHeapData (" + group.dname + ")", dataAddress, size);
     }
 
     private class DoublingTable {
       DoublingTable( int tableWidth, int startingBlockSize) {
 
-      }
-    }
-
-    private class DirectBlock {
-      DirectBlock(long pos, long heapAddress) throws IOException {
-        raf.seek(pos);
-
-        // header
-        byte[] heapname = new byte[4];
-        raf.read(heapname);
-        String nameS = new String(heapname);
-        if (!nameS.equals("FHDB"))
-          throw new IllegalStateException();
-
-        byte version = raf.readByte();
-        long heapHeaderAddress = readOffset();
-        if (heapAddress != heapHeaderAddress)
-          throw new IllegalStateException();
-
-        int nbytes = maxHeapSize / 8;
-        if (maxHeapSize % 8 != 0) nbytes++;
-        byte[] dummy = new byte[nbytes];
-        raf.read(dummy);
       }
     }
 
@@ -3132,10 +3113,43 @@ There is _no_ datatype information stored for these sort of selections currently
         }
 
       }
+
     }
 
-    void get(byte[] id) {
-      printBytes("Heap id = ", id, id.length, false);
+    private class DirectBlock {
+      DirectBlock(long pos, long heapAddress) throws IOException {
+        raf.seek(pos);
+
+        // header
+        byte[] heapname = new byte[4];
+        raf.read(heapname);
+        String nameS = new String(heapname);
+        if (!nameS.equals("FHDB"))
+          throw new IllegalStateException();
+
+        byte version = raf.readByte();
+        long heapHeaderAddress = readOffset();
+        if (heapAddress != heapHeaderAddress)
+          throw new IllegalStateException();
+
+        int nbytes = maxHeapSize / 8;
+        if (maxHeapSize % 8 != 0) nbytes++;
+        byte[] dummy = new byte[nbytes];
+        raf.read(dummy);
+      }
+    }
+
+    void get(byte[] heapId) {
+      int type = (heapId[0] & 0x30) >> 4;
+      int n = maxHeapSize / 8;
+      int m = getNumBytesFromMax(maxDirectBlockSize-1);
+
+      int offset = makeIntFromBytes(heapId, 1, n);
+      int size = makeIntFromBytes(heapId, 1+n, m);
+
+      //long pos = getPos(offset);
+
+      System.out.println("Heap id ="+showBytes(heapId)+" type = " + type+" n= "+n+" m= "+m+" offset= "+offset+" size= "+size);
     }
 
   } // FractalHeap
@@ -3568,27 +3582,13 @@ There is _no_ datatype information stored for these sort of selections currently
   //////////////////////////////////////////////////////////////
   // utilities
 
-  static long read7ByteHeapId( RandomAccessFile raf) throws IOException {
-    byte[] id = new byte[7];
-    if (0 > raf.read(id))
-      throw new EOFException();
-    printBytes("  read7ByteHeapId=", id, 7, true);
-
-    // little endian - low order
-    int low = (int) id[3];
-    for (int i=2; i>=0; i--) {
-      low <<= 8;
-      low = low + id[i];
+  int makeIntFromBytes( byte[] bb, int start, int n) {
+    int result = 0;
+    for (int i=start+n-1; i>=start; i--) {
+      result <<= 8;
+      byte b = bb[i];
+      result += (b < 0) ? b + 256 : b;
     }
-
-    // little endian - high order (missing high byte)
-    int hi = (int) id[6];
-    for (int i=5; i>3; i--) {
-      hi <<= 8;
-      hi = hi + id[i];
-    }
-
-    long result = (low & 0xFFFFFFFFL) + ((long) hi << 32);
     return result;
   }
 
@@ -3660,12 +3660,18 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   // size of data depends on "maximum possible number"
-  private long readVariableSizeMax(int maxNumber) throws IOException {
+  private int getNumBytesFromMax(long maxNumber) {
     int size = 0;
     while (maxNumber != 0) {
       size++;
       maxNumber >>>= 8;  // right shift with zero extension
     }
+    return size;
+  }
+
+  // size of data depends on "maximum possible number"
+  private long readVariableSizeMax(int maxNumber) throws IOException {
+    int size = getNumBytesFromMax( maxNumber);
     return readVariableSize(size);
   }
 
@@ -3711,6 +3717,18 @@ There is _no_ datatype information stored for these sort of selections currently
     printBytes(head, mess, nbytes, false);
     raf.seek(savePos);
   }
+
+  static String showBytes(byte[] buff) {
+    StringBuffer sbuff = new StringBuffer();
+    for (int i = 0; i < buff.length; i++) {
+      byte b = buff[i];
+      int ub = (b < 0) ? b + 256 : b;
+      if (i > 0) sbuff.append(" ");
+      sbuff.append(ub);
+    }
+    return sbuff.toString();
+  }
+
 
   static void printBytes(String head, byte[] buff, int n, boolean count) {
     debugOut.print(head + " == ");

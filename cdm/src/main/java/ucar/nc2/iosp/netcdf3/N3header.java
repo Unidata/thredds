@@ -63,6 +63,7 @@ public class N3header {
   private List<Variable> uvars = new ArrayList<Variable>(); // vars that have the unlimited dimension
   private Dimension udim; // the unlimited dimension
 
+  boolean isStreaming = false;
   int numrecs = 0; // number of records written
   int recsize = 0; // size of each record (padded)
   long dataStart = Long.MAX_VALUE; // where the data starts
@@ -104,6 +105,10 @@ public class N3header {
     // number of records
     numrecs = raf.readInt();
     if (debug) out.println("numrecs= " + numrecs);
+    if (numrecs == -1) {
+      isStreaming = true;
+      numrecs = 0;
+    }
 
     // dimensions
     int numdims = 0;
@@ -195,7 +200,7 @@ public class N3header {
       long begin = useLongOffset ? raf.readLong() : (long) raf.readInt();
       if (debug)
         out.println(" name= " + name + " type=" + type + " vsize=" + vsize + " velems=" + velems + " begin= " + begin +
-                " isRecord=" + isRecord + " attsPos= " + varAttsPos + "\n");
+            " isRecord=" + isRecord + " attsPos= " + varAttsPos + "\n");
       var.setSPobject(new Vinfo(vsize, begin, isRecord, varAttsPos));
 
       // track how big each record is
@@ -227,6 +232,23 @@ public class N3header {
       System.out.println("  nonRecordData size= " + nonRecordData);
       System.out.println("  recsize= " + recsize);
       System.out.println("  numrecs= " + numrecs);
+    }
+
+    // check for streaming file - numrecs must be caclulated
+    if (isStreaming) {
+      long recordSpace = actualSize - dataStart - nonRecordData;
+      if (debug)
+        System.out.println(" isStreaming recordSpace=" + recordSpace + " has extra bytes = " + (recordSpace % recsize));
+      numrecs = (int) (recordSpace / recsize);
+
+      // set it in the unlimited dimension, all of the record variables
+      if (udim != null) {
+        udim.setLength(this.numrecs);
+        for (Variable uvar : uvars) {
+          uvar.resetShape();
+          uvar.invalidateCache();
+        }
+      }
     }
 
     // check for truncated files

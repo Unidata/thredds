@@ -19,6 +19,9 @@
  */
 package ucar.ma2;
 
+import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
+
 /**
  * Concrete implementation of Array specialized for longs.
  * Data storage is with 1D java array of longs.
@@ -105,6 +108,13 @@ public class ArrayLong extends Array {
     long[] ja = (long []) javaArray;
     for (int i=0; i<ja.length; i++)
       ja[i] = iter.getLongNext();
+  }
+
+  public ByteBuffer getDataAsByteBuffer() {
+    ByteBuffer bb = ByteBuffer.allocate((int)(8*getSize()));
+    LongBuffer ib = bb.asLongBuffer();
+    ib.put( (long[]) get1DJavaArray(long.class)); // make sure its in canonical order
+    return bb;
   }
 
  /** Return the element class type */

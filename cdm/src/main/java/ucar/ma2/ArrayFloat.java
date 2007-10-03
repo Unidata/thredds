@@ -19,6 +19,9 @@
  */
 package ucar.ma2;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+
 /**
  * Concrete implementation of Array specialized for floats.
  * Data storage is with 1D java array of floats.
@@ -104,6 +107,13 @@ public class ArrayFloat extends Array {
     float[] ja = (float []) javaArray;
     for (int i=0; i<ja.length; i++)
       ja[i] = iter.getFloatNext();
+  }
+
+  public ByteBuffer getDataAsByteBuffer() {
+    ByteBuffer bb = ByteBuffer.allocate((int)(4*getSize()));
+    FloatBuffer ib = bb.asFloatBuffer();
+    ib.put( (float[]) get1DJavaArray(float.class)); // make sure its in canonical order
+    return bb;
   }
 
  /** Return the element class type */

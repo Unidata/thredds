@@ -25,6 +25,7 @@ import ucar.ma2.Array;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.WriterStationObsDataset;
 import ucar.nc2.dt.point.StationObsDatasetInfo;
+import ucar.nc2.dt.point.WriterCFStationObsDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.units.DateFormatter;
@@ -47,6 +48,7 @@ import org.jdom.Element;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
+import javax.servlet.http.HttpServletResponse;
 
 public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
@@ -761,7 +763,7 @@ public class StationObsCollection {
     return w.netcdfResult;
   }
 
-  public Writer write(QueryParams qp, java.io.PrintWriter pw) throws IOException {
+  public Writer write(QueryParams qp, HttpServletResponse res) throws IOException {
     long start = System.currentTimeMillis();
     Limit counter = new Limit();
 
@@ -773,13 +775,15 @@ public class StationObsCollection {
 
     Writer w;
     if (type.equals(QueryParams.RAW)) {
-      w = new WriterRaw(qp, vars, pw);
+      w = new WriterRaw(qp, vars, res.getWriter());
     } else if (type.equals(QueryParams.XML)) {
-      w = new WriterXML(qp, vars, pw);
+      w = new WriterXML(qp, vars, res.getWriter());
     } else if (type.equals(QueryParams.CSV)) {
-      w = new WriterCSV(qp, vars, pw);
+      w = new WriterCSV(qp, vars, res.getWriter());
     } else if (type.equals(QueryParams.NETCDF)) {
-      w = new WriterNetcdf(qp, vars, pw);
+      w = new WriterNetcdf(qp, vars, res.getWriter());
+    } else if (type.equals(QueryParams.NETCDFS)) {
+      w = new WriterNetcdfStream(qp, vars, res.getOutputStream());
     } else {
       log.error("Unknown writer type = " + type);
       return null;
@@ -817,8 +821,6 @@ public class StationObsCollection {
     }
 
     w.trailer();
-
-    if (pw != null) pw.flush();
 
     if (debug) {
       long took = System.currentTimeMillis() - start;
@@ -911,6 +913,7 @@ public class StationObsCollection {
     public void trailer() {
       try {
         sobsWriter.finish();
+        writer.flush();
       } catch (IOException e) {
         log.error("WriterNetcdf.trailer", e);
       }
@@ -926,6 +929,69 @@ public class StationObsCollection {
     }
   }
 
+  class WriterNetcdfStream extends Writer {
+    WriterCFStationObsDataset sobsWriter;
+    DataOutputStream out;
+    List<Station> stnList;
+    List<VariableSimpleIF> varList;
+
+    WriterNetcdfStream(QueryParams qp, List<String> varNames, OutputStream os) throws IOException {
+      super(qp, varNames, null);
+
+      out = new DataOutputStream( os);
+      sobsWriter = new WriterCFStationObsDataset(out, "Extracted data from Unidata/TDS Metar dataset");
+
+      if ((varNames == null) || (varNames.size() == 0)) {
+        varList = variableList;
+      } else {
+        varList = new ArrayList<VariableSimpleIF>(varNames.size());
+        for (VariableSimpleIF v : variableList) {
+          if (varNames.contains(v.getName()))
+            varList.add(v);
+        }
+      }
+    }
+
+    public void header(List<String> stns) {
+      try {
+        getStationMap();
+
+        if (stns.size() == 0)
+          stnList = stationList;
+        else {
+          stnList = new ArrayList<Station>(stns.size());
+
+          for (String s : stns) {
+            stnList.add(stationMap.get(s));
+          }
+        }
+
+        sobsWriter.writeHeader(stnList, varList);
+      } catch (IOException e) {
+        log.error("WriterNetcdf.header", e);
+      }
+    }
+
+    public void trailer() {
+      try {
+        sobsWriter.finish();
+        out.flush();
+      } catch (IOException e) {
+        log.error("WriterNetcdf.trailer", e);
+      }
+    }
+
+    Action getAction() {
+      return new Action() {
+        public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
+          sobsWriter.writeRecord(sobs, sdata);
+          count++;
+        }
+      };
+    }
+  }
+
+
   class WriterRaw extends Writer {
 
     WriterRaw(QueryParams qp, List<String> vars, final java.io.PrintWriter writer) {
@@ -936,6 +1002,7 @@ public class StationObsCollection {
     }
 
     public void trailer() {
+      writer.flush();
     }
 
     Action getAction() {
@@ -988,7 +1055,7 @@ public class StationObsCollection {
       } catch (XMLStreamException e) {
         throw new RuntimeException(e.getMessage());
       }
-      // writer.println("</metarCollection>");
+      writer.flush();
     }
 
     Action getAction() {
@@ -1052,6 +1119,7 @@ public class StationObsCollection {
     }
 
     public void trailer() {
+      writer.flush();
     }
 
     Action getAction() {

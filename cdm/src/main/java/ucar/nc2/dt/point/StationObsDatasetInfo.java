@@ -172,6 +172,7 @@ public class StationObsDatasetInfo {
     elem.addContent(new Element("accept").addContent("xml"));
     elem.addContent(new Element("accept").addContent("csv"));
     elem.addContent(new Element("accept").addContent("netcdf"));
+    elem.addContent(new Element("accept").addContent("netcdfStream"));
     rootElem.addContent(elem);
 
     return doc;

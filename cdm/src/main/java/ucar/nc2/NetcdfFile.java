@@ -1179,6 +1179,23 @@ public class NetcdfFile {
   }
 
   /**
+   * Add a Variable to the given group.
+   * @param g add to this group. If group is null, use root group
+   * @param v add this Variable
+   */
+  public Variable addStringVariable(Group g, String shortName, String dims, int strlen) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    if (g == null) g = rootGroup;
+    String dimName = shortName+"_strlen";
+    addDimension(g, new Dimension(dimName, strlen));
+    Variable v = new Variable(this, g, null, shortName);
+    v.setDataType( DataType.CHAR);
+    v.setDimensions( dims+" "+dimName);
+    g.addVariable(v);
+    return v;
+  }
+
+  /**
    * Remove a Variable from the given group by name.
    * @param g remove from this group. If group is null, use root group
    * @param varName name of variable to remove.

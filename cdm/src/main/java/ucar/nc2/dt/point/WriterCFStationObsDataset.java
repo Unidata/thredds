@@ -22,6 +22,7 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.dt.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.netcdf3.N3streamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
@@ -45,18 +46,12 @@ public class WriterCFStationObsDataset {
   private static final String latName = "latitude";
   private static final String lonName = "longitude";
   private static final String altName = "altitude";
-  private static final String timeName = "time";
   private static final String idName = "station_id";
   private static final String descName = "station_description";
   private static final String wmoName = "wmo_id";
 
-  private static final String firstChildName = "firstChild";
-  private static final String lastChildName = "lastChild";
-  private static final String numChildName = "numChildren";
-  private static final String nextChildName = "nextChild";
-  private static final String prevChildName = "prevChild";
+  private static final String timeName = "time";
   private static final String parentName = "parent_index";
-  // private static final String timeStrLenDim = "time_strlen";
 
   private DateFormatter dateFormatter = new DateFormatter();
   private int name_strlen, desc_strlen, wmo_strlen;
@@ -65,9 +60,8 @@ public class WriterCFStationObsDataset {
   private String title;
 
   private Set<Dimension> dimSet = new HashSet<Dimension>();
-  private List<Dimension> recordDims = new ArrayList<Dimension>();
-  private List<Dimension> stationDims = new ArrayList<Dimension>();
   private List<Station> stnList;
+  private List<Variable> recordVars = new ArrayList<Variable>();
   private Date minDate = null;
   private Date maxDate = null;
 
@@ -76,46 +70,61 @@ public class WriterCFStationObsDataset {
 
   private boolean debug = false;
 
-  public WriterCFStationObsDataset(String fileOut, String title) {
-    ncfile = new NetcdfFileStream();
+  public WriterCFStationObsDataset(DataOutputStream stream, String title) {
+    ncfile = new NetcdfFileStream(stream);
     this.title = title;
   }
 
   private class NetcdfFileStream extends NetcdfFile {
-    NetcdfFileStream() {
+    N3streamWriter swriter;
+    DataOutputStream stream;
+
+    NetcdfFileStream(DataOutputStream stream) {
       super();
+      this.stream = stream;
+      swriter = new N3streamWriter(this);
+    }
+
+    void writeHeader() throws IOException {
+      swriter.writeHeader(stream);
+    }
+
+    void writeNonRecordData(String varName, Array data) throws IOException {
+      swriter.writeNonRecordData(findVariable(varName), stream, data);
+    }
+
+    void writeRecordData(List<Variable> varList) throws IOException {
+      swriter.writeRecordData(stream, varList);
     }
   }
 
   public void writeHeader(List<Station> stns, List<VariableSimpleIF> vars) throws IOException {
     createGlobalAttributes();
     createStations(stns);
+    createRecordVariables(vars);
 
-    // dummys, update in finish()
-    ncfile.addAttribute( null, new Attribute("time_coverage_start", dateFormatter.toDateTimeStringISO(new Date())));
-    ncfile.addAttribute( null, new Attribute("time_coverage_end", dateFormatter.toDateTimeStringISO(new Date())));
-
-    createDataVariables(vars);
-
-    ncfile.create(); // done with define mode
-
+    ncfile.finish(); // done with define mode
+    ncfile.writeHeader();
     writeStationData(stns); // write out the station info
 
     // now write the observations
-    if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
-      throw new IllegalStateException("can't add record variable");
+    //if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
+    //  throw new IllegalStateException("can't add record variable");
   }
 
   private void createGlobalAttributes() {
-    ncfile.addAttribute(null, new Attribute("Conventions", "Unidata Observation Dataset v1.0"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
     ncfile.addAttribute(null, new Attribute("cdm_datatype", "Station"));
     ncfile.addAttribute(null, new Attribute("title", title));
-    ncfile.addAttribute(null, new Attribute("desc", "Extracted by THREDDS/Netcdf Subset Service"));
+    //ncfile.addAttribute(null, new Attribute("desc", "Extracted by THREDDS/Netcdf Subset Service"));
     /* ncfile.addGlobalAttribute("observationDimension", recordDimName);
     ncfile.addGlobalAttribute("stationDimension", stationDimName);
     ncfile.addGlobalAttribute("latitude_coordinate", latName);
     ncfile.addGlobalAttribute("longitude_coordinate", lonName);
-    ncfile.addGlobalAttribute("time_coordinate", timeName); */
+    ncfile.addGlobalAttribute("time_coordinate", timeName);
+    // dummys, update in finish()
+    ncfile.addAttribute( null, new Attribute("time_coverage_start", dateFormatter.toDateTimeStringISO(new Date())));
+    ncfile.addAttribute( null, new Attribute("time_coverage_end", dateFormatter.toDateTimeStringISO(new Date()))); */
   }
 
   private void createStations(List<Station> stnList) throws IOException {
@@ -149,62 +158,66 @@ public class WriterCFStationObsDataset {
     ncfile.addAttribute(null, new Attribute("geospatial_lon_max", Double.toString(llbb.getUpperRightPoint().getLongitude())));
 
     // add the dimensions
-    Dimension recordDim = ncfile.addDimension( null, new Dimension(recordDimName, -1, true, true, false));
-    recordDims.add(recordDim);
-
-    Dimension stationDim = ncfile.addDimension( null, new Dimension(stationDimName, nstns));
-    stationDims.add(stationDim);
+    ncfile.addDimension(null, new Dimension(recordDimName, 0, true, true, false));
+    ncfile.addDimension(null, new Dimension(stationDimName, nstns));
 
     // add the station Variables using the station dimension
     Variable v = ncfile.addVariable(null, latName, DataType.DOUBLE, stationDimName);
-    v.addAttribute( new Attribute("units", "degrees_north"));
-    v.addAttribute( new Attribute("long_name", "station latitude"));
+    v.addAttribute(new Attribute("units", "degrees_north"));
+    v.addAttribute(new Attribute("long_name", "station latitude"));
 
     v = ncfile.addVariable(null, lonName, DataType.DOUBLE, stationDimName);
-    v.addAttribute( new Attribute("units", "degrees_east"));
-    v.addAttribute( new Attribute("long_name", "station longitude"));
+    v.addAttribute(new Attribute("units", "degrees_east"));
+    v.addAttribute(new Attribute("long_name", "station longitude"));
 
     if (useAlt) {
       v = ncfile.addVariable(null, altName, DataType.DOUBLE, stationDimName);
-      v.addAttribute( new Attribute("units", "meters"));
-      v.addAttribute( new Attribute("long_name", "station altitude"));
+      v.addAttribute(new Attribute("units", "meters"));
+      v.addAttribute(new Attribute("long_name", "station altitude"));
+      v.addAttribute(new Attribute("positive", "up"));
     }
 
-    v = ncfile.addStringVariable(null, idName, stationDims, name_strlen);
-    v.addAttribute( new Attribute("long_name", "station identifier"));
+    v = ncfile.addStringVariable(null, idName, stationDimName, name_strlen);
+    v.addAttribute(new Attribute("long_name", "station identifier"));
 
-    v = ncfile.addStringVariable(null, descName, stationDims, desc_strlen);
-    v.addAttribute( new Attribute("long_name", "station description"));
+    v = ncfile.addStringVariable(null, descName, stationDimName, desc_strlen);
+    v.addAttribute(new Attribute("long_name", "station description"));
 
     if (useWmoId) {
-      v = ncfile.addStringVariable(null, wmoName, stationDims, wmo_strlen);
-      v.addAttribute( new Attribute("long_name", "station WMO id"));
+      v = ncfile.addStringVariable(null, wmoName, stationDimName, wmo_strlen);
+      v.addAttribute(new Attribute("long_name", "station WMO id"));
     }
 
-    v = ncfile.addVariable(null, numChildName, DataType.INT, stationDimName);
+    /* v = ncfile.addVariable(null, numChildName, DataType.INT, stationDimName);
     v.addAttribute( new Attribute("long_name", "number of children in linked list for this station"));
 
     v = ncfile.addVariable(null, lastChildName, DataType.INT, stationDimName);
     v.addAttribute( new Attribute("long_name", "record number of last child in linked list for this station"));
 
     v = ncfile.addVariable(null, firstChildName, DataType.INT, stationDimName);
-    v.addAttribute( new Attribute("long_name", "record number of first child in linked list for this station"));
+    v.addAttribute( new Attribute("long_name", "record number of first child in linked list for this station"));  */
 
-    // time variable
-    Variable timeVar = ncfile.addStringVariable(null, timeName, recordDims, 20);
-    timeVar.addAttribute( new Attribute("long_name", "ISO-8601 Date"));
-
-    v = ncfile.addVariable(null, prevChildName, DataType.INT, recordDimName);
-    v.addAttribute( new Attribute("long_name", "record number of previous child in linked list"));
-
-    v = ncfile.addVariable(null, parentName, DataType.INT, recordDimName);
-    v.addAttribute( new Attribute("long_name", "index of parent station"));
-
-    v = ncfile.addVariable(null, nextChildName, DataType.INT, recordDimName);
-    v.addAttribute( new Attribute("long_name", "record number of next child in linked list"));
   }
 
-  private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
+  private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
+  private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
+
+
+  private void createRecordVariables(List<VariableSimpleIF> dataVars) {
+
+    // time variable
+    Variable timeVar = ncfile.addVariable(null, timeName, DataType.INT, recordDimName);
+    timeVar.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00:00"));
+    timeVar.addAttribute(new Attribute("long_name", "calendar date"));
+    recordVars.add(timeVar);
+    timeVar.setCachedData(timeArray, false);
+
+    Variable parentVar = ncfile.addVariable(null, parentName, DataType.INT, recordDimName);
+    parentVar.addAttribute(new Attribute("long_name", "index of parent station"));
+    recordVars.add(parentVar);
+    parentVar.setCachedData(parentArray, false);
+
+    Attribute coordAtt = new Attribute("coordinates", useAlt ? "latitude longitude altitude time" : "latitude longitude time");
 
     // find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
@@ -215,7 +228,7 @@ public class WriterCFStationObsDataset {
     // add them
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
-        ncfile.addDimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
+        ncfile.addDimension(null, new Dimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength()));
     }
 
     // add the data variables all using the record dimension
@@ -226,12 +239,13 @@ public class WriterCFStationObsDataset {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());
       }
-      Variable newVar = ncfile.addVariable(oldVar.getName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar = ncfile.addVariable(null, oldVar.getName(), oldVar.getDataType(), dimNames.toString());
+      recordVars.add(newVar);
 
       List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
-        ncfile.addVariableAttribute(newVar, att);
-      }
+      for (Attribute att : atts)
+        newVar.addAttribute(att);
+      newVar.addAttribute(coordAtt);
     }
 
   }
@@ -259,9 +273,9 @@ public class WriterCFStationObsDataset {
     ArrayDouble.D1 latArray = new ArrayDouble.D1(nstns);
     ArrayDouble.D1 lonArray = new ArrayDouble.D1(nstns);
     ArrayDouble.D1 altArray = new ArrayDouble.D1(nstns);
-    ArrayObject.D1 idArray = new ArrayObject.D1(String.class, nstns);
-    ArrayObject.D1 descArray = new ArrayObject.D1(String.class, nstns);
-    ArrayObject.D1 wmoArray = new ArrayObject.D1(String.class, nstns);
+    ArrayChar.D2 idArray = new ArrayChar.D2(nstns, name_strlen);
+    ArrayChar.D2 descArray = new ArrayChar.D2(nstns, desc_strlen);
+    ArrayChar.D2 wmoArray = new ArrayChar.D2(nstns, wmo_strlen);
 
     for (int i = 0; i < stnList.size(); i++) {
       Station stn = stnList.get(i);
@@ -271,26 +285,28 @@ public class WriterCFStationObsDataset {
       lonArray.set(i, stn.getLongitude());
       if (useAlt) altArray.set(i, stn.getAltitude());
 
-      idArray.set(i, stn.getName());
-      descArray.set(i, stn.getDescription());
-      if (useWmoId) wmoArray.set(i, stn.getWmoId());
+      idArray.setString(i, stn.getName());
+      descArray.setString(i, stn.getDescription());
+      if (useWmoId) wmoArray.setString(i, stn.getWmoId());
     }
 
     try {
-      ncfile.write(latName, latArray);
-      ncfile.write(lonName, lonArray);
-      if (useAlt) ncfile.write(altName, altArray);
-      ncfile.writeStringData(idName, idArray);
-      ncfile.writeStringData(descName, descArray);
-      if (useWmoId) ncfile.writeStringData(wmoName, wmoArray);
+      //public void writeNonRecordVariable(WritableByteChannel channel, Variable v, Array data);
 
-    } catch (InvalidRangeException e) {
+      ncfile.writeNonRecordData(latName, latArray);
+      ncfile.writeNonRecordData(lonName, lonArray);
+      if (useAlt) ncfile.writeNonRecordData(altName, altArray);
+      ncfile.writeNonRecordData(idName, idArray);
+      ncfile.writeNonRecordData(descName, descArray);
+      if (useWmoId) ncfile.writeNonRecordData(wmoName, wmoArray);
+
+    } catch (Exception e) {
       e.printStackTrace();
       throw new IllegalStateException(e);
     }
   }
 
-  private void writeDataFinish() throws IOException {
+  /* private void writeDataFinish() throws IOException {
     ArrayInt.D1 nextChildArray = new ArrayInt.D1(recno);
 
     int nstns = stnList.size();
@@ -339,21 +355,31 @@ public class WriterCFStationObsDataset {
 
     ncfile.updateAttribute(null, new Attribute("time_coverage_start", dateFormatter.toDateTimeStringISO(minDate)));
     ncfile.updateAttribute(null, new Attribute("time_coverage_end", dateFormatter.toDateTimeStringISO(maxDate)));
-  }
-
-  private int recno = 0;
-  private ArrayObject.D1 timeArray = new ArrayObject.D1(String.class, 1);
-  private ArrayInt.D1 prevArray = new ArrayInt.D1(1);
-  private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
-  private int[] origin = new int[1];
-  private int[] originTime = new int[2];
+  }  */
 
   public void writeRecord(StationObsDatatype sobs, StructureData sdata) throws IOException {
     if (debug) System.out.println("sobs= " + sobs + "; station = " + sobs.getStation());
-    writeRecord(sobs.getStation().getName(), sobs.getObservationTimeAsDate(), sdata);
+
+    StructureMembers sm = sdata.getStructureMembers();
+
+    for (Variable v : recordVars) {
+      if (timeName.equals(v.getShortName())) {
+        Date d = sobs.getObservationTimeAsDate();
+        int secs = (int) (d.getTime() / 1000);
+        timeArray.set(0, secs);
+      } else if (parentName.equals(v.getShortName())) {
+        int stationIndex = stnList.indexOf(sobs.getStation());
+        parentArray.set(0, stationIndex);
+      } else {
+        StructureMembers.Member m = sm.findMember(v.getShortName());
+        v.setCachedData(sdata.getArray(m), false);
+      }
+    }
+
+    ncfile.writeRecordData(recordVars);
   }
 
-  public void writeRecord(String stnName, Date obsDate, StructureData sdata) throws IOException {
+  /* public void writeRecord(String stnName, Date obsDate, StructureData sdata) throws IOException {
     StationTracker tracker = stationMap.get(stnName);
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
@@ -386,10 +412,10 @@ public class WriterCFStationObsDataset {
     }
 
     recno++;
-  }
+  } */
 
   public void finish() throws IOException {
-    writeDataFinish();
+    //writeDataFinish();
     ncfile.close();
   }
 
@@ -408,7 +434,7 @@ public class WriterCFStationObsDataset {
     return rect;
   }
 
-  // not tested
+  /* not tested
   private void write(StationObsDataset sobsDataset) throws IOException {
     createGlobalAttributes();
     createStations(sobsDataset.getStations());
@@ -469,18 +495,21 @@ public class WriterCFStationObsDataset {
     }
 
     ncfile.close();
-  }
+  } */
 
-
-  public static void main(String args[]) throws IOException {
+  public static void main3(String args[]) throws IOException {
     long start = System.currentTimeMillis();
 
-    String location = "C:/data/metars/Surface_METAR_20070513_0000.nc";
+    String location = "C:/data/metars/Surface_METAR_20070329_0000.nc";
     StringBuffer errlog = new StringBuffer();
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, errlog);
 
-    String fileOut = "C:/temp/Surface_METAR_20070513_0000.rewrite.nc";
-    WriterStationObsDataset writer = new WriterStationObsDataset(fileOut, "test");
+    String fileOut = "C:/temp/Surface_METAR_20070329_0000.stream.nc";
+    FileOutputStream fos = new FileOutputStream(fileOut);
+    DataOutputStream out = new DataOutputStream(fos);
+    System.out.println("Read " + location + " write to " + fileOut);
+
+    WriterCFStationObsDataset writer = new WriterCFStationObsDataset(out, "test");
 
     List stns = sobs.getStations();
     List<Station> stnList = new ArrayList<Station>();
@@ -502,15 +531,18 @@ public class WriterCFStationObsDataset {
     writer.finish();
 
     long took = System.currentTimeMillis() - start;
-    System.out.println("That took = " + took);
+    System.out.println("That took = " + took + " msecs");
   }
 
-  public static void rewrite(String fileIn, String fileOut) throws IOException {
+  //////////////////////////////////////////////////////////////////////////////////
+  public static void rewrite(String fileIn, String fileOut, boolean inMemory, boolean sort) throws IOException {
+    System.out.println("Rewrite .nc files from " + fileIn + " to " + fileOut+ "inMem= "+inMemory+" sort= "+sort);
+
     long start = System.currentTimeMillis();
 
     // do it in memory for speed
-    NetcdfFile ncfile = NetcdfFile.openInMemory(fileIn);
-    NetcdfDataset ncd = new NetcdfDataset( ncfile);
+    NetcdfFile ncfile = inMemory ? NetcdfFile.openInMemory(fileIn) : NetcdfFile.open(fileIn);
+    NetcdfDataset ncd = new NetcdfDataset(ncfile);
 
     StringBuffer errlog = new StringBuffer();
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ncd, null, errlog);
@@ -518,13 +550,23 @@ public class WriterCFStationObsDataset {
     List<Station> stns = sobs.getStations();
     List<VariableSimpleIF> vars = sobs.getDataVariables();
 
-    WriterStationObsDataset writer = new WriterStationObsDataset(fileOut, "rewrite "+fileIn);
-    File f = new File( fileIn);
-    writer.setLength(f.length());
+    FileOutputStream fos = new FileOutputStream(fileOut);
+    DataOutputStream out = new DataOutputStream(fos);
+
+    WriterCFStationObsDataset writer = new WriterCFStationObsDataset(out, "rewrite " + fileIn);
     writer.writeHeader(stns, vars);
 
-    for (Station s : stns) {
-      DataIterator iter = sobs.getDataIterator(s);
+    if (sort) {
+      for (Station s : stns) {
+        DataIterator iter = sobs.getDataIterator(s);
+        while (iter.hasNext()) {
+          StationObsDatatype sobsData = (StationObsDatatype) iter.nextData();
+          StructureData data = sobsData.getData();
+          writer.writeRecord(sobsData, data);
+        }
+      }
+    } else {
+      DataIterator iter = sobs.getDataIterator(1000 * 1000);
       while (iter.hasNext()) {
         StationObsDatatype sobsData = (StationObsDatatype) iter.nextData();
         StructureData data = sobsData.getData();
@@ -535,7 +577,17 @@ public class WriterCFStationObsDataset {
     writer.finish();
 
     long took = System.currentTimeMillis() - start;
-    System.out.println("Rewrite " + fileIn+" to "+fileOut+ " took = " + took);
+    System.out.println("Rewrite " + fileIn + " to " + fileOut + " took = " + took);
+  }
+
+  public static void main(String args[]) throws IOException {
+    String location = "C:/data/metars/Surface_METAR_20070329_0000.nc";
+
+    File file = new File(location);
+    rewrite(location, "C:/temp/FU" + file.getName(), false, false);
+    rewrite(location, "C:/temp/FS" + file.getName(), false, true);
+    rewrite(location, "C:/temp/MU" + file.getName(), true, false);
+    rewrite(location, "C:/temp/MS" + file.getName(), true, true);
   }
 
   public static void main2(String args[]) throws IOException {
@@ -547,13 +599,13 @@ public class WriterCFStationObsDataset {
       fromLocation = args[0];
       toLocation = args[1];
     }
-    System.out.println("Rewrite .nc files from "+fromLocation+" to "+toLocation);
+    System.out.println("Rewrite .nc files from " + fromLocation + " to " + toLocation);
 
     File dir = new File(fromLocation);
     File[] files = dir.listFiles();
     for (File file : files) {
       if (file.getName().endsWith(".nc"))
-        rewrite(file.getAbsolutePath(), toLocation + file.getName());
+        rewrite(file.getAbsolutePath(), toLocation + file.getName(), true, true);
     }
 
     long took = System.currentTimeMillis() - start;

@@ -24,6 +24,7 @@ import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 
 import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * This is the service provider interface for the low-level I/O writing.

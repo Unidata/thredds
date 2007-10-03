@@ -42,6 +42,7 @@ public class N3channelWriter {
   private ucar.nc2.NetcdfFile ncfile;
   private List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
   private boolean debugPos = false, debugWriteData = false;
+  private int dataStart, dataOffset = 0;
 
   public N3channelWriter(ucar.nc2.NetcdfFile ncfile) {
     this.ncfile = ncfile;
@@ -53,7 +54,7 @@ public class N3channelWriter {
    * @param stream write to this stream.
    * @throws IOException if write fails
    */
-  void writeHeader(DataOutputStream stream) throws IOException {
+  public void writeHeader(DataOutputStream stream) throws IOException {
 
     // make sure ncfile structures were finished
     ncfile.finish();
@@ -112,13 +113,12 @@ public class N3channelWriter {
     }
 
     // now calculate where things go
-    int dataStart = count; // data starts right after the header
+    dataStart = count; // data starts right after the header
     int offset = dataStart; // track data offset
 
     // do all non-record variables first
     for (int i = 0; i < nvars; i++) {
       Variable var = (Variable) vars.get(i);
-      //if (var instanceof Structure) continue;
 
       if (!var.isUnlimited()) {
         Vinfo vinfo = writeVar(stream, var, offset);
@@ -151,8 +151,6 @@ public class N3channelWriter {
     }
 
     if (debugPos) System.out.println("recsize = " + recsize);
-
-
   }
 
   private Vinfo writeVar(DataOutputStream stream, Variable var, int offset) throws IOException {
@@ -315,6 +313,8 @@ public class N3channelWriter {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+
   public void writeData(WritableByteChannel channel) throws IOException, InvalidRangeException {
     for (Vinfo vinfo : vinfoList) {
       if (!vinfo.isRecord) {
@@ -356,6 +356,14 @@ public class N3channelWriter {
     }
 
   }
+
+  /* public void writeNonRecordVariable(Variable v, Array data) throws IOException, InvalidRangeException {
+    Vinfo vinfo = (Vinfo) v.getSPobject();
+    if (debugWriteData) System.out.println("Write "+v.getName()+" at offset= "+dataOffset+" vinfo.vsize= "+vinfo.vsize);
+
+    ByteBuffer bb = data.getDataAsByteBuffer();
+    channel.write(bb);
+  } */
 
   // pad to a 4 byte boundary
   private ByteBuffer padddingBB;

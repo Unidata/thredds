@@ -19,6 +19,10 @@
  */
 package ucar.ma2;
 
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.ShortBuffer;
+
 /**
  * Concrete implementation of Array specialized for shorts.
  * Data storage is with 1D java array of shorts.
@@ -105,6 +109,13 @@ public class ArrayShort extends Array {
     short[] ja = (short []) javaArray;
     for (int i=0; i<ja.length; i++)
       ja[i] = iter.getShortNext();
+  }
+
+  public ByteBuffer getDataAsByteBuffer() {
+    ByteBuffer bb = ByteBuffer.allocate((int)(2*getSize()));
+    ShortBuffer ib = bb.asShortBuffer();
+    ib.put( (short[]) get1DJavaArray(short.class)); // make sure its in canonical order
+    return bb;
   }
 
  /** Return the element class type */

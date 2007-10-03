@@ -21,6 +21,7 @@ package ucar.ma2;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.nio.ByteBuffer;
 
 /**
  * Superclass for implementations of multidimensional arrays. An Array has a <b>classType</b> which gives
@@ -483,6 +484,16 @@ public abstract class Array {
      MAMath.copy(newA, this);
      return newA.getStorage();
    }
+
+  /**
+   * This gets the data as a ByteBuffer, in correct order.
+   * It avoids copying if possible.
+   * Only for numeric types (byte, short, int, long, double, float
+   * @return equivilent data in a ByteBuffer
+   */
+   public ByteBuffer getDataAsByteBuffer() {
+    throw new UnsupportedOperationException();
+  }
 
    /**
     * Copy this array to a 1D Java primitive array of type getElementType(), with the physical order
