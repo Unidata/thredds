@@ -54,12 +54,13 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ;
     } catch (IOException ioe) {
       return false;
-    }  
+    }
   }
 
   private Level2VolumeScan volScan;
-  private Dimension radialDim;
+ // private Dimension radialDim;
   private double radarRadius;
+  private Variable v0, v1;
   private DateFormatter formatter = new DateFormatter();
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -69,14 +70,25 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     if (volScan.hasDifferentDopplarResolutions())
       throw new IllegalStateException("volScan.hasDifferentDopplarResolutions");
 
-    radialDim = new Dimension("radial", volScan.getMaxRadials());
-    ncfile.addDimension( null, radialDim);
 
-    makeVariable( ncfile, REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups());
-    int velocity_type =  (volScan.getDopplarResolution() == DOPPLER_RESOLUTION_HIGH_CODE) ? VELOCITY_HI : VELOCITY_LOW;
-    Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups());
-    makeVariableNoCoords( ncfile, SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v);
+    if( volScan.hasHighResolutions(0)) {
 
+        if(volScan.getHighResReflectivityGroups() != null)
+            makeVariable2( ncfile, Level2Record.REFLECTIVITY_HIGH, "Reflectivity", "Reflectivity", "R", volScan);
+        if( volScan.getHighResVelocityGroups() != null)
+            makeVariable2( ncfile, Level2Record.VELOCITY_HIGH, "RadialVelocity", "Radial Velocity", "V", volScan);
+
+        if( volScan.getHighResSpectrumGroups() != null) {
+            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HR", "Radial Spectrum_HR", v1);
+            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Radial Spectrum", v0);
+        }
+    }
+    if( volScan.getReflectivityGroups().size() > 0) {
+        makeVariable( ncfile, Level2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups(), 0);
+        int velocity_type =  (volScan.getDopplarResolution() == Level2Record.DOPPLER_RESOLUTION_HIGH_CODE) ? Level2Record.VELOCITY_HI : Level2Record.VELOCITY_LOW;
+        Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups(), 0);
+        makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v);
+    }
     if (volScan.getStationId() != null) {
       ncfile.addAttribute(null, new Attribute("Station", volScan.getStationId()));
       ncfile.addAttribute(null, new Attribute("StationName", volScan.getStationName()));
@@ -140,7 +152,48 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.finish();
   }
 
-  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List<List<Level2Record>> groups) throws IOException {
+  public void makeVariable2(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, Level2VolumeScan vScan) throws IOException {
+      List groups = null;
+
+      if( shortName.startsWith("Reflectivity"))
+        groups = vScan.getHighResReflectivityGroups();
+      else if( shortName.startsWith("RadialVelocity"))
+        groups = vScan.getHighResVelocityGroups();
+
+      int nscans = groups.size();
+
+    if (nscans == 0) {
+      throw new IllegalStateException("No data for "+shortName);
+    }
+
+    ArrayList firstGroup = new ArrayList(groups.size());
+    ArrayList secondGroup = new ArrayList(groups.size());
+
+    for(int i = 0; i < nscans; i++) {
+        List o = (List) groups.get(i);
+        int s = o.size();
+        if(s > 600)
+            firstGroup.add(o);
+        else
+            secondGroup.add(o);
+    }
+    if(firstGroup != null)
+        v1 = makeVariable(ncfile, datatype, shortName + "_HI", longName + "_HI",  abbrev + "_HI", firstGroup, 1);
+    if(secondGroup != null)
+        v0 = makeVariable(ncfile, datatype, shortName, longName,  abbrev, secondGroup, 0);
+
+  }
+
+  public int getMaxRadials(List groups) {
+      int maxRadials = 0;
+      for (int i = 0; i < groups.size(); i++) {
+        ArrayList group = (ArrayList) groups.get(i);
+        maxRadials = Math.max(maxRadials, group.size());
+      }
+      return maxRadials;
+  }
+
+  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List groups, int rd) throws IOException {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -148,16 +201,19 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     }
 
     // get representative record
-    List<Level2Record> firstGroup =  groups.get(0);
+    List<Level2Record> firstGroup = (List)groups.get(0);
     Level2Record firstRecord = firstGroup.get(0);
     int ngates = firstRecord.getGateCount(datatype);
 
     String scanDimName = "scan"+abbrev;
     String gateDimName = "gate"+abbrev;
+    String radialDimName = "radial"+abbrev;
     Dimension scanDim = new Dimension(scanDimName, nscans);
     Dimension gateDim = new Dimension(gateDimName, ngates);
+    Dimension radialDim = new Dimension(radialDimName, volScan.getMaxRadials(rd), true);
     ncfile.addDimension( null, scanDim);
     ncfile.addDimension( null, gateDim);
+    ncfile.addDimension( null, radialDim);
 
     List<Dimension> dims = new ArrayList<Dimension>();
     dims.add( scanDim);
@@ -272,7 +328,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Level2Record[][] map = new Level2Record[nscans][nradials];
     for (int i = 0; i < groups.size(); i++) {
       Level2Record[] mapScan = map[i];
-      List<Level2Record> group = groups.get(i);
+      List<Level2Record> group = (List) groups.get(i);
       for (Level2Record r : group) {
         int radial = r.radial_num - 1;
         mapScan[radial] = r;
@@ -335,7 +391,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     int last_msecs = Integer.MIN_VALUE;
     int nscans = groups.size();
-    int maxRadials = volScan.getMaxRadials();
+    int maxRadials = volScan.getMaxRadials(0);
     for (int i = 0; i < nscans; i++) {
       List scanGroup = (List) groups.get(i);
       int nradials = scanGroup.size();
