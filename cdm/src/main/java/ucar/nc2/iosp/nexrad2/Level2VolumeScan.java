@@ -32,6 +32,7 @@ import java.util.*;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
 
+
 /**
  * This class reads a NEXRAD level II data file.
  * It can handle NCDC archives (ARCHIVE2), as well as CRAFT/IDD compressed files (AR2V0001).
@@ -67,11 +68,29 @@ public class Level2VolumeScan {
   private int vcp = 0; // Volume coverage pattern
   private int max_radials = 0;
   private int min_radials = Integer.MAX_VALUE;
+  private int max_radials_hr = 0;
+  private int min_radials_hr = Integer.MAX_VALUE;
   private int dopplarResolution;
   private boolean hasDifferentDopplarResolutions;
+  private boolean hasHighResolutionData;
 
+  private boolean hasHighResolutionREF;
+  private boolean hasHighResolutionVEL;
+  private boolean hasHighResolutionSW;
+  private boolean hasHighResolutionZDR;
+  private boolean hasHighResolutionPHI;
+  private boolean hasHighResolutionRHO;
   // List of List of Level2Record
   private List<List<Level2Record>>  reflectivityGroups, dopplerGroups;
+
+  //private ArrayList reflectivityGroups, dopplerGroups;
+
+  private List<List<Level2Record>> reflectivityHighResGroups;
+  private List<List<Level2Record>> velocityHighResGroups;
+  private List<List<Level2Record>> spectrumHighResGroups;
+  private ArrayList diffReflectHighResGroups;
+  private ArrayList diffPhaseHighResGroups;
+  private ArrayList coefficientHighResGroups;
 
   private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false, debugStats =  false;
 
@@ -130,26 +149,37 @@ public class Level2VolumeScan {
 
     List<Level2Record> reflectivity = new ArrayList<Level2Record>();
     List<Level2Record> doppler = new ArrayList<Level2Record>();
+    List<Level2Record> highReflectivity = new ArrayList<Level2Record>();
+    List<Level2Record> highVelocity = new ArrayList<Level2Record>();
+    List<Level2Record> highSpectrum = new ArrayList<Level2Record>();
+    List<Level2Record> highDiffReflectivity = new ArrayList<Level2Record>();
+    List<Level2Record> highDiffPhase = new ArrayList<Level2Record>();
+    List<Level2Record> highCorreCoefficient = new ArrayList<Level2Record>();
 
+    long message_offset31 = 0;
     int recno = 0;
     while (true) {
 
-      Level2Record r = Level2Record.factory(raf, recno++);
+      Level2Record r = Level2Record.factory(raf, recno++, message_offset31);
       if (r == null) break;
-
+      if (showData) r.dump2(System.out);
       // skip non-data messages
-      if (r.message_type != 1) {
+       if (r.message_type == 31) {
+          message_offset31 = message_offset31 + (r.message_size*2 + 12 - 2432);
+       }
+
+      if (r.message_type != 1 && r.message_type != 31) {
         if (showMessages) r.dumpMessage(System.out);
         continue;
       }
 
-      if (showData) r.dump2(System.out);
+    //  if (showData) r.dump2(System.out);
 
       /* skip bad
       if (!r.checkOk()) {
         r.dump(System.out);
         continue;
-      } */
+      }   */
 
       // some global params
       if (vcp == 0) vcp = r.vcp;
@@ -165,18 +195,47 @@ public class Level2VolumeScan {
       if (r.hasDopplerData)
         doppler.add(r);
 
+
+      if(r.message_type == 31) {
+         if (r.hasHighResREFData)
+            highReflectivity.add(r);
+         if (r.hasHighResVELData)
+            highVelocity.add(r);
+         if (r.hasHighResSWData)
+            highSpectrum.add(r);
+         if (r.hasHighResZDRData)
+            highDiffReflectivity.add(r);
+         if (r.hasHighResPHIData)
+            highDiffPhase.add(r);
+         if (r.hasHighResRHOData)
+            highCorreCoefficient.add(r);
+      }
+
       if ((cancelTask != null) && cancelTask.isCancel()) return;
     }
     if (debugRadials) System.out.println(" reflect ok= " + reflectivity.size() + " doppler ok= " + doppler.size());
 
-    reflectivityGroups = sortScans("reflect", reflectivity);
-    dopplerGroups = sortScans("doppler", doppler);
+    reflectivityGroups = sortScans("reflect", reflectivity, 600);
+    dopplerGroups = sortScans("doppler", doppler, 600);
+    if(highReflectivity.size() > 0)
+        reflectivityHighResGroups = sortScans("reflect_HR", highReflectivity, 720);
+    if(highVelocity.size() > 0)
+        velocityHighResGroups = sortScans("velocity_HR", highVelocity, 720);
+    if(highSpectrum.size() > 0)
+        spectrumHighResGroups = sortScans("spectrum_HR", highSpectrum, 720);
+    if(highDiffReflectivity.size() > 0)
+        diffReflectHighResGroups = sortScans("diffReflect_HR", highDiffReflectivity, 720);
+    if(highDiffPhase.size() > 0)
+        diffPhaseHighResGroups = sortScans("diffPhase_HR", highDiffPhase, 720);
+    if(highCorreCoefficient.size() > 0)
+        coefficientHighResGroups = sortScans("coefficient_HR", highCorreCoefficient, 720);
+
   }
 
-  private List<List<Level2Record>> sortScans(String name, List<Level2Record> scans) {
+  private ArrayList sortScans(String name, List<Level2Record> scans, int siz) {
 
     // now group by elevation_num
-    Map<Short, List<Level2Record>> groupHash = new HashMap<Short,List<Level2Record>>(600);
+    Map<Short,List<Level2Record>> groupHash = new HashMap<Short,List<Level2Record>>(siz);
     for (Level2Record record : scans) {
       List<Level2Record> group = groupHash.get(record.elevation_num);
       if (null == group) {
@@ -187,21 +246,30 @@ public class Level2VolumeScan {
     }
 
     // sort the groups by elevation_num
-    List<List<Level2Record>> groups = new ArrayList<List<Level2Record>>(groupHash.values());
+    ArrayList groups = new ArrayList(groupHash.values());
     Collections.sort(groups, new GroupComparator());
 
     // use the maximum radials
-    for (List<Level2Record> group : groups) {
+    for (int i = 0; i < groups.size(); i++) {
+      ArrayList group = (ArrayList) groups.get(i);
+      int size = group.size();
       testScan(name, group);
-      max_radials = Math.max(max_radials, group.size());
-      min_radials = Math.min(min_radials, group.size());
+      if(size < 600) {
+        max_radials = Math.max(max_radials, group.size());
+        min_radials = Math.min(min_radials, group.size());
+      } else {
+        max_radials_hr = Math.max(max_radials_hr, group.size());
+        min_radials_hr = Math.min(min_radials_hr, group.size());
+      }
     }
+
     if (debugRadials) {
       System.out.println(name + " min_radials= " + min_radials + " max_radials= " + max_radials);
-      for (List<Level2Record> group : groups) {
-        Level2Record lastr = group.get(0);
+      for (int i = 0; i < groups.size(); i++) {
+        ArrayList group = (ArrayList) groups.get(i);
+        Level2Record lastr = (Level2Record) group.get(0);
         for (int j = 1; j < group.size(); j++) {
-          Level2Record r = group.get(j);
+          Level2Record r = (Level2Record) group.get(j);
           if (r.data_msecs < lastr.data_msecs)
             System.out.println(" out of order " + j);
           lastr = r;
@@ -215,12 +283,22 @@ public class Level2VolumeScan {
     return groups;
   }
 
-  public int getMaxRadials() {
-    return max_radials;
+  public int getMaxRadials(int r) {
+      if(r == 0)
+        return max_radials;
+      else if (r== 1)
+        return max_radials_hr;
+      else
+        return 0;
   }
 
-  public int getMinRadials() {
-    return min_radials;
+  public int getMinRadials(int r) {
+      if(r == 0)
+        return min_radials;
+      else if (r== 1)
+        return min_radials_hr;
+      else
+        return 0;
   }
 
   public int getDopplarResolution() {
@@ -231,13 +309,32 @@ public class Level2VolumeScan {
     return hasDifferentDopplarResolutions;
   }
 
+  public boolean hasHighResolutions(int dt) {
+    if(dt == 0)
+        return hasHighResolutionData;
+    else if(dt == 1)
+        return hasHighResolutionREF;
+    else if(dt == 2)
+        return hasHighResolutionVEL;
+    else if(dt == 3)
+        return hasHighResolutionSW;
+    else if(dt == 4)
+        return hasHighResolutionZDR;
+    else if(dt == 5)
+        return hasHighResolutionPHI;
+    else if(dt == 6)
+        return hasHighResolutionRHO;
+    else
+        return false;
+  }
+
   // do we have same characteristics for all records in a scan?
-  private int MAX_RADIAL = 401;
+  private int MAX_RADIAL = 720;
   private int[] radial = new int[MAX_RADIAL];
 
-  private boolean testScan(String name, List<Level2Record> group) {
+  private boolean testScan(String name, ArrayList group) {
     int datatype = name.equals("reflect") ? Level2Record.REFLECTIVITY : Level2Record.VELOCITY_HI;
-    Level2Record first = group.get(0);
+    Level2Record first = (Level2Record) group.get(0);
 
     int n = group.size();
     if (debugScans) {
@@ -252,8 +349,10 @@ public class Level2VolumeScan {
     for (int i = 0; i < MAX_RADIAL; i++)
       radial[i] = 0;
 
-    for (Level2Record r : group) {
-      /* this appears to be common - seems to be ok, we put missing values in 
+    for (int i = 0; i < group.size(); i++) {
+      Level2Record r = (Level2Record) group.get(i);
+
+      /* this appears to be common - seems to be ok, we put missing values in
       if (r.getGateCount(datatype) != first.getGateCount(datatype)) {
         log.error(raf.getLocation()+" different number of gates ("+r.getGateCount(datatype)+
                 "!="+first.getGateCount(datatype)+") in record "+name+ " "+r);
@@ -300,7 +399,7 @@ public class Level2VolumeScan {
 
     double avg = sum / n;
     double sd = Math.sqrt((n * sum2 - sum * sum) / (n * (n - 1)));
-    if (debugStats) System.out.println(" avg elev="+avg+" std.dev="+sd);
+    // System.out.println(" avg elev="+avg+" std.dev="+sd);
 
     return ok;
   }
@@ -349,6 +448,24 @@ public class Level2VolumeScan {
 
       } else if (debugGroups2)
         System.out.println(" ok gates start elev= " + record.elevation_num + " " + record.getElevation());
+
+      if (record.message_type == 31 ) {
+        hasHighResolutionData = true;
+        //each data type
+        if(record.hasHighResREFData)
+          hasHighResolutionREF = true;
+        if(record.hasHighResVELData)
+          hasHighResolutionVEL = true;
+        if(record.hasHighResSWData)
+          hasHighResolutionSW = true;
+        if(record.hasHighResZDRData)
+          hasHighResolutionZDR = true;
+        if(record.hasHighResPHIData)
+          hasHighResolutionPHI = true;
+        if(record.hasHighResRHOData)
+          hasHighResolutionRHO = true;
+
+      }
     }
 
     return ok;
@@ -360,7 +477,7 @@ public class Level2VolumeScan {
    *
    * @return List of type List of type Level2Record
    */
-  public List<List<Level2Record>>  getReflectivityGroups() {
+  public List getReflectivityGroups() {
     return reflectivityGroups;
   }
 
@@ -370,8 +487,20 @@ public class Level2VolumeScan {
    *
    * @return List of type List of type Level2Record
    */
-  public List<List<Level2Record>> getVelocityGroups() {
+  public List getVelocityGroups() {
     return dopplerGroups;
+  }
+
+  public List getHighResVelocityGroups() {
+    return velocityHighResGroups;
+  }
+
+  public List getHighResReflectivityGroups() {
+    return reflectivityHighResGroups;
+  }
+
+  public List getHighResSpectrumGroups() {
+    return spectrumHighResGroups;
   }
 
   private class GroupComparator implements Comparator<List<Level2Record>> {
@@ -634,11 +763,15 @@ public class Level2VolumeScan {
     return raf.getFilePointer();
   }
 
-  private static void main2(String[] args) throws IOException {
+  /**
+   * test
+   */
+  public static void main2(String[] args) throws IOException {
     File testDir = new File("C:/data/bad/radar2/");
 
     File[] files = testDir.listFiles();
-    for (File file : files) {
+    for (int i = 0; i < files.length; i++) {
+      File file = files[i];
       if (!file.getPath().endsWith(".ar2v")) continue;
       System.out.println(file.getPath() + " " + file.length());
       long pos = testValid(file.getPath());
@@ -659,7 +792,8 @@ public class Level2VolumeScan {
   public static void main(String args[]) throws IOException {
     NexradStationDB.init();
 
-    RandomAccessFile raf = new RandomAccessFile("R:/testdata/radar/nexrad/level2/problem/KCCX_20060627_1701", "r");
+    RandomAccessFile raf = new RandomAccessFile("/upc/share/testdata/radar/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials", "r");
+   // RandomAccessFile raf = new RandomAccessFile("R:/testdata/radar/nexrad/level2/problem/KCCX_20060627_1701", "r");
     new Level2VolumeScan(raf, null);
   }
 
