@@ -13,6 +13,7 @@ public class TestIosp {
     suite.addTest( new TestSuite( ucar.nc2.iosp.dmsp.TestDmspIosp.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gini.TestGini.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2HiResolution.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.nids.TestNids.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.dorade.TestDorade.class));
     return suite;
