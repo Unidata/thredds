@@ -65,6 +65,25 @@ public class Level2Record {
   /** Horizontal beam width */
   public static final float HORIZONTAL_BEAM_WIDTH = (float) 1.5;         // LOOK
 
+ /* added for high resolution message type 31 */
+
+  public static final int REFLECTIVITY_HIGH = 5;
+
+  /** High Resolution Radial Velocity moment identifier */
+  public static final int VELOCITY_HIGH = 6;
+
+  /** High Resolution Sprectrum Width moment identifier */
+  public static final int SPECTRUM_WIDTH_HIGH = 7;
+
+  /** High Resolution Radial Velocity moment identifier */
+  public static final int DIFF_REFLECTIVITY_HIGH = 8;
+
+  /** High Resolution Radial Velocity moment identifier */
+  public static final int DIFF_PHASE = 9;
+
+  /** High Resolution Sprectrum Width moment identifier */
+  public static final int CORRELATION_COEFFICIENT = 10;
+
   // Lookup Tables
 
   /** Initialization flag for lookup tables
@@ -115,6 +134,14 @@ public class Level2Record {
       case VELOCITY_HI :
       case VELOCITY_LOW : return "RadialVelocity";
       case SPECTRUM_WIDTH : return "SpectrumWidth";
+      case REFLECTIVITY_HIGH : return "Reflectivity_HI";
+      case VELOCITY_HIGH : return "RadialVelocity_HI";
+      case SPECTRUM_WIDTH_HIGH : return "SpectrumWidth_HI";
+      case DIFF_REFLECTIVITY_HIGH : return "Reflectivity_DIFF";
+      case DIFF_PHASE : return "Phase";
+      case CORRELATION_COEFFICIENT : return "RHO";
+
+
       default : throw new IllegalArgumentException();
     }
   }
@@ -128,6 +155,21 @@ public class Level2Record {
        case VELOCITY_LOW :
        case SPECTRUM_WIDTH :
            return "m/s";
+
+       case REFLECTIVITY_HIGH :
+           return "dBZ";
+       case DIFF_REFLECTIVITY_HIGH :
+           return "dB";
+
+       case VELOCITY_HIGH : 
+       case SPECTRUM_WIDTH_HIGH :
+           return "m/s";
+
+       case DIFF_PHASE :
+           return "deg";
+
+       case CORRELATION_COEFFICIENT :
+           return "N/A";
      }
      throw new IllegalArgumentException();
    }
@@ -138,6 +180,13 @@ public class Level2Record {
       case VELOCITY_LOW : return 1.0f;
       case VELOCITY_HI:
       case SPECTRUM_WIDTH : return 0.5f;
+        case REFLECTIVITY_HIGH : return 1.0f;
+        case VELOCITY_HIGH :
+        case SPECTRUM_WIDTH_HIGH : return 1.0f;
+        case DIFF_REFLECTIVITY_HIGH : return 1.0f;
+        case DIFF_PHASE :
+        case CORRELATION_COEFFICIENT : return 1.0f;
+
       default : throw new IllegalArgumentException();
     }
   }
@@ -148,6 +197,13 @@ public class Level2Record {
       case VELOCITY_LOW : return -129.0f;
       case VELOCITY_HI:
       case SPECTRUM_WIDTH : return -64.5f;
+      case REFLECTIVITY_HIGH : return -66.0f;
+      case VELOCITY_HIGH : 
+      case SPECTRUM_WIDTH_HIGH : return -129.0f;
+      case DIFF_REFLECTIVITY_HIGH : return -128.0f;
+      case DIFF_PHASE :
+      case CORRELATION_COEFFICIENT : return -2.0f;
+
       default : throw new IllegalArgumentException();
     }
   }
@@ -170,6 +226,7 @@ public class Level2Record {
       case 14 : return "edited clutter filter bypass map - RDA to RPG";
       case 15: return "Notchwidth Map";
       case 18: return "RDA Adaptation data";
+      case 31: return "Digitail Radar Data Generic Format";
       default : return "unknown "+code;
     }
   }
@@ -193,6 +250,9 @@ public class Level2Record {
       case 31 : return "8 elevation scans every 10 mins";
       case 32 : return "7 elevation scans every 10 mins";
       case 121: return "9 elevations, 20 scans every 5 minutes";
+      case 211: return "14 elevations, 16 scans every 5 mins";
+      case 212: return "14 elevations, 17 scans every 4 mins";
+      case 221: return "9 elevations, 11 scans every 5 minutes";
       default : return "unknown "+code;
     }
   }
@@ -208,8 +268,14 @@ public class Level2Record {
 
   int recno;        //  record number within the file
   long message_offset; // offset of start of message
-  boolean hasReflectData, hasDopplerData;
 
+  boolean hasReflectData, hasDopplerData;
+  boolean hasHighResREFData;
+  boolean hasHighResVELData;
+  boolean hasHighResSWData  ;
+  boolean hasHighResZDRData  ;
+  boolean hasHighResPHIData  ;
+  boolean hasHighResRHOData ;
   // message header
   short message_size = 0;
   byte id_channel = 0;
@@ -250,24 +316,67 @@ public class Level2Record {
   private short reflect_offset; // reflectivity data pointer (byte number from start of message)
   private short velocity_offset; // velocity data pointer (byte number from start of message)
   private short spectWidth_offset; // spectrum-width data pointer (byte number from start of message)
+  // new addition for message type 31
+  short rlength = 0;
+  String id;
+  float azimuth;
+  byte compressIdx;
+  byte sp;
+  byte ars;
+  byte rs;
+  float elevation;
+  byte rsbs;
+  byte aim;
+  short dcount;
 
-  public static Level2Record factory(RandomAccessFile din, int record) throws IOException {
-    long offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE;
+  int dbp1;
+  int dbp2;
+  int dbp3;
+  int dbp4;
+  int dbp5;
+  int dbp6;
+  int dbp7;
+  int dbp8;
+  int dbp9;
+  short reflectHR_gate_count = 0;
+  short velocityHR_gate_count = 0;
+  short spectrumHR_gate_count = 0;
+  short zdrHR_gate_count = 0;
+  short phiHR_gate_count = 0;
+  short rhoHR_gate_count = 0;
+  short reflectHR_gate_size = 0;
+  short velocityHR_gate_size = 0;
+  short spectrumHR_gate_size = 0;
+  short zdrHR_gate_size = 0;
+  short phiHR_gate_size = 0;
+  short rhoHR_gate_size = 0;
+  short reflectHR_first_gate = 0;
+  short velocityHR_first_gate = 0;
+  short spectrumHR_first_gate = 0;
+  short zdrHR_first_gate = 0;
+  short phiHR_first_gate = 0;
+  short rhoHR_first_gate = 0;
+
+
+
+
+  public static Level2Record factory(RandomAccessFile din, int record, long message_offset31) throws IOException {
+    long offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE +  message_offset31;
     if (offset >= din.length())
       return null;
     else
-      return new Level2Record(din, record);
+      return new Level2Record(din, record, message_offset31);
   }
 
-  public Level2Record(RandomAccessFile din, int record) throws IOException {
+  public Level2Record(RandomAccessFile din, int record, long message_offset31) throws IOException {
 
     this.recno = record;
-    message_offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE;
+    message_offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE + message_offset31;
     din.seek(message_offset);
-
     din.skipBytes(CTM_HEADER_SIZE);
 
     // Message Header
+     // int size = din.readInt();
     message_size  = din.readShort(); // size in "halfwords" = 2 bytes
     id_channel    = din.readByte(); // channel id
     message_type  = din.readByte();
@@ -277,39 +386,114 @@ public class Level2Record {
     seg_count     = din.readShort(); // number of message segments
     seg_number    = din.readShort(); // this segment
 
-    if (message_type != 1) return;
-
+   // if (message_type != 1 ) return;
+    if(message_type == 1) {
     // data header
-    data_msecs    = din.readInt();   // collection time for this radial, msecs since midnight
-    data_julian_date  = din.readShort(); // prob "collection time"
-    unamb_range   = din.readShort(); // unambiguous range
-    azimuth_ang   = din.readUnsignedShort(); // LOOK why unsigned ??
-    radial_num   = din.readShort(); // radial number within the elevation
-    radial_status = din.readShort();
-    elevation_ang = din.readShort();
-    elevation_num = din.readShort(); // RDA elevation number
-    reflect_first_gate = din.readShort(); // range to first gate of reflectivity (m) may be negetive
-    doppler_first_gate = din.readShort(); // range to first gate of dopplar (m) may be negetive
-    reflect_gate_size = din.readShort(); // reflectivity data gate size (m)
-    doppler_gate_size = din.readShort(); // dopplar data gate size (m)
-    reflect_gate_count = din.readShort(); // number of reflectivity gates
-    doppler_gate_count = din.readShort(); // number of velocity or spectrum width gates
-    cut           = din.readShort(); // sector number within cut
-    calibration   = din.readFloat(); // system gain calibration constant (db biased)
-    reflect_offset  = din.readShort(); // reflectivity data pointer (byte number from start of message)
-    velocity_offset   = din.readShort(); // velocity data pointer (byte number from start of message)
-    spectWidth_offset = din.readShort(); // spectrum-width data pointer (byte number from start of message)
-    resolution    = din.readShort(); // dopplar velocity resolution
-    vcp           = din.readShort(); // volume coverage pattern
+        data_msecs    = din.readInt();   // collection time for this radial, msecs since midnight
+        data_julian_date  = din.readShort(); // prob "collection time"
+        unamb_range   = din.readShort(); // unambiguous range
+        azimuth_ang   = din.readUnsignedShort(); // LOOK why unsigned ??
+        radial_num   = din.readShort(); // radial number within the elevation
+        radial_status = din.readShort();
+        elevation_ang = din.readShort();
+        elevation_num = din.readShort(); // RDA elevation number
+        reflect_first_gate = din.readShort(); // range to first gate of reflectivity (m) may be negetive
+        doppler_first_gate = din.readShort(); // range to first gate of dopplar (m) may be negetive
+        reflect_gate_size = din.readShort(); // reflectivity data gate size (m)
+        doppler_gate_size = din.readShort(); // dopplar data gate size (m)
+        reflect_gate_count = din.readShort(); // number of reflectivity gates
+        doppler_gate_count = din.readShort(); // number of velocity or spectrum width gates
+        cut           = din.readShort(); // sector number within cut
+        calibration   = din.readFloat(); // system gain calibration constant (db biased)
+        reflect_offset  = din.readShort(); // reflectivity data pointer (byte number from start of message)
+        velocity_offset   = din.readShort(); // velocity data pointer (byte number from start of message)
+        spectWidth_offset = din.readShort(); // spectrum-width data pointer (byte number from start of message)
+        resolution    = din.readShort(); // dopplar velocity resolution
+        vcp           = din.readShort(); // volume coverage pattern
 
-    din.skipBytes(14);
+        din.skipBytes(14);
 
-    nyquist_vel   = din.readShort(); // nyquist velocity
-    attenuation   = din.readShort(); // atmospheric attenuation factor
-    threshhold    = din.readShort(); // threshhold paramter for minimum difference
+        nyquist_vel   = din.readShort(); // nyquist velocity
+        attenuation   = din.readShort(); // atmospheric attenuation factor
+        threshhold    = din.readShort(); // threshhold paramter for minimum difference
 
-    hasReflectData = (reflect_gate_count > 0);
-    hasDopplerData = (doppler_gate_count > 0);
+        hasReflectData = (reflect_gate_count > 0);
+        hasDopplerData = (doppler_gate_count > 0);
+        return;
+    }
+
+    else if(message_type == 31) {
+    // data header
+        id = din.readString(4);
+        data_msecs    = din.readInt();   // collection time for this radial, msecs since midnight
+        data_julian_date  = din.readShort(); // prob "collection time"
+        radial_num   = din.readShort(); // radial number within the elevation
+        azimuth   = din.readFloat(); // LOOK why unsigned ??
+        compressIdx = din.readByte();
+        sp = din.readByte();
+        rlength = din.readShort();
+        ars = din.readByte();
+        rs = din.readByte();
+        elevation_num = din.readByte(); // RDA elevation number
+        cut           = din.readByte(); // sector number within cut
+        elevation =  din.readFloat();
+        rsbs = din.readByte();
+        aim = din.readByte();
+        dcount = din.readShort();
+
+        dbp1 = din.readInt();
+        dbp2 = din.readInt();
+        dbp3 = din.readInt();
+        dbp4 = din.readInt();
+        dbp5 = din.readInt();
+        dbp6 = din.readInt();
+        dbp7 = din.readInt();
+        dbp8 = din.readInt();
+        dbp9 = din.readInt();
+
+        vcp = getDataBlockValue(din, (short) dbp1, 40);
+        hasHighResREFData = (dbp4 > 0);
+        if(hasHighResREFData) {
+            reflectHR_gate_count = getDataBlockValue(din, (short) dbp4, 8);
+            reflectHR_first_gate = getDataBlockValue(din, (short) dbp4, 10);
+            reflectHR_gate_size = getDataBlockValue(din, (short) dbp4, 12);
+        }
+        hasHighResVELData = (dbp5 > 0);
+        if(hasHighResVELData) {
+            velocityHR_gate_count = getDataBlockValue(din, (short) dbp5, 8);
+            velocityHR_first_gate = getDataBlockValue(din, (short) dbp5, 10);
+            velocityHR_gate_size = getDataBlockValue(din, (short) dbp5, 12);
+        }
+        hasHighResSWData  = (dbp6 > 0);
+        if(hasHighResSWData) {
+            spectrumHR_gate_count = getDataBlockValue(din, (short) dbp6, 8);
+            spectrumHR_first_gate = getDataBlockValue(din, (short) dbp6, 10);
+            spectrumHR_gate_size = getDataBlockValue(din, (short) dbp6, 12);
+        }
+        hasHighResZDRData = (dbp7 > 0);
+        if(hasHighResZDRData) {
+            zdrHR_gate_count = getDataBlockValue(din, (short) dbp7, 8);
+            zdrHR_first_gate = getDataBlockValue(din, (short) dbp7, 10);
+            zdrHR_gate_size = getDataBlockValue(din, (short) dbp7, 12);
+        }
+        hasHighResPHIData = (dbp8 > 0);
+        if(hasHighResPHIData) {
+            phiHR_gate_count = getDataBlockValue(din, (short) dbp8, 8);
+            phiHR_first_gate = getDataBlockValue(din, (short) dbp8, 10);
+            phiHR_gate_size = getDataBlockValue(din, (short) dbp8, 12);
+        }
+        hasHighResRHOData = (dbp9 > 0);
+        if(hasHighResRHOData)  {
+            rhoHR_gate_count = getDataBlockValue(din, (short) dbp9, 8);
+            rhoHR_first_gate = getDataBlockValue(din, (short) dbp9, 10);
+            rhoHR_gate_size = getDataBlockValue(din, (short) dbp9, 12);
+        }
+
+        return;
+    }
+    else
+        return;
+
   }
 
   public void dumpMessage(PrintStream out) {
@@ -333,11 +517,16 @@ public class Level2Record {
   }
 
   public void dump2(PrintStream out) {
-    out.println(recno+"= "+elevation_num+" size = "+message_size);
+    out.println("recno= " + recno+ " massType= "+message_type+" massSize = "+message_size);
   }
 
   public boolean checkOk() {
     boolean ok = true;
+
+      if ( Float.isNaN(getAzimuth()) ) {
+        logger.warn("****"+recno+ " HAS bad azimuth value = "+ azimuth_ang);
+        ok = false;
+      }
 
     if (message_type != 1) return ok;
 
@@ -392,8 +581,12 @@ public class Level2Record {
    * @return   azimuth angle in degrees 0 = true north, 90 = east
    */
   public float getAzimuth() {
-    if (message_type != 1) return -1.0f;
-    return 180.0f * azimuth_ang / 32768.0f;
+      if( message_type == 31)
+        return azimuth;
+      else if (message_type == 1)
+        return 180.0f * azimuth_ang / 32768.0f;
+      else
+        return -1.0f;
   }
 
     /**
@@ -402,8 +595,12 @@ public class Level2Record {
      * @return  elevation angle in degrees 0 = parellel to pedestal base, 90 = perpendicular
      */
     public float getElevation() {
-      if (message_type != 1) return -1.0f;
-      return 180.0f * elevation_ang / 32768.0f;
+      if( message_type == 31)
+        return elevation;
+      else if (message_type == 1)
+        return 180.0f * elevation_ang / 32768.0f;
+      else
+        return -1.0f;
     }
 
 
@@ -421,6 +618,20 @@ public class Level2Record {
       case VELOCITY_LOW :
       case SPECTRUM_WIDTH :
           return ((int) doppler_gate_size);
+      //high resolution
+      case  REFLECTIVITY_HIGH :
+          return ((int) reflectHR_gate_size);
+      case   VELOCITY_HIGH :
+          return ((int) velocityHR_gate_size);
+      case   SPECTRUM_WIDTH_HIGH :
+          return ((int) spectrumHR_gate_size);
+      case   DIFF_REFLECTIVITY_HIGH :
+          return ((int) zdrHR_gate_size);
+      case   DIFF_PHASE :
+          return ((int) phiHR_gate_size);
+      case   CORRELATION_COEFFICIENT :
+          return ((int) rhoHR_gate_size);
+
     }
     return -1;
   }
@@ -439,6 +650,20 @@ public class Level2Record {
       case VELOCITY_LOW :
       case SPECTRUM_WIDTH :
           return ((int) doppler_first_gate);
+      //high resolution
+      case  REFLECTIVITY_HIGH :
+          return ((int) reflectHR_first_gate);
+      case   VELOCITY_HIGH :
+          return ((int) velocityHR_first_gate);
+      case   SPECTRUM_WIDTH_HIGH :
+          return ((int) spectrumHR_first_gate);
+      case   DIFF_REFLECTIVITY_HIGH :
+          return ((int) zdrHR_first_gate);
+      case   DIFF_PHASE :
+          return ((int) phiHR_first_gate);
+      case   CORRELATION_COEFFICIENT :
+          return ((int) rhoHR_first_gate);
+
     }
     return -1;
   }
@@ -457,6 +682,19 @@ public class Level2Record {
       case VELOCITY_LOW :
       case SPECTRUM_WIDTH :
           return ((int) doppler_gate_count);
+      // hight resolution
+      case  REFLECTIVITY_HIGH :
+          return ((int) reflectHR_gate_count);
+      case   VELOCITY_HIGH :
+          return ((int) velocityHR_gate_count);
+      case   SPECTRUM_WIDTH_HIGH :
+          return ((int) spectrumHR_gate_count);
+      case   DIFF_REFLECTIVITY_HIGH :
+          return ((int) zdrHR_gate_count);
+      case   DIFF_PHASE :
+          return ((int) phiHR_gate_count);
+      case   CORRELATION_COEFFICIENT :
+          return ((int) rhoHR_gate_count);
     }
     return 0;
   }
@@ -467,8 +705,21 @@ public class Level2Record {
       case VELOCITY_HI :
       case VELOCITY_LOW : return velocity_offset;
       case SPECTRUM_WIDTH : return spectWidth_offset;
+      case REFLECTIVITY_HIGH : return (short)dbp4;
+      case VELOCITY_HIGH : return (short)dbp4;
+      case SPECTRUM_WIDTH_HIGH : return (short)dbp4;
+      case DIFF_REFLECTIVITY_HIGH : return (short)dbp4;
+      case DIFF_PHASE : return (short)dbp4;
+      case CORRELATION_COEFFICIENT : return (short)dbp4;
     }
     return Short.MIN_VALUE;
+  }
+
+  private short getDataBlockValue(RandomAccessFile raf, short offset, int skip) throws IOException {
+      long off = offset + message_offset + MESSAGE_HEADER_SIZE;
+      raf.seek(off);
+      raf.skipBytes(skip);
+      return  raf.readShort();
   }
 
   public java.util.Date getDate() {
