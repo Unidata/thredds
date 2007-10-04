@@ -572,9 +572,9 @@ serviceType +"&amp;returns=" + returns + "&amp;");
     // spatial range
     Element LatLonBox = new Element("LatLonBox");
     LatLonBox.addContent( new Element("north").addContent( "75.0000"));
-    LatLonBox.addContent( new Element("south").addContent( "25.0000"));
+    LatLonBox.addContent( new Element("south").addContent( "19.0000"));
     LatLonBox.addContent( new Element("east").addContent( "-75.0000"));
-    LatLonBox.addContent( new Element("west").addContent( "175.0000"));
+    LatLonBox.addContent( new Element("west").addContent( "-175.0000"));
     root.addContent( LatLonBox ); 
 
     // fix the time range

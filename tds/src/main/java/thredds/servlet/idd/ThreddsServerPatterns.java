@@ -339,8 +339,8 @@ public class ThreddsServerPatterns {
 
     //public static final Pattern p_SLTexplanation = Pattern.compile("\\s*<!--");
 
-    public static final Pattern p_station_name = Pattern.compile("\\s*<station\\s+name");
-
+    //public static final Pattern p_station_name = Pattern.compile("\\s*<station\\s+name");
+    public static final Pattern p_station_name = Pattern.compile("\\s*<station\\s+name=\"(.*)\" ");
     //public static final Pattern p_SM = Pattern.compile("\\s+");
 
     public static final Pattern p_SNINCR = Pattern.compile("SNINCR (\\d{1,3})/(\\d{1,3})\\s+");
