@@ -652,9 +652,9 @@ public class IO {
 
   // read URL to File
   static public void main(String[] args) {
-    String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&spatial=all&time_start=2007-09-28T00%3A00%3A00Z&time_end=2007-09-28T23%3A59%3A59Z&accept=netcdf";
+    String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&spatial=all&time_start=2007-09-29T00%3A00%3A00Z&time_end=2007-09-29T23%3A59%3A59Z&accept=netcdf";
 
-    String filenameOut = "C:/temp/metars-0928.nc";
+    String filenameOut = "C:/temp/metars-0929.nc";
     File f = new File(filenameOut);
     System.out.println("Read = " + url + " to " + filenameOut);
 

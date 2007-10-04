@@ -781,7 +781,7 @@ public class StationObsCollection {
     } else if (type.equals(QueryParams.CSV)) {
       w = new WriterCSV(qp, vars, res.getWriter());
     } else if (type.equals(QueryParams.NETCDF)) {
-      w = new WriterNetcdf(qp, vars, res.getWriter());
+      w = new WriterNetcdf(qp, vars);
     } else if (type.equals(QueryParams.NETCDFS)) {
       w = new WriterNetcdfStream(qp, vars, res.getOutputStream());
     } else {
@@ -873,8 +873,8 @@ public class StationObsCollection {
     List<Station> stnList;
     List<VariableSimpleIF> varList;
 
-    WriterNetcdf(QueryParams qp, List<String> varNames, final java.io.PrintWriter writer) throws IOException {
-      super(qp, varNames, writer);
+    WriterNetcdf(QueryParams qp, List<String> varNames) throws IOException {
+      super(qp, varNames, null);
 
       netcdfResult = File.createTempFile("ncss", ".nc");
       sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(), "Extracted data from Unidata/TDS Metar dataset");
@@ -913,7 +913,6 @@ public class StationObsCollection {
     public void trailer() {
       try {
         sobsWriter.finish();
-        writer.flush();
       } catch (IOException e) {
         log.error("WriterNetcdf.trailer", e);
       }

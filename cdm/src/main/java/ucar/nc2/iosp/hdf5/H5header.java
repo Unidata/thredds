@@ -48,8 +48,8 @@ class H5header {
 
   // debugging
   static private boolean debugEnum = false;
-  static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
-  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = true, debugFractalHeap= true;
+  static private boolean debug1 = true, debugDetail = false, debugPos = true, debugHeap = false, debugV = false;
+  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = true, debugFractalHeap = true;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSymbolTable = false;
   static private boolean warnings = true, debugReference = false, debugCreationOrder = false;
   static java.io.PrintStream debugOut = System.out;
@@ -216,7 +216,7 @@ class H5header {
     versionSHMF = raf.readByte();
     if (debugDetail)
       debugOut.println(" versionSB= " + versionSB + " versionFSS= " + versionFSS + " versionGroup= " + versionGroup +
-          " versionSHMF= " + versionSHMF);
+              " versionSHMF= " + versionSHMF);
 
     sizeOffsets = raf.readByte();
     isOffsetLong = (sizeOffsets == 8);
@@ -837,6 +837,7 @@ There is _no_ datatype information stored for these sort of selections currently
       // look for group or a datatype/dataspace/layout message
       MessageGroup groupMessage = null;
       MessageGroupNew groupNewMessage = null;
+      MessageGroupInfo groupInfoMessage = null;
 
       for (Message mess : messages) {
         if (debugTracker) memTracker.addByLen("Message (" + displayName + ") " + mess.mtype, mess.start, mess.size + 8);
@@ -849,6 +850,8 @@ There is _no_ datatype information stored for these sort of selections currently
           msl = (MessageLayout) mess.messData;
         else if (mess.mtype == MessageType.Group)
           groupMessage = (MessageGroup) mess.messData;
+        else if (mess.mtype == MessageType.GroupInfo)
+          groupInfoMessage = (MessageGroupInfo) mess.messData;
         else if (mess.mtype == MessageType.GroupNew)
           groupNewMessage = (MessageGroupNew) mess.messData;
         else if (mess.mtype == MessageType.FilterPipeline)
@@ -874,7 +877,7 @@ There is _no_ datatype information stored for these sort of selections currently
       }  // if has a "groupNewmessage", then its a groupNew
       else if (groupNewMessage != null) {
         // read the group, and its contained data objects.
-        group = new GroupNew(parent, name, groupNewMessage);
+        group = new GroupNew(parent, name, groupNewMessage, groupInfoMessage);
       }
 
       // if it has a Datatype and a StorageLayout, then its a Variable
@@ -1243,7 +1246,7 @@ There is _no_ datatype information stored for these sort of selections currently
       }
 
       if (debug1) debugOut.println("   SimpleDataspace version= " + version + " flags=" +
-          Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
+              Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
 
       dimLength = new int[ndims];
       for (int i = 0; i < ndims; i++)
@@ -1321,7 +1324,7 @@ There is _no_ datatype information stored for these sort of selections currently
       }
 
       fractalHeapAddress = readOffset();
-      v2BtreeAddress = readOffset();
+      v2BtreeAddress = readOffset(); // aka name index
 
       if ((flags & 2) != 0) {
         v2BtreeAddressCreationOrder = readOffset();
@@ -1333,7 +1336,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
   // Message Type 10/0xA "Group Info" (version 2)
   private class MessageGroupInfo {
-    byte version, flags;
+    byte flags;
     short maxCompactValue = -1, minDenseValue = -1, estNumEntries = -1, estLengthEntryName = -1;
 
     public String toString() {
@@ -1348,7 +1351,8 @@ There is _no_ datatype information stored for these sort of selections currently
     void read() throws IOException {
       if (debugPos) debugOut.println("   *MessageGroupInfo start pos= " + raf.getFilePointer());
       byte version = raf.readByte();
-      byte flags = raf.readByte();
+      flags = raf.readByte();
+
       if ((flags & 1) != 0) {
         maxCompactValue = raf.readShort();
         minDenseValue = raf.readShort();
@@ -1450,8 +1454,8 @@ There is _no_ datatype information stored for these sort of selections currently
       byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       if (debug1) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
-          flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
-          + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
+              flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
+              + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
 
       if (type == 0) {  // fixed point
         short bitOffset = raf.readShort();
@@ -1470,8 +1474,8 @@ There is _no_ datatype information stored for these sort of selections currently
         int expBias = raf.readInt();
         if (debug1)
           debugOut.println("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision +
-              " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
-              " manSize= " + manSize + " expBias= " + expBias);
+                  " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
+                  " manSize= " + manSize + " expBias= " + expBias);
 
       } else if (type == 2) {  // time
         short bitPrecision = raf.readShort();
@@ -1814,7 +1818,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       if (debug1)
         debugOut.println("   MessageAttribute version= " + version + " flags = " + Integer.toBinaryString(flags) +
-            " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
+                " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
 
       // read the datatype
       filePos = raf.getFilePointer();
@@ -1962,17 +1966,19 @@ There is _no_ datatype information stored for these sort of selections currently
     private BTree2 btree;
     private MessageGroupNew groupNewMessage;
 
-    public GroupNew(Group parent, String name, MessageGroupNew groupNewMessage) throws IOException {
+    public GroupNew(Group parent, String name, MessageGroupNew groupNewMessage, MessageGroupInfo groupInfoMessage) throws IOException {
       super(parent, name);
       this.groupNewMessage = groupNewMessage;
 
       if (debug1) debugOut.println("\n--> GroupNew read <" + dname + ">");
-      this.fractalHeap = new FractalHeap(this, groupNewMessage.fractalHeapAddress);
-      this.btree = new BTree2(dname, groupNewMessage.v2BtreeAddress);
+      if (groupNewMessage.fractalHeapAddress > 0)
+        this.fractalHeap = new FractalHeap(this, groupNewMessage.fractalHeapAddress);
+      if (groupNewMessage.v2BtreeAddress > 0)
+        this.btree = new BTree2(dname, groupNewMessage.v2BtreeAddress);
 
       for (BTree2.Entry2 e : this.btree.entryList) {
         BTree2.Record5 r5 = (BTree2.Record5) e.record;
-        this.fractalHeap.get( r5.heapId);
+        this.fractalHeap.get(r5.heapId);
       }
 
       /* now read all the entries in the btree
@@ -2103,7 +2109,7 @@ There is _no_ datatype information stored for these sort of selections currently
       long entryPos = raf.getFilePointer();
       if (debugGroupBtree)
         debugOut.println("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
-            " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
+                " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
 
       // read all entries in this Btree "Node"
       List<Entry> myEntries = new ArrayList<Entry>();
@@ -2215,7 +2221,7 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debugBtree2) {
         debugOut.println("BTree2 version=" + version + " type=" + btreeType + " treeDepth=" + treeDepth);
         debugOut.println(" nodeSize=" + nodeSize + " recordSize=" + recordSize + " numRecordsRootNode="
-            + numRecordsRootNode + " totalRecords=" + totalRecords + " rootNodeAddress=" + rootNodeAddress);
+                + numRecordsRootNode + " totalRecords=" + totalRecords + " rootNodeAddress=" + rootNodeAddress);
       }
 
       readAllEntries();
@@ -2275,6 +2281,7 @@ There is _no_ datatype information stored for these sort of selections currently
     }  */
 
     // these are part of the level 1A data structure, type = 0
+
     class Entry2 {
       long childAddress, nrecords, totNrecords;
       Object record;
@@ -2311,30 +2318,30 @@ There is _no_ datatype information stored for these sort of selections currently
           entries[i].record = readRecord(btreeType);
         }
 
-        int maxNumRecords = nodeSize/recordSize; // LOOK ?? guessing
+        int maxNumRecords = nodeSize / recordSize; // LOOK ?? guessing
         for (int i = 0; i < nrecords; i++) {
           Entry2 e = entries[i];
           e.childAddress = readOffset();
           e.nrecords = readVariableSizeMax(maxNumRecords);
           if (depth > 1)
-          e.totNrecords = readVariableSizeMax(maxNumRecords);
+            e.totNrecords = readVariableSizeMax(maxNumRecords);
 
           if (debugBtree2)
             debugOut.println(" entry childAddress=" + e.childAddress + " nrecords=" + e.nrecords + " totNrecords=" + e.totNrecords);
-         }
+        }
 
         int checksum = raf.readInt();
       }
 
       void recurse() throws IOException {
-        for (int i=0; i<entries.length; i++) {
+        for (int i = 0; i < entries.length; i++) {
           Entry2 e = entries[i];
           if (depth > 1) {
-            InternalNode node = new InternalNode(e.childAddress, (short) e.nrecords, recordSize, depth-1);
+            InternalNode node = new InternalNode(e.childAddress, (short) e.nrecords, recordSize, depth - 1);
             node.recurse();
           } else {
             LeafNode leaf = new LeafNode(e.childAddress, (short) e.nrecords);
-            leaf.addEntries( entryList);
+            leaf.addEntries(entryList);
           }
 
         }
@@ -2454,7 +2461,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       Record5() throws IOException {
         nameHash = raf.readInt();
-        raf.read( heapId);
+        raf.read(heapId);
 
         //if (debugBtree2)
         //  debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + showBytes(heapId));
@@ -2591,7 +2598,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       Node(long address, long parent) throws IOException {
         if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
-            " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
+                " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
 
         raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
         raf.seek(getFileOffset(address));
@@ -2618,7 +2625,7 @@ There is _no_ datatype information stored for these sort of selections currently
         long rightAddress = readOffset();
         if (debugDataBtree)
           debugOut.println("    leftAddress=" + leftAddress + " =0x" + Long.toHexString(leftAddress) +
-              " rightAddress=" + rightAddress + " =0x" + Long.toHexString(rightAddress));
+                  " rightAddress=" + rightAddress + " =0x" + Long.toHexString(rightAddress));
 
 
         if (level == 0) {
@@ -2803,7 +2810,7 @@ There is _no_ datatype information stored for these sort of selections currently
         o.dataPos = raf.getFilePointer();
         if (debugDetail)
           debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
-              " dataSize = " + o.dataSize + " dataPos = " + o.dataPos);
+                  " dataSize = " + o.dataSize + " dataPos = " + o.dataPos);
         if (o.id == 0) break;
 
         int nskip = ((int) o.dataSize) + padding((int) o.dataSize, 8);
@@ -2968,18 +2975,21 @@ There is _no_ datatype information stored for these sort of selections currently
     byte flags;
     int maxSizeOfObjects;
     long nextHugeObjectId, freeSpace, managedSpace, allocatedManagedSpace, offsetDirectBlock,
-        nManagedObjects, sizeHugeObjects, nHugeObjects, sizeTinyObjects, nTinyObjects;
+            nManagedObjects, sizeHugeObjects, nHugeObjects, sizeTinyObjects, nTinyObjects;
     long btreeAddress, freeSpaceTrackerAddress;
 
-    //doubling table
-    short tableWidth, maxHeapSize, startingNumRows, currentNumRows;
-    long startingBlockSize, maxDirectBlockSize, rootBlockAddress;
+    short maxHeapSize, startingNumRows, currentNumRows;
+    long maxDirectBlockSize;
+
+    long rootBlockAddress;
 
     // filters
     short ioFilterLen;
     long sizeFilteredRootDirectBlock;
     int ioFilterMask;
     byte[] ioFilterInfo;
+
+    DoublingTable doublingTable;
 
     FractalHeap(Group group, long address) throws IOException {
       this.group = group;
@@ -3016,9 +3026,9 @@ There is _no_ datatype information stored for these sort of selections currently
       sizeTinyObjects = readLength(); // total size of tiny objects packed in heap Ids (in bytes)
       nTinyObjects = readLength(); // number of tiny objects packed in heap Ids
 
-      tableWidth = raf.readShort(); // number of columns in the doubling table for managed blocks, must be power of 2
-      startingBlockSize = readLength(); // starting block size in bytes, power of 2
-      maxDirectBlockSize = readLength(); // maximum block size in bytes, power of 2
+      short tableWidth = raf.readShort(); // number of columns in the doubling table for managed blocks, must be power of 2
+      long startingBlockSize = readLength(); // starting direct block size in bytes, must be power of 2
+      maxDirectBlockSize = readLength(); // maximum direct block size in bytes, must be power of 2
       maxHeapSize = raf.readShort(); // log2 of the maximum size of heap's linear address space, in bytes
       startingNumRows = raf.readShort(); // starting number of rows of the root indirect block, 0 = maximum needed
       rootBlockAddress = readOffset(); // can be undefined if no data
@@ -3036,120 +3046,200 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debugDetail || debugFractalHeap) {
         debugOut.println("FractalHeap version=" + version + " heapIdLen=" + heapIdLen + " ioFilterLen=" + ioFilterLen + " flags= " + flags);
         debugOut.println(" maxSizeOfObjects=" + maxSizeOfObjects + " nextHugeObjectId=" + nextHugeObjectId + " btreeAddress="
-            + btreeAddress + " managedSpace=" + managedSpace + " allocatedManagedSpace=" + allocatedManagedSpace + " freeSpace=" + freeSpace);
+                + btreeAddress + " managedSpace=" + managedSpace + " allocatedManagedSpace=" + allocatedManagedSpace + " freeSpace=" + freeSpace);
         debugOut.println(" nManagedObjects=" + nManagedObjects + " nHugeObjects= " + nHugeObjects + " nTinyObjects=" + nTinyObjects +
-          " maxDirectBlockSize=" + maxDirectBlockSize + " maxHeapSize= 2^" + maxHeapSize);
+                " maxDirectBlockSize=" + maxDirectBlockSize + " maxHeapSize= 2^" + maxHeapSize);
         debugOut.println(" DoublingTable: tableWidth=" + tableWidth + " startingBlockSize=" + startingBlockSize);
         debugOut.println(" rootBlockAddress=" + rootBlockAddress + " startingNumRows=" + startingNumRows + " currentNumRows=" + currentNumRows);
       }
       if (debugPos) debugOut.println("    *now at position=" + raf.getFilePointer());
-
 
       long pos = raf.getFilePointer();
       if (debugDetail) debugOut.println("-- end FractalHeap position=" + raf.getFilePointer());
       int hsize = 8 + 2 * sizeLengths + sizeOffsets;
       if (debugTracker) memTracker.add("Group FractalHeap (" + group.dname + ")", address, pos);
 
-      // data
-      if (currentNumRows == 0)
-        new DirectBlock(getFileOffset(rootBlockAddress), address);
-      else {
-        //int nrows = SpecialMathFunction.log2(iblock_size - SpecialMathFunction.log2(startingBlockSize*tableWidth))+1;
-        int maxrows_directBlocks = (int) (SpecialMathFunction.log2(maxDirectBlockSize) - SpecialMathFunction.log2(startingBlockSize)) + 2;
+      doublingTable = new DoublingTable(tableWidth, startingBlockSize, managedSpace, maxDirectBlockSize);
 
-        new IndirectBlock(getFileOffset(rootBlockAddress), address, hasFilters, 1, 0);
+      // data
+      if (currentNumRows == 0) {
+        DataBlock dblock = new DataBlock();
+        doublingTable.blockList.add(dblock);
+        readDirectBlock( getFileOffset(rootBlockAddress), address, dblock);
+
+      } else {
+        //int nrows = SpecialMathFunction.log2(iblock_size - SpecialMathFunction.log2(startingBlockSize*tableWidth))+1;
+        //int maxrows_directBlocks = (int) (SpecialMathFunction.log2(maxDirectBlockSize) - SpecialMathFunction.log2(startingBlockSize)) + 2;
+
+        readIndirectBlock(getFileOffset(rootBlockAddress), address, hasFilters);
       }
-      //if (debugTracker) memTracker.addByLen("Group FractalHeapData (" + group.dname + ")", dataAddress, size);
+
+      // read in the direct blocks
+      for (DataBlock dblock : doublingTable.blockList) {
+        readDirectBlock(getFileOffset(dblock.address), address, dblock);
+      }
+
+      doublingTable.assignSizes();
+    }
+
+
+    void get(byte[] heapId) throws IOException {
+      int type = (heapId[0] & 0x30) >> 4;
+      int n = maxHeapSize / 8;
+      int m = getNumBytesFromMax(maxDirectBlockSize - 1);
+
+      int offset = makeIntFromBytes(heapId, 1, n);
+      int size = makeIntFromBytes(heapId, 1 + n, m);
+      System.out.println("Heap id =" + showBytes(heapId) + " type = " + type + " n= " + n + " m= " + m + " offset= " + offset + " size= " + size);
+
+      long pos = doublingTable.getPos(offset);
+      byte[] data = new byte[size];
+      raf.seek(pos);
+      raf.read(data);
+      System.out.println(" heap ID vals = " + new String(data) + " == " + showBytes(data));
     }
 
     private class DoublingTable {
-      DoublingTable( int tableWidth, int startingBlockSize) {
+      int tableWidth;
+      long startingBlockSize, managedSpace, maxDirectBlockSize;
+      int nrows, nDirectRows, nIndirectRows;
+      List<DataBlock> blockList;
 
-      }
-    }
+      DoublingTable(int tableWidth, long startingBlockSize, long managedSpace, long maxDirectBlockSize) {
+        this.tableWidth = tableWidth;
+        this.startingBlockSize = startingBlockSize;
+        this.managedSpace = managedSpace;
 
-    private class IndirectBlock {
-      IndirectBlock(long pos, long heapAddress, boolean hasFilter, int nDirectChildren, int nIndirectChildren) throws IOException {
-        raf.seek(pos);
-
-        // header
-        byte[] heapname = new byte[4];
-        raf.read(heapname);
-        String nameS = new String(heapname);
-        if (!nameS.equals("FHIB"))
-          throw new IllegalStateException();
-
-        byte version = raf.readByte();
-        long heapHeaderAddress = readOffset();
-        if (heapAddress != heapHeaderAddress)
-          throw new IllegalStateException();
-
-        int nbytes = maxHeapSize / 8;
-        if (maxHeapSize % 8 != 0) nbytes++;
-        long blockOffset = readVariableSize( nbytes);
-
-        if (debugDetail || debugFractalHeap) {
-           debugOut.println(" -- FH IndirectBlock version=" + version + " blockOffset= " + blockOffset);
+        nrows = calcNrows(managedSpace);
+        int maxDirectRows = calcNrows(maxDirectBlockSize);
+        if (nrows > maxDirectRows) {
+          nDirectRows = maxDirectRows;
+          nIndirectRows = nrows - maxDirectRows;
+        } else {
+          nDirectRows = nrows;
+          nIndirectRows = 0;
         }
 
-        long npos = raf.getFilePointer();
-        if (debugPos) debugOut.println("    *now at position=" + npos);
+        blockList = new ArrayList<DataBlock>(tableWidth * nrows);
+      }
 
-        for (int i = 0; i < nDirectChildren; i++) {
-          long childAddress = readOffset();
-          if (hasFilter) {
-            long sizeFilteredDirectBlock = readLength();
-            int filterMask = raf.readInt();
+      private int calcNrows(long max) {
+        int n = 0;
+        long sizeInBytes = 0;
+        long blockSize = startingBlockSize;
+        while (sizeInBytes < max) {
+          sizeInBytes += blockSize * tableWidth;
+          n++;
+          if (n > 1) blockSize *= 2;
+        }
+        return n;
+      }
+
+      void assignSizes() {
+        int block = 0;
+        long blockSize = startingBlockSize;
+        for (DataBlock db : blockList) {
+          db.size = blockSize;
+          block++;
+          if ((block % tableWidth == 0) && (block / tableWidth > 1))
+            blockSize *= 2;
+        }
+      }
+
+      long getPos(long offset) {
+        for (DataBlock db : blockList) {
+          if ((offset >= db.offset) && (offset < db.offset + db.size)) {
+            long localOffset = offset - db.offset;
+            return db.dataPos + localOffset;
           }
-          if (debugDetail || debugFractalHeap)
-              debugOut.println("  DirectBlock address= " + childAddress);
-
-          //new DirectBlock(getFileOffset(childAddress), heapAddress);
         }
-
-         for (int i = 0; i < nIndirectChildren; i++) {
-          long childAddress = readOffset();
-          // new IndirectBlock(getFileOffset(childAddress), heapAddress, hasFilter, nDirectChildren, nIndirectChildren);
-        }
-
+        throw new IllegalStateException("offset=" + offset);
       }
 
     }
 
-    private class DirectBlock {
-      DirectBlock(long pos, long heapAddress) throws IOException {
-        raf.seek(pos);
+    private class DataBlock {
+      long address;
+      long sizeFilteredDirectBlock;
+      int filterMask;
 
-        // header
-        byte[] heapname = new byte[4];
-        raf.read(heapname);
-        String nameS = new String(heapname);
-        if (!nameS.equals("FHDB"))
-          throw new IllegalStateException();
-
-        byte version = raf.readByte();
-        long heapHeaderAddress = readOffset();
-        if (heapAddress != heapHeaderAddress)
-          throw new IllegalStateException();
-
-        int nbytes = maxHeapSize / 8;
-        if (maxHeapSize % 8 != 0) nbytes++;
-        byte[] dummy = new byte[nbytes];
-        raf.read(dummy);
-      }
+      long dataPos;
+      long offset;
+      long size;
     }
 
-    void get(byte[] heapId) {
-      int type = (heapId[0] & 0x30) >> 4;
-      int n = maxHeapSize / 8;
-      int m = getNumBytesFromMax(maxDirectBlockSize-1);
+    void readIndirectBlock(long pos, long heapAddress, boolean hasFilter) throws IOException {
+      raf.seek(pos);
 
-      int offset = makeIntFromBytes(heapId, 1, n);
-      int size = makeIntFromBytes(heapId, 1+n, m);
+      // header
+      byte[] heapname = new byte[4];
+      raf.read(heapname);
+      String nameS = new String(heapname);
+      if (!nameS.equals("FHIB"))
+        throw new IllegalStateException();
 
-      //long pos = getPos(offset);
+      byte version = raf.readByte();
+      long heapHeaderAddress = readOffset();
+      if (heapAddress != heapHeaderAddress)
+        throw new IllegalStateException();
 
-      System.out.println("Heap id ="+showBytes(heapId)+" type = " + type+" n= "+n+" m= "+m+" offset= "+offset+" size= "+size);
+      int nbytes = maxHeapSize / 8;
+      if (maxHeapSize % 8 != 0) nbytes++;
+      long blockOffset = readVariableSize(nbytes);
+
+      if (debugDetail || debugFractalHeap) {
+        debugOut.println(" -- FH IndirectBlock version=" + version + " blockOffset= " + blockOffset);
+      }
+
+      long npos = raf.getFilePointer();
+      if (debugPos) debugOut.println("    *now at position=" + npos);
+
+      // child direct blocks
+      int nDirectChildren = doublingTable.tableWidth * doublingTable.nDirectRows;
+      for (int i = 0; i < nDirectChildren; i++) {
+        DataBlock directChild = new DataBlock();
+        directChild.address = readOffset();
+        if (hasFilter) {
+          directChild.sizeFilteredDirectBlock = readLength();
+          directChild.filterMask = raf.readInt();
+        }
+        if (debugDetail || debugFractalHeap)
+          debugOut.println("  DirectChild address= " + directChild.address);
+
+        doublingTable.blockList.add(directChild);
+      }
+
+      // child indirect blocks LOOK not sure if order is correct, this is depth first...
+      int nIndirectChildren = doublingTable.tableWidth * doublingTable.nIndirectRows;
+      for (int i = 0; i < nIndirectChildren; i++) {
+        long childIndirectAddress = readOffset();
+        readIndirectBlock(childIndirectAddress, heapAddress, hasFilter);
+      }
+
+    }
+
+    void readDirectBlock(long pos, long heapAddress, DataBlock dblock) throws IOException {
+      raf.seek(pos);
+
+      // header
+      byte[] heapname = new byte[4];
+      raf.read(heapname);
+      String nameS = new String(heapname);
+      if (!nameS.equals("FHDB"))
+        throw new IllegalStateException();
+
+      byte version = raf.readByte();
+      long heapHeaderAddress = readOffset();
+      if (heapAddress != heapHeaderAddress)
+        throw new IllegalStateException();
+
+      int nbytes = maxHeapSize / 8;
+      if (maxHeapSize % 8 != 0) nbytes++;
+      dblock.offset = readVariableSize(nbytes);
+      dblock.dataPos = raf.getFilePointer();
+
+      if (debugDetail || debugFractalHeap)
+        debugOut.println("  DirectBlock offset= " + dblock.offset + " dataPos = " + dblock.dataPos);
     }
 
   } // FractalHeap
@@ -3451,7 +3541,7 @@ There is _no_ datatype information stored for these sort of selections currently
      Used for Structure Members
   */
   private Variable makeMemberVariable(String name, long dataPos, MessageDatatype mdt)
-      throws IOException {
+          throws IOException {
 
     Variable v;
     Vinfo vinfo = new Vinfo(mdt, dataPos);
@@ -3582,9 +3672,9 @@ There is _no_ datatype information stored for these sort of selections currently
   //////////////////////////////////////////////////////////////
   // utilities
 
-  int makeIntFromBytes( byte[] bb, int start, int n) {
+  int makeIntFromBytes(byte[] bb, int start, int n) {
     int result = 0;
-    for (int i=start+n-1; i>=start; i--) {
+    for (int i = start + n - 1; i >= start; i--) {
       result <<= 8;
       byte b = bb[i];
       result += (b < 0) ? b + 256 : b;
@@ -3671,7 +3761,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
   // size of data depends on "maximum possible number"
   private long readVariableSizeMax(int maxNumber) throws IOException {
-    int size = getNumBytesFromMax( maxNumber);
+    int size = getNumBytesFromMax(maxNumber);
     return readVariableSize(size);
   }
 
