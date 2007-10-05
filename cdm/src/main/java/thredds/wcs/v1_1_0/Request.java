@@ -24,8 +24,6 @@ public class Request
 
   // GetCapabilities request info
   private List<GetCapabilities.Section> sections;
-  private GetCapabilities.ServiceId serviceId;
-  private GetCapabilities.ServiceProvider serviceProvider;
 
   // DescribeCoverage request info
   private List<String> identifierList;
@@ -56,8 +54,6 @@ public class Request
   static public Request getGetCapabilitiesRequest( Operation operation,
                                                    String negotiatedVersion,
                                                    List<GetCapabilities.Section> sections,
-                                                   GetCapabilities.ServiceId serviceId,
-                                                   GetCapabilities.ServiceProvider serviceProvider,
                                                    String datasetPath,
                                                    GridDataset dataset)
   {
@@ -65,15 +61,9 @@ public class Request
     if ( ! operation.equals( Operation.GetCapabilities ) )
       throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method.");
     req.sections = sections;
-    req.serviceId = serviceId;
-    req.serviceProvider = serviceProvider;
 
     if ( req.sections == null )
       throw new IllegalArgumentException( "Non-null section list required.");
-    if ( req.serviceId == null )
-      throw new IllegalArgumentException( "Non-null service ID required.");
-    if ( req.serviceProvider == null )
-      throw new IllegalArgumentException( "Non-null service provider expected.");
 
     return req;
   }
@@ -137,9 +127,6 @@ public class Request
   {
     return Collections.unmodifiableList( sections );
   }
-
-  public GetCapabilities.ServiceId getServiceId() { return serviceId; }
-  public GetCapabilities.ServiceProvider getServiceProvider() { return serviceProvider; }
 
   // ---------- DescribeCoverage getters
   public List<String> getIdentifierList() { return identifierList; }

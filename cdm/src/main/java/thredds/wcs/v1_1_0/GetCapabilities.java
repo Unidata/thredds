@@ -211,9 +211,9 @@ public class GetCapabilities
       if ( serviceProvider.name != null )
       {
         // ServiceProvider/ProviderName (ows) [0..1]
-        Element provNameElem = new Element( "ProviderName", owsNS );
-        provNameElem.addContent( serviceProvider.name );
-        servProvElem.addContent( provNameElem );
+        servProvElem.addContent(
+                new Element( "ProviderName", owsNS ).addContent(
+                        serviceProvider.name ) );
       }
 
       if ( serviceProvider.site != null )
@@ -562,14 +562,11 @@ public class GetCapabilities
      {
        this.title = title;
        this._abstract = anAbstract;
-       this.keywords = new ArrayList<String>(keywords.size());
-       Collections.copy( this.keywords, keywords);
+       this.keywords = new ArrayList<String>( keywords);
        this.serviceType = serviceType;
-       this.serviceTypeVersion = new ArrayList<String>( serviceTypeVersion.size() );
-       Collections.copy( this.serviceTypeVersion, serviceTypeVersion);
+       this.serviceTypeVersion = new ArrayList<String>( serviceTypeVersion );
        this.fees = fees;
-       this.accessConstraints = new ArrayList<String>( accessConstraints.size() );
-       Collections.copy(this.accessConstraints, accessConstraints);
+       this.accessConstraints = new ArrayList<String>( accessConstraints );
      }
 
      public String getTitle() { return title; }
@@ -586,39 +583,117 @@ public class GetCapabilities
    */
   public static class ServiceProvider
   {
-    public String name;
-    public OnlineResource site;
-    public ServiceContact contact;
+    public ServiceProvider( String name, OnlineResource site, ServiceContact contact )
+    {
+      this.name = name;
+      this.site = site;
+      this.contact = contact;
+    }
 
-    public class OnlineResource
+    public String getName(){ return name; }
+    private String name;
+
+    public OnlineResource getSite() { return site; }
+    private OnlineResource site;
+
+    public ServiceContact getContact() { return contact; }
+    private ServiceContact contact;
+
+    public static class OnlineResource
     {
-      public URI link;
-      public String title;
+      public OnlineResource( URI link, String title )
+      {
+        this.link = link;
+        this.title = title;
+      }
+
+      public URI getLink() { return link; }
+      private URI link;
+
+      public String getTitle() { return title; }
+      private String title;
     }
-    public class ServiceContact
+    public static class ServiceContact
     {
-      public String individualName;
-      public String positionName;
-      public ContactInfo contactInfo;
-      public String role;
+      public ServiceContact( String individualName, String positionName, ContactInfo contactInfo, String role )
+      {
+        this.individualName = individualName;
+        this.positionName = positionName;
+        this.contactInfo = contactInfo;
+        this.role = role;
+      }
+
+      public String getIndividualName() { return individualName; }
+      private String individualName;
+
+      public String getPositionName() { return positionName; }
+      private String positionName;
+
+      public ContactInfo getContactInfo() { return contactInfo; }
+      private ContactInfo contactInfo;
+
+      public String getRole() { return role; }
+      private String role;
     }
-    public class ContactInfo
+    public static class ContactInfo
     {
-      public List<String> voicePhone;
-      public List<String> faxPhone;
-      public Address address;
-      public OnlineResource onlineResource;
-      public String hoursOfService;
-      public String contactInstructions;
+      public ContactInfo( List<String> voicePhone, List<String> faxPhone, Address address, OnlineResource onlineResource, String hoursOfService, String contactInstructions )
+      {
+        this.voicePhone = new ArrayList<String>( voicePhone);
+        this.faxPhone = new ArrayList<String>( faxPhone);
+        this.address = address;
+        this.onlineResource = onlineResource;
+        this.hoursOfService = hoursOfService;
+        this.contactInstructions = contactInstructions;
+      }
+
+      public List<String> getVoicePhone() { return Collections.unmodifiableList( voicePhone); }
+      private List<String> voicePhone;
+
+      public List<String> getFaxPhone() { return Collections.unmodifiableList( faxPhone); }
+      private List<String> faxPhone;
+
+      public Address getAddress() { return address; }
+      private Address address;
+
+      public OnlineResource getOnlineResource() { return onlineResource; }
+      private OnlineResource onlineResource;
+
+      public String getHoursOfService() { return hoursOfService; }
+      private String hoursOfService;
+
+      public String getContactInstructions() { return contactInstructions; }
+      private String contactInstructions;
     }
-    public class Address
+    public static class Address
     {
-      public List<String> deliveryPoint;
-      public String city;
-      public String adminArea;
-      public String postalCode;
-      public String country;
-      public List<String> email;
+      public Address( List<String> deliveryPoint, String city, String adminArea, String postalCode, String country, List<String> email )
+      {
+        this.deliveryPoint = new ArrayList<String>( deliveryPoint);
+        this.city = city;
+        this.adminArea = adminArea;
+        this.postalCode = postalCode;
+        this.country = country;
+        this.email = new ArrayList<String>( email);
+      }
+
+      public List<String> getDeliveryPoint() { return Collections.unmodifiableList( deliveryPoint); }
+      private List<String> deliveryPoint;
+
+      public String getCity() { return city; }
+      private String city;
+
+      public String getAdminArea() { return adminArea; }
+      private String adminArea;
+
+      public String getPostalCode() { return postalCode; }
+      private String postalCode;
+
+      public String getCountry() { return country; }
+      private String country;
+
+      public List<String> getEmail() { return Collections.unmodifiableList( email); }
+      private List<String> email;
     }
   }
 

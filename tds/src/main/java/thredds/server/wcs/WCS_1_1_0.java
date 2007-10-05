@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * _more_
@@ -49,18 +50,9 @@ public class WCS_1_1_0 implements VersionHandler
       Request request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(), req, res);
       if ( request.getOperation().equals( Request.Operation.GetCapabilities))
       {
-        GetCapabilities.ServiceId sid =
-                new GetCapabilities.ServiceId("title", "abstract",
-                                              Collections.singletonList( "keyword" ),
-                                              "WCS", Collections.singletonList("1.1.0"),
-                                              "", Collections.singletonList( "") );
-        GetCapabilities.ServiceProvider sp =
-                new GetCapabilities.ServiceProvider();
         GetCapabilities getCapabilities =
                 new GetCapabilities( serverURI, request.getSections(),
                                      getServiceId(), getServiceProvider(),
-                                     // ToDo Remove serviceId and serviceProvider from Requst
-                                     //request.getServiceId(), request.getServiceProvider(),
                                      request.getDataset() );
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
@@ -122,17 +114,17 @@ public class WCS_1_1_0 implements VersionHandler
   private GetCapabilities.ServiceProvider getServiceProvider()
   {
     // Todo Figure out how to configure serviceProvider info.
-    GetCapabilities.ServiceProvider sp =
-            new GetCapabilities.ServiceProvider();
-    sp.name = "sp name";
-    sp.site.link = null; //new URI( "");
-    sp.site.title = "a link";
-    sp.contact.individualName = "";
-    sp.contact.positionName = "";
-    sp.contact.contactInfo = null;
-    sp.contact.role = "";
+    GetCapabilities.ServiceProvider.OnlineResource resource =
+            new GetCapabilities.ServiceProvider.OnlineResource( null, "a link");
+    GetCapabilities.ServiceProvider.Address address = null; //new GetCapabilities.ServiceProvider.Address(...);
+    List<String> phone = Collections.emptyList();
+    List<String> fax = Collections.emptyList();
+    GetCapabilities.ServiceProvider.ContactInfo contactInfo =
+            new GetCapabilities.ServiceProvider.ContactInfo( phone, fax, address, null, "hours", "contact instructions");
+    GetCapabilities.ServiceProvider.ServiceContact contact =
+            new GetCapabilities.ServiceProvider.ServiceContact( "individual name", "position name", contactInfo, "role");
 
-    return sp;
+    return new GetCapabilities.ServiceProvider( "sp name", resource, contact);
   }
 
   public void handleExceptionReport( HttpServletResponse res, WcsException exception )

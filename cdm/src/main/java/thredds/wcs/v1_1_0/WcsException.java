@@ -66,8 +66,7 @@ public class WcsException extends Exception
     super( messages.get(0));
     this.code = code;
     this.locator = locator;
-    this.textMessages = new ArrayList<String>( messages.size());
-    Collections.copy( this.textMessages, messages);
+    this.textMessages = new ArrayList<String>( messages);
   }
 
   public WcsException( Code code, String locator, String message )

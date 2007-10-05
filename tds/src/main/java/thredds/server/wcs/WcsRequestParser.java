@@ -42,8 +42,6 @@ public class WcsRequestParser
 
     // GetCapabilities request info
     List<GetCapabilities.Section> sections;
-    GetCapabilities.ServiceId serviceId;
-    GetCapabilities.ServiceProvider serviceProvider;
 
     // DescribeCoverage request info
 
@@ -79,13 +77,7 @@ public class WcsRequestParser
       else
         sections = Collections.emptyList();
 
-      serviceId = null;
-      serviceProvider = null;
-//      serviceId = new GetCapabilities.ServiceId( ThreddsConfig.get( "WCS.serviceId.title", null ),
-//                                                 ThreddsConfig.get( "WCS.serviceId.abstract", null),
-//                                                 )
-      request = Request.getGetCapabilitiesRequest( operation, version,
-                                                   sections, serviceId, serviceProvider,
+      request = Request.getGetCapabilitiesRequest( operation, version, sections,
                                                    datasetPath, dataset );
     }
     // Handle "DescribeCoverage" request.
