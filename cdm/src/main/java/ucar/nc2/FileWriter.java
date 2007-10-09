@@ -371,7 +371,7 @@ public class FileWriter {
    * @return the new Dimension
    */
   public Dimension writeDimension(Dimension dim) {
-    Dimension newDim = ncfile.addDimension(dim.getName(), dim.isUnlimited() ? -1 : dim.getLength(),
+    Dimension newDim = ncfile.addDimension(dim.getName(), dim.isUnlimited() ? 0 : dim.getLength(),
             dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
     dimHash.put(newDim.getName(), newDim);
     if (debug) System.out.println("write dim= " + newDim);
